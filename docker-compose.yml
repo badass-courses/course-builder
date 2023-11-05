@@ -1,0 +1,19 @@
+version: '3.8'
+name: inngest-gpt
+services:
+  db:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=inngest-gpt
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '3309:3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./seed_data:/docker-entrypoint-initdb.d
+volumes:
+  db:
+    driver: local
