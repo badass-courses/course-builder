@@ -21,11 +21,13 @@ export const transcriptRequested = inngest.createFunction(
   {id: `transcript-requested`, name: 'Transcript Requested'},
   {event: TRANSCRIPT_REQUESTED_EVENT},
   async ({event, step}) => {
+
     const deepgramResponse = await step.run('send the media to Deepgram', async () => {
       const utteranceSpiltThreshold = 0.5
 
       const callbackParams = new URLSearchParams({
         videoResourceId: event.data.videoResourceId,
+        ...(event.data.moduleSlug && {moduleSlug: event.data.moduleSlug})
       })
 
       // just weird URL differences between dev and prod
@@ -90,6 +92,7 @@ export const transcriptReady = inngest.createFunction(
         name: MUX_SRT_READY_EVENT,
         data: {
           videoResourceId: videoResource._id as string,
+          moduleSlug: event.data.moduleSlug,
           srt: event.data.srt,
         }
       })

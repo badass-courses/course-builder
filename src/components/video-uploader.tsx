@@ -11,7 +11,7 @@ import ReactMarkdown from "react-markdown";
 import {UploadDropzone} from "@/utils/uploadthing";
 import {getUniqueFilename} from "@/lib/get-unique-filename";
 
-const VideoUploader = () => {
+const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
 
   const [requestIds, setRequestIds] = React.useState<string[]>([])
 
@@ -20,6 +20,9 @@ const VideoUploader = () => {
     <div className="flex flex-col space-y-4">
       <UploadDropzone
         endpoint="videoUploader"
+        input={{
+          moduleSlug
+        }}
         onBeforeUploadBegin={(files) => {
           console.log(files.map((file) => new File([file], getUniqueFilename(file.name), {type: file.type})))
           return files.map((file) => new File([file], getUniqueFilename(file.name), {type: file.type}))

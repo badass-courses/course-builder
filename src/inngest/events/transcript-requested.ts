@@ -10,6 +10,7 @@ export type TranscriptRequested = {
 export const TranscriptRequestedEventSchema = z.object({
   videoResourceId: z.string(),
   mediaUrl: z.string(),
+  moduleSlug: z.string().optional(),
 })
 
 export type TranscriptRequestedEvent = z.infer<typeof TranscriptRequestedEventSchema>
@@ -25,6 +26,7 @@ export const TranscriptReadyEventSchema = z.object({
   videoResourceId: z.string().nullable(),
   srt: z.string(),
   transcript: z.string(),
+  moduleSlug: z.string().optional(),
 })
 
 export type TranscriptReadyEvent = z.infer<typeof TranscriptReadyEventSchema>

@@ -11,7 +11,10 @@ const f = createUploadthing();
 export const ourFileRouter = {
 
   videoUploader: f({ video: { maxFileSize: "2GB", maxFileCount: 5 } })
-    .middleware(async (stuff) => {
+    .input(z.object({
+      moduleSlug: z.string().optional(),
+    }))
+    .middleware(async ({req, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
 
@@ -19,7 +22,7 @@ export const ourFileRouter = {
         throw new Error("Unauthorized");
       }
 
-      return { userId: session.user.id };
+      return { userId: session.user.id, ...(input?.moduleSlug && {moduleSlug: input.moduleSlug}) };
     })
     .onUploadComplete(async (opts) => {
       console.log("Upload complete for userId:", opts.metadata.userId);
@@ -32,6 +35,7 @@ export const ourFileRouter = {
           originalMediaUrl: opts.file.url,
           fileName: opts.file.name || 'untitled',
           title: opts.file.name || 'untitled',
+          moduleSlug: opts.metadata.moduleSlug,
         },
       })
     }),

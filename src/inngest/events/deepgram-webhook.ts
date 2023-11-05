@@ -9,6 +9,7 @@ export type DeepgramWebhook = {
 
 export const DeepgramWebhookEventSchema = z.object({
   videoResourceId: z.string().nullable(),
+  moduleSlug: z.string().optional(),
   results: z.any(),
 })
 

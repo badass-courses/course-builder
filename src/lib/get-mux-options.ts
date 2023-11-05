@@ -5,7 +5,7 @@ export const muxRequestHeaders = {
   "Content-Type": "application/json"
 }
 
-type MuxApiOptions = {passthrough?: string | null, test?: boolean, url?: string, transcription?: boolean}
+type MuxApiOptions = {passthrough?: Record<string, string | undefined> | null, test?: boolean, url?: string, transcription?: boolean}
 
 export function getMuxOptions(options?: MuxApiOptions ) {
     return {
@@ -20,7 +20,7 @@ export function getMuxOptions(options?: MuxApiOptions ) {
         "input": [{url: options?.url
       }],
         "mp4_support": "standard",
-        ...(options?.passthrough ? {passthrough: options.passthrough} : {})
+        ...(options?.passthrough ? {passthrough: JSON.stringify(options.passthrough)} : {})
       }
     }
 }

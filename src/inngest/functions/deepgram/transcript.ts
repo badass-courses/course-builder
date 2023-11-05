@@ -16,6 +16,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
       name: TRANSCRIPT_READY_EVENT,
       data: {
         videoResourceId: event.data.videoResourceId,
+        moduleSlug: event.data.moduleSlug,
         srt,
         transcript
       }

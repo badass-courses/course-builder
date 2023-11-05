@@ -11,6 +11,7 @@ export const VideoUploadedEventSchema = z.object({
   originalMediaUrl: z.string(),
   fileName: z.string(),
   title: z.string().optional(),
+  moduleSlug: z.string().optional(),
 })
 
 export type VideoUploadedEvent = z.infer<typeof VideoUploadedEventSchema>

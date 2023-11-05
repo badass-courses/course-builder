@@ -1,7 +1,6 @@
 import {inngest} from "@/inngest/inngest.server";
 import {MUX_WEBHOOK_EVENT} from "@/inngest/events/mux-webhook";
 import {env} from "@/env.mjs";
-import {AI_WRITING_COMPLETED_EVENT, AI_WRITING_REQUESTED_EVENT} from "@/inngest/events";
 import {sanityMutation, sanityQuery} from "@/server/sanity.server";
 import {VideoResourceSchema} from "@/inngest/functions/transcripts";
 

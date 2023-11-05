@@ -13,13 +13,17 @@ export async function sanityMutation(mutations: any[]) {
 }
 
 export async function sanityQuery(query: string) {
+  console.log(query)
   return await fetch(`https://${env.SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/query/${env.SANITY_STUDIO_DATASET}?query=${encodeURIComponent(query)}`, {
     method: 'get',
     headers: {
       Authorization: `Bearer ${env.SANITY_API_TOKEN}`
     }
   }).then(async (response) => {
+    console.log(response)
     const {result} = await response.json()
     return result
+  }).catch((error) => {
+    console.log(error)
   })
 }

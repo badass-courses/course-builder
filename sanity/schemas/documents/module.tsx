@@ -16,10 +16,18 @@ export default {
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'description',
+      title: 'Short Description',
+      description: 'Describe this module for search engines, social media, and LLM prompt.',
+      type: 'text',
+      validation: (Rule) => Rule.max(160),
+    }),
+    defineField({
       name: 'moduleType',
       title: 'Module Type',
       type: 'string',
       validation: (Rule) => Rule.required(),
+      initialValue: 'tutorial',
       options: {
         list: [
           {title: 'Workshop', value: 'workshop'},
@@ -54,12 +62,10 @@ export default {
       name: 'resources',
       title: 'Resources',
       description:
-        'Exercise, Section, Explainer, Interview, Testimonial, or Link Resource in the Module',
+        'Resources in the Module',
       type: 'array',
       of: [
         {
-          title:
-            'Exercise, Section, Explainer, Interview, Testimonial, or Link Resource',
           type: 'reference',
           to: [
             {title: 'Exercise', type: 'exercise'},
@@ -70,6 +76,16 @@ export default {
               name: 'github',
               title: 'GitHub',
               type: 'github',
+            },
+            {
+              name: 'workflow',
+              title: 'Workflow',
+              type: 'workflow',
+            },
+            {
+              name: 'videoResource',
+              title: 'Video Resource',
+              type: 'videoResource',
             }
           ],
         },
@@ -100,13 +116,7 @@ export default {
       name: 'ogImage',
       title: 'Share card URL',
       type: 'url',
-    },
-    defineField({
-      name: 'description',
-      title: 'SEO Description',
-      type: 'text',
-      validation: (Rule) => Rule.max(160),
-    }),
+    }
   ],
   preview: {
     select: {
