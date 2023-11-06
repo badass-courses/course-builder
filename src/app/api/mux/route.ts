@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       body: JSON.stringify(getMuxOptions())
     })
-    console.log(response)
     const json = await response.json()
     return new Response(JSON.stringify(json.data), {
       status: 200,

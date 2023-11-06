@@ -13,24 +13,29 @@ import {getUniqueFilename} from "@/lib/get-unique-filename";
 
 const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
 
-  const [requestIds, setRequestIds] = React.useState<string[]>([])
+  const {data: sanityModule} = api.module.getBySlug.useQuery({
+    slug: moduleSlug
+  })
+
+  const utils = api.useUtils()
 
   return (
     <div className="grid h-full gap-6 lg:grid-cols-2">
     <div className="flex flex-col space-y-4">
       <UploadDropzone
         endpoint="videoUploader"
+        config={{
+          mode: 'auto',
+        }}
         input={{
           moduleSlug
         }}
         onBeforeUploadBegin={(files) => {
-          console.log(files.map((file) => new File([file], getUniqueFilename(file.name), {type: file.type})))
           return files.map((file) => new File([file], getUniqueFilename(file.name), {type: file.type}))
         }}
-        onClientUploadComplete={(res) => {
-          // Do something with the response
-          console.log("Files: ", res);
-          setRequestIds((requestIds) => [...requestIds, ...res?.map(file => file.name) || 'error'])
+        onClientUploadComplete={async (response: any) => {
+          // Do something with the response.
+          await utils.module.getBySlug.invalidate({slug: moduleSlug})
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
@@ -38,37 +43,43 @@ const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
         }}
       />
       <div className="flex flex-col space-y-4">
-        {requestIds.map((requestId) => (
-          <UploadedVideo key={requestId} requestId={requestId} />
-        ))}
+        {sanityModule?.videoResources?.map(({title, muxPlaybackId, state}: {title: string, muxPlaybackId: string, state:string}) => (
+          <UploadedVideo key={title} requestId={title} playbackId={muxPlaybackId} moduleSlug={moduleSlug} state={state} />
+        )).reverse()}
       </div>
     </div>
 
-    <ChatResponse requestIds={requestIds} />
+    <ChatResponse requestIds={sanityModule?.videoResources?.map(({title}: {title: string}) => title)} />
     </div>
   )
 }
 
-function UploadedVideo({requestId}: {requestId: string}) {
-  const [playbackId, setPlaybackId] = React.useState<string>()
+function UploadedVideo({requestId, playbackId, moduleSlug, state='new'}: {requestId: string, playbackId: string, state:string, moduleSlug?: string}) {
   const [generatedDraft, setGeneratedDraft] = React.useState<{title:string, content: string} | null>(null)
   const [transcriptReady, setTranscriptReady] = React.useState<boolean>(false)
-
   const {mutate: generatePost} = api.post.generate.useMutation()
-  const {mutate: createPost} = api.post.create.useMutation()
+  const {data: sanityModule} = api.module.getBySlug.useQuery({
+    slug: moduleSlug
+  })
+  const utils = api.useUtils()
 
   usePartySocket({
     room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
     host: env.NEXT_PUBLIC_PARTY_KIT_URL,
-    onMessage: (messageEvent) => {
+    onMessage: async (messageEvent) => {
       const data = JSON.parse(messageEvent.data)
+
+      console.log('data', data)
+      console.log('requestId', requestId)
       if(data.name === 'video.asset.ready' && requestId === data.requestId) {
-        setPlaybackId(data.body)
+        await utils.module.getBySlug.invalidate({slug: moduleSlug})
       }
       if(data.name === 'transcript.ready' && requestId === data.requestId) {
         setTranscriptReady(true)
+        await utils.module.getBySlug.invalidate({slug: moduleSlug})
       }
       if(data.name === 'ai.draft.completed' && requestId === data.requestId) {
+        console.log('generated draft', data.body)
         setGeneratedDraft(data.body)
       }
     }
@@ -77,15 +88,12 @@ function UploadedVideo({requestId}: {requestId: string}) {
   return (
     <div>
       {requestId}
-      {playbackId && (
+      {playbackId && state === 'ready' && (
         <MuxPlayer playbackId={playbackId} />
       )}
-      {transcriptReady && (
+      {sanityModule.videoResources.filter((resource: any) => resource._id === requestId)?.[0].transcript && (
         <Button onClick={() => {
-          setGeneratedDraft(null)
-          generatePost({
-            requestId
-          })
+          generatePost({requestId: requestId})
         } }>Generate Post Text</Button>
       )}
       {generatedDraft && (
@@ -94,11 +102,7 @@ function UploadedVideo({requestId}: {requestId: string}) {
           <ReactMarkdown>{generatedDraft.content}</ReactMarkdown>
           <Button onClick={() => {
             setGeneratedDraft(null)
-            createPost({
-              requestId,
-              title: generatedDraft.title,
-              body: generatedDraft.content
-            })
+            console.log('todo stuff')
           } }>Generate Post</Button>
         </div>
       )}

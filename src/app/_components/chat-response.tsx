@@ -6,18 +6,29 @@ import usePartySocket from "partysocket/react";
 import {env} from "@/env.mjs";
 import {STREAM_COMPLETE} from "@/lib/streaming-chunk-publisher";
 import {useRef} from "react";
+import {api} from "@/trpc/react";
 
-export function ChatResponse(props: {requestIds:string[]}) {
+export function ChatResponse({requestIds = []}: {requestIds:string[]}) {
   const [messages, setMessages] = React.useState<{ requestId: string, body: string }[]>([])
   const div = useRef<any>(null);
+
+  const utils = api.useUtils()
+
+  console.log(requestIds)
   usePartySocket({
     room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
     host: env.NEXT_PUBLIC_PARTY_KIT_URL,
     onMessage: (messageEvent) => {
       const messageData = JSON.parse(messageEvent.data)
 
-      if(messageData.body !== STREAM_COMPLETE &&  props.requestIds.includes(messageData.requestId)) {
+
+
+      if(messageData.body !== STREAM_COMPLETE &&  requestIds.includes(messageData.requestId)) {
         setMessages((messages) => [...messages, {body: messageData.body, requestId: messageData.requestId}])
+      }
+
+      if(messageData.body === STREAM_COMPLETE) {
+        utils.module.getBySlug.invalidate()
       }
 
       if(div.current) {

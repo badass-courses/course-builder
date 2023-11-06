@@ -33,14 +33,27 @@ export const videoUploaded = inngest.createFunction(
       return await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.fileName}"][0]`)
     })
 
+    await step.run('announce video resource created', async () => {
+      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          body: `Video Resource Created: ${event.data.fileName}`,
+          requestId: event.data.fileName,
+        }),
+      }).catch((e) => {
+        console.error(e);
+      })
+    })
+
     if (sanityModule) {
       await step.run('update the module in Sanity', async () => {
         return await sanityMutation( [
           {"patch": {
               "id": sanityModule._id,
-              "set": {
-                "resources": [
-                  ...(sanityModule.resources ? sanityModule.resources : []),
+              "setIfMissing": {"resources": []},
+              "insert": {
+                "after": "resources[-1]",
+                "items": [
                   {"_key": v4(), "_ref": videoResource._id, "_type": "reference"}
                 ]
               }
@@ -53,7 +66,7 @@ export const videoUploaded = inngest.createFunction(
     const muxAsset = await step.run('create the mux asset', async () => {
       const baseUrl = 'https://api.mux.com'
 
-      const muxOptions = getMuxOptions({url: event.data.originalMediaUrl, passthrough: {videoResourceId: event.data.fileName, moduleSlug: event.data.moduleSlug}})
+      const muxOptions = getMuxOptions({url: event.data.originalMediaUrl, passthrough: event.data.fileName})
 
       const response = await fetch(`${baseUrl}/video/v1/assets`, {
         headers: {

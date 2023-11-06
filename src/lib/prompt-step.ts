@@ -42,8 +42,5 @@ export async function promptStep({requestId, promptMessages}: PromptStepOptions)
   } finally {
     await writer.publishMessage(`\n\n`);
   }
-
-  console.log(result)
-
   return [...promptMessages, result as ChatCompletionRequestMessage]
 }

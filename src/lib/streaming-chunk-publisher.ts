@@ -55,8 +55,6 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
   async appendToBufferAndPublish(text: string) {
     let resolve = (_val?: any) => {};
 
-    console.log('text', text)
-
     this.buffer.contents += text;
 
     if (this.buffer.signal) {
