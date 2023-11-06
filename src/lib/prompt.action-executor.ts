@@ -13,7 +13,7 @@ export async function promptActionExecutor(options: {
     content?: string,
     title?: string,
   },
-  input: string,
+  input: Record<any, any>
   requestId: string,
   messages: ChatCompletionRequestMessage[],
 }) {
@@ -22,11 +22,9 @@ export async function promptActionExecutor(options: {
     return [...messages, {role: action.role, content: action.content}]
   } else {
     const nonSystemMessages = messages.filter(message => message.role !== 'system')
-    const updatedInput = last(nonSystemMessages)?.content || input
+    const updatedInput = last(nonSystemMessages)?.content ? {input: last(nonSystemMessages)?.content} : {...input}
     const content = await engine.parseAndRender(
-      action.content || '', {
-        input: updatedInput
-      })
+      action.content || '', updatedInput)
     const userMessage = {
       role: action.role,
       ...(action.name && {name: action.name}),

@@ -5,8 +5,6 @@ import {getAbility} from "@/lib/ability";
 import * as React from "react";
 import {redirect} from "next/navigation";
 import VideoUploader from "@/components/video-uploader";
-import {ChatResponse} from "@/app/_components/chat-response";
-import { UploadButton } from "@/utils/uploadthing";
 
 export const metadata: Metadata = {
   title: "Media Processing Workflow",

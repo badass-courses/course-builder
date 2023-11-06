@@ -87,7 +87,8 @@ export default {
               name: 'videoResource',
               title: 'Video Resource',
               type: 'videoResource',
-            }
+            },
+            {title: 'Tip', type: 'tip'},
           ],
         },
       ],

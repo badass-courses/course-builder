@@ -23,7 +23,7 @@ export default {
       options: {
         list: [
           {title: 'new', value: 'new'},
-          {title: 'new', value: 'processing'},
+          {title: 'processing', value: 'processing'},
           {title: 'preparing', value: 'preparing'},
           {title: 'ready', value: 'ready'},
           {title: 'errored', value: 'errored'},

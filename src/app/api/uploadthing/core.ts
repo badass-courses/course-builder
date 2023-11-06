@@ -39,6 +39,31 @@ export const ourFileRouter = {
         },
       })
     }),
+  tipUploader: f({ video: { maxFileSize: "2GB", maxFileCount: 1 } })
+    .middleware(async ({req}) => {
+      const session = await getServerAuthSession()
+      const ability = getAbility({user: session?.user})
+
+      if (!session || !ability.can('upload', 'Media')) {
+        throw new Error("Unauthorized");
+      }
+
+      return { userId: session.user.id, moduleSlug: 'tips' };
+    })
+    .onUploadComplete(async (opts) => {
+      console.log("Upload complete for userId:", opts.metadata.userId);
+      console.log("file url", opts);
+
+      await inngest.send({
+        name: VIDEO_UPLOADED_EVENT,
+        data: {
+          originalMediaUrl: opts.file.url,
+          fileName: opts.file.name || 'untitled',
+          title: opts.file.name || 'untitled',
+          moduleSlug: 'tips',
+        },
+      })
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

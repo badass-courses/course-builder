@@ -1,7 +1,8 @@
 import {EventSchemas, Inngest} from 'inngest'
 import {
+  AI_TIP_WRITING_REQUESTED_EVENT,
   AI_WRITING_COMPLETED_EVENT,
-  AI_WRITING_REQUESTED_EVENT,
+  AI_WRITING_REQUESTED_EVENT, AITipWritingRequested,
   AIWritingRequestCompleted,
   AIWritingRequested
 } from "@/inngest/events";
@@ -25,6 +26,7 @@ type Events = {
   [VIDEO_UPLOADED_EVENT]: VideoUploaded,
   [POST_CREATION_REQUESTED_EVENT]: PostCreationRequested,
   [MUX_SRT_READY_EVENT]: MuxSrtReady
+  [AI_TIP_WRITING_REQUESTED_EVENT]: AITipWritingRequested
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',

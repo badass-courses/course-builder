@@ -1,8 +1,13 @@
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
+import {TipUploader} from "@/app/tips/_components/tip-uploader";
+import { Suspense } from "react";
+import {Form} from "@/components/ui/form";
+import { NewTipForm } from "./new-tip-form";
 
 export function CreateTip() {
   return (
+    <Suspense>
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium">Create a Tip</CardTitle>
@@ -24,25 +29,12 @@ export function CreateTip() {
         </svg>
       </CardHeader>
       <CardContent>
-        <div className="text-lg font-bold">Enter your tip summary here</div>
-        <p className="text-sm mt-2">
-          Your summary will be used to generate the title and draft body text based on the transcript of the
-          video.
-        </p>
-        <textarea aria-label="Enter your tip summary here" className="mt-2 p-2 w-full h-20 border rounded-md" />
-        <div className="text-lg font-bold mt-4">Upload your tip video here</div>
-        <input
-          aria-label="Upload your tip video here"
-          className="mt-2 p-2 w-full h-20 border rounded-md"
-          type="file"
-        />
-        <Button className="mt-2" variant="default">
-          Submit Tip
-        </Button>
+<NewTipForm/>
       </CardContent>
       <CardFooter>
 
       </CardFooter>
     </Card>
+    </Suspense>
   )
 }

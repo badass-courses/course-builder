@@ -1,6 +1,4 @@
-import {createClient} from "@sanity/client";
 import {env} from "@/env.mjs";
-import {ZodSchema} from "zod";
 
 export async function sanityMutation(mutations: any[]) {
   return await fetch(`https://${env.SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/mutate/${env.SANITY_STUDIO_DATASET}`, {
@@ -13,7 +11,7 @@ export async function sanityMutation(mutations: any[]) {
   }).then((response) => response.json())
 }
 
-export async function sanityQuery<T>(query: string): Promise<T> {
+export async function sanityQuery<T = any>(query: string): Promise<T> {
   return await fetch(`https://${env.SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/query/${env.SANITY_STUDIO_DATASET}?query=${encodeURIComponent(query)}`, {
     method: 'get',
     headers: {

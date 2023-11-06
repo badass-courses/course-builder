@@ -21,3 +21,13 @@ export type AIWritingRequested = {
     }
 }
 
+export const AI_TIP_WRITING_REQUESTED_EVENT = 'ai/tip-writing-requested'
+
+export type AITipWritingRequested = {
+    name: typeof AI_TIP_WRITING_REQUESTED_EVENT
+    data: {
+        tipId: string
+    }
+}
+
+

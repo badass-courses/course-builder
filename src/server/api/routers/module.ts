@@ -19,7 +19,7 @@ export const moduleRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
-      return await input.slug ? sanityQuery(`*[_type == "module" && slug.current == "${input.slug}"][0]{
+      return input.slug ? await sanityQuery(`*[_type == "module" && slug.current == "${input.slug}"][0]{
         ...,
         "videoResources": resources[@->._type == 'videoResource']->
       }`) : null

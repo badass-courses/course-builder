@@ -24,7 +24,9 @@ export const writeAnEmail = inngest.createFunction(
         case 'prompt':
           messages = await step.run(action.title, async () => {
             return await promptActionExecutor({
-              action, input: `${event.data.input.input}\n\n ## Examples of Good Video Titles\n\n* ${titles.join('\n * ')}`,
+              action, input: {
+                input: `${event.data.input.input}\n\n ## Examples of Good Video Titles\n\n* ${titles.join('\n * ')}`
+              },
               requestId: event.data.requestId,
               messages
             })
@@ -35,6 +37,7 @@ export const writeAnEmail = inngest.createFunction(
       }
     }
 
+
     await step.sendEvent('Announce Completion', {
       name: AI_WRITING_COMPLETED_EVENT,
       data: {
@@ -43,6 +46,8 @@ export const writeAnEmail = inngest.createFunction(
         fullPrompt: messages
       }
     })
+
+
 
     await step.run('Broadcast Completion', async () => {
       await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`, {

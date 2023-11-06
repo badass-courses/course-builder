@@ -18,6 +18,7 @@
     "@aws-sdk/client-s3": "^3.441.0",
     "@aws-sdk/s3-request-presigner": "^3.441.0",
     "@casl/ability": "^6.5.0",
+    "@hookform/resolvers": "^3.3.2",
     "@mux/mux-player-react": "^2.2.0",
     "@planetscale/database": "^1.11.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",

@@ -17,6 +17,9 @@ dependencies:
   '@casl/ability':
     specifier: ^6.5.0
     version: 6.5.0
+  '@hookform/resolvers':
+    specifier: ^3.3.2
+    version: 3.3.2(react-hook-form@7.48.0)
   '@mux/mux-player-react':
     specifier: ^2.2.0
     version: 2.2.0(@types/react-dom@18.2.14)(@types/react@18.2.34)(react-dom@18.2.0)(react@18.2.0)
@@ -1899,6 +1902,14 @@ packages:
       - '@types/react'
       - '@types/react-dom'
       - react-native
+    dev: false
+
+  /@hookform/resolvers@3.3.2(react-hook-form@7.48.0):
+    resolution: {integrity: sha512-Tw+GGPnBp+5DOsSg4ek3LCPgkBOuOgS5DsDV7qsWNH9LZc433kgsWICjlsh2J9p04H2K66hsXPPb9qn9ILdUtA==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.48.0(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.13:
