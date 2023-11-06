@@ -9,6 +9,8 @@ import {Button} from "@/components/ui/button";
 import {inngest} from "@/inngest/inngest.server";
 import {AI_TIP_WRITING_REQUESTED_EVENT} from "@/inngest/events";
 import {Party} from "@/app/tips/_components/party";
+import {Textarea} from "@/components/ui/textarea";
+import {Input} from "@/components/ui/input";
 
 export default async function TipsListPage() {
   const session = await getServerAuthSession()
@@ -28,30 +30,37 @@ export default async function TipsListPage() {
             </CardHeader>
             <CardContent>
               {tip.summary}
-              <TipPlayer videoResourceId={tip.videoResourceId}/>
-              <form action={async (data) => {
-                "use server"
-                console.log('submit', {data})
-              }}>
-                <input value={tip.title} type="text" placeholder="Title" />
-                <textarea value={tip.summary} placeholder="Summary" />
-                <textarea value={tip.body} placeholder="Description" />
-                <Button type="submit">Save Tip</Button>
-              </form>
-              <form action={async (data) => {
-                "use server"
-                await inngest.send({
-                  name: AI_TIP_WRITING_REQUESTED_EVENT,
-                  data: {
-                    tipId: tip._id
-                  }
-                })
-              }}>
-                <Button type="submit">Re-Generate Title</Button>
-              </form>
-              <form>
-                <Button type="submit">Generate Su</Button>
-              </form>
+              <TipPlayer videoResourceId={tip.videoResourceId} muxPlaybackId={tip.muxPlaybackId}/>
+              {ability.can('upload', 'Media') ? (
+                <div className='flex flex-col'>
+                  <form className='flex flex-col' action={async (data) => {
+                    "use server"
+                    console.log('submit', {data})
+                  }}>
+                    <Input value={tip.title} type="text" placeholder="Title" />
+                    <Textarea  rows={10} value={tip.summary} placeholder="Summary" />
+                    <Textarea rows={10} value={tip.body} placeholder="Description" />
+                    <Button type="submit">Save Tip</Button>
+                  </form>
+                  <div className="flex">
+                    <form action={async (data) => {
+                      "use server"
+                      await inngest.send({
+                        name: AI_TIP_WRITING_REQUESTED_EVENT,
+                        data: {
+                          tipId: tip._id
+                        }
+                      })
+                    }}>
+                      <Button type="submit">Re-Generate Title</Button>
+                    </form>
+                    <form>
+                      <Button type="submit">Generate Su</Button>
+                    </form>
+                  </div>
+                </div>
+              ) : null}
+
             </CardContent>
           </Card>
         ))}

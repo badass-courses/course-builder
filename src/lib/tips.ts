@@ -9,6 +9,7 @@ const TipSchema = z.object({
   summary: z.string(),
   body: z.string(),
   videoResourceId: z.string(),
+  muxPlaybackId: z.string(),
   transcript: z.string().nullable(),
   slug: z.string(),
 })
@@ -25,6 +26,7 @@ export async function getTipsModule() {
         title,
         summary,
         body,
+        "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
         "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
         "transcript": resources[@->._type == 'videoResource'][0]->transcript,
         "slug": slug.current,
