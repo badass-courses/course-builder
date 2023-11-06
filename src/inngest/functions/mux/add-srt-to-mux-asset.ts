@@ -1,9 +1,10 @@
-import {TRANSCRIPT_READY_EVENT} from "@/inngest/events/transcript-requested";
 import {inngest} from "@/inngest/inngest.server";
-import {VideoResourceSchema} from "@/inngest/functions/transcripts";
-import {sanityMutation, sanityQuery} from "@/server/sanity.server";
+import {sanityQuery} from "@/server/sanity.server";
 import {env} from "@/env.mjs";
 import {MUX_SRT_READY_EVENT} from "@/inngest/events/mux-add-srt-to-asset";
+import {VideoResourceSchema} from "@/inngest/functions/transcript-ready";
+
+const COOLDOWN = 10000
 
 export const addSrtToMuxAsset = inngest.createFunction(
   {
@@ -66,8 +67,8 @@ export const addSrtToMuxAsset = inngest.createFunction(
 
         return {muxAsset, videoResource}
       } else {
-        await step.sleep('wait for 10 seconds', 60000)
-        await step.sendEvent('Re-run After Cooldown', {
+        await step.sleep('wait for 10 seconds', COOLDOWN)
+        await step.sendEvent('Re-run After Cool Down', {
           name: MUX_SRT_READY_EVENT,
           data: event.data,
         })

@@ -1,11 +1,9 @@
 import {env} from "@/env.mjs";
 import z from 'zod'
 import {inngest} from "@/inngest/inngest.server";
-import {TRANSCRIPT_READY_EVENT, TRANSCRIPT_REQUESTED_EVENT} from "@/inngest/events/transcript-requested";
+import {TRANSCRIPT_READY_EVENT} from "@/inngest/events/transcript-requested";
 import {MUX_SRT_READY_EVENT} from "@/inngest/events/mux-add-srt-to-asset"
 import {sanityMutation, sanityQuery} from "@/server/sanity.server";
-
-const deepgramUrl = `https://api.deepgram.com/v1/listen`
 
 export const VideoResourceSchema = z.object({
   _id: z.string().optional(),
@@ -16,52 +14,6 @@ export const VideoResourceSchema = z.object({
 })
 
 export type VideoResource = z.infer<typeof VideoResourceSchema>
-
-export const transcriptRequested = inngest.createFunction(
-  {id: `transcript-requested`, name: 'Transcript Requested'},
-  {event: TRANSCRIPT_REQUESTED_EVENT},
-  async ({event, step}) => {
-
-    const deepgramResponse = await step.run('send the media to Deepgram', async () => {
-      const utteranceSpiltThreshold = 0.5
-
-      const callbackParams = new URLSearchParams({
-        videoResourceId: event.data.videoResourceId,
-        ...(event.data.moduleSlug && {moduleSlug: event.data.moduleSlug})
-      })
-
-      // just weird URL differences between dev and prod
-      const callbackBase = env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXTAUTH_URL
-
-      const deepgramParams = new URLSearchParams({
-        model: 'whisper-large',
-        punctuate: 'true',
-        paragraphs: 'true',
-        utterances: 'true',
-        utt_split: String(utteranceSpiltThreshold),
-        callback: `${callbackBase}/api/deepgram/webhook?${callbackParams.toString()}`,
-      })
-
-      const deepgramResponse = await fetch(`${deepgramUrl}?${deepgramParams.toString()}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Token ${env.DEEPGRAM_API_KEY}`,
-        },
-        body: JSON.stringify({
-          url: event.data.mediaUrl,
-        }),
-      })
-
-      return {deepgramResponse: await deepgramResponse.json(), postedUrl: `${deepgramUrl}?${deepgramParams.toString()}`}
-    })
-
-    return {
-      ...event.data,
-      ...deepgramResponse
-    }
-  }
-)
 
 export const transcriptReady = inngest.createFunction(
   {id: `transcript-ready`, name: 'Transcript Ready'},

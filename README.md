@@ -6,12 +6,6 @@ thought"""
 
 ## TODO
 
-- [ ] Model prompt chains in Sanity
-- [ ] Use Deepgram for transcripts
-- [ ] Upload media to S3
-- [ ] Tagging
-- [ ] Use egghead title/description/transcript data for fine-tuning/embedding
-
 It's got a lot of moving parts 😅:
 
 - A database to store our data
@@ -63,5 +57,35 @@ queued serverless background jobs.
 * steps/actions are performed
 * we can sleep or wait for other events within the workflow
 * we can send events that trigger other workflows
+
+
+## Event-Driven Workflows
+
+The application is built around the concept of event-driven workflows. There 
+are several kinds of events. The primary events are external to the workflow 
+and are emitted from users interacting with the application. The user has 
+requested work and provided input. When these are received, the workflow 
+kicks into gear and begins processing the request.
+
+There are also external events that are generally received via webhooks when 
+some service provider has completed some work. For example, [when a video is
+uploaded to Mux, they send a series of webhooks](https://docs.mux.com/guides/system/listen-for-webhooks) at various staging in the 
+video processing to let us know when the asset is available.
+
+The receiving URL is configured within the Mux dashboard (not, for local 
+development we use [ngrok](https://ngrok.com/) to expose our local server.
+
+Another example is ordering transcripts from Deepgram. When the video is 
+uploaded we send the URL to Deepgram for transcription and include a 
+callback url for Deepgram to contact when the transcript is ready.
+
+The last kind of event is internal to the workflow. These are events that
+are triggered by the workflow itself. 
+
+
+![diagram of events](./public/event-diagram.png)
+
+* `VIDEO_UPLOADED_EVENT`: triggered when a new video has been uploaded and 
+  is available via a URL.
 
 _[more to come]_

@@ -2,8 +2,7 @@ import {inngest} from "@/inngest/inngest.server";
 import {MUX_WEBHOOK_EVENT} from "@/inngest/events/mux-webhook";
 import {env} from "@/env.mjs";
 import {sanityMutation, sanityQuery} from "@/server/sanity.server";
-import {VideoResourceSchema} from "@/inngest/functions/transcripts";
-
+import {VideoResourceSchema} from "@/inngest/functions/transcript-ready";
 
 export const muxVideoAssetCreated = inngest.createFunction(
   {id: `mux-video-asset-created`, name: 'Mux Video Asset Created'},
@@ -28,7 +27,7 @@ export const muxVideoAssetReady = inngest.createFunction(
   {id: `mux-video-asset-ready`, name: 'Mux Video Asset Ready'},
   {event: MUX_WEBHOOK_EVENT, if: 'event.data.muxWebhookEvent.type == "video.asset.ready"'},
   async ({event, step}) => {
-    const videoResource = await step.run('get the video resource from Sanity', async () => {
+    const videoResource = await step.run('Load Video Resource', async () => {
       const resourceTemp = VideoResourceSchema.safeParse(await sanityQuery(`*[_type == "videoResource" && muxAssetId == "${event.data.muxWebhookEvent.data.id}"][0]`))
       return resourceTemp.success ? resourceTemp.data : null
     })
@@ -60,17 +59,6 @@ export const muxVideoAssetReady = inngest.createFunction(
         console.error(e);
       })
     })
-    return event.data.muxWebhookEvent.data
-  }
-)
-
-export const muxVideoAssetTrackReady = inngest.createFunction(
-  {id: `mux-video-asset-track-ready`, name: 'Mux Video Asset Track Ready'},
-  {event: MUX_WEBHOOK_EVENT, if: 'event.data.muxWebhookEvent.type == "video.asset.track.ready"'},
-  async ({event, step}) => {
-
-
-
     return event.data.muxWebhookEvent.data
   }
 )

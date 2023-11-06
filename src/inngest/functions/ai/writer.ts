@@ -5,13 +5,13 @@ import {sanityQuery} from "@/server/sanity.server";
 import {last} from "lodash";
 import {env} from "@/env.mjs";
 import {promptActionExecutor} from "@/lib/prompt.action-executor";
-import {titles} from "@/inngest/functions/ai/titles";
+import {titles} from "@/inngest/functions/ai/data/titles";
 
 export const writeAnEmail = inngest.createFunction(
   {id: `gpt-4-writer`, name: 'GPT-4 Writer'},
   {event: AI_WRITING_REQUESTED_EVENT},
   async ({event, step}) => {
-    const workflow = await step.run('load workflow from sanity', async () => {
+    const workflow = await step.run('Load Workflow', async () => {
       return await sanityQuery(`*[_type == "workflow" && trigger == '${AI_WRITING_REQUESTED_EVENT}'][0]`)
     })
 
@@ -35,7 +35,7 @@ export const writeAnEmail = inngest.createFunction(
       }
     }
 
-    await step.sendEvent('announce completion', {
+    await step.sendEvent('Announce Completion', {
       name: AI_WRITING_COMPLETED_EVENT,
       data: {
         requestId: event.data.requestId,
@@ -44,7 +44,7 @@ export const writeAnEmail = inngest.createFunction(
       }
     })
 
-    await step.run('announce draft completed', async () => {
+    await step.run('Broadcast Completion', async () => {
       await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`, {
         method: 'POST',
         body: JSON.stringify({

@@ -26,7 +26,7 @@ function formatTimeString(str: string) {
   return `${h}:${m}:${s}`
 }
 
-export function transcriptAsParagraphsWithTimestamps(results: any) {
+export function transcriptAsParagraphsWithTimestamps(results: any): string {
   let paragraphs
   if (results.channels[0].alternatives[0].paragraphs) {
     paragraphs = results.channels[0].alternatives[0].paragraphs.paragraphs
@@ -45,7 +45,7 @@ export function transcriptAsParagraphsWithTimestamps(results: any) {
     ]
   }
 
-  return paragraphs.reduce((acc: string, paragraph: { sentences: { text: string; start: number; end: number }[] }) => {
+  return paragraphs.reduce((acc: string, paragraph: { sentences: { text: string; start: number; end: number }[] }) : string => {
     const startTime = formatTimeString(convertTime(paragraph?.sentences?.[0]?.start))
     const text = paragraph.sentences.map((x) => x.text).join(' ')
 

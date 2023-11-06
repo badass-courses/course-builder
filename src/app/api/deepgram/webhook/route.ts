@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {inngest} from "@/inngest/inngest.server";
-import {srtProcessor, Word} from "@/lib/srt-processor";
-import {DEEPGRAM_WEBHOOK_EVENT} from "@/inngest/events/deepgram-webhook";
+import {srtFromTranscriptResult, transcriptAsParagraphsWithTimestamps} from "@/lib/deepgram-results-processor";
+import {TRANSCRIPT_READY_EVENT} from "@/inngest/events/transcript-requested";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   // todo: check MUX_WEBHOOK_SIGNING_SECRET to verify the request
@@ -15,17 +15,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
     return new Response(`Bad request`, { status: 400 })
   }
 
-
-
-  const data = {
-    videoResourceId,
-    moduleSlug,
-    results,
-  }
+  const srt = srtFromTranscriptResult(results)
+  const transcript = transcriptAsParagraphsWithTimestamps(results)
 
   await inngest.send({
-    name: DEEPGRAM_WEBHOOK_EVENT,
-    data
+    name: TRANSCRIPT_READY_EVENT,
+    data: {
+      videoResourceId,
+      moduleSlug,
+      srt,
+      transcript
+    }
   })
 
   return new Response('ok', {

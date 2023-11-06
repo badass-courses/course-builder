@@ -3,33 +3,30 @@
 import * as React from 'react'
 import {Button} from "@/components/ui/button";
 import {api} from "@/trpc/react";
-import usePartySocket from "partysocket/react";
-import {env} from "@/env.mjs";
 import {ChatResponse} from "@/app/_components/chat-response";
 import MuxPlayer from "@mux/mux-player-react";
 import ReactMarkdown from "react-markdown";
 import {UploadDropzone} from "@/utils/uploadthing";
 import {getUniqueFilename} from "@/lib/get-unique-filename";
+import {useSocket} from "@/hooks/use-socket";
 
 const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
-
   const {data: sanityModule} = api.module.getBySlug.useQuery({
     slug: moduleSlug
   })
 
   const utils = api.useUtils()
 
-  usePartySocket({
-    room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
-    host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+  useSocket({
     onMessage: async (messageEvent) => {
       const data = JSON.parse(messageEvent.data)
+      const invalidateOn = ['videoResource.created', 'video.asset.ready', 'transcript.ready']
 
-      if(data.name === 'videoResource.created') {
+      if(invalidateOn.includes(data.name)) {
         await utils.module.getBySlug.invalidate({slug: moduleSlug})
       }
     }
-  });
+  })
 
   return (
     <div className="grid h-full gap-6 lg:grid-cols-2">
@@ -68,34 +65,10 @@ const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
 
 function UploadedVideo({requestId, playbackId, moduleSlug, state='new'}: {requestId: string, playbackId: string, state:string, moduleSlug?: string}) {
   const [generatedDraft, setGeneratedDraft] = React.useState<{title:string, content: string} | null>(null)
-  const [transcriptReady, setTranscriptReady] = React.useState<boolean>(false)
   const {mutate: generatePost} = api.post.generate.useMutation()
   const {data: sanityModule} = api.module.getBySlug.useQuery({
     slug: moduleSlug
   })
-  const utils = api.useUtils()
-
-  usePartySocket({
-    room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
-    host: env.NEXT_PUBLIC_PARTY_KIT_URL,
-    onMessage: async (messageEvent) => {
-      const data = JSON.parse(messageEvent.data)
-
-      console.log('data', data)
-      console.log('requestId', requestId)
-      if(data.name === 'video.asset.ready' && requestId === data.requestId) {
-        await utils.module.getBySlug.invalidate({slug: moduleSlug})
-      }
-      if(data.name === 'transcript.ready' && requestId === data.requestId) {
-        setTranscriptReady(true)
-        await utils.module.getBySlug.invalidate({slug: moduleSlug})
-      }
-      if(data.name === 'ai.draft.completed' && requestId === data.requestId) {
-        console.log('generated draft', data.body)
-        setGeneratedDraft(data.body)
-      }
-    }
-  });
 
   return (
     <div>
@@ -114,7 +87,6 @@ function UploadedVideo({requestId, playbackId, moduleSlug, state='new'}: {reques
           <ReactMarkdown>{generatedDraft.content}</ReactMarkdown>
           <Button onClick={() => {
             setGeneratedDraft(null)
-            console.log('todo stuff')
           } }>Generate Post</Button>
         </div>
       )}

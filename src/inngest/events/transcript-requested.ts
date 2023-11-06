@@ -1,20 +1,5 @@
 import {z} from "zod";
 
-export const TRANSCRIPT_REQUESTED_EVENT = 'transcript/transcript-requested'
-
-export type TranscriptRequested = {
-  name: typeof TRANSCRIPT_REQUESTED_EVENT
-  data: TranscriptRequestedEvent
-}
-
-export const TranscriptRequestedEventSchema = z.object({
-  videoResourceId: z.string(),
-  mediaUrl: z.string(),
-  moduleSlug: z.string().optional(),
-})
-
-export type TranscriptRequestedEvent = z.infer<typeof TranscriptRequestedEventSchema>
-
 export const TRANSCRIPT_READY_EVENT = 'transcript/transcript-ready'
 
 export type TranscriptReady = {
@@ -26,7 +11,7 @@ export const TranscriptReadyEventSchema = z.object({
   videoResourceId: z.string().nullable(),
   srt: z.string(),
   transcript: z.string(),
-  moduleSlug: z.string().optional(),
+  moduleSlug: z.string().nullable(),
 })
 
 export type TranscriptReadyEvent = z.infer<typeof TranscriptReadyEventSchema>

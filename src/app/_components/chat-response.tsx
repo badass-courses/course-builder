@@ -2,11 +2,10 @@
 
 import ReactMarkdown from "react-markdown";
 import * as React from "react";
-import usePartySocket from "partysocket/react";
-import {env} from "@/env.mjs";
 import {STREAM_COMPLETE} from "@/lib/streaming-chunk-publisher";
 import {useRef} from "react";
 import {api} from "@/trpc/react";
+import {useSocket} from "@/hooks/use-socket";
 
 export function ChatResponse({requestIds = []}: {requestIds:string[]}) {
   const [messages, setMessages] = React.useState<{ requestId: string, body: string }[]>([])
@@ -14,14 +13,9 @@ export function ChatResponse({requestIds = []}: {requestIds:string[]}) {
 
   const utils = api.useUtils()
 
-  console.log(requestIds)
-  usePartySocket({
-    room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
-    host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+  useSocket({
     onMessage: (messageEvent) => {
       const messageData = JSON.parse(messageEvent.data)
-
-
 
       if(messageData.body !== STREAM_COMPLETE &&  requestIds.includes(messageData.requestId)) {
         setMessages((messages) => [...messages, {body: messageData.body, requestId: messageData.requestId}])
@@ -35,8 +29,7 @@ export function ChatResponse({requestIds = []}: {requestIds:string[]}) {
         div.current.scrollTop = div.current.scrollHeight;
       }
     }
-  });
-
+  })
   // Group messages by requestId
   const groupedMessages = messages.reduce((groups, message) => {
     if (!groups[message.requestId]) {
