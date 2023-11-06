@@ -9,8 +9,7 @@ import {MUX_WEBHOOK_EVENT, MuxWebhook} from "@/inngest/events/mux-webhook";
 import {DEEPGRAM_WEBHOOK_EVENT, DeepgramWebhook} from "@/inngest/events/deepgram-webhook";
 import {
   TRANSCRIPT_READY_EVENT,
-  TRANSCRIPT_REQUESTED_EVENT, TranscriptReady,
-  TranscriptRequested,
+  TranscriptReady,
 } from "@/inngest/events/transcript-requested";
 import {VIDEO_UPLOADED_EVENT, VideoUploaded} from "@/inngest/events/video-uploaded";
 import {POST_CREATION_REQUESTED_EVENT, PostCreationRequested} from "@/inngest/events/sanity-post";
@@ -22,7 +21,6 @@ type Events = {
   [AI_WRITING_REQUESTED_EVENT]: AIWritingRequested,
   [MUX_WEBHOOK_EVENT]: MuxWebhook,
   [DEEPGRAM_WEBHOOK_EVENT]: DeepgramWebhook,
-  [TRANSCRIPT_REQUESTED_EVENT]: TranscriptRequested,
   [TRANSCRIPT_READY_EVENT]: TranscriptReady,
   [VIDEO_UPLOADED_EVENT]: VideoUploaded,
   [POST_CREATION_REQUESTED_EVENT]: PostCreationRequested,
