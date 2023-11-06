@@ -39,6 +39,7 @@ export const videoUploaded = inngest.createFunction(
         body: JSON.stringify({
           body: `Video Resource Created: ${event.data.fileName}`,
           requestId: event.data.fileName,
+          name: 'videoResource.created',
         }),
       }).catch((e) => {
         console.error(e);

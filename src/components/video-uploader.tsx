@@ -19,6 +19,18 @@ const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
 
   const utils = api.useUtils()
 
+  usePartySocket({
+    room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
+    host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+    onMessage: async (messageEvent) => {
+      const data = JSON.parse(messageEvent.data)
+
+      if(data.name === 'videoResource.created') {
+        await utils.module.getBySlug.invalidate({slug: moduleSlug})
+      }
+    }
+  });
+
   return (
     <div className="grid h-full gap-6 lg:grid-cols-2">
     <div className="flex flex-col space-y-4">
