@@ -4,6 +4,8 @@ This is an application that is primarily meant to be ran locally (for now)
 as a way to explore and experiment with gpt-4 prompt chaining as a "tool for 
 thought"""
 
+Current State: https://www.loom.com/share/651287e8136a46429f46e6541e3dd0c2
+
 ## TODO
 
 It's got a lot of moving parts 😅:
