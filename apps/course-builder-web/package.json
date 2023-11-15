@@ -85,7 +85,6 @@
     "openai": "^4.15.0",
     "openai-edge": "^1.2.2",
     "partysocket": "0.0.12",
-    "postmark": "^3.11.0",
     "prism-react-renderer": "^2.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

@@ -233,9 +233,6 @@ importers:
       partysocket:
         specifier: 0.0.12
         version: 0.0.12
-      postmark:
-        specifier: ^3.11.0
-        version: 3.11.0
       prism-react-renderer:
         specifier: ^2.2.0
         version: 2.2.0(react@18.2.0)
@@ -6152,14 +6149,6 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /axios@0.25.0:
-    resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
-    dependencies:
-      follow-redirects: 1.15.3(debug@4.3.4)
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /axios@1.6.1:
     resolution: {integrity: sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==}
     dependencies:
@@ -11557,14 +11546,6 @@ packages:
       nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
-
-  /postmark@3.11.0:
-    resolution: {integrity: sha512-asguBQ9M/8ueQMJ1D45iPF+3+T641q8rAU8m8cQSfhDWePw4TVYql9wszjAwSCE93dUonyrF08D8Kvg6USBoFA==}
-    dependencies:
-      axios: 0.25.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /preact-render-to-string@5.2.3(preact@10.11.3):
     resolution: {integrity: sha512-aPDxUn5o3GhWdtJtW0svRC2SS/l8D9MAgo2+AWml+BhDImb27ALf04Q2d+AHqUUOc6RdSXFIBVa2gxzgMKgtZA==}
