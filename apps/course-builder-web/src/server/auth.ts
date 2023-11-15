@@ -10,6 +10,8 @@ import { env } from "@/env.mjs";
 import { db } from "@/server/db";
 import {mysqlTable, users} from "@/server/db/schema";
 import {eq} from "drizzle-orm";
+import {inngest} from "@/inngest/inngest.server";
+import {USER_CREATED_EVENT} from "@/inngest/events";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -37,6 +39,11 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  events: {
+    createUser: async ({user}) => {
+      await inngest.send({ name: USER_CREATED_EVENT, user, data: {} });
+    }
+  },
   callbacks: {
     session: async ({ session, user }) => {
       const dbUser = await db.query.users.findFirst({
