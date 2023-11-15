@@ -6,6 +6,7 @@ import {videoUploaded} from "@/inngest/functions/video-uploaded";
 import {transcriptReady} from "@/inngest/functions/transcript-ready";
 import {muxVideoAssetCreated, muxVideoAssetReady} from "@/inngest/functions/mux/mux-webhooks-handlers";
 import {tipTitleAndSummaryWriter} from "@/inngest/functions/ai/tip-writer";
+import {userCreated} from "@/inngest/functions/user-created";
 
 export const runtime = 'edge'
 
@@ -17,6 +18,7 @@ export const {GET, POST, PUT} = serve({
     transcriptReady,
     videoUploaded,
     addSrtToMuxAsset,
-    tipTitleAndSummaryWriter
+    tipTitleAndSummaryWriter,
+    userCreated
   ]
 })

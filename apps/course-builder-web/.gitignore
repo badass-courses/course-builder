@@ -29,6 +29,7 @@ next-env.d.ts
 .partykit/
 .turbo/
 dist/
+.react-email/
 
 # debug
 npm-debug.log*
