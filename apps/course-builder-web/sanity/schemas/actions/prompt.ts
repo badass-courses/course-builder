@@ -20,7 +20,7 @@ export default defineType({
         list: [
           {title: 'gpt-4', value: 'gpt-4'},
           {title: 'gpt-4-1106-preview', value: 'gpt-4-1106-preview'},
-          {title: 'gpt-3.5', value: 'gpt-3.5'}
+          {title: 'gpt-3.5', value: 'gpt-3.5'},
         ],
       },
 
@@ -35,7 +35,7 @@ export default defineType({
         list: [
           {title: 'User', value: 'user'},
           {title: 'System', value: 'system'},
-          {title: 'Assistant', value: 'assistant'}
+          {title: 'Assistant', value: 'assistant'},
         ],
       },
 
@@ -51,7 +51,8 @@ export default defineType({
       name: 'content',
       title: 'Content',
       type: 'markdown',
-      description: 'The content of the prompt as markdown with liquid templating',
+      description:
+        'The content of the prompt as markdown with liquid templating',
       validation: (Rule) => Rule.required(),
     }),
   ],

@@ -1,9 +1,9 @@
-import { createTRPCRouter } from "@/server/api/trpc";
-import {moduleRouter} from "@/server/api/routers/module";
-import {postRouter} from "@/server/api/routers/post";
-import {tipsRouter} from "@/server/api/routers/tips";
-import {videoResourceRouter} from "@/server/api/routers/videoResource";
-import {abilityRouter} from "@/server/api/routers/ability";
+import {createTRPCRouter} from '@/server/api/trpc'
+import {moduleRouter} from '@/server/api/routers/module'
+import {postRouter} from '@/server/api/routers/post'
+import {tipsRouter} from '@/server/api/routers/tips'
+import {videoResourceRouter} from '@/server/api/routers/videoResource'
+import {abilityRouter} from '@/server/api/routers/ability'
 
 /**
  * This is the primary router for your server.
@@ -15,8 +15,8 @@ export const appRouter = createTRPCRouter({
   post: postRouter,
   tips: tipsRouter,
   videoResources: videoResourceRouter,
-  ability: abilityRouter
-});
+  ability: abilityRouter,
+})
 
 // export type definition of API
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter

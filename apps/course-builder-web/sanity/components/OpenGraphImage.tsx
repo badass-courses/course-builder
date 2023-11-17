@@ -3,8 +3,8 @@
 export const width = 1200
 export const height = 630
 
-export function OpenGraphImage(props: { title: string }) {
-  const { title } = props
+export function OpenGraphImage(props: {title: string}) {
+  const {title} = props
   return (
     <div
       style={{
@@ -40,7 +40,7 @@ export function OpenGraphImage(props: { title: string }) {
           viewBox="0 0 1521 141"
           xmlns="http://www.w3.org/2000/svg"
           xmlnsXlink="http://www.w3.org/1999/xlink"
-          style={{ background: '#fff' }}
+          style={{background: '#fff'}}
         >
           <path
             id="plus"
@@ -224,7 +224,7 @@ export function OpenGraphImage(props: { title: string }) {
           whiteSpace: 'pre-wrap',
         }}
       >
-        <b style={{ background: '#fff' }}>{title}</b>
+        <b style={{background: '#fff'}}>{title}</b>
       </div>
       <div
         style={{

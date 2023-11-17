@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod'
 
 export const POST_CREATION_REQUESTED_EVENT = 'video/post-creation-requested'
 
@@ -13,4 +13,6 @@ export const PostCreationRequestedEventSchema = z.object({
   title: z.string(),
 })
 
-export type PostCreationRequestedEvent = z.infer<typeof PostCreationRequestedEventSchema>
+export type PostCreationRequestedEvent = z.infer<
+  typeof PostCreationRequestedEventSchema
+>

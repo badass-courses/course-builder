@@ -1,5 +1,5 @@
 import {MdOutlineWorkspaces} from 'react-icons/md'
-import {defineField} from "sanity";
+import {defineField} from 'sanity'
 
 export default {
   name: 'exercise',

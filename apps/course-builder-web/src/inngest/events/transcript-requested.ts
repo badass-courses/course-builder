@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod'
 
 export const TRANSCRIPT_READY_EVENT = 'transcript/transcript-ready'
 

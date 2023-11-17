@@ -32,9 +32,7 @@ export default defineType({
       name: 'actions',
       title: 'Actions',
       type: 'array',
-      of: [
-        {type: 'prompt'}
-      ],
+      of: [{type: 'prompt'}],
     }),
   ],
 })

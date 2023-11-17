@@ -1,7 +1,8 @@
-import {srtProcessor, Word} from "@/lib/srt-processor";
+import {srtProcessor, Word} from '@/lib/srt-processor'
 
-
-export function srtFromTranscriptResult(results: { channels: { alternatives: { words: Word[] }[] }[] }) {
+export function srtFromTranscriptResult(results: {
+  channels: {alternatives: {words: Word[]}[]}[]
+}) {
   return srtProcessor(results.channels[0]?.alternatives[0]?.words)
 }
 
@@ -38,19 +39,29 @@ export function transcriptAsParagraphsWithTimestamps(results: any): string {
           {
             text: results.channels[0].alternatives[0].transcript,
             start: 0,
-            end: results.channels[0].alternatives[0].words[results.channels[0].alternatives[0].words.length - 1].end,
+            end: results.channels[0].alternatives[0].words[
+              results.channels[0].alternatives[0].words.length - 1
+            ].end,
           },
         ],
       },
     ]
   }
 
-  return paragraphs.reduce((acc: string, paragraph: { sentences: { text: string; start: number; end: number }[] }) : string => {
-    const startTime = formatTimeString(convertTime(paragraph?.sentences?.[0]?.start))
-    const text = paragraph.sentences.map((x) => x.text).join(' ')
+  return paragraphs.reduce(
+    (
+      acc: string,
+      paragraph: {sentences: {text: string; start: number; end: number}[]},
+    ): string => {
+      const startTime = formatTimeString(
+        convertTime(paragraph?.sentences?.[0]?.start),
+      )
+      const text = paragraph.sentences.map((x) => x.text).join(' ')
 
-    return `${acc}[${startTime}] ${text}
+      return `${acc}[${startTime}] ${text}
 		
 `
-  }, ``)
+    },
+    ``,
+  )
 }

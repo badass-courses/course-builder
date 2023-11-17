@@ -1,10 +1,10 @@
-import Image from "next/image"
-import {getServerAuthSession} from "@/server/auth";
-import {getAbility} from "@/lib/ability";
-import * as React from "react";
-import {cn} from "@/lib/utils";
+import Image from 'next/image'
+import {getServerAuthSession} from '@/server/auth'
+import {getAbility} from '@/lib/ability'
+import * as React from 'react'
+import {cn} from '@/lib/utils'
 
-import {Links} from "@/components/navigation/links";
+import {Links} from '@/components/navigation/links'
 
 type NavigationProps = {
   className?: string
@@ -12,16 +12,11 @@ type NavigationProps = {
   size?: 'sm' | 'md' | 'lg'
 }
 
-
-
-
-
 const Navigation: React.FC<NavigationProps> = async ({
-                                                 className,
-                                                 size = 'md',
-                                                 navigationContainerClassName,
-                                               }) => {
-
+  className,
+  size = 'md',
+  navigationContainerClassName,
+}) => {
   return (
     <>
       <div
@@ -84,8 +79,6 @@ export const CrossIcon = () => {
   )
 }
 
-
-
 export const Logo: React.FC<{className?: string}> = ({className}) => {
   return (
     <div className="flex items-center gap-1">
@@ -99,7 +92,3 @@ export const Logo: React.FC<{className?: string}> = ({className}) => {
     </div>
   )
 }
-
-
-
-

@@ -1,17 +1,25 @@
 'use client'
 
-import {cn} from "@/lib/utils";
-import Link from "next/link";
-import {cx} from "class-variance-authority";
-import {User} from "@/components/navigation/user";
-import {AnimatePresence, AnimationControls, motion, useAnimationControls} from "framer-motion";
-import * as React from "react";
-import {Logo} from "@/components/navigation";
-import {redirect, usePathname} from "next/navigation";
-import {Login} from "@/components/navigation/login";
+import {cn} from '@/lib/utils'
+import Link from 'next/link'
+import {cx} from 'class-variance-authority'
+import {User} from '@/components/navigation/user'
+import {
+  AnimatePresence,
+  AnimationControls,
+  motion,
+  useAnimationControls,
+} from 'framer-motion'
+import * as React from 'react'
+import {Logo} from '@/components/navigation'
+import {redirect, usePathname} from 'next/navigation'
+import {Login} from '@/components/navigation/login'
 
-export const getNavigationLinks = () : {label: string | React.JSX.Element, href: string, icon: () => string}[] => {
-
+export const getNavigationLinks = (): {
+  label: string | React.JSX.Element
+  href: string
+  icon: () => string
+}[] => {
   return [
     {
       label: 'Tips',
@@ -81,7 +89,7 @@ export function Links({className}: {className?: string}) {
         </div>
       </div>
       <div className="flex items-center justify-end">
-        <Login className="hidden md:flex"/>
+        <Login className="hidden md:flex" />
         <User className="hidden md:flex" />
 
         <NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} />
@@ -106,9 +114,9 @@ export function Links({className}: {className?: string}) {
                   className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
                   passHref
                 >
-                      <span className="flex w-5 items-center justify-center">
-                        {icon()}
-                      </span>{' '}
+                  <span className="flex w-5 items-center justify-center">
+                    {icon()}
+                  </span>{' '}
                   {label}
                 </Link>
               )
@@ -132,10 +140,10 @@ type NavToggleProps = {
 }
 
 const NavToggle: React.FC<NavToggleProps> = ({
-                                               isMenuOpened,
-                                               setMenuOpened,
-                                               menuControls,
-                                             }) => {
+  isMenuOpened,
+  setMenuOpened,
+  menuControls,
+}) => {
   const path01Variants = {
     open: {d: 'M3.06061 2.99999L21.0606 21'},
     closed: {d: 'M0 9.5L24 9.5'},

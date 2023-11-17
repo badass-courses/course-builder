@@ -1,5 +1,5 @@
-name: "Setup and install"
-description: "Common setup steps for Actions"
+name: 'Setup and install'
+description: 'Common setup steps for Actions'
 
 runs:
   using: composite
@@ -8,7 +8,7 @@ runs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-        cache: "pnpm"
+        cache: 'pnpm'
 
     - name: Setup bun
       uses: oven-sh/setup-bun@v1

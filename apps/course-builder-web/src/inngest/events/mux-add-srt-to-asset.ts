@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod'
 
 export const MUX_SRT_READY_EVENT = 'mux/srt-ready'
 

@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod'
 
 export const DEEPGRAM_WEBHOOK_EVENT = 'deepgram/web-hook-event'
 

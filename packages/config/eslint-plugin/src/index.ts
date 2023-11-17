@@ -1,14 +1,14 @@
-import noThrowingPromises from "./rules/no-throwing-promises";
+import noThrowingPromises from './rules/no-throwing-promises'
 
 const recommended = {
-  plugins: ["@uploadthing"],
+  plugins: ['@uploadthing'],
   rules: {
-    ["@uploadthing/no-throwing-promises"]: "error",
+    ['@uploadthing/no-throwing-promises']: 'error',
   },
-};
+}
 
 export const rules = {
-  "no-throwing-promises": noThrowingPromises,
-};
+  'no-throwing-promises': noThrowingPromises,
+}
 
-export const configs = { recommended };
+export const configs = { recommended }

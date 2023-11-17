@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {capitalize} from 'lodash'
 import {MdRadio} from 'react-icons/md'
-import {defineField} from "sanity";
+import {defineField} from 'sanity'
 
 export default {
   name: 'module',
@@ -18,7 +18,8 @@ export default {
     defineField({
       name: 'description',
       title: 'Short Description',
-      description: 'Describe this module for search engines, social media, and LLM prompt.',
+      description:
+        'Describe this module for search engines, social media, and LLM prompt.',
       type: 'text',
       validation: (Rule) => Rule.max(160),
     }),
@@ -62,8 +63,7 @@ export default {
     {
       name: 'resources',
       title: 'Resources',
-      description:
-        'Resources in the Module',
+      description: 'Resources in the Module',
       type: 'array',
       of: [
         {
@@ -118,7 +118,7 @@ export default {
       name: 'ogImage',
       title: 'Share card URL',
       type: 'url',
-    }
+    },
   ],
   preview: {
     select: {

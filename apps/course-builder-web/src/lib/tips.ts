@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {sanityQuery} from "@/server/sanity.server";
+import {z} from 'zod'
+import {sanityQuery} from '@/server/sanity.server'
 
 const TipSchema = z.object({
   _id: z.string(),
@@ -17,7 +17,10 @@ const TipSchema = z.object({
 export type Tip = z.infer<typeof TipSchema>
 
 export async function getTipsModule() {
-  return await sanityQuery<{ _id: string, tips: Tip[] }>(`*[_type == "module" && moduleType == "tips"][0]{
+  return await sanityQuery<{
+    _id: string
+    tips: Tip[]
+  }>(`*[_type == "module" && moduleType == "tips"][0]{
     _id,
     "tips": coalesce(resources[@->._type == 'tip']->{
         _id,

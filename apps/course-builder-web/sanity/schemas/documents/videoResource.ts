@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import {MdVideocam} from 'react-icons/md'
-import {defineField} from "sanity";
+import {defineField} from 'sanity'
 
 export default {
   name: 'videoResource',

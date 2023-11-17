@@ -1,4 +1,4 @@
-import groq from "groq"
+import groq from 'groq'
 
 const postFields = groq`
   _id,

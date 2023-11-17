@@ -2,18 +2,24 @@
  * v0 by Vercel.
  * @see https://v0.dev/t/kjDAPmzUC6C
  */
-import Link from "next/link"
-import { CardTitle, CardHeader, CardContent, Card, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import Link from 'next/link'
+import {
+  CardTitle,
+  CardHeader,
+  CardContent,
+  Card,
+  CardFooter,
+} from '@/components/ui/card'
+import {Button} from '@/components/ui/button'
 
 export default function Component() {
   return (
     <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Create a Tip</CardTitle>
           <svg
-            className=" w-4 h-4 text-zinc-500 dark:text-zinc-400"
+            className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -31,15 +37,20 @@ export default function Component() {
         </CardHeader>
         <CardContent>
           <div className="text-lg font-bold">Enter your tip summary here</div>
-          <p className="text-sm mt-2">
-            Your summary will be used to generate the title and draft body text based on the transcript of the
-            video.
+          <p className="mt-2 text-sm">
+            Your summary will be used to generate the title and draft body text
+            based on the transcript of the video.
           </p>
-          <textarea aria-label="Enter your tip summary here" className="mt-2 p-2 w-full h-20 border rounded-md" />
-          <div className="text-lg font-bold mt-4">Upload your tip video here</div>
+          <textarea
+            aria-label="Enter your tip summary here"
+            className="mt-2 h-20 w-full rounded-md border p-2"
+          />
+          <div className="mt-4 text-lg font-bold">
+            Upload your tip video here
+          </div>
           <input
             aria-label="Upload your tip video here"
-            className="mt-2 p-2 w-full h-20 border rounded-md"
+            className="mt-2 h-20 w-full rounded-md border p-2"
             type="file"
           />
           <Button className="mt-2" variant="default">
@@ -47,7 +58,7 @@ export default function Component() {
           </Button>
           <div className="mt-4 border-t pt-4">
             <h2 className="text-lg font-bold">Ideas for New Tips</h2>
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <li>Tip Idea 1</li>
               <li>Tip Idea 2</li>
               <li>Tip Idea 3</li>
@@ -85,8 +96,8 @@ export default function Component() {
                     height="50"
                     src="/placeholder.svg"
                     style={{
-                      aspectRatio: "100/50",
-                      objectFit: "cover",
+                      aspectRatio: '100/50',
+                      objectFit: 'cover',
                     }}
                     width="100"
                   />
@@ -106,8 +117,8 @@ export default function Component() {
                     height="50"
                     src="/placeholder.svg"
                     style={{
-                      aspectRatio: "100/50",
-                      objectFit: "cover",
+                      aspectRatio: '100/50',
+                      objectFit: 'cover',
                     }}
                     width="100"
                   />
@@ -116,7 +127,7 @@ export default function Component() {
                 </CardContent>
               </Card>
             </div>
-            <Link className="underline mt-2" href="#">
+            <Link className="mt-2 underline" href="#">
               All Tips
             </Link>
           </div>

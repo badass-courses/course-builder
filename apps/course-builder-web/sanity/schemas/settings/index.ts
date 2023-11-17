@@ -1,6 +1,6 @@
-import { CogIcon } from '@sanity/icons'
+import {CogIcon} from '@sanity/icons'
 import * as demo from '../../lib/demo.data'
-import { defineArrayMember, defineField, defineType } from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import OpenGraphInput from './opengraph-input'
 
@@ -9,7 +9,7 @@ export default defineType({
   title: 'Settings',
   type: 'document',
   icon: CogIcon,
-  preview: { select: { title: 'title', subtitle: 'description' } },
+  preview: {select: {title: 'title', subtitle: 'description'}},
   // Uncomment below to have edits publish automatically as you type
   // liveEdit: true,
   fields: [
