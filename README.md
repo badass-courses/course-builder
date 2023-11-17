@@ -18,7 +18,7 @@ It's got a lot of moving parts 😅:
 - Websockets
 - CMS
 
-![diagram of the stack](./public/stack.png)
+![diagram of the stack](./apps/course-builder-web/public/stack.png)
 
 ## Getting Started
 
@@ -32,7 +32,7 @@ to produce summaries, titles, emails and other supplemental details.
 
 Here's an example from a production application that's using this approach:
 
-![flow chart of generated email workflows](./public/epic-web-flows.png)
+![flow chart of generated email workflows](./apps/course-builder-web/public/epic-web-flows.png)
 
 Various events in the application trigger async workflows that occur in 
 queued serverless background jobs. 
@@ -67,7 +67,7 @@ The last kind of event is internal to the workflow. These are events that
 are triggered by the workflow itself. 
 
 
-![diagram of events](./public/event-diagram.png)
+![diagram of events](./apps/course-builder-web/public/event-diagram.png)
 
 * `VIDEO_UPLOADED_EVENT`: triggered when a new video has been uploaded and 
   is available via a URL.
