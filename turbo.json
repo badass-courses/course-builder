@@ -4,17 +4,12 @@
   "globalEnv": ["PORT"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"]
-    },
-    "test": {
-      "outputs": ["coverage/**"],
-      "dependsOn": []
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": ["^build"]
-    },
-    "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^topo", "^build"],
+      "outputs": []
     },
     "dev": {
       "dependsOn": ["^build"],
@@ -22,6 +17,15 @@
       "persistent": true
     },
     "clean": {
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^topo", "^build"]
+    },
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "test:watch": {
       "cache": false
     }
   }
