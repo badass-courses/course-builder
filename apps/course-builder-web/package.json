@@ -13,7 +13,8 @@
     "db:push": "dotenv drizzle-kit push:mysql",
     "db:studio": "dotenv drizzle-kit studio",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.3.4",
@@ -120,7 +121,7 @@
     "@types/base-64": "^1.0.1",
     "@types/eslint": "^8.44.2",
     "@types/json-schema": "^7.0.14",
-    "@types/node": "^18.16.0",
+    "@types/node": "18.16.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/react-gravatar": "^2.6.13",
@@ -136,7 +137,7 @@
     "partykit": "0.0.32",
     "postcss": "^8.4.27",
     "prettier": "^3.1.0",
-    "prettier-plugin-tailwindcss": "^0.5.1",
+    "prettier-plugin-tailwindcss": "^0.5.7",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2"
   },

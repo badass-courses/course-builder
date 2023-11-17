@@ -15,8 +15,8 @@
     "@typescript-eslint/utils": "^6.7.0"
   },
   "devDependencies": {
-    "@types/eslint": "^8.44.2",
     "@coursebuilder/tsconfig": "^0.1.0",
+    "@types/eslint": "^8.44.2",
     "tsup": "6.7.0",
     "typescript": "^5.2.2"
   }
