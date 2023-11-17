@@ -11,7 +11,7 @@ export const env = createEnv({
       .string()
       .url()
       .refine(
-        (str) => !str.includes('YOUR_MYSQL_URL_HERE'),
+        (str) => !str.includes('mysql://{USERNAME}:{PASSWORD}@aws.connect.psdb.cloud/{DATABASE_NAME}?ssl={"rejectUnauthorized":true}'),
         'You forgot to change the default URL',
       ),
     NODE_ENV: z
@@ -26,7 +26,7 @@ export const env = createEnv({
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       (str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url(),
+      process.env.VERCEL ? z.string() : z.string(),
     ),
     OPENAI_API_KEY: z.string(),
     SANITY_STUDIO_PROJECT_ID: z.string(),
