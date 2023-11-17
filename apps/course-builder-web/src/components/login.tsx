@@ -4,11 +4,10 @@
  * @see https://v0.dev/t/DBRH42mJKXr
  */
 import { Button } from "@/components/ui/button"
-import Image from "next/image";
 import {signIn} from "next-auth/react";
-import { Icon } from "./icons";
+import { Icon } from "@/components/icons";
 
-export function Login() {
+export function Login({className}: {className?: string}) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">Log In</h1>

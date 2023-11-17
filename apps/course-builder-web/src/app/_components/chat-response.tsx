@@ -17,13 +17,13 @@ export function ChatResponse({requestIds = []}: {requestIds:string[]}) {
     onMessage: (messageEvent) => {
       const messageData = JSON.parse(messageEvent.data)
 
+      console.log({requestIds, messageData})
+
       if(messageData.body !== STREAM_COMPLETE &&  requestIds.includes(messageData.requestId)) {
         setMessages((messages) => [...messages, {body: messageData.body, requestId: messageData.requestId}])
       }
 
-      if(messageData.body === STREAM_COMPLETE) {
-        utils.module.getBySlug.invalidate()
-      }
+      utils.module.invalidate()
 
       if(div.current) {
         div.current.scrollTop = div.current.scrollHeight;

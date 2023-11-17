@@ -11,6 +11,7 @@ import {getUniqueFilename} from "@/lib/get-unique-filename";
 import {useSocket} from "@/hooks/use-socket";
 
 const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
+  const [requestIds, setRequestIds] = React.useState<string[]>([])
   const {data: sanityModule} = api.module.getBySlug.useQuery({
     slug: moduleSlug
   })
@@ -43,7 +44,7 @@ const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
           return files.map((file) => new File([file], getUniqueFilename(file.name), {type: file.type}))
         }}
         onClientUploadComplete={async (response: any) => {
-          // Do something with the response.
+          setRequestIds(response.map((res: any) => res.fileName))
           await utils.module.getBySlug.invalidate({slug: moduleSlug})
         }}
         onUploadError={(error: Error) => {
@@ -58,7 +59,7 @@ const VideoUploader = ({moduleSlug} : {moduleSlug?: string}) => {
       </div>
     </div>
 
-    <ChatResponse requestIds={sanityModule?.videoResources?.map(({title}: {title: string}) => title)} />
+    <ChatResponse requestIds={requestIds} />
     </div>
   )
 }

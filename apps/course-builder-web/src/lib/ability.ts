@@ -1,12 +1,23 @@
 import {AbilityBuilder, CreateAbility, createMongoAbility, MongoAbility} from "@casl/ability";
+import z from "zod";
+
+export const UserSchema = z.object({
+  role: z.string().optional(),
+  id: z.string().optional(),
+  name: z.nullable(z.string().optional()),
+  email: z.string().optional(),
+})
+
+export type User = z.infer<typeof UserSchema>
 
 type Abilities =
   | ['view', 'Anything']
+  | ['view', 'Profile' | User]
   | ['upload', 'Media']
 
-type AppAbility = MongoAbility<Abilities>
+export type AppAbility = MongoAbility<Abilities>
 
-const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
+export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
 type GetAbilityOptions = {user?:{id:string, role?: string}}
 
@@ -24,6 +35,10 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
     can('upload', 'Media')
   }
 
+  if(options.user) {
+    can('view', 'Profile', {id: options.user.id})
+  }
+
   return rules
 }
 
@@ -37,5 +52,6 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
  * @param options
  */
 export function getAbility(options: GetAbilityOptions = {}) {
+
   return createAppAbility(getAbilityRules(options))
 }
