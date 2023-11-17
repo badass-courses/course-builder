@@ -33,7 +33,7 @@ export function NewTipForm() {
       form.reset()
       setVideoResourceId('')
       form.setValue('videoResourceId', '')
-      await utils.module.getBySlug.invalidate({slug: 'tips'})
+      await utils.module.getBySlug.invalidate()
       router.refresh()
     }
   })

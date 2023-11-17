@@ -3,6 +3,7 @@ import {moduleRouter} from "@/server/api/routers/module";
 import {postRouter} from "@/server/api/routers/post";
 import {tipsRouter} from "@/server/api/routers/tips";
 import {videoResourceRouter} from "@/server/api/routers/videoResource";
+import {abilityRouter} from "@/server/api/routers/ability";
 
 /**
  * This is the primary router for your server.
@@ -13,7 +14,8 @@ export const appRouter = createTRPCRouter({
   module: moduleRouter,
   post: postRouter,
   tips: tipsRouter,
-  videoResources: videoResourceRouter
+  videoResources: videoResourceRouter,
+  ability: abilityRouter
 });
 
 // export type definition of API
