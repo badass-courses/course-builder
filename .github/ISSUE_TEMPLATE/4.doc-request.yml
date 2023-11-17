@@ -19,7 +19,7 @@ body:
     attributes:
       label: Link to related docs
       description: Does documentation already exist? Please link that here.
-      placeholder: https://docs.uploadthing.com/getting-started
+      placeholder: https://docs.coursebuilder.dev/getting-started
   - type: textarea
     attributes:
       label: Additional information
