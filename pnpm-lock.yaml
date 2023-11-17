@@ -409,7 +409,7 @@ importers:
         specifier: ^3.3.3
         version: 3.3.5
       typescript:
-        specifier: ^5.1.6
+        specifier: ^5.2.2
         version: 5.2.2
 
   packages/config/eslint-config:
@@ -474,7 +474,7 @@ importers:
         specifier: 6.7.0
         version: 6.7.0(typescript@5.2.2)
       typescript:
-        specifier: ^5.1.6
+        specifier: ^5.2.2
         version: 5.2.2
 
   packages/config/tsconfig: {}
