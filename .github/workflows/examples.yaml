@@ -31,6 +31,9 @@ jobs:
       - name: Install necessary deps
         run: pnpm --filter "./apps/${{ matrix.dir }}/**"  --filter "@coursebuilder/*" --filter "course-builder-web" --filter "course-builder-turbo" install
 
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+
       - name: Build UT packages
         run: pnpm build
 
