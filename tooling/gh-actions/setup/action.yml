@@ -21,5 +21,4 @@ runs:
     - name: Copy .env.example files
       shell: bash
       run:
-        find ./apps -type f -name ".env.example" -exec sh -c 'cp "$1"
-        "${1%.example}"' _ {} \;
+        find ./apps -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
