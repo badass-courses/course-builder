@@ -1,7 +1,7 @@
-import { Skeleton, Stack } from '@sanity/ui'
-import { height, width } from '../../components/OpenGraphImage'
-import React, { lazy, Suspense, useDeferredValue } from 'react'
-import { type ObjectInputProps } from 'sanity'
+import {Skeleton, Stack} from '@sanity/ui'
+import {height, width} from '../../components/OpenGraphImage'
+import React, {lazy, Suspense, useDeferredValue} from 'react'
+import {type ObjectInputProps} from 'sanity'
 import styled from 'styled-components'
 
 const OpenGraphPreview = lazy(() => import('./opengraph-preview'))
@@ -20,10 +20,5 @@ const fallback = <RatioSkeleton animated />
 
 export default function OpenGraphInput(props: ObjectInputProps) {
   const value = useDeferredValue(props.value)
-  return (
-    <Stack space={2}>
-
-      {props.renderDefault(props)}
-    </Stack>
-  )
+  return <Stack space={2}>{props.renderDefault(props)}</Stack>
 }

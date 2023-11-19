@@ -32,9 +32,7 @@ export const WelcomeEmail = ({
           <Markdown>{body}</Markdown>
         </Section>
         <Section style={footer}>
-          <Markdown>
-            {``}
-          </Markdown>
+          <Markdown>{``}</Markdown>
         </Section>
       </Body>
     </Html>

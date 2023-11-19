@@ -1,7 +1,10 @@
-import {NextRequest, NextResponse} from "next/server";
-import {inngest} from "@/inngest/inngest.server";
-import {srtFromTranscriptResult, transcriptAsParagraphsWithTimestamps} from "@/lib/deepgram-results-processor";
-import {TRANSCRIPT_READY_EVENT} from "@/inngest/events/transcript-requested";
+import {NextRequest, NextResponse} from 'next/server'
+import {inngest} from '@/inngest/inngest.server'
+import {
+  srtFromTranscriptResult,
+  transcriptAsParagraphsWithTimestamps,
+} from '@/lib/deepgram-results-processor'
+import {TRANSCRIPT_READY_EVENT} from '@/inngest/events/transcript-requested'
 
 export async function POST(req: NextRequest, res: NextResponse) {
   // todo: check MUX_WEBHOOK_SIGNING_SECRET to verify the request
@@ -9,10 +12,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const url = new URL(req.url)
   const videoResourceId = url.searchParams.get('videoResourceId')
   const moduleSlug = url.searchParams.get('moduleSlug')
-  const { results }: { results: any } = await req.json()
+  const {results}: {results: any} = await req.json()
 
   if (!results) {
-    return new Response(`Bad request`, { status: 400 })
+    return new Response(`Bad request`, {status: 400})
   }
 
   const srt = srtFromTranscriptResult(results)
@@ -24,8 +27,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       videoResourceId,
       moduleSlug,
       srt,
-      transcript
-    }
+      transcript,
+    },
   })
 
   return new Response('ok', {

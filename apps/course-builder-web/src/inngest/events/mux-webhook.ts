@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod'
 
 export const MUX_WEBHOOK_EVENT = 'mux/web-hook-event'
 

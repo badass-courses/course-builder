@@ -103,7 +103,7 @@ const Icons = {
       </g>
       <defs>
         <clipPath id="a">
-          <path fill="#fff" d="M0 0h16v16H0z"/>
+          <path fill="#fff" d="M0 0h16v16H0z" />
         </clipPath>
       </defs>
     </>
@@ -157,13 +157,13 @@ const Icons = {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <line x1="12.5" y1="0.5" x2="12.5" y2="15.5" stroke="currentColor"/>
-      <polyline points="15.5 12.5 12.5 15.5 9.5 12.5" stroke="currentColor"/>
-      <polyline points="0.5 2.5 0.5 0.5 2.5 0.5"/>
-      <polyline points="2.5 6.5 0.5 6.5 0.5 4.5"/>
-      <polyline points="6.5 4.5 6.5 6.5 4.5 6.5"/>
-      <polyline points="4.5 0.5 6.5 0.5 6.5 2.5"/>
-      <rect x="0.5" y="9.5" width="6" height="6"/>
+      <line x1="12.5" y1="0.5" x2="12.5" y2="15.5" stroke="currentColor" />
+      <polyline points="15.5 12.5 12.5 15.5 9.5 12.5" stroke="currentColor" />
+      <polyline points="0.5 2.5 0.5 0.5 2.5 0.5" />
+      <polyline points="2.5 6.5 0.5 6.5 0.5 4.5" />
+      <polyline points="6.5 4.5 6.5 6.5 4.5 6.5" />
+      <polyline points="4.5 0.5 6.5 0.5 6.5 2.5" />
+      <rect x="0.5" y="9.5" width="6" height="6" />
     </g>
   ),
 } as const
@@ -171,13 +171,13 @@ const Icons = {
 type IconNames = keyof typeof Icons
 
 const Icon: React.FC<IconProperties> = ({
-                                          viewBox = '0 0 16 16',
-                                          title,
-                                          size = '16',
-                                          name,
-                                          role = 'img',
-                                          ...props
-                                        }) => (
+  viewBox = '0 0 16 16',
+  title,
+  size = '16',
+  name,
+  role = 'img',
+  ...props
+}) => (
   <svg
     width={size}
     height={size}

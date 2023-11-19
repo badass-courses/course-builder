@@ -2,7 +2,7 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-await import("./src/env.mjs");
+await import('./src/env.mjs')
 import createMDX from '@next/mdx'
 
 const withMDX = createMDX({
@@ -21,6 +21,6 @@ const config = {
     serverActions: true,
   },
   pageExtensions: ['mdx', 'ts', 'tsx'],
-};
+}
 
-export default withMDX(config);
+export default withMDX(config)

@@ -4,8 +4,8 @@
 // It's part of the Studio's “Structure Builder API” and is documented here:
 // https://www.sanity.io/docs/structure-builder-reference
 
-import { DRAFT_MODE_ROUTE, previewSecretId } from '../../lib/sanity.api'
-import { DefaultDocumentNodeResolver } from 'sanity/desk'
+import {DRAFT_MODE_ROUTE, previewSecretId} from '../../lib/sanity.api'
+import {DefaultDocumentNodeResolver} from 'sanity/desk'
 import {
   defineUrlResolver,
   Iframe,
@@ -23,17 +23,17 @@ const urlResolver = defineUrlResolver({
 const iframeOptions = {
   url: urlResolver,
   urlSecretId: previewSecretId,
-  reload: { button: true },
+  reload: {button: true},
 } satisfies IframeOptions
 
 export const previewDocumentNode = (): DefaultDocumentNodeResolver => {
-  return (S, { schemaType }) => {
+  return (S, {schemaType}) => {
     switch (schemaType) {
       case authorType.name:
         return S.document().views([
           S.view.form(),
           S.view
-            .component(({ document }) => (
+            .component(({document}) => (
               <AuthorAvatarPreviewPane
                 name={document.displayed.name as any}
                 picture={document.displayed.picture as any}

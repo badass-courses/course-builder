@@ -32,8 +32,10 @@ export function srtProcessor(words?: Word[]) {
   let tempArray: Word[] = []
 
   words.forEach((item, index) => {
-    let timeExceeded = currentTimeInSeconds + (item.end - item.start) >= timeLimitInSeconds
-    let charCountExceeded = currentCharCount + item.punctuated_word.length > charLimit
+    let timeExceeded =
+      currentTimeInSeconds + (item.end - item.start) >= timeLimitInSeconds
+    let charCountExceeded =
+      currentCharCount + item.punctuated_word.length > charLimit
 
     if (timeExceeded || charCountExceeded || index === words.length - 1) {
       if (tempArray.length) {

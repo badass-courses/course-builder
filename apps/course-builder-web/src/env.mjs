@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import {createEnv} from '@t3-oss/env-nextjs'
+import {z} from 'zod'
 
 export const env = createEnv({
   /**
@@ -11,14 +11,14 @@ export const env = createEnv({
       .string()
       .url()
       .refine(
-        (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
-        "You forgot to change the default URL"
+        (str) => !str.includes('YOUR_MYSQL_URL_HERE'),
+        'You forgot to change the default URL',
       ),
     NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
+      .enum(['development', 'test', 'production'])
+      .default('development'),
     NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
+      process.env.NODE_ENV === 'production'
         ? z.string()
         : z.string().optional(),
     NEXTAUTH_URL: z.preprocess(
@@ -26,7 +26,7 @@ export const env = createEnv({
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       (str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url()
+      process.env.VERCEL ? z.string() : z.string(),
     ),
     OPENAI_API_KEY: z.string(),
     SANITY_STUDIO_PROJECT_ID: z.string(),
@@ -94,7 +94,8 @@ export const env = createEnv({
     AWS_VIDEO_UPLOAD_BUCKET: process.env.AWS_VIDEO_UPLOAD_BUCKET,
     AWS_VIDEO_UPLOAD_REGION: process.env.AWS_VIDEO_UPLOAD_REGION,
     AWS_VIDEO_UPLOAD_ACCESS_KEY_ID: process.env.AWS_VIDEO_UPLOAD_ACCESS_KEY_ID,
-    AWS_VIDEO_UPLOAD_SECRET_ACCESS_KEY: process.env.AWS_VIDEO_UPLOAD_SECRET_ACCESS_KEY,
+    AWS_VIDEO_UPLOAD_SECRET_ACCESS_KEY:
+      process.env.AWS_VIDEO_UPLOAD_SECRET_ACCESS_KEY,
     UPLOADTHING_URL: process.env.UPLOADTHING_URL,
     POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
   },
@@ -108,4 +109,4 @@ export const env = createEnv({
    * `SOME_VAR: z.string()` and `SOME_VAR=''` will throw an error.
    */
   emptyStringAsUndefined: true,
-});
+})

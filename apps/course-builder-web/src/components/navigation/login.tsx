@@ -1,10 +1,10 @@
 'use client'
 
-import Link from "next/link";
-import {cn} from "@/lib/utils";
-import * as React from "react";
-import {usePathname} from "next/navigation";
-import {useSession} from "next-auth/react";
+import Link from 'next/link'
+import {cn} from '@/lib/utils'
+import * as React from 'react'
+import {usePathname} from 'next/navigation'
+import {useSession} from 'next-auth/react'
 
 export function Login({className}: {className?: string}) {
   const pathname = usePathname()

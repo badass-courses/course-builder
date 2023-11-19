@@ -2,18 +2,27 @@
  * v0 by Vercel.
  * @see https://v0.dev/t/kjDAPmzUC6C
  */
-import Link from "next/link"
-import { CardTitle, CardHeader, CardContent, Card, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import Link from 'next/link'
+import {
+  CardTitle,
+  CardHeader,
+  CardContent,
+  Card,
+  CardFooter,
+} from '@/components/ui/card'
+import {Button} from '@/components/ui/button'
 
 export default function Component() {
   return (
-    <div key="1" className="flex flex-col w-full min-h-screen">
-      <header className="flex items-center h-16 px-4 border-b shrink-0 md:px-6">
-        <nav className="flex-col hidden gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-          <Link className="flex items-center gap-2 text-lg font-semibold md:text-base" href="#">
+    <div key="1" className="flex min-h-screen w-full flex-col">
+      <header className="flex h-16 shrink-0 items-center border-b px-4 md:px-6">
+        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+          <Link
+            className="flex items-center gap-2 text-lg font-semibold md:text-base"
+            href="#"
+          >
             <svg
-              className=" w-6 h-6"
+              className=" h-6 w-6"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -50,10 +59,12 @@ export default function Component() {
       <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-row gap-4 p-4 md:gap-8 md:p-10">
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Create a Tip</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Create a Tip
+              </CardTitle>
               <svg
-                className=" w-4 h-4 text-zinc-500 dark:text-zinc-400"
+                className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -70,16 +81,23 @@ export default function Component() {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-bold">Enter your tip summary here</div>
-              <p className="text-sm mt-2">
-                Your summary will be used to generate the title and draft body text based on the transcript of the
-                video.
+              <div className="text-lg font-bold">
+                Enter your tip summary here
+              </div>
+              <p className="mt-2 text-sm">
+                Your summary will be used to generate the title and draft body
+                text based on the transcript of the video.
               </p>
-              <textarea aria-label="Enter your tip summary here" className="mt-2 p-2 w-full h-20 border rounded-md" />
-              <div className="text-lg font-bold mt-4">Upload your tip video here</div>
+              <textarea
+                aria-label="Enter your tip summary here"
+                className="mt-2 h-20 w-full rounded-md border p-2"
+              />
+              <div className="mt-4 text-lg font-bold">
+                Upload your tip video here
+              </div>
               <input
                 aria-label="Upload your tip video here"
-                className="mt-2 p-2 w-full h-20 border rounded-md"
+                className="mt-2 h-20 w-full rounded-md border p-2"
                 type="file"
               />
               <Button className="mt-2" variant="default">
@@ -87,7 +105,7 @@ export default function Component() {
               </Button>
               <div className="mt-4 border-t pt-4">
                 <h2 className="text-lg font-bold">Ideas for New Tips</h2>
-                <ul className="list-disc list-inside">
+                <ul className="list-inside list-disc">
                   <li>Tip Idea 1</li>
                   <li>Tip Idea 2</li>
                   <li>Tip Idea 3</li>
@@ -125,8 +143,8 @@ export default function Component() {
                         height="50"
                         src="/placeholder.svg"
                         style={{
-                          aspectRatio: "100/50",
-                          objectFit: "cover",
+                          aspectRatio: '100/50',
+                          objectFit: 'cover',
                         }}
                         width="100"
                       />
@@ -146,8 +164,8 @@ export default function Component() {
                         height="50"
                         src="/placeholder.svg"
                         style={{
-                          aspectRatio: "100/50",
-                          objectFit: "cover",
+                          aspectRatio: '100/50',
+                          objectFit: 'cover',
                         }}
                         width="100"
                       />
@@ -156,17 +174,19 @@ export default function Component() {
                     </CardContent>
                   </Card>
                 </div>
-                <Link className="underline mt-2" href="#">
+                <Link className="mt-2 underline" href="#">
                   All Tips
                 </Link>
               </div>
             </CardFooter>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Most Recent Unpublished Module</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Most Recent Unpublished Module
+              </CardTitle>
               <svg
-                className=" w-4 h-4 text-zinc-500 dark:text-zinc-400"
+                className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -204,11 +224,11 @@ export default function Component() {
                   </svg>
                 </Button>
               </div>
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="mt-2 flex flex-col gap-2">
                 <Button size="lg">Create New Lesson or Module Resource</Button>
                 <Button size="lg" variant="outline">
                   <svg
-                    className=" w-4 h-4 mr-2"
+                    className=" mr-2 h-4 w-4"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -263,7 +283,7 @@ export default function Component() {
               </div>
               <div className="mt-2 border-t pt-2">
                 <h2 className="text-lg font-bold">Next Steps</h2>
-                <ul className="list-disc list-inside">
+                <ul className="list-inside list-disc">
                   <li>Review and finalize the module summary</li>
                   <li>Add all necessary module resources</li>
                   <li>Review and finalize all lessons</li>
@@ -274,8 +294,8 @@ export default function Component() {
             <CardFooter>
               <div className="mt-4 border-t pt-2">
                 <h2 className="text-lg font-bold">Other Modules</h2>
-                <div className="mt-2 space-y-4 flex flex-col w-full">
-                  <Card className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <div className="mt-2 flex w-full flex-col space-y-4">
+                  <Card className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
                     <CardHeader>
                       <CardTitle className="text-lg font-bold text-gray-900 dark:text-white">
                         TypeScript: The Basics - An Introduction to TypeScript
@@ -284,30 +304,31 @@ export default function Component() {
                     <CardContent className="text-gray-700 dark:text-gray-300">
                       Published
                       <Button
-                        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="mt-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
                         variant="outline"
                       >
                         View
                       </Button>
                     </CardContent>
                   </Card>
-                  <Card className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                  <Card className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
                     <CardHeader>
                       <CardTitle className="text-lg font-bold text-gray-900 dark:text-white">
-                        TypeScript: Advanced Concepts - Deep Dive into TypeScript
+                        TypeScript: Advanced Concepts - Deep Dive into
+                        TypeScript
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-gray-700 dark:text-gray-300">
                       Unpublished
                       <Button
-                        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="mt-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
                         variant="outline"
                       >
                         Edit
                       </Button>
                     </CardContent>
                   </Card>
-                  <Card className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                  <Card className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
                     <CardHeader>
                       <CardTitle className="text-lg font-bold text-gray-900 dark:text-white">
                         TypeScript: Expert Techniques - Mastering TypeScript
@@ -316,7 +337,7 @@ export default function Component() {
                     <CardContent className="text-gray-700 dark:text-gray-300">
                       Published
                       <Button
-                        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="mt-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
                         variant="outline"
                       >
                         View
@@ -324,22 +345,26 @@ export default function Component() {
                     </CardContent>
                   </Card>
                 </div>
-                <h2 className="text-lg font-bold mt-4">Next Steps for Module Creation and Review</h2>
-                <div className="flex flex-col gap-2 mt-2">
+                <h2 className="mt-4 text-lg font-bold">
+                  Next Steps for Module Creation and Review
+                </h2>
+                <div className="mt-2 flex flex-col gap-2">
                   <Button variant="default">Create New Module</Button>
                   <Button variant="outline">Review Unpublished Modules</Button>
                 </div>
-                <Link className="underline mt-2" href="#">
+                <Link className="mt-2 underline" href="#">
                   All Modules
                 </Link>
               </div>
             </CardFooter>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Add Media Resources</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Add Media Resources
+              </CardTitle>
               <svg
-                className=" w-4 h-4 text-zinc-500 dark:text-zinc-400"
+                className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -361,19 +386,21 @@ export default function Component() {
               </svg>
             </CardHeader>
             <CardContent>
-              <section className="mt-4 border-dashed border-2 border-gray-500 dark:border-gray-400 rounded-md p-4 text-center">
+              <section className="mt-4 rounded-md border-2 border-dashed border-gray-500 p-4 text-center dark:border-gray-400">
                 <h2 className="text-lg font-bold">Upload Media</h2>
                 <p className="mb-2">Drag and drop your media files here</p>
                 <p>or</p>
                 <input
                   aria-label="Upload your media files here"
-                  className="mt-2 p-2 w-full h-20 border rounded-md"
+                  className="mt-2 h-20 w-full rounded-md border p-2"
                   type="file"
                 />
               </section>
               <section className="mt-4">
-                <h2 className="text-lg font-bold">Recently Added Media Resources</h2>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+                <h2 className="text-lg font-bold">
+                  Recently Added Media Resources
+                </h2>
+                <div className="mt-2 grid grid-cols-3 gap-4">
                   <div className="font-bold">Filename</div>
                   <div className="font-bold">Status</div>
                   <div className="font-bold">Transcription</div>
@@ -433,7 +460,7 @@ export default function Component() {
                     </svg>
                   </div>
                 </div>
-                <Link className="underline mt-2" href="#">
+                <Link className="mt-2 underline" href="#">
                   All Media Resources
                 </Link>
               </section>

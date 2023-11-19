@@ -1,5 +1,10 @@
-import {AbilityBuilder, CreateAbility, createMongoAbility, MongoAbility} from "@casl/ability";
-import z from "zod";
+import {
+  AbilityBuilder,
+  CreateAbility,
+  createMongoAbility,
+  MongoAbility,
+} from '@casl/ability'
+import z from 'zod'
 
 export const UserSchema = z.object({
   role: z.string().optional(),
@@ -19,7 +24,7 @@ export type AppAbility = MongoAbility<Abilities>
 
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
-type GetAbilityOptions = {user?:{id:string, role?: string}}
+type GetAbilityOptions = {user?: {id: string; role?: string}}
 
 /**
  * serializable CASL rules object
@@ -35,7 +40,7 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
     can('upload', 'Media')
   }
 
-  if(options.user) {
+  if (options.user) {
     can('view', 'Profile', {id: options.user.id})
   }
 
@@ -52,6 +57,5 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
  * @param options
  */
 export function getAbility(options: GetAbilityOptions = {}) {
-
   return createAppAbility(getAbilityRules(options))
 }

@@ -1,20 +1,26 @@
-import {inngest} from "@/inngest/inngest.server"
-import {AI_TIP_WRITING_REQUESTED_EVENT, AI_WRITING_COMPLETED_EVENT, AI_WRITING_REQUESTED_EVENT} from "@/inngest/events"
-import {type ChatCompletionRequestMessage} from "openai-edge"
-import {sanityMutation, sanityQuery} from "@/server/sanity.server";
-import {last} from "lodash";
-import {env} from "@/env.mjs";
-import {promptActionExecutor} from "@/lib/prompt.action-executor";
-import {titles} from "@/inngest/functions/ai/data/titles";
-import {Tip} from "@/lib/tips";
-import {VideoResource} from "@/inngest/functions/transcript-ready";
+import {inngest} from '@/inngest/inngest.server'
+import {
+  AI_TIP_WRITING_REQUESTED_EVENT,
+  AI_WRITING_COMPLETED_EVENT,
+  AI_WRITING_REQUESTED_EVENT,
+} from '@/inngest/events'
+import {type ChatCompletionRequestMessage} from 'openai-edge'
+import {sanityMutation, sanityQuery} from '@/server/sanity.server'
+import {last} from 'lodash'
+import {env} from '@/env.mjs'
+import {promptActionExecutor} from '@/lib/prompt.action-executor'
+import {titles} from '@/inngest/functions/ai/data/titles'
+import {Tip} from '@/lib/tips'
+import {VideoResource} from '@/inngest/functions/transcript-ready'
 
 export const tipTitleAndSummaryWriter = inngest.createFunction(
   {id: `gpt-4-tip-writer`, name: 'GPT-4 Writer'},
   {event: AI_TIP_WRITING_REQUESTED_EVENT},
   async ({event, step}) => {
     const workflow = await step.run('Load Workflow', async () => {
-      return await sanityQuery(`*[_type == "workflow" && trigger == '${AI_TIP_WRITING_REQUESTED_EVENT}'][0]`)
+      return await sanityQuery(
+        `*[_type == "workflow" && trigger == '${AI_TIP_WRITING_REQUESTED_EVENT}'][0]`,
+      )
     })
 
     const tip = await step.run('Load Tip', async () => {
@@ -32,7 +38,9 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
     })
 
     const videoResource = await step.run('Load Video Resource', async () => {
-      return await sanityQuery<VideoResource>(`*[_type == "videoResource" && _id == '${tip.videoResourceId}'][0]`)
+      return await sanityQuery<VideoResource>(
+        `*[_type == "videoResource" && _id == '${tip.videoResourceId}'][0]`,
+      )
     })
 
     let shouldContinue = Boolean(workflow)
@@ -44,12 +52,17 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
         case 'prompt':
           messages = await step.run(action.title, async () => {
             return await promptActionExecutor({
-              action, input: {
-                transcript: `${videoResource.transcript}\n\n ## Examples of Good Video Titles\n\n* ${titles.join('\n * ')}`,
+              action,
+              input: {
+                transcript: `${
+                  videoResource.transcript
+                }\n\n ## Examples of Good Video Titles\n\n* ${titles.join(
+                  '\n * ',
+                )}`,
                 summary: tip.summary,
               },
               requestId: videoResource._id,
-              messages
+              messages,
             })
           })
           break
@@ -63,14 +76,14 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
     await step.run('Update Tip', async () => {
       await sanityMutation([
         {
-          "patch": {
-            "id": tip._id,
-            "set": {
-              "title": finalMessage.title,
-              "body": finalMessage.content,
+          patch: {
+            id: tip._id,
+            set: {
+              title: finalMessage.title,
+              body: finalMessage.content,
             },
-          }
-        }
+          },
+        },
       ])
     })
 
@@ -79,20 +92,23 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
       data: {
         requestId: videoResource._id,
         result: finalMessage,
-        fullPrompt: messages
-      }
+        fullPrompt: messages,
+      },
     })
 
     await step.run('Broadcast Completion', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          body: finalMessage,
-          requestId: videoResource._id,
-          name: 'ai.tip.draft.completed',
-        }),
-      }).catch((e) => {
-        console.error(e);
+      await fetch(
+        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            body: finalMessage,
+            requestId: videoResource._id,
+            name: 'ai.tip.draft.completed',
+          }),
+        },
+      ).catch((e) => {
+        console.error(e)
       })
     })
 

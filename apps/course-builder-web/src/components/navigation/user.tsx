@@ -1,25 +1,31 @@
 'use client'
 
-import * as React from "react";
-import {cn} from "@/lib/utils";
-import Link from "next/link";
-import {cx} from "class-variance-authority";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "../ui/dropdown-menu";
-import {signOut, useSession} from "next-auth/react";
-import { ChevronDownIcon } from "lucide-react";
+import * as React from 'react'
+import {cn} from '@/lib/utils'
+import Link from 'next/link'
+import {cx} from 'class-variance-authority'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu'
+import {signOut, useSession} from 'next-auth/react'
+import {ChevronDownIcon} from 'lucide-react'
 import Gravatar from 'react-gravatar'
-import {createAppAbility} from "@/lib/ability";
-import {ArrowLeftOnRectangleIcon} from "@heroicons/react/24/solid";
-import {api} from "@/trpc/react";
-import {usePathname} from "next/navigation";
+import {createAppAbility} from '@/lib/ability'
+import {ArrowLeftOnRectangleIcon} from '@heroicons/react/24/solid'
+import {api} from '@/trpc/react'
+import {usePathname} from 'next/navigation'
 
 export const User: React.FC<{className?: string}> = ({className}) => {
   const pathname = usePathname()
   const {data: sessionData, status: sessionStatus} = useSession()
   const {data: abilityRules} = api.ability.getCurrentAbilityRules.useQuery()
   const ability = createAppAbility(abilityRules)
-  const isLoadingUserInfo =
-    sessionStatus === 'loading'
+  const isLoadingUserInfo = sessionStatus === 'loading'
 
   const canCreateContent = ability.can('upload', 'Media')
 
