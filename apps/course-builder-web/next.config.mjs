@@ -5,6 +5,8 @@
 await import('./src/env.mjs')
 import createMDX from '@next/mdx'
 
+const subdomains = ['docs']
+
 const withMDX = createMDX({
   // Add markdown plugins here, as desired
   extension: /\.mdx?$/,
@@ -21,6 +23,21 @@ const config = {
     serverActions: true,
   },
   pageExtensions: ['mdx', 'ts', 'tsx'],
+  async redirects() {
+    return [
+      ...subdomains.map((subdomain) => ({
+        source: "/:path*",
+        has: [
+          {
+            type: 'host',
+            value: `${subdomain}.coursebuilder.dev`,
+          },
+        ],
+        destination: `https://www.coursebuilder.dev/${subdomain}/:path*`,
+        permanent: false,
+      })),
+    ];
+  },
 }
 
 export default withMDX(config)
