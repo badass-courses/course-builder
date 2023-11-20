@@ -4,6 +4,8 @@ on:
     branches:
       - main
 
+permissions: write-all
+
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
