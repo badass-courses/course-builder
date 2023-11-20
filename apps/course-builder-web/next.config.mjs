@@ -27,17 +27,17 @@ const config = {
   async redirects() {
     return [
       ...subdomains.map((subdomain) => ({
-        source: "/:path*",
+        source: '/:path*',
         has: [
           {
-            type: "host",
+            type: 'host',
             value: `${subdomain}.coursebuilder.dev`,
           },
         ],
         destination: `https://www.coursebuilder.dev/${subdomain}/:path*`,
         permanent: false,
       })),
-    ];
+    ]
   },
 }
 
