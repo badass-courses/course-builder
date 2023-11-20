@@ -2,7 +2,7 @@ import {z} from 'zod'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
 import {createTRPCRouter, publicProcedure} from '@/server/api/trpc'
-import {getTipsModule} from '@/lib/tips'
+import {getTip, getTipsModule} from '@/lib/tips'
 import {sanityMutation} from '@/server/sanity.server'
 import {v4} from 'uuid'
 
@@ -48,7 +48,7 @@ export const tipsRouter = createTRPCRouter({
     .input(
       z.object({
         videoResourceId: z.string(),
-        description: z.string(),
+        description: z.string().optional(),
       }),
     )
     .mutation(async ({ctx, input}) => {
@@ -58,7 +58,23 @@ export const tipsRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
+      console.log('tipsRouter', input)
+
       const newTipId = v4()
+
+      // await sanityMutation([
+      //   {
+      //     createOrReplace: {
+      //       _id: event.data.fileName,
+      //       _type: 'videoResource',
+      //       originalMediaUrl: event.data.originalMediaUrl,
+      //       title: event.data.fileName,
+      //       muxAssetId: muxAsset.id,
+      //       muxPlaybackId: playbackId,
+      //       state: `processing`,
+      //     },
+      //   },
+      // ])
 
       await sanityMutation([
         {
@@ -66,6 +82,9 @@ export const tipsRouter = createTRPCRouter({
             _id: newTipId,
             _type: 'tip',
             title: toChicagoTitleCase(input.videoResourceId),
+            slug: {
+              current: input.videoResourceId,
+            },
             resources: [
               {
                 _key: v4(),
@@ -77,6 +96,10 @@ export const tipsRouter = createTRPCRouter({
           },
         },
       ])
+
+      const tip = await getTip(newTipId)
+
+      console.log('tip', tip)
 
       const tipsModule = await getTipsModule()
 
@@ -99,6 +122,6 @@ export const tipsRouter = createTRPCRouter({
         },
       ])
 
-      return await getTipsModule()
+      return tip
     }),
 })

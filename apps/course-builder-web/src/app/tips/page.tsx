@@ -8,9 +8,10 @@ import {TipPlayer} from '@/app/tips/_components/tip-player'
 import {Button} from '@/components/ui/button'
 import {inngest} from '@/inngest/inngest.server'
 import {AI_TIP_WRITING_REQUESTED_EVENT} from '@/inngest/events'
-import {Party} from '@/app/tips/_components/party'
 import {Textarea} from '@/components/ui/textarea'
 import {Input} from '@/components/ui/input'
+import {Label} from '@/components/ui/label'
+import Link from 'next/link'
 
 export default async function TipsListPage() {
   const session = await getServerAuthSession()
@@ -22,11 +23,12 @@ export default async function TipsListPage() {
       {ability.can('upload', 'Media') ? <CreateTip /> : null}
       <div className="mt-2">
         <h3 className="text-lg font-bold">Published Tips</h3>
-        <Party />
         {tipsModule.tips.map((tip) => (
           <Card key={tip._id}>
             <CardHeader>
-              <CardTitle>{tip.title}</CardTitle>
+              <CardTitle>
+                <Link href={`/tips/${tip.slug || tip._id}`}>{tip.title}</Link>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {tip.summary}
@@ -37,21 +39,31 @@ export default async function TipsListPage() {
               {ability.can('upload', 'Media') ? (
                 <div className="flex flex-col">
                   <form
-                    className="flex flex-col"
+                    className="flex flex-col space-y-2"
                     action={async (data) => {
                       'use server'
                       console.log('submit', {data})
                     }}
                   >
-                    <Input value={tip.title} type="text" placeholder="Title" />
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      defaultValue={tip.title}
+                      type="text"
+                      placeholder="Title"
+                    />
+                    <Label htmlFor="summary">Summary</Label>
                     <Textarea
+                      id="summary"
                       rows={10}
-                      value={tip.summary}
+                      defaultValue={tip.summary}
                       placeholder="Summary"
                     />
+                    <Label htmlFor="Description">Description</Label>
                     <Textarea
+                      id="description"
                       rows={10}
-                      value={tip.body}
+                      defaultValue={tip.body}
                       placeholder="Description"
                     />
                     <Button type="submit">Save Tip</Button>

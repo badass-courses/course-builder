@@ -4,7 +4,6 @@ import {getAbility} from '@/lib/ability'
 import {inngest} from '@/inngest/inngest.server'
 import {VIDEO_UPLOADED_EVENT} from '@/inngest/events/video-uploaded'
 import {z} from 'zod'
-import {getUniqueFilename} from '@/lib/get-unique-filename'
 
 const f = createUploadthing()
 

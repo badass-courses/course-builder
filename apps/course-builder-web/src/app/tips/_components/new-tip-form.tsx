@@ -21,13 +21,14 @@ import {api} from '@/trpc/react'
 import {useRouter} from 'next/navigation'
 
 const NewTipFormSchema = z.object({
-  description: z.string().min(2).max(240),
-  videoResourceId: z.string().min(4),
+  description: z.string().max(240).optional(),
+  videoResourceId: z.string().min(4, 'Please upload a video'),
 })
 
 export function NewTipForm() {
   const [videoResourceId, setVideoResourceId] = React.useState<string>('')
   const router = useRouter()
+
   const form = useForm<z.infer<typeof NewTipFormSchema>>({
     resolver: zodResolver(NewTipFormSchema),
     defaultValues: {
@@ -36,8 +37,9 @@ export function NewTipForm() {
     },
   })
   const utils = api.useUtils()
-  const {mutate: createTip} = api.tips.create.useMutation({
-    onSuccess: async () => {
+  const {mutateAsync: createTip} = api.tips.create.useMutation({
+    onSuccess: async (data) => {
+      console.log('onSuccess', {data})
       form.reset()
       setVideoResourceId('')
       form.setValue('videoResourceId', '')
@@ -47,7 +49,8 @@ export function NewTipForm() {
   })
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
-    createTip(values)
+    const tip = await createTip(values)
+    router.push(`/tips/${tip.slug}`)
   }
 
   return (
