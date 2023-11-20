@@ -15,7 +15,7 @@ importers:
         specifier: ^2.26.2
         version: 2.26.2
       '@coursebuilder/eslint-config':
-        specifier: 0.2.0
+        specifier: 0.0.1
         version: link:packages/config/eslint-config
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.1.1
@@ -492,7 +492,7 @@ importers:
         version: 6.11.0(eslint@8.54.0)(typescript@5.2.2)
     devDependencies:
       '@coursebuilder/tsconfig':
-        specifier: ^0.1.0
+        specifier: ^0.0.1
         version: link:../tsconfig
       '@types/eslint':
         specifier: ^8.44.2
