@@ -15,7 +15,7 @@ importers:
         specifier: ^2.26.2
         version: 2.26.2
       '@coursebuilder/eslint-config':
-        specifier: 0.0.1
+        specifier: 0.0.2
         version: link:packages/config/eslint-config
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.1.1
@@ -450,6 +450,9 @@ importers:
 
   packages/config/eslint-config:
     dependencies:
+      '@coursebuilder/eslint-plugin':
+        specifier: ^0.0.2
+        version: link:../eslint-plugin
       '@next/eslint-plugin-next':
         specifier: ^14.0.1
         version: 14.0.3
@@ -462,9 +465,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^6.7.0
         version: 6.11.0(eslint@8.54.0)(typescript@5.2.2)
-      '@uploadthing/eslint-plugin':
-        specifier: ^0.1.0
-        version: 0.1.0(eslint@8.54.0)(typescript@5.2.2)
       eslint-config-prettier:
         specifier: ^9.0.0
         version: 9.0.0(eslint@8.54.0)
@@ -6866,17 +6866,6 @@ packages:
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
-
-  /@uploadthing/eslint-plugin@0.1.0(eslint@8.54.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-2O/Kg80H1dVAWFlfdu4126nc2iVz9nPT93GeAbvdj+Wlxa70wDPVIrj2NWyTJ+4tGRhWEt5DM1vcnmvqbSktFA==}
-    dependencies:
-      '@typescript-eslint/parser': 6.11.0(eslint@8.54.0)(typescript@5.2.2)
-      '@typescript-eslint/utils': 6.11.0(eslint@8.54.0)(typescript@5.2.2)
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
-      - typescript
-    dev: false
 
   /@uploadthing/mime-types@0.2.2:
     resolution: {integrity: sha512-ZUo1JHOPPMZDsUw1mOhhVDIvJGlsjj6T0xJ/YJtulyJwL43S9B5pxg1cHcRuTEgjaxj7B55jiqQ6r9mDrrjH9A==}
