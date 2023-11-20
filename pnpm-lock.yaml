@@ -442,7 +442,7 @@ importers:
         specifier: ^0.32.5
         version: 0.32.6
       tailwindcss:
-        specifier: ^3.0.24
+        specifier: ^3.3.3
         version: 3.3.5
       typescript:
         specifier: ^5.2.2
