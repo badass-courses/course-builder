@@ -6,6 +6,7 @@ import tailwind from "@astrojs/tailwind";
 // https://astro.build/config
 export default defineConfig({
   site: 'https://docs.coursebuilder.dev/',
+  favicon: '/images/badass.svg',
   integrations: [starlight({
     title: 'Course Builder',
     logo: {
