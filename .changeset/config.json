@@ -12,7 +12,7 @@
     "onlyUpdatePeerDependentsWhenOutOfRange": true
   },
   "ignore": [
-    "docs",
-    "@example/*"
+    "course-builder-docs",
+    "course-builder-web"
   ]
 }
