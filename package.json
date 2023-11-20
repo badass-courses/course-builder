@@ -16,9 +16,11 @@
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",
+    "pre-commit": "lint-staged",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
@@ -41,5 +43,8 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "turbo": "^1.10.16",
     "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0"
   }
 }
