@@ -15,7 +15,7 @@
     "dev": "turbo run dev --filter \"./packages/*\"",
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
-    "format": "prettier --write . --list-different",
+    "format": "prettier . --write --list-different",
     "pre-commit": "lint-staged",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
@@ -23,7 +23,7 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
+    "**/*.{ts,tsx,js,jsx,cjs,mjs}": [
       "pnpm run format"
     ]
   },
