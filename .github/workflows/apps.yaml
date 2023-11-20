@@ -1,4 +1,4 @@
-name: Examples E2E
+name: Apps E2E
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
