@@ -16,21 +16,26 @@ hero:
       icon: external
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components'
+Course Builder is a free, open-source platform for building and selling an
+online course for developers (or anybody, really). It's built on top of
+[Next.js](https://nextjs.org) for deployment on [Vercel](https://vercel.com).
 
-## Next steps
+## Features
 
-<CardGrid stagger>
-  <Card title="Update content" icon="pencil">
-    Edit `src/content/docs/index.mdx` to see this page change.
-  </Card>
-  <Card title="Add new content" icon="add-document">
-    Add Markdown or MDX files to `src/content/docs` to create new pages.
-  </Card>
-  <Card title="Configure your site" icon="setting">
-    Edit your `sidebar` and other config in `astro.config.mjs`.
-  </Card>
-  <Card title="Read the docs" icon="open-book">
-    Learn more in [the Starlight Docs](https://starlight.astro.build/).
-  </Card>
-</CardGrid>
+Course Builder is built by example and intended as a reference for building
+your own course platform. It includes:
+
+- Course Builder CLI for scaffolding and deploying your course website
+- Common UI Components
+- Flexible, but opinionated, information architecture
+- Stripe integration for payments
+- Email automation to handle transactional and marketing email
+- Lightweight LLM (AI) to augment and assist course creators
+- Support tools for managing learner accounts and payments
+
+:::note
+Course Builder is not a hosted platform. It's a reference implementation for
+building your own course platform.
+
+The features above are aspirational and not fully implemented yet.
+:::
