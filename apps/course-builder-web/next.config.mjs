@@ -23,13 +23,14 @@ const config = {
     serverActions: true,
   },
   pageExtensions: ['mdx', 'ts', 'tsx'],
+  // @ts-expect-error
   async redirects() {
     return [
       ...subdomains.map((subdomain) => ({
         source: "/:path*",
         has: [
           {
-            type: 'host',
+            type: "host",
             value: `${subdomain}.coursebuilder.dev`,
           },
         ],
