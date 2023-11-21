@@ -1,17 +1,10 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card'
 import {NewTipForm} from './new-tip-form'
 
 export function CreateTip() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Create a Tip</CardTitle>
         <svg
           className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
           fill="none"

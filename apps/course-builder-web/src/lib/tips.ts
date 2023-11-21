@@ -17,7 +17,6 @@ const TipSchema = z.object({
 export type Tip = z.infer<typeof TipSchema>
 
 export async function getTip(slugOrId: string) {
-  console.log('getTip', slugOrId)
   return await sanityQuery<Tip>(`*[_type == "tip" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
           _id,
           _type,

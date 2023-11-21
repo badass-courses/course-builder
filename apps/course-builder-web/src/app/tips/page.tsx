@@ -36,58 +36,7 @@ export default async function TipsListPage() {
                 videoResourceId={tip.videoResourceId}
                 muxPlaybackId={tip.muxPlaybackId}
               />
-              {ability.can('upload', 'Media') ? (
-                <div className="flex flex-col">
-                  <form
-                    className="flex flex-col space-y-2"
-                    action={async (data) => {
-                      'use server'
-                      console.log('submit', {data})
-                    }}
-                  >
-                    <Label htmlFor="title">Title</Label>
-                    <Input
-                      id="title"
-                      defaultValue={tip.title}
-                      type="text"
-                      placeholder="Title"
-                    />
-                    <Label htmlFor="summary">Summary</Label>
-                    <Textarea
-                      id="summary"
-                      rows={10}
-                      defaultValue={tip.summary}
-                      placeholder="Summary"
-                    />
-                    <Label htmlFor="Description">Description</Label>
-                    <Textarea
-                      id="description"
-                      rows={10}
-                      defaultValue={tip.body}
-                      placeholder="Description"
-                    />
-                    <Button type="submit">Save Tip</Button>
-                  </form>
-                  <div className="flex">
-                    <form
-                      action={async (data) => {
-                        'use server'
-                        await inngest.send({
-                          name: AI_TIP_WRITING_REQUESTED_EVENT,
-                          data: {
-                            tipId: tip._id,
-                          },
-                        })
-                      }}
-                    >
-                      <Button type="submit">Re-Generate Title</Button>
-                    </form>
-                    <form>
-                      <Button type="submit">Generate Su</Button>
-                    </form>
-                  </div>
-                </div>
-              ) : null}
+              {tip.body}
             </CardContent>
           </Card>
         ))}
