@@ -3,11 +3,11 @@
   "version": "0.0.2",
   "license": "MIT",
   "dependencies": {
+    "@coursebuilder/eslint-plugin": "^0.0.2",
     "@next/eslint-plugin-next": "^14.0.1",
     "@types/eslint": "^8.44.2",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "@coursebuilder/eslint-plugin": "^0.0.2",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-turbo": "^1.10.12",
     "eslint-plugin-import": "^2.28.0",

@@ -12,10 +12,12 @@ export async function sanityMutation(mutations: any[]) {
       body: JSON.stringify({mutations}),
     },
   )
-    .then((response) => {
+    .then(async (response) => {
       if (response.status !== 200) {
         throw new Error(
-          `Sanity mutation failed with status ${response.status}: ${response.statusText}`,
+          `Sanity mutation failed with status ${response.status}: ${
+            response.statusText
+          }\n\n\n${JSON.stringify(await response.json(), null, 2)})}`,
         )
       }
       return response.json()
@@ -41,6 +43,13 @@ export async function sanityQuery<T = any>(query: string): Promise<T> {
     },
   )
     .then(async (response) => {
+      if (response.status !== 200) {
+        throw new Error(
+          `Sanity mutation failed with status ${response.status}: ${
+            response.statusText
+          }\n\n\n${JSON.stringify(await response.json(), null, 2)})}`,
+        )
+      }
       const {result} = await response.json()
       return result as T
     })
