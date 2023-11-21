@@ -1,7 +1,7 @@
 import {z} from 'zod'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
-import {createTRPCRouter, publicProcedure} from '@/server/api/trpc'
+import {createTRPCRouter, publicProcedure} from '@/trpc/api/trpc'
 import {getTip, getTipsModule} from '@/lib/tips'
 import {sanityMutation} from '@/server/sanity.server'
 import {v4} from 'uuid'

@@ -1,7 +1,7 @@
 import {z} from 'zod'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
-import {createTRPCRouter, publicProcedure} from '@/server/api/trpc'
+import {createTRPCRouter, publicProcedure} from '@/trpc/api/trpc'
 import {sanityQuery} from '@/server/sanity.server'
 
 export const moduleRouter = createTRPCRouter({
