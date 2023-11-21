@@ -32,10 +32,6 @@ export default async function TipsListPage() {
             </CardHeader>
             <CardContent>
               {tip.summary}
-              <TipPlayer
-                videoResourceId={tip.videoResourceId}
-                muxPlaybackId={tip.muxPlaybackId}
-              />
               {tip.body}
             </CardContent>
           </Card>

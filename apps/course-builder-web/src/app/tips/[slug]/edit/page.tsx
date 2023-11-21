@@ -37,6 +37,7 @@ export default async function TipEditPage({params}: {params: {slug: string}}) {
         </CardContent>
         <CardFooter></CardFooter>
       </Card>
+
       <TipPlayer
         videoResourceId={tip.videoResourceId}
         muxPlaybackId={tip.muxPlaybackId}
