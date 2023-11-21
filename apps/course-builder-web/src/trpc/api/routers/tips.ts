@@ -1,10 +1,20 @@
 import {z} from 'zod'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
-import {createTRPCRouter, publicProcedure} from '@/trpc/api/trpc'
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '@/trpc/api/trpc'
 import {getTip, getTipsModule} from '@/lib/tips'
 import {sanityMutation} from '@/server/sanity.server'
 import {v4} from 'uuid'
+import slugify from '@sindresorhus/slugify'
+
+import {customAlphabet} from 'nanoid'
+import {inngest} from '@/inngest/inngest.server'
+import {AI_TIP_WRITING_REQUESTED_EVENT} from '@/inngest/events'
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 function toChicagoTitleCase(slug: string): string {
   const minorWords: Set<string> = new Set([
@@ -44,11 +54,20 @@ function toChicagoTitleCase(slug: string): string {
 }
 
 export const tipsRouter = createTRPCRouter({
-  create: publicProcedure
+  get: publicProcedure
+    .input(
+      z.object({
+        tipId: z.string(),
+      }),
+    )
+    .query(async ({ctx, input}) => {
+      return await getTip(input.tipId)
+    }),
+  create: protectedProcedure
     .input(
       z.object({
         videoResourceId: z.string(),
-        description: z.string().optional(),
+        title: z.string(),
       }),
     )
     .mutation(async ({ctx, input}) => {
@@ -58,32 +77,16 @@ export const tipsRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
-      console.log('tipsRouter', input)
-
       const newTipId = v4()
-
-      // await sanityMutation([
-      //   {
-      //     createOrReplace: {
-      //       _id: event.data.fileName,
-      //       _type: 'videoResource',
-      //       originalMediaUrl: event.data.originalMediaUrl,
-      //       title: event.data.fileName,
-      //       muxAssetId: muxAsset.id,
-      //       muxPlaybackId: playbackId,
-      //       state: `processing`,
-      //     },
-      //   },
-      // ])
 
       await sanityMutation([
         {
           createOrReplace: {
             _id: newTipId,
             _type: 'tip',
-            title: toChicagoTitleCase(input.videoResourceId),
+            title: toChicagoTitleCase(input.title),
             slug: {
-              current: input.videoResourceId,
+              current: slugify(`${input.title}~${nanoid()}`),
             },
             resources: [
               {
@@ -92,14 +95,11 @@ export const tipsRouter = createTRPCRouter({
                 _ref: input.videoResourceId,
               },
             ],
-            summary: input.description,
           },
         },
       ])
 
       const tip = await getTip(newTipId)
-
-      console.log('tip', tip)
 
       const tipsModule = await getTipsModule()
 
@@ -123,5 +123,55 @@ export const tipsRouter = createTRPCRouter({
       ])
 
       return tip
+    }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        tipId: z.string(),
+        title: z.string(),
+      }),
+    )
+    .mutation(async ({ctx, input}) => {
+      const session = await getServerAuthSession()
+      const ability = getAbility({user: session?.user})
+      if (!ability.can('upload', 'Media')) {
+        throw new Error('Unauthorized')
+      }
+
+      await sanityMutation([
+        {
+          patch: {
+            id: input.tipId,
+            set: {
+              'slug.current': `${slugify(input.title)}~${nanoid()}`,
+              title: toChicagoTitleCase(input.title),
+            },
+          },
+        },
+      ])
+
+      return await getTip(input.tipId)
+    }),
+  generateTitle: protectedProcedure
+    .input(
+      z.object({
+        tipId: z.string(),
+      }),
+    )
+    .mutation(async ({ctx, input}) => {
+      const session = await getServerAuthSession()
+      const ability = getAbility({user: session?.user})
+      if (!ability.can('upload', 'Media')) {
+        throw new Error('Unauthorized')
+      }
+
+      await inngest.send({
+        name: AI_TIP_WRITING_REQUESTED_EVENT,
+        data: {
+          tipId: input.tipId,
+        },
+      })
+
+      return await getTip(input.tipId)
     }),
 })

@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import {useForm} from 'react-hook-form'
-import {Textarea} from '@/components/ui/textarea'
 import {z} from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {Input} from '@/components/ui/input'
@@ -21,7 +20,7 @@ import {api} from '@/trpc/react'
 import {useRouter} from 'next/navigation'
 
 const NewTipFormSchema = z.object({
-  description: z.string().max(240).optional(),
+  title: z.string().min(2).max(90),
   videoResourceId: z.string().min(4, 'Please upload a video'),
 })
 
@@ -32,7 +31,7 @@ export function NewTipForm() {
   const form = useForm<z.infer<typeof NewTipFormSchema>>({
     resolver: zodResolver(NewTipFormSchema),
     defaultValues: {
-      description: '',
+      title: '',
       videoResourceId: '',
     },
   })
@@ -58,21 +57,16 @@ export function NewTipForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="description"
+          name="title"
           render={({field}) => (
             <FormItem>
-              <FormLabel className="text-lg font-bold">
-                Enter your tip summary here
-              </FormLabel>
+              <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
-                Your summary will be used to generate the title and draft body
-                text based on the transcript of the video.
+                A title should summarize the tip and explain what it is about
+                clearly.
               </FormDescription>
               <FormControl>
-                <Textarea
-                  placeholder="describe the tip like a tweet :)"
-                  {...field}
-                />
+                <Input {...field} />
               </FormControl>
 
               <FormMessage />
@@ -84,36 +78,46 @@ export function NewTipForm() {
           name="videoResourceId"
           render={({field}) => (
             <FormItem>
+              <FormLabel className="text-lg font-bold">
+                Upload a Tip Video*
+              </FormLabel>
+              <FormDescription className="mt-2 text-sm">
+                Your video will be uploaded and then transcribed automatically.
+              </FormDescription>
               <FormControl>
                 <Input type="hidden" {...field} />
               </FormControl>
+              {videoResourceId.length === 0 ? (
+                <TipUploader
+                  setVideoResourceId={(videoResourceId: string) => {
+                    form.setValue('videoResourceId', videoResourceId)
+                    setVideoResourceId(videoResourceId)
+                  }}
+                />
+              ) : (
+                <div>
+                  {videoResourceId}{' '}
+                  <Button
+                    onClick={() => {
+                      setVideoResourceId('')
+                      form.setValue('videoResourceId', '')
+                    }}
+                  >
+                    clear
+                  </Button>
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {videoResourceId.length === 0 ? (
-          <TipUploader
-            setVideoResourceId={(videoResourceId: string) => {
-              form.setValue('videoResourceId', videoResourceId)
-              setVideoResourceId(videoResourceId)
-            }}
-          />
-        ) : (
-          <div>
-            {videoResourceId}{' '}
-            <Button
-              onClick={() => {
-                setVideoResourceId('')
-                form.setValue('videoResourceId', '')
-              }}
-            >
-              clear
-            </Button>
-          </div>
-        )}
-
-        <Button type="submit" className="mt-2" variant="default">
+        <Button
+          type="submit"
+          className="mt-2"
+          variant="default"
+          disabled={videoResourceId.length === 0}
+        >
           Submit Tip
         </Button>
       </form>
