@@ -123,6 +123,10 @@ const { data } = entry;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
 const description = data.description || config.description;
 
+const imageBackgroundId = 'course-builder-og-image-template_qfarun'
+
+const ogImageUrl = `https://res.cloudinary.com/badass-courses/image/upload/w_1200,h_630,c_fill,f_auto/w_630,h_450,c_fit,co_rgb:FFFFFF,g_west,x_45,y_-40,l_text:arial_60_bold:${encodeURIComponent(data.title)}/course-builder-og-image-template_qfarun.png`
+
 const headDefaults: z.input<ReturnType<typeof HeadConfigSchema>> = [
   { tag: 'meta', attrs: { charset: 'utf-8' } },
   {
@@ -149,6 +153,7 @@ const headDefaults: z.input<ReturnType<typeof HeadConfigSchema>> = [
   { tag: 'meta', attrs: { property: 'og:locale', content: lang } },
   { tag: 'meta', attrs: { property: 'og:description', content: description } },
   { tag: 'meta', attrs: { property: 'og:site_name', content: config.title } },
+  { tag: 'meta', attrs: { property: 'og:image', content: data.ogImageUrl ? data.ogImageUrl : ogImageUrl } },
   // Twitter Tags
   {
     tag: 'meta',
@@ -156,6 +161,7 @@ const headDefaults: z.input<ReturnType<typeof HeadConfigSchema>> = [
   },
   { tag: 'meta', attrs: { name: 'twitter:title', content: data.title } },
   { tag: 'meta', attrs: { name: 'twitter:description', content: description } },
+  { tag: 'meta', attrs: { name: 'twitter:image', content: data.ogImageUrl ? data.ogImageUrl : ogImageUrl } },
 ];
 
 if (description)
