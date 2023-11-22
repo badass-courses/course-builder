@@ -438,6 +438,9 @@ importers:
       astro:
         specifier: ^3.2.3
         version: 3.5.5(@types/node@18.16.0)(typescript@5.2.2)
+      bcp-47:
+        specifier: ^2.1.0
+        version: 2.1.0
       sharp:
         specifier: ^0.32.5
         version: 0.32.6

@@ -12,15 +12,6 @@ export default defineConfig({
       components: {
         Head: './src/components/Head.astro',
       },
-      head: [
-        {
-          tag: 'meta',
-          attrs: {
-            property: 'og:image',
-            content: 'https://docs.coursebuilder.dev/badass.svg',
-          },
-        },
-      ],
       logo: {
         src: './src/assets/badass.svg',
         replacesTitle: true,
