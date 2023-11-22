@@ -9,6 +9,9 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Course Builder',
+      components: {
+        Head: './src/components/Head.astro',
+      },
       head: [
         {
           tag: 'meta',
