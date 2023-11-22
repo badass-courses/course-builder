@@ -9,6 +9,23 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Course Builder',
+      head: [
+        // <meta name="twitter:card" content="summary_large_image" />
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'twitter:card',
+            content: 'summary',
+          },
+        },
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'og:image',
+            content: 'https://docs.coursebuilder.dev/badass.svg',
+          },
+        },
+      ],
       logo: {
         src: './src/assets/badass.svg',
         replacesTitle: true,
