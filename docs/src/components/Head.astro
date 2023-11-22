@@ -152,6 +152,7 @@ const headDefaults: z.input<ReturnType<typeof HeadConfigSchema>> = [
   { tag: 'meta', attrs: { property: 'og:description', content: description } },
   { tag: 'meta', attrs: { property: 'og:site_name', content: config.title } },
   { tag: 'meta', attrs: { property: 'og:image', content: data.ogImageUrl ? data.ogImageUrl : ogImageUrl } },
+
   // Twitter Tags
   {
     tag: 'meta',
