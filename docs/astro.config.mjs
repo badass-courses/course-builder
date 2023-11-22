@@ -10,14 +10,6 @@ export default defineConfig({
     starlight({
       title: 'Course Builder',
       head: [
-        // <meta name="twitter:card" content="summary_large_image" />
-        {
-          tag: 'meta',
-          attrs: {
-            property: 'twitter:card',
-            content: 'summary',
-          },
-        },
         {
           tag: 'meta',
           attrs: {
