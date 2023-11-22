@@ -6,6 +6,7 @@ import slack from './schemas/actions/slack'
 import filter from './schemas/actions/filter'
 import videoResource from './schemas/documents/videoResource'
 import authorType from './schemas/documents/author'
+import postType from './schemas/documents/post'
 import settingsType from './schemas/settings'
 import prompt from './schemas/actions/prompt'
 import concept from './schemas/documents/concept'
@@ -24,6 +25,7 @@ export const schema: {types: SchemaTypeDefinition[]} = {
     workflow,
     videoResource,
     authorType,
+    postType,
     settingsType,
     concept,
     exercise,
