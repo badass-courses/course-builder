@@ -7,6 +7,7 @@ description: Good Stuff
 
 Heres's a behind-the-scenes look at how we create courses at [Badass Courses](https://badass.dev). You see, it's not
 just about having a great idea or being an expert on a topic. It's about a repeatable process we've honed over time. We call it, quite simply, "The
+
 Process" (creative, I know!).
 
 So, what's this all about? It's our four-step playbook that keeps our team
