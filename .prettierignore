@@ -1,4 +1,5 @@
 **/*.mdx
+**/*.md
 
 node_modules
 .pnp
