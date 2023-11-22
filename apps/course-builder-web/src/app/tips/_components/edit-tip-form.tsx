@@ -4,7 +4,6 @@ import * as React from 'react'
 import {Button} from '@/components/ui/button'
 import {
   Form,
-  FormControl,
   FormDescription,
   FormField,
   FormItem,
@@ -53,10 +52,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                 A title should summarize the tip and explain what it is about
                 clearly.
               </FormDescription>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-
+              <Input {...field} />
               <FormMessage />
             </FormItem>
           )}

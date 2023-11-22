@@ -3,23 +3,12 @@ import {VIDEO_UPLOADED_EVENT} from '@/inngest/events/video-uploaded'
 import {sanityMutation, sanityQuery} from '@/server/sanity.server'
 import {env} from '@/env.mjs'
 import {getMuxOptions} from '@/lib/get-mux-options'
-import {v4} from 'uuid'
 import {orderDeepgramTranscript} from '@/lib/deepgram-order-transcript'
 
 export const videoUploaded = inngest.createFunction(
   {id: `video-uploaded`, name: 'Video Uploaded'},
   {event: VIDEO_UPLOADED_EVENT},
   async ({event, step}) => {
-    let sanityModule: any = null
-
-    if (event.data.moduleSlug) {
-      sanityModule = await step.run('get the module from Sanity', async () => {
-        return await sanityQuery(
-          `*[_type == "module" && slug.current == "${event.data.moduleSlug}"][0]`,
-        )
-      })
-    }
-
     const muxAsset = await step.run('create the mux asset', async () => {
       const baseUrl = 'https://api.mux.com'
 
@@ -68,25 +57,6 @@ export const videoUploaded = inngest.createFunction(
         )
       },
     )
-
-    if (sanityModule) {
-      await step.run('update the module in Sanity', async () => {
-        return await sanityMutation([
-          {
-            patch: {
-              id: sanityModule._id,
-              setIfMissing: {resources: []},
-              insert: {
-                after: 'resources[-1]',
-                items: [
-                  {_key: v4(), _ref: videoResource._id, _type: 'reference'},
-                ],
-              },
-            },
-          },
-        ])
-      })
-    }
 
     await step.run('announce video resource created', async () => {
       await fetch(

@@ -11,7 +11,7 @@ import {extractRouterConfig} from 'uploadthing/server'
 import {ourFileRouter} from '@/app/api/uploadthing/core'
 import Navigation from '@/components/navigation'
 import {Providers} from '@/app/_components/providers'
-import {Party} from '@/app/tips/_components/party'
+import {Party} from '@/app/_components/party'
 import * as React from 'react'
 
 const inter = Inter({

@@ -2,10 +2,9 @@ import {inngest} from '@/inngest/inngest.server'
 import {
   AI_TIP_WRITING_REQUESTED_EVENT,
   AI_WRITING_COMPLETED_EVENT,
-  AI_WRITING_REQUESTED_EVENT,
 } from '@/inngest/events'
 import {type ChatCompletionRequestMessage} from 'openai-edge'
-import {sanityMutation, sanityQuery} from '@/server/sanity.server'
+import {sanityQuery} from '@/server/sanity.server'
 import {last} from 'lodash'
 import {env} from '@/env.mjs'
 import {promptActionExecutor} from '@/lib/prompt.action-executor'
@@ -59,7 +58,7 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
                 }\n\n ## Examples of Good Video Titles\n\n* ${titles.join(
                   '\n * ',
                 )}`,
-                summary: tip.summary,
+                summary: tip.title,
               },
               requestId: videoResource._id,
               messages,
@@ -72,20 +71,6 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
     }
 
     const finalMessage = JSON.parse(last(messages)?.content || '{}')
-
-    await step.run('Update Tip', async () => {
-      await sanityMutation([
-        {
-          patch: {
-            id: tip._id,
-            set: {
-              title: finalMessage.title,
-              body: finalMessage.content,
-            },
-          },
-        },
-      ])
-    })
 
     await step.sendEvent('Announce Completion', {
       name: AI_WRITING_COMPLETED_EVENT,

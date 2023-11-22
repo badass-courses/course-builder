@@ -5,6 +5,7 @@ import {getTip} from '@/lib/tips'
 import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card'
 import {EditTipForm} from '../../_components/edit-tip-form'
 import {TipPlayer} from '@/app/tips/_components/tip-player'
+import {SuggestionResults} from '@/app/tips/[slug]/edit/suggestion-results'
 
 export default async function TipEditPage({params}: {params: {slug: string}}) {
   const session = await getServerAuthSession()
@@ -34,6 +35,7 @@ export default async function TipEditPage({params}: {params: {slug: string}}) {
         </CardHeader>
         <CardContent>
           <EditTipForm key={tip.slug} tip={tip} />
+          <SuggestionResults videoResourceId={tip.videoResourceId} />
         </CardContent>
         <CardFooter></CardFooter>
       </Card>

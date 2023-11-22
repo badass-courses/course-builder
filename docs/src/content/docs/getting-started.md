@@ -1,12 +1,16 @@
 ---
-title: Getting Started
+title: ⭐ Getting Started
 description: This will help you create a new Course Builder project.
+sidebar: 
+  order: 0 
 ---
 
 Course Builder is a Turborepo project that includes the website, this docs site you are reading right now, and the
 various libraries and packages that represent the Course Builder platform.
 
-:::note This guide is a work in progress. It will be updated as the project evolves. :::
+:::note 
+This guide is a work in progress. It will be updated as the project evolves. 
+:::
 
 It's non-trivial and these guides are going to make several assumptions:
 
@@ -79,7 +83,9 @@ cp .env.example .env
 
 They are all required.
 
-:::note There are 3 (THREE!) different entries for the URL of the project in the environment:
+:::note 
+There are 3 (THREE!) different entries for the URL of the project in the environment
+:::
 
 ```dotenv
 NEXTAUTH_URL="YOUR_TUNNEL.ngrok-free.app/"

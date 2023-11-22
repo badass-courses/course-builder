@@ -2,7 +2,6 @@ import {getUniqueFilename} from '@/lib/get-unique-filename'
 import {UploadDropzone} from '@/utils/uploadthing'
 import * as React from 'react'
 import {api} from '@/trpc/react'
-import {Dispatch, SetStateAction} from 'react'
 
 export function TipUploader({
   setVideoResourceId,

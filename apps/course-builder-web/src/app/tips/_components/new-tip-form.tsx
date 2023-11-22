@@ -38,7 +38,6 @@ export function NewTipForm() {
   const utils = api.useUtils()
   const {mutateAsync: createTip} = api.tips.create.useMutation({
     onSuccess: async (data) => {
-      console.log('onSuccess', {data})
       form.reset()
       setVideoResourceId('')
       form.setValue('videoResourceId', '')
