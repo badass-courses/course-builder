@@ -20,7 +20,8 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "check": "turbo lint typecheck format:check && manypkg check"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,cjs,mjs}": [
