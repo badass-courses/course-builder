@@ -146,7 +146,6 @@
   },
   "prettier": {
     "bracketSpacing": false,
-    "jsxBracketSameLine": false,
     "plugins": [
       "prettier-plugin-tailwindcss"
     ],

@@ -9,5 +9,3 @@
   },
   "include": ["src", "tsup.config.ts", "../reset.d.ts", "prettier.config.mjs", ".eslintrc.cjs"]
 }
-
-
