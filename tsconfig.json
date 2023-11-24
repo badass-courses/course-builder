@@ -1,6 +1,5 @@
 {
-  "include": [
-    "cli/.eslintrc.cjs", "prettier.config.cjs"],
+  "include": ["cli/.eslintrc.cjs", "prettier.config.cjs"],
   "compilerOptions": {
     /* LANGUAGE COMPILATION OPTIONS */
     "target": "ES2020",
