@@ -6,7 +6,7 @@ function fileExtension(
 ): string {
   if (!opts) opts = {}
   if (!filename) return ''
-  var ext = (/[^./\\]*$/.exec(filename) || [''])[0]
+  const ext = (/[^./\\]*$/.exec(filename) || [''])[0]
   return opts.preserveCase ? ext : ext.toLowerCase()
 }
 

@@ -1,10 +1,9 @@
-import type {ChatCompletionRequestMessage} from 'openai-edge'
-import type {JSONSchema4} from 'json-schema'
+import {type ChatCompletionRequestMessage} from 'openai-edge'
+import {type JSONSchema4} from 'json-schema'
 
 /**
- * Functions represents functions which are callable by OpenAI.  These are added in
- * to each LLM call via the `functions` parameter.
- *
+ * Functions represents functions which are callable by OpenAI. These are added in to each LLM call
+ * via the `functions` parameter.
  */
 export type Functions = Record<string, FunctionDefinition>
 
@@ -13,8 +12,8 @@ export type FunctionDefinition = {
 
   docs: APIDocs
   /**
-   * confirm indicates whether this function call requires confirmation from the
-   * user to be executed.
+   * confirm indicates whether this function call requires confirmation from the user to be
+   * executed.
    */
   confirm?: boolean
 }

@@ -17,7 +17,7 @@ import {AI_TIP_WRITING_REQUESTED_EVENT} from '@/inngest/events'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 function toChicagoTitleCase(slug: string): string {
-  const minorWords: Set<string> = new Set([
+  const minorWords = new Set<string>([
     'and',
     'but',
     'for',

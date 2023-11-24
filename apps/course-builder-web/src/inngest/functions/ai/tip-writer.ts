@@ -9,8 +9,8 @@ import {last} from 'lodash'
 import {env} from '@/env.mjs'
 import {promptActionExecutor} from '@/lib/prompt.action-executor'
 import {titles} from '@/inngest/functions/ai/data/titles'
-import {Tip} from '@/lib/tips'
-import {VideoResource} from '@/inngest/functions/transcript-ready'
+import {type Tip} from '@/lib/tips'
+import {type VideoResource} from '@/inngest/functions/transcript-ready'
 
 export const tipTitleAndSummaryWriter = inngest.createFunction(
   {id: `gpt-4-tip-writer`, name: 'GPT-4 Writer'},

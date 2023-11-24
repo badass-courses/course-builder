@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server'
+import {type NextRequest, NextResponse} from 'next/server'
 import {inngest} from '@/inngest/inngest.server'
 import {
   MUX_WEBHOOK_EVENT,

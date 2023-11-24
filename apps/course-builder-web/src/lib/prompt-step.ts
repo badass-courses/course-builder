@@ -1,7 +1,7 @@
-import {ProgressWriter} from '@/types'
+import {type ProgressWriter} from '@/types'
 import {OpenAIStreamingDataPartykitChunkPublisher} from '@/lib/streaming-chunk-publisher'
 import {
-  ChatCompletionRequestMessage,
+  type ChatCompletionRequestMessage,
   Configuration,
   OpenAIApi,
 } from 'openai-edge'

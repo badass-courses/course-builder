@@ -1,13 +1,13 @@
 import {OpenAIStream, StreamingTextResponse} from 'ai'
-import type {AIMessage, AIOutput} from '@/types'
+import {type AIMessage, type AIOutput} from '@/types'
 import {env} from '@/env.mjs'
 
 export const STREAM_COMPLETE = `\\ok`
 
 /**
- * This is a streaming chunk publisher that will publish a message to the partykit server
- * as a series of websocket messages that can be handled anywhere in the system to perform
- * additional work.
+ * This is a streaming chunk publisher that will publish a message to the partykit server as a
+ * series of websocket messages that can be handled anywhere in the system to perform additional
+ * work.
  */
 export class OpenAIStreamingDataPartykitChunkPublisher {
   requestId: string
@@ -81,8 +81,8 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
 }
 
 /**
- * 🥳 Publish a message to the party. Sends a POST request to the partykit server.
- * The server then broadcasts it to all connected clients.
+ * 🥳 Publish a message to the party. Sends a POST request to the partykit server. The server then
+ * broadcasts it to all connected clients.
  *
  * @param body
  * @param requestId

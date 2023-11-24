@@ -29,7 +29,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Build & test
-        run: pnpm turbo build test --filter "./packages/*"
+        run: pnpm turbo build test --filter "./packages/*" --filter "create-course-app"
 
   lint:
     runs-on: ubuntu-latest
@@ -70,3 +70,54 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+  check-changeset:
+    runs-on: ubuntu-latest
+    name: Check Changeset
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install root dependencies
+        run: pnpm --filter root install
+
+      - name: Check and Validate Changes in /cli
+        run: |
+          git fetch origin main:main
+          changes=$(git diff --name-only main...${{ github.sha }} | grep '^cli/' || true)
+          if [[ -n "$changes" ]]; then
+            echo "Changes detected in /cli: $changes"
+            pnpm changeset status --since origin/main
+            exit_status=$?
+            if [[ $exit_status -eq 0 ]]; then
+              echo "Changeset validation succeeded."
+            else
+              echo "Changeset validation failed."
+            fi
+          else
+            echo "No changes detected in /cli"
+          fi

@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server'
+import {type NextRequest, type NextResponse} from 'next/server'
 import {inngest} from '@/inngest/inngest.server'
 import {
   srtFromTranscriptResult,

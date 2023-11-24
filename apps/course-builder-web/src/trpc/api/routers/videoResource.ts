@@ -1,7 +1,7 @@
 import {z} from 'zod'
 import {createTRPCRouter, publicProcedure} from '@/trpc/api/trpc'
 import {sanityQuery} from '@/server/sanity.server'
-import {VideoResource} from '@/inngest/functions/transcript-ready'
+import {type VideoResource} from '@/inngest/functions/transcript-ready'
 
 export const videoResourceRouter = createTRPCRouter({
   getById: publicProcedure

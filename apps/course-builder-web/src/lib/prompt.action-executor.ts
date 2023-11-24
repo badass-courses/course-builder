@@ -1,8 +1,8 @@
 import {last} from 'lodash'
 import {promptStep} from '@/lib/prompt-step'
-import type {
-  ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
+import {
+  type ChatCompletionRequestMessage,
+  type ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 import {Liquid} from 'liquidjs'
 
