@@ -37,10 +37,10 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
               <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-row gap-4 p-4 md:gap-8 md:p-10">
                 <NextSSRPlugin
                   /**
-                   * The `extractRouterConfig` will extract **only** the route configs
-                   * from the router to prevent additional information from being
-                   * leaked to the client. The data passed to the client is the same
-                   * as if you were to fetch `/api/uploadthing` directly.
+                   * The `extractRouterConfig` will extract **only** the route configs from the
+                   * router to prevent additional information from being leaked to the client. The
+                   * data passed to the client is the same as if you were to fetch
+                   * `/api/uploadthing` directly.
                    */
                   routerConfig={extractRouterConfig(ourFileRouter)}
                 />

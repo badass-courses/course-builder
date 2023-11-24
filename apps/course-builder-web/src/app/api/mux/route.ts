@@ -1,4 +1,4 @@
-import {NextRequest} from 'next/server'
+import {type NextRequest} from 'next/server'
 import {getMuxOptions, muxRequestHeaders} from '@/lib/get-mux-options'
 import {env} from '@/env.mjs'
 

@@ -1,6 +1,9 @@
 '📚 documentation':
   - any: ['docs/**', '!docs/**/package.json']
 
+'🌀 cli':
+  - any: ['cli/**', '!cli/**/package.json']
+
 'apps':
   - any: ['apps/**', '!apps/**/package.json']
 

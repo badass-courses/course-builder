@@ -51,7 +51,7 @@ export const transcriptReady = inngest.createFunction(
       await step.sendEvent('announce that srt is ready', {
         name: MUX_SRT_READY_EVENT,
         data: {
-          videoResourceId: videoResource._id as string,
+          videoResourceId: videoResource._id,
           moduleSlug: event.data.moduleSlug,
           srt: event.data.srt,
         },

@@ -6,7 +6,7 @@ import {cx} from 'class-variance-authority'
 import {User} from '@/components/navigation/user'
 import {
   AnimatePresence,
-  AnimationControls,
+  type AnimationControls,
   motion,
   useAnimationControls,
 } from 'framer-motion'

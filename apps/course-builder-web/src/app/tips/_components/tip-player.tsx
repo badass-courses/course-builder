@@ -1,6 +1,6 @@
 'use client'
 
-import MuxPlayer, {MuxPlayerProps} from '@mux/mux-player-react'
+import MuxPlayer, {type MuxPlayerProps} from '@mux/mux-player-react'
 import * as React from 'react'
 import {api} from '@/trpc/react'
 

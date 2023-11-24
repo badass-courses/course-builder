@@ -1,4 +1,4 @@
-import {srtProcessor, Word} from '@/lib/srt-processor'
+import {srtProcessor, type Word} from '@/lib/srt-processor'
 
 export function srtFromTranscriptResult(results: {
   channels: {alternatives: {words: Word[]}[]}[]
@@ -19,7 +19,7 @@ function convertTime(inputSeconds?: number) {
 }
 
 function formatTimeString(str: string) {
-  let [h, m, s] = str.split(':')
+  const [h, m, s] = str.split(':')
   if (h == '00') {
     return `${m}:${s}`
   }

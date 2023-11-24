@@ -24,17 +24,17 @@ export function srtProcessor(words?: Word[]) {
     return ''
   }
 
-  let timeLimitInSeconds = 5.5
-  let charLimit = 42
+  const timeLimitInSeconds = 5.5
+  const charLimit = 42
   let currentTimeInSeconds = 0
   let currentCharCount = 0
-  let arrayByTimes: Word[][] = []
+  const arrayByTimes: Word[][] = []
   let tempArray: Word[] = []
 
   words.forEach((item, index) => {
-    let timeExceeded =
+    const timeExceeded =
       currentTimeInSeconds + (item.end - item.start) >= timeLimitInSeconds
-    let charCountExceeded =
+    const charCountExceeded =
       currentCharCount + item.punctuated_word.length > charLimit
 
     if (timeExceeded || charCountExceeded || index === words.length - 1) {
@@ -57,10 +57,10 @@ export function srtProcessor(words?: Word[]) {
     }
   })
 
-  let srtEntries = arrayByTimes.map((timeBlock, index) => {
-    let startTime = convertTime(timeBlock[0]?.start)
-    let endTime = convertTime(timeBlock[timeBlock.length - 1]?.end)
-    let text = timeBlock.map((x) => x.punctuated_word).join(' ')
+  const srtEntries = arrayByTimes.map((timeBlock, index) => {
+    const startTime = convertTime(timeBlock[0]?.start)
+    const endTime = convertTime(timeBlock[timeBlock.length - 1]?.end)
+    const text = timeBlock.map((x) => x.punctuated_word).join(' ')
     return `${index + 1}
 ${startTime} --> ${endTime}
 ${text}

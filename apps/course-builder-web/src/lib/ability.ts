@@ -1,8 +1,8 @@
 import {
   AbilityBuilder,
-  CreateAbility,
+  type CreateAbility,
   createMongoAbility,
-  MongoAbility,
+  type MongoAbility,
 } from '@casl/ability'
 import z from 'zod'
 import {Tip} from '@/lib/tips'
@@ -51,8 +51,8 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 }
 
 /**
- * "compiled" ability generated from a bag of options passed in
- * where the options determine what `can` be performed as an ability
+ * "compiled" ability generated from a bag of options passed in where the options determine what
+ * `can` be performed as an ability
  *
  * any asynchronous logic should be handled in the construction of the options
  *

@@ -1,34 +1,37 @@
 import {EventSchemas, Inngest} from 'inngest'
 import {
-  AI_TIP_WRITING_REQUESTED_EVENT,
-  AI_WRITING_COMPLETED_EVENT,
-  AI_WRITING_REQUESTED_EVENT,
-  AITipWritingRequested,
-  AIWritingRequestCompleted,
-  AIWritingRequested,
-  USER_CREATED_EVENT,
-  UserCreated,
+  type AI_TIP_WRITING_REQUESTED_EVENT,
+  type AI_WRITING_COMPLETED_EVENT,
+  type AI_WRITING_REQUESTED_EVENT,
+  type AITipWritingRequested,
+  type AIWritingRequestCompleted,
+  type AIWritingRequested,
+  type USER_CREATED_EVENT,
+  type UserCreated,
 } from '@/inngest/events'
-import {MUX_WEBHOOK_EVENT, MuxWebhook} from '@/inngest/events/mux-webhook'
 import {
-  DEEPGRAM_WEBHOOK_EVENT,
-  DeepgramWebhook,
+  type MUX_WEBHOOK_EVENT,
+  type MuxWebhook,
+} from '@/inngest/events/mux-webhook'
+import {
+  type DEEPGRAM_WEBHOOK_EVENT,
+  type DeepgramWebhook,
 } from '@/inngest/events/deepgram-webhook'
 import {
-  TRANSCRIPT_READY_EVENT,
-  TranscriptReady,
+  type TRANSCRIPT_READY_EVENT,
+  type TranscriptReady,
 } from '@/inngest/events/transcript-requested'
 import {
-  VIDEO_UPLOADED_EVENT,
-  VideoUploaded,
+  type VIDEO_UPLOADED_EVENT,
+  type VideoUploaded,
 } from '@/inngest/events/video-uploaded'
 import {
-  POST_CREATION_REQUESTED_EVENT,
-  PostCreationRequested,
+  type POST_CREATION_REQUESTED_EVENT,
+  type PostCreationRequested,
 } from '@/inngest/events/sanity-post'
 import {
-  MUX_SRT_READY_EVENT,
-  MuxSrtReady,
+  type MUX_SRT_READY_EVENT,
+  type MuxSrtReady,
 } from '@/inngest/events/mux-add-srt-to-asset'
 
 // Create a client to send and receive events

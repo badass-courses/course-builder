@@ -1,4 +1,4 @@
-import {NextRequest} from 'next/server'
+import {type NextRequest} from 'next/server'
 import {sanityQuery} from '@/server/sanity.server'
 
 export async function GET(
