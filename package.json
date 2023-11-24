@@ -21,7 +21,7 @@
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck",
     "prepare": "husky install",
-    "check": "turbo lint typecheck format:check && manypkg check"
+    "check": "turbo lint typecheck && pnpm format:check && manypkg check"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,cjs,mjs}": [
