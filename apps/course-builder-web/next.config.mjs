@@ -20,7 +20,7 @@ const withMDX = createMDX({
 /** @type {import("next").NextConfig} */
 const config = {
   pageExtensions: ['mdx', 'ts', 'tsx'],
-  transpilePackages: ['@coursebuilder/ui'],
+  transpilePackages: ['@coursebuilder/ui', '@coursebuilder/next'],
   // @ts-expect-error
   async redirects() {
     return [
