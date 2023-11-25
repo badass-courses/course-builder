@@ -5,7 +5,7 @@ import { PKG_ROOT } from '~/consts.js'
 import { type Installer } from '~/installers/index.js'
 import { addPackageDependency } from '~/utils/addPackageDependency.js'
 
-export const trpcInstaller: Installer = ({ projectDir, packages, appRouter }) => {
+export const trpcInstaller: Installer = ({ projectDir, packages }) => {
   addPackageDependency({
     projectDir,
     dependencies: [
@@ -26,16 +26,14 @@ export const trpcInstaller: Installer = ({ projectDir, packages, appRouter }) =>
 
   const extrasDir = path.join(PKG_ROOT, 'template/extras')
 
-  const apiHandlerFile = 'src/pages/api/trpc/[trpc].ts'
   const routeHandlerFile = 'src/app/api/trpc/[trpc]/route.ts'
-  const srcToUse = appRouter ? routeHandlerFile : apiHandlerFile
 
-  const apiHandlerSrc = path.join(extrasDir, srcToUse)
-  const apiHandlerDest = path.join(projectDir, srcToUse)
+  const apiHandlerSrc = path.join(extrasDir, routeHandlerFile)
+  const apiHandlerDest = path.join(projectDir, routeHandlerFile)
 
   const trpcFile =
     usingAuth && usingDb ? 'with-auth-db.ts' : usingAuth ? 'with-auth.ts' : usingDb ? 'with-db.ts' : 'base.ts'
-  const trpcSrc = path.join(extrasDir, 'src/server/api', appRouter ? 'trpc-app' : 'trpc-pages', trpcFile)
+  const trpcSrc = path.join(extrasDir, 'src/server/api', 'trpc-app', trpcFile)
   const trpcDest = path.join(projectDir, 'src/server/api/trpc.ts')
 
   const rootRouterSrc = path.join(extrasDir, 'src/server/api/root.ts')
@@ -64,32 +62,22 @@ export const trpcInstaller: Installer = ({ projectDir, packages, appRouter }) =>
     [exampleRouterSrc, exampleRouterDest],
   ]
 
-  if (appRouter) {
-    addPackageDependency({
-      dependencies: ['server-only'],
-      devMode: false,
-      projectDir,
-    })
+  addPackageDependency({
+    dependencies: ['server-only'],
+    devMode: false,
+    projectDir,
+  })
 
-    const trpcDir = path.join(extrasDir, 'src/trpc')
-    copySrcDest.push(
-      [path.join(trpcDir, 'server.ts'), path.join(projectDir, 'src/trpc/server.ts')],
-      [path.join(trpcDir, 'react.tsx'), path.join(projectDir, 'src/trpc/react.tsx')],
-      [path.join(trpcDir, 'shared.ts'), path.join(projectDir, 'src/trpc/shared.ts')],
-      [
-        path.join(
-          extrasDir,
-          'src/app/_components',
-          packages?.tailwind.inUse ? 'create-post-tw.tsx' : 'create-post.tsx'
-        ),
-        path.join(projectDir, 'src/app/_components/create-post.tsx'),
-      ]
-    )
-  } else {
-    const utilsSrc = path.join(extrasDir, 'src/utils/api.ts')
-    const utilsDest = path.join(projectDir, 'src/utils/api.ts')
-    copySrcDest.push([utilsSrc, utilsDest])
-  }
+  const trpcDir = path.join(extrasDir, 'src/trpc')
+  copySrcDest.push(
+    [path.join(trpcDir, 'server.ts'), path.join(projectDir, 'src/trpc/server.ts')],
+    [path.join(trpcDir, 'react.tsx'), path.join(projectDir, 'src/trpc/react.tsx')],
+    [path.join(trpcDir, 'shared.ts'), path.join(projectDir, 'src/trpc/shared.ts')],
+    [
+      path.join(extrasDir, 'src/app/_components', packages?.tailwind.inUse ? 'create-post-tw.tsx' : 'create-post.tsx'),
+      path.join(projectDir, 'src/app/_components/create-post.tsx'),
+    ]
+  )
 
   copySrcDest.forEach(([src, dest]) => {
     fs.copySync(src, dest)
