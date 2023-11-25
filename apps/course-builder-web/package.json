@@ -21,7 +21,7 @@
     "@aws-sdk/client-s3": "^3.441.0",
     "@aws-sdk/s3-request-presigner": "^3.441.0",
     "@casl/ability": "^6.5.0",
-    "@coursebuilder/ui": "^1.0.0",
+    "@coursebuilder/ui": "^1.0.1",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.2",
     "@mdx-js/loader": "^3.0.0",
