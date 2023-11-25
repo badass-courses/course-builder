@@ -1,5 +1,17 @@
 # Changelog
 
+## 7.24.2
+
+### Patch Changes
+
+- [#19](https://github.com/joelhooks/course-builder/pull/19)
+  [`d999dec`](https://github.com/joelhooks/course-builder/commit/d999dec51210fe68e79bca5d3a5de8c345a3f3fa) Thanks
+  [@joelhooks](https://github.com/joelhooks)! - nextjs version bump
+
+- [#17](https://github.com/joelhooks/course-builder/pull/17)
+  [`6b9ff1d`](https://github.com/joelhooks/course-builder/commit/6b9ff1dee9c4e4a63d7513a0adc2df4626296be8) Thanks
+  [@joelhooks](https://github.com/joelhooks)! - Removes the option to use the pages router.
+
 ## 7.24.1
 
 ### Patch Changes
