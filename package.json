@@ -23,6 +23,7 @@
     "typecheck": "turbo run typecheck",
     "prepare": "husky install",
     "check:cli": "turbo lint typecheck --filter \"create-course-app\" && pnpm format:check && manypkg check",
+    "release": "changeset version",
     "pub:beta": "cd cli && pnpm pub:beta",
     "pub:release": "cd cli && pnpm pub:release"
   },
