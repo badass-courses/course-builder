@@ -13,6 +13,7 @@ env:
 jobs:
   release:
     name: Release
+    if: ${{ github.repository_owner == 'joelhooks' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,6 +28,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: "pnpm"
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -46,6 +48,12 @@ jobs:
 
       - name: Check packages for common errors
         run: pnpm turbo --filter "./packages/*" build lint test typecheck
+
+      - name: Check CLI for errors
+        run: pnpm check:cli
+
+      - name: Build the CLI package
+        run: pnpm build:cli
 
       # Using custom token `MY_GITHUB_TOKEN` with more access to avoid rate limiting
       - name: Create Release

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build:all": "turbo run build",
+    "build:cli": "turbo --filter=\"create-course-app\" build",
     "build": "turbo run build --filter \"./packages/*\" --filter \"create-course-app\"",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev:all": "turbo run dev",
@@ -21,7 +22,9 @@
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck",
     "prepare": "husky install",
-    "check": "turbo lint typecheck && pnpm format:check && manypkg check"
+    "check:cli": "turbo lint typecheck --filter \"create-course-app\" && pnpm format:check && manypkg check",
+    "pub:beta": "cd cli && pnpm pub:beta",
+    "pub:release": "cd cli && pnpm pub:release"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,cjs,mjs}": [
