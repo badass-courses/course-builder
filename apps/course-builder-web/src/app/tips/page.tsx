@@ -1,16 +1,9 @@
-import {CardTitle, CardHeader, CardContent, Card} from '@/components/ui/card'
+import {CardTitle, CardHeader, CardContent, Card} from '@coursebuilder/ui'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
 import {CreateTip} from '@/app/tips/_components/create-tip'
 import {getTipsModule} from '@/lib/tips'
 import * as React from 'react'
-import {TipPlayer} from '@/app/tips/_components/tip-player'
-import {Button} from '@/components/ui/button'
-import {inngest} from '@/inngest/inngest.server'
-import {AI_TIP_WRITING_REQUESTED_EVENT} from '@/inngest/events'
-import {Textarea} from '@/components/ui/textarea'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
 import Link from 'next/link'
 
 export default async function TipsListPage() {

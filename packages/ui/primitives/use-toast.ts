@@ -1,7 +1,7 @@
 // Inspired by react-hot-toast library
 import * as React from 'react'
 
-import {type ToastActionElement, type ToastProps} from '@/components/ui/toast'
+import { type ToastActionElement, type ToastProps } from './toast'
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -80,13 +80,11 @@ export const reducer = (state: State, action: Action): State => {
     case 'UPDATE_TOAST':
       return {
         ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? {...t, ...action.toast} : t,
-        ),
+        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } : t)),
       }
 
     case 'DISMISS_TOAST': {
-      const {toastId} = action
+      const { toastId } = action
 
       // ! Side effects ! - This could be extracted into a dismissToast() action,
       // but I'll keep it here for simplicity
@@ -126,7 +124,7 @@ export const reducer = (state: State, action: Action): State => {
 
 const listeners: ((state: State) => void)[] = []
 
-let memoryState: State = {toasts: []}
+let memoryState: State = { toasts: [] }
 
 function dispatch(action: Action) {
   memoryState = reducer(memoryState, action)
@@ -137,15 +135,15 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, 'id'>
 
-function toast({...props}: Toast) {
+function toast({ ...props }: Toast) {
   const id = genId()
 
   const update = (props: ToasterToast) =>
     dispatch({
       type: 'UPDATE_TOAST',
-      toast: {...props, id},
+      toast: { ...props, id },
     })
-  const dismiss = () => dispatch({type: 'DISMISS_TOAST', toastId: id})
+  const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id })
 
   dispatch({
     type: 'ADD_TOAST',
@@ -182,8 +180,8 @@ function useToast() {
   return {
     ...state,
     toast,
-    dismiss: (toastId?: string) => dispatch({type: 'DISMISS_TOAST', toastId}),
+    dismiss: (toastId?: string) => dispatch({ type: 'DISMISS_TOAST', toastId }),
   }
 }
 
-export {useToast, toast}
+export { useToast, toast }

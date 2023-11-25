@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
+import {Button} from '@coursebuilder/ui'
 import {api} from '@/trpc/react'
 import {ChatResponse} from '@/app/_components/chat-response'
 import MuxPlayer from '@mux/mux-player-react'

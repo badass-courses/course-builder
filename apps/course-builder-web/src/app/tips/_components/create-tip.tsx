@@ -1,4 +1,4 @@
-import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card'
+import {Card, CardContent, CardFooter, CardHeader} from '@coursebuilder/ui'
 import {NewTipForm} from './new-tip-form'
 
 export function CreateTip() {

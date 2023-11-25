@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import {CardTitle, CardHeader, CardContent, Card} from '@/components/ui/card'
+import {CardTitle, CardHeader, CardContent, Card} from '@coursebuilder/ui'
 import {TipPlayer} from '@/app/tips/_components/tip-player'
 import * as React from 'react'
 import {getServerAuthSession} from '@/server/auth'

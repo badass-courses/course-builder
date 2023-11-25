@@ -10,8 +10,8 @@ import {
   CardContent,
   Card,
   CardFooter,
-} from '@/components/ui/card'
-import {Button} from '@/components/ui/button'
+} from '@coursebuilder/ui'
+import {Button} from '@coursebuilder/ui'
 
 export default function Component() {
   return (

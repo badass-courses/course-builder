@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
+} from '@coursebuilder/ui'
 import {signOut, useSession} from 'next-auth/react'
 import {ChevronDownIcon} from 'lucide-react'
 import Gravatar from 'react-gravatar'

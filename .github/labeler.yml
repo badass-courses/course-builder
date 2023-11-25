@@ -7,4 +7,7 @@
 'apps':
   - any: ['apps/**', '!apps/**/package.json']
 
+'@coursebuilder/ui':
+  - any: [ 'packages/ui/**', '!packages/ui/package.json' ]
+
 

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {Button} from '@/components/ui/button'
+import {Button} from '@coursebuilder/ui'
 import {
   Form,
   FormDescription,
@@ -9,11 +9,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@coursebuilder/ui'
 import {useForm} from 'react-hook-form'
 import {z} from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {Input} from '@/components/ui/input'
+import {Input} from '@coursebuilder/ui'
 import {api} from '@/trpc/react'
 import {useRouter} from 'next/navigation'
 import {type Tip} from '@/lib/tips'
