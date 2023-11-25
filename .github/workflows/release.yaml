@@ -76,3 +76,4 @@ jobs:
           git add .
           git commit -m "chore(release): 📦 sync lockfile"
           git push origin changeset-release/main
+          echo "done"
