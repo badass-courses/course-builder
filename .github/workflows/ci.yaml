@@ -4,13 +4,15 @@ name: CI
 # @link https://turborepo.org/docs/core-concepts/remote-caching#remote-caching-on-vercel-builds
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TEAM: ${{ env.TURBO_TEAM }}
 
 on:
   push:
     branches:
       - main
   pull_request:
+    branches: ["*"]
+  merge_group:
 
 
 concurrency:
@@ -107,7 +109,7 @@ jobs:
 
       - name: Check and Validate Changes in /cli
         run: |
-          git fetch origin main:main
+          git fetch origin main:main --update-head-ok
           changes=$(git diff --name-only main...${{ github.sha }} | grep '^cli/' || true)
           if [[ -n "$changes" ]]; then
             echo "Changes detected in /cli: $changes"
