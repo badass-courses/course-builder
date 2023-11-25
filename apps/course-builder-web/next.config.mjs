@@ -19,9 +19,6 @@ const withMDX = createMDX({
 
 /** @type {import("next").NextConfig} */
 const config = {
-  experimental: {
-    serverActions: true,
-  },
   pageExtensions: ['mdx', 'ts', 'tsx'],
   // @ts-expect-error
   async redirects() {
