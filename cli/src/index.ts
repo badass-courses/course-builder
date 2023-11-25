@@ -33,7 +33,7 @@ const main = async () => {
   const {
     appName,
     packages,
-    flags: { noGit, noInstall, importAlias, appRouter },
+    flags: { noGit, noInstall, importAlias },
   } = await runCli()
 
   const usePackages = buildPkgInstallerMap(packages)
@@ -47,7 +47,6 @@ const main = async () => {
     packages: usePackages,
     importAlias,
     noInstall,
-    appRouter,
   })
 
   // Write name to package.json
@@ -86,7 +85,6 @@ const main = async () => {
   await logNextSteps({
     projectName: appDir,
     packages: usePackages,
-    appRouter,
     noInstall,
     projectDir,
   })
