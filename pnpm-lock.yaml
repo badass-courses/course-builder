@@ -99,7 +99,7 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0
       '@coursebuilder/ui':
-        specifier: ^1.0.0
+        specifier: ^1.0.1
         version: link:../../packages/ui
       '@heroicons/react':
         specifier: ^2.0.18
