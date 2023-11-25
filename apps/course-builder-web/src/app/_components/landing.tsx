@@ -1,7 +1,7 @@
 'use client'
 
 import LandingCopy from './landing-copy.mdx'
-import {Button} from '@/components/ui/button'
+import {Button} from '@coursebuilder/ui'
 import {signIn, useSession} from 'next-auth/react'
 import {Icon} from '@/components/icons'
 

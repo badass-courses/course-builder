@@ -1,7 +1,7 @@
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
 import {redirect} from 'next/navigation'
-import {Separator} from '@/components/ui/separator'
+import {Separator} from '@coursebuilder/ui'
 import VideoUploader from '@/components/video-uploader'
 import * as React from 'react'
 import {sanityQuery} from '@/server/sanity.server'
