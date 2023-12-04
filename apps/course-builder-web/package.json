@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "concurrently \"npm:dev:*\"",
     "dev:next": "next dev",
-    "dev:inngest": "npx inngest-cli@latest dev",
-    "dev:party": "npx partykit dev",
+    "dev:inngest": "pnpx inngest-cli@latest dev",
+    "dev:party": "pnpx partykit dev",
     "tunnel": "ngrok http --domain=neatly-diverse-goldfish.ngrok-free.app 3000",
     "email:preview": "email dev --dir ./src/emails",
     "build": "next build",

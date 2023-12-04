@@ -32,5 +32,5 @@ export async function sendAnEmail<ComponentPropsType = any>({
       'X-Postmark-Server-Token': env.POSTMARK_API_KEY,
     },
     body: JSON.stringify(options),
-  })
+  }).then((res) => res.json())
 }

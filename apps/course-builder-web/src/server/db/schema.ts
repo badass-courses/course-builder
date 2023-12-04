@@ -30,6 +30,10 @@ export const users = mysqlTable('user', {
     fsp: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
   image: varchar('image', {length: 255}),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    fsp: 3,
+  }).default(sql`CURRENT_TIMESTAMP(3)`),
 })
 
 export const usersRelations = relations(users, ({many}) => ({

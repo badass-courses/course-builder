@@ -37,13 +37,13 @@ export default defineType({
   ],
   preview: {
     select: {
-      title: 'title',
+      subject: 'subject',
       author: 'author.name',
     },
-    prepare({title, author}) {
+    prepare({subject, author}) {
       const subtitles = [author && `by ${author}`].filter(Boolean)
 
-      return {title, subtitle: subtitles.join(' ')}
+      return {title: subject, subtitle: subtitles.join(' ')}
     },
   },
 })
