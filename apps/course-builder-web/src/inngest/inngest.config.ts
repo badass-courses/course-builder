@@ -9,6 +9,7 @@ import {videoUploaded} from '@/inngest/functions/video-uploaded'
 import {addSrtToMuxAsset} from '@/inngest/functions/mux/add-srt-to-mux-asset'
 import {tipTitleAndSummaryWriter} from '@/inngest/functions/ai/tip-writer'
 import {userCreated} from '@/inngest/functions/user-created'
+import {weeklySignupDigest} from '@/inngest/functions/notify/creator/weekly-signups'
 
 export const inngestConfig = {
   client: inngest,
@@ -21,5 +22,6 @@ export const inngestConfig = {
     addSrtToMuxAsset,
     tipTitleAndSummaryWriter,
     userCreated,
+    weeklySignupDigest,
   ],
 }
