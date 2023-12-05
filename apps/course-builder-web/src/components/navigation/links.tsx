@@ -35,11 +35,11 @@ export const getNavigationLinks = (): {
     //   icon: () => '',
     //   href: '/tutorials',
     // },
-    // {
-    //   label: 'Articles',
-    //   icon: () => '',
-    //   href: '/articles',
-    // },
+    {
+      label: 'Tutorials',
+      icon: () => '',
+      href: '/tutorials',
+    },
   ]
 }
 

@@ -30,11 +30,11 @@ export async function sanityMutation(mutations: any[]) {
 
 export async function sanityQuery<T = any>(query: string): Promise<T> {
   return await fetch(
-    `https://${env.SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v${
+    `https://${env.SANITY_STUDIO_PROJECT_ID}.apicdn.sanity.io/v${
       env.SANITY_STUDIO_API_VERSION
     }/data/query/${env.SANITY_STUDIO_DATASET}?query=${encodeURIComponent(
       query,
-    )}`,
+    )}&perspective=published`,
     {
       method: 'get',
       headers: {

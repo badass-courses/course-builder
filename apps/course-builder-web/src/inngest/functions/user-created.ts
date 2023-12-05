@@ -4,19 +4,15 @@ import WelcomeEmail from '@/emails/welcome-email'
 import {sendAnEmail} from '@/utils/send-an-email'
 import {sanityQuery} from '@/server/sanity.server'
 
-const userCreatedEmailBody = `Course Builder is an experimental project by [Joel Hooks](https://x.com/jhooks). 
-          
-Read more about Badass Courses at [https://badass.dev](https://badass.dev).
-
-If you have any questions or feedback, please reply to this email and let me know.
-
-Cheers,
-
-Joel`
-
 export const userCreated = inngest.createFunction(
-  {id: `user created`, name: 'User Created'},
-  {event: USER_CREATED_EVENT},
+  {
+    id: `user created`,
+    name: 'User Created',
+    idempotency: 'event.user.email',
+  },
+  {
+    event: USER_CREATED_EVENT,
+  },
   async ({event, step}) => {
     const email = await step.run(`load email`, async () => {
       return await sanityQuery<{
