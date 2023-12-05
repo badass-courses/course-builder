@@ -22,14 +22,56 @@ Status: proposed | rejected | accepted | deprecated | … | superseded by
 ### Consequences
 ```
 
-* Vercel for Hosting
-* Dizzle for ORM
-* Payment Adapters
-* Github Actions (CI/CD)
+## 08 GitHub Actions for CI/CD
+
+Date: 2023-12-05
+
+Status: proposed
+
+### Context
+Continuous Integration (CI) and Continuous Deployment (CD) are crucial for efficient project management. While various platforms offer CI/CD services, our choice is influenced by our use of Next.js and the platform's integration with these services.
+
+### Decision
+We've decided to leverage GitHub Actions for our CI/CD needs. This aligns with our deployment on GitHub, offering built-in support and accessibility. Our focus is on robust CI/CD from the outset with our course builder platform, involving linting, testing, running end-to-end tests, and staging deployments.
+
+### Consequences
+Using GitHub Actions enables frequent, manageable deployments with rollback capabilities. However, it does come with a learning curve, particularly in setting up and testing the actions initially. Once established, it should require minimal adjustment. Another aspect to consider is the ongoing maintenance of these actions.
+Adjust the date and status to match the current stage of this decision.
+
+## 07 Drizzle ORM for Database Interface
+
+Date: 2023-12-05
+
+Status: proposed
+
+### Context
+Interfacing with databases requires an efficient Object-Relationship Manager (ORM). ORMs provide a code-level, TypeScript-friendly API for interacting with database entities. We considered various ORMs, including Prisma, and evaluated their fit in our system.
+
+### Decision
+We have chosen to try Drizzle ORM as an alternative to Prisma. Drizzle's approach to TypeScript integration is appealing because it does not generate a client like Prisma, which aligns more closely with our code ownership philosophy. It also simplifies asset management in our monorepo structure and offers intriguing edge capabilities, especially when combined with PlanetScale.
+
+### Consequences
+Using Drizzle ORM brings us closer to our own code ownership, reducing the need for significant asset generation. However, integrating any ORM deeply intertwines it with our system. We need to consider creating an additional layer, like a facade, SDK, or API layer, between the ORM and our application to manage this integration effectively.
+Adjust the date and status as needed.
+
+## 06 Host on Vercel
+
+Date: 2023-12-05
+
+Status: proposed
+
+### Context
+There are numerous hosting options for applications, each with its own trade-offs. Options include AWS, Render, Heroku, and others. Our key consideration is the development framework we use, Next.js, which is developed by Vercel.
+
+### Decision
+We have decided to host our Next.js applications on Vercel. This choice offers the least friction and enables us to utilize the full potential of Next.js, especially its latest features. Vercel's hosting aligns well with Next.js, as they are both developed by the same company.
+
+### Consequences
+Choosing Vercel as our hosting provider does come with trade-offs. It locks us into a specific vendor, making us reliant on their methodologies and updates. However, this is not a significant issue as Vercel's approaches align with our application development strategies.
 
 ## 05 PlanetScale
 
-Date: YYYY-MM-DD
+Date: 2023-12-05
 
 Status: proposed
 
@@ -43,7 +85,8 @@ We have chosen to use PlanetScale for our database needs. PlanetScale stands out
 By selecting PlanetScale, we are committing to their service. Although exporting and transferring data is possible, it makes us dependent on another external service. This entails acquiring and managing credentials, along with ongoing management throughout our products' lifespans.
 
 ## 04 Inngest for Background Jobs
-Date: YYYY-MM-DD
+
+Date: 2023-12-05
 
 Status: proposed
 
