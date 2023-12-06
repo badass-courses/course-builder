@@ -111,8 +111,8 @@ importers:
         specifier: ^1.13.1
         version: 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/tokens':
-        specifier: ^1.29.0
-        version: 1.29.0(react@18.2.0)
+        specifier: ^1.29.1
+        version: 1.29.1(react@18.2.0)
       '@auth/drizzle-adapter':
         specifier: ^0.3.6
         version: 0.3.6
@@ -1048,7 +1048,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       bind-event-listener: 2.1.1
       react: 18.2.0
@@ -1070,7 +1070,7 @@ packages:
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.37)(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
@@ -1103,7 +1103,7 @@ packages:
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1129,7 +1129,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1143,7 +1143,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1189,7 +1189,7 @@ packages:
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1245,7 +1245,7 @@ packages:
       '@atlaskit/popper': 5.5.4(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1278,7 +1278,7 @@ packages:
       react: ^16.8.0
     dependencies:
       '@atlaskit/motion': 1.5.1(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       react: 18.2.0
     transitivePeerDependencies:
@@ -1309,7 +1309,7 @@ packages:
       '@atlaskit/focus-ring': 1.3.6(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1326,7 +1326,7 @@ packages:
     dependencies:
       '@atlaskit/pragmatic-drag-and-drop': 0.24.0
       '@atlaskit/pragmatic-drag-and-drop-hitbox': 0.12.0
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1349,7 +1349,7 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@atlaskit/app-provider': 0.4.0(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       '@emotion/serialize': 1.1.2
@@ -1368,7 +1368,7 @@ packages:
     dependencies:
       '@atlaskit/interaction-context': 2.1.3(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1384,15 +1384,15 @@ packages:
     dependencies:
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
-      '@atlaskit/tokens': 1.29.0(react@18.2.0)
+      '@atlaskit/tokens': 1.29.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       react: 18.2.0
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@atlaskit/tokens@1.29.0(react@18.2.0):
-    resolution: {integrity: sha512-VDSl6+HKwInNt9mHXO2M2wKlWDo9rCOFhcAbXD+V3z5AsM7ccjX7Dl9Z2H9lciV6o+pkS0FkdE83DfJVgCBiRg==}
+  /@atlaskit/tokens@1.29.1(react@18.2.0):
+    resolution: {integrity: sha512-fdBIutnwPUsDARMoM9LQW6da2PpICScqsbwBC13KMdh3QOz9hWr5Rwdysw2klonQ4bOlnZdpObFH5hoJwfWaRw==}
     peerDependencies:
       react: ^16.8.0
     dependencies:

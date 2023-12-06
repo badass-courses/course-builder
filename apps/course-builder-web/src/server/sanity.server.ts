@@ -1,8 +1,11 @@
 import {env} from '@/env.mjs'
 
-export async function sanityMutation(mutations: any[]) {
+export async function sanityMutation(
+  mutations: any[],
+  config: {returnDocuments: boolean} = {returnDocuments: false},
+) {
   return await fetch(
-    `https://${env.SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/mutate/${env.SANITY_STUDIO_DATASET}`,
+    `https://${env.SANITY_STUDIO_PROJECT_ID}.api.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/mutate/${env.SANITY_STUDIO_DATASET}?returnDocuments=${config.returnDocuments}`,
     {
       method: 'post',
       headers: {

@@ -1,5 +1,3 @@
-'use client'
-
 import React, {
   createContext,
   Fragment,
@@ -98,7 +96,7 @@ const listItemPreviewStyles = xcss({
   paddingInline: 'space.100',
   borderRadius: 'border.radius.100',
   backgroundColor: 'elevation.surface.overlay',
-  maxWidth: '360px',
+  maxWidth: '420px',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -282,41 +280,6 @@ function LazyDropdownContent({itemData}: {itemData: ItemData}) {
   )
 }
 
-const defaultItems: ItemData[] = [
-  {
-    id: 'task-1',
-    label: 'Eating a healthy breakfast',
-  },
-  {
-    id: 'task-2',
-    label: 'Create a new product roadmap',
-  },
-  {
-    id: 'task-3',
-    label: 'Update the company website',
-  },
-  {
-    id: 'task-4',
-    label: 'Plan the next team offsite',
-  },
-  {
-    id: 'task-5',
-    label: 'Coordinate with the design team',
-  },
-  {
-    id: 'task-6',
-    label: 'Manage the company blog',
-  },
-  {
-    id: 'task-7',
-    label: 'Organize the next team offsite',
-  },
-  {
-    id: 'task-8',
-    label: 'Coordinate with the design team',
-  },
-]
-
 const containerStyles = xcss({
   maxWidth: '400px',
   borderWidth: 'border.width',
@@ -324,7 +287,7 @@ const containerStyles = xcss({
   borderColor: 'color.border',
 })
 
-type ListState = {
+export type ListState = {
   items: ItemData[]
   lastCardMoved: {
     item: ItemData
@@ -334,7 +297,13 @@ type ListState = {
   } | null
 }
 
-export default function ListExample() {
+export default function LessonList({
+  items: defaultItems,
+  onChange = () => {},
+}: {
+  items: ItemData[]
+  onChange: (state: ItemData[]) => void
+}) {
   const [{items, lastCardMoved}, setListState] = useState<ListState>({
     items: defaultItems,
     lastCardMoved: null,
@@ -414,7 +383,7 @@ export default function ListExample() {
       setListState((listState) => {
         const item = listState.items[startIndex] as ItemData
 
-        return {
+        const newState = {
           items: reorder({
             list: listState.items,
             startIndex,
@@ -427,6 +396,10 @@ export default function ListExample() {
             numberOfItems: listState.items.length,
           },
         }
+
+        onChange(newState.items)
+
+        return newState
       })
     },
     [],

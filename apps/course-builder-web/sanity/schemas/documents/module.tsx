@@ -33,6 +33,7 @@ export default {
         list: [
           {title: 'Workshop', value: 'workshop'},
           {title: 'Tutorial', value: 'tutorial'},
+          {title: 'Lesson', value: 'lesson'},
           {title: 'Tips', value: 'tips'},
         ],
       },
@@ -77,6 +78,11 @@ export default {
               name: 'github',
               title: 'GitHub',
               type: 'github',
+            },
+            {
+              name: 'module',
+              title: 'Module',
+              type: 'module',
             },
             {
               name: 'workflow',

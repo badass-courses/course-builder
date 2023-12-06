@@ -25,7 +25,7 @@
     "@atlaskit/pragmatic-drag-and-drop-react-accessibility": "^0.4.1",
     "@atlaskit/pragmatic-drag-and-drop-react-indicator": "^0.17.0",
     "@atlaskit/primitives": "^1.13.1",
-    "@atlaskit/tokens": "^1.29.0",
+    "@atlaskit/tokens": "^1.29.1",
     "@auth/drizzle-adapter": "^0.3.6",
     "@aws-sdk/client-s3": "^3.441.0",
     "@aws-sdk/s3-request-presigner": "^3.441.0",

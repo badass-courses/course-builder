@@ -4,6 +4,8 @@ import {sanityMutation, sanityQuery} from '@/server/sanity.server'
 import {env} from '@/env.mjs'
 import {getMuxOptions} from '@/lib/get-mux-options'
 import {orderDeepgramTranscript} from '@/lib/deepgram-order-transcript'
+import {toChicagoTitleCase} from '@/utils/chicagor-title'
+import {v4} from 'uuid'
 
 export const videoUploaded = inngest.createFunction(
   {id: `video-uploaded`, name: 'Video Uploaded'},
@@ -57,6 +59,76 @@ export const videoUploaded = inngest.createFunction(
         )
       },
     )
+
+    const newLesson = await step.run(
+      'create lesson module for video resource',
+      async () => {
+        const lessonId = v4()
+        const titleToUse = event.data.title || event.data.fileName
+        return await sanityMutation(
+          [
+            {
+              create: {
+                _id: `lesson-${lessonId}`,
+                _type: 'module',
+                title: toChicagoTitleCase(
+                  titleToUse.replace(/-/g, ' ').replace(/\.mp4/g, ''),
+                ),
+                state: 'draft',
+                moduleType: 'lesson',
+                slug: {
+                  _type: 'slug',
+                  current: `lesson-${lessonId}`,
+                },
+
+                resources: [
+                  {
+                    _type: 'reference' as const,
+                    _key: v4(),
+                    _ref: videoResource._id,
+                  },
+                ],
+              },
+            },
+          ],
+          {returnDocuments: true},
+        ).then((res) => res.results[0].document)
+      },
+    )
+
+    if (event.data.moduleSlug) {
+      const parentModule = await step.run('get module', async () => {
+        return await sanityQuery(
+          `*[_type == "module" && slug.current == "${event.data.moduleSlug}"][0]{_id}`,
+        )
+      })
+
+      if (parentModule) {
+        await step.run('add lesson to module', async () => {
+          return await sanityMutation(
+            [
+              {
+                patch: {
+                  id: parentModule._id,
+                  setIfMissing: {resources: []},
+                  insert: {
+                    before: 'resources[-1]',
+                    items: [
+                      {
+                        _type: 'reference' as const,
+                        _key: v4(),
+                        _ref: newLesson._id,
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+            {returnDocuments: true},
+          )
+        })
+      }
+    }
 
     await step.run('announce video resource created', async () => {
       await fetch(
