@@ -17,8 +17,10 @@ export function Party() {
         'ai.tip.draft.completed',
       ]
 
+      console.log(data.name)
+
       if (invalidateOn.includes(data.name)) {
-        await utils.module.getBySlug.invalidate({slug: 'tips'})
+        await utils.module.invalidate()
         router.refresh()
       }
     },
