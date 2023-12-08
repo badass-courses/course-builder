@@ -21,6 +21,7 @@ export const weeklySignupDigest = inngest.createFunction(
         `*[_type == "courseBuilderEmail" && slug.current == "weekly-signups"][0]`,
       )
     })
+
     const newUserCount = await step.run(`load new user count`, async () => {
       const result = await db
         .select({
