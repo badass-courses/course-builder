@@ -25,16 +25,12 @@ export default async function EditTutorialPage({
   }
 
   return (
-    <>
+    <div className="flex flex-col">
       <EditTutorialForm
         moduleSlug={params.module}
         initialTutorialData={course}
       />
-      <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-        <div className="md:order-1">
-          <VideoUploader moduleSlug={params.module} />
-        </div>
-      </div>
-    </>
+      <VideoUploader moduleSlug={params.module} />
+    </div>
   )
 }

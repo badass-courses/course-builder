@@ -46,6 +46,8 @@ export function EditTutorialForm({
     defaultValues: initialTutorialData,
   })
 
+  const {isSubmitting, isDirty, isValid} = form.formState
+
   const {data: tutorial, status: tutorialStatus} =
     api.module.getTutorial.useQuery({
       slug: moduleSlug,
@@ -60,8 +62,14 @@ export function EditTutorialForm({
     move(from, to)
   }
 
+  const {mutate: updateTutorial} = api.module.updateTutorial.useMutation()
+
   const onSubmit = async (values: z.infer<typeof EditTutorialFormSchema>) => {
-    console.log(values)
+    if (!tutorial) return
+    updateTutorial({
+      tutorialId: tutorial?._id,
+      updateData: values,
+    })
   }
 
   const handleOnChange = React.useCallback(
@@ -77,23 +85,23 @@ export function EditTutorialForm({
             sortedLessons.push(tutorial.lessons[lessonIndex])
           }
         })
-      } else {
-        replace(items.map((item) => ({_id: item.id, title: item.label})))
+        replace(sortedLessons)
       }
-
-      replace(sortedLessons)
     },
     [tutorial, replace],
   )
 
   return tutorialStatus === 'success' ? (
-    <>
+    <div className="flex">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {fields.map((field, index) => (
-            <div key={field.id}>
-              <Input name={`lessons.${index}.title`} type="hidden" {...field} />
-            </div>
+            <FormItem key={field.id}>
+              <Input
+                type="hidden"
+                {...form.register(`lessons.${index}.title`)}
+              />
+            </FormItem>
           ))}
           <div>Edit Tutorial Form</div>
           <FormField
@@ -123,7 +131,9 @@ export function EditTutorialForm({
             name="description"
           />
 
-          <Button type="submit">Save Tutorial</Button>
+          <Button type="submit" disabled={!isDirty && !isValid}>
+            {isSubmitting ? 'Saving' : 'Save Tutorial'}
+          </Button>
         </form>
       </Form>
       <div className="flex flex-col">
@@ -144,6 +154,6 @@ export function EditTutorialForm({
           )}
         </div>
       </div>
-    </>
+    </div>
   ) : null
 }
