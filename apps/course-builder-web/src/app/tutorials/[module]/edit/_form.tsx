@@ -1,6 +1,6 @@
 'use client'
 
-import SortableLessonList from '@/components/lesson-list/list'
+import SortableLessonList, {ItemData} from '@/components/lesson-list/list'
 import VideoUploader from '@/components/video-uploader'
 import * as React from 'react'
 import {api} from '@/trpc/react'
@@ -46,6 +46,11 @@ export function EditTutorialForm({
     defaultValues: initialTutorialData,
   })
 
+  const {data: tutorial, status: tutorialStatus} =
+    api.module.getTutorial.useQuery({
+      slug: moduleSlug,
+    })
+
   const {fields, replace, move} = useFieldArray({
     control: form.control,
     name: 'lessons',
@@ -59,7 +64,29 @@ export function EditTutorialForm({
     console.log(values)
   }
 
-  return initialTutorialData ? (
+  const handleOnChange = React.useCallback(
+    (items: ItemData[]) => {
+      const sortedLessons: any[] = []
+
+      if (tutorial?.lessons) {
+        items.forEach((lesson, index) => {
+          const lessonIndex = tutorial.lessons.findIndex(
+            (l) => l._id === lesson.id,
+          )
+          if (lessonIndex > -1) {
+            sortedLessons.push(tutorial.lessons[lessonIndex])
+          }
+        })
+      } else {
+        replace(items.map((item) => ({_id: item.id, title: item.label})))
+      }
+
+      replace(sortedLessons)
+    },
+    [tutorial, replace],
+  )
+
+  return tutorialStatus === 'success' ? (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -112,20 +139,7 @@ export function EditTutorialForm({
                   label: lesson.title,
                 }
               })}
-              onChange={async (items) => {
-                const sortedLessons: any[] = []
-
-                items.forEach((lesson, index) => {
-                  const lessonIndex = initialTutorialData.lessons.findIndex(
-                    (l) => l._id === lesson.id,
-                  )
-                  if (lessonIndex > -1) {
-                    sortedLessons.push(initialTutorialData.lessons[lessonIndex])
-                  }
-                })
-
-                replace(sortedLessons)
-              }}
+              onChange={handleOnChange}
             />
           )}
         </div>
