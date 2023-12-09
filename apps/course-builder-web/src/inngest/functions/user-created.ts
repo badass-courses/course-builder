@@ -1,6 +1,6 @@
 import {inngest} from '@/inngest/inngest.server'
 import {USER_CREATED_EVENT} from '@/inngest/events'
-import WelcomeEmail from '@/emails/welcome-email'
+import BasicEmail from '@/emails/basic-email'
 import {sendAnEmail} from '@/utils/send-an-email'
 import {sanityQuery} from '@/server/sanity.server'
 
@@ -26,13 +26,14 @@ export const userCreated = inngest.createFunction(
     })
     const sendResponse = await step.run('send the email', async () => {
       return await sendAnEmail({
-        Component: WelcomeEmail,
+        Component: BasicEmail,
         componentProps: {
           user: event.user,
           body: email.body,
         },
         Subject: email.subject,
         To: event.user.email,
+        type: 'broadcast',
       })
     })
 

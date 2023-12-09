@@ -44,6 +44,7 @@ export const env = createEnv({
     DEEPGRAM_API_KEY: z.string(),
     UPLOADTHING_URL: z.string(),
     POSTMARK_API_KEY: z.string(),
+    POSTMARK_WEBHOOK_SECRET: z.string(),
   },
 
   /**
@@ -85,6 +86,7 @@ export const env = createEnv({
     UPLOADTHING_URL: process.env.UPLOADTHING_URL,
     POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+    POSTMARK_WEBHOOK_SECRET: process.env.POSTMARK_WEBHOOK_SECRET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -1,6 +1,7 @@
 import {relations, sql} from 'drizzle-orm'
 import {
   bigint,
+  boolean,
   index,
   int,
   mysqlEnum,
@@ -20,25 +21,126 @@ import {type AdapterAccount} from 'next-auth/adapters'
  */
 export const mysqlTable = mysqlTableCreator((name) => `inngest-gpt_${name}`)
 
-export const users = mysqlTable('user', {
-  id: varchar('id', {length: 255}).notNull().primaryKey(),
-  name: varchar('name', {length: 255}),
-  role: mysqlEnum('role', ['user', 'admin']).default('user'),
-  email: varchar('email', {length: 255}).notNull(),
-  emailVerified: timestamp('emailVerified', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  image: varchar('image', {length: 255}),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-})
+export const users = mysqlTable(
+  'user',
+  {
+    id: varchar('id', {length: 255}).notNull().primaryKey(),
+    name: varchar('name', {length: 255}),
+    role: mysqlEnum('role', ['user', 'admin']).default('user'),
+    email: varchar('email', {length: 255}).notNull(),
+    emailVerified: timestamp('emailVerified', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    image: varchar('image', {length: 255}),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+  },
+  (user) => ({
+    emailIdx: index('email_idx').on(user.email),
+    roleIdx: index('role_idx').on(user.role),
+  }),
+)
 
 export const usersRelations = relations(users, ({many}) => ({
   accounts: many(accounts),
+  communicationPreferences: many(communicationPreferences),
 }))
+
+export const communicationPreferenceTypes = mysqlTable(
+  'communicationPreferenceType',
+  {
+    id: varchar('id', {length: 255}).notNull().primaryKey(),
+    name: varchar('name', {length: 255}).notNull(),
+    description: text('description'),
+    status: boolean('status').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+)
+
+export const communicationChannel = mysqlTable(
+  'communicationChannel',
+  {
+    id: varchar('id', {length: 255}).notNull().primaryKey(),
+    name: varchar('name', {length: 255}).notNull(),
+    description: text('description'),
+    status: boolean('status').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+  (cc) => ({
+    nameIdx: index('name_idx').on(cc.name),
+  }),
+)
+
+export const communicationPreferences = mysqlTable(
+  'communicationPreference',
+  {
+    id: varchar('id', {length: 255}).notNull().primaryKey(),
+    userId: varchar('userId', {length: 255}).notNull(),
+    channelId: varchar('channelId', {length: 255}).notNull(),
+    preferenceTypeId: varchar('preferenceTypeId', {length: 255}).notNull(),
+    status: boolean('status').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+  (cp) => ({
+    userIdIdx: index('userId_idx').on(cp.userId),
+    preferenceTypeIdx: index('preferenceTypeId_idx').on(cp.preferenceTypeId),
+    channelIdIdx: index('channelId_idx').on(cp.channelId),
+  }),
+)
+
+export const communicationPreferencesRelations = relations(
+  communicationPreferences,
+  ({one}) => ({
+    user: one(users, {
+      fields: [communicationPreferences.userId],
+      references: [users.id],
+    }),
+    channel: one(communicationChannel, {
+      fields: [communicationPreferences.channelId],
+      references: [communicationChannel.id],
+    }),
+    preferenceType: one(communicationPreferenceTypes, {
+      fields: [communicationPreferences.preferenceTypeId],
+      references: [communicationPreferenceTypes.id],
+    }),
+  }),
+)
 
 export const accounts = mysqlTable(
   'account',

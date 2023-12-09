@@ -303,8 +303,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.3.0
-        version: 3.6.0(encoding@0.1.13)(typescript@5.2.2)
+        specifier: ^3.7.0
+        version: 3.7.0(encoding@0.1.13)(typescript@5.2.2)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -12746,13 +12746,13 @@ packages:
     resolution: {integrity: sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==}
     dev: false
 
-  /inngest@3.6.0(encoding@0.1.13)(typescript@5.2.2):
-    resolution: {integrity: sha512-l6Vrs1mnj0U64iUpFwNn2CdcieMlNJZyv8ks6NbpQe+xnPJ9P2yoUB4n9NJ891Me2383ozm+PDWc4LcVTu0EAg==}
+  /inngest@3.7.0(encoding@0.1.13)(typescript@5.2.2):
+    resolution: {integrity: sha512-LhtFC3S+Ak1ex94APD4IS6z7EuPrffw0CaIpHnEMNbzbpuVc4bF5aN/N4hS4VjNIx1TGxm6Um4ymHmFCSmtcSg==}
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=4.7.2'
     dependencies:
-      buffer: 6.0.3
+      '@types/debug': 4.1.12
       canonicalize: 1.0.8
       chalk: 4.1.2
       cross-fetch: 4.0.0(encoding@0.1.13)
@@ -12764,6 +12764,7 @@ packages:
       serialize-error-cjs: 0.1.3
       strip-ansi: 5.2.0
       type-fest: 3.13.1
+      type-plus: 5.6.0
       typescript: 5.2.2
       zod: 3.22.4
     transitivePeerDependencies:
@@ -19032,6 +19033,14 @@ packages:
       source-map-support: 0.5.21
     dev: false
 
+  /tersify@3.12.1:
+    resolution: {integrity: sha512-VwzXGHZSOB4T27s4uvh9v8FYrNXyfVz0nBQi28TDwrZoQwT8ZJUp1W2Ff73ekN07stJSb0D+pr6iXeNeFqTI6Q==}
+    dependencies:
+      acorn: 8.11.2
+      is-buffer: 2.0.5
+      unpartial: 1.0.5
+    dev: false
+
   /test-exclude@6.0.0:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
     engines: {node: '>=8'}
@@ -19417,6 +19426,13 @@ packages:
     resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
     engines: {node: '>=14.16'}
 
+  /type-plus@5.6.0:
+    resolution: {integrity: sha512-LAIvZzs6mKXYHzwRfGeOuWKsE5jHndwWlLheulMl6eWDSGa1bfZCd0aLQSMgP3HZTbazx/P2UumCqtOz5AMctA==}
+    dependencies:
+      tersify: 3.12.1
+      unpartial: 1.0.5
+    dev: false
+
   /type@1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}
     dev: true
@@ -19717,6 +19733,11 @@ packages:
   /universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
+    dev: false
+
+  /unpartial@1.0.5:
+    resolution: {integrity: sha512-yAqaXcachjgZUnM2yIkf+4KJhmyuoj7stBvlnlZpB15OYVbKnLhgJfmLW7qkpzLHCdsm1bEFvhyN9hCmlZ3uuw==}
+    engines: {node: '>=6'}
     dev: false
 
   /untildify@4.0.0:
