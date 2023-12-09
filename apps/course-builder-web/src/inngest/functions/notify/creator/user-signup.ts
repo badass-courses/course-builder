@@ -53,7 +53,6 @@ export const userSignupAdminEmail = inngest.createFunction(
       return await sendAnEmail({
         Component: BasicEmail,
         componentProps: {
-          user: event.user,
           body: parsedEmailBody,
         },
         Subject: parsedEmailSubject,

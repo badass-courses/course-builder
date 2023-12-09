@@ -28,7 +28,6 @@ export const userCreated = inngest.createFunction(
       return await sendAnEmail({
         Component: BasicEmail,
         componentProps: {
-          user: event.user,
           body: email.body,
         },
         Subject: email.subject,
