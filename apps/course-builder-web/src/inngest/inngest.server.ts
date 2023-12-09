@@ -33,6 +33,10 @@ import {
   type MUX_SRT_READY_EVENT,
   type MuxSrtReady,
 } from '@/inngest/events/mux-add-srt-to-asset'
+import {
+  POSTMARK_WEBHOOK_EVENT,
+  PostmarkWebhook,
+} from '@/inngest/events/postmark-webhook'
 
 // Create a client to send and receive events
 type Events = {
@@ -46,6 +50,7 @@ type Events = {
   [MUX_SRT_READY_EVENT]: MuxSrtReady
   [AI_TIP_WRITING_REQUESTED_EVENT]: AITipWritingRequested
   [USER_CREATED_EVENT]: UserCreated
+  [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',

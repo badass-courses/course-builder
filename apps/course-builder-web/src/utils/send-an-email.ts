@@ -7,21 +7,25 @@ export async function sendAnEmail<ComponentPropsType = any>({
   Subject,
   To,
   From = `joel <joel@coursebuilder.dev>`,
+  type = 'transactional',
 }: {
   Component: (props: ComponentPropsType) => React.JSX.Element
   componentProps: ComponentPropsType
   Subject: string
   From?: string
   To: string
+  type?: 'transactional' | 'broadcast'
 }) {
   const emailHtml = render(Component(componentProps))
+
+  const MessageStream = type === 'broadcast' ? 'broadcast' : 'outbound'
 
   const options = {
     From,
     To,
     Subject,
     HtmlBody: emailHtml,
-    MessageStream: `outbound`,
+    MessageStream,
   }
 
   return await fetch(`https://api.postmarkapp.com/email`, {

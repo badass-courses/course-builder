@@ -89,7 +89,7 @@
     "framer-motion": "^10.16.5",
     "groq": "^3.18.1",
     "i": "^0.3.7",
-    "inngest": "^3.3.0",
+    "inngest": "^3.7.0",
     "intl-segmenter-polyfill": "^0.4.4",
     "json-schema": "^0.4.0",
     "liquidjs": "^10.9.4",

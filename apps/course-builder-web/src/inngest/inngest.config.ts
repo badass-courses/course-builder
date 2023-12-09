@@ -10,6 +10,8 @@ import {addSrtToMuxAsset} from '@/inngest/functions/mux/add-srt-to-mux-asset'
 import {tipTitleAndSummaryWriter} from '@/inngest/functions/ai/tip-writer'
 import {userCreated} from '@/inngest/functions/user-created'
 import {weeklySignupDigest} from '@/inngest/functions/notify/creator/weekly-signups'
+import {userSignupAdminEmail} from '@/inngest/functions/notify/creator/user-signup'
+import {postmarkWebhook} from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 
 export const inngestConfig = {
   client: inngest,
@@ -23,5 +25,7 @@ export const inngestConfig = {
     tipTitleAndSummaryWriter,
     userCreated,
     weeklySignupDigest,
+    userSignupAdminEmail,
+    postmarkWebhook,
   ],
 }

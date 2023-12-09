@@ -8,8 +8,7 @@ import GithubProvider from 'next-auth/providers/github'
 
 import {env} from '@/env.mjs'
 import {db} from '@/server/db'
-import {mysqlTable, users} from '@/server/db/schema'
-import {eq} from 'drizzle-orm'
+import {mysqlTable} from '@/server/db/schema'
 import {inngest} from '@/inngest/inngest.server'
 import {USER_CREATED_EVENT} from '@/inngest/events'
 
