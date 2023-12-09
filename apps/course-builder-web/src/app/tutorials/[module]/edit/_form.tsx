@@ -86,9 +86,15 @@ export function EditTutorialForm({
           }
         })
         replace(sortedLessons)
+        updateTutorial({
+          tutorialId: tutorial?._id,
+          updateData: {
+            lessons: sortedLessons,
+          },
+        })
       }
     },
-    [tutorial, replace],
+    [tutorial, replace, updateTutorial],
   )
 
   return tutorialStatus === 'success' ? (

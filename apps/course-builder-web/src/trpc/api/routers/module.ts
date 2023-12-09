@@ -38,9 +38,9 @@ export const moduleRouter = createTRPCRouter({
       z.object({
         tutorialId: z.string(),
         updateData: z.object({
-          title: z.string(),
+          title: z.string().optional(),
           description: z.string().optional(),
-          lessons: z.array(z.object({_id: z.string()})),
+          lessons: z.array(z.object({_id: z.string()})).optional(),
         }),
       }),
     )
@@ -68,14 +68,18 @@ export const moduleRouter = createTRPCRouter({
             patch: {
               id: tutorial._id,
               set: {
-                title: input.updateData.title,
-                description: input.updateData.description,
-                resources: input.updateData.lessons.map((lesson) => {
-                  return {
-                    _key: v4(),
-                    _type: 'reference',
-                    _ref: lesson._id,
-                  }
+                ...(input.updateData.title && {title: input.updateData.title}),
+                ...(input.updateData.description && {
+                  description: input.updateData.description,
+                }),
+                ...(input.updateData.lessons && {
+                  resources: input.updateData.lessons.map((lesson) => {
+                    return {
+                      _key: v4(),
+                      _type: 'reference',
+                      _ref: lesson._id,
+                    }
+                  }),
                 }),
               },
             },
