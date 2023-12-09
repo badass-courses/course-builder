@@ -12,6 +12,7 @@ import {
   CardFooter,
 } from '@coursebuilder/ui'
 import {Button} from '@coursebuilder/ui'
+import Image from 'next/image'
 
 export default function Component() {
   return (
@@ -138,7 +139,7 @@ export default function Component() {
                     </CardHeader>
                     <CardContent>
                       <p>Views: 1200</p>
-                      <img
+                      <Image
                         alt="Graph for Tip 2"
                         className="object-cover"
                         height="50"
@@ -159,7 +160,7 @@ export default function Component() {
                     </CardHeader>
                     <CardContent>
                       <p>Views: 1500</p>
-                      <img
+                      <Image
                         alt="Graph for Tip 3"
                         className="object-cover"
                         height="50"

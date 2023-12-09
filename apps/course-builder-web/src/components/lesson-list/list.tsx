@@ -59,7 +59,7 @@ function useListContext() {
   return listContext
 }
 
-type ItemData = {
+export type ItemData = {
   id: string
   label: string
 }
@@ -402,7 +402,7 @@ export default function LessonList({
         return newState
       })
     },
-    [],
+    [onChange],
   )
 
   const [instanceId] = useState(() => Symbol('instance-id'))
