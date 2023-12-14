@@ -12,6 +12,7 @@ import {ourFileRouter} from '@/app/api/uploadthing/core'
 import Navigation from '@/components/navigation'
 import {Providers} from '@/app/_components/providers'
 import {Party} from '@/app/_components/party'
+import {AxiomWebVitals} from 'next-axiom'
 import * as React from 'react'
 
 const inter = Inter({
@@ -29,6 +30,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <Providers>
       <html lang="en">
+        <AxiomWebVitals />
         <body className={`font-sans ${inter.variable}`}>
           <TRPCReactProvider headers={headers()}>
             <Party />

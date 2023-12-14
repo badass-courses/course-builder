@@ -1,6 +1,5 @@
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
-import {CreateTip} from '@/app/tips/_components/create-tip'
 import * as React from 'react'
 
 export default async function NewTutorialPage() {

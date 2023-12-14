@@ -1,8 +1,9 @@
 import {type NextRequest, type NextResponse} from 'next/server'
 import {inngest} from '@/inngest/inngest.server'
 import {POSTMARK_WEBHOOK_EVENT} from '@/inngest/events/postmark-webhook'
+import {withSkill} from '@/server/with-skill'
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export const POST = withSkill(async (req: NextRequest, res: NextResponse) => {
   const body = await req.json()
 
   if (
@@ -23,4 +24,4 @@ export async function POST(req: NextRequest, res: NextResponse) {
   return new Response('ok', {
     status: 200,
   })
-}
+})
