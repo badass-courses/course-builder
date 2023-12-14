@@ -110,26 +110,69 @@ const getTutorial = async (slug?: string) => {
   return slug
     ? await sanityQuery<{
         _id: string
+        _type: string
+        moduleType: string
         title: string
         description: string
-        lessons: {_id: string; title: string}[]
+        sections: {
+          _id: string
+          title: string
+          _type: string
+          moduleType: string
+          lessons: {
+            _id: string
+            title: string
+            _type: string
+            moduleType: string
+          }[]
+        }[]
+        lessons: {
+          _id: string
+          title: string
+          _type: string
+          moduleType: string
+        }[]
       }>(
-        `*[_type == "module" && moduleType == 'tutorial' && (_id == "${slug}" || slug.current == "${slug}")][0]{
-      ...,
-      "lessons": resources[@->.moduleType == "lesson"]->{
-       _id,
-       _type,
-       state,
-       moduleType,
-       "slug": slug.current,
-       title,
-       body,
-       image,
-       ogImage,
-       "muxPlaybackId": resources[@->._type == 'videoResource'][0]->.muxPlaybackId,
-       "duration": resources[@->._type == 'videoResource'][0]->.duration,
-       "transcript": resources[@->._type == 'videoResource'][0]->.transcript,
-      }
+        groq`*[_type == "module" && moduleType == 'tutorial' && (_id == "${slug}" || slug.current == "${slug}")][0]{
+                ...,
+                "slug": slug.current,
+                "sections": resources[@->.moduleType in ["section"]]->{
+                   _id,
+                   _type,
+                   state,
+                   moduleType,
+                   "slug": slug.current,
+                   title,
+                   body,
+                  "lessons": resources[@->.moduleType in ["lesson"]]->{
+                     _id,
+                     _type,
+                     state,
+                     moduleType,
+                     "slug": slug.current,
+                     title,
+                     body,
+                     image,
+                     ogImage,
+                     "muxPlaybackId": resources[@->._type == 'videoResource'][0]->.muxPlaybackId,
+                     "duration": resources[@->._type == 'videoResource'][0]->.duration,
+                     "transcript": resources[@->._type == 'videoResource'][0]->.transcript,
+                  }                  
+                },
+                "lessons": resources[@->.moduleType in ["lesson"]]->{
+                   _id,
+                   _type,
+                   state,
+                   moduleType,
+                   "slug": slug.current,
+                   title,
+                   body,
+                   image,
+                   ogImage,
+                   "muxPlaybackId": resources[@->._type == 'videoResource'][0]->.muxPlaybackId,
+                   "duration": resources[@->._type == 'videoResource'][0]->.duration,
+                   "transcript": resources[@->._type == 'videoResource'][0]->.transcript,
+                }
     }`,
       )
     : null

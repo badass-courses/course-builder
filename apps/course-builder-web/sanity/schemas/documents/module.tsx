@@ -33,6 +33,7 @@ export default {
         list: [
           {title: 'Workshop', value: 'workshop'},
           {title: 'Tutorial', value: 'tutorial'},
+          {title: 'Section', value: 'section'},
           {title: 'Lesson', value: 'lesson'},
           {title: 'Tips', value: 'tips'},
         ],
@@ -70,15 +71,6 @@ export default {
         {
           type: 'reference',
           to: [
-            {title: 'Exercise', type: 'exercise'},
-            {title: 'Section', type: 'section'},
-            {title: 'Explainer', type: 'explainer'},
-            {type: 'linkResource'},
-            {
-              name: 'github',
-              title: 'GitHub',
-              type: 'github',
-            },
             {
               name: 'module',
               title: 'Module',
@@ -88,11 +80,6 @@ export default {
               name: 'workflow',
               title: 'Workflow',
               type: 'workflow',
-            },
-            {
-              name: 'videoResource',
-              title: 'Video Resource',
-              type: 'videoResource',
             },
             {title: 'Tip', type: 'tip'},
           ],

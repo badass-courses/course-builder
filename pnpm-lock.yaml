@@ -86,18 +86,36 @@ importers:
 
   apps/course-builder-web:
     dependencies:
+      '@atlaskit/button':
+        specifier: ^16.18.1
+        version: 16.18.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/dropdown-menu':
-        specifier: ^12.1.8
-        version: 12.1.8(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^12.1.9
+        version: 12.1.9(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+      '@atlaskit/ds-lib':
+        specifier: ^2.2.3
+        version: 2.2.3(react@18.2.0)
+      '@atlaskit/focus-ring':
+        specifier: ^1.3.6
+        version: 1.3.6(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/form':
+        specifier: ^9.0.4
+        version: 9.0.4(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/icon':
+        specifier: ^22.0.0
+        version: 22.0.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/modal-dialog':
+        specifier: ^12.10.2
+        version: 12.10.2(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/pragmatic-drag-and-drop':
-        specifier: ^0.24.0
-        version: 0.24.0
+        specifier: ^0.25.0
+        version: 0.25.0
       '@atlaskit/pragmatic-drag-and-drop-flourish':
         specifier: ^0.2.0
         version: 0.2.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/pragmatic-drag-and-drop-hitbox':
-        specifier: ^0.12.0
-        version: 0.12.0
+        specifier: ^0.12.1
+        version: 0.12.1
       '@atlaskit/pragmatic-drag-and-drop-live-region':
         specifier: ^0.5.3
         version: 0.5.3
@@ -105,14 +123,17 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/pragmatic-drag-and-drop-react-indicator':
-        specifier: ^0.17.0
-        version: 0.17.0(@types/react@18.2.37)(react@18.2.0)
+        specifier: ^0.17.1
+        version: 0.17.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/primitives':
         specifier: ^1.13.1
         version: 1.13.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/select':
+        specifier: ^17.0.3
+        version: 17.0.3(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/tokens':
-        specifier: ^1.29.1
-        version: 1.29.1(react@18.2.0)
+        specifier: ^1.29.2
+        version: 1.29.2(react@18.2.0)
       '@auth/drizzle-adapter':
         specifier: ^0.3.6
         version: 0.3.6
@@ -320,6 +341,9 @@ importers:
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@18.2.0)
+      memoize-one:
+        specifier: ^6.0.0
+        version: 6.0.0
       nanoid:
         specifier: ^5.0.2
         version: 5.0.3
@@ -1048,7 +1072,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       bind-event-listener: 2.1.1
       react: 18.2.0
@@ -1056,8 +1080,26 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/button@16.17.10(@types/react@18.2.37)(react@18.2.0):
-    resolution: {integrity: sha512-C7UIVAKKrHOtwHiLT94XfyqQ/EAvWq4C7BxaxY0iTJZCvBTgZcefuHLsol9j612IaT7B8NJ/+vnwkKFpGjvFkQ==}
+  /@atlaskit/blanket@13.0.0(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-v/aS5BCidzwHTnn7oDRMHNAfQX0EgLgYxRVEbbeXVvZ7E7vktpr/G4gIltP6Q0eFvXT6kfFh1u3VGqlQSBsbfg==}
+    peerDependencies:
+      react: ^16.8.0
+    dependencies:
+      '@atlaskit/analytics-next': 9.1.4(react@18.2.0)
+      '@atlaskit/codemod-utils': 4.2.3
+      '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
+      '@atlaskit/theme': 12.6.2(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@babel/runtime': 7.23.2
+      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
+      react: 18.2.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
+    dev: false
+
+  /@atlaskit/button@16.18.1(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-6RZCp2IUZAsgm2UFp+Ws6i3b+0uLbs2rmc6fWrhd4F0jvavDnOjivdFAPPVBcMM4pIOBrTv6QBXAgRhScec/Hw==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -1070,7 +1112,7 @@ packages:
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.37)(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
@@ -1086,13 +1128,13 @@ packages:
       '@babel/runtime': 7.23.2
     dev: false
 
-  /@atlaskit/dropdown-menu@12.1.8(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-PxVaNWxYsa0+Ub2yuCfn2rWOmZ2cy3Q63bBfG+oQJaN0WpCpf8+prfbMyAilgQGexR4ERz9EMt511hH9olhfug==}
+  /@atlaskit/dropdown-menu@12.1.9(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-MhBhYPWcbK1rTvcVRN+jluvHWumnmm0WsZkDvIs238cWMU8Y1PQtJAXoqb+9TL4CxlkqMlW+Gh/PAj4RHP7Ikw==}
     peerDependencies:
       react: ^16.8.0
       react-dom: ^16.8.0
     dependencies:
-      '@atlaskit/button': 16.17.10(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/button': 16.18.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
@@ -1103,7 +1145,7 @@ packages:
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1129,10 +1171,31 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
+    dev: false
+
+  /@atlaskit/form@9.0.4(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-zyjBsnUCZ9s2XUVnQ476aNdBaAeNC5CzI3s0QCoviBDO0+I8e8wZCVTGnV/RJwpJPPjOlq7EwLBb0gH1N9R7ew==}
+    peerDependencies:
+      react: ^16.8.0
+    dependencies:
+      '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/theme': 12.6.2(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@babel/runtime': 7.23.2
+      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
+      final-form: 4.20.10
+      final-form-focus: 1.1.2(final-form@4.20.10)
+      lodash: 4.17.21
+      react: 18.2.0
+      react-uid: 2.3.3(@types/react@18.2.37)(react@18.2.0)
+      tiny-invariant: 1.3.1
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
@@ -1143,7 +1206,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1189,13 +1252,45 @@ packages:
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
+      - supports-color
+    dev: false
+
+  /@atlaskit/modal-dialog@12.10.2(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-n5bM2HP22k4jY7B7n/6kMrJoPqEMucMakZg/iCYc4zaV/POAmpnEajXOa6S4OkUvNb7UVtVCDn55YmbvbVrOMQ==}
+    peerDependencies:
+      react: ^16.8.0
+    dependencies:
+      '@atlaskit/analytics-next': 9.1.4(react@18.2.0)
+      '@atlaskit/blanket': 13.0.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/codemod-utils': 4.2.3
+      '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
+      '@atlaskit/focus-ring': 1.3.6(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/layering': 0.2.3(react@18.2.0)
+      '@atlaskit/motion': 1.5.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/platform-feature-flags': 0.2.5
+      '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.2.0)
+      '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/theme': 12.6.2(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@babel/runtime': 7.23.2
+      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
+      bind-event-listener: 2.1.1
+      raf-schd: 4.0.3
+      react: 18.2.0
+      react-focus-lock: 2.9.6(@types/react@18.2.37)(react@18.2.0)
+      react-scrolllock: 5.0.1(react@18.2.0)
+      react-uid: 2.3.3(@types/react@18.2.37)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - react-dom
       - supports-color
     dev: false
 
@@ -1245,7 +1340,7 @@ packages:
       '@atlaskit/popper': 5.5.4(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1278,7 +1373,7 @@ packages:
       react: ^16.8.0
     dependencies:
       '@atlaskit/motion': 1.5.1(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       react: 18.2.0
     transitivePeerDependencies:
@@ -1286,10 +1381,10 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop-hitbox@0.12.0:
-    resolution: {integrity: sha512-iFGdGyt87OjhzKc3XpuDI/CGB19jfWdbTTPbg1P49sdtHDO5Pu3WuwWWKZuvqabsSbNIbRKsOCqZ25W/CfuP1g==}
+  /@atlaskit/pragmatic-drag-and-drop-hitbox@0.12.1:
+    resolution: {integrity: sha512-kasSifl+wIYGUCEqF+VMbxPxgoQjW6S5rj5MzQ8ULZnOgqDJ5xuiMAcI2px0osftEg6wusX0jRkPOWpSeEXz3Q==}
     dependencies:
-      '@atlaskit/pragmatic-drag-and-drop': 0.24.0
+      '@atlaskit/pragmatic-drag-and-drop': 0.25.0
       '@babel/runtime': 7.23.2
     dev: false
 
@@ -1304,12 +1399,12 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/dropdown-menu': 12.1.8(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+      '@atlaskit/dropdown-menu': 12.1.9(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/focus-ring': 1.3.6(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1319,14 +1414,14 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop-react-indicator@0.17.0(@types/react@18.2.37)(react@18.2.0):
-    resolution: {integrity: sha512-30ktLFyj/soPoytmgF4hDp2L5cGiDBFsc2Ckqd9i/l3+khcea6cc+Jz9qyAUASuBgdcFdX1MsoHeXLq/defSkQ==}
+  /@atlaskit/pragmatic-drag-and-drop-react-indicator@0.17.1(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-hOJxdifEzpmNHgRdKgdas/TMUigRKznnBrT91C1cLzLwSQR50JynBEiApW6BmWOOfZLsrf07FnNyasP8NFK8kg==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/pragmatic-drag-and-drop': 0.24.0
-      '@atlaskit/pragmatic-drag-and-drop-hitbox': 0.12.0
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/pragmatic-drag-and-drop': 0.25.0
+      '@atlaskit/pragmatic-drag-and-drop-hitbox': 0.12.1
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1335,8 +1430,8 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop@0.24.0:
-    resolution: {integrity: sha512-5LvAC7AUzZxlKWgAzizyV/OZMFj9dVB4OpKOC0f2drddJCZfklX2Mg9SYvMgU+7aPLtAXuo97Dl+4yIpkukYHQ==}
+  /@atlaskit/pragmatic-drag-and-drop@0.25.0:
+    resolution: {integrity: sha512-odIEqRtKhBqSNnAOfqVCVKP9aEy5oWO80bmQORXGCiBv0sIexWdn0RH4j8NUf6Glce/iV/tJLOh/irqcqtGo4Q==}
     dependencies:
       '@babel/runtime': 7.23.2
       bind-event-listener: 2.1.1
@@ -1349,13 +1444,45 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@atlaskit/app-provider': 0.4.0(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       '@emotion/serialize': 1.1.2
       bind-event-listener: 2.1.1
       react: 18.2.0
       tiny-invariant: 1.3.1
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
+    dev: false
+
+  /@atlaskit/select@17.0.3(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-YEr7plvrlqw4z/dGc6srKZI8QsyBkMf63p7PAS7mLIYuAnPG1eONwcRoVLqBVeAJeWcK5is1GUdQM5Z6kdJ5xw==}
+    peerDependencies:
+      react: ^16.8.0
+      react-dom: ^16.8.0
+    dependencies:
+      '@atlaskit/analytics-next': 9.1.4(react@18.2.0)
+      '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/platform-feature-flags': 0.2.5
+      '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/theme': 12.6.2(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.37)(react@18.2.0)
+      '@babel/runtime': 7.23.2
+      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
+      '@popperjs/core': 2.11.8
+      bind-event-listener: 2.1.1
+      memoize-one: 6.0.0
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-fast-compare: 3.2.2
+      react-focus-lock: 2.9.6(@types/react@18.2.37)(react@18.2.0)
+      react-node-resolver: 1.0.1
+      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.2.0)(react@18.2.0)
+      react-select: 5.8.0(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+      react-uid: 2.3.3(@types/react@18.2.37)(react@18.2.0)
+      shallow-equal: 3.1.0
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
@@ -1368,7 +1495,7 @@ packages:
     dependencies:
       '@atlaskit/interaction-context': 2.1.3(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1384,15 +1511,15 @@ packages:
     dependencies:
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
-      '@atlaskit/tokens': 1.29.1(react@18.2.0)
+      '@atlaskit/tokens': 1.29.2(react@18.2.0)
       '@babel/runtime': 7.23.2
       react: 18.2.0
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@atlaskit/tokens@1.29.1(react@18.2.0):
-    resolution: {integrity: sha512-fdBIutnwPUsDARMoM9LQW6da2PpICScqsbwBC13KMdh3QOz9hWr5Rwdysw2klonQ4bOlnZdpObFH5hoJwfWaRw==}
+  /@atlaskit/tokens@1.29.2(react@18.2.0):
+    resolution: {integrity: sha512-gxJSfvpDPmVDPt76swB1GFPhrAlKcKnmKtyP/I18amBbvvW3dmcPWJn94f1e78Aax363ozfcmGbsYj/NK3bZ6A==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -7618,6 +7745,12 @@ packages:
       '@types/react': 18.2.37
     dev: false
 
+  /@types/react-transition-group@4.4.10:
+    resolution: {integrity: sha512-hT/+s0VQs2ojCX823m60m5f0sL5idt9SO6Tj6Dg+rdphGPIeJbJ6CxvBYkgkGKrYeDjvIpKTR38UzmtHJOGW3Q==}
+    dependencies:
+      '@types/react': 18.2.37
+    dev: false
+
   /@types/react@18.2.37:
     resolution: {integrity: sha512-RGAYMi2bhRgEXT3f4B92WTohopH6bIXw05FuGlmJEnv/omEn190+QYEIYxIAuIBdKgboYYdVved2p1AxZVQnaw==}
     dependencies:
@@ -10193,6 +10326,13 @@ packages:
     dependencies:
       esutils: 2.0.3
 
+  /dom-helpers@5.2.1:
+    resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
+    dependencies:
+      '@babel/runtime': 7.23.2
+      csstype: 3.1.2
+    dev: false
+
   /dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
     dependencies:
@@ -11486,6 +11626,10 @@ packages:
       strip-final-newline: 3.0.0
     dev: false
 
+  /exenv@1.2.2:
+    resolution: {integrity: sha512-Z+ktTxTwv9ILfgKCk32OX3n/doe+OcLTRtqK9pcL+JsP3J1/VW8Uvl4ZjLlKqeW4rzK4oesDOGMEMRIZqtP4Iw==}
+    dev: false
+
   /exif-component@1.0.1:
     resolution: {integrity: sha512-FXnmK9yJYTa3V3G7DE9BRjUJ0pwXMICAxfbsAuKPTuSlFzMZhQbcvvwx0I8ofNJHxz3tfjze+whxcGpfklAWOQ==}
     dev: false
@@ -11634,6 +11778,21 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       to-regex-range: 5.0.1
+
+  /final-form-focus@1.1.2(final-form@4.20.10):
+    resolution: {integrity: sha512-Gd+Bd2Ll7ijo3/sd6kJ/bwLkhc2bUJPxTON6fIqee/008EJpACWhT+zoWCm9q6NcfMcWRS+Sp5ikRX8iqdXeGQ==}
+    peerDependencies:
+      final-form: '>=1.3.0'
+    dependencies:
+      final-form: 4.20.10
+    dev: false
+
+  /final-form@4.20.10:
+    resolution: {integrity: sha512-TL48Pi1oNHeMOHrKv1bCJUrWZDcD3DIG6AGYVNOnyZPr7Bd/pStN0pL+lfzF5BNoj/FclaoiaLenk4XUIFVYng==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@babel/runtime': 7.23.2
+    dev: false
 
   /find-root@1.1.0:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
@@ -17080,6 +17239,10 @@ packages:
       - supports-color
     dev: false
 
+  /react-node-resolver@1.0.1:
+    resolution: {integrity: sha512-IiSe0h2+IJo4enSlbdYjdwJnY86A7TwNxnfQVG2yApxVkHj9es1jum9Lb2aiBXKkLnwAj7ufBBlAa0ROU0o9nA==}
+    dev: false
+
   /react-photo-album@2.3.0(react@18.2.0):
     resolution: {integrity: sha512-CU+UMK4ZQHIoPZ672TSst9loKE5bxy6w0+bf7bY4XOw1g1C7+VdDWCW+wD8wPpbg2ve38QBTS73HVe6xYLAQ3w==}
     engines: {node: '>=12'}
@@ -17220,6 +17383,36 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
+  /react-scrolllock@5.0.1(react@18.2.0):
+    resolution: {integrity: sha512-poeEsjnZAlpA6fJlaNo4rZtcip2j6l5mUGU/SJe1FFlicEudS943++u7ZSdA7lk10hoyYK3grOD02/qqt5Lxhw==}
+    peerDependencies:
+      react: ^16.3.0
+    dependencies:
+      exenv: 1.2.2
+      react: 18.2.0
+    dev: false
+
+  /react-select@5.8.0(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-TfjLDo58XrhP6VG5M/Mi56Us0Yt8X7xD6cDybC7yoRMUNm7BGO7qk8J0TLQOua/prb8vUOtsfnXZwfm30HGsAA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@emotion/cache': 11.11.0
+      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
+      '@floating-ui/dom': 1.5.3
+      '@types/react-transition-group': 4.4.10
+      memoize-one: 6.0.0
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-transition-group: 4.4.5(react-dom@18.2.0)(react@18.2.0)
+      use-isomorphic-layout-effect: 1.1.2(@types/react@18.2.37)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+    dev: false
+
   /react-simplemde-editor@5.2.0(easymde@2.18.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-GkTg1MlQHVK2Rks++7sjuQr/GVS/xm6y+HchZ4GPBWrhcgLieh4CjK04GTKbsfYorSRYKa0n37rtNSJmOzEDkQ==}
     peerDependencies:
@@ -17259,6 +17452,35 @@ packages:
       '@types/react': 18.2.37
       get-nonce: 1.0.1
       invariant: 2.2.4
+      react: 18.2.0
+      tslib: 2.6.2
+    dev: false
+
+  /react-transition-group@4.4.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
+    peerDependencies:
+      react: '>=16.6.0'
+      react-dom: '>=16.6.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+      dom-helpers: 5.2.1
+      loose-envify: 1.4.0
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-uid@2.3.3(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-iNpDovcb9qBpBTo8iUgqRSQOS8GV3bWoNaTaUptHkXtAooXSo0OWe7vN6TqqB8x3x0bNBbQx96kkmSltQ5h9kQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@types/react': 18.2.37
       react: 18.2.0
       tslib: 2.6.2
     dev: false
@@ -18122,6 +18344,10 @@ packages:
 
   /setimmediate@1.0.5:
     resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
+    dev: false
+
+  /shallow-equal@3.1.0:
+    resolution: {integrity: sha512-pfVOw8QZIXpMbhBWvzBISicvToTiM5WBF1EeAUZDDSb5Dt29yl4AYbyywbJFSEsRUMr7gJaxqCdr4L3tQf9wVg==}
     dev: false
 
   /shallow-equals@1.0.0:
@@ -19832,6 +20058,19 @@ packages:
     peerDependencies:
       react: '>=17.0.0'
     dependencies:
+      react: 18.2.0
+    dev: false
+
+  /use-isomorphic-layout-effect@1.1.2(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@types/react': 18.2.37
       react: 18.2.0
     dev: false
 
