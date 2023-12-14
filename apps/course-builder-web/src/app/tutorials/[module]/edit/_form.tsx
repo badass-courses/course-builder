@@ -1,10 +1,9 @@
 'use client'
 
 import SortableLessonList, {ItemData} from '@/components/lesson-list/list'
-import VideoUploader from '@/components/video-uploader'
 import * as React from 'react'
 import {api} from '@/trpc/react'
-import {Controller, useFieldArray, useForm} from 'react-hook-form'
+import {useFieldArray, useForm} from 'react-hook-form'
 import {z} from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {
@@ -44,6 +43,11 @@ export function EditTutorialForm({
   const form = useForm<z.infer<typeof EditTutorialFormSchema>>({
     resolver: zodResolver(EditTutorialFormSchema),
     defaultValues: initialTutorialData,
+  })
+
+  console.log({
+    moduleSlug,
+    initialTutorialData,
   })
 
   const {isSubmitting, isDirty, isValid} = form.formState

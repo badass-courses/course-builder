@@ -34,6 +34,8 @@ import {DragHandleDropdownMenu} from '@atlaskit/pragmatic-drag-and-drop-react-ac
 import {DropIndicator} from '@atlaskit/pragmatic-drag-and-drop-react-indicator/box'
 import {Box, Grid, Stack, xcss} from '@atlaskit/primitives'
 import {token} from '@atlaskit/tokens'
+import Link from 'next/link'
+import {useParams} from 'next/navigation'
 
 type ItemPosition = 'first' | 'last' | 'middle' | 'only'
 
@@ -207,6 +209,8 @@ function ListItem({itemData}: {itemData: ItemData}) {
     )
   }, [getItemIndex, instanceId, itemData, registerItem])
 
+  const params = useParams()
+
   return (
     <Fragment>
       <Box ref={ref} xcss={listItemContainerStyles}>
@@ -229,7 +233,11 @@ function ListItem({itemData}: {itemData: ItemData}) {
           >
             <LazyDropdownContent itemData={itemData} />
           </DragHandleDropdownMenu>
-          <Box xcss={itemLabelStyles}>{itemData.label}</Box>
+          <Box xcss={itemLabelStyles}>
+            <Link href={`/tutorials/${params.module}/${itemData.id}/edit`}>
+              {itemData.label}
+            </Link>
+          </Box>
         </Grid>
         {closestEdge && <DropIndicator edge={closestEdge} gap="1px" />}
       </Box>
