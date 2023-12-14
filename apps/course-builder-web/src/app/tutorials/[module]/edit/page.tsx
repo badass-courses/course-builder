@@ -3,7 +3,6 @@ import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
 import {notFound, redirect} from 'next/navigation'
 import {api} from '@/trpc/server'
-import {EditTutorialForm} from '@/app/tutorials/[module]/edit/_form'
 import VideoUploader from '@/components/video-uploader'
 import Tree from '@/components/lesson-list/tree'
 import ModuleEdit from '@/components/module-edit'
@@ -29,7 +28,6 @@ export default async function EditTutorialPage({
   return (
     <>
       <ModuleEdit tutorial={tutorial} />
-
       <div className="flex flex-col">
         <VideoUploader moduleSlug={params.module} />
         <Tree

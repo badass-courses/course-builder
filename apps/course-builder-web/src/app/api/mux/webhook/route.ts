@@ -4,8 +4,9 @@ import {
   MUX_WEBHOOK_EVENT,
   MuxWebhookEventSchema,
 } from '@/inngest/events/mux-webhook'
+import {withSkill} from '@/server/with-skill'
 
-export async function POST(req: NextRequest) {
+export const POST = withSkill(async (req: NextRequest) => {
   // todo: check MUX_WEBHOOK_SIGNING_SECRET to verify the request
   const muxWebhookEvent = MuxWebhookEventSchema.parse(await req.json())
 
@@ -23,4 +24,4 @@ export async function POST(req: NextRequest) {
   return new Response('ok', {
     status: 200,
   })
-}
+})

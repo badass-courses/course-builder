@@ -22,6 +22,21 @@ Status: proposed | rejected | accepted | deprecated | … | superseded by
 ### Consequences
 ```
 
+## 09 Use Axiom for Log Management
+
+Date: 2023-12-14
+
+Status: proposed
+
+### Context
+Our application requires comprehensive logging, including the distribution and long-term storage of logs for analysis. We need a solution that allows us to inspect logs over extended periods, especially in critical processes like e-commerce transactions. Vercel's logging capabilities are limited in duration and deployment scope.
+
+### Decision
+We have decided to trial Axiom as our logging service provider. Axiom is recognized for its ability to intake, search, and sort through logs effectively. It offers an affordable solution for extensive logging needs and is compatible with our current system architecture.
+
+### Consequences
+Choosing Axiom introduces a new service into our system, adding to the complexity and maintenance requirements. There's an associated cost, although Axiom is relatively affordable. Implementing Axiom requires instrumenting our application to send logs appropriately, including setting up loggers and wrapping route handlers. While Axiom provides a Next.js library for integration, we'll need to evaluate its effectiveness and may explore other log drain methods in the future.
+
 ## 08 GitHub Actions for CI/CD
 
 Date: 2023-12-05

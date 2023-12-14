@@ -1,6 +1,6 @@
-import {type NextRequest} from 'next/server'
-import {getMuxOptions, muxRequestHeaders} from '@/lib/get-mux-options'
+import {getMuxOptions} from '@/lib/get-mux-options'
 import {env} from '@/env.mjs'
+import {SkillRequest, withSkill} from '@/server/with-skill'
 
 const baseUrl = 'https://api.mux.com'
 
@@ -9,7 +9,7 @@ const baseUrl = 'https://api.mux.com'
  *
  * @param req
  */
-export async function POST(req: NextRequest) {
+export const POST = withSkill(async (req: SkillRequest) => {
   try {
     const response = await fetch(`${baseUrl}/video/v1/uploads`, {
       headers: {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.log(error)
+    req.log.error(`mux error`, {error})
     return new Response(JSON.stringify(error), {
       status: 500,
       headers: {
@@ -37,4 +37,4 @@ export async function POST(req: NextRequest) {
       },
     })
   }
-}
+})
