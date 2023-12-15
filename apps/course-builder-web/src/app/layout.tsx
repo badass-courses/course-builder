@@ -36,7 +36,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
             <Party />
             <div key="1" className="flex min-h-screen w-full flex-col">
               <Navigation />
-              <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-row gap-4 p-4 md:gap-8 md:p-10">
+              <main>
                 <NextSSRPlugin
                   /**
                    * The `extractRouterConfig` will extract **only** the route configs from the
