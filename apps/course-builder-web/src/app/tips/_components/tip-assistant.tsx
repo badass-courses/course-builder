@@ -20,14 +20,8 @@ export function TipAssistant({tip}: {tip: Tip}) {
       <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
       <ChatResponse requestIds={[tip.videoResourceId]} />
       <div className="flex w-full flex-col items-start border-t">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-          }}
-          className="relative w-full"
-        >
+        <div className="relative w-full">
           <Textarea
-            id="tip-assistant-input"
             className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
             placeholder="Type a message..."
             disabled={generateTitleStatus === 'loading'}
@@ -49,7 +43,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
           >
             <EnterIcon className="w-4" />
           </Button>
-        </form>
+        </div>
         <div className="p-5">
           <h3 className="flex pb-3 text-lg font-bold">Actions</h3>
           <Button
@@ -116,7 +110,7 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
   )
 
   return (
-    <ScrollArea viewportRef={div} className="h-[600px] w-full scroll-smooth">
+    <ScrollArea viewportRef={div} className="h-[50vh] w-full scroll-smooth">
       {Object.entries(groupedMessages).map(([requestId, bodies], index) => (
         <div key={requestId} className="prose prose-sm max-w-none p-5">
           <ReactMarkdown>{bodies.join('')}</ReactMarkdown>
