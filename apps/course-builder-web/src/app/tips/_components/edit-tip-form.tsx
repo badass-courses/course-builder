@@ -29,7 +29,6 @@ import Link from 'next/link'
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
   body: z.string().optional().nullable(),
-  slug: z.string(),
 })
 
 export function EditTipForm({tip}: {tip: Tip}) {
@@ -51,11 +50,12 @@ export function EditTipForm({tip}: {tip: Tip}) {
 
   return (
     <Form {...form}>
-      <form className="" onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        {JSON.stringify(form.getValues())}
         <div className="flex w-full items-center justify-between bg-gray-100 px-5 py-3">
-          <Link href={`/tips/${tip.slug}`} className="font-semibold">
-            ← Tip
-          </Link>
+          <Button className="px-0" asChild variant="link">
+            <Link href={`/tips/${tip.slug}`}>← Tip</Link>
+          </Button>
           <Button type="submit" variant="default">
             Save Tip
           </Button>
@@ -97,7 +97,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
               )}
             />
             <Accordion type="single" collapsible>
-              <AccordionItem value="video" className="rounded border ">
+              <AccordionItem value="video" className="rounded border">
                 <AccordionTrigger className="flex w-full justify-between px-5 py-3 text-lg font-bold">
                   Video
                 </AccordionTrigger>
