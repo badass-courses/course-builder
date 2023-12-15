@@ -25,7 +25,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
             className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
             placeholder="Type a message..."
             disabled={generateTitleStatus === 'loading'}
-            rows={5}
+            rows={4}
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault()
