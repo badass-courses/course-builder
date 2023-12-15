@@ -51,7 +51,6 @@ export function EditTipForm({tip}: {tip: Tip}) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        {JSON.stringify(form.getValues())}
         <div className="flex w-full items-center justify-between bg-gray-100 px-5 py-3">
           <Button className="px-0" asChild variant="link">
             <Link href={`/tips/${tip.slug}`}>← Tip</Link>
