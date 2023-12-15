@@ -34,7 +34,6 @@ const NewTipFormSchema = z.object({
 
 export function EditTipForm({tip}: {tip: Tip}) {
   const router = useRouter()
-  const videoResourceId = tip.videoResourceId
 
   const form = useForm<z.infer<typeof NewTipFormSchema>>({
     resolver: zodResolver(NewTipFormSchema),
