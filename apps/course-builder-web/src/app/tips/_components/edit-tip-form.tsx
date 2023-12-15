@@ -41,7 +41,8 @@ export function EditTipForm({tip}: {tip: Tip}) {
       body: tip.body,
     },
   })
-  const {mutateAsync: updateTip} = api.tips.update.useMutation()
+  const {mutateAsync: updateTip, status: updateTipStatus} =
+    api.tips.update.useMutation()
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
     const {slug} = await updateTip({tipId: tip._id, ...values})
@@ -55,7 +56,11 @@ export function EditTipForm({tip}: {tip: Tip}) {
           <Button className="px-0" asChild variant="link">
             <Link href={`/tips/${tip.slug}`}>← Tip</Link>
           </Button>
-          <Button type="submit" variant="default">
+          <Button
+            type="submit"
+            variant="default"
+            disabled={updateTipStatus === 'loading'}
+          >
             Save Tip
           </Button>
         </div>
