@@ -9,19 +9,23 @@ export function Party() {
   const router = useRouter()
   useSocket({
     onMessage: async (messageEvent) => {
-      const data = JSON.parse(messageEvent.data)
-      const invalidateOn = [
-        'videoResource.created',
-        'video.asset.ready',
-        'transcript.ready',
-        'ai.tip.draft.completed',
-      ]
+      try {
+        const data = JSON.parse(messageEvent.data)
+        const invalidateOn = [
+          'videoResource.created',
+          'video.asset.ready',
+          'transcript.ready',
+          'ai.tip.draft.completed',
+        ]
 
-      console.log(data.name)
+        console.log(data.name)
 
-      if (invalidateOn.includes(data.name)) {
-        await utils.module.invalidate()
-        router.refresh()
+        if (invalidateOn.includes(data.name)) {
+          await utils.module.invalidate()
+          router.refresh()
+        }
+      } catch (error) {
+        // noting to do
       }
     },
   })
