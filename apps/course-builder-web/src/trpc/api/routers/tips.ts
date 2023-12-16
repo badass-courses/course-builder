@@ -129,6 +129,7 @@ export const tipsRouter = createTRPCRouter({
       z.object({
         tipId: z.string(),
         title: z.string(),
+        body: z.string().optional().nullable(),
       }),
     )
     .mutation(async ({ctx, input}) => {
@@ -145,6 +146,7 @@ export const tipsRouter = createTRPCRouter({
             set: {
               'slug.current': `${slugify(input.title)}~${nanoid()}`,
               title: toChicagoTitleCase(input.title),
+              body: input.body,
             },
           },
         },

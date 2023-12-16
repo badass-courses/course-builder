@@ -1,6 +1,7 @@
 'use client'
 
-import MuxPlayer, {type MuxPlayerProps} from '@mux/mux-player-react'
+import {type MuxPlayerProps} from '@mux/mux-player-react'
+import MuxPlayer from '@mux/mux-player-react/lazy'
 import * as React from 'react'
 import {api} from '@/trpc/react'
 
@@ -31,13 +32,5 @@ export function TipPlayer({
       ? videoResource?.muxPlaybackId
       : undefined)
 
-  return (
-    <div className="relative z-10 flex items-center justify-center">
-      <div className="flex w-full max-w-screen-xl flex-col">
-        <div className="flex items-center justify-center  overflow-hidden xl:rounded-b-md">
-          <MuxPlayer playbackId={playbackId} {...playerProps} />
-        </div>
-      </div>
-    </div>
-  )
+  return <MuxPlayer playbackId={playbackId} {...playerProps} />
 }

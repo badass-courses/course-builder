@@ -54,7 +54,7 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
   return (
     <div
       ref={div}
-      className="max-h-400 w-full max-w-md overflow-auto rounded-md rounded-md border border bg-muted"
+      className="max-h-400 w-full max-w-md overflow-auto rounded-md border bg-muted"
     >
       {Object.entries(groupedMessages).map(([requestId, bodies], index) => (
         <div key={requestId} className="mb-4 rounded-md bg-blue-100 p-4 shadow">
