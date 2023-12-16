@@ -87,16 +87,22 @@ mux-player {
 }
 
 .tiptap {
-  border: #FF3300 solid 2px;
+  border: #ff3300 solid 2px;
   min-height: calc(100% - 40px);
 }
 .tiptap > * + * {
   margin-top: 0.75em;
 }
-.tiptap ul, .tiptap ol {
+.tiptap ul,
+.tiptap ol {
   padding: 0 1rem;
 }
-.tiptap h1, .tiptap h2, .tiptap h3, .tiptap h4, .tiptap h5, .tiptap h6 {
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
   line-height: 1.1;
 }
 .tiptap code {
@@ -104,8 +110,8 @@ mux-player {
   color: #616161;
 }
 .tiptap pre {
-  background: #0D0D0D;
-  color: #FFF;
+  background: #0d0d0d;
+  color: #fff;
   font-family: 'JetBrainsMono', monospace;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
