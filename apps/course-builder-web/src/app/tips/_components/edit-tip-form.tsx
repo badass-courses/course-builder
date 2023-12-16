@@ -25,6 +25,7 @@ import {useRouter} from 'next/navigation'
 import {type Tip} from '@/lib/tips'
 import {TipAssistant} from './tip-assistant'
 import Link from 'next/link'
+import {CodemirrorEditor} from '@/app/tips/_components/codemirror'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -66,6 +67,10 @@ export function EditTipForm({tip}: {tip: Tip}) {
         </div>
         <div className="grid grid-cols-12">
           <div className="col-span-3 flex h-full flex-col space-y-5 border-r p-5">
+            <TipPlayer
+              videoResourceId={tip.videoResourceId}
+              muxPlaybackId={tip.muxPlaybackId}
+            />
             <FormField
               control={form.control}
               name="title"
@@ -82,37 +87,25 @@ export function EditTipForm({tip}: {tip: Tip}) {
               )}
             />
           </div>
-          <div className="col-span-6 flex flex-col space-y-5 border-r p-5">
+          <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r p-5">
             <FormField
               control={form.control}
               name="body"
               render={({field}) => (
-                <FormItem>
+                <FormItem className="h-full">
                   <FormLabel className="text-lg font-bold">Content</FormLabel>
                   <FormDescription>Tip content in MDX.</FormDescription>
-                  <Textarea
-                    className="text-base leading-relaxed"
-                    rows={21}
-                    {...field}
-                    value={field.value || ''}
-                  />
+                  <CodemirrorEditor roomName={`tip-edit-${tip._id}`} />
+                  {/*<Textarea*/}
+                  {/*  className="text-base leading-relaxed"*/}
+                  {/*  rows={21}*/}
+                  {/*  {...field}*/}
+                  {/*  value={field.value || ''}*/}
+                  {/*/>*/}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Accordion type="single" collapsible>
-              <AccordionItem value="video" className="rounded border">
-                <AccordionTrigger className="flex w-full justify-between px-5 py-3 text-lg font-bold">
-                  Video
-                </AccordionTrigger>
-                <AccordionContent>
-                  <TipPlayer
-                    videoResourceId={tip.videoResourceId}
-                    muxPlaybackId={tip.muxPlaybackId}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
           </div>
           <div className="col-span-3">
             <TipAssistant tip={tip} />

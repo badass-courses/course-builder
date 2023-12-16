@@ -76,23 +76,27 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
 
   useSocket({
     onMessage: (messageEvent) => {
-      const messageData = JSON.parse(messageEvent.data)
+      try {
+        const messageData = JSON.parse(messageEvent.data)
 
-      console.log({requestIds, messageData})
+        console.log({requestIds, messageData})
 
-      if (
-        messageData.body !== STREAM_COMPLETE &&
-        requestIds.includes(messageData.requestId)
-      ) {
-        setMessages((messages) => [
-          ...messages,
-          {body: messageData.body, requestId: messageData.requestId},
-        ])
-      }
-      utils.module.invalidate()
+        if (
+          messageData.body !== STREAM_COMPLETE &&
+          requestIds.includes(messageData.requestId)
+        ) {
+          setMessages((messages) => [
+            ...messages,
+            {body: messageData.body, requestId: messageData.requestId},
+          ])
+        }
+        utils.module.invalidate()
 
-      if (div.current) {
-        div.current.scrollTop = div.current.scrollHeight
+        if (div.current) {
+          div.current.scrollTop = div.current.scrollHeight
+        }
+      } catch (error) {
+        // noting to do
       }
     },
   })
