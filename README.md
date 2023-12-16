@@ -5,7 +5,7 @@ prompt chaining as a "tool for thought"""
 
 Current State: https://www.loom.com/share/651287e8136a46429f46e6541e3dd0c2
 
-Note that this is a monorepo and teh main app is in `apps/course-builder-web`!
+Note that this is a monorepo and the main app is in `apps/course-builder-web`!
 
 It's got a lot of moving parts 😅:
 
