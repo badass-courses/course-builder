@@ -1,35 +1,16 @@
 import type * as Party from 'partykit/server'
 import {onConnect} from 'y-partykit'
 
-import {TiptapTransformer} from '@hocuspocus/transformer'
-
-import * as Y from 'yjs'
-import {Extension} from '@tiptap/react'
-import {StarterKit} from '@tiptap/starter-kit'
-
-export function getBaseExtensions(): Extension[] {
-  return [
-    StarterKit.configure({
-      // The Collaboration extension comes with its own history handling
-      history: false,
-    }),
-  ]
-}
-
-const transformer = TiptapTransformer.extensions(getBaseExtensions())
-const rootFragmentField = 'default'
-
 export default class Server implements Party.Server {
   constructor(readonly party: Party.Party) {}
 
   async onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
-    const party = this.party
     // A websocket just connected!
     console.log(
       `Connected:
-  id: ${conn.id}
-  room: ${this.party.id}
-  url: ${new URL(ctx.request.url).pathname}`,
+          id: ${conn.id}
+          room: ${this.party.id}
+          url: ${new URL(ctx.request.url).pathname}`,
     )
 
     return onConnect(conn, this.party, {})
