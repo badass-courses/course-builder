@@ -12,7 +12,6 @@ export default async function TipEditPage({params}: {params: {slug: string}}) {
   return tip && ability.can('upload', 'Media') ? (
     <div className="relative mx-auto h-full w-full flex-grow items-center justify-center border-b">
       <EditTipForm key={tip.slug} tip={tip} />
-      {/* <SuggestionResults videoResourceId={tip.videoResourceId} /> */}
     </div>
   ) : null
 }
