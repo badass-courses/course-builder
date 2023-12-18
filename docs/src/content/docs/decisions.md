@@ -22,7 +22,7 @@ Status: proposed | rejected | accepted | deprecated | … | superseded by
 ### Consequences
 ```
 
-## Use CodeMirror for Text Editing in Browser
+## 10 Use CodeMirror for Text Editing in Browser
 
 Date: 2023-12-18
 
