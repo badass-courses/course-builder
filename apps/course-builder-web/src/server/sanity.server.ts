@@ -15,6 +15,7 @@ export async function sanityMutation(
         Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
       },
       body: JSON.stringify({mutations}),
+      next: {revalidate: 60}, //seconds
     },
   )
     .then(async (response) => {

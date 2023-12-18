@@ -3,12 +3,7 @@
 import * as React from 'react'
 import {TipPlayer} from '@/app/tips/_components/tip-player'
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
   Button,
-  Textarea,
   Form,
   FormDescription,
   FormField,
@@ -95,13 +90,9 @@ export function EditTipForm({tip}: {tip: Tip}) {
                 <FormItem className="h-full">
                   <FormLabel className="text-lg font-bold">Content</FormLabel>
                   <FormDescription>Tip content in MDX.</FormDescription>
+
                   <CodemirrorEditor roomName={`tip-edit-${tip._id}`} />
-                  {/*<Textarea*/}
-                  {/*  className="text-base leading-relaxed"*/}
-                  {/*  rows={21}*/}
-                  {/*  {...field}*/}
-                  {/*  value={field.value || ''}*/}
-                  {/*/>*/}
+
                   <FormMessage />
                 </FormItem>
               )}
