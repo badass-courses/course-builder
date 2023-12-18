@@ -2,7 +2,7 @@ import {env} from '@/env.mjs'
 import * as Y from 'yjs'
 import {yCollab} from 'y-codemirror.next'
 import {EditorView, basicSetup} from 'codemirror'
-import {EditorState} from '@codemirror/state'
+import {EditorState, Extension} from '@codemirror/state'
 import {useCallback, useEffect, useState} from 'react'
 import {markdown} from '@codemirror/lang-markdown'
 import YPartyKitProvider from 'y-partykit/provider'
@@ -39,6 +39,7 @@ export const CodemirrorEditor = ({roomName}: {roomName: string}) => {
         basicSetup,
         markdown(),
         yCollab(ytext, provider.awareness, {undoManager}),
+        ...styles,
       ],
     })
 
@@ -56,8 +57,41 @@ export const CodemirrorEditor = ({roomName}: {roomName: string}) => {
   }, [element, roomName])
 
   return (
-    <div>
+    <div className="h-full flex-shrink-0 border-y">
       <div ref={ref}></div>
     </div>
   )
 }
+
+const styles: Extension[] = [
+  EditorView.theme({
+    '.cm-content, .cm-gutter': {
+      minHeight: '100%',
+      height: '100%',
+    },
+    '.cm-content': {
+      padding: '2rem 0',
+      fontSize: '14px',
+    },
+    '.cm-line': {
+      padding: '0 2rem',
+    },
+    '.cm-gutters': {
+      backgroundColor: 'hsl(var(--background))',
+      borderRight: 'none',
+      opacity: 0.35,
+    },
+    '.cm-activeLineGutter': {
+      backgroundColor: 'transparent',
+    },
+    '.cm-lineNumbers': {
+      fontSize: '10px',
+    },
+    '&.cm-focused': {
+      outline: 'none',
+    },
+    '.cm-activeLine': {
+      backgroundColor: 'hsl(var(--foreground) / 3%)',
+    },
+  }),
+]
