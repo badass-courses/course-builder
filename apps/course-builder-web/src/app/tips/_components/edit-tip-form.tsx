@@ -87,14 +87,18 @@ export function EditTipForm({tip}: {tip: Tip}) {
               )}
             />
           </div>
-          <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r p-5">
+          <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
             <FormField
               control={form.control}
               name="body"
               render={({field}) => (
-                <FormItem className="h-full">
-                  <FormLabel className="text-lg font-bold">Content</FormLabel>
-                  <FormDescription>Tip content in MDX.</FormDescription>
+                <FormItem className="h-full pt-5">
+                  <FormLabel className="px-5 text-lg font-bold">
+                    Content
+                  </FormLabel>
+                  <FormDescription className="px-5 pb-3">
+                    Tip content in MDX.
+                  </FormDescription>
                   <CodemirrorEditor roomName={`tip-edit-${tip._id}`} />
                   {/*<Textarea*/}
                   {/*  className="text-base leading-relaxed"*/}
