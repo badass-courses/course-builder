@@ -109,12 +109,6 @@ export function EditTipForm({tip}: {tip: Tip}) {
                       Tip content in MDX.
                     </FormDescription>
                     <CodemirrorEditor roomName={`tip-edit-${tip._id}`} />
-                    {/*<Textarea*/}
-                    {/*  className="text-base leading-relaxed"*/}
-                    {/*  rows={21}*/}
-                    {/*  {...field}*/}
-                    {/*  value={field.value || ''}*/}
-                    {/*/>*/}
                     <FormMessage />
                   </FormItem>
                 )}

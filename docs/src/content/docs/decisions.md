@@ -22,6 +22,22 @@ Status: proposed | rejected | accepted | deprecated | … | superseded by
 ### Consequences
 ```
 
+## Use CodeMirror for Text Editing in Browser
+
+Date: 2023-12-18
+
+Status: proposed
+
+### Context
+Content creation, particularly text editing, is a significant aspect of our process, essential for user experience, SEO, and overall content quality. Text editing is primarily conducted in the browser, and we face a choice between different types of text editors. Options include real-time 'What You See Is What You Get' (WYSIWYG) editors, which provide rich text formatting, and plain text editors that support markdown syntax directly.
+
+### Decision
+We are considering using CodeMirror as our primary text editor. CodeMirror stands out for its seamless editing experience, which can be further enhanced with various tools and extensions. Its capability to provide crisp typing experiences combined with real-time editing features, potentially integrated with Party Kit, offers a robust and scalable editing system. This setup would enable first-class markdown editing directly in the browser, contributing to an integrated content environment.
+
+### Consequences
+Opting for CodeMirror involves a commitment to a specific type of text editing interface, which may limit flexibility in terms of rich text features typically found in WYSIWYG editors. However, the advantages of enhanced markdown support and the ability to extend functionality with tools and extensions present significant benefits for our content creation process. This decision will impact how we manage and edit text content, affecting user experience and content management efficiency.
+
+
 ## 09 Use Axiom for Log Management
 
 Date: 2023-12-14
