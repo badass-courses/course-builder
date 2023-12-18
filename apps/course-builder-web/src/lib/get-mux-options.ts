@@ -1,4 +1,5 @@
 import {env} from '@/env.mjs'
+import {z} from 'zod'
 
 export const muxRequestHeaders = {
   Authorization: `Basic ${Buffer.from(
@@ -12,6 +13,30 @@ type MuxApiOptions = {
   test?: boolean
   url?: string
   transcription?: boolean
+}
+
+const MuxAssetSchema = z.object({
+  id: z.string(),
+  playback_ids: z.array(
+    z.object({
+      id: z.string(),
+      policy: z.string(),
+    }),
+  ),
+})
+
+export async function createMuxAsset(options?: MuxApiOptions) {
+  const baseUrl = 'https://api.mux.com'
+
+  const muxOptions = getMuxOptions(options)
+
+  const res = await fetch(`${baseUrl}/video/v1/assets`, {
+    headers: muxRequestHeaders,
+    method: 'POST',
+    body: JSON.stringify(muxOptions.new_asset_settings),
+  })
+  const {data} = await res.json()
+  return MuxAssetSchema.parse(data)
 }
 
 export function getMuxOptions(options?: MuxApiOptions) {

@@ -4,8 +4,11 @@ import {getAbility} from '@/lib/ability'
 import {inngest} from '@/inngest/inngest.server'
 import {VIDEO_UPLOADED_EVENT} from '@/inngest/events/video-uploaded'
 import {z} from 'zod'
+import {UTApi} from 'uploadthing/server'
 
 const f = createUploadthing()
+
+export const utapi = new UTApi()
 
 export const ourFileRouter = {
   videoUploader: f({video: {maxFileSize: '2GB', maxFileCount: 5}})
@@ -39,6 +42,7 @@ export const ourFileRouter = {
           fileName: opts.file.name || 'untitled',
           title: opts.file.name || 'untitled',
           moduleSlug: opts.metadata.moduleSlug,
+          fileKey: opts.file.key,
         },
       })
     }),
@@ -64,6 +68,7 @@ export const ourFileRouter = {
           fileName: opts.file.name || 'untitled',
           title: opts.file.name || 'untitled',
           moduleSlug: 'tips',
+          fileKey: opts.file.key,
         },
       })
     }),
