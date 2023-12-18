@@ -12,6 +12,7 @@ import {userCreated} from '@/inngest/functions/user-created'
 import {weeklySignupDigest} from '@/inngest/functions/notify/creator/weekly-signups'
 import {userSignupAdminEmail} from '@/inngest/functions/notify/creator/user-signup'
 import {postmarkWebhook} from '@/inngest/functions/postmark/postmarks-webhooks-handler'
+import {cloudinaryAssetCreated} from '@/inngest/functions/cloudinary/cloudinary-webhooks-handlers'
 
 export const inngestConfig = {
   client: inngest,
@@ -27,5 +28,6 @@ export const inngestConfig = {
     weeklySignupDigest,
     userSignupAdminEmail,
     postmarkWebhook,
+    cloudinaryAssetCreated,
   ],
 }

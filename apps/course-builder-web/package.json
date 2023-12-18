@@ -92,6 +92,7 @@
     "axios": "^1.5.1",
     "base-64": "^1.0.0",
     "class-variance-authority": "^0.7.0",
+    "cloudinary": "^1.41.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "codemirror": "^6.0.1",

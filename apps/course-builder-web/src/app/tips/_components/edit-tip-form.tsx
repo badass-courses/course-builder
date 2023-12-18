@@ -26,6 +26,9 @@ import {TipAssistant} from './tip-assistant'
 import Link from 'next/link'
 import {CodemirrorEditor} from '@/app/tips/_components/codemirror'
 import {ImagePlusIcon, ZapIcon} from 'lucide-react'
+import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
+import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
+import {cn} from '@/lib/utils'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -49,6 +52,10 @@ export function EditTipForm({tip}: {tip: Tip}) {
     const {slug} = await updateTip({tipId: tip._id, ...values})
     router.push(`/tips/${slug}`)
   }
+
+  const [activeToolbarTab, setActiveToolbarTab] = React.useState(
+    TOOLBAR.values().next().value,
+  )
 
   return (
     <Form {...form}>
@@ -114,46 +121,45 @@ export function EditTipForm({tip}: {tip: Tip}) {
               />
             </div>
             <div className="col-span-3">
-              <TipAssistant tip={tip} />
+              {activeToolbarTab.id === 'assistant' && (
+                <TipAssistant tip={tip} />
+              )}
+              {activeToolbarTab.id === 'media' && (
+                <>
+                  <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
+                  <CloudinaryMediaBrowser />
+                </>
+              )}
             </div>
           </div>
           <div className="border-l bg-gray-100">
             <div className="flex flex-col gap-1 p-1">
               <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="link"
-                      type="button"
-                      className="flex aspect-square items-center justify-center rounded-lg border bg-background p-2"
-                    >
-                      <ZapIcon
-                        strokeWidth={1.5}
-                        size={24}
-                        width={18}
-                        height={18}
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="left">Assistant</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="link"
-                      type="button"
-                      className="flex aspect-square items-center justify-center rounded-lg border border-transparent p-2 transition hover:bg-background/50"
-                    >
-                      <ImagePlusIcon
-                        strokeWidth={1.5}
-                        size={24}
-                        width={18}
-                        height={18}
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="left">Media</TooltipContent>
-                </Tooltip>
+                {Array.from(TOOLBAR).map((item) => (
+                  <Tooltip key={item.id}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="link"
+                        type="button"
+                        className={cn(
+                          `flex aspect-square items-center justify-center rounded-lg border p-0 transition hover:bg-background/50`,
+                          {
+                            'border-border bg-background':
+                              activeToolbarTab.id === item.id,
+                            'border-transparent bg-transparent':
+                              activeToolbarTab.id !== item.id,
+                          },
+                        )}
+                        onClick={() => setActiveToolbarTab(item)}
+                      >
+                        {item.icon()}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left" className="capitalize">
+                      {item.id}
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
               </TooltipProvider>
             </div>
           </div>
@@ -162,3 +168,16 @@ export function EditTipForm({tip}: {tip: Tip}) {
     </Form>
   )
 }
+
+const TOOLBAR = new Set([
+  {
+    id: 'assistant',
+    icon: () => <ZapIcon strokeWidth={1.5} size={24} width={18} height={18} />,
+  },
+  {
+    id: 'media',
+    icon: () => (
+      <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+    ),
+  },
+])

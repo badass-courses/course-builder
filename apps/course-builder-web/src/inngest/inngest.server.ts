@@ -37,6 +37,10 @@ import {
   POSTMARK_WEBHOOK_EVENT,
   PostmarkWebhook,
 } from '@/inngest/events/postmark-webhook'
+import {
+  CLOUDINARY_WEBHOOK_EVENT,
+  CloudinaryWebhook,
+} from '@/inngest/events/cloudinary-webhook'
 
 // Create a client to send and receive events
 type Events = {
@@ -51,6 +55,7 @@ type Events = {
   [AI_TIP_WRITING_REQUESTED_EVENT]: AITipWritingRequested
   [USER_CREATED_EVENT]: UserCreated
   [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
+  [CLOUDINARY_WEBHOOK_EVENT]: CloudinaryWebhook
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',

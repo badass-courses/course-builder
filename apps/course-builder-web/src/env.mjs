@@ -56,6 +56,8 @@ export const env = createEnv({
     NEXT_PUBLIC_PARTYKIT_ROOM_NAME: z.string(),
     NEXT_PUBLIC_PARTY_KIT_URL: z.string(),
     NEXT_PUBLIC_URL: z.string(),
+    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string(),
+    NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string(),
   },
 
   /**
@@ -87,6 +89,10 @@ export const env = createEnv({
     POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     POSTMARK_WEBHOOK_SECRET: process.env.POSTMARK_WEBHOOK_SECRET,
+    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:
+      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET:
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
