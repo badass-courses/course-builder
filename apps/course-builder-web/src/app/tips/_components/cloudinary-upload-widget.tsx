@@ -3,6 +3,7 @@
 import React from 'react'
 import Script from 'next/script'
 import {Button} from '@coursebuilder/ui'
+import {env} from '@/env.mjs'
 
 export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
   dir,
@@ -32,8 +33,8 @@ export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
         onClick={() => {
           widgetRef.current = cloudinaryRef.current.createUploadWidget(
             {
-              cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-              uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+              cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+              uploadPreset: env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
               // inline_container: '#cloudinary-upload-widget-container',
               folder: `${dir}/${id}`,
             },
