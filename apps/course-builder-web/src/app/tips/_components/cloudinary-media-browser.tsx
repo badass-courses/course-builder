@@ -11,10 +11,8 @@ export const CloudinaryMediaBrowser = () => {
 
   useSocket({
     onMessage: (messageEvent) => {
-      console.log(messageEvent)
       try {
         const messageData = JSON.parse(messageEvent.data)
-        console.log('🍊')
         if (messageData.name === 'cloudinary.asset.created') {
           setMediaAssets([...mediaAssets, messageData.body])
         }
