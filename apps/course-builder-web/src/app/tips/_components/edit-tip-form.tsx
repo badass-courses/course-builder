@@ -125,6 +125,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                   <TooltipTrigger asChild>
                     <Button
                       variant="link"
+                      type="button"
                       className="flex aspect-square items-center justify-center rounded-lg border bg-background p-2"
                     >
                       <ZapIcon
@@ -141,6 +142,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                   <TooltipTrigger asChild>
                     <Button
                       variant="link"
+                      type="button"
                       className="flex aspect-square items-center justify-center rounded-lg border border-transparent p-2 transition hover:bg-background/50"
                     >
                       <ImagePlusIcon
