@@ -4,7 +4,6 @@ import * as React from 'react'
 import {TipPlayer} from '@/app/tips/_components/tip-player'
 import {
   Button,
-  Textarea,
   Form,
   FormDescription,
   FormField,
