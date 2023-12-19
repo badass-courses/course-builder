@@ -37,20 +37,26 @@ export async function sanityMutation(
     })
 }
 
-export async function sanityQuery<T = any>(query: string): Promise<T> {
+export async function sanityQuery<T = any>(
+  query: string,
+  options: {useCdn?: boolean; revalidate?: number} = {
+    useCdn: true,
+    revalidate: 10,
+  },
+): Promise<T> {
   const log = new Logger()
   return await fetch(
-    `https://${env.SANITY_STUDIO_PROJECT_ID}.apicdn.sanity.io/v${
-      env.SANITY_STUDIO_API_VERSION
-    }/data/query/${env.SANITY_STUDIO_DATASET}?query=${encodeURIComponent(
-      query,
-    )}&perspective=published`,
+    `https://${env.SANITY_STUDIO_PROJECT_ID}.${
+      options.useCdn ? 'apicdn' : 'api'
+    }.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/query/${
+      env.SANITY_STUDIO_DATASET
+    }?query=${encodeURIComponent(query)}&perspective=published`,
     {
       method: 'get',
       headers: {
         Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
       },
-      next: {revalidate: 60}, //seconds
+      next: {revalidate: options.revalidate}, //seconds
     },
   )
     .then(async (response) => {
