@@ -39,7 +39,7 @@ export async function sanityMutation(
 
 export async function sanityQuery<T = any>(
   query: string,
-  options: {useCdn: boolean; revalidate: number} = {
+  options: {useCdn?: boolean; revalidate?: number} = {
     useCdn: true,
     revalidate: 10,
   },
