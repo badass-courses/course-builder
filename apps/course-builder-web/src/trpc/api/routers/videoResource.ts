@@ -15,6 +15,7 @@ export const videoResourceRouter = createTRPCRouter({
       return input.videoResourceId
         ? await sanityQuery<VideoResource>(
             `*[_type == "videoResource" && _id == "${input.videoResourceId}"][0]`,
+            {useCdn: false},
           )
         : null
     }),
