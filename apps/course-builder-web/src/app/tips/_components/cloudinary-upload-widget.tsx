@@ -26,29 +26,31 @@ export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
         src="https://upload-widget.cloudinary.com/global/all.js"
         type="text/javascript"
       />
-      <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Upload images</h3>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => {
-          widgetRef.current = cloudinaryRef.current.createUploadWidget(
-            {
-              cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-              uploadPreset: env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-              // inline_container: '#cloudinary-upload-widget-container',
-              folder: `${dir}/${id}`,
-            },
-            (error: any, result: any) => {
-              if (!error && result && result.event === 'success') {
-                console.log('Done! Here is the image info: ', result.info)
-              }
-            },
-          )
-          widgetRef.current.open()
-        }}
-      >
-        Upload
-      </Button>
+      <div className="p-5">
+        <Button
+          type="button"
+          variant="outline"
+          className="flex w-full"
+          onClick={() => {
+            widgetRef.current = cloudinaryRef.current.createUploadWidget(
+              {
+                cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+                uploadPreset: env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+                // inline_container: '#cloudinary-upload-widget-container',
+                folder: `${dir}/${id}`,
+              },
+              (error: any, result: any) => {
+                if (!error && result && result.event === 'success') {
+                  console.log('Done! Here is the image info: ', result.info)
+                }
+              },
+            )
+            widgetRef.current.open()
+          }}
+        >
+          Upload images
+        </Button>
+      </div>
       <div ref={containerRef} id="cloudinary-upload-widget-container" />
     </div>
   )
