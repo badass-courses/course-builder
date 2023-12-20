@@ -22,15 +22,24 @@ export const CloudinaryMediaBrowser = () => {
 
   return (
     <div>
-      <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Media Browser</h3>
-      <div className="grid grid-cols-2 gap-1 p-2">
+      <h3 className="inline-flex px-5 text-lg font-bold">Media Browser</h3>
+      <div className="grid grid-cols-3 gap-1 p-2">
         {images.map((asset) => {
           return asset?.url ? (
             <div
               key={asset._id}
-              className="flex items-center justify-center overflow-hidden rounded border"
+              className="flex aspect-square items-center justify-center overflow-hidden rounded border"
             >
-              <img src={asset.url} alt={asset._id} />
+              <img
+                src={asset.url}
+                alt={asset._id}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(
+                    'text/plain',
+                    `![](${e.currentTarget.src})`,
+                  )
+                }}
+              />
             </div>
           ) : null
         })}
