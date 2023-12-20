@@ -12,6 +12,8 @@ import {mysqlTable} from '@/server/db/schema'
 import {inngest} from '@/inngest/inngest.server'
 import {USER_CREATED_EVENT} from '@/inngest/events'
 
+type Role = 'admin' | 'user'
+
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -22,13 +24,13 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string
-      role?: 'admin' | 'user'
+      role: Role
     } & DefaultSession['user']
   }
 
   interface User {
     // ...other properties
-    role?: 'admin' | 'user'
+    role?: Role
   }
 }
 
@@ -48,12 +50,15 @@ export const authOptions: NextAuthOptions = {
       const dbUser = await db.query.users.findFirst({
         where: (users, {eq}) => eq(users.id, user.id),
       })
+
+      const role: Role = dbUser?.role || 'user'
+
       return {
         ...session,
         user: {
           ...session.user,
           id: user.id,
-          role: dbUser?.role || user,
+          role,
         },
       }
     },
