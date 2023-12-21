@@ -48,7 +48,12 @@ export function NewTipForm() {
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
     const tip = await createTip(values)
-    router.push(`/tips/${tip.slug}`)
+
+    if (!tip) {
+      // handle edge, e.g. toast an error message
+    } else {
+      router.push(`/tips/${tip.slug}`)
+    }
   }
 
   return (
