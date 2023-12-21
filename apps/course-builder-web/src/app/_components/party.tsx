@@ -18,8 +18,6 @@ export function Party() {
           'ai.tip.draft.completed',
         ]
 
-        console.log(data.name)
-
         if (invalidateOn.includes(data.name)) {
           await utils.module.invalidate()
           router.refresh()

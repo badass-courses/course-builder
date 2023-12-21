@@ -32,7 +32,6 @@ export default class Server implements Party.Server {
       callback: {
         handler: async (doc) => {
           // autosave
-          console.log('STUFF HAPPENED', doc)
         },
       },
     })
