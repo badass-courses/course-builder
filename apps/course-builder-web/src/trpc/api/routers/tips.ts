@@ -129,6 +129,10 @@ export const tipsRouter = createTRPCRouter({
 
       const currentTip = await getTip(input.tipId)
 
+      if (!currentTip) {
+        throw new Error('Not found')
+      }
+
       if (input.title !== currentTip.title) {
         await sanityMutation([
           {
