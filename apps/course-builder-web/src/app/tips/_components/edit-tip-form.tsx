@@ -49,8 +49,15 @@ export function EditTipForm({tip}: {tip: Tip}) {
     api.tips.update.useMutation()
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
-    const {slug} = await updateTip({tipId: tip._id, ...values})
-    router.push(`/tips/${slug}`)
+    const updatedTip = await updateTip({tipId: tip._id, ...values})
+
+    if (!updatedTip) {
+      // handle edge case, e.g. toast an error message
+    } else {
+      const {slug} = updatedTip
+
+      router.push(`/tips/${slug}`)
+    }
   }
 
   const [activeToolbarTab, setActiveToolbarTab] = React.useState(
