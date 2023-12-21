@@ -95,6 +95,7 @@ export const publishToPartykit = async (body: string, requestId: string) => {
     body: JSON.stringify({
       body,
       requestId,
+      name: 'ai.message',
     }),
   }).catch((e) => {
     console.error(e)
