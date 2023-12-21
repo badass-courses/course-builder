@@ -36,3 +36,13 @@ export type UserCreated = {
   name: typeof USER_CREATED_EVENT
   data: {}
 }
+
+export const TIP_CHAT_EVENT = 'tip/chat-event'
+
+export type TipChat = {
+  name: typeof TIP_CHAT_EVENT
+  data: {
+    tipId: string
+    messages: ChatCompletionRequestMessage[]
+  }
+}

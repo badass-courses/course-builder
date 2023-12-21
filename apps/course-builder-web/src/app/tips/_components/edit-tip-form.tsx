@@ -108,7 +108,13 @@ export function EditTipForm({tip}: {tip: Tip}) {
                     <FormDescription className="px-5 pb-3">
                       Tip content in MDX.
                     </FormDescription>
-                    <CodemirrorEditor roomName={`tip-edit-${tip._id}`} />
+                    <CodemirrorEditor
+                      roomName={`${tip._id}`}
+                      value={tip.body}
+                      onChange={(data) => {
+                        form.setValue('body', data)
+                      }}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

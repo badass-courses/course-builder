@@ -13,7 +13,7 @@ import slugify from '@sindresorhus/slugify'
 
 import {customAlphabet} from 'nanoid'
 import {inngest} from '@/inngest/inngest.server'
-import {AI_TIP_WRITING_REQUESTED_EVENT} from '@/inngest/events'
+import {AI_TIP_WRITING_REQUESTED_EVENT, TIP_CHAT_EVENT} from '@/inngest/events'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 function toChicagoTitleCase(slug: string): string {
@@ -61,6 +61,30 @@ export const tipsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ctx, input}) => {
+      return await getTip(input.tipId)
+    }),
+  chat: protectedProcedure
+    .input(
+      z.object({
+        tipId: z.string(),
+        messages: z.array(z.any()),
+      }),
+    )
+    .mutation(async ({ctx, input}) => {
+      const session = await getServerAuthSession()
+      const ability = getAbility({user: session?.user})
+      if (!ability.can('upload', 'Media')) {
+        throw new Error('Unauthorized')
+      }
+
+      await inngest.send({
+        name: TIP_CHAT_EVENT,
+        data: {
+          tipId: input.tipId,
+          messages: input.messages,
+        },
+      })
+
       return await getTip(input.tipId)
     }),
   create: protectedProcedure
@@ -139,18 +163,35 @@ export const tipsRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
-      await sanityMutation([
-        {
-          patch: {
-            id: input.tipId,
-            set: {
-              'slug.current': `${slugify(input.title)}~${nanoid()}`,
-              title: toChicagoTitleCase(input.title),
-              body: input.body,
+      const currentTip = await getTip(input.tipId)
+
+      if (input.title !== currentTip.title) {
+        await sanityMutation([
+          {
+            patch: {
+              id: input.tipId,
+              set: {
+                'slug.current': `${slugify(input.title)}~${nanoid()}`,
+                title: toChicagoTitleCase(input.title),
+              },
             },
           },
-        },
-      ])
+        ])
+      }
+
+      await sanityMutation(
+        [
+          {
+            patch: {
+              id: input.tipId,
+              set: {
+                body: input.body,
+              },
+            },
+          },
+        ],
+        {returnDocuments: true},
+      )
 
       return await getTip(input.tipId)
     }),
