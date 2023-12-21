@@ -11,7 +11,7 @@ export const CodemirrorEditor = ({roomName}: {roomName: string}) => {
   const {codemirrorElementRef} = useCodemirror({roomName})
 
   return (
-    <div className="h-full flex-shrink-0 border-y">
+    <div className="h-full flex-shrink-0 border-t">
       <div ref={codemirrorElementRef}></div>
     </div>
   )
@@ -25,6 +25,7 @@ const CourseBuilderEditorTheme = {
   '.cm-content': {
     padding: '2rem 0',
     fontSize: '14px',
+    fontFamily: 'var(--font-mono)',
   },
   '.cm-line': {
     padding: '0 2rem',
@@ -51,6 +52,7 @@ const CourseBuilderEditorTheme = {
 const styles: Extension[] = [
   EditorView.theme(CourseBuilderEditorTheme),
   EditorView.lineWrapping,
+  EditorView.domEventHandlers({}),
 ]
 
 /**

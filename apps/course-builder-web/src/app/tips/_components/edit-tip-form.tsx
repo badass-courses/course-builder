@@ -59,23 +59,29 @@ export function EditTipForm({tip}: {tip: Tip}) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="flex w-full items-center justify-between bg-gray-100 p-2">
+      <form
+        className="flex h-full flex-grow flex-col"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
           <Button className="px-0" asChild variant="link">
-            <Link href={`/tips/${tip.slug}`}>← Tip</Link>
+            <Link href={`/tips/${tip.slug}`} className="aspect-square">
+              ←
+            </Link>
           </Button>
           <Button
             type="submit"
             variant="default"
             size="sm"
+            className="h-7"
             disabled={updateTipStatus === 'loading'}
           >
-            Save Tip
+            Save
           </Button>
         </div>
-        <div className="flex h-full border-t">
+        <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
-            <div className="col-span-3 flex h-full flex-col space-y-5 border-r p-5">
+            <div className="col-span-3 flex h-full flex-col border-r">
               <TipPlayer
                 videoResourceId={tip.videoResourceId}
                 muxPlaybackId={tip.muxPlaybackId}
@@ -84,7 +90,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                 control={form.control}
                 name="title"
                 render={({field}) => (
-                  <FormItem>
+                  <FormItem className="p-5">
                     <FormLabel className="text-lg font-bold">Title</FormLabel>
                     <FormDescription>
                       A title should summarize the tip and explain what it is
@@ -101,7 +107,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                 control={form.control}
                 name="body"
                 render={({field}) => (
-                  <FormItem className="h-full pt-5">
+                  <FormItem className="pt-5">
                     <FormLabel className="px-5 text-lg font-bold">
                       Content
                     </FormLabel>
@@ -126,7 +132,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
               )}
             </div>
           </div>
-          <div className="border-l bg-gray-100">
+          <div className="border-l bg-muted">
             <div className="flex flex-col gap-1 p-1">
               <TooltipProvider delayDuration={0}>
                 {Array.from(TOOLBAR).map((item) => (

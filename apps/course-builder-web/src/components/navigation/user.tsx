@@ -42,7 +42,7 @@ export const User: React.FC<{className?: string}> = ({className}) => {
               default="mp"
             />
             <div className="flex flex-col pl-0.5">
-              <span className="inline-flex gap-0.5 text-sm font-bold leading-tight">
+              <span className="inline-flex items-center gap-0.5 text-sm font-bold leading-tight">
                 <span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
                   {sessionData?.user?.name?.split(' ')[0]}
                 </span>{' '}

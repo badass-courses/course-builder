@@ -10,7 +10,7 @@ export default async function TipEditPage({params}: {params: {slug: string}}) {
   const tip = await getTip(params.slug)
 
   return tip && ability.can('upload', 'Media') ? (
-    <div className="relative mx-auto h-full w-full flex-grow items-center justify-center border-b">
+    <div className="relative mx-auto flex h-full w-full flex-grow flex-col items-center justify-center">
       <EditTipForm key={tip.slug} tip={tip} />
     </div>
   ) : null

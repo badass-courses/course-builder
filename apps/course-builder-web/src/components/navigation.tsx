@@ -21,7 +21,7 @@ const Navigation: React.FC<NavigationProps> = async ({
     <>
       <div
         className={cn(
-          'left-0 z-50 flex w-full flex-col items-center justify-center border-b border-foreground/5 bg-white/95 shadow shadow-gray-300/20 backdrop-blur-md print:hidden',
+          `relative z-50 flex h-[var(--nav-height)] w-full flex-col items-center justify-center border-b bg-background print:hidden`,
           navigationContainerClassName,
         )}
       >
