@@ -1,14 +1,22 @@
 import {env} from '@/env.mjs'
 import * as Y from 'yjs'
 import {yCollab} from 'y-codemirror.next'
-import {EditorView, basicSetup} from 'codemirror'
+import {basicSetup, EditorView} from 'codemirror'
 import {EditorState, Extension} from '@codemirror/state'
 import {useCallback, useEffect, useState} from 'react'
 import {markdown} from '@codemirror/lang-markdown'
 import YPartyKitProvider from 'y-partykit/provider'
 
-export const CodemirrorEditor = ({roomName}: {roomName: string}) => {
-  const {codemirrorElementRef} = useCodemirror({roomName})
+export const CodemirrorEditor = ({
+  roomName,
+  value,
+  onChange,
+}: {
+  roomName: string
+  value: string
+  onChange: (data: any) => void
+}) => {
+  const {codemirrorElementRef} = useCodemirror({roomName, value, onChange})
 
   return (
     <div className="h-full flex-shrink-0 border-t">
@@ -60,17 +68,24 @@ const styles: Extension[] = [
  * @param options
  * @constructor
  */
-const useCodemirror = ({roomName}: {roomName: string}) => {
+const useCodemirror = ({
+  roomName,
+  value,
+  onChange,
+}: {
+  roomName: string
+  value: string
+  onChange: (data: any) => void
+}) => {
   const [element, setElement] = useState<HTMLElement>()
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
 
   useEffect(() => {
     let view: EditorView
-    let yDoc = new Y.Doc()
+
     let provider = new YPartyKitProvider(
       env.NEXT_PUBLIC_PARTY_KIT_URL,
       roomName,
-      yDoc,
     )
 
     if (!element) {
@@ -78,14 +93,22 @@ const useCodemirror = ({roomName}: {roomName: string}) => {
     }
 
     const ytext = provider.doc.getText('codemirror')
+
     const undoManager = new Y.UndoManager(ytext)
     setYUndoManager(undoManager)
+
+    let updateListenerExtension = EditorView.updateListener.of((update) => {
+      if (update.docChanged) {
+        onChange(update.state.doc.toString())
+      }
+    })
 
     // Set up CodeMirror and extensions
     const state = EditorState.create({
       doc: ytext.toString(),
       extensions: [
         basicSetup,
+        updateListenerExtension,
         markdown(),
         yCollab(ytext, provider.awareness, {undoManager}),
         ...styles,
@@ -101,9 +124,8 @@ const useCodemirror = ({roomName}: {roomName: string}) => {
     return () => {
       provider?.destroy()
       view?.destroy()
-      yDoc?.destroy()
     }
-  }, [element, roomName])
+  }, [element, roomName, value])
 
   return {
     codemirrorElementRef: useCallback((node: HTMLElement | null) => {
