@@ -1,5 +1,6 @@
 import {env} from '@/env.mjs'
 import {Logger} from 'next-axiom'
+import {makeSafeQueryRunner} from 'groqd'
 
 export async function sanityMutation(
   mutations: any[],
@@ -44,6 +45,16 @@ export async function sanityQuery<T = any>(
     revalidate: 10,
   },
 ): Promise<T> {
+  return (await sanityQueryWithFetch(query, options)) as T
+}
+
+async function sanityQueryWithFetch(
+  query: string,
+  options: {useCdn?: boolean; revalidate?: number} = {
+    useCdn: true,
+    revalidate: 10,
+  },
+): Promise<any> {
   const log = new Logger()
   return await fetch(
     `https://${env.SANITY_STUDIO_PROJECT_ID}.${
@@ -68,7 +79,7 @@ export async function sanityQuery<T = any>(
         )
       }
       const {result} = await response.json()
-      return result as T
+      return result
     })
     .catch((error) => {
       log.error(error)
@@ -78,3 +89,8 @@ export async function sanityQuery<T = any>(
       log.flush()
     })
 }
+
+// 👇 Safe query runner
+export const runQuery = makeSafeQueryRunner((query) =>
+  sanityQueryWithFetch(query),
+)

@@ -100,6 +100,7 @@
     "drizzle-orm": "^0.28.5",
     "framer-motion": "^10.16.5",
     "groq": "^3.18.1",
+    "groqd": "^0.15.10",
     "i": "^0.3.7",
     "inngest": "^3.7.0",
     "intl-segmenter-polyfill": "^0.4.4",

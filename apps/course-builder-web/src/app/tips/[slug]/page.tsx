@@ -10,13 +10,18 @@ import {TipPlayer} from '@/app/tips/_components/tip-player'
 import * as React from 'react'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
-import {getTip} from '@/lib/tips'
+import {getTip, getTipGroqD} from '@/lib/tips'
 import ReactMarkdown from 'react-markdown'
+import {notFound} from 'next/navigation'
 
 export default async function TipPage({params}: {params: {slug: string}}) {
   const session = await getServerAuthSession()
   const ability = getAbility({user: session?.user})
-  const tip = await getTip(params.slug)
+  const tip = await getTipGroqD(params.slug)
+
+  if (!tip) {
+    notFound()
+  }
 
   return (
     <div>

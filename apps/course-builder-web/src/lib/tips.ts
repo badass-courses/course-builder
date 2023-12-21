@@ -1,5 +1,6 @@
 import {z} from 'zod'
-import {sanityQuery} from '@/server/sanity.server'
+import {sanityQuery, runQuery} from '@/server/sanity.server'
+import {q} from 'groqd'
 
 const TipSchema = z.object({
   _id: z.string(),
@@ -29,6 +30,36 @@ export async function getTip(slugOrId: string) {
           "transcript": resources[@->._type == 'videoResource'][0]->transcript,
           "slug": slug.current,
   }`)
+}
+
+export async function getTipGroqD(slugOrId: string) {
+  const fromVideoResource = q('resources')
+    .filter("@->._type == 'videoResource'")
+    .slice(0)
+    .deref()
+
+  const groqQuery = q('*')
+    .filter(
+      `_type == "tip" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")`,
+    )
+    .grab({
+      _id: q.string(),
+      _type: q.string(),
+      _updatedAt: q.string(),
+      title: q.string(),
+      summary: q.string().nullable(),
+      body: q.string().nullable(),
+      muxPlaybackId: fromVideoResource.grabOne('muxPlaybackId', q.string()),
+      videoResourceId: fromVideoResource.grabOne('_id', q.string()),
+      transcript: fromVideoResource.grabOne('transcript', q.string()),
+      slug: ['slug.current', q.string()],
+    })
+    .slice(0)
+    .nullable()
+
+  console.log({groqQuery})
+
+  return await runQuery(groqQuery)
 }
 
 export async function getTipsModule() {
