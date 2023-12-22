@@ -2,6 +2,15 @@ import type * as Party from 'partykit/server'
 import {onConnect} from 'y-partykit'
 import * as Y from 'yjs'
 
+const BROADCAST_INTERVAL = 1000 / 60 // 60fps
+
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET',
+  'Access-Control-Allow-Headers':
+    'Origin, X-Requested-With, Content-Type, Accept',
+}
+
 export default class Server implements Party.Server {
   constructor(readonly party: Party.Party) {}
 
@@ -43,15 +52,33 @@ export default class Server implements Party.Server {
     this.messages = (await this.party.storage.get<string[]>('messages')) ?? []
   }
 
-  async onRequest(_req: Party.Request) {
-    const messageBody: {requestId: string; body: string; name: string} =
-      await _req.json()
+  async onRequest(req: Party.Request) {
+    if (req.method === 'GET') {
+      // For SSR, return the current presence of all connections
+      // const users = [...this.party.getConnections()].reduce(
+      //   (acc, user) => ({...acc, [user.id]: this.getUser(user)}),
+      //   {},
+      // )
+      return Response.json({users: []}, {status: 200, headers: CORS})
+    }
 
-    this.party.broadcast(JSON.stringify(messageBody))
+    // respond to cors preflight requests
+    if (req.method === 'OPTIONS') {
+      return Response.json({ok: true}, {status: 200, headers: CORS})
+    }
 
-    return new Response(
-      `Party ${this.party.id} has received ${this.messages.length} messages`,
-    )
+    if (req.method === 'POST') {
+      const messageBody: {requestId: string; body: string; name: string} =
+        await req.json()
+
+      this.party.broadcast(JSON.stringify(messageBody))
+
+      return new Response(
+        `Party ${this.party.id} has received ${this.messages.length} messages`,
+      )
+    }
+
+    return new Response('Method Not Allowed', {status: 405})
   }
 
   onMessage(message: string, sender: Party.Connection) {

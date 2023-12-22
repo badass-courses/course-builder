@@ -46,6 +46,7 @@
     "@hookform/resolvers": "^3.3.2",
     "@mdx-js/loader": "^3.0.0",
     "@mdx-js/react": "^3.0.0",
+    "@msgpack/msgpack": "3.0.0-beta2",
     "@mux/mux-player-react": "^2.2.0",
     "@next/mdx": "14.0.1",
     "@planetscale/database": "^1.11.0",
@@ -144,7 +145,8 @@
     "y-prosemirror": "^1.2.1",
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.10",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@mux/mux-node": "^7.3.2",
