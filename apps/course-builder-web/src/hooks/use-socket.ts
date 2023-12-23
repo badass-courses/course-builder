@@ -6,10 +6,11 @@ export function useSocket(options: {
   onMessage?: (event: WebSocketEventMap['message']) => void
   onClose?: (event: WebSocketEventMap['close']) => void
   onError?: (event: WebSocketEventMap['error']) => void
+  room?: string
 }) {
   return usePartySocket({
-    room: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
     host: env.NEXT_PUBLIC_PARTY_KIT_URL,
     ...options,
+    room: options.room ?? env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
   })
 }

@@ -10,42 +10,16 @@ import {Tip} from '@/lib/tips'
 import {Button, ScrollArea, Textarea} from '@coursebuilder/ui'
 import {LoaderIcon, SparkleIcon} from 'lucide-react'
 import {EnterIcon} from '@sanity/icons'
-import {inngest} from '@/inngest/inngest.server'
 import {
   type ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 
-const getSystemMessage = (tip: Tip) => {
-  const primarySystemWriterPrompt = `
-    # Instructions
-    Pause. Take a deep breath and think. 
-    
-    You are serving as a writing assistant for a content creator that is publishing a video based tip for software developers. The content 
-    creator will ask questions and expect concise answers that aren't corny or generic.
-    
-    Keep responses scoped to the tip and it's direct contents. Do not include additional information. Do not include information that is not
-    directly related to the tip or the video.
-    
-    The goal is to build a really good written version of the existing video, not edit the video itself. The video is done. 
-    
-    The transcript is the final representation of the video. The transcript is the source of truth.
-    
-    Tip Title: ${tip.title}
-    Tip Transcript: ${tip.transcript}
-    Tip Body: ${tip.body}
-    `
-  return {
-    role: ChatCompletionRequestMessageRoleEnum.System,
-    content: primarySystemWriterPrompt,
-  }
-}
-
 export function TipAssistant({tip}: {tip: Tip}) {
   const {mutate: sendTipChatMessage} = api.tips.chat.useMutation()
   const [messages, setMessages] = React.useState<
     ChatCompletionRequestMessage[]
-  >([getSystemMessage(tip)])
+  >([])
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -53,6 +27,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
     api.tips.generateTitle.useMutation()
 
   useSocket({
+    room: tip._id,
     onMessage: (messageEvent) => {
       try {
         const messageData = JSON.parse(messageEvent.data)
@@ -72,7 +47,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
   return (
     <div className="flex h-full w-full flex-col justify-start">
       <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
-      <ChatResponse requestIds={[tip._id]} />
+      <TipChatResponse requestId={tip._id} />
       <div className="flex w-full flex-col items-start border-t">
         <div className="relative w-full">
           <Textarea
@@ -86,7 +61,6 @@ export function TipAssistant({tip}: {tip: Tip}) {
                 event.preventDefault()
                 sendTipChatMessage({
                   tipId: tip._id,
-
                   messages: [
                     ...messages,
                     {
@@ -146,7 +120,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
   )
 }
 
-export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
+function TipChatResponse({requestId}: {requestId: string}) {
   const [messages, setMessages] = React.useState<
     {requestId: string; body: string}[]
   >([])
@@ -155,6 +129,7 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
   const utils = api.useUtils()
 
   useSocket({
+    room: requestId,
     onMessage: (messageEvent) => {
       try {
         const messageData = JSON.parse(messageEvent.data)
@@ -162,7 +137,7 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
         if (
           messageData.body !== STREAM_COMPLETE &&
           messageData.name == 'ai.message' &&
-          requestIds.includes(messageData.requestId)
+          requestId === messageData.requestId
         ) {
           setMessages((messages) => [
             ...messages,
@@ -170,7 +145,6 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
           ])
         }
         utils.module.invalidate()
-
         if (div.current) {
           div.current.scrollTop = div.current.scrollHeight
         }

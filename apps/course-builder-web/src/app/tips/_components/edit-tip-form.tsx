@@ -86,6 +86,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                 videoResourceId={tip.videoResourceId}
                 muxPlaybackId={tip.muxPlaybackId}
               />
+
               <FormField
                 control={form.control}
                 name="title"
@@ -101,6 +102,9 @@ export function EditTipForm({tip}: {tip: Tip}) {
                   </FormItem>
                 )}
               />
+              <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">
+                {tip._id}
+              </div>
             </div>
             <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
               <FormField
