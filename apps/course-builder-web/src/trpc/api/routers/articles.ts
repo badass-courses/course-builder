@@ -6,31 +6,31 @@ import {
   protectedProcedure,
   publicProcedure,
 } from '@/trpc/api/trpc'
-import {getTip, getTipsModule} from '@/lib/tips'
 import {sanityMutation} from '@/server/sanity.server'
 import {v4} from 'uuid'
 import slugify from '@sindresorhus/slugify'
-
 import {customAlphabet} from 'nanoid'
-import {inngest} from '@/inngest/inngest.server'
-import {AI_TIP_WRITING_REQUESTED_EVENT, TIP_CHAT_EVENT} from '@/inngest/events'
+import {getArticle} from '@/lib/articles'
 import {toChicagoTitleCase} from '@/utils/chicagor-title'
+import {inngest} from '@/inngest/inngest.server'
+import {ARTICLE_CHAT_EVENT, TIP_CHAT_EVENT} from '@/inngest/events'
+import {getTip} from '@/lib/tips'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
-export const tipsRouter = createTRPCRouter({
+export const articlesRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
-        tipId: z.string(),
+        articleId: z.string(),
       }),
     )
     .query(async ({ctx, input}) => {
-      return await getTip(input.tipId)
+      return await getArticle(input.articleId)
     }),
   chat: protectedProcedure
     .input(
       z.object({
-        tipId: z.string(),
+        articleId: z.string(),
         messages: z.array(z.any()),
       }),
     )
@@ -42,19 +42,18 @@ export const tipsRouter = createTRPCRouter({
       }
 
       await inngest.send({
-        name: TIP_CHAT_EVENT,
+        name: ARTICLE_CHAT_EVENT,
         data: {
-          tipId: input.tipId,
+          articleId: input.articleId,
           messages: input.messages,
         },
       })
 
-      return await getTip(input.tipId)
+      return await getArticle(input.articleId)
     }),
   create: protectedProcedure
     .input(
       z.object({
-        videoResourceId: z.string(),
         title: z.string(),
       }),
     )
@@ -65,57 +64,28 @@ export const tipsRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
-      const newTipId = v4()
+      const newArticleId = v4()
 
       await sanityMutation([
         {
           createOrReplace: {
-            _id: newTipId,
-            _type: 'tip',
+            _id: newArticleId,
+            _type: 'article',
+            state: 'draft',
             title: toChicagoTitleCase(input.title),
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),
             },
-            resources: [
-              {
-                _key: v4(),
-                _type: 'reference',
-                _ref: input.videoResourceId,
-              },
-            ],
           },
         },
       ])
 
-      const tip = await getTip(newTipId)
-
-      const tipsModule = await getTipsModule()
-
-      await sanityMutation([
-        {
-          patch: {
-            id: tipsModule._id,
-            setIfMissing: {resources: []},
-            insert: {
-              before: 'resources[0]',
-              items: [
-                {
-                  _key: v4(),
-                  _type: 'reference',
-                  _ref: newTipId,
-                },
-              ],
-            },
-          },
-        },
-      ])
-
-      return tip
+      return getArticle(newArticleId)
     }),
   update: protectedProcedure
     .input(
       z.object({
-        tipId: z.string(),
+        articleId: z.string(),
         title: z.string(),
         body: z.string().optional().nullable(),
       }),
@@ -127,13 +97,13 @@ export const tipsRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
-      const currentTip = await getTip(input.tipId)
+      const currentArticle = await getArticle(input.articleId)
 
-      if (input.title !== currentTip.title) {
+      if (input.title !== currentArticle?.title) {
         await sanityMutation([
           {
             patch: {
-              id: input.tipId,
+              id: input.articleId,
               set: {
                 'slug.current': `${slugify(input.title)}~${nanoid()}`,
                 title: toChicagoTitleCase(input.title),
@@ -147,7 +117,7 @@ export const tipsRouter = createTRPCRouter({
         [
           {
             patch: {
-              id: input.tipId,
+              id: input.articleId,
               set: {
                 body: input.body,
               },
@@ -157,28 +127,6 @@ export const tipsRouter = createTRPCRouter({
         {returnDocuments: true},
       )
 
-      return await getTip(input.tipId)
-    }),
-  generateTitle: protectedProcedure
-    .input(
-      z.object({
-        tipId: z.string(),
-      }),
-    )
-    .mutation(async ({ctx, input}) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({user: session?.user})
-      if (!ability.can('upload', 'Media')) {
-        throw new Error('Unauthorized')
-      }
-
-      await inngest.send({
-        name: AI_TIP_WRITING_REQUESTED_EVENT,
-        data: {
-          tipId: input.tipId,
-        },
-      })
-
-      return await getTip(input.tipId)
+      return getArticle(input.articleId)
     }),
 })

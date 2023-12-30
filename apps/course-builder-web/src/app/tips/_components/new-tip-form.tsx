@@ -117,7 +117,7 @@ export function NewTipForm() {
           variant="default"
           disabled={videoResourceId.length === 0}
         >
-          Submit Tip
+          Create Draft Tip
         </Button>
       </form>
     </Form>
