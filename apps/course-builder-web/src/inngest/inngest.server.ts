@@ -6,6 +6,8 @@ import {
   type AITipWritingRequested,
   type AIWritingRequestCompleted,
   type AIWritingRequested,
+  ARTICLE_CHAT_EVENT,
+  ArticleChat,
   TIP_CHAT_EVENT,
   TipChat,
   type USER_CREATED_EVENT,
@@ -59,6 +61,7 @@ type Events = {
   [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
   [CLOUDINARY_WEBHOOK_EVENT]: CloudinaryWebhook
   [TIP_CHAT_EVENT]: TipChat
+  [ARTICLE_CHAT_EVENT]: ArticleChat
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',
