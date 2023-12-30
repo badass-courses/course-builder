@@ -58,7 +58,7 @@ export const writeAnEmail = inngest.createFunction(
 
     await step.run('Broadcast Completion', async () => {
       await fetch(
-        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`,
+        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${event.data.requestId}`,
         {
           method: 'POST',
           body: JSON.stringify({

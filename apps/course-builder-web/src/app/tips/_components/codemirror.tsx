@@ -6,6 +6,7 @@ import {EditorState, Extension} from '@codemirror/state'
 import {useCallback, useEffect, useState} from 'react'
 import {markdown} from '@codemirror/lang-markdown'
 import YPartyKitProvider from 'y-partykit/provider'
+import {useSession} from 'next-auth/react'
 
 export const CodemirrorEditor = ({
   roomName,
@@ -80,6 +81,8 @@ const useCodemirror = ({
   const [element, setElement] = useState<HTMLElement>()
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
 
+  const {data: session} = useSession()
+
   useEffect(() => {
     let view: EditorView
 
@@ -103,6 +106,15 @@ const useCodemirror = ({
       }
     })
 
+    const awareness = provider.awareness
+
+    if (session) {
+      awareness.setLocalStateField('user', {
+        ...session.user,
+        color: '#ffb61e', // should be a hex color
+      })
+    }
+
     // Set up CodeMirror and extensions
     const state = EditorState.create({
       doc: ytext.toString(),
@@ -125,7 +137,7 @@ const useCodemirror = ({
       provider?.destroy()
       view?.destroy()
     }
-  }, [element, roomName, value])
+  }, [element, roomName, value, session])
 
   return {
     codemirrorElementRef: useCallback((node: HTMLElement | null) => {
