@@ -40,7 +40,9 @@ export function NewArticleForm() {
 
   const onSubmit = async (values: z.infer<typeof NewArticleFormSchema>) => {
     const article = await createArticle(values)
-    router.push(`/${article.slug}`)
+    if (article) {
+      router.push(`/${article.slug}`)
+    }
   }
 
   return (
