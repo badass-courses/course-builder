@@ -46,3 +46,13 @@ export type TipChat = {
     messages: ChatCompletionRequestMessage[]
   }
 }
+
+export const ARTICLE_CHAT_EVENT = 'article/chat-event'
+
+export type ArticleChat = {
+  name: typeof ARTICLE_CHAT_EVENT
+  data: {
+    articleId: string
+    messages: ChatCompletionRequestMessage[]
+  }
+}

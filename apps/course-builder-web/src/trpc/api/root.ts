@@ -5,6 +5,7 @@ import {tipsRouter} from '@/trpc/api/routers/tips'
 import {videoResourceRouter} from '@/trpc/api/routers/videoResource'
 import {abilityRouter} from '@/trpc/api/routers/ability'
 import {imageResourceRouter} from '@/trpc/api/routers/imageResource'
+import {articlesRouter} from '@/trpc/api/routers/articles'
 
 /**
  * This is the primary router for your server.
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   videoResources: videoResourceRouter,
   ability: abilityRouter,
   imageResources: imageResourceRouter,
+  articles: articlesRouter,
 })
 
 // export type definition of API

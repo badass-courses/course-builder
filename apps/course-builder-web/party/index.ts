@@ -107,7 +107,7 @@ export async function sanityQuery<T = any>(
     `https://${env.SANITY_STUDIO_PROJECT_ID}.${
       options.useCdn ? 'apicdn' : 'api'
     }.sanity.io/v${env.SANITY_STUDIO_API_VERSION}/data/query/${
-      env.SANITY_STUDIO_DATASET
+      env.SANITY_STUDIO_DATASET || 'production'
     }?query=${encodeURIComponent(query)}&perspective=published`,
     {
       method: 'get',
