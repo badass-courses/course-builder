@@ -8,6 +8,7 @@ import {sanityQuery} from '@/server/sanity.server'
 import type {ChatCompletionRequestMessage} from 'openai-edge'
 import {promptActionExecutor} from '@/lib/prompt.action-executor'
 import {Liquid} from 'liquidjs'
+import {NonRetriableError} from 'inngest'
 
 export const tipChat = inngest.createFunction(
   {
@@ -21,6 +22,10 @@ export const tipChat = inngest.createFunction(
     const tip = await step.run(`load tip`, async () => {
       return await getTip(event.data.tipId)
     })
+
+    if (!tip) {
+      throw new NonRetriableError(`Tip not found for id (${event.data.tipId})`)
+    }
 
     const workflow = await step.run('Load Workflow', async () => {
       return await sanityQuery(
