@@ -12,12 +12,19 @@ export const CodemirrorEditor = ({
   roomName,
   value,
   onChange,
+  markers,
 }: {
   roomName: string
   value: string
   onChange: (data: any) => void
+  markers?: any[]
 }) => {
-  const {codemirrorElementRef} = useCodemirror({roomName, value, onChange})
+  const {codemirrorElementRef} = useCodemirror({
+    roomName,
+    value,
+    onChange,
+    markers,
+  })
 
   return (
     <div className="h-full flex-shrink-0 border-t">
@@ -73,10 +80,12 @@ const useCodemirror = ({
   roomName,
   value,
   onChange,
+  markers,
 }: {
   roomName: string
   value: string
   onChange: (data: any) => void
+  markers?: any[]
 }) => {
   const [element, setElement] = useState<HTMLElement>()
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()

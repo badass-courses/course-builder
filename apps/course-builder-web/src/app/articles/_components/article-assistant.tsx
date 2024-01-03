@@ -12,11 +12,14 @@ import {
   type ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
+import {FeedbackMarker} from '@/lib/feedback-marker'
 
 export function ArticleAssistant({
   article,
+  currentFeedback,
 }: {
   article: {body: string | null; title: string; _id: string}
+  currentFeedback?: FeedbackMarker[]
 }) {
   const {mutate: sendArticleChatMessage} = api.articles.chat.useMutation()
   const [messages, setMessages] = React.useState<
@@ -70,6 +73,7 @@ export function ArticleAssistant({
                       `,
                     },
                   ],
+                  currentFeedback,
                 })
                 event.currentTarget.value = ''
               }
@@ -90,11 +94,17 @@ export function ArticleAssistant({
                       role: ChatCompletionRequestMessageRoleEnum.User,
                       content: `${event.currentTarget.value}
                       
-                      current title: ${article.title}
-                      current body: ${article.body}
+                      * title: ${article.title}
+                      
+                      * body: ${article.body}
+                      
+                      ## current feedback from ai editor:
+                      
+                      ${JSON.stringify(currentFeedback, null, 2)}
                       `,
                     },
                   ],
+                  currentFeedback,
                 })
                 textareaRef.current.value = ''
               }

@@ -15,6 +15,7 @@ import {postmarkWebhook} from '@/inngest/functions/postmark/postmarks-webhooks-h
 import {cloudinaryAssetCreated} from '@/inngest/functions/cloudinary/cloudinary-webhooks-handlers'
 import {tipChat} from '@/inngest/functions/tips/chat'
 import {articleChat} from '@/inngest/functions/articles/chat'
+import {generateFeedbackMarkers} from '@/inngest/functions/ai/feedback-markers'
 
 export const inngestConfig = {
   client: inngest,
@@ -33,5 +34,6 @@ export const inngestConfig = {
     cloudinaryAssetCreated,
     tipChat,
     articleChat,
+    generateFeedbackMarkers,
   ],
 }
