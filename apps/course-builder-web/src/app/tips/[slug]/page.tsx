@@ -25,7 +25,7 @@ export default async function TipPage({params}: {params: {slug: string}}) {
 
   return (
     <div>
-      {ability.can('edit', 'Tip') ? (
+      {ability.can('update', 'Content') ? (
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
           <div />
           <Button asChild className="h-7">

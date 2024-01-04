@@ -7,6 +7,8 @@ import VideoUploader from '@/components/video-uploader'
 import Tree from '@/components/lesson-list/tree'
 import ModuleEdit from '@/components/module-edit'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditTutorialPage({
   params,
 }: {
@@ -15,7 +17,7 @@ export default async function EditTutorialPage({
   const session = await getServerAuthSession()
   const ability = getAbility({user: session?.user})
 
-  if (!ability.can('edit', 'Module')) {
+  if (!ability.can('update', 'Content')) {
     redirect('/login')
   }
 

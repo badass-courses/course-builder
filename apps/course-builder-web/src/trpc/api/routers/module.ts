@@ -22,7 +22,7 @@ export const moduleRouter = createTRPCRouter({
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
 
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('read', 'Content')) {
         throw new TRPCError({code: 'UNAUTHORIZED'})
       }
 
@@ -48,7 +48,7 @@ export const moduleRouter = createTRPCRouter({
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
 
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('update', 'Content')) {
         throw new TRPCError({code: 'UNAUTHORIZED'})
       }
 
@@ -98,7 +98,7 @@ export const moduleRouter = createTRPCRouter({
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
 
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('read', 'Content')) {
         throw new TRPCError({code: 'UNAUTHORIZED'})
       }
 

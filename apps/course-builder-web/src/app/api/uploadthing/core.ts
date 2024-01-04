@@ -21,7 +21,7 @@ export const ourFileRouter = {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
 
-      if (!session || !ability.can('upload', 'Media')) {
+      if (!session || !ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
@@ -51,7 +51,7 @@ export const ourFileRouter = {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
 
-      if (!session || !ability.can('upload', 'Media')) {
+      if (!session || !ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
