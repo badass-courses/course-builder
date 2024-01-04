@@ -2,22 +2,38 @@ import {env} from '@/env.mjs'
 import * as Y from 'yjs'
 import {yCollab} from 'y-codemirror.next'
 import {basicSetup, EditorView} from 'codemirror'
-import {EditorState, Extension} from '@codemirror/state'
+import {
+  EditorState,
+  Extension,
+  StateEffect,
+  StateField,
+  Range,
+} from '@codemirror/state'
 import {useCallback, useEffect, useState} from 'react'
 import {markdown} from '@codemirror/lang-markdown'
 import YPartyKitProvider from 'y-partykit/provider'
 import {useSession} from 'next-auth/react'
+import {SearchCursor} from '@codemirror/search'
+import {Decoration} from '@codemirror/view'
+import {FeedbackMarker} from '@/lib/feedback-marker'
 
 export const CodemirrorEditor = ({
   roomName,
   value,
   onChange,
+  markers,
 }: {
   roomName: string
   value: string
   onChange: (data: any) => void
+  markers: FeedbackMarker[]
 }) => {
-  const {codemirrorElementRef} = useCodemirror({roomName, value, onChange})
+  const {codemirrorElementRef} = useCodemirror({
+    roomName,
+    value,
+    onChange,
+    markers,
+  })
 
   return (
     <div className="h-full flex-shrink-0 border-t">
@@ -73,10 +89,12 @@ const useCodemirror = ({
   roomName,
   value,
   onChange,
+  markers,
 }: {
   roomName: string
   value: string
   onChange: (data: any) => void
+  markers: FeedbackMarker[]
 }) => {
   const [element, setElement] = useState<HTMLElement>()
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
@@ -85,6 +103,25 @@ const useCodemirror = ({
 
   useEffect(() => {
     let view: EditorView
+
+    const highlight_effect = StateEffect.define<Range<Decoration>[]>()
+
+    const highlight_extension = StateField.define({
+      create() {
+        return Decoration.none
+      },
+      update(value, transaction) {
+        value = value.map(transaction.changes)
+
+        for (let effect of transaction.effects) {
+          if (effect.is(highlight_effect))
+            value = value.update({add: effect.value, sort: true})
+        }
+
+        return value
+      },
+      provide: (f) => EditorView.decorations.from(f),
+    })
 
     let provider = new YPartyKitProvider(
       env.NEXT_PUBLIC_PARTY_KIT_URL,
@@ -103,6 +140,30 @@ const useCodemirror = ({
     let updateListenerExtension = EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         onChange(update.state.doc.toString())
+
+        if (update.state.doc.toString().length !== 0) {
+          for (let marker of markers) {
+            let cursor = new SearchCursor(view.state.doc, marker.originalText)
+
+            while (!cursor.done) {
+              cursor.next()
+              const highlight_decoration = Decoration.mark({
+                attributes: {style: 'background-color: yellow'},
+              })
+
+              console.log({cursor, highlight_decoration})
+
+              view.dispatch({
+                effects: highlight_effect.of([
+                  highlight_decoration.range(
+                    cursor.value.from,
+                    cursor.value.to,
+                  ),
+                ]),
+              })
+            }
+          }
+        }
       }
     })
 
@@ -120,6 +181,7 @@ const useCodemirror = ({
       doc: ytext.toString(),
       extensions: [
         basicSetup,
+        highlight_extension,
         updateListenerExtension,
         markdown(),
         yCollab(ytext, provider.awareness, {undoManager}),
@@ -133,11 +195,13 @@ const useCodemirror = ({
       parent: element,
     })
 
+    // Set up awareness
+
     return () => {
       provider?.destroy()
       view?.destroy()
     }
-  }, [element, roomName, value, session])
+  }, [element, roomName, value, session, markers])
 
   return {
     codemirrorElementRef: useCallback((node: HTMLElement | null) => {

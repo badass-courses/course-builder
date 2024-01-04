@@ -29,6 +29,8 @@ import {ImagePlusIcon, ZapIcon} from 'lucide-react'
 import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
 import {cn} from '@/lib/utils'
+import {FeedbackMarker} from '@/lib/feedback-marker'
+import {useSocket} from '@/hooks/use-socket'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -36,7 +38,29 @@ const NewTipFormSchema = z.object({
 })
 
 export function EditTipForm({tip}: {tip: Tip}) {
+  const [feedbackMarkers, setFeedbackMarkers] = React.useState<
+    FeedbackMarker[]
+  >([])
   const router = useRouter()
+
+  const {mutateAsync: generateFeedback} =
+    api.writing.generateFeedback.useMutation()
+
+  useSocket({
+    room: tip._id,
+    onMessage: async (messageEvent) => {
+      try {
+        const data = JSON.parse(messageEvent.data)
+        const invalidateOn = ['ai.feedback.markers.generated']
+
+        if (invalidateOn.includes(data.name)) {
+          setFeedbackMarkers(data.body)
+        }
+      } catch (error) {
+        // noting to do
+      }
+    },
+  })
 
   const form = useForm<z.infer<typeof NewTipFormSchema>>({
     resolver: zodResolver(NewTipFormSchema),
@@ -128,14 +152,31 @@ export function EditTipForm({tip}: {tip: Tip}) {
                     <CodemirrorEditor
                       roomName={`${tip._id}`}
                       value={tip.body}
+                      markers={feedbackMarkers}
                       onChange={(data) => {
                         form.setValue('body', data)
+                        generateFeedback({
+                          resourceId: tip._id,
+                          body: data,
+                          currentFeedback: feedbackMarkers,
+                        })
                       }}
                     />
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div>
+                <ul>
+                  {feedbackMarkers.map((marker) => {
+                    return (
+                      <li
+                        key={marker.originalText}
+                      >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
+                    )
+                  })}
+                </ul>
+              </div>
             </div>
             <div className="col-span-3">
               {activeToolbarTab.id === 'assistant' && (

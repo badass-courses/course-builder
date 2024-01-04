@@ -11,7 +11,7 @@ export const generateFeedbackMarkers = inngest.createFunction(
     name: 'Generate Feedback Markers',
     debounce: {
       key: 'event.data.resourceId',
-      period: '2s',
+      period: '5s',
     },
   },
   {event: BODY_TEXT_UPDATED},
@@ -39,18 +39,19 @@ export const generateFeedbackMarkers = inngest.createFunction(
               ## Instructions
               
               * Line number accuracy is CRITICAL.
+              * as appropriate, feedback can extend to multiple lines
               * Columns are individual characters on a single line and represent the start and finish of a selected span. 
               * return an ARRAY of objects using the template, even if it is only one feedback marker.
               * multiple feedback markers can be provided.
+              * remove feedback that has been addressed
+              * don't waste our time with feedback that is not actionable
+              * harsh feedback is OK, no need to spare our feelings
+              * act like the authority that you are
               
               ## Feedback Marker Zod Schema
               
               const FeedbackMarkerSchema = z.object({
                 originalText: z.string(),
-                lineNumberStart: z.number(),
-                lineNumberEnd: z.number(),
-                columnStart: z.number(),
-                columnEnd: z.number(),
                 feedback: z.string(),
                 fullSuggestedChange: z.string(),
                 level: z.string(),
@@ -61,12 +62,8 @@ export const generateFeedbackMarkers = inngest.createFunction(
               
               const FeedbackMarkerSchemaExample = {
                 originalText: 'You are mistaken my good sir, this is not the way to do it.',
-                lineNumberStart: 1,
-                lineNumberEnd: 1,
-                columnStart: 0,
-                columnEnd: 12,
                 feedback: 'This sentence is old-timey sounding and corny.',
-                fullSuggestedChange: 'Don\\'t do it that way!',
+                fullSuggestedChange: 'The replacement text that captures the feedback meaningfully.',
                 level: 'critical',
                 type: 'grammar',
               }
@@ -75,7 +72,7 @@ export const generateFeedbackMarkers = inngest.createFunction(
               
               ${JSON.stringify(event.data.currentFeedback)}
               
-              ## Template\n\n{markers:[{"originalText": "quoted from the text", "lineNumberStart": 1, lineNumberEnd: 1, "columnStart": 0, "columnEnd": 12, "feedback": "useful feedback", "fullSuggestedChange": "rewritten text that captures the feedback meaningfully", "level": "critical", "type": "grammar"}]}`,
+              ## Template\n\n{markers:[{"originalText": "quoted from the text", "feedback": "useful feedback", "fullSuggestedChange": "rewritten text that captures the feedback meaningfully", "level": "critical", "type": "grammar"}]}`,
               role: 'system',
             },
             {
