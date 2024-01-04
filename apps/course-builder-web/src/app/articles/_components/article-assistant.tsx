@@ -6,35 +6,34 @@ import {STREAM_COMPLETE} from '@/lib/streaming-chunk-publisher'
 import {useRef} from 'react'
 import {api} from '@/trpc/react'
 import {useSocket} from '@/hooks/use-socket'
-import {Tip} from '@/lib/tips'
 import {Button, ScrollArea, Textarea} from '@coursebuilder/ui'
-import {LoaderIcon, SparkleIcon} from 'lucide-react'
 import {EnterIcon} from '@sanity/icons'
 import {
   type ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 
-export function TipAssistant({tip}: {tip: Tip}) {
-  const {mutate: sendTipChatMessage} = api.tips.chat.useMutation()
+export function ArticleAssistant({
+  article,
+}: {
+  article: {body: string | null; title: string; _id: string}
+}) {
+  const {mutate: sendArticleChatMessage} = api.articles.chat.useMutation()
   const [messages, setMessages] = React.useState<
     ChatCompletionRequestMessage[]
   >([])
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const {mutateAsync: generateTitle, status: generateTitleStatus} =
-    api.tips.generateTitle.useMutation()
-
   useSocket({
-    room: tip._id,
+    room: article._id,
     onMessage: (messageEvent) => {
       try {
         const messageData = JSON.parse(messageEvent.data)
 
         if (
-          messageData.name === 'tip.chat.completed' &&
-          messageData.requestId === tip._id
+          messageData.name === 'article.chat.completed' &&
+          messageData.requestId === article._id
         ) {
           setMessages(messageData.body)
         }
@@ -47,25 +46,28 @@ export function TipAssistant({tip}: {tip: Tip}) {
   return (
     <div className="flex h-full w-full flex-col justify-start">
       <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
-      <TipChatResponse requestId={tip._id} />
+      <ArticleChatResponse requestId={article._id} />
       <div className="flex w-full flex-col items-start border-t">
         <div className="relative w-full">
           <Textarea
             ref={textareaRef}
             className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
             placeholder="Type a message..."
-            disabled={generateTitleStatus === 'loading'}
             rows={4}
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault()
-                sendTipChatMessage({
-                  tipId: tip._id,
+                sendArticleChatMessage({
+                  articleId: article._id,
                   messages: [
                     ...messages,
                     {
                       role: ChatCompletionRequestMessageRoleEnum.User,
-                      content: event.currentTarget.value,
+                      content: `${event.currentTarget.value}
+                      
+                      current title: ${article.title}
+                      current body: ${article.body}
+                      `,
                     },
                   ],
                 })
@@ -80,13 +82,17 @@ export function TipAssistant({tip}: {tip: Tip}) {
             onClick={async (event) => {
               event.preventDefault()
               if (textareaRef.current) {
-                sendTipChatMessage({
-                  tipId: tip._id,
+                sendArticleChatMessage({
+                  articleId: article._id,
                   messages: [
                     ...messages,
                     {
                       role: ChatCompletionRequestMessageRoleEnum.User,
-                      content: textareaRef.current?.value,
+                      content: `${event.currentTarget.value}
+                      
+                      current title: ${article.title}
+                      current body: ${article.body}
+                      `,
                     },
                   ],
                 })
@@ -100,27 +106,13 @@ export function TipAssistant({tip}: {tip: Tip}) {
 
         <div className="p-5">
           <h3 className="flex pb-3 text-lg font-bold">Actions</h3>
-          <Button
-            type="button"
-            disabled={generateTitleStatus === 'loading'}
-            variant="secondary"
-            onClick={async (event) => {
-              event.preventDefault()
-              await generateTitle({tipId: tip._id})
-            }}
-          >
-            <SparkleIcon className="-ml-1 mr-1 w-3" /> suggest title{' '}
-            {generateTitleStatus === 'loading' && (
-              <LoaderIcon className="w-3 animate-spin" />
-            )}
-          </Button>
         </div>
       </div>
     </div>
   )
 }
 
-function TipChatResponse({requestId}: {requestId: string}) {
+function ArticleChatResponse({requestId}: {requestId: string}) {
   const [messages, setMessages] = React.useState<
     {requestId: string; body: string}[]
   >([])

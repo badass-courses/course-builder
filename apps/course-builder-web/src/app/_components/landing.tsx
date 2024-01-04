@@ -7,7 +7,6 @@ import {Icon} from '@/components/icons'
 
 export const Landing = () => {
   const {data: session, status} = useSession()
-  console.log(session)
   return (
     <>
       <LandingCopy />

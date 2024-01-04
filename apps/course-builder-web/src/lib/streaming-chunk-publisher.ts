@@ -88,13 +88,14 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
  * @param requestId
  */
 export const publishToPartykit = async (body: string, requestId: string) => {
-  const partyUrl = `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`
+  const partyUrl = `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${requestId}`
 
   return await fetch(partyUrl, {
     method: 'POST',
     body: JSON.stringify({
       body,
       requestId,
+      name: 'ai.message',
     }),
   }).catch((e) => {
     console.error(e)

@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import {TipPlayer} from '@/app/tips/_components/tip-player'
 import {
   Button,
   Form,
@@ -21,48 +20,50 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {Input} from '@coursebuilder/ui'
 import {api} from '@/trpc/react'
 import {useRouter} from 'next/navigation'
-import {type Tip} from '@/lib/tips'
-import {TipAssistant} from './tip-assistant'
+import {ArticleAssistant} from './article-assistant'
 import Link from 'next/link'
-import {CodemirrorEditor} from '@/app/tips/_components/codemirror'
+import {CodemirrorEditor} from './codemirror'
 import {ImagePlusIcon, ZapIcon} from 'lucide-react'
 import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
 import {cn} from '@/lib/utils'
+import {Article} from '@/lib/articles'
 
-const NewTipFormSchema = z.object({
+const ArticleFormSchema = z.object({
   title: z.string().min(2).max(90),
   body: z.string().optional().nullable(),
 })
 
-export function EditTipForm({tip}: {tip: Tip}) {
+export function EditArticleForm({article}: {article: Article}) {
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof NewTipFormSchema>>({
-    resolver: zodResolver(NewTipFormSchema),
+  const form = useForm<z.infer<typeof ArticleFormSchema>>({
+    resolver: zodResolver(ArticleFormSchema),
     defaultValues: {
-      title: tip.title,
-      body: tip.body,
+      title: article.title,
+      body: article.body,
     },
   })
-  const {mutateAsync: updateTip, status: updateTipStatus} =
-    api.tips.update.useMutation()
+  const {mutateAsync: updateArticle, status: updateArticleStatus} =
+    api.articles.update.useMutation()
 
-  const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
-    const updatedTip = await updateTip({tipId: tip._id, ...values})
-
-    if (!updatedTip) {
-      // handle edge case, e.g. toast an error message
-    } else {
-      const {slug} = updatedTip
-
-      router.push(`/tips/${slug}`)
+  const onSubmit = async (values: z.infer<typeof ArticleFormSchema>) => {
+    const updatedArticle = await updateArticle({
+      articleId: article._id,
+      ...values,
+    })
+    if (updatedArticle) {
+      router.push(`/${updatedArticle.slug}`)
     }
   }
 
   const [activeToolbarTab, setActiveToolbarTab] = React.useState(
     TOOLBAR.values().next().value,
   )
+
+  const formValues = form.getValues()
+
+  const watcher = form.watch(['title', 'body'])
 
   return (
     <Form {...form}>
@@ -72,7 +73,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
       >
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
           <Button className="px-0" asChild variant="link">
-            <Link href={`/tips/${tip.slug}`} className="aspect-square">
+            <Link href={`/${article.slug}`} className="aspect-square">
               ←
             </Link>
           </Button>
@@ -81,7 +82,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
             variant="default"
             size="sm"
             className="h-7"
-            disabled={updateTipStatus === 'loading'}
+            disabled={updateArticleStatus === 'loading'}
           >
             Save
           </Button>
@@ -89,11 +90,6 @@ export function EditTipForm({tip}: {tip: Tip}) {
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
             <div className="col-span-3 flex h-full flex-col border-r">
-              <TipPlayer
-                videoResourceId={tip.videoResourceId}
-                muxPlaybackId={tip.muxPlaybackId}
-              />
-
               <FormField
                 control={form.control}
                 name="title"
@@ -110,7 +106,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                 )}
               />
               <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">
-                {tip._id}
+                {article._id}
               </div>
             </div>
             <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
@@ -126,8 +122,8 @@ export function EditTipForm({tip}: {tip: Tip}) {
                       Tip content in MDX.
                     </FormDescription>
                     <CodemirrorEditor
-                      roomName={`${tip._id}`}
-                      value={tip.body}
+                      roomName={`${article._id}`}
+                      value={article.body}
                       onChange={(data) => {
                         form.setValue('body', data)
                       }}
@@ -138,12 +134,15 @@ export function EditTipForm({tip}: {tip: Tip}) {
               />
             </div>
             <div className="col-span-3">
-              {activeToolbarTab.id === 'assistant' && (
-                <TipAssistant tip={tip} />
+              {watcher && activeToolbarTab.id === 'assistant' && (
+                <ArticleAssistant article={{...article, ...formValues}} />
               )}
               {activeToolbarTab.id === 'media' && (
                 <>
-                  <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
+                  <CloudinaryUploadWidget
+                    dir={article._type}
+                    id={article._id}
+                  />
                   <CloudinaryMediaBrowser />
                 </>
               )}

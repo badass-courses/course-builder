@@ -19,6 +19,7 @@ import solution from './schemas/objects/solution'
 import github from './schemas/objects/github'
 import email from './schemas/documents/email'
 import imageResource from './schemas/documents/imageResource'
+import article from './schemas/documents/article'
 
 export const schema: {types: SchemaTypeDefinition[]} = {
   types: [
@@ -36,6 +37,7 @@ export const schema: {types: SchemaTypeDefinition[]} = {
     linkResource,
     email,
     imageResource,
+    article,
     //objects
     solution,
     github,

@@ -21,6 +21,7 @@ type Abilities =
   | ['view', 'Profile' | User]
   | ['upload', 'Media']
   | ['edit', 'Tip']
+  | ['edit', 'Article']
   | ['edit', 'Module']
 
 export type AppAbility = MongoAbility<Abilities>
@@ -43,6 +44,7 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
     can('upload', 'Media')
     can('edit', 'Tip')
     can('edit', 'Module')
+    can('edit', 'Article')
   }
 
   if (options.user) {

@@ -83,7 +83,7 @@ export const tipTitleAndSummaryWriter = inngest.createFunction(
 
     await step.run('Broadcast Completion', async () => {
       await fetch(
-        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`,
+        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResource._id}`,
         {
           method: 'POST',
           body: JSON.stringify({
