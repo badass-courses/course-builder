@@ -53,7 +53,7 @@ export function Links({className}: {className?: string}) {
     <motion.nav
       aria-label="top"
       className={cn(
-        'relative mx-auto flex h-14 w-full items-center justify-between px-3 text-sm',
+        'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
         className,
       )}
     >
@@ -69,7 +69,7 @@ export function Links({className}: {className?: string}) {
             redirect('/brand')
           }}
         >
-          <Logo />
+          Course Builder
         </Link>
         <div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
           {navigationLinks.map(({label, href, icon}) => {
@@ -91,7 +91,6 @@ export function Links({className}: {className?: string}) {
       <div className="flex items-center justify-end">
         <Login className="hidden md:flex" />
         <User className="hidden md:flex" />
-
         <NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} />
       </div>
       <AnimatePresence>

@@ -4,10 +4,11 @@ import {useSocket} from '@/hooks/use-socket'
 import {api} from '@/trpc/react'
 import {useRouter} from 'next/navigation'
 
-export function Party() {
+export function Party({room}: {room?: string}) {
   const utils = api.useUtils()
   const router = useRouter()
   useSocket({
+    room,
     onMessage: async (messageEvent) => {
       try {
         const data = JSON.parse(messageEvent.data)
@@ -17,8 +18,6 @@ export function Party() {
           'transcript.ready',
           'ai.tip.draft.completed',
         ]
-
-        console.log(data.name)
 
         if (invalidateOn.includes(data.name)) {
           await utils.module.invalidate()

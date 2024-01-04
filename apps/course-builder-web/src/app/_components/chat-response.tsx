@@ -19,8 +19,6 @@ export function ChatResponse({requestIds = []}: {requestIds: string[]}) {
     onMessage: (messageEvent) => {
       const messageData = JSON.parse(messageEvent.data)
 
-      console.log({requestIds, messageData})
-
       if (
         messageData.body !== STREAM_COMPLETE &&
         requestIds.includes(messageData.requestId)
