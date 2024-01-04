@@ -1,14 +1,14 @@
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
-import {redirect} from 'next/navigation'
+import {notFound} from 'next/navigation'
 
 export default async function AdminPage() {
   const session = await getServerAuthSession()
   const ability = getAbility({user: session?.user})
 
-  if (ability.can('view', 'Anything')) {
+  if (ability.can('manage', 'all')) {
     return <div>Admin</div>
+  } else {
+    notFound()
   }
-
-  redirect('/')
 }

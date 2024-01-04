@@ -1,4 +1,9 @@
 import {sanityQuery} from '@/server/sanity.server'
+import {getServerAuthSession} from '@/server/auth'
+import {getAbility} from '@/lib/ability'
+import {notFound} from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 
 export default async function EditTutorialLessonPage({
   params,
@@ -6,6 +11,9 @@ export default async function EditTutorialLessonPage({
   params: {module: string; lesson: string}
 }) {
   const {module, lesson} = params
+
+  const session = await getServerAuthSession()
+  const ability = getAbility({user: session?.user})
 
   const lessonData = await sanityQuery<{
     _id: string
@@ -25,6 +33,10 @@ export default async function EditTutorialLessonPage({
       "slug": slug.current,
     }
   }`)
+
+  if (!lessonData || !ability.can('update', 'Content')) {
+    notFound()
+  }
 
   return (
     <div className="flex flex-col">

@@ -6,7 +6,7 @@ export default async function ProfilePage() {
   const session = await getServerAuthSession()
   const ability = getAbility({user: session?.user})
 
-  if (ability.can('view', 'Profile', session?.user?.id)) {
+  if (ability.can('read', 'User', session?.user?.id)) {
     return <div>Profile</div>
   }
 

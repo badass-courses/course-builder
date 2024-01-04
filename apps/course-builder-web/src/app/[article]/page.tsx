@@ -16,15 +16,13 @@ export default async function ArticlePage({
   const ability = getAbility({user: session?.user})
   const article = await getArticle(params.article)
 
-  console.log('******', {article})
-
   if (!article) {
     notFound()
   }
 
   return (
     <div>
-      {ability.can('edit', 'Article') ? (
+      {ability.can('update', 'Content') ? (
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
           <div />
           <Button asChild className="h-7">
