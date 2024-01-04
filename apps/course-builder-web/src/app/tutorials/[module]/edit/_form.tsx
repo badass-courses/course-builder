@@ -45,11 +45,6 @@ export function EditTutorialForm({
     defaultValues: initialTutorialData,
   })
 
-  console.log({
-    moduleSlug,
-    initialTutorialData,
-  })
-
   const {isSubmitting, isDirty, isValid} = form.formState
 
   const {data: tutorial, status: tutorialStatus} =

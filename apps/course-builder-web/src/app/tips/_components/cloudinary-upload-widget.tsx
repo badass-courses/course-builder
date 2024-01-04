@@ -41,7 +41,7 @@ export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
               },
               (error: any, result: any) => {
                 if (!error && result && result.event === 'success') {
-                  console.log('Done! Here is the image info: ', result.info)
+                  console.debug('Done! Here is the image info: ', result.info)
                 }
               },
             )

@@ -63,7 +63,6 @@ export function EditArticleForm({article}: {article: Article}) {
         const invalidateOn = ['ai.feedback.markers.generated']
 
         if (invalidateOn.includes(data.name)) {
-          console.log('data', data)
           setFeedbackMarkers(data.body)
         }
       } catch (error) {
@@ -166,7 +165,6 @@ export function EditArticleForm({article}: {article: Article}) {
               <div>
                 <ul>
                   {feedbackMarkers.map((marker) => {
-                    console.log('marker', marker)
                     return (
                       <li
                         key={marker.originalText}

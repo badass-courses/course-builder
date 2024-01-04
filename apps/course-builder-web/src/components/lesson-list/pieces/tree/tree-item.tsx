@@ -350,7 +350,6 @@ const TreeItem = memo(function TreeItem({
         <div id={aria?.['aria-controls']}>
           {item.children.map((child, index, array) => {
             const childType: ItemMode = (() => {
-              console.log('child', child)
               if (child.children.length && child.isOpen) {
                 return 'expanded'
               }

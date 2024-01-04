@@ -16,7 +16,6 @@ export const generateFeedbackMarkers = inngest.createFunction(
   },
   {event: BODY_TEXT_UPDATED},
   async ({event, step}) => {
-    console.log(JSON.stringify(event.data.content?.split('\n')))
     const markers = await step.run('Generate Feedback Markers', async () => {
       return fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -90,7 +89,6 @@ export const generateFeedbackMarkers = inngest.createFunction(
       })
         .then((response) => response.json())
         .then((response) => {
-          console.log(response)
           return z
             .array(FeedbackMarkerSchema)
             .parse(JSON.parse(response.choices[0].message.content).markers)

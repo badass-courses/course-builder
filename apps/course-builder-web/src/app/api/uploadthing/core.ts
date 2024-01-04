@@ -31,10 +31,6 @@ export const ourFileRouter = {
       }
     })
     .onUploadComplete(async (opts) => {
-      console.log('Upload complete for userId:', opts.metadata.userId)
-
-      console.log('file url', opts)
-
       await inngest.send({
         name: VIDEO_UPLOADED_EVENT,
         data: {
@@ -58,8 +54,8 @@ export const ourFileRouter = {
       return {userId: session.user.id, moduleSlug: 'tips'}
     })
     .onUploadComplete(async (opts) => {
-      console.log('Upload complete for userId:', opts.metadata.userId)
-      console.log('file url', opts)
+      console.debug('Upload complete for userId:', opts.metadata.userId)
+      console.debug('file url', opts)
 
       await inngest.send({
         name: VIDEO_UPLOADED_EVENT,

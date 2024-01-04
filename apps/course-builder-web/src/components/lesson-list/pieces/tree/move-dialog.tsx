@@ -69,7 +69,6 @@ export function MoveDialog({
 
   const onSubmit = useCallback(
     (formData: FormData) => {
-      console.log('formData = ', formData)
       dispatch({
         type: 'modal-move',
         itemId,

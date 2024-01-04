@@ -18,7 +18,7 @@ export const writingRouter = createTRPCRouter({
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
