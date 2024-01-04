@@ -5,7 +5,6 @@ import {
   type MongoAbility,
 } from '@casl/ability'
 import z from 'zod'
-import {Tip} from '@/lib/tips'
 
 export const UserSchema = z.object({
   role: z.string().optional(),
@@ -16,15 +15,10 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>
 
-type Abilities =
-  | ['view', 'Anything']
-  | ['view', 'Profile' | User]
-  | ['upload', 'Media']
-  | ['edit', 'Tip']
-  | ['edit', 'Article']
-  | ['edit', 'Module']
+type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage'
+type Subjects = 'Content' | 'User' | User | 'all'
 
-export type AppAbility = MongoAbility<Abilities>
+export type AppAbility = MongoAbility<[Actions, Subjects]>
 
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
@@ -40,15 +34,11 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
   const {can, rules} = new AbilityBuilder<AppAbility>(createMongoAbility)
 
   if (options.user?.role === 'admin') {
-    can('view', 'Anything')
-    can('upload', 'Media')
-    can('edit', 'Tip')
-    can('edit', 'Module')
-    can('edit', 'Article')
+    can('manage', 'all')
   }
 
   if (options.user) {
-    can('view', 'Profile', {id: options.user.id})
+    can('read', 'User', {id: options.user.id})
   }
 
   return rules

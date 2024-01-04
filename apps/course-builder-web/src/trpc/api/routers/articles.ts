@@ -39,7 +39,7 @@ export const articlesRouter = createTRPCRouter({
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
@@ -63,7 +63,7 @@ export const articlesRouter = createTRPCRouter({
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
@@ -96,7 +96,7 @@ export const articlesRouter = createTRPCRouter({
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('upload', 'Media')) {
+      if (!ability.can('update', 'Content')) {
         throw new Error('Unauthorized')
       }
 
