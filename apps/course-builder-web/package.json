@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm:dev:*\"",
+    "dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
     "dev:next": "next dev",
     "dev:inngest": "pnpx inngest-cli@latest dev",
     "dev:party": "pnpx partykit dev",
