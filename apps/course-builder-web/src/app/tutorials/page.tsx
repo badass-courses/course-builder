@@ -24,7 +24,7 @@ export default async function Tutorials() {
 
   return (
     <div className="flex flex-col">
-      {ability.can('upload', 'Media') ? (
+      {ability.can('create', 'Content') ? (
         <Link href="/tutorials/new">New Tutorial</Link>
       ) : null}
       {tutorials.map((tutorial) => (

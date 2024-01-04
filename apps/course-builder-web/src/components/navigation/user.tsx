@@ -27,7 +27,7 @@ export const User: React.FC<{className?: string}> = ({className}) => {
   const ability = createAppAbility(abilityRules)
   const isLoadingUserInfo = sessionStatus === 'loading'
 
-  const canCreateContent = ability.can('upload', 'Media')
+  const canCreateContent = ability.can('create', 'Content')
 
   return (
     <>

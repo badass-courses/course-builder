@@ -31,7 +31,7 @@ export default async function TipsListPage() {
       </div>
       <div className="col-span-2 h-full flex-grow">
         <h1 className="pb-2 text-lg font-bold">Create Tip</h1>
-        {ability.can('upload', 'Media') ? <CreateTip /> : null}
+        {ability.can('create', 'Content') ? <CreateTip /> : null}
       </div>
     </div>
   )
