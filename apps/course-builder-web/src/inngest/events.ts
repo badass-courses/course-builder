@@ -1,4 +1,5 @@
 import {type ChatCompletionRequestMessage} from 'openai-edge'
+import {FeedbackMarker} from '@/lib/feedback-marker'
 
 export const AI_WRITING_COMPLETED_EVENT = 'ai/writing-completed'
 
@@ -30,6 +31,17 @@ export type AITipWritingRequested = {
   }
 }
 
+export const BODY_TEXT_UPDATED = 'user/body-text-updated'
+
+export type BodyTextUpdated = {
+  name: typeof BODY_TEXT_UPDATED
+  data: {
+    resourceId: string
+    content: string | null | undefined
+    currentFeedback?: FeedbackMarker[]
+  }
+}
+
 export const USER_CREATED_EVENT = 'user/created'
 
 export type UserCreated = {
@@ -54,5 +66,6 @@ export type ArticleChat = {
   data: {
     articleId: string
     messages: ChatCompletionRequestMessage[]
+    currentFeedback?: FeedbackMarker[]
   }
 }

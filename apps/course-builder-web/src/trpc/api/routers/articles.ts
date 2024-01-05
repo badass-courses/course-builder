@@ -15,6 +15,7 @@ import {toChicagoTitleCase} from '@/utils/chicagor-title'
 import {inngest} from '@/inngest/inngest.server'
 import {ARTICLE_CHAT_EVENT, TIP_CHAT_EVENT} from '@/inngest/events'
 import {getTip} from '@/lib/tips'
+import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 export const articlesRouter = createTRPCRouter({
@@ -32,6 +33,7 @@ export const articlesRouter = createTRPCRouter({
       z.object({
         articleId: z.string(),
         messages: z.array(z.any()),
+        currentFeedback: z.array(FeedbackMarkerSchema).optional(),
       }),
     )
     .mutation(async ({ctx, input}) => {
@@ -46,6 +48,7 @@ export const articlesRouter = createTRPCRouter({
         data: {
           articleId: input.articleId,
           messages: input.messages,
+          currentFeedback: input.currentFeedback,
         },
       })
 

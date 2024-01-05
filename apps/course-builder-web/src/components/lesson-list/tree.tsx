@@ -135,7 +135,6 @@ export default function Tree({initialData}: {initialData?: TreeItemType[]}) {
 
     const targets = []
 
-    console.log('getMoveTargets', itemId, data)
     const searchStack = Array.from(data)
     while (searchStack.length > 0) {
       const node = searchStack.pop()
@@ -163,8 +162,6 @@ export default function Tree({initialData}: {initialData?: TreeItemType[]}) {
 
       node.children.forEach((childNode) => searchStack.push(childNode))
     }
-
-    console.log(targets)
 
     return targets
   }, [])
@@ -211,7 +208,6 @@ export default function Tree({initialData}: {initialData?: TreeItemType[]}) {
         onDrop(args) {
           const {location, source} = args
           // didn't drop on anything
-          console.log('onDrop', args)
           if (!location.current.dropTargets.length) {
             return
           }
@@ -254,7 +250,6 @@ export default function Tree({initialData}: {initialData?: TreeItemType[]}) {
           ref={ref}
         >
           {data.map((item, index, array) => {
-            console.log('TOP item', item)
             const type: ItemMode = (() => {
               if (item.children.length && item.isOpen) {
                 return 'expanded'

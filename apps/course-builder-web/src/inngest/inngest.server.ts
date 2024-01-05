@@ -8,6 +8,8 @@ import {
   type AIWritingRequested,
   ARTICLE_CHAT_EVENT,
   ArticleChat,
+  BODY_TEXT_UPDATED,
+  BodyTextUpdated,
   TIP_CHAT_EVENT,
   TipChat,
   type USER_CREATED_EVENT,
@@ -62,6 +64,7 @@ type Events = {
   [CLOUDINARY_WEBHOOK_EVENT]: CloudinaryWebhook
   [TIP_CHAT_EVENT]: TipChat
   [ARTICLE_CHAT_EVENT]: ArticleChat
+  [BODY_TEXT_UPDATED]: BodyTextUpdated
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',

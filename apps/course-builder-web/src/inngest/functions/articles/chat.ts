@@ -41,8 +41,6 @@ export const articleChat = inngest.createFunction(
         action._type === 'prompt' && action.role === 'system',
     )
 
-    console.log(systemPromptAction)
-
     const systemPrompt = await step.run(`parse system prompt`, async () => {
       try {
         const engine = new Liquid()

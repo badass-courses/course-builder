@@ -28,6 +28,8 @@ import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
 import {cn} from '@/lib/utils'
 import {Article} from '@/lib/articles'
+import {useSocket} from '@/hooks/use-socket'
+import {FeedbackMarker} from '@/lib/feedback-marker'
 
 const ArticleFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -35,6 +37,9 @@ const ArticleFormSchema = z.object({
 })
 
 export function EditArticleForm({article}: {article: Article}) {
+  const [feedbackMarkers, setFeedbackMarkers] = React.useState<
+    FeedbackMarker[]
+  >([])
   const router = useRouter()
 
   const form = useForm<z.infer<typeof ArticleFormSchema>>({
@@ -46,6 +51,25 @@ export function EditArticleForm({article}: {article: Article}) {
   })
   const {mutateAsync: updateArticle, status: updateArticleStatus} =
     api.articles.update.useMutation()
+
+  const {mutateAsync: generateFeedback} =
+    api.writing.generateFeedback.useMutation()
+
+  useSocket({
+    room: article._id,
+    onMessage: async (messageEvent) => {
+      try {
+        const data = JSON.parse(messageEvent.data)
+        const invalidateOn = ['ai.feedback.markers.generated']
+
+        if (invalidateOn.includes(data.name)) {
+          setFeedbackMarkers(data.body)
+        }
+      } catch (error) {
+        // noting to do
+      }
+    },
+  })
 
   const onSubmit = async (values: z.infer<typeof ArticleFormSchema>) => {
     const updatedArticle = await updateArticle({
@@ -124,18 +148,38 @@ export function EditArticleForm({article}: {article: Article}) {
                     <CodemirrorEditor
                       roomName={`${article._id}`}
                       value={article.body}
-                      onChange={(data) => {
+                      onChange={async (data) => {
                         form.setValue('body', data)
+                        generateFeedback({
+                          resourceId: article._id,
+                          body: data,
+                          currentFeedback: feedbackMarkers,
+                        })
                       }}
+                      markers={feedbackMarkers}
                     />
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div>
+                <ul>
+                  {feedbackMarkers.map((marker) => {
+                    return (
+                      <li
+                        key={marker.originalText}
+                      >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
+                    )
+                  })}
+                </ul>
+              </div>
             </div>
             <div className="col-span-3">
               {watcher && activeToolbarTab.id === 'assistant' && (
-                <ArticleAssistant article={{...article, ...formValues}} />
+                <ArticleAssistant
+                  article={{...article, ...formValues}}
+                  currentFeedback={feedbackMarkers}
+                />
               )}
               {activeToolbarTab.id === 'media' && (
                 <>
