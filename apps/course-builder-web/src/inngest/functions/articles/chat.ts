@@ -60,6 +60,15 @@ export const articleChat = inngest.createFunction(
     })
 
     if (messages.length === 1 && systemPrompt) {
+      if (event.data.currentFeedback) {
+        messages = [
+          {
+            content: JSON.stringify(event.data.currentFeedback),
+            role: 'assistant',
+          },
+          ...messages,
+        ]
+      }
       messages = [systemPrompt, ...messages]
     }
 

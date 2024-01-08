@@ -24,13 +24,13 @@ import {useRouter} from 'next/navigation'
 import {type Tip} from '@/lib/tips'
 import {TipAssistant} from './tip-assistant'
 import Link from 'next/link'
-import {CodemirrorEditor} from '@/app/tips/_components/codemirror'
 import {ImagePlusIcon, ZapIcon} from 'lucide-react'
 import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
 import {cn} from '@/lib/utils'
 import {FeedbackMarker} from '@/lib/feedback-marker'
 import {useSocket} from '@/hooks/use-socket'
+import {CodemirrorEditor} from '@/app/_components/codemirror'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
