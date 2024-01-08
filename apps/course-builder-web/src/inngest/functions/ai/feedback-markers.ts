@@ -11,7 +11,7 @@ export const generateFeedbackMarkers = inngest.createFunction(
     name: 'Generate Feedback Markers',
     debounce: {
       key: 'event.data.resourceId',
-      period: '5s',
+      period: '15s',
     },
   },
   {event: BODY_TEXT_UPDATED},
@@ -47,6 +47,10 @@ export const generateFeedbackMarkers = inngest.createFunction(
               * don't waste our time with feedback that is not actionable
               * harsh feedback is OK, no need to spare our feelings
               * act like the authority that you are
+              * do keep the feedback premium and useful
+              * do exclude feedback that is marginal or not actionable
+              * focus on ideas over grammar
+              * limit the feedback to the the top three issues
               
               ## Feedback Marker Zod Schema
               
@@ -72,7 +76,7 @@ export const generateFeedbackMarkers = inngest.createFunction(
               
               ${JSON.stringify(event.data.currentFeedback)}
               
-              ## Template\n\n{markers:[{"originalText": "quoted from the text", "feedback": "useful feedback", "fullSuggestedChange": "rewritten text that captures the feedback meaningfully", "level": "critical", "type": "grammar"}]}`,
+              ## Template\n\n{markers:[{"originalText": "quoted from the text", "feedback": "useful feedback", "fullSuggestedChange": "rewritten text that captures the feedback meaningfully", "level": "how much attention is needed?", "type": "a single word that describes the type of change"}]}`,
               role: 'system',
             },
             {

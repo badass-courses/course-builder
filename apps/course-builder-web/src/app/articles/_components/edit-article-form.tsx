@@ -22,7 +22,6 @@ import {api} from '@/trpc/react'
 import {useRouter} from 'next/navigation'
 import {ArticleAssistant} from './article-assistant'
 import Link from 'next/link'
-import {CodemirrorEditor} from './codemirror'
 import {ImagePlusIcon, ZapIcon} from 'lucide-react'
 import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
@@ -30,6 +29,7 @@ import {cn} from '@/lib/utils'
 import {Article} from '@/lib/articles'
 import {useSocket} from '@/hooks/use-socket'
 import {FeedbackMarker} from '@/lib/feedback-marker'
+import {CodemirrorEditor} from '@/app/_components/codemirror'
 
 const ArticleFormSchema = z.object({
   title: z.string().min(2).max(90),
