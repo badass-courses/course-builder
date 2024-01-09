@@ -1,9 +1,7 @@
 import {EventSchemas, Inngest} from 'inngest'
 import {
-  type AI_TIP_WRITING_REQUESTED_EVENT,
   type AI_WRITING_COMPLETED_EVENT,
   type AI_WRITING_REQUESTED_EVENT,
-  type AITipWritingRequested,
   type AIWritingRequestCompleted,
   type AIWritingRequested,
   ARTICLE_CHAT_EVENT,
@@ -58,7 +56,6 @@ type Events = {
   [VIDEO_UPLOADED_EVENT]: VideoUploaded
   [POST_CREATION_REQUESTED_EVENT]: PostCreationRequested
   [MUX_SRT_READY_EVENT]: MuxSrtReady
-  [AI_TIP_WRITING_REQUESTED_EVENT]: AITipWritingRequested
   [USER_CREATED_EVENT]: UserCreated
   [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
   [CLOUDINARY_WEBHOOK_EVENT]: CloudinaryWebhook

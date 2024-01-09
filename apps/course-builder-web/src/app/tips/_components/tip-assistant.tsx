@@ -23,9 +23,6 @@ export function TipAssistant({tip}: {tip: Tip}) {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const {mutateAsync: generateTitle, status: generateTitleStatus} =
-    api.tips.generateTitle.useMutation()
-
   useSocket({
     room: tip._id,
     onMessage: (messageEvent) => {
@@ -54,7 +51,6 @@ export function TipAssistant({tip}: {tip: Tip}) {
             ref={textareaRef}
             className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
             placeholder="Type a message..."
-            disabled={generateTitleStatus === 'loading'}
             rows={4}
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
@@ -95,24 +91,6 @@ export function TipAssistant({tip}: {tip: Tip}) {
             }}
           >
             <EnterIcon className="w-4" />
-          </Button>
-        </div>
-
-        <div className="p-5">
-          <h3 className="flex pb-3 text-lg font-bold">Actions</h3>
-          <Button
-            type="button"
-            disabled={generateTitleStatus === 'loading'}
-            variant="secondary"
-            onClick={async (event) => {
-              event.preventDefault()
-              await generateTitle({tipId: tip._id})
-            }}
-          >
-            <SparkleIcon className="-ml-1 mr-1 w-3" /> suggest title{' '}
-            {generateTitleStatus === 'loading' && (
-              <LoaderIcon className="w-3 animate-spin" />
-            )}
           </Button>
         </div>
       </div>

@@ -7,7 +7,6 @@ import {
 import {transcriptReady} from '@/inngest/functions/transcript-ready'
 import {videoUploaded} from '@/inngest/functions/video-uploaded'
 import {addSrtToMuxAsset} from '@/inngest/functions/mux/add-srt-to-mux-asset'
-import {tipTitleAndSummaryWriter} from '@/inngest/functions/ai/tip-writer'
 import {userCreated} from '@/inngest/functions/user-created'
 import {weeklySignupDigest} from '@/inngest/functions/notify/creator/weekly-signups'
 import {userSignupAdminEmail} from '@/inngest/functions/notify/creator/user-signup'
@@ -26,7 +25,6 @@ export const inngestConfig = {
     transcriptReady,
     videoUploaded,
     addSrtToMuxAsset,
-    tipTitleAndSummaryWriter,
     userCreated,
     weeklySignupDigest,
     userSignupAdminEmail,

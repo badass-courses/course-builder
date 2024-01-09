@@ -13,7 +13,7 @@ import slugify from '@sindresorhus/slugify'
 
 import {customAlphabet} from 'nanoid'
 import {inngest} from '@/inngest/inngest.server'
-import {AI_TIP_WRITING_REQUESTED_EVENT, TIP_CHAT_EVENT} from '@/inngest/events'
+import {TIP_CHAT_EVENT} from '@/inngest/events'
 import {toChicagoTitleCase} from '@/utils/chicagor-title'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
@@ -160,28 +160,6 @@ export const tipsRouter = createTRPCRouter({
         ],
         {returnDocuments: true},
       )
-
-      return await getTip(input.tipId)
-    }),
-  generateTitle: protectedProcedure
-    .input(
-      z.object({
-        tipId: z.string(),
-      }),
-    )
-    .mutation(async ({ctx, input}) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({user: session?.user})
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
-      }
-
-      await inngest.send({
-        name: AI_TIP_WRITING_REQUESTED_EVENT,
-        data: {
-          tipId: input.tipId,
-        },
-      })
 
       return await getTip(input.tipId)
     }),
