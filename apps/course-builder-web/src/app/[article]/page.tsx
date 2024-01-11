@@ -32,11 +32,11 @@ export default async function ArticlePage({
           </Button>
         </div>
       ) : null}
-      <article className="grid grid-cols-5 p-5 sm:p-10">
-        <div className="col-span-3">
+      <article className="flex flex-col p-5 sm:p-10">
+        
           <h1 className="text-3xl font-bold">{article.title}</h1>
-        </div>
-        <div className="col-span-2">
+      
+        <div className="mt-4 pb-32">
           <ReactMarkdown className="prose dark:prose-invert">
             {article.body}
           </ReactMarkdown>
