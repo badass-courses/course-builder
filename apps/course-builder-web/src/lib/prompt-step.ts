@@ -13,11 +13,13 @@ const openai = new OpenAIApi(config)
 type PromptStepOptions = {
   requestId: string
   promptMessages: ChatCompletionRequestMessage[]
+  model?: string
 }
 
 export async function promptStep({
   requestId,
   promptMessages,
+  model,
 }: PromptStepOptions) {
   // console.log('--------')
   // console.log()
@@ -32,7 +34,7 @@ export async function promptStep({
   const response = await openai.createChatCompletion({
     messages: promptMessages,
     stream: true,
-    model: env.OPENAI_MODEL_ID,
+    model: model ?? env.OPENAI_MODEL_ID,
   })
 
   // console.log({response})

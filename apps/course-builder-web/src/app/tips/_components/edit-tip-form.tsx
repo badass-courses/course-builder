@@ -31,6 +31,7 @@ import {cn} from '@/lib/utils'
 import {FeedbackMarker} from '@/lib/feedback-marker'
 import {useSocket} from '@/hooks/use-socket'
 import {CodemirrorEditor} from '@/app/_components/codemirror'
+import ReactMarkdown from 'react-markdown'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -136,6 +137,14 @@ export function EditTipForm({tip}: {tip: Tip}) {
               <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">
                 {tip._id}
               </div>
+              {tip.transcript ? (
+                <div className="p-5">
+                  <h3 className="font-bold">Transcript</h3>
+                  <ReactMarkdown className="prose">
+                    {tip.transcript}
+                  </ReactMarkdown>
+                </div>
+              ) : null}
             </div>
             <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
               <FormField

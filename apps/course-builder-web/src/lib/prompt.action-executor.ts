@@ -15,6 +15,7 @@ export async function promptActionExecutor(options: {
     name?: string
     content?: string
     title?: string
+    model?: string
   }
   input: Record<any, any>
   requestId: string
@@ -42,6 +43,7 @@ export async function promptActionExecutor(options: {
     return await promptStep({
       requestId,
       promptMessages: [...messages, userMessage],
+      model: action.model,
     })
   }
 }

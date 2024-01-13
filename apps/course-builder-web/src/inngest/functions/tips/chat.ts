@@ -10,6 +10,9 @@ import {promptActionExecutor} from '@/lib/prompt.action-executor'
 import {Liquid} from 'liquidjs'
 import {NonRetriableError} from 'inngest'
 
+/**
+ * TODO: Cancellation conditions need to be added $$
+ */
 export const tipChat = inngest.createFunction(
   {
     id: `tip-chat`,
@@ -75,6 +78,7 @@ export const tipChat = inngest.createFunction(
       return promptStep({
         requestId: event.data.tipId,
         promptMessages: messages,
+        model: systemPromptAction.model ?? env.OPENAI_MODEL_ID,
       })
     })
 

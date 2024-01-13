@@ -21,6 +21,7 @@ export default defineType({
           {title: 'gpt-4', value: 'gpt-4'},
           {title: 'gpt-4-1106-preview', value: 'gpt-4-1106-preview'},
           {title: 'gpt-3.5', value: 'gpt-3.5'},
+          {title: 'gpt-4-32k', value: 'gpt-4-32k'},
         ],
       },
 

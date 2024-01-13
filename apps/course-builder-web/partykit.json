@@ -1,5 +1,5 @@
 {
-  "name": "inngest-gpt-4-ai-chains-mux-video-party",
+  "name": "course-builder",
   "main": "party/index.ts",
   "compatibilityDate": "2023-10-20"
 }
