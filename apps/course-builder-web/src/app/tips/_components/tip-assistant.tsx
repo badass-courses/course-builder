@@ -41,6 +41,14 @@ export function TipAssistant({tip}: {tip: Tip}) {
     },
   })
 
+  // TODO: If we want to do like a distributed chat, the challenge is going to be to divide each individual request up,
+  //  so the response that we' we're getting is the response to a single request and not based on the current screen
+  //  we're in. So you have a user, tip in a request, and that's coming in. And th how can we maybe think about it from
+  //  a tree-like perspective? to where when you make a request, you can then edit it and the responses to that request
+  //  go kind of, you can prune basically and come back to it and do that sort of thing. And then also allow people to
+  //  have multiple conversations at once and kind of see the output of other people's conversations and maybe even use
+  //  them contextually.
+
   return (
     <div className="flex h-full w-full flex-col justify-start">
       <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
