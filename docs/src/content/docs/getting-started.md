@@ -65,7 +65,7 @@ be using these services.
 ## Clone the Repository
 
 ```bash
-git clone https://www.github.com/joelhooks/course-builder
+git clone https://www.github.com/badass-courses/course-builder
 ```
 
 ## Install Dependencies
