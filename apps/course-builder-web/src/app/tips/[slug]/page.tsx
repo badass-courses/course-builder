@@ -1,11 +1,5 @@
 import Link from 'next/link'
-import {
-  CardTitle,
-  CardHeader,
-  CardContent,
-  Card,
-  Button,
-} from '@coursebuilder/ui'
+import {Button} from '@coursebuilder/ui'
 import {TipPlayer} from '@/app/tips/_components/tip-player'
 import * as React from 'react'
 import {getServerAuthSession} from '@/server/auth'
@@ -13,6 +7,35 @@ import {getAbility} from '@/lib/ability'
 import {getTip} from '@/lib/tips'
 import ReactMarkdown from 'react-markdown'
 import {notFound} from 'next/navigation'
+import type {Metadata, ResolvingMetadata} from 'next'
+import {getOGImageUrlForTitle} from '@/utils/get-og-image-for-title'
+
+type Props = {
+  params: {slug: string}
+  searchParams: {[key: string]: string | string[] | undefined}
+}
+
+export async function generateMetadata(
+  {params, searchParams}: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const tip = await getTip(params.slug)
+
+  if (!tip) {
+    return parent as Metadata
+  }
+
+  const previousImages = (await parent).openGraph?.images || []
+
+  const ogImage = getOGImageUrlForTitle(tip.title)
+
+  return {
+    title: tip.title,
+    openGraph: {
+      images: [ogImage, ...previousImages],
+    },
+  }
+}
 
 export default async function TipPage({params}: {params: {slug: string}}) {
   const session = await getServerAuthSession()

@@ -6,6 +6,35 @@ import {getAbility} from '@/lib/ability'
 import ReactMarkdown from 'react-markdown'
 import {getArticle} from '@/lib/articles'
 import {notFound} from 'next/navigation'
+import {type Metadata, type ResolvingMetadata} from 'next'
+import {getOGImageUrlForTitle} from '@/utils/get-og-image-for-title'
+
+type Props = {
+  params: {article: string}
+  searchParams: {[key: string]: string | string[] | undefined}
+}
+
+export async function generateMetadata(
+  {params, searchParams}: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const article = await getArticle(params.article)
+
+  if (!article) {
+    return parent as Metadata
+  }
+
+  const previousImages = (await parent).openGraph?.images || []
+
+  const ogImage = getOGImageUrlForTitle(article.title)
+
+  return {
+    title: article.title,
+    openGraph: {
+      images: [ogImage, ...previousImages],
+    },
+  }
+}
 
 export default async function ArticlePage({
   params,
