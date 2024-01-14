@@ -17,6 +17,15 @@ import {SearchCursor, SearchQuery} from '@codemirror/search'
 import {Decoration} from '@codemirror/view'
 import {FeedbackMarker} from '@/lib/feedback-marker'
 
+async function generateHash(message: string) {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(message)
+  const hash = await window.crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 export const CodemirrorEditor = ({
   roomName,
   value,
@@ -98,6 +107,7 @@ const useCodemirror = ({
 }) => {
   const [element, setElement] = useState<HTMLElement>()
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
+  const [currentText, setCurrentText] = useState<string>('')
 
   const {data: session} = useSession()
 
@@ -137,41 +147,48 @@ const useCodemirror = ({
     const undoManager = new Y.UndoManager(ytext)
     setYUndoManager(undoManager)
 
-    let updateListenerExtension = EditorView.updateListener.of((update) => {
-      if (update.docChanged) {
-        onChange(update.state.doc.toString())
+    let updateListenerExtension = EditorView.updateListener.of(
+      async (update) => {
+        if (update.docChanged) {
+          const docText = update.state.doc.toString()
+          const hash = await generateHash(docText)
+          if (hash !== currentText) {
+            onChange(docText)
+            setCurrentText(hash)
+          }
 
-        if (update.state.doc.toString().length !== 0) {
-          for (let marker of markers) {
-            let cursor = new SearchCursor(view.state.doc, marker.originalText)
+          if (update.state.doc.toString().length !== 0) {
+            for (let marker of markers) {
+              let cursor = new SearchCursor(view.state.doc, marker.originalText)
 
-            let query = new SearchQuery({
-              search: marker.originalText,
-              caseSensitive: false,
-            })
-
-            console.log('-----', query.getCursor(view.state.doc).next())
-
-            while (!cursor.done) {
-              cursor.next()
-              console.log('+++++', query.getCursor(view.state.doc).next())
-              const highlight_decoration = Decoration.mark({
-                attributes: {style: 'background-color: yellow'},
+              let query = new SearchQuery({
+                search: marker.originalText,
+                caseSensitive: false,
               })
 
-              view.dispatch({
-                effects: highlight_effect.of([
-                  highlight_decoration.range(
-                    cursor.value.from,
-                    cursor.value.to,
-                  ),
-                ]),
-              })
+              console.log('-----', query.getCursor(view.state.doc).next())
+
+              while (!cursor.done) {
+                cursor.next()
+                console.log('+++++', query.getCursor(view.state.doc).next())
+                const highlight_decoration = Decoration.mark({
+                  attributes: {style: 'background-color: yellow'},
+                })
+
+                view.dispatch({
+                  effects: highlight_effect.of([
+                    highlight_decoration.range(
+                      cursor.value.from,
+                      cursor.value.to,
+                    ),
+                  ]),
+                })
+              }
             }
           }
         }
-      }
-    })
+      },
+    )
 
     const awareness = provider.awareness
 

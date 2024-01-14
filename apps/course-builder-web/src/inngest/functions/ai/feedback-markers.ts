@@ -9,6 +9,7 @@ export const generateFeedbackMarkers = inngest.createFunction(
   {
     id: `generate-feedback-markers`,
     name: 'Generate Feedback Markers',
+    idempotency: 'event.id',
     debounce: {
       key: 'event.data.resourceId',
       period: '15s',

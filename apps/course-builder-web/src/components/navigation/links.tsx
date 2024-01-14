@@ -22,6 +22,11 @@ export const getNavigationLinks = (): {
 }[] => {
   return [
     {
+      label: 'Articles',
+      icon: () => '',
+      href: '/articles',
+    },
+    {
       label: 'Tips',
       icon: () => '',
       href: '/tips',

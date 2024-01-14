@@ -5,6 +5,13 @@ import {createTRPCRouter, protectedProcedure} from '@/trpc/api/trpc'
 import {inngest} from '@/inngest/inngest.server'
 import {BODY_TEXT_UPDATED} from '@/inngest/events'
 import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
+import crypto from 'crypto'
+
+function generateHash(data: string): string {
+  const hash = crypto.createHash('sha256')
+  hash.update(data)
+  return hash.digest('hex')
+}
 
 export const writingRouter = createTRPCRouter({
   generateFeedback: protectedProcedure
@@ -22,7 +29,12 @@ export const writingRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
+      const bodyHash = generateHash(input.body || '')
+
+      console.log('bodyHash', bodyHash)
+
       await inngest.send({
+        id: bodyHash,
         name: BODY_TEXT_UPDATED,
         data: {
           resourceId: input.resourceId,

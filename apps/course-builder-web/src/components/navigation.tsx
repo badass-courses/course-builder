@@ -1,6 +1,4 @@
 import Image from 'next/image'
-import {getServerAuthSession} from '@/server/auth'
-import {getAbility} from '@/lib/ability'
 import * as React from 'react'
 import {cn} from '@/lib/utils'
 

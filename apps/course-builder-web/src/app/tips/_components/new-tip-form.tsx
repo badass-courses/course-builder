@@ -52,7 +52,7 @@ export function NewTipForm() {
     if (!tip) {
       // handle edge, e.g. toast an error message
     } else {
-      router.push(`/tips/${tip.slug}`)
+      router.push(`/tips/${tip.slug}/edit`)
     }
   }
 

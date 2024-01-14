@@ -33,24 +33,43 @@ export default async function TipPage({params}: {params: {slug: string}}) {
           </Button>
         </div>
       ) : null}
-      <header>
-        <TipPlayer
-          videoResourceId={tip.videoResourceId}
-          muxPlaybackId={tip.muxPlaybackId}
-          className="relative flex h-full max-h-[calc(100vh-var(--nav-height))] w-full items-center justify-center"
-        />
-      </header>
-      <article className="grid grid-cols-5 p-5 sm:p-10">
-        <div className="col-span-3">
-          <h1 className="text-3xl font-bold">{tip.title}</h1>
+      <main className="mx-auto w-full" id="tip">
+        <div className="relative z-10 flex items-center justify-center">
+          <div className="flex w-full max-w-screen-lg flex-col">
+            <TipPlayer
+              videoResourceId={tip.videoResourceId}
+              muxPlaybackId={tip.muxPlaybackId}
+            />
+          </div>
         </div>
-        <div className="col-span-2">
-          <ReactMarkdown className="prose dark:prose-invert">
-            {tip.body}
-          </ReactMarkdown>
-          <ReactMarkdown>{tip.summary}</ReactMarkdown>
-        </div>
-      </article>
+        <article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
+          <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
+            <div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
+              <div className="flex flex-col lg:col-span-8">
+                <h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
+                  {tip.title}
+                </h1>
+
+                {tip.body && (
+                  <>
+                    <ReactMarkdown className="prose dark:prose-invert">
+                      {tip.body}
+                    </ReactMarkdown>
+                  </>
+                )}
+                {tip.transcript && (
+                  <div className="w-full max-w-2xl pt-5">
+                    <h3 className="font-bold">Transcript</h3>
+                    <ReactMarkdown className="prose dark:prose-invert">
+                      {tip.transcript}
+                    </ReactMarkdown>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
     </div>
   )
 }

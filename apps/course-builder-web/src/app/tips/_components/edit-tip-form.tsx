@@ -140,7 +140,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
               {tip.transcript ? (
                 <div className="p-5">
                   <h3 className="font-bold">Transcript</h3>
-                  <ReactMarkdown className="prose">
+                  <ReactMarkdown className="prose dark:prose-invert">
                     {tip.transcript}
                   </ReactMarkdown>
                 </div>
@@ -164,6 +164,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
                       markers={feedbackMarkers}
                       onChange={(data) => {
                         form.setValue('body', data)
+
                         generateFeedback({
                           resourceId: tip._id,
                           body: data,
