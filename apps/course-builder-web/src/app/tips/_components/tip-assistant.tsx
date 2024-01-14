@@ -30,7 +30,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
         const messageData = JSON.parse(messageEvent.data)
 
         if (
-          messageData.name === 'tip.chat.completed' &&
+          messageData.name === 'resource.chat.completed' &&
           messageData.requestId === tip._id
         ) {
           setMessages(messageData.body)
