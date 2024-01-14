@@ -13,8 +13,7 @@ import {customAlphabet} from 'nanoid'
 import {getArticle} from '@/lib/articles'
 import {toChicagoTitleCase} from '@/utils/chicagor-title'
 import {inngest} from '@/inngest/inngest.server'
-import {ARTICLE_CHAT_EVENT, TIP_CHAT_EVENT} from '@/inngest/events'
-import {getTip} from '@/lib/tips'
+import {ARTICLE_CHAT_EVENT} from '@/inngest/events'
 import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 

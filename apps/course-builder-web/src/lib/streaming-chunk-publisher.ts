@@ -1,5 +1,5 @@
 import {OpenAIStream, StreamingTextResponse} from 'ai'
-import {type AIMessage, type AIOutput} from '@/types'
+import {type AIOutput} from '@/types'
 import {env} from '@/env.mjs'
 
 export const STREAM_COMPLETE = `\\ok`

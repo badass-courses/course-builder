@@ -35,7 +35,7 @@ export function ArticleAssistant({
         const messageData = JSON.parse(messageEvent.data)
 
         if (
-          messageData.name === 'article.chat.completed' &&
+          messageData.name === 'resource.chat.completed' &&
           messageData.requestId === article._id
         ) {
           setMessages(messageData.body)

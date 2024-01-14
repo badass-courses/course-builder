@@ -16,17 +16,11 @@ type PromptStepOptions = {
   model?: string
 }
 
-export async function promptStep({
+export async function streamingChatPromptExecutor({
   requestId,
   promptMessages,
   model,
 }: PromptStepOptions) {
-  // console.log('--------')
-  // console.log()
-  // console.log('promptMessages', promptMessages)
-  // console.log()
-  // console.log()
-  // console.log('--------')
   const writer: ProgressWriter = new OpenAIStreamingDataPartykitChunkPublisher(
     requestId,
   )
@@ -36,8 +30,6 @@ export async function promptStep({
     stream: true,
     model: model ?? env.OPENAI_MODEL_ID,
   })
-
-  // console.log({response})
 
   if (response.status >= 400) {
     result = await response.json()

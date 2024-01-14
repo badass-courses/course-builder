@@ -1,5 +1,5 @@
 import {last} from 'lodash'
-import {promptStep} from '@/lib/prompt-step'
+import {streamingChatPromptExecutor} from '@/lib/streaming-chat-prompt-executor'
 import {
   type ChatCompletionRequestMessage,
   type ChatCompletionRequestMessageRoleEnum,
@@ -40,7 +40,7 @@ export async function promptActionExecutor(options: {
       ...(action.name && {name: action.name}),
       ...(action.content && {content}),
     } as ChatCompletionRequestMessage
-    return await promptStep({
+    return await streamingChatPromptExecutor({
       requestId,
       promptMessages: [...messages, userMessage],
       model: action.model,
