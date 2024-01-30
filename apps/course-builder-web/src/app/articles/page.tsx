@@ -1,4 +1,10 @@
-import {CardTitle, CardHeader, CardContent, Card} from '@coursebuilder/ui'
+import {
+  CardTitle,
+  CardHeader,
+  CardContent,
+  Card,
+  Button,
+} from '@coursebuilder/ui'
 import {getServerAuthSession} from '@/server/auth'
 import {getAbility} from '@/lib/ability'
 import * as React from 'react'
@@ -14,15 +20,26 @@ export default async function ArticlesIndexPage() {
       title: string
       slug: string
     }[]
-  >(`*[_type == "article"]{
+  >(
+    `*[_type == "article"] | order(_updatedAt desc) {
     _id,
     title,
     "slug": slug.current,
-  }`)
+  }`,
+    {tags: ['articles']},
+  )
 
   return (
-    <div className="grid h-full flex-grow grid-cols-5 gap-3 bg-muted p-5">
-      <div className="col-span-3 flex h-full flex-grow flex-col space-y-2">
+    <div>
+      {ability.can('update', 'Content') ? (
+        <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
+          <div />
+          <Button asChild className="h-7">
+            <Link href={`/articles/new`}>New Article</Link>
+          </Button>
+        </div>
+      ) : null}
+      <div className="flex flex-col space-y-4 p-5 sm:p-10">
         <h2 className="text-lg font-bold">Articles</h2>
         {articles.map((article) => (
           <Card key={article._id}>

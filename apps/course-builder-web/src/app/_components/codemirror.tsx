@@ -170,19 +170,23 @@ const useCodemirror = ({
 
               while (!cursor.done) {
                 cursor.next()
-                console.log('+++++', query.getCursor(view.state.doc).next())
-                const highlight_decoration = Decoration.mark({
-                  attributes: {style: 'background-color: yellow'},
-                })
 
-                view.dispatch({
-                  effects: highlight_effect.of([
-                    highlight_decoration.range(
-                      cursor.value.from,
-                      cursor.value.to,
-                    ),
-                  ]),
-                })
+                // TODO: this disrupts the typing experience and we need to not do that at
+                //  all costs ☠️
+
+                // console.log('+++++', query.getCursor(view.state.doc).next())
+                // const highlight_decoration = Decoration.mark({
+                //   attributes: {style: 'background-color: yellow'},
+                // })
+                //
+                // view.dispatch({
+                //   effects: highlight_effect.of([
+                //     highlight_decoration.range(
+                //       cursor.value.from,
+                //       cursor.value.to,
+                //     ),
+                //   ]),
+                // })
               }
             }
           }
