@@ -14,7 +14,8 @@ export const ArticleSchema = z.object({
 export type Article = z.infer<typeof ArticleSchema>
 
 export async function getArticle(slugOrId: string) {
-  return sanityQuery<Article | null>(`*[_type == "article" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
+  return sanityQuery<Article | null>(
+    `*[_type == "article" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
           _id,
           _type,
           "_updatedAt": ^._updatedAt,
@@ -22,5 +23,7 @@ export async function getArticle(slugOrId: string) {
           summary,
           body,
           "slug": slug.current,
-  }`)
+  }`,
+    {tags: ['articles', slugOrId]},
+  )
 }

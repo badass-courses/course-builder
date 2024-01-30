@@ -39,9 +39,10 @@ export async function sanityMutation(
 
 export async function sanityQuery<T = any>(
   query: string,
-  options: {useCdn?: boolean; revalidate?: number} = {
+  options: {useCdn?: boolean; revalidate?: number; tags: string[]} = {
     useCdn: true,
     revalidate: 10,
+    tags: [],
   },
 ): Promise<T> {
   const log = new Logger()
@@ -56,7 +57,7 @@ export async function sanityQuery<T = any>(
       headers: {
         Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
       },
-      next: {revalidate: options.revalidate}, //seconds
+      next: {revalidate: options.revalidate, tags: options.tags}, //seconds
     },
   )
     .then(async (response) => {

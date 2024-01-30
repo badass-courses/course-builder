@@ -30,6 +30,7 @@ import {Article} from '@/lib/articles'
 import {useSocket} from '@/hooks/use-socket'
 import {FeedbackMarker} from '@/lib/feedback-marker'
 import {CodemirrorEditor} from '@/app/_components/codemirror'
+import {revalidateTag} from 'next/cache'
 
 const ArticleFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -49,6 +50,7 @@ export function EditArticleForm({article}: {article: Article}) {
       body: article.body,
     },
   })
+
   const {mutateAsync: updateArticle, status: updateArticleStatus} =
     api.articles.update.useMutation()
 

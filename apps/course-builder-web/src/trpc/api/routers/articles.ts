@@ -15,6 +15,7 @@ import {toChicagoTitleCase} from '@/utils/chicagor-title'
 import {inngest} from '@/inngest/inngest.server'
 import {ARTICLE_CHAT_EVENT} from '@/inngest/events'
 import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
+import {revalidateTag} from 'next/cache'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 export const articlesRouter = createTRPCRouter({
@@ -128,6 +129,8 @@ export const articlesRouter = createTRPCRouter({
         ],
         {returnDocuments: true},
       )
+
+      revalidateTag('articles')
 
       return getArticle(input.articleId)
     }),

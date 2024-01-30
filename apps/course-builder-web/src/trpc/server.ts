@@ -1,12 +1,28 @@
-import {
-  createTRPCProxyClient,
-  loggerLink,
-  unstable_httpBatchStreamLink,
-} from '@trpc/client'
-import {headers} from 'next/headers'
+import 'server-only'
 
-import {type AppRouter} from '@/trpc/api/root'
-import {getUrl, transformer} from './shared'
+import {createTRPCProxyClient, loggerLink, TRPCClientError} from '@trpc/client'
+import {callProcedure} from '@trpc/server'
+import {observable} from '@trpc/server/observable'
+import {type TRPCErrorResponse} from '@trpc/server/rpc'
+import {headers} from 'next/headers'
+import {cache} from 'react'
+
+import {transformer} from './shared'
+import {createTRPCContext} from '@/trpc/api/trpc'
+import {type AppRouter, appRouter} from '@/trpc/api/root'
+
+/**
+ * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
+ * handling a tRPC call from a React Server Component.
+ */
+const createContext = cache(() => {
+  const heads = new Headers(headers())
+  heads.set('x-trpc-source', 'rsc')
+
+  return createTRPCContext({
+    headers: heads,
+  })
+})
 
 export const api = createTRPCProxyClient<AppRouter>({
   transformer,
@@ -16,13 +32,30 @@ export const api = createTRPCProxyClient<AppRouter>({
         process.env.NODE_ENV === 'development' ||
         (op.direction === 'down' && op.result instanceof Error),
     }),
-    unstable_httpBatchStreamLink({
-      url: getUrl(),
-      headers() {
-        const heads = new Map(headers())
-        heads.set('x-trpc-source', 'rsc')
-        return Object.fromEntries(heads)
-      },
-    }),
+    /**
+     * Custom RSC link that lets us invoke procedures without using http requests. Since Server
+     * Components always run on the server, we can just call the procedure as a function.
+     */
+    () =>
+      ({op}) =>
+        observable((observer) => {
+          createContext()
+            .then((ctx) => {
+              return callProcedure({
+                procedures: appRouter._def.procedures,
+                path: op.path,
+                rawInput: op.input,
+                ctx,
+                type: op.type,
+              })
+            })
+            .then((data) => {
+              observer.next({result: {data}})
+              observer.complete()
+            })
+            .catch((cause: TRPCErrorResponse) => {
+              observer.error(TRPCClientError.from(cause))
+            })
+        }),
   ],
 })

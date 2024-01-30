@@ -31,17 +31,13 @@ export function NewArticleForm() {
       title: '',
     },
   })
-  const {mutateAsync: createArticle} = api.articles.create.useMutation({
-    onSuccess: async () => {
-      form.reset()
-      router.refresh()
-    },
-  })
+  const {mutateAsync: createArticle} = api.articles.create.useMutation()
 
   const onSubmit = async (values: z.infer<typeof NewArticleFormSchema>) => {
+    form.reset()
     const article = await createArticle(values)
     if (article) {
-      router.push(`/${article.slug}/edit`)
+      router.push(`/articles/${article.slug}/edit`)
     }
   }
 
@@ -71,7 +67,10 @@ export function NewArticleForm() {
           type="submit"
           className="mt-2"
           variant="default"
-          disabled={!form.formState.isValid}
+          disabled={
+            (form.formState.isDirty && !form.formState.isValid) ||
+            form.formState.isSubmitting
+          }
         >
           Create Draft Article
         </Button>
