@@ -18,10 +18,9 @@ export default {
       title: 'Current State',
       type: 'string',
       validation: (Rule) => Rule.required(),
-      initialValue: 'new',
+      initialValue: 'draft',
       options: {
         list: [
-          {title: 'new', value: 'new'},
           {title: 'draft', value: 'draft'},
           {title: 'published', value: 'published'},
           {title: 'archived', value: 'archived'},

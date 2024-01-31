@@ -2,7 +2,6 @@ import {z} from 'zod'
 import {sanityQuery} from '@/server/sanity.server'
 
 export const ArticleStateSchema = z.union([
-  z.literal('new'),
   z.literal('draft'),
   z.literal('published'),
   z.literal('archived'),
@@ -23,7 +22,7 @@ export const ArticleSchema = z.object({
   description: z.string(),
   body: z.string(),
   slug: z.string(),
-  state: ArticleStateSchema.default('new'),
+  state: ArticleStateSchema.default('draft'),
   visibility: ArticleVisibilitySchema.default('public'),
 })
 
