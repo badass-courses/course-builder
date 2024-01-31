@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 const NotificationContextSchema = z.object({
   triggered_at: z.string(),
-});
+})
 
 const NotificationDataSchema = z.object({
   notification_type: z.string(),
@@ -29,16 +29,14 @@ const NotificationDataSchema = z.object({
   original_filename: z.string(),
   notification_context: NotificationContextSchema,
   signature_key: z.string(),
-});
+})
 
-export const CLOUDINARY_WEBHOOK_EVENT = "cloudinary/web-hook-event";
+export const CLOUDINARY_WEBHOOK_EVENT = 'cloudinary/web-hook-event'
 
 export type CloudinaryWebhook = {
-  name: typeof CLOUDINARY_WEBHOOK_EVENT;
-  data: CloudinaryWebhookEvent;
-};
-export const CloudinaryWebhookEventSchema = NotificationDataSchema;
+  name: typeof CLOUDINARY_WEBHOOK_EVENT
+  data: CloudinaryWebhookEvent
+}
+export const CloudinaryWebhookEventSchema = NotificationDataSchema
 
-export type CloudinaryWebhookEvent = z.infer<
-  typeof CloudinaryWebhookEventSchema
->;
+export type CloudinaryWebhookEvent = z.infer<typeof CloudinaryWebhookEventSchema>

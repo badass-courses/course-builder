@@ -1,9 +1,15 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { TipUploader } from "@/app/tips/_components/tip-uploader";
-import { Button } from "@coursebuilder/ui";
+import * as React from 'react'
+import { useRouter } from 'next/navigation'
+import { TipUploader } from '@/app/tips/_components/tip-uploader'
+import { api } from '@/trpc/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
 import {
+  Button,
   Form,
   FormControl,
   FormDescription,
@@ -11,50 +17,45 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@coursebuilder/ui";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@coursebuilder/ui";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
+  Input,
+} from '@coursebuilder/ui'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
-  videoResourceId: z.string().min(4, "Please upload a video"),
-});
+  videoResourceId: z.string().min(4, 'Please upload a video'),
+})
 
 export function NewTipForm() {
-  const [videoResourceId, setVideoResourceId] = React.useState<string>("");
-  const router = useRouter();
+  const [videoResourceId, setVideoResourceId] = React.useState<string>('')
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof NewTipFormSchema>>({
     resolver: zodResolver(NewTipFormSchema),
     defaultValues: {
-      title: "",
-      videoResourceId: "",
+      title: '',
+      videoResourceId: '',
     },
-  });
-  const utils = api.useUtils();
+  })
+  const utils = api.useUtils()
   const { mutateAsync: createTip } = api.tips.create.useMutation({
     onSuccess: async (data) => {
-      form.reset();
-      setVideoResourceId("");
-      form.setValue("videoResourceId", "");
-      await utils.module.getBySlug.invalidate();
-      router.refresh();
+      form.reset()
+      setVideoResourceId('')
+      form.setValue('videoResourceId', '')
+      await utils.module.getBySlug.invalidate()
+      router.refresh()
     },
-  });
+  })
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
-    const tip = await createTip(values);
+    const tip = await createTip(values)
 
     if (!tip) {
       // handle edge, e.g. toast an error message
     } else {
-      router.push(`/tips/${tip.slug}/edit`);
+      router.push(`/tips/${tip.slug}/edit`)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -66,8 +67,7 @@ export function NewTipForm() {
             <FormItem>
               <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
-                A title should summarize the tip and explain what it is about
-                clearly.
+                A title should summarize the tip and explain what it is about clearly.
               </FormDescription>
               <FormControl>
                 <Input {...field} />
@@ -82,9 +82,7 @@ export function NewTipForm() {
           name="videoResourceId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-bold">
-                Upload a Tip Video*
-              </FormLabel>
+              <FormLabel className="text-lg font-bold">Upload a Tip Video*</FormLabel>
               <FormDescription className="mt-2 text-sm">
                 Your video will be uploaded and then transcribed automatically.
               </FormDescription>
@@ -94,17 +92,17 @@ export function NewTipForm() {
               {videoResourceId.length === 0 ? (
                 <TipUploader
                   setVideoResourceId={(videoResourceId: string) => {
-                    form.setValue("videoResourceId", videoResourceId);
-                    setVideoResourceId(videoResourceId);
+                    form.setValue('videoResourceId', videoResourceId)
+                    setVideoResourceId(videoResourceId)
                   }}
                 />
               ) : (
                 <div>
-                  {videoResourceId}{" "}
+                  {videoResourceId}{' '}
                   <Button
                     onClick={() => {
-                      setVideoResourceId("");
-                      form.setValue("videoResourceId", "");
+                      setVideoResourceId('')
+                      form.setValue('videoResourceId', '')
                     }}
                   >
                     clear
@@ -116,15 +114,10 @@ export function NewTipForm() {
           )}
         />
 
-        <Button
-          type="submit"
-          className="mt-2"
-          variant="default"
-          disabled={videoResourceId.length === 0}
-        >
+        <Button type="submit" className="mt-2" variant="default" disabled={videoResourceId.length === 0}>
           Create Draft Tip
         </Button>
       </form>
     </Form>
-  );
+  )
 }

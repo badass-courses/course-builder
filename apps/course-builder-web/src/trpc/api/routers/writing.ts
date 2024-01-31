@@ -1,16 +1,16 @@
-import { z } from "zod";
-import { getServerAuthSession } from "@/server/auth";
-import { getAbility } from "@/lib/ability";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/api/trpc";
-import { inngest } from "@/inngest/inngest.server";
-import { BODY_TEXT_UPDATED } from "@/inngest/events";
-import { FeedbackMarkerSchema } from "@/lib/feedback-marker";
-import crypto from "crypto";
+import crypto from 'crypto'
+import { BODY_TEXT_UPDATED } from '@/inngest/events'
+import { inngest } from '@/inngest/inngest.server'
+import { getAbility } from '@/lib/ability'
+import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
+import { getServerAuthSession } from '@/server/auth'
+import { createTRPCRouter, protectedProcedure } from '@/trpc/api/trpc'
+import { z } from 'zod'
 
 function generateHash(data: string): string {
-  const hash = crypto.createHash("sha256");
-  hash.update(data);
-  return hash.digest("hex");
+  const hash = crypto.createHash('sha256')
+  hash.update(data)
+  return hash.digest('hex')
 }
 
 export const writingRouter = createTRPCRouter({
@@ -23,15 +23,15 @@ export const writingRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const session = await getServerAuthSession();
-      const ability = getAbility({ user: session?.user });
-      if (!ability.can("create", "Content")) {
-        throw new Error("Unauthorized");
+      const session = await getServerAuthSession()
+      const ability = getAbility({ user: session?.user })
+      if (!ability.can('create', 'Content')) {
+        throw new Error('Unauthorized')
       }
 
-      const bodyHash = generateHash(input.body || "");
+      const bodyHash = generateHash(input.body || '')
 
-      console.log("bodyHash", bodyHash);
+      console.log('bodyHash', bodyHash)
 
       await inngest.send({
         id: bodyHash,
@@ -41,8 +41,8 @@ export const writingRouter = createTRPCRouter({
           content: input.body,
           currentFeedback: input.currentFeedback,
         },
-      });
+      })
 
-      return true;
+      return true
     }),
-});
+})

@@ -1,24 +1,24 @@
-import { useSocket } from "@/hooks/use-socket";
-import { api } from "@/trpc/react";
-import React from "react";
+import React from 'react'
+import { useSocket } from '@/hooks/use-socket'
+import { api } from '@/trpc/react'
 
 export const CloudinaryMediaBrowser = () => {
-  const utils = api.useUtils();
+  const utils = api.useUtils()
 
-  const { data: images = [] } = api.imageResources.getAll.useQuery();
+  const { data: images = [] } = api.imageResources.getAll.useQuery()
 
   useSocket({
     onMessage: (messageEvent) => {
       try {
-        const messageData = JSON.parse(messageEvent.data);
-        if (messageData.name === "cloudinary.asset.created") {
-          utils.imageResources.getAll.invalidate();
+        const messageData = JSON.parse(messageEvent.data)
+        if (messageData.name === 'cloudinary.asset.created') {
+          utils.imageResources.getAll.invalidate()
         }
       } catch (error) {
         // noting to do
       }
     },
-  });
+  })
 
   return (
     <div>
@@ -34,16 +34,13 @@ export const CloudinaryMediaBrowser = () => {
                 src={asset.url}
                 alt={asset._id}
                 onDragStart={(e) => {
-                  e.dataTransfer.setData(
-                    "text/plain",
-                    `![](${e.currentTarget.src})`,
-                  );
+                  e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
                 }}
               />
             </div>
-          ) : null;
+          ) : null
         })}
       </div>
     </div>
-  );
-};
+  )
+}

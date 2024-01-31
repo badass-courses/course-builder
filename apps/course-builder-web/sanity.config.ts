@@ -2,28 +2,28 @@
  * This configuration is used to for the Sanity Studio that’s mounted on the `/pages/studio/[[...index]].tsx` route
  */
 
-import { visionTool } from "@sanity/vision";
-import { DRAFT_MODE_ROUTE, previewSecretId } from "./sanity/lib/sanity.api";
-import { previewDocumentNode } from "./sanity/plugins/previewPane";
-import { settingsPlugin, settingsStructure } from "./sanity/plugins/settings";
-import { defineConfig } from "sanity";
-import { deskTool } from "sanity/desk";
-import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
-import { previewUrl } from "sanity-plugin-iframe-pane/preview-url";
-import authorType from "./sanity/schemas/documents/author";
-import postType from "./sanity/schemas/documents//post";
-import settingsType from "./sanity/schemas/settings";
+import { visionTool } from '@sanity/vision'
+import { defineConfig } from 'sanity'
+import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
+import { previewUrl } from 'sanity-plugin-iframe-pane/preview-url'
+import { markdownSchema } from 'sanity-plugin-markdown'
+import { deskTool } from 'sanity/desk'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId } from "./sanity/env";
-import { schema } from "./sanity/schema";
-import { markdownSchema } from "sanity-plugin-markdown";
+import { apiVersion, dataset, projectId } from './sanity/env'
+import { DRAFT_MODE_ROUTE, previewSecretId } from './sanity/lib/sanity.api'
+import { previewDocumentNode } from './sanity/plugins/previewPane'
+import { settingsPlugin, settingsStructure } from './sanity/plugins/settings'
+import { schema } from './sanity/schema'
+import postType from './sanity/schemas/documents//post'
+import authorType from './sanity/schemas/documents/author'
+import settingsType from './sanity/schemas/settings'
 
 export default defineConfig({
-  basePath: "/studio",
+  basePath: '/studio',
   projectId,
   dataset,
-  title: "Media Processor",
+  title: 'Media Processor',
   schema,
   plugins: [
     deskTool({
@@ -46,4 +46,4 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     markdownSchema(),
   ],
-});
+})

@@ -1,13 +1,13 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-export const MUX_WEBHOOK_EVENT = "mux/web-hook-event";
+export const MUX_WEBHOOK_EVENT = 'mux/web-hook-event'
 
 export type MuxWebhook = {
-  name: typeof MUX_WEBHOOK_EVENT;
+  name: typeof MUX_WEBHOOK_EVENT
   data: {
-    muxWebhookEvent: MuxWebhookEvent;
-  };
-};
+    muxWebhookEvent: MuxWebhookEvent
+  }
+}
 
 export const MuxWebhookEventSchema = z.object({
   type: z.string(),
@@ -26,6 +26,6 @@ export const MuxWebhookEventSchema = z.object({
   attempts: z.array(z.any()),
   accessor_source: z.string().nullable(),
   accessor: z.string().nullable(),
-});
+})
 
-export type MuxWebhookEvent = z.infer<typeof MuxWebhookEventSchema>;
+export type MuxWebhookEvent = z.infer<typeof MuxWebhookEventSchema>

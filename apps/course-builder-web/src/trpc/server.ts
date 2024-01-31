@@ -1,40 +1,35 @@
-import "server-only";
+import 'server-only'
 
-import {
-  createTRPCProxyClient,
-  loggerLink,
-  TRPCClientError,
-} from "@trpc/client";
-import { callProcedure } from "@trpc/server";
-import { observable } from "@trpc/server/observable";
-import { type TRPCErrorResponse } from "@trpc/server/rpc";
-import { headers } from "next/headers";
-import { cache } from "react";
+import { cache } from 'react'
+import { headers } from 'next/headers'
+import { appRouter, type AppRouter } from '@/trpc/api/root'
+import { createTRPCContext } from '@/trpc/api/trpc'
+import { createTRPCProxyClient, loggerLink, TRPCClientError } from '@trpc/client'
+import { callProcedure } from '@trpc/server'
+import { observable } from '@trpc/server/observable'
+import { type TRPCErrorResponse } from '@trpc/server/rpc'
 
-import { transformer } from "./shared";
-import { createTRPCContext } from "@/trpc/api/trpc";
-import { type AppRouter, appRouter } from "@/trpc/api/root";
+import { transformer } from './shared'
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
  */
 const createContext = cache(() => {
-  const heads = new Headers(headers());
-  heads.set("x-trpc-source", "rsc");
+  const heads = new Headers(headers())
+  heads.set('x-trpc-source', 'rsc')
 
   return createTRPCContext({
     headers: heads,
-  });
-});
+  })
+})
 
 export const api = createTRPCProxyClient<AppRouter>({
   transformer,
   links: [
     loggerLink({
       enabled: (op) =>
-        process.env.NODE_ENV === "development" ||
-        (op.direction === "down" && op.result instanceof Error),
+        process.env.NODE_ENV === 'development' || (op.direction === 'down' && op.result instanceof Error),
     }),
     /**
      * Custom RSC link that lets us invoke procedures without using http requests. Since Server
@@ -51,15 +46,15 @@ export const api = createTRPCProxyClient<AppRouter>({
                 rawInput: op.input,
                 ctx,
                 type: op.type,
-              });
+              })
             })
             .then((data) => {
-              observer.next({ result: { data } });
-              observer.complete();
+              observer.next({ result: { data } })
+              observer.complete()
             })
             .catch((cause: TRPCErrorResponse) => {
-              observer.error(TRPCClientError.from(cause));
-            });
+              observer.error(TRPCClientError.from(cause))
+            })
         }),
   ],
-});
+})

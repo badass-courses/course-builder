@@ -1,51 +1,44 @@
-"use client";
+'use client'
 
-import ReactMarkdown from "react-markdown";
-import * as React from "react";
-import { STREAM_COMPLETE } from "@/lib/streaming-chunk-publisher";
-import { useRef } from "react";
-import { api } from "@/trpc/react";
-import { useSocket } from "@/hooks/use-socket";
-import { Button, ScrollArea, Textarea } from "@coursebuilder/ui";
-import { EnterIcon } from "@sanity/icons";
-import {
-  type ChatCompletionRequestMessage,
-  ChatCompletionRequestMessageRoleEnum,
-} from "openai-edge";
-import { FeedbackMarker } from "@/lib/feedback-marker";
-import { Article } from "@/lib/articles";
+import * as React from 'react'
+import { useRef } from 'react'
+import { useSocket } from '@/hooks/use-socket'
+import { Article } from '@/lib/articles'
+import { FeedbackMarker } from '@/lib/feedback-marker'
+import { STREAM_COMPLETE } from '@/lib/streaming-chunk-publisher'
+import { api } from '@/trpc/react'
+import { EnterIcon } from '@sanity/icons'
+import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from 'openai-edge'
+import ReactMarkdown from 'react-markdown'
+
+import { Button, ScrollArea, Textarea } from '@coursebuilder/ui'
 
 export function ArticleAssistant({
   article,
   currentFeedback,
 }: {
-  article: Article;
-  currentFeedback?: FeedbackMarker[];
+  article: Article
+  currentFeedback?: FeedbackMarker[]
 }) {
-  const { mutate: sendArticleChatMessage } = api.articles.chat.useMutation();
-  const [messages, setMessages] = React.useState<
-    ChatCompletionRequestMessage[]
-  >([]);
+  const { mutate: sendArticleChatMessage } = api.articles.chat.useMutation()
+  const [messages, setMessages] = React.useState<ChatCompletionRequestMessage[]>([])
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useSocket({
     room: article._id,
     onMessage: (messageEvent) => {
       try {
-        const messageData = JSON.parse(messageEvent.data);
+        const messageData = JSON.parse(messageEvent.data)
 
-        if (
-          messageData.name === "resource.chat.completed" &&
-          messageData.requestId === article._id
-        ) {
-          setMessages(messageData.body);
+        if (messageData.name === 'resource.chat.completed' && messageData.requestId === article._id) {
+          setMessages(messageData.body)
         }
       } catch (error) {
         // noting to do
       }
     },
-  });
+  })
 
   return (
     <div className="flex h-full w-full flex-col justify-start">
@@ -59,8 +52,8 @@ export function ArticleAssistant({
             placeholder="Type a message..."
             rows={4}
             onKeyDown={async (event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault()
                 sendArticleChatMessage({
                   articleId: article._id,
                   messages: [
@@ -75,8 +68,8 @@ export function ArticleAssistant({
                     },
                   ],
                   currentFeedback,
-                });
-                event.currentTarget.value = "";
+                })
+                event.currentTarget.value = ''
               }
             }}
           />
@@ -85,7 +78,7 @@ export function ArticleAssistant({
             className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center p-0"
             variant="outline"
             onClick={async (event) => {
-              event.preventDefault();
+              event.preventDefault()
               if (textareaRef.current) {
                 sendArticleChatMessage({
                   articleId: article._id,
@@ -106,8 +99,8 @@ export function ArticleAssistant({
                     },
                   ],
                   currentFeedback,
-                });
-                textareaRef.current.value = "";
+                })
+                textareaRef.current.value = ''
               }
             }}
           >
@@ -120,62 +113,57 @@ export function ArticleAssistant({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function ArticleChatResponse({ requestId }: { requestId: string }) {
-  const [messages, setMessages] = React.useState<
-    { requestId: string; body: string }[]
-  >([]);
-  const div = useRef<any>(null);
+  const [messages, setMessages] = React.useState<{ requestId: string; body: string }[]>([])
+  const div = useRef<any>(null)
 
-  const utils = api.useUtils();
+  const utils = api.useUtils()
 
   useSocket({
     room: requestId,
     onMessage: (messageEvent) => {
       try {
-        const messageData = JSON.parse(messageEvent.data);
+        const messageData = JSON.parse(messageEvent.data)
 
         if (
           messageData.body !== STREAM_COMPLETE &&
-          messageData.name == "ai.message" &&
+          messageData.name == 'ai.message' &&
           requestId === messageData.requestId
         ) {
-          setMessages((messages) => [
-            ...messages,
-            { body: messageData.body, requestId: messageData.requestId },
-          ]);
+          setMessages((messages) => [...messages, { body: messageData.body, requestId: messageData.requestId }])
         }
-        utils.module.invalidate();
+        utils.module.invalidate()
         if (div.current) {
-          div.current.scrollTop = div.current.scrollHeight;
+          div.current.scrollTop = div.current.scrollHeight
         }
       } catch (error) {
         // noting to do
       }
     },
-  });
+  })
   // Group messages by requestId
   const groupedMessages = messages.reduce(
     (groups, message) => {
       if (!groups[message.requestId]) {
-        groups[message.requestId] = [];
+        groups[message.requestId] = []
       }
 
-      groups[message.requestId]?.push(message.body);
-      return groups;
+      groups[message.requestId]?.push(message.body)
+      return groups
     },
     {} as Record<string, string[]>,
-  );
+  )
 
   return (
     <ScrollArea viewportRef={div} className="h-[50vh] w-full scroll-smooth">
       {Object.entries(groupedMessages).map(([requestId, bodies], index) => (
         <div key={requestId} className="prose prose-sm max-w-none p-5">
-          <ReactMarkdown>{bodies.join("")}</ReactMarkdown>
+          <ReactMarkdown>{bodies.join('')}</ReactMarkdown>
         </div>
       ))}
     </ScrollArea>
-  );
+  )
 }

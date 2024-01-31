@@ -2,12 +2,12 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-import { withAxiom } from "next-axiom";
+import createMDX from '@next/mdx'
+import { withAxiom } from 'next-axiom'
 
-await import("./src/env.mjs");
-import createMDX from "@next/mdx";
+await import('./src/env.mjs')
 
-const subdomains = ["docs"];
+const subdomains = ['docs']
 
 const withMDX = createMDX({
   // Add markdown plugins here, as desired
@@ -15,30 +15,30 @@ const withMDX = createMDX({
   options: {
     remarkPlugins: [],
     rehypePlugins: [],
-    providerImportSource: "@mdx-js/react",
+    providerImportSource: '@mdx-js/react',
   },
-});
+})
 
 /** @type {import("next").NextConfig} */
 const config = {
-  pageExtensions: ["mdx", "ts", "tsx"],
-  transpilePackages: ["@coursebuilder/ui"],
+  pageExtensions: ['mdx', 'ts', 'tsx'],
+  transpilePackages: ['@coursebuilder/ui'],
   // @ts-expect-error
   async redirects() {
     return [
       ...subdomains.map((subdomain) => ({
-        source: "/:path*",
+        source: '/:path*',
         has: [
           {
-            type: "host",
+            type: 'host',
             value: `${subdomain}.coursebuilder.dev`,
           },
         ],
         destination: `https://www.coursebuilder.dev/${subdomain}/:path*`,
         permanent: false,
       })),
-    ];
+    ]
   },
-};
+}
 
-export default withAxiom(withMDX(config));
+export default withAxiom(withMDX(config))

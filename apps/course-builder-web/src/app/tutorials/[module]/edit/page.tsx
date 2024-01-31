@@ -1,29 +1,25 @@
-import * as React from "react";
-import { getServerAuthSession } from "@/server/auth";
-import { getAbility } from "@/lib/ability";
-import { notFound, redirect } from "next/navigation";
-import { api } from "@/trpc/server";
-import VideoUploader from "@/components/video-uploader";
-import ModuleEdit from "@/components/module-edit";
+import * as React from 'react'
+import { notFound, redirect } from 'next/navigation'
+import ModuleEdit from '@/components/module-edit'
+import VideoUploader from '@/components/video-uploader'
+import { getAbility } from '@/lib/ability'
+import { getServerAuthSession } from '@/server/auth'
+import { api } from '@/trpc/server'
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic'
 
-export default async function EditTutorialPage({
-  params,
-}: {
-  params: { module: string };
-}) {
-  const session = await getServerAuthSession();
-  const ability = getAbility({ user: session?.user });
+export default async function EditTutorialPage({ params }: { params: { module: string } }) {
+  const session = await getServerAuthSession()
+  const ability = getAbility({ user: session?.user })
 
-  if (!ability.can("update", "Content")) {
-    redirect("/login");
+  if (!ability.can('update', 'Content')) {
+    redirect('/login')
   }
 
-  const tutorial = await api.module.getTutorial.query({ slug: params.module });
+  const tutorial = await api.module.getTutorial.query({ slug: params.module })
 
   if (!tutorial) {
-    notFound();
+    notFound()
   }
 
   return (
@@ -33,5 +29,5 @@ export default async function EditTutorialPage({
         <VideoUploader moduleSlug={params.module} />
       </div>
     </>
-  );
+  )
 }

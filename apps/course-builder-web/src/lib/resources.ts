@@ -1,8 +1,6 @@
-import { sanityQuery } from "@/server/sanity.server";
+import { sanityQuery } from '@/server/sanity.server'
 
-export async function getResource<T = any>(
-  slugOrId: string,
-): Promise<T | null> {
+export async function getResource<T = any>(slugOrId: string): Promise<T | null> {
   return sanityQuery<T | null>(`*[(_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
           _id,
           _type,
@@ -11,5 +9,5 @@ export async function getResource<T = any>(
           summary,
           body,
           "slug": slug.current,
-  }`);
+  }`)
 }

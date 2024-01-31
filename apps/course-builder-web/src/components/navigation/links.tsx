@@ -1,35 +1,30 @@
-"use client";
+'use client'
 
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { cx } from "class-variance-authority";
-import { User } from "@/components/navigation/user";
-import {
-  AnimatePresence,
-  type AnimationControls,
-  motion,
-  useAnimationControls,
-} from "framer-motion";
-import * as React from "react";
-import { Logo } from "@/components/navigation";
-import { redirect, usePathname } from "next/navigation";
-import { Login } from "@/components/navigation/login";
+import * as React from 'react'
+import Link from 'next/link'
+import { redirect, usePathname } from 'next/navigation'
+import { Logo } from '@/components/navigation'
+import { Login } from '@/components/navigation/login'
+import { User } from '@/components/navigation/user'
+import { cn } from '@/lib/utils'
+import { cx } from 'class-variance-authority'
+import { AnimatePresence, motion, useAnimationControls, type AnimationControls } from 'framer-motion'
 
 export const getNavigationLinks = (): {
-  label: string | React.JSX.Element;
-  href: string;
-  icon: () => string;
+  label: string | React.JSX.Element
+  href: string
+  icon: () => string
 }[] => {
   return [
     {
-      label: "Articles",
-      icon: () => "",
-      href: "/articles",
+      label: 'Articles',
+      icon: () => '',
+      href: '/articles',
     },
     {
-      label: "Tips",
-      icon: () => "",
-      href: "/tips",
+      label: 'Tips',
+      icon: () => '',
+      href: '/tips',
     },
     // {
     //   label: (
@@ -41,26 +36,23 @@ export const getNavigationLinks = (): {
     //   href: '/tutorials',
     // },
     {
-      label: "Tutorials",
-      icon: () => "",
-      href: "/tutorials",
+      label: 'Tutorials',
+      icon: () => '',
+      href: '/tutorials',
     },
-  ];
-};
+  ]
+}
 
 export function Links({ className }: { className?: string }) {
-  const pathname = usePathname();
-  const isRoot = pathname === "/";
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const pathname = usePathname()
+  const isRoot = pathname === '/'
+  const [menuOpen, setMenuOpen] = React.useState(false)
 
-  const navigationLinks = getNavigationLinks();
+  const navigationLinks = getNavigationLinks()
   return (
     <motion.nav
       aria-label="top"
-      className={cn(
-        "relative mx-auto flex w-full items-center justify-between px-3 text-sm",
-        className,
-      )}
+      className={cn('relative mx-auto flex w-full items-center justify-between px-3 text-sm', className)}
     >
       <div className="flex items-center gap-2">
         <Link
@@ -70,8 +62,8 @@ export function Links({ className }: { className?: string }) {
           passHref
           className="relative z-10 text-lg font-bold tracking-tight"
           onContextMenu={(event) => {
-            event.preventDefault();
-            redirect("/brand");
+            event.preventDefault()
+            redirect('/brand')
           }}
         >
           Course Builder
@@ -82,14 +74,12 @@ export function Links({ className }: { className?: string }) {
               <Link
                 key={href}
                 href={href}
-                className={cx(
-                  "group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5",
-                )}
+                className={cx('group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5')}
                 passHref
               >
                 {icon()} {label}
               </Link>
-            );
+            )
           })}
         </div>
       </div>
@@ -105,7 +95,7 @@ export function Links({ className }: { className?: string }) {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: -30, opacity: 0, scale: 0.9 }}
             transition={{
-              type: "spring",
+              type: 'spring',
               duration: 0.5,
             }}
             className="absolute left-0 top-0 flex w-full flex-col gap-2 border-b border-gray-100 bg-white px-2 pb-5 pt-16 text-2xl font-medium shadow-2xl shadow-black/20 backdrop-blur-md md:hidden"
@@ -118,12 +108,9 @@ export function Links({ className }: { className?: string }) {
                   className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
                   passHref
                 >
-                  <span className="flex w-5 items-center justify-center">
-                    {icon()}
-                  </span>{" "}
-                  {label}
+                  <span className="flex w-5 items-center justify-center">{icon()}</span> {label}
                 </Link>
-              );
+              )
             })}
 
             <div className="flex w-full items-center justify-between px-3 pt-5 text-lg">
@@ -134,46 +121,42 @@ export function Links({ className }: { className?: string }) {
         )}
       </AnimatePresence>
     </motion.nav>
-  );
+  )
 }
 
 type NavToggleProps = {
-  isMenuOpened: boolean;
-  setMenuOpened: (value: boolean) => void;
-  menuControls?: AnimationControls;
-};
+  isMenuOpened: boolean
+  setMenuOpened: (value: boolean) => void
+  menuControls?: AnimationControls
+}
 
-const NavToggle: React.FC<NavToggleProps> = ({
-  isMenuOpened,
-  setMenuOpened,
-  menuControls,
-}) => {
+const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menuControls }) => {
   const path01Variants = {
-    open: { d: "M3.06061 2.99999L21.0606 21" },
-    closed: { d: "M0 9.5L24 9.5" },
-  };
+    open: { d: 'M3.06061 2.99999L21.0606 21' },
+    closed: { d: 'M0 9.5L24 9.5' },
+  }
   const path02Variants = {
-    open: { d: "M3.00006 21.0607L21 3.06064" },
-    moving: { d: "M0 14.5L24 14.5" },
-    closed: { d: "M0 14.5L15 14.5" },
-  };
-  const path01Controls = useAnimationControls();
-  const path02Controls = useAnimationControls();
+    open: { d: 'M3.00006 21.0607L21 3.06064' },
+    moving: { d: 'M0 14.5L24 14.5' },
+    closed: { d: 'M0 14.5L15 14.5' },
+  }
+  const path01Controls = useAnimationControls()
+  const path02Controls = useAnimationControls()
 
   return (
     <button
       className="absolute z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
       onClick={async () => {
         // menuControls.start(isMenuOpened ? 'close' : 'open')
-        setMenuOpened(!isMenuOpened);
+        setMenuOpened(!isMenuOpened)
         if (!isMenuOpened) {
-          await path02Controls.start(path02Variants.moving);
-          path01Controls.start(path01Variants.open);
-          path02Controls.start(path02Variants.open);
+          await path02Controls.start(path02Variants.moving)
+          path01Controls.start(path01Variants.open)
+          path02Controls.start(path02Variants.open)
         } else {
-          path01Controls.start(path01Variants.closed);
-          await path02Controls.start(path02Variants.moving);
-          path02Controls.start(path02Variants.closed);
+          path01Controls.start(path01Variants.closed)
+          await path02Controls.start(path02Variants.moving)
+          path02Controls.start(path02Variants.closed)
         }
       }}
     >
@@ -194,5 +177,5 @@ const NavToggle: React.FC<NavToggleProps> = ({
         />
       </svg>
     </button>
-  );
-};
+  )
+}

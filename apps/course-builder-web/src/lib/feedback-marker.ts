@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const FeedbackMarkerSchema = z.object({
   originalText: z.string(),
@@ -6,6 +6,6 @@ export const FeedbackMarkerSchema = z.object({
   fullSuggestedChange: z.string(),
   level: z.string(),
   type: z.string(),
-});
+})
 
-export type FeedbackMarker = z.infer<typeof FeedbackMarkerSchema>;
+export type FeedbackMarker = z.infer<typeof FeedbackMarkerSchema>

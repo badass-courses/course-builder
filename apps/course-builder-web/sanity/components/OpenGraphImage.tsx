@@ -1,38 +1,38 @@
 // Renders the Open Graph image used on the home page
 
-export const width = 1200;
-export const height = 630;
+export const width = 1200
+export const height = 630
 
 export function OpenGraphImage(props: { title: string }) {
-  const { title } = props;
+  const { title } = props
   return (
     <div
       style={{
-        height: "100%",
-        width: "100%",
-        display: "flex",
-        textAlign: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        flexWrap: "nowrap",
-        backgroundColor: "white",
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        textAlign: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        flexWrap: 'nowrap',
+        backgroundColor: 'white',
         backgroundImage:
-          "radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%), radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)",
-        backgroundSize: "100px 100px",
-        backgroundPosition: "0 -8px, 0 -8px",
+          'radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%), radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)',
+        backgroundSize: '100px 100px',
+        backgroundPosition: '0 -8px, 0 -8px',
       }}
     >
       <div
         style={{
-          display: "flex",
+          display: 'flex',
         }}
       />
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <svg
@@ -40,7 +40,7 @@ export function OpenGraphImage(props: { title: string }) {
           viewBox="0 0 1521 141"
           xmlns="http://www.w3.org/2000/svg"
           xmlnsXlink="http://www.w3.org/1999/xlink"
-          style={{ background: "#fff" }}
+          style={{ background: '#fff' }}
         >
           <path
             id="plus"
@@ -213,24 +213,24 @@ export function OpenGraphImage(props: { title: string }) {
       </div>
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           fontSize: 40,
-          fontStyle: "normal",
-          color: "black",
+          fontStyle: 'normal',
+          color: 'black',
           marginTop: 0,
           lineHeight: 1.8,
-          whiteSpace: "pre-wrap",
+          whiteSpace: 'pre-wrap',
         }}
       >
-        <b style={{ background: "#fff" }}>{title}</b>
+        <b style={{ background: '#fff' }}>{title}</b>
       </div>
       <div
         style={{
-          display: "flex",
+          display: 'flex',
         }}
       />
     </div>
-  );
+  )
 }

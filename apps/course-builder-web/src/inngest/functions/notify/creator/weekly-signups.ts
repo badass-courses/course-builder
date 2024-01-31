@@ -1,26 +1,24 @@
-import { inngest } from "@/inngest/inngest.server";
-import { sendAnEmail } from "@/utils/send-an-email";
-import { sanityQuery } from "@/server/sanity.server";
-import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
-import { gt, sql } from "drizzle-orm";
-import { Liquid } from "liquidjs";
-import BasicEmail, { BasicEmailProps } from "@/emails/basic-email";
+import BasicEmail, { BasicEmailProps } from '@/emails/basic-email'
+import { inngest } from '@/inngest/inngest.server'
+import { db } from '@/server/db'
+import { users } from '@/server/db/schema'
+import { sanityQuery } from '@/server/sanity.server'
+import { sendAnEmail } from '@/utils/send-an-email'
+import { gt, sql } from 'drizzle-orm'
+import { Liquid } from 'liquidjs'
 
 export const weeklySignupDigest = inngest.createFunction(
-  { id: `weekly signup digest`, name: "Weekly Signup Digest" },
-  { cron: "TZ=US/Pacific 0 13 * * MON" },
+  { id: `weekly signup digest`, name: 'Weekly Signup Digest' },
+  { cron: 'TZ=US/Pacific 0 13 * * MON' },
   async ({ event, step }) => {
     const email = await step.run(`load email`, async () => {
       return await sanityQuery<{
-        _id: string;
-        subject: string;
-        body: string;
-        previewText?: string;
-      }>(
-        `*[_type == "courseBuilderEmail" && slug.current == "weekly-signups"][0]`,
-      );
-    });
+        _id: string
+        subject: string
+        body: string
+        previewText?: string
+      }>(`*[_type == "courseBuilderEmail" && slug.current == "weekly-signups"][0]`)
+    })
 
     const newUserCount = await step.run(`load new user count`, async () => {
       const result = await db
@@ -30,57 +28,51 @@ export const weeklySignupDigest = inngest.createFunction(
         })
         .from(users)
         .where(gt(users.createdAt, sql`DATE_SUB(NOW(), INTERVAL 7 DAY)`))
-        .groupBy(users.id);
+        .groupBy(users.id)
 
-      return result[0]?.count ?? 0;
-    });
+      return result[0]?.count ?? 0
+    })
 
-    const parsedEmailBody: string = await step.run(
-      `parse email body`,
-      async () => {
-        try {
-          const engine = new Liquid();
-          return engine.parseAndRender(email.body, {
-            newUserCount,
-          });
-        } catch (e: any) {
-          console.error(e.message);
-          return email.body;
-        }
-      },
-    );
+    const parsedEmailBody: string = await step.run(`parse email body`, async () => {
+      try {
+        const engine = new Liquid()
+        return engine.parseAndRender(email.body, {
+          newUserCount,
+        })
+      } catch (e: any) {
+        console.error(e.message)
+        return email.body
+      }
+    })
 
-    const parsedEmailSubject: string = await step.run(
-      `parse email subject`,
-      async () => {
-        try {
-          const engine = new Liquid();
-          return engine.parseAndRender(email.subject, {
-            newUserCount,
-          });
-        } catch (e) {
-          return email.subject;
-        }
-      },
-    );
+    const parsedEmailSubject: string = await step.run(`parse email subject`, async () => {
+      try {
+        const engine = new Liquid()
+        return engine.parseAndRender(email.subject, {
+          newUserCount,
+        })
+      } catch (e) {
+        return email.subject
+      }
+    })
 
-    const sendResponse = await step.run("send the email", async () => {
+    const sendResponse = await step.run('send the email', async () => {
       return await sendAnEmail<BasicEmailProps>({
         Component: BasicEmail,
         componentProps: {
           body: parsedEmailBody,
-          messageType: "transactional",
+          messageType: 'transactional',
         },
         Subject: parsedEmailSubject,
         To: `joel@badass.dev`,
-      });
-    });
+      })
+    })
 
     return {
       sendResponse,
       email,
       parsedEmailBody,
       parsedEmailSubject,
-    };
+    }
   },
-);
+)

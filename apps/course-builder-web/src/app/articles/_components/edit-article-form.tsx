@@ -1,107 +1,99 @@
-"use client";
+'use client'
 
-import * as React from "react";
+import * as React from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { CodemirrorEditor } from '@/app/_components/codemirror'
+import { useSocket } from '@/hooks/use-socket'
+import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
+import { FeedbackMarker } from '@/lib/feedback-marker'
+import { cn } from '@/lib/utils'
+import { api } from '@/trpc/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ImagePlusIcon, ZapIcon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
 import {
   Button,
   Form,
+  FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
+  Input,
   Select,
-  FormControl,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
   Textarea,
-} from "@coursebuilder/ui";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@coursebuilder/ui";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
-import { ArticleAssistant } from "./article-assistant";
-import Link from "next/link";
-import { ImagePlusIcon, ZapIcon } from "lucide-react";
-import { CloudinaryUploadWidget } from "./cloudinary-upload-widget";
-import { CloudinaryMediaBrowser } from "./cloudinary-media-browser";
-import { cn } from "@/lib/utils";
-import {
-  Article,
-  ArticleSchema,
-  ArticleVisibilitySchema,
-} from "@/lib/articles";
-import { useSocket } from "@/hooks/use-socket";
-import { FeedbackMarker } from "@/lib/feedback-marker";
-import { CodemirrorEditor } from "@/app/_components/codemirror";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@coursebuilder/ui'
+
+import { ArticleAssistant } from './article-assistant'
+import { CloudinaryMediaBrowser } from './cloudinary-media-browser'
+import { CloudinaryUploadWidget } from './cloudinary-upload-widget'
 
 export function EditArticleForm({ article }: { article: Article }) {
-  const [feedbackMarkers, setFeedbackMarkers] = React.useState<
-    FeedbackMarker[]
-  >([]);
-  const router = useRouter();
+  const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof ArticleSchema>>({
     resolver: zodResolver(ArticleSchema),
     defaultValues: {
       ...article,
-      description: article.description ?? "",
+      description: article.description ?? '',
     },
-  });
+  })
 
-  const { mutateAsync: updateArticle, status: updateArticleStatus } =
-    api.articles.update.useMutation();
+  const { mutateAsync: updateArticle, status: updateArticleStatus } = api.articles.update.useMutation()
 
-  const { mutateAsync: generateFeedback } =
-    api.writing.generateFeedback.useMutation();
+  const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
 
   useSocket({
     room: article._id,
     onMessage: async (messageEvent) => {
       try {
-        const data = JSON.parse(messageEvent.data);
-        const invalidateOn = ["ai.feedback.markers.generated"];
+        const data = JSON.parse(messageEvent.data)
+        const invalidateOn = ['ai.feedback.markers.generated']
 
         if (invalidateOn.includes(data.name)) {
-          setFeedbackMarkers(data.body);
+          setFeedbackMarkers(data.body)
         }
       } catch (error) {
         // noting to do
       }
     },
-  });
+  })
 
   const onSubmit = async (values: z.infer<typeof ArticleSchema>) => {
-    const updatedArticle = await updateArticle(values);
+    const updatedArticle = await updateArticle(values)
     if (updatedArticle) {
-      router.push(`/${updatedArticle.slug}`);
+      router.push(`/${updatedArticle.slug}`)
     }
-  };
+  }
 
-  const [activeToolbarTab, setActiveToolbarTab] = React.useState(
-    TOOLBAR.values().next().value,
-  );
+  const [activeToolbarTab, setActiveToolbarTab] = React.useState(TOOLBAR.values().next().value)
 
-  const formValues = form.getValues();
+  const formValues = form.getValues()
 
-  const watcher = form.watch(["title", "body"]);
+  const watcher = form.watch(['title', 'body'])
 
   return (
     <Form {...form}>
       <form
         className="flex h-full flex-grow flex-col"
         onSubmit={form.handleSubmit(onSubmit, (error) => {
-          console.log({ error });
+          console.log({ error })
         })}
       >
-        <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
+        <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <Button className="px-0" asChild variant="link">
               <Link href={`/${article.slug}`} className="aspect-square">
@@ -109,10 +101,7 @@ export function EditArticleForm({ article }: { article: Article }) {
               </Link>
             </Button>
             <span className="font-medium">
-              Article{" "}
-              <span className="font-mono text-xs font-normal">
-                ({article._id})
-              </span>
+              Article <span className="font-mono text-xs font-normal">({article._id})</span>
             </span>
           </div>
           <Button
@@ -120,7 +109,7 @@ export function EditArticleForm({ article }: { article: Article }) {
             variant="default"
             size="sm"
             className="h-7"
-            disabled={updateArticleStatus === "loading"}
+            disabled={updateArticleStatus === 'loading'}
           >
             Save
           </Button>
@@ -135,8 +124,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                   <FormItem className="px-5">
                     <FormLabel>Title</FormLabel>
                     <FormDescription>
-                      A title should summarize the tip and explain what it is
-                      about clearly.
+                      A title should summarize the tip and explain what it is about clearly.
                     </FormDescription>
                     <Input {...field} />
                     <FormMessage />
@@ -168,12 +156,12 @@ export function EditArticleForm({ article }: { article: Article }) {
                       </FormControl>
                       <SelectContent className="">
                         {ArticleVisibilitySchema.options.map((option) => {
-                          const value = option._def.value;
+                          const value = option._def.value
                           return (
                             <SelectItem key={value} value={value}>
                               {value}
                             </SelectItem>
-                          );
+                          )
                         })}
                       </SelectContent>
                     </Select>
@@ -198,10 +186,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                 render={({ field }) => (
                   <FormItem className="px-5">
                     <FormLabel>Short Description</FormLabel>
-                    <FormDescription>
-                      Used as a short &quot;SEO&quot; summary on Twitter cards
-                      etc.
-                    </FormDescription>
+                    <FormDescription>Used as a short &quot;SEO&quot; summary on Twitter cards etc.</FormDescription>
                     <Textarea {...field} />
                     <FormMessage />
                   </FormItem>
@@ -214,22 +199,18 @@ export function EditArticleForm({ article }: { article: Article }) {
                 name="body"
                 render={({ field }) => (
                   <FormItem className="pt-5">
-                    <FormLabel className="px-5 text-lg font-bold">
-                      Content
-                    </FormLabel>
-                    <FormDescription className="px-5 pb-3">
-                      Tip content in MDX.
-                    </FormDescription>
+                    <FormLabel className="px-5 text-lg font-bold">Content</FormLabel>
+                    <FormDescription className="px-5 pb-3">Tip content in MDX.</FormDescription>
                     <CodemirrorEditor
                       roomName={`${article._id}`}
-                      value={article.body || ""}
+                      value={article.body || ''}
                       onChange={async (data) => {
-                        form.setValue("body", data);
+                        form.setValue('body', data)
                         generateFeedback({
                           resourceId: article._id,
                           body: data,
                           currentFeedback: feedbackMarkers,
-                        });
+                        })
                       }}
                       markers={feedbackMarkers}
                     />
@@ -244,30 +225,24 @@ export function EditArticleForm({ article }: { article: Article }) {
                       <li
                         key={marker.originalText}
                       >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
-                    );
+                    )
                   })}
                 </ul>
               </div>
             </div>
             <div className="col-span-3">
-              {watcher && activeToolbarTab.id === "assistant" && (
-                <ArticleAssistant
-                  article={{ ...article, ...formValues }}
-                  currentFeedback={feedbackMarkers}
-                />
+              {watcher && activeToolbarTab.id === 'assistant' && (
+                <ArticleAssistant article={{ ...article, ...formValues }} currentFeedback={feedbackMarkers} />
               )}
-              {activeToolbarTab.id === "media" && (
+              {activeToolbarTab.id === 'media' && (
                 <>
-                  <CloudinaryUploadWidget
-                    dir={article._type}
-                    id={article._id}
-                  />
+                  <CloudinaryUploadWidget dir={article._type} id={article._id} />
                   <CloudinaryMediaBrowser />
                 </>
               )}
             </div>
           </div>
-          <div className="border-l bg-muted">
+          <div className="bg-muted border-l">
             <div className="flex flex-col gap-1 p-1">
               <TooltipProvider delayDuration={0}>
                 {Array.from(TOOLBAR).map((item) => (
@@ -277,12 +252,10 @@ export function EditArticleForm({ article }: { article: Article }) {
                         variant="link"
                         type="button"
                         className={cn(
-                          `flex aspect-square items-center justify-center rounded-lg border p-0 transition hover:bg-background/50`,
+                          `hover:bg-background/50 flex aspect-square items-center justify-center rounded-lg border p-0 transition`,
                           {
-                            "border-border bg-background":
-                              activeToolbarTab.id === item.id,
-                            "border-transparent bg-transparent":
-                              activeToolbarTab.id !== item.id,
+                            'border-border bg-background': activeToolbarTab.id === item.id,
+                            'border-transparent bg-transparent': activeToolbarTab.id !== item.id,
                           },
                         )}
                         onClick={() => setActiveToolbarTab(item)}
@@ -301,18 +274,16 @@ export function EditArticleForm({ article }: { article: Article }) {
         </div>
       </form>
     </Form>
-  );
+  )
 }
 
 const TOOLBAR = new Set([
   {
-    id: "assistant",
+    id: 'assistant',
     icon: () => <ZapIcon strokeWidth={1.5} size={24} width={18} height={18} />,
   },
   {
-    id: "media",
-    icon: () => (
-      <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
-    ),
+    id: 'media',
+    icon: () => <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />,
   },
-]);
+])

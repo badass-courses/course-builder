@@ -1,24 +1,19 @@
-import {
-  CardTitle,
-  CardHeader,
-  CardContent,
-  Card,
-  Button,
-} from "@coursebuilder/ui";
-import { getServerAuthSession } from "@/server/auth";
-import { getAbility } from "@/lib/ability";
-import * as React from "react";
-import Link from "next/link";
-import { sanityQuery } from "@/server/sanity.server";
+import * as React from 'react'
+import Link from 'next/link'
+import { getAbility } from '@/lib/ability'
+import { getServerAuthSession } from '@/server/auth'
+import { sanityQuery } from '@/server/sanity.server'
+
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
 
 export default async function ArticlesIndexPage() {
-  const session = await getServerAuthSession();
-  const ability = getAbility({ user: session?.user });
+  const session = await getServerAuthSession()
+  const ability = getAbility({ user: session?.user })
   const articles = await sanityQuery<
     {
-      _id: string;
-      title: string;
-      slug: string;
+      _id: string
+      title: string
+      slug: string
     }[]
   >(
     `*[_type == "article"] | order(_updatedAt desc) {
@@ -26,13 +21,13 @@ export default async function ArticlesIndexPage() {
     title,
     "slug": slug.current,
   }`,
-    { tags: ["articles"] },
-  );
+    { tags: ['articles'] },
+  )
 
   return (
     <div>
-      {ability.can("update", "Content") ? (
-        <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
+      {ability.can('update', 'Content') ? (
+        <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
           <div />
           <Button asChild className="h-7">
             <Link href={`/articles/new`}>New Article</Link>
@@ -45,9 +40,7 @@ export default async function ArticlesIndexPage() {
           <Card key={article._id}>
             <CardHeader>
               <CardTitle>
-                <Link href={`/${article.slug || article._id}`}>
-                  {article.title}
-                </Link>
+                <Link href={`/${article.slug || article._id}`}>{article.title}</Link>
               </CardTitle>
             </CardHeader>
             <CardContent></CardContent>
@@ -55,5 +48,5 @@ export default async function ArticlesIndexPage() {
         ))}
       </div>
     </div>
-  );
+  )
 }

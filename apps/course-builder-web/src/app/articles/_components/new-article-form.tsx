@@ -1,8 +1,14 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Button } from "@coursebuilder/ui";
+import * as React from 'react'
+import { useRouter } from 'next/navigation'
+import { api } from '@/trpc/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
 import {
+  Button,
   Form,
   FormControl,
   FormDescription,
@@ -10,36 +16,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@coursebuilder/ui";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@coursebuilder/ui";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
+  Input,
+} from '@coursebuilder/ui'
 
 const NewArticleFormSchema = z.object({
   title: z.string().min(2).max(90),
-});
+})
 
 export function NewArticleForm() {
-  const router = useRouter();
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof NewArticleFormSchema>>({
     resolver: zodResolver(NewArticleFormSchema),
     defaultValues: {
-      title: "",
+      title: '',
     },
-  });
-  const { mutateAsync: createArticle } = api.articles.create.useMutation();
+  })
+  const { mutateAsync: createArticle } = api.articles.create.useMutation()
 
   const onSubmit = async (values: z.infer<typeof NewArticleFormSchema>) => {
-    form.reset();
-    const article = await createArticle(values);
+    form.reset()
+    const article = await createArticle(values)
     if (article) {
-      router.push(`/articles/${article.slug}/edit`);
+      router.push(`/articles/${article.slug}/edit`)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -51,8 +52,7 @@ export function NewArticleForm() {
             <FormItem>
               <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
-                A title should summarize the article and explain what it is
-                about clearly.
+                A title should summarize the article and explain what it is about clearly.
               </FormDescription>
               <FormControl>
                 <Input {...field} />
@@ -67,14 +67,11 @@ export function NewArticleForm() {
           type="submit"
           className="mt-2"
           variant="default"
-          disabled={
-            (form.formState.isDirty && !form.formState.isValid) ||
-            form.formState.isSubmitting
-          }
+          disabled={(form.formState.isDirty && !form.formState.isValid) || form.formState.isSubmitting}
         >
           Create Draft Article
         </Button>
       </form>
     </Form>
-  );
+  )
 }

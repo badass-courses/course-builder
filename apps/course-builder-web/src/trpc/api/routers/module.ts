@@ -1,15 +1,11 @@
-import { z } from "zod";
-import { getServerAuthSession } from "@/server/auth";
-import { getAbility } from "@/lib/ability";
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/trpc/api/trpc";
-import { sanityMutation, sanityQuery } from "@/server/sanity.server";
-import { TRPCError } from "@trpc/server";
-import groq from "groq";
-import { v4 } from "uuid";
+import { getAbility } from '@/lib/ability'
+import { getServerAuthSession } from '@/server/auth'
+import { sanityMutation, sanityQuery } from '@/server/sanity.server'
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
+import { TRPCError } from '@trpc/server'
+import groq from 'groq'
+import { v4 } from 'uuid'
+import { z } from 'zod'
 
 export const moduleRouter = createTRPCRouter({
   getBySlug: publicProcedure
@@ -19,11 +15,11 @@ export const moduleRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const session = await getServerAuthSession();
-      const ability = getAbility({ user: session?.user });
+      const session = await getServerAuthSession()
+      const ability = getAbility({ user: session?.user })
 
-      if (!ability.can("read", "Content")) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      if (!ability.can('read', 'Content')) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       return input.slug
@@ -31,7 +27,7 @@ export const moduleRouter = createTRPCRouter({
         ...,
         "videoResources": resources[@->._type == 'videoResource']->
       }`)
-        : null;
+        : null
     }),
   updateTutorial: protectedProcedure
     .input(
@@ -45,21 +41,20 @@ export const moduleRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const session = await getServerAuthSession();
-      const ability = getAbility({ user: session?.user });
+      const session = await getServerAuthSession()
+      const ability = getAbility({ user: session?.user })
 
-      if (!ability.can("update", "Content")) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      if (!ability.can('update', 'Content')) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const tutorial =
-        await sanityQuery(groq`*[_type == "module" && _id == "${input.tutorialId}"][0]{
+      const tutorial = await sanityQuery(groq`*[_type == "module" && _id == "${input.tutorialId}"][0]{
         _id,
         resources[]->
-      }`);
+      }`)
 
       if (!tutorial) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: 'NOT_FOUND' })
       }
 
       return await sanityMutation(
@@ -78,9 +73,9 @@ export const moduleRouter = createTRPCRouter({
                   resources: input.updateData.lessons.map((lesson) => {
                     return {
                       _key: v4(),
-                      _type: "reference",
+                      _type: 'reference',
                       _ref: lesson._id,
-                    };
+                    }
                   }),
                 }),
               },
@@ -88,7 +83,7 @@ export const moduleRouter = createTRPCRouter({
           },
         ],
         { returnDocuments: true },
-      );
+      )
     }),
   getTutorial: publicProcedure
     .input(
@@ -97,43 +92,43 @@ export const moduleRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const session = await getServerAuthSession();
-      const ability = getAbility({ user: session?.user });
+      const session = await getServerAuthSession()
+      const ability = getAbility({ user: session?.user })
 
-      if (!ability.can("read", "Content")) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+      if (!ability.can('read', 'Content')) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      return await getTutorial(input.slug);
+      return await getTutorial(input.slug)
     }),
-});
+})
 
 const getTutorial = async (slug?: string) => {
   return slug
     ? await sanityQuery<{
-        _id: string;
-        _type: string;
-        moduleType: string;
-        title: string;
-        description: string;
+        _id: string
+        _type: string
+        moduleType: string
+        title: string
+        description: string
         sections: {
-          _id: string;
-          title: string;
-          _type: string;
-          moduleType: string;
+          _id: string
+          title: string
+          _type: string
+          moduleType: string
           lessons: {
-            _id: string;
-            title: string;
-            _type: string;
-            moduleType: string;
-          }[];
-        }[];
+            _id: string
+            title: string
+            _type: string
+            moduleType: string
+          }[]
+        }[]
         lessons: {
-          _id: string;
-          title: string;
-          _type: string;
-          moduleType: string;
-        }[];
+          _id: string
+          title: string
+          _type: string
+          moduleType: string
+        }[]
       }>(
         groq`*[_type == "module" && moduleType == 'tutorial' && (_id == "${slug}" || slug.current == "${slug}")][0]{
                 ...,
@@ -177,5 +172,5 @@ const getTutorial = async (slug?: string) => {
                 }
     }`,
       )
-    : null;
-};
+    : null
+}

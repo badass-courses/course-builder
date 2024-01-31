@@ -1,37 +1,34 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Button } from "@coursebuilder/ui";
-import { api } from "@/trpc/react";
-import { ChatResponse } from "@/app/_components/chat-response";
-import MuxPlayer from "@mux/mux-player-react";
-import ReactMarkdown from "react-markdown";
-import { UploadDropzone } from "@/utils/uploadthing";
-import { getUniqueFilename } from "@/lib/get-unique-filename";
-import { useSocket } from "@/hooks/use-socket";
+import * as React from 'react'
+import { ChatResponse } from '@/app/_components/chat-response'
+import { useSocket } from '@/hooks/use-socket'
+import { getUniqueFilename } from '@/lib/get-unique-filename'
+import { api } from '@/trpc/react'
+import { UploadDropzone } from '@/utils/uploadthing'
+import MuxPlayer from '@mux/mux-player-react'
+import ReactMarkdown from 'react-markdown'
+
+import { Button } from '@coursebuilder/ui'
 
 const VideoUploader = ({ moduleSlug }: { moduleSlug?: string }) => {
-  const [requestIds, setRequestIds] = React.useState<string[]>([]);
+  const [requestIds, setRequestIds] = React.useState<string[]>([])
   const { data: sanityModule } = api.module.getBySlug.useQuery({
     slug: moduleSlug,
-  });
+  })
 
-  const utils = api.useUtils();
+  const utils = api.useUtils()
 
   useSocket({
     onMessage: async (messageEvent) => {
-      const data = JSON.parse(messageEvent.data);
-      const invalidateOn = [
-        "videoResource.created",
-        "video.asset.ready",
-        "transcript.ready",
-      ];
+      const data = JSON.parse(messageEvent.data)
+      const invalidateOn = ['videoResource.created', 'video.asset.ready', 'transcript.ready']
 
       if (invalidateOn.includes(data.name)) {
-        await utils.module.getBySlug.invalidate({ slug: moduleSlug });
+        await utils.module.getBySlug.invalidate({ slug: moduleSlug })
       }
     },
-  });
+  })
 
   return (
     <div className="grid h-full gap-6 lg:grid-cols-2">
@@ -39,7 +36,7 @@ const VideoUploader = ({ moduleSlug }: { moduleSlug?: string }) => {
         <UploadDropzone
           endpoint="videoUploader"
           config={{
-            mode: "auto",
+            mode: 'auto',
           }}
           input={{
             moduleSlug,
@@ -50,77 +47,65 @@ const VideoUploader = ({ moduleSlug }: { moduleSlug?: string }) => {
                 new File([file], getUniqueFilename(file.name), {
                   type: file.type,
                 }),
-            );
+            )
           }}
           onClientUploadComplete={async (response: any) => {
-            setRequestIds(response.map((res: any) => res.fileName));
-            await utils.module.getBySlug.invalidate({ slug: moduleSlug });
+            setRequestIds(response.map((res: any) => res.fileName))
+            await utils.module.getBySlug.invalidate({ slug: moduleSlug })
           }}
           onUploadError={(error: Error) => {
             // Do something with the error.
-            alert(`ERROR! ${error.message}`);
+            alert(`ERROR! ${error.message}`)
           }}
         />
         <div className="flex flex-col space-y-4">
           {sanityModule?.videoResources
-            ?.map(
-              ({
-                title,
-                muxPlaybackId,
-                state,
-              }: {
-                title: string;
-                muxPlaybackId: string;
-                state: string;
-              }) => (
-                <UploadedVideo
-                  key={title}
-                  requestId={title}
-                  playbackId={muxPlaybackId}
-                  moduleSlug={moduleSlug}
-                  state={state}
-                />
-              ),
-            )
+            ?.map(({ title, muxPlaybackId, state }: { title: string; muxPlaybackId: string; state: string }) => (
+              <UploadedVideo
+                key={title}
+                requestId={title}
+                playbackId={muxPlaybackId}
+                moduleSlug={moduleSlug}
+                state={state}
+              />
+            ))
             .reverse()}
         </div>
       </div>
 
       <ChatResponse requestIds={requestIds} />
     </div>
-  );
-};
+  )
+}
 
 function UploadedVideo({
   requestId,
   playbackId,
   moduleSlug,
-  state = "new",
+  state = 'new',
 }: {
-  requestId: string;
-  playbackId: string;
-  state: string;
-  moduleSlug?: string;
+  requestId: string
+  playbackId: string
+  state: string
+  moduleSlug?: string
 }) {
   const [generatedDraft, setGeneratedDraft] = React.useState<{
-    title: string;
-    content: string;
-  } | null>(null);
-  const { mutate: generatePost } = api.post.generate.useMutation();
+    title: string
+    content: string
+  } | null>(null)
+  const { mutate: generatePost } = api.post.generate.useMutation()
   const { data: sanityModule } = api.module.getBySlug.useQuery({
     slug: moduleSlug,
-  });
+  })
 
   return (
     <div>
       {requestId}
-      {playbackId && state === "ready" && <MuxPlayer playbackId={playbackId} />}
-      {sanityModule.videoResources.filter(
-        (resource: any) => resource._id === requestId,
-      )?.[0].transcript && (
+      {playbackId && state === 'ready' && <MuxPlayer playbackId={playbackId} />}
+      {sanityModule.videoResources.filter((resource: any) => resource._id === requestId)?.[0].transcript && (
         <Button
           onClick={() => {
-            generatePost({ requestId: requestId });
+            generatePost({ requestId: requestId })
           }}
         >
           Generate Post Text
@@ -132,7 +117,7 @@ function UploadedVideo({
           <ReactMarkdown>{generatedDraft.content}</ReactMarkdown>
           <Button
             onClick={() => {
-              setGeneratedDraft(null);
+              setGeneratedDraft(null)
             }}
           >
             Generate Post
@@ -140,7 +125,7 @@ function UploadedVideo({
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default VideoUploader;
+export default VideoUploader

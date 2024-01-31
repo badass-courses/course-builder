@@ -1,24 +1,24 @@
 export default {
-  name: "imageResource",
-  type: "document",
-  title: "Image Resource",
+  name: 'imageResource',
+  type: 'document',
+  title: 'Image Resource',
   fields: [
     {
-      name: "url",
-      type: "url",
-      title: "Image URL",
+      name: 'url',
+      type: 'url',
+      title: 'Image URL',
     },
     {
-      name: "alt",
-      type: "string",
-      title: "Alternative text",
+      name: 'alt',
+      type: 'string',
+      title: 'Alternative text',
     },
   ],
   preview: {
-    select: { url: "url", alt: "alt" },
+    select: { url: 'url', alt: 'alt' },
     prepare(selection: any) {
-      const { url, alt } = selection;
-      return { media: <img src={url} alt={alt} /> };
+      const { url, alt } = selection
+      return { media: <img src={url} alt={alt} /> }
     },
   },
-};
+}

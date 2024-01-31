@@ -1,5 +1,6 @@
-import { Card, CardContent, CardFooter, CardHeader } from "@coursebuilder/ui";
-import { NewArticleForm } from "@/app/articles/_components/new-article-form";
+import { NewArticleForm } from '@/app/articles/_components/new-article-form'
+
+import { Card, CardContent, CardFooter, CardHeader } from '@coursebuilder/ui'
 
 export function CreateArticle() {
   return (
@@ -10,5 +11,5 @@ export function CreateArticle() {
       </CardContent>
       <CardFooter></CardFooter>
     </Card>
-  );
+  )
 }
