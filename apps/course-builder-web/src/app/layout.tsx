@@ -1,6 +1,7 @@
 import '@/styles/globals.css'
 
 import * as React from 'react'
+import { Suspense } from 'react'
 import { Inter } from 'next/font/google'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'

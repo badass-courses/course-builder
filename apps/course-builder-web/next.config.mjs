@@ -21,6 +21,9 @@ const withMDX = createMDX({
 
 /** @type {import("next").NextConfig} */
 const config = {
+  experimental: {
+    ppr: true,
+  },
   pageExtensions: ['mdx', 'ts', 'tsx'],
   transpilePackages: ['@coursebuilder/ui'],
   // @ts-expect-error

@@ -3,7 +3,6 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
-import { Logo } from '@/components/navigation'
 import { Login } from '@/components/navigation/login'
 import { User } from '@/components/navigation/user'
 import { cn } from '@/lib/utils'

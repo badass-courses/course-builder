@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -34,32 +35,57 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
   }
 }
 
-export default async function ArticlePage({ params }: { params: { article: string } }) {
+async function ArticleActionBar({ slug }: { slug: string }) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
-  const article = await getArticle(params.article)
-
-  if (!article) {
-    notFound()
-  }
+  const article = await getArticle(slug)
 
   return (
-    <div>
-      {ability.can('update', 'Content') ? (
+    <>
+      {article && ability.can('update', 'Content') ? (
         <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
           <div />
           <Button asChild className="h-7">
             <Link href={`/articles/${article.slug || article._id}/edit`}>Edit</Link>
           </Button>
         </div>
-      ) : null}
-      <article className="flex flex-col p-5 sm:p-10">
-        <h1 className="text-3xl font-bold">{article.title}</h1>
+      ) : (
+        <div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+      )}
+    </>
+  )
+}
 
-        <div className="mt-4 pb-32">
-          <ReactMarkdown className="prose dark:prose-invert">{article.body}</ReactMarkdown>
-          <ReactMarkdown>{article.description}</ReactMarkdown>
-        </div>
+async function Article({ slug }: { slug: string }) {
+  const article = await getArticle(slug)
+
+  if (!article) {
+    notFound()
+  }
+
+  return (
+    <div className="mt-4 pb-32">
+      <ReactMarkdown className="prose dark:prose-invert">{article.body}</ReactMarkdown>
+      <ReactMarkdown>{article.description}</ReactMarkdown>
+    </div>
+  )
+}
+
+async function ArticleTitle({ slug }: { slug: string }) {
+  const article = await getArticle(slug)
+
+  return <h1 className="text-3xl font-bold">{article?.title}</h1>
+}
+
+export default async function ArticlePage({ params }: { params: { article: string } }) {
+  return (
+    <div>
+      <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
+        <ArticleActionBar slug={params.article} />
+      </Suspense>
+      <article className="flex flex-col p-5 sm:p-10">
+        <ArticleTitle slug={params.article} />
+        <Article slug={params.article} />
       </article>
     </div>
   )
