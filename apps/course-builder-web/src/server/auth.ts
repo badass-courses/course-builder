@@ -1,18 +1,18 @@
-import {DrizzleAdapter} from '@auth/drizzle-adapter'
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
-} from 'next-auth'
-import GithubProvider from 'next-auth/providers/github'
+} from "next-auth";
+import GithubProvider from "next-auth/providers/github";
 
-import {env} from '@/env.mjs'
-import {db} from '@/server/db'
-import {mysqlTable} from '@/server/db/schema'
-import {inngest} from '@/inngest/inngest.server'
-import {USER_CREATED_EVENT} from '@/inngest/events'
+import { env } from "@/env.mjs";
+import { db } from "@/server/db";
+import { mysqlTable } from "@/server/db/schema";
+import { inngest } from "@/inngest/inngest.server";
+import { USER_CREATED_EVENT } from "@/inngest/events";
 
-type Role = 'admin' | 'user'
+type Role = "admin" | "user";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -20,17 +20,17 @@ type Role = 'admin' | 'user'
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string
-      role: Role
-    } & DefaultSession['user']
+      id: string;
+      role: Role;
+    } & DefaultSession["user"];
   }
 
   interface User {
     // ...other properties
-    role?: Role
+    role?: Role;
   }
 }
 
@@ -41,17 +41,17 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   events: {
-    createUser: async ({user}) => {
-      await inngest.send({name: USER_CREATED_EVENT, user, data: {}})
+    createUser: async ({ user }) => {
+      await inngest.send({ name: USER_CREATED_EVENT, user, data: {} });
     },
   },
   callbacks: {
-    session: async ({session, user}) => {
+    session: async ({ session, user }) => {
       const dbUser = await db.query.users.findFirst({
-        where: (users, {eq}) => eq(users.id, user.id),
-      })
+        where: (users, { eq }) => eq(users.id, user.id),
+      });
 
-      const role: Role = dbUser?.role || 'user'
+      const role: Role = dbUser?.role || "user";
 
       return {
         ...session,
@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           role,
         },
-      }
+      };
     },
   },
   adapter: DrizzleAdapter(db, mysqlTable),
@@ -81,15 +81,15 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: '/login',
-    error: '/error',
-    verifyRequest: '/check-your-email',
+    signIn: "/login",
+    error: "/error",
+    verifyRequest: "/check-your-email",
   },
-}
+};
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = () => getServerSession(authOptions)
+export const getServerAuthSession = () => getServerSession(authOptions);

@@ -3,11 +3,11 @@
  * @see https://v0.dev/t/Hw1J8tftoVR
  */
 
-import {Button, Input, Label, Textarea} from '@coursebuilder/ui'
-import {EditTutorialForm} from '@/app/tutorials/[module]/edit/_form'
-import * as React from 'react'
+import { Button, Input, Label, Textarea } from "@coursebuilder/ui";
+import { EditTutorialForm } from "@/app/tutorials/[module]/edit/_form";
+import * as React from "react";
 
-export default function Component({tutorial}: {tutorial: any}) {
+export default function Component({ tutorial }: { tutorial: any }) {
   return (
     <div key="1" className="grid grid-cols-8 gap-4 p-4">
       <div className="col-span-2">
@@ -123,7 +123,7 @@ export default function Component({tutorial}: {tutorial: any}) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function ExpandIcon(props: any) {
@@ -145,5 +145,5 @@ function ExpandIcon(props: any) {
       <path d="M21 7.8V3m0 0h-4.8M21 3l-6 6" />
       <path d="M3 7.8V3m0 0h4.8M3 3l6 6" />
     </svg>
-  )
+  );
 }

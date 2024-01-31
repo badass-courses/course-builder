@@ -1,13 +1,13 @@
-import * as React from 'react'
+import * as React from "react";
 
 type IconProperties = {
-  className?: string
-  viewBox?: string
-  title?: string
-  role?: string
-  size?: '16' | '20' | '24' | '32' | '40'
-  name: IconNames
-}
+  className?: string;
+  viewBox?: string;
+  title?: string;
+  role?: string;
+  size?: "16" | "20" | "24" | "32" | "40";
+  name: IconNames;
+};
 
 const Icons = {
   Palm: () => (
@@ -166,16 +166,16 @@ const Icons = {
       <rect x="0.5" y="9.5" width="6" height="6" />
     </g>
   ),
-} as const
+} as const;
 
-type IconNames = keyof typeof Icons
+type IconNames = keyof typeof Icons;
 
 const Icon: React.FC<IconProperties> = ({
-  viewBox = '0 0 16 16',
+  viewBox = "0 0 16 16",
   title,
-  size = '16',
+  size = "16",
   name,
-  role = 'img',
+  role = "img",
   ...props
 }) => (
   <svg
@@ -190,6 +190,6 @@ const Icon: React.FC<IconProperties> = ({
     {title && <title>{title}</title>}
     {Icons[name]()}
   </svg>
-)
+);
 
-export {Icon, type IconNames}
+export { Icon, type IconNames };

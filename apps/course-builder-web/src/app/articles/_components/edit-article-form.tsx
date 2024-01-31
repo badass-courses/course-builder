@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import * as React from 'react'
+import * as React from "react";
 import {
   Button,
   Form,
@@ -13,115 +13,127 @@ import {
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from '@coursebuilder/ui'
-import {useForm} from 'react-hook-form'
-import {z} from 'zod'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {Input} from '@coursebuilder/ui'
-import {api} from '@/trpc/react'
-import {useRouter} from 'next/navigation'
-import {ArticleAssistant} from './article-assistant'
-import Link from 'next/link'
-import {ImagePlusIcon, ZapIcon} from 'lucide-react'
-import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
-import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
-import {cn} from '@/lib/utils'
-import {Article} from '@/lib/articles'
-import {useSocket} from '@/hooks/use-socket'
-import {FeedbackMarker} from '@/lib/feedback-marker'
-import {CodemirrorEditor} from '@/app/_components/codemirror'
-import {revalidateTag} from 'next/cache'
+  Select,
+  FormControl,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Textarea,
+} from "@coursebuilder/ui";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@coursebuilder/ui";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+import { ArticleAssistant } from "./article-assistant";
+import Link from "next/link";
+import { ImagePlusIcon, ZapIcon } from "lucide-react";
+import { CloudinaryUploadWidget } from "./cloudinary-upload-widget";
+import { CloudinaryMediaBrowser } from "./cloudinary-media-browser";
+import { cn } from "@/lib/utils";
+import {
+  Article,
+  ArticleSchema,
+  ArticleVisibilitySchema,
+} from "@/lib/articles";
+import { useSocket } from "@/hooks/use-socket";
+import { FeedbackMarker } from "@/lib/feedback-marker";
+import { CodemirrorEditor } from "@/app/_components/codemirror";
 
-const ArticleFormSchema = z.object({
-  title: z.string().min(2).max(90),
-  body: z.string().optional().nullable(),
-})
-
-export function EditArticleForm({article}: {article: Article}) {
+export function EditArticleForm({ article }: { article: Article }) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<
     FeedbackMarker[]
-  >([])
-  const router = useRouter()
+  >([]);
+  const router = useRouter();
 
-  const form = useForm<z.infer<typeof ArticleFormSchema>>({
-    resolver: zodResolver(ArticleFormSchema),
+  const form = useForm<z.infer<typeof ArticleSchema>>({
+    resolver: zodResolver(ArticleSchema),
     defaultValues: {
-      title: article.title,
-      body: article.body,
+      ...article,
+      description: article.description ?? "",
     },
-  })
+  });
 
-  const {mutateAsync: updateArticle, status: updateArticleStatus} =
-    api.articles.update.useMutation()
+  const { mutateAsync: updateArticle, status: updateArticleStatus } =
+    api.articles.update.useMutation();
 
-  const {mutateAsync: generateFeedback} =
-    api.writing.generateFeedback.useMutation()
+  const { mutateAsync: generateFeedback } =
+    api.writing.generateFeedback.useMutation();
 
   useSocket({
     room: article._id,
     onMessage: async (messageEvent) => {
       try {
-        const data = JSON.parse(messageEvent.data)
-        const invalidateOn = ['ai.feedback.markers.generated']
+        const data = JSON.parse(messageEvent.data);
+        const invalidateOn = ["ai.feedback.markers.generated"];
 
         if (invalidateOn.includes(data.name)) {
-          setFeedbackMarkers(data.body)
+          setFeedbackMarkers(data.body);
         }
       } catch (error) {
         // noting to do
       }
     },
-  })
+  });
 
-  const onSubmit = async (values: z.infer<typeof ArticleFormSchema>) => {
-    const updatedArticle = await updateArticle({
-      articleId: article._id,
-      ...values,
-    })
+  const onSubmit = async (values: z.infer<typeof ArticleSchema>) => {
+    const updatedArticle = await updateArticle(values);
     if (updatedArticle) {
-      router.push(`/${updatedArticle.slug}`)
+      router.push(`/${updatedArticle.slug}`);
     }
-  }
+  };
 
   const [activeToolbarTab, setActiveToolbarTab] = React.useState(
     TOOLBAR.values().next().value,
-  )
+  );
 
-  const formValues = form.getValues()
+  const formValues = form.getValues();
 
-  const watcher = form.watch(['title', 'body'])
+  const watcher = form.watch(["title", "body"]);
 
   return (
     <Form {...form}>
       <form
         className="flex h-full flex-grow flex-col"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, (error) => {
+          console.log({ error });
+        })}
       >
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
-          <Button className="px-0" asChild variant="link">
-            <Link href={`/${article.slug}`} className="aspect-square">
-              ←
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button className="px-0" asChild variant="link">
+              <Link href={`/${article.slug}`} className="aspect-square">
+                ←
+              </Link>
+            </Button>
+            <span className="font-medium">
+              Article{" "}
+              <span className="font-mono text-xs font-normal">
+                ({article._id})
+              </span>
+            </span>
+          </div>
           <Button
             type="submit"
             variant="default"
             size="sm"
             className="h-7"
-            disabled={updateArticleStatus === 'loading'}
+            disabled={updateArticleStatus === "loading"}
           >
             Save
           </Button>
         </div>
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
-            <div className="col-span-3 flex h-full flex-col border-r">
+            <div className="col-span-3 flex h-full flex-col gap-5 border-r py-5">
               <FormField
                 control={form.control}
                 name="title"
-                render={({field}) => (
-                  <FormItem className="p-5">
-                    <FormLabel className="text-lg font-bold">Title</FormLabel>
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Title</FormLabel>
                     <FormDescription>
                       A title should summarize the tip and explain what it is
                       about clearly.
@@ -131,15 +143,76 @@ export function EditArticleForm({article}: {article: Article}) {
                   </FormItem>
                 )}
               />
-              <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">
-                {article._id}
-              </div>
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Slug</FormLabel>
+                    <Input {...field} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="visibility"
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Visibility</FormLabel>
+                    <Select {...field} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose state" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="">
+                        {ArticleVisibilitySchema.options.map((option) => {
+                          const value = option._def.value;
+                          return (
+                            <SelectItem key={value} value={value}>
+                              {value}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>State</FormLabel>
+                    <Input {...field} readOnly disabled />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Short Description</FormLabel>
+                    <FormDescription>
+                      Used as a short &quot;SEO&quot; summary on Twitter cards
+                      etc.
+                    </FormDescription>
+                    <Textarea {...field} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
               <FormField
                 control={form.control}
                 name="body"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem className="pt-5">
                     <FormLabel className="px-5 text-lg font-bold">
                       Content
@@ -149,14 +222,14 @@ export function EditArticleForm({article}: {article: Article}) {
                     </FormDescription>
                     <CodemirrorEditor
                       roomName={`${article._id}`}
-                      value={article.body}
+                      value={article.body || ""}
                       onChange={async (data) => {
-                        form.setValue('body', data)
+                        form.setValue("body", data);
                         generateFeedback({
                           resourceId: article._id,
                           body: data,
                           currentFeedback: feedbackMarkers,
-                        })
+                        });
                       }}
                       markers={feedbackMarkers}
                     />
@@ -171,19 +244,19 @@ export function EditArticleForm({article}: {article: Article}) {
                       <li
                         key={marker.originalText}
                       >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
-                    )
+                    );
                   })}
                 </ul>
               </div>
             </div>
             <div className="col-span-3">
-              {watcher && activeToolbarTab.id === 'assistant' && (
+              {watcher && activeToolbarTab.id === "assistant" && (
                 <ArticleAssistant
-                  article={{...article, ...formValues}}
+                  article={{ ...article, ...formValues }}
                   currentFeedback={feedbackMarkers}
                 />
               )}
-              {activeToolbarTab.id === 'media' && (
+              {activeToolbarTab.id === "media" && (
                 <>
                   <CloudinaryUploadWidget
                     dir={article._type}
@@ -206,9 +279,9 @@ export function EditArticleForm({article}: {article: Article}) {
                         className={cn(
                           `flex aspect-square items-center justify-center rounded-lg border p-0 transition hover:bg-background/50`,
                           {
-                            'border-border bg-background':
+                            "border-border bg-background":
                               activeToolbarTab.id === item.id,
-                            'border-transparent bg-transparent':
+                            "border-transparent bg-transparent":
                               activeToolbarTab.id !== item.id,
                           },
                         )}
@@ -228,18 +301,18 @@ export function EditArticleForm({article}: {article: Article}) {
         </div>
       </form>
     </Form>
-  )
+  );
 }
 
 const TOOLBAR = new Set([
   {
-    id: 'assistant',
+    id: "assistant",
     icon: () => <ZapIcon strokeWidth={1.5} size={24} width={18} height={18} />,
   },
   {
-    id: 'media',
+    id: "media",
     icon: () => (
       <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
     ),
   },
-])
+]);

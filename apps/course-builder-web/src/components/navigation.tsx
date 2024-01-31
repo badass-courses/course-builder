@@ -1,18 +1,18 @@
-import Image from 'next/image'
-import * as React from 'react'
-import {cn} from '@/lib/utils'
+import Image from "next/image";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import {Links} from '@/components/navigation/links'
+import { Links } from "@/components/navigation/links";
 
 type NavigationProps = {
-  className?: string
-  navigationContainerClassName?: string
-  size?: 'sm' | 'md' | 'lg'
-}
+  className?: string;
+  navigationContainerClassName?: string;
+  size?: "sm" | "md" | "lg";
+};
 
 const Navigation: React.FC<NavigationProps> = async ({
   className,
-  size = 'md',
+  size = "md",
   navigationContainerClassName,
 }) => {
   return (
@@ -26,15 +26,15 @@ const Navigation: React.FC<NavigationProps> = async ({
         <Links />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Navigation
+export default Navigation;
 
 type IconProps = {
-  isHovered: boolean
-  theme: 'light' | 'dark'
-}
+  isHovered: boolean;
+  theme: "light" | "dark";
+};
 
 export const HamburgerMenuIcon = () => {
   return (
@@ -53,8 +53,8 @@ export const HamburgerMenuIcon = () => {
         clipRule="evenodd"
       />
     </svg>
-  )
-}
+  );
+};
 
 export const CrossIcon = () => {
   return (
@@ -74,19 +74,19 @@ export const CrossIcon = () => {
         clipRule="evenodd"
       />
     </svg>
-  )
-}
+  );
+};
 
-export const Logo: React.FC<{className?: string}> = ({className}) => {
+export const Logo: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <div className="flex items-center gap-1">
       <Image
-        src={require('../../public/favicon.ico')}
+        src={require("../../public/favicon.ico")}
         alt=""
         width={24}
         height={24}
-      />{' '}
+      />{" "}
       {process.env.NEXT_PUBLIC_SITE_TITLE}
     </div>
-  )
-}
+  );
+};

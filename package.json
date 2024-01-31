@@ -53,7 +53,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.3",
     "jest": "^29.7.0",
-    "lint-staged": "^15.1.0",
+    "lint-staged": "^15.2.1",
     "prettier": "^3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "turbo": "^1.12.1",

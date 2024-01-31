@@ -1,4 +1,4 @@
-import {sanityQuery} from '@/server/sanity.server'
+import { sanityQuery } from "@/server/sanity.server";
 
 export async function getResource<T = any>(
   slugOrId: string,
@@ -11,5 +11,5 @@ export async function getResource<T = any>(
           summary,
           body,
           "slug": slug.current,
-  }`)
+  }`);
 }

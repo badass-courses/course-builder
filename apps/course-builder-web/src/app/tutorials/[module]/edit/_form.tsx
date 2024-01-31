@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import {api} from '@/trpc/react'
-import {useFieldArray, useForm} from 'react-hook-form'
-import {z} from 'zod'
-import {zodResolver} from '@hookform/resolvers/zod'
+import * as React from "react";
+import { api } from "@/trpc/react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
   Form,
@@ -15,7 +15,7 @@ import {
   FormMessage,
   Input,
   Textarea,
-} from '@coursebuilder/ui'
+} from "@coursebuilder/ui";
 
 const EditTutorialFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -26,51 +26,51 @@ const EditTutorialFormSchema = z.object({
       title: z.string().min(2).max(90),
     }),
   ),
-})
+});
 
 export function EditTutorialForm({
   moduleSlug,
   initialTutorialData,
 }: {
-  moduleSlug: string
+  moduleSlug: string;
   initialTutorialData: {
-    title: string
-    description: string
-    lessons: {_id: string; title: string}[]
-  }
+    title: string;
+    description: string;
+    lessons: { _id: string; title: string }[];
+  };
 }) {
   const form = useForm<z.infer<typeof EditTutorialFormSchema>>({
     resolver: zodResolver(EditTutorialFormSchema),
     defaultValues: initialTutorialData,
-  })
+  });
 
-  const {isSubmitting, isDirty, isValid} = form.formState
+  const { isSubmitting, isDirty, isValid } = form.formState;
 
-  const {data: tutorial, status: tutorialStatus} =
+  const { data: tutorial, status: tutorialStatus } =
     api.module.getTutorial.useQuery({
       slug: moduleSlug,
-    })
+    });
 
-  const {fields, replace, move} = useFieldArray({
+  const { fields, replace, move } = useFieldArray({
     control: form.control,
-    name: 'lessons',
-  })
+    name: "lessons",
+  });
 
   const handleMove = (from: number, to: number) => {
-    move(from, to)
-  }
+    move(from, to);
+  };
 
-  const {mutate: updateTutorial} = api.module.updateTutorial.useMutation()
+  const { mutate: updateTutorial } = api.module.updateTutorial.useMutation();
 
   const onSubmit = async (values: z.infer<typeof EditTutorialFormSchema>) => {
-    if (!tutorial) return
+    if (!tutorial) return;
     updateTutorial({
       tutorialId: tutorial?._id,
       updateData: values,
-    })
-  }
+    });
+  };
 
-  return tutorialStatus === 'success' ? (
+  return tutorialStatus === "success" ? (
     <div className="flex">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -85,7 +85,7 @@ export function EditTutorialForm({
           <div>Edit Tutorial Form</div>
           <FormField
             control={form.control}
-            render={({field}) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-lg font-bold">Title</FormLabel>
                 <FormDescription className="mt-2 text-sm">
@@ -100,7 +100,7 @@ export function EditTutorialForm({
           />
           <FormField
             control={form.control}
-            render={({field}) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-lg font-bold">Description</FormLabel>
                 <Textarea {...field} />
@@ -111,10 +111,10 @@ export function EditTutorialForm({
           />
 
           <Button type="submit" disabled={!isDirty && !isValid}>
-            {isSubmitting ? 'Saving' : 'Save Tutorial'}
+            {isSubmitting ? "Saving" : "Save Tutorial"}
           </Button>
         </form>
       </Form>
     </div>
-  ) : null
+  ) : null;
 }

@@ -3,16 +3,16 @@
  *
  * @see https://v0.dev/t/kjDAPmzUC6C
  */
-import Link from 'next/link'
+import Link from "next/link";
 import {
   CardTitle,
   CardHeader,
   CardContent,
   Card,
   CardFooter,
-} from '@coursebuilder/ui'
-import {Button} from '@coursebuilder/ui'
-import Image from 'next/image'
+} from "@coursebuilder/ui";
+import { Button } from "@coursebuilder/ui";
+import Image from "next/image";
 
 export default function Component() {
   return (
@@ -145,8 +145,8 @@ export default function Component() {
                         height="50"
                         src="/placeholder.svg"
                         style={{
-                          aspectRatio: '100/50',
-                          objectFit: 'cover',
+                          aspectRatio: "100/50",
+                          objectFit: "cover",
                         }}
                         width="100"
                       />
@@ -166,8 +166,8 @@ export default function Component() {
                         height="50"
                         src="/placeholder.svg"
                         style={{
-                          aspectRatio: '100/50',
-                          objectFit: 'cover',
+                          aspectRatio: "100/50",
+                          objectFit: "cover",
                         }}
                         width="100"
                       />
@@ -471,5 +471,5 @@ export default function Component() {
         </div>
       </main>
     </div>
-  )
+  );
 }

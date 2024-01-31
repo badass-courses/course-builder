@@ -1,16 +1,16 @@
-import {CardTitle, CardHeader, CardContent, Card} from '@coursebuilder/ui'
-import {getServerAuthSession} from '@/server/auth'
-import {getAbility} from '@/lib/ability'
-import {CreateTip} from '@/app/tips/_components/create-tip'
-import {getTipsModule} from '@/lib/tips'
-import * as React from 'react'
-import Link from 'next/link'
-import ReactMarkdown from 'react-markdown'
+import { CardTitle, CardHeader, CardContent, Card } from "@coursebuilder/ui";
+import { getServerAuthSession } from "@/server/auth";
+import { getAbility } from "@/lib/ability";
+import { CreateTip } from "@/app/tips/_components/create-tip";
+import { getTipsModule } from "@/lib/tips";
+import * as React from "react";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 export default async function TipsListPage() {
-  const session = await getServerAuthSession()
-  const ability = getAbility({user: session?.user})
-  const tipsModule = await getTipsModule()
+  const session = await getServerAuthSession();
+  const ability = getAbility({ user: session?.user });
+  const tipsModule = await getTipsModule();
 
   return (
     <div className="flex h-full flex-grow flex-col-reverse gap-3 bg-muted p-5 md:flex-row">
@@ -31,12 +31,12 @@ export default async function TipsListPage() {
           </Card>
         ))}
       </div>
-      {ability.can('create', 'Content') ? (
+      {ability.can("create", "Content") ? (
         <div className="order-1 h-full flex-grow md:order-2">
           <h1 className="pb-2 text-lg font-bold">Create Tip</h1>
           <CreateTip />
         </div>
       ) : null}
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import {TipPlayer} from '@/app/tips/_components/tip-player'
+import * as React from "react";
+import { TipPlayer } from "@/app/tips/_components/tip-player";
 import {
   Button,
   Form,
@@ -14,54 +14,54 @@ import {
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from '@coursebuilder/ui'
-import {useForm} from 'react-hook-form'
-import {z} from 'zod'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {Input} from '@coursebuilder/ui'
-import {api} from '@/trpc/react'
-import {useRouter} from 'next/navigation'
-import {type Tip} from '@/lib/tips'
-import {TipAssistant} from './tip-assistant'
-import Link from 'next/link'
-import {ImagePlusIcon, ZapIcon} from 'lucide-react'
-import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
-import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
-import {cn} from '@/lib/utils'
-import {FeedbackMarker} from '@/lib/feedback-marker'
-import {useSocket} from '@/hooks/use-socket'
-import {CodemirrorEditor} from '@/app/_components/codemirror'
-import ReactMarkdown from 'react-markdown'
+} from "@coursebuilder/ui";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@coursebuilder/ui";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
+import { type Tip } from "@/lib/tips";
+import { TipAssistant } from "./tip-assistant";
+import Link from "next/link";
+import { ImagePlusIcon, ZapIcon } from "lucide-react";
+import { CloudinaryUploadWidget } from "./cloudinary-upload-widget";
+import { CloudinaryMediaBrowser } from "./cloudinary-media-browser";
+import { cn } from "@/lib/utils";
+import { FeedbackMarker } from "@/lib/feedback-marker";
+import { useSocket } from "@/hooks/use-socket";
+import { CodemirrorEditor } from "@/app/_components/codemirror";
+import ReactMarkdown from "react-markdown";
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
   body: z.string().optional().nullable(),
-})
+});
 
-export function EditTipForm({tip}: {tip: Tip}) {
+export function EditTipForm({ tip }: { tip: Tip }) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<
     FeedbackMarker[]
-  >([])
-  const router = useRouter()
+  >([]);
+  const router = useRouter();
 
-  const {mutateAsync: generateFeedback} =
-    api.writing.generateFeedback.useMutation()
+  const { mutateAsync: generateFeedback } =
+    api.writing.generateFeedback.useMutation();
 
   useSocket({
     room: tip._id,
     onMessage: async (messageEvent) => {
       try {
-        const data = JSON.parse(messageEvent.data)
-        const invalidateOn = ['ai.feedback.markers.generated']
+        const data = JSON.parse(messageEvent.data);
+        const invalidateOn = ["ai.feedback.markers.generated"];
 
         if (invalidateOn.includes(data.name)) {
-          setFeedbackMarkers(data.body)
+          setFeedbackMarkers(data.body);
         }
       } catch (error) {
         // noting to do
       }
     },
-  })
+  });
 
   const form = useForm<z.infer<typeof NewTipFormSchema>>({
     resolver: zodResolver(NewTipFormSchema),
@@ -69,25 +69,25 @@ export function EditTipForm({tip}: {tip: Tip}) {
       title: tip.title,
       body: tip.body,
     },
-  })
-  const {mutateAsync: updateTip, status: updateTipStatus} =
-    api.tips.update.useMutation()
+  });
+  const { mutateAsync: updateTip, status: updateTipStatus } =
+    api.tips.update.useMutation();
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
-    const updatedTip = await updateTip({tipId: tip._id, ...values})
+    const updatedTip = await updateTip({ tipId: tip._id, ...values });
 
     if (!updatedTip) {
       // handle edge case, e.g. toast an error message
     } else {
-      const {slug} = updatedTip
+      const { slug } = updatedTip;
 
-      router.push(`/tips/${slug}`)
+      router.push(`/tips/${slug}`);
     }
-  }
+  };
 
   const [activeToolbarTab, setActiveToolbarTab] = React.useState(
     TOOLBAR.values().next().value,
-  )
+  );
 
   return (
     <Form {...form}>
@@ -106,7 +106,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
             variant="default"
             size="sm"
             className="h-7"
-            disabled={updateTipStatus === 'loading'}
+            disabled={updateTipStatus === "loading"}
           >
             Save
           </Button>
@@ -122,7 +122,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
               <FormField
                 control={form.control}
                 name="title"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem className="p-5">
                     <FormLabel className="text-lg font-bold">Title</FormLabel>
                     <FormDescription>
@@ -150,7 +150,7 @@ export function EditTipForm({tip}: {tip: Tip}) {
               <FormField
                 control={form.control}
                 name="body"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem className="pt-5">
                     <FormLabel className="px-5 text-lg font-bold">
                       Content
@@ -163,13 +163,13 @@ export function EditTipForm({tip}: {tip: Tip}) {
                       value={tip.body}
                       markers={feedbackMarkers}
                       onChange={(data) => {
-                        form.setValue('body', data)
+                        form.setValue("body", data);
 
                         generateFeedback({
                           resourceId: tip._id,
                           body: data,
                           currentFeedback: feedbackMarkers,
-                        })
+                        });
                       }}
                     />
                     <FormMessage />
@@ -183,16 +183,16 @@ export function EditTipForm({tip}: {tip: Tip}) {
                       <li
                         key={marker.originalText}
                       >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
-                    )
+                    );
                   })}
                 </ul>
               </div>
             </div>
             <div className="col-span-3">
-              {activeToolbarTab.id === 'assistant' && (
+              {activeToolbarTab.id === "assistant" && (
                 <TipAssistant tip={tip} />
               )}
-              {activeToolbarTab.id === 'media' && (
+              {activeToolbarTab.id === "media" && (
                 <>
                   <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
                   <CloudinaryMediaBrowser />
@@ -212,9 +212,9 @@ export function EditTipForm({tip}: {tip: Tip}) {
                         className={cn(
                           `flex aspect-square items-center justify-center rounded-lg border p-0 transition hover:bg-background/50`,
                           {
-                            'border-border bg-background':
+                            "border-border bg-background":
                               activeToolbarTab.id === item.id,
-                            'border-transparent bg-transparent':
+                            "border-transparent bg-transparent":
                               activeToolbarTab.id !== item.id,
                           },
                         )}
@@ -234,18 +234,18 @@ export function EditTipForm({tip}: {tip: Tip}) {
         </div>
       </form>
     </Form>
-  )
+  );
 }
 
 const TOOLBAR = new Set([
   {
-    id: 'assistant',
+    id: "assistant",
     icon: () => <ZapIcon strokeWidth={1.5} size={24} width={18} height={18} />,
   },
   {
-    id: 'media',
+    id: "media",
     icon: () => (
       <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
     ),
   },
-])
+]);

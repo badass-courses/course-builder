@@ -1,36 +1,36 @@
-import {srtProcessor, type Word} from '@/lib/srt-processor'
+import { srtProcessor, type Word } from "@/lib/srt-processor";
 
 export function srtFromTranscriptResult(results: {
-  channels: {alternatives: {words: Word[]}[]}[]
+  channels: { alternatives: { words: Word[] }[] }[];
 }) {
-  return srtProcessor(results.channels[0]?.alternatives[0]?.words)
+  return srtProcessor(results.channels[0]?.alternatives[0]?.words);
 }
 
 function convertTime(inputSeconds?: number) {
   if (!inputSeconds) {
-    return '--:--:--'
+    return "--:--:--";
   }
-  const date = new Date(inputSeconds * 1000)
-  const hours = String(date.getUTCHours()).padStart(2, '0')
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0')
-  const seconds = String(date.getUTCSeconds()).padStart(2, '0')
+  const date = new Date(inputSeconds * 1000);
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(date.getUTCSeconds()).padStart(2, "0");
 
-  return `${hours}:${minutes}:${seconds}`
+  return `${hours}:${minutes}:${seconds}`;
 }
 
 function formatTimeString(str: string) {
-  const [h, m, s] = str.split(':')
-  if (h == '00') {
-    return `${m}:${s}`
+  const [h, m, s] = str.split(":");
+  if (h == "00") {
+    return `${m}:${s}`;
   }
 
-  return `${h}:${m}:${s}`
+  return `${h}:${m}:${s}`;
 }
 
 export function transcriptAsParagraphsWithTimestamps(results: any): string {
-  let paragraphs
+  let paragraphs;
   if (results.channels[0].alternatives[0].paragraphs) {
-    paragraphs = results.channels[0].alternatives[0].paragraphs.paragraphs
+    paragraphs = results.channels[0].alternatives[0].paragraphs.paragraphs;
   } else {
     paragraphs = [
       {
@@ -45,23 +45,23 @@ export function transcriptAsParagraphsWithTimestamps(results: any): string {
           },
         ],
       },
-    ]
+    ];
   }
 
   return paragraphs.reduce(
     (
       acc: string,
-      paragraph: {sentences: {text: string; start: number; end: number}[]},
+      paragraph: { sentences: { text: string; start: number; end: number }[] },
     ): string => {
       const startTime = formatTimeString(
         convertTime(paragraph?.sentences?.[0]?.start),
-      )
-      const text = paragraph.sentences.map((x) => x.text).join(' ')
+      );
+      const text = paragraph.sentences.map((x) => x.text).join(" ");
 
       return `${acc}[${startTime}] ${text}
 		
-`
+`;
     },
     ``,
-  )
+  );
 }

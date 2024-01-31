@@ -162,17 +162,5 @@
   "ct3aMetadata": {
     "initVersion": "7.22.0"
   },
-  "prettier": {
-    "bracketSpacing": false,
-    "plugins": [
-      "prettier-plugin-tailwindcss"
-    ],
-    "printWidth": 80,
-    "semi": false,
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "all",
-    "useTabs": false
-  },
   "packageManager": "pnpm@8.0.0"
 }

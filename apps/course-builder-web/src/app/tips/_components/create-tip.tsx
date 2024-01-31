@@ -1,5 +1,5 @@
-import {Card, CardContent, CardFooter, CardHeader} from '@coursebuilder/ui'
-import {NewTipForm} from './new-tip-form'
+import { Card, CardContent, CardFooter, CardHeader } from "@coursebuilder/ui";
+import { NewTipForm } from "./new-tip-form";
 
 export function CreateTip() {
   return (
@@ -10,5 +10,5 @@ export function CreateTip() {
       </CardContent>
       <CardFooter></CardFooter>
     </Card>
-  )
+  );
 }
