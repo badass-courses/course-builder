@@ -1,8 +1,6 @@
 import '@/styles/globals.css'
 
 import {Inter} from 'next/font/google'
-import {headers} from 'next/headers'
-
 import {TRPCReactProvider} from '@/trpc/react'
 
 import {NextSSRPlugin} from '@uploadthing/react/next-ssr-plugin'
@@ -32,7 +30,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <html lang="en">
         <AxiomWebVitals />
         <body className={`font-sans ${inter.variable}`}>
-          <TRPCReactProvider headers={headers()}>
+          <TRPCReactProvider>
             <Party />
             <div key="1" className="flex min-h-screen w-full flex-col">
               <Navigation />

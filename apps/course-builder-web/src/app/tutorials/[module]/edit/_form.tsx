@@ -1,6 +1,5 @@
 'use client'
 
-import SortableLessonList, {ItemData} from '@/components/lesson-list/list'
 import * as React from 'react'
 import {api} from '@/trpc/react'
 import {useFieldArray, useForm} from 'react-hook-form'
@@ -71,31 +70,6 @@ export function EditTutorialForm({
     })
   }
 
-  const handleOnChange = React.useCallback(
-    (items: ItemData[]) => {
-      const sortedLessons: any[] = []
-
-      if (tutorial?.lessons) {
-        items.forEach((lesson, index) => {
-          const lessonIndex = tutorial.lessons.findIndex(
-            (l) => l._id === lesson.id,
-          )
-          if (lessonIndex > -1) {
-            sortedLessons.push(tutorial.lessons[lessonIndex])
-          }
-        })
-        replace(sortedLessons)
-        updateTutorial({
-          tutorialId: tutorial?._id,
-          updateData: {
-            lessons: sortedLessons,
-          },
-        })
-      }
-    },
-    [tutorial, replace, updateTutorial],
-  )
-
   return tutorialStatus === 'success' ? (
     <div className="flex">
       <Form {...form}>
@@ -141,24 +115,6 @@ export function EditTutorialForm({
           </Button>
         </form>
       </Form>
-      <div className="flex flex-col">
-        <div
-          key={initialTutorialData.lessons.length}
-          className="container h-full py-6"
-        >
-          {initialTutorialData?.lessons && (
-            <SortableLessonList
-              items={initialTutorialData?.lessons.map((lesson) => {
-                return {
-                  id: lesson._id,
-                  label: lesson.title,
-                }
-              })}
-              onChange={handleOnChange}
-            />
-          )}
-        </div>
-      </div>
     </div>
   ) : null
 }
