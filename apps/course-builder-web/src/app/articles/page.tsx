@@ -16,7 +16,7 @@ export default async function ArticlesIndexPage() {
       slug: string
     }[]
   >(
-    `*[_type == "article"] | order(_updatedAt desc) {
+    `*[_type == "article"] | order(_createdAt desc) {
     _id,
     title,
     "slug": slug.current,
