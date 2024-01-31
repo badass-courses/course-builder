@@ -33,7 +33,7 @@ export default {
       title: 'Visibility',
       type: 'string',
       validation: (Rule) => Rule.required(),
-      initialValue: 'public',
+      initialValue: 'unlisted',
       options: {
         list: [
           {title: 'public', value: 'public'},
