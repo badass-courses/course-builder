@@ -1,29 +1,29 @@
-import {z} from 'zod'
-import {sanityQuery} from '@/server/sanity.server'
+import {z} from "zod"
+import {sanityQuery} from "@/server/sanity.server"
 
 export const ArticleStateSchema = z.union([
-  z.literal('draft'),
-  z.literal('published'),
-  z.literal('archived'),
-  z.literal('deleted'),
+  z.literal("draft"),
+  z.literal("published"),
+  z.literal("archived"),
+  z.literal("deleted"),
 ])
 
 export const ArticleVisibilitySchema = z.union([
-  z.literal('public'),
-  z.literal('private'),
-  z.literal('unlisted'),
+  z.literal("public"),
+  z.literal("private"),
+  z.literal("unlisted"),
 ])
 
 export const ArticleSchema = z.object({
   _id: z.string(),
-  _type: z.literal('article'),
+  _type: z.literal("article"),
   _updatedAt: z.string(),
-  title: z.string(),
+  title: z.string().min(2).max(90),
+  body: z.string().optional().nullable(),
   description: z.string(),
-  body: z.string(),
   slug: z.string(),
-  state: ArticleStateSchema.default('draft'),
-  visibility: ArticleVisibilitySchema.default('public'),
+  state: ArticleStateSchema.default("draft"),
+  visibility: ArticleVisibilitySchema.default("unlisted"),
 })
 
 export type Article = z.infer<typeof ArticleSchema>
@@ -41,6 +41,6 @@ export async function getArticle(slugOrId: string) {
           "slug": slug.current,
           state,
   }`,
-    {tags: ['articles', slugOrId]},
+    {tags: ["articles", slugOrId]}
   )
 }

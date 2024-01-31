@@ -1,30 +1,29 @@
-import {z} from 'zod'
-import {getServerAuthSession} from '@/server/auth'
-import {getAbility} from '@/lib/ability'
+import {z} from "zod"
+import {getServerAuthSession} from "@/server/auth"
+import {getAbility} from "@/lib/ability"
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-} from '@/trpc/api/trpc'
-import {sanityMutation} from '@/server/sanity.server'
-import {v4} from 'uuid'
-import slugify from '@sindresorhus/slugify'
-import {customAlphabet} from 'nanoid'
-import {getArticle} from '@/lib/articles'
-import {toChicagoTitleCase} from '@/utils/chicagor-title'
-import {inngest} from '@/inngest/inngest.server'
-import {ARTICLE_CHAT_EVENT} from '@/inngest/events'
-import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
-import {revalidateTag} from 'next/cache'
-import {ArticleFormSchema} from '@/app/articles/_components/edit-article-form'
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
+} from "@/trpc/api/trpc"
+import {sanityMutation} from "@/server/sanity.server"
+import {v4} from "uuid"
+import slugify from "@sindresorhus/slugify"
+import {customAlphabet} from "nanoid"
+import {getArticle, ArticleSchema} from "@/lib/articles"
+import {toChicagoTitleCase} from "@/utils/chicagor-title"
+import {inngest} from "@/inngest/inngest.server"
+import {ARTICLE_CHAT_EVENT} from "@/inngest/events"
+import {FeedbackMarkerSchema} from "@/lib/feedback-marker"
+import {revalidateTag} from "next/cache"
+const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 5)
 
 export const articlesRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
         articleId: z.string(),
-      }),
+      })
     )
     .query(async ({ctx, input}) => {
       return await getArticle(input.articleId)
@@ -35,13 +34,13 @@ export const articlesRouter = createTRPCRouter({
         articleId: z.string(),
         messages: z.array(z.any()),
         currentFeedback: z.array(FeedbackMarkerSchema).optional(),
-      }),
+      })
     )
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
+      if (!ability.can("create", "Content")) {
+        throw new Error("Unauthorized")
       }
 
       await inngest.send({
@@ -59,13 +58,13 @@ export const articlesRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
-      }),
+      })
     )
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
+      if (!ability.can("create", "Content")) {
+        throw new Error("Unauthorized")
       }
 
       const newArticleId = v4()
@@ -74,8 +73,8 @@ export const articlesRouter = createTRPCRouter({
         {
           createOrReplace: {
             _id: newArticleId,
-            _type: 'article',
-            state: 'draft',
+            _type: "article",
+            state: "draft",
             title: toChicagoTitleCase(input.title),
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),
@@ -87,12 +86,12 @@ export const articlesRouter = createTRPCRouter({
       return getArticle(newArticleId)
     }),
   update: protectedProcedure
-    .input(ArticleFormSchema)
+    .input(ArticleSchema)
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
-      if (!ability.can('update', 'Content')) {
-        throw new Error('Unauthorized')
+      if (!ability.can("update", "Content")) {
+        throw new Error("Unauthorized")
       }
 
       const currentArticle = await getArticle(input._id)
@@ -103,7 +102,7 @@ export const articlesRouter = createTRPCRouter({
             patch: {
               id: input._id,
               set: {
-                'slug.current': `${slugify(input.title)}~${nanoid()}`,
+                "slug.current": `${slugify(input.title)}~${nanoid()}`,
                 title: toChicagoTitleCase(input.title),
               },
             },
@@ -119,17 +118,17 @@ export const articlesRouter = createTRPCRouter({
               set: {
                 ...input,
                 slug: {
-                  _type: 'slug',
+                  _type: "slug",
                   current: input.slug,
                 },
               },
             },
           },
         ],
-        {returnDocuments: true},
+        {returnDocuments: true}
       )
 
-      revalidateTag('articles')
+      revalidateTag("articles")
 
       return getArticle(input._id)
     }),

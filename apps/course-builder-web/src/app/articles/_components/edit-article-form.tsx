@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import * as React from 'react'
+import * as React from "react"
 import {
   Button,
   Form,
@@ -20,30 +20,23 @@ import {
   SelectContent,
   SelectItem,
   Textarea,
-} from '@coursebuilder/ui'
-import {useForm} from 'react-hook-form'
-import {z} from 'zod'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {Input} from '@coursebuilder/ui'
-import {api} from '@/trpc/react'
-import {useRouter} from 'next/navigation'
-import {ArticleAssistant} from './article-assistant'
-import Link from 'next/link'
-import {ImagePlusIcon, ZapIcon} from 'lucide-react'
-import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
-import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
-import {cn} from '@/lib/utils'
-import {Article, ArticleSchema, ArticleVisibilitySchema} from '@/lib/articles'
-import {useSocket} from '@/hooks/use-socket'
-import {FeedbackMarker} from '@/lib/feedback-marker'
-import {CodemirrorEditor} from '@/app/_components/codemirror'
-
-export const ArticleFormSchema = z
-  .object({
-    title: z.string().min(2).max(90),
-    body: z.string().optional().nullable(),
-  })
-  .merge(ArticleSchema)
+} from "@coursebuilder/ui"
+import {useForm} from "react-hook-form"
+import {z} from "zod"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {Input} from "@coursebuilder/ui"
+import {api} from "@/trpc/react"
+import {useRouter} from "next/navigation"
+import {ArticleAssistant} from "./article-assistant"
+import Link from "next/link"
+import {ImagePlusIcon, ZapIcon} from "lucide-react"
+import {CloudinaryUploadWidget} from "./cloudinary-upload-widget"
+import {CloudinaryMediaBrowser} from "./cloudinary-media-browser"
+import {cn} from "@/lib/utils"
+import {Article, ArticleSchema, ArticleVisibilitySchema} from "@/lib/articles"
+import {useSocket} from "@/hooks/use-socket"
+import {FeedbackMarker} from "@/lib/feedback-marker"
+import {CodemirrorEditor} from "@/app/_components/codemirror"
 
 export function EditArticleForm({article}: {article: Article}) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<
@@ -51,11 +44,11 @@ export function EditArticleForm({article}: {article: Article}) {
   >([])
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof ArticleFormSchema>>({
-    resolver: zodResolver(ArticleFormSchema),
+  const form = useForm<z.infer<typeof ArticleSchema>>({
+    resolver: zodResolver(ArticleSchema),
     defaultValues: {
       ...article,
-      description: article.description ?? '',
+      description: article.description ?? "",
     },
   })
 
@@ -70,7 +63,7 @@ export function EditArticleForm({article}: {article: Article}) {
     onMessage: async (messageEvent) => {
       try {
         const data = JSON.parse(messageEvent.data)
-        const invalidateOn = ['ai.feedback.markers.generated']
+        const invalidateOn = ["ai.feedback.markers.generated"]
 
         if (invalidateOn.includes(data.name)) {
           setFeedbackMarkers(data.body)
@@ -81,22 +74,20 @@ export function EditArticleForm({article}: {article: Article}) {
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof ArticleFormSchema>) => {
-    const updatedArticle = await updateArticle({
-      ...values,
-    })
+  const onSubmit = async (values: z.infer<typeof ArticleSchema>) => {
+    const updatedArticle = await updateArticle(values)
     if (updatedArticle) {
       router.push(`/${updatedArticle.slug}`)
     }
   }
 
   const [activeToolbarTab, setActiveToolbarTab] = React.useState(
-    TOOLBAR.values().next().value,
+    TOOLBAR.values().next().value
   )
 
   const formValues = form.getValues()
 
-  const watcher = form.watch(['title', 'body'])
+  const watcher = form.watch(["title", "body"])
 
   return (
     <Form {...form}>
@@ -114,7 +105,7 @@ export function EditArticleForm({article}: {article: Article}) {
               </Link>
             </Button>
             <span className="font-medium">
-              Article{' '}
+              Article{" "}
               <span className="font-mono text-xs font-normal">
                 ({article._id})
               </span>
@@ -125,7 +116,7 @@ export function EditArticleForm({article}: {article: Article}) {
             variant="default"
             size="sm"
             className="h-7"
-            disabled={updateArticleStatus === 'loading'}
+            disabled={updateArticleStatus === "loading"}
           >
             Save
           </Button>
@@ -228,7 +219,7 @@ export function EditArticleForm({article}: {article: Article}) {
                       roomName={`${article._id}`}
                       value={article.body}
                       onChange={async (data) => {
-                        form.setValue('body', data)
+                        form.setValue("body", data)
                         generateFeedback({
                           resourceId: article._id,
                           body: data,
@@ -254,13 +245,13 @@ export function EditArticleForm({article}: {article: Article}) {
               </div>
             </div>
             <div className="col-span-3">
-              {watcher && activeToolbarTab.id === 'assistant' && (
+              {watcher && activeToolbarTab.id === "assistant" && (
                 <ArticleAssistant
                   article={{...article, ...formValues}}
                   currentFeedback={feedbackMarkers}
                 />
               )}
-              {activeToolbarTab.id === 'media' && (
+              {activeToolbarTab.id === "media" && (
                 <>
                   <CloudinaryUploadWidget
                     dir={article._type}
@@ -283,11 +274,11 @@ export function EditArticleForm({article}: {article: Article}) {
                         className={cn(
                           `flex aspect-square items-center justify-center rounded-lg border p-0 transition hover:bg-background/50`,
                           {
-                            'border-border bg-background':
+                            "border-border bg-background":
                               activeToolbarTab.id === item.id,
-                            'border-transparent bg-transparent':
+                            "border-transparent bg-transparent":
                               activeToolbarTab.id !== item.id,
-                          },
+                          }
                         )}
                         onClick={() => setActiveToolbarTab(item)}
                       >
@@ -310,11 +301,11 @@ export function EditArticleForm({article}: {article: Article}) {
 
 const TOOLBAR = new Set([
   {
-    id: 'assistant',
+    id: "assistant",
     icon: () => <ZapIcon strokeWidth={1.5} size={24} width={18} height={18} />,
   },
   {
-    id: 'media',
+    id: "media",
     icon: () => (
       <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
     ),
