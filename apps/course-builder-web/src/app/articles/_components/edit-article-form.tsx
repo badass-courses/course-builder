@@ -33,7 +33,7 @@ import {ImagePlusIcon, ZapIcon} from 'lucide-react'
 import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
 import {cn} from '@/lib/utils'
-import {Article, ArticleSchema, ArticleStateSchema} from '@/lib/articles'
+import {Article, ArticleSchema, ArticleVisibilitySchema} from '@/lib/articles'
 import {useSocket} from '@/hooks/use-socket'
 import {FeedbackMarker} from '@/lib/feedback-marker'
 import {CodemirrorEditor} from '@/app/_components/codemirror'
@@ -161,10 +161,10 @@ export function EditArticleForm({article}: {article: Article}) {
               />
               <FormField
                 control={form.control}
-                name="state"
+                name="visibility"
                 render={({field}) => (
                   <FormItem className="px-5">
-                    <FormLabel>State</FormLabel>
+                    <FormLabel>Visibility</FormLabel>
                     <Select {...field} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
@@ -172,7 +172,7 @@ export function EditArticleForm({article}: {article: Article}) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="">
-                        {ArticleStateSchema.options.map((option) => {
+                        {ArticleVisibilitySchema.options.map((option) => {
                           const value = option._def.value
                           return (
                             <SelectItem key={value} value={value}>
@@ -182,6 +182,17 @@ export function EditArticleForm({article}: {article: Article}) {
                         })}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="state"
+                render={({field}) => (
+                  <FormItem className="px-5">
+                    <FormLabel>State</FormLabel>
+                    <Input {...field} readOnly disabled />
                     <FormMessage />
                   </FormItem>
                 )}

@@ -18,12 +18,28 @@ export default {
       title: 'Current State',
       type: 'string',
       validation: (Rule) => Rule.required(),
-      initialValue: 'draft',
+      initialValue: 'new',
       options: {
         list: [
+          {title: 'new', value: 'new'},
           {title: 'draft', value: 'draft'},
           {title: 'published', value: 'published'},
           {title: 'archived', value: 'archived'},
+          {title: 'deleted', value: 'deleted'},
+        ],
+      },
+    }),
+    defineField({
+      name: 'visibility',
+      title: 'Visibility',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      initialValue: 'public',
+      options: {
+        list: [
+          {title: 'public', value: 'public'},
+          {title: 'private', value: 'private'},
+          {title: 'unlisted', value: 'unlisted'},
         ],
       },
     }),
