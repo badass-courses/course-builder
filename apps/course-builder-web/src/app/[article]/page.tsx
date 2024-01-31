@@ -68,7 +68,7 @@ export default async function ArticlePage({
           <ReactMarkdown className="prose dark:prose-invert">
             {article.body}
           </ReactMarkdown>
-          <ReactMarkdown>{article.summary}</ReactMarkdown>
+          <ReactMarkdown>{article.description}</ReactMarkdown>
         </div>
       </article>
     </div>
