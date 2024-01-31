@@ -16,6 +16,7 @@ import {inngest} from '@/inngest/inngest.server'
 import {ARTICLE_CHAT_EVENT} from '@/inngest/events'
 import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
 import {revalidateTag} from 'next/cache'
+import {ArticleFormSchema} from '@/app/articles/_components/edit-article-form'
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 export const articlesRouter = createTRPCRouter({
@@ -86,13 +87,7 @@ export const articlesRouter = createTRPCRouter({
       return getArticle(newArticleId)
     }),
   update: protectedProcedure
-    .input(
-      z.object({
-        articleId: z.string(),
-        title: z.string(),
-        body: z.string().optional().nullable(),
-      }),
-    )
+    .input(ArticleFormSchema)
     .mutation(async ({ctx, input}) => {
       const session = await getServerAuthSession()
       const ability = getAbility({user: session?.user})
@@ -100,13 +95,13 @@ export const articlesRouter = createTRPCRouter({
         throw new Error('Unauthorized')
       }
 
-      const currentArticle = await getArticle(input.articleId)
+      const currentArticle = await getArticle(input._id)
 
       if (input.title !== currentArticle?.title) {
         await sanityMutation([
           {
             patch: {
-              id: input.articleId,
+              id: input._id,
               set: {
                 'slug.current': `${slugify(input.title)}~${nanoid()}`,
                 title: toChicagoTitleCase(input.title),
@@ -120,9 +115,13 @@ export const articlesRouter = createTRPCRouter({
         [
           {
             patch: {
-              id: input.articleId,
+              id: input._id,
               set: {
-                body: input.body,
+                ...input,
+                slug: {
+                  _type: 'slug',
+                  current: input.slug,
+                },
               },
             },
           },
@@ -132,6 +131,6 @@ export const articlesRouter = createTRPCRouter({
 
       revalidateTag('articles')
 
-      return getArticle(input.articleId)
+      return getArticle(input._id)
     }),
 })

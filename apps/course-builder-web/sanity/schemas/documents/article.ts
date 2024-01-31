@@ -23,6 +23,7 @@ export default {
         list: [
           {title: 'draft', value: 'draft'},
           {title: 'published', value: 'published'},
+          {title: 'archived', value: 'archived'},
         ],
       },
     }),
@@ -39,11 +40,6 @@ export default {
     {
       name: 'body',
       title: 'Body',
-      type: 'markdown',
-    },
-    {
-      name: 'summary',
-      title: 'Summary',
       type: 'markdown',
     },
     {

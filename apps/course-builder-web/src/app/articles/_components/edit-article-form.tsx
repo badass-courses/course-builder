@@ -13,6 +13,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
+  Select,
+  FormControl,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Textarea,
 } from '@coursebuilder/ui'
 import {useForm} from 'react-hook-form'
 import {z} from 'zod'
@@ -26,16 +33,17 @@ import {ImagePlusIcon, ZapIcon} from 'lucide-react'
 import {CloudinaryUploadWidget} from './cloudinary-upload-widget'
 import {CloudinaryMediaBrowser} from './cloudinary-media-browser'
 import {cn} from '@/lib/utils'
-import {Article} from '@/lib/articles'
+import {Article, ArticleSchema, ArticleStateSchema} from '@/lib/articles'
 import {useSocket} from '@/hooks/use-socket'
 import {FeedbackMarker} from '@/lib/feedback-marker'
 import {CodemirrorEditor} from '@/app/_components/codemirror'
-import {revalidateTag} from 'next/cache'
 
-const ArticleFormSchema = z.object({
-  title: z.string().min(2).max(90),
-  body: z.string().optional().nullable(),
-})
+export const ArticleFormSchema = z
+  .object({
+    title: z.string().min(2).max(90),
+    body: z.string().optional().nullable(),
+  })
+  .merge(ArticleSchema)
 
 export function EditArticleForm({article}: {article: Article}) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<
@@ -46,8 +54,8 @@ export function EditArticleForm({article}: {article: Article}) {
   const form = useForm<z.infer<typeof ArticleFormSchema>>({
     resolver: zodResolver(ArticleFormSchema),
     defaultValues: {
-      title: article.title,
-      body: article.body,
+      ...article,
+      description: article.description ?? '',
     },
   })
 
@@ -75,7 +83,6 @@ export function EditArticleForm({article}: {article: Article}) {
 
   const onSubmit = async (values: z.infer<typeof ArticleFormSchema>) => {
     const updatedArticle = await updateArticle({
-      articleId: article._id,
       ...values,
     })
     if (updatedArticle) {
@@ -95,14 +102,24 @@ export function EditArticleForm({article}: {article: Article}) {
     <Form {...form}>
       <form
         className="flex h-full flex-grow flex-col"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, (error) => {
+          console.log({error})
+        })}
       >
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
-          <Button className="px-0" asChild variant="link">
-            <Link href={`/${article.slug}`} className="aspect-square">
-              ←
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button className="px-0" asChild variant="link">
+              <Link href={`/${article.slug}`} className="aspect-square">
+                ←
+              </Link>
+            </Button>
+            <span className="font-medium">
+              Article{' '}
+              <span className="font-mono text-xs font-normal">
+                ({article._id})
+              </span>
+            </span>
+          </div>
           <Button
             type="submit"
             variant="default"
@@ -115,13 +132,13 @@ export function EditArticleForm({article}: {article: Article}) {
         </div>
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
-            <div className="col-span-3 flex h-full flex-col border-r">
+            <div className="col-span-3 flex h-full flex-col gap-5 border-r py-5">
               <FormField
                 control={form.control}
                 name="title"
                 render={({field}) => (
-                  <FormItem className="p-5">
-                    <FormLabel className="text-lg font-bold">Title</FormLabel>
+                  <FormItem className="px-5">
+                    <FormLabel>Title</FormLabel>
                     <FormDescription>
                       A title should summarize the tip and explain what it is
                       about clearly.
@@ -131,9 +148,58 @@ export function EditArticleForm({article}: {article: Article}) {
                   </FormItem>
                 )}
               />
-              <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">
-                {article._id}
-              </div>
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({field}) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Slug</FormLabel>
+                    <Input {...field} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="state"
+                render={({field}) => (
+                  <FormItem className="px-5">
+                    <FormLabel>State</FormLabel>
+                    <Select {...field} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose state" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="">
+                        {ArticleStateSchema.options.map((option) => {
+                          const value = option._def.value
+                          return (
+                            <SelectItem key={value} value={value}>
+                              {value}
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({field}) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Short Description</FormLabel>
+                    <FormDescription>
+                      Used as a short "SEO" summary on Twitter cards etc.
+                    </FormDescription>
+                    <Textarea {...field} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
               <FormField
