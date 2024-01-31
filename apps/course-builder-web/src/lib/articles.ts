@@ -1,18 +1,18 @@
-import {z} from "zod"
-import {sanityQuery} from "@/server/sanity.server"
+import { z } from "zod";
+import { sanityQuery } from "@/server/sanity.server";
 
 export const ArticleStateSchema = z.union([
   z.literal("draft"),
   z.literal("published"),
   z.literal("archived"),
   z.literal("deleted"),
-])
+]);
 
 export const ArticleVisibilitySchema = z.union([
   z.literal("public"),
   z.literal("private"),
   z.literal("unlisted"),
-])
+]);
 
 export const ArticleSchema = z.object({
   _id: z.string(),
@@ -24,9 +24,9 @@ export const ArticleSchema = z.object({
   slug: z.string(),
   state: ArticleStateSchema.default("draft"),
   visibility: ArticleVisibilitySchema.default("unlisted"),
-})
+});
 
-export type Article = z.infer<typeof ArticleSchema>
+export type Article = z.infer<typeof ArticleSchema>;
 
 export async function getArticle(slugOrId: string) {
   return sanityQuery<Article | null>(
@@ -41,6 +41,6 @@ export async function getArticle(slugOrId: string) {
           "slug": slug.current,
           state,
   }`,
-    {tags: ["articles", slugOrId]}
-  )
+    { tags: ["articles", slugOrId] },
+  );
 }

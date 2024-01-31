@@ -1,12 +1,12 @@
-import {type Metadata} from 'next'
-import * as React from 'react'
-import {Landing} from '@/app/_components/landing'
+import { type Metadata } from "next";
+import * as React from "react";
+import { Landing } from "@/app/_components/landing";
 
 export const metadata: Metadata = {
-  title: 'Course Builder',
+  title: "Course Builder",
   description:
     "Course Builder is a framework for building courses. It's not a course platform. It's not a course marketplace. It's all of the pieces that you need to launch your own course platform and marketplace.",
-}
+};
 
 export default async function PlaygroundPage() {
   return (
@@ -15,5 +15,5 @@ export default async function PlaygroundPage() {
         <Landing />
       </article>
     </main>
-  )
+  );
 }

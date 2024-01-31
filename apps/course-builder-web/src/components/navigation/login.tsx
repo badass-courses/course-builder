@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import {cn} from '@/lib/utils'
-import * as React from 'react'
-import {usePathname} from 'next/navigation'
-import {useSession} from 'next-auth/react'
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import * as React from "react";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function Login({className}: {className?: string}) {
-  const pathname = usePathname()
-  const {data: sessionData, status: sessionStatus} = useSession()
-  const isLoadingUserInfo = sessionStatus === 'loading'
+export function Login({ className }: { className?: string }) {
+  const pathname = usePathname();
+  const { data: sessionData, status: sessionStatus } = useSession();
+  const isLoadingUserInfo = sessionStatus === "loading";
 
   return (
     <>
@@ -17,10 +17,10 @@ export function Login({className}: {className?: string}) {
         <Link
           href="/login"
           className={cn(
-            'group flex items-center gap-1 rounded-md px-2.5 py-1 font-semibold transition hover:opacity-100',
+            "group flex items-center gap-1 rounded-md px-2.5 py-1 font-semibold transition hover:opacity-100",
             {
-              'underline opacity-100': pathname === '/login',
-              'opacity-75': pathname !== '/login',
+              "underline opacity-100": pathname === "/login",
+              "opacity-75": pathname !== "/login",
             },
             className,
           )}
@@ -29,5 +29,5 @@ export function Login({className}: {className?: string}) {
         </Link>
       )}
     </>
-  )
+  );
 }

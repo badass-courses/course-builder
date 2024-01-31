@@ -1,45 +1,45 @@
-'use client'
+"use client";
 
-import ReactMarkdown from 'react-markdown'
-import * as React from 'react'
-import {STREAM_COMPLETE} from '@/lib/streaming-chunk-publisher'
-import {useRef} from 'react'
-import {api} from '@/trpc/react'
-import {useSocket} from '@/hooks/use-socket'
-import {Tip} from '@/lib/tips'
-import {Button, ScrollArea, Textarea} from '@coursebuilder/ui'
-import {LoaderIcon, SparkleIcon} from 'lucide-react'
-import {EnterIcon} from '@sanity/icons'
+import ReactMarkdown from "react-markdown";
+import * as React from "react";
+import { STREAM_COMPLETE } from "@/lib/streaming-chunk-publisher";
+import { useRef } from "react";
+import { api } from "@/trpc/react";
+import { useSocket } from "@/hooks/use-socket";
+import { Tip } from "@/lib/tips";
+import { Button, ScrollArea, Textarea } from "@coursebuilder/ui";
+import { LoaderIcon, SparkleIcon } from "lucide-react";
+import { EnterIcon } from "@sanity/icons";
 import {
   type ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
-} from 'openai-edge'
+} from "openai-edge";
 
-export function TipAssistant({tip}: {tip: Tip}) {
-  const {mutate: sendTipChatMessage} = api.tips.chat.useMutation()
+export function TipAssistant({ tip }: { tip: Tip }) {
+  const { mutate: sendTipChatMessage } = api.tips.chat.useMutation();
   const [messages, setMessages] = React.useState<
     ChatCompletionRequestMessage[]
-  >([])
+  >([]);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useSocket({
     room: tip._id,
     onMessage: (messageEvent) => {
       try {
-        const messageData = JSON.parse(messageEvent.data)
+        const messageData = JSON.parse(messageEvent.data);
 
         if (
-          messageData.name === 'resource.chat.completed' &&
+          messageData.name === "resource.chat.completed" &&
           messageData.requestId === tip._id
         ) {
-          setMessages(messageData.body)
+          setMessages(messageData.body);
         }
       } catch (error) {
         // noting to do
       }
     },
-  })
+  });
 
   // TODO: If we want to do like a distributed chat, the challenge is going to be to divide each individual request up,
   //  so the response that we' we're getting is the response to a single request and not based on the current screen
@@ -61,8 +61,8 @@ export function TipAssistant({tip}: {tip: Tip}) {
             placeholder="Type a message..."
             rows={4}
             onKeyDown={async (event) => {
-              if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault()
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
                 sendTipChatMessage({
                   tipId: tip._id,
                   messages: [
@@ -72,8 +72,8 @@ export function TipAssistant({tip}: {tip: Tip}) {
                       content: event.currentTarget.value,
                     },
                   ],
-                })
-                event.currentTarget.value = ''
+                });
+                event.currentTarget.value = "";
               }
             }}
           />
@@ -82,7 +82,7 @@ export function TipAssistant({tip}: {tip: Tip}) {
             className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center p-0"
             variant="outline"
             onClick={async (event) => {
-              event.preventDefault()
+              event.preventDefault();
               if (textareaRef.current) {
                 sendTipChatMessage({
                   tipId: tip._id,
@@ -93,8 +93,8 @@ export function TipAssistant({tip}: {tip: Tip}) {
                       content: textareaRef.current?.value,
                     },
                   ],
-                })
-                textareaRef.current.value = ''
+                });
+                textareaRef.current.value = "";
               }
             }}
           >
@@ -103,62 +103,62 @@ export function TipAssistant({tip}: {tip: Tip}) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-function TipChatResponse({requestId}: {requestId: string}) {
+function TipChatResponse({ requestId }: { requestId: string }) {
   const [messages, setMessages] = React.useState<
-    {requestId: string; body: string}[]
-  >([])
-  const div = useRef<any>(null)
+    { requestId: string; body: string }[]
+  >([]);
+  const div = useRef<any>(null);
 
-  const utils = api.useUtils()
+  const utils = api.useUtils();
 
   useSocket({
     room: requestId,
     onMessage: (messageEvent) => {
       try {
-        const messageData = JSON.parse(messageEvent.data)
+        const messageData = JSON.parse(messageEvent.data);
 
         if (
           messageData.body !== STREAM_COMPLETE &&
-          messageData.name == 'ai.message' &&
+          messageData.name == "ai.message" &&
           requestId === messageData.requestId
         ) {
           setMessages((messages) => [
             ...messages,
-            {body: messageData.body, requestId: messageData.requestId},
-          ])
+            { body: messageData.body, requestId: messageData.requestId },
+          ]);
         }
-        utils.module.invalidate()
+        utils.module.invalidate();
         if (div.current) {
-          div.current.scrollTop = div.current.scrollHeight
+          div.current.scrollTop = div.current.scrollHeight;
         }
       } catch (error) {
         // noting to do
       }
     },
-  })
+  });
   // Group messages by requestId
   const groupedMessages = messages.reduce(
     (groups, message) => {
       if (!groups[message.requestId]) {
-        groups[message.requestId] = []
+        groups[message.requestId] = [];
       }
 
-      groups[message.requestId]?.push(message.body)
-      return groups
+      groups[message.requestId]?.push(message.body);
+      return groups;
     },
     {} as Record<string, string[]>,
-  )
+  );
 
   return (
     <ScrollArea viewportRef={div} className="h-[50vh] w-full scroll-smooth">
       {Object.entries(groupedMessages).map(([requestId, bodies], index) => (
         <div key={requestId} className="prose prose-sm max-w-none p-5">
-          <ReactMarkdown>{bodies.join('')}</ReactMarkdown>
+          <ReactMarkdown>{bodies.join("")}</ReactMarkdown>
         </div>
       ))}
     </ScrollArea>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import {z} from 'zod'
-import {getServerAuthSession} from '@/server/auth'
-import {getAbility} from '@/lib/ability'
+import { z } from "zod";
+import { getServerAuthSession } from "@/server/auth";
+import { getAbility } from "@/lib/ability";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-} from '@/trpc/api/trpc'
-import {getTip, getTipsModule} from '@/lib/tips'
-import {sanityMutation} from '@/server/sanity.server'
-import {v4} from 'uuid'
-import slugify from '@sindresorhus/slugify'
+} from "@/trpc/api/trpc";
+import { getTip, getTipsModule } from "@/lib/tips";
+import { sanityMutation } from "@/server/sanity.server";
+import { v4 } from "uuid";
+import slugify from "@sindresorhus/slugify";
 
-import {customAlphabet} from 'nanoid'
-import {inngest} from '@/inngest/inngest.server'
-import {TIP_CHAT_EVENT} from '@/inngest/events'
-import {toChicagoTitleCase} from '@/utils/chicagor-title'
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
+import { customAlphabet } from "nanoid";
+import { inngest } from "@/inngest/inngest.server";
+import { TIP_CHAT_EVENT } from "@/inngest/events";
+import { toChicagoTitleCase } from "@/utils/chicagor-title";
+const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 5);
 
 export const tipsRouter = createTRPCRouter({
   get: publicProcedure
@@ -24,8 +24,8 @@ export const tipsRouter = createTRPCRouter({
         tipId: z.string(),
       }),
     )
-    .query(async ({ctx, input}) => {
-      return await getTip(input.tipId)
+    .query(async ({ ctx, input }) => {
+      return await getTip(input.tipId);
     }),
   chat: protectedProcedure
     .input(
@@ -34,11 +34,11 @@ export const tipsRouter = createTRPCRouter({
         messages: z.array(z.any()),
       }),
     )
-    .mutation(async ({ctx, input}) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({user: session?.user})
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
+    .mutation(async ({ ctx, input }) => {
+      const session = await getServerAuthSession();
+      const ability = getAbility({ user: session?.user });
+      if (!ability.can("create", "Content")) {
+        throw new Error("Unauthorized");
       }
 
       await inngest.send({
@@ -47,9 +47,9 @@ export const tipsRouter = createTRPCRouter({
           tipId: input.tipId,
           messages: input.messages,
         },
-      })
+      });
 
-      return await getTip(input.tipId)
+      return await getTip(input.tipId);
     }),
   create: protectedProcedure
     .input(
@@ -58,20 +58,20 @@ export const tipsRouter = createTRPCRouter({
         title: z.string(),
       }),
     )
-    .mutation(async ({ctx, input}) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({user: session?.user})
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
+    .mutation(async ({ ctx, input }) => {
+      const session = await getServerAuthSession();
+      const ability = getAbility({ user: session?.user });
+      if (!ability.can("create", "Content")) {
+        throw new Error("Unauthorized");
       }
 
-      const newTipId = v4()
+      const newTipId = v4();
 
       await sanityMutation([
         {
           createOrReplace: {
             _id: newTipId,
-            _type: 'tip',
+            _type: "tip",
             title: toChicagoTitleCase(input.title),
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),
@@ -79,38 +79,38 @@ export const tipsRouter = createTRPCRouter({
             resources: [
               {
                 _key: v4(),
-                _type: 'reference',
+                _type: "reference",
                 _ref: input.videoResourceId,
               },
             ],
           },
         },
-      ])
+      ]);
 
-      const tip = await getTip(newTipId)
+      const tip = await getTip(newTipId);
 
-      const tipsModule = await getTipsModule()
+      const tipsModule = await getTipsModule();
 
       await sanityMutation([
         {
           patch: {
             id: tipsModule._id,
-            setIfMissing: {resources: []},
+            setIfMissing: { resources: [] },
             insert: {
-              before: 'resources[0]',
+              before: "resources[0]",
               items: [
                 {
                   _key: v4(),
-                  _type: 'reference',
+                  _type: "reference",
                   _ref: newTipId,
                 },
               ],
             },
           },
         },
-      ])
+      ]);
 
-      return tip
+      return tip;
     }),
   update: protectedProcedure
     .input(
@@ -120,17 +120,17 @@ export const tipsRouter = createTRPCRouter({
         body: z.string().optional().nullable(),
       }),
     )
-    .mutation(async ({ctx, input}) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({user: session?.user})
-      if (!ability.can('update', 'Content')) {
-        throw new Error('Unauthorized')
+    .mutation(async ({ ctx, input }) => {
+      const session = await getServerAuthSession();
+      const ability = getAbility({ user: session?.user });
+      if (!ability.can("update", "Content")) {
+        throw new Error("Unauthorized");
       }
 
-      const currentTip = await getTip(input.tipId)
+      const currentTip = await getTip(input.tipId);
 
       if (!currentTip) {
-        throw new Error('Not found')
+        throw new Error("Not found");
       }
 
       if (input.title !== currentTip.title) {
@@ -139,12 +139,12 @@ export const tipsRouter = createTRPCRouter({
             patch: {
               id: input.tipId,
               set: {
-                'slug.current': `${slugify(input.title)}~${nanoid()}`,
+                "slug.current": `${slugify(input.title)}~${nanoid()}`,
                 title: toChicagoTitleCase(input.title),
               },
             },
           },
-        ])
+        ]);
       }
 
       await sanityMutation(
@@ -158,9 +158,9 @@ export const tipsRouter = createTRPCRouter({
             },
           },
         ],
-        {returnDocuments: true},
-      )
+        { returnDocuments: true },
+      );
 
-      return await getTip(input.tipId)
+      return await getTip(input.tipId);
     }),
-})
+});

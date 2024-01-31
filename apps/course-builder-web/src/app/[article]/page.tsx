@@ -1,57 +1,57 @@
-import Link from 'next/link'
-import {Button} from '@coursebuilder/ui'
-import * as React from 'react'
-import {getServerAuthSession} from '@/server/auth'
-import {getAbility} from '@/lib/ability'
-import ReactMarkdown from 'react-markdown'
-import {getArticle} from '@/lib/articles'
-import {notFound} from 'next/navigation'
-import {type Metadata, type ResolvingMetadata} from 'next'
-import {getOGImageUrlForTitle} from '@/utils/get-og-image-for-title'
+import Link from "next/link";
+import { Button } from "@coursebuilder/ui";
+import * as React from "react";
+import { getServerAuthSession } from "@/server/auth";
+import { getAbility } from "@/lib/ability";
+import ReactMarkdown from "react-markdown";
+import { getArticle } from "@/lib/articles";
+import { notFound } from "next/navigation";
+import { type Metadata, type ResolvingMetadata } from "next";
+import { getOGImageUrlForTitle } from "@/utils/get-og-image-for-title";
 
 type Props = {
-  params: {article: string}
-  searchParams: {[key: string]: string | string[] | undefined}
-}
+  params: { article: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
 export async function generateMetadata(
-  {params, searchParams}: Props,
+  { params, searchParams }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const article = await getArticle(params.article)
+  const article = await getArticle(params.article);
 
   if (!article) {
-    return parent as Metadata
+    return parent as Metadata;
   }
 
-  const previousImages = (await parent).openGraph?.images || []
+  const previousImages = (await parent).openGraph?.images || [];
 
-  const ogImage = getOGImageUrlForTitle(article.title)
+  const ogImage = getOGImageUrlForTitle(article.title);
 
   return {
     title: article.title,
     openGraph: {
       images: [ogImage, ...previousImages],
     },
-  }
+  };
 }
 
 export default async function ArticlePage({
   params,
 }: {
-  params: {article: string}
+  params: { article: string };
 }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({user: session?.user})
-  const article = await getArticle(params.article)
+  const session = await getServerAuthSession();
+  const ability = getAbility({ user: session?.user });
+  const article = await getArticle(params.article);
 
   if (!article) {
-    notFound()
+    notFound();
   }
 
   return (
     <div>
-      {ability.can('update', 'Content') ? (
+      {ability.can("update", "Content") ? (
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
           <div />
           <Button asChild className="h-7">
@@ -72,5 +72,5 @@ export default async function ArticlePage({
         </div>
       </article>
     </div>
-  )
+  );
 }

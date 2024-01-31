@@ -1,28 +1,28 @@
-import {inngest} from '@/inngest/inngest.server'
-import {BODY_TEXT_UPDATED} from '@/inngest/events'
+import { inngest } from "@/inngest/inngest.server";
+import { BODY_TEXT_UPDATED } from "@/inngest/events";
 
-import {env} from '@/env.mjs'
-import {FeedbackMarkerSchema} from '@/lib/feedback-marker'
-import {z} from 'zod'
+import { env } from "@/env.mjs";
+import { FeedbackMarkerSchema } from "@/lib/feedback-marker";
+import { z } from "zod";
 
 export const generateFeedbackMarkers = inngest.createFunction(
   {
     id: `generate-feedback-markers`,
-    name: 'Generate Feedback Markers',
-    idempotency: 'event.id',
+    name: "Generate Feedback Markers",
+    idempotency: "event.id",
     debounce: {
-      key: 'event.data.resourceId',
-      period: '15s',
+      key: "event.data.resourceId",
+      period: "15s",
     },
   },
-  {event: BODY_TEXT_UPDATED},
-  async ({event, step}) => {
-    const markers = await step.run('Generate Feedback Markers', async () => {
-      return fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
+  { event: BODY_TEXT_UPDATED },
+  async ({ event, step }) => {
+    const markers = await step.run("Generate Feedback Markers", async () => {
+      return fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           messages: [
@@ -78,45 +78,45 @@ export const generateFeedbackMarkers = inngest.createFunction(
               ${JSON.stringify(event.data.currentFeedback)}
               
               ## Template\n\n{markers:[{"originalText": "quoted from the text", "feedback": "useful feedback", "fullSuggestedChange": "rewritten text that captures the feedback meaningfully", "level": "how much attention is needed?", "type": "a single word that describes the type of change"}]}`,
-              role: 'system',
+              role: "system",
             },
             {
-              content: JSON.stringify(event.data.content?.split('\n')),
-              role: 'user',
+              content: JSON.stringify(event.data.content?.split("\n")),
+              role: "user",
             },
           ],
-          model: 'gpt-4-1106-preview',
-          response_format: {type: 'json_object'},
+          model: "gpt-4-1106-preview",
+          response_format: { type: "json_object" },
         }),
       })
         .then((response) => response.json())
         .then((response) => {
           return z
             .array(FeedbackMarkerSchema)
-            .parse(JSON.parse(response.choices[0].message.content).markers)
+            .parse(JSON.parse(response.choices[0].message.content).markers);
         })
         .catch((e) => {
-          console.error(e)
-          return []
-        })
-    })
+          console.error(e);
+          return [];
+        });
+    });
 
-    await step.run('Broadcast Completion', async () => {
+    await step.run("Broadcast Completion", async () => {
       await fetch(
         `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${event.data.resourceId}`,
         {
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify({
             body: markers,
-            name: 'ai.feedback.markers.generated',
+            name: "ai.feedback.markers.generated",
             requestId: event.data.resourceId,
           }),
         },
       ).catch((e) => {
-        console.error(e)
-      })
-    })
+        console.error(e);
+      });
+    });
 
-    return markers
+    return markers;
   },
-)
+);

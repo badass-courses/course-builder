@@ -1,31 +1,31 @@
-import {inngest} from '@/inngest/inngest.server'
-import {POSTMARK_WEBHOOK_EVENT} from '@/inngest/events/postmark-webhook'
+import { inngest } from "@/inngest/inngest.server";
+import { POSTMARK_WEBHOOK_EVENT } from "@/inngest/events/postmark-webhook";
 
 export const postmarkWebhook = inngest.createFunction(
-  {id: `postmark-webhooks`, name: 'Postmark Unsubscribed Webhooks'},
+  { id: `postmark-webhooks`, name: "Postmark Unsubscribed Webhooks" },
   {
     event: POSTMARK_WEBHOOK_EVENT,
     if: 'event.data.RecordType in ["Bounce", "SpamComplaint", "SubscriptionChange"]',
   },
-  async ({event, step}) => {
+  async ({ event, step }) => {
     switch (event.data.RecordType) {
-      case 'SubscriptionChange': {
-        if (event.data.SuppressionReason === 'ManualSuppression') {
+      case "SubscriptionChange": {
+        if (event.data.SuppressionReason === "ManualSuppression") {
           //unsubscribed
         } else if (!event.data.SuppressSending) {
           //resubscribed?
         }
-        break
+        break;
       }
-      case 'Bounce': {
+      case "Bounce": {
         // something went wrong, display in app message
-        break
+        break;
       }
-      case 'SpamComplaint': {
+      case "SpamComplaint": {
         // something
-        break
+        break;
       }
     }
-    return event.data
+    return event.data;
   },
-)
+);

@@ -1,27 +1,27 @@
-'use client'
+"use client";
 
-import React from 'react'
-import Script from 'next/script'
-import {Button} from '@coursebuilder/ui'
-import {env} from '@/env.mjs'
+import React from "react";
+import Script from "next/script";
+import { Button } from "@coursebuilder/ui";
+import { env } from "@/env.mjs";
 
-export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
+export const CloudinaryUploadWidget: React.FC<{ dir: string; id: string }> = ({
   dir,
   id,
 }) => {
-  const cloudinaryRef = React.useRef<any>()
-  const widgetRef = React.useRef<any>()
-  const containerRef = React.useRef<HTMLDivElement>(null)
+  const cloudinaryRef = React.useRef<any>();
+  const widgetRef = React.useRef<any>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
-    cloudinaryRef.current = (window as any).cloudinary
-  }, [])
+    cloudinaryRef.current = (window as any).cloudinary;
+  }, []);
 
   return (
     <div>
       <Script
         strategy="afterInteractive"
         onLoad={() => {
-          cloudinaryRef.current = (window as any).cloudinary
+          cloudinaryRef.current = (window as any).cloudinary;
         }}
         src="https://upload-widget.cloudinary.com/global/all.js"
         type="text/javascript"
@@ -40,12 +40,12 @@ export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
                 folder: `${dir}/${id}`,
               },
               (error: any, result: any) => {
-                if (!error && result && result.event === 'success') {
-                  console.debug('Done! Here is the image info: ', result.info)
+                if (!error && result && result.event === "success") {
+                  console.debug("Done! Here is the image info: ", result.info);
                 }
               },
-            )
-            widgetRef.current.open()
+            );
+            widgetRef.current.open();
           }}
         >
           Upload images
@@ -53,5 +53,5 @@ export const CloudinaryUploadWidget: React.FC<{dir: string; id: string}> = ({
       </div>
       <div ref={containerRef} id="cloudinary-upload-widget-container" />
     </div>
-  )
-}
+  );
+};

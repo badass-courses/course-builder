@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import {Button} from '@coursebuilder/ui'
+import * as React from "react";
+import { Button } from "@coursebuilder/ui";
 import {
   Form,
   FormControl,
@@ -10,36 +10,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@coursebuilder/ui'
-import {useForm} from 'react-hook-form'
-import {z} from 'zod'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {Input} from '@coursebuilder/ui'
-import {api} from '@/trpc/react'
-import {useRouter} from 'next/navigation'
+} from "@coursebuilder/ui";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@coursebuilder/ui";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
 
 const NewArticleFormSchema = z.object({
   title: z.string().min(2).max(90),
-})
+});
 
 export function NewArticleForm() {
-  const router = useRouter()
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof NewArticleFormSchema>>({
     resolver: zodResolver(NewArticleFormSchema),
     defaultValues: {
-      title: '',
+      title: "",
     },
-  })
-  const {mutateAsync: createArticle} = api.articles.create.useMutation()
+  });
+  const { mutateAsync: createArticle } = api.articles.create.useMutation();
 
   const onSubmit = async (values: z.infer<typeof NewArticleFormSchema>) => {
-    form.reset()
-    const article = await createArticle(values)
+    form.reset();
+    const article = await createArticle(values);
     if (article) {
-      router.push(`/articles/${article.slug}/edit`)
+      router.push(`/articles/${article.slug}/edit`);
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -47,7 +47,7 @@ export function NewArticleForm() {
         <FormField
           control={form.control}
           name="title"
-          render={({field}) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
@@ -76,5 +76,5 @@ export function NewArticleForm() {
         </Button>
       </form>
     </Form>
-  )
+  );
 }

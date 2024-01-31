@@ -4,21 +4,21 @@ import {
   CardContent,
   Card,
   Button,
-} from '@coursebuilder/ui'
-import {getServerAuthSession} from '@/server/auth'
-import {getAbility} from '@/lib/ability'
-import * as React from 'react'
-import Link from 'next/link'
-import {sanityQuery} from '@/server/sanity.server'
+} from "@coursebuilder/ui";
+import { getServerAuthSession } from "@/server/auth";
+import { getAbility } from "@/lib/ability";
+import * as React from "react";
+import Link from "next/link";
+import { sanityQuery } from "@/server/sanity.server";
 
 export default async function ArticlesIndexPage() {
-  const session = await getServerAuthSession()
-  const ability = getAbility({user: session?.user})
+  const session = await getServerAuthSession();
+  const ability = getAbility({ user: session?.user });
   const articles = await sanityQuery<
     {
-      _id: string
-      title: string
-      slug: string
+      _id: string;
+      title: string;
+      slug: string;
     }[]
   >(
     `*[_type == "article"] | order(_updatedAt desc) {
@@ -26,12 +26,12 @@ export default async function ArticlesIndexPage() {
     title,
     "slug": slug.current,
   }`,
-    {tags: ['articles']},
-  )
+    { tags: ["articles"] },
+  );
 
   return (
     <div>
-      {ability.can('update', 'Content') ? (
+      {ability.can("update", "Content") ? (
         <div className="flex h-9 w-full items-center justify-between bg-muted px-1">
           <div />
           <Button asChild className="h-7">
@@ -55,5 +55,5 @@ export default async function ArticlesIndexPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }
