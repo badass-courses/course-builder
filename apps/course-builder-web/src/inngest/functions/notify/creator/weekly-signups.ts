@@ -5,7 +5,6 @@ import {db} from '@/server/db'
 import {users} from '@/server/db/schema'
 import {gt, sql} from 'drizzle-orm'
 import {Liquid} from 'liquidjs'
-import WeeklySignups from '@/emails/weekly-signups'
 import BasicEmail, {BasicEmailProps} from '@/emails/basic-email'
 
 export const weeklySignupDigest = inngest.createFunction(
@@ -42,7 +41,6 @@ export const weeklySignupDigest = inngest.createFunction(
         try {
           const engine = new Liquid()
           return engine.parseAndRender(email.body, {
-            user: event.user,
             newUserCount,
           })
         } catch (e: any) {
@@ -58,7 +56,6 @@ export const weeklySignupDigest = inngest.createFunction(
         try {
           const engine = new Liquid()
           return engine.parseAndRender(email.subject, {
-            user: event.user,
             newUserCount,
           })
         } catch (e) {
@@ -84,7 +81,6 @@ export const weeklySignupDigest = inngest.createFunction(
       email,
       parsedEmailBody,
       parsedEmailSubject,
-      user: event.user,
     }
   },
 )
