@@ -69,8 +69,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@18.18.13)
       lint-staged:
-        specifier: ^15.1.0
-        version: 15.1.0
+        specifier: ^15.2.1
+        version: 15.2.1
       prettier:
         specifier: ^3.1.0
         version: 3.1.0
@@ -87,11 +87,11 @@ importers:
   apps/course-builder-web:
     dependencies:
       '@atlaskit/button':
-        specifier: ^16.18.1
-        version: 16.18.1(@types/react@18.2.37)(react@18.2.0)
+        specifier: ^17.2.0
+        version: 17.2.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/dropdown-menu':
-        specifier: ^12.1.9
-        version: 12.1.9(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^12.1.10
+        version: 12.1.10(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/ds-lib':
         specifier: ^2.2.3
         version: 2.2.3(react@18.2.0)
@@ -99,14 +99,14 @@ importers:
         specifier: ^1.3.6
         version: 1.3.6(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/form':
-        specifier: ^9.0.4
-        version: 9.0.4(@types/react@18.2.37)(react@18.2.0)
+        specifier: ^9.0.6
+        version: 9.0.6(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/icon':
         specifier: ^22.0.0
         version: 22.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/modal-dialog':
-        specifier: ^12.10.2
-        version: 12.10.2(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^12.10.4
+        version: 12.10.4(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/pragmatic-drag-and-drop':
         specifier: ^0.25.0
         version: 0.25.0
@@ -126,14 +126,14 @@ importers:
         specifier: ^0.17.1
         version: 0.17.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/primitives':
-        specifier: ^1.13.1
-        version: 1.13.1(@types/react@18.2.37)(react@18.2.0)
+        specifier: ^1.19.0
+        version: 1.19.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/select':
-        specifier: ^17.0.3
-        version: 17.0.3(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^17.0.4
+        version: 17.0.4(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/tokens':
-        specifier: ^1.29.2
-        version: 1.29.2(react@18.2.0)
+        specifier: ^1.34.1
+        version: 1.34.1(react@18.2.0)
       '@auth/drizzle-adapter':
         specifier: ^0.3.6
         version: 0.3.6
@@ -579,12 +579,6 @@ importers:
       gradient-string:
         specifier: ^2.0.2
         version: 2.0.2
-      husky:
-        specifier: ^9.0.7
-        version: 9.0.7
-      lint-staged:
-        specifier: ^11.2.6
-        version: 11.2.6
       ora:
         specifier: 6.3.1
         version: 6.3.1
@@ -1087,7 +1081,7 @@ packages:
     engines: {node: '>=18.14.1'}
     dependencies:
       ci-info: 3.9.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       dlv: 1.1.3
       dset: 3.1.3
       is-docker: 3.0.0
@@ -1123,7 +1117,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       bind-event-listener: 2.1.1
       react: 18.2.0
@@ -1140,7 +1134,7 @@ packages:
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1149,8 +1143,8 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/button@16.18.1(@types/react@18.2.37)(react@18.2.0):
-    resolution: {integrity: sha512-6RZCp2IUZAsgm2UFp+Ws6i3b+0uLbs2rmc6fWrhd4F0jvavDnOjivdFAPPVBcMM4pIOBrTv6QBXAgRhScec/Hw==}
+  /@atlaskit/button@17.2.0(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-0ghb3EFraVMtja7gwSPBZ7/8DpE4PUlZAryQ2DGMvpqPFhYdJ/foEygbTCFYK6cDXauoPO91yGSBOgB0CS+S8w==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -1160,10 +1154,10 @@ packages:
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/interaction-context': 2.1.3(react@18.2.0)
       '@atlaskit/platform-feature-flags': 0.2.5
-      '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/primitives': 1.19.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.37)(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
@@ -1179,13 +1173,13 @@ packages:
       '@babel/runtime': 7.23.2
     dev: false
 
-  /@atlaskit/dropdown-menu@12.1.9(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-MhBhYPWcbK1rTvcVRN+jluvHWumnmm0WsZkDvIs238cWMU8Y1PQtJAXoqb+9TL4CxlkqMlW+Gh/PAj4RHP7Ikw==}
+  /@atlaskit/dropdown-menu@12.1.10(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-mEjAVsLGSQd/Oy3WUapqb/02f0DoRkldJ1ita3qr5NeEQxjJZ4Gu1GXM+L2+VEdBxarreqSr8jh16Fb8CCKUVA==}
     peerDependencies:
       react: ^16.8.0
       react-dom: ^16.8.0
     dependencies:
-      '@atlaskit/button': 16.18.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/button': 17.2.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
@@ -1193,10 +1187,10 @@ packages:
       '@atlaskit/menu': 2.1.3(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/popup': 1.11.5(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
-      '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/primitives': 1.19.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1222,7 +1216,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1231,14 +1225,14 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/form@9.0.4(@types/react@18.2.37)(react@18.2.0):
-    resolution: {integrity: sha512-zyjBsnUCZ9s2XUVnQ476aNdBaAeNC5CzI3s0QCoviBDO0+I8e8wZCVTGnV/RJwpJPPjOlq7EwLBb0gH1N9R7ew==}
+  /@atlaskit/form@9.0.6(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-Mis5LzNLxmS2sZgpYViA8rtbcr6399UR0yW+griF0WY5/gnXexnZgGFoJddG7apiLX/U16v1WZZYS1i3F1urtA==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       final-form: 4.20.10
@@ -1257,7 +1251,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1301,9 +1295,9 @@ packages:
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/focus-ring': 1.3.6(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/platform-feature-flags': 0.2.5
-      '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/primitives': 1.19.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1313,8 +1307,8 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/modal-dialog@12.10.2(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-n5bM2HP22k4jY7B7n/6kMrJoPqEMucMakZg/iCYc4zaV/POAmpnEajXOa6S4OkUvNb7UVtVCDn55YmbvbVrOMQ==}
+  /@atlaskit/modal-dialog@12.10.4(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-yn7fuGpbRCrB8WATZgB21E/xvJw6EjVNSfLP/Bt1t1TeImgcH2YWSvgdJEkMWZhUUyxzzSkrzvgT96xLP8d+sg==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -1328,9 +1322,9 @@ packages:
       '@atlaskit/motion': 1.5.1(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.2.0)
-      '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/primitives': 1.19.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1391,7 +1385,7 @@ packages:
       '@atlaskit/popper': 5.5.4(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       bind-event-listener: 2.1.1
@@ -1424,7 +1418,7 @@ packages:
       react: ^16.8.0
     dependencies:
       '@atlaskit/motion': 1.5.1(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       react: 18.2.0
     transitivePeerDependencies:
@@ -1450,12 +1444,12 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/dropdown-menu': 12.1.9(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+      '@atlaskit/dropdown-menu': 12.1.10(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/focus-ring': 1.3.6(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/icon': 22.0.0(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/primitives': 1.13.1(@types/react@18.2.37)(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/primitives': 1.19.0(@types/react@18.2.37)(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1472,7 +1466,7 @@ packages:
     dependencies:
       '@atlaskit/pragmatic-drag-and-drop': 0.25.0
       '@atlaskit/pragmatic-drag-and-drop-hitbox': 0.12.1
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1489,13 +1483,13 @@ packages:
       raf-schd: 4.0.3
     dev: false
 
-  /@atlaskit/primitives@1.13.1(@types/react@18.2.37)(react@18.2.0):
-    resolution: {integrity: sha512-mjtL6tma8/PdsWG+F6qCgYLSziZcKo4r/VtdMmCNpVgAU+YJda3HczFey+roLNrtzVMZMKg4msm4SO8UqHi05A==}
+  /@atlaskit/primitives@1.19.0(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-Wr3J46kqL+yfldV67j45HQm7OAGepvRYA5VyHQJlbNmM8ZMEaLIdcjx9HVOD1nM55fCmoPOmFgO32DKA65Wkvg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@atlaskit/app-provider': 0.4.0(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       '@emotion/serialize': 1.1.2
@@ -1507,8 +1501,8 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/select@17.0.3(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-YEr7plvrlqw4z/dGc6srKZI8QsyBkMf63p7PAS7mLIYuAnPG1eONwcRoVLqBVeAJeWcK5is1GUdQM5Z6kdJ5xw==}
+  /@atlaskit/select@17.0.4(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-V1EZFfao8AiPMnk6A8IF8FOS4BHUghtxEYore4fp9kRVKczkjP/J7nEGTZbkYkxpHxLLqkUMzNhIXdLpZ+O1mA==}
     peerDependencies:
       react: ^16.8.0
       react-dom: ^16.8.0
@@ -1518,7 +1512,7 @@ packages:
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/spinner': 16.0.0(@types/react@18.2.37)(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.37)(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
@@ -1546,7 +1540,7 @@ packages:
     dependencies:
       '@atlaskit/interaction-context': 2.1.3(react@18.2.0)
       '@atlaskit/theme': 12.6.2(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       react: 18.2.0
@@ -1562,22 +1556,22 @@ packages:
     dependencies:
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
-      '@atlaskit/tokens': 1.29.2(react@18.2.0)
+      '@atlaskit/tokens': 1.34.1(react@18.2.0)
       '@babel/runtime': 7.23.2
       react: 18.2.0
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@atlaskit/tokens@1.29.2(react@18.2.0):
-    resolution: {integrity: sha512-gxJSfvpDPmVDPt76swB1GFPhrAlKcKnmKtyP/I18amBbvvW3dmcPWJn94f1e78Aax363ozfcmGbsYj/NK3bZ6A==}
+  /@atlaskit/tokens@1.34.1(react@18.2.0):
+    resolution: {integrity: sha512-o/GxLvVmT0UVIwBno/rVrZohtqZ1LMyyKq8f6gD/NNF47S/FkdEEtJ+++LVklCFs6ja5LKzp1JckBD/whdy7Rw==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
       '@atlaskit/ds-lib': 2.2.3(react@18.2.0)
       '@atlaskit/platform-feature-flags': 0.2.5
       '@babel/runtime': 7.23.2
-      '@babel/traverse': 7.23.3
+      '@babel/traverse': 7.23.3(supports-color@5.5.0)
       '@babel/types': 7.23.4
       bind-event-listener: 2.1.1
       react: 18.2.0
@@ -2248,10 +2242,10 @@ packages:
       '@babel/helpers': 7.23.2
       '@babel/parser': 7.23.3
       '@babel/template': 7.22.15
-      '@babel/traverse': 7.23.3
+      '@babel/traverse': 7.23.3(supports-color@5.5.0)
       '@babel/types': 7.23.4
       convert-source-map: 2.0.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -2358,7 +2352,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/template': 7.22.15
-      '@babel/traverse': 7.23.3
+      '@babel/traverse': 7.23.3(supports-color@5.5.0)
       '@babel/types': 7.23.4
     transitivePeerDependencies:
       - supports-color
@@ -2555,23 +2549,6 @@ packages:
       '@babel/parser': 7.23.3
       '@babel/types': 7.23.4
 
-  /@babel/traverse@7.23.3:
-    resolution: {integrity: sha512-+K0yF1/9yR0oHdE0StHuEj3uTPzwwbrLGfNOndVJVV2TqA5+j3oljJUb4nmB954FLGjNem976+B+eDuLIjesiQ==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      '@babel/code-frame': 7.22.13
-      '@babel/generator': 7.23.3
-      '@babel/helper-environment-visitor': 7.22.20
-      '@babel/helper-function-name': 7.23.0
-      '@babel/helper-hoist-variables': 7.22.5
-      '@babel/helper-split-export-declaration': 7.22.6
-      '@babel/parser': 7.23.3
-      '@babel/types': 7.23.4
-      debug: 4.3.4(supports-color@8.1.1)
-      globals: 11.12.0
-    transitivePeerDependencies:
-      - supports-color
-
   /@babel/traverse@7.23.3(supports-color@5.5.0):
     resolution: {integrity: sha512-+K0yF1/9yR0oHdE0StHuEj3uTPzwwbrLGfNOndVJVV2TqA5+j3oljJUb4nmB954FLGjNem976+B+eDuLIjesiQ==}
     engines: {node: '>=6.9.0'}
@@ -2588,7 +2565,6 @@ packages:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@babel/types@7.23.3:
     resolution: {integrity: sha512-OZnvoH2l8PK5eUvEcUyCt/sXgr/h+UWpVuBbOljwcrAgUl6lpchoQ++PHGyQy1AtYnVA6CEq3y5xeEI10brpXw==}
@@ -4391,7 +4367,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       ajv: 6.12.6
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       espree: 9.6.1
       globals: 13.23.0
       ignore: 5.2.4
@@ -4497,7 +4473,7 @@ packages:
     engines: {node: '>=10.10.0'}
     dependencies:
       '@humanwhocodes/object-schema': 2.0.1
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -4521,7 +4497,7 @@ packages:
       '@babel/core': 7.23.3
       '@babel/generator': 7.23.3
       '@babel/parser': 7.23.3
-      '@babel/traverse': 7.23.3
+      '@babel/traverse': 7.23.3(supports-color@5.5.0)
       '@babel/types': 7.23.3
       prettier: 3.1.0
       semver: 7.5.4
@@ -7218,7 +7194,7 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
     dependencies:
-      '@babel/traverse': 7.23.3
+      '@babel/traverse': 7.23.3(supports-color@5.5.0)
       chalk: 4.1.2
       esbuild: 0.19.5
       esbuild-register: 3.5.0(esbuild@0.19.5)
@@ -8648,7 +8624,7 @@ packages:
       '@typescript-eslint/type-utils': 6.11.0(eslint@8.54.0)(typescript@5.2.2)
       '@typescript-eslint/utils': 6.11.0(eslint@8.54.0)(typescript@5.2.2)
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.54.0
       graphemer: 1.4.0
       ignore: 5.2.4
@@ -8677,7 +8653,7 @@ packages:
       '@typescript-eslint/type-utils': 6.11.0(eslint@8.54.0)(typescript@5.3.3)
       '@typescript-eslint/utils': 6.11.0(eslint@8.54.0)(typescript@5.3.3)
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.54.0
       graphemer: 1.4.0
       ignore: 5.2.4
@@ -8703,7 +8679,7 @@ packages:
       '@typescript-eslint/types': 6.11.0
       '@typescript-eslint/typescript-estree': 6.11.0(typescript@5.3.3)
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.53.0
       typescript: 5.3.3
     transitivePeerDependencies:
@@ -8724,7 +8700,7 @@ packages:
       '@typescript-eslint/types': 6.11.0
       '@typescript-eslint/typescript-estree': 6.11.0(typescript@5.2.2)
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.54.0
       typescript: 5.2.2
     transitivePeerDependencies:
@@ -8745,7 +8721,7 @@ packages:
       '@typescript-eslint/types': 6.11.0
       '@typescript-eslint/typescript-estree': 6.11.0(typescript@5.3.3)
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.54.0
       typescript: 5.3.3
     transitivePeerDependencies:
@@ -8770,7 +8746,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 6.11.0(typescript@5.2.2)
       '@typescript-eslint/utils': 6.11.0(eslint@8.54.0)(typescript@5.2.2)
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.54.0
       ts-api-utils: 1.0.3(typescript@5.2.2)
       typescript: 5.2.2
@@ -8790,7 +8766,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 6.11.0(typescript@5.3.3)
       '@typescript-eslint/utils': 6.11.0(eslint@8.54.0)(typescript@5.3.3)
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       eslint: 8.54.0
       ts-api-utils: 1.0.3(typescript@5.3.3)
       typescript: 5.3.3
@@ -8813,7 +8789,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 6.11.0
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -8834,7 +8810,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 6.11.0
       '@typescript-eslint/visitor-keys': 6.11.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.4
@@ -9336,7 +9312,7 @@ packages:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -9346,14 +9322,6 @@ packages:
     engines: {node: '>= 8.0.0'}
     dependencies:
       humanize-ms: 1.2.1
-    dev: false
-
-  /aggregate-error@3.1.0:
-    resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
-    engines: {node: '>=8'}
-    dependencies:
-      clean-stack: 2.2.0
-      indent-string: 4.0.0
     dev: false
 
   /ai@2.2.22(react@18.2.0)(solid-js@1.8.5)(svelte@4.2.3)(vue@3.3.8):
@@ -9421,11 +9389,11 @@ packages:
       type-fest: 0.21.3
     dev: false
 
-  /ansi-escapes@5.0.0:
-    resolution: {integrity: sha512-5GFMVX8HqE/TB+FuBJGuO5XG0WrsA6ptUqoODaT/n9mmUaZFkqnBueB4leqGBCmrUHnCnC4PCZTCd0E7QQ83bA==}
-    engines: {node: '>=12'}
+  /ansi-escapes@6.2.0:
+    resolution: {integrity: sha512-kzRaCqXnpzWs+3z5ABPQiVke+iq0KXkHo8xiWV4RPTi5Yli0l97BEQuhXV1s7+aSU/fu1kUuxgS4MsQ0fRuygw==}
+    engines: {node: '>=14.16'}
     dependencies:
-      type-fest: 1.4.0
+      type-fest: 3.13.1
     dev: false
 
   /ansi-regex@4.1.1:
@@ -9631,11 +9599,6 @@ packages:
     resolution: {integrity: sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==}
     dev: true
 
-  /astral-regex@2.0.0:
-    resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
-    engines: {node: '>=8'}
-    dev: false
-
   /astring@1.8.6:
     resolution: {integrity: sha512-ISvCdHdlTDlH5IpxQJIex7BWBywFWgjJSVdwst+/iQCoEYnyOaQ95+X1JGshuBjGp6nxKUy1jMgE3zPqN7fQdg==}
     hasBin: true
@@ -9654,7 +9617,7 @@ packages:
       '@babel/generator': 7.23.3
       '@babel/parser': 7.23.3
       '@babel/plugin-transform-react-jsx': 7.23.4(@babel/core@7.23.3)
-      '@babel/traverse': 7.23.3
+      '@babel/traverse': 7.23.3(supports-color@5.5.0)
       '@babel/types': 7.23.3
       '@types/babel__core': 7.20.4
       acorn: 8.11.2
@@ -9664,7 +9627,7 @@ packages:
       clsx: 2.0.0
       common-ancestor-path: 1.0.1
       cookie: 0.5.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       deterministic-object-hash: 1.3.1
       devalue: 4.3.2
       diff: 5.1.0
@@ -10208,7 +10171,7 @@ packages:
   /capnp-ts@0.7.0:
     resolution: {integrity: sha512-XKxXAC3HVPv7r674zP0VC3RTXz+/JKhfyw94ljvF80yynK6VkTnqE3jMuN8b3dUVmmc43TjyxjW4KTsmB3c86g==}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       tslib: 2.6.2
     transitivePeerDependencies:
       - supports-color
@@ -10335,11 +10298,6 @@ packages:
     resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
     dev: false
 
-  /clean-stack@2.2.0:
-    resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
-    engines: {node: '>=6'}
-    dev: false
-
   /cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
     engines: {node: '>=10'}
@@ -10375,20 +10333,12 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /cli-truncate@2.1.0:
-    resolution: {integrity: sha512-n8fOixwDD6b/ObinzTrp1ZKFzbgvKZvuz/TvejnLn1aQfC6r52XEx85FmuC+3HI+JM7coBRXUvNqEU2PHVrHpg==}
-    engines: {node: '>=8'}
-    dependencies:
-      slice-ansi: 3.0.0
-      string-width: 4.2.3
-    dev: false
-
-  /cli-truncate@3.1.0:
-    resolution: {integrity: sha512-wfOBkjXteqSnI59oPcJkcPl/ZmwvMMOj340qUIY1SKZCv0B9Cf4D4fAucRkIKQmsIuYK3x1rrgU7MeGRruiuiA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+  /cli-truncate@4.0.0:
+    resolution: {integrity: sha512-nPdaFdQ0h/GEigbPClz11D0v/ZJEwxmeVZGeMo3Z5StPtUTkA9o1lD6QwoirYiSDzbcwn2XcjwmCp68W1IS4TA==}
+    engines: {node: '>=18'}
     dependencies:
       slice-ansi: 5.0.0
-      string-width: 5.1.2
+      string-width: 7.1.0
     dev: false
 
   /client-only@0.0.1:
@@ -10555,10 +10505,6 @@ packages:
       color-string: 1.9.1
     dev: false
 
-  /colorette@1.4.0:
-    resolution: {integrity: sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==}
-    dev: false
-
   /colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
     dev: false
@@ -10602,11 +10548,6 @@ packages:
   /commander@5.1.0:
     resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
     engines: {node: '>= 6'}
-    dev: false
-
-  /commander@8.3.0:
-    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
-    engines: {node: '>= 12'}
     dev: false
 
   /commander@9.4.1:
@@ -11014,19 +10955,6 @@ packages:
     dependencies:
       ms: 2.1.2
       supports-color: 5.5.0
-    dev: false
-
-  /debug@4.3.4(supports-color@8.1.1):
-    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.1.2
-      supports-color: 8.1.1
 
   /decamelize-keys@1.1.1:
     resolution: {integrity: sha512-WiPxgEirIV0/eIOMcnFBA3/IJZAZqKnwAwWyvvdi4lsr1WCN22nhdf/3db3DoZcUjTV2SqfzIwNyp6y2xs3nmg==}
@@ -11771,7 +11699,7 @@ packages:
     peerDependencies:
       esbuild: '>=0.12 <1'
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       esbuild: 0.18.20
     transitivePeerDependencies:
       - supports-color
@@ -11782,7 +11710,7 @@ packages:
     peerDependencies:
       esbuild: '>=0.12 <1'
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       esbuild: 0.19.5
     transitivePeerDependencies:
       - supports-color
@@ -12040,7 +11968,7 @@ packages:
       eslint: '*'
       eslint-plugin-import: '*'
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       enhanced-resolve: 5.15.0
       eslint: 8.53.0
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.11.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.53.0)
@@ -12385,7 +12313,7 @@ packages:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.3
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       doctrine: 3.0.0
       escape-string-regexp: 4.0.0
       eslint-scope: 7.2.2
@@ -12432,7 +12360,7 @@ packages:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.3
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       doctrine: 3.0.0
       escape-string-regexp: 4.0.0
       eslint-scope: 7.2.2
@@ -12915,7 +12843,7 @@ packages:
       debug:
         optional: true
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -13065,6 +12993,11 @@ packages:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
 
+  /get-east-asian-width@1.2.0:
+    resolution: {integrity: sha512-2nk+7SIVb14QrgXFHcm84tD4bKQz0RxPuMT8Ag5KPOq7J5fEmAg0UbXdTOSHqNuHSU28k55qnceesxXRZGzKWA==}
+    engines: {node: '>=18'}
+    dev: false
+
   /get-intrinsic@1.2.2:
     resolution: {integrity: sha512-0gSo4ml/0j98Y3lngkFEot/zhiCeWsbYIlZ+uZOVgzLyLaUw7wxUL+nCTP0XJvJg1AXulJRI3UJi8GsbDuxdGA==}
     dependencies:
@@ -13077,7 +13010,7 @@ packages:
     resolution: {integrity: sha512-Pu3pnJfnYuLEhwJgMlFqk19ugvtazzTxh7rg8wATaBL4c5Fy4ahM5B+bGdluiNSNYYK89F5vSa+N3sTa/qqtlg==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       decompress-response: 7.0.0
       follow-redirects: 1.15.3(debug@4.3.4)
       into-stream: 6.0.0
@@ -13094,10 +13027,6 @@ packages:
   /get-nonce@1.0.1:
     resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
     engines: {node: '>=6'}
-    dev: false
-
-  /get-own-enumerable-property-symbols@3.0.2:
-    resolution: {integrity: sha512-I0UBV/XOz1XkIJHEUDMZAbzCThU/H8DxmSfmdGcKPnVhu2VfFqr34jr9777IyaTYvxjedWhqVIilEDsCdP5G6g==}
     dev: false
 
   /get-package-type@0.1.0:
@@ -13834,7 +13763,7 @@ packages:
     dependencies:
       '@tootallnate/once': 2.0.0
       agent-base: 6.0.2
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -13844,7 +13773,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -13879,12 +13808,6 @@ packages:
   /husky@8.0.3:
     resolution: {integrity: sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==}
     engines: {node: '>=14'}
-    hasBin: true
-    dev: false
-
-  /husky@9.0.7:
-    resolution: {integrity: sha512-vWdusw+y12DUEeoZqW1kplOFqk3tedGV8qlga8/SF6a3lOiWLqGZZQvfWvY0fQYdfiRi/u1DFNpudTSV9l1aCg==}
-    engines: {node: '>=18'}
     hasBin: true
     dev: false
 
@@ -13978,7 +13901,7 @@ packages:
       canonicalize: 1.0.8
       chalk: 4.1.2
       cross-fetch: 4.0.0(encoding@0.1.13)
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       h3: 1.8.2
       hash.js: 1.1.7
       json-stringify-safe: 5.0.1
@@ -14177,6 +14100,13 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
+  /is-fullwidth-code-point@5.0.0:
+    resolution: {integrity: sha512-OVa3u9kkBbw7b8Xw5F9P+D/T9X+Z4+JruYVNapTjPYZYUznQ5YfWeFkOj606XYYW8yugTfC8Pj0hYqvi4ryAhA==}
+    engines: {node: '>=18'}
+    dependencies:
+      get-east-asian-width: 1.2.0
+    dev: false
+
   /is-generator-fn@2.1.0:
     resolution: {integrity: sha512-cTIB4yPYL/Grw0EaSzASzg6bBy9gqCofvWN8okThAYIxKJZC+udlRAmGbM0XLeniEJSs8uEgHPGuHSe1XsOLSQ==}
     engines: {node: '>=6'}
@@ -14245,11 +14175,6 @@ packages:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
 
-  /is-obj@1.0.1:
-    resolution: {integrity: sha512-l4RyHgRqGN4Y3+9JHVrNqO+tN0rV5My76uW5/nuO4K1b6vw5G8d/cmFjP9tRfEsdhZNt0IFdZuK/c2Vr4Nb+Qg==}
-    engines: {node: '>=0.10.0'}
-    dev: false
-
   /is-obj@2.0.0:
     resolution: {integrity: sha512-drqDG3cbczxxEJRoOXcOjtdp1J/lyp1mNn0xaznRs8+muBhgQcrnbspox5X5fOw0HnMnbfDzvnEMEtqDEJEo8w==}
     engines: {node: '>=8'}
@@ -14297,11 +14222,6 @@ packages:
     dependencies:
       call-bind: 1.0.5
       has-tostringtag: 1.0.0
-
-  /is-regexp@1.0.0:
-    resolution: {integrity: sha512-7zjFAPO4/gwyQAAgRRmqeEeyIICSdmCqa3tsVHMdBzaXXRiqopZL4Cyghg/XulGWrtABTpbnYYzzIRffLkP4oA==}
-    engines: {node: '>=0.10.0'}
-    dev: false
 
   /is-retina@1.0.3:
     resolution: {integrity: sha512-/tCmbIETZwCd8uHWO+GvbRa7jxwHFHdfetHfiwoP0aN9UDf3prUJMtKn7iBFYipYhqY1bSTjur8hC/Dakt8eyw==}
@@ -14482,7 +14402,7 @@ packages:
     resolution: {integrity: sha512-n3s8EwkdFIJCG3BPKBYvskgXGoy88ARzvegkitk60NxRdwltLOTaH7CUiMRXvwYorl0Q712iEjcWB+fK/MrWVw==}
     engines: {node: '>=10'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       istanbul-lib-coverage: 3.2.2
       source-map: 0.6.1
     transitivePeerDependencies:
@@ -15234,6 +15154,11 @@ packages:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
 
+  /lilconfig@3.0.0:
+    resolution: {integrity: sha512-K2U4W2Ff5ibV7j7ydLr+zLAkIg5JJ4lPn1Ltsdt+Tz/IjQ8buJ55pZAxoP34lqIiwtF9iAvtLv3JGv7CAyAg+g==}
+    engines: {node: '>=14'}
+    dev: false
+
   /linebreak@1.1.0:
     resolution: {integrity: sha512-MHp03UImeVhB7XZtjd0E4n6+3xr5Dq/9xI/5FptGk5FrbDR3zagPa2DS6U8ks/3HjbKWG9Q1M2ufOzxV2qLYSQ==}
     dependencies:
@@ -15244,37 +15169,17 @@ packages:
   /lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  /lint-staged@11.2.6:
-    resolution: {integrity: sha512-Vti55pUnpvPE0J9936lKl0ngVeTdSZpEdTNhASbkaWX7J5R9OEifo1INBGQuGW4zmy6OG+TcWPJ3m5yuy5Q8Tg==}
-    hasBin: true
-    dependencies:
-      cli-truncate: 2.1.0
-      colorette: 1.4.0
-      commander: 8.3.0
-      cosmiconfig: 7.1.0
-      debug: 4.3.4(supports-color@8.1.1)
-      enquirer: 2.4.1
-      execa: 5.1.1
-      listr2: 3.14.0(enquirer@2.4.1)
-      micromatch: 4.0.5
-      normalize-path: 3.0.0
-      please-upgrade-node: 3.2.0
-      string-argv: 0.3.1
-      stringify-object: 3.3.0
-      supports-color: 8.1.1
-    dev: false
-
-  /lint-staged@15.1.0:
-    resolution: {integrity: sha512-ZPKXWHVlL7uwVpy8OZ7YQjYDAuO5X4kMh0XgZvPNxLcCCngd0PO5jKQyy3+s4TL2EnHoIXIzP1422f/l3nZKMw==}
+  /lint-staged@15.2.1:
+    resolution: {integrity: sha512-dhwAPnM85VdshybV9FWI/9ghTvMLoQLEXgVMx+ua2DN7mdfzd/tRfoU2yhMcBac0RHkofoxdnnJUokr8s4zKmQ==}
     engines: {node: '>=18.12.0'}
     hasBin: true
     dependencies:
       chalk: 5.3.0
       commander: 11.1.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       execa: 8.0.1
-      lilconfig: 2.1.0
-      listr2: 7.0.2
+      lilconfig: 3.0.0
+      listr2: 8.0.1
       micromatch: 4.0.5
       pidtree: 0.6.0
       string-argv: 0.3.2
@@ -15295,36 +15200,16 @@ packages:
     resolution: {integrity: sha512-3mk/Zag0+IJxeDrxSgaDPy4zZ3w05PRZeJNnlWhzFz5OkX49J4krc+A8X2d2M69vGMBEX0uyl8M+W+8gH+kBqQ==}
     dev: false
 
-  /listr2@3.14.0(enquirer@2.4.1):
-    resolution: {integrity: sha512-TyWI8G99GX9GjE54cJ+RrNMcIFBfwMPxc3XTFiAYGN4s10hWROGtOg7+O6u6LE3mNkyld7RSLE6nrKBvTfcs3g==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      enquirer: '>= 2.3.0 < 3'
-    peerDependenciesMeta:
-      enquirer:
-        optional: true
+  /listr2@8.0.1:
+    resolution: {integrity: sha512-ovJXBXkKGfq+CwmKTjluEqFi3p4h8xvkxGQQAQan22YCgef4KZ1mKGjzfGh6PL6AW5Csw0QiQPNuQyH+6Xk3hA==}
+    engines: {node: '>=18.0.0'}
     dependencies:
-      cli-truncate: 2.1.0
-      colorette: 2.0.20
-      enquirer: 2.4.1
-      log-update: 4.0.0
-      p-map: 4.0.0
-      rfdc: 1.3.0
-      rxjs: 7.8.1
-      through: 2.3.8
-      wrap-ansi: 7.0.0
-    dev: false
-
-  /listr2@7.0.2:
-    resolution: {integrity: sha512-rJysbR9GKIalhTbVL2tYbF2hVyDnrf7pFUZBwjPaMIdadYHmeT+EVi/Bu3qd7ETQPahTotg2WRCatXwRBW554g==}
-    engines: {node: '>=16.0.0'}
-    dependencies:
-      cli-truncate: 3.1.0
+      cli-truncate: 4.0.0
       colorette: 2.0.20
       eventemitter3: 5.0.1
-      log-update: 5.0.1
+      log-update: 6.0.0
       rfdc: 1.3.0
-      wrap-ansi: 8.1.0
+      wrap-ansi: 9.0.0
     dev: false
 
   /load-tsconfig@0.2.5:
@@ -15456,25 +15341,15 @@ packages:
       is-unicode-supported: 1.3.0
     dev: false
 
-  /log-update@4.0.0:
-    resolution: {integrity: sha512-9fkkDevMefjg0mmzWFBW8YkFP91OrizzkW3diF7CpG+S2EYdy4+TVfGwz1zeF8x7hCx1ovSPTOE9Ngib74qqUg==}
-    engines: {node: '>=10'}
+  /log-update@6.0.0:
+    resolution: {integrity: sha512-niTvB4gqvtof056rRIrTZvjNYE4rCUzO6X/X+kYjd7WFxXeJ0NwEFnRxX6ehkvv3jTwrXnNdtAak5XYZuIyPFw==}
+    engines: {node: '>=18'}
     dependencies:
-      ansi-escapes: 4.3.2
-      cli-cursor: 3.1.0
-      slice-ansi: 4.0.0
-      wrap-ansi: 6.2.0
-    dev: false
-
-  /log-update@5.0.1:
-    resolution: {integrity: sha512-5UtUDQ/6edw4ofyljDNcOVJQ4c7OjDro4h3y8e1GQL5iYElYclVHJ3zeWchylvMaKnDbDilC8irOVyexnA/Slw==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      ansi-escapes: 5.0.0
+      ansi-escapes: 6.2.0
       cli-cursor: 4.0.0
-      slice-ansi: 5.0.0
+      slice-ansi: 7.1.0
       strip-ansi: 7.1.0
-      wrap-ansi: 8.1.0
+      wrap-ansi: 9.0.0
     dev: false
 
   /long@5.2.3:
@@ -16587,7 +16462,7 @@ packages:
     resolution: {integrity: sha512-uD66tJj54JLYq0De10AhWycZWGQNUvDI55xPgk2sQM5kn1JYlhbCMTtEeT27+vAhW2FBQxLlOmS3pmA7/2z4aA==}
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       decode-named-character-reference: 1.0.2
       micromark-core-commonmark: 1.1.0
       micromark-factory-space: 1.1.0
@@ -16611,7 +16486,7 @@ packages:
     resolution: {integrity: sha512-o/sd0nMof8kYff+TqcDx3VSrgBTcZpSvYcAHIfHhv5VAuNmisCxjhx6YmxS8PFEpb9z5WKWKPdzf0jM23ro3RQ==}
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.0
@@ -17540,13 +17415,6 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /p-map@4.0.0:
-    resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
-    engines: {node: '>=10'}
-    dependencies:
-      aggregate-error: 3.1.0
-    dev: false
-
   /p-queue@2.4.2:
     resolution: {integrity: sha512-n8/y+yDJwBjoLQe1GSJbbaYQLTI7QHNZI2+rpmCDbe++WLf9HC3gf6iqj5yfPAV71W4UF3ql5W1+UBPXoXTxng==}
     engines: {node: '>=4'}
@@ -17829,12 +17697,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       find-up: 5.0.0
-    dev: false
-
-  /please-upgrade-node@3.2.0:
-    resolution: {integrity: sha512-gQR3WpIgNIKwBMVLkpMUeR3e1/E1y42bqDQZfql+kDeXd8COYfM8PQA4X6y7a8u9Ua9FHmsrrmirW2vHs45hWg==}
-    dependencies:
-      semver-compare: 1.0.0
     dev: false
 
   /pluralize-esm@9.0.5:
@@ -19540,10 +19402,6 @@ packages:
       semver: 6.3.1
     dev: false
 
-  /semver-compare@1.0.0:
-    resolution: {integrity: sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==}
-    dev: false
-
   /semver@5.7.2:
     resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
     hasBin: true
@@ -19771,30 +19629,20 @@ packages:
       tiny-warning: 1.0.3
     dev: false
 
-  /slice-ansi@3.0.0:
-    resolution: {integrity: sha512-pSyv7bSTC7ig9Dcgbw9AuRNUb5k5V6oDudjZoMBSr13qpLBG7tB+zgCkARjq7xIUgdz5P1Qe8u+rSGdouOOIyQ==}
-    engines: {node: '>=8'}
-    dependencies:
-      ansi-styles: 4.3.0
-      astral-regex: 2.0.0
-      is-fullwidth-code-point: 3.0.0
-    dev: false
-
-  /slice-ansi@4.0.0:
-    resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
-    engines: {node: '>=10'}
-    dependencies:
-      ansi-styles: 4.3.0
-      astral-regex: 2.0.0
-      is-fullwidth-code-point: 3.0.0
-    dev: false
-
   /slice-ansi@5.0.0:
     resolution: {integrity: sha512-FC+lgizVPfie0kkhqUScwRu1O/lF6NOgJmlCgK+/LYxDCTk8sGelYaHDhFcDN+Sn3Cv+3VSa4Byeo+IMCzpMgQ==}
     engines: {node: '>=12'}
     dependencies:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 4.0.0
+    dev: false
+
+  /slice-ansi@7.1.0:
+    resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
+    engines: {node: '>=18'}
+    dependencies:
+      ansi-styles: 6.2.1
+      is-fullwidth-code-point: 5.0.0
     dev: false
 
   /smartwrap@2.0.2:
@@ -20023,11 +19871,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /string-argv@0.3.1:
-    resolution: {integrity: sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==}
-    engines: {node: '>=0.6.19'}
-    dev: false
-
   /string-argv@0.3.2:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
     engines: {node: '>=0.6.19'}
@@ -20064,6 +19907,15 @@ packages:
     dependencies:
       eastasianwidth: 0.2.0
       emoji-regex: 10.3.0
+      strip-ansi: 7.1.0
+    dev: false
+
+  /string-width@7.1.0:
+    resolution: {integrity: sha512-SEIJCWiX7Kg4c129n48aDRwLbFb2LJmXXFrWBG4NGaRtMQ3myKPKbwrD1BKqQn74oCoNMBVrfDEr5M9YxCsrkw==}
+    engines: {node: '>=18'}
+    dependencies:
+      emoji-regex: 10.3.0
+      get-east-asian-width: 1.2.0
       strip-ansi: 7.1.0
     dev: false
 
@@ -20127,15 +19979,6 @@ packages:
     dependencies:
       character-entities-html4: 2.1.0
       character-entities-legacy: 3.0.0
-    dev: false
-
-  /stringify-object@3.3.0:
-    resolution: {integrity: sha512-rHqiFh1elqCQ9WPLIC8I0Q/g/wj5J1eMkyoiD6eoQApWHP0FtlK7rqnhmabL5VUY9JQCcqwwvlOaSuutekgyrw==}
-    engines: {node: '>=4'}
-    dependencies:
-      get-own-enumerable-property-symbols: 3.0.2
-      is-obj: 1.0.1
-      is-regexp: 1.0.0
     dev: false
 
   /strip-ansi@5.2.0:
@@ -20605,10 +20448,6 @@ packages:
       readable-stream: 3.6.2
     dev: false
 
-  /through@2.3.8:
-    resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
-    dev: false
-
   /timers-ext@0.1.7:
     resolution: {integrity: sha512-b85NUNzTSdodShTIbky6ZF02e8STtVVfD+fu4aXXShEELpozH+bCpJLYMPZbsABN2wDH7fJpqIoXxJpzbf0NqQ==}
     dependencies:
@@ -20803,7 +20642,7 @@ packages:
       bundle-require: 4.0.2(esbuild@0.17.19)
       cac: 6.7.14
       chokidar: 3.5.3
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       esbuild: 0.17.19
       execa: 5.1.1
       globby: 11.1.0
@@ -20840,7 +20679,7 @@ packages:
       bundle-require: 4.0.2(esbuild@0.17.19)
       cac: 6.7.14
       chokidar: 3.5.3
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4(supports-color@5.5.0)
       esbuild: 0.17.19
       execa: 5.1.1
       globby: 11.1.0
@@ -20981,11 +20820,6 @@ packages:
   /type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-    dev: false
-
-  /type-fest@1.4.0:
-    resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
-    engines: {node: '>=10'}
     dev: false
 
   /type-fest@2.19.0:
@@ -22060,6 +21894,15 @@ packages:
     dependencies:
       ansi-styles: 6.2.1
       string-width: 5.1.2
+      strip-ansi: 7.1.0
+    dev: false
+
+  /wrap-ansi@9.0.0:
+    resolution: {integrity: sha512-G8ura3S+3Z2G+mkgNRq8dqaFZAuxfsxpBB8OCTGRTCtp+l/v9nbFNmCUP1BZMts3G1142MsZfn6eeUKrr4PD1Q==}
+    engines: {node: '>=18'}
+    dependencies:
+      ansi-styles: 6.2.1
+      string-width: 7.1.0
       strip-ansi: 7.1.0
     dev: false
 

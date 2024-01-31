@@ -48,14 +48,7 @@
     "release": "changeset version",
     "pub:beta": "pnpm build && npm publish --tag beta",
     "pub:next": "pnpm build && npm publish --tag next",
-    "pub:release": "pnpm build && npm publish",
-    "prepare": "husky install",
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
-      "pnpm run format"
-    ]
+    "pub:release": "pnpm build && npm publish"
   },
   "dependencies": {
     "@clack/core": "^0.3.2",
@@ -67,9 +60,7 @@
     "fs-extra": "^11.1.1",
     "gradient-string": "^2.0.2",
     "ora": "6.3.1",
-    "sort-package-json": "^2.4.1",
-    "husky": "^9.0.7",
-    "lint-staged": "^11.2.6"
+    "sort-package-json": "^2.4.1"
   },
   "devDependencies": {
     "@auth/drizzle-adapter": "^0.3.6",
