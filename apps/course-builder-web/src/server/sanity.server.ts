@@ -3,7 +3,7 @@ import { Logger } from 'next-axiom'
 
 export async function sanityMutation(
   mutations: any[],
-  config: { returnDocuments: boolean } = { returnDocuments: false },
+  config: { returnDocuments?: boolean; revalidate?: number } = { returnDocuments: false },
 ) {
   const log = new Logger()
   return await fetch(
@@ -15,7 +15,7 @@ export async function sanityMutation(
         Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
       },
       body: JSON.stringify({ mutations }),
-      next: { revalidate: 60 }, //seconds
+      next: { ...(config.revalidate && { revalidate: config.revalidate }) }, //seconds
     },
   )
     .then(async (response) => {
@@ -43,7 +43,6 @@ export async function sanityQuery<T = any>(
   query: string,
   options: { useCdn?: boolean; revalidate?: number; tags?: string[] } = {
     useCdn: true,
-    revalidate: 10,
     tags: [],
   },
 ): Promise<T> {
@@ -57,7 +56,7 @@ export async function sanityQuery<T = any>(
       headers: {
         Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
       },
-      next: { revalidate: options.revalidate, tags: options.tags }, //seconds
+      next: { ...(options.revalidate && { revalidate: options.revalidate }), tags: options.tags }, //seconds
     },
   )
     .then(async (response) => {

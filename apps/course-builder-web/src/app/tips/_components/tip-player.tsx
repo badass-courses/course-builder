@@ -1,25 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import { api } from '@/trpc/react'
+import type { VideoResource } from '@/inngest/functions/transcript-ready'
 import { type MuxPlayerProps } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function TipPlayer({
-  videoResourceId,
   muxPlaybackId,
+  videoResource,
   className,
 }: {
-  videoResourceId: string
   muxPlaybackId?: string
+  videoResource: VideoResource
   className?: string
 }) {
-  const { data: videoResource } = api.videoResources.getById.useQuery({
-    videoResourceId,
-  })
-
   const playerProps = {
     id: 'mux-player',
     defaultHiddenCaptions: true,
