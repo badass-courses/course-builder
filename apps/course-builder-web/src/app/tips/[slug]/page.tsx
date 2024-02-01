@@ -89,8 +89,8 @@ function PlayerContainerSkeleton() {
     <div className="relative z-10 flex items-center justify-center">
       <div className="flex w-full max-w-screen-lg flex-col">
         <div className="relative aspect-[16/9]">
-          <div className="flex items-center justify-center  overflow-hidden shadow-gray-600/40 sm:shadow-2xl xl:rounded-b-md">
-            <div className="h-96 w-full bg-gray-300" />
+          <div className="flex items-center justify-center  overflow-hidden">
+            <div className="h-full w-full bg-gray-100" />
           </div>
         </div>
       </div>
@@ -117,12 +117,9 @@ async function PlayerContainer({ slug }: { slug: string }) {
       <div className="flex w-full max-w-screen-lg flex-col">
         <div className="relative aspect-[16/9]">
           <div
-            className={cn(
-              'flex items-center justify-center  overflow-hidden shadow-gray-600/40 sm:shadow-2xl xl:rounded-b-md',
-              {
-                hidden: displayOverlay,
-              },
-            )}
+            className={cn('flex items-center justify-center  overflow-hidden', {
+              hidden: displayOverlay,
+            })}
           >
             <TipPlayer videoResource={videoResource} />
           </div>
