@@ -10,6 +10,7 @@ import { FeedbackMarker } from '@/lib/feedback-marker'
 import { cn } from '@/lib/utils'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ResetIcon } from '@radix-ui/react-icons'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -43,12 +44,14 @@ import { CloudinaryUploadWidget } from './cloudinary-upload-widget'
 export function EditArticleForm({ article }: { article: Article }) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const router = useRouter()
+  const defaultSocialImage = `/${article.slug}/opengraph-image`
 
   const form = useForm<z.infer<typeof ArticleSchema>>({
     resolver: zodResolver(ArticleSchema),
     defaultValues: {
       ...article,
       description: article.description ?? '',
+      socialImage: article.socialImage || defaultSocialImage,
     },
   })
 
@@ -187,7 +190,48 @@ export function EditArticleForm({ article }: { article: Article }) {
                   <FormItem className="px-5">
                     <FormLabel>Short Description</FormLabel>
                     <FormDescription>Used as a short &quot;SEO&quot; summary on Twitter cards etc.</FormDescription>
-                    <Textarea {...field} />
+                    <Textarea {...field} value={field.value?.toString()} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="socialImage"
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Social Image</FormLabel>
+                    <FormDescription>Used as a preview image on Twitter cards etc.</FormDescription>
+                    <img
+                      alt={`social image preview for ${article.title}`}
+                      width={1200 / 2}
+                      height={630 / 2}
+                      className="aspect-[1200/630] rounded-md border"
+                      src={form.watch('socialImage')?.toString()}
+                    />
+                    <div className="flex items-center gap-1">
+                      <Input
+                        {...field}
+                        value={field.value?.toString()}
+                        onDrop={(event) => {
+                          // remove markdown image syntax
+                          const url = event.dataTransfer.getData('text/plain').replace(/!\[(.*?)\]\((.*?)\)/, '$2')
+                          return form.setValue('socialImage', url)
+                        }}
+                      />
+                      <Button
+                        title="Reset to default"
+                        disabled={form.watch('socialImage') === defaultSocialImage}
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          form.setValue('socialImage', defaultSocialImage)
+                        }}
+                      >
+                        <ResetIcon />
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
