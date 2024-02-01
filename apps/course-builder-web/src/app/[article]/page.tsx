@@ -64,9 +64,14 @@ async function Article({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="mt-4 pb-32">
-      <ReactMarkdown className="prose dark:prose-invert">{article.body}</ReactMarkdown>
-      <ReactMarkdown>{article.description}</ReactMarkdown>
+    <div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
+      <ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">{article.body}</ReactMarkdown>
+      <aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
+        <div className="border-t pt-5">
+          <strong>Description</strong>
+          <ReactMarkdown>{article.description}</ReactMarkdown>
+        </div>
+      </aside>
     </div>
   )
 }
@@ -74,7 +79,7 @@ async function Article({ slug }: { slug: string }) {
 async function ArticleTitle({ slug }: { slug: string }) {
   const article = await getArticle(slug)
 
-  return <h1 className="text-3xl font-bold">{article?.title}</h1>
+  return <h1 className="text-3xl font-bold sm:text-4xl">{article?.title}</h1>
 }
 
 export default async function ArticlePage({ params }: { params: { article: string } }) {
@@ -83,7 +88,7 @@ export default async function ArticlePage({ params }: { params: { article: strin
       <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
         <ArticleActionBar slug={params.article} />
       </Suspense>
-      <article className="flex flex-col p-5 sm:p-10">
+      <article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
         <ArticleTitle slug={params.article} />
         <Article slug={params.article} />
       </article>
