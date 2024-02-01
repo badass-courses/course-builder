@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { sanityQuery } from '@/server/sanity.server'
 import { z } from 'zod'
 
@@ -16,16 +17,17 @@ export const ArticleSchema = z.object({
   _updatedAt: z.string(),
   title: z.string().min(2).max(90),
   body: z.string().optional().nullable(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   slug: z.string(),
   state: ArticleStateSchema.default('draft'),
   visibility: ArticleVisibilitySchema.default('unlisted'),
+  socialImage: z.string().optional().nullable(),
 })
 
 export type Article = z.infer<typeof ArticleSchema>
 
 export async function getArticle(slugOrId: string) {
-  return sanityQuery<Article | null>(
+  const article = await sanityQuery<Article | null>(
     `*[_type == "article" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
           _id,
           _type,
@@ -36,7 +38,10 @@ export async function getArticle(slugOrId: string) {
           visibility,
           "slug": slug.current,
           state,
+          socialImage,
   }`,
     { tags: ['articles', slugOrId] },
   )
+
+  return ArticleSchema.parse(article)
 }
