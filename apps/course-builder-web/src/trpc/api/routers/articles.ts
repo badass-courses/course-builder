@@ -8,6 +8,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import { toChicagoTitleCase } from '@/utils/chicagor-title'
+import { getOGImageUrlForTitle } from '@/utils/get-og-image-for-title'
 import slugify from '@sindresorhus/slugify'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
@@ -73,7 +74,8 @@ export const articlesRouter = createTRPCRouter({
             _type: 'article',
             state: 'draft',
             visibility: 'unlisted',
-            title: toChicagoTitleCase(input.title),
+            socialImage: getOGImageUrlForTitle(input.title),
+            title: input.title,
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),
             },
@@ -100,6 +102,7 @@ export const articlesRouter = createTRPCRouter({
             set: {
               'slug.current': `${slugify(input.title)}~${nanoid()}`,
               title: toChicagoTitleCase(input.title),
+              socialImage: getOGImageUrlForTitle(input.title),
             },
           },
         },

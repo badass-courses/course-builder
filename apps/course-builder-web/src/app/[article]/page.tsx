@@ -23,7 +23,7 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
     return parent as Metadata
   }
 
-  const customOgImage = article.socialImage
+  const customOgImage = article.socialImage || getOGImageUrlForTitle(article.title)
 
   return {
     title: article.title,
