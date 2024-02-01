@@ -17,7 +17,8 @@ const TipSchema = z.object({
 export type Tip = z.infer<typeof TipSchema>
 
 export async function getTip(slugOrId: string) {
-  return await sanityQuery<Tip | null>(`*[_type == "tip" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
+  return await sanityQuery<Tip | null>(
+    `*[_type == "tip" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
           _id,
           _type,
           "_updatedAt": ^._updatedAt,
@@ -28,14 +29,17 @@ export async function getTip(slugOrId: string) {
           "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
           "transcript": resources[@->._type == 'videoResource'][0]->transcript,
           "slug": slug.current,
-  }`)
+  }`,
+    { tags: ['tips'] },
+  )
 }
 
 export async function getTipsModule() {
   return await sanityQuery<{
     _id: string
     tips: Tip[]
-  }>(`*[_type == "module" && moduleType == "tips"][0]{
+  }>(
+    `*[_type == "module" && moduleType == "tips"][0]{
     _id,
     "tips": coalesce(resources[@->._type == 'tip']->{
         _id,
@@ -49,5 +53,7 @@ export async function getTipsModule() {
         "transcript": resources[@->._type == 'videoResource'][0]->transcript,
         "slug": slug.current,
       }, [])
-  }`)
+  }`,
+    { tags: ['tips'] },
+  )
 }

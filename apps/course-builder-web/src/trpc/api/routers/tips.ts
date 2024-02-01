@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache'
 import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
@@ -106,6 +107,8 @@ export const tipsRouter = createTRPCRouter({
         },
       ])
 
+      revalidateTag('tips')
+
       return tip
     }),
   update: protectedProcedure
@@ -156,6 +159,8 @@ export const tipsRouter = createTRPCRouter({
         ],
         { returnDocuments: true },
       )
+
+      revalidateTag('tips')
 
       return await getTip(input.tipId)
     }),
