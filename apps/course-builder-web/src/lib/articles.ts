@@ -1,4 +1,3 @@
-import { env } from '@/env.mjs'
 import { sanityQuery } from '@/server/sanity.server'
 import { z } from 'zod'
 
@@ -43,5 +42,13 @@ export async function getArticle(slugOrId: string) {
     { tags: ['articles', slugOrId] },
   )
 
-  return ArticleSchema.parse(article)
+  const parsed = ArticleSchema.safeParse(article)
+
+  if (!parsed.success) {
+    console.error('Error parsing article', slugOrId)
+    console.error(parsed.error)
+    return null
+  } else {
+    return parsed.data
+  }
 }

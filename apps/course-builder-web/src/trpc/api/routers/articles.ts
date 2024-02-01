@@ -72,6 +72,7 @@ export const articlesRouter = createTRPCRouter({
             _id: newArticleId,
             _type: 'article',
             state: 'draft',
+            visibility: 'unlisted',
             title: toChicagoTitleCase(input.title),
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),

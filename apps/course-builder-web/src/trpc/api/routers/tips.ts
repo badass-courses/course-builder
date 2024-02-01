@@ -69,6 +69,8 @@ export const tipsRouter = createTRPCRouter({
             _id: newTipId,
             _type: 'tip',
             title: toChicagoTitleCase(input.title),
+            state: 'draft',
+            visibility: 'unlisted',
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),
             },

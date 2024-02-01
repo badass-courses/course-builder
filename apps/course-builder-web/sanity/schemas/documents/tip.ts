@@ -27,6 +27,20 @@ export default {
       },
     }),
     defineField({
+      name: 'visibility',
+      title: 'Visibility',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      initialValue: 'unlisted',
+      options: {
+        list: [
+          { title: 'public', value: 'public' },
+          { title: 'private', value: 'private' },
+          { title: 'unlisted', value: 'unlisted' },
+        ],
+      },
+    }),
+    defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
