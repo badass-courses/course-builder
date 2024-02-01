@@ -70,6 +70,9 @@ export function EditTipForm({ tip }: { tip: Tip }) {
     },
   })
   const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
+  const { data: videoResource } = api.videoResources.getById.useQuery({
+    videoResourceId: tip.videoResourceId,
+  })
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
     const updatedTip = await updateTip({ tipId: tip._id, ...values })
@@ -101,8 +104,7 @@ export function EditTipForm({ tip }: { tip: Tip }) {
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
             <div className="col-span-3 flex h-full flex-col border-r">
-              <TipPlayer videoResourceId={tip.videoResourceId} muxPlaybackId={tip.muxPlaybackId} />
-
+              {videoResource ? <TipPlayer videoResource={videoResource} /> : null}
               <FormField
                 control={form.control}
                 name="title"
