@@ -151,7 +151,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                 render={({ field }) => (
                   <FormItem className="px-5">
                     <FormLabel>Visibility</FormLabel>
-                    <Select {...field} onValueChange={field.onChange}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Choose state" />
