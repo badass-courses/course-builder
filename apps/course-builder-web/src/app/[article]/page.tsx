@@ -23,11 +23,9 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
     return parent as Metadata
   }
 
-  const customOgImage = article.socialImage || getOGImageUrlForResource(article)
-
   return {
     title: article.title,
-    openGraph: customOgImage ? { images: [customOgImage] } : {},
+    openGraph: { images: [getOGImageUrlForResource(article)] },
   }
 }
 

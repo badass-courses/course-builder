@@ -1,5 +1,4 @@
 import { revalidateTag } from 'next/cache'
-import { env } from '@/env.mjs'
 import { ARTICLE_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
@@ -8,7 +7,6 @@ import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import slugify from '@sindresorhus/slugify'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
@@ -108,7 +106,7 @@ export const articlesRouter = createTRPCRouter({
       ])
     }
 
-    const updatedArticle = await sanityMutation(
+    await sanityMutation(
       [
         {
           patch: {
@@ -125,17 +123,6 @@ export const articlesRouter = createTRPCRouter({
       ],
       { returnDocuments: true },
     ).then((res) => res.results[0].document)
-
-    await sanityMutation([
-      {
-        patch: {
-          id: input._id,
-          set: {
-            socialImage: getOGImageUrlForResource(updatedArticle),
-          },
-        },
-      },
-    ])
 
     revalidateTag('articles')
 

@@ -52,7 +52,7 @@ export function EditArticleForm({ article }: { article: Article }) {
     defaultValues: {
       ...article,
       description: article.description ?? '',
-      socialImage: article.socialImage || defaultSocialImage,
+      socialImage: defaultSocialImage,
     },
   })
 
