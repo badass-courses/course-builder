@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
 import { getArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
-import { getOGImageUrlForTitle } from '@/utils/get-og-image-for-title'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -23,7 +23,7 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
     return parent as Metadata
   }
 
-  const customOgImage = article.socialImage || getOGImageUrlForTitle(article.title)
+  const customOgImage = article.socialImage || getOGImageUrlForResource(article)
 
   return {
     title: article.title,

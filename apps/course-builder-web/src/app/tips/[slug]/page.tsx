@@ -9,7 +9,7 @@ import { getAbility } from '@/lib/ability'
 import { getTip } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
-import { getOGImageUrlForTitle } from '@/utils/get-og-image-for-title'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -29,7 +29,7 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
 
   const previousImages = (await parent).openGraph?.images || []
 
-  const ogImage = getOGImageUrlForTitle(tip.title)
+  const ogImage = getOGImageUrlForResource(tip)
 
   return {
     title: tip.title,

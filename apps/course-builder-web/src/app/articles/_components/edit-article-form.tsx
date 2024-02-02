@@ -4,13 +4,14 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
+import { env } from '@/env.mjs'
 import { useSocket } from '@/hooks/use-socket'
 import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { cn } from '@/lib/utils'
 import { api } from '@/trpc/react'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ResetIcon } from '@radix-ui/react-icons'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -44,7 +45,7 @@ import { CloudinaryUploadWidget } from './cloudinary-upload-widget'
 export function EditArticleForm({ article }: { article: Article }) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const router = useRouter()
-  const defaultSocialImage = `/${article.slug}/opengraph-image`
+  const defaultSocialImage = getOGImageUrlForResource(article)
 
   const form = useForm<z.infer<typeof ArticleSchema>>({
     resolver: zodResolver(ArticleSchema),
@@ -210,29 +211,8 @@ export function EditArticleForm({ article }: { article: Article }) {
                       src={form.watch('socialImage')?.toString()}
                     />
                     <div className="flex items-center gap-1">
-                      <Input
-                        {...field}
-                        value={field.value?.toString()}
-                        onDrop={(event) => {
-                          // remove markdown image syntax
-                          const url = event.dataTransfer.getData('text/plain').replace(/!\[(.*?)\]\((.*?)\)/, '$2')
-                          return form.setValue('socialImage', url)
-                        }}
-                      />
-                      <Button
-                        title="Reset to default"
-                        disabled={form.watch('socialImage') === defaultSocialImage}
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => {
-                          form.setValue('socialImage', defaultSocialImage)
-                        }}
-                      >
-                        <ResetIcon />
-                      </Button>
+                      <Input {...field} value={field.value?.toString()} type="hidden" />
                     </div>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
