@@ -1,10 +1,10 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
-import { env } from '@/env.mjs'
 import { useSocket } from '@/hooks/use-socket'
 import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
 import { FeedbackMarker } from '@/lib/feedback-marker'
@@ -88,6 +88,8 @@ export function EditArticleForm({ article }: { article: Article }) {
   const formValues = form.getValues()
 
   const watcher = form.watch(['title', 'body'])
+
+  const currentSocialImage = form.watch('socialImage')
 
   return (
     <Form {...form}>
@@ -203,13 +205,15 @@ export function EditArticleForm({ article }: { article: Article }) {
                   <FormItem className="px-5">
                     <FormLabel>Social Image</FormLabel>
                     <FormDescription>Used as a preview image on Twitter cards etc.</FormDescription>
-                    <img
-                      alt={`social image preview for ${article.title}`}
-                      width={1200 / 2}
-                      height={630 / 2}
-                      className="aspect-[1200/630] rounded-md border"
-                      src={form.watch('socialImage')?.toString()}
-                    />
+                    {currentSocialImage && (
+                      <Image
+                        alt={`social image preview for ${article.title}`}
+                        width={1200 / 2}
+                        height={630 / 2}
+                        className="aspect-[1200/630] rounded-md border"
+                        src={currentSocialImage.toString()}
+                      />
+                    )}
                     <div className="flex items-center gap-1">
                       <Input {...field} value={field.value?.toString()} type="hidden" />
                     </div>
@@ -230,7 +234,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                       value={article.body || ''}
                       onChange={async (data) => {
                         form.setValue('body', data)
-                        generateFeedback({
+                        await generateFeedback({
                           resourceId: article._id,
                           body: data,
                           currentFeedback: feedbackMarkers,
