@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
@@ -206,7 +205,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                     <FormLabel>Social Image</FormLabel>
                     <FormDescription>Used as a preview image on Twitter cards etc.</FormDescription>
                     {currentSocialImage && (
-                      <Image
+                      <img
                         alt={`social image preview for ${article.title}`}
                         width={1200 / 2}
                         height={630 / 2}
