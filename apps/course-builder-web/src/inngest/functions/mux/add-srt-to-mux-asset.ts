@@ -1,10 +1,10 @@
 import { env } from '@/env.mjs'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
-import { VideoResourceSchema } from '@/inngest/functions/transcript-ready'
 import { inngest } from '@/inngest/inngest.server'
+import { VideoResourceSchema } from '@/lib/video-resource'
 import { sanityQuery } from '@/server/sanity.server'
 
-const COOLDOWN = 10000
+const COOLDOWN = 20000
 
 export const addSrtToMuxAsset = inngest.createFunction(
   {
@@ -77,13 +77,15 @@ export const addSrtToMuxAsset = inngest.createFunction(
         })
 
         return { muxAsset, videoResource }
-      } else {
-        await step.sleep('wait for 10 seconds', COOLDOWN)
+      } else if (muxAsset.status !== 'errored') {
+        await step.sleep(`wait for ${COOLDOWN / 1000} seconds`, COOLDOWN)
         await step.sendEvent('Re-run After Cool Down', {
           name: MUX_SRT_READY_EVENT,
           data: event.data,
         })
         return 'asset not ready yet'
+      } else {
+        throw new Error('Mux Asset is in errored state')
       }
     }
   },

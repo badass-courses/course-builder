@@ -1,4 +1,4 @@
-import { type VideoResource } from '@/inngest/functions/transcript-ready'
+import { type VideoResource } from '@/lib/video-resource'
 import { sanityQuery } from '@/server/sanity.server'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
@@ -7,7 +7,7 @@ export const videoResourceRouter = createTRPCRouter({
   getById: publicProcedure
     .input(
       z.object({
-        videoResourceId: z.string(),
+        videoResourceId: z.string().nullable(),
         moduleSlug: z.string().optional(),
       }),
     )

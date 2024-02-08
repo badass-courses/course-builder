@@ -42,22 +42,64 @@ const NewTipFormSchema = z.object({
 
 export function EditTipForm({ tip }: { tip: Tip }) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
+  const [transcript, setTranscript] = React.useState<string | null>(tip.transcript)
+  const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
 
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
+  const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
+  const { data: videoResource, refetch: refetchVideoResource } = api.videoResources.getById.useQuery(
+    {
+      videoResourceId,
+    },
+    {
+      refetchInterval: 10000,
+    },
+  )
 
   useSocket({
     room: tip._id,
     onMessage: async (messageEvent) => {
       try {
         const data = JSON.parse(messageEvent.data)
-        const invalidateOn = ['ai.feedback.markers.generated']
 
-        if (invalidateOn.includes(data.name)) {
-          setFeedbackMarkers(data.body)
+        switch (data.name) {
+          case 'ai.feedback.markers.generated':
+            setFeedbackMarkers(data.body)
+            break
+          default:
+            break
         }
       } catch (error) {
-        // noting to do
+        // nothing to do
+      }
+    },
+  })
+
+  useSocket({
+    room: videoResourceId,
+    onMessage: async (messageEvent) => {
+      try {
+        const data = JSON.parse(messageEvent.data)
+
+        switch (data.name) {
+          case 'video.asset.ready':
+          case 'videoResource.created':
+            if (data.body.id) {
+              setVideoResourceId(data.body.id)
+            }
+
+            refetchVideoResource()
+
+            break
+          case 'transcript.ready':
+            setTranscript(data.body)
+            break
+          default:
+            break
+        }
+      } catch (error) {
+        // nothing to do
       }
     },
   })
@@ -68,10 +110,6 @@ export function EditTipForm({ tip }: { tip: Tip }) {
       title: tip.title,
       body: tip.body,
     },
-  })
-  const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
-  const { data: videoResource } = api.videoResources.getById.useQuery({
-    videoResourceId: tip.videoResourceId,
   })
 
   const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
@@ -104,7 +142,31 @@ export function EditTipForm({ tip }: { tip: Tip }) {
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
             <div className="col-span-3 flex h-full flex-col border-r">
-              {videoResource ? <TipPlayer videoResource={videoResource} /> : null}
+              {videoResource ? (
+                <>
+                  <div className="relative z-10 flex items-center justify-center">
+                    <div className="flex w-full max-w-screen-lg flex-col">
+                      <div className="relative aspect-[16/9]">
+                        <div className={cn('flex items-center justify-center  overflow-hidden')}>
+                          <TipPlayer videoResource={videoResource} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-xs">video is {videoResource.state}</div>
+                </>
+              ) : (
+                <>
+                  <div className="relative z-10 flex items-center justify-center">
+                    <div className="flex w-full max-w-screen-lg flex-col">
+                      <div className="relative aspect-[16/9]">
+                        <div className={cn('flex items-center justify-center  overflow-hidden')}></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-xs">video is loading</div>
+                </>
+              )}
               <FormField
                 control={form.control}
                 name="title"
@@ -120,12 +182,12 @@ export function EditTipForm({ tip }: { tip: Tip }) {
                 )}
               />
               <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">{tip._id}</div>
-              {tip.transcript ? (
-                <div className="p-5">
-                  <h3 className="font-bold">Transcript</h3>
-                  <ReactMarkdown className="prose dark:prose-invert">{tip.transcript}</ReactMarkdown>
-                </div>
-              ) : null}
+              <div className="p-5">
+                <h3 className="font-bold">Transcript</h3>
+                <ReactMarkdown className="prose dark:prose-invert">
+                  {transcript ? transcript : 'Transcript Processing'}
+                </ReactMarkdown>
+              </div>
             </div>
             <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
               <FormField

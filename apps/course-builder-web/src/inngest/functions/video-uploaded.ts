@@ -1,5 +1,7 @@
 import { utapi } from '@/app/api/uploadthing/core'
 import { env } from '@/env.mjs'
+import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/events/video-resource'
+import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
 import { orderDeepgramTranscript } from '@/lib/deepgram-order-transcript'
@@ -15,7 +17,7 @@ export const videoUploaded = inngest.createFunction(
     const muxAsset = await step.run('create the mux asset', async () => {
       return createMuxAsset({
         url: event.data.originalMediaUrl,
-        passthrough: event.data.fileName,
+        passthrough: event.data.resourceId || event.data.fileName,
       })
     })
 
@@ -106,7 +108,7 @@ export const videoUploaded = inngest.createFunction(
       await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResource._id}`, {
         method: 'POST',
         body: JSON.stringify({
-          body: `Video Resource Created: ${event.data.fileName}`,
+          body: videoResource,
           requestId: event.data.fileName,
           name: 'videoResource.created',
         }),
@@ -115,20 +117,25 @@ export const videoUploaded = inngest.createFunction(
       })
     })
 
-    const deepgram = await step.run('Order Transcript [Deepgram]', async () => {
-      return await orderDeepgramTranscript({
+    await step.sendEvent('order transcript for new video resource', {
+      name: VIDEO_RESOURCE_CREATED_EVENT,
+      data: {
         moduleSlug: event.data.moduleSlug,
-        mediaUrl: event.data.originalMediaUrl,
-        videoResourceId: event.data.fileName,
-      })
+        originalMediaUrl: event.data.originalMediaUrl,
+        videoResourceId: videoResource._id,
+      },
     })
 
     if (event.data.fileKey) {
-      await step.run('delete file from uploadthing', async () => {
-        return utapi.deleteFiles(event.data.fileKey as string)
+      await step.sendEvent('remove video from uploadthing when done', {
+        name: VIDEO_STATUS_CHECK_EVENT,
+        data: {
+          fileKey: event.data.fileKey,
+          videoResourceId: videoResource._id,
+        },
       })
     }
 
-    return { data: event.data, videoResource, muxAsset, deepgram }
+    return { data: event.data, videoResource, muxAsset }
   },
 )

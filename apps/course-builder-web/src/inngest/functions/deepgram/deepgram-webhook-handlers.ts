@@ -1,25 +1,20 @@
 import { env } from '@/env.mjs'
+import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
-import { TRANSCRIPT_READY_EVENT } from '@/inngest/events/transcript-requested'
 import { inngest } from '@/inngest/inngest.server'
+import { srtFromTranscriptResult, transcriptAsParagraphsWithTimestamps } from '@/lib/deepgram-results-processor'
+import { VideoResourceSchema } from '@/lib/video-resource'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
-import z from 'zod'
 
-export const VideoResourceSchema = z.object({
-  _id: z.string(),
-  muxPlaybackId: z.string().optional(),
-  muxAssetId: z.string().optional(),
-  transcript: z.string().optional(),
-  srt: z.string().optional(),
-  state: z.enum(['new', 'processing', 'preparing', 'ready', 'errored']),
-})
-
-export type VideoResource = z.infer<typeof VideoResourceSchema>
-
-export const transcriptReady = inngest.createFunction(
-  { id: `transcript-ready`, name: 'Transcript Ready' },
-  { event: TRANSCRIPT_READY_EVENT },
+export const deepgramTranscriptReady = inngest.createFunction(
+  { id: `deepgram-transcript-ready-event`, name: 'Deepgram Transcript Ready' },
+  {
+    event: DEEPGRAM_WEBHOOK_EVENT,
+  },
   async ({ event, step }) => {
+    const srt = srtFromTranscriptResult(event.data.results)
+    const transcript = transcriptAsParagraphsWithTimestamps(event.data.results)
+
     const videoResource = await step.run('get the video resource from Sanity', async () => {
       const resourceTemp = VideoResourceSchema.safeParse(
         await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.videoResourceId}"][0]`),
@@ -34,9 +29,8 @@ export const transcriptReady = inngest.createFunction(
             patch: {
               id: videoResource._id,
               set: {
-                srt: event.data.srt,
-                transcript: event.data.transcript,
-                state: `ready`,
+                srt,
+                transcript,
               },
             },
           },
@@ -48,7 +42,7 @@ export const transcriptReady = inngest.createFunction(
         data: {
           videoResourceId: videoResource._id,
           moduleSlug: event.data.moduleSlug,
-          srt: event.data.srt,
+          srt,
         },
       })
     }
@@ -57,7 +51,7 @@ export const transcriptReady = inngest.createFunction(
       await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${event.data.videoResourceId}`, {
         method: 'POST',
         body: JSON.stringify({
-          body: event.data.transcript,
+          body: transcript,
           requestId: event.data.videoResourceId,
           name: 'transcript.ready',
         }),
@@ -66,6 +60,6 @@ export const transcriptReady = inngest.createFunction(
       })
     })
 
-    return event.data
+    return { srt, transcript }
   },
 )
