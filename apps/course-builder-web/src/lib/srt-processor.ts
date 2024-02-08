@@ -1,10 +1,27 @@
-export type Word = {
-  word: string
-  start: number
-  end: number
-  confidence: number
-  punctuated_word: string
-}
+import { z } from 'zod'
+
+export const ParagraphSchema = z.object({
+  text: z.string(),
+  sentences: z.array(
+    z.object({
+      end: z.number(),
+      start: z.number(),
+      text: z.string(),
+    }),
+  ),
+})
+
+export type Paragraph = z.infer<typeof ParagraphSchema>
+
+export const WordSchema = z.object({
+  word: z.string(),
+  start: z.number(),
+  end: z.number(),
+  confidence: z.number(),
+  punctuated_word: z.string(),
+})
+
+export type Word = z.infer<typeof WordSchema>
 
 function convertTime(inputSeconds?: number) {
   if (!inputSeconds) {

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import type { VideoResource } from '@/inngest/functions/transcript-ready'
+import { type VideoResource } from '@/lib/video-resource'
 import { type MuxPlayerProps } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
@@ -28,5 +28,9 @@ export function TipPlayer({
 
   const playbackId = muxPlaybackId || (videoResource?.state === 'ready' ? videoResource?.muxPlaybackId : undefined)
 
-  return <MuxPlayer playbackId={playbackId} className={cn(className)} {...playerProps} />
+  return (
+    <>
+      <MuxPlayer playbackId={playbackId} className={cn(className)} {...playerProps} />
+    </>
+  )
 }

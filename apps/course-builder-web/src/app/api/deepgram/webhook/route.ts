@@ -1,4 +1,5 @@
 import { type NextResponse } from 'next/server'
+import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { TRANSCRIPT_READY_EVENT } from '@/inngest/events/transcript-requested'
 import { inngest } from '@/inngest/inngest.server'
 import { srtFromTranscriptResult, transcriptAsParagraphsWithTimestamps } from '@/lib/deepgram-results-processor'
@@ -18,16 +19,12 @@ export const POST = withSkill(async (req: SkillRequest, res: NextResponse) => {
 
   req.log.info(`Received transcript from deepgram for videoResource [${videoResourceId}]: ${results.id}`)
 
-  const srt = srtFromTranscriptResult(results)
-  const transcript = transcriptAsParagraphsWithTimestamps(results)
-
   await inngest.send({
-    name: TRANSCRIPT_READY_EVENT,
+    name: DEEPGRAM_WEBHOOK_EVENT,
     data: {
       videoResourceId,
       moduleSlug,
-      srt,
-      transcript,
+      results,
     },
   })
 
