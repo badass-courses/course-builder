@@ -1,6 +1,7 @@
-import { srtProcessor, type Word } from '@/lib/srt-processor'
+import { DeepgramResults } from '@/inngest/events/deepgram-webhook'
+import { Paragraph, srtProcessor } from '@/lib/srt-processor'
 
-export function srtFromTranscriptResult(results: { channels: { alternatives: { words: Word[] }[] }[] }) {
+export function srtFromTranscriptResult(results: DeepgramResults) {
   return srtProcessor(results.channels[0]?.alternatives[0]?.words)
 }
 
@@ -25,34 +26,39 @@ function formatTimeString(str: string) {
   return `${h}:${m}:${s}`
 }
 
-export function transcriptAsParagraphsWithTimestamps(results: any): string {
-  let paragraphs
-  if (results.channels[0].alternatives[0].paragraphs) {
+export function transcriptAsParagraphsWithTimestamps(results: DeepgramResults): string {
+  let paragraphs: Paragraph[] = []
+  if (results.channels[0]?.alternatives[0]?.paragraphs) {
     paragraphs = results.channels[0].alternatives[0].paragraphs.paragraphs
-  } else {
+  } else if (results.channels[0]?.alternatives[0]?.transcript) {
+    const text = results.channels[0].alternatives[0].transcript
     paragraphs = [
       {
-        text: results.channels[0].alternatives[0].transcript,
+        text,
         sentences: [
           {
-            text: results.channels[0].alternatives[0].transcript,
+            text,
             start: 0,
-            end: results.channels[0].alternatives[0].words[results.channels[0].alternatives[0].words.length - 1].end,
+            end:
+              results.channels[0].alternatives[0].words[results.channels[0].alternatives[0].words?.length - 1 || 0]
+                ?.end || 0,
           },
         ],
       },
     ]
   }
 
-  return paragraphs.reduce(
-    (acc: string, paragraph: { sentences: { text: string; start: number; end: number }[] }): string => {
-      const startTime = formatTimeString(convertTime(paragraph?.sentences?.[0]?.start))
-      const text = paragraph.sentences.map((x) => x.text).join(' ')
+  return (
+    paragraphs?.reduce(
+      (acc: string, paragraph: { sentences: { text: string; start: number; end: number }[] }): string => {
+        const startTime = formatTimeString(convertTime(paragraph?.sentences?.[0]?.start))
+        const text = paragraph.sentences.map((x) => x.text).join(' ')
 
-      return `${acc}[${startTime}] ${text}
+        return `${acc}[${startTime}] ${text}
 		
 `
-    },
-    ``,
+      },
+      ``,
+    ) || ''
   )
 }

@@ -4,9 +4,9 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
-import type { VideoResource } from '@/inngest/functions/transcript-ready'
 import { getAbility } from '@/lib/ability'
 import { getTip } from '@/lib/tips'
+import { VideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -111,6 +111,7 @@ async function PlayerContainer({ slug }: { slug: string }) {
 
   const videoResource = await sanityQuery<VideoResource>(
     `*[_type == "videoResource" && _id == "${tip.videoResourceId}"][0]`,
+    { tags: ['tips', tip._id] },
   )
 
   return (

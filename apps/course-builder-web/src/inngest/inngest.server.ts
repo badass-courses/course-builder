@@ -19,6 +19,8 @@ import { type MUX_WEBHOOK_EVENT, type MuxWebhook } from '@/inngest/events/mux-we
 import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
 import { type POST_CREATION_REQUESTED_EVENT, type PostCreationRequested } from '@/inngest/events/sanity-post'
 import { type TRANSCRIPT_READY_EVENT, type TranscriptReady } from '@/inngest/events/transcript-requested'
+import { VIDEO_RESOURCE_CREATED_EVENT, VideoResourceCreated } from '@/inngest/events/video-resource'
+import { VIDEO_STATUS_CHECK_EVENT, VideoStatusCheck } from '@/inngest/events/video-status-check'
 import { type VIDEO_UPLOADED_EVENT, type VideoUploaded } from '@/inngest/events/video-uploaded'
 import { EventSchemas, Inngest } from 'inngest'
 
@@ -38,6 +40,8 @@ type Events = {
   [TIP_CHAT_EVENT]: TipChat
   [ARTICLE_CHAT_EVENT]: ArticleChat
   [BODY_TEXT_UPDATED]: BodyTextUpdated
+  [VIDEO_STATUS_CHECK_EVENT]: VideoStatusCheck
+  [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',

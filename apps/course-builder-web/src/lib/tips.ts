@@ -1,4 +1,5 @@
 import { sanityQuery } from '@/server/sanity.server'
+import { tags } from 'liquidjs'
 import { z } from 'zod'
 
 export const TipStateSchema = z.union([
@@ -17,8 +18,8 @@ const TipSchema = z.object({
   title: z.string(),
   summary: z.string(),
   body: z.string(),
-  videoResourceId: z.string(),
-  muxPlaybackId: z.string(),
+  videoResourceId: z.string().nullable(),
+  muxPlaybackId: z.string().nullable(),
   transcript: z.string().nullable(),
   state: TipStateSchema.default('draft'),
   visibility: TipVisibilitySchema.default('unlisted'),
@@ -27,7 +28,7 @@ const TipSchema = z.object({
 
 export type Tip = z.infer<typeof TipSchema>
 
-export async function getTip(slugOrId: string) {
+export async function getTip(slugOrId: string, revalidateKey: string = 'tips') {
   return await sanityQuery<Tip | null>(
     `*[_type == "tip" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
           _id,
@@ -43,7 +44,7 @@ export async function getTip(slugOrId: string) {
           "transcript": resources[@->._type == 'videoResource'][0]->transcript,
           "slug": slug.current,
   }`,
-    { tags: ['tips'] },
+    { tags: [slugOrId, revalidateKey] },
   )
 }
 

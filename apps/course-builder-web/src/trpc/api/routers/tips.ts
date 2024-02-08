@@ -110,6 +110,8 @@ export const tipsRouter = createTRPCRouter({
       ])
 
       revalidateTag('tips')
+      revalidateTag(newTipId)
+
 
       return tip
     }),
@@ -163,6 +165,7 @@ export const tipsRouter = createTRPCRouter({
       )
 
       revalidateTag('tips')
+      revalidateTag(input.tipId)
 
       return await getTip(input.tipId)
     }),
