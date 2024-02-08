@@ -10,7 +10,6 @@ import { VideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'

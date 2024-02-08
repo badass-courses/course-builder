@@ -112,7 +112,6 @@ export const tipsRouter = createTRPCRouter({
       revalidateTag('tips')
       revalidateTag(newTipId)
 
-
       return tip
     }),
   update: protectedProcedure
