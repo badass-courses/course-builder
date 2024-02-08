@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
 import { getArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
-import { getOGImageUrlForTitle } from '@/utils/get-og-image-for-title'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -23,15 +23,9 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
     return parent as Metadata
   }
 
-  const previousImages = (await parent).openGraph?.images || []
-
-  const ogImage = getOGImageUrlForTitle(article.title)
-
   return {
     title: article.title,
-    openGraph: {
-      images: [ogImage, ...previousImages],
-    },
+    openGraph: { images: [getOGImageUrlForResource(article)] },
   }
 }
 
@@ -66,12 +60,14 @@ async function Article({ slug }: { slug: string }) {
   return (
     <div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
       <ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">{article.body}</ReactMarkdown>
-      <aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
-        <div className="border-t pt-5">
-          <strong>Description</strong>
-          <ReactMarkdown>{article.description}</ReactMarkdown>
-        </div>
-      </aside>
+      {article.description && (
+        <aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
+          <div className="border-t pt-5">
+            <strong>Description</strong>
+            <ReactMarkdown>{article.description}</ReactMarkdown>
+          </div>
+        </aside>
+      )}
     </div>
   )
 }

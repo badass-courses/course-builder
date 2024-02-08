@@ -9,6 +9,7 @@ import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { cn } from '@/lib/utils'
 import { api } from '@/trpc/react'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -43,12 +44,14 @@ import { CloudinaryUploadWidget } from './cloudinary-upload-widget'
 export function EditArticleForm({ article }: { article: Article }) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const router = useRouter()
+  const defaultSocialImage = getOGImageUrlForResource(article)
 
   const form = useForm<z.infer<typeof ArticleSchema>>({
     resolver: zodResolver(ArticleSchema),
     defaultValues: {
       ...article,
       description: article.description ?? '',
+      socialImage: defaultSocialImage,
     },
   })
 
@@ -84,6 +87,8 @@ export function EditArticleForm({ article }: { article: Article }) {
   const formValues = form.getValues()
 
   const watcher = form.watch(['title', 'body'])
+
+  const currentSocialImage = form.watch('socialImage')
 
   return (
     <Form {...form}>
@@ -148,7 +153,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                 render={({ field }) => (
                   <FormItem className="px-5">
                     <FormLabel>Visibility</FormLabel>
-                    <Select {...field} onValueChange={field.onChange}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Choose state" />
@@ -187,8 +192,30 @@ export function EditArticleForm({ article }: { article: Article }) {
                   <FormItem className="px-5">
                     <FormLabel>Short Description</FormLabel>
                     <FormDescription>Used as a short &quot;SEO&quot; summary on Twitter cards etc.</FormDescription>
-                    <Textarea {...field} />
+                    <Textarea {...field} value={field.value?.toString()} />
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="socialImage"
+                render={({ field }) => (
+                  <FormItem className="px-5">
+                    <FormLabel>Social Image</FormLabel>
+                    <FormDescription>Used as a preview image on Twitter cards etc.</FormDescription>
+                    {currentSocialImage && (
+                      <img
+                        alt={`social image preview for ${article.title}`}
+                        width={1200 / 2}
+                        height={630 / 2}
+                        className="aspect-[1200/630] rounded-md border"
+                        src={currentSocialImage.toString()}
+                      />
+                    )}
+                    <div className="flex items-center gap-1">
+                      <Input {...field} value={field.value?.toString()} type="hidden" />
+                    </div>
                   </FormItem>
                 )}
               />
@@ -206,7 +233,7 @@ export function EditArticleForm({ article }: { article: Article }) {
                       value={article.body || ''}
                       onChange={async (data) => {
                         form.setValue('body', data)
-                        generateFeedback({
+                        await generateFeedback({
                           resourceId: article._id,
                           body: data,
                           currentFeedback: feedbackMarkers,

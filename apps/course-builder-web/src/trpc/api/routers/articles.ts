@@ -7,7 +7,6 @@ import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
-import { toChicagoTitleCase } from '@/utils/chicagor-title'
 import slugify from '@sindresorhus/slugify'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
@@ -72,7 +71,8 @@ export const articlesRouter = createTRPCRouter({
             _id: newArticleId,
             _type: 'article',
             state: 'draft',
-            title: toChicagoTitleCase(input.title),
+            visibility: 'unlisted',
+            title: input.title,
             slug: {
               current: slugify(`${input.title}~${nanoid()}`),
             },
@@ -92,13 +92,14 @@ export const articlesRouter = createTRPCRouter({
     const currentArticle = await getArticle(input._id)
 
     if (input.title !== currentArticle?.title) {
+      const splitSlug = currentArticle?.slug.split('~') || ['', nanoid()]
       await sanityMutation([
         {
           patch: {
             id: input._id,
             set: {
-              'slug.current': `${slugify(input.title)}~${nanoid()}`,
-              title: toChicagoTitleCase(input.title),
+              'slug.current': `${slugify(input.title)}~${splitSlug[1]}`,
+              title: input.title,
             },
           },
         },
@@ -121,7 +122,7 @@ export const articlesRouter = createTRPCRouter({
         },
       ],
       { returnDocuments: true },
-    )
+    ).then((res) => res.results[0].document)
 
     revalidateTag('articles')
 

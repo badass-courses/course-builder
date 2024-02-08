@@ -69,6 +69,12 @@ export default {
       ],
     },
     defineField({
+      name: 'socialImage',
+      title: 'Social Image',
+      description: 'Used as a preview image on Twitter cards etc.',
+      type: 'string',
+    }),
+    defineField({
       name: 'description',
       title: 'Short Description',
       description: 'Used as a short "SEO" summary on Twitter cards etc.',

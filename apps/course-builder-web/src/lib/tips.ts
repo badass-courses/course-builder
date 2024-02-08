@@ -1,6 +1,15 @@
 import { sanityQuery } from '@/server/sanity.server'
 import { z } from 'zod'
 
+export const TipStateSchema = z.union([
+  z.literal('draft'),
+  z.literal('published'),
+  z.literal('archived'),
+  z.literal('deleted'),
+])
+
+export const TipVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
+
 const TipSchema = z.object({
   _id: z.string(),
   _type: z.literal('explainer'),
@@ -11,6 +20,8 @@ const TipSchema = z.object({
   videoResourceId: z.string(),
   muxPlaybackId: z.string(),
   transcript: z.string().nullable(),
+  state: TipStateSchema.default('draft'),
+  visibility: TipVisibilitySchema.default('unlisted'),
   slug: z.string(),
 })
 
@@ -24,6 +35,8 @@ export async function getTip(slugOrId: string) {
           "_updatedAt": ^._updatedAt,
           title,
           summary,
+          visibility,
+          state,
           body,
           "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
           "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
@@ -47,6 +60,8 @@ export async function getTipsModule() {
         "_updatedAt": ^._updatedAt,
         title,
         summary,
+        visibility,
+        state,
         body,
         "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
         "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
