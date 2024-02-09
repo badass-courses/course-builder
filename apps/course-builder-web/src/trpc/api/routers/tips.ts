@@ -2,7 +2,7 @@ import { revalidateTag } from 'next/cache'
 import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { getTip, getTipsModule } from '@/lib/tips'
+import { getTip } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
@@ -86,33 +86,10 @@ export const tipsRouter = createTRPCRouter({
         },
       ])
 
-      const tip = await getTip(newTipId)
-
-      const tipsModule = await getTipsModule()
-
-      await sanityMutation([
-        {
-          patch: {
-            id: tipsModule._id,
-            setIfMissing: { resources: [] },
-            insert: {
-              before: 'resources[0]',
-              items: [
-                {
-                  _key: v4(),
-                  _type: 'reference',
-                  _ref: newTipId,
-                },
-              ],
-            },
-          },
-        },
-      ])
-
       revalidateTag('tips')
       revalidateTag(newTipId)
 
-      return tip
+      return getTip(newTipId)
     }),
   update: protectedProcedure
     .input(

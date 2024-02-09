@@ -50,12 +50,10 @@ export async function getTip(slugOrId: string, revalidateKey: string = 'tips') {
 
 export async function getTipsModule() {
   return await sanityQuery<{
-    _id: string
     tips: Tip[]
   }>(
-    `*[_type == "module" && moduleType == "tips"][0]{
-    _id,
-    "tips": coalesce(resources[@->._type == 'tip']->{
+    `{"tips": coalesce(
+  *[_type == 'tip']{
         _id,
         _type,
         "_updatedAt": ^._updatedAt,
@@ -68,8 +66,7 @@ export async function getTipsModule() {
         "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
         "transcript": resources[@->._type == 'videoResource'][0]->transcript,
         "slug": slug.current,
-      }, [])
-  }`,
+      }, [])}`,
     { tags: ['tips'] },
   )
 }
