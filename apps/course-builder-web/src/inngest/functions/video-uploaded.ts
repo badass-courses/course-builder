@@ -1,10 +1,8 @@
-import { utapi } from '@/app/api/uploadthing/core'
 import { env } from '@/env.mjs'
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/events/video-resource'
 import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
-import { orderDeepgramTranscript } from '@/lib/deepgram-order-transcript'
 import { createMuxAsset } from '@/lib/get-mux-options'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { toChicagoTitleCase } from '@/utils/chicagor-title'
@@ -41,38 +39,38 @@ export const videoUploaded = inngest.createFunction(
       return await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.fileName}"][0]`)
     })
 
-    const newLesson = await step.run('create lesson module for video resource', async () => {
-      const lessonId = v4()
-      const titleToUse = event.data.title || event.data.fileName
-      return await sanityMutation(
-        [
-          {
-            create: {
-              _id: `lesson-${lessonId}`,
-              _type: 'module',
-              title: toChicagoTitleCase(titleToUse.replace(/-/g, ' ').replace(/\.mp4/g, '')),
-              state: 'draft',
-              moduleType: 'lesson',
-              slug: {
-                _type: 'slug',
-                current: `lesson-${lessonId}`,
-              },
-
-              resources: [
-                {
-                  _type: 'reference' as const,
-                  _key: v4(),
-                  _ref: videoResource._id,
-                },
-              ],
-            },
-          },
-        ],
-        { returnDocuments: true },
-      ).then((res) => res.results[0].document)
-    })
-
     if (event.data.moduleSlug) {
+      const newLesson = await step.run('create lesson module for video resource', async () => {
+        const lessonId = v4()
+        const titleToUse = event.data.title || event.data.fileName
+        return await sanityMutation(
+          [
+            {
+              create: {
+                _id: `lesson-${lessonId}`,
+                _type: 'module',
+                title: toChicagoTitleCase(titleToUse.replace(/-/g, ' ').replace(/\.mp4/g, '')),
+                state: 'draft',
+                moduleType: 'lesson',
+                slug: {
+                  _type: 'slug',
+                  current: `lesson-${lessonId}`,
+                },
+
+                resources: [
+                  {
+                    _type: 'reference' as const,
+                    _key: v4(),
+                    _ref: videoResource._id,
+                  },
+                ],
+              },
+            },
+          ],
+          { returnDocuments: true },
+        ).then((res) => res.results[0].document)
+      })
+
       const parentModule = await step.run('get module', async () => {
         return await sanityQuery(`*[_type == "module" && slug.current == "${event.data.moduleSlug}"][0]{_id}`)
       })

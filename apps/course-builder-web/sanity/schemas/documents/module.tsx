@@ -81,6 +81,7 @@ export default {
               type: 'workflow',
             },
             { title: 'Tip', type: 'tip' },
+            { title: 'Video', type: 'videoResource' },
           ],
         },
       ],
