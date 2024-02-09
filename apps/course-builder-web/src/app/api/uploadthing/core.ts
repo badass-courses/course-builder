@@ -51,7 +51,7 @@ export const ourFileRouter = {
         throw new Error('Unauthorized')
       }
 
-      return { userId: session.user.id, moduleSlug: 'tips' }
+      return { userId: session.user.id }
     })
     .onUploadComplete(async (opts) => {
       console.debug('Upload complete for userId:', opts.metadata.userId)
@@ -63,7 +63,6 @@ export const ourFileRouter = {
           originalMediaUrl: opts.file.url,
           fileName: opts.file.name || 'untitled',
           title: opts.file.name || 'untitled',
-          moduleSlug: 'tips',
           fileKey: opts.file.key,
         },
       })
