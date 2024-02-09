@@ -53,7 +53,7 @@ export async function getTipsModule() {
     tips: Tip[]
   }>(
     `{"tips": coalesce(
-  *[_type == 'tip']{
+  *[_type == 'tip'] | order(_updatedAt desc) {
         _id,
         _type,
         "_updatedAt": ^._updatedAt,
