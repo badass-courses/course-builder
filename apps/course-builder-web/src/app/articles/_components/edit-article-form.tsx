@@ -93,12 +93,12 @@ export function EditArticleForm({ article }: { article: Article }) {
   return (
     <Form {...form}>
       <form
-        className="flex h-full flex-grow flex-col"
+        className="relative flex h-full flex-grow flex-col"
         onSubmit={form.handleSubmit(onSubmit, (error) => {
           console.log({ error })
         })}
       >
-        <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+        <div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
           <div className="flex items-center gap-2">
             <Button className="px-0" asChild variant="link">
               <Link href={`/${article.slug}`} className="aspect-square">
@@ -106,7 +106,7 @@ export function EditArticleForm({ article }: { article: Article }) {
               </Link>
             </Button>
             <span className="font-medium">
-              Article <span className="font-mono text-xs font-normal">({article._id})</span>
+              Article <span className="hidden font-mono text-xs font-normal md:inline-block">({article._id})</span>
             </span>
           </div>
           <Button
@@ -119,9 +119,9 @@ export function EditArticleForm({ article }: { article: Article }) {
             Save
           </Button>
         </div>
-        <div className="flex h-full flex-grow border-t">
-          <div className="grid grid-cols-12">
-            <div className="col-span-3 flex h-full flex-col gap-5 border-r py-5">
+        <div className="flex h-full flex-grow flex-col border-t md:flex-row">
+          <div className="grid-cols-12 md:grid">
+            <div className="col-span-3 flex flex-col gap-5 py-5 md:h-full md:border-r">
               <FormField
                 control={form.control}
                 name="title"
@@ -220,14 +220,13 @@ export function EditArticleForm({ article }: { article: Article }) {
                 )}
               />
             </div>
-            <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
+            <div className="col-span-6 flex w-full flex-col justify-start space-y-5 border-r md:h-full">
               <FormField
                 control={form.control}
                 name="body"
                 render={({ field }) => (
                   <FormItem className="pt-5">
                     <FormLabel className="px-5 text-lg font-bold">Content</FormLabel>
-                    <FormDescription className="px-5 pb-3">Tip content in MDX.</FormDescription>
                     <CodemirrorEditor
                       roomName={`${article._id}`}
                       value={article.body || ''}
@@ -269,7 +268,7 @@ export function EditArticleForm({ article }: { article: Article }) {
               )}
             </div>
           </div>
-          <div className="bg-muted border-l">
+          <div className="bg-muted relative border-l">
             <div className="flex flex-col gap-1 p-1">
               <TooltipProvider delayDuration={0}>
                 {Array.from(TOOLBAR).map((item) => (

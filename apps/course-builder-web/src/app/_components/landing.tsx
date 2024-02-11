@@ -13,13 +13,13 @@ export const Landing = () => {
     <>
       <LandingCopy />
       {status === 'unauthenticated' ? (
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center">
           <h2 className="mb-8 text-xl font-bold text-gray-900 dark:text-gray-100">
             Want to Learn More About Course Builder?
           </h2>
           <Button
             data-button=""
-            variant="outline"
+            size="lg"
             onClick={() =>
               signIn('github', {
                 callbackUrl: '/',
