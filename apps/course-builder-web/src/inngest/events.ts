@@ -58,6 +58,7 @@ export type TipChat = {
     tipId: string
     messages: ChatCompletionRequestMessage[]
     currentFeedback?: FeedbackMarker[]
+    session: Session | null
   }
 }
 
