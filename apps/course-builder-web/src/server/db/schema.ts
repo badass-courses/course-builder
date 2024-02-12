@@ -145,6 +145,8 @@ export const accounts = mysqlTable(
     providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
     refresh_token: text('refresh_token'),
     access_token: text('access_token'),
+    oauth_token: text('oauth_token'),
+    oauth_token_secret: text('oauth_token_secret'),
     expires_at: int('expires_at'),
     token_type: varchar('token_type', { length: 255 }),
     scope: varchar('scope', { length: 255 }),
