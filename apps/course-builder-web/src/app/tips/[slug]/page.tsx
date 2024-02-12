@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { Suspense } from 'react'
+import { Suspense, use } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { getAbility } from '@/lib/ability'
-import { getTip } from '@/lib/tips'
+import { getTip, Tip } from '@/lib/tips'
 import { VideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
@@ -29,7 +29,7 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
 
   const previousImages = (await parent).openGraph?.images || []
 
-  const ogImage = getOGImageUrlForResource(tip)
+  const ogImage = getOGImageUrlForResource(tip, 'tips')
 
   return {
     title: tip.title,
@@ -40,20 +40,21 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
 }
 
 export default async function TipPage({ params }: { params: { slug: string } }) {
+  const tipLoader = getTip(params.slug)
   return (
     <div>
       <main className="mx-auto w-full" id="tip">
         <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
-          <TipActionBar slug={params.slug} />
+          <TipActionBar slug={params.slug} tipLoader={tipLoader} />
         </Suspense>
         <Suspense fallback={<PlayerContainerSkeleton />}>
-          <PlayerContainer slug={params.slug} />
+          <PlayerContainer slug={params.slug} tipLoader={tipLoader} />
         </Suspense>
         <article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
           <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
             <div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
               <div className="flex flex-col lg:col-span-8">
-                <TipBody slug={params.slug} />
+                <TipBody slug={params.slug} tipLoader={tipLoader} />
               </div>
             </div>
           </div>
@@ -63,10 +64,10 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
   )
 }
 
-async function TipActionBar({ slug }: { slug: string }) {
+async function TipActionBar({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
-  const tip = await getTip(slug)
+  const tip = await tipLoader
 
   return (
     <>
@@ -98,17 +99,17 @@ function PlayerContainerSkeleton() {
   )
 }
 
-async function PlayerContainer({ slug }: { slug: string }) {
+async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
-  const tip = await getTip(slug)
+  const tip = await tipLoader
   const displayOverlay = false
 
   if (!tip) {
     notFound()
   }
 
-  const videoResource = await sanityQuery<VideoResource>(
+  const videoResourceLoader = sanityQuery<VideoResource>(
     `*[_type == "videoResource" && _id == "${tip.videoResourceId}"][0]`,
     { tags: ['tips', tip._id] },
   )
@@ -122,7 +123,7 @@ async function PlayerContainer({ slug }: { slug: string }) {
               hidden: displayOverlay,
             })}
           >
-            <TipPlayer videoResource={videoResource} />
+            <TipPlayer videoResourceLoader={videoResourceLoader} />
           </div>
         </div>
       </div>
@@ -130,8 +131,8 @@ async function PlayerContainer({ slug }: { slug: string }) {
   )
 }
 
-async function TipBody({ slug }: { slug: string }) {
-  const tip = await getTip(slug)
+async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
+  const tip = await tipLoader
 
   if (!tip) {
     notFound()

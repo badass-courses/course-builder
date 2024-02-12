@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { use } from 'react'
 import { type VideoResource } from '@/lib/video-resource'
 import { type MuxPlayerProps } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
@@ -9,11 +10,11 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function TipPlayer({
   muxPlaybackId,
-  videoResource,
   className,
+  videoResourceLoader,
 }: {
   muxPlaybackId?: string
-  videoResource: VideoResource
+  videoResourceLoader: Promise<VideoResource | null>
   className?: string
 }) {
   const playerProps = {
@@ -25,6 +26,8 @@ export function TipPlayer({
     maxResolution: '2160p',
     minResolution: '540p',
   } as MuxPlayerProps
+
+  const videoResource = use(videoResourceLoader)
 
   const playbackId = muxPlaybackId || (videoResource?.state === 'ready' ? videoResource?.muxPlaybackId : undefined)
 
