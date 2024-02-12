@@ -45,6 +45,7 @@ export const articlesRouter = createTRPCRouter({
           articleId: input.articleId,
           messages: input.messages,
           currentFeedback: input.currentFeedback,
+          session: session,
         },
       })
 
