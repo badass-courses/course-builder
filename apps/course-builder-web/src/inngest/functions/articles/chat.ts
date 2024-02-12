@@ -38,6 +38,7 @@ export const articleChat = inngest.createFunction(
       resource,
       messages: event.data.messages,
       currentFeedback: event.data.currentFeedback,
+      session: event.data.session,
     })
 
     return { article, messages }

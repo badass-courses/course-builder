@@ -2,8 +2,10 @@ import { env } from '@/env.mjs'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { promptActionExecutor } from '@/lib/prompt.action-executor'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
+import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
 import { Liquid } from 'liquidjs'
+import type { Session } from 'next-auth'
 import type { ChatCompletionRequestMessage } from 'openai-edge'
 
 /**
@@ -27,6 +29,7 @@ export async function resourceChat({
   messages,
   resource,
   currentFeedback,
+  session,
 }: {
   currentFeedback?: FeedbackMarker[]
   resource: any
@@ -34,6 +37,7 @@ export async function resourceChat({
   workflowTrigger: string
   resourceId: string
   messages: ChatCompletionRequestMessage[]
+  session: Session | null
 }) {
   const workflow = await step.run('Load Workflow', async () => {
     return await sanityQuery(`*[_type == "workflow" && trigger == "${workflowTrigger}"][0]`, { useCdn: false })
@@ -78,13 +82,34 @@ export async function resourceChat({
 
   workflow.actions.splice(systemPromptIndex, 1)
 
+  const currentUserMessage = messages[messages.length - 1]
+  const currentResourceMetadata = messages[messages.length - 2]
+
+  if (currentUserMessage?.content) {
+    await step.run(`partykit broadcast user prompt [${resourceId}]`, async () => {
+      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          body: currentUserMessage.content,
+          requestId: resourceId,
+          name: 'resource.chat.prompted',
+          userId: session?.user.id,
+        }),
+      }).catch((e) => {
+        console.error(e)
+      })
+    })
+  }
+
   messages = await step.run('answer the user prompt', async () => {
-    const currentUserMessage = messages[messages.length - 1]
     if (!currentUserMessage) {
       throw new Error('No user message')
     }
     const engine = new Liquid()
     currentUserMessage.content = await engine.parseAndRender(currentUserMessage.content ?? '', resource)
+    if (currentResourceMetadata) {
+      currentResourceMetadata.content = await engine.parseAndRender(currentResourceMetadata.content ?? '', resource)
+    }
     return streamingChatPromptExecutor({
       requestId: resourceId,
       promptMessages: messages,
