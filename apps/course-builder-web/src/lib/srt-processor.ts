@@ -47,9 +47,9 @@ export function srtProcessor(words?: Word[], toWordLevelTimestamps: boolean = fa
       const endTime = convertTime(word.end)
       const text = word.punctuated_word
       return `${index + 1}
-  ${startTime} --> ${endTime}
-  ${text}
-      `
+${startTime} --> ${endTime}
+${text}
+`
     })
 
     return srtEntries.join('\n\n')
