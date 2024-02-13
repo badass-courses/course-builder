@@ -47,9 +47,8 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
         <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
           <TipActionBar slug={params.slug} tipLoader={tipLoader} />
         </Suspense>
-        <Suspense fallback={<PlayerContainerSkeleton />}>
-          <PlayerContainer slug={params.slug} tipLoader={tipLoader} />
-        </Suspense>
+
+        <PlayerContainer slug={params.slug} tipLoader={tipLoader} />
         <article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
           <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
             <div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
@@ -115,19 +114,21 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
   )
 
   return (
-    <div className="relative z-10 flex items-center justify-center">
-      <div className="flex w-full max-w-screen-lg flex-col">
-        <div className="relative aspect-[16/9]">
-          <div
-            className={cn('flex items-center justify-center  overflow-hidden', {
-              hidden: displayOverlay,
-            })}
-          >
-            <TipPlayer videoResourceLoader={videoResourceLoader} />
+    <Suspense fallback={<PlayerContainerSkeleton />}>
+      <div className="relative z-10 flex items-center justify-center">
+        <div className="flex w-full max-w-screen-lg flex-col">
+          <div className="relative aspect-[16/9]">
+            <div
+              className={cn('flex items-center justify-center  overflow-hidden', {
+                hidden: displayOverlay,
+              })}
+            >
+              <TipPlayer videoResourceLoader={videoResourceLoader} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 
