@@ -73,5 +73,10 @@ export default {
       name: 'wordLevelSrt',
       type: 'text',
     }),
+    defineField({
+      title: 'Transcript with Screenshots',
+      name: 'transcriptWithScreenshots',
+      type: 'text',
+    }),
   ],
 }

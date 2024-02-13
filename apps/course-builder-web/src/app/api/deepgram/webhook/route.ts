@@ -1,8 +1,6 @@
 import { type NextResponse } from 'next/server'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
-import { TRANSCRIPT_READY_EVENT } from '@/inngest/events/transcript-requested'
 import { inngest } from '@/inngest/inngest.server'
-import { srtFromTranscriptResult, transcriptAsParagraphsWithTimestamps } from '@/lib/deepgram-results-processor'
 import { withSkill, type SkillRequest } from '@/server/with-skill'
 
 export const POST = withSkill(async (req: SkillRequest, res: NextResponse) => {
