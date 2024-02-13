@@ -5,12 +5,10 @@ import {
   BodyTextUpdated,
   TIP_CHAT_EVENT,
   TipChat,
-  TRANSCRIPT_WITH_SCREENSHOTS_REQUESTED_EVENT,
   type AI_WRITING_COMPLETED_EVENT,
   type AI_WRITING_REQUESTED_EVENT,
   type AIWritingRequestCompleted,
   type AIWritingRequested,
-  type GenerateTranscriptWithScreenshotsRequested,
   type USER_CREATED_EVENT,
   type UserCreated,
 } from '@/inngest/events'
@@ -44,7 +42,6 @@ type Events = {
   [BODY_TEXT_UPDATED]: BodyTextUpdated
   [VIDEO_STATUS_CHECK_EVENT]: VideoStatusCheck
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
-  [TRANSCRIPT_WITH_SCREENSHOTS_REQUESTED_EVENT]: GenerateTranscriptWithScreenshotsRequested
 }
 export const inngest = new Inngest({
   id: 'gpt-4-ai-chains',

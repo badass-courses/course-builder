@@ -73,12 +73,3 @@ export type ArticleChat = {
     session: Session | null
   }
 }
-
-export const TRANSCRIPT_WITH_SCREENSHOTS_REQUESTED_EVENT = 'ai/transcript-with-screenshots-requested-event'
-
-export type GenerateTranscriptWithScreenshotsRequested = {
-  name: typeof TRANSCRIPT_WITH_SCREENSHOTS_REQUESTED_EVENT
-  data: {
-    videoResourceId: string
-  }
-}
