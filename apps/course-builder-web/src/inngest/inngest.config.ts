@@ -1,3 +1,4 @@
+import { generateTranscriptWithScreenshots } from '@/inngest/functions/ai/data/generate-transcript-with-screnshots'
 import { generateFeedbackMarkers } from '@/inngest/functions/ai/feedback-markers'
 import { writeAnEmail, writeDraft } from '@/inngest/functions/ai/writer'
 import { articleChat } from '@/inngest/functions/articles/chat'
@@ -37,6 +38,7 @@ export const inngestConfig = {
     tipChat,
     articleChat,
     generateFeedbackMarkers,
+    generateTranscriptWithScreenshots,
     deepgramTranscriptReady,
     removeCompletedVideo,
     orderTranscript,

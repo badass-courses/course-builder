@@ -2,13 +2,13 @@ import { env } from '@/env.mjs'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
+import { VideoResourceSchema } from '@/lib/video-resource'
+import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import {
   srtFromTranscriptResult,
   transcriptAsParagraphsWithTimestamps,
   wordLevelSrtFromTranscriptResult,
-} from '@/lib/deepgram-results-processor'
-import { VideoResourceSchema } from '@/lib/video-resource'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
+} from '@/transcript-processing/deepgram-results-processor'
 
 export const deepgramTranscriptReady = inngest.createFunction(
   { id: `deepgram-transcript-ready-event`, name: 'Deepgram Transcript Ready' },
