@@ -74,7 +74,7 @@ export function ArticleAssistant({
           <Textarea
             ref={textareaRef}
             className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
-            placeholder="Ask Assistant..."
+            placeholder="Direct Assistant..."
             rows={4}
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
