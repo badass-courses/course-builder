@@ -45,7 +45,10 @@ export async function getTip(slugOrId: string, revalidateKey: string = 'tips') {
           "slug": slug.current,
   }`,
     { tags: [slugOrId, revalidateKey] },
-  )
+  ).catch((error) => {
+    console.error('Error fetching tip', error)
+    return null
+  })
 }
 
 export async function getTipsModule() {
@@ -68,5 +71,8 @@ export async function getTipsModule() {
         "slug": slug.current,
       }, [])}`,
     { tags: ['tips'] },
-  )
+  ).catch((error) => {
+    console.error('Error fetching tips module', error)
+    return { tips: [] }
+  })
 }
