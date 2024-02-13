@@ -1,8 +1,7 @@
 import { revalidateTag } from 'next/cache'
-import { DRAFT_WRITEUP_REQUESTED_EVENT, TIP_CHAT_EVENT } from '@/inngest/events'
+import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { getResource } from '@/lib/resources'
 import { getTip } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
@@ -147,24 +146,4 @@ export const tipsRouter = createTRPCRouter({
 
       return await getTip(input.tipId)
     }),
-  generateDraft: protectedProcedure.input(z.object({ resourceId: z.string() })).mutation(async ({ ctx, input }) => {
-    const session = await getServerAuthSession()
-    const ability = getAbility({ user: session?.user })
-    if (!ability.can('create', 'Content')) {
-      throw new Error('Unauthorized')
-    }
-    const resource = await getResource(input.resourceId)
-    console.log('resource', resource)
-    if (!resource) {
-      throw new Error('Not found')
-    }
-    return await inngest.send({
-      name: DRAFT_WRITEUP_REQUESTED_EVENT,
-      data: {
-        requestId: input.resourceId,
-        resourceId: input.resourceId,
-        transcript: resource.transcript,
-      },
-    })
-  }),
 })

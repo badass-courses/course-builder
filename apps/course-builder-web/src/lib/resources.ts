@@ -8,7 +8,6 @@ export async function getResource<T = any>(slugOrId: string): Promise<T | null> 
           title,
           summary,
           body,
-          "slug": slug.current,
-          transcript
+          "slug": slug.current
   }`)
 }

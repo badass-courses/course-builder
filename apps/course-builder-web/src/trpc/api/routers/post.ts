@@ -1,38 +1,11 @@
-import { AI_WRITING_REQUESTED_EVENT } from '@/inngest/events'
 import { POST_CREATION_REQUESTED_EVENT } from '@/inngest/events/sanity-post'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
 
 export const postRouter = createTRPCRouter({
-  generate: publicProcedure
-    .input(
-      z.object({
-        requestId: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({ user: session?.user })
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
-      }
-
-      const { transcript } = await sanityQuery(`*[_type == "videoResource" && _id == "${input.requestId}"][0]`)
-
-      await inngest.send({
-        name: AI_WRITING_REQUESTED_EVENT,
-        data: {
-          requestId: input.requestId,
-          input: {
-            input: transcript,
-          },
-        },
-      })
-    }),
   create: publicProcedure
     .input(
       z.object({

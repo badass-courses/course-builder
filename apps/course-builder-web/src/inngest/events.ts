@@ -13,25 +13,6 @@ export type AIWritingRequestCompleted = {
   }
 }
 
-export const AI_WRITING_REQUESTED_EVENT = 'ai/writing-requested'
-
-export type AIWritingRequested = {
-  name: typeof AI_WRITING_REQUESTED_EVENT
-  data: {
-    requestId: string
-    input: Record<any, any>
-  }
-}
-
-export const AI_TIP_WRITING_REQUESTED_EVENT = 'ai/tip-writing-requested'
-
-export type AITipWritingRequested = {
-  name: typeof AI_TIP_WRITING_REQUESTED_EVENT
-  data: {
-    tipId: string
-  }
-}
-
 export const BODY_TEXT_UPDATED = 'user/body-text-updated'
 
 export type BodyTextUpdated = {
@@ -71,17 +52,6 @@ export type ArticleChat = {
     messages: ChatCompletionRequestMessage[]
     currentFeedback?: FeedbackMarker[]
     session: Session | null
-  }
-}
-
-export const DRAFT_WRITEUP_REQUESTED_EVENT = 'ai/draft-writeup-requested'
-
-export type DraftWriteupRequested = {
-  name: typeof DRAFT_WRITEUP_REQUESTED_EVENT
-  data: {
-    resourceId: string
-    requestId: string
-    transcript: string
   }
 }
 
