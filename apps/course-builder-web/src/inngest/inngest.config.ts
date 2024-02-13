@@ -1,5 +1,5 @@
 import { generateFeedbackMarkers } from '@/inngest/functions/ai/feedback-markers'
-import { writeAnEmail } from '@/inngest/functions/ai/writer'
+import { writeAnEmail, writeDraft } from '@/inngest/functions/ai/writer'
 import { articleChat } from '@/inngest/functions/articles/chat'
 import { cloudinaryAssetCreated } from '@/inngest/functions/cloudinary/cloudinary-webhooks-handlers'
 import { deepgramTranscriptReady } from '@/inngest/functions/deepgram/deepgram-webhook-handlers'
@@ -23,6 +23,7 @@ export const inngestConfig = {
   client: inngest,
   functions: [
     writeAnEmail,
+    writeDraft,
     muxVideoAssetCreated,
     muxVideoAssetReady,
     muxVideoAssetError,

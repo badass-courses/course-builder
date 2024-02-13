@@ -70,3 +70,25 @@ export type ArticleChat = {
     currentFeedback?: FeedbackMarker[]
   }
 }
+
+export const DRAFT_WRITEUP_REQUESTED_EVENT = 'ai/draft-writeup-requested'
+
+export type DraftWriteupRequested = {
+  name: typeof DRAFT_WRITEUP_REQUESTED_EVENT
+  data: {
+    resourceId: string
+    requestId: string
+    transcript: string
+  }
+}
+
+export const DRAFT_WRITEUP_COMPLETED_EVENT = 'ai/draft-writeup-completed'
+
+export type DraftWriteupCompleted = {
+  name: typeof DRAFT_WRITEUP_COMPLETED_EVENT
+  data: {
+    requestId: string
+    result?: any
+    fullPrompt: ChatCompletionRequestMessage[]
+  }
+}
