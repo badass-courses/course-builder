@@ -4,6 +4,9 @@ import { Paragraph, srtProcessor } from '@/lib/srt-processor'
 export function srtFromTranscriptResult(results: DeepgramResults) {
   return srtProcessor(results.channels[0]?.alternatives[0]?.words)
 }
+export function wordLevelSrtFromTranscriptResult(results: DeepgramResults) {
+  return srtProcessor(results.channels[0]?.alternatives[0]?.words, true)
+}
 
 function convertTime(inputSeconds?: number) {
   if (!inputSeconds) {
