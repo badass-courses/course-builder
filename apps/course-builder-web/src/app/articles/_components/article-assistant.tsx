@@ -8,7 +8,9 @@ import { FeedbackMarker } from '@/lib/feedback-marker'
 import { STREAM_COMPLETE } from '@/lib/streaming-chunk-publisher'
 import { api } from '@/trpc/react'
 import { EnterIcon } from '@sanity/icons'
+import { useSession } from 'next-auth/react'
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from 'openai-edge'
+import Gravatar from 'react-gravatar'
 import ReactMarkdown from 'react-markdown'
 
 import { Button, ScrollArea, Textarea } from '@coursebuilder/ui'
@@ -40,6 +42,29 @@ export function ArticleAssistant({
     },
   })
 
+  const handleSendArticleChatMessage = (
+    event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    sendArticleChatMessage({
+      articleId: article._id,
+      messages: [
+        ...messages,
+        {
+          role: ChatCompletionRequestMessageRoleEnum.System,
+          content: `
+          current title: ${article.title}
+          current body: ${article.body}
+          `,
+        },
+        {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: event.currentTarget.value,
+        },
+      ],
+      currentFeedback,
+    })
+  }
+
   return (
     <div className="flex h-full w-full flex-col justify-start">
       <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
@@ -49,26 +74,12 @@ export function ArticleAssistant({
           <Textarea
             ref={textareaRef}
             className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
-            placeholder="Type a message..."
+            placeholder="Direct Assistant..."
             rows={4}
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault()
-                sendArticleChatMessage({
-                  articleId: article._id,
-                  messages: [
-                    ...messages,
-                    {
-                      role: ChatCompletionRequestMessageRoleEnum.User,
-                      content: `${event.currentTarget.value}
-                      
-                      current title: ${article.title}
-                      current body: ${article.body}
-                      `,
-                    },
-                  ],
-                  currentFeedback,
-                })
+                handleSendArticleChatMessage(event)
                 event.currentTarget.value = ''
               }
             }}
@@ -80,26 +91,7 @@ export function ArticleAssistant({
             onClick={async (event) => {
               event.preventDefault()
               if (textareaRef.current) {
-                sendArticleChatMessage({
-                  articleId: article._id,
-                  messages: [
-                    ...messages,
-                    {
-                      role: ChatCompletionRequestMessageRoleEnum.User,
-                      content: `${event.currentTarget.value}
-                      
-                      * title: ${article.title}
-                      
-                      * body: ${article.body}
-                      
-                      ## current feedback from ai editor:
-                      
-                      ${JSON.stringify(currentFeedback, null, 2)}
-                      `,
-                    },
-                  ],
-                  currentFeedback,
-                })
+                handleSendArticleChatMessage(event)
                 textareaRef.current.value = ''
               }
             }}
@@ -116,10 +108,16 @@ export function ArticleAssistant({
   )
 }
 
-function ArticleChatResponse({ requestId }: { requestId: string }) {
-  const [messages, setMessages] = React.useState<{ requestId: string; body: string }[]>([])
-  const div = useRef<any>(null)
+type Message = {
+  body: string
+  requestId?: string
+  userId?: string
+}
 
+function ArticleChatResponse({ requestId }: { requestId: string }) {
+  const session = useSession()
+  const [messages, setMessages] = React.useState<Message[]>([])
+  const div = useRef<any>(null)
   const utils = api.useUtils()
 
   useSocket({
@@ -128,13 +126,37 @@ function ArticleChatResponse({ requestId }: { requestId: string }) {
       try {
         const messageData = JSON.parse(messageEvent.data)
 
-        if (
-          messageData.body !== STREAM_COMPLETE &&
-          messageData.name == 'ai.message' &&
-          requestId === messageData.requestId
-        ) {
-          setMessages((messages) => [...messages, { body: messageData.body, requestId: messageData.requestId }])
+        if (messageData.userId) {
+          // It's a user message, add it directly.
+          setMessages((prev) => [
+            ...prev,
+            { body: messageData.body, userId: messageData.userId, requestId: messageData.requestId },
+          ])
+        } else {
+          // It's an assistant message part, check for STREAM_COMPLETE
+          if (messageData.body === STREAM_COMPLETE) {
+            // When stream is complete, do not append anything.
+            // If you need to handle the end of a stream (e.g., to clean up or mark as complete), do it here.
+          } else {
+            // It's a part of an assistant's message (streaming), append to the last assistant message.
+            setMessages((prev) => {
+              let lastMessage = prev[prev.length - 1]
+              if (lastMessage && !lastMessage.userId && lastMessage.requestId === messageData.requestId) {
+                if (typeof messageData.body !== 'object') {
+                  // Continuation of the last assistant message: append the body part.
+                  return [...prev.slice(0, -1), { ...lastMessage, body: lastMessage.body + messageData.body }]
+                } else {
+                  // If the message is an object, it's the last part of the message.
+                  return [...prev.slice(0, -1), { ...lastMessage, body: lastMessage.body }]
+                }
+              } else {
+                // New assistant message: add as a new message.
+                return [...prev, { body: messageData.body, requestId: messageData.requestId }]
+              }
+            })
+          }
         }
+
         utils.module.invalidate()
         if (div.current) {
           div.current.scrollTop = div.current.scrollHeight
@@ -144,26 +166,45 @@ function ArticleChatResponse({ requestId }: { requestId: string }) {
       }
     },
   })
-  // Group messages by requestId
-  const groupedMessages = messages.reduce(
-    (groups, message) => {
-      if (!groups[message.requestId]) {
-        groups[message.requestId] = []
-      }
-
-      groups[message.requestId]?.push(message.body)
-      return groups
-    },
-    {} as Record<string, string[]>,
-  )
 
   return (
-    <ScrollArea viewportRef={div} className="h-[50vh] w-full scroll-smooth">
-      {Object.entries(groupedMessages).map(([requestId, bodies], index) => (
-        <div key={requestId} className="prose prose-sm max-w-none p-5">
-          <ReactMarkdown>{bodies.join('')}</ReactMarkdown>
+    <ScrollArea viewportRef={div} className="h-[50vh] w-full scroll-smooth text-sm">
+      {messages.length === 0 && session.status === 'authenticated' ? (
+        <div className="prose prose-sm px-5">
+          {`Hi ${session.data.user.name?.split(' ')[0]}, I’m your assistant and I’m here to help you get things done
+          faster.`}
+        </div>
+      ) : null}
+      {messages.map((message, index) => (
+        <div key={index} className="border-b p-5">
+          <MessageHeader userId={message.userId} />
+          <ReactMarkdown className="prose prose-sm">{message.body}</ReactMarkdown>
         </div>
       ))}
     </ScrollArea>
+  )
+}
+
+function MessageHeader({ userId }: { userId?: string }) {
+  const { data: userData, status } = api.users.get.useQuery(
+    {
+      userId: userId as string,
+    },
+    {
+      enabled: Boolean(userId),
+    },
+  )
+
+  return (
+    <div className="pb-1">
+      {userId ? (
+        <div className="flex items-center gap-1">
+          {userData?.email && <Gravatar className="h-5 w-5 rounded-full" email={userData.email} default="mp" />}
+          <strong>{userData?.name?.split(' ')[0] || 'User'}</strong>
+        </div>
+      ) : (
+        <strong>Assistant</strong>
+      )}
+    </div>
   )
 }

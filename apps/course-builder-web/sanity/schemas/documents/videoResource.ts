@@ -68,5 +68,10 @@ export default {
       name: 'srt',
       type: 'text',
     }),
+    defineField({
+      title: 'Word Level SRT',
+      name: 'wordLevelSrt',
+      type: 'text',
+    }),
   ],
 }

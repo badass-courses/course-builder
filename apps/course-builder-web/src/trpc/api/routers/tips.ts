@@ -43,6 +43,7 @@ export const tipsRouter = createTRPCRouter({
         data: {
           tipId: input.tipId,
           messages: input.messages,
+          session: session,
         },
       })
 

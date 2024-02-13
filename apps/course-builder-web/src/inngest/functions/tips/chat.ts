@@ -35,6 +35,7 @@ export const tipChat = inngest.createFunction(
       resource,
       messages: event.data.messages,
       currentFeedback: event.data.currentFeedback,
+      session: event.data.session,
     })
 
     return { tip, messages }

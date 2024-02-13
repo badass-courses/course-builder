@@ -29,13 +29,13 @@ jobs:
           cache: "pnpm"
 
       - name: Install necessary deps
-        run: pnpm --filter "./apps/${{ matrix.dir }}/**"  --filter "@coursebuilder/*" --filter "course-builder-web" --filter "course-builder-turbo" install
+        run: pnpm --filter "./apps/${{ matrix.dir }}/**"  --filter "@coursebuilder/*" install
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Build UT packages
-        run: pnpm build
+      - name: Build Course Builder packages
+        run: pnpm build --filter "@coursebuilder/*"
 
       - name: Run build
         run: pnpm turbo --filter ./apps/${{ matrix.dir }} build

@@ -2,7 +2,11 @@ import { env } from '@/env.mjs'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { srtFromTranscriptResult, transcriptAsParagraphsWithTimestamps } from '@/lib/deepgram-results-processor'
+import {
+  srtFromTranscriptResult,
+  transcriptAsParagraphsWithTimestamps,
+  wordLevelSrtFromTranscriptResult,
+} from '@/lib/deepgram-results-processor'
 import { VideoResourceSchema } from '@/lib/video-resource'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 
@@ -13,8 +17,8 @@ export const deepgramTranscriptReady = inngest.createFunction(
   },
   async ({ event, step }) => {
     const srt = srtFromTranscriptResult(event.data.results)
+    const wordLevelSrt = wordLevelSrtFromTranscriptResult(event.data.results)
     const transcript = transcriptAsParagraphsWithTimestamps(event.data.results)
-
     const videoResource = await step.run('get the video resource from Sanity', async () => {
       const resourceTemp = VideoResourceSchema.safeParse(
         await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.videoResourceId}"][0]`),
@@ -30,6 +34,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
               id: videoResource._id,
               set: {
                 srt,
+                wordLevelSrt,
                 transcript,
               },
             },
@@ -43,6 +48,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
           videoResourceId: videoResource._id,
           moduleSlug: event.data.moduleSlug,
           srt,
+          wordLevelSrt,
         },
       })
     }
@@ -60,6 +66,6 @@ export const deepgramTranscriptReady = inngest.createFunction(
       })
     })
 
-    return { srt, transcript }
+    return { srt, wordLevelSrt, transcript }
   },
 )
