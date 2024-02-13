@@ -2,7 +2,7 @@ import * as React from 'react'
 import { notFound } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
 import { getTip } from '@/lib/tips'
-import { VideoResource } from '@/lib/video-resource'
+import { getVideoResource, VideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
 
@@ -19,9 +19,9 @@ export default async function TipEditPage({ params }: { params: { slug: string }
     notFound()
   }
 
-  const videoResourceLoader = sanityQuery<VideoResource>(
-    `*[_type == "videoResource" && _id == "${tip.videoResourceId}"][0]`,
-    { tags: ['tips', tip._id] },
+  const videoResourceLoader = getVideoResource(
+    tip.videoResourceId,
+    tip.videoResourceId ? [tip.videoResourceId, 'tips', tip._id] : ['tips', tip._id],
   )
 
   return (

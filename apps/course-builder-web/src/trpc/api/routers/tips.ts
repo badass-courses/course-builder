@@ -1,5 +1,5 @@
 import { revalidateTag } from 'next/cache'
-import { TIP_CHAT_EVENT, TRANSCRIPT_WITH_SCREENSHOTS_REQUESTED_EVENT } from '@/inngest/events'
+import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
 import { getTip } from '@/lib/tips'
@@ -145,25 +145,5 @@ export const tipsRouter = createTRPCRouter({
       revalidateTag(input.tipId)
 
       return await getTip(input.tipId)
-    }),
-  generateTranscriptWithScreenshots: protectedProcedure
-    .input(
-      z.object({
-        videoResourceId: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const session = await getServerAuthSession()
-      const ability = getAbility({ user: session?.user })
-      if (!ability.can('create', 'Content')) {
-        throw new Error('Unauthorized')
-      }
-
-      return await inngest.send({
-        name: TRANSCRIPT_WITH_SCREENSHOTS_REQUESTED_EVENT,
-        data: {
-          videoResourceId: input.videoResourceId,
-        },
-      })
     }),
 })
