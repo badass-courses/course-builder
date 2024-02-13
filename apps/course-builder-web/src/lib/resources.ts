@@ -9,5 +9,8 @@ export async function getResource<T = any>(slugOrId: string): Promise<T | null> 
           summary,
           body,
           "slug": slug.current,
+          srt,
+          wordLevelSrt,
+          muxPlaybackId,
   }`)
 }
