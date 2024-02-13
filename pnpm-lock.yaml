@@ -389,6 +389,9 @@ importers:
       shortid:
         specifier: ^2.2.16
         version: 2.2.16
+      srt-parser-2:
+        specifier: ^1.2.3
+        version: 1.2.3
       styled-components:
         specifier: ~5.2.3
         version: 5.2.3(@babel/core@7.23.3)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react-is@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -10737,6 +10740,7 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
     dev: false
+    bundledDependencies: false
 
   /crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
@@ -19672,6 +19676,11 @@ packages:
   /sqlstring@2.3.3:
     resolution: {integrity: sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==}
     engines: {node: '>= 0.6'}
+
+  /srt-parser-2@1.2.3:
+    resolution: {integrity: sha512-dANP1AyJTI503H0/kXwRza+7QxDB3BqeFvEKTF4MI9lQcBe8JbRUQTKVIGzGABJCwBovEYavZ2Qsdm/s8XKz8A==}
+    hasBin: true
+    dev: false
 
   /sswr@2.0.0(svelte@4.2.3):
     resolution: {integrity: sha512-mV0kkeBHcjcb0M5NqKtKVg/uTIYNlIIniyDfSGrSfxpEdM9C365jK0z55pl9K0xAkNTJi2OAOVFQpgMPUk+V0w==}
