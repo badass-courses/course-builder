@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { Suspense, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
@@ -9,6 +10,7 @@ import { useSocket } from '@/hooks/use-socket'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { type Tip } from '@/lib/tips'
 import { cn } from '@/lib/utils'
+import { VideoResource } from '@/lib/video-resource'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
@@ -40,7 +42,13 @@ const NewTipFormSchema = z.object({
   body: z.string().optional().nullable(),
 })
 
-export function EditTipForm({ tip }: { tip: Tip }) {
+export function EditTipForm({
+  tip,
+  videoResourceLoader,
+}: {
+  tip: Tip
+  videoResourceLoader: Promise<VideoResource | null>
+}) {
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(tip.transcript)
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
@@ -48,14 +56,20 @@ export function EditTipForm({ tip }: { tip: Tip }) {
 
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
   const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
-  const { data: videoResource, refetch: refetchVideoResource } = api.videoResources.getById.useQuery(
-    {
-      videoResourceId,
-    },
-    {
-      refetchInterval: 10000,
-    },
-  )
+  // const {
+  //   data: videoResource,
+  //   refetch: refetchVideoResource,
+  //   status: videoResourceLoadingStatus,
+  // } = api.videoResources.getById.useQuery(
+  //   {
+  //     videoResourceId,
+  //   },
+  //   {
+  //     refetchInterval: 10000,
+  //   },
+  // )
+
+  const videoResource = use(videoResourceLoader)
 
   useSocket({
     room: tip._id,
@@ -89,7 +103,7 @@ export function EditTipForm({ tip }: { tip: Tip }) {
               setVideoResourceId(data.body.id)
             }
 
-            refetchVideoResource()
+            router.refresh()
 
             break
           case 'transcript.ready':
@@ -142,31 +156,31 @@ export function EditTipForm({ tip }: { tip: Tip }) {
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
             <div className="col-span-3 flex h-full flex-col border-r">
-              {videoResource ? (
-                <>
-                  <div className="relative z-10 flex items-center justify-center">
-                    <div className="flex w-full max-w-screen-lg flex-col">
-                      <div className="relative aspect-[16/9]">
-                        <div className={cn('flex items-center justify-center  overflow-hidden')}>
-                          <TipPlayer videoResource={videoResource} />
+              <Suspense
+                fallback={
+                  <>
+                    <div className="relative z-10 flex items-center justify-center">
+                      <div className="flex w-full max-w-screen-lg flex-col">
+                        <div className="relative aspect-[16/9]">
+                          <div className={cn('flex items-center justify-center  overflow-hidden')}></div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-xs">video is {videoResource.state}</div>
-                </>
-              ) : (
-                <>
-                  <div className="relative z-10 flex items-center justify-center">
-                    <div className="flex w-full max-w-screen-lg flex-col">
-                      <div className="relative aspect-[16/9]">
-                        <div className={cn('flex items-center justify-center  overflow-hidden')}></div>
+                    <div className="text-xs">video is loading</div>
+                  </>
+                }
+              >
+                <div className="relative z-10 flex items-center justify-center">
+                  <div className="flex w-full max-w-screen-lg flex-col">
+                    <div className="relative aspect-[16/9]">
+                      <div className={cn('flex items-center justify-center  overflow-hidden')}>
+                        <TipPlayer videoResourceLoader={videoResourceLoader} />
                       </div>
                     </div>
                   </div>
-                  <div className="text-xs">video is loading</div>
-                </>
-              )}
+                </div>
+                <div className="text-xs">video is {videoResource?.state}</div>
+              </Suspense>
               <FormField
                 control={form.control}
                 name="title"
