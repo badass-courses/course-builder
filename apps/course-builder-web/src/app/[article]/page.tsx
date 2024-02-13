@@ -4,7 +4,7 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
-import { getArticle } from '@/lib/articles'
+import { getArticle, type Article } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
@@ -29,10 +29,10 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
   }
 }
 
-async function ArticleActionBar({ slug }: { slug: string }) {
+async function ArticleActionBar({ articleLoader }: { articleLoader: Promise<Article | null> }) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
-  const article = await getArticle(slug)
+  const article = await articleLoader
 
   return (
     <>
@@ -50,8 +50,8 @@ async function ArticleActionBar({ slug }: { slug: string }) {
   )
 }
 
-async function Article({ slug }: { slug: string }) {
-  const article = await getArticle(slug)
+async function Article({ articleLoader }: { articleLoader: Promise<Article | null> }) {
+  const article = await articleLoader
 
   if (!article) {
     notFound()
@@ -72,21 +72,22 @@ async function Article({ slug }: { slug: string }) {
   )
 }
 
-async function ArticleTitle({ slug }: { slug: string }) {
-  const article = await getArticle(slug)
+async function ArticleTitle({ articleLoader }: { articleLoader: Promise<Article | null> }) {
+  const article = await articleLoader
 
   return <h1 className="text-3xl font-bold sm:text-4xl">{article?.title}</h1>
 }
 
 export default async function ArticlePage({ params }: { params: { article: string } }) {
+  const articleLoader = getArticle(params.article)
   return (
     <div>
       <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
-        <ArticleActionBar slug={params.article} />
+        <ArticleActionBar articleLoader={articleLoader} />
       </Suspense>
       <article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
-        <ArticleTitle slug={params.article} />
-        <Article slug={params.article} />
+        <ArticleTitle articleLoader={articleLoader} />
+        <Article articleLoader={articleLoader} />
       </article>
     </div>
   )
