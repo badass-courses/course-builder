@@ -35,7 +35,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Build Course Builder packages
-        run: pnpm build
+        run: pnpm build --filter "@coursebuilder/*"
 
       - name: Run build
         run: pnpm turbo --filter ./apps/${{ matrix.dir }} build
