@@ -6,6 +6,7 @@ import { mysqlTable } from '@/server/db/schema'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { getServerSession, type DefaultSession, type NextAuthOptions } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
+import TwitterProvider from 'next-auth/providers/twitter'
 
 type Role = 'admin' | 'user'
 
@@ -69,11 +70,24 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
-    GithubProvider({
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
+    ...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
+      ? [
+          GithubProvider({
+            clientId: env.GITHUB_CLIENT_ID,
+            clientSecret: env.GITHUB_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
+          }),
+        ]
+      : []),
+    ...(env.TWITTER_CLIENT_ID && env.TWITTER_CLIENT_SECRET
+      ? [
+          TwitterProvider({
+            clientId: env.TWITTER_CLIENT_ID,
+            clientSecret: env.TWITTER_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
+          }),
+        ]
+      : []),
   ],
   pages: {
     signIn: '/login',

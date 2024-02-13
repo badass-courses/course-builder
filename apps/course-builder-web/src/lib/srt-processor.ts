@@ -36,9 +36,23 @@ function convertTime(inputSeconds?: number) {
   return `${hours}:${minutes}:${seconds},${milliseconds}`
 }
 
-export function srtProcessor(words?: Word[]) {
+export function srtProcessor(words?: Word[], toWordLevelTimestamps: boolean = false) {
   if (!words) {
     return ''
+  }
+
+  if (toWordLevelTimestamps) {
+    const srtEntries = words.map((word, index) => {
+      const startTime = convertTime(word.start)
+      const endTime = convertTime(word.end)
+      const text = word.punctuated_word
+      return `${index + 1}
+${startTime} --> ${endTime}
+${text}
+`
+    })
+
+    return srtEntries.join('\n\n')
   }
 
   const timeLimitInSeconds = 5.5
