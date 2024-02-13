@@ -75,6 +75,7 @@ export async function sanityQuery<T = any>(
     })
     .catch((error) => {
       log.error(error)
+      console.error(error)
       throw error
     })
     .finally(() => {
