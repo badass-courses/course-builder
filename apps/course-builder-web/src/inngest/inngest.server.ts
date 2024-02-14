@@ -6,9 +6,9 @@ import {
   TIP_CHAT_EVENT,
   TipChat,
   type AI_WRITING_COMPLETED_EVENT,
-  type AI_WRITING_REQUESTED_EVENT,
   type AIWritingRequestCompleted,
-  type AIWritingRequested,
+  type DRAFT_WRITEUP_COMPLETED_EVENT,
+  type DraftWriteupCompleted,
   type USER_CREATED_EVENT,
   type UserCreated,
 } from '@/inngest/events'
@@ -27,7 +27,6 @@ import { EventSchemas, Inngest } from 'inngest'
 // Create a client to send and receive events
 type Events = {
   [AI_WRITING_COMPLETED_EVENT]: AIWritingRequestCompleted
-  [AI_WRITING_REQUESTED_EVENT]: AIWritingRequested
   [MUX_WEBHOOK_EVENT]: MuxWebhook
   [DEEPGRAM_WEBHOOK_EVENT]: DeepgramWebhook
   [TRANSCRIPT_READY_EVENT]: TranscriptReady
@@ -42,8 +41,9 @@ type Events = {
   [BODY_TEXT_UPDATED]: BodyTextUpdated
   [VIDEO_STATUS_CHECK_EVENT]: VideoStatusCheck
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
+  [DRAFT_WRITEUP_COMPLETED_EVENT]: DraftWriteupCompleted
 }
 export const inngest = new Inngest({
-  id: 'gpt-4-ai-chains',
+  id: 'course-builder',
   schemas: new EventSchemas().fromRecord<Events>(),
 })

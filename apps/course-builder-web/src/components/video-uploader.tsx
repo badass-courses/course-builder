@@ -7,12 +7,10 @@ import { getUniqueFilename } from '@/lib/get-unique-filename'
 import { api } from '@/trpc/react'
 import { UploadDropzone } from '@/utils/uploadthing'
 import MuxPlayer from '@mux/mux-player-react'
-import ReactMarkdown from 'react-markdown'
-
-import { Button } from '@coursebuilder/ui'
 
 const VideoUploader = ({ moduleSlug }: { moduleSlug?: string }) => {
   const [requestIds, setRequestIds] = React.useState<string[]>([])
+
   const { data: sanityModule } = api.module.getBySlug.useQuery({
     slug: moduleSlug,
   })
@@ -81,7 +79,6 @@ const VideoUploader = ({ moduleSlug }: { moduleSlug?: string }) => {
 function UploadedVideo({
   requestId,
   playbackId,
-  moduleSlug,
   state = 'new',
 }: {
   requestId: string
@@ -89,41 +86,10 @@ function UploadedVideo({
   state: string
   moduleSlug?: string
 }) {
-  const [generatedDraft, setGeneratedDraft] = React.useState<{
-    title: string
-    content: string
-  } | null>(null)
-  const { mutate: generatePost } = api.post.generate.useMutation()
-  const { data: sanityModule } = api.module.getBySlug.useQuery({
-    slug: moduleSlug,
-  })
-
   return (
     <div>
       {requestId}
       {playbackId && state === 'ready' && <MuxPlayer playbackId={playbackId} />}
-      {sanityModule.videoResources.filter((resource: any) => resource._id === requestId)?.[0].transcript && (
-        <Button
-          onClick={() => {
-            generatePost({ requestId: requestId })
-          }}
-        >
-          Generate Post Text
-        </Button>
-      )}
-      {generatedDraft && (
-        <div>
-          <h2 className="text-2xl font-semibold">{generatedDraft.title}</h2>
-          <ReactMarkdown>{generatedDraft.content}</ReactMarkdown>
-          <Button
-            onClick={() => {
-              setGeneratedDraft(null)
-            }}
-          >
-            Generate Post
-          </Button>
-        </div>
-      )}
     </div>
   )
 }

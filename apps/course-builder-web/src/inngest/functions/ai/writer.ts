@@ -1,35 +1,50 @@
 import { env } from '@/env.mjs'
-import { AI_WRITING_COMPLETED_EVENT, AI_WRITING_REQUESTED_EVENT } from '@/inngest/events'
-import { titles } from '@/inngest/functions/ai/data/titles'
+import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { promptActionExecutor } from '@/lib/prompt.action-executor'
+import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
+import { getVideoResource } from '@/lib/video-resource'
 import { sanityQuery } from '@/server/sanity.server'
-import { last } from 'lodash'
+import { NonRetriableError } from 'inngest'
+import { Liquid } from 'liquidjs'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
 
-export const writeAnEmail = inngest.createFunction(
-  { id: `gpt-4-writer`, name: 'GPT-4 Writer' },
-  { event: AI_WRITING_REQUESTED_EVENT },
+export const writeResourceBody = inngest.createFunction(
+  { id: `gpt-4-draft-writer`, name: 'GPT-4 Draft Writer' },
+  { event: MUX_SRT_READY_EVENT },
   async ({ event, step }) => {
     const workflow = await step.run('Load Workflow', async () => {
-      return await sanityQuery(`*[_type == "workflow" && trigger == '${AI_WRITING_REQUESTED_EVENT}'][0]`)
+      return await sanityQuery(`*[_type == "workflow" && trigger == 'ai/draft-writeup-requested'][0]`)
     })
+
+    const videoResource = await step.run('get the video resource from Sanity', async () => {
+      return await getVideoResource(event.data.videoResourceId)
+    })
+
+    if (!videoResource) {
+      throw new NonRetriableError(`Video resource not found for id (${event.data.videoResourceId})`)
+    }
 
     let shouldContinue = Boolean(workflow)
     let messages: ChatCompletionRequestMessage[] = []
+    const engine = new Liquid()
 
     while (workflow.actions.length > 0 && shouldContinue) {
       const action = workflow.actions.shift()
       switch (action._type) {
         case 'prompt':
           messages = await step.run(action.title, async () => {
-            return await promptActionExecutor({
-              action,
-              input: {
-                input: `${event.data.input.input}\n\n ## Examples of Good Video Titles\n\n* ${titles.join('\n * ')}`,
-              },
-              requestId: event.data.requestId,
-              messages,
+            return await streamingChatPromptExecutor({
+              requestId: event.data.videoResourceId,
+              promptMessages: [
+                ...messages,
+                {
+                  role: action.role,
+                  content: await engine.parseAndRender(action.content ?? '', {
+                    transcript: videoResource.transcript,
+                  }),
+                },
+              ],
+              model: action.model,
             })
           })
           break
@@ -37,28 +52,6 @@ export const writeAnEmail = inngest.createFunction(
           shouldContinue = false
       }
     }
-
-    await step.sendEvent('Announce Completion', {
-      name: AI_WRITING_COMPLETED_EVENT,
-      data: {
-        requestId: event.data.requestId,
-        result: last(messages),
-        fullPrompt: messages,
-      },
-    })
-
-    await step.run('Broadcast Completion', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${event.data.requestId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          body: last(messages),
-          requestId: event.data.requestId,
-          name: 'ai.draft.completed',
-        }),
-      }).catch((e) => {
-        console.error(e)
-      })
-    })
 
     return { workflow, messages }
   },
