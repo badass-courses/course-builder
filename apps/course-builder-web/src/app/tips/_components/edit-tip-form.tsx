@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
+import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useSocket } from '@/hooks/use-socket'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { type Tip } from '@/lib/tips'
@@ -56,18 +57,6 @@ export function EditTipForm({
 
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
   const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
-  // const {
-  //   data: videoResource,
-  //   refetch: refetchVideoResource,
-  //   status: videoResourceLoadingStatus,
-  // } = api.videoResources.getById.useQuery(
-  //   {
-  //     videoResourceId,
-  //   },
-  //   {
-  //     refetchInterval: 10000,
-  //   },
-  // )
 
   const videoResource = use(videoResourceLoader)
 
@@ -155,7 +144,7 @@ export function EditTipForm({
         </div>
         <div className="flex h-full flex-grow border-t">
           <div className="grid grid-cols-12">
-            <div className="col-span-3 flex h-full flex-col border-r">
+            <div className="col-span-2 flex h-full flex-col border-r">
               <Suspense
                 fallback={
                   <>
@@ -198,12 +187,27 @@ export function EditTipForm({
               <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">{tip._id}</div>
               <div className="p-5">
                 <h3 className="font-bold">Transcript</h3>
+                {Boolean(videoResourceId) && (
+                  <Button
+                    onClick={async (event) => {
+                      event.preventDefault()
+                      await reprocessTranscript({ videoResourceId })
+                    }}
+                  >
+                    Reprocess Transcript
+                  </Button>
+                )}
                 <ReactMarkdown className="prose dark:prose-invert">
                   {transcript ? transcript : 'Transcript Processing'}
                 </ReactMarkdown>
               </div>
             </div>
-            <div className="col-span-6 flex h-full w-full flex-col justify-start space-y-5 border-r">
+            <div
+              className={cn(
+                `flex h-full w-full flex-col justify-start space-y-5 border-r`,
+                Boolean(videoResource?.transcriptWithScreenshots) ? 'col-span-5' : 'col-span-8',
+              )}
+            >
               <FormField
                 control={form.control}
                 name="body"
@@ -241,7 +245,15 @@ export function EditTipForm({
                 </ul>
               </div>
             </div>
-            <div className="col-span-3">
+            {Boolean(videoResource?.transcriptWithScreenshots) && (
+              <div className="col-span-3 flex h-full w-full flex-col justify-start space-y-5 border-r">
+                <ReactMarkdown className="prose dark:prose-invert">
+                  {videoResource?.transcriptWithScreenshots}
+                </ReactMarkdown>
+              </div>
+            )}
+
+            <div className="col-span-2">
               {activeToolbarTab.id === 'assistant' && <TipAssistant tip={tip} />}
               {activeToolbarTab.id === 'media' && (
                 <>

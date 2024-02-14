@@ -5,7 +5,7 @@ export const VideoResourceSchema = z.object({
   _id: z.string(),
   _type: z.string(),
   _updatedAt: z.string(),
-  title: z.string(),
+  title: z.string().optional().nullable(),
   duration: z.number().optional().nullable(),
   muxPlaybackId: z.string().optional().nullable(),
   muxAssetId: z.string().optional().nullable(),
@@ -26,7 +26,7 @@ export async function getVideoResource(id: string | null, tags: string[] = []): 
     `*[(_id == "${id}")][0]{
         _id,
         _type,
-        "_updatedAt": ^._updatedAt,
+        _updatedAt,
         title,
         duration,
         muxAssetId,
@@ -45,6 +45,8 @@ export async function getVideoResource(id: string | null, tags: string[] = []): 
   if (videoResource.success) {
     return videoResource.data
   }
+
+  console.error('Failed to parse video resource', videoResource.error)
 
   return null
 }

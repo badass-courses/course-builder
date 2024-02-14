@@ -1,10 +1,12 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
+import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { getAbility } from '@/lib/ability'
 import { getTip } from '@/lib/tips'
-import { getVideoResource, VideoResource } from '@/lib/video-resource'
+import { getVideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
+
+import { Button } from '@coursebuilder/ui'
 
 import { EditTipForm } from '../../_components/edit-tip-form'
 
@@ -23,6 +25,8 @@ export default async function TipEditPage({ params }: { params: { slug: string }
     tip.videoResourceId,
     tip.videoResourceId ? [tip.videoResourceId, 'tips', tip._id] : ['tips', tip._id],
   )
+
+  const reprocessForVideoResourceId = reprocessTranscript.bind(null, { videoResourceId: tip.videoResourceId })
 
   return (
     <div className="relative mx-auto flex h-full w-full flex-grow flex-col items-center justify-center">

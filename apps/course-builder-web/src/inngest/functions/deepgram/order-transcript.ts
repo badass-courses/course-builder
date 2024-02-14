@@ -6,7 +6,7 @@ import { sanityQuery } from '@/server/sanity.server'
 import { NonRetriableError } from 'inngest'
 
 export const orderTranscript = inngest.createFunction(
-  { id: `order-transcript`, name: 'orderTranscript' },
+  { id: `order-transcript`, name: 'Order Transcript from Deepgram' },
   { event: VIDEO_RESOURCE_CREATED_EVENT },
   async ({ event, step }) => {
     const videoResource = await step.run('Load Video Resource', async () => {

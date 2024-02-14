@@ -23,7 +23,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
       throw new NonRetriableError(`Video resource not found for id (${event.data.videoResourceId})`)
     }
 
-    const transcriptWithScreenshots = await step.run('generate transcript with screenshots', async () => {
+    const { transcriptWithScreenshots } = await step.run('generate transcript with screenshots', async () => {
       if (!videoResource.srt || !videoResource.muxPlaybackId) {
         throw new Error(`Video resource (${event.data.videoResourceId}) does not have an srt or muxPlaybackId`)
       }
