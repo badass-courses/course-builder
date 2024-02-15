@@ -103,33 +103,38 @@ export const moduleRouter = createTRPCRouter({
     }),
 })
 
+export type Tutorial_GARBAGE = {
+  _id: string
+  _type: string
+  moduleType: string
+  title: string
+  description?: string
+  slug: string
+  sections?: {
+    _id: string
+    title: string
+    _type: string
+    moduleType: string
+    lessons: {
+      _id: string
+      title: string
+      _type: string
+      moduleType: string
+      slug: string
+    }[]
+  }[]
+  lessons?: {
+    _id: string
+    title: string
+    _type: string
+    moduleType: string
+    slug: string
+  }[]
+}
+
 const getTutorial = async (slug?: string) => {
   return slug
-    ? await sanityQuery<{
-        _id: string
-        _type: string
-        moduleType: string
-        title: string
-        description: string
-        sections: {
-          _id: string
-          title: string
-          _type: string
-          moduleType: string
-          lessons: {
-            _id: string
-            title: string
-            _type: string
-            moduleType: string
-          }[]
-        }[]
-        lessons: {
-          _id: string
-          title: string
-          _type: string
-          moduleType: string
-        }[]
-      }>(
+    ? await sanityQuery<Tutorial_GARBAGE>(
         groq`*[_type == "module" && moduleType == 'tutorial' && (_id == "${slug}" || slug.current == "${slug}")][0]{
                 ...,
                 "slug": slug.current,

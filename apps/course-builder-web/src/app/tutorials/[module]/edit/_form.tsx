@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { Tutorial_GARBAGE } from '@/trpc/api/routers/module'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -34,11 +35,7 @@ export function EditTutorialForm({
   initialTutorialData,
 }: {
   moduleSlug: string
-  initialTutorialData: {
-    title: string
-    description: string
-    lessons: { _id: string; title: string }[]
-  }
+  initialTutorialData: Tutorial_GARBAGE
 }) {
   const form = useForm<z.infer<typeof EditTutorialFormSchema>>({
     resolver: zodResolver(EditTutorialFormSchema),

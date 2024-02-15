@@ -5,10 +5,12 @@
 
 import * as React from 'react'
 import { EditTutorialForm } from '@/app/tutorials/[module]/edit/_form'
+import Tree from '@/components/lesson-list/tree'
+import { Tutorial_GARBAGE } from '@/trpc/api/routers/module'
 
 import { Button, Input, Label, Textarea } from '@coursebuilder/ui'
 
-export default function Component({ tutorial }: { tutorial: any }) {
+export default function Component({ tutorial }: { tutorial: Tutorial_GARBAGE }) {
   return (
     <div key="1" className="grid grid-cols-8 gap-4 p-4">
       <div className="col-span-2">
@@ -49,6 +51,44 @@ export default function Component({ tutorial }: { tutorial: any }) {
           <Button className="mt-2" variant="outline">
             + add resource
           </Button>
+        </div>
+        <div className="flex flex-col">
+          sss
+          <Tree
+            initialData={[
+              ...(tutorial.sections
+                ? tutorial.sections.map((section) => {
+                    return {
+                      id: section._id,
+                      label: section.title,
+                      type: section.moduleType,
+                      itemData: section,
+                      children:
+                        section.lessons?.map((lesson) => {
+                          return {
+                            id: lesson._id,
+                            label: lesson.title,
+                            type: lesson.moduleType,
+                            children: [],
+                            itemData: lesson,
+                          }
+                        }) ?? [],
+                    }
+                  })
+                : []),
+              ...(tutorial.lessons
+                ? tutorial.lessons.map((lesson) => {
+                    return {
+                      id: lesson._id,
+                      label: lesson.title,
+                      type: lesson.moduleType,
+                      children: [],
+                      itemData: lesson,
+                    }
+                  })
+                : []),
+            ]}
+          />
         </div>
       </div>
       <div className="col-span-4">
