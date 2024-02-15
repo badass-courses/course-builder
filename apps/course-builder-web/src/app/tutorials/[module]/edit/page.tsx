@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
+import Tree from '@/components/lesson-list/tree'
 import ModuleEdit from '@/components/module-edit'
-import VideoUploader from '@/components/video-uploader'
 import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
 import { api } from '@/trpc/server'
@@ -18,6 +18,8 @@ export default async function EditTutorialPage({ params }: { params: { module: s
 
   const tutorial = await api.module.getTutorial.query({ slug: params.module })
 
+  console.log(tutorial)
+
   if (!tutorial) {
     notFound()
   }
@@ -25,9 +27,6 @@ export default async function EditTutorialPage({ params }: { params: { module: s
   return (
     <>
       <ModuleEdit tutorial={tutorial} />
-      <div className="flex flex-col">
-        <VideoUploader moduleSlug={params.module} />
-      </div>
     </>
   )
 }
