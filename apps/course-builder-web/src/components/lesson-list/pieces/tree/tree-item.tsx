@@ -1,4 +1,4 @@
-import { Fragment, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { Fragment, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Instruction, ItemMode } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
@@ -282,7 +282,9 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
               <code className="text- absolute bottom-0 right-[var(--grid)] text-xs">({mode})</code>
             </small>
           </span>
-          {instruction ? <DropIndicator instruction={instruction} /> : null}
+          {instruction ? (
+            <span style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>◎ {instruction.type}</span>
+          ) : null}
         </button>
       </div>
       {item.children.length && item.isOpen ? (
