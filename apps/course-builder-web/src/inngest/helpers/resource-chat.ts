@@ -5,7 +5,8 @@ import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executo
 import { sanityQuery } from '@/server/sanity.server'
 import { Liquid } from 'liquidjs'
 import type { Session } from 'next-auth'
-import type { ChatCompletionRequestMessage } from 'openai-edge'
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
+import { z } from 'zod'
 
 /**
  * loads the workflow from sanity based on the trigger and then executes the workflow using the `resource` as
@@ -57,13 +58,27 @@ export async function resourceChat({
   let seedMessages: ChatCompletionRequestMessage[] = []
 
   try {
-    const actionParsed = JSON.parse(systemPromptAction.content)
+    const actionParsed = z
+      .array(
+        z.object({
+          role: z.enum([
+            ChatCompletionRequestMessageRoleEnum.System,
+            ChatCompletionRequestMessageRoleEnum.User,
+            ChatCompletionRequestMessageRoleEnum.Assistant,
+            ChatCompletionRequestMessageRoleEnum.Function,
+          ]),
+          content: z.string(),
+        }),
+      )
+      .parse(JSON.parse(systemPromptAction.content))
+
     const actionMessages: ChatCompletionRequestMessage[] = []
     for (const actionMessage of actionParsed) {
       const liquidParsedContent = await step.run('parse json content', async () => {
         const engine = new Liquid()
         return await engine.parseAndRender(actionMessage.content, { ...resource })
       })
+
       actionMessages.push({
         role: actionMessage.role,
         content: liquidParsedContent,
