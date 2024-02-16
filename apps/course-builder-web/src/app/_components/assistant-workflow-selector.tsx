@@ -5,10 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export function AssistantWorkflowSelector({
   onValueChange,
   initialValue = 'summarize',
-  availableWorkflows = [
-    { value: 'summarize', label: 'Summarize' },
-    { value: 'draft', label: 'Draft' },
-  ],
+  availableWorkflows = [{ value: 'summarize', label: 'Summarize' }],
 }: {
   onValueChange: (value?: string) => void
   initialValue?: string
