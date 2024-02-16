@@ -851,6 +851,9 @@ importers:
       clsx:
         specifier: ^2.0.0
         version: 2.0.0
+      cmdk:
+        specifier: ^0.2.0
+        version: 0.2.0(@types/react@18.2.37)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       framer-motion:
         specifier: ^10.16.5
         version: 10.16.5(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -5933,6 +5936,33 @@ packages:
       '@babel/runtime': 7.23.2
       '@types/react': 18.2.55
       react: 18.3.0-canary-03d6f7cf0-20240209
+    dev: false
+
+  /@radix-ui/react-dialog@1.0.0(@types/react@18.2.37)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-Yn9YU+QlHYLWwV1XfKiqnGVpWYWk6MeBVM6x/bcoyPvxgjQGoeT35482viLPctTMWoMw0PoHgqfSox7Ig+957Q==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@radix-ui/primitive': 1.0.0
+      '@radix-ui/react-compose-refs': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-context': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-dismissable-layer': 1.0.0(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-focus-guards': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-focus-scope': 1.0.0(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-id': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-portal': 1.0.0(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-presence': 1.0.0(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-primitive': 1.0.0(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-slot': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@radix-ui/react-use-controllable-state': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      aria-hidden: 1.2.3
+      react: 18.3.0-canary-03d6f7cf0-20240209
+      react-dom: 18.3.0-canary-03d6f7cf0-20240209(react@18.3.0-canary-03d6f7cf0-20240209)
+      react-remove-scroll: 2.5.4(@types/react@18.2.37)(react@18.3.0-canary-03d6f7cf0-20240209)
+    transitivePeerDependencies:
+      - '@types/react'
     dev: false
 
   /@radix-ui/react-dialog@1.0.0(@types/react@18.2.55)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
@@ -11056,6 +11086,20 @@ packages:
   /clsx@2.0.0:
     resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
     engines: {node: '>=6'}
+    dev: false
+
+  /cmdk@0.2.0(@types/react@18.2.37)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-JQpKvEOb86SnvMZbYaFKYhvzFntWBeSZdyii0rZPhKJj9uwJBxu4DaVYDrRN7r3mPop56oPhRw+JYWTKs66TYw==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@radix-ui/react-dialog': 1.0.0(@types/react@18.2.37)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      command-score: 0.1.2
+      react: 18.3.0-canary-03d6f7cf0-20240209
+      react-dom: 18.3.0-canary-03d6f7cf0-20240209(react@18.3.0-canary-03d6f7cf0-20240209)
+    transitivePeerDependencies:
+      - '@types/react'
     dev: false
 
   /cmdk@0.2.0(@types/react@18.2.55)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
@@ -19063,6 +19107,25 @@ packages:
       react: 18.3.0-canary-03d6f7cf0-20240209
       react-style-singleton: 2.2.1(@types/react@18.2.55)(react@18.3.0-canary-03d6f7cf0-20240209)
       tslib: 2.6.2
+    dev: false
+
+  /react-remove-scroll@2.5.4(@types/react@18.2.37)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-xGVKJJr0SJGQVirVFAUZ2k1QLyO6m+2fy0l8Qawbp5Jgrv3DeLalrfMNBFSlmz5kriGGzsVBtGVnf4pTKIhhWA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@types/react': 18.2.37
+      react: 18.3.0-canary-03d6f7cf0-20240209
+      react-remove-scroll-bar: 2.3.4(@types/react@18.2.37)(react@18.3.0-canary-03d6f7cf0-20240209)
+      react-style-singleton: 2.2.1(@types/react@18.2.37)(react@18.3.0-canary-03d6f7cf0-20240209)
+      tslib: 2.6.2
+      use-callback-ref: 1.3.0(@types/react@18.2.37)(react@18.3.0-canary-03d6f7cf0-20240209)
+      use-sidecar: 1.1.2(@types/react@18.2.37)(react@18.3.0-canary-03d6f7cf0-20240209)
     dev: false
 
   /react-remove-scroll@2.5.4(@types/react@18.2.55)(react@18.3.0-canary-03d6f7cf0-20240209):

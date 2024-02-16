@@ -27,7 +27,6 @@ export const articleChat = inngest.createFunction(
       throw new NonRetriableError(`Article ${event.data.articleId} not found`)
     }
 
-    const resource = { article }
     const resourceId = article._id
     const workflowTrigger = ARTICLE_CHAT_EVENT
 
@@ -35,7 +34,7 @@ export const articleChat = inngest.createFunction(
       step,
       workflowTrigger,
       resourceId,
-      resource,
+      resource: article,
       messages: event.data.messages,
       currentFeedback: event.data.currentFeedback,
       session: event.data.session,

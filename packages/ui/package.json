@@ -30,6 +30,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "cmdk": "^0.2.0",
     "framer-motion": "^10.16.5",
     "lucide-react": "^0.288.0",
     "react": "canary",

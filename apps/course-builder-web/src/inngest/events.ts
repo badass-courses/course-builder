@@ -40,6 +40,7 @@ export type TipChat = {
     messages: ChatCompletionRequestMessage[]
     currentFeedback?: FeedbackMarker[]
     session: Session | null
+    selectedWorkflow?: string
   }
 }
 
@@ -52,6 +53,7 @@ export type ArticleChat = {
     messages: ChatCompletionRequestMessage[]
     currentFeedback?: FeedbackMarker[]
     session: Session | null
+    selectedWorkflow?: string
   }
 }
 

@@ -30,6 +30,7 @@ export const articlesRouter = createTRPCRouter({
         articleId: z.string(),
         messages: z.array(z.any()),
         currentFeedback: z.array(FeedbackMarkerSchema).optional(),
+        selectedWorkflow: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -46,6 +47,7 @@ export const articlesRouter = createTRPCRouter({
           messages: input.messages,
           currentFeedback: input.currentFeedback,
           session: session,
+          selectedWorkflow: input.selectedWorkflow,
         },
       })
 

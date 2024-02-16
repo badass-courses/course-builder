@@ -29,6 +29,7 @@ export const tipsRouter = createTRPCRouter({
       z.object({
         tipId: z.string(),
         messages: z.array(z.any()),
+        selectedWorkflow: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -44,6 +45,7 @@ export const tipsRouter = createTRPCRouter({
           tipId: input.tipId,
           messages: input.messages,
           session: session,
+          selectedWorkflow: input.selectedWorkflow,
         },
       })
 

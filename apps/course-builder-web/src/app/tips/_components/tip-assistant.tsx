@@ -12,6 +12,7 @@ export function TipAssistant({ tip }: { tip: Tip }) {
   const handleSendChatMessage = (
     event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
     messages: ChatCompletionRequestMessage[],
+    selectedWorkflow?: string,
   ) => {
     sendTipChatMessage({
       tipId: tip._id,
@@ -19,15 +20,25 @@ export function TipAssistant({ tip }: { tip: Tip }) {
         ...messages,
         {
           role: ChatCompletionRequestMessageRoleEnum.System,
-          content: `current title: ${tip.title}\n\ncurrent body: ${tip.body}`,
+          content: `## current state of tip writeup\n\ncurrent title: ${tip.title}\n\ncurrent body: ${tip.body}`,
         },
         {
           role: ChatCompletionRequestMessageRoleEnum.User,
           content: event.currentTarget.value,
         },
       ],
+      selectedWorkflow,
     })
   }
 
-  return <ResourceAssistant resourceId={tip._id} handleSendMessage={handleSendChatMessage} />
+  return (
+    <ResourceAssistant
+      resourceId={tip._id}
+      handleSendMessage={handleSendChatMessage}
+      availableWorkflows={[
+        { value: 'tip-chat-response-v2', label: 'Default' },
+        { value: 'taylor-transcript-draft-v1', label: 'Draft (taylor v1)', default: true },
+      ]}
+    />
+  )
 }
