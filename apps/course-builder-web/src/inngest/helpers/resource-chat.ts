@@ -2,11 +2,11 @@ import { env } from '@/env.mjs'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { promptActionExecutor } from '@/lib/prompt.action-executor'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
-import { getServerAuthSession } from '@/server/auth'
 import { sanityQuery } from '@/server/sanity.server'
 import { Liquid } from 'liquidjs'
 import type { Session } from 'next-auth'
-import type { ChatCompletionRequestMessage } from 'openai-edge'
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
+import { z } from 'zod'
 
 /**
  * loads the workflow from sanity based on the trigger and then executes the workflow using the `resource` as
@@ -21,6 +21,7 @@ import type { ChatCompletionRequestMessage } from 'openai-edge'
  * @param messages
  * @param resource
  * @param currentFeedback
+ * @param session
  */
 export async function resourceChat({
   step,
@@ -40,40 +41,88 @@ export async function resourceChat({
   session: Session | null
 }) {
   const workflow = await step.run('Load Workflow', async () => {
-    return await sanityQuery(`*[_type == "workflow" && trigger == "${workflowTrigger}"][0]`, { useCdn: false })
+    return await sanityQuery(
+      `*[_type == "workflow" && (slug.current == "${workflowTrigger}" || trigger == "${workflowTrigger}")][0]`,
+      { useCdn: false },
+    )
   })
 
   const systemPromptAction = workflow.actions.find(
     (action: { _type: string; role: string }) => action._type === 'prompt' && action.role === 'system',
   )
 
-  const systemPrompt = await step.run(`parse system prompt`, async () => {
-    try {
-      const engine = new Liquid()
-      return {
-        role: systemPromptAction.role,
-        content: await engine.parseAndRender(systemPromptAction.content, resource),
-      }
-    } catch (e: any) {
-      console.error(e.message)
-      return {
-        role: systemPromptAction.role,
-        content: systemPromptAction.content,
-      }
-    }
-  })
+  let systemPrompt: ChatCompletionRequestMessage = {
+    role: systemPromptAction.role,
+    content: systemPromptAction.content,
+  }
+  let seedMessages: ChatCompletionRequestMessage[] = []
 
-  if (messages.length === 1 && systemPrompt) {
+  try {
+    const actionParsed = z
+      .array(
+        z.object({
+          role: z.enum([
+            ChatCompletionRequestMessageRoleEnum.System,
+            ChatCompletionRequestMessageRoleEnum.User,
+            ChatCompletionRequestMessageRoleEnum.Assistant,
+            ChatCompletionRequestMessageRoleEnum.Function,
+          ]),
+          content: z.string(),
+        }),
+      )
+      .parse(JSON.parse(systemPromptAction.content))
+
+    const actionMessages: ChatCompletionRequestMessage[] = []
+    for (const actionMessage of actionParsed) {
+      const liquidParsedContent = await step.run('parse json content', async () => {
+        const engine = new Liquid()
+        return await engine.parseAndRender(actionMessage.content, { ...resource })
+      })
+
+      actionMessages.push({
+        role: actionMessage.role,
+        content: liquidParsedContent,
+      })
+    }
+    if (actionMessages.length > 0) {
+      ;[
+        systemPrompt = {
+          role: systemPromptAction.role,
+          content: systemPromptAction.content,
+        },
+        ...seedMessages
+      ] = actionMessages
+    }
+  } catch (e: any) {
+    // if the prompt action content is not valid json, we assume it's just text
+    systemPrompt = await step.run(`parse system prompt`, async () => {
+      try {
+        const engine = new Liquid()
+        return {
+          role: systemPrompt.role,
+          content: await engine.parseAndRender(systemPrompt.content || '', resource),
+        }
+      } catch (e: any) {
+        console.error(e.message)
+        return {
+          role: systemPromptAction.role,
+          content: systemPromptAction.content,
+        }
+      }
+    })
+  }
+
+  if (messages.length <= 2 && systemPrompt) {
     if (currentFeedback) {
       messages = [
         {
           content: JSON.stringify(currentFeedback),
-          role: 'assistant',
+          role: 'system',
         },
         ...messages,
       ]
     }
-    messages = [systemPrompt, ...messages]
+    messages = [systemPrompt, ...seedMessages, ...messages]
   }
 
   const systemPromptIndex = workflow.actions.findIndex(

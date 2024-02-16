@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { useRef } from 'react'
+import { AssistantWorkflowSelector } from '@/app/_components/assistant-workflow-selector'
 import { ResourceChatResponse } from '@/app/_components/resource-chat-response'
 import { useSocket } from '@/hooks/use-socket'
 import { EnterIcon } from '@sanity/icons'
@@ -10,14 +11,20 @@ import { Button, Textarea } from '@coursebuilder/ui'
 export function ResourceAssistant({
   resourceId,
   handleSendMessage,
+  availableWorkflows = [{ value: 'summarize', label: 'Summarize', default: true }],
 }: {
   resourceId: string
   handleSendMessage: (
     event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
     messages: ChatCompletionRequestMessage[],
+    selectedWorkflow?: string,
   ) => void
+  availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
   const [messages, setMessages] = React.useState<ChatCompletionRequestMessage[]>([])
+  const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>(
+    availableWorkflows.find((w) => w.default)?.value || 'summarize',
+  )
 
   useSocket({
     room: resourceId,
@@ -37,7 +44,18 @@ export function ResourceAssistant({
 
   return (
     <div className="flex h-full w-full flex-col justify-start">
-      <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
+      <div>
+        <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
+        {availableWorkflows.length > 1 && (
+          <AssistantWorkflowSelector
+            initialValue={selectedWorkflow}
+            onValueChange={(value) => {
+              setSelectedWorkflow(value || selectedWorkflow)
+            }}
+            availableWorkflows={availableWorkflows}
+          />
+        )}
+      </div>
       <ResourceChatResponse requestId={resourceId} />
       <div className="flex w-full flex-col items-start border-t">
         <div className="relative w-full">
@@ -49,7 +67,7 @@ export function ResourceAssistant({
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault()
-                handleSendMessage(event, messages)
+                handleSendMessage(event, messages, selectedWorkflow)
                 event.currentTarget.value = ''
               }
             }}
@@ -61,7 +79,7 @@ export function ResourceAssistant({
             onClick={async (event) => {
               event.preventDefault()
               if (textareaRef.current) {
-                handleSendMessage(event, messages)
+                handleSendMessage(event, messages, selectedWorkflow)
                 textareaRef.current.value = ''
               }
             }}

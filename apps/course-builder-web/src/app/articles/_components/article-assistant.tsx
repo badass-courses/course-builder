@@ -19,6 +19,7 @@ export function ArticleAssistant({
   const handleSendArticleChatMessage = (
     event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
     messages: ChatCompletionRequestMessage[],
+    selectedWorkflow?: string,
   ) => {
     sendArticleChatMessage({
       articleId: article._id,
@@ -26,7 +27,7 @@ export function ArticleAssistant({
         ...messages,
         {
           role: ChatCompletionRequestMessageRoleEnum.System,
-          content: `
+          content: `## current state of article
           current title: ${article.title}
           current body: ${article.body}
           `,
@@ -37,8 +38,18 @@ export function ArticleAssistant({
         },
       ],
       currentFeedback,
+      selectedWorkflow,
     })
   }
 
-  return <ResourceAssistant resourceId={article._id} handleSendMessage={handleSendArticleChatMessage} />
+  return (
+    <ResourceAssistant
+      resourceId={article._id}
+      handleSendMessage={handleSendArticleChatMessage}
+      availableWorkflows={[
+        { value: 'article-chat-response', label: 'Default' },
+        { value: 'taylor-transcript-draft-v1', label: 'Draft (taylor v1)', default: true },
+      ]}
+    />
+  )
 }

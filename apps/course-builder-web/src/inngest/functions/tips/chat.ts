@@ -24,15 +24,14 @@ export const tipChat = inngest.createFunction(
       throw new NonRetriableError(`Tip not found for id (${event.data.tipId})`)
     }
 
-    const resource = { tip }
     const resourceId = tip._id
-    const workflowTrigger = TIP_CHAT_EVENT
+    const workflowTrigger = event.data.selectedWorkflow || 'tip-chat-response'
 
     const messages = await resourceChat({
       step,
       workflowTrigger,
       resourceId,
-      resource,
+      resource: tip,
       messages: event.data.messages,
       currentFeedback: event.data.currentFeedback,
       session: event.data.session,
