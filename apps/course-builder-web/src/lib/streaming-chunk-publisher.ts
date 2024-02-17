@@ -2,7 +2,7 @@ import { env } from '@/env.mjs'
 import { type AIOutput } from '@/types'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
-export const STREAM_COMPLETE = `\\ok`
+export const STREAM_COMPLETE = `#####ok`
 
 /**
  * This is a streaming chunk publisher that will publish a message to the partykit server as a

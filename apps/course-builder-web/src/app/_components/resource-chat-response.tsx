@@ -15,7 +15,13 @@ type Message = {
   userId?: string
 }
 
-export function ResourceChatResponse({ requestId }: { requestId: string }) {
+export function ResourceChatResponse({
+  requestId,
+  setStreamingActive = () => {},
+}: {
+  requestId: string
+  setStreamingActive: (value: ((prevState: boolean) => boolean) | boolean) => void
+}) {
   const session = useSession()
   const [messages, setMessages] = React.useState<Message[]>([])
   const div = useRef<any>(null)
@@ -36,9 +42,13 @@ export function ResourceChatResponse({ requestId }: { requestId: string }) {
         } else {
           // It's an assistant message part, check for STREAM_COMPLETE
           if (messageData.body === STREAM_COMPLETE) {
+            setStreamingActive((prev) => {
+              return false
+            })
             // When stream is complete, do not append anything.
             // If you need to handle the end of a stream (e.g., to clean up or mark as complete), do it here.
           } else {
+            setStreamingActive(true)
             // It's a part of an assistant's message (streaming), append to the last assistant message.
             setMessages((prev) => {
               let lastMessage = prev[prev.length - 1]

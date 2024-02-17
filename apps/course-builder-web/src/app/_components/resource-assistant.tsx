@@ -3,7 +3,9 @@ import { useRef } from 'react'
 import { AssistantWorkflowSelector } from '@/app/_components/assistant-workflow-selector'
 import { ResourceChatResponse } from '@/app/_components/resource-chat-response'
 import { useSocket } from '@/hooks/use-socket'
+import { cn } from '@/utils/cn'
 import { EnterIcon } from '@sanity/icons'
+import { SquareIcon } from 'lucide-react'
 import type { ChatCompletionRequestMessage } from 'openai-edge'
 
 import { Button, Textarea } from '@coursebuilder/ui'
@@ -22,6 +24,7 @@ export function ResourceAssistant({
   availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
   const [messages, setMessages] = React.useState<ChatCompletionRequestMessage[]>([])
+  const [streamingActive, setStreamingActive] = React.useState<boolean>(false)
   const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>(
     availableWorkflows.find((w) => w.default)?.value || 'summarize',
   )
@@ -33,10 +36,11 @@ export function ResourceAssistant({
         const messageData = JSON.parse(messageEvent.data)
 
         if (messageData.name === 'resource.chat.completed' && messageData.requestId === resourceId) {
+          // setStreamingActive(false)
           setMessages(messageData.body)
         }
       } catch (error) {
-        // noting to do
+        setStreamingActive(false)
       }
     },
   })
@@ -56,7 +60,7 @@ export function ResourceAssistant({
           />
         )}
       </div>
-      <ResourceChatResponse requestId={resourceId} />
+      <ResourceChatResponse requestId={resourceId} setStreamingActive={setStreamingActive} />
       <div className="flex w-full flex-col items-start border-t">
         <div className="relative w-full">
           <Textarea
@@ -65,7 +69,7 @@ export function ResourceAssistant({
             placeholder="Direct Assistant..."
             rows={4}
             onKeyDown={async (event) => {
-              if (event.key === 'Enter' && !event.shiftKey) {
+              if (event.key === 'Enter' && !event.shiftKey && !streamingActive) {
                 event.preventDefault()
                 handleSendMessage(event, messages, selectedWorkflow)
                 event.currentTarget.value = ''
@@ -74,17 +78,22 @@ export function ResourceAssistant({
           />
           <Button
             type="button"
-            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center p-0"
+            className={cn(
+              'absolute right-2 top-2 flex h-6 w-6 items-center justify-center p-0',
+              streamingActive ? 'text-gray-400' : 'text-gray-600',
+            )}
             variant="outline"
             onClick={async (event) => {
               event.preventDefault()
-              if (textareaRef.current) {
+              if (textareaRef.current && !streamingActive) {
                 handleSendMessage(event, messages, selectedWorkflow)
                 textareaRef.current.value = ''
+              } else if (streamingActive) {
+                // cancel the streaming
               }
             }}
           >
-            <EnterIcon className="w-4" />
+            {streamingActive ? <SquareIcon className="w-4" /> : <EnterIcon className="w-4" />}
           </Button>
         </div>
       </div>

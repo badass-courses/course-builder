@@ -22,7 +22,7 @@ export async function mergeSrtWithScreenshots(srt: string, muxPlaybackId: string
       const [hours, minutes, seconds]: any = startTime?.split(':').map(Number)
       const totalSeconds = hours * 3600 + minutes * 60 + seconds
 
-      const muxThumbnailUrl = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?width=800&height=600`
+      const muxThumbnailUrl = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${totalSeconds}`
       timesWithWordsScreenshots.push({
         ...time,
         screenshot: muxThumbnailUrl + `&time=${totalSeconds}`,

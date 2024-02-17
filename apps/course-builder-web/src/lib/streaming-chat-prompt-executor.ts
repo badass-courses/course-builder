@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { OpenAIStreamingDataPartykitChunkPublisher } from '@/lib/streaming-chunk-publisher'
+import { OpenAIStreamingDataPartykitChunkPublisher, STREAM_COMPLETE } from '@/lib/streaming-chunk-publisher'
 import { type ProgressWriter } from '@/types'
 import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai-edge'
 
@@ -33,7 +33,7 @@ export async function streamingChatPromptExecutor({ requestId, promptMessages, m
   } catch (e) {
     console.warn((e as Error).message, e)
   } finally {
-    await writer.publishMessage(`\n\n`)
+    await writer.publishMessage(STREAM_COMPLETE)
   }
   return [...promptMessages, result as ChatCompletionRequestMessage]
 }

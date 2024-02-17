@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Suspense, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { AssistantWorkflowSelector } from '@/app/_components/assistant-workflow-selector'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
@@ -14,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { VideoResource } from '@/lib/video-resource'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, ZapIcon } from 'lucide-react'
+import { ImagePlusIcon, PaintBucketIcon, ZapIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -55,7 +56,6 @@ export function EditTipForm({
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
 
-  const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
   const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
 
   const videoResource = use(videoResourceLoader)
@@ -221,12 +221,6 @@ export function EditTipForm({
                       markers={feedbackMarkers}
                       onChange={(data) => {
                         form.setValue('body', data)
-
-                        generateFeedback({
-                          resourceId: tip._id,
-                          body: data,
-                          currentFeedback: feedbackMarkers,
-                        })
                       }}
                     />
                     <FormMessage />
@@ -260,6 +254,16 @@ export function EditTipForm({
                   <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
                   <CloudinaryMediaBrowser />
                 </>
+              )}
+              {activeToolbarTab.id === 'resources' && (
+                <div className="flex h-full w-full flex-col justify-start">
+                  <div>
+                    <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Resources</h3>
+                    <p className="p-5 text-xs opacity-70">
+                      Add resources that will be consumed as context by the assistant and also help learners.
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -306,5 +310,9 @@ const TOOLBAR = new Set([
   {
     id: 'media',
     icon: () => <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />,
+  },
+  {
+    id: 'resources',
+    icon: () => <PaintBucketIcon strokeWidth={1.5} size={24} width={18} height={18} />,
   },
 ])
