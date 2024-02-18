@@ -10,6 +10,7 @@
 import { getServerAuthSession } from '@/server/auth'
 import { db } from '@/server/db'
 import { initTRPC, TRPCError } from '@trpc/server'
+import { CreateNextContextOptions } from '@trpc/server/dist/adapters/next'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
@@ -25,7 +26,7 @@ import { ZodError } from 'zod'
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const session = await getServerAuthSession()
 
   return {

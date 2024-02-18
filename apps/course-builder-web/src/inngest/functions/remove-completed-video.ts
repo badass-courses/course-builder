@@ -25,11 +25,12 @@ export const removeCompletedVideo = inngest.createFunction(
     const finishedStates = ['ready', 'errored']
 
     if (finishedStates.includes(videoResource.state)) {
+      await step.sleep('wait a few just to be sure', '30m')
       await step.run('delete file from uploadthing', async () => {
         return utapi.deleteFiles(event.data.fileKey as string)
       })
     } else {
-      await step.sleep('wait for video to be ready', 60000)
+      await step.sleep('wait for video to be ready', '5m')
       await step.sendEvent('check video status', {
         name: VIDEO_STATUS_CHECK_EVENT,
         data: event.data,

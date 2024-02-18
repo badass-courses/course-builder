@@ -5,9 +5,11 @@ import { getAbility } from '@/lib/ability'
 import { ArticleSchema, getArticle } from '@/lib/articles'
 import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
+import { redis } from '@/server/redis-client'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import slugify from '@sindresorhus/slugify'
+import { Ratelimit } from '@upstash/ratelimit'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
 import { z } from 'zod'
@@ -49,6 +51,7 @@ export const articlesRouter = createTRPCRouter({
           session: session,
           selectedWorkflow: input.selectedWorkflow,
         },
+        user: session?.user,
       })
 
       return await getArticle(input.articleId)

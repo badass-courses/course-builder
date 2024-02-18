@@ -26,6 +26,7 @@ export const ourFileRouter = {
       }
 
       return {
+        user: session.user,
         userId: session.user.id,
         ...(input?.moduleSlug && { moduleSlug: input.moduleSlug }),
       }
@@ -40,6 +41,7 @@ export const ourFileRouter = {
           moduleSlug: opts.metadata.moduleSlug,
           fileKey: opts.file.key,
         },
+        user: opts.metadata.user,
       })
     }),
   tipUploader: f({ video: { maxFileSize: '2GB', maxFileCount: 1 } })
@@ -51,7 +53,7 @@ export const ourFileRouter = {
         throw new Error('Unauthorized')
       }
 
-      return { userId: session.user.id }
+      return { userId: session.user.id, user: session?.user }
     })
     .onUploadComplete(async (opts) => {
       console.debug('Upload complete for userId:', opts.metadata.userId)
@@ -65,6 +67,7 @@ export const ourFileRouter = {
           title: opts.file.name || 'untitled',
           fileKey: opts.file.key,
         },
+        user: opts.metadata.user,
       })
     }),
 } satisfies FileRouter

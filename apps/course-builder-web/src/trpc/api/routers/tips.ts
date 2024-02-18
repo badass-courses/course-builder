@@ -47,6 +47,7 @@ export const tipsRouter = createTRPCRouter({
           session: session,
           selectedWorkflow: input.selectedWorkflow,
         },
+        user: session?.user,
       })
 
       return await getTip(input.tipId)

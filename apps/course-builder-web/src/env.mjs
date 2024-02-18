@@ -31,7 +31,8 @@ export const env = createEnv({
     MUX_ACCESS_TOKEN_ID: z.string(),
     OPENAI_MODEL_ID: z.string(),
     OPENAI_EMBEDDINGS_MODEL: z.string(),
-
+    UPSTASH_REDIS_REST_URL: z.string(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
     DEEPGRAM_API_KEY: z.string(),
     UPLOADTHING_URL: z.string(),
     POSTMARK_API_KEY: z.string(),
@@ -88,6 +89,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
     TWITTER_CLIENT_ID: process.env.TWITTER_CLIENT_ID,
     TWITTER_CLIENT_SECRET: process.env.TWITTER_CLIENT_SECRET,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

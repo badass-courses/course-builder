@@ -9,7 +9,15 @@ import { toChicagoTitleCase } from '@/utils/chicagor-title'
 import { v4 } from 'uuid'
 
 export const videoUploaded = inngest.createFunction(
-  { id: `video-uploaded`, name: 'Video Uploaded' },
+  {
+    id: `video-uploaded`,
+    name: 'Video Uploaded',
+    rateLimit: {
+      key: 'event.user.id',
+      limit: 5,
+      period: '10m',
+    },
+  },
   { event: VIDEO_UPLOADED_EVENT },
   async ({ event, step }) => {
     const muxAsset = await step.run('create the mux asset', async () => {

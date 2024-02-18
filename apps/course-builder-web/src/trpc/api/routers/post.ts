@@ -28,6 +28,7 @@ export const postRouter = createTRPCRouter({
           content: input.body,
           title: input.title,
         },
+        user: session?.user,
       })
     }),
 })

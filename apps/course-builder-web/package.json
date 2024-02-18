@@ -89,6 +89,8 @@
     "@types/shortid": "^0.0.31",
     "@types/uuid": "^9.0.6",
     "@uploadthing/react": "5.7.1-canary.65ab2fd",
+    "@upstash/ratelimit": "^1.0.1",
+    "@upstash/redis": "^1.28.4",
     "ai": "^2.2.22",
     "aws-sdk": "^2.1483.0",
     "axios": "^1.5.1",

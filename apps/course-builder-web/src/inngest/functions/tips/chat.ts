@@ -11,6 +11,11 @@ export const tipChat = inngest.createFunction(
   {
     id: `tip-chat`,
     name: 'Tip Chat',
+    rateLimit: {
+      key: 'event.user.id',
+      limit: 5,
+      period: '15s',
+    },
   },
   {
     event: TIP_CHAT_EVENT,
