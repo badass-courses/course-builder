@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Body, Head, Html, Link, Preview, Section } from '@react-email/components'
+import { Body, Head, Html, Link, Preview, Row, Section } from '@react-email/components'
 import { Markdown } from '@react-email/markdown'
 
 export type BasicEmailProps = {
@@ -24,7 +24,14 @@ export const BasicEmail = ({
           <Markdown>{body}</Markdown>
         </Section>
         <Section style={footer}>
-          {messageType === 'broadcast' ? <Link href={unsubscribeLinkUrl}>unsubscribe</Link> : null}
+          {messageType === 'broadcast' ? (
+            <>
+              <Row>
+                <Link href={unsubscribeLinkUrl}>unsubscribe</Link>
+              </Row>
+              <Row>12333 Sowden Rd, Ste. B, PMB #97429 Houston, TX 77080-2059</Row>
+            </>
+          ) : null}
         </Section>
       </Body>
     </Html>
