@@ -33,15 +33,15 @@ export const writingRouter = createTRPCRouter({
 
       console.log('bodyHash', bodyHash)
 
-      await inngest.send({
-        id: bodyHash,
-        name: BODY_TEXT_UPDATED,
-        data: {
-          resourceId: input.resourceId,
-          content: input.body,
-          currentFeedback: input.currentFeedback,
-        },
-      })
+      // await inngest.send({
+      //   id: bodyHash,
+      //   name: BODY_TEXT_UPDATED,
+      //   data: {
+      //     resourceId: input.resourceId,
+      //     content: input.body,
+      //     currentFeedback: input.currentFeedback,
+      //   },
+      // })
 
       return true
     }),
