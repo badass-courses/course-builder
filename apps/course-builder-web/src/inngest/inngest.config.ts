@@ -4,6 +4,7 @@ import { articleChat } from '@/inngest/functions/articles/chat'
 import { cloudinaryAssetCreated } from '@/inngest/functions/cloudinary/cloudinary-webhooks-handlers'
 import { deepgramTranscriptReady } from '@/inngest/functions/deepgram/deepgram-webhook-handlers'
 import { orderTranscript } from '@/inngest/functions/deepgram/order-transcript'
+import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { addSrtToMuxAsset } from '@/inngest/functions/mux/add-srt-to-mux-asset'
 import {
   muxVideoAssetCreated,
@@ -39,5 +40,6 @@ export const inngestConfig = {
     deepgramTranscriptReady,
     removeCompletedVideo,
     orderTranscript,
+    emailSendBroadcast,
   ],
 }

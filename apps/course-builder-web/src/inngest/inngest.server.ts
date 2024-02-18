@@ -14,6 +14,7 @@ import {
 } from '@/inngest/events'
 import { CLOUDINARY_WEBHOOK_EVENT, CloudinaryWebhook } from '@/inngest/events/cloudinary-webhook'
 import { type DEEPGRAM_WEBHOOK_EVENT, type DeepgramWebhook } from '@/inngest/events/deepgram-webhook'
+import { EMAIL_SEND_BROADCAST, EmailSendBroadcast } from '@/inngest/events/email-send-broadcast'
 import { type MUX_SRT_READY_EVENT, type MuxSrtReady } from '@/inngest/events/mux-add-srt-to-asset'
 import { type MUX_WEBHOOK_EVENT, type MuxWebhook } from '@/inngest/events/mux-webhook'
 import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
@@ -42,6 +43,7 @@ type Events = {
   [VIDEO_STATUS_CHECK_EVENT]: VideoStatusCheck
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
   [DRAFT_WRITEUP_COMPLETED_EVENT]: DraftWriteupCompleted
+  [EMAIL_SEND_BROADCAST]: EmailSendBroadcast
 }
 export const inngest = new Inngest({
   id: 'course-builder',
