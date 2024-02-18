@@ -53,7 +53,7 @@ export const communicationPreferenceTypes = mysqlTable('communicationPreferenceT
   id: varchar('id', { length: 255 }).notNull().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
-  status: boolean('status').notNull().default(true),
+  active: boolean('active').notNull().default(true),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     fsp: 3,
@@ -74,7 +74,7 @@ export const communicationChannel = mysqlTable(
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description'),
-    status: boolean('status').notNull().default(true),
+    active: boolean('active').notNull().default(true),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
@@ -99,12 +99,21 @@ export const communicationPreferences = mysqlTable(
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     userId: varchar('userId', { length: 255 }).notNull(),
     channelId: varchar('channelId', { length: 255 }).notNull(),
+    preferenceLevel: mysqlEnum('preferenceLevel', ['low', 'medium', 'high']).notNull().default('medium'),
     preferenceTypeId: varchar('preferenceTypeId', { length: 255 }).notNull(),
-    status: boolean('status').notNull().default(true),
+    active: boolean('active').notNull().default(true),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
     }).default(sql`CURRENT_TIMESTAMP(3)`),
+    optInAt: timestamp('optInAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    optOutAt: timestamp('optOutAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
@@ -155,7 +164,7 @@ export const accounts = mysqlTable(
     refresh_token_expires_in: int('refresh_token_expires_in'),
   },
   (account) => ({
-    compoundKey: primaryKey(account.provider, account.providerAccountId),
+    compoundKey: primaryKey({ columns: [account.provider, account.providerAccountId] }),
     userIdIdx: index('userId_idx').on(account.userId),
   }),
 )
@@ -188,6 +197,6 @@ export const verificationTokens = mysqlTable(
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
   (vt) => ({
-    compoundKey: primaryKey(vt.identifier, vt.token),
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 )
