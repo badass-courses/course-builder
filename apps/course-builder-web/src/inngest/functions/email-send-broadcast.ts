@@ -3,8 +3,12 @@ import { env } from '@/env.mjs'
 import { EMAIL_SEND_BROADCAST } from '@/inngest/events/email-send-broadcast'
 import { inngest } from '@/inngest/inngest.server'
 import { db } from '@/server/db'
+import { communicationPreferences } from '@/server/db/schema'
 import { NonRetriableError } from 'inngest'
+import { customAlphabet } from 'nanoid'
 import { Resend } from 'resend'
+
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 export async function sendAnEmail<ComponentPropsType = any>({
   Component,
@@ -48,17 +52,23 @@ export const emailSendBroadcast = inngest.createFunction(
     event: EMAIL_SEND_BROADCAST,
   },
   async ({ event, step }) => {
+    const { preferenceType, preferenceChannel } = await step.run('load the preference type and channel', async () => {
+      const preferenceType = await db.query.communicationPreferenceTypes.findFirst({
+        where: (cpt, { eq }) => eq(cpt.name, 'Newsletter'),
+      })
+      const preferenceChannel = await db.query.communicationChannel.findFirst({
+        where: (cc, { eq }) => eq(cc.name, 'Email'),
+      })
+      return { preferenceType, preferenceChannel }
+    })
+
+    if (!preferenceType || !preferenceChannel) {
+      throw new NonRetriableError('Preference type or channel not found')
+    }
+
     const user = await step.run('load the user', async () => {
       return db.query.users.findFirst({
         where: (users, { eq }) => eq(users.id, event.data.toUserId),
-        with: {
-          communicationPreferences: {
-            with: {
-              preferenceType: true,
-              channel: true,
-            },
-          },
-        },
       })
     })
 
@@ -66,9 +76,32 @@ export const emailSendBroadcast = inngest.createFunction(
       throw new NonRetriableError(`User not found with id: ${event.data.toUserId}`)
     }
 
-    const preference = user.communicationPreferences.find(
-      (cp) => cp.preferenceType.name === 'Newsletter' && cp.channel.name === 'Email',
-    )
+    let preference = await step.run('load the user preference', async () => {
+      return db.query.communicationPreferences.findFirst({
+        where: (cp, { and, eq }) => and(eq(cp.userId, user.id), eq(cp.preferenceTypeId, preferenceType.id)),
+      })
+    })
+
+    if (!preference) {
+      await step.run('create the user preference', async () => {
+        await db.insert(communicationPreferences).values({
+          id: nanoid(),
+          userId: user.id,
+          preferenceTypeId: preferenceType.id,
+          channelId: preferenceChannel.id,
+          active: true,
+          updatedAt: new Date(),
+          optInAt: new Date(),
+          createdAt: new Date(),
+        })
+      })
+
+      preference = await step.run('load the user preference', async () => {
+        return db.query.communicationPreferences.findFirst({
+          where: (cp, { and, eq }) => and(eq(cp.userId, user.id), eq(cp.preferenceTypeId, preferenceType.id)),
+        })
+      })
+    }
 
     if (!preference?.active) {
       return 'User has unsubscribed'
