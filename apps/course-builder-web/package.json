@@ -128,6 +128,7 @@
     "react-hook-form": "^7.48.0",
     "react-icons": "^4.11.0",
     "react-markdown": "^9.0.0",
+    "resend": "^3.2.0",
     "sanity": "^3.18.1",
     "sanity-plugin-asset-source-unsplash": "^1.1.2",
     "sanity-plugin-iframe-pane": "^2.6.0",
