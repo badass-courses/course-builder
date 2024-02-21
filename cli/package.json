@@ -1,6 +1,6 @@
 {
   "name": "create-course-app",
-  "version": "7.24.2",
+  "version": "8.0.0",
   "description": "Create web application with the Course Builder stack",
   "license": "MIT",
   "repository": {
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@auth/drizzle-adapter": "^0.3.6",
-    "@coursebuilder/tsconfig": "^0.0.1",
+    "@coursebuilder/tsconfig": "^0.0.2",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@planetscale/database": "1.14.0",
     "@prisma/client": "^5.6.0",
