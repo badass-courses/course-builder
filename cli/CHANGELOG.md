@@ -1,5 +1,23 @@
 # Changelog
 
+## 8.0.0
+
+### Major Changes
+
+- [#58](https://github.com/badass-courses/course-builder/pull/58)
+  [`709986aa09677d937ea891b66cc689de44affb0e`](https://github.com/badass-courses/course-builder/commit/709986aa09677d937ea891b66cc689de44affb0e)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - bumbing dep versions
+
+### Patch Changes
+
+- [#69](https://github.com/badass-courses/course-builder/pull/69)
+  [`ecd40cb8d6e2a94bd75233e6e853d423a1a23ef6`](https://github.com/badass-courses/course-builder/commit/ecd40cb8d6e2a94bd75233e6e853d423a1a23ef6)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - Bumped to the canary version of react ☠️
+
+- [#76](https://github.com/badass-courses/course-builder/pull/76)
+  [`10d1a2a3d4a8da2d4b098225d7b4c11167a8e059`](https://github.com/badass-courses/course-builder/commit/10d1a2a3d4a8da2d4b098225d7b4c11167a8e059)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - updating drizzle to latest
+
 ## 7.24.2
 
 ### Patch Changes
