@@ -386,6 +386,9 @@ importers:
       next-mdx-remote:
         specifier: ^4.4.1
         version: 4.4.1(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      next-themes:
+        specifier: ^0.2.1
+        version: 0.2.1(next@14.1.1-canary.26)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       npm:
         specifier: ^10.2.1
         version: 10.2.3
@@ -881,6 +884,9 @@ importers:
       react-hook-form:
         specifier: ^7.48.0
         version: 7.48.2(react@18.3.0-canary-03d6f7cf0-20240209)
+      react-resizable-panels:
+        specifier: ^2.0.9
+        version: 2.0.9(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       react-wrap-balancer:
         specifier: ^0.2.4
         version: 0.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -11475,6 +11481,7 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
     dev: false
+    bundledDependencies: false
 
   /crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
@@ -17615,6 +17622,18 @@ packages:
       - supports-color
     dev: false
 
+  /next-themes@0.2.1(next@14.1.1-canary.26)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-B+AKNfYNIzh0vqQQKqQItTS8evEouKD7H5Hj3kmuPERwddR2TxvDSFZuTj6T7Jfn1oyeUyJMydPl1Bkxkh0W7A==}
+    peerDependencies:
+      next: '*'
+      react: '*'
+      react-dom: '*'
+    dependencies:
+      next: 14.1.1-canary.26(@babel/core@7.23.3)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      react: 18.3.0-canary-03d6f7cf0-20240209
+      react-dom: 18.3.0-canary-03d6f7cf0-20240209(react@18.3.0-canary-03d6f7cf0-20240209)
+    dev: false
+
   /next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: true
@@ -19321,6 +19340,16 @@ packages:
       tslib: 2.6.2
       use-callback-ref: 1.3.0(@types/react@18.2.55)(react@18.3.0-canary-03d6f7cf0-20240209)
       use-sidecar: 1.1.2(@types/react@18.2.55)(react@18.3.0-canary-03d6f7cf0-20240209)
+    dev: false
+
+  /react-resizable-panels@2.0.9(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-ZylBvs7oG7Y/INWw3oYGolqgpFvoPW8MPeg9l1fURDeKpxrmUuCHBUmPj47BdZ11MODImu3kZYXG85rbySab7w==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.3.0-canary-03d6f7cf0-20240209
+      react-dom: 18.3.0-canary-03d6f7cf0-20240209(react@18.3.0-canary-03d6f7cf0-20240209)
     dev: false
 
   /react-rx@2.1.3(react@18.3.0-canary-03d6f7cf0-20240209)(rxjs@7.8.1):

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function PlaygroundPage() {
   return (
     <main>
-      <article className="prose sm:prose-lg mx-auto w-full max-w-2xl px-5 py-8 sm:py-16">
+      <article className="prose sm:prose-lg dark:prose-invert mx-auto w-full max-w-2xl px-5 py-8 sm:py-16">
         <Landing />
       </article>
     </main>

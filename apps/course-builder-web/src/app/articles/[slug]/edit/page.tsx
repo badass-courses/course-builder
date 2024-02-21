@@ -18,9 +18,5 @@ export default async function ArticleEditPage({ params }: { params: { slug: stri
     notFound()
   }
 
-  return (
-    <div className="relative mx-auto flex h-full w-full flex-grow flex-col items-center justify-center">
-      <EditArticleForm key={article.slug} article={article} />
-    </div>
-  )
+  return <EditArticleForm key={article.slug} article={article} />
 }

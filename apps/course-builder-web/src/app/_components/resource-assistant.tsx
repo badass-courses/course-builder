@@ -6,7 +6,7 @@ import { useSocket } from '@/hooks/use-socket'
 import { EnterIcon } from '@sanity/icons'
 import type { ChatCompletionRequestMessage } from 'openai-edge'
 
-import { Button, Textarea } from '@coursebuilder/ui'
+import { Button, ResizableHandle, ResizablePanel, ResizablePanelGroup, Textarea } from '@coursebuilder/ui'
 
 export function ResourceAssistant({
   resourceId,
@@ -44,8 +44,8 @@ export function ResourceAssistant({
 
   return (
     <div className="flex h-full w-full flex-col justify-start">
-      <div>
-        <h3 className="inline-flex p-5 pb-3 text-lg font-bold">Assistant</h3>
+      <div className="flex items-center justify-between gap-10 border-b p-5">
+        <h3 className="inline-flex text-lg font-bold">Assistant</h3>
         {availableWorkflows.length > 1 && (
           <AssistantWorkflowSelector
             initialValue={selectedWorkflow}
@@ -56,14 +56,16 @@ export function ResourceAssistant({
           />
         )}
       </div>
-      <ResourceChatResponse requestId={resourceId} />
-      <div className="flex w-full flex-col items-start border-t">
-        <div className="relative w-full">
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel defaultSize={85}>
+          <ResourceChatResponse requestId={resourceId} />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={15} minSize={5} className="relative flex w-full flex-col items-start">
           <Textarea
             ref={textareaRef}
-            className="w-full rounded-none border-0 border-b px-5 py-4 pr-10"
+            className="w-full flex-grow rounded-none border-0 px-5 py-4 pr-10 focus-visible:ring-0"
             placeholder="Direct Assistant..."
-            rows={4}
             onKeyDown={async (event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault()
@@ -74,7 +76,7 @@ export function ResourceAssistant({
           />
           <Button
             type="button"
-            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center p-0"
+            className="absolute right-2 top-4 flex h-6 w-6 items-center justify-center p-0"
             variant="outline"
             onClick={async (event) => {
               event.preventDefault()
@@ -86,8 +88,8 @@ export function ResourceAssistant({
           >
             <EnterIcon className="w-4" />
           </Button>
-        </div>
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   )
 }

@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 import { cx } from 'class-variance-authority'
 import { AnimatePresence, motion, useAnimationControls, type AnimationControls } from 'framer-motion'
 
+import { ThemeToggle } from './theme-toggle'
+
 export const getNavigationLinks = (): {
   label: string | React.JSX.Element
   href: string
@@ -82,9 +84,10 @@ export function Links({ className }: { className?: string }) {
           })}
         </div>
       </div>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end gap-2">
         <Login className="hidden md:flex" />
         <User className="hidden md:flex" />
+        <ThemeToggle />
         <NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} />
       </div>
       <AnimatePresence>
@@ -97,7 +100,7 @@ export function Links({ className }: { className?: string }) {
               type: 'spring',
               duration: 0.5,
             }}
-            className="absolute left-0 top-0 flex w-full flex-col gap-2 border-b border-gray-100 bg-white px-2 pb-5 pt-16 text-2xl font-medium shadow-2xl shadow-black/20 backdrop-blur-md md:hidden"
+            className="bg-card absolute left-0 top-0 flex w-full flex-col gap-2 border-b px-2 pb-5 pt-16 text-2xl font-medium shadow-2xl shadow-black/20 backdrop-blur-md md:hidden"
           >
             {navigationLinks.map(({ label, href, icon }) => {
               return (
@@ -107,7 +110,7 @@ export function Links({ className }: { className?: string }) {
                   className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
                   passHref
                 >
-                  <span className="flex w-5 items-center justify-center">{icon()}</span> {label}
+                  {label}
                 </Link>
               )
             })}
@@ -144,7 +147,7 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
 
   return (
     <button
-      className="absolute z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
+      className="z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
       onClick={async () => {
         // menuControls.start(isMenuOpened ? 'close' : 'open')
         setMenuOpened(!isMenuOpened)

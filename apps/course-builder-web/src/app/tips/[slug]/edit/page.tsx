@@ -28,9 +28,5 @@ export default async function TipEditPage({ params }: { params: { slug: string }
 
   const reprocessForVideoResourceId = reprocessTranscript.bind(null, { videoResourceId: tip.videoResourceId })
 
-  return (
-    <div className="relative mx-auto flex h-full w-full flex-grow flex-col items-center justify-center">
-      <EditTipForm key={tip.slug} tip={tip} videoResourceLoader={videoResourceLoader} />
-    </div>
-  )
+  return <EditTipForm key={tip.slug} tip={tip} videoResourceLoader={videoResourceLoader} />
 }
