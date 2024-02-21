@@ -11,8 +11,6 @@ on:
     branches:
       - main
   pull_request:
-    branches: ["*"]
-  merge_group:
 
 
 concurrency:
@@ -25,20 +23,22 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Build & test
-        run: pnpm turbo build test --filter "./packages/*" --filter "create-course-app"
+      - name: Build
+        run: pnpm turbo build --filter "./packages/*"
+      - name: Test
+        run: pnpm test
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./tooling/gh-actions/setup

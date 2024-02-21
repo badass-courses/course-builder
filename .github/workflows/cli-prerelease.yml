@@ -11,7 +11,7 @@ on:
 jobs:
   prerelease:
     if: |
-      github.repository_owner == 'joelhooks' &&
+      github.repository_owner == 'badass-courses' &&
       contains(github.event.pull_request.labels.*.name, '🚀 autorelease')
     name: Build & Publish a beta release to NPM
     runs-on: ubuntu-latest

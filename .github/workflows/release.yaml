@@ -13,22 +13,20 @@ env:
 jobs:
   release:
     name: Release
-    if: ${{ github.repository_owner == 'badass-courses' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Use PNPM
-        uses: pnpm/action-setup@v2.2.4
+        uses: pnpm/action-setup@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: "pnpm"
+          node-version: 20
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -36,7 +34,7 @@ jobs:
           echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.0
         with:
           path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -48,12 +46,6 @@ jobs:
 
       - name: Check packages for common errors
         run: pnpm turbo --filter "./packages/*" build lint test typecheck
-
-      - name: Check CLI for errors
-        run: pnpm check:cli
-
-      - name: Build the CLI package
-        run: pnpm build:cli
 
       # Using custom token `MY_GITHUB_TOKEN` with more access to avoid rate limiting
       - name: Create Release

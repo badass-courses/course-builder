@@ -9,7 +9,7 @@ on:
 jobs:
   comment:
     if: |
-      github.repository_owner == 'joelhooks' &&
+      github.repository_owner == 'badass-courses' &&
       ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     name: Write comment to the PR
