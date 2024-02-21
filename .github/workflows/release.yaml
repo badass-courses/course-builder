@@ -13,7 +13,7 @@ env:
 jobs:
   release:
     name: Release
-    if: ${{ github.repository_owner == 'joelhooks' }}
+    if: ${{ github.repository_owner == 'badass-courses' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
