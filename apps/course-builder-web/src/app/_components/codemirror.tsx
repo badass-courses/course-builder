@@ -39,7 +39,7 @@ export const CodemirrorEditor = ({
   })
 
   return (
-    <div className="h-full flex-shrink-0 border-t">
+    <div className="h-full flex-shrink-0">
       <div ref={codemirrorElementRef}></div>
     </div>
   )
@@ -54,6 +54,7 @@ const CourseBuilderEditorTheme = {
     padding: '2rem 0',
     fontSize: '14px',
     fontFamily: 'var(--font-mono)',
+    color: 'hsl(var(--foreground))',
   },
   '.cm-line': {
     padding: '0 2rem',
@@ -74,6 +75,9 @@ const CourseBuilderEditorTheme = {
   },
   '.cm-activeLine': {
     backgroundColor: 'hsl(var(--foreground) / 3%)',
+  },
+  '.cm-cursor': {
+    borderLeft: '1px solid hsl(var(--foreground))',
   },
 }
 

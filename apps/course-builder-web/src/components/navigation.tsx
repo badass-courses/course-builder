@@ -14,7 +14,7 @@ const Navigation: React.FC<NavigationProps> = async ({ className, size = 'md', n
     <>
       <div
         className={cn(
-          `bg-background relative z-50 flex h-[var(--nav-height)] w-full flex-col items-center justify-center border-b print:hidden`,
+          `bg-background relative z-50 flex h-[calc(var(--nav-height)-1px)] w-full flex-col items-center justify-center border-b print:hidden`,
           navigationContainerClassName,
         )}
       >

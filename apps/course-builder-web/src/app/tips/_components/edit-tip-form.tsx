@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils'
 import { VideoResource } from '@/lib/video-resource'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, ZapIcon } from 'lucide-react'
+import { ImagePlusIcon, RefreshCcw, ZapIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -28,6 +28,10 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+  ScrollArea,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -127,174 +131,225 @@ export function EditTipForm({
     }
   }
 
+  const formValues = form.getValues()
+
   const [activeToolbarTab, setActiveToolbarTab] = React.useState(TOOLBAR.values().next().value)
 
   return (
-    <Form {...form}>
-      <form className="flex h-full flex-grow flex-col" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+    <>
+      <div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
+        <div className="flex items-center gap-2">
           <Button className="px-0" asChild variant="link">
             <Link href={`/tips/${tip.slug}`} className="aspect-square">
               ←
             </Link>
           </Button>
-          <Button type="submit" variant="default" size="sm" className="h-7" disabled={updateTipStatus === 'loading'}>
-            Save
-          </Button>
+          <span className="font-medium">
+            Tip <span className="hidden font-mono text-xs font-normal md:inline-block">({tip._id})</span>
+          </span>
         </div>
-        <div className="flex h-full flex-grow border-t">
-          <div className="grid grid-cols-12">
-            <div className="col-span-2 flex h-full flex-col border-r">
-              <Suspense
-                fallback={
-                  <>
-                    <div className="relative z-10 flex items-center justify-center">
-                      <div className="flex w-full max-w-screen-lg flex-col">
-                        <div className="relative aspect-[16/9]">
-                          <div className={cn('flex items-center justify-center  overflow-hidden')}></div>
-                        </div>
-                      </div>
+        <Button
+          onClick={(e) => {
+            onSubmit(formValues)
+          }}
+          type="button"
+          variant="default"
+          size="sm"
+          className="h-7 disabled:cursor-wait"
+          disabled={updateTipStatus === 'loading'}
+        >
+          Save
+        </Button>
+      </div>
+      <ResizablePanelGroup direction="horizontal" className="!flex-col border-t md:!flex-row">
+        <ResizablePanel
+          className="min-h-[var(--pane-layout-height)] md:min-h-full"
+          minSize={5}
+          defaultSize={25}
+          maxSize={35}
+        >
+          <Form {...form}>
+            <form
+              className="min-w-[280px]"
+              onSubmit={form.handleSubmit(onSubmit, (error) => {
+                console.log({ error })
+              })}
+            >
+              <ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
+                <div className="flex flex-col gap-8">
+                  <div>
+                    <Suspense
+                      fallback={
+                        <>
+                          <div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+                            video is loading
+                          </div>
+                        </>
+                      }
+                    >
+                      <TipPlayer videoResourceLoader={videoResourceLoader} />
+                      <div className="px-5 text-xs">video is {videoResource?.state}</div>
+                    </Suspense>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem className="px-5">
+                        <FormLabel className="text-lg font-bold">Title</FormLabel>
+                        <FormDescription>
+                          A title should summarize the tip and explain what it is about clearly.
+                        </FormDescription>
+                        <Input {...field} />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="px-5">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-lg font-bold">Transcript</label>
+                      {Boolean(videoResourceId) && (
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                type="button"
+                                onClick={async (event) => {
+                                  event.preventDefault()
+                                  await reprocessTranscript({ videoResourceId })
+                                }}
+                                title="Reprocess"
+                              >
+                                <RefreshCcw className="w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">Reprocess Transcript</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                     </div>
-                    <div className="text-xs">video is loading</div>
-                  </>
-                }
-              >
-                <div className="relative z-10 flex items-center justify-center">
-                  <div className="flex w-full max-w-screen-lg flex-col">
-                    <div className="relative aspect-[16/9]">
-                      <div className={cn('flex items-center justify-center  overflow-hidden')}>
-                        <TipPlayer videoResourceLoader={videoResourceLoader} />
-                      </div>
-                    </div>
+                    <ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
+                      {transcript ? transcript : 'Transcript Processing'}
+                    </ReactMarkdown>
                   </div>
                 </div>
-                <div className="text-xs">video is {videoResource?.state}</div>
-              </Suspense>
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem className="p-5">
-                    <FormLabel className="text-lg font-bold">Title</FormLabel>
-                    <FormDescription>
-                      A title should summarize the tip and explain what it is about clearly.
-                    </FormDescription>
-                    <Input {...field} />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex max-h-screen items-end p-5 text-xs text-orange-600">{tip._id}</div>
-              <div className="p-5">
-                <h3 className="font-bold">Transcript</h3>
-                {Boolean(videoResourceId) && (
-                  <Button
-                    onClick={async (event) => {
-                      event.preventDefault()
-                      await reprocessTranscript({ videoResourceId })
+              </ScrollArea>
+            </form>
+          </Form>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={50} className="min-h-[var(--pane-layout-height)] md:min-h-full">
+          <ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+            <CodemirrorEditor
+              roomName={`${tip._id}`}
+              value={tip.body}
+              markers={feedbackMarkers}
+              onChange={(data) => {
+                form.setValue('body', data)
+
+                generateFeedback({
+                  resourceId: tip._id,
+                  body: data,
+                  currentFeedback: feedbackMarkers,
+                })
+              }}
+            />
+            <div>
+              <ul>
+                {feedbackMarkers.map((marker) => {
+                  return (
+                    <li
+                      key={marker.originalText}
+                    >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
+                  )
+                })}
+              </ul>
+            </div>
+          </ScrollArea>
+        </ResizablePanel>
+        <ResizableHandle />
+        {Boolean(videoResource?.transcriptWithScreenshots) && (
+          <>
+            <ResizablePanel
+              defaultSize={20}
+              minSize={1}
+              maxSize={50}
+              className="hidden h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:flex md:min-h-full"
+            >
+              <ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
+                <div className="p-5">
+                  <ReactMarkdown
+                    className="prose dark:prose-invert prose-sm"
+                    components={{
+                      img: (props) => {
+                        return (
+                          <a href={props.src} target="_blank" rel="noreferrer">
+                            <img
+                              {...props}
+                              onDragStart={(e) => {
+                                e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
+                              }}
+                            />
+                          </a>
+                        )
+                      },
                     }}
                   >
-                    Reprocess Transcript
-                  </Button>
-                )}
-                <ReactMarkdown className="prose dark:prose-invert">
-                  {transcript ? transcript : 'Transcript Processing'}
-                </ReactMarkdown>
-              </div>
-            </div>
-            <div
-              className={cn(
-                `flex h-full w-full flex-col justify-start space-y-5 border-r`,
-                Boolean(videoResource?.transcriptWithScreenshots) ? 'col-span-5' : 'col-span-8',
-              )}
-            >
-              <FormField
-                control={form.control}
-                name="body"
-                render={({ field }) => (
-                  <FormItem className="pt-5">
-                    <FormLabel className="px-5 text-lg font-bold">Content</FormLabel>
-                    <FormDescription className="px-5 pb-3">Tip content in MDX.</FormDescription>
-                    <CodemirrorEditor
-                      roomName={`${tip._id}`}
-                      value={tip.body}
-                      markers={feedbackMarkers}
-                      onChange={(data) => {
-                        form.setValue('body', data)
-
-                        generateFeedback({
-                          resourceId: tip._id,
-                          body: data,
-                          currentFeedback: feedbackMarkers,
-                        })
-                      }}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div>
-                <ul>
-                  {feedbackMarkers.map((marker) => {
-                    return (
-                      <li
-                        key={marker.originalText}
-                      >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
-                    )
-                  })}
-                </ul>
-              </div>
-            </div>
-            {Boolean(videoResource?.transcriptWithScreenshots) && (
-              <div className="col-span-3 flex h-full w-full flex-col justify-start space-y-5 border-r">
-                <ReactMarkdown className="prose dark:prose-invert">
-                  {videoResource?.transcriptWithScreenshots}
-                </ReactMarkdown>
-              </div>
-            )}
-
-            <div className="col-span-2">
-              {activeToolbarTab.id === 'assistant' && <TipAssistant tip={tip} />}
-              {activeToolbarTab.id === 'media' && (
-                <>
-                  <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
-                  <CloudinaryMediaBrowser />
-                </>
-              )}
-            </div>
-          </div>
-          <div className="bg-muted border-l">
-            <div className="flex flex-col gap-1 p-1">
-              <TooltipProvider delayDuration={0}>
-                {Array.from(TOOLBAR).map((item) => (
-                  <Tooltip key={item.id}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="link"
-                        type="button"
-                        className={cn(
-                          `hover:bg-background/50 flex aspect-square items-center justify-center rounded-lg border p-0 transition`,
-                          {
-                            'border-border bg-background': activeToolbarTab.id === item.id,
-                            'border-transparent bg-transparent': activeToolbarTab.id !== item.id,
-                          },
-                        )}
-                        onClick={() => setActiveToolbarTab(item)}
-                      >
-                        {item.icon()}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left" className="capitalize">
-                      {item.id}
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </TooltipProvider>
-            </div>
+                    {videoResource?.transcriptWithScreenshots}
+                  </ReactMarkdown>
+                </div>
+              </ScrollArea>
+            </ResizablePanel>
+            <ResizableHandle />
+          </>
+        )}
+        <ResizablePanel
+          className="h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full"
+          minSize={15}
+          defaultSize={25}
+          maxSize={50}
+        >
+          {activeToolbarTab.id === 'assistant' && <TipAssistant tip={tip} />}
+          {activeToolbarTab.id === 'media' && (
+            <ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
+              <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
+              <CloudinaryMediaBrowser />
+            </ScrollArea>
+          )}
+        </ResizablePanel>
+        <div className="bg-muted h-12 w-full border-l md:h-[var(--pane-layout-height)] md:w-12">
+          <div className="flex flex-row gap-1 p-1 md:flex-col">
+            <TooltipProvider delayDuration={0}>
+              {Array.from(TOOLBAR).map((item) => (
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="link"
+                      type="button"
+                      className={cn(
+                        `hover:bg-background/50 flex aspect-square items-center justify-center rounded-lg border p-0 transition`,
+                        {
+                          'border-border bg-background': activeToolbarTab.id === item.id,
+                          'border-transparent bg-transparent': activeToolbarTab.id !== item.id,
+                        },
+                      )}
+                      onClick={() => setActiveToolbarTab(item)}
+                    >
+                      {item.icon()}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="capitalize">
+                    {item.id}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
           </div>
         </div>
-      </form>
-    </Form>
+      </ResizablePanelGroup>
+    </>
   )
 }
 

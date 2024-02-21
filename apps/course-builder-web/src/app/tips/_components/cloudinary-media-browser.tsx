@@ -23,7 +23,7 @@ export const CloudinaryMediaBrowser = () => {
   return (
     <div>
       <h3 className="inline-flex px-5 text-lg font-bold">Media Browser</h3>
-      <div className="grid grid-cols-3 gap-1 p-2">
+      <div className="grid grid-cols-3 gap-1 px-5">
         {images.map((asset) => {
           return asset?.url ? (
             <div

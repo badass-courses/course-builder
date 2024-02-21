@@ -51,6 +51,7 @@ import { Input } from './primitives/input'
 import { Label } from './primitives/label'
 import { Popover, PopoverContent, PopoverTrigger } from './primitives/popover'
 import { Progress } from './primitives/progress'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './primitives/resizable'
 import { ScrollArea, ScrollBar } from './primitives/scroll-area'
 import {
   Select,
@@ -178,4 +179,7 @@ export {
   ToastTitle,
   ToastViewport,
   useToast,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
 }

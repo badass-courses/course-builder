@@ -69,17 +69,17 @@ export function ResourceChatResponse({ requestId }: { requestId: string }) {
   })
 
   return (
-    <ScrollArea viewportRef={div} className="h-[50vh] w-full scroll-smooth text-sm">
+    <ScrollArea viewportRef={div} className="h-full w-full scroll-smooth text-sm">
       {messages.length === 0 && session.status === 'authenticated' ? (
-        <div className="prose prose-sm px-5">
+        <div className="prose prose-sm dark:prose-invert p-5">
           {`Hi ${session.data.user.name?.split(' ')[0]}, I’m your assistant and I’m here to help you get things done
           faster.`}
         </div>
       ) : null}
       {messages.map((message, index) => (
-        <div key={index} className="border-b p-5">
+        <div key={index} className="border-b p-5 last-of-type:border-b-0">
           <MessageHeader userId={message.userId} />
-          <ReactMarkdown className="prose prose-sm">{message.body}</ReactMarkdown>
+          <ReactMarkdown className="prose prose-sm dark:prose-invert">{message.body}</ReactMarkdown>
         </div>
       ))}
     </ScrollArea>
