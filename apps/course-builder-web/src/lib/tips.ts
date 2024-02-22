@@ -11,13 +11,13 @@ export const TipStateSchema = z.union([
 
 export const TipVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
 
-const TipSchema = z.object({
+export const TipSchema = z.object({
   _id: z.string(),
   _type: z.literal('explainer'),
   _updatedAt: z.string(),
   title: z.string(),
   summary: z.string(),
-  body: z.string(),
+  body: z.string().nullable(),
   videoResourceId: z.string().nullable(),
   muxPlaybackId: z.string().nullable(),
   transcript: z.string().nullable(),

@@ -52,8 +52,8 @@ const CourseBuilderEditorTheme = {
   },
   '.cm-content': {
     padding: '2rem 0',
-    fontSize: '14px',
-    fontFamily: 'var(--font-mono)',
+    fontSize: '15px',
+    fontFamily: 'var(--font-sans)',
     color: 'hsl(var(--foreground))',
   },
   '.cm-line': {

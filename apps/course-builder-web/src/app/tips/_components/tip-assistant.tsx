@@ -20,7 +20,9 @@ export function TipAssistant({ tip }: { tip: Tip }) {
         ...messages,
         {
           role: ChatCompletionRequestMessageRoleEnum.System,
-          content: `## current state of tip writeup\n\ncurrent title: ${tip.title}\n\ncurrent body: ${tip.body}`,
+          content: `## current state of tip
+          current title: ${tip.title}
+          current body: ${tip.body}`,
         },
         {
           role: ChatCompletionRequestMessageRoleEnum.User,
