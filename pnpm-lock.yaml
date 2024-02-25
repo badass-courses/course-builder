@@ -15,8 +15,8 @@ importers:
         specifier: ^2.27.1
         version: 2.27.1
       '@coursebuilder/eslint-config':
-        specifier: 0.0.2
-        version: 0.0.2(eslint@8.54.0)(typescript@5.3.3)
+        specifier: workspace:*
+        version: link:packages/config/eslint-config
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.1.1
         version: 4.1.1(prettier@3.1.0)
@@ -3156,28 +3156,6 @@ packages:
       commander: 9.4.x
     dependencies:
       commander: 9.4.1
-    dev: false
-
-  /@coursebuilder/eslint-config@0.0.2(eslint@8.54.0)(typescript@5.3.3):
-    resolution: {integrity: sha512-rxjMW0WFFTu3CVo3bsP+rV3mn5nxUACF8v6MdKI3Df6eraoVmV/i0Zj3ROCguarDw0VqciEUBDTL3ED6hEfeRg==}
-    dependencies:
-      '@next/eslint-plugin-next': 14.0.3
-      '@types/eslint': 8.44.7
-      '@typescript-eslint/eslint-plugin': 6.11.0(@typescript-eslint/parser@6.11.0)(eslint@8.54.0)(typescript@5.3.3)
-      '@typescript-eslint/parser': 6.11.0(eslint@8.54.0)(typescript@5.3.3)
-      '@uploadthing/eslint-plugin': 0.1.0(eslint@8.54.0)(typescript@5.3.3)
-      eslint-config-prettier: 9.0.0(eslint@8.54.0)
-      eslint-config-turbo: 1.10.16(eslint@8.54.0)
-      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@6.11.0)(eslint@8.54.0)
-      eslint-plugin-react: 7.33.2(eslint@8.54.0)
-      eslint-plugin-react-hooks: 4.6.0(eslint@8.54.0)
-      modern-module-resolution: link:@rushstack/eslint-patch/modern-module-resolution
-    transitivePeerDependencies:
-      - eslint
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-      - typescript
     dev: false
 
   /@cspotcode/source-map-support@0.8.1:
@@ -9669,17 +9647,6 @@ packages:
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
-
-  /@uploadthing/eslint-plugin@0.1.0(eslint@8.54.0)(typescript@5.3.3):
-    resolution: {integrity: sha512-2O/Kg80H1dVAWFlfdu4126nc2iVz9nPT93GeAbvdj+Wlxa70wDPVIrj2NWyTJ+4tGRhWEt5DM1vcnmvqbSktFA==}
-    dependencies:
-      '@typescript-eslint/parser': 6.11.0(eslint@8.54.0)(typescript@5.3.3)
-      '@typescript-eslint/utils': 6.11.0(eslint@8.54.0)(typescript@5.3.3)
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
-      - typescript
-    dev: false
 
   /@uploadthing/mime-types@0.2.2:
     resolution: {integrity: sha512-ZUo1JHOPPMZDsUw1mOhhVDIvJGlsjj6T0xJ/YJtulyJwL43S9B5pxg1cHcRuTEgjaxj7B55jiqQ6r9mDrrjH9A==}
