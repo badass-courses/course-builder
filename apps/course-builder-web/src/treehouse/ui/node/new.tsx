@@ -1,6 +1,5 @@
 import { useTreehouseStore } from '@/treehouse/mod'
 import { Path } from '@/treehouse/workbench/path'
-import { Workbench } from '@/treehouse/workbench/workbench'
 
 interface NewNodeProps {
   path: Path

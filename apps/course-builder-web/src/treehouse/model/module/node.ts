@@ -6,7 +6,7 @@ import { hasHook, triggerHook } from '../hooks'
 import { Bus as IBus, Node as INode, RawNode, WalkFunc, WalkOptions } from '../mod'
 import { Bus } from './mod'
 
-export class Node {
+export class Node implements INode {
   _id: string
   _bus: Bus
   _hash: string
@@ -395,5 +395,8 @@ export class Node {
     this._hash = SHA1(JSON.stringify(this))
   }
 
+  displayName(node: Node): string {
+    return node.name
+  }
   // duplicate?
 }

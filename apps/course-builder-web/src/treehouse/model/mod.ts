@@ -69,6 +69,7 @@ export interface Node {
   destroy(): void
   duplicate(): Node
   changed(): void
+  displayName(node: Node): string
 }
 
 export interface Bus {

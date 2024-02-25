@@ -20,13 +20,20 @@ export class CommandRegistry {
   }
 
   canExecuteCommand(id: string, ...rest: any): boolean {
-    if (this.commands[id] && this.commands[id]?.when) {
-      return !(this.commands[id]?.when && !this.commands[id]?.when?.(...rest))
+    console.log('canExecuteCommand', id, this.commands[id])
+    const command = this.commands[id]
+    if (command) {
+      if (command.when && !command.when(...rest)) {
+        return false
+      }
+      return true
     }
+
     return false
   }
 
   executeCommand<T>(id: string, ...rest: any): Promise<T> {
+    console.log('executeCommand', id, this.commands[id])
     return new Promise((resolve) => {
       const ret = this.commands[id]?.action(...rest)
       resolve(ret)

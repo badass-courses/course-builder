@@ -77,8 +77,8 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
     }
   }
 
-  const oninput = (e: SyntheticEvent<HTMLInputElement>) => {
-    const inputElement = e.target as HTMLInputElement
+  const oninput = (e: SyntheticEvent<HTMLTextAreaElement>) => {
+    const inputElement = e.target as HTMLTextAreaElement
     if (tagPopover) {
       tagPopover.oninput(e)
       if (!inputElement.value.includes('#')) {
@@ -119,6 +119,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
     }
     const anyModifiers = e.shiftKey || e.metaKey || e.altKey || e.ctrlKey
     const inputElement = e.target as HTMLInputElement
+    console.log('onkeydown', e.key, inputElement.selectionStart, inputElement.selectionEnd)
     switch (e.key) {
       case 'ArrowUp':
         if (inputElement.selectionStart !== 0 && !anyModifiers) {

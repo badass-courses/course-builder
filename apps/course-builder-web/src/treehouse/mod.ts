@@ -74,25 +74,6 @@ export async function setup(document: Document, backend: Backend) {
   })
 
   treehouseStore.commands.registerCommand({
-    id: 'insert',
-    title: 'Insert Node',
-    action: (ctx: Context, name: string = '') => {
-      if (!ctx.node || !ctx.path) return
-      if (ctx.path.previous && objectManaged(ctx.path.previous)) return
-      const node = treehouseStore.newWorkspace(name)
-      node.parent = ctx.node.parent
-      node.siblingIndex = ctx.node.siblingIndex + 1
-      const p = ctx.path.clone()
-      p.pop()
-      const newPath = p.append(node)
-      setTimeout(() => {
-        treehouseStore.focus(newPath)
-      }, 0)
-    },
-  })
-  treehouseStore.keybindings.registerBinding({ command: 'insert', key: 'shift+enter' })
-
-  treehouseStore.commands.registerCommand({
     id: 'cut',
     title: 'Cut',
     when: (ctx: Context) => {

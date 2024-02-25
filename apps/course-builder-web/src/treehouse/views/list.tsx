@@ -26,7 +26,6 @@ const ListView: React.FC<ListViewProps> = ({ path, alwaysShowNew }) => {
 
   return (
     <div key={node.hash} className="list-view">
-      {node.hash}
       <div className="fields">
         {node.getLinked('Fields').length > 0 &&
           node.getLinked('Fields').map((n: any) => <OutlineNode key={n.hash} path={path.append(n)} />)}

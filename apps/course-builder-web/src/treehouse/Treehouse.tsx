@@ -4,7 +4,6 @@ import * as React from 'react'
 import { SearchIndex } from '@/treehouse/backend/mod'
 import { setup, useTreehouseStore } from '@/treehouse/mod'
 import { RawNode } from '@/treehouse/model/mod'
-import { Workbench } from '@/treehouse/workbench/workbench'
 
 export class LoggerBackend {
   auth: null

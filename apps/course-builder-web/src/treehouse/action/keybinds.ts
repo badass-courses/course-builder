@@ -53,6 +53,7 @@ export class KeyBindings {
   }
 
   evaluateEvent(event: KeyboardEvent): Binding | null {
+    console.log('evaluating event', event)
     bindings: for (const b of this.bindings) {
       let modifiers = b.key.toLowerCase().split('+')
       let key = modifiers.pop()
@@ -62,6 +63,7 @@ export class KeyBindings {
       for (const checkMod of ['shift', 'ctrl', 'alt', 'meta']) {
         let hasMod = modifiers.includes(checkMod)
         const isMac = navigator.userAgent.toLowerCase().indexOf('mac') !== -1
+        console.log('isMac', isMac, checkMod, hasMod, modifiers, event)
         if (!isMac) {
           if (checkMod === 'meta') continue
           if (checkMod === 'ctrl') {
@@ -77,6 +79,7 @@ export class KeyBindings {
           continue bindings
         }
       }
+      console.log('found binding', b, event)
       return b
     }
     return null
