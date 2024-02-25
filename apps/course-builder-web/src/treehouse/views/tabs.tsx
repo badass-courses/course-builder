@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import { useTreehouseStore } from '@/treehouse/mod'
 import { getView } from '@/treehouse/views/views'
 import { Path } from '@/treehouse/workbench/path'
 
@@ -10,7 +9,6 @@ interface TabsViewProps {
 }
 
 const TabsView: React.FC<TabsViewProps> = ({ path }) => {
-  const workbench = useTreehouseStore()
   const node = path.node
   const [tabs, setTabs] = useState(new Set())
   const [selectedTab, setSelectedTab] = useState('')

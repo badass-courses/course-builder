@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useTreehouseStore } from '@/treehouse/mod'
 import { Path } from '@/treehouse/workbench/path'
-import { Workbench } from '@/treehouse/workbench/workbench'
 
 import { NodeEditor } from '../ui/node/editor'
 import { OutlineNode } from '../ui/outline'
@@ -12,7 +10,6 @@ interface TableViewProps {
 }
 
 const TableView: React.FC<TableViewProps> = ({ path }) => {
-  const workbench = useTreehouseStore()
   const node = path.node
   const [fields, setFields] = useState(new Set<string>())
 

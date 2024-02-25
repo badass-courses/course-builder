@@ -7,7 +7,7 @@ interface NewNodeProps {
 }
 
 export const NewNode: React.FC<NewNodeProps> = ({ path }) => {
-  const workbench = useTreehouseStore()
+  const { executeCommand } = useTreehouseStore()
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Tab') {
       e.stopPropagation()
@@ -15,10 +15,10 @@ export const NewNode: React.FC<NewNodeProps> = ({ path }) => {
       const node = path.node
       if (node.childCount > 0) {
         const lastchild = node.children[node.childCount - 1]
-        workbench.executeCommand('insert-child', { node: lastchild, path })
+        executeCommand('insert-child', { node: lastchild, path })
       }
     } else {
-      workbench.executeCommand('insert-child', { node: path.node, path }, e.currentTarget.value)
+      executeCommand('insert-child', { node: path.node, path }, e.currentTarget.value)
     }
   }
 

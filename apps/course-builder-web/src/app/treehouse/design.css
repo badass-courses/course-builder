@@ -26,35 +26,35 @@
   --28: 7rem;
   --32: 8rem;
 
-  --blue-700: #00819E;
-  --blue-600: #007C9E;
-  --blue-500: #00819E;
-  --blue-300: #00819E;
-  
-  --green-700: #1F842A;
-  --green-500: #1F842A;
-  --green-300: #1F842A;
-  
-  --red-700: #B71B3A;
-  --red-500: #B71B3A;
-  --red-300: #B71B3A;
+  --blue-700: #00819e;
+  --blue-600: #007c9e;
+  --blue-500: #00819e;
+  --blue-300: #00819e;
 
-  --purple-700: #852E8E;
-  --purple-500: #852E8E;
-  --purple-300: #852E8E;
+  --green-700: #1f842a;
+  --green-500: #1f842a;
+  --green-300: #1f842a;
 
-  --gray-900: #1D2020;
-  --gray-800: #353A3B;
-  --gray-700: #575A5B;
-  --gray-600: #75797A;
+  --red-700: #b71b3a;
+  --red-500: #b71b3a;
+  --red-300: #b71b3a;
+
+  --purple-700: #852e8e;
+  --purple-500: #852e8e;
+  --purple-300: #852e8e;
+
+  --gray-900: #1d2020;
+  --gray-800: #353a3b;
+  --gray-700: #575a5b;
+  --gray-600: #75797a;
   --gray-500: #949899;
-  --gray-400: #BBBEBE;
-  --gray-300: #D2D5D5;
-  --gray-200: #E8EBEB;
-  --gray-100: #F6F7F7;
+  --gray-400: #bbbebe;
+  --gray-300: #d2d5d5;
+  --gray-200: #e8ebeb;
+  --gray-100: #f6f7f7;
 
   --primary: var(--green-500);
-  
+
   --white: #fff;
   --black: var(--gray-900);
 
@@ -83,26 +83,45 @@
   --text-body: 1rem;
 
   --padding: 1rem;
-
 }
 
-.h1,h1,.h2,h2,.h3,h3,.h4,h4,.h5,h5 {
+.h1,
+h1,
+.h2,
+h2,
+.h3,
+h3,
+.h4,
+h4,
+.h5,
+h5 {
   line-height: 1.1;
   font-weight: var(--weight-bold);
 }
-.h2,h2,.h3,h3,.h4,h4,.h5,h5 {
+.h2,
+h2,
+.h3,
+h3,
+.h4,
+h4,
+.h5,
+h5 {
   font-weight: var(--weight-bold);
 }
-.h1,h1 {
+.h1,
+h1 {
   font-size: var(--h1-size);
 }
-.h2,h2 {
+.h2,
+h2 {
   font-size: var(--h2-size);
 }
-.h3,h3 {
+.h3,
+h3 {
   font-size: var(--h3-size);
 }
-.h5, h5 {
+.h5,
+h5 {
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   font-size: var(--text-small);
@@ -141,10 +160,7 @@ a.row {
 
 .\?\?\? {
   border: 1px solid blue;
-} 
-
-
-
+}
 
 /* Tailwind Utilities */
 
@@ -181,14 +197,21 @@ a.row {
 .shrink-0 {
   flex-shrink: 0;
 }
-.gap-2 {	gap: var(--2); } 
-.gap-8 {	gap: var(--8); } 
-.m-0 { margin: 0; }
+.gap-2 {
+  gap: var(--2);
+}
+.gap-8 {
+  gap: var(--8);
+}
+.m-0 {
+  margin: 0;
+}
 .inset-0 {
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
 }
-.absolute { position: absolute; }
-
+.absolute {
+  position: absolute;
+}

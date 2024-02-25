@@ -33,7 +33,8 @@ type OutlineNodeProps = {
 }
 
 export const OutlineNode = ({ path }: OutlineNodeProps) => {
-  const workbench = useTreehouseStore()
+  const { executeCommand, clipboard, getExpanded, closePopover, findAbove, focus, context, showMenu } =
+    useTreehouseStore()
   const [hoverState, setHoverState] = useState(false)
   const [tagPopover, setTagPopover] = useState<Popover | undefined>(undefined)
   let node: Node | null = path.node
@@ -50,13 +51,13 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
   }
 
   let isCut = false
-  if (workbench.clipboard && workbench.clipboard.op === 'cut') {
-    if (node && workbench.clipboard.node.id === node.id) {
+  if (clipboard && clipboard.op === 'cut') {
+    if (node && clipboard.node.id === node.id) {
       isCut = true
     }
   }
 
-  const expanded = workbench.getExpanded(path.head, handleNode)
+  const expanded = getExpanded(path.head, handleNode)
   const placeholder = objectHas(node, 'handlePlaceholder') ? objectCall(node, 'handlePlaceholder') : ''
 
   const hover = (e: SyntheticEvent<HTMLDivElement>) => {
@@ -71,7 +72,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
 
   const cancelTagPopover = () => {
     if (tagPopover) {
-      workbench.closePopover()
+      closePopover()
       setTagPopover(undefined)
     }
   }
@@ -141,7 +142,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           if (!node || node.childCount > 0) {
             return
           }
-          workbench.executeCommand('delete', { node, path, event: e })
+          executeCommand('delete', { node, path, event: e })
           return
         }
         // cursor at beginning of non-empty text
@@ -153,7 +154,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           }
 
           // TODO: make this work as a command?
-          const above = workbench.findAbove(path)
+          const above = findAbove(path)
           if (!above || !above.node) {
             return
           }
@@ -161,7 +162,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           above.node.name = oldName + inputElement.value
           node?.destroy()
           // m.redraw.sync();
-          workbench.focus(above, oldName.length)
+          focus(above, oldName.length)
 
           return
         }
@@ -171,17 +172,17 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
         if (e.ctrlKey || e.shiftKey || e.metaKey || e.altKey) return
         // cursor at end of text
         if (inputElement.selectionStart === inputElement.value.length) {
-          if ((!node || node.childCount > 0) && workbench.getExpanded(path.head, node)) {
-            workbench.executeCommand('insert-child', { node, path }, '', 0)
+          if ((!node || node.childCount > 0) && getExpanded(path.head, node)) {
+            executeCommand('insert-child', { node, path }, '', 0)
           } else {
-            workbench.executeCommand('insert', { node, path })
+            executeCommand('insert', { node, path })
           }
           e.stopPropagation()
           return
         }
         // cursor at beginning of text
         if (inputElement.selectionStart === 0) {
-          workbench.executeCommand('insert-before', { node, path })
+          executeCommand('insert-before', { node, path })
           e.stopPropagation()
           return
         }
@@ -191,11 +192,9 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           inputElement.selectionStart > 0 &&
           inputElement.selectionStart < inputElement.value.length
         ) {
-          workbench
-            .executeCommand('insert', { node, path }, inputElement.value.slice(inputElement.selectionStart))
-            .then(() => {
-              if (node) node.name = inputElement.value.slice(0, inputElement.selectionStart as number)
-            })
+          executeCommand('insert', { node, path }, inputElement.value.slice(inputElement.selectionStart)).then(() => {
+            if (node) node.name = inputElement.value.slice(0, inputElement.selectionStart as number)
+          })
           e.stopPropagation()
           return
         }
@@ -207,7 +206,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
     e.preventDefault()
     e.stopPropagation()
 
-    workbench.executeCommand('zoom', { node, path })
+    executeCommand('zoom', { node, path })
 
     // Clear text selection that happens after from double click
 
@@ -225,9 +224,9 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
       return
     }
     if (expanded) {
-      workbench.executeCommand('collapse', { node: handleNode, path })
+      executeCommand('collapse', { node: handleNode, path })
     } else {
-      workbench.executeCommand('expand', { node: handleNode, path })
+      executeCommand('expand', { node: handleNode, path })
     }
     e.stopPropagation()
   }
@@ -237,7 +236,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
   }
 
   const showHandle = () => {
-    if ((node && node.id === workbench.context?.node?.id) || hoverState) {
+    if ((node && node.id === context?.node?.id) || hoverState) {
       return true
     }
     if (node && node.name.length > 0) return true
@@ -255,8 +254,8 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
         <svg
           className="node-menu shrink-0"
           xmlns="http://www.w3.org/2000/svg"
-          onClick={(e: React.MouseEvent<SVGSVGElement>) => workbench.showMenu(e, { node: handleNode, path })}
-          onContextMenu={(e) => workbench.showMenu(e, { node: handleNode, path })}
+          onClick={(e: React.MouseEvent<SVGSVGElement>) => showMenu(e, { node: handleNode, path })}
+          onContextMenu={(e) => showMenu(e, { node: handleNode, path })}
           data-menu="node"
           viewBox="0 0 16 16"
         >
@@ -273,7 +272,7 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           className="node-handle shrink-0"
           onClick={toggle}
           onDoubleClick={open}
-          onContextMenu={(e) => workbench.showMenu(e, { node: handleNode, path })}
+          onContextMenu={(e) => showMenu(e, { node: handleNode, path })}
           data-menu="node"
           style={{ display: showHandle() ? 'block' : 'none' }}
         >

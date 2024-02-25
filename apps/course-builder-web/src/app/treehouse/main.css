@@ -33,7 +33,10 @@ body {
   margin: 0;
   height: 100%;
 }
-body, input, textarea, button {
+body,
+input,
+textarea,
+button {
   color: var(--color-text);
   font-size: var(--text-body);
   font-family: var(--font);
@@ -43,8 +46,9 @@ dialog {
   color: var(--color-text);
 }
 
-button, .badge {
-  cursor: pointer; 
+button,
+.badge {
+  cursor: pointer;
   border-radius: var(--border-radius);
 }
 button {
@@ -53,7 +57,7 @@ button {
   font-weight: var(--weight-bold);
   border: 1px solid var(--color-outline);
   background-color: var(--color-background);
-  padding: 0 calc(var(--padding)*2);
+  padding: 0 calc(var(--padding) * 2);
 }
 button.primary {
   color: var(--color-background);
@@ -102,10 +106,10 @@ dialog {
   padding: 0;
 }
 dialog::backdrop {
-  background: rgba(0,0,0,0);
+  background: rgba(0, 0, 0, 0);
 }
 dialog.backdrop::backdrop {
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 dialog > form {
   padding: calc(2 * var(--padding));
@@ -122,7 +126,9 @@ main {
   background-color: var(--color-background);
 }
 /*to make theming easier*/
-.text-editor textarea, .new-node input, .palette input {
+.text-editor textarea,
+.new-node input,
+.palette input {
   background-color: transparent;
 }
 
@@ -152,7 +158,7 @@ main {
   color: var(--color-icon);
 }
 .sidebar-item {
-  padding-bottom: calc(var(--padding)/2);
+  padding-bottom: calc(var(--padding) / 2);
 }
 .sidebar-item svg {
   cursor: pointer;
@@ -169,7 +175,7 @@ main {
 
 /*------------TOPBAR------------*/
 .topbar {
-  padding: var(--padding) calc(var(--padding)*2);
+  padding: var(--padding) calc(var(--padding) * 2);
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   border-bottom: 1px solid var(--color-outline-secondary);
@@ -183,7 +189,9 @@ main {
   align-items: center;
   color: var(--color-nav-label);
 }
-.topbar-item svg, .search svg, div[data-menu="settings"] {
+.topbar-item svg,
+.search svg,
+div[data-menu='settings'] {
   color: var(--color-icon);
 }
 .topbar-item > div {
@@ -191,8 +199,7 @@ main {
 }
 /*fun hack to get the top navbar items vertically aligned
 with their icon for Safari only*/
-@supports (-webkit-hyphens:none)
-{
+@supports (-webkit-hyphens: none) {
   .topbar-item > div {
     margin-bottom: -3px;
   }
@@ -207,8 +214,8 @@ with their icon for Safari only*/
 }
 .panel {
   margin-top: var(--padding);
-  margin-left: calc(var(--padding)*2);
-  margin-right: calc(var(--padding)*2);
+  margin-left: calc(var(--padding) * 2);
+  margin-right: calc(var(--padding) * 2);
   padding-bottom: var(--padding);
 }
 .panel > .bar {
@@ -216,7 +223,7 @@ with their icon for Safari only*/
   color: var(--color-text-secondary);
   gap: var(--padding);
   padding: 0 var(--padding);
-  margin-bottom: calc(var(--padding)*1.5);
+  margin-bottom: calc(var(--padding) * 1.5);
 }
 .panel > .bar .panel-icons {
   gap: var(--4);
@@ -227,14 +234,14 @@ with their icon for Safari only*/
   padding: 0 var(--padding);
 }
 
-
 /*------------NODES------------*/
 /*keep max line length from getting too long for readibility*/
 .node-editor {
   width: 100%;
   margin-bottom: var(--2);
 }
-.text-editor textarea, .panel-back-parent {
+.text-editor textarea,
+.panel-back-parent {
   max-width: 768px;
 }
 .node-description {
@@ -247,7 +254,8 @@ with their icon for Safari only*/
   background: transparent;
 }
 /*todo: check unused textarea styles in panel.tsx*/
-.text-editor > textarea, .text-editor > span {
+.text-editor > textarea,
+.text-editor > span {
   outline: none;
   padding: 0;
   width: 100%;
@@ -258,7 +266,8 @@ with their icon for Safari only*/
   line-height: var(--body-line-height);
   border: none;
 }
-.title-node .text-editor > textarea, .title-node .text-editor > span {
+.title-node .text-editor > textarea,
+.title-node .text-editor > span {
   font-size: var(--6);
   font-weight: var(--weight-bold);
 }
@@ -312,12 +321,12 @@ svg.node-bullet circle#node-collapsed-handle {
 
 .table-view {
   display: grid;
-  margin-bottom: calc(var(--padding)/4);
+  margin-bottom: calc(var(--padding) / 4);
 }
 .table-view th {
   border-bottom: solid 1px var(--color-outline-secondary);
-  margin-bottom: calc(var(--padding)/2);
-  padding-bottom: calc(var(--padding)/2);
+  margin-bottom: calc(var(--padding) / 2);
+  padding-bottom: calc(var(--padding) / 2);
   text-align: left;
 }
 .table-view thead,
@@ -340,9 +349,9 @@ svg.node-bullet circle#node-collapsed-handle {
 .tabs-view .tabs div {
   border-bottom: solid 1px var(--color-outline-secondary);
   cursor: pointer;
-  margin-bottom: calc(var(--padding)/2);
+  margin-bottom: calc(var(--padding) / 2);
   padding: 0 var(--padding);
-  padding-bottom: calc(var(--padding)/2);
+  padding-bottom: calc(var(--padding) / 2);
 }
 .tabs-view .tabs div.active {
   border-bottom: solid 2px var(--color-outline);
@@ -353,20 +362,20 @@ svg.node-bullet circle#node-collapsed-handle {
 .notice {
   width: 40rem;
   background-color: var(--color-background);
-  padding: calc(var(--padding)*2);
+  padding: calc(var(--padding) * 2);
 }
 .notice h3 {
-  margin-bottom: calc(var(--padding)*1.5);
+  margin-bottom: calc(var(--padding) * 1.5);
 }
 .notice p {
   line-height: var(--body-line-height);
 }
-.notice .button-bar button+button {
+.notice .button-bar button + button {
   margin-left: var(--padding);
 }
 .notice .button-bar {
   text-align: right;
-  margin-top: calc(var(--padding)*3);
+  margin-top: calc(var(--padding) * 3);
 }
 
 /*------------DRAWER------------*/
@@ -381,7 +390,7 @@ svg.node-bullet circle#node-collapsed-handle {
   top: 0;
   z-index: 10;
   transition: right 0.1s;
-  transition-timing-function: cubic-bezier(0,-0.04,1,.52)
+  transition-timing-function: cubic-bezier(0, -0.04, 1, 0.52);
 }
 .drawer.open {
   right: 0;
@@ -393,7 +402,7 @@ svg.node-bullet circle#node-collapsed-handle {
 /*------KEYBOARD REFERENCE-------*/
 .reference .item {
   font-size: var(--text-small);
-  margin-bottom: calc(var(--padding)/1.5);
+  margin-bottom: calc(var(--padding) / 1.5);
   gap: var(--padding);
 }
 .reference .item .keybindings {
@@ -403,25 +412,25 @@ svg.node-bullet circle#node-collapsed-handle {
 .reference h2 {
   font-size: var(--text-body);
   font-weight: var(--weight-bold);
-  margin-bottom: calc(var(--padding)*2);
+  margin-bottom: calc(var(--padding) * 2);
 }
 .reference h3 {
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--padding);
-  margin-top: calc(var(--padding)*1.5);
+  margin-top: calc(var(--padding) * 1.5);
 }
 
 /*------------MENU------------*/
 .menu {
-  padding: calc(var(--padding)/4);
+  padding: calc(var(--padding) / 4);
   background-color: var(--color-background);
   font-size: var(--text-small);
   min-width: 200px;
 }
 .menu li {
   list-style-type: none;
-  padding: calc(var(--padding)/2);
+  padding: calc(var(--padding) / 2);
   margin: 0px;
 }
 .menu li .keybindings {
@@ -439,12 +448,12 @@ svg.node-bullet circle#node-collapsed-handle {
 /*------------PICKER------------*/
 
 .picker {
-  padding: calc(var(--padding)/2);
+  padding: calc(var(--padding) / 2);
   min-width: 400px;
   background: var(--color-background);
 }
 .picker input {
-  padding: calc(var(--padding)/2);
+  padding: calc(var(--padding) / 2);
   border: 0;
   outline: 0;
   background: transparent;
@@ -453,12 +462,12 @@ svg.node-bullet circle#node-collapsed-handle {
 .picker .items {
   overflow-y: auto;
   line-height: var(--body-line-height);
-  padding: calc(var(--padding)/2) 0 0 0;
+  padding: calc(var(--padding) / 2) 0 0 0;
   font-size: var(--text-small);
 }
 .picker .item {
   cursor: pointer;
-  padding: calc(var(--padding)/2);
+  padding: calc(var(--padding) / 2);
 }
 
 /*------------SEARCH------------*/
@@ -469,10 +478,11 @@ svg.node-bullet circle#node-collapsed-handle {
 }
 .searchbar > div {
   width: 95%;
-  padding: calc(var(--padding)/2);
-  margin: calc(var(--padding)/-2);
+  padding: calc(var(--padding) / 2);
+  margin: calc(var(--padding) / -2);
 }
-.searchbar input, .search input {
+.searchbar input,
+.search input {
   width: 99%;
   margin: 0 var(--padding) 0 var(--1);
   font-weight: var(--weight-semibold);
@@ -483,11 +493,11 @@ svg.node-bullet circle#node-collapsed-handle {
   padding-top: 3px;
 }
 
-.picker .selected, .menu li:not(.disabled):hover {
+.picker .selected,
+.menu li:not(.disabled):hover {
   background: var(--color-highlight);
   border-radius: var(--border-radius);
 }
-
 
 /*------------PALETTE------------*/
 .palette .picker {
@@ -549,9 +559,9 @@ svg.node-bullet circle#node-collapsed-handle {
   }
 }
 
-
 /*------------DOCUMENT------------*/
-.document-view, .document-panel .title-node {
+.document-view,
+.document-panel .title-node {
   width: 900px;
   padding-left: var(--24);
   padding-right: var(--24);
@@ -569,14 +579,14 @@ svg.node-bullet circle#node-collapsed-handle {
 .cm-focused {
   outline: none !important;
 }
-.cm-content, .cm-line {
+.cm-content,
+.cm-line {
   padding: 0 !important;
   caret-color: var(--color-text) !important;
 }
 .cm-line .tok-meta {
   color: var(--color-text-placeholder) !important;
 }
-
 
 /*------------MOBILE------------*/
 
@@ -610,7 +620,7 @@ svg.node-bullet circle#node-collapsed-handle {
     --text-body: 1.25rem;
   }
 
-/*to account for small margin on either side of dialog*/
+  /*to account for small margin on either side of dialog*/
   dialog {
     width: 97vw;
     max-width: 97vw;
@@ -625,14 +635,17 @@ svg.node-bullet circle#node-collapsed-handle {
   .menu {
     width: 100%;
   }
-/*todo: this padding needs to stay to same as desktop 
+  /*todo: this padding needs to stay to same as desktop 
 for alignment purposes. should probably center
 the top nav in a more elegant way at some point*/
-  .sidebar-top, .topbar {
-    padding: calc(var(--padding)*2);
+  .sidebar-top,
+  .topbar {
+    padding: calc(var(--padding) * 2);
   }
 
-  .topbar, .sidebar-top, .sidebar-bottom {
+  .topbar,
+  .sidebar-top,
+  .sidebar-bottom {
     display: none;
   }
   .sidebar {
@@ -640,22 +653,23 @@ the top nav in a more elegant way at some point*/
     z-index: 10;
     height: 100%;
     display: none;
-    padding: calc(var(--padding)*2);
+    padding: calc(var(--padding) * 2);
   }
 
   .sidebar-item {
-    padding-bottom: calc(var(--padding)*2);
+    padding-bottom: calc(var(--padding) * 2);
   }
- 
-/*  .search {
+
+  /*  .search {
     max-width: 100vw;
   }*/
 
-  .sidebar, .panel {
-    padding-top: calc(var(--padding)*3);
-    padding-bottom: calc(var(--padding)*3);
+  .sidebar,
+  .panel {
+    padding-top: calc(var(--padding) * 3);
+    padding-bottom: calc(var(--padding) * 3);
   }
-  svg.node-menu{
+  svg.node-menu {
     width: 1.5rem;
     height: 1.5rem;
     margin-top: 0;

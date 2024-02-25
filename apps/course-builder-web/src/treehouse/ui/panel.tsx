@@ -13,12 +13,12 @@ interface PanelProps {
 }
 
 export const Panel: React.FC<PanelProps> = ({ path }) => {
-  const workbench = useTreehouseStore()
+  const { executeCommand, context, panels, open, showMenu } = useTreehouseStore()
   const node = path.node
 
   const close = useCallback(() => {
-    workbench.executeCommand('close-panel', {}, path)
-  }, [workbench, path])
+    executeCommand('close-panel', {}, path)
+  }, [path])
 
   const goBack = useCallback(() => {
     let node = path.pop()
@@ -28,9 +28,8 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
   }, [path])
 
   const maximize = useCallback(() => {
-    workbench.panels = [path]
-    workbench.context.path = path
-  }, [workbench, path])
+    useTreehouseStore.setState({ context: { ...context, path: path }, panels: [path] })
+  }, [path, context])
 
   const editMarkdown = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -62,7 +61,7 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
 
         <div className="panel-back-parent grow">
           {node.parent && node.parent.id !== '@root' ? (
-            <span style={{ cursor: 'pointer' }} onClick={() => workbench.open(node.parent as Node)}>
+            <span style={{ cursor: 'pointer' }} onClick={() => open(node.parent as Node)}>
               {node.parent.name}
             </span>
           ) : (
@@ -70,13 +69,11 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
           )}
         </div>
 
-        {workbench.panels.length > 1 && (
-          <div className="panel-icons flex items-center">{/* SVGs for maximize and close */}</div>
-        )}
+        {panels.length > 1 && <div className="panel-icons flex items-center">{/* SVGs for maximize and close */}</div>}
       </div>
 
       <div className="body flex flex-col">
-        <div className="title-node" onContextMenu={(e) => workbench.showMenu(e, { node, path })} data-menu="node">
+        <div className="title-node" onContextMenu={(e) => showMenu(e, { node, path })} data-menu="node">
           <NodeEditor path={path} disallowEmpty={true} />
         </div>
         {node.hasComponent(Page) && (
