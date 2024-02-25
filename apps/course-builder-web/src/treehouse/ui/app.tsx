@@ -1,16 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
 import { Panel as PanelComponent } from '@/treehouse/ui/panel'
-import { useWorkbench } from '@/treehouse/workbench/mod'
 import { Workbench } from '@/treehouse/workbench/workbench'
 
 export const TreehouseApp = () => {
   const [open, setOpen] = useState(true)
-  const workbench = useWorkbench()
-
   const toggleSidebar = () => setOpen(!open)
+  const { bus, panels } = useTreehouseStore()
 
   return (
     <main className="workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>
@@ -21,12 +20,7 @@ export const TreehouseApp = () => {
           <div className="logo" />
         </div>
         <div className="sidebar-main grow">
-          {open &&
-            workbench.workspace.bus
-              ?.root()
-              .children.map((node) => (
-                <NavNode key={node.id} node={node} expanded={true} level={0} workbench={workbench} />
-              ))}
+          {open && bus?.root().children.map((node) => <NavNode key={node.id} node={node} expanded={true} level={0} />)}
         </div>
         <div className="sidebar-bottom">
           <svg
@@ -50,8 +44,8 @@ export const TreehouseApp = () => {
       <div className="main flex grow flex-col">
         ...
         {/* Main content including topbar, panels, mobile-nav */}
-        {workbench.panels.map((path) => (
-          <PanelComponent key={path.id} workbench={workbench} path={path} />
+        {panels.map((path) => (
+          <PanelComponent key={path.hash} path={path} />
         ))}
       </div>
       {/* Popover, dialog, and menu components */}
@@ -59,17 +53,7 @@ export const TreehouseApp = () => {
   )
 }
 
-const NavNode = ({
-  node,
-  workbench,
-  expanded: propExpanded,
-  level,
-}: {
-  node: Node
-  workbench: Workbench
-  expanded: boolean
-  level: number
-}) => {
+const NavNode = ({ node, expanded: propExpanded, level }: { node: Node; expanded: boolean; level: number }) => {
   const [expanded, setExpanded] = useState(propExpanded)
   const expandable = node.childCount > 0 && level < 3
 
@@ -94,7 +78,7 @@ const NavNode = ({
           {node.children
             .filter((n: Node) => n.name !== '')
             .map((n) => (
-              <NavNode key={n.id} workbench={workbench} node={n} level={level + 1} expanded={true} />
+              <NavNode key={n.id} node={n} level={level + 1} expanded={true} />
             ))}
         </div>
       )}

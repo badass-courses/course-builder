@@ -1,8 +1,37 @@
 import { Path } from '@/treehouse/workbench/path'
+import { Workbench } from '@/treehouse/workbench/workbench'
+import { create, StateCreator } from 'zustand'
 
 import { FileStore } from '../backend/mod'
 import { Bus, Node, RawNode } from '../model/mod'
 import * as module from '../model/module/mod'
+
+export interface Workspace {
+  initializeWorkspace(fs: FileStore): Promise<void>
+  fs?: FileStore
+  bus?: Bus
+  lastOpenedID: string | null
+  expanded: { [key: string]: { [key: string]: boolean } }
+  settings: { theme: string }
+  writeDebounce: (path: string, contents: any) => void
+  rawNodes: () => RawNode[]
+
+  observe(fn: (n: Node) => void): void
+
+  save(immediate?: boolean): Promise<void>
+
+  load(): Promise<void>
+  newWorkspace(name: string, value?: any): Node
+
+  mainNode(): Node
+
+  setExpanded(head: Node, n: Node, b: boolean): void
+  getExpanded(head: Node, n: Node | null): boolean
+
+  find(path: string): Node | null
+  findAbove(path: Path): Path | null
+  findBelow(path: Path): Path | null
+}
 
 /**
  * Workspace is a container for nodes and manages marshaling them using
@@ -15,141 +44,129 @@ import * as module from '../model/module/mod'
  * TODO: don't use file store because we are serverless
  * TODO: this could uses tests
  */
-export class Workspace {
-  fs: FileStore
-  bus: Bus
-
-  lastOpenedID: string | null
-  expanded: { [key: string]: { [key: string]: boolean } } // [rootid][id]
-  settings: { theme: string }
-  writeDebounce: (path: string, contents: any) => void
-
-  constructor(fs: FileStore) {
-    this.fs = fs
-    this.bus = new module.Bus()
-    this.expanded = {}
-    this.settings = {
-      theme: 'light',
+export const createWorkspaceSlice: StateCreator<Workbench & Workspace, [], [], Workspace> = (set, get) => ({
+  initializeWorkspace: async (fs: FileStore) => {
+    set({ fs, bus: new module.Bus() })
+  },
+  fs: undefined,
+  bus: undefined,
+  lastOpenedID: null,
+  expanded: {},
+  settings: { theme: 'light' },
+  writeDebounce: debounce(async (path: string, contents: any) => {
+    try {
+      const fs = get().fs
+      if (!fs) throw new Error('FileStore not initialized')
+      await fs.writeFile(path, contents)
+      console.log('Saved workspace.')
+    } catch (e: unknown) {
+      console.error(e)
+      document.dispatchEvent(new CustomEvent('BackendError'))
     }
-    this.lastOpenedID = null
-
-    this.writeDebounce = debounce(async (path: string, contents: any) => {
-      try {
-        await this.fs.writeFile(path, contents)
-        console.log('Saved workspace.')
-      } catch (e: unknown) {
-        console.error(e)
-        document.dispatchEvent(new CustomEvent('BackendError'))
-      }
-    })
-  }
-
-  get rawNodes(): RawNode[] {
-    return this.bus.export()
-  }
-
-  observe(fn: (n: Node) => void) {
-    this.bus.observe(fn)
-  }
-
-  async save(immediate?: boolean) {
+  }, 300),
+  rawNodes: () => {
+    const state = get()
+    return state.bus?.export() || []
+  },
+  observe(fn) {
+    get().bus?.observe(fn)
+  },
+  async save(immediate = false) {
+    const state = get()
+    console.log('Saving workspace...', { state })
     const contents = JSON.stringify(
       {
         version: 1,
-        lastopen: this.lastOpenedID,
-        expanded: this.expanded,
-        nodes: this.rawNodes,
-        settings: this.settings,
+        lastopen: state.lastOpenedID,
+        expanded: state.expanded,
+        nodes: state.rawNodes(),
+        settings: state.settings,
       },
       null,
       2,
     )
     if (immediate) {
-      await this.fs.writeFile('workspace.json', contents)
+      await state.fs?.writeFile('workspace.json', contents)
     } else {
-      this.writeDebounce('workspace.json', contents)
+      state.writeDebounce('workspace.json', contents)
     }
-  }
-
+  },
   async load() {
-    let doc = JSON.parse((await this.fs.readFile('workspace.json')) || '{}')
+    const state = get()
+    let doc = JSON.parse((await state.fs?.readFile('workspace.json')) || '{}')
     if (doc.nodes) {
       doc.nodes = doc.nodes.map((n: any) => {
-        // any node migrations:
         if (n.Name === 'treehouse.SearchNode') {
           n.Name = 'treehouse.SmartNode'
         }
         return n
       })
-      this.bus.import(doc.nodes)
+      state.bus?.import(doc.nodes)
       console.log(`Loaded ${doc.nodes.length} nodes.`)
     }
     if (doc.expanded) {
-      // Only import the node keys that still exist
-      // in the workspace.
       for (const n in doc.expanded) {
         for (const i in doc.expanded[n]) {
-          if (this.bus.find(i)) {
-            const localExpanded = this.expanded[n] || {}
+          if (state.bus?.find(i)) {
+            const localExpanded = state.expanded[n] || {}
             localExpanded[i] = doc.expanded[n][i]
+            set({ expanded: { ...state.expanded, [n]: localExpanded } })
           }
         }
       }
     }
     if (doc.lastopen) {
-      this.lastOpenedID = doc.lastopen
+      set({ lastOpenedID: doc.lastopen })
     }
     if (doc.settings) {
-      this.settings = Object.assign(this.settings, doc.settings)
+      set({ settings: { ...state.settings, ...doc.settings } })
     }
-  }
+  },
+  mainNode() {
+    const state = get()
+    let main = state.bus?.find('@workspace')
 
-  mainNode(): Node {
-    let main = this.bus.find('@workspace')
     if (!main) {
       console.info('Building missing workspace node.')
-      const root = this.bus.find('@root')
-      const ws = this.bus.make('@workspace')
+      const root = state.bus?.find('@root')
+      const ws = state.bus?.make('@workspace')
+      if (!ws) throw new Error('Workspace not created')
+
       ws.name = 'Workspace'
+
+      if (!root) throw new Error('Root not found')
       ws.parent = root
-      const cal = this.bus.make('@calendar')
+      const cal = state.bus?.make('@calendar')
+      if (!cal) throw new Error('Calendar not created')
       cal.name = 'Calendar'
       cal.parent = ws
-      const home = this.bus.make('Home')
+      const home = state.bus?.make('Home')
+      if (!home) throw new Error('Home not created')
       home.parent = ws
       main = ws
     }
     return main
-  }
-
-  find(path: string): Node | null {
-    return this.bus.find(path)
-  }
-
-  new(name: string, value?: any): Node {
-    return this.bus.make(name, value)
-  }
-
-  // TODO: take single Path
-  getExpanded(head: Node | null, n: Node | null): boolean {
-    if (!head || !n) {
-      return false
-    }
-    const localExpanded = this.expanded[head.id] || {}
-    let expanded = localExpanded[n.id]
-    if (expanded === undefined) {
-      expanded = false
-    }
-    return expanded
-  }
-
-  // TODO: take single Path
+  },
+  find(path) {
+    return get().bus?.find(path) || null
+  },
+  newWorkspace(name: string, value?: any) {
+    const state = get()
+    if (!state.bus) throw new Error('Bus not initialized')
+    return state.bus.make(name, value)
+  },
+  getExpanded(head: Node, n: Node) {
+    if (!head || !n) return false
+    const expanded = get().expanded[head.id] || {}
+    return expanded[n.id] ?? false
+  },
   setExpanded(head: Node, n: Node, b: boolean) {
-    const localExpanded = this.expanded[head.id] || {}
+    const state = get()
+    const localExpanded = state.expanded[head.id] || {}
     localExpanded[n.id] = b
-    this.save()
-  }
-
+    set({ expanded: { ...state.expanded, [head.id]: localExpanded } })
+    state.save()
+  },
   findAbove(path: Path): Path | null {
     if (!path.head || !path.node || (path.node && path.head && path.node.id === path.head.id)) {
       return null
@@ -191,7 +208,7 @@ export class Workspace {
     }
     // return prev sibling or its last child if expanded
     return lastSubIfExpanded(p.append(prev))
-  }
+  },
 
   findBelow(path: Path): Path | null {
     // TODO: find a way to indicate pseudo "new" node for expanded leaf nodes
@@ -227,8 +244,8 @@ export class Workspace {
     }
     // return next sibling or parents next sibling
     return nextSiblingOrParentNextSibling(p)
-  }
-}
+  },
+})
 
 function debounce(func: any, timeout = 3000) {
   let timer: any

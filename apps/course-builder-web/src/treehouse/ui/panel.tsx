@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
@@ -9,10 +10,10 @@ import { OutlineEditor } from './outline'
 
 interface PanelProps {
   path: Path
-  workbench: Workbench
 }
 
-export const Panel: React.FC<PanelProps> = ({ path, workbench }) => {
+export const Panel: React.FC<PanelProps> = ({ path }) => {
+  const workbench = useTreehouseStore()
   const node = path.node
 
   const close = useCallback(() => {
@@ -76,7 +77,7 @@ export const Panel: React.FC<PanelProps> = ({ path, workbench }) => {
 
       <div className="body flex flex-col">
         <div className="title-node" onContextMenu={(e) => workbench.showMenu(e, { node, path })} data-menu="node">
-          <NodeEditor workbench={workbench} path={path} disallowEmpty={true} />
+          <NodeEditor path={path} disallowEmpty={true} />
         </div>
         {node.hasComponent(Page) && (
           <textarea
@@ -92,7 +93,7 @@ export const Panel: React.FC<PanelProps> = ({ path, workbench }) => {
             }}
           />
         )}
-        <OutlineEditor workbench={workbench} path={path.sub()} alwaysShowNew={true} />
+        <OutlineEditor path={path.sub()} alwaysShowNew={true} />
       </div>
     </div>
   )

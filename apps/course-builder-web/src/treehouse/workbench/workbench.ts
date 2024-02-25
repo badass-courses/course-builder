@@ -3,6 +3,7 @@ import { FunctionComponent, SyntheticEvent } from 'react'
 import * as React from 'react'
 import { Settings } from '@/treehouse/ui/settings'
 import { Path } from '@/treehouse/workbench/path'
+import { create, StateCreator } from 'zustand'
 
 import { Command, CommandRegistry } from '../action/commands'
 import { KeyBindings } from '../action/keybinds'
@@ -33,171 +34,146 @@ export interface Drawer {
  * trigger various pop-overs, work with quick add, or anything else
  * not provided by the backend or workspace.
  */
-export class Workbench {
-  commands: CommandRegistry
-  keybindings: KeyBindings
-  menus: MenuRegistry
+export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], Workbench> = (set, get) => ({
+  commands: new CommandRegistry(),
+  keybindings: new KeyBindings(),
+  menus: new MenuRegistry(),
+  backend: undefined,
+  context: { node: null, path: null },
+  panels: [],
+  clipboard: undefined,
+  drawer: { open: false },
+  popover: null,
+  dialog: React.createElement('div', {}),
+  menu: React.createElement('div', {}),
 
-  backend: Backend
-  workspace: Workspace
+  mainPanel: () => {
+    const { panels } = get()
+    return panels[0] as Path
+  },
 
-  context: Context
-  panels: Path[]
-  clipboard?: Clipboard
-  drawer: Drawer
+  initializeWorkbench: async (backend: Backend) => {
+    console.log('Initializing workbench with backend', backend)
+    const { openNewPanel, initializeWorkspace, load, rawNodes, observe, save, lastOpenedID, find, mainNode } = get()
+    await initializeWorkspace(backend.files)
+    await load()
 
-  popover: any
-  dialog: any
-  menu: any
-
-  constructor(backend: Backend) {
-    this.commands = new CommandRegistry()
-    this.keybindings = new KeyBindings()
-    this.menus = new MenuRegistry()
-
-    this.backend = backend
-    this.workspace = new Workspace(backend.files)
-
-    this.context = { node: null, path: null }
-    this.panels = []
-    this.drawer = { open: false }
-
-    this.dialog = { body: () => null }
-    this.menu = { body: () => null }
-  }
-
-  get mainPanel(): Path {
-    if (!this.panels[0]) {
-      throw new Error('No main panel')
-    }
-    return this.panels[0] as Path
-  }
-
-  async initialize() {
-    await this.workspace.load()
-
-    this.workspace.rawNodes.forEach((n) => this.backend.index.index(n))
-    this.workspace.observe((n) => {
-      this.workspace.save()
+    rawNodes().forEach((n) => backend.index.index(n))
+    observe((n) => {
+      save()
       if (n.isDestroyed) {
-        this.backend.index.remove(n.id)
+        backend.index.remove(n.id)
       } else {
-        this.backend.index.index(n.raw)
-        n.components.forEach((com) => this.backend.index.index(com.raw))
+        backend.index.index(n.raw)
+        n.components.forEach((com) => backend.index.index(com.raw))
       }
     })
 
-    if (this.workspace.lastOpenedID) {
-      this.openNewPanel(this.workspace.find(this.workspace.lastOpenedID) || this.workspace.mainNode())
+    set({ backend })
+
+    if (lastOpenedID) {
+      openNewPanel(find(lastOpenedID) || mainNode())
     } else {
-      this.openNewPanel(this.workspace.mainNode())
+      console.log('No last opened ID, opening main node')
+      openNewPanel(mainNode())
     }
 
-    if (this.backend.loadExtensions) {
-      await this.backend.loadExtensions()
+    if (backend.loadExtensions) {
+      await backend.loadExtensions()
     }
+  },
 
-    if (this.workspace.settings.theme) {
-      const css = document.createElement('link')
-      // TODO: figure out better way to couple themes than hardcoded hotlinked URL
-      css.setAttribute('href', `https://treehouse.sh/style/design.css`)
-      css.setAttribute('rel', 'stylesheet')
-      css.setAttribute('type', 'text/css')
-      document.head.appendChild(css)
-    }
+  authenticated: () => {
+    const { backend } = get()
+    return Boolean(backend?.auth && backend.auth.currentUser()) || false
+  },
+  openQuickAdd: () => {
+    const { showDialog, find, newWorkspace } = get()
+    let node = find('@quickadd') || newWorkspace('@quickadd')
 
-    // TODO how do we handle redraws in React?
-    // m.redraw();
-  }
-
-  authenticated(): boolean {
-    return Boolean(this.backend.auth && this.backend.auth.currentUser()) || false
-  }
-
-  openQuickAdd() {
-    let node = this.workspace.find('@quickadd') || this.workspace.new('@quickadd')
-
-    this.showDialog(() => React.createElement(QuickAdd, { workbench: this, node }), true)
+    showDialog(() => React.createElement(QuickAdd, { workbench: get(), node }), true)
     setTimeout(() => {
       ;(document.querySelector('main > dialog .new-node input') as HTMLElement)?.focus()
     }, 1)
-  }
-
-  commitQuickAdd() {
-    const node = this.workspace.find('@quickadd')
+  },
+  commitQuickAdd: () => {
+    const { todayNode, find } = get()
+    const node = find('@quickadd')
     if (!node) return
-    const today = this.todayNode()
+    const today = todayNode()
     node.children.forEach((n) => (n.parent = today))
-  }
+  },
+  clearQuickAdd: () => {
+    const { todayNode, find } = get()
 
-  clearQuickAdd() {
-    const node = this.workspace.find('@quickadd')
+    const node = find('@quickadd')
     if (!node) return
     node.children.forEach((n) => n.destroy())
-  }
+  },
+  todayNode: () => {
+    const { find, newWorkspace } = get()
 
-  // TODO: goto workspace
-  todayNode(): Node {
     const today = new Date()
     const dayNode = today.toUTCString().split(today.getFullYear().toString())[0]
     const weekNode = `Week ${String(getWeekOfYear(today)).padStart(2, '0')}`
     const yearNode = `${today.getFullYear()}`
     const todayPath = ['@calendar', yearNode, weekNode, dayNode].join('/')
-    let todayNode = this.workspace.find(todayPath)
+    let todayNode = find(todayPath)
     if (!todayNode) {
-      todayNode = this.workspace.new(todayPath)
+      todayNode = newWorkspace(todayPath)
     }
     return todayNode
-  }
-
-  openToday() {
-    this.open(this.todayNode())
-  }
-
-  open(n: Node) {
+  },
+  openToday: () => {
+    const { open, todayNode } = get()
+    open(todayNode())
+  },
+  open: async (n: Node) => {
+    const { context, panels, expanded, lastOpenedID, save } = get()
     // TODO: not sure this is still necessary
-    if (!this.workspace.expanded[n.id]) {
-      this.workspace.expanded[n.id] = {}
+    if (!expanded[n.id]) {
+      expanded[n.id] = {}
     }
 
-    this.workspace.lastOpenedID = n.id
-    this.workspace.save()
+    set({ lastOpenedID: n.id })
+    await save()
     const p = new Path(n)
-    this.panels[0] = p
-    this.context.path = p
-  }
-
-  openNewPanel(n: Node) {
+    set({ panels: [p, ...panels], context: { node: n, path: p } })
+  },
+  openNewPanel: async (n: Node) => {
+    const { context, panels, expanded, save } = get()
     // TODO: not sure this is still necessary
-    if (!this.workspace.expanded[n.id]) {
-      this.workspace.expanded[n.id] = {}
+    if (!expanded[n.id]) {
+      expanded[n.id] = {}
     }
 
-    this.workspace.lastOpenedID = n.id
-    this.workspace.save()
+    set({ lastOpenedID: n.id })
+    await save()
     const p = new Path(n)
-    this.panels.push(p)
-    this.context.path = p
-  }
-
-  closePanel(panel: Path) {
-    this.panels = this.panels.filter((p) => p.name !== panel.name)
-  }
-
-  defocus() {
-    if (!this.context.path) return
-    const input = this.getInput(this.context.path)
+    set({ panels: [p, ...panels], context: { node: n, path: p } })
+  },
+  closePanel: (panel: Path) => {
+    const { panels } = get()
+    set({ panels: panels.filter((p) => p.name !== panel.name) })
+  },
+  defocus: () => {
+    const { context, getInput } = get()
+    if (!context.path) return
+    const input = getInput(context.path)
     if (input) {
       input.blur()
     }
-    this.context.node = null
-    this.context.path = null
-  }
+    context.node = null
+    context.path = null
+  },
+  focus: (path: Path, pos: number = 0) => {
+    const { context, getInput } = get()
+    const input = getInput(path)
 
-  focus(path: Path, pos: number = 0) {
-    const input = this.getInput(path)
+    console.log('focusing', { path, input, pos, context })
+
     if (input) {
-      this.context.path = path
+      context.path = path
       input.focus()
       if (pos !== undefined) {
         input.setSelectionRange(pos, pos)
@@ -205,9 +181,9 @@ export class Workbench {
     } else {
       console.warn('unable to find input for', path)
     }
-  }
-
-  getInput(path: Path): any {
+  },
+  getInput: (path: Path) => {
+    // TODO does this DOM crawling work in React?
     let id = `input-${path.id}-${path.node.id}`
     // kludge:
     if (path.node.raw.Rel === 'Fields') {
@@ -216,30 +192,32 @@ export class Workbench {
       }
     }
     const el = document.getElementById(id)
+
+    console.log('getting input', { id, el })
     // @ts-ignore
     if (el?.editor) {
       // @ts-ignore
       return el.editor
     }
     return el
-  }
-
-  canExecuteCommand(id: string, ctx: any, ...rest: any): boolean {
-    ctx = this.newContext(ctx)
-    return this.commands.canExecuteCommand(id, ctx, ...rest)
-  }
-
-  executeCommand<T>(id: string, ctx: any, ...rest: any): Promise<T> {
-    ctx = this.newContext(ctx)
-    console.log(id, ctx, ...rest)
-    return this.commands.executeCommand(id, ctx, ...rest)
-  }
-
-  newContext(ctx: any): Context {
-    return Object.assign({}, this.context, ctx)
-  }
-
-  showMenu(event: React.MouseEvent, ctx: Context, style?: {}) {
+  },
+  canExecuteCommand: (id: string, ctx: any, ...rest: any) => {
+    const { newContext, commands } = get()
+    ctx = newContext(ctx)
+    return commands.canExecuteCommand(id, ctx, ...rest)
+  },
+  executeCommand: (id: string, ctx: any, ...rest: any) => {
+    const { newContext, commands } = get()
+    ctx = newContext(ctx)
+    return commands.executeCommand(id, ctx, ...rest)
+  },
+  newContext: (ctx: any) => {
+    const { context } = get()
+    set({ context: Object.assign({}, context, ctx) })
+    return get().context
+  },
+  showMenu: (event: React.MouseEvent, ctx: Context, style?: {}) => {
+    const { context, menus, commands, menu } = get()
     event.stopPropagation()
     event.preventDefault()
     const currentTarget = event.target as HTMLElement
@@ -261,15 +239,14 @@ export class Workbench {
     // }
     if (!trigger.dataset['menu']) return
 
-    const items = this.menus.menus[trigger.dataset['menu']] || []
-    const cmds = items.filter((i) => i.command).map((i) => this.commands.commands[i.command] as Command) || []
-    if (!items) return
-    this.menu = Menu({
-      workbench: this as Workbench,
-      ctx,
-      items,
-      commands: cmds,
-    })
+    const items = menus.menus[trigger.dataset['menu']] || []
+    const cmds = items.filter((i) => i.command).map((i) => commands.commands[i.command] as Command) || []
+    if (!items) {
+      return
+    }
+
+    set({ menu: React.createElement(Menu, { workbench: get() as Workbench, ctx, items, commands: cmds }) })
+
     // TODO: draw logic
     // m.redraw();
     // setTimeout(() => {
@@ -277,29 +254,26 @@ export class Workbench {
     //   // to showModal on already open dialog, which causes exception.
     //   document.querySelector("main > dialog.menu").showModal();
     // }, 0);
-  }
-
-  closeMenu() {
-    // TODO: state management
-    // document.querySelector("main > dialog.menu").close();
-    // workbench.menu.body = () => null;
-  }
-
-  showPalette(x: number, y: number, ctx: Context) {
-    this.showDialog(() => React.createElement(CommandPalette, { workbench: this, ctx }), false, {
+  },
+  closeMenu: () => {
+    ;(document.querySelector('main > dialog.menu') as HTMLDialogElement)?.close()
+  },
+  showPalette: (x: number, y: number, ctx: Context) => {
+    const { showDialog } = get()
+    showDialog(() => React.createElement(CommandPalette, { workbench: get() as Workbench, ctx }), false, {
       left: `${x}px`,
       top: `${y}px`,
     })
-  }
-
-  showNotice(notice: 'firsttime' | 'github' | 'lockstolen', finished: any) {
+  },
+  showNotice: (notice: 'firsttime' | 'github' | 'lockstolen', finished: any) => {
+    const { showDialog } = get()
     const NoticeComponent = {
       firsttime: FirstTimeMessage,
       github: GitHubMessage,
       lockstolen: LockStolenMessage,
     }[notice]
 
-    this.showDialog(
+    showDialog(
       () =>
         React.createElement(NoticeComponent as FunctionComponent<any>, {
           workbench: this,
@@ -309,32 +283,25 @@ export class Workbench {
       undefined,
       notice === 'lockstolen',
     )
-  }
+  },
+  toggleDrawer: () => {
+    set((state) => ({ drawer: { open: !state.drawer.open } }))
+  },
+  showSettings: () => {
+    const { showDialog } = get()
+    showDialog(() => React.createElement(Settings, { workbench: get() as Workbench }), true)
+  },
+  showPopover: (body: any, style?: {}) => {
+    set({ popover: { body, style } })
+  },
+  closePopover: () => {
+    set({ popover: null })
+  },
+  showDialog: (body: any, backdrop?: boolean, style?: {}, explicitClose?: boolean) => {
+    const { dialog } = get()
+    // TODO actual dialog element
+    set({ dialog: React.createElement('div', { body, backdrop, style, explicitClose }) })
 
-  toggleDrawer() {
-    this.drawer.open = !this.drawer.open
-    // TODO redraw
-    // m.redraw();
-  }
-
-  showSettings() {
-    this.showDialog(() => React.createElement(Settings, { workbench: this }), true)
-  }
-
-  showPopover(body: any, style?: {}) {
-    this.popover = { body, style }
-    // TODO redraw
-    // m.redraw();
-  }
-
-  closePopover() {
-    this.popover = null
-    // TODO redraw
-    // m.redraw();
-  }
-
-  showDialog(body: any, backdrop?: boolean, style?: {}, explicitClose?: boolean) {
-    this.dialog = { body, backdrop, style, explicitClose }
     // TODO redraw
     // m.redraw();
     setTimeout(() => {
@@ -342,19 +309,16 @@ export class Workbench {
       // to showModal on already open dialog, which causes exception.
       ;(document.querySelector('main > dialog.modal') as HTMLDialogElement)?.showModal()
     }, 0)
-  }
-
-  isDialogOpen(): boolean {
+  },
+  isDialogOpen: (): boolean => {
     return (document.querySelector('main > dialog.modal') as HTMLDialogElement)?.hasAttribute('open')
-  }
-
-  closeDialog() {
+  },
+  closeDialog: () => {
     ;(document.querySelector('main > dialog.modal') as HTMLDialogElement)?.close()
-    this.dialog.body = () => null
-  }
-
-  search(query: string): Node[] {
+  },
+  search: (query: string): Node[] => {
     if (!query) return []
+    const { backend } = get()
     // this regex selects spaces NOT inside quotes
     let splitQuery = query.split(/\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)/)
     let textQuery = splitQuery.filter((term) => !term.includes(':')).join(' ')
@@ -392,9 +356,10 @@ export class Workbench {
     //   );
     // }
     let resultCache = {}
-    this.backend.index.search(textQuery).forEach((id) => {
+    backend?.index.search(textQuery).forEach((id) => {
+      const { find } = get()
       // @ts-ignore
-      let node: Node | null = window.workbench.workspace.find(id)
+      let node: Node | null = find(id)
 
       if (!node) {
         return
@@ -412,7 +377,50 @@ export class Workbench {
       resultCache[node.id] = node
     })
     return Object.values(resultCache)
-  }
+  },
+})
+
+export interface Workbench {
+  commands: CommandRegistry
+  keybindings: KeyBindings
+  menus: MenuRegistry
+  backend?: Backend
+  context: Context
+  panels: Path[]
+  clipboard?: Clipboard
+  drawer: Drawer
+  mainPanel: () => Path
+  popover: any // Specify the correct type if possible
+  dialog: React.ReactElement // Specify the correct return type for body
+  menu: React.ReactElement // Specify the correct return type for body
+  initializeWorkbench: (backend: Backend) => Promise<void>
+  authenticated: () => boolean
+  openQuickAdd: () => void
+  commitQuickAdd: () => void
+  clearQuickAdd: () => void
+  todayNode: () => Node
+  openToday: () => void
+  open: (n: Node) => void
+  openNewPanel: (n: Node) => void
+  closePanel: (panel: Path) => void
+  defocus: () => void
+  focus: (path: Path, pos?: number) => void
+  getInput: (path: Path) => any
+  canExecuteCommand: (id: string, ctx: any, ...rest: any) => boolean
+  executeCommand: <T>(id: string, ctx: any, ...rest: any) => Promise<T>
+  newContext: (ctx: any) => Context
+  showMenu: (event: React.MouseEvent, ctx: Context, style?: {}) => void
+  closeMenu: () => void
+  showPalette: (x: number, y: number, ctx: Context) => void
+  showNotice: (notice: 'firsttime' | 'github' | 'lockstolen', finished: any) => void
+  toggleDrawer: () => void
+  showSettings: () => void
+  showPopover: (body: any, style?: {}) => void
+  closePopover: () => void
+  showDialog: (body: any, backdrop?: boolean, style?: {}, explicitClose?: boolean) => void
+  isDialogOpen: () => boolean
+  closeDialog: () => void
+  search: (query: string) => Node[]
 }
 
 function getWeekOfYear(date: Date) {

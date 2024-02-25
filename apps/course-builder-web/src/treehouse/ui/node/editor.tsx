@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import * as React from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
@@ -6,7 +8,6 @@ import { Workbench } from '@/treehouse/workbench/workbench'
 import { objectCall, objectHas } from '../../model/hooks'
 
 interface NodeEditorProps {
-  workbench: Workbench
   path: Path
   onkeydown?: (e: React.KeyboardEvent) => void
   oninput?: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -16,7 +17,6 @@ interface NodeEditorProps {
 }
 
 export const NodeEditor: React.FC<NodeEditorProps> = ({
-  workbench,
   path,
   onkeydown,
   oninput,
@@ -28,27 +28,39 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({
   let prop = editValue ? 'value' : 'name'
   // @ts-expect-error
   const [value, setValue] = useState<string>(node[prop] || '')
+  const [displayValue, setDisplayValue] = useState<string>('')
+  const workbench = useTreehouseStore()
+
+  const display = React.useCallback(
+    (value: string) => {
+      if (prop === 'name') {
+        return objectHas(node, 'displayName') ? objectCall(node, 'displayName', node) : node.name
+      }
+      return value
+    },
+    [node, prop],
+  )
 
   useEffect(() => {
     // @ts-expect-error
     setValue(node[prop] || '')
-  }, [node, prop])
-
-  const display = () => {
-    if (prop === 'name') {
-      return objectHas(node, 'displayName') ? objectCall(node, 'displayName', node) : node.name
-    }
-    return value
-  }
+    // @ts-ignore
+    setDisplayValue(display(node[prop] || ''))
+  }, [node, prop, display])
 
   const onfocus = () => {
-    workbench.context.node = node
-    workbench.context.path = path
+    useTreehouseStore.setState({
+      context: {
+        node,
+        path,
+      },
+    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value
     setValue(newValue)
+    setDisplayValue(display(newValue))
     if (oninput) oninput(e as unknown as React.ChangeEvent<HTMLInputElement>)
   }
 
@@ -74,15 +86,20 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({
   // Placeholder for TextAreaEditor or CodeMirrorEditor component
   // Assuming TextAreaEditor is a simple textarea for the sake of example
   let EditorComponent = (
-    <textarea
-      id={id}
-      value={display()}
-      onKeyDown={onkeydown}
-      onChange={handleChange}
-      onFocus={onfocus}
-      onBlur={handleBlur}
-      placeholder={placeholder}
-    />
+    <>
+      <textarea
+        id={id}
+        value={value}
+        onKeyDown={onkeydown}
+        onChange={handleChange}
+        onFocus={onfocus}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+      />
+      <span className="text-xs text-gray-500">
+        id: {path.id}-{node?.id}
+      </span>
+    </>
   )
 
   // Placeholder for conditional editor logic

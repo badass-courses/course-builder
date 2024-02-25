@@ -1,14 +1,16 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { getView } from '@/treehouse/views/views'
+import { Path } from '@/treehouse/workbench/path'
 
 interface TabsViewProps {
-  workbench: any // Define more specific type based on usage
-  path: any // Define more specific type based on usage
+  path: Path // Define more specific type based on usage
   alwaysShowNew?: boolean
 }
 
-const TabsView: React.FC<TabsViewProps> = ({ workbench, path }) => {
+const TabsView: React.FC<TabsViewProps> = ({ path }) => {
+  const workbench = useTreehouseStore()
   const node = path.node
   const [tabs, setTabs] = useState(new Set())
   const [selectedTab, setSelectedTab] = useState('')
@@ -43,9 +45,8 @@ const TabsView: React.FC<TabsViewProps> = ({ workbench, path }) => {
       <div className="tab-content">
         {/* Render the view for the selected tab */}
         {/* Assuming getView returns a React component */}
-        {selectedNode &&
+        {selectedNode && // @ts-ignore
           React.createElement(getView(selectedNode.getAttr('view') || 'list'), {
-            workbench,
             path: path.append(selectedNode),
           })}
       </div>

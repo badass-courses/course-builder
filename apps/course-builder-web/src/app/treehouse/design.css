@@ -1,0 +1,194 @@
+@import url(./normalize.css);
+
+:root {
+  --0: 0px;
+  --1: 0.25rem;
+  --2: 0.5rem;
+  --3: 0.75rem;
+  --4: 1rem;
+  --5: 1.25rem;
+  --6: 1.5rem;
+  --7: 1.75rem;
+  --8: 2rem;
+  --9: 2.25rem;
+  --10: 2.5rem;
+  --11: 2.75rem;
+  --12: 3rem;
+  --13: 3.25rem;
+  --14: 3.5rem;
+  --15: 3.75rem;
+  --16: 4rem;
+  --17: 4.25rem;
+  --18: 4.5rem;
+  --19: 4.75rem;
+  --20: 5rem;
+  --24: 6rem;
+  --28: 7rem;
+  --32: 8rem;
+
+  --blue-700: #00819E;
+  --blue-600: #007C9E;
+  --blue-500: #00819E;
+  --blue-300: #00819E;
+  
+  --green-700: #1F842A;
+  --green-500: #1F842A;
+  --green-300: #1F842A;
+  
+  --red-700: #B71B3A;
+  --red-500: #B71B3A;
+  --red-300: #B71B3A;
+
+  --purple-700: #852E8E;
+  --purple-500: #852E8E;
+  --purple-300: #852E8E;
+
+  --gray-900: #1D2020;
+  --gray-800: #353A3B;
+  --gray-700: #575A5B;
+  --gray-600: #75797A;
+  --gray-500: #949899;
+  --gray-400: #BBBEBE;
+  --gray-300: #D2D5D5;
+  --gray-200: #E8EBEB;
+  --gray-100: #F6F7F7;
+
+  --primary: var(--green-500);
+  
+  --white: #fff;
+  --black: var(--gray-900);
+
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 800;
+
+  --layer-1: 10;
+  --layer-2: 20;
+  --layer-3: 30;
+  --layer-4: 40;
+  --layer-5: 50;
+  --layer-below: -1;
+  --layer-top: 2147483647;
+
+  --h1-size: var(--12);
+  --h2-size: var(--8);
+  --h3-size: var(--6);
+
+  --border-radius: var(--1);
+
+  --body-line-height: 1.5;
+  --text-small: 0.875rem;
+  --text-body: 1rem;
+
+  --padding: 1rem;
+
+}
+
+.h1,h1,.h2,h2,.h3,h3,.h4,h4,.h5,h5 {
+  line-height: 1.1;
+  font-weight: var(--weight-bold);
+}
+.h2,h2,.h3,h3,.h4,h4,.h5,h5 {
+  font-weight: var(--weight-bold);
+}
+.h1,h1 {
+  font-size: var(--h1-size);
+}
+.h2,h2 {
+  font-size: var(--h2-size);
+}
+.h3,h3 {
+  font-size: var(--h3-size);
+}
+.h5, h5 {
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  font-size: var(--text-small);
+  letter-spacing: 1px;
+}
+
+.link {
+  font-weight: var(--weight-semibold);
+  text-decoration: underline;
+  color: var(--blue-600);
+}
+
+/* Treehouse Utilities */
+
+/*TO DO: replace this with a variable*/
+.text-small {
+  font-size: 0.875rem;
+}
+.row {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: var(--8);
+}
+a.row {
+  gap: 0.375rem;
+}
+
+.\? {
+  border: 1px solid red;
+}
+
+.\?\? {
+  border: 1px solid green;
+}
+
+.\?\?\? {
+  border: 1px solid blue;
+} 
+
+
+
+
+/* Tailwind Utilities */
+
+.flex {
+  display: flex;
+}
+.flex-row {
+  flex-direction: row;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.grow {
+  flex-grow: 1;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.w-full {
+  width: 100%;
+}
+.justify-center {
+  justify-content: center;
+}
+.items-start {
+  align-items: flex-start;
+}
+.shrink-0 {
+  flex-shrink: 0;
+}
+.gap-2 {	gap: var(--2); } 
+.gap-8 {	gap: var(--8); } 
+.m-0 { margin: 0; }
+.inset-0 {
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+.absolute { position: absolute; }
+

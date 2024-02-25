@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
 
@@ -6,12 +7,12 @@ import { NodeEditor } from '../ui/node/editor'
 import { OutlineNode } from '../ui/outline'
 
 interface TableViewProps {
-  workbench: Workbench
   path: Path
   alwaysShowNew?: boolean
 }
 
-const TableView: React.FC<TableViewProps> = ({ workbench, path }) => {
+const TableView: React.FC<TableViewProps> = ({ path }) => {
+  const workbench = useTreehouseStore()
   const node = path.node
   const [fields, setFields] = useState(new Set<string>())
 
@@ -26,7 +27,7 @@ const TableView: React.FC<TableViewProps> = ({ workbench, path }) => {
   const getFieldEditor = (node: any, field: string) => {
     const fields = node.getLinked('Fields').filter((f: any) => f.name === field)
     if (fields.length === 0) return null
-    return <NodeEditor editValue={true} workbench={workbench} path={path.append(fields[0])} />
+    return <NodeEditor editValue={true} path={path.append(fields[0])} />
   }
 
   return (
@@ -43,7 +44,7 @@ const TableView: React.FC<TableViewProps> = ({ workbench, path }) => {
         {node.children.map((n: any) => (
           <tr key={n.id}>
             <td>
-              <OutlineNode workbench={workbench} path={path.append(n)} />
+              <OutlineNode path={path.append(n)} />
             </td>
             {[...fields].map((f) => (
               <td key={f}>{getFieldEditor(n, f)}</td>

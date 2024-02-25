@@ -28,6 +28,7 @@ export interface Node {
   readonly id: string
   readonly bus: Bus
   readonly raw: RawNode
+  readonly hash: string
 
   name: string
   value: any

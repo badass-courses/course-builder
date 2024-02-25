@@ -1,3 +1,6 @@
+import { useTreehouseStore } from '@/treehouse/mod'
+import { SHA1 } from '@/treehouse/workbench/util'
+
 import { componentName, duplicate, getComponent } from '../components'
 import { hasHook, triggerHook } from '../hooks'
 import { Bus as IBus, Node as INode, RawNode, WalkFunc, WalkOptions } from '../mod'
@@ -6,10 +9,12 @@ import { Bus } from './mod'
 export class Node {
   _id: string
   _bus: Bus
+  _hash: string
 
   constructor(bus: Bus, id: string) {
     this._bus = bus
     this._id = id
+    this._hash = SHA1(JSON.stringify(this))
   }
 
   [Symbol.for('Deno.customInspect')]() {
@@ -24,6 +29,10 @@ export class Node {
 
   get bus(): IBus {
     return this._bus
+  }
+
+  get hash(): string {
+    return this._hash
   }
 
   get raw(): RawNode {
@@ -383,6 +392,7 @@ export class Node {
 
   changed() {
     this._bus.changed(this)
+    this._hash = SHA1(JSON.stringify(this))
   }
 
   // duplicate?

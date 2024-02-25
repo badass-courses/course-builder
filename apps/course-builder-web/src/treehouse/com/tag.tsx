@@ -4,7 +4,6 @@ import * as React from 'react'
 import { component } from '../model/components'
 import { Node } from '../model/mod'
 import { Picker } from '../ui/picker'
-import { WorkbenchContext } from '../workbench/mod'
 import { Path } from '../workbench/path'
 import { Template } from './template'
 
@@ -32,8 +31,6 @@ const TagBadge = ({
 }
 
 export const useTag = () => {
-  const workbench = useContext(WorkbenchContext)
-
   const addTag = (node: Node, tagName: string) => {
     // Logic to add a tag to a node
     // Update the node accordingly

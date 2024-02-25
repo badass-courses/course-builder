@@ -5,12 +5,11 @@ import { NewNode } from '../ui/node/new'
 import { OutlineNode } from '../ui/outline'
 
 interface DocumentViewProps {
-  workbench: Workbench
   path: Path
   alwaysShowNew?: boolean
 }
 
-const DocumentView: React.FC<DocumentViewProps> = ({ workbench, path, alwaysShowNew }) => {
+const DocumentView: React.FC<DocumentViewProps> = ({ path, alwaysShowNew }) => {
   let node = path.node
   if (path.node.refTo) {
     node = path.node.refTo
@@ -24,14 +23,11 @@ const DocumentView: React.FC<DocumentViewProps> = ({ workbench, path, alwaysShow
     <div className="document-view">
       <div className="fields">
         {node.getLinked('Fields').length > 0 &&
-          node
-            .getLinked('Fields')
-            .map((n: any) => <OutlineNode key={n.id} workbench={workbench} path={path.append(n)} />)}
+          node.getLinked('Fields').map((n: any) => <OutlineNode key={n.id} path={path.append(n)} />)}
       </div>
       <div className="children">
-        {node.childCount > 0 &&
-          node.children.map((n: any) => <OutlineNode key={n.id} workbench={workbench} path={path.append(n)} />)}
-        {showNew && <NewNode workbench={workbench} path={path} />}
+        {node.childCount > 0 && node.children.map((n: any) => <OutlineNode key={n.id} path={path.append(n)} />)}
+        {showNew && <NewNode path={path} />}
       </div>
     </div>
   )

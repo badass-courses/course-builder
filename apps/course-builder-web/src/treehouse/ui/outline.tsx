@@ -1,6 +1,7 @@
 // import { Tag } from "../com/tag";
 import * as React from 'react'
 import { ChangeEvent, SyntheticEvent, useState } from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { getView } from '@/treehouse/views/views'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
@@ -10,30 +11,18 @@ import { componentsWith, objectCall, objectHas } from '../model/hooks'
 import { Node } from '../model/mod'
 import { NodeEditor } from './node/editor'
 
-export interface Attrs {
-  path: Path
-  workbench: Workbench
-}
-
-export interface State {
-  hover: boolean
-  tagPopover?: Popover
-}
-
 interface Popover {
   onkeydown: Function
   oninput: Function
 }
 
 type OutlineEditorProps = {
-  workbench: Workbench
   path: Path
   alwaysShowNew?: boolean
 }
 
-export const OutlineEditor: React.FC<OutlineEditorProps> = ({ workbench, path, alwaysShowNew }) => {
+export const OutlineEditor = ({ path, alwaysShowNew }: OutlineEditorProps) => {
   return React.createElement(getView((path?.node?.getAttr('view') as any) || 'list'), {
-    workbench,
     path,
     alwaysShowNew,
   })
@@ -41,11 +30,12 @@ export const OutlineEditor: React.FC<OutlineEditorProps> = ({ workbench, path, a
 
 type OutlineNodeProps = {
   path: Path
-  workbench: Workbench
 }
 
-export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
-  let [state, setState] = useState<State>({ hover: false })
+export const OutlineNode = ({ path }: OutlineNodeProps) => {
+  const workbench = useTreehouseStore()
+  const [hoverState, setHoverState] = useState(false)
+  const [tagPopover, setTagPopover] = useState<Popover | undefined>(undefined)
   let node: Node | null = path.node
 
   if (!node) {
@@ -66,39 +56,39 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
     }
   }
 
-  const expanded = workbench.workspace.getExpanded(path.head, handleNode)
+  const expanded = workbench.getExpanded(path.head, handleNode)
   const placeholder = objectHas(node, 'handlePlaceholder') ? objectCall(node, 'handlePlaceholder') : ''
 
   const hover = (e: SyntheticEvent<HTMLDivElement>) => {
-    setState({ ...state, hover: true })
+    setHoverState(true)
     e.stopPropagation()
   }
 
   const unhover = (e: SyntheticEvent<HTMLDivElement>) => {
-    setState({ ...state, hover: false })
+    setHoverState(false)
     e.stopPropagation()
   }
 
   const cancelTagPopover = () => {
-    if (state.tagPopover) {
+    if (tagPopover) {
       workbench.closePopover()
-      setState({ ...state, tagPopover: undefined })
+      setTagPopover(undefined)
     }
   }
 
   const oninput = (e: SyntheticEvent<HTMLInputElement>) => {
     const inputElement = e.target as HTMLInputElement
-    if (state.tagPopover) {
-      state.tagPopover.oninput(e)
+    if (tagPopover) {
+      tagPopover.oninput(e)
       if (!inputElement.value.includes('#')) {
         cancelTagPopover()
       }
     } else {
       if (inputElement.value.includes('#')) {
-        state.tagPopover = {
+        setTagPopover({
           onkeydown: () => {},
           oninput: () => {},
-        }
+        })
         // Don't love that we're hard depending on Tag
         if (!node) return
         // TODO Tags
@@ -115,13 +105,13 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
     }
   }
 
-  const onkeydown = (e: React.KeyboardEvent<Element>) => {
-    if (state.tagPopover) {
+  const onkeydown = async (e: React.KeyboardEvent<Element>) => {
+    if (tagPopover) {
       if (e.key === 'Escape') {
         cancelTagPopover()
         return
       }
-      if (state.tagPopover.onkeydown(e) === false) {
+      if (tagPopover.onkeydown(e) === false) {
         e.stopPropagation()
         return
       }
@@ -163,7 +153,7 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
           }
 
           // TODO: make this work as a command?
-          const above = workbench.workspace.findAbove(path)
+          const above = workbench.findAbove(path)
           if (!above || !above.node) {
             return
           }
@@ -181,7 +171,7 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
         if (e.ctrlKey || e.shiftKey || e.metaKey || e.altKey) return
         // cursor at end of text
         if (inputElement.selectionStart === inputElement.value.length) {
-          if ((!node || node.childCount > 0) && workbench.workspace.getExpanded(path.head, node)) {
+          if ((!node || node.childCount > 0) && workbench.getExpanded(path.head, node)) {
             workbench.executeCommand('insert-child', { node, path }, '', 0)
           } else {
             workbench.executeCommand('insert', { node, path })
@@ -220,12 +210,12 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
     workbench.executeCommand('zoom', { node, path })
 
     // Clear text selection that happens after from double click
-    // TODO state management (global)
-    // if (document.selection && document.selection.empty) {
-    //   document.selection.empty();
-    // } else if (window.getSelection) {
-    //   window.getSelection().removeAllRanges();
-    // }
+
+    if (document.getSelection() && document.getSelection()?.empty) {
+      document.getSelection()?.empty()
+    } else if (window.getSelection) {
+      window.getSelection()?.removeAllRanges()
+    }
   }
 
   const toggle = (e: SyntheticEvent<HTMLDivElement>) => {
@@ -247,7 +237,7 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
   }
 
   const showHandle = () => {
-    if ((node && node.id === workbench.context?.node?.id) || state.hover) {
+    if ((node && node.id === workbench.context?.node?.id) || hoverState) {
       return true
     }
     if (node && node.name.length > 0) return true
@@ -270,7 +260,7 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
           data-menu="node"
           viewBox="0 0 16 16"
         >
-          {state.hover && (
+          {hoverState && (
             <path
               style={{ transform: 'translateY(-1px)' }}
               fill="currentColor"
@@ -311,9 +301,9 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
         {node && node?.raw.Rel === 'Fields' ? (
           <div className="flex grow flex-row items-start">
             <div>
-              <NodeEditor workbench={workbench} path={path} onkeydown={onkeydown} oninput={oninput} />
+              <NodeEditor path={path} onkeydown={onkeydown} oninput={oninput} />
             </div>
-            <NodeEditor editValue={true} workbench={workbench} path={path} onkeydown={onkeydown} oninput={oninput} />
+            <NodeEditor editValue={true} path={path} onkeydown={onkeydown} oninput={oninput} />
           </div>
         ) : (
           <div className="flex grow flex-row items-start" style={{ gap: '0.5rem' }}>
@@ -324,13 +314,7 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
                   component,
                 }),
               )}
-            <NodeEditor
-              workbench={workbench}
-              path={path}
-              onkeydown={onkeydown}
-              oninput={oninput}
-              placeholder={placeholder}
-            />
+            <NodeEditor path={path} onkeydown={onkeydown} oninput={oninput} placeholder={placeholder} />
             {objectHas(node, 'afterEditor') &&
               componentsWith(node, 'afterEditor').map((component) =>
                 React.createElement(component.afterEditor(), {
@@ -355,7 +339,6 @@ export const OutlineNode: React.FC<Attrs> = ({ path, workbench }) => {
           <div className="view grow">
             {node &&
               React.createElement(getView((node.getAttr('view') as unknown as any) || 'list'), {
-                workbench,
                 path,
               })}
           </div>

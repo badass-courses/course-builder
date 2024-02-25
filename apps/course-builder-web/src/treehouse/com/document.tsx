@@ -1,16 +1,16 @@
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import * as React from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
-import { Workbench } from '@/treehouse/workbench/workbench'
 
-import { Context, WorkbenchContext } from '../workbench/mod'
+import { Context } from '../workbench/mod'
 
 interface DocumentProps {
   node: Node
 }
 
 export const Document: React.FC<DocumentProps> = ({ node }) => {
-  const workbench = useContext(WorkbenchContext)
+  const { commands, executeCommand } = useTreehouseStore()
 
   useEffect(() => {
     if (node && node.parent) {
@@ -19,18 +19,18 @@ export const Document: React.FC<DocumentProps> = ({ node }) => {
   }, [node])
 
   useEffect(() => {
-    // workbench?.commands.registerCommand({
-    //   id: "make-document",
-    //   title: "Make Document",
-    //   action: (ctx: Context) => {
-    //     if (!ctx.node) return;
-    //     const doc = new Document();
-    //     ctx.node.addComponent(doc);
-    //     ctx.node.changed();
-    //     workbench.executeCommand("zoom", ctx);
-    //   }
-    // });
-  }, [workbench])
+    commands.registerCommand({
+      id: 'make-document',
+      title: 'Make Document',
+      action: (ctx: Context) => {
+        if (!ctx.node) return
+        const doc = React.createElement(Document, { node: ctx.node })
+        ctx.node.addComponent(doc)
+        ctx.node.changed()
+        executeCommand('zoom', ctx)
+      },
+    })
+  }, [])
 
   const handleIcon = (collapsed: boolean = false) => (
     <svg

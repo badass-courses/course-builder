@@ -5,15 +5,12 @@ import { Workspace } from '@/treehouse/workbench/workspace'
 
 import { component } from '../model/components'
 import { Node } from '../model/mod'
-import { Context, WorkbenchContext } from '../workbench/mod'
 
 interface TemplateProps {
   node: Node
 }
 
 export const Template: React.FC<TemplateProps> = ({ node }) => {
-  const workbench = useContext(WorkbenchContext)
-
   useEffect(() => {
     // Assuming onAttach logic or similar initialization
     if (node && node.parent) {

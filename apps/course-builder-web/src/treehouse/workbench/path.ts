@@ -10,6 +10,7 @@ import { SHA1 } from './util'
 export class Path {
   name: string
   nodes: Node[]
+  _hash: string
 
   constructor(head?: Node | null, name?: string) {
     if (name) {
@@ -22,6 +23,12 @@ export class Path {
     } else {
       this.nodes = []
     }
+
+    this._hash = SHA1([this.name, ...this.nodes.map((n) => n.id)].join(':'))
+  }
+
+  get hash(): string {
+    return this._hash
   }
 
   push(node: Node) {

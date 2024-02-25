@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { SearchIndex } from '@/treehouse/backend/mod'
+import { setup, useTreehouseStore } from '@/treehouse/mod'
 import { RawNode } from '@/treehouse/model/mod'
-import { WorkbenchProvider } from '@/treehouse/workbench/mod'
 import { Workbench } from '@/treehouse/workbench/workbench'
 
 export class LoggerBackend {
@@ -19,18 +19,21 @@ export class LoggerBackend {
 }
 
 export const Treehouse = ({ children }: { children?: React.ReactNode }) => {
-  const [workbench, setWorkbench] = React.useState<Workbench | null>(null)
+  const { backend } = useTreehouseStore()
 
   React.useEffect(() => {
-    setWorkbench(new Workbench(new LoggerBackend()))
+    async function initialize() {
+      await setup(document, new LoggerBackend())
+    }
+
+    initialize()
   }, [])
 
-  if (!workbench) {
-    return null
+  if (!backend) {
+    return <div>Loading...</div>
   }
 
-  console.log('workbench', workbench)
-  return <WorkbenchProvider workbench={workbench}>{children}</WorkbenchProvider>
+  return <>{children}</>
 }
 
 export class SearchIndex_Dumb {

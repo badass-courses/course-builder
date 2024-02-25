@@ -1,12 +1,13 @@
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
 
 interface NewNodeProps {
-  workbench: Workbench
   path: Path
 }
 
-export const NewNode: React.FC<NewNodeProps> = ({ workbench, path }) => {
+export const NewNode: React.FC<NewNodeProps> = ({ path }) => {
+  const workbench = useTreehouseStore()
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Tab') {
       e.stopPropagation()

@@ -5,7 +5,7 @@ import { Node } from './mod'
 
 type CHANGE_ME = any
 
-export class Bus {
+export class Bus implements IBus {
   nodes: Record<string, RawNode>
   observers: ObserverFunc[]
 
@@ -126,10 +126,10 @@ export class Bus {
       .map((n) => new Node(this, n.ID))
   }
 
-  root(name?: string): INode | null {
+  root(name?: string): INode {
     name = name || '@root'
     const node = this.roots().find((root) => root.name === name)
-    if (node === undefined) return null
+    if (node === undefined) throw new Error(`unable to find root ${name}`)
     return node
   }
 

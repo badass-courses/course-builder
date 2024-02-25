@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Workbench } from '@/treehouse/workbench/workbench'
 
 interface SettingsProps {
@@ -6,7 +7,8 @@ interface SettingsProps {
 }
 
 export const Settings: React.FC<SettingsProps> = ({ workbench }) => {
-  const currentTheme = workbench.workspace.settings.theme
+  const { settings, save } = useTreehouseStore()
+  const currentTheme = settings.theme
   const [selectedTheme, setSelectedTheme] = useState(currentTheme)
 
   const oninput = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,8 +41,8 @@ export const Settings: React.FC<SettingsProps> = ({ workbench }) => {
           className="primary"
           onClick={async () => {
             if (currentTheme !== selectedTheme) {
-              workbench.workspace.settings.theme = selectedTheme
-              await workbench.workspace.save(true)
+              settings.theme = selectedTheme
+              await save(true)
               window.location.reload()
             } else {
               workbench.closeDialog()
