@@ -1,13 +1,21 @@
 import { useState } from 'react'
 import { useTreehouseStore } from '@/treehouse/mod'
 import { Workbench } from '@/treehouse/workbench/workbench'
+import { useShallow } from 'zustand/react/shallow'
 
 interface SettingsProps {
   workbench: Workbench
 }
 
 export const Settings: React.FC<SettingsProps> = ({ workbench }) => {
-  const { settings, save } = useTreehouseStore()
+  const { settings, save } = useTreehouseStore(
+    useShallow((s) => {
+      return {
+        settings: s.settings,
+        save: s.save,
+      }
+    }),
+  )
   const currentTheme = settings.theme
   const [selectedTheme, setSelectedTheme] = useState(currentTheme)
 

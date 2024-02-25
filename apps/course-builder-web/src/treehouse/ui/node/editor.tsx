@@ -20,7 +20,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({
   editValue,
   placeholder,
 }) => {
-  const { context } = useTreehouseStore()
+  const context = useTreehouseStore((s) => s.context)
   const node = path.node
   let prop: 'value' | 'name' = editValue ? 'value' : 'name'
 
@@ -113,7 +113,12 @@ const TextAreaEditor = ({
   const [buffer, setBuffer] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const spanRef = useRef<HTMLSpanElement | null>(null)
-  const { newWorkspace, focus } = useTreehouseStore()
+  const { newWorkspace, focus } = useTreehouseStore((s) => {
+    return {
+      newWorkspace: s.newWorkspace,
+      focus: s.focus,
+    }
+  })
 
   useEffect(() => {
     const textarea = textareaRef.current

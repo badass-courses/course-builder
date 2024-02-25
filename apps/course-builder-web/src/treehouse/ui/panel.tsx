@@ -3,6 +3,7 @@ import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Page } from '../com/page'
 import { NodeEditor } from './node/editor'
@@ -13,7 +14,17 @@ interface PanelProps {
 }
 
 export const Panel: React.FC<PanelProps> = ({ path }) => {
-  const { executeCommand, context, panels, open, showMenu } = useTreehouseStore()
+  const { executeCommand, context, panels, open, showMenu } = useTreehouseStore(
+    useShallow((s) => {
+      return {
+        executeCommand: s.executeCommand,
+        context: s.context,
+        panels: s.panels,
+        open: s.open,
+        showMenu: s.showMenu,
+      }
+    }),
+  )
   const node = path.node
 
   const close = useCallback(() => {

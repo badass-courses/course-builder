@@ -9,7 +9,8 @@ import { Workbench } from '@/treehouse/workbench/workbench'
 export const TreehouseApp = () => {
   const [open, setOpen] = useState(true)
   const toggleSidebar = () => setOpen(!open)
-  const { bus, panels } = useTreehouseStore()
+  const bus = useTreehouseStore((state) => state.bus)
+  const panels = useTreehouseStore((state) => state.panels)
 
   return (
     <main className="workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>

@@ -18,7 +18,7 @@ export class LoggerBackend {
 }
 
 export const Treehouse = ({ children }: { children?: React.ReactNode }) => {
-  const { backend } = useTreehouseStore()
+  const backend = useTreehouseStore((s) => s.backend)
 
   React.useEffect(() => {
     async function initialize() {

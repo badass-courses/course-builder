@@ -6,7 +6,7 @@ interface NewNodeProps {
 }
 
 export const NewNode: React.FC<NewNodeProps> = ({ path }) => {
-  const { executeCommand } = useTreehouseStore()
+  const executeCommand = useTreehouseStore((s) => s.executeCommand)
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Tab') {
       e.stopPropagation()

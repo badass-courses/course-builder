@@ -10,7 +10,8 @@ interface DocumentProps {
 }
 
 export const Document: React.FC<DocumentProps> = ({ node }) => {
-  const { commands, executeCommand } = useTreehouseStore()
+  const commands = useTreehouseStore((s) => s.commands)
+  const executeCommand = useTreehouseStore((s) => s.executeCommand)
 
   useEffect(() => {
     if (node && node.parent) {

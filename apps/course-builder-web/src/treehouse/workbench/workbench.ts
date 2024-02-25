@@ -247,7 +247,7 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
 
     set({ menu: React.createElement(Menu, { workbench: get() as Workbench, ctx, items, commands: cmds }) })
 
-    // TODO: draw logic
+    // TODO: draw logic `look up flushSync`
     // m.redraw();
     // setTimeout(() => {
     //   // this next frame timeout is so any current dialog can close before attempting

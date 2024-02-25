@@ -5,6 +5,7 @@ import { useTreehouseStore } from '@/treehouse/mod'
 import { getView } from '@/treehouse/views/views'
 import { Path } from '@/treehouse/workbench/path'
 import { Workbench } from '@/treehouse/workbench/workbench'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Document } from '../com/document'
 import { componentsWith, objectCall, objectHas } from '../model/hooks'
@@ -34,7 +35,20 @@ type OutlineNodeProps = {
 
 export const OutlineNode = ({ path }: OutlineNodeProps) => {
   const { executeCommand, clipboard, getExpanded, closePopover, findAbove, focus, context, showMenu } =
-    useTreehouseStore()
+    useTreehouseStore(
+      useShallow((s) => {
+        return {
+          executeCommand: s.executeCommand,
+          clipboard: s.clipboard,
+          getExpanded: s.getExpanded,
+          closePopover: s.closePopover,
+          findAbove: s.findAbove,
+          focus: s.focus,
+          context: s.context,
+          showMenu: s.showMenu,
+        }
+      }),
+    )
   const [hoverState, setHoverState] = useState(false)
   const [tagPopover, setTagPopover] = useState<Popover | undefined>(undefined)
   let node: Node | null = path.node
