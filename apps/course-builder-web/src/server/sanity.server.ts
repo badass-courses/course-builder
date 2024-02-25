@@ -71,6 +71,7 @@ export async function sanityQuery<T = any>(
         )
       }
       const { result } = await response.json()
+
       return result as T
     })
     .catch((error) => {
