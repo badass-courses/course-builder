@@ -187,9 +187,13 @@ $ pnpm db:push
 
 1. Visit the `ngrok` URL in your browser
 2. Click 'Sign In' and authenticate with our GitHub account
-3. Configure and run Drizzle Studio, which acts as a local interface for your remote database.
+3. Connect to your database through the SQL console (planetscale), Drizze Studio (see below), or your favorite database client gui.
+
+#### Configuring Drizzle Studio
+
+1. Configure and run Drizzle Studio, which acts as a local interface for your remote database.
     1. If you're using Safari, you'll need to `brew install mkcert` and then `mkcert -install` first. (You will have to install xcode-select tooling if you don't have it, just follow the prompts)
     2. Run `pnpm db:studio`
     3. Navigate to `https://local.drizzle.studio`
-4. Via Drizzle Studio (other flows are possible if you'd prefer, but this is the one we're documenting) find your new `user` record and change the `role` to `admin`. Make sure to save/apply the change.
-5. When you visit `/tips`, you'll see the form for creating a new Tip.
+2. Via Drizzle Studio (other flows are possible if you'd prefer, but this is the one we're documenting) find your new `user` record and change the `role` to `admin`. Make sure to save/apply the change.
+3. When you visit `/tips`, you'll see the form for creating a new Tip.
