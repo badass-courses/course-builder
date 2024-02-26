@@ -96,7 +96,7 @@ This app can be run locally. It requires API keys for many 3rd-party services. Y
 
 ### Env Vars from Vercel
 
-For those with access to the project in Vercel, here is how to grab those env vars:
+For those with access to the project in Vercel, here is how to grab those env vars. NOTE: you'll want to make sure you've `cd`'d into `<project-root>/apps/course-builder-web` for the rest of this guide:
 
 - 1. Make sure you are signed in to the Vercel CLI
   - `vercel login`
