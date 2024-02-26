@@ -96,7 +96,9 @@ This app can be run locally. It requires API keys for many 3rd-party services. Y
 
 ### Env Vars from Vercel
 
-For those with access to the project in Vercel, here is how to grab those env vars:
+For those with access to the project in Vercel, here is how to grab those env vars. 
+
+**NOTE: you'll want to make sure you've `cd`'d into `<project-root>/apps/course-builder-web` for this**:
 
 - 1. Make sure you are signed in to the Vercel CLI
   - `vercel login`
@@ -178,9 +180,17 @@ Then, apply the database schema to that new database with:
 $ pnpm db:push
 ```
 
+### Start the Local Dev Server
+1. `npm build` to build your app
+2. `npm start` to start listening locally on port 3000 (which will be forwarded by ngrok, above).
+
 ### Create an Admin User
 
 1. Visit the `ngrok` URL in your browser
 2. Click 'Sign In' and authenticate with our GitHub account
-3. Via Drizzle Studio, Planetscale console, or a SQL client, find your new `user` record and change the `role` to `admin`. Make sure to save/apply the change.
-4. When you visit `/tips`, you'll see the form for creating a new Tip.
+3. Configure and run Drizzle Studio, which acts as a local interface for your remote database.
+    1. If you're using Safari, you'll need to `brew install mkcert` and then `mkcert -install` first. (You will have to install xcode-select tooling if you don't have it, just follow the prompts)
+    2. Run `pnpm db:studio`
+    3. Navigate to `https://local.drizzle.studio`
+4. Via Drizzle Studio (other flows are possible if you'd prefer, but this is the one we're documenting) find your new `user` record and change the `role` to `admin`. Make sure to save/apply the change.
+5. When you visit `/tips`, you'll see the form for creating a new Tip.
