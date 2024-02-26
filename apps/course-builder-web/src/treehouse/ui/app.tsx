@@ -13,7 +13,7 @@ export const TreehouseApp = () => {
   const panels = useTreehouseStore((state) => state.panels)
 
   return (
-    <main className="workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>
+    <main className="treehouse workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>
       ...
       <div className="sidebar flex flex-col" style={{ width: open ? '256px' : '52px' }}>
         ...

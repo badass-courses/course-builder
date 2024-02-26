@@ -5,6 +5,8 @@ import { SearchIndex } from '@/treehouse/backend/mod'
 import { setup, useTreehouseStore } from '@/treehouse/mod'
 import { RawNode } from '@/treehouse/model/mod'
 
+import './treehouse.css'
+
 export class LoggerBackend {
   auth: null
   index: SearchIndex

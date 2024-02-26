@@ -1,0 +1,636 @@
+.treehouse {
+    /*------------APP------------*/
+
+
+    /*to make theming easier*/
+
+    .text-editor textarea,
+    .new-node input,
+    .palette input {
+        background-color: transparent;
+    }
+
+    /*------------SIDEBAR------------*/
+
+    .sidebar {
+        background-color: #f6f7f7;
+        border-right: 1px solid #e8ebeb;
+    }
+
+    .sidebar-top {
+        padding: 1rem;
+        border-bottom: 1px solid #e8ebeb;
+    }
+
+    .sidebar-top > .logo {
+        width: 20px;
+        height: 20px;
+        background-color: #75797a;
+        /*-webkit-mask: url(/logo.svg) no-repeat center;*/
+        /*mask: url(/logo.svg) no-repeat center;*/
+    }
+
+    .sidebar-main {
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #1d2020;
+    }
+
+    .sidebar-main svg {
+        color: #1d2020;
+    }
+
+    .sidebar-item {
+        padding-bottom: calc(1rem / 2);
+    }
+
+    .sidebar-item svg {
+        cursor: pointer;
+        padding-top: 0px;
+        margin-right: 0.125rem;
+    }
+
+    .sidebar-bottom {
+        padding: 1rem;
+        color: #75797a;
+    }
+
+    .sidebar-item-nested {
+        margin-left: 0.5rem;
+    }
+
+    /*------------TOPBAR------------*/
+
+    .topbar {
+        padding: 1rem calc(1rem * 2);
+        font-size: 0.875rem;
+        font-weight: 600;
+        border-bottom: 1px solid #e8ebeb;
+        height: 56px;
+    }
+
+    .topbar > div > svg {
+        margin-right: 0.25rem;
+    }
+
+    .topbar-item {
+        display: flex;
+        align-items: center;
+        color: #1d2020;
+    }
+
+    .topbar-item svg,
+    .search svg,
+    div[data-menu='settings'] {
+        color: #1d2020;
+    }
+
+    .topbar-item > div {
+        margin-bottom: -1px;
+    }
+
+    /*fun hack to get the top navbar items vertically aligned
+    with their icon for Safari only*/
+    @supports (-webkit-hyphens: none) {
+        .topbar-item > div {
+            margin-bottom: -3px;
+        }
+    }
+
+    /*------------PANELS------------*/
+
+    .panels > div {
+        border-right: 1px solid #e8ebeb;
+        overflow: auto;
+        flex: 1 1 auto;
+        flex-basis: 0;
+    }
+
+    .panel {
+        margin-top: 1rem;
+        margin-left: calc(1rem * 2);
+        margin-right: calc(1rem * 2);
+        padding-bottom: 1rem;
+    }
+
+    .panel > .bar {
+        font-size: 0.875rem;
+        color: #75797a;
+        gap: 1rem;
+        padding: 0 1rem;
+        margin-bottom: calc(1rem * 1.5);
+    }
+
+    .panel > .bar .panel-icons {
+        gap: 1rem;
+        z-index: 0;
+        color: #75797a;
+    }
+
+    .panel > .body {
+        padding: 0 1rem;
+    }
+
+    /*------------NODES------------*/
+    /*keep max line length from getting too long for readibility*/
+
+    .node-editor {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .text-editor textarea,
+    .panel-back-parent {
+        max-width: 768px;
+    }
+
+    .node-description {
+        padding: 0;
+        color: #75797a;
+        line-height: 150%;
+        font-size: 13px;
+        border: 0;
+        outline: 0;
+        background: transparent;
+    }
+
+    /*todo: check unused textarea styles in panel.tsx*/
+
+    .text-editor > textarea,
+    .text-editor > span {
+        outline: none;
+        padding: 0;
+        width: 100%;
+        box-sizing: border-box;
+        resize: none;
+        overflow: hidden;
+        display: block;
+        line-height: 1.5;
+        border: none;
+    }
+
+    .title-node .text-editor > textarea,
+    .title-node .text-editor > span {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .new-node svg {
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        padding-left: 1px;
+        color: #75797a;
+    }
+
+    .new-node svg circle {
+        fill: #e8ebeb;
+    }
+
+    .new-node input {
+        border: 0px;
+        outline: 0px;
+    }
+
+    .expanded-node {
+        padding-bottom: 0.25rem;
+    }
+
+    .expanded-node > .indent {
+        width: 2rem;
+    }
+
+    .cut-node {
+        display: none;
+    }
+
+    svg.node-menu {
+        cursor: pointer;
+        color: #75797a;
+        width: 1rem;
+        height: 1rem;
+        margin-left: -1rem;
+        user-select: none;
+        margin-top: 0.25rem;
+    }
+
+    .node-handle {
+        cursor: pointer;
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        padding-left: 1px;
+        margin-top: 0.25rem;
+        color: #75797a;
+    }
+
+    svg.node-bullet circle#node-collapsed-handle {
+        fill: #e8ebeb;
+    }
+
+    /*------------TABLE VIEW------------*/
+
+    .table-view {
+        display: grid;
+        margin-bottom: calc(1rem / 4);
+    }
+
+    .table-view th {
+        border-bottom: solid 1px #e8ebeb;
+        margin-bottom: calc(1rem / 2);
+        padding-bottom: calc(1rem / 2);
+        text-align: left;
+    }
+
+    .table-view thead,
+    .table-view tbody,
+    .table-view tr {
+        display: contents;
+    }
+
+    .table-view thead th:first-child {
+        padding-left: 24px;
+    }
+
+    /*------------TABS VIEW--------------*/
+
+    .tabs-view .tabs {
+        display: flex;
+        overflow-x: auto;
+        width: 100%;
+        max-width: 80vw;
+    }
+
+    .tabs-view .tabs div {
+        border-bottom: solid 1px #e8ebeb;
+        cursor: pointer;
+        margin-bottom: calc(1rem / 2);
+        padding: 0 1rem;
+        padding-bottom: calc(1rem / 2);
+    }
+
+    .tabs-view .tabs div.active {
+        border-bottom: solid 2px #bbbebe;
+        font-weight: bold;
+    }
+
+    /*------------NOTICES------------*/
+
+    .notice {
+        width: 40rem;
+        background-color: #fff;
+        padding: calc(1rem * 2);
+    }
+
+    .notice h3 {
+        margin-bottom: calc(1rem * 1.5);
+    }
+
+    .notice p {
+        line-height: 1.5;
+    }
+
+    .notice .button-bar button + button {
+        margin-left: 1rem;
+    }
+
+    .notice .button-bar {
+        text-align: right;
+        margin-top: calc(1rem * 3);
+    }
+
+    /*------------DRAWER------------*/
+
+    .drawer {
+        width: 256px; /* same width as sidebar*/
+        background-color: #e8ebeb;
+        padding: 1rem;
+        position: absolute;
+        bottom: 0;
+        right: -256px;
+        top: 0;
+        z-index: 10;
+        transition: right 0.1s;
+        transition-timing-function: cubic-bezier(0, -0.04, 1, 0.52);
+    }
+
+    .drawer.open {
+        right: 0;
+    }
+
+    .drawer.closed {
+        right: -256px;
+    }
+
+    /*------KEYBOARD REFERENCE-------*/
+
+    .reference .item {
+        font-size: 0.875rem;
+        margin-bottom: calc(1rem / 1.5);
+        gap: 1rem;
+    }
+
+    .reference .item .keybindings {
+        color: #75797a;
+        width: 3.75rem;
+    }
+
+    .reference h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: calc(1rem * 2);
+    }
+
+    .reference h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        margin-top: calc(1rem * 1.5);
+    }
+
+    /*------------MENU------------*/
+
+    .menu {
+        padding: calc(1rem / 4);
+        background-color: #fff;
+        font-size: 0.875rem;
+        min-width: 200px;
+    }
+
+    .menu li {
+        list-style-type: none;
+        padding: calc(1rem / 2);
+        margin: 0px;
+    }
+
+    .menu li .keybindings {
+        color: #75797a;
+        margin-left: 1rem;
+    }
+
+    .menu li:not(.disabled):hover {
+        cursor: pointer;
+    }
+
+    .menu li.disabled {
+        color: #bbbebe;
+        cursor: pointer;
+    }
+
+    /*------------PICKER------------*/
+
+    .picker {
+        padding: calc(1rem / 2);
+        min-width: 400px;
+        background: #fff;
+    }
+
+    .picker input {
+        padding: calc(1rem / 2);
+        border: 0;
+        outline: 0;
+        background: transparent;
+        font-size: 0.875rem;
+    }
+
+    .picker .items {
+        overflow-y: auto;
+        line-height: 1.5;
+        padding: calc(1rem / 2) 0 0 0;
+        font-size: 0.875rem;
+    }
+
+    .picker .item {
+        cursor: pointer;
+        padding: calc(1rem / 2);
+    }
+
+    /*------------SEARCH------------*/
+
+    .searchbar {
+        border: none;
+        background: none;
+        margin: 0 1rem;
+    }
+
+    .searchbar > div {
+        width: 95%;
+        padding: calc(1rem / 2);
+        margin: calc(1rem / -2);
+    }
+
+    .searchbar input,
+    .search input {
+        width: 99%;
+        margin: 0 1rem 0 0.25rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .search input {
+        padding: 2px;
+        padding-top: 3px;
+    }
+
+    .picker .selected,
+    .menu li:not(.disabled):hover {
+        background: #e8ebeb;
+        border-radius: 0.25rem;
+    }
+
+    /*------------PALETTE------------*/
+
+    .palette .picker {
+        min-width: 400px;
+    }
+
+    .palette .items {
+        max-height: 250px;
+    }
+
+    .palette .item .keybindings {
+        color: #75797a;
+    }
+
+    /*------------LOADING ANIMATION------------*/
+
+    .lds-ripple {
+        display: inline-block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        transform: scale(2);
+    }
+
+    .lds-ripple div {
+        position: absolute;
+        border: 4px solid #444;
+        opacity: 1;
+        border-radius: 50%;
+        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+    .lds-ripple div:nth-child(2) {
+        animation-delay: -0.5s;
+    }
+
+    @keyframes lds-ripple {
+        0% {
+            top: 36px;
+            left: 36px;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        4.9% {
+            top: 36px;
+            left: 36px;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        5% {
+            top: 36px;
+            left: 36px;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+        100% {
+            top: 0px;
+            left: 0px;
+            width: 72px;
+            height: 72px;
+            opacity: 0;
+        }
+    }
+
+    /*------------DOCUMENT------------*/
+
+    .document-view,
+    .document-panel .title-node {
+        width: 900px;
+        padding-left: 6rem;
+        padding-right: 6rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .document-view .node-handle {
+        display: none !important;
+    }
+
+    .cm-scroller {
+        line-height: 1.5 !important;
+    }
+
+    .cm-focused {
+        outline: none !important;
+    }
+
+    .cm-content,
+    .cm-line {
+        padding: 0 !important;
+        caret-color: #1d2020 !important;
+    }
+
+    .cm-line .tok-meta {
+        color: #bbbebe !important;
+    }
+
+    /*------------MOBILE------------*/
+
+    .mobile-nav {
+        display: none;
+    }
+
+    @media (max-width: 600px) {
+        .mobile-nav {
+            display: flex;
+            background-color: #f6f7f7;
+            z-index: 100;
+            flex: none;
+            border-top: 1px solid #e8ebeb;
+            justify-content: space-evenly;
+        }
+
+        .mobile-nav > div {
+            padding: 24px 20px;
+        }
+
+        .mobile-nav svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .notice {
+            width: 100%;
+        }
+
+        /*to account for small margin on either side of dialog*/
+        dialog {
+            width: 97vw;
+            max-width: 97vw;
+        }
+
+        dialog:has(> .search) {
+            margin: 0 auto !important;
+        }
+
+        dialog:has(> .menu) {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .menu {
+            width: 100%;
+        }
+
+        /*todo: this padding needs to stay to same as desktop
+      for alignment purposes. should probably center
+      the top nav in a more elegant way at some point*/
+        .sidebar-top,
+        .topbar {
+            padding: calc(1rem * 2);
+        }
+
+        .topbar,
+        .sidebar-top,
+        .sidebar-bottom {
+            display: none;
+        }
+
+        .sidebar {
+            position: absolute;
+            z-index: 10;
+            height: 100%;
+            display: none;
+            padding: calc(1rem * 2);
+        }
+
+        .sidebar-item {
+            padding-bottom: calc(1rem * 2);
+        }
+
+        /*  .search {
+          max-width: 100vw;
+        }*/
+        .sidebar,
+        .panel {
+            padding-top: calc(1rem * 3);
+            padding-bottom: calc(1rem * 3);
+        }
+
+        svg.node-menu {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-top: 0;
+        }
+
+        .menu li {
+            padding: 1rem;
+        }
+    }
+}
