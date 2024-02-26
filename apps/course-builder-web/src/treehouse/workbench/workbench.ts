@@ -216,7 +216,8 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     set({ context: Object.assign({}, context, ctx) })
     return get().context
   },
-  showMenu: (event: React.MouseEvent, ctx: Context, style?: {}) => {
+  showMenu: (event: React.MouseEvent, ctx: Context, style?: any) => {
+    console.log('showing menu', { event, ctx, style })
     const { context, menus, commands, menu } = get()
     event.stopPropagation()
     event.preventDefault()
@@ -224,19 +225,20 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     const trigger = currentTarget.closest('*[data-menu]') as HTMLElement
     const rect = trigger?.getBoundingClientRect()
     // TODO: styling
-    // if (!style) {
-    //   const align = trigger.dataset["align"] || "left";
-    //   style = {
-    //     top: `${document.body.scrollTop + rect.y + rect.height}px`,
-    //   };
-    //   if (align === "right") {
-    //     style.marginLeft = "auto";
-    //     style.marginRight = `${document.body.offsetWidth - rect.right}px`;
-    //   } else {
-    //     style.marginLeft = `${document.body.scrollLeft + rect.x}px`;
-    //     style.marginRight = "auto";
-    //   }
-    // }
+    if (!style) {
+      const align = trigger.dataset['align'] || 'left'
+      style = {
+        top: `${document.body.scrollTop + rect.y + rect.height}px`,
+      }
+      if (align === 'right') {
+        style.marginLeft = 'auto'
+        style.marginRight = `${document.body.offsetWidth - rect.right}px`
+      } else {
+        style.marginLeft = `${document.body.scrollLeft + rect.x}px`
+        style.marginRight = 'auto'
+      }
+    }
+    console.log('showing menu', { trigger, rect, style })
     if (!trigger.dataset['menu']) return
 
     const items = menus.menus[trigger.dataset['menu']] || []
@@ -245,15 +247,15 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
       return
     }
 
-    set({ menu: React.createElement(Menu, { workbench: get() as Workbench, ctx, items, commands: cmds }) })
+    set({ menu: React.createElement(Menu, { ctx, items, commands: cmds }) })
 
     // TODO: draw logic `look up flushSync`
     // m.redraw();
-    // setTimeout(() => {
-    //   // this next frame timeout is so any current dialog can close before attempting
-    //   // to showModal on already open dialog, which causes exception.
-    //   document.querySelector("main > dialog.menu").showModal();
-    // }, 0);
+    setTimeout(() => {
+      // this next frame timeout is so any current dialog can close before attempting
+      // to showModal on already open dialog, which causes exception.
+      ;(document.querySelector('main > dialog.menu') as HTMLDialogElement)?.showModal()
+    }, 0)
   },
   closeMenu: () => {
     ;(document.querySelector('main > dialog.menu') as HTMLDialogElement)?.close()

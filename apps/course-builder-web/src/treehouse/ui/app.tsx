@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
 import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
 import { Panel as PanelComponent } from '@/treehouse/ui/panel'
@@ -11,15 +11,12 @@ export const TreehouseApp = () => {
   const toggleSidebar = () => setOpen(!open)
   const bus = useTreehouseStore((state) => state.bus)
   const panels = useTreehouseStore((state) => state.panels)
+  const Menu = useTreehouseStore((state) => state.menu)
+  const closeMenu = useTreehouseStore((state) => state.closeMenu)
 
   return (
     <main className="treehouse workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>
-      ...
       <div className="sidebar flex flex-col" style={{ width: open ? '256px' : '52px' }}>
-        ...
-        <div className="sidebar-top" style={{ height: '56px' }}>
-          <div className="logo" />
-        </div>
         <div className="sidebar-main grow">
           {open && bus?.root().children.map((node) => <NavNode key={node.id} node={node} expanded={true} level={0} />)}
         </div>
@@ -49,7 +46,25 @@ export const TreehouseApp = () => {
           <PanelComponent key={path.hash} path={path} />
         ))}
       </div>
-      {/* Popover, dialog, and menu components */}
+      {Menu && (
+        <dialog
+          className="menu popover"
+          style={{ margin: '0', ...(Menu && { ...Menu.props.style }) }}
+          onCancel={(e) => {
+            // resets body
+            useTreehouseStore.setState({ menu: undefined })
+          }}
+          onClick={(e: React.MouseEvent<HTMLDialogElement>) => {
+            const dialog = (e.target as HTMLDialogElement).closest('dialog')
+            const rect = dialog?.getBoundingClientRect() || (e.target as HTMLDialogElement).getBoundingClientRect()
+            if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+              closeMenu()
+            }
+          }}
+        >
+          {Menu}
+        </dialog>
+      )}
     </main>
   )
 }

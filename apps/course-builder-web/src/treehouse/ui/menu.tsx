@@ -1,40 +1,38 @@
 import { SyntheticEvent } from 'react'
 import { Command } from '@/treehouse/action/commands'
 import { MenuItem } from '@/treehouse/action/menus'
+import { useTreehouseStore } from '@/treehouse/mod'
 import { Context } from '@/treehouse/workbench/mod'
 import { Workbench } from '@/treehouse/workbench/workbench'
 
 import { bindingSymbols } from '../action/keybinds'
 
-function isDisabled(workbench: Workbench, item: MenuItem, cmd: Command, ctx: Context) {
+function isDisabled(item: MenuItem, cmd: Command, ctx: Context) {
+  const { canExecuteCommand } = useTreehouseStore.getState()
   if (cmd) {
-    return item.disabled || !workbench.canExecuteCommand(cmd.id, ctx)
+    return item.disabled || !canExecuteCommand(cmd.id, ctx)
   }
   return item.disabled
 }
 
-export const Menu = ({
-  workbench,
-  items,
-  commands,
-  ctx,
-}: {
-  workbench: Workbench
-  items: any[]
-  commands: Command[]
-  ctx: Context
-}) => {
+export const Menu = ({ items, commands, ctx }: { items: any[]; commands: Command[]; ctx: Context }) => {
+  const closeMenu = useTreehouseStore((s) => s.closeMenu)
+  const executeCommand = useTreehouseStore((s) => s.executeCommand)
+  const keybindings = useTreehouseStore((s) => s.keybindings)
+
   const onclick = (item: MenuItem, cmd: Command) => (e: SyntheticEvent) => {
+    console.log('leeeeeroooooooooooy jeeeeeeeeeeeenkins!')
     e.stopPropagation()
-    if (isDisabled(workbench, item, cmd, ctx)) {
+    console.log('onclick', item, cmd, ctx)
+    if (isDisabled(item, cmd, ctx)) {
       return
     }
-    workbench.closeMenu()
+    closeMenu()
     if (item.onclick) {
       item.onclick()
     }
     if (cmd) {
-      workbench.executeCommand(cmd.id, ctx)
+      executeCommand(cmd.id, ctx)
     }
   }
 
@@ -56,7 +54,7 @@ export const Menu = ({
           if (i.command) {
             cmd = commands.find((c) => c.id === i.command)
             if (!cmd) return null
-            binding = workbench.keybindings.getBinding(cmd.id)
+            binding = keybindings.getBinding(cmd.id)
             title = cmd.title || ''
           }
           if (i.title) {
@@ -67,8 +65,8 @@ export const Menu = ({
           return (
             <li
               key={cmd.id}
-              onClick={() => onclick(i, cmd as Command)}
-              className={isDisabled(workbench, i, cmd, ctx) ? 'disabled' : ''}
+              onClick={onclick(i, cmd as Command)}
+              className={isDisabled(i, cmd, ctx) ? 'disabled' : ''}
               style={{
                 display: 'flex',
               }}
