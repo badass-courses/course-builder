@@ -178,6 +178,10 @@ Then, apply the database schema to that new database with:
 $ pnpm db:push
 ```
 
+### Start the Local Dev Server
+1. `npm build` to build your app
+2. `npm start` to start listening locally on port 3000 (which will be forwarded by ngrok, above).
+
 ### Create an Admin User
 
 1. Visit the `ngrok` URL in your browser
