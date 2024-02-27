@@ -5,11 +5,9 @@ import { getAbility } from '@/lib/ability'
 import { ArticleSchema, getArticle } from '@/lib/articles'
 import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
-import { redis } from '@/server/redis-client'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import slugify from '@sindresorhus/slugify'
-import { Ratelimit } from '@upstash/ratelimit'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
 import { z } from 'zod'
@@ -104,6 +102,11 @@ export const articlesRouter = createTRPCRouter({
           patch: {
             id: input._id,
             set: {
+              ...input,
+              author: input.author?.map((authorId) => ({
+                _key: v4(),
+                _ref: authorId,
+              })),
               'slug.current': `${slugify(input.title)}~${splitSlug[1]}`,
               title: input.title,
             },
@@ -119,6 +122,10 @@ export const articlesRouter = createTRPCRouter({
             id: input._id,
             set: {
               ...input,
+              author: input.author?.map((authorId) => ({
+                _key: v4(),
+                _ref: authorId,
+              })),
               slug: {
                 _type: 'slug',
                 current: input.slug,
@@ -131,6 +138,7 @@ export const articlesRouter = createTRPCRouter({
     ).then((res) => res.results[0].document)
 
     revalidateTag('articles')
+    revalidateTag(input._id)
 
     return getArticle(input._id)
   }),

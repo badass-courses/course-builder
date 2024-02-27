@@ -1,6 +1,8 @@
 import { MdArticle } from 'react-icons/md'
 import { defineField } from 'sanity'
 
+import authorType from './author'
+
 export default {
   name: 'article',
   type: 'document',
@@ -27,6 +29,12 @@ export default {
           { title: 'deleted', value: 'deleted' },
         ],
       },
+    }),
+    defineField({
+      name: 'author',
+      title: 'Author',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: authorType.name }] }],
     }),
     defineField({
       name: 'visibility',

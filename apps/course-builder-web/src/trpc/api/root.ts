@@ -1,5 +1,6 @@
 import { abilityRouter } from '@/trpc/api/routers/ability'
 import { articlesRouter } from '@/trpc/api/routers/articles'
+import { authorsRouter } from '@/trpc/api/routers/authors'
 import { imageResourceRouter } from '@/trpc/api/routers/imageResource'
 import { moduleRouter } from '@/trpc/api/routers/module'
 import { postRouter } from '@/trpc/api/routers/post'
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   articles: articlesRouter,
   writing: writingRouter,
   users: usersRouter,
+  authors: authorsRouter,
 })
 
 // export type definition of API

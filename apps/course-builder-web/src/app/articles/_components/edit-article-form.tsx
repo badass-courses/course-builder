@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, ZapIcon } from 'lucide-react'
+import { ImagePlusIcon, Minus, PlusIcon, ZapIcon } from 'lucide-react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -339,6 +339,8 @@ const MobileEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }
 
 const ArticleMetadataFormFields = ({ form }: { form: UseFormReturn<z.infer<typeof ArticleSchema>> }) => {
   const currentSocialImage = form.watch('socialImage')
+  const { data: authors } = api.authors.getAll.useQuery()
+
   return (
     <>
       <FormField
@@ -360,6 +362,119 @@ const ArticleMetadataFormFields = ({ form }: { form: UseFormReturn<z.infer<typeo
           <FormItem className="px-5">
             <FormLabel>Slug</FormLabel>
             <Input {...field} />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="author"
+        render={({ field }) => (
+          <FormItem className="px-5">
+            <div className="inline-flex w-full items-center justify-between">
+              <FormLabel>Author</FormLabel>
+              {field.value && field.value.length > 0 && (
+                <Button
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                  className="h-5 w-5"
+                  onClick={() => {
+                    form.setValue('author', [...(form.getValues('author') || []), ''])
+                  }}
+                >
+                  <PlusIcon className="w-3" />
+                </Button>
+              )}
+            </div>
+            {field.value && field.value.length > 0 ? (
+              <>
+                {field.value.map((fieldValue, idx) => (
+                  <div className="flex w-full items-center justify-between gap-1">
+                    <Select
+                      key={typeof fieldValue === 'string' ? fieldValue + idx : fieldValue._id + idx}
+                      value={typeof fieldValue === 'string' ? fieldValue : fieldValue._id}
+                      onValueChange={(value) => {
+                        const newAuthors = form.getValues('author')
+                        if (newAuthors) {
+                          newAuthors[idx] = value
+                          return field.onChange(newAuthors)
+                        }
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose author" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {authors?.map((author) => (
+                          <SelectItem value={author._id} key={author._id}>
+                            <div className="flex items-center gap-2">
+                              {author.picture.url && (
+                                <img
+                                  className="rounded-full"
+                                  src={author.picture.url}
+                                  alt={author.name}
+                                  width={28}
+                                  height={28}
+                                />
+                              )}
+                              <span>{author.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                      className="h-5 w-5 flex-shrink-0"
+                      onClick={() => {
+                        const newAuthors = form.getValues('author')
+                        if (newAuthors) {
+                          newAuthors.splice(idx, 1)
+                          return field.onChange(newAuthors)
+                        }
+                      }}
+                    >
+                      <Minus className="w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <Select
+                onValueChange={(value) => {
+                  return field.onChange([value])
+                }}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose author" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="">
+                  {authors?.map((author) => (
+                    <SelectItem value={author._id} key={author._id}>
+                      <div className="flex items-center gap-2">
+                        {author.picture.url && (
+                          <img
+                            className="rounded-full"
+                            src={author.picture.url}
+                            alt={author.name}
+                            width={28}
+                            height={28}
+                          />
+                        )}
+                        <span>{author.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             <FormMessage />
           </FormItem>
         )}

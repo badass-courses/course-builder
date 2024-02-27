@@ -1,6 +1,8 @@
 import { sanityQuery } from '@/server/sanity.server'
 import { z } from 'zod'
 
+import { AuthorSchema } from './authors'
+
 export const ArticleStateSchema = z.union([
   z.literal('draft'),
   z.literal('published'),
@@ -15,6 +17,7 @@ export const ArticleSchema = z.object({
   _type: z.literal('article'),
   _updatedAt: z.string(),
   title: z.string().min(2).max(90),
+  author: z.array(z.string().or(AuthorSchema)).optional().nullable(),
   body: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   slug: z.string(),
@@ -32,6 +35,7 @@ export async function getArticle(slugOrId: string) {
           _type,
           _updatedAt,
           title,
+          'author': author[]->_id,
           description,
           body,
           visibility,

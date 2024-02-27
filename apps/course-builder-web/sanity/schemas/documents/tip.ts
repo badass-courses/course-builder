@@ -1,6 +1,8 @@
 import { MdOutlineLightbulb } from 'react-icons/md'
 import { defineField } from 'sanity'
 
+import authorType from './author'
+
 export default {
   name: 'tip',
   type: 'document',
@@ -25,6 +27,12 @@ export default {
           { title: 'published', value: 'published' },
         ],
       },
+    }),
+    defineField({
+      name: 'author',
+      title: 'Author',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: authorType.name }] }],
     }),
     defineField({
       name: 'visibility',

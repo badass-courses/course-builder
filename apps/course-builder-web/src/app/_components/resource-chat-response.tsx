@@ -3,11 +3,12 @@ import { useRef } from 'react'
 import { useSocket } from '@/hooks/use-socket'
 import { STREAM_COMPLETE } from '@/lib/streaming-chunk-publisher'
 import { api } from '@/trpc/react'
+import { ClipboardCopyIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Gravatar from 'react-gravatar'
 import ReactMarkdown from 'react-markdown'
 
-import { ScrollArea } from '@coursebuilder/ui'
+import { Button, ScrollArea } from '@coursebuilder/ui'
 
 type Message = {
   body: string
@@ -69,20 +70,40 @@ export function ResourceChatResponse({ requestId }: { requestId: string }) {
   })
 
   return (
-    <ScrollArea viewportRef={div} className="h-full w-full scroll-smooth text-sm">
+    <ScrollArea viewportRef={div} className="h-full w-auto scroll-smooth text-sm">
       {messages.length === 0 && session.status === 'authenticated' ? (
-        <div className="prose prose-sm dark:prose-invert p-5">
+        <div className="prose prose-sm dark:prose-invert max-w-none p-5">
           {`Hi ${session.data.user.name?.split(' ')[0]}, I’m your assistant and I’m here to help you get things done
           faster.`}
         </div>
       ) : null}
       {messages.map((message, index) => (
         <div key={index} className="border-b p-5 last-of-type:border-b-0">
-          <MessageHeader userId={message.userId} />
-          <ReactMarkdown className="prose prose-sm dark:prose-invert">{message.body}</ReactMarkdown>
+          <div className="flex items-center justify-between">
+            <MessageHeader userId={message.userId} />
+            <MessageActions message={message} />
+          </div>
+          <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-full">{message.body}</ReactMarkdown>
         </div>
       ))}
     </ScrollArea>
+  )
+}
+
+function MessageActions({ message }: { message: Message }) {
+  return (
+    <div className="flex items-center justify-between pb-1">
+      <Button
+        size="icon"
+        variant="ghost"
+        type="button"
+        onClick={() => {
+          navigator.clipboard.writeText(message.body)
+        }}
+      >
+        <ClipboardCopyIcon className="w-3" />
+      </Button>
+    </div>
   )
 }
 
