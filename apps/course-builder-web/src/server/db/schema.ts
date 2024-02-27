@@ -203,8 +203,8 @@ export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => 
 
 export const contentStates = mysqlTable('contentState', {
   id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
+  slug: varchar('name', { length: 255 }).notNull().unique(),
+  title: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   active: boolean('active').notNull().default(true),
   createdAt: timestamp('createdAt', {
@@ -223,8 +223,8 @@ export const contentStates = mysqlTable('contentState', {
 
 export const contentVisibilities = mysqlTable('contentVisibility', {
   id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
+  slug: varchar('name', { length: 255 }).notNull().unique(),
+  title: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   active: boolean('active').notNull().default(true),
   createdAt: timestamp('createdAt', {
@@ -272,8 +272,8 @@ export const contentContributionRelations = relations(contentContributions, ({ o
 
 export const contributionTypes = mysqlTable('contributionType', {
   id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
+  slug: varchar('name', { length: 255 }).notNull().unique(),
+  title: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   active: boolean('active').notNull().default(true),
   createdAt: timestamp('createdAt', {
@@ -298,7 +298,7 @@ export const contentMetadata = mysqlTable(
   'contentMetadata',
   {
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
-    slug: varchar('slug', { length: 255 }).notNull().unique(),
+    slug: varchar('name', { length: 255 }).notNull().unique(),
     createdById: varchar('createdById', { length: 255 }).notNull(),
     title: varchar('title', { length: 255 }).notNull(),
     stateId: varchar('stateId', { length: 255 }).notNull(),
