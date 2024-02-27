@@ -51,7 +51,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   userPermissions: many(userPermissions),
   contributions: many(contentContributions),
-  createdContent: many(contentMetadata),
+  createdContent: many(contentResource),
 }))
 
 export const permissions = mysqlTable('permission', {
@@ -263,7 +263,7 @@ export const contentContributions = mysqlTable('contentContribution', {
 
 export const contentContributionRelations = relations(contentContributions, ({ one }) => ({
   user: one(users, { fields: [contentContributions.userId], references: [users.id] }),
-  content: one(contentMetadata, { fields: [contentContributions.contentId], references: [contentMetadata.id] }),
+  content: one(contentResource, { fields: [contentContributions.contentId], references: [contentResource.id] }),
   contributionType: one(contributionTypes, {
     fields: [contentContributions.contributionTypeId],
     references: [contributionTypes.id],
@@ -294,8 +294,8 @@ export const contributionTypesRelations = relations(contributionTypes, ({ many }
   contributions: many(contentContributions),
 }))
 
-export const contentMetadata = mysqlTable(
-  'contentMetadata',
+export const contentResource = mysqlTable(
+  'contentResource',
   {
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     slug: varchar('slug', { length: 255 }).notNull().unique(),
@@ -327,11 +327,11 @@ export const contentMetadata = mysqlTable(
   }),
 )
 
-export const contentMetadataRelations = relations(contentMetadata, ({ one, many }) => ({
-  createdBy: one(users, { fields: [contentMetadata.createdById], references: [users.id] }),
-  state: one(contentStates, { fields: [contentMetadata.stateId], references: [contentStates.id] }),
+export const contentResourceRelations = relations(contentResource, ({ one, many }) => ({
+  createdBy: one(users, { fields: [contentResource.createdById], references: [users.id] }),
+  state: one(contentStates, { fields: [contentResource.stateId], references: [contentStates.id] }),
   visibility: one(contentVisibilities, {
-    fields: [contentMetadata.visibilityId],
+    fields: [contentResource.visibilityId],
     references: [contentVisibilities.id],
   }),
   contributions: many(contentContributions),
