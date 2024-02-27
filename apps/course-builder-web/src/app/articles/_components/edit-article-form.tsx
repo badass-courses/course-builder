@@ -390,9 +390,11 @@ const ArticleMetadataFormFields = ({ form }: { form: UseFormReturn<z.infer<typeo
             {field.value && field.value.length > 0 ? (
               <>
                 {field.value.map((fieldValue, idx) => (
-                  <div className="flex w-full items-center justify-between gap-1">
+                  <div
+                    className="flex w-full items-center justify-between gap-1"
+                    key={typeof fieldValue === 'string' ? fieldValue + idx : fieldValue._id + idx}
+                  >
                     <Select
-                      key={typeof fieldValue === 'string' ? fieldValue + idx : fieldValue._id + idx}
                       value={typeof fieldValue === 'string' ? fieldValue : fieldValue._id}
                       onValueChange={(value) => {
                         const newAuthors = form.getValues('author')
