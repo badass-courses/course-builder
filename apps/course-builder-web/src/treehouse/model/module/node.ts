@@ -37,7 +37,9 @@ export class Node implements INode {
 
   get raw(): RawNode {
     const raw = this._bus.nodes[this.id]
-    if (!raw) throw `use of non-existent node ${this.id}`
+    if (!raw) {
+      throw new Error(`Node ${this.id} not found 🤔`)
+    }
     return raw
   }
 
@@ -308,7 +310,7 @@ export class Node implements INode {
   }
 
   getAttr(name: string): string {
-    return this.raw.Attrs[name] || ''
+    return this.raw?.Attrs[name] || ''
   }
 
   setAttr(name: string, value: string) {

@@ -5,7 +5,7 @@
  *
  * @module
  */
-import { Node } from './mod'
+import { type Node } from './mod'
 
 // triggered on parent set or import (if has parent), or addcomponent
 export interface AttachListener {

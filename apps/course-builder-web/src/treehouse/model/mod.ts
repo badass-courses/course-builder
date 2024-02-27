@@ -64,7 +64,7 @@ export interface Node {
   getAttr(name: string): string
   setAttr(name: string, value: string): void
 
-  find(path: string): Node | null
+  find(path?: string): Node | null
   walk(fn: WalkFunc, opts?: WalkOptions): boolean
   destroy(): void
   duplicate(): Node

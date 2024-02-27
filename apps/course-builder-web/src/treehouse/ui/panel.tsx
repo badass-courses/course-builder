@@ -14,17 +14,19 @@ interface PanelProps {
 }
 
 export const Panel: React.FC<PanelProps> = ({ path }) => {
-  const { executeCommand, context, panels, open, showMenu } = useTreehouseStore(
+  const { executeCommand, open, showMenu } = useTreehouseStore(
     useShallow((s) => {
       return {
         executeCommand: s.executeCommand,
-        context: s.context,
-        panels: s.panels,
         open: s.open,
         showMenu: s.showMenu,
       }
     }),
   )
+
+  const panels = useTreehouseStore((state) => state.panels)
+  const context = useTreehouseStore((state) => state.context)
+
   const node = path.node
 
   const close = useCallback(() => {
@@ -57,6 +59,7 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
   }, [])
 
   let viewClass = ''
+
   if (node.getAttr('view')) {
     viewClass = `${node.getAttr('view')}-panel`
   }

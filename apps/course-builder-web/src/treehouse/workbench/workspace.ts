@@ -115,6 +115,7 @@ export const createWorkspaceSlice: StateCreator<Workbench & Workspace, [], [], W
         }
       }
     }
+
     if (doc.lastopen) {
       set({ lastOpenedID: doc.lastopen })
     }

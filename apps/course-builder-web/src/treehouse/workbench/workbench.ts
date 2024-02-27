@@ -54,13 +54,17 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
 
   initializeWorkbench: async (backend: Backend) => {
     console.log('Initializing workbench with backend', backend)
-    const { openNewPanel, initializeWorkspace, load, rawNodes, observe, save, lastOpenedID, find, mainNode } = get()
+    const { openNewPanel, initializeWorkspace, load, observe, save, find, mainNode } = get()
     await initializeWorkspace(backend.files)
+
     await load()
 
-    rawNodes().forEach((n) => backend.index.index(n))
+    const rawNodes = get().rawNodes()
+
+    rawNodes.forEach((n) => backend.index.index(n))
     observe((n) => {
       save()
+      console.log('observed', n.id, n.raw)
       if (n.isDestroyed) {
         backend.index.remove(n.id)
       } else {
@@ -70,6 +74,8 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     })
 
     set({ backend })
+
+    const lastOpenedID = get().lastOpenedID
 
     if (lastOpenedID) {
       openNewPanel(find(lastOpenedID) || mainNode())
@@ -129,28 +135,30 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     open(todayNode())
   },
   open: async (n: Node) => {
-    const { context, panels, expanded, lastOpenedID, save } = get()
+    const { panels, expanded, save } = get()
     // TODO: not sure this is still necessary
     if (!expanded[n.id]) {
-      expanded[n.id] = {}
+      set({ expanded: { ...expanded, [n.id]: {} } })
     }
 
     set({ lastOpenedID: n.id })
     await save()
     const p = new Path(n)
-    set({ panels: [p, ...panels], context: { node: n, path: p } })
+    console.log('opening panel', { panel: p })
+    set({ panels: [...panels, p], context: { node: n, path: p } })
   },
   openNewPanel: async (n: Node) => {
-    const { context, panels, expanded, save } = get()
+    const { panels, expanded, save } = get()
     // TODO: not sure this is still necessary
     if (!expanded[n.id]) {
-      expanded[n.id] = {}
+      set({ expanded: { ...expanded, [n.id]: {} } })
     }
 
     set({ lastOpenedID: n.id })
     await save()
     const p = new Path(n)
-    set({ panels: [p, ...panels], context: { node: n, path: p } })
+    console.log('opening new panel', { panel: p })
+    set({ panels: [...panels, p], context: { node: n, path: p } })
   },
   closePanel: (panel: Path) => {
     const { panels } = get()
@@ -163,8 +171,7 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     if (input) {
       input.blur()
     }
-    context.node = null
-    context.path = null
+    set({ context: { node: null, path: null } })
   },
   focus: (path: Path, pos: number = 0) => {
     const { context, getInput } = get()
@@ -173,7 +180,7 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     console.log('focusing', { path, input, pos, context })
 
     if (input) {
-      context.path = path
+      set({ context: { ...context, path } })
       input.focus()
       if (pos !== undefined) {
         input.setSelectionRange(pos, pos)

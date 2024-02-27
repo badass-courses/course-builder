@@ -1,10 +1,9 @@
 'use client'
 
-import { SyntheticEvent, useState } from 'react'
+import { useState } from 'react'
 import { useTreehouseStore } from '@/treehouse/mod'
 import { Node } from '@/treehouse/model/mod'
 import { Panel as PanelComponent } from '@/treehouse/ui/panel'
-import { Workbench } from '@/treehouse/workbench/workbench'
 
 export const TreehouseApp = () => {
   const [open, setOpen] = useState(true)
@@ -14,11 +13,20 @@ export const TreehouseApp = () => {
   const Menu = useTreehouseStore((state) => state.menu)
   const closeMenu = useTreehouseStore((state) => state.closeMenu)
 
+  console.log('TreehouseApp', { panels })
+
   return (
     <main className="treehouse workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>
-      <div className="sidebar flex flex-col" style={{ width: open ? '256px' : '52px' }}>
+      <div className="sidebar mt-5 flex flex-col" style={{ width: open ? '256px' : '52px' }}>
         <div className="sidebar-main grow">
-          {open && bus?.root().children.map((node) => <NavNode key={node.id} node={node} expanded={true} level={0} />)}
+          {open &&
+            bus?.root().children.map((node) => {
+              return (
+                <>
+                  <NavNode key={node.id} node={node} expanded={true} level={0} />
+                </>
+              )
+            })}
         </div>
         <div className="sidebar-bottom">
           <svg
@@ -39,12 +47,15 @@ export const TreehouseApp = () => {
           </svg>
         </div>
       </div>
-      <div className="main flex grow flex-col">
-        ...
-        {/* Main content including topbar, panels, mobile-nav */}
-        {panels.map((path) => (
-          <PanelComponent key={path.hash} path={path} />
-        ))}
+      <div className="main mt-10 flex grow flex-col">
+        <div className="panels relative flex grow flex-row overflow-hidden">
+          {/* Main content including topbar, panels, mobile-nav */}
+          {panels.map((path) => (
+            <div key={path.id}>
+              <PanelComponent path={path} />
+            </div>
+          ))}
+        </div>
       </div>
       {Menu && (
         <dialog
@@ -69,32 +80,63 @@ export const TreehouseApp = () => {
   )
 }
 
-const NavNode = ({ node, expanded: propExpanded, level }: { node: Node; expanded: boolean; level: number }) => {
-  const [expanded, setExpanded] = useState(propExpanded)
+const NavNode = ({ node, expanded: initialExpanded, level }: { node: Node; expanded: boolean; level: number }) => {
+  const [expanded, setExpanded] = useState(initialExpanded)
   const expandable = node.childCount > 0 && level < 3
+  const { open } = useTreehouseStore((state) => ({ open: state.open }))
 
-  const toggleExpansion = (e: React.SyntheticEvent<HTMLDivElement>) => {
+  const toggle = (e: React.MouseEvent) => {
+    if (!expandable) return
+    setExpanded(!expanded)
     e.stopPropagation()
-    if (expandable) {
-      setExpanded(!expanded)
-    }
   }
 
-  const openNode = (e: React.SyntheticEvent<HTMLDivElement>) => {
-    // Logic to handle node opening
+  const openNode = (e: React.MouseEvent) => {
+    const mobileNav = document.querySelector('.mobile-nav') as HTMLElement
+    if (mobileNav?.offsetHeight) {
+      ;(document.querySelector('.sidebar') as HTMLElement).style.display = 'none'
+    }
+    open(node)
   }
 
   return (
     <div>
-      <div className="sidebar-item flex" onClick={expandable ? toggleExpansion : openNode}>
-        {/* Node label and optional expand/collapse icon */}
+      <div className="sidebar-item flex">
+        <svg
+          onClick={toggle}
+          className="feather feather-chevron-right shrink-0"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {expandable &&
+            (expanded ? <polyline points="6 9 12 15 18 9"></polyline> : <polyline points="9 18 15 12 9 6"></polyline>)}
+        </svg>
+        <div
+          className="sidebar-item-label grow"
+          onClick={openNode}
+          style={{
+            cursor: 'pointer',
+            maxWidth: '100%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {node.name}
+        </div>
       </div>
       {expanded && (
         <div className="sidebar-item-nested">
           {node.children
-            .filter((n: Node) => n.name !== '')
-            .map((n) => (
-              <NavNode key={n.id} node={n} level={level + 1} expanded={true} />
+            .filter((n) => n.name !== '')
+            .map((n, index) => (
+              <NavNode key={index} node={n} level={level + 1} expanded={false} />
             ))}
         </div>
       )}

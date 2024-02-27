@@ -568,6 +568,7 @@ export async function setup(document: Document, backend: Backend) {
       if (ctx.node.id.startsWith('@')) return
       if (ctx.path.previous && objectManaged(ctx.path.previous)) return // should probably provide feedback or disable delete
       const above = treehouseStore.findAbove(ctx.path)
+
       ctx.node.destroy()
       if (above) {
         let pos = 0
@@ -675,13 +676,7 @@ export async function setup(document: Document, backend: Backend) {
     title: 'Open',
     action: (ctx: Context) => {
       if (!ctx.node || !ctx.path) return
-      const { panels, context } = useTreehouseStore.getState()
-      treehouseStore.save()
-      useTreehouseStore.setState({
-        context: { ...context, path: ctx.path.append(ctx.node) },
-        panels: [ctx.path.append(ctx.node), ...panels],
-        lastOpenedID: ctx.node.id,
-      })
+      treehouseStore.open(ctx.node)
     },
   })
   treehouseStore.commands.registerCommand({
