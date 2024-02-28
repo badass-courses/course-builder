@@ -304,8 +304,8 @@ export const contentResource = mysqlTable(
     stateId: varchar('stateId', { length: 255 }).notNull(),
     visibilityId: varchar('visibilityId', { length: 255 }).notNull(),
     body: text('body'),
-    resources: json('resources'),
-    metadata: json('metadata'),
+    resources: json('resources').default([]),
+    metadata: json('metadata').default({}),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
