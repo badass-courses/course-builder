@@ -305,6 +305,7 @@ export const contentResource = mysqlTable(
     visibilityId: varchar('visibilityId', { length: 255 }).notNull(),
     body: text('body'),
     resources: json('resources'),
+    metadata: json('metadata'),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
