@@ -243,8 +243,8 @@ export const migrationFromSanity = inngest.createFunction(
             updatedAt: z.date(),
             resources: z.array(z.object({ _type: z.string(), _ref: z.string() })).default([]),
             metadata: z
-              .object({ state: z.string(), visibility: z.string(), summary: z.string().nullable() })
-              .default({ state: 'draft', visibility: 'unlisted', summary: '' }),
+              .object({ state: z.string(), visibility: z.string(), summary: z.string().optional().nullable() })
+              .default({ state: 'draft', visibility: 'unlisted', summary: null }),
           })
 
           const migratedResource = MigratedTipResourceSchema.parse({
