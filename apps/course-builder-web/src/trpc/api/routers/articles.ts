@@ -14,11 +14,8 @@ import slugify from '@sindresorhus/slugify'
 import { Ratelimit } from '@upstash/ratelimit'
 import { eq } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
-import { mockSession } from 'next-auth/client/__tests__/helpers/mocks'
 import { v4 } from 'uuid'
 import { z } from 'zod'
-
-import user = mockSession.user
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
