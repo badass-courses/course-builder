@@ -63,7 +63,7 @@ export const migrationFromSanity = inngest.createFunction(
       })
 
       if (canMigrateArticleResource && migrationResourceOwner) {
-        await step.run('insert article resources into the database', async () => {
+        step.run('insert article resources into the database', async () => {
           const MigratedArticleResourceSchema = z.object({
             createdById: z.string(),
             title: z.string(),
@@ -122,7 +122,7 @@ export const migrationFromSanity = inngest.createFunction(
       })
 
       if (canMigrateVideoResource && migrationResourceOwner) {
-        await step.run('insert video resources into the database', async () => {
+        step.run('insert video resources into the database', async () => {
           const MigratedVideoResourceSchema = z.object({
             createdById: z.string(),
             title: z.string(),
@@ -149,17 +149,49 @@ export const migrationFromSanity = inngest.createFunction(
             slug: slugify(sanityVideoResource.title || `untitled-video-${nanoid()}`),
             body: null,
             id: sanityVideoResource._id,
+            resources: [
+              ...(sanityVideoResource.transcript
+                ? [
+                    {
+                      _type: `transcript`,
+                      _key: `transcript-${nanoid()}`,
+                      text: sanityVideoResource.transcript,
+                    },
+                  ]
+                : []),
+              ...(sanityVideoResource.srt
+                ? [
+                    {
+                      _type: `srt`,
+                      _key: `srt-${nanoid()}`,
+                      text: sanityVideoResource.srt,
+                    },
+                  ]
+                : []),
+              ...(sanityVideoResource.wordLevelSrt
+                ? [
+                    {
+                      _type: `wordLevelSrt`,
+                      _key: `wordLevelSrt-${nanoid()}`,
+                      text: sanityVideoResource.wordLevelSrt,
+                    },
+                  ]
+                : []),
+              ...(sanityVideoResource.transcriptWithScreenshots
+                ? [
+                    {
+                      _type: `transcriptWithScreenshots`,
+                      _key: `transcriptWithScreenshots-${nanoid()}`,
+                      text: sanityVideoResource.transcriptWithScreenshots,
+                    },
+                  ]
+                : []),
+            ],
             metadata: {
               state: sanityVideoResource.state,
               muxPlaybackId: sanityVideoResource.muxPlaybackId,
               muxAssetId: sanityVideoResource.muxAssetId,
               ...(sanityVideoResource.duration ? { duration: sanityVideoResource.duration } : null),
-              ...(sanityVideoResource.transcript ? { transcript: sanityVideoResource.transcript } : null),
-              ...(sanityVideoResource.transcriptWithScreenshots
-                ? { transcriptWithScreenshots: sanityVideoResource.transcriptWithScreenshots }
-                : null),
-              ...(sanityVideoResource.srt ? { srt: sanityVideoResource.srt } : null),
-              ...(sanityVideoResource.wordLevelSrt ? { wordLevelSrt: sanityVideoResource.wordLevelSrt } : null),
             },
           })
 
@@ -200,7 +232,7 @@ export const migrationFromSanity = inngest.createFunction(
         return !existingResource
       })
       if (canMigrateTip && migrationResourceOwner) {
-        await step.run('insert tip resource into the database', async () => {
+        step.run('insert tip resource into the database', async () => {
           const MigratedTipResourceSchema = z.object({
             createdById: z.string(),
             title: z.string(),
@@ -209,7 +241,7 @@ export const migrationFromSanity = inngest.createFunction(
             body: z.string().nullable(),
             id: z.string(),
             updatedAt: z.date(),
-            resources: z.array(z.object({ type: z.string(), _ref: z.string() })).default([]),
+            resources: z.array(z.object({ _type: z.string(), _ref: z.string() })).default([]),
             metadata: z
               .object({ state: z.string(), visibility: z.string(), summary: z.string().nullable() })
               .default({ state: 'draft', visibility: 'unlisted', summary: '' }),
@@ -225,8 +257,9 @@ export const migrationFromSanity = inngest.createFunction(
             updatedAt: new Date(sanityTip._updatedAt),
             resources: [
               {
-                type: `_ref`,
+                _type: `reference`,
                 _ref: sanityTip.videoResourceId,
+                _key: `videoResource-${nanoid()}`,
               },
             ],
             metadata: {

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { type Metadata } from 'next'
 import { Landing } from '@/app/_components/landing'
-import { fetchContentResourcesWithTypeAndUserContributions } from '@/lib/contentResources'
 
 export const metadata: Metadata = {
   title: 'Course Builder',
@@ -10,9 +9,6 @@ export const metadata: Metadata = {
 }
 
 export default async function PlaygroundPage() {
-  const resources = await fetchContentResourcesWithTypeAndUserContributions('article')
-
-  console.log(JSON.stringify(resources, null, 2))
   return (
     <main>
       <article className="prose sm:prose-lg dark:prose-invert mx-auto w-full max-w-2xl px-5 py-8 sm:py-16">
