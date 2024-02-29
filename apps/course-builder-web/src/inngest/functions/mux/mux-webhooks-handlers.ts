@@ -2,8 +2,11 @@ import { revalidateTag } from 'next/cache'
 import { env } from '@/env.mjs'
 import { MUX_WEBHOOK_EVENT } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
-import { VideoResourceSchema } from '@/lib/video-resource'
+import { convertToMigratedResource, getVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
+import { eq } from 'drizzle-orm'
 
 export const muxVideoAssetCreated = inngest.createFunction(
   { id: `mux-video-asset-created`, name: 'Mux Video Asset Created' },
@@ -59,6 +62,31 @@ export const muxVideoAssetError = inngest.createFunction(
         ])
       })
       revalidateTag(videoResource._id)
+
+      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
+        return getVideoResource(videoResource._id)
+      })
+
+      if (updatedVideoResource) {
+        await step.run('update the video resource in the database', async () => {
+          const resourceToUpdate = await db.query.contentResource.findFirst({
+            where: eq(contentResource.id, updatedVideoResource._id),
+          })
+
+          if (!resourceToUpdate) {
+            return
+          }
+          const migratedResource = convertToMigratedResource({
+            videoResource: updatedVideoResource,
+            ownerUserId: resourceToUpdate.createdById,
+          })
+
+          return db
+            .update(contentResource)
+            .set(migratedResource)
+            .where(eq(contentResource.id, updatedVideoResource._id))
+        })
+      }
     }
 
     await step.run('announce asset errored', async () => {
@@ -109,6 +137,30 @@ export const muxVideoAssetReady = inngest.createFunction(
         ])
       })
       revalidateTag(videoResource._id)
+      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
+        return getVideoResource(videoResource._id)
+      })
+
+      if (updatedVideoResource) {
+        await step.run('update the video resource in the database', async () => {
+          const resourceToUpdate = await db.query.contentResource.findFirst({
+            where: eq(contentResource.id, updatedVideoResource._id),
+          })
+
+          if (!resourceToUpdate) {
+            return
+          }
+          const migratedResource = convertToMigratedResource({
+            videoResource: updatedVideoResource,
+            ownerUserId: resourceToUpdate.createdById,
+          })
+
+          return db
+            .update(contentResource)
+            .set(migratedResource)
+            .where(eq(contentResource.id, updatedVideoResource._id))
+        })
+      }
     }
 
     await step.run('announce asset ready', async () => {

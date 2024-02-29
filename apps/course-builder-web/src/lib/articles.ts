@@ -25,6 +25,47 @@ export const ArticleSchema = z.object({
 
 export type Article = z.infer<typeof ArticleSchema>
 
+export const MigratedArticleResourceSchema = z.object({
+  createdById: z.string(),
+  title: z.string(),
+  type: z.string(),
+  slug: z.string(),
+  body: z.string().nullable(),
+  id: z.string(),
+  metadata: z
+    .object({
+      state: z.string(),
+      visibility: z.string(),
+      description: z.string().optional().nullable(),
+      socialImage: z.object({ type: z.string(), url: z.string() }).optional().nullable(),
+    })
+    .default({ state: 'draft', visibility: 'unlisted', description: null, socialImage: null }),
+})
+
+export function convertToMigratedArticleResource({ article, ownerUserId }: { article: Article; ownerUserId: string }) {
+  return MigratedArticleResourceSchema.parse({
+    createdById: ownerUserId,
+    title: article.title,
+    type: 'article',
+    slug: article.slug,
+    body: article.body,
+    id: article._id,
+    metadata: {
+      state: article.state,
+      visibility: article.visibility,
+      ...(article.description ? { description: article.description } : null),
+      ...(article.socialImage
+        ? {
+            socialImage: {
+              type: 'imageUrl',
+              url: article.socialImage,
+            },
+          }
+        : null),
+    },
+  })
+}
+
 export async function getArticle(slugOrId: string) {
   const article = await sanityQuery<Article | null>(
     `*[_type == "article" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{

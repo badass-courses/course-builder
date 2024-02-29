@@ -4,9 +4,10 @@ import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
 import { createMuxAsset } from '@/lib/get-mux-options'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
-import { toChicagoTitleCase } from '@/utils/chicagor-title'
-import { v4 } from 'uuid'
+import { convertToMigratedResource, getVideoResource } from '@/lib/video-resource'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
+import { sanityMutation } from '@/server/sanity.server'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -20,6 +21,10 @@ export const videoUploaded = inngest.createFunction(
   },
   { event: VIDEO_UPLOADED_EVENT },
   async ({ event, step }) => {
+    if (!event.user.id) {
+      throw new Error('No user id for video uploaded event')
+    }
+
     const muxAsset = await step.run('create the mux asset', async () => {
       return createMuxAsset({
         url: event.data.originalMediaUrl,
@@ -44,71 +49,88 @@ export const videoUploaded = inngest.createFunction(
         },
       ])
 
-      return await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.fileName}"][0]`)
+      return await getVideoResource(event.data.fileName)
     })
 
-    if (event.data.moduleSlug) {
-      const newLesson = await step.run('create lesson module for video resource', async () => {
-        const lessonId = v4()
-        const titleToUse = event.data.title || event.data.fileName
-        return await sanityMutation(
-          [
-            {
-              create: {
-                _id: `lesson-${lessonId}`,
-                _type: 'module',
-                title: toChicagoTitleCase(titleToUse.replace(/-/g, ' ').replace(/\.mp4/g, '')),
-                state: 'draft',
-                moduleType: 'lesson',
-                slug: {
-                  _type: 'slug',
-                  current: `lesson-${lessonId}`,
-                },
-
-                resources: [
-                  {
-                    _type: 'reference' as const,
-                    _key: v4(),
-                    _ref: videoResource._id,
-                  },
-                ],
-              },
-            },
-          ],
-          { returnDocuments: true },
-        ).then((res) => res.results[0].document)
-      })
-
-      const parentModule = await step.run('get module', async () => {
-        return await sanityQuery(`*[_type == "module" && slug.current == "${event.data.moduleSlug}"][0]{_id}`)
-      })
-
-      if (parentModule) {
-        await step.run('add lesson to module', async () => {
-          return await sanityMutation(
-            [
-              {
-                patch: {
-                  id: parentModule._id,
-                  setIfMissing: { resources: [] },
-                  insert: {
-                    before: 'resources[-1]',
-                    items: [
-                      {
-                        _type: 'reference' as const,
-                        _key: v4(),
-                        _ref: newLesson._id,
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-            { returnDocuments: true },
-          )
-        })
-      }
+    if (!videoResource) {
+      throw new Error('Failed to create video resource')
     }
+
+    await step.run('save video resource to database', async () => {
+      const migratedResource = convertToMigratedResource({
+        videoResource: videoResource,
+        ownerUserId: event.user.id,
+      })
+
+      await db.insert(contentResource).values(migratedResource)
+      return db.query.contentResource.findFirst({
+        where: (cr, { eq }) => eq(cr.id, migratedResource.id),
+      })
+    })
+
+    // TODO: This is a future feature for modules
+    // if (event.data.moduleSlug) {
+    //   const newLesson = await step.run('create lesson module for video resource', async () => {
+    //     const lessonId = v4()
+    //     const titleToUse = event.data.title || event.data.fileName
+    //     return await sanityMutation(
+    //       [
+    //         {
+    //           create: {
+    //             _id: `lesson-${lessonId}`,
+    //             _type: 'module',
+    //             title: toChicagoTitleCase(titleToUse.replace(/-/g, ' ').replace(/\.mp4/g, '')),
+    //             state: 'draft',
+    //             moduleType: 'lesson',
+    //             slug: {
+    //               _type: 'slug',
+    //               current: `lesson-${lessonId}`,
+    //             },
+    //
+    //             resources: [
+    //               {
+    //                 _type: 'reference' as const,
+    //                 _key: v4(),
+    //                 _ref: videoResource._id,
+    //               },
+    //             ],
+    //           },
+    //         },
+    //       ],
+    //       { returnDocuments: true },
+    //     ).then((res) => res.results[0].document)
+    //   })
+    //
+    //   const parentModule = await step.run('get module', async () => {
+    //     return await sanityQuery(`*[_type == "module" && slug.current == "${event.data.moduleSlug}"][0]{_id}`)
+    //   })
+    //
+    //   if (parentModule) {
+    //     await step.run('add lesson to module', async () => {
+    //       return await sanityMutation(
+    //         [
+    //           {
+    //             patch: {
+    //               id: parentModule._id,
+    //               setIfMissing: { resources: [] },
+    //               insert: {
+    //                 before: 'resources[-1]',
+    //                 items: [
+    //                   {
+    //                     _type: 'reference' as const,
+    //                     _key: v4(),
+    //                     _ref: newLesson._id,
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //         ],
+    //         { returnDocuments: true },
+    //       )
+    //     })
+    //   }
+    // }
 
     await step.run('announce video resource created', async () => {
       await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResource._id}`, {

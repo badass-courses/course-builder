@@ -2,12 +2,15 @@ import { revalidateTag } from 'next/cache'
 import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { getTip } from '@/lib/tips'
+import { convertToMigratedTipResource, getTip } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import { toChicagoTitleCase } from '@/utils/chicagor-title'
 import slugify from '@sindresorhus/slugify'
+import { eq } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
 import { z } from 'zod'
@@ -62,7 +65,9 @@ export const tipsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const session = await getServerAuthSession()
       const ability = getAbility({ user: session?.user })
-      if (!ability.can('create', 'Content')) {
+      const user = session?.user
+
+      if (!user || !ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
@@ -73,7 +78,7 @@ export const tipsRouter = createTRPCRouter({
           createOrReplace: {
             _id: newTipId,
             _type: 'tip',
-            title: toChicagoTitleCase(input.title),
+            title: input.title,
             state: 'draft',
             visibility: 'unlisted',
             slug: {
@@ -90,10 +95,15 @@ export const tipsRouter = createTRPCRouter({
         },
       ])
 
-      revalidateTag('tips')
-      revalidateTag(newTipId)
+      const tip = await getTip(newTipId)
 
-      return getTip(newTipId)
+      if (tip) {
+        db.insert(contentResource).values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
+      }
+
+      revalidateTag('tips')
+
+      return tip
     }),
   update: protectedProcedure
     .input(
@@ -105,8 +115,9 @@ export const tipsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const session = await getServerAuthSession()
-      const ability = getAbility({ user: session?.user })
-      if (!ability.can('update', 'Content')) {
+      const user = session?.user
+      const ability = getAbility({ user })
+      if (!user || !ability.can('update', 'Content')) {
         throw new Error('Unauthorized')
       }
 
@@ -123,7 +134,7 @@ export const tipsRouter = createTRPCRouter({
               id: input.tipId,
               set: {
                 'slug.current': `${slugify(input.title)}~${nanoid()}`,
-                title: toChicagoTitleCase(input.title),
+                title: input.title,
               },
             },
           },
@@ -147,6 +158,14 @@ export const tipsRouter = createTRPCRouter({
       revalidateTag('tips')
       revalidateTag(input.tipId)
 
-      return await getTip(input.tipId)
+      const updatedTip = await getTip(input.tipId)
+
+      if (updatedTip) {
+        db.update(contentResource)
+          .set(convertToMigratedTipResource({ tip: updatedTip, ownerUserId: user.id }))
+          .where(eq(contentResource.id, updatedTip._id))
+      }
+
+      return updatedTip
     }),
 })

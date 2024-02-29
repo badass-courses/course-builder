@@ -2,17 +2,23 @@ import { revalidateTag } from 'next/cache'
 import { ARTICLE_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { ArticleSchema, getArticle } from '@/lib/articles'
+import { ArticleSchema, convertToMigratedArticleResource, getArticle } from '@/lib/articles'
 import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
 import { redis } from '@/server/redis-client'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import slugify from '@sindresorhus/slugify'
 import { Ratelimit } from '@upstash/ratelimit'
+import { eq } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
+import { mockSession } from 'next-auth/client/__tests__/helpers/mocks'
 import { v4 } from 'uuid'
 import { z } from 'zod'
+
+import user = mockSession.user
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
@@ -64,8 +70,9 @@ export const articlesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const session = await getServerAuthSession()
-      const ability = getAbility({ user: session?.user })
-      if (!ability.can('create', 'Content')) {
+      const user = session?.user
+      const ability = getAbility({ user })
+      if (!user || !ability.can('create', 'Content')) {
         throw new Error('Unauthorized')
       }
 
@@ -86,12 +93,21 @@ export const articlesRouter = createTRPCRouter({
         },
       ])
 
-      return getArticle(newArticleId)
+      const article = await getArticle(newArticleId)
+
+      if (article && session?.user) {
+        db.insert(contentResource).values(convertToMigratedArticleResource({ article, ownerUserId: session.user.id }))
+      }
+
+      revalidateTag('articles')
+
+      return article
     }),
   update: protectedProcedure.input(ArticleSchema).mutation(async ({ ctx, input }) => {
     const session = await getServerAuthSession()
-    const ability = getAbility({ user: session?.user })
-    if (!ability.can('update', 'Content')) {
+    const user = session?.user
+    const ability = getAbility({ user })
+    if (!user || !ability.can('update', 'Content')) {
       throw new Error('Unauthorized')
     }
 
@@ -132,6 +148,14 @@ export const articlesRouter = createTRPCRouter({
 
     revalidateTag('articles')
 
-    return getArticle(input._id)
+    const updatedArticle = await getArticle(input._id)
+
+    if (updatedArticle) {
+      db.update(contentResource)
+        .set(convertToMigratedArticleResource({ article: updatedArticle, ownerUserId: user.id }))
+        .where(eq(contentResource.id, updatedArticle._id))
+    }
+
+    return updatedArticle
   }),
 })

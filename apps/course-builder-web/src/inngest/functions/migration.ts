@@ -1,16 +1,15 @@
 import { inngest } from '@/inngest/inngest.server'
-import { Article } from '@/lib/articles'
-import { Tip } from '@/lib/tips'
-import { VideoResource } from '@/lib/video-resource'
+import { Article, convertToMigratedArticleResource } from '@/lib/articles'
+import { convertToMigratedTipResource, MigratedTipResourceSchema, Tip } from '@/lib/tips'
+import { convertToMigratedResource, MigratedVideoResourceSchema, VideoResource } from '@/lib/video-resource'
 import { db } from '@/server/db'
 import { contentResource, users } from '@/server/db/schema'
 import { sanityQuery } from '@/server/sanity.server'
+import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { eq, or } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 import { z } from 'zod'
-
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 async function fetchContentResource(slugOrId: string) {
   const results = await db
@@ -64,43 +63,9 @@ export const migrationFromSanity = inngest.createFunction(
 
       if (canMigrateArticleResource && migrationResourceOwner) {
         step.run('insert article resources into the database', async () => {
-          const MigratedArticleResourceSchema = z.object({
-            createdById: z.string(),
-            title: z.string(),
-            type: z.string(),
-            slug: z.string(),
-            body: z.string().nullable(),
-            id: z.string(),
-            metadata: z
-              .object({
-                state: z.string(),
-                visibility: z.string(),
-                description: z.string().optional().nullable(),
-                socialImage: z.object({ type: z.string(), url: z.string() }).optional().nullable(),
-              })
-              .default({ state: 'draft', visibility: 'unlisted', description: null, socialImage: null }),
-          })
-
-          const migratedResource = MigratedArticleResourceSchema.parse({
-            createdById: migrationResourceOwner.id,
-            title: sanityArticleResource.title || 'Untitled Article',
-            type: 'article',
-            slug: sanityArticleResource.slug,
-            body: sanityArticleResource.body,
-            id: sanityArticleResource._id,
-            metadata: {
-              state: sanityArticleResource.state,
-              visibility: sanityArticleResource.visibility,
-              ...(sanityArticleResource.description ? { description: sanityArticleResource.description } : null),
-              ...(sanityArticleResource.socialImage
-                ? {
-                    socialImage: {
-                      type: 'imageUrl',
-                      url: sanityArticleResource.socialImage,
-                    },
-                  }
-                : null),
-            },
+          const migratedResource = convertToMigratedArticleResource({
+            article: sanityArticleResource,
+            ownerUserId: migrationResourceOwner.id,
           })
 
           console.log('migrating article', sanityArticleResource._id)
@@ -123,76 +88,9 @@ export const migrationFromSanity = inngest.createFunction(
 
       if (canMigrateVideoResource && migrationResourceOwner) {
         step.run('insert video resources into the database', async () => {
-          const MigratedVideoResourceSchema = z.object({
-            createdById: z.string(),
-            title: z.string(),
-            type: z.string(),
-            slug: z.string(),
-            body: z.string().nullable(),
-            id: z.string(),
-            metadata: z.object({
-              state: z.string(),
-              muxPlaybackId: z.string(),
-              muxAssetId: z.string(),
-              duration: z.number().optional(),
-              transcript: z.string().optional().nullable(),
-              transcriptWithScreenshots: z.string().optional().nullable(),
-              srt: z.string().optional().nullable(),
-              wordLevelSrt: z.string().optional().nullable(),
-            }),
-          })
-
-          const migratedResource = MigratedVideoResourceSchema.parse({
-            createdById: migrationResourceOwner.id,
-            title: sanityVideoResource.title || 'Untitled Video',
-            type: 'videoResource',
-            slug: slugify(sanityVideoResource.title || `untitled-video-${nanoid()}`),
-            body: null,
-            id: sanityVideoResource._id,
-            resources: [
-              ...(sanityVideoResource.transcript
-                ? [
-                    {
-                      _type: `transcript`,
-                      _key: `transcript-${nanoid()}`,
-                      text: sanityVideoResource.transcript,
-                    },
-                  ]
-                : []),
-              ...(sanityVideoResource.srt
-                ? [
-                    {
-                      _type: `srt`,
-                      _key: `srt-${nanoid()}`,
-                      text: sanityVideoResource.srt,
-                    },
-                  ]
-                : []),
-              ...(sanityVideoResource.wordLevelSrt
-                ? [
-                    {
-                      _type: `wordLevelSrt`,
-                      _key: `wordLevelSrt-${nanoid()}`,
-                      text: sanityVideoResource.wordLevelSrt,
-                    },
-                  ]
-                : []),
-              ...(sanityVideoResource.transcriptWithScreenshots
-                ? [
-                    {
-                      _type: `transcriptWithScreenshots`,
-                      _key: `transcriptWithScreenshots-${nanoid()}`,
-                      text: sanityVideoResource.transcriptWithScreenshots,
-                    },
-                  ]
-                : []),
-            ],
-            metadata: {
-              state: sanityVideoResource.state,
-              muxPlaybackId: sanityVideoResource.muxPlaybackId,
-              muxAssetId: sanityVideoResource.muxAssetId,
-              ...(sanityVideoResource.duration ? { duration: sanityVideoResource.duration } : null),
-            },
+          const migratedResource = convertToMigratedResource({
+            videoResource: sanityVideoResource,
+            ownerUserId: migrationResourceOwner.id,
           })
 
           console.log('migrating video', sanityVideoResource._id)
@@ -233,40 +131,9 @@ export const migrationFromSanity = inngest.createFunction(
       })
       if (canMigrateTip && migrationResourceOwner) {
         step.run('insert tip resource into the database', async () => {
-          const MigratedTipResourceSchema = z.object({
-            createdById: z.string(),
-            title: z.string(),
-            type: z.string(),
-            slug: z.string(),
-            body: z.string().nullable(),
-            id: z.string(),
-            updatedAt: z.date(),
-            resources: z.array(z.object({ _type: z.string(), _ref: z.string() })).default([]),
-            metadata: z
-              .object({ state: z.string(), visibility: z.string(), summary: z.string().optional().nullable() })
-              .default({ state: 'draft', visibility: 'unlisted', summary: null }),
-          })
-
-          const migratedResource = MigratedTipResourceSchema.parse({
-            createdById: migrationResourceOwner.id,
-            title: sanityTip.title || 'Untitled Tip',
-            type: sanityTip._type,
-            slug: sanityTip.slug,
-            body: sanityTip.body,
-            id: sanityTip._id,
-            updatedAt: new Date(sanityTip._updatedAt),
-            resources: [
-              {
-                _type: `reference`,
-                _ref: sanityTip.videoResourceId,
-                _key: `videoResource-${nanoid()}`,
-              },
-            ],
-            metadata: {
-              state: sanityTip.state,
-              visibility: sanityTip.visibility,
-              ...(sanityTip.summary && { summary: sanityTip.summary }),
-            },
+          const migratedResource = convertToMigratedTipResource({
+            tip: sanityTip,
+            ownerUserId: migrationResourceOwner.id,
           })
 
           console.log('migrating tip', sanityTip._id)
