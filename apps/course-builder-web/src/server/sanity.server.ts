@@ -39,25 +39,34 @@ export async function sanityMutation(
     })
 }
 
+type SanityQueryOptions = { useCdn?: boolean; revalidate?: number; tags?: string[]; cache?: RequestCache }
+
+const defaultSanityQueryOptions = {
+  useCdn: true,
+  tags: [],
+  revalidate: 60,
+  cache: 'default' as RequestCache,
+}
+
 export async function sanityQuery<T = any>(
   query: string,
-  options: { useCdn?: boolean; revalidate?: number; tags?: string[] } = {
-    useCdn: true,
-    tags: [],
-    revalidate: 60,
-  },
+  options: SanityQueryOptions = defaultSanityQueryOptions,
 ): Promise<T> {
   const log = new Logger()
+
+  const signal = options.cache === 'no-cache' ? new AbortController().signal : undefined
+
   return await fetch(
     `https://${env.SANITY_STUDIO_PROJECT_ID}.${options.useCdn ? 'apicdn' : 'api'}.sanity.io/v${
       env.SANITY_STUDIO_API_VERSION
     }/data/query/${env.SANITY_STUDIO_DATASET}?query=${encodeURIComponent(query)}&perspective=published`,
     {
       method: 'get',
+      cache: options.cache,
+      ...(signal && { signal }),
       headers: {
         Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
       },
-      next: { ...(options.revalidate && { revalidate: options.revalidate }), tags: options.tags }, //seconds
     },
   )
     .then(async (response) => {

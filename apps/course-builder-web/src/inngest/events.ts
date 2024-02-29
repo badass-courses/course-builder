@@ -67,3 +67,10 @@ export type DraftWriteupCompleted = {
     fullPrompt: ChatCompletionRequestMessage[]
   }
 }
+
+export const MIGRATE_EVENT = 'migration'
+
+export type MigrateEvent = {
+  name: typeof MIGRATE_EVENT
+  data: {}
+}

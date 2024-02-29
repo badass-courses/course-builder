@@ -1,6 +1,5 @@
 import { relations, sql } from 'drizzle-orm'
 import {
-  bigint,
   boolean,
   index,
   int,
@@ -54,24 +53,30 @@ export const usersRelations = relations(users, ({ many }) => ({
   createdContent: many(contentResource),
 }))
 
-export const permissions = mysqlTable('permission', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  name: varchar('name', { length: 255 }).notNull().unique(),
-  description: text('description'),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    fsp: 3,
+export const permissions = mysqlTable(
+  'permission',
+  {
+    id: varchar('id', { length: 255 }).notNull().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull().unique(),
+    description: text('description'),
+    active: boolean('active').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+  (permission) => ({
+    nameIdx: index('name_idx').on(permission.name),
   }),
-  deletedAt: timestamp('deletedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-})
+)
 
 export const permissionsRelations = relations(permissions, ({ many }) => ({
   userRoles: many(userRoles),
@@ -128,7 +133,9 @@ export const userRoles = mysqlTable(
     }),
   },
   (ur) => ({
-    compoundKey: primaryKey({ columns: [ur.userId, ur.roleId] }),
+    pk: primaryKey({ columns: [ur.userId, ur.roleId] }),
+    userIdIdx: index('userId_idx').on(ur.userId),
+    roleIdIdx: index('roleId_idx').on(ur.roleId),
   }),
 )
 
@@ -157,7 +164,9 @@ export const userPermissions = mysqlTable(
     }),
   },
   (up) => ({
-    compoundKey: primaryKey({ columns: [up.userId, up.permissionId] }),
+    pk: primaryKey({ columns: [up.userId, up.permissionId] }),
+    userIdIdx: index('userId_idx').on(up.userId),
+    permissionIdIdx: index('permissionId_idx').on(up.permissionId),
   }),
 )
 
@@ -189,7 +198,9 @@ export const rolePermissions = mysqlTable(
     }),
   },
   (rp) => ({
-    compoundKey: primaryKey({ columns: [rp.roleId, rp.permissionId] }),
+    pk: primaryKey({ columns: [rp.roleId, rp.permissionId] }),
+    roleIdIdx: index('roleId_idx').on(rp.roleId),
+    permissionIdIdx: index('permissionId_idx').on(rp.permissionId),
   }),
 )
 
@@ -201,65 +212,33 @@ export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => 
   }),
 }))
 
-export const contentStates = mysqlTable('contentState', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('description'),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    fsp: 3,
+export const contentContributions = mysqlTable(
+  'contentContribution',
+  {
+    id: varchar('id', { length: 255 }).notNull().primaryKey(),
+    userId: varchar('userId', { length: 255 }).notNull(),
+    contentId: varchar('contentId', { length: 255 }).notNull(),
+    contributionTypeId: varchar('contributionTypeId', { length: 255 }).notNull(),
+    active: boolean('active').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+  (cc) => ({
+    userIdIdx: index('userId_idx').on(cc.userId),
+    contentIdIdx: index('contentId_idx').on(cc.contentId),
+    contributionTypeIdIdx: index('contributionTypeId_idx').on(cc.contributionTypeId),
   }),
-  deletedAt: timestamp('deletedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-})
-
-export const contentVisibilities = mysqlTable('contentVisibility', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('description'),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-  deletedAt: timestamp('deletedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-})
-
-export const contentContributions = mysqlTable('contentContribution', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  userId: varchar('userId', { length: 255 }).notNull(),
-  contentId: varchar('contentId', { length: 255 }).notNull(),
-  contributionTypeId: varchar('contributionTypeId', { length: 255 }).notNull(),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-  deletedAt: timestamp('deletedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-})
+)
 
 export const contentContributionRelations = relations(contentContributions, ({ one }) => ({
   user: one(users, { fields: [contentContributions.userId], references: [users.id] }),
@@ -270,25 +249,32 @@ export const contentContributionRelations = relations(contentContributions, ({ o
   }),
 }))
 
-export const contributionTypes = mysqlTable('contributionType', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('description'),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    fsp: 3,
+export const contributionTypes = mysqlTable(
+  'contributionType',
+  {
+    id: varchar('id', { length: 255 }).notNull().primaryKey(),
+    slug: varchar('slug', { length: 255 }).notNull().unique(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('description'),
+    active: boolean('active').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+  (ct) => ({
+    nameIdx: index('name_idx').on(ct.name),
+    slugIdx: index('slug_idx').on(ct.slug),
   }),
-  deletedAt: timestamp('deletedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-})
+)
 
 export const contributionTypesRelations = relations(contributionTypes, ({ many }) => ({
   contributions: many(contentContributions),
@@ -298,14 +284,13 @@ export const contentResource = mysqlTable(
   'contentResource',
   {
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
+    type: varchar('type', { length: 255 }).notNull(),
     slug: varchar('slug', { length: 255 }).notNull().unique(),
     createdById: varchar('createdById', { length: 255 }).notNull(),
     title: varchar('title', { length: 255 }).notNull(),
-    stateId: varchar('stateId', { length: 255 }).notNull(),
-    visibilityId: varchar('visibilityId', { length: 255 }).notNull(),
     body: text('body'),
-    resources: json('resources').default([]),
-    metadata: json('metadata').default({}),
+    resources: json('resources').$type<any[]>().default([]),
+    metadata: json('metadata').$type<Record<string, any>>().default({}),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
@@ -323,18 +308,12 @@ export const contentResource = mysqlTable(
     titleIdx: index('title_idx').on(cm.title),
     slugIdx: index('slug_idx').on(cm.slug),
     createdByIdx: index('createdById_idx').on(cm.createdById),
-    stateIdx: index('stateId_idx').on(cm.stateId),
-    visibilityIdx: index('visibilityId_idx').on(cm.visibilityId),
+    createdAtIdx: index('createdAt_idx').on(cm.createdAt),
   }),
 )
 
 export const contentResourceRelations = relations(contentResource, ({ one, many }) => ({
   createdBy: one(users, { fields: [contentResource.createdById], references: [users.id] }),
-  state: one(contentStates, { fields: [contentResource.stateId], references: [contentStates.id] }),
-  visibility: one(contentVisibilities, {
-    fields: [contentResource.visibilityId],
-    references: [contentVisibilities.id],
-  }),
   contributions: many(contentContributions),
 }))
 
@@ -453,7 +432,7 @@ export const accounts = mysqlTable(
     refresh_token_expires_in: int('refresh_token_expires_in'),
   },
   (account) => ({
-    compoundKey: primaryKey({ columns: [account.provider, account.providerAccountId] }),
+    pk: primaryKey({ columns: [account.provider, account.providerAccountId] }),
     userIdIdx: index('userId_idx').on(account.userId),
   }),
 )
@@ -486,6 +465,6 @@ export const verificationTokens = mysqlTable(
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
   (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
+    pk: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 )

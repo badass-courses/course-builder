@@ -22,6 +22,42 @@ Status: proposed | rejected | accepted | deprecated | … | superseded by
 ### Consequences
 ```
 
+## 12 Use a Single Table for Content Resources
+
+Date: 2024-02-29
+
+Status: proposed
+
+### Context
+
+Our content resources, such as courses, lessons, and articles, we traditionally stored in separate tables in our database. This approach has led to complex queries and joins, making it challenging to manage and retrieve content efficiently as well as forcing us into a "known set of content types". 
+
+We are considering using a single table to store all content resources called `contentResources`, which could simplify our data model and allow for a lot of flexibility.
+
+a content resource will carry `metadata` and `resources` that can be shaped via schemas for specific content types.
+
+This will allow individual sites/products to define their own content types and schemas, and we can store all content resources in a single location, making it easier to manage and retrieve content efficiently.
+
+### Decision
+
+We have decided to use a single table to store all content resources. This decision aligns with our goal to simplify our data model and allow for a lot of flexibility. By using a single table, we can store all content resources in a single location, making it easier to manage and retrieve content efficiently.
+
+## 11 Migrate from Sanity to Course Builder as CMS
+
+Date: 2024-02-29
+
+Status: proposed
+
+### Context
+
+Our content management system (CMS) is a critical part of our infrastructure, enabling us to manage and deliver content to our users. We currently use Sanity as our CMS, but we are considering migrating to Course Builder as our primary CMS.
+
+Important to note that we will NOT be a CDN for images and videos. We will use a third-party service for that.
+
+### Decision
+
+We have decided to migrate from Sanity to Course Builder as our CMS. This decision aligns with our goal to consolidate our infrastructure and reduce dependencies on external services. By using Course Builder as our CMS, we can take advantage of its seamless integration with our existing infrastructure, including our database, authentication, and other services.
+
 ## 10 Use CodeMirror for Text Editing in Browser
 
 Date: 2023-12-18
@@ -73,7 +109,7 @@ Adjust the date and status to match the current stage of this decision.
 
 Date: 2023-12-05
 
-Status: proposed
+Status: accepted
 
 ### Context
 Interfacing with databases requires an efficient Object-Relationship Manager (ORM). ORMs provide a code-level, TypeScript-friendly API for interacting with database entities. We considered various ORMs, including Prisma, and evaluated their fit in our system.
@@ -89,7 +125,7 @@ Adjust the date and status as needed.
 
 Date: 2023-12-05
 
-Status: proposed
+Status: accepted
 
 ### Context
 There are numerous hosting options for applications, each with its own trade-offs. Options include AWS, Render, Heroku, and others. Our key consideration is the development framework we use, Next.js, which is developed by Vercel.
@@ -104,7 +140,7 @@ Choosing Vercel as our hosting provider does come with trade-offs. It locks us i
 
 Date: 2023-12-05
 
-Status: proposed
+Status: accepted
 
 ### Context
 For our individual courses and creators, we require dedicated databases to store crucial information like user data, product details, e-commerce transactions, and user progress. Each course or creator will have their own database setup.
@@ -119,7 +155,7 @@ By selecting PlanetScale, we are committing to their service. Although exporting
 
 Date: 2023-12-05
 
-Status: proposed
+Status: accepted
 
 ### Context
 In our customer-focused environment, we deal with various automated tasks and activities behind the scenes. Key interactions, like user sign-ups or lesson progressions, necessitate automated responses such as email notifications. This demands a robust system for processing background jobs.

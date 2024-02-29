@@ -8,8 +8,11 @@ import { getAbility } from '@/lib/ability'
 import { getTip, Tip } from '@/lib/tips'
 import { VideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
 import { sanityQuery } from '@/server/sanity.server'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { eq } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -22,6 +25,12 @@ type Props = {
 
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const tip = await getTip(params.slug)
+
+  const newTips = await db.select().from(contentResource).where(eq(contentResource.slug, params.slug))
+
+  if (newTips[0]) {
+    console.log('newTips', newTips[0])
+  }
 
   if (!tip) {
     return parent as Metadata
