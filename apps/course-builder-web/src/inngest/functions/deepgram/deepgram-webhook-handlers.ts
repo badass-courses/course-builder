@@ -2,13 +2,16 @@ import { env } from '@/env.mjs'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { VideoResourceSchema } from '@/lib/video-resource'
+import { convertToMigratedResource, getVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import {
   srtFromTranscriptResult,
   transcriptAsParagraphsWithTimestamps,
   wordLevelSrtFromTranscriptResult,
 } from '@/transcript-processing/deepgram-results-processor'
+import { eq } from 'drizzle-orm'
 
 export const deepgramTranscriptReady = inngest.createFunction(
   { id: `deepgram-transcript-ready-event`, name: 'Deepgram Transcript Ready' },
@@ -41,6 +44,31 @@ export const deepgramTranscriptReady = inngest.createFunction(
           },
         ])
       })
+
+      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
+        return getVideoResource(event.data.videoResourceId)
+      })
+
+      if (updatedVideoResource) {
+        await step.run('update the video resource in the database', async () => {
+          const resourceToUpdate = await db.query.contentResource.findFirst({
+            where: eq(contentResource.id, updatedVideoResource._id),
+          })
+
+          if (!resourceToUpdate) {
+            return
+          }
+          const migratedResource = convertToMigratedResource({
+            videoResource: updatedVideoResource,
+            ownerUserId: resourceToUpdate.createdById,
+          })
+
+          return db
+            .update(contentResource)
+            .set(migratedResource)
+            .where(eq(contentResource.id, updatedVideoResource._id))
+        })
+      }
 
       await step.sendEvent('announce that srt is ready', {
         name: MUX_SRT_READY_EVENT,
