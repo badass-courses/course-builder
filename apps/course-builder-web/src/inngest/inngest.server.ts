@@ -27,6 +27,8 @@ import { VIDEO_STATUS_CHECK_EVENT, VideoStatusCheck } from '@/inngest/events/vid
 import { type VIDEO_UPLOADED_EVENT, type VideoUploaded } from '@/inngest/events/video-uploaded'
 import { EventSchemas, Inngest } from 'inngest'
 
+import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
+
 // Create a client to send and receive events
 type Events = {
   [AI_WRITING_COMPLETED_EVENT]: AIWritingRequestCompleted
@@ -47,6 +49,7 @@ type Events = {
   [DRAFT_WRITEUP_COMPLETED_EVENT]: DraftWriteupCompleted
   [EMAIL_SEND_BROADCAST]: EmailSendBroadcast
   [MIGRATE_EVENT]: MigrateEvent
+  [OCR_WEBHOOK_EVENT]: OcrWebhook
 }
 export const inngest = new Inngest({
   id: 'course-builder',

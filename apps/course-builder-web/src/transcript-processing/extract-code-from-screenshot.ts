@@ -6,6 +6,12 @@ const openai = new OpenAI({
 })
 
 export async function extractCodeFromScreenshot(screenshotUrl: string) {
+  console.info(`
+  
+    Extracting code from screenshot at ${screenshotUrl}
+  
+  `)
+
   const thread = await openai.beta.threads.create()
 
   const image_data = await fetch(screenshotUrl)
@@ -34,7 +40,8 @@ export async function extractCodeFromScreenshot(screenshotUrl: string) {
   }
 
   if (run_status === 'failed') {
-    throw new Error('Code extraction failed')
+    const status = (await openai.beta.threads.runs.retrieve(thread.id, run.id)).last_error?.message
+    throw new Error('Code extraction failed with error: ' + status)
   }
 
   const all_messages = await openai.beta.threads.messages.list(thread.id)
