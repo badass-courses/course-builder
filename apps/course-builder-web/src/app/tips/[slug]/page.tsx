@@ -5,12 +5,16 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { getAbility } from '@/lib/ability'
-import { getTip, Tip } from '@/lib/tips'
+import { getTip, Tip, TipSchema } from '@/lib/tips'
 import { VideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
+import { db } from '@/server/db'
+import { contentResource } from '@/server/db/schema'
 import { sanityQuery } from '@/server/sanity.server'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { eq } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
+import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -22,6 +26,39 @@ type Props = {
 
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const tip = await getTip(params.slug)
+
+  const newTips = await db.select().from(contentResource).where(eq(contentResource.slug, params.slug))
+
+  if (newTips[0]) {
+    let expandedResources = []
+    for (const resource of newTips[0].resources || []) {
+      if (resource.type === '_ref') {
+        const newResource = await db.select().from(contentResource).where(eq(contentResource.id, resource._ref))
+        expandedResources.push(
+          newResource.map((resource) => {
+            const { metadata, ...rest } = resource
+            if (resource.type === 'videoResource' && metadata) {
+              const { id, type, srt, wordLevelSrt, ...filteredMetadata } = metadata
+              return { ...filteredMetadata, ...rest, videoResourceId: resource.id }
+            }
+            return { ...metadata, ...rest }
+          })[0],
+        )
+      } else {
+        expandedResources.push(resource)
+      }
+    }
+
+    const newTip = TipSchema.parse({
+      _id: newTips[0].id,
+      _updatedAt: newTips[0].updatedAt?.toISOString(),
+      _type: 'explainer',
+      summary: '',
+      ...newTips[0],
+      ...expandedResources[0],
+      ...newTips[0].metadata,
+    })
+  }
 
   if (!tip) {
     return parent as Metadata
