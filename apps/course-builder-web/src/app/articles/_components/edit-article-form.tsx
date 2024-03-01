@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
+import { updateArticle } from '@/app/articles/_components/article-form-actions'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useSocket } from '@/hooks/use-socket'
 import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
@@ -86,8 +87,6 @@ const DesktopEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form 
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const router = useRouter()
 
-  const { mutateAsync: updateArticle, status: updateArticleStatus } = api.articles.update.useMutation()
-
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
 
   useSocket({
@@ -140,7 +139,6 @@ const DesktopEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form 
           variant="default"
           size="sm"
           className="h-7 disabled:cursor-wait"
-          disabled={updateArticleStatus === 'loading'}
         >
           Save
         </Button>
@@ -253,9 +251,6 @@ const MobileEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [activeWidget, setActiveWidget] = React.useState(WIDGETS.values().next().value)
 
-  const { mutateAsync: updateArticle, status: updateArticleStatus } = api.articles.update.useMutation()
-  const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
-
   useSocket({
     room: article._id,
     onMessage: async (messageEvent) => {
@@ -302,7 +297,6 @@ const MobileEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }
           variant="default"
           size="sm"
           className="h-7 disabled:cursor-wait"
-          disabled={updateArticleStatus === 'loading'}
         >
           Save
         </Button>
@@ -325,11 +319,6 @@ const MobileEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }
         value={article.body || ''}
         onChange={async (data) => {
           form.setValue('body', data)
-          await generateFeedback({
-            resourceId: article._id,
-            body: data,
-            currentFeedback: feedbackMarkers,
-          })
         }}
         markers={feedbackMarkers}
       />

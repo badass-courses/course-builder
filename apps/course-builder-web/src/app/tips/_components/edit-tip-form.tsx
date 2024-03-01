@@ -5,6 +5,7 @@ import { Suspense, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
+import { TipUpdate, updateTip } from '@/app/tips/_components/tip-form-actions'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -84,13 +85,13 @@ export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps,
 }
 
 const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+  const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(tip.transcript)
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
 
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
-  const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
 
   const videoResource = use(videoResourceLoader)
 
@@ -142,7 +143,8 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
   })
 
   const onSubmit = async (values: z.infer<typeof TipSchema>) => {
-    const updatedTip = await updateTip({ tipId: tip._id, ...values })
+    const updatedTip = await updateTip({ ...values, _id: tip._id })
+    setUpdateTipStatus('success')
 
     if (!updatedTip) {
       // handle edge case, e.g. toast an error message
@@ -173,6 +175,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
         </div>
         <Button
           onClick={(e) => {
+            setUpdateTipStatus('loading')
             onSubmit(formValues)
           }}
           type="button"
@@ -361,12 +364,11 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
 }
 
 const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+  const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(tip.transcript)
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
-
-  const { mutateAsync: updateTip, status: updateTipStatus } = api.tips.update.useMutation()
 
   const videoResource = use(videoResourceLoader)
 
@@ -417,8 +419,9 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourc
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
-    const updatedTip = await updateTip({ tipId: tip._id, ...values })
+  const onSubmit = async (values: TipUpdate) => {
+    const updatedTip = await updateTip({ ...values, _id: tip._id })
+    setUpdateTipStatus('success')
 
     if (!updatedTip) {
       // handle edge case, e.g. toast an error message
@@ -446,6 +449,7 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourc
         </div>
         <Button
           onClick={(e) => {
+            setUpdateTipStatus('loading')
             onSubmit(formValues)
           }}
           type="button"

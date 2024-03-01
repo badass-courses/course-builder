@@ -5,8 +5,6 @@ import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
 import { getVideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
-import { redis } from '@/server/redis-client'
-import { Ratelimit } from '@upstash/ratelimit'
 
 export async function reprocessTranscript({ videoResourceId }: { videoResourceId: string | null }) {
   // template for the url to download the mp4 file from mux

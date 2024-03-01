@@ -2,10 +2,9 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { api } from '@/trpc/react'
+import { createArticle, NewArticle, NewArticleSchema } from '@/app/articles/_components/article-form-actions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import {
   Button,
@@ -19,22 +18,17 @@ import {
   Input,
 } from '@coursebuilder/ui'
 
-const NewArticleFormSchema = z.object({
-  title: z.string().min(2).max(90),
-})
-
 export function NewArticleForm() {
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof NewArticleFormSchema>>({
-    resolver: zodResolver(NewArticleFormSchema),
+  const form = useForm<NewArticle>({
+    resolver: zodResolver(NewArticleSchema),
     defaultValues: {
       title: '',
     },
   })
-  const { mutateAsync: createArticle } = api.articles.create.useMutation()
 
-  const onSubmit = async (values: z.infer<typeof NewArticleFormSchema>) => {
+  const onSubmit = async (values: NewArticle) => {
     form.reset()
     const article = await createArticle(values)
     if (article) {
