@@ -22,6 +22,20 @@ Status: proposed | rejected | accepted | deprecated | … | superseded by
 ### Consequences
 ```
 
+## 13 Prefer Server Actions Over TRPC
+
+Date: 2024-03-01
+
+Status: proposed
+
+### Context
+
+We are currently using TRPC for api style actions, which has served us well. However, we are considering switching to server actions as our primary method for handling server-side logic.
+
+### Decision
+
+We have decided to prefer server actions over TRPC. This decision aligns with our goal to simplify our codebase and reduce dependencies. By using server actions, we can take advantage of the built-in Next.js features, which are easy to set up and maintain. This approach also allows us to keep our server-side logic close to our frontend code, making it easier to manage and maintain.
+
 ## 12 Use a Single Table for Content Resources
 
 Date: 2024-02-29

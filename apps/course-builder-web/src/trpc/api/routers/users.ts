@@ -1,4 +1,4 @@
-import { db } from '@/server/db'
+import { db } from '@/db'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
 

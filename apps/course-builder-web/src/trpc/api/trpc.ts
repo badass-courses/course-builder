@@ -7,8 +7,8 @@
  * need to use are documented accordingly near the end.
  */
 
+import { db } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
-import { db } from '@/server/db'
 import { initTRPC, TRPCError } from '@trpc/server'
 import { CreateNextContextOptions } from '@trpc/server/dist/adapters/next'
 import superjson from 'superjson'

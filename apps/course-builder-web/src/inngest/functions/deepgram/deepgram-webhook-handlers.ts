@@ -1,10 +1,10 @@
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
 import { convertToMigratedResource, getVideoResource, VideoResourceSchema } from '@/lib/video-resource'
-import { db } from '@/server/db'
-import { contentResource } from '@/server/db/schema'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import {
   srtFromTranscriptResult,

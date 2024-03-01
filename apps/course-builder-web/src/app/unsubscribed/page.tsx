@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
-import { db } from '@/server/db'
-import { communicationPreferences } from '@/server/db/schema'
+import { db } from '@/db'
+import { communicationPreferences } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 

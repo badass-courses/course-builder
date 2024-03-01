@@ -1,11 +1,11 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
 import { convertToMigratedTipResource, getTip } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
-import { db } from '@/server/db'
-import { contentResource } from '@/server/db/schema'
 import { sanityMutation } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'

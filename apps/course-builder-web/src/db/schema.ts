@@ -79,7 +79,6 @@ export const permissions = mysqlTable(
 )
 
 export const permissionsRelations = relations(permissions, ({ many }) => ({
-  userRoles: many(userRoles),
   rolePermissions: many(rolePermissions),
 }))
 
@@ -110,7 +109,6 @@ export const roles = mysqlTable(
 
 export const rolesRelations = relations(roles, ({ many }) => ({
   userRoles: many(userRoles),
-  permissions: many(permissions),
 }))
 
 export const userRoles = mysqlTable(
