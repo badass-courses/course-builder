@@ -148,9 +148,9 @@ export const articlesRouter = createTRPCRouter({
     const updatedArticle = await getArticle(input._id)
 
     if (updatedArticle) {
-      db.update(contentResource)
-        .set(convertToMigratedArticleResource({ article: updatedArticle, ownerUserId: user.id }))
-        .where(eq(contentResource.id, updatedArticle._id))
+      const dbArticle = convertToMigratedArticleResource({ article: updatedArticle, ownerUserId: user.id })
+      console.log('updating article', { dbArticle })
+      console.log(await db.update(contentResource).set(dbArticle).where(eq(contentResource.id, updatedArticle._id)))
     }
 
     return updatedArticle
