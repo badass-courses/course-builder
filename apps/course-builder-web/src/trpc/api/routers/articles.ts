@@ -7,11 +7,9 @@ import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
 import { db } from '@/server/db'
 import { contentResource } from '@/server/db/schema'
-import { redis } from '@/server/redis-client'
 import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
 import slugify from '@sindresorhus/slugify'
-import { Ratelimit } from '@upstash/ratelimit'
 import { eq } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
@@ -93,7 +91,10 @@ export const articlesRouter = createTRPCRouter({
       const article = await getArticle(newArticleId)
 
       if (article && session?.user) {
-        db.insert(contentResource).values(convertToMigratedArticleResource({ article, ownerUserId: session.user.id }))
+        console.log('inserting article', { article })
+        await db
+          .insert(contentResource)
+          .values(convertToMigratedArticleResource({ article, ownerUserId: session.user.id }))
       }
 
       revalidateTag('articles')
@@ -150,7 +151,7 @@ export const articlesRouter = createTRPCRouter({
     if (updatedArticle) {
       const dbArticle = convertToMigratedArticleResource({ article: updatedArticle, ownerUserId: user.id })
       console.log('updating article', { dbArticle })
-      console.log(await db.update(contentResource).set(dbArticle).where(eq(contentResource.id, updatedArticle._id)))
+      await db.update(contentResource).set(dbArticle).where(eq(contentResource.id, updatedArticle._id))
     }
 
     return updatedArticle

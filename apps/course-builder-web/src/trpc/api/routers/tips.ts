@@ -98,7 +98,7 @@ export const tipsRouter = createTRPCRouter({
       const tip = await getTip(newTipId)
 
       if (tip) {
-        db.insert(contentResource).values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
+        await db.insert(contentResource).values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
       }
 
       revalidateTag('tips')
@@ -161,7 +161,8 @@ export const tipsRouter = createTRPCRouter({
       const updatedTip = await getTip(input.tipId)
 
       if (updatedTip) {
-        db.update(contentResource)
+        await db
+          .update(contentResource)
           .set(convertToMigratedTipResource({ tip: updatedTip, ownerUserId: user.id }))
           .where(eq(contentResource.id, updatedTip._id))
       }
