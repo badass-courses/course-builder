@@ -27,7 +27,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <Providers>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning={true}>
         <AxiomWebVitals />
         <body className={`font-sans ${inter.variable}`}>
           <TRPCReactProvider>

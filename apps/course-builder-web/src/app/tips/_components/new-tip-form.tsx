@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { createTip, NewTip, NewTipSchema } from '@/app/tips/_components/tip-form-actions'
 import { TipUploader } from '@/app/tips/_components/tip-uploader'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,34 +21,23 @@ import {
   Input,
 } from '@coursebuilder/ui'
 
-const NewTipFormSchema = z.object({
-  title: z.string().min(2).max(90),
-  videoResourceId: z.string().min(4, 'Please upload a video'),
-})
-
 export function NewTipForm() {
   const [videoResourceId, setVideoResourceId] = React.useState<string>('')
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof NewTipFormSchema>>({
-    resolver: zodResolver(NewTipFormSchema),
+  const form = useForm<NewTip>({
+    resolver: zodResolver(NewTipSchema),
     defaultValues: {
       title: '',
       videoResourceId: '',
     },
   })
-  const utils = api.useUtils()
-  const { mutateAsync: createTip } = api.tips.create.useMutation({
-    onSuccess: async (data) => {
-      form.reset()
-      setVideoResourceId('')
-      form.setValue('videoResourceId', '')
-      await utils.module.getBySlug.invalidate()
-      router.refresh()
-    },
-  })
 
-  const onSubmit = async (values: z.infer<typeof NewTipFormSchema>) => {
+  const onSubmit = async (values: NewTip) => {
+    form.reset()
+    setVideoResourceId('')
+    form.setValue('videoResourceId', '')
+
     const tip = await createTip(values)
 
     if (!tip) {
