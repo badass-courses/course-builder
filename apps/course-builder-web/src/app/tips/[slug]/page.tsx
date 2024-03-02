@@ -23,7 +23,6 @@ type Props = {
 }
 
 async function getTip(slug: string) {
-  console.log('loading tip', slug)
   const query = sql<Tip>`
     SELECT
       tips.id as _id,
@@ -55,11 +54,9 @@ async function getTip(slug: string) {
     .execute(query)
     .then((result) => {
       const parsedTip = TipSchema.safeParse(result.rows[0])
-      console.log('parsedTip', parsedTip)
       return parsedTip.success ? parsedTip.data : null
     })
     .catch((error) => {
-      console.log('Error getting tip', error)
       return error
     })
 }
@@ -180,8 +177,7 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
       return parsedResource.success ? parsedResource.data : null
     })
     .catch((error) => {
-      console.error('Error getting video resource', error)
-      return null
+      return error
     })
 
   return (
@@ -233,8 +229,7 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
       return (result.rows[0] as { transcript: string | null })?.transcript
     })
     .catch((error) => {
-      console.error('Error getting transcript', error)
-      return null
+      return error
     })
 
   return (
