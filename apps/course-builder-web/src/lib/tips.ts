@@ -1,8 +1,7 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { sanityQuery } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
-import { desc, eq } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const TipStateSchema = z.union([
@@ -28,6 +27,85 @@ export const TipSchema = z.object({
 })
 
 export type Tip = z.infer<typeof TipSchema>
+
+export async function getTip(slug: string): Promise<Tip | null> {
+  const query = sql`
+    SELECT
+      tips.id as _id,
+      tips.type as _type,
+      tips.slug,
+      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
+      JSON_EXTRACT (tips.metadata, "$.title") AS title,
+      JSON_EXTRACT (tips.metadata, "$.body") AS body,
+      JSON_EXTRACT (tips.metadata, "$.state") AS state,
+      JSON_EXTRACT (tips.metadata, "$.visibility") AS visibility,
+      refs.id as videoResourceId
+    FROM
+      ${contentResource} as tips,
+      JSON_TABLE (
+        tips.resources,
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          _ref VARCHAR(255) PATH '$._ref'
+        )
+      ) AS videoResources
+    LEFT JOIN ${contentResource} as refs ON videoResources._ref = refs.id
+      AND refs.type = 'videoResource'
+    WHERE
+      tips.type = 'tip'
+      AND refs.type = 'videoResource'
+      AND (tips.slug = ${slug} OR tips.id = ${slug});
+  `
+  return db
+    .execute(query)
+    .then((result) => {
+      const parsedTip = TipSchema.safeParse(result.rows[0])
+      return parsedTip.success ? parsedTip.data : null
+    })
+    .catch((error) => {
+      return error
+    })
+}
+
+export async function getTipsModule(): Promise<Tip[]> {
+  const query = sql<Tip[]>`
+    SELECT
+      tips.id as _id,
+      tips.type as _type,
+      tips.slug,
+      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
+      JSON_EXTRACT (tips.metadata, "$.title") AS title,
+      JSON_EXTRACT (tips.metadata, "$.body") AS body,
+      JSON_EXTRACT (tips.metadata, "$.state") AS state,
+      JSON_EXTRACT (tips.metadata, "$.visibility") AS visibility,
+      refs.id as videoResourceId
+    FROM
+      ${contentResource} as tips,
+      JSON_TABLE (
+        tips.resources,
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          _ref VARCHAR(255) PATH '$._ref'
+        )
+      ) AS videoResources
+    LEFT JOIN ${contentResource} as refs ON videoResources._ref = refs.id
+      AND refs.type = 'videoResource'
+    
+    WHERE
+      tips.type = 'tip'
+      AND refs.type = 'videoResource'
+    ORDER BY tips.updatedAt DESC;
+  `
+  return await db
+    .execute(query)
+    .then((result) => {
+      const parsedTips = z.array(TipSchema).safeParse(result.rows)
+      return parsedTips.success ? parsedTips.data : []
+    })
+    .catch((error) => {
+      return error
+    })
+}
 
 export const MigratedTipResourceSchema = z.object({
   createdById: z.string(),
@@ -72,60 +150,5 @@ export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; o
       visibility: tip.visibility,
       ...(tip.summary && { summary: tip.summary }),
     },
-  })
-}
-
-export async function getTip(slugOrId: string, revalidateKey: string = 'tips') {
-  return await sanityQuery<Tip | null>(
-    `*[_type == "tip" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
-          _id,
-          _type,
-          "_updatedAt": ^._updatedAt,
-          title,
-          summary,
-          visibility,
-          state,
-          body,
-          "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
-          "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
-          "transcript": resources[@->._type == 'videoResource'][0]->transcript,
-          "slug": slug.current,
-  }`,
-    { tags: [slugOrId, revalidateKey] },
-  ).catch((error) => {
-    console.error('Error fetching tip', error)
-    return null
-  })
-}
-
-export async function getTipsModule() {
-  const allTipsRaw = await db
-    .select()
-    .from(contentResource)
-    .where(eq(contentResource.type, 'tip'))
-    .orderBy(desc(contentResource.updatedAt))
-
-  return await sanityQuery<{
-    tips: Tip[]
-  }>(
-    `{"tips": coalesce(
-  *[_type == 'tip'] | order(_updatedAt desc) {
-        _id,
-        _type,
-        "_updatedAt": ^._updatedAt,
-        title,
-        summary,
-        visibility,
-        state,
-        body,
-        "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
-        "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
-        "transcript": resources[@->._type == 'videoResource'][0]->transcript,
-        "slug": slug.current,
-      }, [])}`,
-    { tags: ['tips'] },
-  ).catch((error) => {
-    console.error('Error fetching tips module', error)
-    return { tips: [] }
   })
 }

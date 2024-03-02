@@ -27,7 +27,7 @@ async function TipList() {
   const tipsModule = await getTipsModule()
   return (
     <>
-      {tipsModule.tips.map((tip) => (
+      {tipsModule.map((tip) => (
         <Card key={tip._id}>
           <CardHeader>
             <CardTitle>

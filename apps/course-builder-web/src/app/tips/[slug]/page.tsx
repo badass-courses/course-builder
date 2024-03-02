@@ -4,14 +4,11 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
-import { Tip, TipSchema } from '@/lib/tips'
-import { getTranscript, getVideoResource, VideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { getTip, type Tip } from '@/lib/tips'
+import { getTranscript, getVideoResource } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { sql } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -20,45 +17,6 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 type Props = {
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
-}
-
-async function getTip(slug: string) {
-  const query = sql`
-    SELECT
-      tips.id as _id,
-      tips.type as _type,
-      tips.slug,
-      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
-      JSON_EXTRACT (tips.metadata, "$.title") AS title,
-      JSON_EXTRACT (tips.metadata, "$.body") AS body,
-      JSON_EXTRACT (tips.metadata, "$.state") AS state,
-      JSON_EXTRACT (tips.metadata, "$.visibility") AS visibility,
-      refs.id as videoResourceId
-    FROM
-      ${contentResource} as tips,
-      JSON_TABLE (
-        tips.resources,
-        '$[*]' COLUMNS (
-          _type VARCHAR(255) PATH '$._type',
-          _ref VARCHAR(255) PATH '$._ref'
-        )
-      ) AS videoResources
-    LEFT JOIN ${contentResource} as refs ON videoResources._ref = refs.id
-      AND refs.type = 'videoResource'
-    WHERE
-      tips.type = 'tip'
-      AND refs.type = 'videoResource'
-      AND (tips.slug = ${slug} OR tips.id = ${slug});
-  `
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsedTip = TipSchema.safeParse(result.rows[0])
-      return parsedTip.success ? parsedTip.data : null
-    })
-    .catch((error) => {
-      return error
-    })
 }
 
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
@@ -89,7 +47,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
           <TipActionBar tipLoader={tipLoader} />
         </Suspense>
 
-        <PlayerContainer slug={params.slug} tipLoader={tipLoader} />
+        <PlayerContainer tipLoader={tipLoader} />
         <article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
           <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
             <div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
@@ -139,7 +97,7 @@ function PlayerContainerSkeleton() {
   )
 }
 
-async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
+async function PlayerContainer({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
   const tip = await tipLoader
   const displayOverlay = false
 
