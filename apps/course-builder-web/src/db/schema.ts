@@ -1,3 +1,4 @@
+import { AdapterAccount } from '@auth/core/adapters'
 import { relations, sql } from 'drizzle-orm'
 import {
   boolean,
@@ -11,7 +12,6 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/mysql-core'
-import { type AdapterAccount } from 'next-auth/adapters'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same

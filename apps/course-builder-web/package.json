@@ -31,7 +31,7 @@
     "@atlaskit/primitives": "^2.0.2",
     "@atlaskit/select": "^17.1.0",
     "@atlaskit/tokens": "^1.37.1",
-    "@auth/drizzle-adapter": "^0.3.6",
+    "@auth/core": "^0.28.0",
     "@aws-sdk/client-s3": "^3.441.0",
     "@aws-sdk/s3-request-presigner": "^3.441.0",
     "@casl/ability": "^6.5.0",
