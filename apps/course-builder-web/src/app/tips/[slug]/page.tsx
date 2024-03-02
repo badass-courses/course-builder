@@ -50,10 +50,16 @@ async function getTip(slug: string) {
       AND refs.type = 'videoResource'
       AND (tips.slug = ${slug} OR tips.id = ${slug})
   `
-  return await db.execute(query).then((result) => {
-    const parsedTip = TipSchema.safeParse(result.rows[0])
-    return parsedTip.success ? parsedTip.data : null
-  })
+  return await db
+    .execute(query)
+    .then((result) => {
+      const parsedTip = TipSchema.safeParse(result.rows[0])
+      return parsedTip.success ? parsedTip.data : null
+    })
+    .catch((error) => {
+      console.error('Error getting tip', error)
+      return null
+    })
 }
 
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
@@ -165,10 +171,16 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
     LIMIT
       10;
  `
-  const videoResourceLoader = db.execute(query).then((result) => {
-    const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
-    return parsedResource.success ? parsedResource.data : null
-  })
+  const videoResourceLoader = db
+    .execute(query)
+    .then((result) => {
+      const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
+      return parsedResource.success ? parsedResource.data : null
+    })
+    .catch((error) => {
+      console.error('Error getting video resource', error)
+      return null
+    })
 
   return (
     <Suspense fallback={<PlayerContainerSkeleton />}>
@@ -213,9 +225,15 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
       AND transcriptResources._type = 'transcript'
       AND id = ${tip.videoResourceId}
  `
-  const transcript = await db.execute(query).then((result) => {
-    return (result.rows[0] as { transcript: string | null })?.transcript
-  })
+  const transcript = await db
+    .execute(query)
+    .then((result) => {
+      return (result.rows[0] as { transcript: string | null })?.transcript
+    })
+    .catch((error) => {
+      console.error('Error getting transcript', error)
+      return null
+    })
 
   return (
     <>
