@@ -6,7 +6,7 @@ import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
 import { createMuxAsset } from '@/lib/get-mux-options'
-import { convertToMigratedResource, getVideoResource } from '@/lib/video-resource'
+import { convertToMigratedVideoResource, getVideoResource } from '@/lib/video-resource'
 import { sanityMutation } from '@/server/sanity.server'
 
 export const videoUploaded = inngest.createFunction(
@@ -57,7 +57,7 @@ export const videoUploaded = inngest.createFunction(
     }
 
     await step.run('save video resource to database', async () => {
-      const migratedResource = convertToMigratedResource({
+      const migratedResource = convertToMigratedVideoResource({
         videoResource: videoResource,
         ownerUserId: event.user.id,
       })

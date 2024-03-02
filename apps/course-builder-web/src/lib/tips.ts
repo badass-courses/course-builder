@@ -1,6 +1,8 @@
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { sanityQuery } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
-import { tags } from 'liquidjs'
+import { desc, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const TipStateSchema = z.union([
@@ -14,14 +16,12 @@ export const TipVisibilitySchema = z.union([z.literal('public'), z.literal('priv
 
 export const TipSchema = z.object({
   _id: z.string(),
-  _type: z.literal('explainer'),
+  _type: z.literal('tip'),
   _updatedAt: z.string(),
   title: z.string(),
-  summary: z.string(),
+  summary: z.string().optional().nullable(),
   body: z.string().nullable(),
   videoResourceId: z.string().nullable(),
-  muxPlaybackId: z.string().nullable(),
-  transcript: z.string().nullable(),
   state: TipStateSchema.default('draft'),
   visibility: TipVisibilitySchema.default('unlisted'),
   slug: z.string(),
@@ -31,25 +31,29 @@ export type Tip = z.infer<typeof TipSchema>
 
 export const MigratedTipResourceSchema = z.object({
   createdById: z.string(),
-  title: z.string(),
+
   type: z.string(),
   slug: z.string(),
-  body: z.string().nullable(),
+
   id: z.string(),
   updatedAt: z.date(),
   resources: z.array(z.object({ _type: z.string(), _ref: z.string() })).default([]),
   metadata: z
-    .object({ state: z.string(), visibility: z.string(), summary: z.string().optional().nullable() })
-    .default({ state: 'draft', visibility: 'unlisted', summary: null }),
+    .object({
+      title: z.string(),
+      body: z.string().nullable().optional(),
+      state: z.string(),
+      visibility: z.string(),
+      summary: z.string().optional().nullable(),
+    })
+    .default({ title: 'New Tip', state: 'draft', visibility: 'unlisted', summary: null }),
 })
 
 export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; ownerUserId: string }) {
   return MigratedTipResourceSchema.parse({
     createdById: ownerUserId,
-    title: tip.title,
     type: 'tip',
     slug: tip.slug,
-    body: tip.body,
     id: tip._id,
     updatedAt: new Date(tip._updatedAt),
     resources: tip.videoResourceId
@@ -62,6 +66,8 @@ export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; o
         ]
       : [],
     metadata: {
+      title: tip.title,
+      body: tip.body,
       state: tip.state,
       visibility: tip.visibility,
       ...(tip.summary && { summary: tip.summary }),
@@ -93,6 +99,12 @@ export async function getTip(slugOrId: string, revalidateKey: string = 'tips') {
 }
 
 export async function getTipsModule() {
+  const allTipsRaw = await db
+    .select()
+    .from(contentResource)
+    .where(eq(contentResource.type, 'tip'))
+    .orderBy(desc(contentResource.updatedAt))
+
   return await sanityQuery<{
     tips: Tip[]
   }>(

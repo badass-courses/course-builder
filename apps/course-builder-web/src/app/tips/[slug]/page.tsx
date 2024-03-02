@@ -7,12 +7,11 @@ import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
-import { getTip, Tip } from '@/lib/tips'
-import { VideoResource } from '@/lib/video-resource'
+import { Tip, TipSchema } from '@/lib/tips'
+import { VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -23,14 +22,42 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
+async function getTip(slug: string) {
+  const query = sql<Tip>`
+    SELECT
+      tips.id as _id,
+      tips.type as _type,
+      tips.slug,
+      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
+      JSON_EXTRACT (tips.metadata, "$.title") AS title,
+      JSON_EXTRACT (tips.metadata, "$.body") AS body,
+      JSON_EXTRACT (tips.metadata, "$.state") AS state,
+      JSON_EXTRACT (tips.metadata, "$.visibility") AS visibility,
+      refs.id as videoResourceId
+    FROM
+      ${contentResource} as tips,
+      JSON_TABLE (
+        tips.resources,
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          _ref VARCHAR(255) PATH '$._ref'
+        )
+      ) AS transcriptResource
+    LEFT JOIN ${contentResource} as refs ON transcriptResource._ref = refs.id
+      AND refs.type = 'videoResource'
+    WHERE
+      tips.type = 'tip'
+      AND refs.type = 'videoResource'
+      AND (tips.slug = ${slug} OR tips.id = ${slug})
+  `
+  return await db.execute(query).then((result) => {
+    const parsedTip = TipSchema.safeParse(result.rows[0])
+    return parsedTip.success ? parsedTip.data : null
+  })
+}
+
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const tip = await getTip(params.slug)
-
-  const newTips = await db.select().from(contentResource).where(eq(contentResource.slug, params.slug))
-
-  if (newTips[0]) {
-    console.log('newTips', newTips[0])
-  }
 
   if (!tip) {
     return parent as Metadata
@@ -108,8 +135,6 @@ function PlayerContainerSkeleton() {
 }
 
 async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
   const tip = await tipLoader
   const displayOverlay = false
 
@@ -117,10 +142,33 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
     notFound()
   }
 
-  const videoResourceLoader = sanityQuery<VideoResource>(
-    `*[_type == "videoResource" && _id == "${tip.videoResourceId}"][0]`,
-    { tags: ['tips', tip._id] },
-  )
+  const query = sql<VideoResource>`
+    SELECT
+      id,
+      transcriptResource.text AS transcript,
+      JSON_EXTRACT (${contentResource.metadata}, "$.state") AS state,
+      JSON_EXTRACT (${contentResource.metadata}, "$.duration") AS duration,
+      JSON_EXTRACT (${contentResource.metadata}, "$.muxPlaybackId") AS muxPlaybackId
+    FROM
+      ${contentResource},
+      JSON_TABLE (
+        ${contentResource.resources},
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          text TEXT PATH '$.text'
+        )
+      ) AS transcriptResource
+    WHERE
+      type = 'videoResource'
+      AND transcriptResource._type = 'transcript'
+      AND (id = ${tip.videoResourceId} OR slug = ${tip.slug})
+    LIMIT
+      10;
+ `
+  const videoResourceLoader = db.execute(query).then((result) => {
+    const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
+    return parsedResource.success ? parsedResource.data : null
+  })
 
   return (
     <Suspense fallback={<PlayerContainerSkeleton />}>
@@ -148,6 +196,27 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
     notFound()
   }
 
+  const query = sql`
+    SELECT
+      transcriptResource.text AS transcript
+    FROM
+      ${contentResource},
+      JSON_TABLE (
+        ${contentResource.resources},
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          text TEXT PATH '$.text'
+        )
+      ) AS transcriptResource
+    WHERE
+      type = 'videoResource'
+      AND transcriptResource._type = 'transcript'
+      AND id = ${tip.videoResourceId}
+ `
+  const transcript = await db.execute(query).then((result) => {
+    return (result.rows[0] as { transcript: string | null })?.transcript
+  })
+
   return (
     <>
       <h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
@@ -159,10 +228,10 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
           <ReactMarkdown className="prose dark:prose-invert">{tip.body}</ReactMarkdown>
         </>
       )}
-      {tip.transcript && (
+      {transcript && (
         <div className="w-full max-w-2xl pt-5">
           <h3 className="font-bold">Transcript</h3>
-          <ReactMarkdown className="prose dark:prose-invert">{tip.transcript}</ReactMarkdown>
+          <ReactMarkdown className="prose dark:prose-invert">{transcript}</ReactMarkdown>
         </div>
       )}
     </>

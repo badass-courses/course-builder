@@ -1,15 +1,11 @@
 import { db } from '@/db'
 import { contentResource, users } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
-import { Article, convertToMigratedArticleResource } from '@/lib/articles'
-import { convertToMigratedTipResource, MigratedTipResourceSchema, Tip } from '@/lib/tips'
-import { convertToMigratedResource, MigratedVideoResourceSchema, VideoResource } from '@/lib/video-resource'
+import { convertToMigratedArticleResource, type Article } from '@/lib/articles'
+import { convertToMigratedTipResource, type Tip } from '@/lib/tips'
+import { convertToMigratedVideoResource, type VideoResource } from '@/lib/video-resource'
 import { sanityQuery } from '@/server/sanity.server'
-import { guid } from '@/utils/guid'
-import slugify from '@sindresorhus/slugify'
 import { eq, or } from 'drizzle-orm'
-import { customAlphabet } from 'nanoid'
-import { z } from 'zod'
 
 async function fetchContentResource(slugOrId: string) {
   const results = await db
@@ -25,6 +21,7 @@ export const migrationFromSanity = inngest.createFunction(
   {
     id: `migration`,
     name: 'migrate stuff from sanity',
+    concurrency: 10,
   },
   {
     event: 'migration',
@@ -54,15 +51,18 @@ export const migrationFromSanity = inngest.createFunction(
       )
     })
 
+    const allArticleResourcesIds = await step.run('fetch article resources from the database', async () => {
+      return await db
+        .select({ id: contentResource.id })
+        .from(contentResource)
+        .where(eq(contentResource.type, 'article'))
+        .execute()
+        .then((results) => results.map((result) => result.id))
+    })
+
     for (const sanityArticleResource of sanityArticleResources) {
-      const canMigrateArticleResource = await step.run('check if article can be migrated', async () => {
-        const existingResource = await fetchContentResource(sanityArticleResource._id)
-
-        return !existingResource
-      })
-
-      if (canMigrateArticleResource && migrationResourceOwner) {
-        step.run('insert article resources into the database', async () => {
+      if (!allArticleResourcesIds.includes(sanityArticleResource._id) && migrationResourceOwner) {
+        await step.run('insert article resources into the database', async () => {
           const migratedResource = convertToMigratedArticleResource({
             article: sanityArticleResource,
             ownerUserId: migrationResourceOwner.id,
@@ -70,7 +70,7 @@ export const migrationFromSanity = inngest.createFunction(
 
           console.log('migrating article', sanityArticleResource._id)
 
-          return db.insert(contentResource).values(migratedResource)
+          db.insert(contentResource).values(migratedResource).execute()
         })
       }
     }
@@ -79,23 +79,30 @@ export const migrationFromSanity = inngest.createFunction(
       return await sanityQuery<VideoResource[]>(`*[_type == "videoResource"]`, { cache: 'no-cache' })
     })
 
+    const allVideoResourcesIds = await step.run('fetch video resources from the database', async () => {
+      return await db
+        .select({ id: contentResource.id })
+        .from(contentResource)
+        .where(eq(contentResource.type, 'videoResource'))
+        .execute()
+        .then((results) => results.map((result) => result.id))
+    })
+
     for (const sanityVideoResource of sanityVideoResources) {
-      const canMigrateVideoResource = await step.run('check if video can be migrated', async () => {
-        const existingResource = await fetchContentResource(sanityVideoResource._id)
+      if (!allVideoResourcesIds.includes(sanityVideoResource._id) && migrationResourceOwner) {
+        await step.run('insert video resources into the database', async () => {
+          try {
+            const migratedResource = convertToMigratedVideoResource({
+              videoResource: sanityVideoResource,
+              ownerUserId: migrationResourceOwner.id,
+            })
 
-        return !existingResource
-      })
+            console.log('migrating video', sanityVideoResource._id)
 
-      if (canMigrateVideoResource && migrationResourceOwner) {
-        step.run('insert video resources into the database', async () => {
-          const migratedResource = convertToMigratedResource({
-            videoResource: sanityVideoResource,
-            ownerUserId: migrationResourceOwner.id,
-          })
-
-          console.log('migrating video', sanityVideoResource._id)
-
-          return db.insert(contentResource).values(migratedResource)
+            db.insert(contentResource).values(migratedResource).execute()
+          } catch (error) {
+            console.error('Error migrating video', error)
+          }
         })
       }
     }
@@ -124,13 +131,22 @@ export const migrationFromSanity = inngest.createFunction(
       })
     })
 
+    const allTipResourcesIds = await step.run('fetch tip resources from the database', async () => {
+      return await db
+        .select({ id: contentResource.id })
+        .from(contentResource)
+        .where(eq(contentResource.type, 'tip'))
+        .execute()
+        .then((results) => results.map((result) => result.id))
+    })
+
     for (const sanityTip of sanityTipResources) {
-      const canMigrateTip = await step.run('check if tip can be migrated', async () => {
-        const existingResource = await fetchContentResource(sanityTip._id)
-        return !existingResource
-      })
-      if (canMigrateTip && migrationResourceOwner) {
-        step.run('insert tip resource into the database', async () => {
+      if (!sanityTip) {
+        continue
+      }
+
+      if (!allTipResourcesIds.includes(sanityTip._id) && migrationResourceOwner) {
+        await step.run('insert tip resource into the database', async () => {
           const migratedResource = convertToMigratedTipResource({
             tip: sanityTip,
             ownerUserId: migrationResourceOwner.id,
@@ -138,7 +154,7 @@ export const migrationFromSanity = inngest.createFunction(
 
           console.log('migrating tip', sanityTip._id)
 
-          return db.insert(contentResource).values(migratedResource)
+          db.insert(contentResource).values(migratedResource).execute()
         })
       }
     }

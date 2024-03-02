@@ -4,9 +4,8 @@ import slugify from '@sindresorhus/slugify'
 import z from 'zod'
 
 export const VideoResourceSchema = z.object({
-  _id: z.string(),
-  _type: z.string(),
-  _updatedAt: z.string(),
+  _id: z.string().optional(),
+  _updatedAt: z.string().optional(),
   title: z.string().optional().nullable(),
   duration: z.number().optional().nullable(),
   muxPlaybackId: z.string().optional().nullable(),
@@ -20,30 +19,32 @@ export const VideoResourceSchema = z.object({
 
 export type VideoResource = z.infer<typeof VideoResourceSchema>
 
+export const TextResourceSchema = z.object({
+  _type: z.string(),
+  _key: z.string(),
+  text: z.string(),
+})
+
 /**
  * This is the schema for the video resource after it has been migrated to the mysql
  * database as a `contentResource`.
  */
 export const MigratedVideoResourceSchema = z.object({
   createdById: z.string(),
-  title: z.string(),
   type: z.string(),
   slug: z.string(),
-  body: z.string().nullable(),
   id: z.string(),
+  resources: z.array(TextResourceSchema).default([]),
   metadata: z.object({
+    title: z.string(),
     state: z.string(),
     muxPlaybackId: z.string(),
     muxAssetId: z.string(),
     duration: z.number().optional(),
-    transcript: z.string().optional().nullable(),
-    transcriptWithScreenshots: z.string().optional().nullable(),
-    srt: z.string().optional().nullable(),
-    wordLevelSrt: z.string().optional().nullable(),
   }),
 })
 
-export function convertToMigratedResource({
+export function convertToMigratedVideoResource({
   videoResource,
   ownerUserId,
 }: {
@@ -52,10 +53,9 @@ export function convertToMigratedResource({
 }) {
   return MigratedVideoResourceSchema.parse({
     ...(ownerUserId ? { createdById: ownerUserId } : {}),
-    title: videoResource.title || 'Untitled Video',
+
     type: 'videoResource',
     slug: slugify(videoResource.title || `untitled-video-${guid()}`),
-    body: null,
     id: videoResource._id,
     resources: [
       ...(videoResource.transcript
@@ -96,6 +96,7 @@ export function convertToMigratedResource({
         : []),
     ],
     metadata: {
+      title: videoResource.title || 'Untitled Video',
       state: videoResource.state,
       muxPlaybackId: videoResource.muxPlaybackId,
       muxAssetId: videoResource.muxAssetId,

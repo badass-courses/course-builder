@@ -4,7 +4,7 @@ import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { MUX_WEBHOOK_EVENT } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedResource, getVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { convertToMigratedVideoResource, getVideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { eq } from 'drizzle-orm'
 
@@ -76,7 +76,7 @@ export const muxVideoAssetError = inngest.createFunction(
           if (!resourceToUpdate) {
             return
           }
-          const migratedResource = convertToMigratedResource({
+          const migratedResource = convertToMigratedVideoResource({
             videoResource: updatedVideoResource,
             ownerUserId: resourceToUpdate.createdById,
           })
@@ -150,7 +150,7 @@ export const muxVideoAssetReady = inngest.createFunction(
           if (!resourceToUpdate) {
             return
           }
-          const migratedResource = convertToMigratedResource({
+          const migratedResource = convertToMigratedVideoResource({
             videoResource: updatedVideoResource,
             ownerUserId: resourceToUpdate.createdById,
           })
