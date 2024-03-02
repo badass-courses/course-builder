@@ -140,7 +140,7 @@ export async function getVideoResource(videoResourceId: string | null) {
       return parsedResource.success ? parsedResource.data : null
     })
     .catch((error) => {
-      throw error
+      return error
     })
 }
 
@@ -171,6 +171,6 @@ export async function getTranscript(videoResourceId: string | null) {
       return (result.rows[0] as { transcript: string | null })?.transcript
     })
     .catch((error) => {
-      throw error
+      return error
     })
 }

@@ -63,7 +63,7 @@ export async function getTip(slug: string): Promise<Tip | null> {
       return parsedTip.success ? parsedTip.data : null
     })
     .catch((error) => {
-      throw error
+      return error
     })
 }
 
