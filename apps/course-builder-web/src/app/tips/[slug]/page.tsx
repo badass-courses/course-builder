@@ -8,7 +8,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
 import { Tip, TipSchema } from '@/lib/tips'
-import { VideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { getTranscript, getVideoResource, VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { sql } from 'drizzle-orm'
@@ -23,7 +23,7 @@ type Props = {
 }
 
 async function getTip(slug: string) {
-  const query = sql<Tip>`
+  const query = sql`
     SELECT
       tips.id as _id,
       tips.type as _type,
@@ -48,7 +48,7 @@ async function getTip(slug: string) {
     WHERE
       tips.type = 'tip'
       AND refs.type = 'videoResource'
-      AND (tips.slug = ${slug} OR tips.id = ${slug})
+      AND (tips.slug = ${slug} OR tips.id = ${slug});
   `
   return db
     .execute(query)
@@ -86,7 +86,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
     <div>
       <main className="mx-auto w-full" id="tip">
         <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
-          <TipActionBar slug={params.slug} tipLoader={tipLoader} />
+          <TipActionBar tipLoader={tipLoader} />
         </Suspense>
 
         <PlayerContainer slug={params.slug} tipLoader={tipLoader} />
@@ -94,7 +94,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
           <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
             <div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
               <div className="flex flex-col lg:col-span-8">
-                <TipBody slug={params.slug} tipLoader={tipLoader} />
+                <TipBody tipLoader={tipLoader} />
               </div>
             </div>
           </div>
@@ -104,7 +104,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
   )
 }
 
-async function TipActionBar({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
+async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const tip = await tipLoader
@@ -147,38 +147,7 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
     notFound()
   }
 
-  const query = sql<VideoResource>`
-    SELECT
-      id,
-      transcriptResources.text AS transcript,
-      JSON_EXTRACT (${contentResource.metadata}, "$.state") AS state,
-      JSON_EXTRACT (${contentResource.metadata}, "$.duration") AS duration,
-      JSON_EXTRACT (${contentResource.metadata}, "$.muxPlaybackId") AS muxPlaybackId
-    FROM
-      ${contentResource},
-      JSON_TABLE (
-        ${contentResource.resources},
-        '$[*]' COLUMNS (
-          _type VARCHAR(255) PATH '$._type',
-          text TEXT PATH '$.text'
-        )
-      ) AS transcriptResources
-    WHERE
-      type = 'videoResource'
-      AND transcriptResources._type = 'transcript'
-      AND (id = ${tip.videoResourceId} OR slug = ${tip.slug})
-    LIMIT
-      10;
- `
-  const videoResourceLoader = db
-    .execute(query)
-    .then((result) => {
-      const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
-      return parsedResource.success ? parsedResource.data : null
-    })
-    .catch((error) => {
-      return error
-    })
+  const videoResourceLoader = getVideoResource(tip.videoResourceId)
 
   return (
     <Suspense fallback={<PlayerContainerSkeleton />}>
@@ -199,38 +168,14 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
   )
 }
 
-async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
+async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
   const tip = await tipLoader
 
   if (!tip) {
     notFound()
   }
 
-  const query = sql`
-    SELECT
-      transcriptResources.text AS transcript
-    FROM
-      ${contentResource},
-      JSON_TABLE (
-        ${contentResource.resources},
-        '$[*]' COLUMNS (
-          _type VARCHAR(255) PATH '$._type',
-          text TEXT PATH '$.text'
-        )
-      ) AS transcriptResources
-    WHERE
-      type = 'videoResource'
-      AND transcriptResources._type = 'transcript'
-      AND id = ${tip.videoResourceId}
- `
-  const transcript = await db
-    .execute(query)
-    .then((result) => {
-      return (result.rows[0] as { transcript: string | null })?.transcript
-    })
-    .catch((error) => {
-      return error
-    })
+  const transcript = await getTranscript(tip.videoResourceId)
 
   return (
     <>
