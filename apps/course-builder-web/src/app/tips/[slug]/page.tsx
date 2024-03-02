@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Suspense, use } from 'react'
+import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -11,7 +11,7 @@ import { Tip, TipSchema } from '@/lib/tips'
 import { VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -23,6 +23,7 @@ type Props = {
 }
 
 async function getTip(slug: string) {
+  console.log('loading tip', slug)
   const query = sql<Tip>`
     SELECT
       tips.id as _id,
@@ -50,14 +51,15 @@ async function getTip(slug: string) {
       AND refs.type = 'videoResource'
       AND (tips.slug = ${slug} OR tips.id = ${slug})
   `
-  return await db
+  return db
     .execute(query)
     .then((result) => {
       const parsedTip = TipSchema.safeParse(result.rows[0])
+      console.log('parsedTip', parsedTip)
       return parsedTip.success ? parsedTip.data : null
     })
     .catch((error) => {
-      console.error('Error getting tip', error)
+      console.log('Error getting tip', error)
       return null
     })
 }
