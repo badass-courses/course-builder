@@ -92,7 +92,7 @@
     "@upstash/ratelimit": "^1.0.1",
     "@upstash/redis": "^1.28.4",
     "ai": "3.0.1",
-    "aws-sdk": "^2.1483.0",
+    "aws-sdk": "^2.1494.0",
     "axios": "^1.5.1",
     "base-64": "^1.0.0",
     "class-variance-authority": "^0.7.0",
