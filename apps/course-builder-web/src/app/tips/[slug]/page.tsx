@@ -60,7 +60,7 @@ async function getTip(slug: string) {
     })
     .catch((error) => {
       console.log('Error getting tip', error)
-      return null
+      return error
     })
 }
 
