@@ -63,7 +63,7 @@ export async function getTip(slug: string): Promise<Tip | null> {
       return parsedTip.success ? parsedTip.data : null
     })
     .catch((error) => {
-      return error
+      throw error
     })
 }
 
@@ -96,14 +96,14 @@ export async function getTipsModule(): Promise<Tip[]> {
       AND refs.type = 'videoResource'
     ORDER BY tips.updatedAt DESC;
   `
-  return await db
+  return db
     .execute(query)
     .then((result) => {
       const parsedTips = z.array(TipSchema).safeParse(result.rows)
       return parsedTips.success ? parsedTips.data : []
     })
     .catch((error) => {
-      return error
+      throw error
     })
 }
 

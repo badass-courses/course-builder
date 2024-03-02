@@ -5,9 +5,8 @@ import { CreateTip } from '@/app/tips/_components/create-tip'
 import { getAbility } from '@/lib/ability'
 import { getTipsModule } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
-import ReactMarkdown from 'react-markdown'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
+import { Card, CardHeader, CardTitle } from '@coursebuilder/ui'
 
 export default async function TipsListPage() {
   return (
@@ -25,6 +24,7 @@ export default async function TipsListPage() {
 
 async function TipList() {
   const tipsModule = await getTipsModule()
+
   return (
     <>
       {tipsModule.map((tip) => (
@@ -34,9 +34,6 @@ async function TipList() {
               <Link href={`/tips/${tip.slug || tip._id}`}>{tip.title}</Link>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ReactMarkdown className="prose dark:prose-invert">{tip.summary ?? tip.body}</ReactMarkdown>
-          </CardContent>
         </Card>
       ))}
     </>
