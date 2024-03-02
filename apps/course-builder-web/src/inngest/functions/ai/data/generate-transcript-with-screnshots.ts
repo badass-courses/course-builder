@@ -3,7 +3,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedResource, getVideoResource } from '@/lib/video-resource'
+import { convertToMigratedVideoResource, getVideoResource } from '@/lib/video-resource'
 import { sanityMutation } from '@/server/sanity.server'
 import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
 import { eq } from 'drizzle-orm'
@@ -61,7 +61,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
         if (!resourceToUpdate) {
           return
         }
-        const migratedResource = convertToMigratedResource({
+        const migratedResource = convertToMigratedVideoResource({
           videoResource: updatedVideoResource,
           ownerUserId: resourceToUpdate.createdById,
         })

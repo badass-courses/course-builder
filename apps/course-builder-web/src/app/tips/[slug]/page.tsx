@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Suspense, use } from 'react'
+import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -7,12 +7,11 @@ import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
-import { getTip, Tip } from '@/lib/tips'
-import { VideoResource } from '@/lib/video-resource'
+import { Tip, TipSchema } from '@/lib/tips'
+import { getTranscript, getVideoResource, VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { eq } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -23,14 +22,47 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
+async function getTip(slug: string) {
+  const query = sql`
+    SELECT
+      tips.id as _id,
+      tips.type as _type,
+      tips.slug,
+      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
+      JSON_EXTRACT (tips.metadata, "$.title") AS title,
+      JSON_EXTRACT (tips.metadata, "$.body") AS body,
+      JSON_EXTRACT (tips.metadata, "$.state") AS state,
+      JSON_EXTRACT (tips.metadata, "$.visibility") AS visibility,
+      refs.id as videoResourceId
+    FROM
+      ${contentResource} as tips,
+      JSON_TABLE (
+        tips.resources,
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          _ref VARCHAR(255) PATH '$._ref'
+        )
+      ) AS videoResources
+    LEFT JOIN ${contentResource} as refs ON videoResources._ref = refs.id
+      AND refs.type = 'videoResource'
+    WHERE
+      tips.type = 'tip'
+      AND refs.type = 'videoResource'
+      AND (tips.slug = ${slug} OR tips.id = ${slug});
+  `
+  return db
+    .execute(query)
+    .then((result) => {
+      const parsedTip = TipSchema.safeParse(result.rows[0])
+      return parsedTip.success ? parsedTip.data : null
+    })
+    .catch((error) => {
+      return error
+    })
+}
+
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const tip = await getTip(params.slug)
-
-  const newTips = await db.select().from(contentResource).where(eq(contentResource.slug, params.slug))
-
-  if (newTips[0]) {
-    console.log('newTips', newTips[0])
-  }
 
   if (!tip) {
     return parent as Metadata
@@ -54,7 +86,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
     <div>
       <main className="mx-auto w-full" id="tip">
         <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
-          <TipActionBar slug={params.slug} tipLoader={tipLoader} />
+          <TipActionBar tipLoader={tipLoader} />
         </Suspense>
 
         <PlayerContainer slug={params.slug} tipLoader={tipLoader} />
@@ -62,7 +94,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
           <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
             <div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
               <div className="flex flex-col lg:col-span-8">
-                <TipBody slug={params.slug} tipLoader={tipLoader} />
+                <TipBody tipLoader={tipLoader} />
               </div>
             </div>
           </div>
@@ -72,7 +104,7 @@ export default async function TipPage({ params }: { params: { slug: string } }) 
   )
 }
 
-async function TipActionBar({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
+async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const tip = await tipLoader
@@ -108,8 +140,6 @@ function PlayerContainerSkeleton() {
 }
 
 async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
   const tip = await tipLoader
   const displayOverlay = false
 
@@ -117,10 +147,7 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
     notFound()
   }
 
-  const videoResourceLoader = sanityQuery<VideoResource>(
-    `*[_type == "videoResource" && _id == "${tip.videoResourceId}"][0]`,
-    { tags: ['tips', tip._id] },
-  )
+  const videoResourceLoader = getVideoResource(tip.videoResourceId)
 
   return (
     <Suspense fallback={<PlayerContainerSkeleton />}>
@@ -141,12 +168,14 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
   )
 }
 
-async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<Tip | null> }) {
+async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
   const tip = await tipLoader
 
   if (!tip) {
     notFound()
   }
+
+  const transcript = await getTranscript(tip.videoResourceId)
 
   return (
     <>
@@ -159,10 +188,10 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
           <ReactMarkdown className="prose dark:prose-invert">{tip.body}</ReactMarkdown>
         </>
       )}
-      {tip.transcript && (
+      {transcript && (
         <div className="w-full max-w-2xl pt-5">
           <h3 className="font-bold">Transcript</h3>
-          <ReactMarkdown className="prose dark:prose-invert">{tip.transcript}</ReactMarkdown>
+          <ReactMarkdown className="prose dark:prose-invert">{transcript}</ReactMarkdown>
         </div>
       )}
     </>

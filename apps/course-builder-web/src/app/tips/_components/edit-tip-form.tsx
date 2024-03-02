@@ -85,15 +85,14 @@ export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps,
 }
 
 const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+  const videoResource = use(videoResourceLoader)
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
-  const [transcript, setTranscript] = React.useState<string | null>(tip.transcript)
+  const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
 
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
-
-  const videoResource = use(videoResourceLoader)
 
   useSocket({
     room: tip._id,
@@ -364,13 +363,12 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
 }
 
 const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+  const videoResource = use(videoResourceLoader)
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
-  const [transcript, setTranscript] = React.useState<string | null>(tip.transcript)
+  const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
-
-  const videoResource = use(videoResourceLoader)
 
   useSocket({
     room: tip._id,

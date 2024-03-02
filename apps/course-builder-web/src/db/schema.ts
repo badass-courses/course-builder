@@ -1,3 +1,4 @@
+import { AdapterAccount } from '@auth/core/adapters'
 import { relations, sql } from 'drizzle-orm'
 import {
   boolean,
@@ -11,7 +12,6 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/mysql-core'
-import { type AdapterAccount } from 'next-auth/adapters'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -285,8 +285,6 @@ export const contentResource = mysqlTable(
     type: varchar('type', { length: 255 }).notNull(),
     slug: varchar('slug', { length: 255 }).notNull().unique(),
     createdById: varchar('createdById', { length: 255 }).notNull(),
-    title: varchar('title', { length: 255 }).notNull(),
-    body: text('body'),
     resources: json('resources').$type<any[]>().default([]),
     metadata: json('metadata').$type<Record<string, any>>().default({}),
     createdAt: timestamp('createdAt', {
@@ -303,7 +301,6 @@ export const contentResource = mysqlTable(
     }),
   },
   (cm) => ({
-    titleIdx: index('title_idx').on(cm.title),
     slugIdx: index('slug_idx').on(cm.slug),
     createdByIdx: index('createdById_idx').on(cm.createdById),
     createdAtIdx: index('createdAt_idx').on(cm.createdAt),

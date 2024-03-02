@@ -18,7 +18,7 @@ export async function reprocessTranscript({ videoResourceId }: { videoResourceId
 
   const videoResource = await getVideoResource(videoResourceId)
 
-  if (videoResource) {
+  if (videoResource?._id) {
     await inngest.send({
       name: VIDEO_RESOURCE_CREATED_EVENT,
       data: {

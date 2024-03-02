@@ -27,30 +27,30 @@ export type Article = z.infer<typeof ArticleSchema>
 
 export const MigratedArticleResourceSchema = z.object({
   createdById: z.string(),
-  title: z.string(),
   type: z.string(),
   slug: z.string(),
-  body: z.string().nullable(),
   id: z.string(),
   metadata: z
     .object({
+      title: z.string().nullable(),
+      body: z.string().nullable().optional(),
       state: z.string(),
       visibility: z.string(),
       description: z.string().optional().nullable(),
       socialImage: z.object({ type: z.string(), url: z.string() }).optional().nullable(),
     })
-    .default({ state: 'draft', visibility: 'unlisted', description: null, socialImage: null }),
+    .default({ title: 'New Article', state: 'draft', visibility: 'unlisted', description: null, socialImage: null }),
 })
 
 export function convertToMigratedArticleResource({ article, ownerUserId }: { article: Article; ownerUserId: string }) {
   return MigratedArticleResourceSchema.parse({
     createdById: ownerUserId,
-    title: article.title,
     type: 'article',
     slug: article.slug,
-    body: article.body,
     id: article._id,
     metadata: {
+      title: article.title,
+      body: article.body,
       state: article.state,
       visibility: article.visibility,
       ...(article.description ? { description: article.description } : null),

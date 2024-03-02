@@ -1,12 +1,14 @@
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { sanityQuery } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
+import { sql } from 'drizzle-orm'
 import z from 'zod'
 
 export const VideoResourceSchema = z.object({
-  _id: z.string(),
-  _type: z.string(),
-  _updatedAt: z.string(),
+  _id: z.string().optional(),
+  _updatedAt: z.string().optional(),
   title: z.string().optional().nullable(),
   duration: z.number().optional().nullable(),
   muxPlaybackId: z.string().optional().nullable(),
@@ -20,30 +22,32 @@ export const VideoResourceSchema = z.object({
 
 export type VideoResource = z.infer<typeof VideoResourceSchema>
 
+export const TextResourceSchema = z.object({
+  _type: z.string(),
+  _key: z.string(),
+  text: z.string(),
+})
+
 /**
  * This is the schema for the video resource after it has been migrated to the mysql
  * database as a `contentResource`.
  */
 export const MigratedVideoResourceSchema = z.object({
   createdById: z.string(),
-  title: z.string(),
   type: z.string(),
   slug: z.string(),
-  body: z.string().nullable(),
   id: z.string(),
+  resources: z.array(TextResourceSchema).default([]),
   metadata: z.object({
+    title: z.string(),
     state: z.string(),
     muxPlaybackId: z.string(),
     muxAssetId: z.string(),
     duration: z.number().optional(),
-    transcript: z.string().optional().nullable(),
-    transcriptWithScreenshots: z.string().optional().nullable(),
-    srt: z.string().optional().nullable(),
-    wordLevelSrt: z.string().optional().nullable(),
   }),
 })
 
-export function convertToMigratedResource({
+export function convertToMigratedVideoResource({
   videoResource,
   ownerUserId,
 }: {
@@ -52,10 +56,9 @@ export function convertToMigratedResource({
 }) {
   return MigratedVideoResourceSchema.parse({
     ...(ownerUserId ? { createdById: ownerUserId } : {}),
-    title: videoResource.title || 'Untitled Video',
+
     type: 'videoResource',
     slug: slugify(videoResource.title || `untitled-video-${guid()}`),
-    body: null,
     id: videoResource._id,
     resources: [
       ...(videoResource.transcript
@@ -96,6 +99,7 @@ export function convertToMigratedResource({
         : []),
     ],
     metadata: {
+      title: videoResource.title || 'Untitled Video',
       state: videoResource.state,
       muxPlaybackId: videoResource.muxPlaybackId,
       muxAssetId: videoResource.muxAssetId,
@@ -104,35 +108,69 @@ export function convertToMigratedResource({
   })
 }
 
-export async function getVideoResource(id: string | null, tags: string[] = []): Promise<VideoResource | null> {
-  if (!id) {
+export async function getVideoResource(videoResourceId: string | null) {
+  if (!videoResourceId) {
     return null
   }
-  const videoResourceData = await sanityQuery<VideoResource | null>(
-    `*[(_id == "${id}")][0]{
-        _id,
-        _type,
-        _updatedAt,
-        title,
-        duration,
-        muxAssetId,
-        transcript,
-        state,
-        srt,
-        wordLevelSrt,
-        muxPlaybackId,
-        transcriptWithScreenshots
-  }`,
-    { tags },
-  )
+  const query = sql`
+    SELECT
+      id,
+      transcriptResources.text AS transcript,
+      JSON_EXTRACT (${contentResource.metadata}, "$.state") AS state,
+      JSON_EXTRACT (${contentResource.metadata}, "$.duration") AS duration,
+      JSON_EXTRACT (${contentResource.metadata}, "$.muxPlaybackId") AS muxPlaybackId
+    FROM
+      ${contentResource},
+      JSON_TABLE (
+        ${contentResource.resources},
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          text TEXT PATH '$.text'
+        )
+      ) AS transcriptResources
+    WHERE
+      type = 'videoResource'
+      AND transcriptResources._type = 'transcript'
+      AND (id = ${videoResourceId});
+ `
+  return db
+    .execute(query)
+    .then((result) => {
+      const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
+      return parsedResource.success ? parsedResource.data : null
+    })
+    .catch((error) => {
+      return error
+    })
+}
 
-  const videoResource = VideoResourceSchema.safeParse(videoResourceData)
-
-  if (videoResource.success) {
-    return videoResource.data
+export async function getTranscript(videoResourceId: string | null) {
+  if (!videoResourceId) {
+    return null
   }
-
-  console.error('Failed to parse video resource', videoResource.error)
-
-  return null
+  const query = sql`
+    SELECT
+      transcriptResources.text AS transcript
+    FROM
+      ${contentResource},
+      JSON_TABLE (
+        ${contentResource.resources},
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          text TEXT PATH '$.text'
+        )
+      ) AS transcriptResources
+    WHERE
+      type = 'videoResource'
+      AND transcriptResources._type = 'transcript'
+      AND id = ${videoResourceId};
+ `
+  return db
+    .execute(query)
+    .then((result) => {
+      return (result.rows[0] as { transcript: string | null })?.transcript
+    })
+    .catch((error) => {
+      return error
+    })
 }
