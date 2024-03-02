@@ -42,8 +42,8 @@ async function getTip(slug: string) {
           _type VARCHAR(255) PATH '$._type',
           _ref VARCHAR(255) PATH '$._ref'
         )
-      ) AS transcriptResource
-    LEFT JOIN ${contentResource} as refs ON transcriptResource._ref = refs.id
+      ) AS videoResources
+    LEFT JOIN ${contentResource} as refs ON videoResources._ref = refs.id
       AND refs.type = 'videoResource'
     WHERE
       tips.type = 'tip'
@@ -145,7 +145,7 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
   const query = sql<VideoResource>`
     SELECT
       id,
-      transcriptResource.text AS transcript,
+      transcriptResources.text AS transcript,
       JSON_EXTRACT (${contentResource.metadata}, "$.state") AS state,
       JSON_EXTRACT (${contentResource.metadata}, "$.duration") AS duration,
       JSON_EXTRACT (${contentResource.metadata}, "$.muxPlaybackId") AS muxPlaybackId
@@ -157,10 +157,10 @@ async function PlayerContainer({ slug, tipLoader }: { slug: string; tipLoader: P
           _type VARCHAR(255) PATH '$._type',
           text TEXT PATH '$.text'
         )
-      ) AS transcriptResource
+      ) AS transcriptResources
     WHERE
       type = 'videoResource'
-      AND transcriptResource._type = 'transcript'
+      AND transcriptResources._type = 'transcript'
       AND (id = ${tip.videoResourceId} OR slug = ${tip.slug})
     LIMIT
       10;
@@ -198,7 +198,7 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
 
   const query = sql`
     SELECT
-      transcriptResource.text AS transcript
+      transcriptResources.text AS transcript
     FROM
       ${contentResource},
       JSON_TABLE (
@@ -207,10 +207,10 @@ async function TipBody({ slug, tipLoader }: { slug: string; tipLoader: Promise<T
           _type VARCHAR(255) PATH '$._type',
           text TEXT PATH '$.text'
         )
-      ) AS transcriptResource
+      ) AS transcriptResources
     WHERE
       type = 'videoResource'
-      AND transcriptResource._type = 'transcript'
+      AND transcriptResources._type = 'transcript'
       AND id = ${tip.videoResourceId}
  `
   const transcript = await db.execute(query).then((result) => {
