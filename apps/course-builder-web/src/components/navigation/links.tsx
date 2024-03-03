@@ -149,7 +149,9 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
   const [shouldAnimate, setShouldAnimate] = React.useState(false)
   React.useEffect(()=>{
 
-    if(!shouldAnimate) return
+    if(!shouldAnimate) {
+      return
+    }
 
     if (!isMenuOpened) {
           await path02Controls.start(path02Variants.moving)
