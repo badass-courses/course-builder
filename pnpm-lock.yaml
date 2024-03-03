@@ -144,7 +144,7 @@ importers:
         specifier: ^6.2.3
         version: 6.2.4
       '@codemirror/language-data':
-        specifier: ^6.3.1
+        specifier: ^6.4.1
         version: 6.4.1(@codemirror/view@6.24.1)
       '@codemirror/search':
         specifier: ^6.5.5
@@ -167,6 +167,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.3.2
         version: 3.3.4(react-hook-form@7.51.0)
+      '@lezer/highlight':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.0
         version: 3.0.1(webpack@5.90.3)
@@ -299,6 +302,9 @@ importers:
       '@types/uuid':
         specifier: ^9.0.6
         version: 9.0.8
+      '@uiw/codemirror-themes':
+        specifier: ^4.21.24
+        version: 4.21.24(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)
       '@uploadthing/react':
         specifier: 5.7.1-canary.65ab2fd
         version: 5.7.1-canary.65ab2fd(next@14.1.2-canary.1)(react@18.3.0-canary-03d6f7cf0-20240209)(uploadthing@5.7.5-canary.65ab2fd)
@@ -10551,6 +10557,18 @@ packages:
       '@codemirror/view': 6.24.1
     dev: false
 
+  /@uiw/codemirror-themes@4.21.24(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1):
+    resolution: {integrity: sha512-InY24KWP8YArDBACWHKFZ6ZU+WCvRHf3ZB2cCVxMVN35P1ANUmRzpAP2ernZQ5OIriL1/A/kXgD0Zg3Y65PNgg==}
+    peerDependencies:
+      '@codemirror/language': '>=6.0.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/language': 6.10.1
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.24.1
+    dev: false
+
   /@uiw/react-codemirror@4.21.24(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.13.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.24.1)(codemirror@6.0.1)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
     resolution: {integrity: sha512-8zs5OuxbhikHocHBsVBMuW1vqlv4ccZAkt4rFwr7ebLP2Q6RwHsjpsR9GeGyAigAqonKRoeHugqF78UMrkaTgg==}
     peerDependencies:
@@ -12559,6 +12577,7 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
     dev: false
+    bundledDependencies: false
 
   /crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
