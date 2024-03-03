@@ -109,8 +109,6 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
   const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
   const router = useRouter()
 
-  console.log({ transcriptWithScreenshots })
-
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
 
   useSocket({

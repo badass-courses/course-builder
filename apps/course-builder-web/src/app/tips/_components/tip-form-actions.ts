@@ -6,14 +6,13 @@ import { contentResource } from '@/db/schema'
 import { OCR_WEBHOOK_EVENT } from '@/inngest/events/ocr-webhook'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { convertToMigratedTipResource, getTip, NewTip, TipUpdate } from '@/lib/tips'
+import { convertToMigratedTipResource, getTip, type NewTip, type TipUpdate } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
-import { z } from 'zod'
 
 export async function requestCodeExtraction(options: { imageUrl?: string; resourceId?: string }) {
   const session = await getServerAuthSession()
