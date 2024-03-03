@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { performOCR, uploadImage } from '@/utils/aws'
 import OpenAI from 'openai'
 
@@ -6,18 +7,18 @@ const openai = new OpenAI({
 })
 
 export async function extractCodeFromScreenshot(screenshotUrl: string) {
-  const image_download = await fetch(screenshotUrl)
-  const contentType = image_download.headers.get('content-type') ?? undefined
+  const imageDownload = await fetch(screenshotUrl)
+  const contentType = imageDownload.headers.get('content-type') ?? undefined
   const contentLength =
-    image_download.headers.get('content-length') != null
-      ? parseInt(image_download.headers.get('content-length')!)
+    imageDownload.headers.get('content-length') != null
+      ? parseInt(imageDownload.headers.get('content-length')!)
       : undefined
-  const body = await image_download.arrayBuffer()
-  const bucket_name = process.env.AWS_BUCKET_NAME || 'eggheadimages'
+  const body = await imageDownload.arrayBuffer()
+  const bucketName = env.AWS_BUCKET_NAME || 'coursebuilderimages'
   const filename = `ocr/${Date.now()}.png`
 
-  await uploadImage(bucket_name, filename, Buffer.from(body), contentType!, contentLength!)
-  const text = await performOCR(bucket_name, filename)
+  await uploadImage(bucketName, filename, Buffer.from(body), contentType!, contentLength!)
+  const text = await performOCR(bucketName, filename)
 
   const systemMessage =
     `You are an assistant specializing in reformatting code that has been OCR'd from a screenshot of a video. It is important that the code you return accurately reflects the code from the screenshot without adjusting its functionality or resolving any comments.`.trim()

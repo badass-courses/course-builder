@@ -14,7 +14,7 @@ import {
 } from '@/inngest/functions/mux/mux-webhooks-handlers'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { weeklySignupDigest } from '@/inngest/functions/notify/creator/weekly-signups'
-import { perform_code_extraction } from '@/inngest/functions/ocr/ocr-code-extractor'
+import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { removeCompletedVideo } from '@/inngest/functions/remove-completed-video'
 import { tipChat } from '@/inngest/functions/tips/chat'
@@ -44,6 +44,6 @@ export const inngestConfig = {
     orderTranscript,
     emailSendBroadcast,
     migrationFromSanity,
-    perform_code_extraction,
+    performCodeExtraction,
   ],
 }
