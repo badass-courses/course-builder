@@ -146,7 +146,7 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
   const path01Controls = useAnimationControls()
   const path02Controls = useAnimationControls()
 
-  const [shouldAnimate, serShouldAnimate] = React.useState(false)
+  const [shouldAnimate, setShouldAnimate] = React.useState(false)
   React.useEffect(()=>{
 
     if(!shouldAnimate) return
@@ -162,7 +162,7 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
         }
 
     setShouldAnimate(false)
-  },[isMenuOoened, isMenuOpened])
+  },[shouldAnimate, isMenuOpened])
 
   return (
     <button
