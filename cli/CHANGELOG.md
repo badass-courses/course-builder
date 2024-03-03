@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.1
+
+### Patch Changes
+
+- [#90](https://github.com/badass-courses/course-builder/pull/90) [`644394f1bb9584de7f6dcfb6803b914991a5a149`](https://github.com/badass-courses/course-builder/commit/644394f1bb9584de7f6dcfb6803b914991a5a149) Thanks [@joelhooks](https://github.com/joelhooks)! - bumping dependency versions
+
 ## 8.0.0
 
 ### Major Changes
