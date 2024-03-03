@@ -153,7 +153,8 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
       return
     }
 
-    if (!isMenuOpened) {
+    async function animateMenu() {
+if (!isMenuOpened) {
           await path02Controls.start(path02Variants.moving)
           path01Controls.start(path01Variants.open)
           path02Controls.start(path02Variants.open)
@@ -164,6 +165,11 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
         }
 
     setShouldAnimate(false)
+      
+    }
+    
+animateMenu()
+    
   },[shouldAnimate, isMenuOpened])
 
   return (
