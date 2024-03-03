@@ -93,7 +93,7 @@
     "@uploadthing/react": "5.7.1-canary.65ab2fd",
     "@upstash/ratelimit": "^1.0.1",
     "@upstash/redis": "^1.28.4",
-    "ai": "3.0.1",
+    "ai": "3.0.2",
     "aws-sdk": "^2.1494.0",
     "axios": "^1.5.1",
     "base-64": "^1.0.0",
@@ -154,6 +154,7 @@
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.10",
     "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.22.4",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
@@ -162,7 +163,7 @@
     "@types/base-64": "^1.0.1",
     "@types/eslint": "^8.44.2",
     "@types/json-schema": "^7.0.14",
-    "@types/node": "^18.17.0",
+    "@types/node": "^20.11.24",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/react-gravatar": "^2.6.13",
