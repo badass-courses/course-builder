@@ -1,9 +1,10 @@
+import { env } from '@/env.mjs'
 import aws from 'aws-sdk'
 
 aws.config.update({
-  region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: env.AWS_REGION,
+  accessKeyId: env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
 })
 
 const s3 = new aws.S3()

@@ -109,7 +109,7 @@ export function Links({ className }: { className?: string }) {
                   href={href}
                   className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
                   passHref
-                  onClick={() => setMenuOpen(false) }
+                  onClick={() => setMenuOpen(false)}
                 >
                   {label}
                 </Link>
@@ -147,30 +147,27 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
   const path02Controls = useAnimationControls()
 
   const [shouldAnimate, setShouldAnimate] = React.useState(false)
-  React.useEffect(()=>{
-
-    if(!shouldAnimate) {
+  React.useEffect(() => {
+    if (!shouldAnimate) {
       return
     }
 
     async function animateMenu() {
-if (!isMenuOpened) {
-          await path02Controls.start(path02Variants.moving)
-          path01Controls.start(path01Variants.open)
-          path02Controls.start(path02Variants.open)
-        } else {
-          path01Controls.start(path01Variants.closed)
-          await path02Controls.start(path02Variants.moving)
-          path02Controls.start(path02Variants.closed)
-        }
+      if (!isMenuOpened) {
+        await path02Controls.start(path02Variants.moving)
+        path01Controls.start(path01Variants.open)
+        path02Controls.start(path02Variants.open)
+      } else {
+        path01Controls.start(path01Variants.closed)
+        await path02Controls.start(path02Variants.moving)
+        path02Controls.start(path02Variants.closed)
+      }
 
-    setShouldAnimate(false)
-      
+      setShouldAnimate(false)
     }
-    
-animateMenu()
-    
-  },[shouldAnimate, isMenuOpened])
+
+    animateMenu()
+  }, [shouldAnimate, isMenuOpened])
 
   return (
     <button
