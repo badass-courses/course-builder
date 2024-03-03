@@ -109,6 +109,7 @@ export function Links({ className }: { className?: string }) {
                   href={href}
                   className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
                   passHref
+                  onClick={() => setMenuOpen(false) }
                 >
                   {label}
                 </Link>
