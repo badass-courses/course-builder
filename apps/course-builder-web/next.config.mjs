@@ -24,6 +24,15 @@ const config = {
   experimental: {
     ppr: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'image.mux.com',
+        port: '',
+      },
+    ],
+  },
   pageExtensions: ['mdx', 'ts', 'tsx'],
   transpilePackages: ['@coursebuilder/ui'],
   // @ts-expect-error

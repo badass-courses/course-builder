@@ -3,8 +3,10 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
+import { OCR_WEBHOOK_EVENT } from '@/inngest/events/ocr-webhook'
+import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { convertToMigratedTipResource, getTip } from '@/lib/tips'
+import { convertToMigratedTipResource, getTip, NewTip, TipUpdate } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
@@ -13,12 +15,30 @@ import { eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
-export const NewTipSchema = z.object({
-  title: z.string().min(2).max(90),
-  videoResourceId: z.string().min(4, 'Please upload a video'),
-})
+export async function requestCodeExtraction(options: { imageUrl?: string; resourceId?: string }) {
+  const session = await getServerAuthSession()
+  const ability = getAbility({ user: session?.user })
+  const user = session?.user
 
-export type NewTip = z.infer<typeof NewTipSchema>
+  if (!options.imageUrl) {
+    throw new Error('Image URL is required')
+  }
+
+  if (!user || !ability.can('create', 'Content')) {
+    throw new Error('Unauthorized')
+  }
+
+  await inngest.send({
+    name: OCR_WEBHOOK_EVENT,
+    data: {
+      ocrWebhookEvent: {
+        screenshotUrl: options.imageUrl,
+        resourceId: options.resourceId,
+      },
+    },
+    user,
+  })
+}
 
 export async function createTip(input: NewTip) {
   const session = await getServerAuthSession()
@@ -63,14 +83,6 @@ export async function createTip(input: NewTip) {
 
   return tip
 }
-
-export const TipUpdateSchema = z.object({
-  _id: z.string(),
-  title: z.string().min(2).max(90),
-  body: z.string().optional().nullable(),
-})
-
-export type TipUpdate = z.infer<typeof TipUpdateSchema>
 
 export async function updateTip(input: TipUpdate) {
   const session = await getServerAuthSession()
