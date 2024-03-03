@@ -146,13 +146,12 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
   const path01Controls = useAnimationControls()
   const path02Controls = useAnimationControls()
 
-  return (
-    <button
-      className="z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
-      onClick={async () => {
-        // menuControls.start(isMenuOpened ? 'close' : 'open')
-        setMenuOpened(!isMenuOpened)
-        if (!isMenuOpened) {
+  const [shouldAnimate, serShouldAnimate] = React.useState(false)
+  React.useEffect(()=>{
+
+    if(!shouldAnimate) return
+
+    if (!isMenuOpened) {
           await path02Controls.start(path02Variants.moving)
           path01Controls.start(path01Variants.open)
           path02Controls.start(path02Variants.open)
@@ -161,6 +160,17 @@ const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menu
           await path02Controls.start(path02Variants.moving)
           path02Controls.start(path02Variants.closed)
         }
+
+    setShouldAnimate(false)
+  },[isMenuOoened, isMenuOpened])
+
+  return (
+    <button
+      className="z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
+      onClick={async () => {
+        // menuControls.start(isMenuOpened ? 'close' : 'open')
+        setMenuOpened(!isMenuOpened)
+        setShouldAnimate(true)
       }}
     >
       <svg width="24" height="24" viewBox="0 0 24 24">
