@@ -144,7 +144,7 @@ importers:
         specifier: ^6.2.3
         version: 6.2.4
       '@codemirror/language-data':
-        specifier: ^6.3.1
+        specifier: ^6.4.1
         version: 6.4.1(@codemirror/view@6.24.1)
       '@codemirror/search':
         specifier: ^6.5.5
@@ -156,7 +156,7 @@ importers:
         specifier: ^6.22.3
         version: 6.24.1
       '@coursebuilder/ui':
-        specifier: ^1.0.2
+        specifier: ^1.0.3
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -167,6 +167,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.3.2
         version: 3.3.4(react-hook-form@7.51.0)
+      '@lezer/highlight':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.0
         version: 3.0.1(webpack@5.90.3)
@@ -299,6 +302,9 @@ importers:
       '@types/uuid':
         specifier: ^9.0.6
         version: 9.0.8
+      '@uiw/codemirror-themes':
+        specifier: ^4.21.24
+        version: 4.21.24(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)
       '@uploadthing/react':
         specifier: 5.7.1-canary.65ab2fd
         version: 5.7.1-canary.65ab2fd(next@14.1.2-canary.1)(react@18.3.0-canary-03d6f7cf0-20240209)(uploadthing@5.7.5-canary.65ab2fd)
@@ -10547,6 +10553,18 @@ packages:
       '@codemirror/language': 6.10.1
       '@codemirror/lint': 6.5.0
       '@codemirror/search': 6.5.6
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.24.1
+    dev: false
+
+  /@uiw/codemirror-themes@4.21.24(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1):
+    resolution: {integrity: sha512-InY24KWP8YArDBACWHKFZ6ZU+WCvRHf3ZB2cCVxMVN35P1ANUmRzpAP2ernZQ5OIriL1/A/kXgD0Zg3Y65PNgg==}
+    peerDependencies:
+      '@codemirror/language': '>=6.0.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/language': 6.10.1
       '@codemirror/state': 6.4.1
       '@codemirror/view': 6.24.1
     dev: false
