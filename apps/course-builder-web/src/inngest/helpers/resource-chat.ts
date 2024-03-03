@@ -150,8 +150,6 @@ export async function resourceChat({
     })
   }
 
-  console.log({ currentUserMessage, currentResourceMetadata })
-
   messages = await step.run('answer the user prompt', async () => {
     if (!currentUserMessage) {
       throw new Error('No user message')

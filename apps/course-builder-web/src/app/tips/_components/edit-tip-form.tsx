@@ -2,16 +2,17 @@
 
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
-import { TipUpdate, updateTip } from '@/app/tips/_components/tip-form-actions'
+import { requestCodeExtraction, updateTip } from '@/app/tips/_components/tip-form-actions'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useSocket } from '@/hooks/use-socket'
 import { FeedbackMarker } from '@/lib/feedback-marker'
-import { TipSchema, type Tip } from '@/lib/tips'
+import { TipSchema, TipUpdate, type Tip } from '@/lib/tips'
 import { cn } from '@/lib/utils'
 import { VideoResource } from '@/lib/video-resource'
 import { api } from '@/trpc/react'
@@ -53,6 +54,7 @@ const NewTipFormSchema = z.object({
 type EditTipFormProps = {
   tip: Tip
   videoResourceLoader: Promise<VideoResource | null>
+  transcriptWithScreenshotsLoader?: Promise<string | null>
   form: UseFormReturn<z.infer<typeof TipSchema>>
 }
 
@@ -67,7 +69,11 @@ const WIDGETS = new Set([
   },
 ])
 
-export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps, 'form'>) {
+export function EditTipForm({
+  tip,
+  videoResourceLoader,
+  transcriptWithScreenshotsLoader,
+}: Omit<EditTipFormProps, 'form'>) {
   const form = useForm<z.infer<typeof TipSchema>>({
     resolver: zodResolver(NewTipFormSchema),
     defaultValues: {
@@ -80,12 +86,23 @@ export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps,
   return isMobile ? (
     <MobileEditTipForm tip={tip} form={form} videoResourceLoader={videoResourceLoader} />
   ) : (
-    <DesktopEditTipForm tip={tip} form={form} videoResourceLoader={videoResourceLoader} />
+    <DesktopEditTipForm
+      tip={tip}
+      form={form}
+      videoResourceLoader={videoResourceLoader}
+      transcriptWithScreenshotsLoader={transcriptWithScreenshotsLoader}
+    />
   )
 }
 
-const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
+  tip,
+  form,
+  videoResourceLoader,
+  transcriptWithScreenshotsLoader,
+}) => {
   const videoResource = use(videoResourceLoader)
+  const transcriptWithScreenshots = transcriptWithScreenshotsLoader ? use(transcriptWithScreenshotsLoader) : null
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
@@ -277,7 +294,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
           </ScrollArea>
         </ResizablePanel>
         <ResizableHandle />
-        {Boolean(videoResource?.transcriptWithScreenshots) && (
+        {Boolean(transcriptWithScreenshots) && (
           <>
             <ResizablePanel
               defaultSize={20}
@@ -293,20 +310,38 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
                     className="prose dark:prose-invert prose-sm"
                     components={{
                       img: (props) => {
+                        if (!props.src) return null
+
                         return (
-                          <a href={props.src} target="_blank" rel="noreferrer">
-                            <img
-                              {...props}
-                              onDragStart={(e) => {
-                                e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
+                          <div>
+                            <a href={props.src} target="_blank" rel="noreferrer">
+                              <Image
+                                {...props}
+                                src={props.src}
+                                alt={'screenshot'}
+                                width={800}
+                                height={600}
+                                onDragStart={(e) => {
+                                  e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
+                                }}
+                              />
+                            </a>
+                            <Button
+                              onClick={() => {
+                                const screenshotUrl = new URL(props.src as string)
+                                screenshotUrl.searchParams.set('width', '1920')
+                                screenshotUrl.searchParams.set('height', '1080')
+                                requestCodeExtraction({ imageUrl: screenshotUrl.toString(), resourceId: tip._id })
                               }}
-                            />
-                          </a>
+                            >
+                              Get Code Text
+                            </Button>
+                          </div>
                         )
                       },
                     }}
                   >
-                    {videoResource?.transcriptWithScreenshots}
+                    {transcriptWithScreenshots}
                   </ReactMarkdown>
                 </div>
               </ScrollArea>
@@ -362,7 +397,12 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResour
   )
 }
 
-const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+const MobileEditTipForm: React.FC<EditTipFormProps> = ({
+  tip,
+  form,
+  videoResourceLoader,
+  transcriptWithScreenshotsLoader,
+}) => {
   const videoResource = use(videoResourceLoader)
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])

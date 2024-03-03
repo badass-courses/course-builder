@@ -38,6 +38,10 @@ export function ResourceChatResponse({ requestId }: { requestId: string }) {
           if (messageData.body === STREAM_COMPLETE) {
             // When stream is complete, do not append anything.
             // If you need to handle the end of a stream (e.g., to clean up or mark as complete), do it here.
+          } else if (messageData.name === 'code.extraction.completed') {
+            setMessages((prevMessages) => {
+              return [...prevMessages, { body: messageData.body.content, requestId: messageData.requestId }]
+            })
           } else {
             // It's a part of an assistant's message (streaming), append to the last assistant message.
             setMessages((prev) => {

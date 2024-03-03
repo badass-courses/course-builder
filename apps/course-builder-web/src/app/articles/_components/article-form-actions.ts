@@ -47,7 +47,6 @@ export async function createArticle(input: NewArticle) {
   const article = await getArticle(newArticleId)
 
   if (article && session?.user) {
-    console.log('inserting article', { article })
     await db.insert(contentResource).values(convertToMigratedArticleResource({ article, ownerUserId: session.user.id }))
   }
 
@@ -71,12 +70,9 @@ export async function updateArticle(input: Article) {
 
   const currentArticle = await getArticle(input._id)
 
-  console.log({ currentArticle, input })
-
   let slugUpdatedTo = input.slug
 
   if (input.title !== currentArticle?.title) {
-    console.log('updating title and slug')
     const splitSlug = currentArticle?.slug.split('~') || ['', guid()]
     const newSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
     await sanityMutation([

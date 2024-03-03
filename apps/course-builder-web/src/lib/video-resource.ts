@@ -108,7 +108,7 @@ export function convertToMigratedVideoResource({
   })
 }
 
-export async function getVideoResource(videoResourceId: string | null) {
+export async function getVideoResource(videoResourceId: string | null): Promise<VideoResource | null> {
   if (!videoResourceId) {
     return null
   }
@@ -171,6 +171,39 @@ export async function getTranscript(videoResourceId: string | null) {
       return (result.rows[0] as { transcript: string | null })?.transcript
     })
     .catch((error) => {
+      return error
+    })
+}
+
+export async function getTranscriptWithScreenshots(videoResourceId: string | null): Promise<string | null> {
+  if (!videoResourceId) {
+    return null
+  }
+  const query = sql`
+    SELECT
+      transcriptWithScreenshots.text AS text
+    FROM
+      ${contentResource},
+      JSON_TABLE (
+        ${contentResource.resources},
+        '$[*]' COLUMNS (
+          _type VARCHAR(255) PATH '$._type',
+          text TEXT PATH '$.text'
+        )
+      ) AS transcriptWithScreenshots
+    WHERE
+      type = 'videoResource'
+      AND transcriptWithScreenshots._type = 'transcriptWithScreenshots'
+      AND id = ${videoResourceId};
+ `
+  return db
+    .execute(query)
+    .then((result) => {
+      console.log(result)
+      return (result.rows[0] as { text: string | null })?.text || null
+    })
+    .catch((error) => {
+      console.log(error)
       return error
     })
 }

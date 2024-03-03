@@ -11,6 +11,7 @@ export type OcrWebhook = {
 
 export const OcrWebhookEventSchema = z.object({
   screenshotUrl: z.string().nullable(),
+  resourceId: z.string().nullable().optional(),
 })
 
 export type OcrWebhookEvent = z.infer<typeof OcrWebhookEventSchema>

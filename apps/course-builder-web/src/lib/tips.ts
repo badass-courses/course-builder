@@ -152,3 +152,18 @@ export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; o
     },
   })
 }
+
+export const NewTipSchema = z.object({
+  title: z.string().min(2).max(90),
+  videoResourceId: z.string().min(4, 'Please upload a video'),
+})
+
+export type NewTip = z.infer<typeof NewTipSchema>
+
+export const TipUpdateSchema = z.object({
+  _id: z.string(),
+  title: z.string().min(2).max(90),
+  body: z.string().optional().nullable(),
+})
+
+export type TipUpdate = z.infer<typeof TipUpdateSchema>

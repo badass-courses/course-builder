@@ -2,8 +2,9 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { createTip, NewTip, NewTipSchema } from '@/app/tips/_components/tip-form-actions'
+import { createTip } from '@/app/tips/_components/tip-form-actions'
 import { TipUploader } from '@/app/tips/_components/tip-uploader'
+import { NewTip, NewTipSchema } from '@/lib/tips'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
