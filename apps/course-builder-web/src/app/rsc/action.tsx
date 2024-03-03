@@ -1,5 +1,8 @@
+import { headers } from 'next/headers'
 import { Purchase } from '@/app/rsc/purchase'
+import { redis } from '@/server/redis-client'
 import { TAnyToolDefinitionArray, TToolDefinitionMap } from '@/utils/tool-definition'
+import { Ratelimit } from '@upstash/ratelimit'
 import { OpenAIStream } from 'ai'
 import { createAI, createStreamableUI, getMutableAIState, render } from 'ai/rsc'
 import { OpenAI } from 'openai'
@@ -79,6 +82,24 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
 
 async function submitUserMessage(content: string) {
   'use server'
+
+  const ip = headers().get('x-forwarded-for')
+  const ratelimit = new Ratelimit({
+    redis,
+    // rate limit to 5 requests per 10 seconds
+    limiter: Ratelimit.slidingWindow(10, '12h'),
+  })
+
+  const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`)
+
+  console.log({ success, limit, reset, remaining, ip })
+
+  if (!success) {
+    return {
+      id: Date.now(),
+      display: <div>Rate limit exceeded. Please try again in {reset} seconds.</div>,
+    }
+  }
 
   console.log('submitUserMessage', content)
 
