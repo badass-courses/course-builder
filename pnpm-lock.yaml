@@ -479,9 +479,9 @@ importers:
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
-      y-codemirror.next:
-        specifier: ^0.3.2
-        version: 0.3.2(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.14)
+      y-codemirror.jh:
+        specifier: 0.3.2-joel-fork
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.14)
       y-partykit:
         specifier: ^0.0.21
         version: 0.0.21
@@ -24503,8 +24503,8 @@ packages:
     engines: {node: '>=0.4'}
     dev: false
 
-  /y-codemirror.next@0.3.2(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.14):
-    resolution: {integrity: sha512-3ksMXoietzNkrgluG9ut+5q4PNHCS6sQ+mHd44hNX1s7TBe4iDgOOIswfY3oLsdamZLAUPr+TnRdYgYuNDs7Qg==}
+  /y-codemirror.jh@0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.14):
+    resolution: {integrity: sha512-lEi5ZCtfXJpxNAu3x++/ssXPE5pJkGP9Y659fzu2nBPBFtP1EKtQUrXIy23PUI4NTvQ6vzSNFjhjGsKIPw/6DQ==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0

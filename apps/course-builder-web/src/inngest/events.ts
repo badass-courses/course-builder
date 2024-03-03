@@ -1,5 +1,5 @@
 import { FeedbackMarker } from '@/lib/feedback-marker'
-import type { Session } from 'next-auth/core/types'
+import { Session } from 'next-auth'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
 
 export const AI_WRITING_COMPLETED_EVENT = 'ai/writing-completed'
