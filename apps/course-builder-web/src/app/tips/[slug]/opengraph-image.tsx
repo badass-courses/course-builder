@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { getTip } from '@/lib/tips'
+import { getTip } from '@/lib/tips-query'
 
 export const runtime = 'edge'
 export const revalidate = 60

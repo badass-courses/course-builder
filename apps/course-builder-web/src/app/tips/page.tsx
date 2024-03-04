@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { CreateTip } from '@/app/tips/_components/create-tip'
 import { getAbility } from '@/lib/ability'
-import { getTipsModule } from '@/lib/tips'
+import { getTipsModule } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { Card, CardHeader, CardTitle } from '@coursebuilder/ui'
