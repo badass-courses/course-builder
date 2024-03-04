@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.2
+
+### Patch Changes
+
+- [#94](https://github.com/badass-courses/course-builder/pull/94) [`145110e98d0fec29cb7272d00b6c62b15e69d44f`](https://github.com/badass-courses/course-builder/commit/145110e98d0fec29cb7272d00b6c62b15e69d44f) Thanks [@joelhooks](https://github.com/joelhooks)! - Changes to get Vercel's `ai` package running for RSC streaming stuff
+
 ## 8.0.1
 
 ### Patch Changes
