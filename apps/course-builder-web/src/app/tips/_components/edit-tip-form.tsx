@@ -316,11 +316,9 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
                           <div>
                             <a href={props.src} target="_blank" rel="noreferrer">
                               <Image
-                                {...props}
                                 src={props.src}
                                 alt={'screenshot'}
-                                width={800}
-                                height={600}
+                                fill={true}
                                 onDragStart={(e) => {
                                   e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
                                 }}
