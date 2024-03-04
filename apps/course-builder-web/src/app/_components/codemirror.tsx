@@ -11,7 +11,7 @@ import { createTheme } from '@uiw/codemirror-themes'
 import { basicSetup, EditorView } from 'codemirror'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
-import { yCollab } from 'y-codemirror.next'
+import { yCollab } from 'y-codemirror.jh'
 import YPartyKitProvider from 'y-partykit/provider'
 import * as Y from 'yjs'
 

@@ -10,7 +10,6 @@
 import { db } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
 import { initTRPC, TRPCError } from '@trpc/server'
-import { CreateNextContextOptions } from '@trpc/server/dist/adapters/next'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 

@@ -1,7 +1,6 @@
 'use client'
 
 import { Icon } from '@/components/icons'
-import { Provider } from 'next-auth/providers'
 import { signIn } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
