@@ -1,7 +1,7 @@
-import { ARTICLE_CHAT_EVENT, TIP_CHAT_EVENT } from '@/inngest/events'
+import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { resourceChat } from '@/inngest/helpers/resource-chat'
 import { inngest } from '@/inngest/inngest.server'
-import { getTip } from '@/lib/tips'
+import { getTip } from '@/lib/tips-query'
 import { NonRetriableError } from 'inngest'
 
 /**

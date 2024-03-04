@@ -1,22 +1,10 @@
-import { revalidatePath, revalidateTag } from 'next/cache'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { TIP_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { convertToMigratedTipResource, getTip } from '@/lib/tips'
+import { getTip } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
-import { toChicagoTitleCase } from '@/utils/chicagor-title'
-import { guid } from '@/utils/guid'
-import slugify from '@sindresorhus/slugify'
-import { eq } from 'drizzle-orm'
-import { customAlphabet } from 'nanoid'
-import { v4 } from 'uuid'
 import { z } from 'zod'
-
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 export const tipsRouter = createTRPCRouter({
   get: publicProcedure
