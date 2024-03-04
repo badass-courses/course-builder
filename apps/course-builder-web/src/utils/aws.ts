@@ -1,27 +1,22 @@
 import { env } from '@/env.mjs'
-import aws from 'aws-sdk'
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { DetectDocumentTextCommand, TextractClient } from '@aws-sdk/client-textract'
+import { fromEnv } from '@aws-sdk/credential-providers'
 
-aws.config.update({
-  region: env.AWS_REGION,
-  accessKeyId: env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-})
-
-const s3 = new aws.S3()
-
-const textract = new aws.Textract()
+const s3Client = new S3Client({ region: env.AWS_REGION, credentials: fromEnv() })
+const textractClient = new TextractClient({ region: env.AWS_REGION, credentials: fromEnv() })
 
 export async function performOCR(s3_bucket: string, s3_key: string) {
-  const params = {
+  const command = new DetectDocumentTextCommand({
     Document: {
       S3Object: {
         Bucket: s3_bucket,
         Name: s3_key,
       },
     },
-  }
+  })
 
-  const response = await textract.detectDocumentText(params).promise()
+  const response = await textractClient.send(command)
 
   const text = response.Blocks?.map((block) => block.Text)
 
@@ -35,13 +30,12 @@ export async function uploadImage(
   contentType: string,
   contentLength: number,
 ) {
-  return await s3
-    .putObject({
-      Bucket: s3_bucket,
-      Key: s3_key,
-      ContentType: contentType,
-      ContentLength: contentLength,
-      Body: image,
-    })
-    .promise()
+  const command = new PutObjectCommand({
+    Bucket: s3_bucket,
+    Key: s3_key,
+    ContentType: contentType,
+    ContentLength: contentLength,
+    Body: image,
+  })
+  return await s3Client.send(command)
 }
