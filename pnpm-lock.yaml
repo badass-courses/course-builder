@@ -671,7 +671,7 @@ importers:
         specifier: canary
         version: 14.1.2-canary.1(@babel/core@7.24.0)(react-dom@18.3.0-canary-2f8f77602-20240229)(react@18.3.0-canary-2f8f77602-20240229)
       next-auth:
-        specifier: ^4.24.5
+        specifier: ^4.24.6
         version: 4.24.6(next@14.1.2-canary.1)(react-dom@18.3.0-canary-2f8f77602-20240229)(react@18.3.0-canary-2f8f77602-20240229)
       prettier:
         specifier: ^3.1.0
