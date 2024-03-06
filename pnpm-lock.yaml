@@ -390,7 +390,7 @@ importers:
         specifier: 14.1.2-canary.1
         version: 14.1.2-canary.1(@babel/core@7.24.0)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-auth:
-        specifier: ^4.24.5
+        specifier: ^4.24.6
         version: 4.24.6(next@14.1.2-canary.1)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-axiom:
         specifier: ^1.1.1
