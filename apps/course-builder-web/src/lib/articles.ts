@@ -1,5 +1,11 @@
 import { sanityQuery } from '@/server/sanity.server'
+import { guid } from '@/utils/guid'
 import { z } from 'zod'
+
+export const NewArticleSchema = z.object({
+  title: z.string().min(2).max(90),
+})
+export type NewArticle = z.infer<typeof NewArticleSchema>
 
 export const ArticleStateSchema = z.union([
   z.literal('draft'),
@@ -28,10 +34,10 @@ export type Article = z.infer<typeof ArticleSchema>
 export const MigratedArticleResourceSchema = z.object({
   createdById: z.string(),
   type: z.string(),
-  slug: z.string(),
   id: z.string(),
-  metadata: z
+  fields: z
     .object({
+      slug: z.string(),
       title: z.string().nullable(),
       body: z.string().nullable().optional(),
       state: z.string(),
@@ -39,16 +45,24 @@ export const MigratedArticleResourceSchema = z.object({
       description: z.string().optional().nullable(),
       socialImage: z.object({ type: z.string(), url: z.string() }).optional().nullable(),
     })
-    .default({ title: 'New Article', state: 'draft', visibility: 'unlisted', description: null, socialImage: null }),
+    .default({
+      title: 'New Article',
+      slug: `article-${guid()}`,
+      state: 'draft',
+      visibility: 'unlisted',
+      description: null,
+      socialImage: null,
+    }),
 })
 
 export function convertToMigratedArticleResource({ article, ownerUserId }: { article: Article; ownerUserId: string }) {
   return MigratedArticleResourceSchema.parse({
     createdById: ownerUserId,
     type: 'article',
-    slug: article.slug,
+
     id: article._id,
-    metadata: {
+    fields: {
+      slug: article.slug,
       title: article.title,
       body: article.body,
       state: article.state,

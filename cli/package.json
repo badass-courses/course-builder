@@ -81,7 +81,7 @@
     "drizzle-kit": "^0.20.14",
     "drizzle-orm": "^0.29.3",
     "next": "canary",
-    "next-auth": "^4.24.5",
+    "next-auth": "^4.24.6",
     "prettier": "^3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "prisma": "^5.6.0",

@@ -6,13 +6,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
-import { requestCodeExtraction, updateTip } from '@/app/tips/_components/tip-form-actions'
+import { requestCodeExtraction } from '@/app/tips/_components/tip-form-actions'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useSocket } from '@/hooks/use-socket'
 import { FeedbackMarker } from '@/lib/feedback-marker'
 import { TipSchema, TipUpdate, type Tip } from '@/lib/tips'
+import { updateTip } from '@/lib/tips-query'
 import { cn } from '@/lib/utils'
 import { VideoResource } from '@/lib/video-resource'
 import { api } from '@/trpc/react'
@@ -106,7 +107,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
-  const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
+  const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
   const router = useRouter()
 
   const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
@@ -405,7 +406,7 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
-  const [videoResourceId, setVideoResourceId] = React.useState<string | null>(tip.videoResourceId)
+  const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
   const router = useRouter()
 
   useSocket({

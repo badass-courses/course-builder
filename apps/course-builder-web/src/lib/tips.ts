@@ -17,7 +17,7 @@ export const TipSchema = z.object({
   title: z.string(),
   summary: z.string().optional().nullable(),
   body: z.string().nullable(),
-  videoResourceId: z.string().nullable(),
+  videoResourceId: z.string().nullable().optional(),
   state: TipStateSchema.default('draft'),
   visibility: TipVisibilitySchema.default('unlisted'),
   slug: z.string(),
@@ -29,39 +29,38 @@ export const MigratedTipResourceSchema = z.object({
   createdById: z.string(),
 
   type: z.string(),
-  slug: z.string(),
 
   id: z.string(),
   updatedAt: z.date(),
-  resources: z.array(z.object({ _type: z.string(), _ref: z.string() })).default([]),
-  metadata: z
+  resources: z.array(z.object({ type: z.literal('videoResource'), id: z.string() })).default([]),
+  fields: z
     .object({
+      slug: z.string(),
       title: z.string(),
       body: z.string().nullable().optional(),
       state: z.string(),
       visibility: z.string(),
       summary: z.string().optional().nullable(),
     })
-    .default({ title: 'New Tip', state: 'draft', visibility: 'unlisted', summary: null }),
+    .default({ title: 'New Tip', slug: `tip-${guid()}`, state: 'draft', visibility: 'unlisted', summary: null }),
 })
 
 export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; ownerUserId: string }) {
   return MigratedTipResourceSchema.parse({
     createdById: ownerUserId,
     type: 'tip',
-    slug: tip.slug,
     id: tip._id,
     updatedAt: new Date(tip._updatedAt),
     resources: tip.videoResourceId
       ? [
           {
-            _type: 'reference',
-            _ref: tip.videoResourceId,
-            key: `videoResource-${guid()}`,
+            type: 'videoResource',
+            id: tip.videoResourceId,
           },
         ]
       : [],
-    metadata: {
+    fields: {
+      slug: tip.slug,
       title: tip.title,
       body: tip.body,
       state: tip.state,
