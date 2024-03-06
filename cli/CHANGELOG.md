@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.3
+
+### Patch Changes
+
+- [#97](https://github.com/badass-courses/course-builder/pull/97) [`9faae9f039e18e59cc9522fedeb30a4379fadf8b`](https://github.com/badass-courses/course-builder/commit/9faae9f039e18e59cc9522fedeb30a4379fadf8b) Thanks [@joelhooks](https://github.com/joelhooks)! - next-auth version bump
+
 ## 8.0.2
 
 ### Patch Changes
