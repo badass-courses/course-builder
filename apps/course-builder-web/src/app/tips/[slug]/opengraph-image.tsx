@@ -1,7 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { getTip } from '@/lib/tips-query'
 
-export const runtime = 'edge'
 export const revalidate = 60
 
 export default async function TipOG({ params }: { params: { slug: string } }) {

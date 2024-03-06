@@ -2,13 +2,12 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { createTip } from '@/app/tips/_components/tip-form-actions'
 import { TipUploader } from '@/app/tips/_components/tip-uploader'
 import { NewTip, NewTipSchema } from '@/lib/tips'
-import { api } from '@/trpc/react'
+import { createTip } from '@/lib/tips-query'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import {
   Button,
@@ -23,7 +22,9 @@ import {
 } from '@coursebuilder/ui'
 
 export function NewTipForm() {
-  const [videoResourceId, setVideoResourceId] = React.useState<string>('')
+  const [videoResourceId, setVideoResourceId] = React.useState<string | undefined>()
+  const [videoResourceValid, setVideoResourceValid] = React.useState<boolean>(false)
+  const [isValidatingVideoResource, setIsValidatingVideoResource] = React.useState<boolean>(false)
   const router = useRouter()
 
   const form = useForm<NewTip>({
@@ -34,17 +35,65 @@ export function NewTipForm() {
     },
   })
 
+  async function* pollVideoResource(
+    videoResourceId: string,
+    maxAttempts = 30,
+    initialDelay = 250,
+    delayIncrement = 250,
+  ) {
+    let delay = initialDelay
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const videoResource = await getVideoResource(videoResourceId)
+      if (videoResource) {
+        yield videoResource
+        return
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delay))
+      delay += delayIncrement
+    }
+
+    throw new Error('Video resource not found after maximum attempts')
+  }
+
   const onSubmit = async (values: NewTip) => {
-    form.reset()
-    setVideoResourceId('')
-    form.setValue('videoResourceId', '')
+    try {
+      for await (const _ of pollVideoResource(values.videoResourceId)) {
+        const tip = await createTip(values)
+        if (!tip) {
+          // handle edge, e.g. toast an error message
+          return
+        }
+        router.push(`/tips/${tip.slug}/edit`)
+      }
+    } catch (error) {
+      console.error('Error polling video resource:', error)
+      // handle error, e.g. toast an error message
+    } finally {
+      form.reset()
+      setVideoResourceId(undefined)
+      form.setValue('videoResourceId', '')
+    }
+  }
 
-    const tip = await createTip(values)
-
-    if (!tip) {
-      // handle edge, e.g. toast an error message
-    } else {
-      router.push(`/tips/${tip.slug}/edit`)
+  async function handleSetVideoResourceId(videoResourceId: string) {
+    setVideoResourceId(videoResourceId)
+    setIsValidatingVideoResource(true)
+    form.setValue('videoResourceId', videoResourceId)
+    try {
+      for await (const videoResource of pollVideoResource(videoResourceId)) {
+        console.log('Video resource found:', videoResource)
+        setVideoResourceValid(true)
+      }
+      setIsValidatingVideoResource(false)
+    } catch (error) {
+      console.error('Error validating video resource:', error)
+      setVideoResourceValid(false)
+      form.setError('videoResourceId', { message: 'Video resource not found' })
+      setVideoResourceId('')
+      form.setValue('videoResourceId', '')
+      setIsValidatingVideoResource(false)
     }
   }
 
@@ -80,13 +129,8 @@ export function NewTipForm() {
               <FormControl>
                 <Input type="hidden" {...field} />
               </FormControl>
-              {videoResourceId.length === 0 ? (
-                <TipUploader
-                  setVideoResourceId={(videoResourceId: string) => {
-                    form.setValue('videoResourceId', videoResourceId)
-                    setVideoResourceId(videoResourceId)
-                  }}
-                />
+              {!videoResourceId ? (
+                <TipUploader setVideoResourceId={handleSetVideoResourceId} />
               ) : (
                 <div>
                   {videoResourceId}{' '}
@@ -100,12 +144,14 @@ export function NewTipForm() {
                   </Button>
                 </div>
               )}
+              {isValidatingVideoResource && !videoResourceValid ? <FormMessage>Processing Upload</FormMessage> : null}
+
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="mt-2" variant="default" disabled={videoResourceId.length === 0}>
+        <Button type="submit" className="mt-2" variant="default" disabled={!videoResourceValid}>
           Create Draft Tip
         </Button>
       </form>

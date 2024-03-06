@@ -189,7 +189,7 @@ importers:
         specifier: ^2.2.0
         version: 2.3.3(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@next/mdx':
-        specifier: canary
+        specifier: 14.1.2-canary.1
         version: 14.1.2-canary.1(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
       '@planetscale/database':
         specifier: 1.14.0
@@ -344,6 +344,9 @@ importers:
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.2.1)
+      crypto:
+        specifier: ^1.0.1
+        version: 1.0.1
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -384,7 +387,7 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: canary
+        specifier: 14.1.2-canary.1
         version: 14.1.2-canary.1(@babel/core@7.24.0)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-auth:
         specifier: ^4.24.5
@@ -12748,6 +12751,11 @@ packages:
   /crypto-random-string@2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
     engines: {node: '>=8'}
+    dev: false
+
+  /crypto@1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
     dev: false
 
   /css-background-parser@0.1.0:

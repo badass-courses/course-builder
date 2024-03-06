@@ -2,6 +2,7 @@ import { AdapterAccount } from '@auth/core/adapters'
 import { relations, sql } from 'drizzle-orm'
 import {
   boolean,
+  double,
   index,
   int,
   json,
@@ -283,10 +284,8 @@ export const contentResource = mysqlTable(
   {
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     type: varchar('type', { length: 255 }).notNull(),
-    slug: varchar('slug', { length: 255 }).notNull().unique(),
     createdById: varchar('createdById', { length: 255 }).notNull(),
-    resources: json('resources').$type<any[]>().default([]),
-    metadata: json('metadata').$type<Record<string, any>>().default({}),
+    fields: json('fields').$type<Record<string, any>>().default({}),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
@@ -301,7 +300,7 @@ export const contentResource = mysqlTable(
     }),
   },
   (cm) => ({
-    slugIdx: index('slug_idx').on(cm.slug),
+    typeIdx: index('type_idx').on(cm.type),
     createdByIdx: index('createdById_idx').on(cm.createdById),
     createdAtIdx: index('createdAt_idx').on(cm.createdAt),
   }),
@@ -310,6 +309,47 @@ export const contentResource = mysqlTable(
 export const contentResourceRelations = relations(contentResource, ({ one, many }) => ({
   createdBy: one(users, { fields: [contentResource.createdById], references: [users.id] }),
   contributions: many(contentContributions),
+  resources: many(contentResourceResource, { relationName: 'resource' }),
+  resourceOf: many(contentResourceResource, { relationName: 'resourceOf' }),
+}))
+
+export const contentResourceResource = mysqlTable(
+  'contentResourceResource',
+  {
+    resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
+    resourceId: varchar('resourceId', { length: 255 }).notNull(),
+    position: double('position').notNull().default(0),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+  (crr) => ({
+    pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
+    contentResourceIdIdx: index('contentResourceId_idx').on(crr.resourceOfId),
+    resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
+  }),
+)
+
+export const contentResourceResourceRelations = relations(contentResourceResource, ({ one }) => ({
+  resourceOf: one(contentResource, {
+    fields: [contentResourceResource.resourceOfId],
+    references: [contentResource.id],
+    relationName: 'resourceOf',
+  }),
+  resource: one(contentResource, {
+    fields: [contentResourceResource.resourceId],
+    references: [contentResource.id],
+    relationName: 'resource',
+  }),
 }))
 
 export const communicationPreferenceTypes = mysqlTable('communicationPreferenceType', {

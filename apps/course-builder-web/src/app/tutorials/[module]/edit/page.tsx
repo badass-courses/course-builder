@@ -18,8 +18,6 @@ export default async function EditTutorialPage({ params }: { params: { module: s
 
   const tutorial = await api.module.getTutorial.query({ slug: params.module })
 
-  console.log(tutorial)
-
   if (!tutorial) {
     notFound()
   }

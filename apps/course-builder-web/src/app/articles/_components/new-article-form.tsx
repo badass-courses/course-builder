@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { createArticle, NewArticle, NewArticleSchema } from '@/app/articles/_components/article-form-actions'
+import { NewArticle, NewArticleSchema } from '@/lib/articles'
+import { createArticle } from '@/lib/articles-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 

@@ -3,10 +3,10 @@
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/events/video-resource'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { getVideoResource } from '@/lib/video-resource'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 
-export async function reprocessTranscript({ videoResourceId }: { videoResourceId: string | null }) {
+export async function reprocessTranscript({ videoResourceId }: { videoResourceId?: string | null }) {
   // template for the url to download the mp4 file from mux
   // https://stream.mux.com/{PLAYBACK_ID}/{MP4_FILE_NAME}?download={FILE_NAME}
   const session = await getServerAuthSession()

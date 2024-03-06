@@ -4,20 +4,13 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
-import { Article, convertToMigratedArticleResource, getArticle } from '@/lib/articles'
+import { Article, convertToMigratedArticleResource, getArticle, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
-import { z } from 'zod'
-
-export const NewArticleSchema = z.object({
-  title: z.string().min(2).max(90),
-})
-
-export type NewArticle = z.infer<typeof NewArticleSchema>
 
 export async function createArticle(input: NewArticle) {
   const session = await getServerAuthSession()

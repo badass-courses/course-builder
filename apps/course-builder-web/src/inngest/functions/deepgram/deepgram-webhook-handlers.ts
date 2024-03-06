@@ -4,7 +4,8 @@ import { env } from '@/env.mjs'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedVideoResource, getVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { convertToMigratedVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import {
   srtFromTranscriptResult,

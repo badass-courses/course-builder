@@ -92,16 +92,12 @@ async function submitUserMessage(content: string) {
 
   const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`)
 
-  console.log({ success, limit, reset, remaining, ip })
-
   if (!success) {
     return {
       id: Date.now(),
       display: <div>Rate limit exceeded. Please try again in {reset} seconds.</div>,
     }
   }
-
-  console.log('submitUserMessage', content)
 
   const aiState = getMutableAIState<typeof AI>()
   aiState.update([
