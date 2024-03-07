@@ -4,7 +4,7 @@ import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { MUX_WEBHOOK_EVENT } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { convertToMigratedVideoResource, VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { eq } from 'drizzle-orm'
@@ -65,7 +65,7 @@ export const muxVideoAssetError = inngest.createFunction(
       revalidateTag(videoResource._id)
 
       const updatedVideoResource = await step.run('update the video resource in the database', async () => {
-        return getVideoResource(videoResource._id)
+        return sanityQuery<VideoResource | null>(`*[_id == "${videoResource._id}"][0]`)
       })
 
       if (updatedVideoResource) {
@@ -138,8 +138,8 @@ export const muxVideoAssetReady = inngest.createFunction(
         ])
       })
       revalidateTag(videoResource._id)
-      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
-        return getVideoResource(videoResource._id)
+      const updatedVideoResource = await step.run('reload from sanity', async () => {
+        return sanityQuery<VideoResource | null>(`*[_id == "${videoResource._id}"][0]`)
       })
 
       if (updatedVideoResource) {

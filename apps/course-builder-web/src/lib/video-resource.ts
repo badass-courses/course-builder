@@ -53,6 +53,7 @@ export function convertToMigratedVideoResource({
   videoResource: VideoResource
   ownerUserId?: string
 }) {
+  console.log({ videoResource, ownerUserId })
   return MigratedVideoResourceSchema.parse({
     ...(ownerUserId ? { createdById: ownerUserId } : {}),
     type: 'videoResource',

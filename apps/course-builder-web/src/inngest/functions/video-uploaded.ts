@@ -50,20 +50,7 @@ export const videoUploaded = inngest.createFunction(
         },
       ])
 
-      return await sanityQuery<VideoResource | null>(`*[_type == "videoResource" && _id == "${event.data.fileName}"][0]{
-        _id,
-        _type,
-        _updatedAt,
-        title,
-        duration,
-        muxAssetId,
-        transcript,
-        state,
-        srt,
-        wordLevelSrt,
-        muxPlaybackId,
-        transcriptWithScreenshots
-      }`)
+      return await sanityQuery<VideoResource | null>(`*[_id == "${event.data.fileName}"][0]`)
     })
 
     if (!videoResource) {

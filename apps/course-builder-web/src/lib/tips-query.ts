@@ -67,7 +67,6 @@ export async function getTipsModule(): Promise<Tip[]> {
     .execute(query)
     .then((result) => {
       const parsedTips = z.array(TipSchema).safeParse(result.rows)
-      console.log(parsedTips)
       return parsedTips.success ? parsedTips.data : []
     })
     .catch((error) => {
@@ -115,6 +114,7 @@ export async function createTip(input: NewTip) {
           _id,
           _type,
           _updatedAt,
+          _createdAt,
           title,
           summary,
           visibility,
@@ -133,6 +133,7 @@ export async function createTip(input: NewTip) {
 
   if (tip) {
     await db.insert(contentResource).values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
+    await db.insert(contentResourceResource).values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
   }
 
   revalidateTag('tips')

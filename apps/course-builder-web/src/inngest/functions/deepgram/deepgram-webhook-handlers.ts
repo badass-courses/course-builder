@@ -4,7 +4,7 @@ import { env } from '@/env.mjs'
 import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedVideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { convertToMigratedVideoResource, VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import {
@@ -46,9 +46,11 @@ export const deepgramTranscriptReady = inngest.createFunction(
         ])
       })
 
-      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
-        return getVideoResource(event.data.videoResourceId)
+      const updatedVideoResource = await step.run('reload updated resource from sanity', async () => {
+        return sanityQuery<VideoResource>(`*[_id == "${event.data.videoResourceId}"][0]`)
       })
+
+      console.log({ updatedVideoResource })
 
       if (updatedVideoResource) {
         await step.run('update the video resource in the database', async () => {
@@ -63,6 +65,8 @@ export const deepgramTranscriptReady = inngest.createFunction(
             videoResource: updatedVideoResource,
             ownerUserId: resourceToUpdate.createdById,
           })
+
+          console.log({ migratedResource })
 
           return db
             .update(contentResource)

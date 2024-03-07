@@ -42,6 +42,7 @@ export async function getVideoResource(videoResourceId?: string | null): Promise
       JSON_EXTRACT (${contentResource.fields}, "$.state") AS state,
       JSON_EXTRACT (${contentResource.fields}, "$.duration") AS duration,
       JSON_EXTRACT (${contentResource.fields}, "$.muxPlaybackId") AS muxPlaybackId,
+      JSON_EXTRACT (${contentResource.fields}, "$.muxAssetId") AS muxAssetId,
       JSON_EXTRACT (${contentResource.fields}, "$.transcript") AS transcript
     FROM
       ${contentResource}

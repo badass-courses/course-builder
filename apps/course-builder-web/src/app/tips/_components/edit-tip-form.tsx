@@ -314,18 +314,20 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
                         if (!props.src) return null
 
                         return (
-                          <div>
+                          <div className="flex flex-col">
                             <a href={props.src} target="_blank" rel="noreferrer">
                               <Image
                                 src={props.src}
                                 alt={'screenshot'}
-                                fill={true}
+                                width={1960}
+                                height={1080}
                                 onDragStart={(e) => {
                                   e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
                                 }}
                               />
                             </a>
                             <Button
+                              size="sm"
                               onClick={() => {
                                 const screenshotUrl = new URL(props.src as string)
                                 screenshotUrl.searchParams.set('width', '1920')
@@ -490,9 +492,8 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
             onSubmit(formValues)
           }}
           type="button"
-          variant="default"
           size="sm"
-          className="h-7 disabled:cursor-wait"
+          className="disabled:cursor-wait"
           disabled={updateTipStatus === 'loading'}
         >
           Save
