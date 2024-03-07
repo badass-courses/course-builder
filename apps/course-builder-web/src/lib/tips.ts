@@ -14,6 +14,7 @@ export const TipSchema = z.object({
   _id: z.string(),
   _type: z.literal('tip'),
   _updatedAt: z.string(),
+  _createdAt: z.string(),
   title: z.string(),
   summary: z.string().optional().nullable(),
   body: z.string().nullable(),
@@ -32,6 +33,7 @@ export const MigratedTipResourceSchema = z.object({
 
   id: z.string(),
   updatedAt: z.date(),
+  createdAt: z.date(),
   resources: z.array(z.object({ type: z.literal('videoResource'), id: z.string() })).default([]),
   fields: z
     .object({
@@ -51,6 +53,7 @@ export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; o
     type: 'tip',
     id: tip._id,
     updatedAt: new Date(tip._updatedAt),
+    createdAt: new Date(tip._createdAt),
     resources: tip.videoResourceId
       ? [
           {

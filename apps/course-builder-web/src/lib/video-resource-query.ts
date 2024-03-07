@@ -36,7 +36,9 @@ export async function getVideoResource(videoResourceId?: string | null): Promise
   }
   const query = sql`
     SELECT
-      id,
+      id as _id,
+      CAST(updatedAt AS DATETIME) as _updatedAt,
+      CAST(createdAt AS DATETIME) as _createdAt,
       JSON_EXTRACT (${contentResource.fields}, "$.state") AS state,
       JSON_EXTRACT (${contentResource.fields}, "$.duration") AS duration,
       JSON_EXTRACT (${contentResource.fields}, "$.muxPlaybackId") AS muxPlaybackId,

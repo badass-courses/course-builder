@@ -1,4 +1,3 @@
-import { AdapterAccount } from '@auth/core/adapters'
 import { relations, sql } from 'drizzle-orm'
 import {
   boolean,
@@ -13,6 +12,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/mysql-core'
+import { AdapterAccount } from 'next-auth/adapters'
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -68,7 +68,7 @@ export const permissions = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -97,7 +97,7 @@ export const roles = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -125,7 +125,7 @@ export const userRoles = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -156,7 +156,7 @@ export const userPermissions = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -190,7 +190,7 @@ export const rolePermissions = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -226,7 +226,7 @@ export const contentContributions = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -263,7 +263,7 @@ export const contributionTypes = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -293,7 +293,7 @@ export const contentResource = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -385,7 +385,7 @@ export const communicationChannel = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -420,7 +420,7 @@ export const communicationPreferences = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }),
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,

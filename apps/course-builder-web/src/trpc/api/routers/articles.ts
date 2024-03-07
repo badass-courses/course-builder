@@ -1,21 +1,11 @@
-import { revalidateTag } from 'next/cache'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { ARTICLE_CHAT_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
 import { getAbility } from '@/lib/ability'
-import { ArticleSchema, convertToMigratedArticleResource, getArticle } from '@/lib/articles'
+import { getArticle } from '@/lib/articles-query'
 import { FeedbackMarkerSchema } from '@/lib/feedback-marker'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityMutation } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'
-import slugify from '@sindresorhus/slugify'
-import { eq } from 'drizzle-orm'
-import { customAlphabet } from 'nanoid'
-import { v4 } from 'uuid'
 import { z } from 'zod'
-
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
 export const articlesRouter = createTRPCRouter({
   get: publicProcedure

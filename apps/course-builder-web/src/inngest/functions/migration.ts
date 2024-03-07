@@ -36,16 +36,8 @@ export const migrationFromSanity = inngest.createFunction(
     const sanityArticleResources = await step.run('fetch video resources from sanity', async () => {
       return await sanityQuery<Article[]>(
         `*[_type == "article"]{
-          _id,
-          _type,
-          _updatedAt,
-          title,
-          description,
-          body,
-          visibility,
-          "slug": slug.current,
-          state,
-          socialImage,
+          ...,
+          "slug": slug.current
       }`,
         { cache: 'no-cache' },
       )
@@ -114,14 +106,7 @@ export const migrationFromSanity = inngest.createFunction(
       return await sanityQuery<Tip[]>(
         `coalesce(
           *[_type == 'tip'] | order(_updatedAt desc) {
-            _id,
-            _type,
-            _updatedAt,
-            title,
-            summary,
-            visibility,
-            state,
-            body,
+            ...,
             "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
             "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
             "transcript": resources[@->._type == 'videoResource'][0]->transcript,

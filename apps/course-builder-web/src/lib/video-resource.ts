@@ -3,6 +3,7 @@ import z from 'zod'
 export const VideoResourceSchema = z.object({
   _id: z.string().optional(),
   _updatedAt: z.string().optional(),
+  _createdAt: z.string().optional(),
   title: z.string().optional().nullable(),
   duration: z.number().optional().nullable(),
   muxPlaybackId: z.string().optional().nullable(),
@@ -30,6 +31,8 @@ export const MigratedVideoResourceSchema = z.object({
   createdById: z.string(),
   type: z.string(),
   id: z.string(),
+  updatedAt: z.date(),
+  createdAt: z.date(),
   fields: z.object({
     title: z.string(),
     state: z.string(),
@@ -54,6 +57,8 @@ export function convertToMigratedVideoResource({
     ...(ownerUserId ? { createdById: ownerUserId } : {}),
     type: 'videoResource',
     id: videoResource._id,
+    updatedAt: new Date(videoResource._updatedAt || new Date().toISOString()),
+    createdAt: new Date(videoResource._createdAt || new Date().toISOString()),
     fields: {
       title: videoResource.title || 'Untitled Video',
       state: videoResource.state,

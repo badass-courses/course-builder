@@ -20,6 +20,7 @@ export const ArticleSchema = z.object({
   _id: z.string(),
   _type: z.literal('article'),
   _updatedAt: z.string(),
+  _createdAt: z.string(),
   title: z.string().min(2).max(90),
   body: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
@@ -35,6 +36,8 @@ export const MigratedArticleResourceSchema = z.object({
   createdById: z.string(),
   type: z.string(),
   id: z.string(),
+  updatedAt: z.date(),
+  createdAt: z.date(),
   fields: z
     .object({
       slug: z.string(),
@@ -59,7 +62,8 @@ export function convertToMigratedArticleResource({ article, ownerUserId }: { art
   return MigratedArticleResourceSchema.parse({
     createdById: ownerUserId,
     type: 'article',
-
+    createdAt: new Date(article._createdAt || new Date().toISOString()),
+    updatedAt: new Date(article._updatedAt || new Date().toISOString()),
     id: article._id,
     fields: {
       slug: article.slug,
@@ -78,32 +82,4 @@ export function convertToMigratedArticleResource({ article, ownerUserId }: { art
         : null),
     },
   })
-}
-
-export async function getArticle(slugOrId: string) {
-  const article = await sanityQuery<Article | null>(
-    `*[_type == "article" && (_id == "${slugOrId}" || slug.current == "${slugOrId}")][0]{
-          _id,
-          _type,
-          _updatedAt,
-          title,
-          description,
-          body,
-          visibility,
-          "slug": slug.current,
-          state,
-          socialImage,
-  }`,
-    { tags: ['articles', slugOrId] },
-  )
-
-  const parsed = ArticleSchema.safeParse(article)
-
-  if (!parsed.success) {
-    console.error('Error parsing article', slugOrId)
-    console.error(parsed.error)
-    return null
-  } else {
-    return parsed.data
-  }
 }
