@@ -12,6 +12,7 @@ import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { eq, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
+import { z } from 'zod'
 
 async function getSanityArticle(slugOrId: string): Promise<Article | null> {
   return sanityQuery<Article | null>(
@@ -21,6 +22,35 @@ async function getSanityArticle(slugOrId: string): Promise<Article | null> {
     }`,
     { tags: ['articles', slugOrId] },
   )
+}
+
+export async function getArticles(): Promise<Article[]> {
+  const query = sql`
+    SELECT
+      articles.id as _id,
+      articles.type as _type,
+      CAST(articles.updatedAt AS DATETIME) as _updatedAt,
+      CAST(articles.createdAt AS DATETIME) as _createdAt,
+      JSON_EXTRACT (articles.fields, "$.title") AS title,
+      JSON_EXTRACT (articles.fields, "$.state") AS state,
+      JSON_EXTRACT (articles.fields, "$.slug") AS slug
+    FROM
+      ${contentResource} as articles
+    WHERE
+      articles.type = 'article';
+    ORDER BY articles.createdAt DESC;
+  `
+
+  return db
+    .execute(query)
+    .then((result) => {
+      const parsed = z.array(ArticleSchema).safeParse(result.rows)
+      return parsed.success ? parsed.data : []
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
 }
 
 export async function createArticle(input: NewArticle) {

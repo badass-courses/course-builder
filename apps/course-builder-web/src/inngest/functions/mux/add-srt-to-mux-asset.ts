@@ -1,8 +1,7 @@
 import { env } from '@/env.mjs'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { VideoResourceSchema } from '@/lib/video-resource'
-import { sanityQuery } from '@/server/sanity.server'
+import { getVideoResource } from '@/lib/video-resource-query'
 
 const COOLDOWN = 20000
 
@@ -14,10 +13,7 @@ export const addSrtToMuxAsset = inngest.createFunction(
   { event: MUX_SRT_READY_EVENT },
   async ({ event, step }) => {
     const videoResource = await step.run('get the video resource from Sanity', async () => {
-      const resourceTemp = VideoResourceSchema.safeParse(
-        await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.videoResourceId}"][0]`),
-      )
-      return resourceTemp.success ? resourceTemp.data : null
+      return getVideoResource(event.data.videoResourceId)
     })
 
     if (videoResource) {

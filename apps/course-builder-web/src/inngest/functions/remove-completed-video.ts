@@ -1,8 +1,7 @@
 import { utapi } from '@/app/api/uploadthing/core'
 import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { inngest } from '@/inngest/inngest.server'
-import { VideoResourceSchema } from '@/lib/video-resource'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { NonRetriableError } from 'inngest'
 
 export const removeCompletedVideo = inngest.createFunction(
@@ -10,12 +9,7 @@ export const removeCompletedVideo = inngest.createFunction(
   { event: VIDEO_STATUS_CHECK_EVENT },
   async ({ event, step }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      const resourceTemp = VideoResourceSchema.safeParse(
-        await sanityQuery(`*[_type == "videoResource" && _id == "${event.data.videoResourceId}"][0]`, {
-          useCdn: false,
-        }),
-      )
-      return resourceTemp.success ? resourceTemp.data : null
+      return await getVideoResource(event.data.videoResourceId)
     })
 
     if (!videoResource) {

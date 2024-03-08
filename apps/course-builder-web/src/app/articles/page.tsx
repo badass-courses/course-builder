@@ -1,28 +1,15 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { getAbility } from '@/lib/ability'
+import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
 
 export default async function ArticlesIndexPage() {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
-  const articles = await sanityQuery<
-    {
-      _id: string
-      title: string
-      slug: string
-    }[]
-  >(
-    `*[_type == "article"] | order(_createdAt desc) {
-    _id,
-    title,
-    "slug": slug.current,
-  }`,
-    { tags: ['articles'] },
-  )
+  const articles = await getArticles()
 
   return (
     <div>

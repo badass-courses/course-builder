@@ -107,46 +107,36 @@ export async function createTip(input: NewTip) {
     throw new Error('🚨 Video Resource not found')
   }
 
-  await sanityMutation([
-    {
-      createOrReplace: {
-        _id: newTipId,
-        _type: 'tip',
+  await db
+    .insert(contentResource)
+    .values({
+      id: newTipId,
+      type: 'tip',
+      createdById: user.id,
+      fields: {
         title: input.title,
         state: 'draft',
         visibility: 'unlisted',
-        slug: {
-          current: slugify(`${input.title}~${guid()}`),
-        },
-        resources: [
-          {
-            _key: v4(),
-            _type: 'reference',
-            _ref: videoResource?._id,
-          },
-        ],
+        slug: slugify(`${input.title}~${guid()}`),
       },
-    },
-  ]).then((res) => {
-    console.log('🚀 Tip created in Sanity', res)
-  })
+    })
+    .then((result) => {
+      console.log('🚀 Tip Created')
+      return result
+    })
+    .catch((error) => {
+      console.error('🚨 Error creating tip', error)
+      throw error
+    })
 
-  const tip = await getSanityTip(newTipId)
-
-  console.log('🚀 Tip', tip)
+  const tip = await getTip(newTipId)
 
   if (tip) {
-    await db
-      .insert(contentResource)
-      .values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
-      .finally(() => {
-        console.log('🚀 Tip created')
-      })
     await db
       .insert(contentResourceResource)
       .values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
       .finally(() => {
-        console.log('🚀 Tip resource created')
+        console.log('🚀 Video Associated with Tip')
       })
 
     revalidateTag('tips')

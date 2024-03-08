@@ -1,11 +1,29 @@
 import { type NextRequest } from 'next/server'
-import { sanityQuery } from '@/server/sanity.server'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
+import { sql } from 'drizzle-orm'
 
 export const GET = async (_: NextRequest, { params }: { params: { videoResourceId: string } }) => {
-  const videoResource = await sanityQuery(`*[_type == "videoResource" && _id == "${params.videoResourceId}"][0]{
-    srt
-   }`)
-  return new Response(videoResource.srt || '', {
+  const query = sql`
+    SELECT
+    JSON_EXTRACT (${contentResource.fields}, "$.srt") AS srt
+    FROM
+      ${contentResource}
+    WHERE
+      type = 'videoResource'
+      AND id = ${params.videoResourceId};
+   `
+
+  const result = await db
+    .execute(query)
+    .then((result) => {
+      return (result.rows[0] as { srt: string | null })?.srt || null
+    })
+    .catch((error) => {
+      console.log(error)
+      return error
+    })
+  return new Response(result.srt || '', {
     status: 200,
   })
 }

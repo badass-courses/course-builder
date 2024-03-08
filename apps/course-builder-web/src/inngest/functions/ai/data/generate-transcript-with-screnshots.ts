@@ -1,13 +1,11 @@
-import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
 import { VideoResourceSchema } from '@/lib/video-resource'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 
 export const generateTranscriptWithScreenshots = inngest.createFunction(

@@ -9,6 +9,7 @@ import { createMuxAsset } from '@/lib/get-mux-options'
 import { convertToMigratedVideoResource, VideoResource } from '@/lib/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
+import { sql } from 'drizzle-orm'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -33,41 +34,39 @@ export const videoUploaded = inngest.createFunction(
       })
     })
 
-    const videoResource = await step.run('create the video resource in Sanity', async () => {
+    await step.run('create the video resource in database', async () => {
       const playbackId = muxAsset.playback_ids.filter((playbackId) => playbackId.policy === 'public')[0]?.id
 
-      await sanityMutation([
-        {
-          createOrReplace: {
-            _id: event.data.fileName,
-            _type: 'videoResource',
+      return await db
+        .insert(contentResource)
+        .values({
+          id: event.data.fileName,
+          type: 'videoResource',
+          fields: {
+            state: 'processing',
             originalMediaUrl: event.data.originalMediaUrl,
-            title: event.data.fileName,
             muxAssetId: muxAsset.id,
             muxPlaybackId: playbackId,
-            state: `processing`,
           },
-        },
-      ])
+          createdById: event.user.id,
+        })
+        .then((result) => {
+          console.log('📼 created video resource', result)
+          return result
+        })
+        .catch((error) => {
+          console.error(error)
+          throw error
+        })
+    })
 
-      return await sanityQuery<VideoResource | null>(`*[_id == "${event.data.fileName}"][0]`)
+    const videoResource = await step.run('get the video resource from database', async () => {
+      return await getVideoResource(event.data.fileName)
     })
 
     if (!videoResource) {
       throw new Error('Failed to create video resource')
     }
-
-    await step.run('save video resource to database', async () => {
-      const migratedResource = convertToMigratedVideoResource({
-        videoResource: videoResource,
-        ownerUserId: event.user.id,
-      })
-
-      await db.insert(contentResource).values(migratedResource)
-      return db.query.contentResource.findFirst({
-        where: (cr, { eq }) => eq(cr.id, migratedResource.id),
-      })
-    })
 
     // TODO: This is a future feature for modules
     // if (event.data.moduleSlug) {
