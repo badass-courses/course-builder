@@ -435,7 +435,7 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.2.61)(react@18.3.0-canary-03d6f7cf0-20240209)
       react-resizable-panels:
-        specifier: ^2.0.9
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       resend:
         specifier: ^3.2.0
@@ -903,7 +903,7 @@ importers:
         specifier: ^7.48.0
         version: 7.51.0(react@18.3.0-canary-2f8f77602-20240229)
       react-resizable-panels:
-        specifier: ^2.0.9
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.3.0-canary-2f8f77602-20240229)(react@18.3.0-canary-2f8f77602-20240229)
       react-wrap-balancer:
         specifier: ^0.2.4

@@ -321,7 +321,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
                         if (!props.src) return null
 
                         return (
-                          <div className="flex flex-col">
+                          <>
                             <a href={props.src} target="_blank" rel="noreferrer">
                               <Image
                                 src={props.src}
@@ -344,7 +344,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
                             >
                               Get Code Text
                             </Button>
-                          </div>
+                          </>
                         )
                       },
                     }}
