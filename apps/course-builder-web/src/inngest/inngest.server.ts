@@ -3,8 +3,6 @@ import {
   ArticleChat,
   BODY_TEXT_UPDATED,
   BodyTextUpdated,
-  MIGRATE_EVENT,
-  MigrateEvent,
   TIP_CHAT_EVENT,
   TipChat,
   type AI_WRITING_COMPLETED_EVENT,
@@ -48,7 +46,6 @@ type Events = {
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
   [DRAFT_WRITEUP_COMPLETED_EVENT]: DraftWriteupCompleted
   [EMAIL_SEND_BROADCAST]: EmailSendBroadcast
-  [MIGRATE_EVENT]: MigrateEvent
   [OCR_WEBHOOK_EVENT]: OcrWebhook
 }
 export const inngest = new Inngest({
