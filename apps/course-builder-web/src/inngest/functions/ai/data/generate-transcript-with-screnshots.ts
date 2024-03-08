@@ -53,8 +53,6 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
         })
     })
 
-    console.log({ videoResource })
-
     if (!videoResource) {
       throw new NonRetriableError(`Video resource not found for id (${event.data.videoResourceId})`)
     }
