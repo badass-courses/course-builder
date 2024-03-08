@@ -4,13 +4,12 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
-import { convertToMigratedTipResource, Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
+import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -20,6 +19,7 @@ export async function getTip(slug: string): Promise<Tip | null> {
       tips.id as _id,
       tips.type as _type,
       CAST(tips.updatedAt AS DATETIME) as _updatedAt,
+      CAST(tips.createdAt AS DATETIME) as _createdAt,
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
       JSON_EXTRACT (tips.fields, "$.body") AS body,
@@ -50,6 +50,7 @@ export async function getTipsModule(): Promise<Tip[]> {
       tips.id as _id,
       tips.type as _type,
       CAST(tips.updatedAt AS DATETIME) as _updatedAt,
+      CAST(tips.createdAt AS DATETIME) as _createdAt,
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
       JSON_EXTRACT (tips.fields, "$.body") AS body,
@@ -65,7 +66,6 @@ export async function getTipsModule(): Promise<Tip[]> {
     .execute(query)
     .then((result) => {
       const parsedTips = z.array(TipSchema).safeParse(result.rows)
-      console.log(parsedTips)
       return parsedTips.success ? parsedTips.data : []
     })
     .catch((error) => {
@@ -86,60 +86,51 @@ export async function createTip(input: NewTip) {
 
   const videoResource = await getVideoResource(input.videoResourceId)
 
-  await sanityMutation([
-    {
-      createOrReplace: {
-        _id: newTipId,
-        _type: 'tip',
+  if (!videoResource) {
+    throw new Error('🚨 Video Resource not found')
+  }
+
+  await db
+    .insert(contentResource)
+    .values({
+      id: newTipId,
+      type: 'tip',
+      createdById: user.id,
+      fields: {
         title: input.title,
         state: 'draft',
         visibility: 'unlisted',
-        slug: {
-          current: slugify(`${input.title}~${guid()}`),
-        },
-        resources: [
-          {
-            _key: v4(),
-            _type: 'reference',
-            _ref: videoResource?._id,
-          },
-        ],
+        slug: slugify(`${input.title}~${guid()}`),
       },
-    },
-  ])
+    })
+    .then((result) => {
+      console.log('🚀 Tip Created')
+      return result
+    })
+    .catch((error) => {
+      console.error('🚨 Error creating tip', error)
+      throw error
+    })
 
-  const tip = await sanityQuery<Tip | null>(
-    `*[_type == "tip" && (_id == "${newTipId}")][0]{
-          _id,
-          _type,
-          _updatedAt,
-          title,
-          summary,
-          visibility,
-          state,
-          body,
-          "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
-          "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
-          "transcript": resources[@->._type == 'videoResource'][0]->transcript,
-          "slug": slug.current,
-  }`,
-    { tags: ['tips'] },
-  ).catch((error) => {
-    console.error('Error fetching tip', error)
-    return null
-  })
+  const tip = await getTip(newTipId)
 
   if (tip) {
-    await db.insert(contentResource).values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
+    await db
+      .insert(contentResourceResource)
+      .values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
+      .finally(() => {
+        console.log('🚀 Video Associated with Tip')
+      })
+
+    revalidateTag('tips')
+
+    return tip
+  } else {
+    throw new Error('🚨 Error creating tip: Tip not found')
   }
-
-  revalidateTag('tips')
-
-  return tip
 }
 
 export async function updateTip(input: TipUpdate) {
-  console.log('Updating Tip', input)
   const session = await getServerAuthSession()
   const user = session?.user
   const ability = getAbility({ user })
@@ -149,95 +140,43 @@ export async function updateTip(input: TipUpdate) {
 
   const currentTip = await getTip(input._id)
 
-  console.log('\tCurrent Tip', currentTip)
-
   if (!currentTip) {
-    throw new Error('Not found')
+    throw new Error(`Tip with id ${input._id} not found.`)
   }
+
+  let tipSlug = currentTip.slug
 
   if (input.title !== currentTip.title) {
-    console.log('\ttip title has changed')
-    console.log('\t\told: ', currentTip.title)
-    console.log('\t\tnew: ', input.title)
     const splitSlug = currentTip?.slug.split('~') || ['', guid()]
-    const newSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
-
-    await sanityMutation([
-      {
-        patch: {
-          id: input._id,
-          set: {
-            body: input.body,
-            slug: {
-              current: newSlug,
-            },
-            title: input.title,
-          },
-        },
-      },
-    ])
-  } else {
-    console.log('\tno title change, updating body')
-    await sanityMutation([
-      {
-        patch: {
-          id: input._id,
-          set: {
-            body: input.body,
-          },
-        },
-      },
-    ])
+    tipSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
   }
+
+  const query = sql`
+    UPDATE ${contentResource}
+    SET
+      ${contentResource.fields} = JSON_SET(
+        ${contentResource.fields},
+        '$.title', ${input.title},
+        '$.slug', ${tipSlug},
+        '$.body', ${input.body}
+      )
+    WHERE
+      id = ${input._id};
+  `
+
+  await db
+    .execute(query)
+    .then((result) => {
+      console.log('Updated Tip', result)
+    })
+    .catch((error) => {
+      console.error('🚨 Error updating tip', error)
+      throw error
+    })
 
   revalidateTag('tips')
   revalidateTag(input._id)
+  revalidatePath(`/tips/${tipSlug}`)
 
-  const updatedTip = await sanityQuery<Tip | null>(
-    `*[_type == "tip" && (_id == "${input._id}")][0]{
-          _id,
-          _type,
-          _updatedAt,
-          title,
-          summary,
-          visibility,
-          state,
-          body,
-          "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
-          "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
-          "transcript": resources[@->._type == 'videoResource'][0]->transcript,
-          "slug": slug.current,
-  }`,
-    { tags: ['tips', input._id] },
-  ).catch((error) => {
-    console.error('Error fetching tip', error)
-    return null
-  })
-
-  if (updatedTip) {
-    console.log('\tUpdated Tip: ', user)
-    revalidateTag(updatedTip.slug)
-    console.log('\trevalidate tag: ', updatedTip.slug)
-    revalidatePath(`/tips/${updatedTip.slug}`)
-    console.log('\trevalidate path: ', `/tips/${updatedTip.slug}`)
-    const { resources, ...updatedContentResource } = convertToMigratedTipResource({
-      tip: updatedTip,
-      ownerUserId: user.id,
-    })
-    console.log('\tUpdated Tip Resource: ', updatedContentResource)
-    await db
-      .update(contentResource)
-      .set(updatedContentResource)
-      .where(eq(contentResource.id, updatedTip._id))
-      .execute()
-      .catch((error) => {
-        console.error('\tError updating tip', error)
-        return null
-      })
-      .finally(() => {
-        console.log('\tUpdated Tip in DB')
-      })
-  }
-
-  return updatedTip
+  return await getTip(input._id)
 }

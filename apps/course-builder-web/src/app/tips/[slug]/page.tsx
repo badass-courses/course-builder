@@ -73,7 +73,7 @@ async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
       {tip && ability.can('update', 'Content') ? (
         <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
           <div />
-          <Button asChild className="h-7">
+          <Button size="sm" asChild>
             <Link href={`/tips/${tip.slug || tip._id}/edit`}>Edit</Link>
           </Button>
         </div>
@@ -105,6 +105,8 @@ async function PlayerContainer({ tipLoader }: { tipLoader: Promise<Tip | null> }
   if (!tip) {
     notFound()
   }
+
+  console.log('tip', tip)
 
   const videoResourceLoader = getVideoResource(tip.videoResourceId)
 

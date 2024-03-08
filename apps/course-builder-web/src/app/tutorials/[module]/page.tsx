@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 
 import { Separator } from '@coursebuilder/ui'
 
@@ -15,9 +14,7 @@ export default async function ModulePage({ params }: { params: { module: string 
     redirect('/login')
   }
 
-  const course = await sanityQuery<{ title: string; description: string }>(
-    `*[_type == "module" && moduleType == 'tutorial' && (_id == "${params.module}" || slug.current == "${params.module}")][0]`,
-  )
+  const course: any = null
 
   if (!course) {
     notFound()

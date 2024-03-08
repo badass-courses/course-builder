@@ -2,26 +2,13 @@ import * as React from 'react'
 import Link from 'next/link'
 import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
 
 export default async function Tutorials() {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
-  const tutorials = await sanityQuery<
-    {
-      _id: string
-      title: string
-      description: string
-      slug: string
-    }[]
-  >(`*[_type == "module" && moduleType == "tutorial"]{
-    _id, 
-    title, 
-    description, 
-    "slug": slug.current
-    }`)
+  const tutorials: any[] = []
 
   return (
     <div className="flex flex-col">

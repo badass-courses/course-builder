@@ -4,7 +4,8 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
-import { getArticle, type Article } from '@/lib/articles'
+import { type Article } from '@/lib/articles'
+import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
@@ -39,7 +40,7 @@ async function ArticleActionBar({ articleLoader }: { articleLoader: Promise<Arti
       {article && ability.can('update', 'Content') ? (
         <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
           <div />
-          <Button asChild className="h-7">
+          <Button asChild size="sm">
             <Link href={`/articles/${article.slug || article._id}/edit`}>Edit</Link>
           </Button>
         </div>

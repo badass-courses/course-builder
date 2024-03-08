@@ -4,10 +4,8 @@ import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { MUX_WEBHOOK_EVENT } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedVideoResource, VideoResourceSchema } from '@/lib/video-resource'
-import { getVideoResource } from '@/lib/video-resource-query'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
-import { eq } from 'drizzle-orm'
+import { getVideoResourceByMuxAssetId } from '@/lib/video-resource-query'
+import { sql } from 'drizzle-orm'
 
 export const muxVideoAssetCreated = inngest.createFunction(
   { id: `mux-video-asset-created`, name: 'Mux Video Asset Created' },
@@ -41,53 +39,31 @@ export const muxVideoAssetError = inngest.createFunction(
   },
   async ({ event, step }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      const resourceTemp = VideoResourceSchema.safeParse(
-        await sanityQuery(`*[_type == "videoResource" && muxAssetId == "${event.data.muxWebhookEvent.data.id}"][0]`, {
-          useCdn: false,
-        }),
-      )
-      return resourceTemp.success ? resourceTemp.data : null
+      return getVideoResourceByMuxAssetId(event.data.muxWebhookEvent.data.id)
     })
 
     if (videoResource) {
       await step.run('update the video resource in Sanity as errored', async () => {
-        return await sanityMutation([
-          {
-            patch: {
-              id: videoResource._id,
-              set: {
-                state: `errored`,
-              },
-            },
-          },
-        ])
+        const query = sql`
+          UPDATE ${contentResource}
+          SET
+            ${contentResource.fields} = JSON_SET(
+              ${contentResource.fields}, '$.state', 'errored')
+          WHERE
+            id = ${videoResource._id};
+        `
+        return db
+          .execute(query)
+          .then((result) => {
+            console.log('📼 updated video resource', result)
+            return result
+          })
+          .catch((error) => {
+            console.error(error)
+            throw error
+          })
       })
       revalidateTag(videoResource._id)
-
-      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
-        return getVideoResource(videoResource._id)
-      })
-
-      if (updatedVideoResource) {
-        await step.run('update the video resource in the database', async () => {
-          const resourceToUpdate = await db.query.contentResource.findFirst({
-            where: eq(contentResource.id, updatedVideoResource._id),
-          })
-
-          if (!resourceToUpdate) {
-            return
-          }
-          const migratedResource = convertToMigratedVideoResource({
-            videoResource: updatedVideoResource,
-            ownerUserId: resourceToUpdate.createdById,
-          })
-
-          return db
-            .update(contentResource)
-            .set(migratedResource)
-            .where(eq(contentResource.id, updatedVideoResource._id))
-        })
-      }
     }
 
     await step.run('announce asset errored', async () => {
@@ -115,53 +91,31 @@ export const muxVideoAssetReady = inngest.createFunction(
   },
   async ({ event, step }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      const resourceTemp = VideoResourceSchema.safeParse(
-        await sanityQuery(`*[_type == "videoResource" && muxAssetId == "${event.data.muxWebhookEvent.data.id}"][0]`, {
-          useCdn: false,
-        }),
-      )
-      return resourceTemp.success ? resourceTemp.data : null
+      return getVideoResourceByMuxAssetId(event.data.muxWebhookEvent.data.id)
     })
 
     if (videoResource) {
-      await step.run('update the video resource in Sanity', async () => {
-        return await sanityMutation([
-          {
-            patch: {
-              id: videoResource._id,
-              set: {
-                duration: event.data.muxWebhookEvent.data.duration,
-                state: `ready`,
-              },
-            },
-          },
-        ])
+      await step.run('update the video resource in database', async () => {
+        const query = sql`
+          UPDATE ${contentResource}
+          SET
+            ${contentResource.fields} = JSON_SET(
+              ${contentResource.fields}, '$.state', 'ready')
+          WHERE
+            id = ${videoResource._id};
+        `
+        return db
+          .execute(query)
+          .then((result) => {
+            console.log('📼 updated video resource', result)
+            return result
+          })
+          .catch((error) => {
+            console.error(error)
+            throw error
+          })
       })
       revalidateTag(videoResource._id)
-      const updatedVideoResource = await step.run('update the video resource in the database', async () => {
-        return getVideoResource(videoResource._id)
-      })
-
-      if (updatedVideoResource) {
-        await step.run('update the video resource in the database', async () => {
-          const resourceToUpdate = await db.query.contentResource.findFirst({
-            where: eq(contentResource.id, updatedVideoResource._id),
-          })
-
-          if (!resourceToUpdate) {
-            return
-          }
-          const migratedResource = convertToMigratedVideoResource({
-            videoResource: updatedVideoResource,
-            ownerUserId: resourceToUpdate.createdById,
-          })
-
-          return db
-            .update(contentResource)
-            .set(migratedResource)
-            .where(eq(contentResource.id, updatedVideoResource._id))
-        })
-      }
     }
 
     await step.run('announce asset ready', async () => {

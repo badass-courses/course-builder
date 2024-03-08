@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { EditArticleForm } from '@/app/articles/_components/edit-article-form'
 import { getAbility } from '@/lib/ability'
-import { getArticle } from '@/lib/articles'
+import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'

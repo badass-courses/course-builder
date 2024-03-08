@@ -1,7 +1,7 @@
 import { ARTICLE_CHAT_EVENT } from '@/inngest/events'
 import { resourceChat } from '@/inngest/helpers/resource-chat'
 import { inngest } from '@/inngest/inngest.server'
-import { getArticle } from '@/lib/articles'
+import { getArticle } from '@/lib/articles-query'
 import { NonRetriableError } from 'inngest'
 
 export const articleChat = inngest.createFunction(

@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityQuery } from '@/server/sanity.server'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,24 +10,7 @@ export default async function EditTutorialLessonPage({ params }: { params: { mod
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
 
-  const lessonData = await sanityQuery<{
-    _id: string
-    title: string
-    description: string
-    slug: string
-  }>(`*[slug.current == "${lesson}"][0]{
-    _id,
-    _type, 
-    title, 
-    description, 
-    "slug": slug.current,
-    "lessons": lessons[]->{
-      _id, 
-      title, 
-      description, 
-      "slug": slug.current,
-    }
-  }`)
+  const lessonData = null
 
   if (!lessonData || !ability.can('update', 'Content')) {
     notFound()

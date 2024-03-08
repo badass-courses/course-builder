@@ -103,7 +103,11 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
   transcriptWithScreenshotsLoader,
 }) => {
   const videoResource = use(videoResourceLoader)
-  const transcriptWithScreenshots = transcriptWithScreenshotsLoader ? use(transcriptWithScreenshotsLoader) : null
+  const initialTranscriptWithScreenshots = transcriptWithScreenshotsLoader ? use(transcriptWithScreenshotsLoader) : null
+
+  const [transcriptWithScreenshots, setTranscriptWithScreenshots] = React.useState<string | null>(
+    initialTranscriptWithScreenshots,
+  )
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
@@ -149,6 +153,9 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
             break
           case 'transcript.ready':
             setTranscript(data.body)
+            break
+          case 'transcriptWithScreenshots.ready':
+            setTranscriptWithScreenshots(data.body)
             break
           default:
             break
@@ -314,18 +321,20 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
                         if (!props.src) return null
 
                         return (
-                          <div>
+                          <div className="flex flex-col">
                             <a href={props.src} target="_blank" rel="noreferrer">
                               <Image
                                 src={props.src}
                                 alt={'screenshot'}
-                                fill={true}
+                                width={1960}
+                                height={1080}
                                 onDragStart={(e) => {
                                   e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
                                 }}
                               />
                             </a>
                             <Button
+                              size="sm"
                               onClick={() => {
                                 const screenshotUrl = new URL(props.src as string)
                                 screenshotUrl.searchParams.set('width', '1920')
@@ -447,6 +456,7 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
           case 'transcript.ready':
             setTranscript(data.body)
             break
+
           default:
             break
         }
@@ -490,9 +500,8 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
             onSubmit(formValues)
           }}
           type="button"
-          variant="default"
           size="sm"
-          className="h-7 disabled:cursor-wait"
+          className="disabled:cursor-wait"
           disabled={updateTipStatus === 'loading'}
         >
           Save

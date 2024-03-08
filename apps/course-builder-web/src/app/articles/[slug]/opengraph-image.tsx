@@ -1,7 +1,6 @@
 import { ImageResponse } from 'next/og'
-import { getArticle } from '@/lib/articles'
+import { getArticle } from '@/lib/articles-query'
 
-export const runtime = 'edge'
 export const revalidate = 60
 
 export default async function ArticleOG({ params }: { params: { slug: string } }) {
