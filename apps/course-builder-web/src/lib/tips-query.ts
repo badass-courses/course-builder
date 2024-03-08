@@ -158,7 +158,7 @@ export async function updateTip(input: TipUpdate) {
         ${contentResource.fields},
         '$.title', ${input.title},
         '$.slug', ${tipSlug},
-        '$.body', ${input.body},
+        '$.body', ${input.body}
       )
     WHERE
       id = ${input._id};
