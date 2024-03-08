@@ -4,25 +4,13 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getAbility } from '@/lib/ability'
-import { Article, ArticleSchema, convertToMigratedArticleResource, NewArticle } from '@/lib/articles'
-import { VideoResourceSchema } from '@/lib/video-resource'
+import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
-
-async function getSanityArticle(slugOrId: string): Promise<Article | null> {
-  return sanityQuery<Article | null>(
-    `*[_id == "${slugOrId}"][0]{
-      ...,
-      "slug": slug.current,
-    }`,
-    { tags: ['articles', slugOrId] },
-  )
-}
 
 export async function getArticles(): Promise<Article[]> {
   const query = sql`
@@ -63,26 +51,19 @@ export async function createArticle(input: NewArticle) {
 
   const newArticleId = v4()
 
-  await sanityMutation([
-    {
-      createOrReplace: {
-        _id: newArticleId,
-        _type: 'article',
-        state: 'draft',
-        visibility: 'unlisted',
-        title: input.title,
-        slug: {
-          current: slugify(`${input.title}~${guid()}`),
-        },
-      },
+  await db.insert(contentResource).values({
+    id: newArticleId,
+    type: 'article',
+    fields: {
+      title: input.title,
+      state: 'draft',
+      visibility: 'unlisted',
+      slug: slugify(`${input.title}~${guid()}`),
     },
-  ])
+    createdById: user.id,
+  })
 
-  const article = await getSanityArticle(newArticleId)
-
-  if (article && session?.user) {
-    await db.insert(contentResource).values(convertToMigratedArticleResource({ article, ownerUserId: session.user.id }))
-  }
+  const article = await getArticle(newArticleId)
 
   revalidateTag('articles')
 
@@ -97,9 +78,7 @@ export async function updateArticle(input: Article) {
     throw new Error('Unauthorized')
   }
 
-  console.log('Updating Article', { input })
-
-  const currentArticle = await getSanityArticle(input._id)
+  const currentArticle = await getArticle(input._id)
 
   if (!currentArticle) {
     return createArticle(input)
@@ -112,39 +91,36 @@ export async function updateArticle(input: Article) {
     articleSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
   }
 
-  await sanityMutation(
-    [
-      {
-        patch: {
-          id: input._id,
-          set: {
-            ...input,
-            slug: {
-              _type: 'slug',
-              current: articleSlug,
-            },
-          },
-        },
-      },
-    ],
-    { returnDocuments: true },
-  ).then((res) => res.results[0].document)
+  const query = sql`
+    UPDATE ${contentResource}
+    SET
+      ${contentResource.fields} = JSON_SET(
+        ${contentResource.fields},
+        '$.title', ${input.title},
+        '$.slug', ${articleSlug},
+        '$.body', ${input.body},
+        '$.state', ${input.state}
+      )
+    WHERE
+      id = ${input._id};
+  `
+
+  await db
+    .execute(query)
+    .then((result) => {
+      console.log('Updated Article')
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
 
   revalidateTag('articles')
   revalidateTag(input._id)
   revalidateTag(articleSlug)
   revalidatePath(`/${articleSlug}`)
 
-  const updatedArticle = await getSanityArticle(input._id)
-
-  if (updatedArticle) {
-    const dbArticle = convertToMigratedArticleResource({ article: updatedArticle, ownerUserId: user.id })
-    await db.update(contentResource).set(dbArticle).where(eq(contentResource.id, updatedArticle._id))
-    console.log('Updated Article', { updatedArticle })
-    return updatedArticle
-  } else {
-    throw new Error('Article not found')
-  }
+  return await getArticle(input._id)
 }
 
 export async function getArticle(slugOrId: string) {

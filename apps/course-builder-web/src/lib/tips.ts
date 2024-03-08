@@ -1,4 +1,3 @@
-import { guid } from '@/utils/guid'
 import { z } from 'zod'
 
 export const TipStateSchema = z.union([
@@ -25,53 +24,6 @@ export const TipSchema = z.object({
 })
 
 export type Tip = z.infer<typeof TipSchema>
-
-export const MigratedTipResourceSchema = z.object({
-  createdById: z.string(),
-
-  type: z.string(),
-
-  id: z.string(),
-  updatedAt: z.date(),
-  createdAt: z.date(),
-  resources: z.array(z.object({ type: z.literal('videoResource'), id: z.string() })).default([]),
-  fields: z
-    .object({
-      slug: z.string(),
-      title: z.string(),
-      body: z.string().nullable().optional(),
-      state: z.string(),
-      visibility: z.string(),
-      summary: z.string().optional().nullable(),
-    })
-    .default({ title: 'New Tip', slug: `tip-${guid()}`, state: 'draft', visibility: 'unlisted', summary: null }),
-})
-
-export function convertToMigratedTipResource({ tip, ownerUserId }: { tip: Tip; ownerUserId: string }) {
-  return MigratedTipResourceSchema.parse({
-    createdById: ownerUserId,
-    type: 'tip',
-    id: tip._id,
-    updatedAt: new Date(tip._updatedAt),
-    createdAt: new Date(tip._createdAt),
-    resources: tip.videoResourceId
-      ? [
-          {
-            type: 'videoResource',
-            id: tip.videoResourceId,
-          },
-        ]
-      : [],
-    fields: {
-      slug: tip.slug,
-      title: tip.title,
-      body: tip.body,
-      state: tip.state,
-      visibility: tip.visibility,
-      ...(tip.summary && { summary: tip.summary }),
-    },
-  })
-}
 
 export const NewTipSchema = z.object({
   title: z.string().min(2).max(90),

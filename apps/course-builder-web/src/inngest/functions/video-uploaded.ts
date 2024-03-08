@@ -6,10 +6,7 @@ import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
 import { createMuxAsset } from '@/lib/get-mux-options'
-import { convertToMigratedVideoResource, VideoResource } from '@/lib/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
-import { sql } from 'drizzle-orm'
 
 export const videoUploaded = inngest.createFunction(
   {

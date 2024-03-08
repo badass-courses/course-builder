@@ -1,5 +1,3 @@
-import { sanityQuery } from '@/server/sanity.server'
-import { guid } from '@/utils/guid'
 import { z } from 'zod'
 
 export const NewArticleSchema = z.object({
@@ -31,55 +29,3 @@ export const ArticleSchema = z.object({
 })
 
 export type Article = z.infer<typeof ArticleSchema>
-
-export const MigratedArticleResourceSchema = z.object({
-  createdById: z.string(),
-  type: z.string(),
-  id: z.string(),
-  updatedAt: z.date(),
-  createdAt: z.date(),
-  fields: z
-    .object({
-      slug: z.string(),
-      title: z.string().nullable(),
-      body: z.string().nullable().optional(),
-      state: z.string(),
-      visibility: z.string(),
-      description: z.string().optional().nullable(),
-      socialImage: z.object({ type: z.string(), url: z.string() }).optional().nullable(),
-    })
-    .default({
-      title: 'New Article',
-      slug: `article-${guid()}`,
-      state: 'draft',
-      visibility: 'unlisted',
-      description: null,
-      socialImage: null,
-    }),
-})
-
-export function convertToMigratedArticleResource({ article, ownerUserId }: { article: Article; ownerUserId: string }) {
-  return MigratedArticleResourceSchema.parse({
-    createdById: ownerUserId,
-    type: 'article',
-    createdAt: new Date(article._createdAt || new Date().toISOString()),
-    updatedAt: new Date(article._updatedAt || new Date().toISOString()),
-    id: article._id,
-    fields: {
-      slug: article.slug,
-      title: article.title,
-      body: article.body,
-      state: article.state,
-      visibility: article.visibility,
-      ...(article.description ? { description: article.description } : null),
-      ...(article.socialImage
-        ? {
-            socialImage: {
-              type: 'imageUrl',
-              url: article.socialImage,
-            },
-          }
-        : null),
-    },
-  })
-}
