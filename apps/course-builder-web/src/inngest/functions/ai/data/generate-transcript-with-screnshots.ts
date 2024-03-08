@@ -1,11 +1,11 @@
 import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
-import { convertToMigratedVideoResource, VideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { VideoResourceSchema } from '@/lib/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
-import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
 import { eq, sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
@@ -19,9 +19,43 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     event: MUX_SRT_READY_EVENT,
   },
   async ({ event, step }) => {
+    const videoResourceId = event.data.videoResourceId
+
+    if (!videoResourceId) {
+      throw new Error('video resource id is required')
+    }
+
     const videoResource = await step.run('get the video resource from Sanity', async () => {
-      return sanityQuery<VideoResource | null>(`*[_id == "${event.data.videoResourceId}"][0]`)
+      const query = sql`
+        SELECT
+          id as _id,
+          CAST(updatedAt AS DATETIME) as _updatedAt,
+          CAST(createdAt AS DATETIME) as _createdAt,
+          JSON_EXTRACT (${contentResource.fields}, "$.state") AS state,
+          JSON_EXTRACT (${contentResource.fields}, "$.duration") AS duration,
+          JSON_EXTRACT (${contentResource.fields}, "$.muxPlaybackId") AS muxPlaybackId,
+          JSON_EXTRACT (${contentResource.fields}, "$.muxAssetId") AS muxAssetId,
+          JSON_EXTRACT (${contentResource.fields}, "$.srt") AS srt
+        FROM
+          ${contentResource}
+        WHERE
+          type = 'videoResource'
+          AND (id = ${videoResourceId});
+        `
+
+      return db
+        .execute(query)
+        .then((result) => {
+          const parsed = VideoResourceSchema.safeParse(result.rows[0])
+          return parsed.success ? parsed.data : null
+        })
+        .catch((error) => {
+          console.error(error)
+          throw error
+        })
     })
+
+    console.log({ videoResource })
 
     if (!videoResource) {
       throw new NonRetriableError(`Video resource not found for id (${event.data.videoResourceId})`)
@@ -31,48 +65,45 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
       if (!videoResource.muxPlaybackId) {
         throw new Error(`Video resource (${event.data.videoResourceId}) does not have a muxPlaybackId`)
       }
-      if (!videoResource.srt) {
+      if (!event.data.srt) {
         throw new Error(`Video resource (${event.data.videoResourceId}) does not have an srt`)
       }
-      return await mergeSrtWithScreenshots(videoResource.srt, videoResource.muxPlaybackId)
+      return await mergeSrtWithScreenshots(event.data.srt, videoResource.muxPlaybackId)
     })
 
-    await step.run('update the video resource in Sanity', async () => {
-      await sanityMutation([
-        {
-          patch: {
-            id: videoResource._id,
-            set: {
-              transcriptWithScreenshots,
-            },
-          },
-        },
-      ])
-
-      revalidateTag(videoResource._id)
-    })
-
-    const updatedVideoResource = await step.run('update the video resource in the database', async () => {
-      return sanityQuery<VideoResource | null>(`*[_id == "${event.data.videoResourceId}"][0]`)
-    })
-
-    if (updatedVideoResource) {
-      await step.run('update the video resource in the database', async () => {
-        const resourceToUpdate = await db.query.contentResource.findFirst({
-          where: eq(contentResource.id, updatedVideoResource._id),
+    await step.run('update the video resource in the database', async () => {
+      const query = sql`
+        UPDATE ${contentResource}
+        SET
+          ${contentResource.fields} = JSON_SET(
+            ${contentResource.fields}, '$.transcriptWithScreenshots', ${transcriptWithScreenshots})
+        WHERE
+          id = ${videoResourceId};
+      `
+      return db
+        .execute(query)
+        .then((result) => {
+          console.log('📼 updated video resource', result)
+          return result
         })
-
-        if (!resourceToUpdate) {
-          return
-        }
-        const migratedResource = convertToMigratedVideoResource({
-          videoResource: updatedVideoResource,
-          ownerUserId: resourceToUpdate.createdById,
+        .catch((error) => {
+          console.error(error)
+          throw error
         })
+    })
 
-        return db.update(contentResource).set(migratedResource).where(eq(contentResource.id, updatedVideoResource._id))
+    await step.run('send the transcript to the party', async () => {
+      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${event.data.videoResourceId}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          body: transcriptWithScreenshots,
+          requestId: event.data.videoResourceId,
+          name: 'transcriptWithScreenshots.ready',
+        }),
+      }).catch((e) => {
+        console.error(e)
       })
-    }
+    })
 
     return { transcriptWithScreenshots }
   },

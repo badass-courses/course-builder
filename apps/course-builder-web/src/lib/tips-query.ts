@@ -14,6 +14,22 @@ import { eq, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
+async function getSanityTip(slug: string) {
+  return await sanityQuery<Tip | null>(
+    `*[_id == "${slug}" || slug.current == "${slug}"][0]{
+          ...,
+          "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
+          "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
+          "transcript": resources[@->._type == 'videoResource'][0]->transcript,
+          "slug": slug.current,
+  }`,
+    { tags: ['tips', slug] },
+  ).catch((error) => {
+    console.error('Error fetching tip', error)
+    return null
+  })
+}
+
 export async function getTip(slug: string): Promise<Tip | null> {
   const query = sql`
     SELECT
@@ -87,6 +103,10 @@ export async function createTip(input: NewTip) {
 
   const videoResource = await getVideoResource(input.videoResourceId)
 
+  if (!videoResource) {
+    throw new Error('🚨 Video Resource not found')
+  }
+
   await sanityMutation([
     {
       createOrReplace: {
@@ -107,42 +127,37 @@ export async function createTip(input: NewTip) {
         ],
       },
     },
-  ])
-
-  const tip = await sanityQuery<Tip | null>(
-    `*[_type == "tip" && (_id == "${newTipId}")][0]{
-          _id,
-          _type,
-          _updatedAt,
-          _createdAt,
-          title,
-          summary,
-          visibility,
-          state,
-          body,
-          "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
-          "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
-          "transcript": resources[@->._type == 'videoResource'][0]->transcript,
-          "slug": slug.current,
-  }`,
-    { tags: ['tips'] },
-  ).catch((error) => {
-    console.error('Error fetching tip', error)
-    return null
+  ]).then((res) => {
+    console.log('🚀 Tip created in Sanity', res)
   })
 
+  const tip = await getSanityTip(newTipId)
+
+  console.log('🚀 Tip', tip)
+
   if (tip) {
-    await db.insert(contentResource).values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
-    await db.insert(contentResourceResource).values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
+    await db
+      .insert(contentResource)
+      .values(convertToMigratedTipResource({ tip, ownerUserId: user.id }))
+      .finally(() => {
+        console.log('🚀 Tip created')
+      })
+    await db
+      .insert(contentResourceResource)
+      .values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
+      .finally(() => {
+        console.log('🚀 Tip resource created')
+      })
+
+    revalidateTag('tips')
+
+    return tip
+  } else {
+    throw new Error('🚨 Error creating tip: Tip not found')
   }
-
-  revalidateTag('tips')
-
-  return tip
 }
 
 export async function updateTip(input: TipUpdate) {
-  console.log('Updating Tip', input)
   const session = await getServerAuthSession()
   const user = session?.user
   const ability = getAbility({ user })
@@ -152,93 +167,52 @@ export async function updateTip(input: TipUpdate) {
 
   const currentTip = await getTip(input._id)
 
-  console.log('\tCurrent Tip', currentTip)
-
   if (!currentTip) {
-    throw new Error('Not found')
+    throw new Error(`Tip with id ${input._id} not found.`)
   }
+
+  let tipSlug = currentTip.slug
 
   if (input.title !== currentTip.title) {
-    console.log('\ttip title has changed')
-    console.log('\t\told: ', currentTip.title)
-    console.log('\t\tnew: ', input.title)
     const splitSlug = currentTip?.slug.split('~') || ['', guid()]
-    const newSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
-
-    await sanityMutation([
-      {
-        patch: {
-          id: input._id,
-          set: {
-            body: input.body,
-            slug: {
-              current: newSlug,
-            },
-            title: input.title,
-          },
-        },
-      },
-    ])
-  } else {
-    console.log('\tno title change, updating body')
-    await sanityMutation([
-      {
-        patch: {
-          id: input._id,
-          set: {
-            body: input.body,
-          },
-        },
-      },
-    ])
+    tipSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
   }
+
+  await sanityMutation([
+    {
+      patch: {
+        id: input._id,
+        set: {
+          ...input,
+          slug: {
+            current: tipSlug,
+          },
+          title: input.title,
+        },
+      },
+    },
+  ])
 
   revalidateTag('tips')
   revalidateTag(input._id)
 
-  const updatedTip = await sanityQuery<Tip | null>(
-    `*[_type == "tip" && (_id == "${input._id}")][0]{
-          _id,
-          _type,
-          _updatedAt,
-          title,
-          summary,
-          visibility,
-          state,
-          body,
-          "muxPlaybackId": resources[@->._type == 'videoResource'][0]->muxPlaybackId,
-          "videoResourceId": resources[@->._type == 'videoResource'][0]->_id,
-          "transcript": resources[@->._type == 'videoResource'][0]->transcript,
-          "slug": slug.current,
-  }`,
-    { tags: ['tips', input._id] },
-  ).catch((error) => {
-    console.error('Error fetching tip', error)
-    return null
-  })
+  const updatedTip = await getSanityTip(input._id)
 
   if (updatedTip) {
-    console.log('\tUpdated Tip: ', user)
     revalidateTag(updatedTip.slug)
-    console.log('\trevalidate tag: ', updatedTip.slug)
     revalidatePath(`/tips/${updatedTip.slug}`)
-    console.log('\trevalidate path: ', `/tips/${updatedTip.slug}`)
     const { resources, ...updatedContentResource } = convertToMigratedTipResource({
       tip: updatedTip,
       ownerUserId: user.id,
     })
-    console.log('\tUpdated Tip Resource: ', updatedContentResource)
     await db
       .update(contentResource)
       .set(updatedContentResource)
       .where(eq(contentResource.id, updatedTip._id))
       .execute()
       .catch((error) => {
-        console.error('\tError updating tip', error)
+        console.error('🚨 Error updating tip', error)
         return null
-      })
-      .finally(() => {
-        console.log('\tUpdated Tip in DB')
       })
   }
 

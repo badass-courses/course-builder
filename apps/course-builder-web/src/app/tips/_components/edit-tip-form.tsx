@@ -103,7 +103,11 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
   transcriptWithScreenshotsLoader,
 }) => {
   const videoResource = use(videoResourceLoader)
-  const transcriptWithScreenshots = transcriptWithScreenshotsLoader ? use(transcriptWithScreenshotsLoader) : null
+  const initialTranscriptWithScreenshots = transcriptWithScreenshotsLoader ? use(transcriptWithScreenshotsLoader) : null
+
+  const [transcriptWithScreenshots, setTranscriptWithScreenshots] = React.useState<string | null>(
+    initialTranscriptWithScreenshots,
+  )
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
@@ -149,6 +153,9 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
             break
           case 'transcript.ready':
             setTranscript(data.body)
+            break
+          case 'transcriptWithScreenshots.ready':
+            setTranscriptWithScreenshots(data.body)
             break
           default:
             break
@@ -449,6 +456,7 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
           case 'transcript.ready':
             setTranscript(data.body)
             break
+
           default:
             break
         }

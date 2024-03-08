@@ -21,6 +21,7 @@ export async function getTranscriptWithScreenshots(videoResourceId?: string | nu
   return db
     .execute(query)
     .then((result) => {
+      console.log('📼 transcriptWithScreenshots', result.rows[0], videoResourceId)
       return (result.rows[0] as { text: string | null })?.text || null
     })
     .catch((error) => {
@@ -30,7 +31,7 @@ export async function getTranscriptWithScreenshots(videoResourceId?: string | nu
 }
 
 export async function getVideoResource(videoResourceId?: string | null): Promise<VideoResource | null> {
-  console.log('📼 videoResourceId', videoResourceId)
+  console.log('📼 getVideoResource', videoResourceId)
   if (!videoResourceId) {
     return null
   }
@@ -54,6 +55,7 @@ export async function getVideoResource(videoResourceId?: string | null): Promise
   return db
     .execute(query)
     .then((result) => {
+      console.log('\t result', result)
       const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
       return parsedResource.success ? parsedResource.data : null
     })
