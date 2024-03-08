@@ -37,7 +37,7 @@ export async function getArticles(): Promise<Article[]> {
     FROM
       ${contentResource} as articles
     WHERE
-      articles.type = 'article';
+      articles.type = 'article'
     ORDER BY articles.createdAt DESC;
   `
 
