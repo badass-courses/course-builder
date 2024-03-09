@@ -38,13 +38,19 @@ async function getChatResource(id: string) {
       JSON_EXTRACT (resources.fields, "$.body") AS body,
       JSON_EXTRACT (videoResources.fields, "$.transcript") AS transcript,
       JSON_EXTRACT (videoResources.fields, "$.wordLevelSrt") AS wordLevelSrt
-      
     FROM
       ${contentResource} as resources
-    LEFT JOIN ${contentResourceResource} as refs 
-      ON resources.id = refs.resourceOfId
-    LEFT JOIN ${contentResource} as videoResources
-      ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'    
+    -- join assumes that there is a single video resource ie a Tip
+    LEFT JOIN (
+      SELECT
+        refs.resourceOfId,
+        videoResources.fields
+      FROM
+        ${contentResourceResource} as refs
+      JOIN ${contentResource} as videoResources
+        ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'
+    ) as videoResources
+      ON resources.id = videoResources.resourceOfId 
     WHERE
       resources.id = ${id};
   `
