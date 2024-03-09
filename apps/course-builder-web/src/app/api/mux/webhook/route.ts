@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { MUX_WEBHOOK_EVENT, MuxWebhookEventSchema } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
+import { MUX_WEBHOOK_EVENT, MuxWebhookEventSchema } from '@/inngest/video-processing/events/video-mux-webhook'
 import { withSkill } from '@/server/with-skill'
 
 export const POST = withSkill(async (req: NextRequest) => {

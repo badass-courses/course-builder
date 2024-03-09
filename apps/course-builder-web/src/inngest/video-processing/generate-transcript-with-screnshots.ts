@@ -1,8 +1,8 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
+import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
 import { VideoResourceSchema } from '@/lib/video-resource'
 import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
 import { sql } from 'drizzle-orm'
@@ -14,7 +14,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     name: 'Generate Transcript with Screenshots',
   },
   {
-    event: MUX_SRT_READY_EVENT,
+    event: VIDEO_SRT_READY_EVENT,
   },
   async ({ event, step }) => {
     const videoResourceId = event.data.videoResourceId

@@ -1,5 +1,5 @@
 import BasicEmail from '@/emails/basic-email'
-import { USER_CREATED_EVENT } from '@/inngest/events'
+import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sanityQuery } from '@/server/sanity.server'
 import { sendAnEmail } from '@/utils/send-an-email'

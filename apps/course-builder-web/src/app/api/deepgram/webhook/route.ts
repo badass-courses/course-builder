@@ -1,6 +1,6 @@
 import { type NextResponse } from 'next/server'
-import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
 import { inngest } from '@/inngest/inngest.server'
+import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-deepgram-webhook'
 import { withSkill, type SkillRequest } from '@/server/with-skill'
 
 export const POST = withSkill(async (req: SkillRequest, res: NextResponse) => {

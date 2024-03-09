@@ -1,7 +1,7 @@
 'use server'
 
-import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/events/video-resource'
 import { inngest } from '@/inngest/inngest.server'
+import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
 import { getAbility } from '@/lib/ability'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'

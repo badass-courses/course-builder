@@ -1,7 +1,7 @@
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events'
+import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
 import { User } from '@/lib/ability'
 import { promptActionExecutor } from '@/lib/prompt.action-executor'

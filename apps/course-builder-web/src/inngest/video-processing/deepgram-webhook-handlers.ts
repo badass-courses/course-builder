@@ -1,16 +1,15 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
-import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
+import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-deepgram-webhook'
+import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
 import {
   srtFromTranscriptResult,
   transcriptAsParagraphsWithTimestamps,
   wordLevelSrtFromTranscriptResult,
 } from '@/transcript-processing/deepgram-results-processor'
-import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 
 export const deepgramTranscriptReady = inngest.createFunction(
   { id: `deepgram-transcript-ready-event`, name: 'Deepgram Transcript Ready' },
@@ -56,7 +55,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
 
     if (srt && wordLevelSrt && videoResourceId) {
       await step.sendEvent('announce that srt is ready', {
-        name: MUX_SRT_READY_EVENT,
+        name: VIDEO_SRT_READY_EVENT,
         data: {
           videoResourceId: videoResourceId,
           moduleSlug: event.data.moduleSlug,

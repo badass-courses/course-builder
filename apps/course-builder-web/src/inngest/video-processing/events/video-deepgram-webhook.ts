@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export const DEEPGRAM_WEBHOOK_EVENT = 'deepgram/web-hook-event'
 
-export type DeepgramWebhook = {
+export type VideoDeepgramWebhook = {
   name: typeof DEEPGRAM_WEBHOOK_EVENT
   data: DeepgramWebhookEvent
 }

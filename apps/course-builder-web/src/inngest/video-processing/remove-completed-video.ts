@@ -1,5 +1,5 @@
-import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { inngest } from '@/inngest/inngest.server'
+import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { utapi } from '@/uploadthing/core'
 import { NonRetriableError } from 'inngest'

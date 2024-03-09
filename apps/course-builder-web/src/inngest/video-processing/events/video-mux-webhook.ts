@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const MUX_WEBHOOK_EVENT = 'mux/web-hook-event'
 
-export type MuxWebhook = {
+export type VideoMuxWebhook = {
   name: typeof MUX_WEBHOOK_EVENT
   data: {
     muxWebhookEvent: MuxWebhookEvent

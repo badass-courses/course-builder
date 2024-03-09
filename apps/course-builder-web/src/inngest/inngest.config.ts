@@ -6,18 +6,18 @@ import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extracto
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { resourceChat } from '@/inngest/functions/resource-chat'
 import { userCreated } from '@/inngest/functions/user-created'
-import { addSrtToMuxAsset } from '@/inngest/functions/video-processing/add-srt-to-mux-asset'
-import { deepgramTranscriptReady } from '@/inngest/functions/video-processing/deepgram-webhook-handlers'
-import { generateTranscriptWithScreenshots } from '@/inngest/functions/video-processing/generate-transcript-with-screnshots'
+import { inngest } from '@/inngest/inngest.server'
+import { addSrtToMuxAsset } from '@/inngest/video-processing/add-srt-to-mux-asset'
+import { deepgramTranscriptReady } from '@/inngest/video-processing/deepgram-webhook-handlers'
+import { generateTranscriptWithScreenshots } from '@/inngest/video-processing/generate-transcript-with-screnshots'
 import {
   muxVideoAssetCreated,
   muxVideoAssetError,
   muxVideoAssetReady,
-} from '@/inngest/functions/video-processing/mux-webhooks-handlers'
-import { orderTranscript } from '@/inngest/functions/video-processing/order-transcript'
-import { removeCompletedVideo } from '@/inngest/functions/video-processing/remove-completed-video'
-import { videoUploaded } from '@/inngest/functions/video-processing/video-uploaded'
-import { inngest } from '@/inngest/inngest.server'
+} from '@/inngest/video-processing/mux-webhooks-handlers'
+import { orderTranscript } from '@/inngest/video-processing/order-transcript'
+import { removeCompletedVideo } from '@/inngest/video-processing/remove-completed-video'
+import { videoUploaded } from '@/inngest/video-processing/video-uploaded'
 
 export const inngestConfig = {
   client: inngest,
