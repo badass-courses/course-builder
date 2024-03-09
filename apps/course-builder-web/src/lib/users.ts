@@ -1,6 +1,6 @@
+import { UserSchema } from '@/ability'
 import { db } from '@/db'
 import { roles, userRoles, users } from '@/db/schema'
-import { UserSchema } from '@/lib/ability'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 

@@ -1,5 +1,5 @@
-import { CLOUDINARY_WEBHOOK_EVENT, CloudinaryWebhook } from '@/inngest/events/cloudinary-webhook'
 import { EMAIL_SEND_BROADCAST, EmailSendBroadcast } from '@/inngest/events/email-send-broadcast'
+import { IMAGE_RESOURCE_CREATED_EVENT, ImageResourceCreated } from '@/inngest/events/image-resource-created'
 import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
 import { RESOURCE_CHAT_REQUEST_EVENT, ResourceChat } from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
@@ -24,7 +24,7 @@ type Events = {
   [VIDEO_SRT_READY_EVENT]: VideoSrtReady
   [USER_CREATED_EVENT]: UserCreated
   [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
-  [CLOUDINARY_WEBHOOK_EVENT]: CloudinaryWebhook
+  [IMAGE_RESOURCE_CREATED_EVENT]: ImageResourceCreated
   [RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
   [VIDEO_STATUS_CHECK_EVENT]: VideoStatusCheck
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated

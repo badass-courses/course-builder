@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 

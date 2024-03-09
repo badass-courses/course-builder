@@ -1,7 +1,7 @@
 import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
-import { orderDeepgramTranscript } from '@/lib/deepgram-order-transcript'
 import { getVideoResource } from '@/lib/video-resource-query'
+import { orderDeepgramTranscript } from '@/transcript-processing/deepgram-order-transcript'
 import { NonRetriableError } from 'inngest'
 
 export const orderTranscript = inngest.createFunction(

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'

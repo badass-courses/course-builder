@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 export default async function ProfilePage() {

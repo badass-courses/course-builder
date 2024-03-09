@@ -1,5 +1,5 @@
 import { DeepgramResults } from '@/inngest/video-processing/events/video-transcript-ready'
-import { Paragraph, srtProcessor } from '@/lib/srt-processor'
+import { Paragraph, srtProcessor } from '@/transcript-processing/srt-processor'
 
 export function srtFromTranscriptResult(results: DeepgramResults) {
   return srtProcessor(results.channels[0]?.alternatives[0]?.words)

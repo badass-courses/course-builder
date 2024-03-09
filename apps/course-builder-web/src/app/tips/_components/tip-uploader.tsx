@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getUniqueFilename } from '@/lib/get-unique-filename'
+import { getUniqueFilename } from '@/utils/get-unique-filename'
 import { UploadDropzone } from '@/utils/uploadthing'
 
 export function TipUploader({ setVideoResourceId }: { setVideoResourceId: (value: string) => void }) {

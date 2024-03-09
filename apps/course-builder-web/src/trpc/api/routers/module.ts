@@ -1,4 +1,4 @@
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/trpc/api/trpc'

@@ -1,4 +1,4 @@
-import { ParagraphSchema, WordSchema } from '@/lib/srt-processor'
+import { ParagraphSchema, WordSchema } from '@/transcript-processing/srt-processor'
 import { z } from 'zod'
 
 export const VIDEO_TRANSCRIPT_READY_EVENT = 'video/transcript-ready-event'

@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { getMuxOptions } from '@/lib/get-mux-options'
+import { getMuxOptions } from '@/lib/mux-api'
 import { SkillRequest, withSkill } from '@/server/with-skill'
 
 const baseUrl = 'https://api.mux.com'

@@ -3,12 +3,12 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { CloudinaryMediaBrowser } from '@/app/_components/cloudinary-media-browser'
 import { CodemirrorEditor } from '@/app/_components/codemirror'
 import { useIsMobile } from '@/hooks/use-is-mobile'
-import { useSocket } from '@/hooks/use-socket'
 import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
@@ -41,9 +41,8 @@ import {
   TooltipTrigger,
 } from '@coursebuilder/ui'
 
+import { CloudinaryUploadWidget } from '../../_components/cloudinary-upload-widget'
 import { ArticleAssistant } from './article-assistant'
-import { CloudinaryMediaBrowser } from './cloudinary-media-browser'
-import { CloudinaryUploadWidget } from './cloudinary-upload-widget'
 
 const WIDGETS = new Set([
   {

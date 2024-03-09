@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
+import { getAbility } from '@/ability'
 import { CreateTip } from '@/app/tips/_components/create-tip'
-import { getAbility } from '@/lib/ability'
 import { getTipsModule } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 

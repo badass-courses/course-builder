@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 import { Separator } from '@coursebuilder/ui'

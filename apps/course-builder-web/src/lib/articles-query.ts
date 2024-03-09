@@ -1,9 +1,9 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { getAbility } from '@/ability'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { getAbility } from '@/lib/ability'
 import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'

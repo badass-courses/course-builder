@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { getAbility } from '@/ability'
 import { EditArticleForm } from '@/app/articles/_components/edit-article-form'
-import { getAbility } from '@/lib/ability'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 

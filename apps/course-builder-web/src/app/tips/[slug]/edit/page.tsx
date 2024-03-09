@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getTip } from '@/lib/tips-query'
 import { getTranscriptWithScreenshots, getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'

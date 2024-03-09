@@ -1,4 +1,4 @@
-import { cloudinaryAssetCreated } from '@/inngest/functions/cloudinary/cloudinary-webhooks-handlers'
+import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { weeklySignupDigest } from '@/inngest/functions/notify/creator/weekly-signups'
@@ -27,7 +27,7 @@ export const inngestConfig = {
     weeklySignupDigest,
     userSignupAdminEmail,
     postmarkWebhook,
-    cloudinaryAssetCreated,
+    imageResourceCreated,
     resourceChat,
     generateTranscriptWithScreenshots,
     deepgramTranscriptReady,

@@ -3,16 +3,15 @@ import { useSocket } from '@/hooks/use-socket'
 import { api } from '@/trpc/react'
 
 export const CloudinaryMediaBrowser = () => {
-  const utils = api.useUtils()
-
-  const { data: images = [] } = api.imageResources.getAll.useQuery()
+  const { data: images = [], refetch } = api.imageResources.getAll.useQuery()
 
   useSocket({
     onMessage: (messageEvent) => {
       try {
         const messageData = JSON.parse(messageEvent.data)
-        if (messageData.name === 'cloudinary.asset.created') {
-          utils.imageResources.getAll.invalidate()
+        if (messageData.name === 'image.resource.created') {
+          console.log('🖼️ image resource created')
+          refetch()
         }
       } catch (error) {
         // noting to do

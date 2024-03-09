@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 import { Links } from '@/components/navigation/links'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 
 type NavigationProps = {
   className?: string

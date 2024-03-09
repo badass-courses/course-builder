@@ -3,10 +3,13 @@
 import React from 'react'
 import Script from 'next/script'
 import { env } from '@/env.mjs'
+import { createImageResource } from '@/lib/image-resource-query'
+import { useSession } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
 
 export const CloudinaryUploadWidget: React.FC<{ dir: string; id: string }> = ({ dir, id }) => {
+  const session = useSession()
   const cloudinaryRef = React.useRef<any>()
   const widgetRef = React.useRef<any>()
   const containerRef = React.useRef<HTMLDivElement>(null)
@@ -14,7 +17,7 @@ export const CloudinaryUploadWidget: React.FC<{ dir: string; id: string }> = ({ 
     cloudinaryRef.current = (window as any).cloudinary
   }, [])
 
-  return (
+  return session?.data?.user ? (
     <div>
       <Script
         strategy="afterInteractive"
@@ -40,6 +43,10 @@ export const CloudinaryUploadWidget: React.FC<{ dir: string; id: string }> = ({ 
               (error: any, result: any) => {
                 if (!error && result && result.event === 'success') {
                   console.debug('Done! Here is the image info: ', result.info)
+                  createImageResource({
+                    asset_id: result.info.asset_id,
+                    secure_url: result.info.url,
+                  })
                 }
               },
             )
@@ -51,5 +58,5 @@ export const CloudinaryUploadWidget: React.FC<{ dir: string; id: string }> = ({ 
       </div>
       <div ref={containerRef} id="cloudinary-upload-widget-container" />
     </div>
-  )
+  ) : null
 }

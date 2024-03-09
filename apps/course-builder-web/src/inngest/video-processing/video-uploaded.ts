@@ -5,7 +5,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
 import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
-import { createMuxAsset } from '@/lib/get-mux-options'
+import { createMuxAsset } from '@/lib/mux-api'
 import { getVideoResource } from '@/lib/video-resource-query'
 
 export const videoUploaded = inngest.createFunction(

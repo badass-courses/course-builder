@@ -1,8 +1,8 @@
 'use server'
 
+import { getAbility } from '@/ability'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
-import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 export async function sendResourceChatMessage({

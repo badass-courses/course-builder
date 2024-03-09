@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
 import { Login } from '@/components/navigation/login'
 import { User } from '@/components/navigation/user'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { cx } from 'class-variance-authority'
 import { AnimatePresence, motion, useAnimationControls, type AnimationControls } from 'framer-motion'
 

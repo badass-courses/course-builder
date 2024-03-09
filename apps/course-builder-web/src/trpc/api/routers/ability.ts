@@ -1,4 +1,4 @@
-import { getAbilityRules } from '@/lib/ability'
+import { getAbilityRules } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 

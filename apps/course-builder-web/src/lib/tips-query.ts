@@ -1,9 +1,9 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { getAbility } from '@/ability'
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { getAbility } from '@/lib/ability'
 import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'

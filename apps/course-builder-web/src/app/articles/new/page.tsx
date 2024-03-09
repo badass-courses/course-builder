@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/lib/ability'
+import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 import { CreateArticle } from '../_components/create-article'
