@@ -1,10 +1,10 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/events/video-resource'
-import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
-import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
+import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
+import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
+import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
 import { createMuxAsset } from '@/lib/get-mux-options'
 import { getVideoResource } from '@/lib/video-resource-query'
 
@@ -142,7 +142,7 @@ export const videoUploaded = inngest.createFunction(
       })
     })
 
-    await step.sendEvent('order transcript for new video resource', {
+    await step.sendEvent('announce new video resource', {
       name: VIDEO_RESOURCE_CREATED_EVENT,
       data: {
         moduleSlug: event.data.moduleSlug,

@@ -319,6 +319,7 @@ export const contentResourceResource = mysqlTable(
     resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
     resourceId: varchar('resourceId', { length: 255 }).notNull(),
     position: double('position').notNull().default(0),
+    metadata: json('fields').$type<Record<string, any>>().default({}),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,

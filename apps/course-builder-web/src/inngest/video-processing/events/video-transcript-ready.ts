@@ -1,11 +1,11 @@
 import { ParagraphSchema, WordSchema } from '@/lib/srt-processor'
 import { z } from 'zod'
 
-export const DEEPGRAM_WEBHOOK_EVENT = 'deepgram/web-hook-event'
+export const VIDEO_TRANSCRIPT_READY_EVENT = 'video/transcript-ready-event'
 
-export type DeepgramWebhook = {
-  name: typeof DEEPGRAM_WEBHOOK_EVENT
-  data: DeepgramWebhookEvent
+export type VideoTranscriptReady = {
+  name: typeof VIDEO_TRANSCRIPT_READY_EVENT
+  data: VideoTranscriptReadyEvent
 }
 
 export const DeepgramResultsSchema = z.object({
@@ -28,10 +28,10 @@ export const DeepgramResultsSchema = z.object({
 
 export type DeepgramResults = z.infer<typeof DeepgramResultsSchema>
 
-export const DeepgramWebhookEventSchema = z.object({
+export const VideoTranscriptReadyEventSchema = z.object({
   videoResourceId: z.string().nullable(),
   moduleSlug: z.string().nullable(),
   results: DeepgramResultsSchema,
 })
 
-export type DeepgramWebhookEvent = z.infer<typeof DeepgramWebhookEventSchema>
+export type VideoTranscriptReadyEvent = z.infer<typeof VideoTranscriptReadyEventSchema>

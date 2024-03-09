@@ -1,5 +1,5 @@
-import { VIDEO_UPLOADED_EVENT } from '@/inngest/events/video-uploaded'
 import { inngest } from '@/inngest/inngest.server'
+import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
 import { getAbility } from '@/lib/ability'
 import { getServerAuthSession } from '@/server/auth'
 import { createUploadthing, type FileRouter } from 'uploadthing/next'

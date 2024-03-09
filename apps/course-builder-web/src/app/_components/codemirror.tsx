@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { env } from '@/env.mjs'
-import { FeedbackMarker } from '@/lib/feedback-marker'
 import { markdown } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
 import { SearchCursor, SearchQuery } from '@codemirror/search'
@@ -28,18 +27,15 @@ export const CodemirrorEditor = ({
   roomName,
   value,
   onChange,
-  markers,
 }: {
   roomName: string
   value: string
   onChange: (data: any) => void
-  markers: FeedbackMarker[]
 }) => {
   const { codemirrorElementRef } = useCodemirror({
     roomName,
     value,
     onChange,
-    markers,
   })
 
   return (
@@ -104,12 +100,10 @@ const useCodemirror = ({
   roomName,
   value,
   onChange,
-  markers,
 }: {
   roomName: string
   value: string
   onChange: (data: any) => void
-  markers: FeedbackMarker[]
 }) => {
   const [element, setElement] = useState<HTMLElement>()
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
@@ -158,40 +152,6 @@ const useCodemirror = ({
           onChange(docText)
           setCurrentText(hash)
         }
-
-        if (update.state.doc.toString().length !== 0) {
-          for (let marker of markers) {
-            let cursor = new SearchCursor(view.state.doc, marker.originalText)
-
-            let query = new SearchQuery({
-              search: marker.originalText,
-              caseSensitive: false,
-            })
-
-            console.log('-----', query.getCursor(view.state.doc).next())
-
-            while (!cursor.done) {
-              cursor.next()
-
-              // TODO: this disrupts the typing experience and we need to not do that at
-              //  all costs ☠️
-
-              // console.log('+++++', query.getCursor(view.state.doc).next())
-              // const highlight_decoration = Decoration.mark({
-              //   attributes: {style: 'background-color: yellow'},
-              // })
-              //
-              // view.dispatch({
-              //   effects: highlight_effect.of([
-              //     highlight_decoration.range(
-              //       cursor.value.from,
-              //       cursor.value.to,
-              //     ),
-              //   ]),
-              // })
-            }
-          }
-        }
       }
     })
 
@@ -233,7 +193,7 @@ const useCodemirror = ({
       provider?.destroy()
       view?.destroy()
     }
-  }, [element, roomName, value, session, markers, theme])
+  }, [element, roomName, value, session, theme])
 
   return {
     codemirrorElementRef: useCallback((node: HTMLElement | null) => {

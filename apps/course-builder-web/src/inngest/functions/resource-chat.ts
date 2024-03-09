@@ -1,12 +1,113 @@
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { FeedbackMarker } from '@/lib/feedback-marker'
+import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
+import { inngest } from '@/inngest/inngest.server'
+import { User } from '@/lib/ability'
 import { promptActionExecutor } from '@/lib/prompt.action-executor'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
 import { sanityQuery } from '@/server/sanity.server'
+import { sql } from 'drizzle-orm'
+import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
-import type { Session } from 'next-auth'
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
 import { z } from 'zod'
+
+const ChatResourceSchema = z.object({
+  _id: z.string(),
+  _type: z.string(),
+  _updatedAt: z.string(),
+  _createdAt: z.string(),
+  title: z.string().nullable().optional(),
+  body: z.string().nullable().optional(),
+  transcript: z.string().nullable().optional(),
+  wordLevelSrt: z.string().nullable().optional(),
+})
+
+type ChatResource = z.infer<typeof ChatResourceSchema>
+
+async function getChatResource(id: string) {
+  const query = sql`
+    SELECT
+      resources.id as _id,
+      resources.type as _type,
+      resources.fields,
+      CAST(resources.updatedAt AS DATETIME) as _updatedAt,
+      CAST(resources.createdAt AS DATETIME) as _createdAt,
+      JSON_EXTRACT (resources.fields, "$.title") AS title,
+      JSON_EXTRACT (resources.fields, "$.body") AS body,
+      JSON_EXTRACT (videoResources.fields, "$.transcript") AS transcript,
+      JSON_EXTRACT (videoResources.fields, "$.wordLevelSrt") AS wordLevelSrt
+    FROM
+      ${contentResource} as resources
+    -- join assumes that there is a single video resource ie a Tip
+    LEFT JOIN (
+      SELECT
+        refs.resourceOfId,
+        videoResources.fields
+      FROM
+        ${contentResourceResource} as refs
+      JOIN ${contentResource} as videoResources
+        ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'
+    ) as videoResources
+      ON resources.id = videoResources.resourceOfId 
+    WHERE
+      resources.id = ${id};
+  `
+
+  return db
+    .execute(query)
+    .then((result) => {
+      console.log('📼 get chat resource', result)
+      const parsed = ChatResourceSchema.safeParse(result.rows[0])
+      return parsed.success ? parsed.data : null
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
+}
+
+/**
+ * TODO: Cancellation conditions need to be added $$
+ */
+export const resourceChat = inngest.createFunction(
+  {
+    id: `resource-chat`,
+    name: 'Resource Chat',
+    rateLimit: {
+      key: 'event.user.id',
+      limit: 5,
+      period: '1m',
+    },
+  },
+  {
+    event: RESOURCE_CHAT_REQUEST_EVENT,
+  },
+  async ({ event, step }) => {
+    const resourceId = event.data.resourceId
+    const workflowTrigger = event.data.selectedWorkflow
+
+    const resource = await step.run('get the resource', async () => {
+      return getChatResource(resourceId)
+    })
+
+    if (!resource) {
+      throw new NonRetriableError(`Resource not found for id (${resourceId})`)
+    }
+
+    const messages = await resourceChatWorkflowExecutor({
+      step,
+      workflowTrigger,
+      resourceId,
+      resource,
+      messages: event.data.messages,
+      user: event.user,
+    })
+
+    return { resource, messages }
+  },
+)
 
 /**
  * loads the workflow from sanity based on the trigger and then executes the workflow using the `resource` as
@@ -21,24 +122,21 @@ import { z } from 'zod'
  * @param messages
  * @param resource
  * @param currentFeedback
- * @param session
  */
-export async function resourceChat({
+export async function resourceChatWorkflowExecutor({
   step,
   workflowTrigger,
   resourceId,
   messages,
   resource,
-  currentFeedback,
-  session,
+  user,
 }: {
-  currentFeedback?: FeedbackMarker[]
-  resource: any
+  resource: ChatResource
   step: any
   workflowTrigger: string
   resourceId: string
   messages: ChatCompletionRequestMessage[]
-  session: Session | null
+  user: User
 }) {
   const workflow = await step.run('Load Workflow', async () => {
     return await sanityQuery(
@@ -113,15 +211,6 @@ export async function resourceChat({
   }
 
   if (messages.length <= 2 && systemPrompt) {
-    if (currentFeedback) {
-      messages = [
-        {
-          content: JSON.stringify(currentFeedback),
-          role: 'system',
-        },
-        ...messages,
-      ]
-    }
     messages = [systemPrompt, ...seedMessages, ...messages]
   }
 
@@ -142,7 +231,7 @@ export async function resourceChat({
           body: currentUserMessage.content,
           requestId: resourceId,
           name: 'resource.chat.prompted',
-          userId: session?.user.id,
+          userId: user.id,
         }),
       }).catch((e) => {
         console.error(e)

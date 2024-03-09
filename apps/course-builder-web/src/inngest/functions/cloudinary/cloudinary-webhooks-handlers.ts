@@ -1,7 +1,7 @@
 import { env } from '@/env.mjs'
 import { CLOUDINARY_WEBHOOK_EVENT } from '@/inngest/events/cloudinary-webhook'
-import { MUX_WEBHOOK_EVENT } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
+import { MUX_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-mux-webhook'
 import { sanityMutation, sanityQuery } from '@/server/sanity.server'
 
 export const cloudinaryAssetCreated = inngest.createFunction(

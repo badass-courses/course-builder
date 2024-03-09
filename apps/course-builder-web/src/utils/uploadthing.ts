@@ -1,4 +1,4 @@
-import { type OurFileRouter } from '@/app/api/uploadthing/core'
+import { type OurFileRouter } from '@/uploadthing/core'
 import { generateComponents } from '@uploadthing/react'
 import { generateReactHelpers } from '@uploadthing/react/hooks'
 

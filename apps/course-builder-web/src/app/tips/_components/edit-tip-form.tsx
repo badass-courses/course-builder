@@ -11,11 +11,11 @@ import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useSocket } from '@/hooks/use-socket'
-import { FeedbackMarker } from '@/lib/feedback-marker'
 import { TipSchema, TipUpdate, type Tip } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
 import { cn } from '@/lib/utils'
 import { VideoResource } from '@/lib/video-resource'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon, RefreshCcw, ZapIcon } from 'lucide-react'
@@ -96,6 +96,58 @@ export function EditTipForm({
   )
 }
 
+/**
+ * Custom hook to poll for video resource transcript because sometimes
+ * the timing is JUST right and the webhook gets missed so a poll helps
+ * makes sure it's not stuck in a loading state
+ * @param options
+ */
+function useTranscript(options: { videoResourceId: string | null | undefined; initialTranscript?: string | null }) {
+  const [transcript, setTranscript] = React.useState<string | null>(options.initialTranscript || null)
+  async function* pollVideoResourceTranscript(
+    videoResourceId: string,
+    maxAttempts = 30,
+    initialDelay = 250,
+    delayIncrement = 1000,
+  ) {
+    let delay = initialDelay
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const videoResource = await getVideoResource(videoResourceId)
+      if (videoResource?.transcript) {
+        yield videoResource.transcript
+        return
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delay))
+      delay += delayIncrement
+    }
+
+    throw new Error('Video resource not found after maximum attempts')
+  }
+
+  React.useEffect(() => {
+    async function run() {
+      try {
+        if (options.videoResourceId) {
+          const { value: transcript } = await pollVideoResourceTranscript(options.videoResourceId).next()
+          if (transcript) {
+            setTranscript(transcript)
+          }
+        }
+      } catch (error) {
+        console.error('Error polling video resource transcript:', error)
+      }
+    }
+
+    if (!options.initialTranscript) {
+      run()
+    }
+  }, [options.initialTranscript, options.videoResourceId])
+
+  return [transcript, setTranscript] as const
+}
+
 const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
   tip,
   form,
@@ -109,12 +161,11 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
     initialTranscriptWithScreenshots,
   )
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
-  const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
+
   const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
   const router = useRouter()
 
-  const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
+  const [transcript, setTranscript] = useTranscript({ videoResourceId, initialTranscript: videoResource?.transcript })
 
   useSocket({
     room: tip._id,
@@ -123,9 +174,6 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
         const data = JSON.parse(messageEvent.data)
 
         switch (data.name) {
-          case 'ai.feedback.markers.generated':
-            setFeedbackMarkers(data.body)
-            break
           default:
             break
         }
@@ -277,28 +325,10 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
             <CodemirrorEditor
               roomName={`${tip._id}`}
               value={tip.body || ''}
-              markers={feedbackMarkers}
               onChange={(data) => {
                 form.setValue('body', data)
-
-                generateFeedback({
-                  resourceId: tip._id,
-                  body: data,
-                  currentFeedback: feedbackMarkers,
-                })
               }}
             />
-            <div>
-              <ul>
-                {feedbackMarkers.map((marker) => {
-                  return (
-                    <li
-                      key={marker.originalText}
-                    >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
-                  )
-                })}
-              </ul>
-            </div>
           </ScrollArea>
         </ResizablePanel>
         <ResizableHandle />
@@ -413,29 +443,9 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 }) => {
   const videoResource = use(videoResourceLoader)
   const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
   const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
   const router = useRouter()
-
-  useSocket({
-    room: tip._id,
-    onMessage: async (messageEvent) => {
-      try {
-        const data = JSON.parse(messageEvent.data)
-
-        switch (data.name) {
-          case 'ai.feedback.markers.generated':
-            setFeedbackMarkers(data.body)
-            break
-          default:
-            break
-        }
-      } catch (error) {
-        // nothing to do
-      }
-    },
-  })
 
   useSocket({
     room: videoResourceId,
@@ -568,7 +578,6 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
           <CodemirrorEditor
             roomName={`${tip._id}`}
             value={tip.body || ''}
-            markers={feedbackMarkers}
             onChange={(data) => {
               form.setValue('body', data)
             }}

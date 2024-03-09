@@ -1,21 +1,20 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { DEEPGRAM_WEBHOOK_EVENT } from '@/inngest/events/deepgram-webhook'
-import { MUX_SRT_READY_EVENT } from '@/inngest/events/mux-add-srt-to-asset'
 import { inngest } from '@/inngest/inngest.server'
+import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
+import { VIDEO_TRANSCRIPT_READY_EVENT } from '@/inngest/video-processing/events/video-transcript-ready'
 import {
   srtFromTranscriptResult,
   transcriptAsParagraphsWithTimestamps,
   wordLevelSrtFromTranscriptResult,
 } from '@/transcript-processing/deepgram-results-processor'
-import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 
 export const deepgramTranscriptReady = inngest.createFunction(
-  { id: `deepgram-transcript-ready-event`, name: 'Deepgram Transcript Ready' },
+  { id: `transcript-ready-event`, name: 'Transcript Ready' },
   {
-    event: DEEPGRAM_WEBHOOK_EVENT,
+    event: VIDEO_TRANSCRIPT_READY_EVENT,
   },
   async ({ event, step }) => {
     const videoResourceId = event.data.videoResourceId
@@ -34,7 +33,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
           ${contentResource.fields} = JSON_SET(
             ${contentResource.fields}, '$.transcript', ${transcript}),
           ${contentResource.fields} = JSON_SET(
-            ${contentResource.fields}, '$.srt', ${srt}),
+            ${contentResource.fields},
           ${contentResource.fields} = JSON_SET(
             ${contentResource.fields}, '$.wordLevelSrt', ${wordLevelSrt}),
           ${contentResource.fields} = JSON_SET(
@@ -56,7 +55,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
 
     if (srt && wordLevelSrt && videoResourceId) {
       await step.sendEvent('announce that srt is ready', {
-        name: MUX_SRT_READY_EVENT,
+        name: VIDEO_SRT_READY_EVENT,
         data: {
           videoResourceId: videoResourceId,
           moduleSlug: event.data.moduleSlug,

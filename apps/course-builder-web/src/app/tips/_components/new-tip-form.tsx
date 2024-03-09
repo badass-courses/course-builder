@@ -59,14 +59,13 @@ export function NewTipForm() {
 
   const onSubmit = async (values: NewTip) => {
     try {
-      for await (const _ of pollVideoResource(values.videoResourceId)) {
-        const tip = await createTip(values)
-        if (!tip) {
-          // handle edge, e.g. toast an error message
-          return
-        }
-        router.push(`/tips/${tip.slug}/edit`)
+      await pollVideoResource(values.videoResourceId).next()
+      const tip = await createTip(values)
+      if (!tip) {
+        // Handle edge case, e.g., toast an error message
+        return
       }
+      router.push(`/tips/${tip.slug}/edit`)
     } catch (error) {
       console.error('Error polling video resource:', error)
       // handle error, e.g. toast an error message
@@ -78,17 +77,16 @@ export function NewTipForm() {
   }
 
   async function handleSetVideoResourceId(videoResourceId: string) {
-    setVideoResourceId(videoResourceId)
-    setIsValidatingVideoResource(true)
-    form.setValue('videoResourceId', videoResourceId)
     try {
-      for await (const videoResource of pollVideoResource(videoResourceId)) {
-        console.log('Video resource found:', videoResource)
-        setVideoResourceValid(true)
-      }
+      setVideoResourceId(videoResourceId)
+      setIsValidatingVideoResource(true)
+      form.setValue('videoResourceId', videoResourceId)
+
+      await pollVideoResource(videoResourceId).next()
+
+      setVideoResourceValid(true)
       setIsValidatingVideoResource(false)
     } catch (error) {
-      console.error('Error validating video resource:', error)
       setVideoResourceValid(false)
       form.setError('videoResourceId', { message: 'Video resource not found' })
       setVideoResourceId('')
