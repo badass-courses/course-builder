@@ -1,4 +1,4 @@
-import { DeepgramResults } from '@/inngest/video-processing/events/video-deepgram-webhook'
+import { DeepgramResults } from '@/inngest/video-processing/events/video-transcript-ready'
 import { Paragraph, srtProcessor } from '@/lib/srt-processor'
 
 export function srtFromTranscriptResult(results: DeepgramResults) {

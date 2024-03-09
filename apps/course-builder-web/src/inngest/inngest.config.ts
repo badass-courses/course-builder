@@ -8,23 +8,20 @@ import { resourceChat } from '@/inngest/functions/resource-chat'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import { addSrtToMuxAsset } from '@/inngest/video-processing/add-srt-to-mux-asset'
-import { deepgramTranscriptReady } from '@/inngest/video-processing/deepgram-webhook-handlers'
 import { generateTranscriptWithScreenshots } from '@/inngest/video-processing/generate-transcript-with-screnshots'
-import {
-  muxVideoAssetCreated,
-  muxVideoAssetError,
-  muxVideoAssetReady,
-} from '@/inngest/video-processing/mux-webhooks-handlers'
 import { orderTranscript } from '@/inngest/video-processing/order-transcript'
 import { removeCompletedVideo } from '@/inngest/video-processing/remove-completed-video'
+import { deepgramTranscriptReady } from '@/inngest/video-processing/transcript-ready'
+import { videoProcessingError } from '@/inngest/video-processing/video-processing-error'
+import { muxVideoAssetCreated, videoReady } from '@/inngest/video-processing/video-ready'
 import { videoUploaded } from '@/inngest/video-processing/video-uploaded'
 
 export const inngestConfig = {
   client: inngest,
   functions: [
     muxVideoAssetCreated,
-    muxVideoAssetReady,
-    muxVideoAssetError,
+    videoReady,
+    videoProcessingError,
     videoUploaded,
     addSrtToMuxAsset,
     userCreated,
