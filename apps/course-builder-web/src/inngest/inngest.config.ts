@@ -13,13 +13,12 @@ import { orderTranscript } from '@/inngest/video-processing/order-transcript'
 import { removeCompletedVideo } from '@/inngest/video-processing/remove-completed-video'
 import { deepgramTranscriptReady } from '@/inngest/video-processing/transcript-ready'
 import { videoProcessingError } from '@/inngest/video-processing/video-processing-error'
-import { muxVideoAssetCreated, videoReady } from '@/inngest/video-processing/video-ready'
+import { videoReady } from '@/inngest/video-processing/video-ready'
 import { videoUploaded } from '@/inngest/video-processing/video-uploaded'
 
 export const inngestConfig = {
   client: inngest,
   functions: [
-    muxVideoAssetCreated,
     videoReady,
     videoProcessingError,
     videoUploaded,
