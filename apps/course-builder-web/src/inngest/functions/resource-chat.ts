@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events'
 import { inngest } from '@/inngest/inngest.server'
@@ -7,11 +7,60 @@ import { User } from '@/lib/ability'
 import { promptActionExecutor } from '@/lib/prompt.action-executor'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
 import { sanityQuery } from '@/server/sanity.server'
-import { eq } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
 import { z } from 'zod'
+
+const ChatResourceSchema = z.object({
+  _id: z.string(),
+  _type: z.string(),
+  _updatedAt: z.string(),
+  _createdAt: z.string(),
+  title: z.string().nullable().optional(),
+  body: z.string().nullable().optional(),
+  transcript: z.string().nullable().optional(),
+  wordLevelSrt: z.string().nullable().optional(),
+})
+
+type ChatResource = z.infer<typeof ChatResourceSchema>
+
+async function getChatResource(id: string) {
+  const query = sql`
+    SELECT
+      resources.id as _id,
+      resources.type as _type,
+      resources.fields,
+      CAST(resources.updatedAt AS DATETIME) as _updatedAt,
+      CAST(resources.createdAt AS DATETIME) as _createdAt,
+      JSON_EXTRACT (resources.fields, "$.title") AS title,
+      JSON_EXTRACT (resources.fields, "$.body") AS body,
+      JSON_EXTRACT (videoResources.fields, "$.transcript") AS transcript,
+      JSON_EXTRACT (videoResources.fields, "$.wordLevelSrt") AS wordLevelSrt
+      
+    FROM
+      ${contentResource} as resources
+    LEFT JOIN ${contentResourceResource} as refs 
+      ON resources.id = refs.resourceOfId
+    LEFT JOIN ${contentResource} as videoResources
+      ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'    
+    WHERE
+      resources.id = ${id};
+  `
+
+  return db
+    .execute(query)
+    .then((result) => {
+      console.log('📼 get chat resource', result)
+      const parsed = ChatResourceSchema.safeParse(result.rows[0])
+      return parsed.success ? parsed.data : null
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
+}
 
 /**
  * TODO: Cancellation conditions need to be added $$
@@ -33,14 +82,12 @@ export const resourceChat = inngest.createFunction(
     const resourceId = event.data.resourceId
     const workflowTrigger = event.data.selectedWorkflow
 
-    const resource = await step.run(`load tip`, async () => {
-      return db.query.contentResource.findFirst({
-        where: eq(contentResource.id, resourceId),
-      })
+    const resource = await step.run('get the resource', async () => {
+      return getChatResource(resourceId)
     })
 
     if (!resource) {
-      throw new NonRetriableError(`Tip not found for id (${resourceId})`)
+      throw new NonRetriableError(`Resource not found for id (${resourceId})`)
     }
 
     const messages = await resourceChatWorkflowExecutor({
@@ -69,7 +116,6 @@ export const resourceChat = inngest.createFunction(
  * @param messages
  * @param resource
  * @param currentFeedback
- * @param session
  */
 export async function resourceChatWorkflowExecutor({
   step,
@@ -79,7 +125,7 @@ export async function resourceChatWorkflowExecutor({
   resource,
   user,
 }: {
-  resource: any
+  resource: ChatResource
   step: any
   workflowTrigger: string
   resourceId: string
