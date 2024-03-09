@@ -1,7 +1,7 @@
-import { utapi } from '@/app/api/uploadthing/core'
 import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/events/video-status-check'
 import { inngest } from '@/inngest/inngest.server'
 import { getVideoResource } from '@/lib/video-resource-query'
+import { utapi } from '@/uploadthing/core'
 import { NonRetriableError } from 'inngest'
 
 export const removeCompletedVideo = inngest.createFunction(

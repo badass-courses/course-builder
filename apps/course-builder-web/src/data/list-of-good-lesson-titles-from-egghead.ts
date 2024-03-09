@@ -1,4 +1,4 @@
-export const titles = [
+export const listOfGoodLessonTitlesFromEgghead = [
   'Refactor JSX in React to Stateless Functional Components',
   'Render in React Based on a Global State Object',
   'Load Data Based on Angular Route Params',

@@ -142,7 +142,7 @@ export const videoUploaded = inngest.createFunction(
       })
     })
 
-    await step.sendEvent('order transcript for new video resource', {
+    await step.sendEvent('announce new video resource', {
       name: VIDEO_RESOURCE_CREATED_EVENT,
       data: {
         moduleSlug: event.data.moduleSlug,

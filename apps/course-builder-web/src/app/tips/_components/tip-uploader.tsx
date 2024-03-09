@@ -1,10 +1,8 @@
 import * as React from 'react'
 import { getUniqueFilename } from '@/lib/get-unique-filename'
-import { api } from '@/trpc/react'
 import { UploadDropzone } from '@/utils/uploadthing'
 
 export function TipUploader({ setVideoResourceId }: { setVideoResourceId: (value: string) => void }) {
-  const utils = api.useUtils()
   return (
     <div>
       <UploadDropzone
@@ -22,7 +20,6 @@ export function TipUploader({ setVideoResourceId }: { setVideoResourceId: (value
         }}
         onClientUploadComplete={async (response: any) => {
           if (response[0].fileName) setVideoResourceId(response[0].fileName)
-          await utils.module.getBySlug.invalidate({ slug: 'tips' })
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.

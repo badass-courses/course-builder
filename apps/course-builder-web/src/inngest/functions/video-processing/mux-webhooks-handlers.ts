@@ -4,7 +4,7 @@ import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { MUX_WEBHOOK_EVENT } from '@/inngest/events/mux-webhook'
 import { inngest } from '@/inngest/inngest.server'
-import { getVideoResourceByMuxAssetId } from '@/lib/video-resource-query'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { sql } from 'drizzle-orm'
 
 export const muxVideoAssetCreated = inngest.createFunction(
@@ -39,7 +39,7 @@ export const muxVideoAssetError = inngest.createFunction(
   },
   async ({ event, step }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return getVideoResourceByMuxAssetId(event.data.muxWebhookEvent.data.id)
+      return getVideoResource(event.data.muxWebhookEvent.data.passthrough)
     })
 
     if (videoResource) {
@@ -91,7 +91,7 @@ export const muxVideoAssetReady = inngest.createFunction(
   },
   async ({ event, step }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return getVideoResourceByMuxAssetId(event.data.muxWebhookEvent.data.id)
+      return getVideoResource(event.data.muxWebhookEvent.data.passthrough)
     })
 
     if (videoResource) {

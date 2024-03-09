@@ -1,12 +1,60 @@
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { FeedbackMarker } from '@/lib/feedback-marker'
+import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events'
+import { inngest } from '@/inngest/inngest.server'
+import { User } from '@/lib/ability'
 import { promptActionExecutor } from '@/lib/prompt.action-executor'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
 import { sanityQuery } from '@/server/sanity.server'
+import { eq } from 'drizzle-orm'
+import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
-import type { Session } from 'next-auth'
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
 import { z } from 'zod'
+
+/**
+ * TODO: Cancellation conditions need to be added $$
+ */
+export const resourceChat = inngest.createFunction(
+  {
+    id: `tip-chat`,
+    name: 'Tip Chat',
+    rateLimit: {
+      key: 'event.user.id',
+      limit: 5,
+      period: '15s',
+    },
+  },
+  {
+    event: RESOURCE_CHAT_REQUEST_EVENT,
+  },
+  async ({ event, step }) => {
+    const resourceId = event.data.resourceId
+    const workflowTrigger = event.data.selectedWorkflow
+
+    const resource = await step.run(`load tip`, async () => {
+      return db.query.contentResource.findFirst({
+        where: eq(contentResource.id, resourceId),
+      })
+    })
+
+    if (!resource) {
+      throw new NonRetriableError(`Tip not found for id (${resourceId})`)
+    }
+
+    const messages = await resourceChatWorkflowExecutor({
+      step,
+      workflowTrigger,
+      resourceId,
+      resource,
+      messages: event.data.messages,
+      user: event.user,
+    })
+
+    return { resource, messages }
+  },
+)
 
 /**
  * loads the workflow from sanity based on the trigger and then executes the workflow using the `resource` as
@@ -23,22 +71,20 @@ import { z } from 'zod'
  * @param currentFeedback
  * @param session
  */
-export async function resourceChat({
+export async function resourceChatWorkflowExecutor({
   step,
   workflowTrigger,
   resourceId,
   messages,
   resource,
-  currentFeedback,
-  session,
+  user,
 }: {
-  currentFeedback?: FeedbackMarker[]
   resource: any
   step: any
   workflowTrigger: string
   resourceId: string
   messages: ChatCompletionRequestMessage[]
-  session: Session | null
+  user: User
 }) {
   const workflow = await step.run('Load Workflow', async () => {
     return await sanityQuery(
@@ -113,15 +159,6 @@ export async function resourceChat({
   }
 
   if (messages.length <= 2 && systemPrompt) {
-    if (currentFeedback) {
-      messages = [
-        {
-          content: JSON.stringify(currentFeedback),
-          role: 'system',
-        },
-        ...messages,
-      ]
-    }
     messages = [systemPrompt, ...seedMessages, ...messages]
   }
 
@@ -142,7 +179,7 @@ export async function resourceChat({
           body: currentUserMessage.content,
           requestId: resourceId,
           name: 'resource.chat.prompted',
-          userId: session?.user.id,
+          userId: user.id,
         }),
       }).catch((e) => {
         console.error(e)

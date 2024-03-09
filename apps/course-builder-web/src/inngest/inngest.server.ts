@@ -1,10 +1,6 @@
 import {
-  ARTICLE_CHAT_EVENT,
-  ArticleChat,
-  BODY_TEXT_UPDATED,
-  BodyTextUpdated,
-  TIP_CHAT_EVENT,
-  TipChat,
+  RESOURCE_CHAT_REQUEST_EVENT,
+  ResourceChat,
   type AI_WRITING_COMPLETED_EVENT,
   type AIWritingRequestCompleted,
   type DRAFT_WRITEUP_COMPLETED_EVENT,
@@ -39,9 +35,7 @@ type Events = {
   [USER_CREATED_EVENT]: UserCreated
   [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
   [CLOUDINARY_WEBHOOK_EVENT]: CloudinaryWebhook
-  [TIP_CHAT_EVENT]: TipChat
-  [ARTICLE_CHAT_EVENT]: ArticleChat
-  [BODY_TEXT_UPDATED]: BodyTextUpdated
+  [RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
   [VIDEO_STATUS_CHECK_EVENT]: VideoStatusCheck
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
   [DRAFT_WRITEUP_COMPLETED_EVENT]: DraftWriteupCompleted

@@ -8,9 +8,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useSocket } from '@/hooks/use-socket'
 import { Article, ArticleSchema, ArticleVisibilitySchema } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
-import { FeedbackMarker } from '@/lib/feedback-marker'
 import { cn } from '@/lib/utils'
-import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
@@ -84,26 +82,7 @@ export function EditArticleForm({ article }: Omit<EditArticleFormProps, 'form'>)
 }
 
 const DesktopEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }) => {
-  const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
   const router = useRouter()
-
-  const { mutateAsync: generateFeedback } = api.writing.generateFeedback.useMutation()
-
-  useSocket({
-    room: article._id,
-    onMessage: async (messageEvent) => {
-      try {
-        const data = JSON.parse(messageEvent.data)
-        const invalidateOn = ['ai.feedback.markers.generated']
-
-        if (invalidateOn.includes(data.name)) {
-          setFeedbackMarkers(data.body)
-        }
-      } catch (error) {
-        // noting to do
-      }
-    },
-  })
 
   const onSubmit = async (values: z.infer<typeof ArticleSchema>) => {
     const updatedArticle = await updateArticle(values)
@@ -173,26 +152,8 @@ const DesktopEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form 
               value={article.body || ''}
               onChange={async (data) => {
                 form.setValue('body', data)
-                await generateFeedback({
-                  resourceId: article._id,
-                  body: data,
-                  currentFeedback: feedbackMarkers,
-                })
               }}
-              markers={feedbackMarkers}
             />
-            {/* <FormMessage /> */}
-            <div>
-              <ul>
-                {feedbackMarkers.map((marker) => {
-                  return (
-                    <li
-                      key={marker.originalText}
-                    >{`${marker.level}: ${marker.originalText} -> ${marker.fullSuggestedChange} [${marker.feedback}]`}</li>
-                  )
-                })}
-              </ul>
-            </div>
           </ScrollArea>
         </ResizablePanel>
         <ResizableHandle />
@@ -202,9 +163,7 @@ const DesktopEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form 
           defaultSize={25}
           maxSize={50}
         >
-          {watcher && activeWidget.id === 'assistant' && (
-            <ArticleAssistant article={{ ...article, ...formValues }} currentFeedback={feedbackMarkers} />
-          )}
+          {watcher && activeWidget.id === 'assistant' && <ArticleAssistant article={{ ...article, ...formValues }} />}
           {activeWidget.id === 'media' && (
             <ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
               <CloudinaryUploadWidget dir={article._type} id={article._id} />
@@ -248,24 +207,6 @@ const DesktopEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form 
 
 const MobileEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }) => {
   const router = useRouter()
-  const [feedbackMarkers, setFeedbackMarkers] = React.useState<FeedbackMarker[]>([])
-  const [activeWidget, setActiveWidget] = React.useState(WIDGETS.values().next().value)
-
-  useSocket({
-    room: article._id,
-    onMessage: async (messageEvent) => {
-      try {
-        const data = JSON.parse(messageEvent.data)
-        const invalidateOn = ['ai.feedback.markers.generated']
-
-        if (invalidateOn.includes(data.name)) {
-          setFeedbackMarkers(data.body)
-        }
-      } catch (error) {
-        // nothing to do
-      }
-    },
-  })
 
   const onSubmit = async (values: z.infer<typeof ArticleSchema>) => {
     const updatedArticle = await updateArticle(values)
@@ -320,7 +261,6 @@ const MobileEditArticleForm: React.FC<EditArticleFormProps> = ({ article, form }
         onChange={async (data) => {
           form.setValue('body', data)
         }}
-        markers={feedbackMarkers}
       />
     </>
   )
