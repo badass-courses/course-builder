@@ -73,12 +73,12 @@ async function getChatResource(id: string) {
  */
 export const resourceChat = inngest.createFunction(
   {
-    id: `tip-chat`,
-    name: 'Tip Chat',
+    id: `resource-chat`,
+    name: 'Resource Chat',
     rateLimit: {
       key: 'event.user.id',
       limit: 5,
-      period: '15s',
+      period: '1m',
     },
   },
   {
