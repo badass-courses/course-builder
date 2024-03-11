@@ -53,7 +53,6 @@ export async function getTipsModule(): Promise<Tip[]> {
       CAST(tips.createdAt AS DATETIME) as _createdAt,
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
-      JSON_EXTRACT (tips.fields, "$.body") AS body,
       JSON_EXTRACT (tips.fields, "$.state") AS state,
       JSON_EXTRACT (tips.fields, "$.visibility") AS visibility
     FROM

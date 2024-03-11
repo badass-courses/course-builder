@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.17.1",
     "@atlaskit/button": "^17.4.0",
     "@atlaskit/dropdown-menu": "^12.5.1",
     "@atlaskit/ds-lib": "^2.2.3",
