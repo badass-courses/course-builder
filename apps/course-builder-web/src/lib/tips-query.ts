@@ -37,6 +37,7 @@ export async function getTip(slug: string): Promise<Tip | null> {
     .execute(query)
     .then((result) => {
       const parsedTip = TipSchema.safeParse(result.rows[0])
+      console.log('🚀 get tip', parsedTip.success ? parsedTip.data : null)
       return parsedTip.success ? parsedTip.data : null
     })
     .catch((error) => {
@@ -175,6 +176,7 @@ export async function updateTip(input: TipUpdate) {
 
   revalidateTag('tips')
   revalidateTag(input._id)
+  revalidateTag(tipSlug)
   revalidatePath(`/tips/${tipSlug}`)
 
   return await getTip(input._id)

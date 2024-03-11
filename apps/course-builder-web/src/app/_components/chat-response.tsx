@@ -21,8 +21,6 @@ export function ChatResponse({ requestIds = [] }: { requestIds: string[] }) {
         setMessages((messages) => [...messages, { body: messageData.body, requestId: messageData.requestId }])
       }
 
-      utils.module.invalidate()
-
       if (div.current) {
         div.current.scrollTop = div.current.scrollHeight
       }

@@ -62,7 +62,6 @@ export function ResourceChatResponse({ requestId }: { requestId: string }) {
           }
         }
 
-        utils.module.invalidate()
         if (div.current) {
           div.current.scrollTop = div.current.scrollHeight
         }

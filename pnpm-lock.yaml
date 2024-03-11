@@ -393,8 +393,8 @@ importers:
         specifier: 14.2.0-canary.11
         version: 14.2.0-canary.11(@babel/core@7.24.0)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-auth:
-        specifier: 5.0.0-beta.15
-        version: 5.0.0-beta.15(next@14.2.0-canary.11)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^4.24.6
+        version: 4.24.6(next@14.2.0-canary.11)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.2.0-canary.11)(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -16920,7 +16920,6 @@ packages:
 
   /jose@4.15.4:
     resolution: {integrity: sha512-W+oqK4H+r5sITxfxpSU+MMdr/YSWGvgZMQDIsNoBDGGy4i7GBPTtvFKibQzW06n3U3TqHjhvBJsirShsEJ6eeQ==}
-    dev: true
 
   /jose@5.2.2:
     resolution: {integrity: sha512-/WByRr4jDcsKlvMd1dRJnPfS1GVO3WuKyaurJ/vvXcOaUQO8rnNObCQMlv/5uCceVQIq5Q4WLF44ohsdiTohdg==}
@@ -18892,25 +18891,29 @@ packages:
       uuid: 8.3.2
     dev: true
 
-  /next-auth@5.0.0-beta.15(next@14.2.0-canary.11)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-UQggNq8CDu3/w8CYkihKLLnRPNXel98K0j7mtjj9a6XTNYo4Hni8xg/2h1YhElW6vXE8mgtvmH11rU8NKw86jQ==}
+  /next-auth@4.24.6(next@14.2.0-canary.11)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-djQt3ZEaWEIxcsuh3HTW2uuzLfXMRjHH+ugAsichlQSbH4iA5MRcgMA2HvTNvsDTDLh44tyU72+/gWsxgTbAKg==}
     peerDependencies:
-      '@simplewebauthn/browser': ^9.0.1
-      '@simplewebauthn/server': ^9.0.2
-      next: ^14
+      next: ^12.2.5 || ^13 || ^14
       nodemailer: ^6.6.5
-      react: ^18.2.0
+      react: ^17.0.2 || ^18
+      react-dom: ^17.0.2 || ^18
     peerDependenciesMeta:
-      '@simplewebauthn/browser':
-        optional: true
-      '@simplewebauthn/server':
-        optional: true
       nodemailer:
         optional: true
     dependencies:
-      '@auth/core': 0.28.0
+      '@babel/runtime': 7.24.0
+      '@panva/hkdf': 1.1.1
+      cookie: 0.5.0
+      jose: 4.15.4
       next: 14.2.0-canary.11(@babel/core@7.24.0)(react-dom@18.3.0-canary-03d6f7cf0-20240209)(react@18.3.0-canary-03d6f7cf0-20240209)
+      oauth: 0.9.15
+      openid-client: 5.6.4
+      preact: 10.19.6
+      preact-render-to-string: 5.2.6(preact@10.19.6)
       react: 18.3.0-canary-03d6f7cf0-20240209
+      react-dom: 18.3.0-canary-03d6f7cf0-20240209(react@18.3.0-canary-03d6f7cf0-20240209)
+      uuid: 8.3.2
     dev: false
 
   /next-axiom@1.1.1(next@14.2.0-canary.11)(react@18.3.0-canary-03d6f7cf0-20240209):
@@ -19269,7 +19272,6 @@ packages:
 
   /oauth@0.9.15:
     resolution: {integrity: sha512-a5ERWK1kh38ExDEfoO6qUHJb32rd7aYmPHuyCu3Fta/cnICvYmgd2uhuKXvPD+PXB+gCEYYEaQdIRAjCOwAKNA==}
-    dev: true
 
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
@@ -19278,7 +19280,6 @@ packages:
   /object-hash@2.2.0:
     resolution: {integrity: sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==}
     engines: {node: '>= 6'}
-    dev: true
 
   /object-hash@3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
@@ -19359,7 +19360,6 @@ packages:
   /oidc-token-hash@5.0.3:
     resolution: {integrity: sha512-IF4PcGgzAr6XXSff26Sk/+P4KZFJVuHAJZj3wgO3vX2bMdNVp/QXTP3P7CEm9V1IdG8lDLY3HhiqpsE/nOwpPw==}
     engines: {node: ^10.13.0 || >=12.0.0}
-    dev: true
 
   /once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
@@ -19421,7 +19421,6 @@ packages:
       lru-cache: 6.0.0
       object-hash: 2.2.0
       oidc-token-hash: 5.0.3
-    dev: true
 
   /optionator@0.9.3:
     resolution: {integrity: sha512-JjCoypp+jKn1ttEFExxhetCKeJt9zhAgAve5FXHixTvFDW/5aEktX9bufBKLRRMdU7bNtpLfcGu94B3cdEJgjg==}
@@ -19993,14 +19992,12 @@ packages:
     dependencies:
       preact: 10.19.6
       pretty-format: 3.8.0
-    dev: true
 
   /preact@10.11.3:
     resolution: {integrity: sha512-eY93IVpod/zG3uMF22Unl8h9KkrcKIRs2EGar8hwLZZDU1lkjph303V9HZBwufh2s736U6VXuhD109LYqPoffg==}
 
   /preact@10.19.6:
     resolution: {integrity: sha512-gympg+T2Z1fG1unB8NH29yHJwnEaCH37Z32diPDku316OTnRPeMbiRV9kTrfZpocXjdfnWuFUl/Mj4BHaf6gnw==}
-    dev: true
 
   /prebuild-install@7.1.2:
     resolution: {integrity: sha512-UnNke3IQb6sgarcZIDU3gbMeTp/9SSU1DAIkil7PrqG1vZlBtY5msYccSKSHDqa3hNg436IXK+SNImReuA1wEQ==}

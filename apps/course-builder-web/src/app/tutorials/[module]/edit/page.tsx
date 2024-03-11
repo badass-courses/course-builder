@@ -16,7 +16,7 @@ export default async function EditTutorialPage({ params }: { params: { module: s
     redirect('/login')
   }
 
-  const tutorial = await api.module.getTutorial.query({ slug: params.module })
+  const tutorial = null
 
   if (!tutorial) {
     notFound()

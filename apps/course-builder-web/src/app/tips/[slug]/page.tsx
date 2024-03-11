@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAbility } from '@/ability'
@@ -40,6 +41,7 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
 }
 
 export default async function TipPage({ params }: { params: { slug: string } }) {
+  headers()
   const tipLoader = getTip(params.slug)
   return (
     <div>

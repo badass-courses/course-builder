@@ -1,7 +1,6 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
-import { weeklySignupDigest } from '@/inngest/functions/notify/creator/weekly-signups'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { resourceChat } from '@/inngest/functions/resource-chat'
@@ -24,7 +23,6 @@ export const inngestConfig = {
     videoUploaded,
     addSrtToMuxAsset,
     userCreated,
-    weeklySignupDigest,
     userSignupAdminEmail,
     postmarkWebhook,
     imageResourceCreated,

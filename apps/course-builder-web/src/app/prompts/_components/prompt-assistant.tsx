@@ -1,24 +1,24 @@
 import * as React from 'react'
 import { ResourceAssistant } from '@/app/_components/resource-assistant'
 import { sendResourceChatMessage } from '@/lib/ai-chat'
-import { Article } from '@/lib/articles'
+import { Prompt } from '@/lib/prompts'
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from 'openai-edge'
 
-export function ArticleAssistant({ article }: { article: Article }) {
-  const handleSendArticleChatMessage = (
+export function PromptAssistant({ prompt }: { prompt: Prompt }) {
+  const handleSendPromptChatMessage = (
     event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
     messages: ChatCompletionRequestMessage[],
     selectedWorkflow?: string,
   ) => {
     sendResourceChatMessage({
-      resourceId: article._id,
+      resourceId: prompt._id,
       messages: [
         ...messages,
         {
           role: ChatCompletionRequestMessageRoleEnum.System,
-          content: `## current state of article
-          current title: ${article.title}
-          current body: ${article.body}
+          content: `## current state of prompt
+          current title: ${prompt.title}
+          current body: ${prompt.body}
           `,
         },
         {
@@ -32,9 +32,9 @@ export function ArticleAssistant({ article }: { article: Article }) {
 
   return (
     <ResourceAssistant
-      resourceId={article._id}
-      handleSendMessage={handleSendArticleChatMessage}
-      availableWorkflows={[{ value: 'article-chat-default-5aj1o', label: 'Default', default: true }]}
+      resourceId={prompt._id}
+      handleSendMessage={handleSendPromptChatMessage}
+      availableWorkflows={[{ value: 'prompt-prompt-default-g8v77', label: 'Default', default: true }]}
     />
   )
 }

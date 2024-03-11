@@ -33,10 +33,7 @@ export function TipAssistant({ tip }: { tip: Tip }) {
     <ResourceAssistant
       resourceId={tip._id}
       handleSendMessage={handleSendChatMessage}
-      availableWorkflows={[
-        { value: 'tip-chat-response-v2', label: 'Default', default: true },
-        { value: 'taylor-transcript-draft-v1', label: 'Draft (taylor v1)' },
-      ]}
+      availableWorkflows={[{ value: 'tip-chat-default-okf8v', label: 'Default', default: true }]}
     />
   )
 }
