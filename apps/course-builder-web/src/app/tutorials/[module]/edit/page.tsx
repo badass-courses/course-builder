@@ -1,10 +1,8 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { getAbility } from '@/ability'
-import Tree from '@/components/lesson-list/tree'
 import ModuleEdit from '@/components/module-edit'
 import { getServerAuthSession } from '@/server/auth'
-import { api } from '@/trpc/server'
 
 export const dynamic = 'force-dynamic'
 
