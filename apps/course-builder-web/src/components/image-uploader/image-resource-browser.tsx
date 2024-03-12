@@ -2,7 +2,7 @@ import React from 'react'
 import { useSocket } from '@/hooks/use-socket'
 import { api } from '@/trpc/react'
 
-export const CloudinaryMediaBrowser = () => {
+export const ImageResourceBrowser = () => {
   const { data: images = [], refetch } = api.imageResources.getAll.useQuery()
 
   useSocket({

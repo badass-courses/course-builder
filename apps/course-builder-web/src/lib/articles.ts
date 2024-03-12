@@ -12,7 +12,7 @@ export const ArticleStateSchema = z.union([
   z.literal('deleted'),
 ])
 
-export const ArticleVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
+export const ResourceVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
 
 export const ArticleSchema = z.object({
   _id: z.string(),
@@ -24,7 +24,7 @@ export const ArticleSchema = z.object({
   description: z.string().optional().nullable(),
   slug: z.string(),
   state: ArticleStateSchema.default('draft'),
-  visibility: ArticleVisibilitySchema.default('unlisted'),
+  visibility: ResourceVisibilitySchema.default('unlisted'),
   socialImage: z.string().optional().nullable(),
 })
 
