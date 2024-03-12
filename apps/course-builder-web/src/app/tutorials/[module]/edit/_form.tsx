@@ -1,8 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { Tutorial_GARBAGE } from '@/trpc/api/routers/module'
-import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -30,23 +28,12 @@ const EditTutorialFormSchema = z.object({
   ),
 })
 
-export function EditTutorialForm({
-  moduleSlug,
-  initialTutorialData,
-}: {
-  moduleSlug: string
-  initialTutorialData: Tutorial_GARBAGE
-}) {
+export function EditTutorialForm({ moduleSlug }: { moduleSlug: string }) {
   const form = useForm<z.infer<typeof EditTutorialFormSchema>>({
     resolver: zodResolver(EditTutorialFormSchema),
-    defaultValues: initialTutorialData,
   })
 
   const { isSubmitting, isDirty, isValid } = form.formState
-
-  const { data: tutorial, status: tutorialStatus } = api.module.getTutorial.useQuery({
-    slug: moduleSlug,
-  })
 
   const { fields, replace, move } = useFieldArray({
     control: form.control,
@@ -57,20 +44,12 @@ export function EditTutorialForm({
     move(from, to)
   }
 
-  const { mutate: updateTutorial } = api.module.updateTutorial.useMutation()
-
-  const onSubmit = async (values: z.infer<typeof EditTutorialFormSchema>) => {
-    if (!tutorial) return
-    updateTutorial({
-      tutorialId: tutorial?._id,
-      updateData: values,
-    })
-  }
+  const tutorialStatus = 'success'
 
   return tutorialStatus === 'success' ? (
     <div className="flex">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(() => {})}>
           {fields.map((field, index) => (
             <FormItem key={field.id}>
               <Input type="hidden" {...form.register(`lessons.${index}.title`)} />

@@ -20,7 +20,6 @@ export function Party({ room }: { room?: string }) {
         ]
 
         if (invalidateOn.includes(data.name)) {
-          await utils.module.invalidate()
           router.refresh()
         }
       } catch (error) {

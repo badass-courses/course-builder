@@ -16,7 +16,7 @@ export const TipSchema = z.object({
   _createdAt: z.string(),
   title: z.string(),
   summary: z.string().optional().nullable(),
-  body: z.string().nullable(),
+  body: z.string().nullable().optional(),
   videoResourceId: z.string().nullable().optional(),
   state: TipStateSchema.default('draft'),
   visibility: TipVisibilitySchema.default('unlisted'),

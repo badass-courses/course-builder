@@ -1,7 +1,6 @@
 import BasicEmail from '@/emails/basic-email'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
-import { sanityQuery } from '@/server/sanity.server'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { Liquid } from 'liquidjs'
 
@@ -15,14 +14,18 @@ export const userSignupAdminEmail = inngest.createFunction(
     event: USER_CREATED_EVENT,
   },
   async ({ event, step }) => {
-    const email = await step.run(`load email`, async () => {
-      return await sanityQuery<{
-        _id: string
-        subject: string
-        body: string
-        previewText?: string
-      }>(`*[_type == "courseBuilderEmail" && slug.current == "user-signup"][0]`)
-    })
+    const email = {
+      body: `Course Builder is an experimental project by [Joel Hooks](https://x.com/jhooks). 
+          
+Read more about Badass Courses at [https://badass.dev](https://badass.dev).
+
+If you have any questions or feedback, please reply to this email and let me know.
+
+Cheers,
+
+Joel`,
+      subject: 'Welcome to Course Builder!',
+    }
 
     const parsedEmailBody: string = await step.run(`parse email body`, async () => {
       try {

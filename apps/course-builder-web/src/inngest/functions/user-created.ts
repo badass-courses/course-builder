@@ -3,7 +3,6 @@ import { communicationPreferences } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
-import { sanityQuery } from '@/server/sanity.server'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { NonRetriableError } from 'inngest'
 import { customAlphabet } from 'nanoid'
@@ -20,14 +19,10 @@ export const userCreated = inngest.createFunction(
     event: USER_CREATED_EVENT,
   },
   async ({ event, step }) => {
-    const email = await step.run(`load email`, async () => {
-      return await sanityQuery<{
-        _id: string
-        subject: string
-        body: string
-        previewText?: string
-      }>(`*[_type == "courseBuilderEmail" && slug.current == "welcome-email"][0]`)
-    })
+    const email = {
+      body: `{{user.email}} signed up.`,
+      subject: 'Course Builder Signup from {{user.email}}',
+    }
 
     const { preferenceType, preferenceChannel } = await step.run('load the preference type and channel', async () => {
       const preferenceType = await db.query.communicationPreferenceTypes.findFirst({

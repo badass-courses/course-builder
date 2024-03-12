@@ -6,11 +6,10 @@
 import * as React from 'react'
 import { EditTutorialForm } from '@/app/tutorials/[module]/edit/_form'
 import Tree from '@/components/lesson-list/tree'
-import { Tutorial_GARBAGE } from '@/trpc/api/routers/module'
 
 import { Button, Input, Label, Textarea } from '@coursebuilder/ui'
 
-export default function Component({ tutorial }: { tutorial: Tutorial_GARBAGE }) {
+export default function Component({ tutorial }: { tutorial: any }) {
   return (
     <div key="1" className="grid grid-cols-8 gap-4 p-4">
       <div className="col-span-2">
@@ -20,7 +19,7 @@ export default function Component({ tutorial }: { tutorial: Tutorial_GARBAGE }) 
           magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
           consequat.
         </p>
-        <EditTutorialForm moduleSlug={tutorial.slug} initialTutorialData={tutorial} />
+        <EditTutorialForm moduleSlug={tutorial.slug} />
         <div className="space-y-2">
           <div>
             <h2 className="font-bold">Section 1</h2>
@@ -57,14 +56,14 @@ export default function Component({ tutorial }: { tutorial: Tutorial_GARBAGE }) 
           <Tree
             initialData={[
               ...(tutorial.sections
-                ? tutorial.sections.map((section) => {
+                ? tutorial.sections.map((section: any) => {
                     return {
                       id: section._id,
                       label: section.title,
                       type: section.moduleType,
                       itemData: section,
                       children:
-                        section.lessons?.map((lesson) => {
+                        section.lessons?.map((lesson: any) => {
                           return {
                             id: lesson._id,
                             label: lesson.title,
@@ -77,7 +76,7 @@ export default function Component({ tutorial }: { tutorial: Tutorial_GARBAGE }) 
                   })
                 : []),
               ...(tutorial.lessons
-                ? tutorial.lessons.map((lesson) => {
+                ? tutorial.lessons.map((lesson: any) => {
                     return {
                       id: lesson._id,
                       label: lesson.title,

@@ -4,9 +4,8 @@ import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
-import { promptActionExecutor } from '@/lib/prompt.action-executor'
+import { getPrompt } from '@/lib/prompts-query'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
-import { sanityQuery } from '@/server/sanity.server'
 import { sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
@@ -138,20 +137,17 @@ export async function resourceChatWorkflowExecutor({
   messages: ChatCompletionRequestMessage[]
   user: User
 }) {
-  const workflow = await step.run('Load Workflow', async () => {
-    return await sanityQuery(
-      `*[_type == "workflow" && (slug.current == "${workflowTrigger}" || trigger == "${workflowTrigger}")][0]`,
-      { useCdn: false },
-    )
+  const prompt = await step.run('Load Prompt', async () => {
+    return await getPrompt(workflowTrigger)
   })
 
-  const systemPromptAction = workflow.actions.find(
-    (action: { _type: string; role: string }) => action._type === 'prompt' && action.role === 'system',
-  )
+  if (!prompt) {
+    throw new NonRetriableError(`Prompt not found for id (${workflowTrigger})`)
+  }
 
   let systemPrompt: ChatCompletionRequestMessage = {
-    role: systemPromptAction.role,
-    content: systemPromptAction.content,
+    role: 'system',
+    content: prompt.body,
   }
   let seedMessages: ChatCompletionRequestMessage[] = []
 
@@ -168,7 +164,7 @@ export async function resourceChatWorkflowExecutor({
           content: z.string(),
         }),
       )
-      .parse(JSON.parse(systemPromptAction.content))
+      .parse(JSON.parse(prompt.body))
 
     const actionMessages: ChatCompletionRequestMessage[] = []
     for (const actionMessage of actionParsed) {
@@ -185,8 +181,8 @@ export async function resourceChatWorkflowExecutor({
     if (actionMessages.length > 0) {
       ;[
         systemPrompt = {
-          role: systemPromptAction.role,
-          content: systemPromptAction.content,
+          role: 'system',
+          content: prompt.body,
         },
         ...seedMessages
       ] = actionMessages
@@ -203,8 +199,8 @@ export async function resourceChatWorkflowExecutor({
       } catch (e: any) {
         console.error(e.message)
         return {
-          role: systemPromptAction.role,
-          content: systemPromptAction.content,
+          role: 'system',
+          content: prompt.body,
         }
       }
     })
@@ -213,12 +209,6 @@ export async function resourceChatWorkflowExecutor({
   if (messages.length <= 2 && systemPrompt) {
     messages = [systemPrompt, ...seedMessages, ...messages]
   }
-
-  const systemPromptIndex = workflow.actions.findIndex(
-    (item: any) => item.content === systemPrompt.content && item.role === systemPrompt.role,
-  )
-
-  workflow.actions.splice(systemPromptIndex, 1)
 
   const currentUserMessage = messages[messages.length - 1]
   const currentResourceMetadata = messages[messages.length - 2]
@@ -253,27 +243,6 @@ export async function resourceChatWorkflowExecutor({
       promptMessages: messages,
     })
   })
-
-  let shouldContinue = Boolean(workflow && workflow.actions.length > 0)
-
-  // if the workflow has additional steps, do them now
-  while (shouldContinue) {
-    const action = workflow.actions.shift()
-    switch (action._type) {
-      case 'prompt':
-        messages = await step.run(action.title, async () => {
-          return await promptActionExecutor({
-            action,
-            input: resource,
-            requestId: resourceId,
-            messages,
-          })
-        })
-        break
-      default:
-        shouldContinue = false
-    }
-  }
 
   await step.run(`partykit broadcast [${resourceId}]`, async () => {
     return await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
