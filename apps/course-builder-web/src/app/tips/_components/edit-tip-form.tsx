@@ -5,11 +5,12 @@ import { Suspense, use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { CloudinaryUploadWidget } from '@/app/_components/cloudinary-upload-widget'
-import { CodemirrorEditor } from '@/app/_components/codemirror'
 import { requestCodeExtraction } from '@/app/tips/_components/tip-form-actions'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
+import { ResourceChatAssistant } from '@/components/chat-assistant/resource-chat-assistant'
+import { CodemirrorEditor } from '@/components/codemirror'
+import { CloudinaryUploadButton } from '@/components/image-uploader/cloudinary-upload-button'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useSocket } from '@/hooks/use-socket'
 import { TipSchema, TipUpdate, type Tip } from '@/lib/tips'
@@ -43,8 +44,7 @@ import {
 } from '@coursebuilder/ui'
 import { toast } from '@coursebuilder/ui/primitives/use-toast'
 
-import { CloudinaryMediaBrowser } from '../../_components/cloudinary-media-browser'
-import { TipAssistant } from './tip-assistant'
+import { ImageResourceBrowser } from '../../../components/image-uploader/image-resource-browser'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
@@ -214,6 +214,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
   })
 
   const onSubmit = async (values: z.infer<typeof TipSchema>) => {
+    console.log({ values })
     const updatedTip = await updateTip({ ...values, _id: tip._id })
     setUpdateTipStatus('success')
 
@@ -247,7 +248,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
         <Button
           onClick={(e) => {
             setUpdateTipStatus('loading')
-            onSubmit(formValues)
+            onSubmit(form.getValues())
           }}
           type="button"
           variant="default"
@@ -325,6 +326,7 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
               roomName={`${tip._id}`}
               value={tip.body || ''}
               onChange={(data) => {
+                console.log('\n\n\n\n\n******************', data)
                 form.setValue('body', data)
               }}
             />
@@ -392,11 +394,11 @@ const DesktopEditTipForm: React.FC<EditTipFormProps> = ({
           defaultSize={25}
           maxSize={50}
         >
-          {activeWidget.id === 'assistant' && <TipAssistant tip={{ ...tip, ...formValues }} />}
+          {activeWidget.id === 'assistant' && <ResourceChatAssistant resource={{ ...tip, ...formValues }} />}
           {activeWidget.id === 'media' && (
             <ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
-              <CloudinaryUploadWidget dir={tip._type} id={tip._id} />
-              <CloudinaryMediaBrowser />
+              <CloudinaryUploadButton dir={tip._type} id={tip._id} />
+              <ImageResourceBrowser />
             </ScrollArea>
           )}
         </ResizablePanel>
@@ -506,7 +508,7 @@ const MobileEditTipForm: React.FC<EditTipFormProps> = ({
         <Button
           onClick={(e) => {
             setUpdateTipStatus('loading')
-            onSubmit(formValues)
+            onSubmit(form.getValues())
           }}
           type="button"
           size="sm"

@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { NewArticle, NewArticleSchema } from '@/lib/articles'
-import { createArticle } from '@/lib/articles-query'
+import { createResource } from '@/lib/resources/create-resources'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 import {
   Button,
@@ -19,21 +19,21 @@ import {
   Input,
 } from '@coursebuilder/ui'
 
-export function NewArticleForm() {
+export function CreateResourceForm({ resourceType }: { resourceType: string }) {
   const router = useRouter()
 
-  const form = useForm<NewArticle>({
-    resolver: zodResolver(NewArticleSchema),
+  const form = useForm<{ title: string }>({
+    resolver: zodResolver(z.object({ title: z.string() })),
     defaultValues: {
       title: '',
     },
   })
 
-  const onSubmit = async (values: NewArticle) => {
+  const onSubmit = async (values: { title: string }) => {
+    const resource = await createResource({ title: values.title, type: resourceType })
     form.reset()
-    const article = await createArticle(values)
-    if (article) {
-      router.push(`/articles/${article.slug}/edit`)
+    if (resource) {
+      router.push(`/${resourceType}s/${resource.fields.slug}/edit`)
     }
   }
 
@@ -47,7 +47,7 @@ export function NewArticleForm() {
             <FormItem>
               <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
-                A title should summarize the article and explain what it is about clearly.
+                A title should summarize the {resourceType.toUpperCase()} and explain what it is about clearly.
               </FormDescription>
               <FormControl>
                 <Input {...field} />
@@ -64,7 +64,7 @@ export function NewArticleForm() {
           variant="default"
           disabled={(form.formState.isDirty && !form.formState.isValid) || form.formState.isSubmitting}
         >
-          Create Draft Article
+          Create Draft {resourceType.toUpperCase()}
         </Button>
       </form>
     </Form>

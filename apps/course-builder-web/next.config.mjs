@@ -31,6 +31,11 @@ const config = {
         hostname: 'image.mux.com',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'neatly-diverse-goldfish.ngrok-free.app',
+        port: '',
+      },
     ],
   },
   pageExtensions: ['mdx', 'ts', 'tsx'],

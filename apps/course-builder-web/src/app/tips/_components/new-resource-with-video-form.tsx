@@ -21,7 +21,7 @@ import {
   Input,
 } from '@coursebuilder/ui'
 
-export function NewTipForm() {
+export function NewResourceWithVideoForm() {
   const [videoResourceId, setVideoResourceId] = React.useState<string | undefined>()
   const [videoResourceValid, setVideoResourceValid] = React.useState<boolean>(false)
   const [isValidatingVideoResource, setIsValidatingVideoResource] = React.useState<boolean>(false)

@@ -1,24 +1,20 @@
 import * as React from 'react'
 import { useRef } from 'react'
 import { AssistantWorkflowSelector } from '@/app/_components/assistant-workflow-selector'
-import { ResourceChatResponse } from '@/app/_components/resource-chat-response'
+import { ResourceChatResponse } from '@/components/chat-assistant/resource-chat-response'
 import { useSocket } from '@/hooks/use-socket'
+import { sendResourceChatMessage } from '@/lib/ai-chat'
 import { EnterIcon } from '@sanity/icons'
-import type { ChatCompletionRequestMessage } from 'openai-edge'
+import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
 
 import { Button, ResizableHandle, ResizablePanel, ResizablePanelGroup, Textarea } from '@coursebuilder/ui'
 
-export function ResourceAssistant({
-  resourceId,
-  handleSendMessage,
+export function ResourceChatAssistant({
+  resource,
   availableWorkflows = [{ value: 'summarize', label: 'Summarize', default: true }],
 }: {
-  resourceId: string
-  handleSendMessage: (
-    event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    messages: ChatCompletionRequestMessage[],
-    selectedWorkflow?: string,
-  ) => void
+  resource: { _type: string; _id: string; body?: string | null; title?: string | null }
+
   availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
   const [messages, setMessages] = React.useState<ChatCompletionRequestMessage[]>([])
@@ -26,13 +22,38 @@ export function ResourceAssistant({
     availableWorkflows.find((w) => w.default)?.value || 'summarize',
   )
 
+  const handleSendMessage = (
+    event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    messages: ChatCompletionRequestMessage[],
+    selectedWorkflow?: string,
+  ) => {
+    sendResourceChatMessage({
+      resourceId: resource._id,
+      messages: [
+        ...messages,
+        {
+          role: ChatCompletionRequestMessageRoleEnum.System,
+          content: `## current state of article
+          current title: ${resource.title}
+          current body: ${resource.body}
+          `,
+        },
+        {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: event.currentTarget.value,
+        },
+      ],
+      selectedWorkflow,
+    })
+  }
+
   useSocket({
-    room: resourceId,
+    room: resource._id,
     onMessage: (messageEvent) => {
       try {
         const messageData = JSON.parse(messageEvent.data)
 
-        if (messageData.name === 'resource.chat.completed' && messageData.requestId === resourceId) {
+        if (messageData.name === 'resource.chat.completed' && messageData.requestId === resource._id) {
           setMessages(messageData.body)
         }
       } catch (error) {
@@ -58,7 +79,7 @@ export function ResourceAssistant({
       </div>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={85}>
-          <ResourceChatResponse requestId={resourceId} />
+          <ResourceChatResponse requestId={resource._id} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={15} minSize={5} className="relative flex w-full flex-col items-start">
