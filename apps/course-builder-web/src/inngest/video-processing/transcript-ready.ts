@@ -31,13 +31,12 @@ export const deepgramTranscriptReady = inngest.createFunction(
         UPDATE ${contentResource}
         SET
           ${contentResource.fields} = JSON_SET(
-            ${contentResource.fields}, '$.transcript', ${transcript}),
-          ${contentResource.fields} = JSON_SET(
-            ${contentResource.fields},
-          ${contentResource.fields} = JSON_SET(
-            ${contentResource.fields}, '$.wordLevelSrt', ${wordLevelSrt}),
-          ${contentResource.fields} = JSON_SET(
-            ${contentResource.fields}, '$.state', 'ready')
+            ${contentResource.fields}, 
+            '$.transcript', ${transcript}, 
+            '$.srt', ${srt}, 
+            '$.wordLevelSrt', ${wordLevelSrt}, 
+            '$.state', 'ready'
+          )
         WHERE
           id = ${videoResourceId};
       `

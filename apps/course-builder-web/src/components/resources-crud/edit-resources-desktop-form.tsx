@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation'
 import { CodemirrorEditor } from '@/components/codemirror'
 import { EditResourcesActionBar } from '@/components/resources-crud/edit-resources-action-bar'
 import { EditResourcesToolPanel } from '@/components/resources-crud/edit-resources-tool-panel'
-import { updateArticle } from '@/lib/articles-query'
 import { type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
@@ -43,7 +42,12 @@ export function EditResourcesDesktopForm({
         }}
       />
       <ResizablePanelGroup direction="horizontal" className="!flex-col border-t md:!flex-row">
-        <ResizablePanel minSize={5} defaultSize={20} maxSize={35}>
+        <ResizablePanel
+          minSize={5}
+          defaultSize={20}
+          maxSize={35}
+          className="min-h-[var(--pane-layout-height)] md:min-h-full"
+        >
           <Form {...form}>
             <form
               className="min-h-[280px] min-w-[280px]"
@@ -58,7 +62,7 @@ export function EditResourcesDesktopForm({
           </Form>
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel defaultSize={50}>
+        <ResizablePanel defaultSize={50} className="min-h-[var(--pane-layout-height)] md:min-h-full">
           <ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
             <CodemirrorEditor
               roomName={`${resource._id}`}

@@ -156,14 +156,8 @@ export async function updateTip(input: TipUpdate) {
     SET
       ${contentResource.fields} = JSON_SET(
         ${contentResource.fields},
-        '$.title', ${input.title}
-      ),
-      ${contentResource.fields} = JSON_SET(
-        ${contentResource.fields},
-        '$.slug', ${tipSlug}
-      ),
-      ${contentResource.fields} = JSON_SET(
-        ${contentResource.fields},
+        '$.title', ${input.title},
+        '$.slug', ${tipSlug},
         '$.body', ${input.body}
       )
     WHERE
