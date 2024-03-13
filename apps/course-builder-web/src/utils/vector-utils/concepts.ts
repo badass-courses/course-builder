@@ -21,7 +21,7 @@ export async function get_related_concepts(text: string) {
   return synonyms
 }
 
-export async function add_concept(text) {
+export async function add_concept(text: string) {
   const embedding = (await get_embedding(text)).embedding
 
   if (!embedding) throw new Error('Unable to create embedding for concept: ' + text)
@@ -43,6 +43,11 @@ export async function add_alias_to_concept(concept_id: string, alias: string) {
   const fetch_results = await index.fetch([concept_id])
 
   const concept = fetch_results.records[concept_id]
+
+  if (!concept) {
+    throw new Error('Concept not found')
+  }
+
   if (!concept?.metadata) {
     concept.metadata = { aliases: [] }
   }
