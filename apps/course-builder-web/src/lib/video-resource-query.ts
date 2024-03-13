@@ -3,7 +3,73 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { VideoResource, VideoResourceSchema } from '@/lib/video-resource'
+import { ExecutedQuery } from '@planetscale/database'
 import { sql } from 'drizzle-orm'
+
+export async function updateVideoStatus({
+  videoResourceId,
+  status,
+}: {
+  videoResourceId: string
+  status: string
+}): Promise<ExecutedQuery<any[] | Record<string, any>>> {
+  const query = sql`
+        UPDATE ${contentResource}
+        SET
+          ${contentResource.fields} = JSON_SET(
+            ${contentResource.fields}, 
+            '$.state', ${status}
+          )
+        WHERE
+          id = ${videoResourceId};
+      `
+  return db
+    .execute(query)
+    .then((result) => {
+      console.log('📼 updated video resource status', result)
+      return result
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
+}
+
+export async function updateVideoWithTranscripts({
+  videoResourceId,
+  transcript,
+  srt,
+  wordLevelSrt,
+}: {
+  videoResourceId: string
+  transcript: string
+  srt: string
+  wordLevelSrt: string
+}): Promise<ExecutedQuery<any[] | Record<string, any>>> {
+  const query = sql`
+        UPDATE ${contentResource}
+        SET
+          ${contentResource.fields} = JSON_SET(
+            ${contentResource.fields}, 
+            '$.transcript', ${transcript}, 
+            '$.srt', ${srt}, 
+            '$.wordLevelSrt', ${wordLevelSrt}, 
+            '$.state', 'ready'
+          )
+        WHERE
+          id = ${videoResourceId};
+      `
+  return db
+    .execute(query)
+    .then((result) => {
+      console.log('📼 updated video resource', result)
+      return result
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
+}
 
 export async function getTranscriptWithScreenshots(videoResourceId?: string | null): Promise<string | null> {
   if (!videoResourceId) {
@@ -82,5 +148,56 @@ export async function getTranscript(videoResourceId?: string | null) {
     })
     .catch((error) => {
       return error
+    })
+}
+
+export async function createVideoResource(values: {
+  id: string
+  type: 'videoResource'
+  fields: {
+    state: 'processing'
+    originalMediaUrl: string
+    muxAssetId: string
+    muxPlaybackId: string
+  }
+  createdById: string
+}): Promise<ExecutedQuery<any[] | Record<string, any>>> {
+  return await db
+    .insert(contentResource)
+    .values(values)
+    .then((result) => {
+      console.log('📼 created video resource', result)
+      return result
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
+}
+
+export async function updateVideoTranscriptWithScreenshots({
+  videoResourceId,
+  transcriptWithScreenshots,
+}: {
+  videoResourceId: string
+  transcriptWithScreenshots: string
+}) {
+  const query = sql`
+        UPDATE ${contentResource}
+        SET
+          ${contentResource.fields} = JSON_SET(
+            ${contentResource.fields}, '$.transcriptWithScreenshots', ${transcriptWithScreenshots})
+        WHERE
+          id = ${videoResourceId};
+      `
+  return db
+    .execute(query)
+    .then((result) => {
+      console.log('📼 updated video resource', result)
+      return result
+    })
+    .catch((error) => {
+      console.error(error)
+      throw error
     })
 }

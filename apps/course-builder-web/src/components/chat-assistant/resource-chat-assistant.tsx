@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { AssistantWorkflowSelector } from '@/app/_components/assistant-workflow-selector'
 import { ResourceChatResponse } from '@/components/chat-assistant/resource-chat-response'
 import { useSocket } from '@/hooks/use-socket'
-import { sendResourceChatMessage } from '@/lib/ai-chat'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { EnterIcon } from '@sanity/icons'
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
 
