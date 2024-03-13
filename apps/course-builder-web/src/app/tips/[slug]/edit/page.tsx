@@ -2,7 +2,7 @@ import * as React from 'react'
 import { notFound } from 'next/navigation'
 import { getAbility } from '@/ability'
 import { getTip } from '@/lib/tips-query'
-import { getTranscriptWithScreenshots, getVideoResource } from '@/lib/video-resource-query'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { EditTipForm } from '../../_components/edit-tip-form'
@@ -19,14 +19,6 @@ export default async function TipEditPage({ params }: { params: { slug: string }
   }
 
   const videoResourceLoader = getVideoResource(tip.videoResourceId)
-  const transcriptWithScreenshotsLoader = getTranscriptWithScreenshots(tip.videoResourceId)
 
-  return (
-    <EditTipForm
-      key={tip.slug}
-      tip={tip}
-      videoResourceLoader={videoResourceLoader}
-      transcriptWithScreenshotsLoader={transcriptWithScreenshotsLoader}
-    />
-  )
+  return <EditTipForm key={tip.slug} tip={tip} videoResourceLoader={videoResourceLoader} />
 }
