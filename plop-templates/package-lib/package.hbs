@@ -1,35 +1,5 @@
-{
-    "name": "@coursebuilder/{{kebabCase name}}",
-    "version": "0.0.1",
-    "description": "A brave new world.",
-    "scripts": {
-    "clean": "rm -rf ./dist",
-    "test": "echo 'No tests yet.'",
-    "build": "tsup",
-    "dev": "tsup --watch"
-    },
-    "keywords": ["coursebuilder"],
-    "author": "",
-    "license": "MIT",
-    "type": "module",
-    "types": "./index.d.ts",
-    "files": [
-    "*.d.ts*",
-    "*.js",
-    "lib",
-    "src"
-    ],
-    "exports": {
-    ".": {
-    "types": "./index.d.ts",
-    "import": "./index.js"
-    }
-    },
-    "private": false,
-    "publishConfig": {
-    "access": "public"
-    },
-  "devDependencies": {
-    "tsup": "6.7.0"
-  }
-}
+{ "name": "@coursebuilder/{{kebabCase name}}", "version": "0.0.1", "description": "A brave new world.", "scripts": {
+"clean": "rm -rf ./dist", "test": "echo 'No tests yet.'", "build": "tsup", "dev": "tsup --watch" }, "keywords":
+["coursebuilder"], "author": "", "license": "MIT", "type": "module", "types": "./index.d.ts", "files": [ "*.d.ts*",
+"*.js", "lib", "src" ], "exports": { ".": { "types": "./index.d.ts", "import": "./index.js" } }, "private": false,
+"publishConfig": { "access": "public" }, "devDependencies": { "tsup": "6.7.0" } }

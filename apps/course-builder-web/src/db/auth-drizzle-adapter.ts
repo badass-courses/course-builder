@@ -1,7 +1,7 @@
 import { accounts, sessions, users, verificationTokens } from '@/db/schema'
+import { type Adapter, type AdapterSession, type AdapterUser } from '@auth/core/adapters'
 import { and, eq } from 'drizzle-orm'
 import { mysqlTable as defaultMySqlTableFn, MySqlDatabase } from 'drizzle-orm/mysql-core'
-import { type Adapter, type AdapterSession, type AdapterUser } from 'next-auth/adapters'
 
 const createTables = (_: any) => {
   return {

@@ -75,7 +75,7 @@ export function SQLiteDrizzleAdapter(
 
   return {
     async createUser(data) {
-      return await client
+      return client
         .insert(users)
         .values({ ...data, id: crypto.randomUUID() })
         .returning()

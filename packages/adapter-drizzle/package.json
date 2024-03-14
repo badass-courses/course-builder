@@ -11,7 +11,10 @@
     "build": "tsup",
     "dev": "tsup --watch"
   },
-  "keywords": ["coursebuilder", "drizzle"],
+  "keywords": [
+    "coursebuilder",
+    "drizzle"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
@@ -31,6 +34,9 @@
   "private": false,
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@auth/core": "^0.28.0"
   },
   "devDependencies": {
     "tsup": "6.7.0",
