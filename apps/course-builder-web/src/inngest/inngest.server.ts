@@ -23,6 +23,7 @@ import {
   type RequestConceptSelection,
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
+import { REQUEST_VIDEO_SPLIT_POINTS, type RequestVideoSplitPoints } from './events/split_video'
 
 // Create a client to send and receive events
 type Events = {
@@ -41,6 +42,7 @@ type Events = {
   [CONCEPT_TAGS_REQUESTED]: ConceptTagsRequested
   [REQUEST_CONCEPT_SELECTION]: RequestConceptSelection
   [CONCEPT_SELECTED]: ConceptSelected
+  [REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
 }
 export const inngest = new Inngest({
   id: 'course-builder',
