@@ -718,16 +718,16 @@ importers:
 
   packages/adapter-drizzle:
     dependencies:
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+    devDependencies:
       '@auth/core':
         specifier: ^0.28.0
         version: 0.28.0
       '@coursebuilder/core':
         specifier: 0.0.1
         version: link:../core
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-    devDependencies:
       '@libsql/client':
         specifier: 0.5.6
         version: 0.5.6
@@ -830,11 +830,10 @@ importers:
         version: 6.7.0(postcss@8.4.35)(typescript@5.3.3)
 
   packages/core:
-    dependencies:
+    devDependencies:
       '@auth/core':
         specifier: ^0.28.0
         version: 0.28.0
-    devDependencies:
       tsup:
         specifier: 6.7.0
         version: 6.7.0(postcss@8.4.35)(typescript@5.3.3)
