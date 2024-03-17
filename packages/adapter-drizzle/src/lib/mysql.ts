@@ -1,20 +1,28 @@
-import type { Adapter, AdapterAccount } from '@auth/core/adapters'
-import { and, eq } from 'drizzle-orm'
+import type { AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
+import { addSeconds, isAfter } from 'date-fns'
+import { and, eq, sql } from 'drizzle-orm'
 import {
   mysqlTable as defaultMySqlTableFn,
+  double,
+  index,
   int,
+  json,
   MySqlDatabase,
+  mysqlEnum,
   MySqlTableFn,
   primaryKey,
   timestamp,
   varchar,
 } from 'drizzle-orm/mysql-core'
 
+import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+
 export function createTables(mySqlTable: MySqlTableFn) {
   const users = mySqlTable('user', {
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     name: varchar('name', { length: 255 }),
     email: varchar('email', { length: 255 }).notNull(),
+    role: mysqlEnum('role', ['user', 'admin']).default('user'),
     emailVerified: timestamp('emailVerified', {
       mode: 'date',
       fsp: 3,
@@ -42,17 +50,24 @@ export function createTables(mySqlTable: MySqlTableFn) {
       session_state: varchar('session_state', { length: 255 }),
     },
     (account) => ({
-      compoundKey: primaryKey(account.provider, account.providerAccountId),
+      pk: primaryKey({ columns: [account.provider, account.providerAccountId] }),
+      userIdIdx: index('userId_idx').on(account.userId),
     }),
   )
 
-  const sessions = mySqlTable('session', {
-    sessionToken: varchar('sessionToken', { length: 255 }).notNull().primaryKey(),
-    userId: varchar('userId', { length: 255 })
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    expires: timestamp('expires', { mode: 'date' }).notNull(),
-  })
+  const sessions = mySqlTable(
+    'session',
+    {
+      sessionToken: varchar('sessionToken', { length: 255 }).notNull().primaryKey(),
+      userId: varchar('userId', { length: 255 })
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+      expires: timestamp('expires', { mode: 'date' }).notNull(),
+    },
+    (session) => ({
+      userIdIdx: index('userId_idx').on(session.userId),
+    }),
+  )
 
   const verificationTokens = mySqlTable(
     'verificationToken',
@@ -60,13 +75,71 @@ export function createTables(mySqlTable: MySqlTableFn) {
       identifier: varchar('identifier', { length: 255 }).notNull(),
       token: varchar('token', { length: 255 }).notNull(),
       expires: timestamp('expires', { mode: 'date' }).notNull(),
+      createdAt: timestamp('createdAt', {
+        mode: 'date',
+        fsp: 3,
+      }).default(sql`CURRENT_TIMESTAMP(3)`),
     },
     (vt) => ({
-      compoundKey: primaryKey(vt.identifier, vt.token),
+      pk: primaryKey({ columns: [vt.identifier, vt.token] }),
     }),
   )
 
-  return { users, accounts, sessions, verificationTokens }
+  const contentResource = mySqlTable(
+    'contentResource',
+    {
+      id: varchar('id', { length: 255 }).notNull().primaryKey(),
+      type: varchar('type', { length: 255 }).notNull(),
+      createdById: varchar('createdById', { length: 255 }).notNull(),
+      fields: json('fields').$type<Record<string, any>>().default({}),
+      createdAt: timestamp('createdAt', {
+        mode: 'date',
+        fsp: 3,
+      }).defaultNow(),
+      updatedAt: timestamp('updatedAt', {
+        mode: 'date',
+        fsp: 3,
+      }).defaultNow(),
+      deletedAt: timestamp('deletedAt', {
+        mode: 'date',
+        fsp: 3,
+      }),
+    },
+    (cm) => ({
+      typeIdx: index('type_idx').on(cm.type),
+      createdByIdx: index('createdById_idx').on(cm.createdById),
+      createdAtIdx: index('createdAt_idx').on(cm.createdAt),
+    }),
+  )
+
+  const contentResourceResource = mySqlTable(
+    'contentResourceResource',
+    {
+      resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
+      resourceId: varchar('resourceId', { length: 255 }).notNull(),
+      position: double('position').notNull().default(0),
+      metadata: json('fields').$type<Record<string, any>>().default({}),
+      createdAt: timestamp('createdAt', {
+        mode: 'date',
+        fsp: 3,
+      }).defaultNow(),
+      updatedAt: timestamp('updatedAt', {
+        mode: 'date',
+        fsp: 3,
+      }).defaultNow(),
+      deletedAt: timestamp('deletedAt', {
+        mode: 'date',
+        fsp: 3,
+      }),
+    },
+    (crr) => ({
+      pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
+      contentResourceIdIdx: index('contentResourceId_idx').on(crr.resourceOfId),
+      resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
+    }),
+  )
+
+  return { users, accounts, sessions, verificationTokens, contentResource, contentResourceResource }
 }
 
 export type DefaultSchema = ReturnType<typeof createTables>
@@ -74,10 +147,31 @@ export type DefaultSchema = ReturnType<typeof createTables>
 export function mySqlDrizzleAdapter(
   client: InstanceType<typeof MySqlDatabase>,
   tableFn = defaultMySqlTableFn,
-): Adapter {
-  const { users, accounts, sessions, verificationTokens } = createTables(tableFn)
+): CourseBuilderAdapter {
+  const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async createContentResource(data) {
+      const id = crypto.randomUUID()
+
+      await client.insert(contentResource).values({ ...data, id })
+
+      return await client
+        .select()
+        .from(contentResource)
+        .where(eq(contentResource.id, id))
+        .then((res) => res[0])
+    },
+    async getContentResource(data) {
+      const thing =
+        (await client
+          .select()
+          .from(contentResource)
+          .where(eq(contentResource.id, data))
+          .then((res) => res[0])) ?? null
+
+      return thing
+    },
     async createUser(data) {
       const id = crypto.randomUUID()
 
@@ -87,7 +181,7 @@ export function mySqlDrizzleAdapter(
         .select()
         .from(users)
         .where(eq(users.id, id))
-        .then((res) => res[0])
+        .then((res) => res[0] as AdapterUser)
     },
     async getUser(data) {
       const thing =
@@ -116,7 +210,7 @@ export function mySqlDrizzleAdapter(
         .select()
         .from(sessions)
         .where(eq(sessions.sessionToken, data.sessionToken))
-        .then((res) => res[0])
+        .then((res) => res[0] as AdapterSession)
     },
     async getSessionAndUser(data) {
       const sessionAndUser =
@@ -143,7 +237,7 @@ export function mySqlDrizzleAdapter(
         .select()
         .from(users)
         .where(eq(users.id, data.id))
-        .then((res) => res[0])
+        .then((res) => res[0] as AdapterUser)
     },
     async updateSession(data) {
       await client.update(sessions).set(data).where(eq(sessions.sessionToken, data.sessionToken))
@@ -204,9 +298,24 @@ export function mySqlDrizzleAdapter(
             .where(and(eq(verificationTokens.identifier, token.identifier), eq(verificationTokens.token, token.token)))
             .then((res) => res[0])) ?? null
 
-        await client
-          .delete(verificationTokens)
-          .where(and(eq(verificationTokens.identifier, token.identifier), eq(verificationTokens.token, token.token)))
+        if (deletedToken?.createdAt) {
+          const TIMEOUT_IN_SECONDS = 90
+          const expireMultipleClicks = addSeconds(deletedToken.createdAt, TIMEOUT_IN_SECONDS)
+          const now = new Date()
+
+          if (isAfter(expireMultipleClicks, now)) {
+            // @ts-ignore
+            const { id: _, ...verificationToken } = token
+            return deletedToken
+          } else {
+            await client
+              .delete(verificationTokens)
+              .where(
+                and(eq(verificationTokens.identifier, token.identifier), eq(verificationTokens.token, token.token)),
+              )
+            return deletedToken
+          }
+        }
 
         return deletedToken
       } catch (err) {

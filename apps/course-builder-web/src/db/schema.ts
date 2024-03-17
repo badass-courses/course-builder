@@ -64,11 +64,11 @@ export const permissions = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -93,11 +93,11 @@ export const roles = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -121,11 +121,11 @@ export const userRoles = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -152,11 +152,11 @@ export const userPermissions = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -186,11 +186,11 @@ export const rolePermissions = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -222,11 +222,11 @@ export const contentContributions = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -259,11 +259,11 @@ export const contributionTypes = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -361,7 +361,7 @@ export const communicationPreferenceTypes = mysqlTable('communicationPreferenceT
   createdAt: timestamp('createdAt', {
     mode: 'date',
     fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
+  }).defaultNow(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
     fsp: 3,
@@ -382,11 +382,11 @@ export const communicationChannel = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -409,7 +409,7 @@ export const communicationPreferences = mysqlTable(
     createdAt: timestamp('createdAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     optInAt: timestamp('optInAt', {
       mode: 'date',
       fsp: 3,
@@ -421,7 +421,7 @@ export const communicationPreferences = mysqlTable(
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       fsp: 3,
-    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    }).defaultNow(),
     deletedAt: timestamp('deletedAt', {
       mode: 'date',
       fsp: 3,
@@ -499,6 +499,10 @@ export const verificationTokens = mysqlTable(
     identifier: varchar('identifier', { length: 255 }).notNull(),
     token: varchar('token', { length: 255 }).notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).defaultNow(),
   },
   (vt) => ({
     pk: primaryKey({ columns: [vt.identifier, vt.token] }),

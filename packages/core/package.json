@@ -1,9 +1,9 @@
 {
-  "name": "@coursebuilder/adapter-drizzle",
+  "name": "@coursebuilder/core",
   "version": "0.0.1",
-  "description": "Drizzle adapter for Course Builder.",
+  "description": "Core package for Course Builder",
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf *.js *.d.ts* lib",
     "test": "pnpm test:mysql && pnpm test:sqlite && pnpm test:pg",
     "test:mysql": "pnpm clean && ./test/mysql/test.sh",
     "test:sqlite": "pnpm clean && ./test/sqlite/test.sh",
@@ -29,6 +29,12 @@
     ".": {
       "types": "./index.d.ts",
       "import": "./index.js"
+    },
+    "./adapters": {
+      "types": "./adapters.d.ts"
+    },
+    "./types": {
+      "types": "./types.d.ts"
     }
   },
   "private": false,
@@ -36,18 +42,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@auth/core": "^0.28.0",
-    "@coursebuilder/core": "0.0.1",
-    "date-fns": "^2.30.0"
+    "@auth/core": "^0.28.0"
   },
   "devDependencies": {
-    "@libsql/client": "0.5.6",
-    "@types/better-sqlite3": "7.6.9",
-    "@types/uuid": "9.0.8",
-    "better-sqlite3": "9.4.3",
-    "drizzle-kit": "^0.20.14",
-    "drizzle-orm": "0.30.2",
-    "mysql2": "^3.6.1",
-    "postgres": "^3.3.4"
+    "tsup": "6.7.0"
   }
 }

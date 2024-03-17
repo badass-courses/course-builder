@@ -3,7 +3,7 @@ import { MySqlDatabase, MySqlTableFn } from 'drizzle-orm/mysql-core'
 import { PgDatabase, PgTableFn } from 'drizzle-orm/pg-core'
 import { BaseSQLiteDatabase, SQLiteTableFn } from 'drizzle-orm/sqlite-core'
 
-import { mySqlDrizzleAdapter } from './lib/mysql.js'
+import { createTables as createMySqlTables, mySqlDrizzleAdapter } from './lib/mysql.js'
 import { pgDrizzleAdapter } from './lib/pg.js'
 import { SQLiteDrizzleAdapter } from './lib/sqlite.js'
 import { SqlFlavorOptions, TableFn } from './lib/utils.js'
@@ -24,3 +24,5 @@ export function DrizzleAdapter<SqlFlavor extends SqlFlavorOptions>(
 
   throw new Error(`Unsupported database type (${typeof db}) in Auth.js Drizzle adapter.`)
 }
+
+export { createMySqlTables }

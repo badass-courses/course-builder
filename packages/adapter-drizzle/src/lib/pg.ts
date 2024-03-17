@@ -1,4 +1,4 @@
-import type { Adapter, AdapterAccount } from '@auth/core/adapters'
+import type { Adapter, AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { and, eq } from 'drizzle-orm'
 import {
   pgTable as defaultPgTableFn,
@@ -77,7 +77,7 @@ export function pgDrizzleAdapter(client: InstanceType<typeof PgDatabase>, tableF
         .insert(users)
         .values({ ...data, id: crypto.randomUUID() })
         .returning()
-        .then((res) => res[0] ?? null)
+        .then((res) => (res[0] as AdapterUser) ?? null)
     },
     async getUser(data) {
       return await client
@@ -98,7 +98,7 @@ export function pgDrizzleAdapter(client: InstanceType<typeof PgDatabase>, tableF
         .insert(sessions)
         .values(data)
         .returning()
-        .then((res) => res[0])
+        .then((res) => res[0] as AdapterSession)
     },
     async getSessionAndUser(data) {
       return await client
@@ -121,7 +121,7 @@ export function pgDrizzleAdapter(client: InstanceType<typeof PgDatabase>, tableF
         .set(data)
         .where(eq(users.id, data.id))
         .returning()
-        .then((res) => res[0])
+        .then((res) => res[0] as AdapterUser)
     },
     async updateSession(data) {
       return await client
@@ -132,13 +132,11 @@ export function pgDrizzleAdapter(client: InstanceType<typeof PgDatabase>, tableF
         .then((res) => res[0])
     },
     async linkAccount(rawAccount) {
-      return stripUndefined(
-        await client
-          .insert(accounts)
-          .values(rawAccount)
-          .returning()
-          .then((res) => res[0]),
-      )
+      await client
+        .insert(accounts)
+        .values(rawAccount)
+        .returning()
+        .then((res) => res[0])
     },
     async getUserByAccount(account) {
       const dbAccount =
@@ -192,7 +190,7 @@ export function pgDrizzleAdapter(client: InstanceType<typeof PgDatabase>, tableF
         .delete(accounts)
         .where(and(eq(accounts.providerAccountId, account.providerAccountId), eq(accounts.provider, account.provider)))
         .returning()
-        .then((res) => res[0] ?? null)
+        .then((res) => (res[0] as AdapterAccount) ?? null)
 
       return { provider, type, providerAccountId, userId }
     },

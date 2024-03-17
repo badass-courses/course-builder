@@ -1,5 +1,43 @@
-{ "name": "@coursebuilder/{{kebabCase name}}", "version": "0.0.1", "description": "A brave new world.", "scripts": {
-"clean": "rm -rf ./dist", "test": "echo 'No tests yet.'", "build": "tsup", "dev": "tsup --watch" }, "keywords":
-["coursebuilder"], "author": "", "license": "MIT", "type": "module", "types": "./index.d.ts", "files": [ "*.d.ts*",
-"*.js", "lib", "src" ], "exports": { ".": { "types": "./index.d.ts", "import": "./index.js" } }, "private": false,
-"publishConfig": { "access": "public" }, "devDependencies": { "tsup": "6.7.0" } }
+{
+"name": "@coursebuilder/{{kebabCase name}}",
+"version": "0.0.1",
+"description": "{{upperCase name}} for Course Builder.",
+"scripts": {
+"clean": "rm -rf ./dist",
+"test": "pnpm test:mysql && pnpm test:sqlite && pnpm test:pg",
+"test:mysql": "pnpm clean && ./test/mysql/test.sh",
+"test:sqlite": "pnpm clean && ./test/sqlite/test.sh",
+"test:pg": "pnpm clean && ./test/pg/test.sh",
+"build": "tsup",
+"dev": "tsup --watch"
+},
+"keywords": [
+"coursebuilder",
+"drizzle"
+],
+"author": "",
+"license": "ISC",
+"type": "module",
+"types": "./dist/index.d.ts",
+"files": [
+"*.d.ts*",
+"*.js",
+"lib",
+"src"
+],
+"exports": {
+".": {
+"types": "./dist/index.d.ts",
+"import": "./dist/index.js"
+}
+},
+"private": false,
+"publishConfig": {
+"access": "public"
+},
+"dependencies": {
+},
+"devDependencies": {
+"tsup": "6.7.0"
+}
+}
