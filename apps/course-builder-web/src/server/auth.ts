@@ -1,13 +1,11 @@
+import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
 import { db } from '@/db'
-import { mysqlTable } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
-
-import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 
 type Role = 'admin' | 'user'
 
@@ -60,7 +58,7 @@ export const authOptions: NextAuthConfig = {
       }
     },
   },
-  adapter: DrizzleAdapter(db, mysqlTable),
+  adapter: courseBuilderConfig.adapter,
   providers: [
     /**
      * ...add more providers here.

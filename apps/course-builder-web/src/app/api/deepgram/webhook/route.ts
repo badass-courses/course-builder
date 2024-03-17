@@ -1,7 +1,7 @@
 import { type NextResponse } from 'next/server'
+import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
 import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_TRANSCRIPT_READY_EVENT } from '@/inngest/video-processing/events/video-transcript-ready'
-import { transcriptProvider } from '@/providers/deepgram'
 import { withSkill, type SkillRequest } from '@/server/with-skill'
 
 export const POST = withSkill(async (req: SkillRequest, res: NextResponse) => {
@@ -18,7 +18,7 @@ export const POST = withSkill(async (req: SkillRequest, res: NextResponse) => {
 
   req.log.info(`Received transcript from deepgram for videoResource [${videoResourceId}]: ${results.id}`)
 
-  const { srt, wordLevelSrt, transcript } = transcriptProvider.handleCallback(results)
+  const { srt, wordLevelSrt, transcript } = courseBuilderConfig.transcriptProvider.handleCallback(results)
 
   await inngest.send({
     name: VIDEO_TRANSCRIPT_READY_EVENT,
