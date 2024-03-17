@@ -19,7 +19,6 @@ export const videoReady = inngest.createFunction(
       await step.run('update the video resource in database', async () => {
         return updateVideoStatus({ videoResourceId: videoResource._id, status: 'ready' })
       })
-      revalidateTag(videoResource._id)
     }
 
     await step.run('announce asset ready', async () => {

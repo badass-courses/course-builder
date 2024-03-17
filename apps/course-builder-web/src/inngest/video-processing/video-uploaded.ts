@@ -70,23 +70,25 @@ export const videoUploaded = inngest.createFunction(
       })
     })
 
-    await step.sendEvent('announce new video resource', {
-      name: VIDEO_RESOURCE_CREATED_EVENT,
-      data: {
-        moduleSlug: event.data.moduleSlug,
-        originalMediaUrl: event.data.originalMediaUrl,
-        videoResourceId: videoResource._id,
-      },
-    })
-
-    if (event.data.fileKey) {
-      await step.sendEvent('remove video from uploadthing when done', {
-        name: VIDEO_STATUS_CHECK_EVENT,
+    if (videoResource && videoResource._id) {
+      await step.sendEvent('announce new video resource', {
+        name: VIDEO_RESOURCE_CREATED_EVENT,
         data: {
-          fileKey: event.data.fileKey,
+          moduleSlug: event.data.moduleSlug,
+          originalMediaUrl: event.data.originalMediaUrl,
           videoResourceId: videoResource._id,
         },
       })
+
+      if (event.data.fileKey) {
+        await step.sendEvent('remove video from uploadthing when done', {
+          name: VIDEO_STATUS_CHECK_EVENT,
+          data: {
+            fileKey: event.data.fileKey,
+            videoResourceId: videoResource._id,
+          },
+        })
+      }
     }
 
     return { data: event.data, videoResource, muxAsset }
