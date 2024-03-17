@@ -42,7 +42,6 @@ async function TipList() {
 
 async function TipListActions() {
   const session = await getServerAuthSession()
-  console.log('session', session)
   const ability = getAbility({ user: session?.user })
   return (
     <>
