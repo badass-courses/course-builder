@@ -1,71 +1,15 @@
 import { User } from '@/ability'
-import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
+import { ChatResource } from '@/lib/ai-chat'
+import { getChatResource } from '@/lib/ai-chat-query'
 import { getPrompt } from '@/lib/prompts-query'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
-import { sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
 import { z } from 'zod'
-
-const ChatResourceSchema = z.object({
-  _id: z.string(),
-  _type: z.string(),
-  _updatedAt: z.string(),
-  _createdAt: z.string(),
-  title: z.string().nullable().optional(),
-  body: z.string().nullable().optional(),
-  transcript: z.string().nullable().optional(),
-  wordLevelSrt: z.string().nullable().optional(),
-})
-
-type ChatResource = z.infer<typeof ChatResourceSchema>
-
-async function getChatResource(id: string) {
-  const query = sql`
-    SELECT
-      resources.id as _id,
-      resources.type as _type,
-      resources.fields,
-      CAST(resources.updatedAt AS DATETIME) as _updatedAt,
-      CAST(resources.createdAt AS DATETIME) as _createdAt,
-      JSON_EXTRACT (resources.fields, "$.title") AS title,
-      JSON_EXTRACT (resources.fields, "$.body") AS body,
-      JSON_EXTRACT (videoResources.fields, "$.transcript") AS transcript,
-      JSON_EXTRACT (videoResources.fields, "$.wordLevelSrt") AS wordLevelSrt
-    FROM
-      ${contentResource} as resources
-    -- join assumes that there is a single video resource ie a Tip
-    LEFT JOIN (
-      SELECT
-        refs.resourceOfId,
-        videoResources.fields
-      FROM
-        ${contentResourceResource} as refs
-      JOIN ${contentResource} as videoResources
-        ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'
-    ) as videoResources
-      ON resources.id = videoResources.resourceOfId 
-    WHERE
-      resources.id = ${id};
-  `
-
-  return db
-    .execute(query)
-    .then((result) => {
-      console.log('📼 get chat resource', result)
-      const parsed = ChatResourceSchema.safeParse(result.rows[0])
-      return parsed.success ? parsed.data : null
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
-}
 
 /**
  * TODO: Cancellation conditions need to be added $$

@@ -7,7 +7,7 @@ import { Schema, z } from 'zod'
 
 import { Button, Form } from '@coursebuilder/ui'
 
-export function EditResourcesMobileForm({
+export function EditResourcesFormMobile({
   resource,
   getResourcePath,
   resourceSchema,

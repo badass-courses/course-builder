@@ -15,12 +15,7 @@ const ResizablePanelGroup: React.FC<
   />
 )
 
-const ResizablePanel: React.FC<ResizablePrimitive.PanelProps> = (props) => (
-  <ResizablePrimitive.Panel
-    {...props}
-    className={cn('min-h-[var(--pane-layout-height)] md:min-h-full', props.className)}
-  />
-)
+const ResizablePanel: React.FC<ResizablePrimitive.PanelProps> = (props) => <ResizablePrimitive.Panel {...props} />
 
 const ResizableHandle: React.FC<any & { withHandle?: boolean }> = ({ withHandle, className, ...props }) => (
   <ResizablePrimitive.PanelResizeHandle

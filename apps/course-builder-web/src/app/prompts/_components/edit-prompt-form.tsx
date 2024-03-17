@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { EditResourcesDesktopForm } from '@/components/resources-crud/edit-resources-desktop-form'
+import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
+import { EditResourcesFormMobile } from '@/components/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@/components/resources-crud/edit-resources-metadata-fields'
-import { EditResourcesMobileForm } from '@/components/resources-crud/edit-resources-mobile-form'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { PromptSchema, type Prompt } from '@/lib/prompts'
 import { updatePrompt } from '@/lib/prompts-query'
@@ -26,7 +26,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 
   const isMobile = useIsMobile()
 
-  const ResourceForm = isMobile ? EditResourcesMobileForm : EditResourcesDesktopForm
+  const ResourceForm = isMobile ? EditResourcesFormMobile : EditResourcesFormDesktop
 
   return (
     <ResourceForm

@@ -1,11 +1,8 @@
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
-import { VideoResourceSchema } from '@/lib/video-resource'
+import { getVideoResource, updateVideoTranscriptWithScreenshots } from '@/lib/video-resource-query'
 import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
-import { sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 
 export const generateTranscriptWithScreenshots = inngest.createFunction(
@@ -24,33 +21,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     }
 
     const videoResource = await step.run('get the video resource from Sanity', async () => {
-      const query = sql`
-        SELECT
-          id as _id,
-          CAST(updatedAt AS DATETIME) as _updatedAt,
-          CAST(createdAt AS DATETIME) as _createdAt,
-          JSON_EXTRACT (${contentResource.fields}, "$.state") AS state,
-          JSON_EXTRACT (${contentResource.fields}, "$.duration") AS duration,
-          JSON_EXTRACT (${contentResource.fields}, "$.muxPlaybackId") AS muxPlaybackId,
-          JSON_EXTRACT (${contentResource.fields}, "$.muxAssetId") AS muxAssetId,
-          JSON_EXTRACT (${contentResource.fields}, "$.srt") AS srt
-        FROM
-          ${contentResource}
-        WHERE
-          type = 'videoResource'
-          AND (id = ${videoResourceId});
-        `
-
-      return db
-        .execute(query)
-        .then((result) => {
-          const parsed = VideoResourceSchema.safeParse(result.rows[0])
-          return parsed.success ? parsed.data : null
-        })
-        .catch((error) => {
-          console.error(error)
-          throw error
-        })
+      return getVideoResource(videoResourceId)
     })
 
     if (!videoResource) {
@@ -68,24 +39,10 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     })
 
     await step.run('update the video resource in the database', async () => {
-      const query = sql`
-        UPDATE ${contentResource}
-        SET
-          ${contentResource.fields} = JSON_SET(
-            ${contentResource.fields}, '$.transcriptWithScreenshots', ${transcriptWithScreenshots})
-        WHERE
-          id = ${videoResourceId};
-      `
-      return db
-        .execute(query)
-        .then((result) => {
-          console.log('📼 updated video resource', result)
-          return result
-        })
-        .catch((error) => {
-          console.error(error)
-          throw error
-        })
+      return updateVideoTranscriptWithScreenshots({
+        videoResourceId,
+        transcriptWithScreenshots,
+      })
     })
 
     await step.run('send the transcript to the party', async () => {

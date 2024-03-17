@@ -1,11 +1,8 @@
 import { revalidateTag } from 'next/cache'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { MUX_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-mux-webhook'
-import { getVideoResource } from '@/lib/video-resource-query'
-import { sql } from 'drizzle-orm'
+import { getVideoResource, updateVideoStatus } from '@/lib/video-resource-query'
 
 export const videoReady = inngest.createFunction(
   { id: `mux-video-asset-ready`, name: 'Mux Video Asset Ready' },
@@ -20,24 +17,7 @@ export const videoReady = inngest.createFunction(
 
     if (videoResource) {
       await step.run('update the video resource in database', async () => {
-        const query = sql`
-          UPDATE ${contentResource}
-          SET
-            ${contentResource.fields} = JSON_SET(
-              ${contentResource.fields}, '$.state', 'ready')
-          WHERE
-            id = ${videoResource._id};
-        `
-        return db
-          .execute(query)
-          .then((result) => {
-            console.log('📼 updated video resource', result)
-            return result
-          })
-          .catch((error) => {
-            console.error(error)
-            throw error
-          })
+        return updateVideoStatus({ videoResourceId: videoResource._id, status: 'ready' })
       })
       revalidateTag(videoResource._id)
     }

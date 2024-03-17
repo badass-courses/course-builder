@@ -1,12 +1,10 @@
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
 import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
 import { createMuxAsset } from '@/lib/mux-api'
-import { getVideoResource } from '@/lib/video-resource-query'
+import { createVideoResource, getVideoResource } from '@/lib/video-resource-query'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -34,27 +32,21 @@ export const videoUploaded = inngest.createFunction(
     await step.run('create the video resource in database', async () => {
       const playbackId = muxAsset.playback_ids.filter((playbackId) => playbackId.policy === 'public')[0]?.id
 
-      return await db
-        .insert(contentResource)
-        .values({
-          id: event.data.fileName,
-          type: 'videoResource',
-          fields: {
-            state: 'processing',
-            originalMediaUrl: event.data.originalMediaUrl,
-            muxAssetId: muxAsset.id,
-            muxPlaybackId: playbackId,
-          },
-          createdById: event.user.id,
-        })
-        .then((result) => {
-          console.log('📼 created video resource', result)
-          return result
-        })
-        .catch((error) => {
-          console.error(error)
-          throw error
-        })
+      if (!playbackId) {
+        throw new Error('No public playback id found')
+      }
+
+      return createVideoResource({
+        id: event.data.fileName,
+        type: 'videoResource',
+        fields: {
+          state: 'processing',
+          originalMediaUrl: event.data.originalMediaUrl,
+          muxAssetId: muxAsset.id,
+          muxPlaybackId: playbackId,
+        },
+        createdById: event.user.id,
+      })
     })
 
     const videoResource = await step.run('get the video resource from database', async () => {
@@ -64,70 +56,6 @@ export const videoUploaded = inngest.createFunction(
     if (!videoResource) {
       throw new Error('Failed to create video resource')
     }
-
-    // TODO: This is a future feature for modules
-    // if (event.data.moduleSlug) {
-    //   const newLesson = await step.run('create lesson module for video resource', async () => {
-    //     const lessonId = v4()
-    //     const titleToUse = event.data.title || event.data.fileName
-    //     return await sanityMutation(
-    //       [
-    //         {
-    //           create: {
-    //             _id: `lesson-${lessonId}`,
-    //             _type: 'module',
-    //             title: toChicagoTitleCase(titleToUse.replace(/-/g, ' ').replace(/\.mp4/g, '')),
-    //             state: 'draft',
-    //             moduleType: 'lesson',
-    //             slug: {
-    //               _type: 'slug',
-    //               current: `lesson-${lessonId}`,
-    //             },
-    //
-    //             resources: [
-    //               {
-    //                 _type: 'reference' as const,
-    //                 _key: v4(),
-    //                 _ref: videoResource._id,
-    //               },
-    //             ],
-    //           },
-    //         },
-    //       ],
-    //       { returnDocuments: true },
-    //     ).then((res) => res.results[0].document)
-    //   })
-    //
-    //   const parentModule = await step.run('get module', async () => {
-    //     return await sanityQuery(`*[_type == "module" && slug.current == "${event.data.moduleSlug}"][0]{_id}`)
-    //   })
-    //
-    //   if (parentModule) {
-    //     await step.run('add lesson to module', async () => {
-    //       return await sanityMutation(
-    //         [
-    //           {
-    //             patch: {
-    //               id: parentModule._id,
-    //               setIfMissing: { resources: [] },
-    //               insert: {
-    //                 before: 'resources[-1]',
-    //                 items: [
-    //                   {
-    //                     _type: 'reference' as const,
-    //                     _key: v4(),
-    //                     _ref: newLesson._id,
-    //                   },
-    //                 ],
-    //               },
-    //             },
-    //           },
-    //         ],
-    //         { returnDocuments: true },
-    //       )
-    //     })
-    //   }
-    // }
 
     await step.run('announce video resource created', async () => {
       await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResource._id}`, {
