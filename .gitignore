@@ -11,3 +11,13 @@ dist-ssr
 server/dist
 public/dist
 .idea
+
+packages/*/*.js
+packages/*/*.d.ts
+packages/*/*.d.ts.map
+packages/*/lib
+packages/**/generated
+
+# Core
+packages/core/lib
+packages/core/providers

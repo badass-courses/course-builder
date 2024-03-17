@@ -1,0 +1,52 @@
+{
+  "name": "@coursebuilder/adapter-drizzle",
+  "version": "0.0.1",
+  "description": "Drizzle adapter for Course Builder.",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "coursebuilder",
+    "drizzle"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.d.ts*",
+    "*.js",
+    "lib",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@auth/core": "^0.28.0",
+    "@coursebuilder/core": "0.0.1",
+    "@libsql/client": "0.5.6",
+    "@types/better-sqlite3": "7.6.9",
+    "@types/uuid": "9.0.8",
+    "better-sqlite3": "9.4.3",
+    "drizzle-kit": "^0.20.14",
+    "drizzle-orm": "0.30.2",
+    "mysql2": "^3.6.1",
+    "postgres": "^3.3.4"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "0.30.x"
+  }
+}

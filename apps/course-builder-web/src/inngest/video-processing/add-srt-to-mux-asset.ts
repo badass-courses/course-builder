@@ -57,7 +57,7 @@ export const addSrtToMuxAsset = inngest.createFunction(
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              url: `${env.NEXTAUTH_URL}/api/videos/${videoResource._id}/srt`,
+              url: `${env.NEXT_PUBLIC_URL}/api/videos/${videoResource._id}/srt`,
               type: 'text',
               text_type: 'subtitles',
               closed_captions: true,

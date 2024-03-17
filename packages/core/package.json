@@ -1,0 +1,54 @@
+{
+  "name": "@coursebuilder/core",
+  "version": "0.0.1",
+  "description": "Core package for Course Builder",
+  "scripts": {
+    "clean": "rm -rf *.js *.d.ts* lib",
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "coursebuilder",
+    "drizzle"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "types": "./index.d.ts",
+  "files": [
+    "*.d.ts*",
+    "*.js",
+    "lib",
+    "src",
+    "providers"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./adapters": {
+      "types": "./adapters.d.ts"
+    },
+    "./providers": {
+      "types": "./providers/index.d.ts"
+    },
+    "./providers/*": {
+      "types": "./providers/*.d.ts",
+      "import": "./providers/*.js"
+    },
+    "./types": {
+      "types": "./types.d.ts"
+    }
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@auth/core": "^0.28.0",
+    "tsup": "6.7.0",
+    "zod": "^3.22.4"
+  }
+}

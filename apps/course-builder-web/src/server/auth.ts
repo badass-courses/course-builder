@@ -1,12 +1,11 @@
+import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
 import { db } from '@/db'
-import { DrizzleAdapter } from '@/db/auth-drizzle-adapter'
-import { mysqlTable } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
-import { getServerSession, type DefaultSession, type NextAuthOptions } from 'next-auth'
-import GithubProvider from 'next-auth/providers/github'
-import TwitterProvider from 'next-auth/providers/twitter'
+import GithubProvider from '@auth/core/providers/github'
+import TwitterProvider from '@auth/core/providers/twitter'
+import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
 type Role = 'admin' | 'user'
 
@@ -35,7 +34,7 @@ declare module 'next-auth' {
  *
  * @see https://next-auth.js.org/configuration/options
  */
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   events: {
     createUser: async ({ user }) => {
       await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
@@ -59,7 +58,7 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
-  adapter: DrizzleAdapter(db, mysqlTable),
+  adapter: courseBuilderConfig.adapter,
   providers: [
     /**
      * ...add more providers here.
@@ -96,9 +95,9 @@ export const authOptions: NextAuthOptions = {
   },
 }
 
-/**
- * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
- *
- * @see https://next-auth.js.org/configuration/nextjs
- */
-export const getServerAuthSession = () => getServerSession(authOptions)
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth(authOptions)
+
+export const getServerAuthSession = async () => auth()

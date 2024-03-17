@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { VideoResource, VideoResourceSchema } from '@/lib/video-resource'
@@ -10,9 +11,12 @@ export async function updateVideoStatus({
   videoResourceId,
   status,
 }: {
-  videoResourceId: string
+  videoResourceId?: string
   status: string
 }): Promise<ExecutedQuery<any[] | Record<string, any>>> {
+  if (!videoResourceId) {
+    throw new Error('videoResourceId is required')
+  }
   const query = sql`
         UPDATE ${contentResource}
         SET
@@ -27,6 +31,7 @@ export async function updateVideoStatus({
     .execute(query)
     .then((result) => {
       console.log('📼 updated video resource status', result)
+      revalidateTag(videoResourceId)
       return result
     })
     .catch((error) => {
@@ -97,8 +102,9 @@ export async function getTranscriptWithScreenshots(videoResourceId?: string | nu
 
 export async function getVideoResource(videoResourceId?: string | null): Promise<VideoResource | null> {
   if (!videoResourceId) {
-    return null
+    throw new Error('videoResourceId is required')
   }
+
   const query = sql`
     SELECT
       id as _id,

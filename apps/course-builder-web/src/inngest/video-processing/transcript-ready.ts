@@ -3,11 +3,6 @@ import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
 import { VIDEO_TRANSCRIPT_READY_EVENT } from '@/inngest/video-processing/events/video-transcript-ready'
 import { updateVideoWithTranscripts } from '@/lib/video-resource-query'
-import {
-  srtFromTranscriptResult,
-  transcriptAsParagraphsWithTimestamps,
-  wordLevelSrtFromTranscriptResult,
-} from '@/transcript-processing/deepgram-results-processor'
 
 export const deepgramTranscriptReady = inngest.createFunction(
   { id: `transcript-ready-event`, name: 'Transcript Ready' },
@@ -20,9 +15,9 @@ export const deepgramTranscriptReady = inngest.createFunction(
       throw new Error('video resource id is required')
     }
 
-    const srt = srtFromTranscriptResult(event.data.results)
-    const wordLevelSrt = wordLevelSrtFromTranscriptResult(event.data.results)
-    const transcript = transcriptAsParagraphsWithTimestamps(event.data.results)
+    const transcript = event.data.transcript
+    const srt = event.data.srt
+    const wordLevelSrt = event.data.wordLevelSrt
 
     await step.run('update the video resource in the database', async () => {
       return updateVideoWithTranscripts({

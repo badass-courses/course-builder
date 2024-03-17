@@ -1,4 +1,3 @@
-import { ParagraphSchema, WordSchema } from '@/transcript-processing/srt-processor'
 import { z } from 'zod'
 
 export const VIDEO_TRANSCRIPT_READY_EVENT = 'video/transcript-ready-event'
@@ -8,30 +7,13 @@ export type VideoTranscriptReady = {
   data: VideoTranscriptReadyEvent
 }
 
-export const DeepgramResultsSchema = z.object({
-  channels: z.array(
-    z.object({
-      alternatives: z.array(
-        z.object({
-          transcript: z.string(),
-          paragraphs: z
-            .object({
-              paragraphs: z.array(ParagraphSchema),
-            })
-            .optional(),
-          words: z.array(WordSchema),
-        }),
-      ),
-    }),
-  ),
-})
-
-export type DeepgramResults = z.infer<typeof DeepgramResultsSchema>
-
 export const VideoTranscriptReadyEventSchema = z.object({
   videoResourceId: z.string().nullable(),
   moduleSlug: z.string().nullable(),
-  results: DeepgramResultsSchema,
+  results: z.any(),
+  srt: z.string(),
+  wordLevelSrt: z.string(),
+  transcript: z.string(),
 })
 
 export type VideoTranscriptReadyEvent = z.infer<typeof VideoTranscriptReadyEventSchema>

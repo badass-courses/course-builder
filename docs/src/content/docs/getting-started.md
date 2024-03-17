@@ -88,7 +88,7 @@ There are 3 (THREE!) different entries for the URL of the project in the environ
 :::
 
 ```dotenv
-NEXTAUTH_URL="YOUR_TUNNEL.ngrok-free.app/"
+NEXTAUTH_URL="YOUR_TUNNEL.ngrok-free.app/api/auth"
 UPLOADTHING_URL="http://localhost:3000"
 NEXT_PUBLIC_URL="https://YOUR_TUNNEL.ngrok-free.app/"
 ```
