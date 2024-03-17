@@ -1,16 +1,7 @@
-import { Index, Pinecone, PineconeRecord } from '@pinecone-database/pinecone'
+import { Index, PineconeRecord } from '@pinecone-database/pinecone'
 
 import { get_embedding } from '../openai'
 import { get_or_create_index } from '../pinecone'
-
-export type Concent = {
-  id: string
-  values: number[]
-  metadata: {
-    aliases: string[]
-    redirect?: string
-  }
-}
 
 const index: Index = await get_or_create_index({
   name: 'concepts',
