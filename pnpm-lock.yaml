@@ -170,6 +170,9 @@ importers:
       '@coursebuilder/adapter-drizzle':
         specifier: 0.0.1
         version: link:../../packages/adapter-drizzle
+      '@coursebuilder/core':
+        specifier: 0.0.1
+        version: link:../../packages/core
       '@coursebuilder/ui':
         specifier: ^1.0.3
         version: link:../../packages/ui

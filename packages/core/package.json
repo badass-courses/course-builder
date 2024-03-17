@@ -19,7 +19,8 @@
     "*.d.ts*",
     "*.js",
     "lib",
-    "src"
+    "src",
+    "providers"
   ],
   "exports": {
     ".": {
@@ -28,6 +29,13 @@
     },
     "./adapters": {
       "types": "./adapters.d.ts"
+    },
+    "./providers": {
+      "types": "./providers/index.d.ts"
+    },
+    "./providers/*": {
+      "types": "./providers/*.d.ts",
+      "import": "./providers/*.js"
     },
     "./types": {
       "types": "./types.d.ts"
