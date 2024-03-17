@@ -14,7 +14,16 @@ import {
 import { type VIDEO_UPLOADED_EVENT, type VideoUploaded } from '@/inngest/video-processing/events/video-uploaded'
 import { EventSchemas, Inngest } from 'inngest'
 
+import {
+  CONCEPT_SELECTED,
+  CONCEPT_TAGS_REQUESTED,
+  REQUEST_CONCEPT_SELECTION,
+  type ConceptSelected,
+  type ConceptTagsRequested,
+  type RequestConceptSelection,
+} from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
+import { REQUEST_VIDEO_SPLIT_POINTS, type RequestVideoSplitPoints } from './events/split_video'
 
 // Create a client to send and receive events
 type Events = {
@@ -30,6 +39,10 @@ type Events = {
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
   [EMAIL_SEND_BROADCAST]: EmailSendBroadcast
   [OCR_WEBHOOK_EVENT]: OcrWebhook
+  [CONCEPT_TAGS_REQUESTED]: ConceptTagsRequested
+  [REQUEST_CONCEPT_SELECTION]: RequestConceptSelection
+  [CONCEPT_SELECTED]: ConceptSelected
+  [REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
 }
 export const inngest = new Inngest({
   id: 'course-builder',

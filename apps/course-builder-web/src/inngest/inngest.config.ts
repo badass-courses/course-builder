@@ -15,6 +15,9 @@ import { videoProcessingError } from '@/inngest/video-processing/video-processin
 import { videoReady } from '@/inngest/video-processing/video-ready'
 import { videoUploaded } from '@/inngest/video-processing/video-uploaded'
 
+import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
+import { computeVideoSplitPoints } from './functions/split_video'
+
 export const inngestConfig = {
   client: inngest,
   functions: [
@@ -33,5 +36,7 @@ export const inngestConfig = {
     orderTranscript,
     emailSendBroadcast,
     performCodeExtraction,
+    getOrCreateConcept,
+    computeVideoSplitPoints,
   ],
 }
