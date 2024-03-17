@@ -1,6 +1,5 @@
-import type { Adapter, AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
+import type { AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { and, eq } from 'drizzle-orm'
-import { mysqlEnum } from 'drizzle-orm/mysql-core/index'
 import {
   pgTable as defaultPgTableFn,
   integer,
@@ -14,7 +13,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
 export function createTables(pgTable: PgTableFn) {
   const users = pgTable('user', {

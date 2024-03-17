@@ -1,14 +1,14 @@
 import { is } from 'drizzle-orm'
-import { MySqlDatabase, MySqlTableFn } from 'drizzle-orm/mysql-core'
-import { PgDatabase, PgTableFn } from 'drizzle-orm/pg-core'
-import { BaseSQLiteDatabase, SQLiteTableFn } from 'drizzle-orm/sqlite-core'
+import { MySqlDatabase, type MySqlTableFn } from 'drizzle-orm/mysql-core'
+import { PgDatabase, type PgTableFn } from 'drizzle-orm/pg-core'
+import { BaseSQLiteDatabase, type SQLiteTableFn } from 'drizzle-orm/sqlite-core'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
 import { createTables as createMySqlTables, mySqlDrizzleAdapter } from './lib/mysql.js'
 import { pgDrizzleAdapter } from './lib/pg.js'
 import { SQLiteDrizzleAdapter } from './lib/sqlite.js'
-import { SqlFlavorOptions, TableFn } from './lib/utils.js'
+import { type SqlFlavorOptions, type TableFn } from './lib/utils.js'
 
 export function DrizzleAdapter<SqlFlavor extends SqlFlavorOptions>(
   db: SqlFlavor,

@@ -37,10 +37,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "@auth/core": "^0.28.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@auth/core": "^0.28.0",
     "tsup": "6.7.0"
   }
 }

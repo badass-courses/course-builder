@@ -15,7 +15,7 @@ import {
   varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
 export function createTables(mySqlTable: MySqlTableFn) {
   const users = mySqlTable('user', {

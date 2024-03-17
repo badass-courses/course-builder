@@ -9,7 +9,7 @@ import {
   text,
 } from 'drizzle-orm/sqlite-core'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
 import { stripUndefined } from './utils.js'
 
