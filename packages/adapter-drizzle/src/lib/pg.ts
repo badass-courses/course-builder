@@ -1,10 +1,12 @@
 import type { Adapter, AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { and, eq } from 'drizzle-orm'
+import { mysqlEnum } from 'drizzle-orm/mysql-core/index'
 import {
   pgTable as defaultPgTableFn,
   integer,
   json,
   PgDatabase,
+  pgEnum,
   PgTableFn,
   primaryKey,
   text,
@@ -14,14 +16,13 @@ import {
 
 import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
-import { stripUndefined } from './utils.js'
-
 export function createTables(pgTable: PgTableFn) {
   const users = pgTable('user', {
     id: text('id').notNull().primaryKey(),
     name: text('name'),
     email: text('email').notNull(),
     emailVerified: timestamp('emailVerified', { mode: 'date' }),
+    role: pgEnum('role', ['user', 'admin'])('role').default('user'),
     image: text('image'),
   })
 
@@ -43,7 +44,7 @@ export function createTables(pgTable: PgTableFn) {
       session_state: text('session_state'),
     },
     (account) => ({
-      compoundKey: primaryKey(account.provider, account.providerAccountId),
+      pk: primaryKey({ columns: [account.provider, account.providerAccountId] }),
     }),
   )
 
@@ -63,7 +64,7 @@ export function createTables(pgTable: PgTableFn) {
       expires: timestamp('expires', { mode: 'date' }).notNull(),
     },
     (vt) => ({
-      compoundKey: primaryKey(vt.identifier, vt.token),
+      pk: primaryKey({ columns: [vt.identifier, vt.token] }),
     }),
   )
 

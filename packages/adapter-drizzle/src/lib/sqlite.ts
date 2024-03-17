@@ -1,4 +1,4 @@
-import type { Adapter, AdapterAccount } from '@auth/core/adapters'
+import type { AdapterAccount } from '@auth/core/adapters'
 import { and, eq, sql } from 'drizzle-orm'
 import {
   BaseSQLiteDatabase,
@@ -17,6 +17,7 @@ export function createTables(sqliteTable: SQLiteTableFn) {
   const users = sqliteTable('user', {
     id: text('id').notNull().primaryKey(),
     name: text('name'),
+    role: text('role', { enum: ['user', 'admin'] }).default('user'),
     email: text('email').notNull(),
     emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
     image: text('image'),
@@ -70,13 +71,13 @@ export function createTables(sqliteTable: SQLiteTableFn) {
     createdById: text('createdById', { length: 255 }).notNull(),
     fields: text('metadata', { mode: 'json' }).$type<Record<string, any>>().default({}),
     createdAt: integer('createdAt', {
-      mode: 'timestamp',
+      mode: 'timestamp_ms',
     }).default(sql`CURRENT_TIME`),
     updatedAt: integer('updatedAt', {
-      mode: 'timestamp',
+      mode: 'timestamp_ms',
     }).default(sql`CURRENT_TIME`),
     deletedAt: integer('deletedAt', {
-      mode: 'timestamp',
+      mode: 'timestamp_ms',
     }),
   })
 
@@ -88,13 +89,13 @@ export function createTables(sqliteTable: SQLiteTableFn) {
       position: integer('position').notNull().default(0),
       metadata: text('metadata', { mode: 'json' }).$type<Record<string, any>>().default({}),
       createdAt: integer('createdAt', {
-        mode: 'timestamp',
+        mode: 'timestamp_ms',
       }).default(sql`CURRENT_TIME`),
       updatedAt: integer('updatedAt', {
-        mode: 'timestamp',
+        mode: 'timestamp_ms',
       }).default(sql`CURRENT_TIME`),
       deletedAt: integer('deletedAt', {
-        mode: 'timestamp',
+        mode: 'timestamp_ms',
       }),
     },
     (crr) => ({
