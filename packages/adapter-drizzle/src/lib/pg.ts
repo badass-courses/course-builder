@@ -3,12 +3,16 @@ import { and, eq } from 'drizzle-orm'
 import {
   pgTable as defaultPgTableFn,
   integer,
+  json,
   PgDatabase,
   PgTableFn,
   primaryKey,
   text,
   timestamp,
+  varchar,
 } from 'drizzle-orm/pg-core'
+
+import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
 import { stripUndefined } from './utils.js'
 
@@ -63,15 +67,83 @@ export function createTables(pgTable: PgTableFn) {
     }),
   )
 
-  return { users, accounts, sessions, verificationTokens }
+  const contentResource = pgTable('contentResource', {
+    id: varchar('id', { length: 255 }).notNull().primaryKey(),
+    type: varchar('type', { length: 255 }).notNull(),
+    createdById: varchar('createdById', { length: 255 }).notNull(),
+    fields: json('fields').$type<Record<string, any>>().default({}),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      precision: 6,
+      withTimezone: true,
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      precision: 6,
+      withTimezone: true,
+    }).defaultNow(),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      precision: 6,
+      withTimezone: true,
+    }),
+  })
+
+  const contentResourceResource = pgTable(
+    'contentResourceResource',
+    {
+      resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
+      resourceId: varchar('resourceId', { length: 255 }).notNull(),
+      position: integer('position').notNull().default(0),
+      metadata: json('fields').$type<Record<string, any>>().default({}),
+      createdAt: timestamp('createdAt', {
+        mode: 'date',
+        precision: 6,
+        withTimezone: true,
+      }).defaultNow(),
+      updatedAt: timestamp('updatedAt', {
+        mode: 'date',
+        precision: 6,
+        withTimezone: true,
+      }).defaultNow(),
+      deletedAt: timestamp('deletedAt', {
+        mode: 'date',
+        precision: 6,
+        withTimezone: true,
+      }),
+    },
+    (crr) => ({
+      pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
+    }),
+  )
+
+  return { users, accounts, sessions, verificationTokens, contentResource }
 }
 
 export type DefaultSchema = ReturnType<typeof createTables>
 
-export function pgDrizzleAdapter(client: InstanceType<typeof PgDatabase>, tableFn = defaultPgTableFn): Adapter {
-  const { users, accounts, sessions, verificationTokens } = createTables(tableFn)
+export function pgDrizzleAdapter(
+  client: InstanceType<typeof PgDatabase>,
+  tableFn = defaultPgTableFn,
+): CourseBuilderAdapter {
+  const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async createContentResource(resource) {
+      return client
+        .insert(contentResource)
+        .values({ ...resource, id: crypto.randomUUID() })
+        .returning()
+        .then((res) => res[0] ?? null)
+    },
+    async getContentResource(data) {
+      const result = await client
+        .select()
+        .from(contentResource)
+        .where(eq(contentResource.id, data))
+        .then((res) => res[0] ?? null)
+      return result ?? null
+    },
     async createUser(data) {
       return await client
         .insert(users)

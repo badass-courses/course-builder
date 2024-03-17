@@ -1,5 +1,5 @@
 import type { Adapter, AdapterAccount } from '@auth/core/adapters'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import {
   BaseSQLiteDatabase,
   sqliteTable as defaultSqliteTableFn,
@@ -8,6 +8,8 @@ import {
   SQLiteTableFn,
   text,
 } from 'drizzle-orm/sqlite-core'
+
+import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
 import { stripUndefined } from './utils.js'
 
@@ -38,7 +40,7 @@ export function createTables(sqliteTable: SQLiteTableFn) {
       session_state: text('session_state'),
     },
     (account) => ({
-      compoundKey: primaryKey(account.provider, account.providerAccountId),
+      pk: primaryKey({ columns: [account.provider, account.providerAccountId] }),
     }),
   )
 
@@ -58,11 +60,49 @@ export function createTables(sqliteTable: SQLiteTableFn) {
       expires: integer('expires', { mode: 'timestamp_ms' }).notNull(),
     },
     (vt) => ({
-      compoundKey: primaryKey(vt.identifier, vt.token),
+      pk: primaryKey({ columns: [vt.identifier, vt.token] }),
     }),
   )
 
-  return { users, accounts, sessions, verificationTokens }
+  const contentResource = sqliteTable('contentResource', {
+    id: text('id', { length: 255 }).notNull().primaryKey(),
+    type: text('type', { length: 255 }).notNull(),
+    createdById: text('createdById', { length: 255 }).notNull(),
+    fields: text('metadata', { mode: 'json' }).$type<Record<string, any>>().default({}),
+    createdAt: integer('createdAt', {
+      mode: 'timestamp',
+    }).default(sql`CURRENT_TIME`),
+    updatedAt: integer('updatedAt', {
+      mode: 'timestamp',
+    }).default(sql`CURRENT_TIME`),
+    deletedAt: integer('deletedAt', {
+      mode: 'timestamp',
+    }),
+  })
+
+  const contentResourceResource = sqliteTable(
+    'contentResourceResource',
+    {
+      resourceOfId: text('resourceOfId', { length: 255 }).notNull(),
+      resourceId: text('resourceId', { length: 255 }).notNull(),
+      position: integer('position').notNull().default(0),
+      metadata: text('metadata', { mode: 'json' }).$type<Record<string, any>>().default({}),
+      createdAt: integer('createdAt', {
+        mode: 'timestamp',
+      }).default(sql`CURRENT_TIME`),
+      updatedAt: integer('updatedAt', {
+        mode: 'timestamp',
+      }).default(sql`CURRENT_TIME`),
+      deletedAt: integer('deletedAt', {
+        mode: 'timestamp',
+      }),
+    },
+    (crr) => ({
+      pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
+    }),
+  )
+
+  return { users, accounts, sessions, verificationTokens, contentResource, contentResourceResource }
 }
 
 export type DefaultSchema = ReturnType<typeof createTables>
@@ -70,10 +110,21 @@ export type DefaultSchema = ReturnType<typeof createTables>
 export function SQLiteDrizzleAdapter(
   client: InstanceType<typeof BaseSQLiteDatabase>,
   tableFn = defaultSqliteTableFn,
-): Adapter {
-  const { users, accounts, sessions, verificationTokens } = createTables(tableFn)
+): CourseBuilderAdapter {
+  const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async createContentResource(resource) {
+      return client
+        .insert(contentResource)
+        .values({ ...resource, id: crypto.randomUUID() })
+        .returning()
+        .get()
+    },
+    async getContentResource(data) {
+      const result = await client.select().from(contentResource).where(eq(contentResource.id, data)).get()
+      return result ?? null
+    },
     async createUser(data) {
       return client
         .insert(users)
