@@ -9,15 +9,12 @@ export const getOrCreateConcept = inngest.createFunction(
     event: CONCEPT_TAGS_REQUESTED,
   },
   async ({ event, step }) => {
-    let new_concept
-    let related_concepts
-
-    await step.run('check for similar concepts', async () => {
-      related_concepts = await get_related_concepts(event.data.key)
+    const related_concepts = await step.run('check for similar concepts', async () => {
+      return await get_related_concepts(event.data.key)
     })
 
-    await step.run('create new concept', async () => {
-      new_concept = await add_concept(event.data.key)
+    const new_concept = await step.run('create new concept', async () => {
+      return await add_concept(event.data.key)
     })
 
     // TODO:

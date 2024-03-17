@@ -13,7 +13,7 @@ export const computeVideoSplitPoints = inngest.createFunction(
   },
   async ({ event, step }) => {
     const split_points = await step.run('determining split points', async () => {
-      determineSplitPoints(event.data.transcript)
+      return determineSplitPoints(event.data.transcript)
     })
 
     // open question - do we want to return the split poinst here, or do we want to kick off an actual splitting of the video within this function?
