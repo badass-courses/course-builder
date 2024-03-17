@@ -1,7 +1,7 @@
-import { PineconeRecord } from '@pinecone-database/pinecone'
+import { Index, Pinecone, PineconeRecord } from '@pinecone-database/pinecone'
 
 import { get_embedding } from '../openai'
-import { get_index } from '../pinecone'
+import { get_or_create_index } from '../pinecone'
 
 export type Concent = {
   id: string
@@ -12,13 +12,25 @@ export type Concent = {
   }
 }
 
+const index: Index = await get_or_create_index({
+  name: 'concepts',
+  dimension: 1536,
+  metric: 'cosine',
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+})
+
+// ok, we are now using cosine similarity to identify concepts that are within .2 of the provided term. We will want to tune this figure to get a cutoff that is broad enough to capture all possible synonyms but narrow enough to filter out unrelated stuff.
 export async function get_related_concepts(text: string) {
   const embedding = (await get_embedding(text)).embedding
   if (!embedding) return Promise.resolve([])
 
-  const index = await get_index('concepts')
-  const synonyms = await index.query({ vector: embedding, topK: 5, includeMetadata: true, includeValues: true })
-  return synonyms
+  const synonyms = await index.query({ vector: embedding, topK: 5, includeMetadata: true })
+  return synonyms.matches.filter((record) => record.score && record.score < 0.2)
 }
 
 export async function add_concept(text: string) {
@@ -26,7 +38,6 @@ export async function add_concept(text: string) {
 
   if (!embedding) throw new Error('Unable to create embedding for concept: ' + text)
 
-  const index = await get_index('concepts')
   const new_record: PineconeRecord = {
     id: text,
     values: embedding,
@@ -39,7 +50,6 @@ export async function add_concept(text: string) {
 }
 
 export async function add_alias_to_concept(concept_id: string, alias: string) {
-  const index = await get_index('concepts')
   const fetch_results = await index.fetch([concept_id])
 
   const concept = fetch_results.records[concept_id]
