@@ -4,10 +4,6 @@
   "description": "Core package for Course Builder",
   "scripts": {
     "clean": "rm -rf *.js *.d.ts* lib",
-    "test": "pnpm test:mysql && pnpm test:sqlite && pnpm test:pg",
-    "test:mysql": "pnpm clean && ./test/mysql/test.sh",
-    "test:sqlite": "pnpm clean && ./test/sqlite/test.sh",
-    "test:pg": "pnpm clean && ./test/pg/test.sh",
     "build": "tsc",
     "dev": "tsc --watch"
   },
