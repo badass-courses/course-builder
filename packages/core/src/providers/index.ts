@@ -1,13 +1,13 @@
 /**
  * The configuration object for a transcription service provider.
  */
-export interface TranscriptionConfig<P> {
+export interface TranscriptionConfig {
   id: string
   name: string
   type: string
   options: TranscriptionUserConfig
   initiateTranscription: (options: { mediaUrl: string; resourceId: string }) => Promise<any>
-  handleCallback: (callbackData: any) => P
+  handleCallback: (callbackData: any) => { srt: string; transcript: string; wordLevelSrt: string }
 }
 
 /**
