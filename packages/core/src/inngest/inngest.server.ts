@@ -40,20 +40,7 @@ const middleware = new InngestMiddleware({
   },
 })
 
-export const inngest = new Inngest<{
-  schemas: EventSchemas<any>
-  id: string
-  middleware: [
-    InngestMiddleware<{
-      init(): {
-        onFunctionRun(event: any): {
-          transformInput: (input: any) => { ctx: { db: CourseBuilderAdapter } }
-        }
-      }
-      name: string
-    }>,
-  ]
-}>({
+export const inngest = new Inngest({
   id: 'course-builder-core',
   middleware: [middleware],
   schemas: new EventSchemas().fromRecord<Events>(),
