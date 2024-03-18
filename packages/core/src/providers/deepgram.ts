@@ -13,32 +13,24 @@ export interface DeepgramTranscriptionResult extends Record<string, any> {
   wordLevelSrt: string
 }
 
-export default function Deepgram(
-  options: Omit<TranscriptionUserConfig, 'apiKey'> & {
-    /**
-     * The API key for authenticating requests to Deepgram.
-     */
-    apiKey: string
-    /**
-     * The callback URL to which Deepgram will send the transcription results.
-     */
-    getCallbackUrl?: (options: { baseUrl: string; params: Record<string, string> }) => string
-    callbackUrl: string
-  },
-): TranscriptionConfig {
+const defaultGetCallbackUrl = ({ baseUrl, params }: { baseUrl: string; params: Record<string, string> }) => {
+  const callbackParams = new URLSearchParams(params)
+  return `${baseUrl}?${callbackParams.toString()}`
+}
+
+export default function Deepgram(options: TranscriptionUserConfig): TranscriptionConfig {
   return {
-    id: 'deepgram',
+    id: 'deepgram' as const,
     name: 'Deepgram',
     type: 'transcription',
+    callbackUrl: options.callbackUrl,
+    apiKey: options.apiKey,
     // Additional configuration options can be added here based on Deepgram's API requirements
     options,
     // Define how to initiate a transcription request to Deepgram
     initiateTranscription: async (transcriptOptions: { mediaUrl: string; resourceId: string }) => {
       const deepgramUrl = `https://api.deepgram.com/v1/listen`
-      const defaultGetCallbackUrl = ({ baseUrl, params }: { baseUrl: string; params: Record<string, string> }) => {
-        const callbackParams = new URLSearchParams(params)
-        return `${baseUrl}?${callbackParams.toString()}`
-      }
+
       const getCallbackUrl = options.getCallbackUrl || defaultGetCallbackUrl
       const utteranceSpiltThreshold = 0.5
 

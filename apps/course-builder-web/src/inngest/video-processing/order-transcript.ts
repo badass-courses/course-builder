@@ -1,4 +1,4 @@
-import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
+import { transcriptProvider } from '@/coursebuilder/course-builder-config'
 import { inngest } from '@/inngest/inngest.server'
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
@@ -17,7 +17,7 @@ export const orderTranscript = inngest.createFunction(
     }
 
     const deepgram = await step.run('Order Transcript [Deepgram]', async () => {
-      return await courseBuilderConfig.transcriptProvider.initiateTranscription({
+      return await transcriptProvider.initiateTranscription({
         mediaUrl: event.data.originalMediaUrl,
         resourceId: event.data.videoResourceId,
       })
