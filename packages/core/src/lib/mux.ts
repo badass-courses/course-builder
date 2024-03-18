@@ -12,7 +12,7 @@ type MuxApiOptions = {
   transcription?: boolean
 }
 
-export async function addSrtTrackToMuxAsset(assetId: string, srtUrl: string) {
+export async function addSrtTrackToMuxAsset({ assetId, srtUrl }: { assetId: string; srtUrl: string }) {
   const muxAsset = await getMuxAsset(assetId)
   if (!muxAsset) {
     throw new Error('Mux Asset not found')

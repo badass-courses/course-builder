@@ -72,7 +72,7 @@ const middleware = new InngestMiddleware({
       onFunctionRun(event) {
         return {
           transformInput: (input) => {
-            return { ctx: { db: DrizzleAdapter(db, mysqlTable) } }
+            return { ctx: { db: DrizzleAdapter(db, mysqlTable), siteRootUrl: process.env.NEXT_PUBLIC_URL } }
           },
         }
       },

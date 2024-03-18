@@ -1,6 +1,6 @@
 import { NonRetriableError } from 'inngest'
 
-import { addSrtTrackToMuxAsset, deleteSrtTrackFromMuxAsset, getMuxAsset } from '../../../lib/mux'
+import { deleteSrtTrackFromMuxAsset, getMuxAsset } from '../../../lib/mux'
 import { inngest } from '../../inngest.server'
 import { VIDEO_SRT_READY_EVENT } from '../events'
 
@@ -12,7 +12,7 @@ export const addSrtToMuxAsset = inngest.createFunction(
     name: 'Add SRT to Mux Asset',
   },
   { event: VIDEO_SRT_READY_EVENT },
-  async ({ event, step, db }) => {
+  async ({ event, step, db, siteRootUrl }) => {
     const videoResource = await step.run('get the video resource from Sanity', async () => {
       return db.getVideoResource(event.data.videoResourceId)
     })
@@ -35,7 +35,7 @@ export const addSrtToMuxAsset = inngest.createFunction(
         await step.run('add srt track to mux asset', async () => {
           return db.addSrtTrackToMuxAsset({
             assetId: muxAsset.id,
-            videoResourceId: videoResource._id,
+            srtUrl: `${siteRootUrl}/api/videos/${videoResource._id}/srt`,
           })
         })
 

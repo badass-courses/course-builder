@@ -153,13 +153,7 @@ export function mySqlDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
-    async addSrtTrackToMuxAsset({ assetId, videoResourceId }) {
-      if (!videoResourceId) {
-        throw new Error('videoResourceId is required')
-      }
-      const srtUrl = `${process.env.NEXT_PUBLIC_URL}/api/videos/${videoResourceId}/srt`
-      return addSrtTrackToMuxAsset(assetId, srtUrl)
-    },
+    addSrtTrackToMuxAsset,
     async getVideoResource(id) {
       if (!id) {
         throw new Error('videoResourceId is required')

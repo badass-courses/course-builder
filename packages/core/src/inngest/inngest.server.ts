@@ -32,7 +32,7 @@ const middleware = new InngestMiddleware({
       onFunctionRun(event) {
         return {
           transformInput: (input) => {
-            return { ctx: { db: MockCourseBuilderAdapter } }
+            return { ctx: { db: MockCourseBuilderAdapter, siteRootUrl: '' } }
           },
         }
       },

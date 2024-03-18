@@ -10,6 +10,7 @@ import {
 } from 'drizzle-orm/sqlite-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { addSrtTrackToMuxAsset } from '@coursebuilder/core/lib/mux'
 
 import { stripUndefined } from './utils.js'
 
@@ -115,9 +116,7 @@ export function SQLiteDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
-    async addSrtTrackToMuxAsset(id) {
-      //  TODO Implement
-    },
+    addSrtTrackToMuxAsset,
     async getVideoResource(id) {
       //  TODO Implement
       return null
