@@ -77,7 +77,6 @@
   },
   "devDependencies": {
     "@auth/core": "^0.28.0",
-
     "zod": "^3.22.4"
   }
 }
