@@ -6,14 +6,9 @@ import { assertConfig } from './lib/utils/assert'
 import { logger, LoggerInstance, setLogger } from './lib/utils/logger'
 import { toInternalRequest, toResponse } from './lib/utils/web'
 import type { Provider } from './providers'
-import { CookiesOptions, ResponseInternal } from './types'
+import { CookiesOptions } from './types'
 
-export async function CourseBuilder(request: Request, config: CourseBuilderConfig): Promise<ResponseInternal>
-export async function CourseBuilder(request: Request, config: Omit<CourseBuilderConfig, 'raw'>): Promise<Response>
-export async function CourseBuilder(
-  request: Request,
-  config: CourseBuilderConfig,
-): Promise<ResponseInternal | Response> {
+export async function CourseBuilder(request: Request, config: CourseBuilderConfig): Promise<Response> {
   setLogger(config.logger, config.debug)
 
   const internalRequest = await toInternalRequest(request, config)
