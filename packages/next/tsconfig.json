@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "react-jsx",
     "allowJs": true,
     "baseUrl": ".",
     "declaration": true,
@@ -23,5 +22,5 @@
     "rootDir": "src"
   },
   "include": [".eslintrc.cjs", "src/**/*"],
-  "exclude": ["node_modules", "*.js", "*.d.ts", "lib", "providers"]
+  "exclude": ["node_modules", "*.js", "*.d.ts"]
 }
