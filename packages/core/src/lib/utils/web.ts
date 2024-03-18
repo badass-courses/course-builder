@@ -33,8 +33,6 @@ export async function toInternalRequest(
 
     const { action, providerId } = parseActionAndProviderId(url.pathname, config.basePath)
 
-    console.log(action, providerId)
-
     return {
       url,
       action,
@@ -59,7 +57,6 @@ export function parseActionAndProviderId(
   action: CourseBuilderAction
   providerId?: string
 } {
-  console.log(pathname, base)
   const a = pathname.match(new RegExp(`^${base}(.+)`))
 
   if (a === null) throw new UnknownAction(`Cannot parse action at ${pathname}`)
