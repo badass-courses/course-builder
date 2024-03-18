@@ -129,6 +129,10 @@ export function pgDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async getVideoResource(id) {
+      //  TODO Implement
+      return null
+    },
     async createContentResource(resource) {
       return client
         .insert(contentResource)

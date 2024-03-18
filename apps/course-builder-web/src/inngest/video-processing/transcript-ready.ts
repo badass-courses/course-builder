@@ -1,8 +1,11 @@
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
-import { VIDEO_TRANSCRIPT_READY_EVENT } from '@/inngest/video-processing/events/video-transcript-ready'
 import { updateVideoWithTranscripts } from '@/lib/video-resource-query'
+
+import {
+  VIDEO_SRT_READY_EVENT,
+  VIDEO_TRANSCRIPT_READY_EVENT,
+} from '@coursebuilder/core/inngest/video-processing/events'
 
 export const deepgramTranscriptReady = inngest.createFunction(
   { id: `transcript-ready-event`, name: 'Transcript Ready' },

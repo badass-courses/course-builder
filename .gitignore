@@ -21,3 +21,5 @@ packages/**/generated
 # Core
 packages/core/lib
 packages/core/providers
+packages/core/inngest
+packages/core/schemas

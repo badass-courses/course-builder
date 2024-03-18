@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { inngest } from '@/inngest/inngest.server'
-import { MUX_WEBHOOK_EVENT, MuxWebhookEventSchema } from '@/inngest/video-processing/events/video-mux-webhook'
 import { withSkill } from '@/server/with-skill'
+
+import { MUX_WEBHOOK_EVENT, MuxWebhookEventSchema } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const POST = withSkill(async (req: NextRequest) => {
   // todo: check MUX_WEBHOOK_SIGNING_SECRET to verify the request

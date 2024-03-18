@@ -1,10 +1,13 @@
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
-import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
-import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
-import { createMuxAsset } from '@/lib/mux-api'
-import { createVideoResource, getVideoResource } from '@/lib/video-resource-query'
+import { createVideoResource } from '@/lib/video-resource-query'
+
+import {
+  VIDEO_RESOURCE_CREATED_EVENT,
+  VIDEO_STATUS_CHECK_EVENT,
+  VIDEO_UPLOADED_EVENT,
+} from '@coursebuilder/core/inngest/video-processing/events'
+import { createMuxAsset } from '@coursebuilder/core/lib/mux'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -17,7 +20,7 @@ export const videoUploaded = inngest.createFunction(
     },
   },
   { event: VIDEO_UPLOADED_EVENT },
-  async ({ event, step }) => {
+  async ({ event, step, db }) => {
     if (!event.user.id) {
       throw new Error('No user id for video uploaded event')
     }
@@ -50,7 +53,7 @@ export const videoUploaded = inngest.createFunction(
     })
 
     const videoResource = await step.run('get the video resource from database', async () => {
-      return await getVideoResource(event.data.fileName)
+      return await db.getVideoResource(event.data.fileName)
     })
 
     if (!videoResource) {

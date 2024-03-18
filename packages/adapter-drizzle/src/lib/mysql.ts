@@ -16,6 +16,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 export function createTables(mySqlTable: MySqlTableFn) {
   const users = mySqlTable('user', {
@@ -151,6 +152,39 @@ export function mySqlDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async getVideoResource(id) {
+      if (!id) {
+        throw new Error('videoResourceId is required')
+      }
+
+      const query = sql`
+    SELECT
+      id as _id,
+      CAST(updatedAt AS DATETIME) as _updatedAt,
+      CAST(createdAt AS DATETIME) as _createdAt,
+      JSON_EXTRACT (${contentResource.fields}, "$.state") AS state,
+      JSON_EXTRACT (${contentResource.fields}, "$.duration") AS duration,
+      JSON_EXTRACT (${contentResource.fields}, "$.muxPlaybackId") AS muxPlaybackId,
+      JSON_EXTRACT (${contentResource.fields}, "$.muxAssetId") AS muxAssetId,
+      JSON_EXTRACT (${contentResource.fields}, "$.transcript") AS transcript
+    FROM
+      ${contentResource}
+    WHERE
+      type = 'videoResource'
+      AND (id = ${id});
+      
+ `
+      return client
+        .execute(query)
+        .then((result: any) => {
+          const parsedResource = VideoResourceSchema.safeParse(result.rows[0])
+          return parsedResource.success ? parsedResource.data : null
+        })
+        .catch((error) => {
+          console.error(error)
+          return error
+        })
+    },
     async createContentResource(data) {
       const id = crypto.randomUUID()
 

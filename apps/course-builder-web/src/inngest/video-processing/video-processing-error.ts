@@ -1,8 +1,9 @@
 import { revalidateTag } from 'next/cache'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
-import { MUX_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-mux-webhook'
-import { getVideoResource, updateVideoStatus } from '@/lib/video-resource-query'
+import { updateVideoStatus } from '@/lib/video-resource-query'
+
+import { MUX_WEBHOOK_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const videoProcessingError = inngest.createFunction(
   { id: `mux-video-asset-error`, name: 'Mux Video Asset Errored' },
@@ -10,9 +11,9 @@ export const videoProcessingError = inngest.createFunction(
     event: MUX_WEBHOOK_EVENT,
     if: 'event.data.muxWebhookEvent.type == "video.asset.errored"',
   },
-  async ({ event, step }) => {
+  async ({ event, step, db }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return getVideoResource(event.data.muxWebhookEvent.data.passthrough)
+      return db.getVideoResource(event.data.muxWebhookEvent.data.passthrough)
     })
 
     if (!videoResource) {

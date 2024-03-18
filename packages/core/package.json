@@ -20,7 +20,8 @@
     "*.js",
     "lib",
     "src",
-    "providers"
+    "providers",
+    "inngest"
   ],
   "exports": {
     ".": {
@@ -37,6 +38,30 @@
       "types": "./providers/*.d.ts",
       "import": "./providers/*.js"
     },
+    "./schemas/*": {
+      "types": "./schemas/*.d.ts",
+      "import": "./schemas/*.js"
+    },
+    "./lib/*": {
+      "types": "./lib/*.d.ts",
+      "import": "./lib/*.js"
+    },
+    "./inngest/video-processing/events": {
+      "types": "./inngest/video-processing/events/index.d.ts",
+      "import": "./inngest/video-processing/events/index.js"
+    },
+    "./inngest/video-processing/events/*": {
+      "types": "./inngest/video-processing/events/*.d.ts",
+      "import": "./inngest/video-processing/events/*.js"
+    },
+    "./inngest/video-processing/functions": {
+      "types": "./inngest/video-processing/functions/index.d.ts",
+      "import": "./inngest/video-processing/functions/index.js"
+    },
+    "./inngest/video-processing/functions/*": {
+      "types": "./inngest/video-processing/functions/*.d.ts",
+      "import": "./inngest/video-processing/functions/*.js"
+    },
     "./types": {
       "types": "./types.d.ts"
     }
@@ -47,12 +72,12 @@
   },
   "dependencies": {
     "@types/cookie": "0.6.0",
-    "cookie": "0.6.0"
+    "cookie": "0.6.0",
+    "inngest": "^3.12.0"
   },
   "devDependencies": {
     "@auth/core": "^0.28.0",
-    "inngest": "^3.12.0",
-    "tsup": "6.7.0",
+
     "zod": "^3.22.4"
   }
 }

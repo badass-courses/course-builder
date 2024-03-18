@@ -1,9 +1,10 @@
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_SRT_READY_EVENT } from '@/inngest/video-processing/events/video-srt-ready-to-asset'
-import { getVideoResource, updateVideoTranscriptWithScreenshots } from '@/lib/video-resource-query'
+import { updateVideoTranscriptWithScreenshots } from '@/lib/video-resource-query'
 import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
 import { NonRetriableError } from 'inngest'
+
+import { VIDEO_SRT_READY_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const generateTranscriptWithScreenshots = inngest.createFunction(
   {
@@ -13,7 +14,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
   {
     event: VIDEO_SRT_READY_EVENT,
   },
-  async ({ event, step }) => {
+  async ({ event, step, db }) => {
     const videoResourceId = event.data.videoResourceId
 
     if (!videoResourceId) {
@@ -21,7 +22,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     }
 
     const videoResource = await step.run('get the video resource from Sanity', async () => {
-      return getVideoResource(videoResourceId)
+      return db.getVideoResource(videoResourceId)
     })
 
     if (!videoResource) {

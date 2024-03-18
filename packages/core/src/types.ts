@@ -1,5 +1,5 @@
 import { CookieSerializeOptions } from 'cookie'
-import { Inngest } from 'inngest'
+import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
 
 import { CourseBuilderAdapter } from './adapters'
 import { Cookie } from './lib/utils/cookie'
@@ -32,7 +32,7 @@ export type CourseBuilderAction = 'webhook'
 
 export interface RequestInternal {
   url: URL
-  method: 'POST'
+  method: 'POST' | 'GET'
   cookies?: Partial<Record<string, string>>
   headers?: Record<string, any>
   query?: Record<string, any>

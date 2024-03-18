@@ -1,15 +1,15 @@
 import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { utapi } from '@/uploadthing/core'
 import { NonRetriableError } from 'inngest'
+
+import { VIDEO_STATUS_CHECK_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const removeCompletedVideo = inngest.createFunction(
   { id: `remove-video-after-completed`, name: 'Remove Uploadthing Video' },
   { event: VIDEO_STATUS_CHECK_EVENT },
-  async ({ event, step }) => {
+  async ({ event, step, db }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return await getVideoResource(event.data.videoResourceId)
+      return await db.getVideoResource(event.data.videoResourceId)
     })
 
     if (!videoResource) {
