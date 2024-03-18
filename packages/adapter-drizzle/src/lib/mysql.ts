@@ -16,6 +16,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { addSrtTrackToMuxAsset } from '@coursebuilder/core/lib/mux'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 export function createTables(mySqlTable: MySqlTableFn) {
@@ -152,6 +153,13 @@ export function mySqlDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async addSrtTrackToMuxAsset({ assetId, videoResourceId }) {
+      if (!videoResourceId) {
+        throw new Error('videoResourceId is required')
+      }
+      const srtUrl = `${process.env.NEXT_PUBLIC_URL}/api/videos/${videoResourceId}/srt`
+      return addSrtTrackToMuxAsset(assetId, srtUrl)
+    },
     async getVideoResource(id) {
       if (!id) {
         throw new Error('videoResourceId is required')

@@ -33,10 +33,10 @@ export const addSrtToMuxAsset = inngest.createFunction(
         })
 
         await step.run('add srt track to mux asset', async () => {
-          return await addSrtTrackToMuxAsset(
-            muxAsset.id,
-            `${process.env.NEXT_PUBLIC_URL}/api/videos/${videoResource._id}/srt`,
-          )
+          return db.addSrtTrackToMuxAsset({
+            assetId: muxAsset.id,
+            videoResourceId: videoResource._id,
+          })
         })
 
         return { muxAsset, videoResource }

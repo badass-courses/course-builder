@@ -41,8 +41,7 @@ export async function deleteSrtTrackFromMuxAsset(assetId: string) {
   if (!muxAsset) {
     throw new Error('Mux Asset not found')
   }
-
-  if (!muxAsset.tracks) return
+  if (!muxAsset.tracks) return console.warn('No tracks found')
 
   const trackId = muxAsset.tracks.filter((track: { type: string; status: string }) => track.type === 'text')[0]?.id
   return await fetch(`https://api.mux.com/video/v1/assets/${muxAsset.id}/tracks/${trackId}`, {

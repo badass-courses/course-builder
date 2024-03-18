@@ -115,6 +115,9 @@ export function SQLiteDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async addSrtTrackToMuxAsset(id) {
+      //  TODO Implement
+    },
     async getVideoResource(id) {
       //  TODO Implement
       return null
