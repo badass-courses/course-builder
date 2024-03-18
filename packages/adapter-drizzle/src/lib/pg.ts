@@ -14,7 +14,6 @@ import {
 } from 'drizzle-orm/pg-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
-import { addSrtTrackToMuxAsset } from '@coursebuilder/core/lib/mux'
 
 export function createTables(pgTable: PgTableFn) {
   const users = pgTable('user', {
@@ -130,7 +129,6 @@ export function pgDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
-    addSrtTrackToMuxAsset,
     async getVideoResource(id) {
       //  TODO Implement
       return null

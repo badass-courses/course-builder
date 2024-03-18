@@ -7,7 +7,6 @@ export interface CourseBuilderAdapter extends Adapter {
   createContentResource: (resource: ContentResource) => Awaitable<ContentResource>
   getContentResource: (id: string) => Awaitable<ContentResource | null>
   getVideoResource: (id: string) => Awaitable<VideoResource | null>
-  addSrtTrackToMuxAsset: (options: { assetId: string; srtUrl: string }) => Awaitable<void>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -20,5 +19,4 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
   getVideoResource: async (_) => {
     return null
   },
-  addSrtTrackToMuxAsset: async () => {},
 }
