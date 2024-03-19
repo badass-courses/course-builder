@@ -1,6 +1,6 @@
 import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
 
-import { MockCourseBuilderAdapter, type CourseBuilderAdapter } from '../adapters'
+import { MockCourseBuilderAdapter } from '../adapters'
 import { MockTranscriptionProvider } from '../providers'
 import {
   EventVideoMuxWebhook,
