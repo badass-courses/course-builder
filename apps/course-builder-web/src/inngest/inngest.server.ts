@@ -15,9 +15,11 @@ import { type VIDEO_UPLOADED_EVENT, type VideoUploaded } from '@/inngest/video-p
 import { EventSchemas, Inngest } from 'inngest'
 
 import {
+  ADD_CONCEPT_TO_STORE,
   CONCEPT_SELECTED,
   CONCEPT_TAGS_REQUESTED,
   REQUEST_CONCEPT_SELECTION,
+  type AddConceptToStore,
   type ConceptSelected,
   type ConceptTagsRequested,
   type RequestConceptSelection,
@@ -43,6 +45,7 @@ type Events = {
   [REQUEST_CONCEPT_SELECTION]: RequestConceptSelection
   [CONCEPT_SELECTED]: ConceptSelected
   [REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
+  [ADD_CONCEPT_TO_STORE]: AddConceptToStore
 }
 export const inngest = new Inngest({
   id: 'course-builder',

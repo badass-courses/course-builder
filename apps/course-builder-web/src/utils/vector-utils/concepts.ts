@@ -20,8 +20,18 @@ export async function get_related_concepts(text: string) {
   const embedding = (await get_embedding(text)).embedding
   if (!embedding) return Promise.resolve([])
 
-  const synonyms = await index.query({ vector: embedding, topK: 5, includeMetadata: true })
-  return synonyms.matches.filter((record) => record.score && record.score < 0.2)
+  let synonyms
+
+  try {
+    synonyms = await index.query({ vector: embedding, topK: 5, includeMetadata: true })
+  } catch (e) {
+    console.error('Error querying for synonyms', e)
+    return []
+  }
+
+  const matches = synonyms.matches
+
+  return matches
 }
 
 export async function add_concept(text: string) {
