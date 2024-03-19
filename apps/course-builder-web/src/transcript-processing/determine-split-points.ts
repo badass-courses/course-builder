@@ -10,12 +10,12 @@ export async function determineSplitPoints(transcript: string) {
     I'd like you to return a JSON object representing report with metadata and an array of subsections using the following JSON schema. 
     
     {
-        "proposed_concepts": ["concept1", "concept2", "concept3"],
         "subsections" :[
             {
                 "start": 0,
                 "end": 100,
                 "title": "Introduction",
+                "concepts": ["concept1", "concept2", "concept3"],
                 "key_points": [
                     "What is X",
                     "Why X is important"
@@ -25,6 +25,7 @@ export async function determineSplitPoints(transcript: string) {
                 "start": 101,
                 "end": 200,
                 "title": "How to X",
+                "concepts": ["concept1", "concept2", "concept3"],
                 "key_points": [
                     "Step 1",
                     "Step 2",
@@ -35,6 +36,7 @@ export async function determineSplitPoints(transcript: string) {
                 "start": 201,
                 "end": 258,
                 "title": "How to Y",
+                "concepts": ["concept1", "concept2", "concept3"],
                 "key_points": [
                     "Step 1",
                     "Step 2"
