@@ -1,4 +1,3 @@
-import { transcriptProvider } from '@/coursebuilder/course-builder-config'
 import { db } from '@/db'
 import { mysqlTable } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -7,8 +6,8 @@ import { IMAGE_RESOURCE_CREATED_EVENT, ImageResourceCreated } from '@/inngest/ev
 import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
 import { RESOURCE_CHAT_REQUEST_EVENT, ResourceChat } from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
-import { utapi } from '@/uploadthing/core'
 import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
+import { UTApi } from 'uploadthing/server'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 import {
@@ -25,6 +24,7 @@ import {
   type VideoResourceCreated,
   type VideoSrtReady,
 } from '@coursebuilder/core/inngest/video-processing/events'
+import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 
 import {
   CONCEPT_SELECTED,
@@ -57,6 +57,8 @@ export type Events = {
   [REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
 }
 
+const callbackBase = env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
+
 const middleware = new InngestMiddleware({
   name: 'Supply Context',
   init() {
@@ -69,8 +71,11 @@ const middleware = new InngestMiddleware({
                 db: DrizzleAdapter(db, mysqlTable),
                 siteRootUrl: env.NEXT_PUBLIC_URL,
                 partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
-                transcriptProvider: transcriptProvider,
-                mediaUploadProvider: utapi,
+                mediaUploadProvider: new UTApi(),
+                transcriptProvider: DeepgramProvider({
+                  apiKey: env.DEEPGRAM_API_KEY,
+                  callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
+                }),
               },
             }
           },
