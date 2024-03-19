@@ -1,13 +1,12 @@
-import { transcriptProvider } from '@/coursebuilder/course-builder-config'
-import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
-import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
+import { inngest } from '../../inngest.server'
+import { VIDEO_RESOURCE_CREATED_EVENT } from '../events'
 
 export const orderTranscript = inngest.createFunction(
   { id: `order-transcript`, name: 'Order Transcript from Deepgram' },
   { event: VIDEO_RESOURCE_CREATED_EVENT },
-  async ({ event, step, db }) => {
+  async ({ event, step, db, transcriptProvider }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
       return db.getVideoResource(event.data.videoResourceId)
     })

@@ -1,6 +1,7 @@
 import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
 
 import { MockCourseBuilderAdapter, type CourseBuilderAdapter } from '../adapters'
+import { MockTranscriptionProvider } from '../providers'
 import {
   EventVideoMuxWebhook,
   EventVideoStatusCheck,
@@ -32,7 +33,17 @@ const middleware = new InngestMiddleware({
       onFunctionRun(event) {
         return {
           transformInput: (input) => {
-            return { ctx: { db: MockCourseBuilderAdapter, siteRootUrl: '' } }
+            return {
+              ctx: {
+                db: MockCourseBuilderAdapter,
+                siteRootUrl: '',
+                partyKitRootUrl: '',
+                transcriptProvider: MockTranscriptionProvider,
+                mediaUploadProvider: {
+                  deleteFiles: async (fileKey: string) => Promise.resolve(),
+                },
+              },
+            }
           },
         }
       },

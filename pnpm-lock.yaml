@@ -849,6 +849,9 @@ importers:
       inngest:
         specifier: ^3.12.0
         version: 3.16.0(encoding@0.1.13)(typescript@5.3.3)
+      srt-parser-2:
+        specifier: ^1.2.3
+        version: 1.2.3
     devDependencies:
       '@auth/core':
         specifier: ^0.28.0

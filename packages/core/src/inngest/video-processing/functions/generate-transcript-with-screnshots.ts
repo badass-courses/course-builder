@@ -1,10 +1,8 @@
-import { env } from '@/env.mjs'
-import { inngest } from '@/inngest/inngest.server'
-import { updateVideoTranscriptWithScreenshots } from '@/lib/video-resource-query'
-import { mergeSrtWithScreenshots } from '@/transcript-processing/merge-srt-with-screenshots'
 import { NonRetriableError } from 'inngest'
 
-import { VIDEO_SRT_READY_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
+import { inngest } from '../../inngest.server'
+import { VIDEO_SRT_READY_EVENT } from '../events'
+import { mergeSrtWithScreenshots } from '../utils'
 
 export const generateTranscriptWithScreenshots = inngest.createFunction(
   {
@@ -14,7 +12,7 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
   {
     event: VIDEO_SRT_READY_EVENT,
   },
-  async ({ event, step, db }) => {
+  async ({ event, step, db, partyKitRootUrl }) => {
     const videoResourceId = event.data.videoResourceId
 
     if (!videoResourceId) {
@@ -40,14 +38,14 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     })
 
     await step.run('update the video resource in the database', async () => {
-      return updateVideoTranscriptWithScreenshots({
-        videoResourceId,
-        transcriptWithScreenshots,
+      return db.updateContentResourceFields({
+        id: videoResourceId,
+        fields: { transcriptWithScreenshots },
       })
     })
 
     await step.run('send the transcript to the party', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${event.data.videoResourceId}`, {
+      await fetch(`${partyKitRootUrl}/party/${event.data.videoResourceId}`, {
         method: 'POST',
         body: JSON.stringify({
           body: transcriptWithScreenshots,

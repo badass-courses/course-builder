@@ -152,6 +152,30 @@ export function mySqlDrizzleAdapter(
   const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
 
   return {
+    async updateContentResourceFields(options) {
+      const setFields = Object.entries(options.fields)
+        .map(([fieldName, fieldValue], index, array) => {
+          const comma = index < array.length - 1 ? ',' : ''
+          return sql`${fieldName} = ${fieldValue}${comma}`
+        })
+        .join(' ')
+
+      const query = sql`
+        UPDATE ${contentResource}
+        SET ${setFields}
+        WHERE
+          id = ${options.id};
+      `
+      return client
+        .execute(query)
+        .then((_) => {
+          return this.getContentResource(options.id)
+        })
+        .catch((error) => {
+          console.error(error)
+          throw error
+        })
+    },
     async getVideoResource(id) {
       if (!id) {
         throw new Error('videoResourceId is required')

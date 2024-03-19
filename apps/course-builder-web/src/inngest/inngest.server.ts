@@ -1,10 +1,13 @@
+import { transcriptProvider } from '@/coursebuilder/course-builder-config'
 import { db } from '@/db'
 import { mysqlTable } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { EMAIL_SEND_BROADCAST, EmailSendBroadcast } from '@/inngest/events/email-send-broadcast'
 import { IMAGE_RESOURCE_CREATED_EVENT, ImageResourceCreated } from '@/inngest/events/image-resource-created'
 import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
 import { RESOURCE_CHAT_REQUEST_EVENT, ResourceChat } from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
+import { utapi } from '@/uploadthing/core'
 import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
@@ -61,7 +64,15 @@ const middleware = new InngestMiddleware({
       onFunctionRun(event) {
         return {
           transformInput: (input) => {
-            return { ctx: { db: DrizzleAdapter(db, mysqlTable), siteRootUrl: process.env.NEXT_PUBLIC_URL } }
+            return {
+              ctx: {
+                db: DrizzleAdapter(db, mysqlTable),
+                siteRootUrl: env.NEXT_PUBLIC_URL,
+                partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
+                transcriptProvider: transcriptProvider,
+                mediaUploadProvider: utapi,
+              },
+            }
           },
         }
       },

@@ -1,13 +1,6 @@
-import { env } from '@/env.mjs'
-import { inngest } from '@/inngest/inngest.server'
-import { createVideoResource } from '@/lib/video-resource-query'
-
-import {
-  VIDEO_RESOURCE_CREATED_EVENT,
-  VIDEO_STATUS_CHECK_EVENT,
-  VIDEO_UPLOADED_EVENT,
-} from '@coursebuilder/core/inngest/video-processing/events'
-import { createMuxAsset } from '@coursebuilder/core/lib/mux'
+import { createMuxAsset } from '../../../lib/mux'
+import { inngest } from '../../inngest.server'
+import { VIDEO_RESOURCE_CREATED_EVENT, VIDEO_STATUS_CHECK_EVENT, VIDEO_UPLOADED_EVENT } from '../events'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -20,7 +13,7 @@ export const videoUploaded = inngest.createFunction(
     },
   },
   { event: VIDEO_UPLOADED_EVENT },
-  async ({ event, step, db }) => {
+  async ({ event, step, db, partyKitRootUrl }) => {
     if (!event.user.id) {
       throw new Error('No user id for video uploaded event')
     }
@@ -39,7 +32,7 @@ export const videoUploaded = inngest.createFunction(
         throw new Error('No public playback id found')
       }
 
-      return createVideoResource({
+      return db.createContentResource({
         id: event.data.fileName,
         type: 'videoResource',
         fields: {
@@ -61,7 +54,7 @@ export const videoUploaded = inngest.createFunction(
     }
 
     await step.run('announce video resource created', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResource._id}`, {
+      await fetch(`${partyKitRootUrl}/party/${videoResource._id}`, {
         method: 'POST',
         body: JSON.stringify({
           body: videoResource,

@@ -1,18 +1,12 @@
-import { env } from '@/env.mjs'
-import { inngest } from '@/inngest/inngest.server'
-import { updateVideoWithTranscripts } from '@/lib/video-resource-query'
+import { inngest } from '../../inngest.server'
+import { VIDEO_SRT_READY_EVENT, VIDEO_TRANSCRIPT_READY_EVENT } from '../events'
 
-import {
-  VIDEO_SRT_READY_EVENT,
-  VIDEO_TRANSCRIPT_READY_EVENT,
-} from '@coursebuilder/core/inngest/video-processing/events'
-
-export const deepgramTranscriptReady = inngest.createFunction(
+export const transcriptReady = inngest.createFunction(
   { id: `transcript-ready-event`, name: 'Transcript Ready' },
   {
     event: VIDEO_TRANSCRIPT_READY_EVENT,
   },
-  async ({ event, step }) => {
+  async ({ event, step, partyKitRootUrl, db }) => {
     const videoResourceId = event.data.videoResourceId
     if (!videoResourceId) {
       throw new Error('video resource id is required')
@@ -23,11 +17,13 @@ export const deepgramTranscriptReady = inngest.createFunction(
     const wordLevelSrt = event.data.wordLevelSrt
 
     await step.run('update the video resource in the database', async () => {
-      return updateVideoWithTranscripts({
-        videoResourceId,
-        transcript,
-        srt,
-        wordLevelSrt,
+      db.updateContentResourceFields({
+        id: videoResourceId,
+        fields: {
+          transcript,
+          srt,
+          wordLevelSrt,
+        },
       })
     })
 
@@ -44,7 +40,7 @@ export const deepgramTranscriptReady = inngest.createFunction(
     }
 
     await step.run('send the transcript to the party', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResourceId}`, {
+      await fetch(`${partyKitRootUrl}/party/${videoResourceId}`, {
         method: 'POST',
         body: JSON.stringify({
           body: transcript,
