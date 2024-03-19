@@ -9,7 +9,7 @@ export const removeCompletedVideo = inngest.createFunction(
   { event: VIDEO_STATUS_CHECK_EVENT },
   async ({ event, step, db }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return await db.getVideoResource(event.data.videoResourceId)
+      return db.getVideoResource(event.data.videoResourceId)
     })
 
     if (!videoResource) {

@@ -5,20 +5,9 @@ import { IMAGE_RESOURCE_CREATED_EVENT, ImageResourceCreated } from '@/inngest/ev
 import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
 import { RESOURCE_CHAT_REQUEST_EVENT, ResourceChat } from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
-import {
-  AssertInternalEventPayloads,
-  ClientOptions,
-  Combine,
-  EventSchemas,
-  FailureEventPayload,
-  FinishedEventPayload,
-  Inngest,
-  InngestMiddleware,
-  internalEvents,
-} from 'inngest'
+import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import {
   MUX_WEBHOOK_EVENT,
   VIDEO_RESOURCE_CREATED_EVENT,
