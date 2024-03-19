@@ -117,6 +117,8 @@ For those with access to the project in Vercel, here is how to grab those env va
     - If for some reason you are needing environment variables for a different environment, you can include the `--environment` flag in the above command like so:
       - `vercel env pull --environment=preview`
 
+_Note: Because of [Next.js Enviornment Variable Load Order](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#environment-variable-load-order), the `.env.local` file generated in this step will override many values that you may want to set in the `.env` or `.env.development` files. Any env vars in development that you want to take precedence over what is in `.env.local` will need to go in `.env.local.development`._
+
 ### Install dependences
 
 Make sure you have [`pnpm`](https://pnpm.io/) installed.
@@ -137,9 +139,9 @@ $ ngrok http 3000
 
 Note: with a free account, this URL will change each time you restart the `ngrok` command, so make sure to update it in the relevant places when that happens.
 
-Grab this URL because you'll need it for a couple `.env` values and for the _GitHub OAuth Setup_.
+Grab this URL because you'll need it for a couple `.env.development.local` values and for the _GitHub OAuth Setup_.
 
-Set the following URLs in your `.env`:
+Set the following URLs in your `.env.development.local`:
 
 ```
 # for webhooks use ngrok or similar for stable DNS accessible URL
@@ -167,7 +169,7 @@ You will now be dropped on your OAuth Application page where you can:
 - 1. Copy the Client ID into the `GITHUB_CLIENT_ID` env var
 - 2. Generate a Client Secret and copy it into the `GITHUB_CLIENT_SECRET` env var
 
-These can both go in `.env`.
+These can both go in `.env.development.local`.
 
 ### Database Setup
 
