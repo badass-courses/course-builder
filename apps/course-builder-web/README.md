@@ -143,10 +143,12 @@ Set the following URLs in your `.env`:
 
 ```
 # for webhooks use ngrok or similar for stable DNS accessible URL
-NEXTAUTH_URL="https://some-unique-value.ngrok-free.app"
+NEXTAUTH_URL="https://some-unique-value.ngrok-free.app/api/auth"
 UPLOADTHING_URL="https://some-unique-value.ngrok-free.app"
 NEXT_PUBLIC_URL="https://some-unique-value.ngrok-free.app"
 ```
+
+_Note: `NEXTAUTH_URL` now needs to end in `/api/auth` for NextAuth v5._
 
 ### GitHub OAuth Setup
 
@@ -155,9 +157,10 @@ This app uses GitHub as its OAuth provider. For local development, you'll need t
 You can create one by visiting the [_Register a new OAuth Application_](https://github.com/settings/applications/new) and following these steps:
 
 - 1. Give it an application name, e.g. "Bob's Local Course Builder"
-- 2. Set the Homepage URL and Authorization callback URL to the `ngrok` URL you got in the previous section
-- 3. No need to give a Description or check Enable Device Flow
-- 4. Click 'Register Application'
+- 2. Set the Homepage URL to the `ngrok` URL you got in the previous section
+- 3. Set the Authorization callback URL to match the `NEXTAUTH_URL` set in the previous section
+- 4. No need to give a Description or check Enable Device Flow
+- 5. Click 'Register Application'
 
 You will now be dropped on your OAuth Application page where you can:
 
