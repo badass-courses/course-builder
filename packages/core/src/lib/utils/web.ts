@@ -23,10 +23,6 @@ export async function toInternalRequest(
   config: CourseBuilderConfig,
 ): Promise<RequestInternal | undefined> {
   try {
-    if (req.method !== 'POST') {
-      throw new Error('Method not allowed: only POST Supported for now')
-    }
-
     config.basePath ??= '/coursebuilder'
 
     const url = new URL(req.url)
@@ -37,7 +33,7 @@ export async function toInternalRequest(
       url,
       action,
       providerId,
-      method: req.method,
+      method: req.method as 'POST' | 'GET',
       headers: Object.fromEntries(req.headers),
       body: req.body ? await getBody(req) : undefined,
       cookies: parseCookie(req.headers.get('cookie') ?? '') ?? {},
@@ -71,7 +67,7 @@ export function parseActionAndProviderId(
 
   if (!isCourseBuilderAction(action)) throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
-  if (providerId && !['webhook'].includes(action)) throw new UnknownAction(`Cannot parse action at ${pathname}`)
+  if (providerId && !['webhook', 'srt'].includes(action)) throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
   return { action, providerId }
 }

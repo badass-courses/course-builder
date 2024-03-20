@@ -2,6 +2,7 @@ import { CourseBuilderConfig } from '../index'
 import { RequestInternal, ResponseInternal } from '../types'
 import * as actions from './actions'
 import { init } from './init'
+import { UnknownAction } from './utils/web'
 
 export async function CourseBuilderInternal(
   request: RequestInternal,
@@ -18,12 +19,19 @@ export async function CourseBuilderInternal(
     isPost: method === 'POST',
   })
 
-  if (method !== 'POST') {
-    throw new Error('Method not allowed: only POST Supported')
+  console.log('options', options)
+
+  if (method === 'GET') {
+    switch (action) {
+      case 'srt':
+        return await actions.srt(request, cookies, options)
+    }
   } else {
     switch (action) {
       case 'webhook':
         return await actions.webhook(request, cookies, options)
     }
   }
+
+  throw new UnknownAction(`Cannot handle action: ${action}`)
 }

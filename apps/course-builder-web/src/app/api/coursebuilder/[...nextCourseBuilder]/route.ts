@@ -1,1 +1,1 @@
-export { POST } from '@/coursebuilder/course-builder-config'
+export { POST, GET } from '@/coursebuilder/course-builder-config'
