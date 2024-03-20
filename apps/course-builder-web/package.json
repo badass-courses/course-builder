@@ -128,7 +128,7 @@
     "partysocket": "0.0.25",
     "prism-react-renderer": "^2.2.0",
     "react": "18.3.0-canary-03d6f7cf0-20240209",
-    "react-dom": "18.3.0-canary-03d6f7cf0-20240209",
+    "react-dom": "18.2.0",
     "react-gravatar": "^2.6.3",
     "react-hook-form": "^7.48.0",
     "react-icons": "^4.11.0",

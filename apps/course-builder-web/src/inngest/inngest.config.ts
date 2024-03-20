@@ -6,8 +6,7 @@ import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks
 import { resourceChat } from '@/inngest/functions/resource-chat'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
-
-import { videoProcessingFunctions } from '@coursebuilder/core/inngest/video-processing/functions'
+import { videoProcessingFunctions } from '@/inngest/video-processing/functions'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { computeVideoSplitPoints } from './functions/split_video'

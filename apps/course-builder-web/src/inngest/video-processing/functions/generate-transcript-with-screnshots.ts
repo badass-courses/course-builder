@@ -1,8 +1,8 @@
+import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
-import { inngest } from '../../inngest.server'
-import { VIDEO_SRT_READY_EVENT } from '../events'
-import { mergeSrtWithScreenshots } from '../utils'
+import { VIDEO_SRT_READY_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
+import { mergeSrtWithScreenshots } from '@coursebuilder/core/inngest/video-processing/utils'
 
 export const generateTranscriptWithScreenshots = inngest.createFunction(
   {

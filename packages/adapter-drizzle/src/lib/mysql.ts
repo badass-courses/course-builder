@@ -153,28 +153,26 @@ export function mySqlDrizzleAdapter(
 
   return {
     async updateContentResourceFields(options) {
-      const setFields = Object.entries(options.fields)
-        .map(([fieldName, fieldValue], index, array) => {
-          const comma = index < array.length - 1 ? ',' : ''
-          return sql`${fieldName} = ${fieldValue}${comma}`
-        })
-        .join(' ')
+      if (!options.id) {
+        throw new Error('No content resource id.')
+      }
 
-      const query = sql`
-        UPDATE ${contentResource}
-        SET ${setFields}
-        WHERE
-          id = ${options.id};
-      `
-      return client
-        .execute(query)
-        .then((_) => {
-          return this.getContentResource(options.id)
-        })
-        .catch((error) => {
-          console.error(error)
-          throw error
-        })
+      const currentResource = await client
+        .select()
+        .from(contentResource)
+        .where(eq(contentResource.id, options.id))
+        .then((res) => res[0])
+
+      await client
+        .update(contentResource)
+        .set({ fields: { ...currentResource.fields, ...options.fields } })
+        .where(eq(contentResource.id, options.id))
+
+      return await client
+        .select()
+        .from(contentResource)
+        .where(eq(contentResource.id, options.id))
+        .then((res) => res[0])
     },
     async getVideoResource(id) {
       if (!id) {
@@ -210,7 +208,7 @@ export function mySqlDrizzleAdapter(
         })
     },
     async createContentResource(data) {
-      const id = crypto.randomUUID()
+      const id = data.id || crypto.randomUUID()
 
       await client.insert(contentResource).values({ ...data, id })
 

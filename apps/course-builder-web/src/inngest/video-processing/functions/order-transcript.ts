@@ -1,7 +1,7 @@
+import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
-import { inngest } from '../../inngest.server'
-import { VIDEO_RESOURCE_CREATED_EVENT } from '../events'
+import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const orderTranscript = inngest.createFunction(
   { id: `order-transcript`, name: 'Order Transcript from Deepgram' },

@@ -1,7 +1,7 @@
+import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
-import { inngest } from '../../inngest.server'
-import { VIDEO_STATUS_CHECK_EVENT } from '../events'
+import { VIDEO_STATUS_CHECK_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const removeCompletedVideo = inngest.createFunction(
   { id: `remove-video-after-completed`, name: 'Remove Uploadthing Video' },

@@ -1,5 +1,9 @@
-import { inngest } from '../../inngest.server'
-import { VIDEO_SRT_READY_EVENT, VIDEO_TRANSCRIPT_READY_EVENT } from '../events'
+import { inngest } from '@/inngest/inngest.server'
+
+import {
+  VIDEO_SRT_READY_EVENT,
+  VIDEO_TRANSCRIPT_READY_EVENT,
+} from '@coursebuilder/core/inngest/video-processing/events'
 
 export const transcriptReady = inngest.createFunction(
   { id: `transcript-ready-event`, name: 'Transcript Ready' },

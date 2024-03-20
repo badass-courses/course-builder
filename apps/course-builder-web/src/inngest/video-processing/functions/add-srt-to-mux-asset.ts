@@ -1,8 +1,8 @@
+import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
-import { addSrtTrackToMuxAsset, deleteSrtTrackFromMuxAsset, getMuxAsset } from '../../../lib/mux'
-import { inngest } from '../../inngest.server'
-import { VIDEO_SRT_READY_EVENT } from '../events'
+import { VIDEO_SRT_READY_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
+import { addSrtTrackToMuxAsset, deleteSrtTrackFromMuxAsset, getMuxAsset } from '@coursebuilder/core/lib/mux'
 
 const COOLDOWN = 20000
 
@@ -18,7 +18,7 @@ export const addSrtToMuxAsset = inngest.createFunction(
     })
 
     if (videoResource) {
-      const muxAsset = await step.run('get the mux asset', async () => {
+      let muxAsset = await step.run('get the mux asset', async () => {
         const assetId = videoResource.muxAssetId
         return getMuxAsset(assetId)
       })
@@ -29,14 +29,19 @@ export const addSrtToMuxAsset = inngest.createFunction(
 
       if (muxAsset.status === 'ready') {
         await step.run('delete existing srt track from mux asset', async () => {
-          return await deleteSrtTrackFromMuxAsset(muxAsset.id)
+          return await deleteSrtTrackFromMuxAsset(muxAsset?.id)
         })
 
         await step.run('add srt track to mux asset', async () => {
           return addSrtTrackToMuxAsset({
-            assetId: muxAsset.id,
+            assetId: muxAsset?.id,
             srtUrl: `${siteRootUrl}/api/videos/${videoResource._id}/srt`,
           })
+        })
+
+        muxAsset = await step.run('get the updated mux asset', async () => {
+          const assetId = videoResource.muxAssetId
+          return getMuxAsset(assetId)
         })
 
         return { muxAsset, videoResource }

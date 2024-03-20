@@ -10,7 +10,6 @@ export const ImageResourceBrowser = () => {
       try {
         const messageData = JSON.parse(messageEvent.data)
         if (messageData.name === 'image.resource.created') {
-          console.log('🖼️ image resource created')
           refetch()
         }
       } catch (error) {

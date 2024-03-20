@@ -1,5 +1,6 @@
-import { inngest } from '../../inngest.server'
-import { MUX_WEBHOOK_EVENT } from '../events'
+import { inngest } from '@/inngest/inngest.server'
+
+import { MUX_WEBHOOK_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const videoReady = inngest.createFunction(
   { id: `mux-video-asset-ready`, name: 'Mux Video Asset Ready' },
@@ -17,7 +18,7 @@ export const videoReady = inngest.createFunction(
         return db.updateContentResourceFields({
           id: videoResource._id as string,
           fields: {
-            status: 'ready',
+            state: 'ready',
           },
         })
       })

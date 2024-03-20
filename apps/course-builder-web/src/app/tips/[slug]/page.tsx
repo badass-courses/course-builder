@@ -108,8 +108,6 @@ async function PlayerContainer({ tipLoader }: { tipLoader: Promise<Tip | null> }
     notFound()
   }
 
-  console.log('tip', tip)
-
   const videoResourceLoader = getVideoResource(tip.videoResourceId)
 
   return (

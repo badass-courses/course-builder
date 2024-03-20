@@ -1,6 +1,11 @@
-import { createMuxAsset } from '../../../lib/mux'
-import { inngest } from '../../inngest.server'
-import { VIDEO_RESOURCE_CREATED_EVENT, VIDEO_STATUS_CHECK_EVENT, VIDEO_UPLOADED_EVENT } from '../events'
+import { inngest } from '@/inngest/inngest.server'
+
+import {
+  VIDEO_RESOURCE_CREATED_EVENT,
+  VIDEO_STATUS_CHECK_EVENT,
+  VIDEO_UPLOADED_EVENT,
+} from '@coursebuilder/core/inngest/video-processing/events'
+import { createMuxAsset } from '@coursebuilder/core/lib/mux'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -46,7 +51,7 @@ export const videoUploaded = inngest.createFunction(
     })
 
     const videoResource = await step.run('get the video resource from database', async () => {
-      return await db.getVideoResource(event.data.fileName)
+      return db.getVideoResource(event.data.fileName)
     })
 
     if (!videoResource) {
