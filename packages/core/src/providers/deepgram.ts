@@ -62,7 +62,7 @@ export default function Deepgram(options: TranscriptionUserConfig): Transcriptio
       return await deepgramResponse.json()
     },
     // Define how to handle the callback with the transcription result
-    handleCallback: (callbackData: DeepgramResults) => {
+    handleCallback: (callbackData: DeepgramResults): DeepgramTranscriptionResult => {
       const srt = srtFromTranscriptResult(callbackData)
       const wordLevelSrt = wordLevelSrtFromTranscriptResult(callbackData)
       const transcript = transcriptAsParagraphsWithTimestamps(callbackData)

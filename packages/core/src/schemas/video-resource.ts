@@ -1,7 +1,7 @@
-import z from 'zod'
+import { z } from 'zod'
 
 export const VideoResourceSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.string(),
   _updatedAt: z.string().optional(),
   _createdAt: z.string().optional(),
   title: z.string().optional().nullable(),

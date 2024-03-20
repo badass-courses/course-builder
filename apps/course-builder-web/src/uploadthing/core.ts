@@ -1,10 +1,11 @@
 import { getAbility } from '@/ability'
 import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
 import { getServerAuthSession } from '@/server/auth'
 import { createUploadthing, type FileRouter } from 'uploadthing/next'
 import { UTApi } from 'uploadthing/server'
 import { z } from 'zod'
+
+import { VIDEO_UPLOADED_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 const f = createUploadthing()
 

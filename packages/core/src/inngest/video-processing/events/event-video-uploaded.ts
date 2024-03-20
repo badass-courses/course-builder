@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const VIDEO_UPLOADED_EVENT = 'video/video-uploaded'
 
-export type VideoUploaded = {
+export type EventVideoUploaded = {
   name: typeof VIDEO_UPLOADED_EVENT
   data: VideoUploadedEvent
 }

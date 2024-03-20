@@ -3,9 +3,10 @@
 import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { VideoResource, VideoResourceSchema } from '@/lib/video-resource'
 import { ExecutedQuery } from '@planetscale/database'
 import { sql } from 'drizzle-orm'
+
+import { VideoResourceSchema, type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
 export async function updateVideoStatus({
   videoResourceId,

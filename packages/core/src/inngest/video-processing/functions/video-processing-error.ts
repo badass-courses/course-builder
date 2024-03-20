@@ -1,8 +1,5 @@
-import { revalidateTag } from 'next/cache'
-import { env } from '@/env.mjs'
-import { inngest } from '@/inngest/inngest.server'
-import { MUX_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-mux-webhook'
-import { getVideoResource, updateVideoStatus } from '@/lib/video-resource-query'
+import { inngest } from '../../inngest.server'
+import { MUX_WEBHOOK_EVENT } from '../events'
 
 export const videoProcessingError = inngest.createFunction(
   { id: `mux-video-asset-error`, name: 'Mux Video Asset Errored' },
@@ -10,9 +7,9 @@ export const videoProcessingError = inngest.createFunction(
     event: MUX_WEBHOOK_EVENT,
     if: 'event.data.muxWebhookEvent.type == "video.asset.errored"',
   },
-  async ({ event, step }) => {
+  async ({ event, step, db, partyKitRootUrl }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return getVideoResource(event.data.muxWebhookEvent.data.passthrough)
+      return db.getVideoResource(event.data.muxWebhookEvent.data.passthrough)
     })
 
     if (!videoResource) {
@@ -20,13 +17,17 @@ export const videoProcessingError = inngest.createFunction(
     }
 
     await step.run('update the video resource in Sanity as errored', async () => {
-      return updateVideoStatus({ videoResourceId: videoResource._id, status: 'errored' })
+      return db.updateContentResourceFields({
+        id: videoResource._id as string,
+        fields: {
+          status: 'errored',
+        },
+      })
     })
 
     await step.run('announce asset errored', async () => {
-      const roomName = event.data.muxWebhookEvent.data.passthrough || env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME
-      revalidateTag(roomName)
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${roomName}`, {
+      const roomName = event.data.muxWebhookEvent.data.passthrough
+      await fetch(`${partyKitRootUrl}/party/${roomName}`, {
         method: 'POST',
         body: JSON.stringify({
           body: `Mux Asset Errored: ${event.data.muxWebhookEvent.data.id}`,

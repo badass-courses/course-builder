@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { use } from 'react'
-import { type VideoResource } from '@/lib/video-resource'
 import { type MuxPlayerProps } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
+import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function TipPlayer({

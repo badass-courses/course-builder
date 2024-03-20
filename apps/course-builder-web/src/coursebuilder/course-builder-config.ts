@@ -23,5 +23,5 @@ export const courseBuilderConfig: CourseBuilderConfig = {
 }
 
 export const {
-  handlers: { POST },
+  handlers: { POST, GET },
 } = NextCourseBuilder(courseBuilderConfig)

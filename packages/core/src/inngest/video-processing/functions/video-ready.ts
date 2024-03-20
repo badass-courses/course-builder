@@ -1,8 +1,5 @@
-import { revalidateTag } from 'next/cache'
-import { env } from '@/env.mjs'
-import { inngest } from '@/inngest/inngest.server'
-import { MUX_WEBHOOK_EVENT } from '@/inngest/video-processing/events/video-mux-webhook'
-import { getVideoResource, updateVideoStatus } from '@/lib/video-resource-query'
+import { inngest } from '../../inngest.server'
+import { MUX_WEBHOOK_EVENT } from '../events'
 
 export const videoReady = inngest.createFunction(
   { id: `mux-video-asset-ready`, name: 'Mux Video Asset Ready' },
@@ -10,23 +7,26 @@ export const videoReady = inngest.createFunction(
     event: MUX_WEBHOOK_EVENT,
     if: 'event.data.muxWebhookEvent.type == "video.asset.ready"',
   },
-  async ({ event, step }) => {
+  async ({ event, step, db, partyKitRootUrl }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return getVideoResource(event.data.muxWebhookEvent.data.passthrough)
+      return db.getVideoResource(event.data.muxWebhookEvent.data.passthrough)
     })
 
     if (videoResource) {
       await step.run('update the video resource in database', async () => {
-        return updateVideoStatus({ videoResourceId: videoResource._id, status: 'ready' })
+        return db.updateContentResourceFields({
+          id: videoResource._id as string,
+          fields: {
+            status: 'ready',
+          },
+        })
       })
     }
 
     await step.run('announce asset ready', async () => {
-      const roomName = event.data.muxWebhookEvent.data.passthrough || env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME
+      const roomName = event.data.muxWebhookEvent.data.passthrough
 
-      revalidateTag(roomName)
-
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${roomName}`, {
+      await fetch(`${partyKitRootUrl}/party/${roomName}`, {
         method: 'POST',
         body: JSON.stringify({
           body: videoResource?.muxPlaybackId,

@@ -53,7 +53,7 @@ Joel`,
           body: parsedEmailBody,
         },
         Subject: parsedEmailSubject,
-        To: 'joel@badass.dev',
+        To: event.user.email,
       })
     })
 
