@@ -15,6 +15,21 @@ export interface TranscriptionConfig {
   handleCallback: (callbackData: any) => { srt: string; transcript: string; wordLevelSrt: string }
 }
 
+export const MockTranscriptionProvider: TranscriptionConfig = {
+  id: 'mock-transcription' as const,
+  name: 'Mock Transcription',
+  type: 'transcription',
+  options: {
+    apiKey: 'mock-api-key',
+    callbackUrl: 'mock-callback-url',
+  },
+  apiKey: 'mock-api-key',
+  callbackUrl: 'mock-callback-url',
+  getCallbackUrl: () => 'mock-callback-url',
+  initiateTranscription: async () => ({ mock: 'transcription' }),
+  handleCallback: () => ({ srt: 'mock-srt', transcript: 'mock-transcript', wordLevelSrt: 'mock-word-level-srt' }),
+}
+
 export type TranscriptionUserConfig = Omit<Partial<TranscriptionConfig>, 'options' | 'type'> & {
   apiKey: string
   callbackUrl: string

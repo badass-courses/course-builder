@@ -6,12 +6,12 @@ import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useSocket } from '@/hooks/use-socket'
 import { useTranscript } from '@/hooks/use-transcript'
 import { TipSchema, type Tip } from '@/lib/tips'
-import { VideoResource } from '@/lib/video-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
 
+import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
   Button,
   FormDescription,

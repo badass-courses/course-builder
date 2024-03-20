@@ -1,15 +1,14 @@
-import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
-import { getVideoResource } from '@/lib/video-resource-query'
-import { utapi } from '@/uploadthing/core'
 import { NonRetriableError } from 'inngest'
+
+import { inngest } from '../../inngest.server'
+import { VIDEO_STATUS_CHECK_EVENT } from '../events'
 
 export const removeCompletedVideo = inngest.createFunction(
   { id: `remove-video-after-completed`, name: 'Remove Uploadthing Video' },
   { event: VIDEO_STATUS_CHECK_EVENT },
-  async ({ event, step }) => {
+  async ({ event, step, db, mediaUploadProvider }) => {
     const videoResource = await step.run('Load Video Resource', async () => {
-      return await getVideoResource(event.data.videoResourceId)
+      return db.getVideoResource(event.data.videoResourceId)
     })
 
     if (!videoResource) {
@@ -21,7 +20,7 @@ export const removeCompletedVideo = inngest.createFunction(
     if (finishedStates.includes(videoResource.state)) {
       await step.sleep('wait a few just to be sure', '30m')
       await step.run('delete file from uploadthing', async () => {
-        return utapi.deleteFiles(event.data.fileKey as string)
+        return mediaUploadProvider.deleteFiles(event.data.fileKey as string)
       })
     } else {
       await step.sleep('wait for video to be ready', '5m')

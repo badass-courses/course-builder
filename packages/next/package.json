@@ -33,7 +33,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@coursebuilder/core": "0.0.2"
+    "@coursebuilder/core": "0.0.2",
+    "inngest": "^3.12.0"
   },
   "devDependencies": {
     "next": "14.2.0-canary.27",

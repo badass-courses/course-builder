@@ -24,7 +24,7 @@ export async function toInternalRequest(
 ): Promise<RequestInternal | undefined> {
   try {
     if (req.method !== 'POST') {
-      throw new Error('Method not allowed: only POST Supported')
+      throw new Error('Method not allowed: only POST Supported for now')
     }
 
     config.basePath ??= '/coursebuilder'

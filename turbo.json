@@ -8,7 +8,18 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next", "dist/**", "lib/**", "providers/**", "*.js", "*.d.ts", "*.d.ts.map", "!.next/cache/**"]
+      "outputs": [
+        ".next",
+        "dist/**",
+        "lib/**",
+        "providers/**",
+        "inngest/**",
+        "schemas/**",
+        "*.js",
+        "*.d.ts",
+        "*.d.ts.map",
+        "!.next/cache/**"
+      ]
     },
     "lint": {
       "dependsOn": ["^topo", "^build"],

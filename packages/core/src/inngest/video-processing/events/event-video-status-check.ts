@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const VIDEO_STATUS_CHECK_EVENT = 'video/status-check'
 
-export type VideoStatusCheck = {
+export type EventVideoStatusCheck = {
   name: typeof VIDEO_STATUS_CHECK_EVENT
   data: VideoStatusCheckEvent
 }

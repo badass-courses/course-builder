@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const VIDEO_TRANSCRIPT_READY_EVENT = 'video/transcript-ready-event'
 
-export type VideoTranscriptReady = {
+export type EventVideoTranscriptReady = {
   name: typeof VIDEO_TRANSCRIPT_READY_EVENT
   data: VideoTranscriptReadyEvent
 }

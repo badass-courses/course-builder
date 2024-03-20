@@ -4,22 +4,10 @@ import { CourseBuilder } from '@coursebuilder/core'
 
 import { NextCourseBuilderConfig } from './lib'
 
-export default function NextCourseBuilder(
-  config: NextCourseBuilderConfig | ((request: NextRequest | undefined) => NextCourseBuilderConfig),
-) {
-  if (typeof config === 'function') {
-    const httpHandler = (req: NextRequest) => {
-      const _config = config(req)
-      return CourseBuilder(req, _config)
-    }
-    return {
-      handlers: { POST: httpHandler } as const,
-    }
-  }
-
+export default function NextCourseBuilder(config: NextCourseBuilderConfig): NextCourseBuilderResult {
   const httpHandler = (req: NextRequest) => CourseBuilder(req, config)
   return {
-    handlers: { POST: httpHandler } as const,
+    handlers: { POST: httpHandler, GET: httpHandler } as const,
   }
 }
 

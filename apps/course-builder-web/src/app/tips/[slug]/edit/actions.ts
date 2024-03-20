@@ -2,9 +2,10 @@
 
 import { getAbility } from '@/ability'
 import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
+
+import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export async function reprocessTranscript({ videoResourceId }: { videoResourceId?: string | null }) {
   // template for the url to download the mp4 file from mux

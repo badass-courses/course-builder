@@ -1,10 +1,6 @@
-import { env } from '@/env.mjs'
-import { inngest } from '@/inngest/inngest.server'
-import { VIDEO_RESOURCE_CREATED_EVENT } from '@/inngest/video-processing/events/video-resource'
-import { VIDEO_STATUS_CHECK_EVENT } from '@/inngest/video-processing/events/video-status-check'
-import { VIDEO_UPLOADED_EVENT } from '@/inngest/video-processing/events/video-uploaded'
-import { createMuxAsset } from '@/lib/mux-api'
-import { createVideoResource, getVideoResource } from '@/lib/video-resource-query'
+import { createMuxAsset } from '../../../lib/mux'
+import { inngest } from '../../inngest.server'
+import { VIDEO_RESOURCE_CREATED_EVENT, VIDEO_STATUS_CHECK_EVENT, VIDEO_UPLOADED_EVENT } from '../events'
 
 export const videoUploaded = inngest.createFunction(
   {
@@ -17,7 +13,7 @@ export const videoUploaded = inngest.createFunction(
     },
   },
   { event: VIDEO_UPLOADED_EVENT },
-  async ({ event, step }) => {
+  async ({ event, step, db, partyKitRootUrl }) => {
     if (!event.user.id) {
       throw new Error('No user id for video uploaded event')
     }
@@ -36,7 +32,7 @@ export const videoUploaded = inngest.createFunction(
         throw new Error('No public playback id found')
       }
 
-      return createVideoResource({
+      return db.createContentResource({
         id: event.data.fileName,
         type: 'videoResource',
         fields: {
@@ -50,7 +46,7 @@ export const videoUploaded = inngest.createFunction(
     })
 
     const videoResource = await step.run('get the video resource from database', async () => {
-      return await getVideoResource(event.data.fileName)
+      return await db.getVideoResource(event.data.fileName)
     })
 
     if (!videoResource) {
@@ -58,7 +54,7 @@ export const videoUploaded = inngest.createFunction(
     }
 
     await step.run('announce video resource created', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${videoResource._id}`, {
+      await fetch(`${partyKitRootUrl}/party/${videoResource._id}`, {
         method: 'POST',
         body: JSON.stringify({
           body: videoResource,

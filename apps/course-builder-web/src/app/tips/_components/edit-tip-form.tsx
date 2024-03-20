@@ -7,10 +7,11 @@ import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resou
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { TipSchema, type Tip } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
-import { VideoResource } from '@/lib/video-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
+
+import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
 const NewTipFormSchema = z.object({
   title: z.string().min(2).max(90),
