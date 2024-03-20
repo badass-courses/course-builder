@@ -35,7 +35,7 @@ export const addSrtToMuxAsset = inngest.createFunction(
         await step.run('add srt track to mux asset', async () => {
           return addSrtTrackToMuxAsset({
             assetId: muxAsset?.id,
-            srtUrl: `${siteRootUrl}/api/videos/${videoResource._id}/srt`,
+            srtUrl: `${siteRootUrl}/api/coursebuilder/srt/internal?videoResourceId=${videoResource._id}`,
           })
         })
 

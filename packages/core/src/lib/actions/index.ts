@@ -1,6 +1,25 @@
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { Cookie } from '../utils/cookie'
 
+export async function srt(
+  request: RequestInternal,
+  cookies: Cookie[],
+  options: InternalOptions,
+): Promise<ResponseInternal> {
+  const client = options.adapter
+
+  const resource = await client?.getContentResource(request.query?.videoResourceId)
+
+  if (!resource) throw new Error('Resource not found')
+
+  return {
+    status: 200,
+    body: resource.fields?.srt,
+    headers: { 'Content-Type': 'application/text' },
+    cookies,
+  }
+}
+
 export async function webhook(
   request: RequestInternal,
   cookies: Cookie[],
