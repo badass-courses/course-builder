@@ -36,6 +36,8 @@ export const TipMetadataFormFields: React.FC<{
   const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
   const [transcript, setTranscript] = useTranscript({ videoResourceId, initialTranscript: videoResource?.transcript })
 
+  console.log({ videoResource })
+
   useSocket({
     room: videoResourceId,
     onMessage: async (messageEvent) => {

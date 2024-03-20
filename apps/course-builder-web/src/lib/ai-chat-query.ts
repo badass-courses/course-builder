@@ -69,7 +69,6 @@ export async function getChatResource(id: string) {
   return db
     .execute(query)
     .then((result) => {
-      console.log('📼 get chat resource', result)
       const parsed = ChatResourceSchema.safeParse(result.rows[0])
       return parsed.success ? parsed.data : null
     })

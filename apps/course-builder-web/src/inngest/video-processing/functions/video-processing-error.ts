@@ -1,5 +1,6 @@
-import { inngest } from '../../inngest.server'
-import { MUX_WEBHOOK_EVENT } from '../events'
+import { inngest } from '@/inngest/inngest.server'
+
+import { MUX_WEBHOOK_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
 
 export const videoProcessingError = inngest.createFunction(
   { id: `mux-video-asset-error`, name: 'Mux Video Asset Errored' },
@@ -20,7 +21,7 @@ export const videoProcessingError = inngest.createFunction(
       return db.updateContentResourceFields({
         id: videoResource._id as string,
         fields: {
-          status: 'errored',
+          state: 'errored',
         },
       })
     })

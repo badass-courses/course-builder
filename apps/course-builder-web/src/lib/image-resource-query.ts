@@ -36,7 +36,6 @@ export async function createImageResource(input: { asset_id: string; secure_url:
       createdById: user.id,
     })
     .then((result) => {
-      console.log('🖼️ created image resource')
       return result
     })
     .catch((error) => {
@@ -67,9 +66,7 @@ export async function getAllImageResources() {
         createdAt DESC
     `
   return db.execute(query).then((result) => {
-    console.log('result', result)
     const parsed = z.array(ImageResourceSchema).safeParse(result.rows)
-    console.log('parsed', parsed)
     return parsed.success ? parsed.data : []
   })
 }

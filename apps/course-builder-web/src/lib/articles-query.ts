@@ -105,15 +105,10 @@ export async function updateArticle(input: Article) {
       id = ${input._id};
   `
 
-  await db
-    .execute(query)
-    .then((result) => {
-      console.log('Updated Article')
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
+  await db.execute(query).catch((error) => {
+    console.error(error)
+    throw error
+  })
 
   revalidateTag('articles')
   revalidateTag(input._id)

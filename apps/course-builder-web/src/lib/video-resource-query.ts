@@ -31,7 +31,6 @@ export async function updateVideoStatus({
   return db
     .execute(query)
     .then((result) => {
-      console.log('📼 updated video resource status', result)
       revalidateTag(videoResourceId)
       return result
     })
@@ -68,7 +67,6 @@ export async function updateVideoWithTranscripts({
   return db
     .execute(query)
     .then((result) => {
-      console.log('📼 updated video resource', result)
       return result
     })
     .catch((error) => {
@@ -173,7 +171,6 @@ export async function createVideoResource(values: {
     .insert(contentResource)
     .values(values)
     .then((result) => {
-      console.log('📼 created video resource', result)
       return result
     })
     .catch((error) => {
@@ -200,7 +197,6 @@ export async function updateVideoTranscriptWithScreenshots({
   return db
     .execute(query)
     .then((result) => {
-      console.log('📼 updated video resource', result)
       return result
     })
     .catch((error) => {

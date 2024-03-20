@@ -37,7 +37,6 @@ export async function getTip(slug: string): Promise<Tip | null> {
     .execute(query)
     .then((result) => {
       const parsedTip = TipSchema.safeParse(result.rows[0])
-      console.log('🚀 get tip', parsedTip.success ? parsedTip.data : null)
       return parsedTip.success ? parsedTip.data : null
     })
     .catch((error) => {
@@ -104,7 +103,6 @@ export async function createTip(input: NewTip) {
       },
     })
     .then((result) => {
-      console.log('🚀 Tip Created')
       return result
     })
     .catch((error) => {
@@ -115,12 +113,7 @@ export async function createTip(input: NewTip) {
   const tip = await getTip(newTipId)
 
   if (tip) {
-    await db
-      .insert(contentResourceResource)
-      .values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
-      .finally(() => {
-        console.log('🚀 Video Associated with Tip')
-      })
+    await db.insert(contentResourceResource).values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
 
     revalidateTag('tips')
 
@@ -164,15 +157,10 @@ export async function updateTip(input: TipUpdate) {
       id = ${input._id};
   `
 
-  await db
-    .execute(query)
-    .then((result) => {
-      console.log('Updated Tip', result)
-    })
-    .catch((error) => {
-      console.error('🚨 Error updating tip', error)
-      throw error
-    })
+  await db.execute(query).catch((error) => {
+    console.error('🚨 Error updating tip', error)
+    throw error
+  })
 
   revalidateTag('tips')
   revalidateTag(input._id)

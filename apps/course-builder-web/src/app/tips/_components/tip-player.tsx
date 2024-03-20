@@ -29,7 +29,7 @@ export function TipPlayer({
 
   const videoResource = use(videoResourceLoader)
 
-  const playbackId = muxPlaybackId || (videoResource?.state === 'ready' ? videoResource?.muxPlaybackId : undefined)
+  const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
 
   return <>{playbackId ? <MuxPlayer playbackId={playbackId} className={cn(className)} {...playerProps} /> : null}</>
 }

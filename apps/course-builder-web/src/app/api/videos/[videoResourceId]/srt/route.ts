@@ -17,13 +17,14 @@ export const GET = async (_: NextRequest, { params }: { params: { videoResourceI
   const result = await db
     .execute(query)
     .then((result) => {
+      console.log(result)
       return (result.rows[0] as { srt: string | null })?.srt || null
     })
     .catch((error) => {
       console.log(error)
       return error
     })
-  return new Response(result.srt || '', {
+  return new Response(result || '', {
     status: 200,
   })
 }

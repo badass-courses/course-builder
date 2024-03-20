@@ -12,7 +12,7 @@ type MuxApiOptions = {
   transcription?: boolean
 }
 
-export async function addSrtTrackToMuxAsset({ assetId, srtUrl }: { assetId: string; srtUrl: string }) {
+export async function addSrtTrackToMuxAsset({ assetId, srtUrl }: { assetId?: string; srtUrl: string }) {
   const muxAsset = await getMuxAsset(assetId)
   if (!muxAsset) {
     throw new Error('Mux Asset not found')
@@ -36,14 +36,14 @@ export async function addSrtTrackToMuxAsset({ assetId, srtUrl }: { assetId: stri
     })
 }
 
-export async function deleteSrtTrackFromMuxAsset(assetId: string) {
+export async function deleteSrtTrackFromMuxAsset(assetId?: string) {
   const muxAsset = await getMuxAsset(assetId)
   if (!muxAsset) {
     throw new Error('Mux Asset not found')
   }
   if (!muxAsset.tracks) return console.warn('No tracks found')
 
-  const trackId = muxAsset.tracks.filter((track: { type: string; status: string }) => track.type === 'text')[0]?.id
+  const trackId = muxAsset.tracks.filter((track: { type: string }) => track.type === 'text')[0]?.id
   return await fetch(`https://api.mux.com/video/v1/assets/${muxAsset.id}/tracks/${trackId}`, {
     method: 'DELETE',
     headers: muxRequestHeaders,
@@ -53,6 +53,7 @@ export async function deleteSrtTrackFromMuxAsset(assetId: string) {
 }
 
 export async function getMuxAsset(assetId?: string | null) {
+  console.log('getMuxAsset', assetId)
   if (!assetId) {
     return null
   }
@@ -60,7 +61,11 @@ export async function getMuxAsset(assetId?: string | null) {
     headers: muxRequestHeaders,
   }).then(async (response) => await response.json())
 
+  console.log('getMuxAsset', data)
+
   const parsedData = MuxAssetSchema.safeParse(data)
+
+  console.log('getMuxAsset', JSON.stringify(parsedData))
 
   return parsedData.success ? parsedData.data : null
 }
