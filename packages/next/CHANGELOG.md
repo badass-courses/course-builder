@@ -1,5 +1,12 @@
 # @coursebuilder/next
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`c22006c720e7ab149ec43783aa0e3b590f92ab47`](https://github.com/badass-courses/course-builder/commit/c22006c720e7ab149ec43783aa0e3b590f92ab47)]:
+  - @coursebuilder/core@0.0.4
+
 ## 0.0.2
 
 ### Patch Changes
