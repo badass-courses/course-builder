@@ -309,8 +309,8 @@ export const contentResource = mysqlTable(
 export const contentResourceRelations = relations(contentResource, ({ one, many }) => ({
   createdBy: one(users, { fields: [contentResource.createdById], references: [users.id] }),
   contributions: many(contentContributions),
-  resources: many(contentResourceResource, { relationName: 'resource' }),
-  resourceOf: many(contentResourceResource, { relationName: 'resourceOf' }),
+  resources: many(contentResourceResource, { relationName: 'resourceOf' }),
+  resourceOf: many(contentResourceResource, { relationName: 'resource' }),
 }))
 
 export const contentResourceResource = mysqlTable(

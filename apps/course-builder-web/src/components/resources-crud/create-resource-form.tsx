@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { createResource } from '@/lib/resources/create-resources'
@@ -7,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import {
   Button,
   Form,
@@ -19,7 +18,13 @@ import {
   Input,
 } from '@coursebuilder/ui'
 
-export function CreateResourceForm({ resourceType }: { resourceType: string }) {
+export function CreateResourceForm({
+  resourceType,
+  onCreate = async () => {},
+}: {
+  resourceType: string
+  onCreate?: (resource: ContentResource) => Promise<void>
+}) {
   const router = useRouter()
 
   const form = useForm<{ title: string }>({
@@ -29,17 +34,21 @@ export function CreateResourceForm({ resourceType }: { resourceType: string }) {
     },
   })
 
-  const onSubmit = async (values: { title: string }) => {
+  const internalOnSubmit = async (values: { title: string }) => {
     const resource = await createResource({ title: values.title, type: resourceType })
     form.reset()
     if (resource) {
-      router.push(`/${resourceType}s/${resource.fields.slug}/edit`)
+      if (onCreate) {
+        await onCreate(resource)
+      } else {
+        router.push(`/${resourceType}s/${resource.fields.slug}/edit`)
+      }
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(internalOnSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="title"
