@@ -18,10 +18,11 @@ import {
   ResourceChat,
 } from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
-import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
+import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
+import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 import {
   MUX_WEBHOOK_EVENT,
   VIDEO_RESOURCE_CREATED_EVENT,
@@ -75,30 +76,15 @@ export type Events = {
 const callbackBase =
   env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
 
-const middleware = new InngestMiddleware({
-  name: 'Supply Context',
-  init() {
-    return {
-      onFunctionRun(event) {
-        return {
-          transformInput: (input) => {
-            return {
-              ctx: {
-                db: DrizzleAdapter(db, mysqlTable),
-                siteRootUrl: env.NEXT_PUBLIC_URL,
-                partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
-                mediaUploadProvider: new UTApi(),
-                transcriptProvider: DeepgramProvider({
-                  apiKey: env.DEEPGRAM_API_KEY,
-                  callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
-                }),
-              },
-            }
-          },
-        }
-      },
-    }
-  },
+const middleware = createInngestMiddleware({
+  db: DrizzleAdapter(db, mysqlTable),
+  siteRootUrl: env.NEXT_PUBLIC_URL,
+  partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
+  mediaUploadProvider: new UTApi(),
+  transcriptProvider: DeepgramProvider({
+    apiKey: env.DEEPGRAM_API_KEY,
+    callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
+  }),
 })
 
 export const inngest = new Inngest({

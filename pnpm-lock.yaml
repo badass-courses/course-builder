@@ -366,8 +366,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.12.0
-        version: 3.16.0(encoding@0.1.13)(typescript@5.4.3)
+        specifier: ^3.16.1
+        version: 3.16.1(encoding@0.1.13)(typescript@5.4.3)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -847,8 +847,8 @@ importers:
         specifier: 0.6.0
         version: 0.6.0
       inngest:
-        specifier: ^3.12.0
-        version: 3.16.0(encoding@0.1.13)(typescript@5.4.3)
+        specifier: ^3.16.1
+        version: 3.16.1(encoding@0.1.13)(typescript@5.4.3)
       srt-parser-2:
         specifier: ^1.2.3
         version: 1.2.3
@@ -866,8 +866,8 @@ importers:
         specifier: 0.0.5
         version: link:../core
       inngest:
-        specifier: ^3.12.0
-        version: 3.16.0(encoding@0.1.13)(typescript@5.4.3)
+        specifier: ^3.16.1
+        version: 3.16.1(encoding@0.1.13)(typescript@5.4.3)
     devDependencies:
       next:
         specifier: 14.2.0-canary.27
@@ -15052,8 +15052,8 @@ packages:
     resolution: {integrity: sha512-EcKzdTHVe8wFVOGEYXiW9WmJXPjqi1T+234YpJr98RiFYKHV3cdy1+3mkTE+KHTHxFFLH51SfaGOoUdW+v7ViQ==}
     dev: false
 
-  /inngest@3.16.0(encoding@0.1.13)(typescript@5.4.3):
-    resolution: {integrity: sha512-JWQsB2DQbWIlGGvQfEujXjebDbtq5jOHloO9AyEoT9SDvmNYQj/k549ZW6gKprhUlZKdiHX1xQ+vWbzxEuQSxw==}
+  /inngest@3.16.1(encoding@0.1.13)(typescript@5.4.3):
+    resolution: {integrity: sha512-5jhrVtVzMthyscaI8La73y0rAKEoTtdFg4LpV2ksaET58MmwBBkjH1qPAdIfFMhJrWS+ITQ7HNdzj3nWk+aDBg==}
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=4.7.2'
