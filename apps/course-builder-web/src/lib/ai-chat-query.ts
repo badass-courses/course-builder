@@ -11,34 +11,34 @@ import { sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function sendResourceChatMessage({
-  resourceId,
-  messages,
-  selectedWorkflow,
+	resourceId,
+	messages,
+	selectedWorkflow,
 }: {
-  resourceId: string
-  messages: any[]
-  selectedWorkflow?: string
+	resourceId: string
+	messages: any[]
+	selectedWorkflow?: string
 }) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('create', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  await inngest.send({
-    name: RESOURCE_CHAT_REQUEST_EVENT,
-    data: {
-      resourceId,
-      messages,
-      selectedWorkflow: selectedWorkflow || 'article/chat-event',
-    },
-    user,
-  })
+	await inngest.send({
+		name: RESOURCE_CHAT_REQUEST_EVENT,
+		data: {
+			resourceId,
+			messages,
+			selectedWorkflow: selectedWorkflow || 'article/chat-event',
+		},
+		user,
+	})
 }
 
 export async function getChatResource(id: string) {
-  const query = sql`
+	const query = sql`
     SELECT
       resources.id as _id,
       resources.type as _type,
@@ -66,14 +66,14 @@ export async function getChatResource(id: string) {
       resources.id = ${id};
   `
 
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsed = ChatResourceSchema.safeParse(result.rows[0])
-      return parsed.success ? parsed.data : null
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsed = ChatResourceSchema.safeParse(result.rows[0])
+			return parsed.success ? parsed.data : null
+		})
+		.catch((error) => {
+			console.error(error)
+			throw error
+		})
 }

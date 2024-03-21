@@ -9,18 +9,18 @@ import { getServerAuthSession } from '@/server/auth'
 export const dynamic = 'force-dynamic'
 
 export default async function ArticleEditPage({
-  params,
+	params,
 }: {
-  params: { slug: string }
+	params: { slug: string }
 }) {
-  headers()
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
-  const article = await getArticle(params.slug)
+	headers()
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
+	const article = await getArticle(params.slug)
 
-  if (!article || !ability.can('create', 'Content')) {
-    notFound()
-  }
+	if (!article || !ability.can('create', 'Content')) {
+		notFound()
+	}
 
-  return <EditArticleForm key={article.slug} article={article} />
+	return <EditArticleForm key={article.slug} article={article} />
 }

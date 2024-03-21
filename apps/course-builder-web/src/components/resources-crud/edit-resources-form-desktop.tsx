@@ -11,49 +11,49 @@ import { Schema, z } from 'zod'
 import { ResizableHandle } from '@coursebuilder/ui'
 
 export function EditResourcesFormDesktop({
-  resource,
-  getResourcePath,
-  resourceSchema,
-  children,
-  form,
-  updateResource,
+	resource,
+	getResourcePath,
+	resourceSchema,
+	children,
+	form,
+	updateResource,
 }: {
-  resource: any
-  getResourcePath: (slug: string) => string
-  resourceSchema: Schema
-  children?: React.ReactNode
-  form: UseFormReturn<z.infer<typeof resourceSchema>>
-  updateResource: (values: z.infer<typeof resourceSchema>) => Promise<any>
+	resource: any
+	getResourcePath: (slug: string) => string
+	resourceSchema: Schema
+	children?: React.ReactNode
+	form: UseFormReturn<z.infer<typeof resourceSchema>>
+	updateResource: (values: z.infer<typeof resourceSchema>) => Promise<any>
 }) {
-  const router = useRouter()
+	const router = useRouter()
 
-  const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
-    const updatedResource = await updateResource(values)
-    if (updatedResource) {
-      router.push(getResourcePath(updatedResource.slug))
-    }
-  }
+	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
+		const updatedResource = await updateResource(values)
+		if (updatedResource) {
+			router.push(getResourcePath(updatedResource.slug))
+		}
+	}
 
-  return (
-    <>
-      <EditResourcesActionBar
-        resource={resource}
-        resourcePath={getResourcePath(resource.slug)}
-        onSubmit={() => {
-          onSubmit(form.getValues())
-        }}
-      />
-      <EditResourcePanelGroup>
-        <EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
-          {children}
-        </EditResourcesMetadataPanel>
-        <ResizableHandle />
-        <EditResourcesBodyPanel resource={resource} form={form} />
-        <ResizableHandle />
-        <EditResourcesToolPanel
-          resource={{ ...resource, ...form.getValues() }}
-        />
-      </EditResourcePanelGroup>
-    </>
-  )
+	return (
+		<>
+			<EditResourcesActionBar
+				resource={resource}
+				resourcePath={getResourcePath(resource.slug)}
+				onSubmit={() => {
+					onSubmit(form.getValues())
+				}}
+			/>
+			<EditResourcePanelGroup>
+				<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
+					{children}
+				</EditResourcesMetadataPanel>
+				<ResizableHandle />
+				<EditResourcesBodyPanel resource={resource} form={form} />
+				<ResizableHandle />
+				<EditResourcesToolPanel
+					resource={{ ...resource, ...form.getValues() }}
+				/>
+			</EditResourcePanelGroup>
+		</>
+	)
 }

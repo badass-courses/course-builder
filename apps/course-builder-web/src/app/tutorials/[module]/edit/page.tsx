@@ -12,38 +12,38 @@ import { last } from 'lodash'
 export const dynamic = 'force-dynamic'
 
 export default async function EditTutorialPage({
-  params,
+	params,
 }: {
-  params: { module: string }
+	params: { module: string }
 }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
 
-  if (!ability.can('update', 'Content')) {
-    redirect('/login')
-  }
+	if (!ability.can('update', 'Content')) {
+		redirect('/login')
+	}
 
-  const tutorial = await db.query.contentResource.findFirst({
-    where: like(contentResource.id, `%${last(params.module.split('-'))}%`),
-    with: {
-      resources: {
-        with: {
-          resource: true,
-        },
-        orderBy: asc(contentResourceResource.position),
-      },
-    },
-  })
+	const tutorial = await db.query.contentResource.findFirst({
+		where: like(contentResource.id, `%${last(params.module.split('-'))}%`),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
 
-  if (!tutorial) {
-    notFound()
-  }
+	if (!tutorial) {
+		notFound()
+	}
 
-  console.log(`page load`, { tutorial })
+	console.log(`page load`, { tutorial })
 
-  return (
-    <>
-      <ModuleEdit tutorial={tutorial} />
-    </>
-  )
+	return (
+		<>
+			<ModuleEdit tutorial={tutorial} />
+		</>
+	)
 }

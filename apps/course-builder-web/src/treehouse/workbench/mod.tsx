@@ -10,8 +10,8 @@ import type { Workbench } from './workbench'
  * but is also used for local context in commands.
  */
 export interface Context {
-  path: Path | null
-  node: Node | null
-  nodes?: Node[]
-  event?: Event
+	path: Path | null
+	node: Node | null
+	nodes?: Node[]
+	event?: Event
 }

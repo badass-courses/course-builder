@@ -12,33 +12,33 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 type EditPromptFormProps = {
-  prompt: Prompt
+	prompt: Prompt
 }
 
 export function EditPromptForm({ prompt }: EditPromptFormProps) {
-  const form = useForm<z.infer<typeof PromptSchema>>({
-    resolver: zodResolver(PromptSchema),
-    defaultValues: {
-      ...prompt,
-      description: prompt.description ?? '',
-    },
-  })
+	const form = useForm<z.infer<typeof PromptSchema>>({
+		resolver: zodResolver(PromptSchema),
+		defaultValues: {
+			...prompt,
+			description: prompt.description ?? '',
+		},
+	})
 
-  const isMobile = useIsMobile()
+	const isMobile = useIsMobile()
 
-  const ResourceForm = isMobile
-    ? EditResourcesFormMobile
-    : EditResourcesFormDesktop
+	const ResourceForm = isMobile
+		? EditResourcesFormMobile
+		: EditResourcesFormDesktop
 
-  return (
-    <ResourceForm
-      resource={prompt}
-      form={form}
-      resourceSchema={PromptSchema}
-      getResourcePath={(slug) => `/prompts/${slug}`}
-      updateResource={updatePrompt}
-    >
-      <EditResourcesMetadataFields form={form} />
-    </ResourceForm>
-  )
+	return (
+		<ResourceForm
+			resource={prompt}
+			form={form}
+			resourceSchema={PromptSchema}
+			getResourcePath={(slug) => `/prompts/${slug}`}
+			updateResource={updatePrompt}
+		>
+			<EditResourcesMetadataFields form={form} />
+		</ResourceForm>
+	)
 }

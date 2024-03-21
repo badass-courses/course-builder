@@ -1,16 +1,16 @@
 import {
-  AbilityBuilder,
-  createMongoAbility,
-  type CreateAbility,
-  type MongoAbility,
+	AbilityBuilder,
+	createMongoAbility,
+	type CreateAbility,
+	type MongoAbility,
 } from '@casl/ability'
 import z from 'zod'
 
 export const UserSchema = z.object({
-  role: z.string().optional(),
-  id: z.string().optional(),
-  name: z.nullable(z.string().optional()),
-  email: z.string().optional(),
+	role: z.string().optional(),
+	id: z.string().optional(),
+	name: z.nullable(z.string().optional()),
+	email: z.string().optional(),
 })
 
 export type User = z.infer<typeof UserSchema>
@@ -31,17 +31,17 @@ type GetAbilityOptions = { user?: { id: string; role?: string } }
  * @param options
  */
 export function getAbilityRules(options: GetAbilityOptions = {}) {
-  const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
+	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
 
-  if (options.user?.role === 'admin') {
-    can('manage', 'all')
-  }
+	if (options.user?.role === 'admin') {
+		can('manage', 'all')
+	}
 
-  if (options.user) {
-    can('read', 'User', { id: options.user.id })
-  }
+	if (options.user) {
+		can('read', 'User', { id: options.user.id })
+	}
 
-  return rules
+	return rules
 }
 
 /**
@@ -54,5 +54,5 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
  * @param options
  */
 export function getAbility(options: GetAbilityOptions = {}) {
-  return createAppAbility(getAbilityRules(options))
+	return createAppAbility(getAbilityRules(options))
 }

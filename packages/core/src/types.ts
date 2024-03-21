@@ -9,62 +9,62 @@ import { ProviderType, TranscriptionConfig } from './providers'
 export type Awaitable<T> = T | PromiseLike<T>
 
 export interface ContentResource {
-  id: string
-  type: string
-  createdById: string
-  fields: Record<string, any> | null
+	id: string
+	type: string
+	createdById: string
+	fields: Record<string, any> | null
 }
 
 export interface ResponseInternal<
-  Body extends string | Record<string, any> | any[] | null = any,
+	Body extends string | Record<string, any> | any[] | null = any,
 > {
-  status?: number
-  headers?: Headers | HeadersInit
-  body?: Body
-  redirect?: string
-  cookies?: Cookie[]
+	status?: number
+	headers?: Headers | HeadersInit
+	body?: Body
+	redirect?: string
+	cookies?: Cookie[]
 }
 
 export interface CookieOption {
-  name: string
-  options: CookieSerializeOptions
+	name: string
+	options: CookieSerializeOptions
 }
 
 export type CourseBuilderAction = 'webhook' | 'srt'
 
 export interface RequestInternal {
-  url: URL
-  method: 'POST' | 'GET'
-  cookies?: Partial<Record<string, string>>
-  headers?: Record<string, any>
-  query?: Record<string, any>
-  body?: Record<string, any>
-  action: CourseBuilderAction
-  providerId?: string
-  error?: string
+	url: URL
+	method: 'POST' | 'GET'
+	cookies?: Partial<Record<string, string>>
+	headers?: Record<string, any>
+	query?: Record<string, any>
+	body?: Record<string, any>
+	action: CourseBuilderAction
+	providerId?: string
+	error?: string
 }
 
 /** @internal */
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
-  ? TranscriptionConfig
-  : never
+	? TranscriptionConfig
+	: never
 
 export interface InternalOptions<TProviderType = ProviderType> {
-  providers: InternalProvider[]
-  url: URL
-  action: CourseBuilderAction
-  provider: InternalProvider<TProviderType>
-  debug: boolean
-  logger: LoggerInstance
-  adapter: Required<CourseBuilderAdapter> | undefined
-  cookies: Record<keyof CookiesOptions, CookieOption>
-  basePath: string
-  inngest: Inngest
+	providers: InternalProvider[]
+	url: URL
+	action: CourseBuilderAction
+	provider: InternalProvider<TProviderType>
+	debug: boolean
+	logger: LoggerInstance
+	adapter: Required<CourseBuilderAdapter> | undefined
+	cookies: Record<keyof CookiesOptions, CookieOption>
+	basePath: string
+	inngest: Inngest
 }
 
 export interface CookieOption {
-  name: string
-  options: CookieSerializeOptions
+	name: string
+	options: CookieSerializeOptions
 }
 
 export interface CookiesOptions {}

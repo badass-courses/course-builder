@@ -13,32 +13,32 @@ import { RawNode } from '../model/mod'
  * implemented on the same object.
  */
 export interface Backend {
-  auth: Authenticator | null
-  index: SearchIndex
-  files: FileStore
-  loadExtensions?: any
-  initialize?: any
+	auth: Authenticator | null
+	index: SearchIndex
+	files: FileStore
+	loadExtensions?: any
+	initialize?: any
 }
 
 export interface Authenticator {
-  login(): any
-  logout(): any
-  currentUser(): User | null
+	login(): any
+	logout(): any
+	currentUser(): User | null
 }
 
 export interface User {
-  userID(): string
-  displayName(): string
-  avatarURL(): string
+	userID(): string
+	displayName(): string
+	avatarURL(): string
 }
 
 export interface SearchIndex {
-  index(node: RawNode): any
-  remove(id: string): any
-  search(query: string): string[]
+	index(node: RawNode): any
+	remove(id: string): any
+	search(query: string): string[]
 }
 
 export interface FileStore {
-  readFile(path: string): Promise<string | null>
-  writeFile(path: string, contents: string): Promise<any>
+	readFile(path: string): Promise<string | null>
+	writeFile(path: string, contents: string): Promise<any>
 }

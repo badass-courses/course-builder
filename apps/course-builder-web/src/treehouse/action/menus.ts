@@ -1,22 +1,22 @@
 export interface MenuItem {
-  command: string
-  //alt?: string;
-  when?: Function
-  title?: Function
-  onclick?: Function
-  disabled?: boolean
-  //group
-  //submenu
+	command: string
+	//alt?: string;
+	when?: Function
+	title?: Function
+	onclick?: Function
+	disabled?: boolean
+	//group
+	//submenu
 }
 
 export class MenuRegistry {
-  menus: { [index: string]: MenuItem[] }
+	menus: { [index: string]: MenuItem[] }
 
-  constructor() {
-    this.menus = {}
-  }
+	constructor() {
+		this.menus = {}
+	}
 
-  registerMenu(id: string, items: MenuItem[]) {
-    this.menus[id] = items
-  }
+	registerMenu(id: string, items: MenuItem[]) {
+		this.menus[id] = items
+	}
 }

@@ -1,11 +1,11 @@
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+	apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function determineSplitPoints(transcript: string) {
-  const prompt = `The following transcript was extracted from a tutorial video. Please generate a high-level set of subsections from the transcript so that we can break it down into several sequential videos instead of a single long video.
+	const prompt = `The following transcript was extracted from a tutorial video. Please generate a high-level set of subsections from the transcript so that we can break it down into several sequential videos instead of a single long video.
     
     I'd like you to return a JSON object representing report with metadata and an array of subsections using the following JSON schema. 
     

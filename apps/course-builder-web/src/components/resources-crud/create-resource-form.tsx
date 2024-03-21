@@ -7,85 +7,85 @@ import { z } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import {
-  Button,
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
+	Button,
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	Input,
 } from '@coursebuilder/ui'
 
 export function CreateResourceForm({
-  resourceType,
-  onCreate = async () => {},
+	resourceType,
+	onCreate = async () => {},
 }: {
-  resourceType: string
-  onCreate?: (resource: ContentResource) => Promise<void>
+	resourceType: string
+	onCreate?: (resource: ContentResource) => Promise<void>
 }) {
-  const router = useRouter()
+	const router = useRouter()
 
-  const form = useForm<{ title: string }>({
-    resolver: zodResolver(z.object({ title: z.string() })),
-    defaultValues: {
-      title: '',
-    },
-  })
+	const form = useForm<{ title: string }>({
+		resolver: zodResolver(z.object({ title: z.string() })),
+		defaultValues: {
+			title: '',
+		},
+	})
 
-  const internalOnSubmit = async (values: { title: string }) => {
-    const resource = await createResource({
-      title: values.title,
-      type: resourceType,
-    })
-    form.reset()
-    if (resource) {
-      if (onCreate) {
-        await onCreate(resource)
-      } else {
-        router.push(`/${resourceType}s/${resource.fields.slug}/edit`)
-      }
-    }
-  }
+	const internalOnSubmit = async (values: { title: string }) => {
+		const resource = await createResource({
+			title: values.title,
+			type: resourceType,
+		})
+		form.reset()
+		if (resource) {
+			if (onCreate) {
+				await onCreate(resource)
+			} else {
+				router.push(`/${resourceType}s/${resource.fields.slug}/edit`)
+			}
+		}
+	}
 
-  return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(internalOnSubmit)}
-        className="space-y-8"
-      >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-lg font-bold">Title</FormLabel>
-              <FormDescription className="mt-2 text-sm">
-                A title should summarize the {resourceType.toUpperCase()} and
-                explain what it is about clearly.
-              </FormDescription>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
+	return (
+		<Form {...form}>
+			<form
+				onSubmit={form.handleSubmit(internalOnSubmit)}
+				className="space-y-8"
+			>
+				<FormField
+					control={form.control}
+					name="title"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel className="text-lg font-bold">Title</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								A title should summarize the {resourceType.toUpperCase()} and
+								explain what it is about clearly.
+							</FormDescription>
+							<FormControl>
+								<Input {...field} />
+							</FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
 
-        <Button
-          type="submit"
-          className="mt-2"
-          variant="default"
-          disabled={
-            (form.formState.isDirty && !form.formState.isValid) ||
-            form.formState.isSubmitting
-          }
-        >
-          Create Draft {resourceType.toUpperCase()}
-        </Button>
-      </form>
-    </Form>
-  )
+				<Button
+					type="submit"
+					className="mt-2"
+					variant="default"
+					disabled={
+						(form.formState.isDirty && !form.formState.isValid) ||
+						form.formState.isSubmitting
+					}
+				>
+					Create Draft {resourceType.toUpperCase()}
+				</Button>
+			</form>
+		</Form>
+	)
 }

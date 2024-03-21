@@ -10,25 +10,25 @@ import { EditTipForm } from '../../_components/edit-tip-form'
 export const dynamic = 'force-dynamic'
 
 export default async function TipEditPage({
-  params,
+	params,
 }: {
-  params: { slug: string }
+	params: { slug: string }
 }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
-  const tip = await getTip(params.slug)
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
+	const tip = await getTip(params.slug)
 
-  if (!tip || !ability.can('create', 'Content')) {
-    notFound()
-  }
+	if (!tip || !ability.can('create', 'Content')) {
+		notFound()
+	}
 
-  const videoResourceLoader = getVideoResource(tip.videoResourceId)
+	const videoResourceLoader = getVideoResource(tip.videoResourceId)
 
-  return (
-    <EditTipForm
-      key={tip.slug}
-      tip={tip}
-      videoResourceLoader={videoResourceLoader}
-    />
-  )
+	return (
+		<EditTipForm
+			key={tip.slug}
+			tip={tip}
+			videoResourceLoader={videoResourceLoader}
+		/>
+	)
 }

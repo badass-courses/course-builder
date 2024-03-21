@@ -14,7 +14,7 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function getTip(slug: string): Promise<Tip | null> {
-  const query = sql`
+	const query = sql`
     SELECT
       tips.id as _id,
       tips.type as _type,
@@ -33,19 +33,19 @@ export async function getTip(slug: string): Promise<Tip | null> {
       tips.type = 'tip'
       AND (JSON_EXTRACT (tips.fields, "$.slug") = ${slug} OR tips.id = ${slug});
   `
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsedTip = TipSchema.safeParse(result.rows[0])
-      return parsedTip.success ? parsedTip.data : null
-    })
-    .catch((error) => {
-      return error
-    })
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsedTip = TipSchema.safeParse(result.rows[0])
+			return parsedTip.success ? parsedTip.data : null
+		})
+		.catch((error) => {
+			return error
+		})
 }
 
 export async function getTipsModule(): Promise<Tip[]> {
-  const query = sql<Tip[]>`
+	const query = sql<Tip[]>`
     SELECT
       tips.id as _id,
       tips.type as _type,
@@ -61,92 +61,92 @@ export async function getTipsModule(): Promise<Tip[]> {
       tips.type = 'tip'
     ORDER BY tips.updatedAt DESC;
   `
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsedTips = z.array(TipSchema).safeParse(result.rows)
-      return parsedTips.success ? parsedTips.data : []
-    })
-    .catch((error) => {
-      throw error
-    })
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsedTips = z.array(TipSchema).safeParse(result.rows)
+			return parsedTips.success ? parsedTips.data : []
+		})
+		.catch((error) => {
+			throw error
+		})
 }
 
 export async function createTip(input: NewTip) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
-  const user = session?.user
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
+	const user = session?.user
 
-  if (!user || !ability.can('create', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const newTipId = v4()
+	const newTipId = v4()
 
-  const videoResource = await getVideoResource(input.videoResourceId)
+	const videoResource = await getVideoResource(input.videoResourceId)
 
-  if (!videoResource) {
-    throw new Error('🚨 Video Resource not found')
-  }
+	if (!videoResource) {
+		throw new Error('🚨 Video Resource not found')
+	}
 
-  await db
-    .insert(contentResource)
-    .values({
-      id: newTipId,
-      type: 'tip',
-      createdById: user.id,
-      fields: {
-        title: input.title,
-        state: 'draft',
-        visibility: 'unlisted',
-        slug: slugify(`${input.title}~${guid()}`),
-      },
-    })
-    .then((result) => {
-      return result
-    })
-    .catch((error) => {
-      console.error('🚨 Error creating tip', error)
-      throw error
-    })
+	await db
+		.insert(contentResource)
+		.values({
+			id: newTipId,
+			type: 'tip',
+			createdById: user.id,
+			fields: {
+				title: input.title,
+				state: 'draft',
+				visibility: 'unlisted',
+				slug: slugify(`${input.title}~${guid()}`),
+			},
+		})
+		.then((result) => {
+			return result
+		})
+		.catch((error) => {
+			console.error('🚨 Error creating tip', error)
+			throw error
+		})
 
-  const tip = await getTip(newTipId)
+	const tip = await getTip(newTipId)
 
-  if (tip) {
-    await db
-      .insert(contentResourceResource)
-      .values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
+	if (tip) {
+		await db
+			.insert(contentResourceResource)
+			.values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
 
-    revalidateTag('tips')
+		revalidateTag('tips')
 
-    return tip
-  } else {
-    throw new Error('🚨 Error creating tip: Tip not found')
-  }
+		return tip
+	} else {
+		throw new Error('🚨 Error creating tip: Tip not found')
+	}
 }
 
 export async function updateTip(input: TipUpdate) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('update', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const currentTip = await getTip(input._id)
+	const currentTip = await getTip(input._id)
 
-  if (!currentTip) {
-    throw new Error(`Tip with id ${input._id} not found.`)
-  }
+	if (!currentTip) {
+		throw new Error(`Tip with id ${input._id} not found.`)
+	}
 
-  let tipSlug = currentTip.slug
+	let tipSlug = currentTip.slug
 
-  if (input.title !== currentTip.title) {
-    const splitSlug = currentTip?.slug.split('~') || ['', guid()]
-    tipSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
-  }
+	if (input.title !== currentTip.title) {
+		const splitSlug = currentTip?.slug.split('~') || ['', guid()]
+		tipSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
+	}
 
-  const query = sql`
+	const query = sql`
     UPDATE ${contentResource}
     SET
       ${contentResource.fields} = JSON_SET(
@@ -159,15 +159,15 @@ export async function updateTip(input: TipUpdate) {
       id = ${input._id};
   `
 
-  await db.execute(query).catch((error) => {
-    console.error('🚨 Error updating tip', error)
-    throw error
-  })
+	await db.execute(query).catch((error) => {
+		console.error('🚨 Error updating tip', error)
+		throw error
+	})
 
-  revalidateTag('tips')
-  revalidateTag(input._id)
-  revalidateTag(tipSlug)
-  revalidatePath(`/tips/${tipSlug}`)
+	revalidateTag('tips')
+	revalidateTag(input._id)
+	revalidateTag(tipSlug)
+	revalidatePath(`/tips/${tipSlug}`)
 
-  return await getTip(input._id)
+	return await getTip(input._id)
 }

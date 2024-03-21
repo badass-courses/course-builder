@@ -1,46 +1,46 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["PORT"],
-  "pipeline": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [
-        ".next",
-        "dist/**",
-        "lib/**",
-        "providers/**",
-        "inngest/**",
-        "schemas/**",
-        "*.js",
-        "*.d.ts",
-        "*.d.ts.map",
-        "!.next/cache/**"
-      ]
-    },
-    "lint": {
-      "dependsOn": ["^topo", "^build"],
-      "outputs": []
-    },
-    "dev": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "clean": {
-      "cache": false
-    },
-    "typecheck": {
-      "dependsOn": ["^topo", "^build"]
-    },
-    "test": {
-      "dependsOn": ["build"]
-    },
-    "test:watch": {
-      "cache": false
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["**/.env.*local"],
+	"globalEnv": ["PORT"],
+	"pipeline": {
+		"topo": {
+			"dependsOn": ["^topo"]
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [
+				".next",
+				"dist/**",
+				"lib/**",
+				"providers/**",
+				"inngest/**",
+				"schemas/**",
+				"*.js",
+				"*.d.ts",
+				"*.d.ts.map",
+				"!.next/cache/**"
+			]
+		},
+		"lint": {
+			"dependsOn": ["^topo", "^build"],
+			"outputs": []
+		},
+		"dev": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"clean": {
+			"cache": false
+		},
+		"typecheck": {
+			"dependsOn": ["^topo", "^build"]
+		},
+		"test": {
+			"dependsOn": ["build"]
+		},
+		"test:watch": {
+			"cache": false
+		}
+	}
 }

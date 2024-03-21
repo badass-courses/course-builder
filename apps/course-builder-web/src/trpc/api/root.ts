@@ -9,9 +9,9 @@ import { createTRPCRouter } from '@/trpc/api/trpc'
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  ability: abilityRouter,
-  imageResources: imageResourceRouter,
-  users: usersRouter,
+	ability: abilityRouter,
+	imageResources: imageResourceRouter,
+	users: usersRouter,
 })
 
 // export type definition of API

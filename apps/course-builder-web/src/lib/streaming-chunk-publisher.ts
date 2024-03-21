@@ -10,74 +10,74 @@ export const STREAM_COMPLETE = `\\ok`
  * work.
  */
 export class OpenAIStreamingDataPartykitChunkPublisher {
-  requestId: string
+	requestId: string
 
-  interval = 250
+	interval = 250
 
-  buffer: {
-    contents: string
-    // signal is a blocking signal which resolves when the buffer has been written.
-    signal?: Promise<unknown>
-  }
+	buffer: {
+		contents: string
+		// signal is a blocking signal which resolves when the buffer has been written.
+		signal?: Promise<unknown>
+	}
 
-  constructor(requestId: string) {
-    this.requestId = requestId
-    this.buffer = {
-      contents: '',
-    }
-  }
+	constructor(requestId: string) {
+		this.requestId = requestId
+		this.buffer = {
+			contents: '',
+		}
+	}
 
-  async publishMessage(message: string) {
-    await publishToPartykit(message, this.requestId)
-  }
+	async publishMessage(message: string) {
+		await publishToPartykit(message, this.requestId)
+	}
 
-  async writeResponseInChunks(streamingResponse: Response): Promise<AIOutput> {
-    const applyChunk = this.appendToBufferAndPublish.bind(this)
+	async writeResponseInChunks(streamingResponse: Response): Promise<AIOutput> {
+		const applyChunk = this.appendToBufferAndPublish.bind(this)
 
-    // https://developer.mozilla.org/en-US/docs/Web/API/TransformStream
-    const transformStream = new TransformStream({
-      async transform(chunk, controller) {
-        // When we receive a chunk, publish this as a new request.
-        const text = new TextDecoder().decode(chunk)
-        await applyChunk(text)
-        // await publish(text, requestId);
-        // Continue with the standard stream.
-        controller.enqueue(chunk)
-      },
-    })
-    // Publish via our writing pipe.
-    const stream = OpenAIStream(streamingResponse).pipeThrough(transformStream)
-    const result = await parseStreamToText(stream, this.requestId)
-    await this.buffer.signal
-    return result
-  }
+		// https://developer.mozilla.org/en-US/docs/Web/API/TransformStream
+		const transformStream = new TransformStream({
+			async transform(chunk, controller) {
+				// When we receive a chunk, publish this as a new request.
+				const text = new TextDecoder().decode(chunk)
+				await applyChunk(text)
+				// await publish(text, requestId);
+				// Continue with the standard stream.
+				controller.enqueue(chunk)
+			},
+		})
+		// Publish via our writing pipe.
+		const stream = OpenAIStream(streamingResponse).pipeThrough(transformStream)
+		const result = await parseStreamToText(stream, this.requestId)
+		await this.buffer.signal
+		return result
+	}
 
-  async appendToBufferAndPublish(text: string) {
-    let resolve = (_val?: any) => {}
+	async appendToBufferAndPublish(text: string) {
+		let resolve = (_val?: any) => {}
 
-    this.buffer.contents += text
+		this.buffer.contents += text
 
-    if (this.buffer.signal) {
-      // Already enqueued.
-      return
-    }
+		if (this.buffer.signal) {
+			// Already enqueued.
+			return
+		}
 
-    this.buffer.signal = new Promise((r) => {
-      resolve = r
-    })
-    setTimeout(() => {
-      if (this.buffer.contents.length === 0) {
-        // No need to write
-        resolve()
-        return
-      }
-      publishToPartykit(this.buffer.contents, this.requestId)
-      resolve()
-      this.buffer = {
-        contents: '',
-      }
-    }, this.interval)
-  }
+		this.buffer.signal = new Promise((r) => {
+			resolve = r
+		})
+		setTimeout(() => {
+			if (this.buffer.contents.length === 0) {
+				// No need to write
+				resolve()
+				return
+			}
+			publishToPartykit(this.buffer.contents, this.requestId)
+			resolve()
+			this.buffer = {
+				contents: '',
+			}
+		}, this.interval)
+	}
 }
 
 /**
@@ -88,41 +88,41 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
  * @param requestId
  */
 export const publishToPartykit = async (body: string, requestId: string) => {
-  const partyUrl = `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${requestId}`
+	const partyUrl = `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${requestId}`
 
-  return await fetch(partyUrl, {
-    method: 'POST',
-    body: JSON.stringify({
-      body,
-      requestId,
-      name: 'ai.message',
-    }),
-  }).catch((e) => {
-    console.error(e)
-  })
+	return await fetch(partyUrl, {
+		method: 'POST',
+		body: JSON.stringify({
+			body,
+			requestId,
+			name: 'ai.message',
+		}),
+	}).catch((e) => {
+		console.error(e)
+	})
 }
 
 const parseStreamToText = async (
-  stream: ReadableStream,
-  requestId: string,
+	stream: ReadableStream,
+	requestId: string,
 ): Promise<AIOutput> => {
-  // And then pass this through the standard text response
-  const text = await new StreamingTextResponse(stream).text()
-  return { role: 'assistant', content: text }
+	// And then pass this through the standard text response
+	const text = await new StreamingTextResponse(stream).text()
+	return { role: 'assistant', content: text }
 
-  // if we are function calling we want JSON!
-  // try {
-  //   const raw = JSON.parse(text) as Record<string, any>;
-  //
-  //   console.log('raw', raw)
-  //   const output = {
-  //     role: "assistant",
-  //     content: null,
-  //     ...raw,
-  //   } as unknown;
-  //   return output as AIMessage;
-  // } catch (e) {
-  //   // This may not be JSON
-  //   return { role: "assistant", content: text };
-  // }
+	// if we are function calling we want JSON!
+	// try {
+	//   const raw = JSON.parse(text) as Record<string, any>;
+	//
+	//   console.log('raw', raw)
+	//   const output = {
+	//     role: "assistant",
+	//     content: null,
+	//     ...raw,
+	//   } as unknown;
+	//   return output as AIMessage;
+	// } catch (e) {
+	//   // This may not be JSON
+	//   return { role: "assistant", content: text };
+	// }
 }

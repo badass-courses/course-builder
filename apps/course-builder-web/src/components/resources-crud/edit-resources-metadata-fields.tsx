@@ -7,20 +7,20 @@ import { MetadataFieldVisibility } from '@/components/resources-crud/metadata-fi
 import type { UseFormReturn } from 'react-hook-form'
 
 export function EditResourcesMetadataFields({
-  form,
-  children,
+	form,
+	children,
 }: {
-  form: UseFormReturn<any>
-  children?: React.ReactNode
+	form: UseFormReturn<any>
+	children?: React.ReactNode
 }) {
-  return (
-    <>
-      <MetadataFieldTitle form={form} />
-      <MetadataFieldSlug form={form} />
-      <MetadataFieldVisibility form={form} />
-      <MetadataFieldState form={form} />
-      <MetadataFieldDescription form={form} />
-      {children}
-    </>
-  )
+	return (
+		<>
+			<MetadataFieldTitle form={form} />
+			<MetadataFieldSlug form={form} />
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
+			<MetadataFieldDescription form={form} />
+			{children}
+		</>
+	)
 }

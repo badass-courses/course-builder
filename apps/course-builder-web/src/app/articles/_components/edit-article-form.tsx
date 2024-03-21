@@ -14,51 +14,51 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 type EditArticleFormProps = {
-  article: Article
+	article: Article
 }
 
 export function EditArticleForm({ article }: EditArticleFormProps) {
-  const defaultSocialImage = getOGImageUrlForResource(article)
-  const form = useForm<z.infer<typeof ArticleSchema>>({
-    resolver: zodResolver(ArticleSchema),
-    defaultValues: {
-      ...article,
-      description: article.description ?? '',
-      socialImage: defaultSocialImage,
-    },
-  })
+	const defaultSocialImage = getOGImageUrlForResource(article)
+	const form = useForm<z.infer<typeof ArticleSchema>>({
+		resolver: zodResolver(ArticleSchema),
+		defaultValues: {
+			...article,
+			description: article.description ?? '',
+			socialImage: defaultSocialImage,
+		},
+	})
 
-  const isMobile = useIsMobile()
+	const isMobile = useIsMobile()
 
-  const ResourceForm = isMobile
-    ? EditResourcesFormMobile
-    : EditResourcesFormDesktop
+	const ResourceForm = isMobile
+		? EditResourcesFormMobile
+		: EditResourcesFormDesktop
 
-  return (
-    <ResourceForm
-      resource={article}
-      form={form}
-      resourceSchema={ArticleSchema}
-      getResourcePath={(slug) => `/${slug}`}
-      updateResource={updateArticle}
-    >
-      <ArticleMetadataFormFields form={form} />
-    </ResourceForm>
-  )
+	return (
+		<ResourceForm
+			resource={article}
+			form={form}
+			resourceSchema={ArticleSchema}
+			getResourcePath={(slug) => `/${slug}`}
+			updateResource={updateArticle}
+		>
+			<ArticleMetadataFormFields form={form} />
+		</ResourceForm>
+	)
 }
 
 const ArticleMetadataFormFields = ({
-  form,
+	form,
 }: {
-  form: UseFormReturn<z.infer<typeof ArticleSchema>>
+	form: UseFormReturn<z.infer<typeof ArticleSchema>>
 }) => {
-  const currentSocialImage = form.watch('socialImage')
-  return (
-    <EditResourcesMetadataFields form={form}>
-      <MetadataFieldSocialImage
-        form={form}
-        currentSocialImage={currentSocialImage}
-      />
-    </EditResourcesMetadataFields>
-  )
+	const currentSocialImage = form.watch('socialImage')
+	return (
+		<EditResourcesMetadataFields form={form}>
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={currentSocialImage}
+			/>
+		</EditResourcesMetadataFields>
+	)
 }

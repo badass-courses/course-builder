@@ -7,20 +7,20 @@ import { getServerAuthSession } from '@/server/auth'
 export const dynamic = 'force-dynamic'
 
 export default async function CreateResourcePage({
-  resourceType,
+	resourceType,
 }: {
-  resourceType: string
+	resourceType: string
 }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
 
-  if (!ability.can('create', 'Content')) {
-    notFound()
-  }
+	if (!ability.can('create', 'Content')) {
+		notFound()
+	}
 
-  return (
-    <div className="flex flex-col">
-      <CreateResourceCard resourceType={resourceType} />
-    </div>
-  )
+	return (
+		<div className="flex flex-col">
+			<CreateResourceCard resourceType={resourceType} />
+		</div>
+	)
 }

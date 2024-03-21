@@ -13,19 +13,19 @@ import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { computeVideoSplitPoints } from './functions/split_video'
 
 export const inngestConfig = {
-  client: inngest,
-  functions: [
-    ...coreVideoProcessingFunctions.map(({ config, trigger, handler }) =>
-      inngest.createFunction(config, trigger, handler),
-    ),
-    userCreated,
-    userSignupAdminEmail,
-    postmarkWebhook,
-    imageResourceCreated,
-    resourceChat,
-    emailSendBroadcast,
-    performCodeExtraction,
-    getOrCreateConcept,
-    computeVideoSplitPoints,
-  ],
+	client: inngest,
+	functions: [
+		...coreVideoProcessingFunctions.map(({ config, trigger, handler }) =>
+			inngest.createFunction(config, trigger, handler),
+		),
+		userCreated,
+		userSignupAdminEmail,
+		postmarkWebhook,
+		imageResourceCreated,
+		resourceChat,
+		emailSendBroadcast,
+		performCodeExtraction,
+		getOrCreateConcept,
+		computeVideoSplitPoints,
+	],
 }

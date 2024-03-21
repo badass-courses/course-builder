@@ -9,36 +9,36 @@ import slugify from '@sindresorhus/slugify'
 import { z } from 'zod'
 
 const NewResourceSchema = z.object({
-  type: z.string(),
-  title: z.string().min(2).max(90),
+	type: z.string(),
+	title: z.string().min(2).max(90),
 })
 
 type NewResource = z.infer<typeof NewResourceSchema>
 
 export async function createResource(input: NewResource) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('create', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const hash = guid()
-  const newResourceId = slugify(`${input.type}~${hash}`)
+	const hash = guid()
+	const newResourceId = slugify(`${input.type}~${hash}`)
 
-  const newResource = {
-    id: newResourceId,
-    type: input.type,
-    fields: {
-      title: input.title,
-      state: 'draft',
-      visibility: 'unlisted',
-      slug: slugify(`${input.title}~${hash}`),
-    },
-    createdById: user.id,
-  }
+	const newResource = {
+		id: newResourceId,
+		type: input.type,
+		fields: {
+			title: input.title,
+			state: 'draft',
+			visibility: 'unlisted',
+			slug: slugify(`${input.title}~${hash}`),
+		},
+		createdById: user.id,
+	}
 
-  await db.insert(contentResource).values(newResource)
+	await db.insert(contentResource).values(newResource)
 
-  return newResource
+	return newResource
 }

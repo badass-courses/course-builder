@@ -1,11 +1,11 @@
 {
-  "name": "@coursebuilder/tsconfig",
-  "version": "0.0.2",
-  "private": true,
-  "files": [
-    "base.json",
-    "cli.json",
-    "nextjs.json",
-    "react-library.json"
-  ]
+	"name": "@coursebuilder/tsconfig",
+	"version": "0.0.2",
+	"private": true,
+	"files": [
+		"base.json",
+		"cli.json",
+		"nextjs.json",
+		"react-library.json"
+	]
 }

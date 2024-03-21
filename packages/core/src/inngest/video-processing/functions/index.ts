@@ -8,12 +8,12 @@ import { videoReady } from './video-ready'
 import { videoUploaded } from './video-uploaded'
 
 export const coreVideoProcessingFunctions = [
-  transcriptReady,
-  addSrtToMuxAsset,
-  generateTranscriptWithScreenshots,
-  orderTranscript,
-  removeCompletedVideo,
-  videoProcessingError,
-  videoReady,
-  videoUploaded,
+	transcriptReady,
+	addSrtToMuxAsset,
+	generateTranscriptWithScreenshots,
+	orderTranscript,
+	removeCompletedVideo,
+	videoProcessingError,
+	videoReady,
+	videoUploaded,
 ]

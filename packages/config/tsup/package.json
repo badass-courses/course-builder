@@ -1,11 +1,11 @@
 {
-  "name": "@coursebuilder/tsup-config",
-  "version": "0.0.3",
-  "private": true,
-  "main": "index.js",
-  "types": "index.d.ts",
-  "devDependencies": {
-    "@types/node": "^20.11.24",
-    "tsup": "6.7.0"
-  }
+	"name": "@coursebuilder/tsup-config",
+	"version": "0.0.3",
+	"private": true,
+	"main": "index.js",
+	"types": "index.d.ts",
+	"devDependencies": {
+		"@types/node": "^20.11.24",
+		"tsup": "6.7.0"
+	}
 }

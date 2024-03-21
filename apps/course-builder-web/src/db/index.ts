@@ -5,8 +5,8 @@ import { drizzle } from 'drizzle-orm/planetscale-serverless'
 import * as schema from './schema'
 
 export const db = drizzle(
-  new Client({
-    url: env.DATABASE_URL,
-  }),
-  { schema },
+	new Client({
+		url: env.DATABASE_URL,
+	}),
+	{ schema },
 )

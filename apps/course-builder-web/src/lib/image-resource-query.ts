@@ -10,53 +10,53 @@ import { sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 const ImageResourceSchema = z.object({
-  _id: z.string(),
-  url: z.string(),
-  alt: z.string().optional().nullable(),
+	_id: z.string(),
+	url: z.string(),
+	alt: z.string().optional().nullable(),
 })
 
 export async function createImageResource(input: {
-  asset_id: string
-  secure_url: string
+	asset_id: string
+	secure_url: string
 }) {
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
-  const user = session?.user
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
+	const user = session?.user
 
-  if (!user || !ability.can('create', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  await db
-    .insert(contentResource)
-    .values({
-      id: input.asset_id,
-      type: 'imageResource',
-      fields: {
-        state: 'ready',
-        url: input.secure_url,
-      },
-      createdById: user.id,
-    })
-    .then((result) => {
-      return result
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
+	await db
+		.insert(contentResource)
+		.values({
+			id: input.asset_id,
+			type: 'imageResource',
+			fields: {
+				state: 'ready',
+				url: input.secure_url,
+			},
+			createdById: user.id,
+		})
+		.then((result) => {
+			return result
+		})
+		.catch((error) => {
+			console.error(error)
+			throw error
+		})
 
-  await inngest.send({
-    name: IMAGE_RESOURCE_CREATED_EVENT,
-    data: {
-      resourceId: input.asset_id,
-    },
-    user,
-  })
+	await inngest.send({
+		name: IMAGE_RESOURCE_CREATED_EVENT,
+		data: {
+			resourceId: input.asset_id,
+		},
+		user,
+	})
 }
 
 export async function getAllImageResources() {
-  const query = sql`
+	const query = sql`
       SELECT    
         id as _id,
         JSON_EXTRACT (${contentResource.fields}, "$.url") AS url,
@@ -68,8 +68,8 @@ export async function getAllImageResources() {
       ORDER BY
         createdAt DESC
     `
-  return db.execute(query).then((result) => {
-    const parsed = z.array(ImageResourceSchema).safeParse(result.rows)
-    return parsed.success ? parsed.data : []
-  })
+	return db.execute(query).then((result) => {
+		const parsed = z.array(ImageResourceSchema).safeParse(result.rows)
+		return parsed.success ? parsed.data : []
+	})
 }

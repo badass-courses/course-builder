@@ -16,17 +16,17 @@ type Role = 'admin' | 'user'
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module 'next-auth' {
-  interface Session extends DefaultSession {
-    user: {
-      id: string
-      role: Role
-    } & DefaultSession['user']
-  }
+	interface Session extends DefaultSession {
+		user: {
+			id: string
+			role: Role
+		} & DefaultSession['user']
+	}
 
-  interface User {
-    // ...other properties
-    role?: Role
-  }
+	interface User {
+		// ...other properties
+		role?: Role
+	}
 }
 
 /**
@@ -35,69 +35,69 @@ declare module 'next-auth' {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthConfig = {
-  events: {
-    createUser: async ({ user }) => {
-      await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
-    },
-  },
-  callbacks: {
-    session: async ({ session, user }) => {
-      const dbUser = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.id, user.id),
-      })
+	events: {
+		createUser: async ({ user }) => {
+			await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
+		},
+	},
+	callbacks: {
+		session: async ({ session, user }) => {
+			const dbUser = await db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, user.id),
+			})
 
-      const role: Role = dbUser?.role || 'user'
+			const role: Role = dbUser?.role || 'user'
 
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-          role,
-        },
-      }
-    },
-  },
-  adapter: courseBuilderConfig.adapter,
-  providers: [
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-    ...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
-      ? [
-          GithubProvider({
-            clientId: env.GITHUB_CLIENT_ID,
-            clientSecret: env.GITHUB_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : []),
-    ...(env.TWITTER_CLIENT_ID && env.TWITTER_CLIENT_SECRET
-      ? [
-          TwitterProvider({
-            clientId: env.TWITTER_CLIENT_ID,
-            clientSecret: env.TWITTER_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : []),
-  ],
-  pages: {
-    signIn: '/login',
-    error: '/error',
-    verifyRequest: '/check-your-email',
-  },
+			return {
+				...session,
+				user: {
+					...session.user,
+					id: user.id,
+					role,
+				},
+			}
+		},
+	},
+	adapter: courseBuilderConfig.adapter,
+	providers: [
+		/**
+		 * ...add more providers here.
+		 *
+		 * Most other providers require a bit more work than the Discord provider. For example, the
+		 * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
+		 * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
+		 *
+		 * @see https://next-auth.js.org/providers/github
+		 */
+		...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
+			? [
+					GithubProvider({
+						clientId: env.GITHUB_CLIENT_ID,
+						clientSecret: env.GITHUB_CLIENT_SECRET,
+						allowDangerousEmailAccountLinking: true,
+					}),
+				]
+			: []),
+		...(env.TWITTER_CLIENT_ID && env.TWITTER_CLIENT_SECRET
+			? [
+					TwitterProvider({
+						clientId: env.TWITTER_CLIENT_ID,
+						clientSecret: env.TWITTER_CLIENT_SECRET,
+						allowDangerousEmailAccountLinking: true,
+					}),
+				]
+			: []),
+	],
+	pages: {
+		signIn: '/login',
+		error: '/error',
+		verifyRequest: '/check-your-email',
+	},
 }
 
 export const {
-  handlers: { GET, POST },
-  auth,
+	handlers: { GET, POST },
+	auth,
 } = NextAuth(authOptions)
 
 export const getServerAuthSession = async () => auth()

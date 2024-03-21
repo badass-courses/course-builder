@@ -8,75 +8,75 @@ import { SHA1 } from './util'
  * the node ID since a node can be shown more than once (references, panels, etc).
  */
 export class Path {
-  name: string
-  nodes: Node[]
-  _hash: string
+	name: string
+	nodes: Node[]
+	_hash: string
 
-  constructor(head?: Node | null, name?: string) {
-    if (name) {
-      this.name = name
-    } else {
-      this.name = Math.random().toString(36).substring(2)
-    }
-    if (head) {
-      this.nodes = [head]
-    } else {
-      this.nodes = []
-    }
+	constructor(head?: Node | null, name?: string) {
+		if (name) {
+			this.name = name
+		} else {
+			this.name = Math.random().toString(36).substring(2)
+		}
+		if (head) {
+			this.nodes = [head]
+		} else {
+			this.nodes = []
+		}
 
-    this._hash = SHA1([this.name, ...this.nodes.map((n) => n.id)].join(':'))
-  }
+		this._hash = SHA1([this.name, ...this.nodes.map((n) => n.id)].join(':'))
+	}
 
-  get hash(): string {
-    return this._hash
-  }
+	get hash(): string {
+		return this._hash
+	}
 
-  push(node: Node) {
-    this.nodes.push(node)
-  }
+	push(node: Node) {
+		this.nodes.push(node)
+	}
 
-  pop(): Node | null {
-    return this.nodes.pop() || null
-  }
+	pop(): Node | null {
+		return this.nodes.pop() || null
+	}
 
-  sub(): Path {
-    return new Path(this.node, this.name)
-  }
+	sub(): Path {
+		return new Path(this.node, this.name)
+	}
 
-  clone(): Path {
-    const p = new Path()
-    p.name = this.name
-    p.nodes = [...this.nodes]
-    return p
-  }
+	clone(): Path {
+		const p = new Path()
+		p.name = this.name
+		p.nodes = [...this.nodes]
+		return p
+	}
 
-  append(node: Node): Path {
-    const p = this.clone()
-    p.push(node)
-    return p
-  }
+	append(node: Node): Path {
+		const p = this.clone()
+		p.push(node)
+		return p
+	}
 
-  get length(): number {
-    return this.nodes.length
-  }
+	get length(): number {
+		return this.nodes.length
+	}
 
-  get id(): string {
-    return SHA1([this.name, ...this.nodes.map((n) => n.id)].join(':'))
-  }
+	get id(): string {
+		return SHA1([this.name, ...this.nodes.map((n) => n.id)].join(':'))
+	}
 
-  get node(): Node {
-    const n = this.nodes[this.nodes.length - 1]
-    if (!n) throw new Error('Path has no nodes')
-    return n
-  }
+	get node(): Node {
+		const n = this.nodes[this.nodes.length - 1]
+		if (!n) throw new Error('Path has no nodes')
+		return n
+	}
 
-  get previous(): Node | null {
-    if (this.nodes.length < 2) return null
-    return this.nodes[this.nodes.length - 2] || null
-  }
+	get previous(): Node | null {
+		if (this.nodes.length < 2) return null
+		return this.nodes[this.nodes.length - 2] || null
+	}
 
-  get head(): Node {
-    if (!this.nodes[0]) throw new Error('Path has no nodes')
-    return this.nodes[0]
-  }
+	get head(): Node {
+		if (!this.nodes[0]) throw new Error('Path has no nodes')
+		return this.nodes[0]
+	}
 }

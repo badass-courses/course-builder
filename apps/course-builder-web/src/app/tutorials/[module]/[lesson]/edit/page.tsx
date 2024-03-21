@@ -5,24 +5,24 @@ import { getServerAuthSession } from '@/server/auth'
 export const dynamic = 'force-dynamic'
 
 export default async function EditTutorialLessonPage({
-  params,
+	params,
 }: {
-  params: { module: string; lesson: string }
+	params: { module: string; lesson: string }
 }) {
-  const { module, lesson } = params
+	const { module, lesson } = params
 
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
 
-  const lessonData = null
+	const lessonData = null
 
-  if (!lessonData || !ability.can('update', 'Content')) {
-    notFound()
-  }
+	if (!lessonData || !ability.can('update', 'Content')) {
+		notFound()
+	}
 
-  return (
-    <div className="flex flex-col">
-      <div>Edit Tutorial Lesson Form</div>
-    </div>
-  )
+	return (
+		<div className="flex flex-col">
+			<div>Edit Tutorial Lesson Form</div>
+		</div>
+	)
 }

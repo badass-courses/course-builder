@@ -1,11 +1,11 @@
 export default async function TutorialLessonPage({
-  params,
+	params,
 }: {
-  params: { module: string; lesson: string }
+	params: { module: string; lesson: string }
 }) {
-  return (
-    <div className="flex flex-col">
-      <div>Lesson Page</div>
-    </div>
-  )
+	return (
+		<div className="flex flex-col">
+			<div>Lesson Page</div>
+		</div>
+	)
 }

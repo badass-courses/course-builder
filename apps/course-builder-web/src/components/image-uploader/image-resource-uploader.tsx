@@ -5,16 +5,16 @@ import { ImageResourceBrowser } from '@/components/image-uploader/image-resource
 import { ScrollArea } from '@coursebuilder/ui'
 
 export function ImageResourceUploader(props: {
-  uploadDirectory: string
-  belongsToResourceId: string
+	uploadDirectory: string
+	belongsToResourceId: string
 }) {
-  return (
-    <ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
-      <CloudinaryUploadButton
-        dir={props.uploadDirectory}
-        id={props.belongsToResourceId}
-      />
-      <ImageResourceBrowser />
-    </ScrollArea>
-  )
+	return (
+		<ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
+			<CloudinaryUploadButton
+				dir={props.uploadDirectory}
+				id={props.belongsToResourceId}
+			/>
+			<ImageResourceBrowser />
+		</ScrollArea>
+	)
 }

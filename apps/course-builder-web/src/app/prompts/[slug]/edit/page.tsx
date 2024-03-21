@@ -9,18 +9,18 @@ import { getServerAuthSession } from '@/server/auth'
 export const dynamic = 'force-dynamic'
 
 export default async function PromptEditPage({
-  params,
+	params,
 }: {
-  params: { slug: string }
+	params: { slug: string }
 }) {
-  headers()
-  const session = await getServerAuthSession()
-  const ability = getAbility({ user: session?.user })
-  const prompt = await getPrompt(params.slug)
+	headers()
+	const session = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user })
+	const prompt = await getPrompt(params.slug)
 
-  if (!prompt || !ability.can('create', 'Content')) {
-    notFound()
-  }
+	if (!prompt || !ability.can('create', 'Content')) {
+		notFound()
+	}
 
-  return <EditPromptForm key={prompt.slug} prompt={prompt} />
+	return <EditPromptForm key={prompt.slug} prompt={prompt} />
 }

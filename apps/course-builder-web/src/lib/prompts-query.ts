@@ -13,7 +13,7 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function getPrompts(): Promise<Prompt[]> {
-  const query = sql`
+	const query = sql`
     SELECT
       prompts.id as _id,
       prompts.type as _type,
@@ -29,69 +29,69 @@ export async function getPrompts(): Promise<Prompt[]> {
     ORDER BY prompts.createdAt DESC;
   `
 
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsed = z.array(PromptSchema).safeParse(result.rows)
-      return parsed.success ? parsed.data : []
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsed = z.array(PromptSchema).safeParse(result.rows)
+			return parsed.success ? parsed.data : []
+		})
+		.catch((error) => {
+			console.error(error)
+			throw error
+		})
 }
 
 export async function createPrompt(input: NewPrompt) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('create', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const newPromptId = v4()
+	const newPromptId = v4()
 
-  await db.insert(contentResource).values({
-    id: newPromptId,
-    type: 'prompt',
-    fields: {
-      title: input.title,
-      state: 'draft',
-      visibility: 'unlisted',
-      slug: slugify(`${input.title}~${guid()}`),
-    },
-    createdById: user.id,
-  })
+	await db.insert(contentResource).values({
+		id: newPromptId,
+		type: 'prompt',
+		fields: {
+			title: input.title,
+			state: 'draft',
+			visibility: 'unlisted',
+			slug: slugify(`${input.title}~${guid()}`),
+		},
+		createdById: user.id,
+	})
 
-  const prompt = await getPrompt(newPromptId)
+	const prompt = await getPrompt(newPromptId)
 
-  revalidateTag('prompts')
+	revalidateTag('prompts')
 
-  return prompt
+	return prompt
 }
 
 export async function updatePrompt(input: Prompt) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('update', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const currentPrompt = await getPrompt(input._id)
+	const currentPrompt = await getPrompt(input._id)
 
-  if (!currentPrompt) {
-    return createPrompt(input)
-  }
+	if (!currentPrompt) {
+		return createPrompt(input)
+	}
 
-  let promptSlug = input.slug
+	let promptSlug = input.slug
 
-  if (input.title !== currentPrompt?.title) {
-    const splitSlug = currentPrompt?.slug.split('~') || ['', guid()]
-    promptSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
-  }
+	if (input.title !== currentPrompt?.title) {
+		const splitSlug = currentPrompt?.slug.split('~') || ['', guid()]
+		promptSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
+	}
 
-  const query = sql`
+	const query = sql`
     UPDATE ${contentResource}
     SET
       ${contentResource.fields} = JSON_SET(
@@ -105,26 +105,26 @@ export async function updatePrompt(input: Prompt) {
       id = ${input._id};
   `
 
-  await db
-    .execute(query)
-    .then((result) => {
-      console.log('Updated Prompt')
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
+	await db
+		.execute(query)
+		.then((result) => {
+			console.log('Updated Prompt')
+		})
+		.catch((error) => {
+			console.error(error)
+			throw error
+		})
 
-  revalidateTag('prompts')
-  revalidateTag(input._id)
-  revalidateTag(promptSlug)
-  revalidatePath(`/${promptSlug}`)
+	revalidateTag('prompts')
+	revalidateTag(input._id)
+	revalidateTag(promptSlug)
+	revalidatePath(`/${promptSlug}`)
 
-  return await getPrompt(input._id)
+	return await getPrompt(input._id)
 }
 
 export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
-  const query = sql`
+	const query = sql`
     SELECT
       prompts.id as _id,
       prompts.type as _type,
@@ -140,21 +140,21 @@ export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
       prompts.type = 'prompt' AND (prompts.id = ${slugOrId} OR JSON_EXTRACT (prompts.fields, "$.slug") = ${slugOrId});
   `
 
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsed = PromptSchema.safeParse(result.rows[0])
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsed = PromptSchema.safeParse(result.rows[0])
 
-      if (!parsed.success) {
-        console.error('Error parsing prompt', slugOrId)
-        console.error(parsed.error)
-        return null
-      } else {
-        return parsed.data
-      }
-    })
-    .catch((error) => {
-      console.error(error)
-      return error
-    })
+			if (!parsed.success) {
+				console.error('Error parsing prompt', slugOrId)
+				console.error(parsed.error)
+				return null
+			} else {
+				return parsed.data
+			}
+		})
+		.catch((error) => {
+			console.error(error)
+			return error
+		})
 }

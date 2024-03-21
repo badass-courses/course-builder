@@ -13,123 +13,123 @@ import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
-  Button,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Button,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	Input,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@coursebuilder/ui'
 
 export const TipMetadataFormFields: React.FC<{
-  form: UseFormReturn<z.infer<typeof TipSchema>>
-  videoResourceLoader: Promise<VideoResource | null>
-  tip: Tip
+	form: UseFormReturn<z.infer<typeof TipSchema>>
+	videoResourceLoader: Promise<VideoResource | null>
+	tip: Tip
 }> = ({ form, videoResourceLoader, tip }) => {
-  const router = useRouter()
-  const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
-  const [videoResourceId, setVideoResourceId] = React.useState<
-    string | null | undefined
-  >(tip.videoResourceId)
-  const [transcript, setTranscript] = useTranscript({
-    videoResourceId,
-    initialTranscript: videoResource?.transcript,
-  })
+	const router = useRouter()
+	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
+	const [videoResourceId, setVideoResourceId] = React.useState<
+		string | null | undefined
+	>(tip.videoResourceId)
+	const [transcript, setTranscript] = useTranscript({
+		videoResourceId,
+		initialTranscript: videoResource?.transcript,
+	})
 
-  console.log({ videoResource })
+	console.log({ videoResource })
 
-  useSocket({
-    room: videoResourceId,
-    onMessage: async (messageEvent) => {
-      try {
-        const data = JSON.parse(messageEvent.data)
+	useSocket({
+		room: videoResourceId,
+		onMessage: async (messageEvent) => {
+			try {
+				const data = JSON.parse(messageEvent.data)
 
-        switch (data.name) {
-          case 'video.asset.ready':
-          case 'videoResource.created':
-            if (data.body.id) {
-              setVideoResourceId(data.body.id)
-            }
+				switch (data.name) {
+					case 'video.asset.ready':
+					case 'videoResource.created':
+						if (data.body.id) {
+							setVideoResourceId(data.body.id)
+						}
 
-            router.refresh()
+						router.refresh()
 
-            break
-          case 'transcript.ready':
-            setTranscript(data.body)
-            break
-          default:
-            break
-        }
-      } catch (error) {
-        // nothing to do
-      }
-    },
-  })
-  return (
-    <>
-      <div>
-        <Suspense
-          fallback={
-            <>
-              <div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-                video is loading
-              </div>
-            </>
-          }
-        >
-          <TipPlayer videoResourceLoader={videoResourceLoader} />
-          <div className="px-5 text-xs">video is {videoResource?.state}</div>
-        </Suspense>
-      </div>
-      <FormField
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <FormItem className="px-5">
-            <FormLabel className="text-lg font-bold">Title</FormLabel>
-            <FormDescription>
-              A title should summarize the tip and explain what it is about
-              clearly.
-            </FormDescription>
-            <Input {...field} />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className="px-5">
-        <div className="flex items-center justify-between gap-2">
-          <label className="text-lg font-bold">Transcript</label>
-          {Boolean(videoResourceId) && (
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    type="button"
-                    onClick={async (event) => {
-                      event.preventDefault()
-                      await reprocessTranscript({ videoResourceId })
-                    }}
-                    title="Reprocess"
-                  >
-                    <RefreshCcw className="w-3" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Reprocess Transcript</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-        <ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-          {transcript ? transcript : 'Transcript Processing'}
-        </ReactMarkdown>
-      </div>
-    </>
-  )
+						break
+					case 'transcript.ready':
+						setTranscript(data.body)
+						break
+					default:
+						break
+				}
+			} catch (error) {
+				// nothing to do
+			}
+		},
+	})
+	return (
+		<>
+			<div>
+				<Suspense
+					fallback={
+						<>
+							<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+								video is loading
+							</div>
+						</>
+					}
+				>
+					<TipPlayer videoResourceLoader={videoResourceLoader} />
+					<div className="px-5 text-xs">video is {videoResource?.state}</div>
+				</Suspense>
+			</div>
+			<FormField
+				control={form.control}
+				name="title"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormDescription>
+							A title should summarize the tip and explain what it is about
+							clearly.
+						</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<div className="px-5">
+				<div className="flex items-center justify-between gap-2">
+					<label className="text-lg font-bold">Transcript</label>
+					{Boolean(videoResourceId) && (
+						<TooltipProvider delayDuration={0}>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button
+										variant="ghost"
+										size="icon"
+										type="button"
+										onClick={async (event) => {
+											event.preventDefault()
+											await reprocessTranscript({ videoResourceId })
+										}}
+										title="Reprocess"
+									>
+										<RefreshCcw className="w-3" />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent side="top">Reprocess Transcript</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					)}
+				</div>
+				<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
+					{transcript ? transcript : 'Transcript Processing'}
+				</ReactMarkdown>
+			</div>
+		</>
+	)
 }

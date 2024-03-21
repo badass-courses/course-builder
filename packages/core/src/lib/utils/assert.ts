@@ -1,8 +1,8 @@
 import { CourseBuilderAdapter } from '../../adapters'
 import {
-  MissingAdapter,
-  MissingAdapterMethods,
-  UnsupportedStrategy,
+	MissingAdapter,
+	MissingAdapterMethods,
+	UnsupportedStrategy,
 } from '../../errors'
 import { CourseBuilderConfig } from '../../index'
 import { RequestInternal } from '../../types'
@@ -14,41 +14,41 @@ let hasTranscript = false
 let warned = false
 
 export function assertConfig(
-  request: RequestInternal,
-  options: CourseBuilderConfig,
+	request: RequestInternal,
+	options: CourseBuilderConfig,
 ): ConfigError | WarningCode[] {
-  const { url } = request
-  const warnings: WarningCode[] = []
+	const { url } = request
+	const warnings: WarningCode[] = []
 
-  if (!warned && options.debug) warnings.push('debug-enabled')
+	if (!warned && options.debug) warnings.push('debug-enabled')
 
-  // Keep track of webauthn providers that use conditional UI
+	// Keep track of webauthn providers that use conditional UI
 
-  for (const p of options.providers) {
-    const provider = typeof p === 'function' ? p() : p
-    if (provider.type === 'transcription') {
-      hasTranscript = true
-    }
-  }
+	for (const p of options.providers) {
+		const provider = typeof p === 'function' ? p() : p
+		if (provider.type === 'transcription') {
+			hasTranscript = true
+		}
+	}
 
-  const { adapter } = options
+	const { adapter } = options
 
-  let requiredMethods: (keyof CourseBuilderAdapter)[] = []
+	let requiredMethods: (keyof CourseBuilderAdapter)[] = []
 
-  if (hasTranscript) {
-  }
+	if (hasTranscript) {
+	}
 
-  if (adapter) {
-    const missing = requiredMethods.filter((m) => !(m in adapter))
+	if (adapter) {
+		const missing = requiredMethods.filter((m) => !(m in adapter))
 
-    if (missing.length) {
-      return new MissingAdapterMethods(
-        `Required adapter methods were missing: ${missing.join(', ')}`,
-      )
-    }
-  }
+		if (missing.length) {
+			return new MissingAdapterMethods(
+				`Required adapter methods were missing: ${missing.join(', ')}`,
+			)
+		}
+	}
 
-  if (!warned) warned = true
+	if (!warned) warned = true
 
-  return warnings
+	return warnings
 }

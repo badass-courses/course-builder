@@ -13,7 +13,7 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function getArticles(): Promise<Article[]> {
-  const query = sql`
+	const query = sql`
     SELECT
       articles.id as _id,
       articles.type as _type,
@@ -29,69 +29,69 @@ export async function getArticles(): Promise<Article[]> {
     ORDER BY articles.createdAt DESC;
   `
 
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsed = z.array(ArticleSchema).safeParse(result.rows)
-      return parsed.success ? parsed.data : []
-    })
-    .catch((error) => {
-      console.error(error)
-      throw error
-    })
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsed = z.array(ArticleSchema).safeParse(result.rows)
+			return parsed.success ? parsed.data : []
+		})
+		.catch((error) => {
+			console.error(error)
+			throw error
+		})
 }
 
 export async function createArticle(input: NewArticle) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('create', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const newArticleId = v4()
+	const newArticleId = v4()
 
-  await db.insert(contentResource).values({
-    id: newArticleId,
-    type: 'article',
-    fields: {
-      title: input.title,
-      state: 'draft',
-      visibility: 'unlisted',
-      slug: slugify(`${input.title}~${guid()}`),
-    },
-    createdById: user.id,
-  })
+	await db.insert(contentResource).values({
+		id: newArticleId,
+		type: 'article',
+		fields: {
+			title: input.title,
+			state: 'draft',
+			visibility: 'unlisted',
+			slug: slugify(`${input.title}~${guid()}`),
+		},
+		createdById: user.id,
+	})
 
-  const article = await getArticle(newArticleId)
+	const article = await getArticle(newArticleId)
 
-  revalidateTag('articles')
+	revalidateTag('articles')
 
-  return article
+	return article
 }
 
 export async function updateArticle(input: Article) {
-  const session = await getServerAuthSession()
-  const user = session?.user
-  const ability = getAbility({ user })
-  if (!user || !ability.can('update', 'Content')) {
-    throw new Error('Unauthorized')
-  }
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 
-  const currentArticle = await getArticle(input._id)
+	const currentArticle = await getArticle(input._id)
 
-  if (!currentArticle) {
-    return createArticle(input)
-  }
+	if (!currentArticle) {
+		return createArticle(input)
+	}
 
-  let articleSlug = input.slug
+	let articleSlug = input.slug
 
-  if (input.title !== currentArticle?.title) {
-    const splitSlug = currentArticle?.slug.split('~') || ['', guid()]
-    articleSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
-  }
+	if (input.title !== currentArticle?.title) {
+		const splitSlug = currentArticle?.slug.split('~') || ['', guid()]
+		articleSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
+	}
 
-  const query = sql`
+	const query = sql`
     UPDATE ${contentResource}
     SET
       ${contentResource.fields} = JSON_SET(
@@ -105,21 +105,21 @@ export async function updateArticle(input: Article) {
       id = ${input._id};
   `
 
-  await db.execute(query).catch((error) => {
-    console.error(error)
-    throw error
-  })
+	await db.execute(query).catch((error) => {
+		console.error(error)
+		throw error
+	})
 
-  revalidateTag('articles')
-  revalidateTag(input._id)
-  revalidateTag(articleSlug)
-  revalidatePath(`/${articleSlug}`)
+	revalidateTag('articles')
+	revalidateTag(input._id)
+	revalidateTag(articleSlug)
+	revalidatePath(`/${articleSlug}`)
 
-  return await getArticle(input._id)
+	return await getArticle(input._id)
 }
 
 export async function getArticle(slugOrId: string) {
-  const query = sql`
+	const query = sql`
     SELECT
       articles.id as _id,
       articles.type as _type,
@@ -135,21 +135,21 @@ export async function getArticle(slugOrId: string) {
       articles.type = 'article' AND (articles.id = ${slugOrId} OR JSON_EXTRACT (articles.fields, "$.slug") = ${slugOrId});
   `
 
-  return db
-    .execute(query)
-    .then((result) => {
-      const parsed = ArticleSchema.safeParse(result.rows[0])
+	return db
+		.execute(query)
+		.then((result) => {
+			const parsed = ArticleSchema.safeParse(result.rows[0])
 
-      if (!parsed.success) {
-        console.error('Error parsing article', slugOrId)
-        console.error(parsed.error)
-        return null
-      } else {
-        return parsed.data
-      }
-    })
-    .catch((error) => {
-      console.error(error)
-      return error
-    })
+			if (!parsed.success) {
+				console.error('Error parsing article', slugOrId)
+				console.error(parsed.error)
+				return null
+			} else {
+				return parsed.data
+			}
+		})
+		.catch((error) => {
+			console.error(error)
+			return error
+		})
 }

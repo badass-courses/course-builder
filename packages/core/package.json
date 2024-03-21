@@ -1,91 +1,91 @@
 {
-  "name": "@coursebuilder/core",
-  "version": "0.0.5",
-  "description": "Core package for Course Builder",
-  "scripts": {
-    "clean": "rm -rf *.js *.d.ts* lib",
-    "build": "tsc",
-    "dev": "tsc --watch"
-  },
-  "keywords": [
-    "coursebuilder",
-    "drizzle"
-  ],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "types": "./index.d.ts",
-  "files": [
-    "*.d.ts*",
-    "*.js",
-    "lib",
-    "src",
-    "providers",
-    "inngest"
-  ],
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "import": "./index.js"
-    },
-    "./adapters": {
-      "types": "./adapters.d.ts"
-    },
-    "./providers": {
-      "types": "./providers/index.d.ts"
-    },
-    "./providers/*": {
-      "types": "./providers/*.d.ts",
-      "import": "./providers/*.js"
-    },
-    "./schemas/*": {
-      "types": "./schemas/*.d.ts",
-      "import": "./schemas/*.js"
-    },
-    "./lib/*": {
-      "types": "./lib/*.d.ts",
-      "import": "./lib/*.js"
-    },
-    "./inngest/video-processing/events": {
-      "types": "./inngest/video-processing/events/index.d.ts",
-      "import": "./inngest/video-processing/events/index.js"
-    },
-    "./inngest/video-processing/events/*": {
-      "types": "./inngest/video-processing/events/*.d.ts",
-      "import": "./inngest/video-processing/events/*.js"
-    },
-    "./inngest/video-processing/functions": {
-      "types": "./inngest/video-processing/functions/index.d.ts",
-      "import": "./inngest/video-processing/functions/index.js"
-    },
-    "./inngest/video-processing/functions/*": {
-      "types": "./inngest/video-processing/functions/*.d.ts",
-      "import": "./inngest/video-processing/functions/*.js"
-    },
-    "./inngest/video-processing/utils": {
-      "types": "./inngest/video-processing/utils.d.ts",
-      "import": "./inngest/video-processing/utils.js"
-    },
-    "./inngest/*": {
-      "types": "./inngest/*.d.ts",
-      "import": "./inngest/*.js"
-    },
-    "./types": {
-      "types": "./types.d.ts"
-    }
-  },
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@types/cookie": "0.6.0",
-    "cookie": "0.6.0",
-    "inngest": "^3.16.1",
-    "srt-parser-2": "^1.2.3"
-  },
-  "devDependencies": {
-    "@auth/core": "^0.28.0",
-    "zod": "^3.22.4"
-  }
+	"name": "@coursebuilder/core",
+	"version": "0.0.5",
+	"description": "Core package for Course Builder",
+	"scripts": {
+		"clean": "rm -rf *.js *.d.ts* lib",
+		"build": "tsc",
+		"dev": "tsc --watch"
+	},
+	"keywords": [
+		"coursebuilder",
+		"drizzle"
+	],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"types": "./index.d.ts",
+	"files": [
+		"*.d.ts*",
+		"*.js",
+		"lib",
+		"src",
+		"providers",
+		"inngest"
+	],
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"import": "./index.js"
+		},
+		"./adapters": {
+			"types": "./adapters.d.ts"
+		},
+		"./providers": {
+			"types": "./providers/index.d.ts"
+		},
+		"./providers/*": {
+			"types": "./providers/*.d.ts",
+			"import": "./providers/*.js"
+		},
+		"./schemas/*": {
+			"types": "./schemas/*.d.ts",
+			"import": "./schemas/*.js"
+		},
+		"./lib/*": {
+			"types": "./lib/*.d.ts",
+			"import": "./lib/*.js"
+		},
+		"./inngest/video-processing/events": {
+			"types": "./inngest/video-processing/events/index.d.ts",
+			"import": "./inngest/video-processing/events/index.js"
+		},
+		"./inngest/video-processing/events/*": {
+			"types": "./inngest/video-processing/events/*.d.ts",
+			"import": "./inngest/video-processing/events/*.js"
+		},
+		"./inngest/video-processing/functions": {
+			"types": "./inngest/video-processing/functions/index.d.ts",
+			"import": "./inngest/video-processing/functions/index.js"
+		},
+		"./inngest/video-processing/functions/*": {
+			"types": "./inngest/video-processing/functions/*.d.ts",
+			"import": "./inngest/video-processing/functions/*.js"
+		},
+		"./inngest/video-processing/utils": {
+			"types": "./inngest/video-processing/utils.d.ts",
+			"import": "./inngest/video-processing/utils.js"
+		},
+		"./inngest/*": {
+			"types": "./inngest/*.d.ts",
+			"import": "./inngest/*.js"
+		},
+		"./types": {
+			"types": "./types.d.ts"
+		}
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@types/cookie": "0.6.0",
+		"cookie": "0.6.0",
+		"inngest": "^3.16.1",
+		"srt-parser-2": "^1.2.3"
+	},
+	"devDependencies": {
+		"@auth/core": "^0.28.0",
+		"zod": "^3.22.4"
+	}
 }

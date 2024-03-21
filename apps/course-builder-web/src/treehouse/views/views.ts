@@ -5,14 +5,14 @@ import table from './table'
 import tabs from './tabs'
 
 export const views = {
-  list,
-  table,
-  tabs,
-  document,
+	list,
+	table,
+	tabs,
+	document,
 }
 
 export function getView(name: 'list' | 'table' | 'tabs' | 'document') {
-  return views[name] || empty
+	return views[name] || empty
 }
 
 // TODO state management
@@ -29,7 +29,7 @@ export function getView(name: 'list' | 'table' | 'tabs' | 'document') {
 // }
 
 function toTitleCase(str: string) {
-  return str.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-  })
+	return str.replace(/\w\S*/g, function (txt) {
+		return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+	})
 }

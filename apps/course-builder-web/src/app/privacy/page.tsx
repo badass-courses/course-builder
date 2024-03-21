@@ -1,11 +1,11 @@
 import ReactMarkdown from 'react-markdown'
 
 const PrivacyPage = () => (
-  <main className="p-5 py-16 lg:py-24">
-    <article className="prose dark:prose-invert mx-auto">
-      <ReactMarkdown>{markdownContent}</ReactMarkdown>
-    </article>
-  </main>
+	<main className="p-5 py-16 lg:py-24">
+		<article className="prose dark:prose-invert mx-auto">
+			<ReactMarkdown>{markdownContent}</ReactMarkdown>
+		</article>
+	</main>
 )
 
 export default PrivacyPage

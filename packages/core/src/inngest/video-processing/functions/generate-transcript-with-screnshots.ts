@@ -1,87 +1,87 @@
 import { NonRetriableError } from 'inngest'
 
 import {
-  CoreInngestFunctionInput,
-  CoreInngestHandler,
-  CoreInngestTrigger,
+	CoreInngestFunctionInput,
+	CoreInngestHandler,
+	CoreInngestTrigger,
 } from '../../create-inngest-middleware'
 import { VIDEO_SRT_READY_EVENT } from '../events/event-video-srt-ready-to-asset'
 import { mergeSrtWithScreenshots } from '../utils'
 
 export const generateTranscriptWithScreenshotsConfig = {
-  id: `generate-transcript-with-screenshots`,
-  name: 'Generate Transcript with Screenshots',
+	id: `generate-transcript-with-screenshots`,
+	name: 'Generate Transcript with Screenshots',
 }
 export const generateTranscriptWithScreenshotsTrigger: CoreInngestTrigger = {
-  event: VIDEO_SRT_READY_EVENT,
+	event: VIDEO_SRT_READY_EVENT,
 }
 
 export const generateTranscriptWithScreenshotsHandler: CoreInngestHandler =
-  async ({ event, step, db, partyKitRootUrl }: CoreInngestFunctionInput) => {
-    const videoResourceId = event.data.videoResourceId
+	async ({ event, step, db, partyKitRootUrl }: CoreInngestFunctionInput) => {
+		const videoResourceId = event.data.videoResourceId
 
-    if (!videoResourceId) {
-      throw new Error('video resource id is required')
-    }
+		if (!videoResourceId) {
+			throw new Error('video resource id is required')
+		}
 
-    const videoResource = await step.run(
-      'get the video resource from Sanity',
-      async () => {
-        return db.getVideoResource(videoResourceId)
-      },
-    )
+		const videoResource = await step.run(
+			'get the video resource from Sanity',
+			async () => {
+				return db.getVideoResource(videoResourceId)
+			},
+		)
 
-    if (!videoResource) {
-      throw new NonRetriableError(
-        `Video resource not found for id (${event.data.videoResourceId})`,
-      )
-    }
+		if (!videoResource) {
+			throw new NonRetriableError(
+				`Video resource not found for id (${event.data.videoResourceId})`,
+			)
+		}
 
-    const { transcriptWithScreenshots } = await step.run(
-      'generate transcript with screenshots',
-      async () => {
-        if (!videoResource.muxPlaybackId) {
-          throw new Error(
-            `Video resource (${event.data.videoResourceId}) does not have a muxPlaybackId`,
-          )
-        }
-        if (!event.data.srt) {
-          throw new Error(
-            `Video resource (${event.data.videoResourceId}) does not have an srt`,
-          )
-        }
-        return await mergeSrtWithScreenshots(
-          event.data.srt,
-          videoResource.muxPlaybackId,
-        )
-      },
-    )
+		const { transcriptWithScreenshots } = await step.run(
+			'generate transcript with screenshots',
+			async () => {
+				if (!videoResource.muxPlaybackId) {
+					throw new Error(
+						`Video resource (${event.data.videoResourceId}) does not have a muxPlaybackId`,
+					)
+				}
+				if (!event.data.srt) {
+					throw new Error(
+						`Video resource (${event.data.videoResourceId}) does not have an srt`,
+					)
+				}
+				return await mergeSrtWithScreenshots(
+					event.data.srt,
+					videoResource.muxPlaybackId,
+				)
+			},
+		)
 
-    await step.run('update the video resource in the database', async () => {
-      return db.updateContentResourceFields({
-        id: videoResourceId,
-        fields: { transcriptWithScreenshots },
-      })
-    })
+		await step.run('update the video resource in the database', async () => {
+			return db.updateContentResourceFields({
+				id: videoResourceId,
+				fields: { transcriptWithScreenshots },
+			})
+		})
 
-    await step.run('send the transcript to the party', async () => {
-      await fetch(`${partyKitRootUrl}/party/${event.data.videoResourceId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          body: transcriptWithScreenshots,
-          requestId: event.data.videoResourceId,
-          name: 'transcriptWithScreenshots.ready',
-        }),
-      }).catch((e) => {
-        console.error(e)
-      })
-    })
+		await step.run('send the transcript to the party', async () => {
+			await fetch(`${partyKitRootUrl}/party/${event.data.videoResourceId}`, {
+				method: 'POST',
+				body: JSON.stringify({
+					body: transcriptWithScreenshots,
+					requestId: event.data.videoResourceId,
+					name: 'transcriptWithScreenshots.ready',
+				}),
+			}).catch((e) => {
+				console.error(e)
+			})
+		})
 
-    return { transcriptWithScreenshots }
-  }
+		return { transcriptWithScreenshots }
+	}
 
 export const generateTranscriptWithScreenshots = {
-  config: generateTranscriptWithScreenshotsConfig,
-  trigger: generateTranscriptWithScreenshotsTrigger,
-  handler: generateTranscriptWithScreenshotsHandler,
+	config: generateTranscriptWithScreenshotsConfig,
+	trigger: generateTranscriptWithScreenshotsTrigger,
+	handler: generateTranscriptWithScreenshotsHandler,
 }

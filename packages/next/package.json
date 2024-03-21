@@ -1,47 +1,47 @@
 {
-  "name": "@coursebuilder/next",
-  "version": "0.0.4",
-  "description": "Next for Course Builder.",
-  "scripts": {
-    "clean": "rm -rf *.js *.d.ts* lib providers",
-    "build": "pnpm clean && tsc",
-    "dev": "tsc --watch"
-  },
-  "keywords": [
-    "coursebuilder",
-    "drizzle"
-  ],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "types": "./index.d.ts",
-  "files": [
-    "*.d.ts*",
-    "*.js",
-    "lib",
-    "providers",
-    "src"
-  ],
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "import": "./index.js"
-    }
-  },
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@coursebuilder/core": "0.0.5",
-    "inngest": "^3.16.1"
-  },
-  "devDependencies": {
-    "next": "14.2.0-canary.27",
-    "react": "18.3.0-canary-03d6f7cf0-20240209"
-  },
-  "peerDependencies": {
-    "next": "^14",
-    "react": "^18"
-  }
+	"name": "@coursebuilder/next",
+	"version": "0.0.4",
+	"description": "Next for Course Builder.",
+	"scripts": {
+		"clean": "rm -rf *.js *.d.ts* lib providers",
+		"build": "pnpm clean && tsc",
+		"dev": "tsc --watch"
+	},
+	"keywords": [
+		"coursebuilder",
+		"drizzle"
+	],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"types": "./index.d.ts",
+	"files": [
+		"*.d.ts*",
+		"*.js",
+		"lib",
+		"providers",
+		"src"
+	],
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"import": "./index.js"
+		}
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@coursebuilder/core": "0.0.5",
+		"inngest": "^3.16.1"
+	},
+	"devDependencies": {
+		"next": "14.2.0-canary.27",
+		"react": "18.3.0-canary-03d6f7cf0-20240209"
+	},
+	"peerDependencies": {
+		"next": "^14",
+		"react": "^18"
+	}
 }
