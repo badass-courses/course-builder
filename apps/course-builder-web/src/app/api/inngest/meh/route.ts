@@ -11,6 +11,7 @@ const inngestClient = new Inngest({
 
 const noopFunction = inngestClient.createFunction({ id: 'noop' }, { event: 'noop' }, async () => {})
 
+// this exists to kill previously named app since you can't delete it in cloud
 const inngest = serve({
   client: inngestClient,
   functions: [noopFunction],
