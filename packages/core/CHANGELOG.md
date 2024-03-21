@@ -1,5 +1,11 @@
 # @coursebuilder/core
 
+## 0.0.5
+
+### Patch Changes
+
+- [#115](https://github.com/badass-courses/course-builder/pull/115) [`931b6d1c482df050eb3840f518b73e4e3204ab53`](https://github.com/badass-courses/course-builder/commit/931b6d1c482df050eb3840f518b73e4e3204ab53) Thanks [@joelhooks](https://github.com/joelhooks)! - adds the ability to create a tutorial collection, which is a flat playlist (no sections yet)
+
 ## 0.0.4
 
 ### Patch Changes
