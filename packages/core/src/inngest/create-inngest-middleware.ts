@@ -1,8 +1,22 @@
-import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
+import {
+  EventSchemas,
+  GetEvents,
+  GetFunctionInput,
+  Handler,
+  Inngest,
+  InngestFunction,
+  InngestMiddleware,
+} from 'inngest'
 
-import { MockCourseBuilderAdapter, type CourseBuilderAdapter } from '../adapters'
-import { MockTranscriptionProvider, type TranscriptionConfig } from '../providers'
-import { courseBuilderCoreEvents } from './video-processing/events'
+import {
+  MockCourseBuilderAdapter,
+  type CourseBuilderAdapter,
+} from '../adapters'
+import {
+  MockTranscriptionProvider,
+  type TranscriptionConfig,
+} from '../providers'
+import { CourseBuilderCoreEvents } from './video-processing/events'
 
 export interface CoreInngestContext {
   db: CourseBuilderAdapter
@@ -14,7 +28,15 @@ export interface CoreInngestContext {
   }
 }
 
-export const createInngestMiddleware = <TCourseBuilderContext extends CoreInngestContext = CoreInngestContext>(
+export type CoreInngestFunctionInput = GetFunctionInput<CoreInngest>
+export type CoreInngestTrigger = InngestFunction.Trigger<
+  keyof GetEvents<CoreInngest>
+>
+export type CoreInngestHandler = Handler.Any
+
+export const createInngestMiddleware = <
+  TCourseBuilderContext extends CoreInngestContext = CoreInngestContext,
+>(
   context: TCourseBuilderContext,
 ) => {
   return new InngestMiddleware({
@@ -38,9 +60,9 @@ export const createInngestMiddleware = <TCourseBuilderContext extends CoreInnges
   })
 }
 
-const schemas = new EventSchemas().fromRecord<courseBuilderCoreEvents>()
+const schemas = new EventSchemas().fromRecord<CourseBuilderCoreEvents>()
 
-const coreInngest = new Inngest({
+export const coreInngest = new Inngest({
   id: 'core-inngest',
   schemas,
   middleware: [

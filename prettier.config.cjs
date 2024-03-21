@@ -3,13 +3,16 @@
 /** @type { PrettierConfig | import("@ianvs/prettier-plugin-sort-imports").PluginConfig} } */
 const config = {
   arrowParens: 'always',
-  printWidth: 120,
+  printWidth: 80,
   singleQuote: true,
   semi: false,
   trailingComma: 'all',
   useTabs: false,
   tabWidth: 2,
-  plugins: ['@ianvs/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
+  plugins: [
+    '@ianvs/prettier-plugin-sort-imports',
+    'prettier-plugin-tailwindcss',
+  ],
   // Last version that doesn't squash type and value imports
   importOrderTypeScriptVersion: '4.4.0',
   importOrder: [

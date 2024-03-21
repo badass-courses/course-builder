@@ -54,6 +54,10 @@
       "types": "./inngest/video-processing/events/*.d.ts",
       "import": "./inngest/video-processing/events/*.js"
     },
+    "./inngest/video-processing/functions": {
+      "types": "./inngest/video-processing/functions/index.d.ts",
+      "import": "./inngest/video-processing/functions/index.js"
+    },
     "./inngest/video-processing/functions/*": {
       "types": "./inngest/video-processing/functions/*.d.ts",
       "import": "./inngest/video-processing/functions/*.js"
