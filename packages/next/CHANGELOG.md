@@ -1,5 +1,14 @@
 # @coursebuilder/next
 
+## 0.0.5
+
+### Patch Changes
+
+- [#117](https://github.com/badass-courses/course-builder/pull/117) [`e3a2ffba66ca708f9e8982d05a6d827afe57970a`](https://github.com/badass-courses/course-builder/commit/e3a2ffba66ca708f9e8982d05a6d827afe57970a) Thanks [@joelhooks](https://github.com/joelhooks)! - moves the video processing fucntions BACK to core but with a schema to keep type safety and shared context in core and consumer apps
+
+- Updated dependencies [[`e3a2ffba66ca708f9e8982d05a6d827afe57970a`](https://github.com/badass-courses/course-builder/commit/e3a2ffba66ca708f9e8982d05a6d827afe57970a)]:
+  - @coursebuilder/core@0.0.6
+
 ## 0.0.4
 
 ### Patch Changes
