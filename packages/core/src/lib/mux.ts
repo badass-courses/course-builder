@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 import { MuxAssetSchema } from '../schemas/mux'
 
 export const muxRequestHeaders = {
@@ -87,7 +89,9 @@ export async function getMuxAsset(assetId?: string | null) {
   return parsedData.success ? parsedData.data : null
 }
 
-export async function createMuxAsset(options?: MuxApiOptions) {
+export async function createMuxAsset(
+  options?: MuxApiOptions,
+): Promise<z.infer<typeof MuxAssetSchema>> {
   const baseUrl = 'https://api.mux.com'
 
   const muxOptions = getMuxOptions(options)

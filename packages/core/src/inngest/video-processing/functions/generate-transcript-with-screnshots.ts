@@ -1,18 +1,23 @@
-import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
-import { VIDEO_SRT_READY_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
-import { mergeSrtWithScreenshots } from '@coursebuilder/core/inngest/video-processing/utils'
+import {
+  CoreInngestFunctionInput,
+  CoreInngestHandler,
+  CoreInngestTrigger,
+} from '../../create-inngest-middleware'
+import { VIDEO_SRT_READY_EVENT } from '../events/event-video-srt-ready-to-asset'
+import { mergeSrtWithScreenshots } from '../utils'
 
-export const generateTranscriptWithScreenshots = inngest.createFunction(
-  {
-    id: `generate-transcript-with-screenshots`,
-    name: 'Generate Transcript with Screenshots',
-  },
-  {
-    event: VIDEO_SRT_READY_EVENT,
-  },
-  async ({ event, step, db, partyKitRootUrl }) => {
+export const generateTranscriptWithScreenshotsConfig = {
+  id: `generate-transcript-with-screenshots`,
+  name: 'Generate Transcript with Screenshots',
+}
+export const generateTranscriptWithScreenshotsTrigger: CoreInngestTrigger = {
+  event: VIDEO_SRT_READY_EVENT,
+}
+
+export const generateTranscriptWithScreenshotsHandler: CoreInngestHandler =
+  async ({ event, step, db, partyKitRootUrl }: CoreInngestFunctionInput) => {
     const videoResourceId = event.data.videoResourceId
 
     if (!videoResourceId) {
@@ -73,5 +78,10 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
     })
 
     return { transcriptWithScreenshots }
-  },
-)
+  }
+
+export const generateTranscriptWithScreenshots = {
+  config: generateTranscriptWithScreenshotsConfig,
+  trigger: generateTranscriptWithScreenshotsTrigger,
+  handler: generateTranscriptWithScreenshotsHandler,
+}

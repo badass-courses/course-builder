@@ -1,8 +1,16 @@
-import { GetEvents, GetFunctionInput, Handler, InngestFunction, NonRetriableError } from 'inngest'
+import { NonRetriableError } from 'inngest'
 
-import { addSrtTrackToMuxAsset, deleteSrtTrackFromMuxAsset, getMuxAsset } from '../../../lib/mux'
-import { CoreInngest } from '../../create-inngest-middleware'
-import { VIDEO_SRT_READY_EVENT } from '../events'
+import {
+  addSrtTrackToMuxAsset,
+  deleteSrtTrackFromMuxAsset,
+  getMuxAsset,
+} from '../../../lib/mux'
+import {
+  CoreInngestFunctionInput,
+  CoreInngestHandler,
+  CoreInngestTrigger,
+} from '../../create-inngest-middleware'
+import { VIDEO_SRT_READY_EVENT } from '../events/event-video-srt-ready-to-asset'
 
 const COOLDOWN = 20000
 
@@ -11,14 +19,22 @@ export const addSrtToMuxAssetConfig = {
   name: 'Add SRT to Mux Asset',
 }
 
-export const addSrtToMuxAssetTrigger = { event: VIDEO_SRT_READY_EVENT } satisfies InngestFunction.Trigger<
-  keyof GetEvents<CoreInngest>
->
+export const addSrtToMuxAssetTrigger: CoreInngestTrigger = {
+  event: VIDEO_SRT_READY_EVENT,
+}
 
-export const addSrtToMuxAssetHandler = (async ({ event, step, db, siteRootUrl }: GetFunctionInput<CoreInngest>) => {
-  const videoResource = await step.run('get the video resource from Sanity', async () => {
-    return db.getVideoResource(event.data.videoResourceId)
-  })
+export const addSrtToMuxAssetHandler: CoreInngestHandler = async ({
+  event,
+  step,
+  db,
+  siteRootUrl,
+}: CoreInngestFunctionInput) => {
+  const videoResource = await step.run(
+    'get the video resource from Sanity',
+    async () => {
+      return db.getVideoResource(event.data.videoResourceId)
+    },
+  )
 
   if (videoResource) {
     let muxAsset = await step.run('get the mux asset', async () => {
@@ -59,4 +75,10 @@ export const addSrtToMuxAssetHandler = (async ({ event, step, db, siteRootUrl }:
       throw new Error('Mux Asset is in errored state')
     }
   }
-}) satisfies Handler.Any
+}
+
+export const addSrtToMuxAsset = {
+  config: addSrtToMuxAssetConfig,
+  trigger: addSrtToMuxAssetTrigger,
+  handler: addSrtToMuxAssetHandler,
+}

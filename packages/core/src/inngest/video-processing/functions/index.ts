@@ -7,22 +7,13 @@ import { videoProcessingError } from './video-processing-error'
 import { videoReady } from './video-ready'
 import { videoUploaded } from './video-uploaded'
 
-export * from './add-srt-to-mux-asset'
-export * from './generate-transcript-with-screnshots'
-export * from './order-transcript'
-export * from './transcript-ready'
-export * from './video-processing-error'
-export * from './video-ready'
-export * from './video-uploaded'
-export * from './remove-completed-video'
-
-export const videoProcessingFunctions = [
+export const coreVideoProcessingFunctions = [
+  transcriptReady,
   addSrtToMuxAsset,
   generateTranscriptWithScreenshots,
   orderTranscript,
-  transcriptReady,
+  removeCompletedVideo,
   videoProcessingError,
   videoReady,
   videoUploaded,
-  removeCompletedVideo,
 ]

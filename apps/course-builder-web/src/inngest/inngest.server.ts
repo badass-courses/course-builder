@@ -23,20 +23,10 @@ import { UTApi } from 'uploadthing/server'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
-import {
-  MUX_WEBHOOK_EVENT,
-  VIDEO_RESOURCE_CREATED_EVENT,
-  VIDEO_SRT_READY_EVENT,
-  VIDEO_STATUS_CHECK_EVENT,
-  VIDEO_TRANSCRIPT_READY_EVENT,
-  VIDEO_UPLOADED_EVENT,
-  type EventVideoMuxWebhook,
-  type EventVideoStatusCheck,
-  type EventVideoTranscriptReady,
-  type EventVideoUploaded,
-  type VideoResourceCreated,
-  type VideoSrtReady,
-} from '@coursebuilder/core/inngest/video-processing/events'
+
+import '@coursebuilder/core/inngest/video-processing/events'
+
+import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 
 import {
@@ -55,16 +45,10 @@ import {
 
 // Create a client to send and receive events
 export type Events = {
-  [MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
-  [VIDEO_TRANSCRIPT_READY_EVENT]: EventVideoTranscriptReady
-  [VIDEO_UPLOADED_EVENT]: EventVideoUploaded
-  [VIDEO_SRT_READY_EVENT]: VideoSrtReady
   [USER_CREATED_EVENT]: UserCreated
   [POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
   [IMAGE_RESOURCE_CREATED_EVENT]: ImageResourceCreated
   [RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
-  [VIDEO_STATUS_CHECK_EVENT]: EventVideoStatusCheck
-  [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
   [EMAIL_SEND_BROADCAST]: EmailSendBroadcast
   [OCR_WEBHOOK_EVENT]: OcrWebhook
   [CONCEPT_TAGS_REQUESTED]: ConceptTagsRequested
@@ -90,5 +74,5 @@ const middleware = createInngestMiddleware({
 export const inngest = new Inngest({
   id: 'course-builder',
   middleware: [middleware],
-  schemas: new EventSchemas().fromRecord<Events>(),
+  schemas: new EventSchemas().fromRecord<Events & CourseBuilderCoreEvents>(),
 })
