@@ -5,7 +5,7 @@ import { withSkill } from '@/server/with-skill'
 import {
   MUX_WEBHOOK_EVENT,
   MuxWebhookEventSchema,
-} from '@coursebuilder/core/inngest/video-processing/events'
+} from '@coursebuilder/core/inngest/video-processing/events/event-video-mux-webhook'
 
 export const POST = withSkill(async (req: NextRequest) => {
   // todo: check MUX_WEBHOOK_SIGNING_SECRET to verify the request

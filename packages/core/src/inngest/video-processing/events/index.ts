@@ -1,4 +1,7 @@
-import { MUX_WEBHOOK_EVENT, MuxWebhookEvent } from './event-video-mux-webhook'
+import {
+  EventVideoMuxWebhook,
+  MUX_WEBHOOK_EVENT,
+} from './event-video-mux-webhook'
 import {
   VIDEO_RESOURCE_CREATED_EVENT,
   VideoResourceCreated,
@@ -26,5 +29,5 @@ export type CourseBuilderCoreEvents = {
   [VIDEO_SRT_READY_EVENT]: VideoSrtReady
   [VIDEO_UPLOADED_EVENT]: EventVideoUploaded
   [VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
-  [MUX_WEBHOOK_EVENT]: MuxWebhookEvent
+  [MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
 }
