@@ -1,6 +1,8 @@
 import type { Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 import invariant from 'tiny-invariant'
 
+import { ContentResource } from '@coursebuilder/core/types'
+
 export type TreeItem = {
   id: string
   label?: string
@@ -8,7 +10,7 @@ export type TreeItem = {
   type?: string
   children: TreeItem[]
   isOpen?: boolean
-  itemData?: Record<string, unknown>
+  itemData?: { position: number; resource: ContentResource; resourceId: string; resourceOfId: string }
 }
 
 export type TreeState = {

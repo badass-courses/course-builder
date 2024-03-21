@@ -1,3 +1,5 @@
+'use client'
+
 import { CreateResourceForm } from '@/components/resources-crud/create-resource-form'
 
 import { Card, CardContent, CardFooter, CardHeader } from '@coursebuilder/ui'

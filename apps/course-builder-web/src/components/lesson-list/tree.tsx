@@ -1,6 +1,7 @@
-'use client'
-
 import { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
+import { updateResourcePosition } from '@/lib/tutorials-query'
 import { triggerPostMoveFlash } from '@atlaskit/pragmatic-drag-and-drop-flourish/trigger-post-move-flash'
 import { Instruction, ItemMode } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 import * as liveRegion from '@atlaskit/pragmatic-drag-and-drop-live-region'
@@ -38,6 +39,7 @@ function createTreeItemRegistry() {
 
 export default function Tree({ initialData }: { initialData?: TreeItemType[] }) {
   const [state, updateState] = useReducer(treeStateReducer, initialData, getInitialTreeState)
+  const params = useParams<{ module: string }>()
 
   const ref = useRef<HTMLDivElement>(null)
   const { extractInstruction } = useContext(DependencyContext)
@@ -50,10 +52,27 @@ export default function Tree({ initialData }: { initialData?: TreeItemType[] }) 
     lastStateRef.current = data
   }, [data])
 
+  const saveTreeData = useCallback(async () => {
+    const currentData = lastStateRef.current
+    console.log('currentData', currentData)
+    for (const item of currentData) {
+      if (!item.itemData) continue
+      await updateResourcePosition({
+        tutorialId: params.module as string,
+        resourceId: item.itemData.resourceId,
+        position: currentData.indexOf(item),
+      })
+    }
+  }, [params])
+
   useEffect(() => {
     if (lastAction === null) {
       return
     }
+
+    saveTreeData()
+
+    console.log('lastAction', lastAction)
 
     if (lastAction.type === 'modal-move') {
       const parentName = lastAction.targetId === '' ? 'the root' : `Item ${lastAction.targetId}`
@@ -84,7 +103,7 @@ export default function Tree({ initialData }: { initialData?: TreeItemType[] }) 
 
       return
     }
-  }, [lastAction, registry])
+  }, [lastAction, registry, saveTreeData])
 
   useEffect(() => {
     return () => {
