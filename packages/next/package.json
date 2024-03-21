@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@coursebuilder/core": "0.0.5",
-    "inngest": "^3.12.0"
+    "inngest": "^3.16.1"
   },
   "devDependencies": {
     "next": "14.2.0-canary.27",
