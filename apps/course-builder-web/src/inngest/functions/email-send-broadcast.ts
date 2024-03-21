@@ -52,15 +52,21 @@ export const emailSendBroadcast = inngest.createFunction(
     event: EMAIL_SEND_BROADCAST,
   },
   async ({ event, step }) => {
-    const { preferenceType, preferenceChannel } = await step.run('load the preference type and channel', async () => {
-      const preferenceType = await db.query.communicationPreferenceTypes.findFirst({
-        where: (cpt, { eq }) => eq(cpt.name, 'Newsletter'),
-      })
-      const preferenceChannel = await db.query.communicationChannel.findFirst({
-        where: (cc, { eq }) => eq(cc.name, 'Email'),
-      })
-      return { preferenceType, preferenceChannel }
-    })
+    const { preferenceType, preferenceChannel } = await step.run(
+      'load the preference type and channel',
+      async () => {
+        const preferenceType =
+          await db.query.communicationPreferenceTypes.findFirst({
+            where: (cpt, { eq }) => eq(cpt.name, 'Newsletter'),
+          })
+        const preferenceChannel = await db.query.communicationChannel.findFirst(
+          {
+            where: (cc, { eq }) => eq(cc.name, 'Email'),
+          },
+        )
+        return { preferenceType, preferenceChannel }
+      },
+    )
 
     if (!preferenceType || !preferenceChannel) {
       throw new NonRetriableError('Preference type or channel not found')
@@ -73,12 +79,18 @@ export const emailSendBroadcast = inngest.createFunction(
     })
 
     if (!user) {
-      throw new NonRetriableError(`User not found with id: ${event.data.toUserId}`)
+      throw new NonRetriableError(
+        `User not found with id: ${event.data.toUserId}`,
+      )
     }
 
     let preference = await step.run('load the user preference', async () => {
       return db.query.communicationPreferences.findFirst({
-        where: (cp, { and, eq }) => and(eq(cp.userId, user.id), eq(cp.preferenceTypeId, preferenceType.id)),
+        where: (cp, { and, eq }) =>
+          and(
+            eq(cp.userId, user.id),
+            eq(cp.preferenceTypeId, preferenceType.id),
+          ),
       })
     })
 
@@ -98,7 +110,11 @@ export const emailSendBroadcast = inngest.createFunction(
 
       preference = await step.run('load the user preference', async () => {
         return db.query.communicationPreferences.findFirst({
-          where: (cp, { and, eq }) => and(eq(cp.userId, user.id), eq(cp.preferenceTypeId, preferenceType.id)),
+          where: (cp, { and, eq }) =>
+            and(
+              eq(cp.userId, user.id),
+              eq(cp.preferenceTypeId, preferenceType.id),
+            ),
         })
       })
     }

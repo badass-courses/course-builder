@@ -6,6 +6,10 @@ export const metadata = {
   description: 'testing new stuff in ai/rsc',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return <AI>{children}</AI>
 }

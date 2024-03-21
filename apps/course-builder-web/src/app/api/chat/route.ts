@@ -20,7 +20,9 @@ export async function POST(req: Request) {
     limiter: Ratelimit.slidingWindow(5, '10s'),
   })
 
-  const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`)
+  const { success, limit, reset, remaining } = await ratelimit.limit(
+    `ratelimit_${ip}`,
+  )
 
   if (!success) {
     return new Response('You have reached your request limit for the day.', {

@@ -6,14 +6,24 @@ export function EditResourcesToolPanelContents({
   resource,
   activeToolId,
 }: {
-  resource: { _type: string; _id: string; body?: string | null; title?: string | null }
+  resource: {
+    _type: string
+    _id: string
+    body?: string | null
+    title?: string | null
+  }
   activeToolId: string
 }) {
   return (
     <>
-      {activeToolId === 'assistant' && <ResourceChatAssistant resource={resource} />}
+      {activeToolId === 'assistant' && (
+        <ResourceChatAssistant resource={resource} />
+      )}
       {activeToolId === 'media' && (
-        <ImageResourceUploader belongsToResourceId={resource._id} uploadDirectory={`${resource._type}s`} />
+        <ImageResourceUploader
+          belongsToResourceId={resource._id}
+          uploadDirectory={`${resource._type}s`}
+        />
       )}
     </>
   )

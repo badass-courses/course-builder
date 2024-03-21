@@ -38,7 +38,8 @@ const Unsubscribed = async ({ searchParams }: UnsubscribedProps) => {
     where: (users, { eq }) => eq(users.id, userId as string),
     with: {
       communicationPreferences: {
-        where: (communicationPreferences, { eq }) => eq(communicationPreferences.preferenceTypeId, preferenceType.id),
+        where: (communicationPreferences, { eq }) =>
+          eq(communicationPreferences.preferenceTypeId, preferenceType.id),
         with: {
           channel: true,
           preferenceType: true,
@@ -51,7 +52,9 @@ const Unsubscribed = async ({ searchParams }: UnsubscribedProps) => {
     redirect('/')
   }
 
-  const preference = user.communicationPreferences.find((cp) => cp.preferenceTypeId === preferenceType.id)
+  const preference = user.communicationPreferences.find(
+    (cp) => cp.preferenceTypeId === preferenceType.id,
+  )
 
   if (!preference) {
     const preferenceChannel = await db.query.communicationChannel.findFirst({
@@ -88,7 +91,8 @@ const Unsubscribed = async ({ searchParams }: UnsubscribedProps) => {
     <div className="flex min-h-[calc(100vh-96px)] flex-col p-0">
       <div className="flex flex-grow flex-col items-center justify-center p-5 pb-16 text-center sm:pb-0">
         <div className="font-heading max-w-xl pt-4 text-3xl">
-          You&apos;ve been removed from the email list and won&apos;t receive any more emails.
+          You&apos;ve been removed from the email list and won&apos;t receive
+          any more emails.
         </div>
       </div>
     </div>

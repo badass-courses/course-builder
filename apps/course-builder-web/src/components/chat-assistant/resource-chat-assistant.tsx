@@ -5,25 +5,45 @@ import { ResourceChatResponse } from '@/components/chat-assistant/resource-chat-
 import { useSocket } from '@/hooks/use-socket'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { EnterIcon } from '@sanity/icons'
-import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+} from 'openai-edge'
 
-import { Button, ResizableHandle, ResizablePanel, ResizablePanelGroup, Textarea } from '@coursebuilder/ui'
+import {
+  Button,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+  Textarea,
+} from '@coursebuilder/ui'
 
 export function ResourceChatAssistant({
   resource,
-  availableWorkflows = [{ value: 'summarize', label: 'Summarize', default: true }],
+  availableWorkflows = [
+    { value: 'summarize', label: 'Summarize', default: true },
+  ],
 }: {
-  resource: { _type: string; _id: string; body?: string | null; title?: string | null }
+  resource: {
+    _type: string
+    _id: string
+    body?: string | null
+    title?: string | null
+  }
 
   availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
-  const [messages, setMessages] = React.useState<ChatCompletionRequestMessage[]>([])
+  const [messages, setMessages] = React.useState<
+    ChatCompletionRequestMessage[]
+  >([])
   const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>(
     availableWorkflows.find((w) => w.default)?.value || 'summarize',
   )
 
   const handleSendMessage = (
-    event: React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    event:
+      | React.KeyboardEvent<HTMLTextAreaElement>
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>,
     messages: ChatCompletionRequestMessage[],
     selectedWorkflow?: string,
   ) => {
@@ -53,7 +73,10 @@ export function ResourceChatAssistant({
       try {
         const messageData = JSON.parse(messageEvent.data)
 
-        if (messageData.name === 'resource.chat.completed' && messageData.requestId === resource._id) {
+        if (
+          messageData.name === 'resource.chat.completed' &&
+          messageData.requestId === resource._id
+        ) {
           setMessages(messageData.body)
         }
       } catch (error) {
@@ -82,7 +105,11 @@ export function ResourceChatAssistant({
           <ResourceChatResponse requestId={resource._id} />
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel defaultSize={15} minSize={5} className="relative flex w-full flex-col items-start">
+        <ResizablePanel
+          defaultSize={15}
+          minSize={5}
+          className="relative flex w-full flex-col items-start"
+        >
           <Textarea
             ref={textareaRef}
             className="w-full flex-grow rounded-none border-0 px-5 py-4 pr-10 focus-visible:ring-0"

@@ -41,7 +41,10 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
   }, [path])
 
   const maximize = useCallback(() => {
-    useTreehouseStore.setState({ context: { ...context, path: path }, panels: [path] })
+    useTreehouseStore.setState({
+      context: { ...context, path: path },
+      panels: [path],
+    })
   }, [path, context])
 
   const editMarkdown = useCallback(
@@ -68,14 +71,20 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
     <div className={`panel flex grow flex-col ${viewClass}`}>
       <div className="bar flex">
         {path.length > 1 && (
-          <div className="panel-back" style={{ paddingRight: 'var(--padding)' }}>
+          <div
+            className="panel-back"
+            style={{ paddingRight: 'var(--padding)' }}
+          >
             {/* SVG for goBack */}
           </div>
         )}
 
         <div className="panel-back-parent grow">
           {node.parent && node.parent.id !== '@root' ? (
-            <span style={{ cursor: 'pointer' }} onClick={() => open(node.parent as Node)}>
+            <span
+              style={{ cursor: 'pointer' }}
+              onClick={() => open(node.parent as Node)}
+            >
               {node.parent.name}
             </span>
           ) : (
@@ -83,11 +92,19 @@ export const Panel: React.FC<PanelProps> = ({ path }) => {
           )}
         </div>
 
-        {panels.length > 1 && <div className="panel-icons flex items-center">{/* SVGs for maximize and close */}</div>}
+        {panels.length > 1 && (
+          <div className="panel-icons flex items-center">
+            {/* SVGs for maximize and close */}
+          </div>
+        )}
       </div>
 
       <div className="body flex flex-col">
-        <div className="title-node" onContextMenu={(e) => showMenu(e, { node, path })} data-menu="node">
+        <div
+          className="title-node"
+          onContextMenu={(e) => showMenu(e, { node, path })}
+          data-menu="node"
+        >
           <NodeEditor path={path} disallowEmpty={true} />
         </div>
         {node.hasComponent(Page) && (

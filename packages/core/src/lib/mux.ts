@@ -12,24 +12,33 @@ type MuxApiOptions = {
   transcription?: boolean
 }
 
-export async function addSrtTrackToMuxAsset({ assetId, srtUrl }: { assetId?: string; srtUrl: string }) {
+export async function addSrtTrackToMuxAsset({
+  assetId,
+  srtUrl,
+}: {
+  assetId?: string
+  srtUrl: string
+}) {
   const muxAsset = await getMuxAsset(assetId)
   if (!muxAsset) {
     throw new Error('Mux Asset not found')
   }
-  return await fetch(`https://api.mux.com/video/v1/assets/${muxAsset.id}/tracks`, {
-    method: 'POST',
-    headers: muxRequestHeaders,
-    body: JSON.stringify({
-      url: srtUrl,
-      type: 'text',
-      text_type: 'subtitles',
-      closed_captions: true,
-      language_code: 'en-US',
-      name: 'English',
-      passthrough: 'English',
-    }),
-  })
+  return await fetch(
+    `https://api.mux.com/video/v1/assets/${muxAsset.id}/tracks`,
+    {
+      method: 'POST',
+      headers: muxRequestHeaders,
+      body: JSON.stringify({
+        url: srtUrl,
+        type: 'text',
+        text_type: 'subtitles',
+        closed_captions: true,
+        language_code: 'en-US',
+        name: 'English',
+        passthrough: 'English',
+      }),
+    },
+  )
     .then(async (response) => await response.json())
     .catch((error) => {
       console.error(error)
@@ -43,11 +52,16 @@ export async function deleteSrtTrackFromMuxAsset(assetId?: string) {
   }
   if (!muxAsset.tracks) return console.warn('No tracks found')
 
-  const trackId = muxAsset.tracks.filter((track: { type: string }) => track.type === 'text')[0]?.id
-  return await fetch(`https://api.mux.com/video/v1/assets/${muxAsset.id}/tracks/${trackId}`, {
-    method: 'DELETE',
-    headers: muxRequestHeaders,
-  }).catch((error) => {
+  const trackId = muxAsset.tracks.filter(
+    (track: { type: string }) => track.type === 'text',
+  )[0]?.id
+  return await fetch(
+    `https://api.mux.com/video/v1/assets/${muxAsset.id}/tracks/${trackId}`,
+    {
+      method: 'DELETE',
+      headers: muxRequestHeaders,
+    },
+  ).catch((error) => {
     console.error(error)
   })
 }
@@ -57,9 +71,12 @@ export async function getMuxAsset(assetId?: string | null) {
   if (!assetId) {
     return null
   }
-  const { data } = await fetch(`https://api.mux.com/video/v1/assets/${assetId}`, {
-    headers: muxRequestHeaders,
-  }).then(async (response) => await response.json())
+  const { data } = await fetch(
+    `https://api.mux.com/video/v1/assets/${assetId}`,
+    {
+      headers: muxRequestHeaders,
+    },
+  ).then(async (response) => await response.json())
 
   console.log('getMuxAsset', data)
 

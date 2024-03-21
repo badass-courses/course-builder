@@ -26,7 +26,9 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 
   const isMobile = useIsMobile()
 
-  const ResourceForm = isMobile ? EditResourcesFormMobile : EditResourcesFormDesktop
+  const ResourceForm = isMobile
+    ? EditResourcesFormMobile
+    : EditResourcesFormDesktop
 
   return (
     <ResourceForm

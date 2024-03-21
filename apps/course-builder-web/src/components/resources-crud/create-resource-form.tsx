@@ -35,7 +35,10 @@ export function CreateResourceForm({
   })
 
   const internalOnSubmit = async (values: { title: string }) => {
-    const resource = await createResource({ title: values.title, type: resourceType })
+    const resource = await createResource({
+      title: values.title,
+      type: resourceType,
+    })
     form.reset()
     if (resource) {
       if (onCreate) {
@@ -48,7 +51,10 @@ export function CreateResourceForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(internalOnSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(internalOnSubmit)}
+        className="space-y-8"
+      >
         <FormField
           control={form.control}
           name="title"
@@ -56,7 +62,8 @@ export function CreateResourceForm({
             <FormItem>
               <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
-                A title should summarize the {resourceType.toUpperCase()} and explain what it is about clearly.
+                A title should summarize the {resourceType.toUpperCase()} and
+                explain what it is about clearly.
               </FormDescription>
               <FormControl>
                 <Input {...field} />
@@ -71,7 +78,10 @@ export function CreateResourceForm({
           type="submit"
           className="mt-2"
           variant="default"
-          disabled={(form.formState.isDirty && !form.formState.isValid) || form.formState.isSubmitting}
+          disabled={
+            (form.formState.isDirty && !form.formState.isValid) ||
+            form.formState.isSubmitting
+          }
         >
           Create Draft {resourceType.toUpperCase()}
         </Button>

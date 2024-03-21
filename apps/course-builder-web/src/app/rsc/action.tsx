@@ -1,7 +1,10 @@
 import { headers } from 'next/headers'
 import { Purchase } from '@/app/rsc/purchase'
 import { redis } from '@/server/redis-client'
-import { TAnyToolDefinitionArray, TToolDefinitionMap } from '@/utils/tool-definition'
+import {
+  TAnyToolDefinitionArray,
+  TToolDefinitionMap,
+} from '@/utils/tool-definition'
 import { Ratelimit } from '@upstash/ratelimit'
 import { OpenAIStream } from 'ai'
 import { createAI, createStreamableUI, getMutableAIState, render } from 'ai/rsc'
@@ -51,14 +54,16 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
     purchasing.done(
       <div>
         <p className="mb-2">
-          You have successfully purchased {amount} ${symbol}. Total cost: {formatNumber(amount * price)}
+          You have successfully purchased {amount} ${symbol}. Total cost:{' '}
+          {formatNumber(amount * price)}
         </p>
       </div>,
     )
 
     systemMessage.done(
       <div>
-        You have purchased {amount} shares of {symbol} at ${price}. Total cost = {formatNumber(amount * price)}.
+        You have purchased {amount} shares of {symbol} at ${price}. Total cost ={' '}
+        {formatNumber(amount * price)}.
       </div>,
     )
 
@@ -90,12 +95,16 @@ async function submitUserMessage(content: string) {
     limiter: Ratelimit.slidingWindow(10, '12h'),
   })
 
-  const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`)
+  const { success, limit, reset, remaining } = await ratelimit.limit(
+    `ratelimit_${ip}`,
+  )
 
   if (!success) {
     return {
       id: Date.now(),
-      display: <div>Rate limit exceeded. Please try again in {reset} seconds.</div>,
+      display: (
+        <div>Rate limit exceeded. Please try again in {reset} seconds.</div>
+      ),
     }
   }
 
@@ -148,7 +157,11 @@ Besides that, you can also chat with users and do some calculations if needed.`,
         description:
           'Get the current stock price of a given stock or currency. Use this to show the price to the user.',
         parameters: z.object({
-          symbol: z.string().describe('The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.'),
+          symbol: z
+            .string()
+            .describe(
+              'The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.',
+            ),
           price: z.number().describe('The price of the stock.'),
           delta: z.number().describe('The change in price of the stock'),
         }),
@@ -158,7 +171,11 @@ Besides that, you can also chat with users and do some calculations if needed.`,
         description:
           'Show price and the UI to purchase a stock or currency. Use this if the user wants to purchase a stock or currency.',
         parameters: z.object({
-          symbol: z.string().describe('The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.'),
+          symbol: z
+            .string()
+            .describe(
+              'The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.',
+            ),
           price: z.number().describe('The price of the stock.'),
           numberOfShares: z
             .number()
@@ -182,11 +199,14 @@ Besides that, you can also chat with users and do some calculations if needed.`,
       },
       {
         name: 'get_events',
-        description: 'List funny imaginary events between user highlighted dates that describe stock activity.',
+        description:
+          'List funny imaginary events between user highlighted dates that describe stock activity.',
         parameters: z.object({
           events: z.array(
             z.object({
-              date: z.string().describe('The date of the event, in ISO-8601 format'),
+              date: z
+                .string()
+                .describe('The date of the event, in ISO-8601 format'),
               headline: z.string().describe('The headline of the event'),
               description: z.string().describe('The description of the event'),
             }),
@@ -205,33 +225,36 @@ Besides that, you can also chat with users and do some calculations if needed.`,
     }
   })
 
-  completion.onFunctionCall('list_stocks', async ({ stocks }: { stocks: any[] }) => {
-    reply.update(<div></div>)
+  completion.onFunctionCall(
+    'list_stocks',
+    async ({ stocks }: { stocks: any[] }) => {
+      reply.update(<div></div>)
 
-    await sleep(1000)
+      await sleep(1000)
 
-    reply.done(
-      <div>
-        {stocks.map((stock: any) => (
-          <Card key={stock.symbol}>
-            <CardHeader>{stock.symbol}</CardHeader>
-            <CardContent>
-              Price: {stock.price}, Delta: {stock.delta}
-            </CardContent>
-          </Card>
-        ))}
-      </div>,
-    )
+      reply.done(
+        <div>
+          {stocks.map((stock: any) => (
+            <Card key={stock.symbol}>
+              <CardHeader>{stock.symbol}</CardHeader>
+              <CardContent>
+                Price: {stock.price}, Delta: {stock.delta}
+              </CardContent>
+            </Card>
+          ))}
+        </div>,
+      )
 
-    aiState.done([
-      ...aiState.get(),
-      {
-        role: 'function',
-        name: 'list_stocks',
-        content: JSON.stringify(stocks),
-      },
-    ])
-  })
+      aiState.done([
+        ...aiState.get(),
+        {
+          role: 'function',
+          name: 'list_stocks',
+          content: JSON.stringify(stocks),
+        },
+      ])
+    },
+  )
 
   completion.onFunctionCall('get_events', async ({ events }) => {
     reply.update(<div></div>)
@@ -259,69 +282,79 @@ Besides that, you can also chat with users and do some calculations if needed.`,
     ])
   })
 
-  completion.onFunctionCall('show_stock_price', async ({ symbol, price, delta }: any) => {
-    reply.update(
-      <div>
-        <Spinner />
-      </div>,
-    )
+  completion.onFunctionCall(
+    'show_stock_price',
+    async ({ symbol, price, delta }: any) => {
+      reply.update(
+        <div>
+          <Spinner />
+        </div>,
+      )
 
-    await sleep(1000)
+      await sleep(1000)
 
-    reply.done(
-      <div>
-        Stock price of {symbol} is {price} ({delta})
-      </div>,
-    )
+      reply.done(
+        <div>
+          Stock price of {symbol} is {price} ({delta})
+        </div>,
+      )
 
-    aiState.done([
-      ...aiState.get(),
-      {
-        role: 'function',
-        name: 'show_stock_price',
-        content: `[Price of ${symbol} = ${price}]`,
-      },
-    ])
-  })
+      aiState.done([
+        ...aiState.get(),
+        {
+          role: 'function',
+          name: 'show_stock_price',
+          content: `[Price of ${symbol} = ${price}]`,
+        },
+      ])
+    },
+  )
 
-  completion.onFunctionCall('show_stock_purchase_ui', ({ symbol, price, numberOfShares = 100 }) => {
-    if (numberOfShares <= 0 || numberOfShares > 1000) {
-      reply.done(<div>Invalid amount</div>)
+  completion.onFunctionCall(
+    'show_stock_purchase_ui',
+    ({ symbol, price, numberOfShares = 100 }) => {
+      if (numberOfShares <= 0 || numberOfShares > 1000) {
+        reply.done(<div>Invalid amount</div>)
+        aiState.done([
+          ...aiState.get(),
+          {
+            role: 'function',
+            name: 'show_stock_purchase_ui',
+            content: `[Invalid amount]`,
+          },
+        ])
+        return
+      }
+
+      reply.done(
+        <>
+          <div>
+            Sure!{' '}
+            {typeof numberOfShares === 'number'
+              ? `Click the button below to purchase ${numberOfShares} shares of $${symbol}:`
+              : `How many $${symbol} would you like to purchase?`}
+          </div>
+          <div>
+            <Purchase
+              defaultAmount={numberOfShares}
+              name={symbol}
+              price={+price}
+            />
+          </div>
+        </>,
+      )
       aiState.done([
         ...aiState.get(),
         {
           role: 'function',
           name: 'show_stock_purchase_ui',
-          content: `[Invalid amount]`,
+          content: `[UI for purchasing ${numberOfShares} shares of ${symbol}. Current price = ${price}, total cost = ${
+            numberOfShares * price
+          }]`,
         },
       ])
-      return
-    }
-
-    reply.done(
-      <>
-        <div>
-          Sure!{' '}
-          {typeof numberOfShares === 'number'
-            ? `Click the button below to purchase ${numberOfShares} shares of $${symbol}:`
-            : `How many $${symbol} would you like to purchase?`}
-        </div>
-        <div>
-          <Purchase defaultAmount={numberOfShares} name={symbol} price={+price} />
-        </div>
-      </>,
-    )
-    aiState.done([
-      ...aiState.get(),
-      {
-        role: 'function',
-        name: 'show_stock_purchase_ui',
-        content: `[UI for purchasing ${numberOfShares} shares of ${symbol}. Current price = ${price}, total cost = ${
-          numberOfShares * price
-        }]`,
-      },
-    ])
-  })
+    },
+  )
 
   return {
     id: Date.now(),
@@ -361,7 +394,10 @@ const consumeStream = async (stream: ReadableStream) => {
 }
 
 export function runOpenAICompletion<
-  T extends Omit<Parameters<typeof OpenAI.prototype.chat.completions.create>[0], 'functions'>,
+  T extends Omit<
+    Parameters<typeof OpenAI.prototype.chat.completions.create>[0],
+    'functions'
+  >,
   const TFunctions extends TAnyToolDefinitionArray,
 >(
   openai: OpenAI,
@@ -393,7 +429,10 @@ export function runOpenAICompletion<
           functions: functions.map((fn) => ({
             name: fn.name,
             description: fn.description,
-            parameters: zodToJsonSchema(fn.parameters) as Record<string, unknown>,
+            parameters: zodToJsonSchema(fn.parameters) as Record<
+              string,
+              unknown
+            >,
           })),
         })) as any,
         {
@@ -409,13 +448,19 @@ export function runOpenAICompletion<
             const zodSchema = functionsMap[functionCallPayload.name]?.parameters
 
             if (!zodSchema) {
-              throw new Error(`Function call ${functionCallPayload.name} not found in the provided functions`)
+              throw new Error(
+                `Function call ${functionCallPayload.name} not found in the provided functions`,
+              )
             }
 
-            const parsedArgs = zodSchema.safeParse(functionCallPayload.arguments)
+            const parsedArgs = zodSchema.safeParse(
+              functionCallPayload.arguments,
+            )
 
             if (!parsedArgs.success) {
-              throw new Error(`Invalid function call in message. Expected a function call object`)
+              throw new Error(
+                `Invalid function call in message. Expected a function call object`,
+              )
             }
 
             onFunctionCall[functionCallPayload.name]?.(parsedArgs.data)
@@ -435,7 +480,9 @@ export function runOpenAICompletion<
   })()
 
   return {
-    onTextContent: (callback: (text: string, isFinal: boolean) => void | Promise<void>) => {
+    onTextContent: (
+      callback: (text: string, isFinal: boolean) => void | Promise<void>,
+    ) => {
       onTextContent = callback
     },
     onFunctionCall: <TName extends TFunctions[number]['name']>(
@@ -463,11 +510,14 @@ export const formatNumber = (value: number) =>
     currency: 'USD',
   }).format(value)
 
-export const runAsyncFnWithoutBlocking = (fn: (...args: any) => Promise<any>) => {
+export const runAsyncFnWithoutBlocking = (
+  fn: (...args: any) => Promise<any>,
+) => {
   fn()
 }
 
-export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
 
 // Fake data
 export function getStockPrice(name: string) {

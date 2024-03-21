@@ -2,7 +2,13 @@ import * as React from 'react'
 import Image from 'next/image'
 import type { UseFormReturn } from 'react-hook-form'
 
-import { FormDescription, FormField, FormItem, FormLabel, Input } from '@coursebuilder/ui'
+import {
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+} from '@coursebuilder/ui'
 
 export function MetadataFieldSocialImage({
   form,
@@ -18,7 +24,9 @@ export function MetadataFieldSocialImage({
       render={({ field }) => (
         <FormItem className="px-5">
           <FormLabel>Social Image</FormLabel>
-          <FormDescription>Used as a preview image on Twitter cards etc.</FormDescription>
+          <FormDescription>
+            Used as a preview image on Twitter cards etc.
+          </FormDescription>
           {currentSocialImage && (
             <Image
               src={currentSocialImage.toString()}

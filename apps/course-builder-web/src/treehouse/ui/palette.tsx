@@ -9,7 +9,10 @@ type CommandPaletteProps = {
   ctx: any
 }
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({ workbench, ctx }) => {
+export const CommandPalette: React.FC<CommandPaletteProps> = ({
+  workbench,
+  ctx,
+}) => {
   const getTitle = (cmd: Command) => {
     const title = cmd.title || cmd.id
     return title.replace('-', ' ').replace(/(^|\s)\S/g, (t) => t.toUpperCase())
@@ -56,7 +59,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ workbench, ctx }
         itemview={(cmd: Command) => (
           <div className="flex">
             <div>{getTitle(cmd)}</div>
-            <div className="keybindings grow text-right">{getBindingSymbols(cmd)}</div>
+            <div className="keybindings grow text-right">
+              {getBindingSymbols(cmd)}
+            </div>
           </div>
         )}
       />

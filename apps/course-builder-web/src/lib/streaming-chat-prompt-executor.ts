@@ -1,9 +1,16 @@
 import { env } from '@/env.mjs'
-import { OpenAIStreamingDataPartykitChunkPublisher, publishToPartykit } from '@/lib/streaming-chunk-publisher'
+import {
+  OpenAIStreamingDataPartykitChunkPublisher,
+  publishToPartykit,
+} from '@/lib/streaming-chunk-publisher'
 import { type ProgressWriter } from '@/types'
 import Anthropic from '@anthropic-ai/sdk'
 import { MessageParam } from '@anthropic-ai/sdk/resources/index.mjs'
-import { Configuration, OpenAIApi, type ChatCompletionRequestMessage } from 'openai-edge'
+import {
+  Configuration,
+  OpenAIApi,
+  type ChatCompletionRequestMessage,
+} from 'openai-edge'
 
 const config = new Configuration({ apiKey: env.OPENAI_API_KEY })
 const openai = new OpenAIApi(config)
@@ -25,7 +32,9 @@ export async function streamingChatPromptExecutor({
   model,
   provider = 'openai',
 }: PromptStepOptions) {
-  const writer: ProgressWriter = new OpenAIStreamingDataPartykitChunkPublisher(requestId)
+  const writer: ProgressWriter = new OpenAIStreamingDataPartykitChunkPublisher(
+    requestId,
+  )
   let result
 
   if (provider === 'openai') {
@@ -37,9 +46,14 @@ export async function streamingChatPromptExecutor({
 
     if (response.status >= 400) {
       result = await response.json()
-      throw new Error(result?.error?.message ? (result.error.message as string) : 'There was an error with openAI', {
-        cause: result,
-      })
+      throw new Error(
+        result?.error?.message
+          ? (result.error.message as string)
+          : 'There was an error with openAI',
+        {
+          cause: result,
+        },
+      )
     }
 
     try {
@@ -50,7 +64,9 @@ export async function streamingChatPromptExecutor({
       await writer.publishMessage(`\n\n`)
     }
   } else if (provider === 'anthropic') {
-    const messages = promptMessages.filter((msg) => msg && msg.role !== 'system') as MessageParam[]
+    const messages = promptMessages.filter(
+      (msg) => msg && msg.role !== 'system',
+    ) as MessageParam[]
     const streamArgs = {
       system: promptMessages.reduce((acc, msg) => {
         if (msg && msg.role === 'system') {

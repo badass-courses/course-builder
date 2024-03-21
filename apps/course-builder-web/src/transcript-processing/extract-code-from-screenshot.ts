@@ -17,7 +17,13 @@ export async function extractCodeFromScreenshot(screenshotUrl: string) {
   const bucketName = env.AWS_BUCKET_NAME || 'coursebuilderimages'
   const filename = `ocr/${Date.now()}.png`
 
-  await uploadImage(bucketName, filename, Buffer.from(body), contentType!, contentLength!)
+  await uploadImage(
+    bucketName,
+    filename,
+    Buffer.from(body),
+    contentType!,
+    contentLength!,
+  )
   const text = await performOCR(bucketName, filename)
 
   const systemMessage =

@@ -21,7 +21,10 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const tip = await getTip(params.slug)
 
   if (!tip) {
@@ -40,13 +43,21 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
   }
 }
 
-export default async function TipPage({ params }: { params: { slug: string } }) {
+export default async function TipPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
   headers()
   const tipLoader = getTip(params.slug)
   return (
     <div>
       <main className="mx-auto w-full" id="tip">
-        <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
+        <Suspense
+          fallback={
+            <div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+          }
+        >
           <TipActionBar tipLoader={tipLoader} />
         </Suspense>
 
@@ -100,7 +111,11 @@ function PlayerContainerSkeleton() {
   )
 }
 
-async function PlayerContainer({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
+async function PlayerContainer({
+  tipLoader,
+}: {
+  tipLoader: Promise<Tip | null>
+}) {
   const tip = await tipLoader
   const displayOverlay = false
 
@@ -116,9 +131,12 @@ async function PlayerContainer({ tipLoader }: { tipLoader: Promise<Tip | null> }
         <div className="flex w-full max-w-screen-lg flex-col">
           <div className="relative aspect-[16/9]">
             <div
-              className={cn('flex items-center justify-center  overflow-hidden', {
-                hidden: displayOverlay,
-              })}
+              className={cn(
+                'flex items-center justify-center  overflow-hidden',
+                {
+                  hidden: displayOverlay,
+                },
+              )}
             >
               <TipPlayer videoResourceLoader={videoResourceLoader} />
             </div>
@@ -146,13 +164,17 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 
       {tip.body && (
         <>
-          <ReactMarkdown className="prose dark:prose-invert">{tip.body}</ReactMarkdown>
+          <ReactMarkdown className="prose dark:prose-invert">
+            {tip.body}
+          </ReactMarkdown>
         </>
       )}
       {transcript && (
         <div className="w-full max-w-2xl pt-5">
           <h3 className="font-bold">Transcript</h3>
-          <ReactMarkdown className="prose dark:prose-invert">{transcript}</ReactMarkdown>
+          <ReactMarkdown className="prose dark:prose-invert">
+            {transcript}
+          </ReactMarkdown>
         </div>
       )}
     </>

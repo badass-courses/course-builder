@@ -10,9 +10,17 @@ export const env = createEnv({
     DATABASE_URL: z
       .string()
       .url()
-      .refine((str) => !str.includes('YOUR_MYSQL_URL_HERE'), 'You forgot to change the default URL'),
-    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    NEXTAUTH_SECRET: process.env.NODE_ENV === 'production' ? z.string() : z.string().optional(),
+      .refine(
+        (str) => !str.includes('YOUR_MYSQL_URL_HERE'),
+        'You forgot to change the default URL'
+      ),
+    NODE_ENV: z
+      .enum(['development', 'test', 'production'])
+      .default('development'),
+    NEXTAUTH_SECRET:
+      process.env.NODE_ENV === 'production'
+        ? z.string()
+        : z.string().optional(),
     NEXTAUTH_URL: z.preprocess(
       // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
       // Since NextAuth.js automatically uses the VERCEL_URL if present.

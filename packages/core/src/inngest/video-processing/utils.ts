@@ -1,6 +1,9 @@
 import SrtParser2 from 'srt-parser-2'
 
-export async function mergeSrtWithScreenshots(srt: string, muxPlaybackId: string) {
+export async function mergeSrtWithScreenshots(
+  srt: string,
+  muxPlaybackId: string,
+) {
   let parser = new SrtParser2()
   let result = parser.fromSrt(srt)
 
@@ -34,7 +37,9 @@ export async function mergeSrtWithScreenshots(srt: string, muxPlaybackId: string
   }
   // deep merge timesWithWordsScreenshots with result
   let resultWithScreenshots = result.map((x: any) => {
-    let found = timesWithWordsScreenshots.find((y: any) => y.startTime === x.startTime)
+    let found = timesWithWordsScreenshots.find(
+      (y: any) => y.startTime === x.startTime,
+    )
     if (found) {
       return { ...x, screenshot: found.screenshot }
     }
@@ -63,9 +68,13 @@ export async function mergeSrtWithScreenshots(srt: string, muxPlaybackId: string
     if (currentTimeInSeconds === 0) {
       // if x has a screenshot add it to the array
       if (x.screenshot) {
-        tempArray.push(`[${formatMdTimeString(x.startTime.split(',')[0])}] ${x.text}\n\n![](${x.screenshot})\n\n`)
+        tempArray.push(
+          `[${formatMdTimeString(x.startTime.split(',')[0])}] ${x.text}\n\n![](${x.screenshot})\n\n`,
+        )
       } else {
-        tempArray.push(`[${formatMdTimeString(x.startTime.split(',')[0])}] ${x.text}`)
+        tempArray.push(
+          `[${formatMdTimeString(x.startTime.split(',')[0])}] ${x.text}`,
+        )
       }
     } else {
       if (x.screenshot) {

@@ -13,7 +13,9 @@ const WIDGETS = new Set([
   },
   {
     id: 'media',
-    icon: () => <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />,
+    icon: () => (
+      <ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+    ),
   },
 ])
 
@@ -28,20 +30,36 @@ export function EditResourcesToolPanel({
   defaultSize?: number
   maxSize?: number
   className?: string
-  resource: { _type: string; _id: string; body?: string | null; title?: string | null }
+  resource: {
+    _type: string
+    _id: string
+    body?: string | null
+    title?: string | null
+  }
 }) {
-  const [activeToolId, setActiveToolId] = React.useState<string>(WIDGETS.values().next().value.id)
+  const [activeToolId, setActiveToolId] = React.useState<string>(
+    WIDGETS.values().next().value.id,
+  )
   return (
     <>
       <ResizablePanel
-        className={cn('h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full', className)}
+        className={cn(
+          'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full',
+          className,
+        )}
         minSize={minSize}
         defaultSize={defaultSize}
         maxSize={maxSize}
       >
-        <EditResourcesToolPanelContents resource={resource} activeToolId={activeToolId} />
+        <EditResourcesToolPanelContents
+          resource={resource}
+          activeToolId={activeToolId}
+        />
       </ResizablePanel>
-      <EditResourcesToolbar tools={WIDGETS} onToolChange={(tool) => setActiveToolId(tool.id)} />
+      <EditResourcesToolbar
+        tools={WIDGETS}
+        onToolChange={(tool) => setActiveToolId(tool.id)}
+      />
     </>
   )
 }

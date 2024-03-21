@@ -1,9 +1,15 @@
-import { CreateIndexOptions, Index, Pinecone } from '@pinecone-database/pinecone'
+import {
+  CreateIndexOptions,
+  Index,
+  Pinecone,
+} from '@pinecone-database/pinecone'
 import { PineconeConflictError } from '@pinecone-database/pinecone/dist/errors'
 
 const pc = new Pinecone()
 
-export async function get_or_create_index(opts: CreateIndexOptions): Promise<Index> {
+export async function get_or_create_index(
+  opts: CreateIndexOptions,
+): Promise<Index> {
   try {
     await pc.createIndex(opts)
   } catch (e) {

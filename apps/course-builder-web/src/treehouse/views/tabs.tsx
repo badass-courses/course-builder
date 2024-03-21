@@ -34,7 +34,11 @@ const TabsView: React.FC<TabsViewProps> = ({ path }) => {
     <div className="tabs-view">
       <div className="tabs">
         {[...tabs].map((n: any) => (
-          <div key={n.ID} className={n.ID === selectedTab ? 'active' : ''} onClick={() => handleTabClick(n.ID)}>
+          <div
+            key={n.ID}
+            className={n.ID === selectedTab ? 'active' : ''}
+            onClick={() => handleTabClick(n.ID)}
+          >
             {n.Name}
           </div>
         ))}

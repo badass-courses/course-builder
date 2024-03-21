@@ -5,7 +5,10 @@ import { BaseSQLiteDatabase, type SQLiteTableFn } from 'drizzle-orm/sqlite-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 
-import { createTables as createMySqlTables, mySqlDrizzleAdapter } from './lib/mysql.js'
+import {
+  createTables as createMySqlTables,
+  mySqlDrizzleAdapter,
+} from './lib/mysql.js'
 import { pgDrizzleAdapter } from './lib/pg.js'
 import { SQLiteDrizzleAdapter } from './lib/sqlite.js'
 import { type SqlFlavorOptions, type TableFn } from './lib/utils.js'
@@ -22,7 +25,9 @@ export function DrizzleAdapter<SqlFlavor extends SqlFlavorOptions>(
     return SQLiteDrizzleAdapter(db, table as SQLiteTableFn)
   }
 
-  throw new Error(`Unsupported database type (${typeof db}) in Auth.js Drizzle adapter.`)
+  throw new Error(
+    `Unsupported database type (${typeof db}) in Auth.js Drizzle adapter.`,
+  )
 }
 
 export { createMySqlTables }

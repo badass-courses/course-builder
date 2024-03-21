@@ -169,13 +169,19 @@ export const userPermissions = mysqlTable(
   }),
 )
 
-export const userPermissionsRelations = relations(userPermissions, ({ one }) => ({
-  user: one(users, { fields: [userPermissions.userId], references: [users.id] }),
-  permission: one(permissions, {
-    fields: [userPermissions.permissionId],
-    references: [permissions.id],
+export const userPermissionsRelations = relations(
+  userPermissions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userPermissions.userId],
+      references: [users.id],
+    }),
+    permission: one(permissions, {
+      fields: [userPermissions.permissionId],
+      references: [permissions.id],
+    }),
   }),
-}))
+)
 
 export const rolePermissions = mysqlTable(
   'rolePermission',
@@ -203,13 +209,19 @@ export const rolePermissions = mysqlTable(
   }),
 )
 
-export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => ({
-  role: one(roles, { fields: [rolePermissions.roleId], references: [roles.id] }),
-  permission: one(permissions, {
-    fields: [rolePermissions.permissionId],
-    references: [permissions.id],
+export const rolePermissionsRelations = relations(
+  rolePermissions,
+  ({ one }) => ({
+    role: one(roles, {
+      fields: [rolePermissions.roleId],
+      references: [roles.id],
+    }),
+    permission: one(permissions, {
+      fields: [rolePermissions.permissionId],
+      references: [permissions.id],
+    }),
   }),
-}))
+)
 
 export const contentContributions = mysqlTable(
   'contentContribution',
@@ -217,7 +229,9 @@ export const contentContributions = mysqlTable(
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     userId: varchar('userId', { length: 255 }).notNull(),
     contentId: varchar('contentId', { length: 255 }).notNull(),
-    contributionTypeId: varchar('contributionTypeId', { length: 255 }).notNull(),
+    contributionTypeId: varchar('contributionTypeId', {
+      length: 255,
+    }).notNull(),
     active: boolean('active').notNull().default(true),
     createdAt: timestamp('createdAt', {
       mode: 'date',
@@ -235,18 +249,29 @@ export const contentContributions = mysqlTable(
   (cc) => ({
     userIdIdx: index('userId_idx').on(cc.userId),
     contentIdIdx: index('contentId_idx').on(cc.contentId),
-    contributionTypeIdIdx: index('contributionTypeId_idx').on(cc.contributionTypeId),
+    contributionTypeIdIdx: index('contributionTypeId_idx').on(
+      cc.contributionTypeId,
+    ),
   }),
 )
 
-export const contentContributionRelations = relations(contentContributions, ({ one }) => ({
-  user: one(users, { fields: [contentContributions.userId], references: [users.id] }),
-  content: one(contentResource, { fields: [contentContributions.contentId], references: [contentResource.id] }),
-  contributionType: one(contributionTypes, {
-    fields: [contentContributions.contributionTypeId],
-    references: [contributionTypes.id],
+export const contentContributionRelations = relations(
+  contentContributions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [contentContributions.userId],
+      references: [users.id],
+    }),
+    content: one(contentResource, {
+      fields: [contentContributions.contentId],
+      references: [contentResource.id],
+    }),
+    contributionType: one(contributionTypes, {
+      fields: [contentContributions.contributionTypeId],
+      references: [contributionTypes.id],
+    }),
   }),
-}))
+)
 
 export const contributionTypes = mysqlTable(
   'contributionType',
@@ -275,9 +300,12 @@ export const contributionTypes = mysqlTable(
   }),
 )
 
-export const contributionTypesRelations = relations(contributionTypes, ({ many }) => ({
-  contributions: many(contentContributions),
-}))
+export const contributionTypesRelations = relations(
+  contributionTypes,
+  ({ many }) => ({
+    contributions: many(contentContributions),
+  }),
+)
 
 export const contentResource = mysqlTable(
   'contentResource',
@@ -306,12 +334,18 @@ export const contentResource = mysqlTable(
   }),
 )
 
-export const contentResourceRelations = relations(contentResource, ({ one, many }) => ({
-  createdBy: one(users, { fields: [contentResource.createdById], references: [users.id] }),
-  contributions: many(contentContributions),
-  resources: many(contentResourceResource, { relationName: 'resourceOf' }),
-  resourceOf: many(contentResourceResource, { relationName: 'resource' }),
-}))
+export const contentResourceRelations = relations(
+  contentResource,
+  ({ one, many }) => ({
+    createdBy: one(users, {
+      fields: [contentResource.createdById],
+      references: [users.id],
+    }),
+    contributions: many(contentContributions),
+    resources: many(contentResourceResource, { relationName: 'resourceOf' }),
+    resourceOf: many(contentResourceResource, { relationName: 'resource' }),
+  }),
+)
 
 export const contentResourceResource = mysqlTable(
   'contentResourceResource',
@@ -340,37 +374,43 @@ export const contentResourceResource = mysqlTable(
   }),
 )
 
-export const contentResourceResourceRelations = relations(contentResourceResource, ({ one }) => ({
-  resourceOf: one(contentResource, {
-    fields: [contentResourceResource.resourceOfId],
-    references: [contentResource.id],
-    relationName: 'resourceOf',
+export const contentResourceResourceRelations = relations(
+  contentResourceResource,
+  ({ one }) => ({
+    resourceOf: one(contentResource, {
+      fields: [contentResourceResource.resourceOfId],
+      references: [contentResource.id],
+      relationName: 'resourceOf',
+    }),
+    resource: one(contentResource, {
+      fields: [contentResourceResource.resourceId],
+      references: [contentResource.id],
+      relationName: 'resource',
+    }),
   }),
-  resource: one(contentResource, {
-    fields: [contentResourceResource.resourceId],
-    references: [contentResource.id],
-    relationName: 'resource',
-  }),
-}))
+)
 
-export const communicationPreferenceTypes = mysqlTable('communicationPreferenceType', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('description'),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    fsp: 3,
-  }).defaultNow(),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-  deletedAt: timestamp('deletedAt', {
-    mode: 'date',
-    fsp: 3,
-  }),
-})
+export const communicationPreferenceTypes = mysqlTable(
+  'communicationPreferenceType',
+  {
+    id: varchar('id', { length: 255 }).notNull().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('description'),
+    active: boolean('active').notNull().default(true),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      fsp: 3,
+    }).defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+    deletedAt: timestamp('deletedAt', {
+      mode: 'date',
+      fsp: 3,
+    }),
+  },
+)
 
 export const communicationChannel = mysqlTable(
   'communicationChannel',
@@ -403,7 +443,9 @@ export const communicationPreferences = mysqlTable(
     id: varchar('id', { length: 255 }).notNull().primaryKey(),
     userId: varchar('userId', { length: 255 }).notNull(),
     channelId: varchar('channelId', { length: 255 }).notNull(),
-    preferenceLevel: mysqlEnum('preferenceLevel', ['low', 'medium', 'high']).notNull().default('medium'),
+    preferenceLevel: mysqlEnum('preferenceLevel', ['low', 'medium', 'high'])
+      .notNull()
+      .default('medium'),
     preferenceTypeId: varchar('preferenceTypeId', { length: 255 }).notNull(),
     active: boolean('active').notNull().default(true),
     createdAt: timestamp('createdAt', {
@@ -434,26 +476,31 @@ export const communicationPreferences = mysqlTable(
   }),
 )
 
-export const communicationPreferencesRelations = relations(communicationPreferences, ({ one }) => ({
-  user: one(users, {
-    fields: [communicationPreferences.userId],
-    references: [users.id],
+export const communicationPreferencesRelations = relations(
+  communicationPreferences,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [communicationPreferences.userId],
+      references: [users.id],
+    }),
+    channel: one(communicationChannel, {
+      fields: [communicationPreferences.channelId],
+      references: [communicationChannel.id],
+    }),
+    preferenceType: one(communicationPreferenceTypes, {
+      fields: [communicationPreferences.preferenceTypeId],
+      references: [communicationPreferenceTypes.id],
+    }),
   }),
-  channel: one(communicationChannel, {
-    fields: [communicationPreferences.channelId],
-    references: [communicationChannel.id],
-  }),
-  preferenceType: one(communicationPreferenceTypes, {
-    fields: [communicationPreferences.preferenceTypeId],
-    references: [communicationPreferenceTypes.id],
-  }),
-}))
+)
 
 export const accounts = mysqlTable(
   'account',
   {
     userId: varchar('userId', { length: 255 }).notNull(),
-    type: varchar('type', { length: 255 }).$type<AdapterAccount['type']>().notNull(),
+    type: varchar('type', { length: 255 })
+      .$type<AdapterAccount['type']>()
+      .notNull(),
     provider: varchar('provider', { length: 255 }).notNull(),
     providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
     refresh_token: text('refresh_token'),
@@ -480,7 +527,9 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = mysqlTable(
   'session',
   {
-    sessionToken: varchar('sessionToken', { length: 255 }).notNull().primaryKey(),
+    sessionToken: varchar('sessionToken', { length: 255 })
+      .notNull()
+      .primaryKey(),
     userId: varchar('userId', { length: 255 }).notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },

@@ -8,7 +8,13 @@ import { addPackageDependency } from '~/utils/addPackageDependency.js'
 export const tailwindInstaller: Installer = ({ projectDir }) => {
   addPackageDependency({
     projectDir,
-    dependencies: ['tailwindcss', 'postcss', 'autoprefixer', 'prettier', 'prettier-plugin-tailwindcss'],
+    dependencies: [
+      'tailwindcss',
+      'postcss',
+      'autoprefixer',
+      'prettier',
+      'prettier-plugin-tailwindcss',
+    ],
     devMode: true,
   })
 

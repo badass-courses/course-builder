@@ -33,7 +33,10 @@ const Icons = {
     />
   ),
   Playmark: () => (
-    <path fill="currentColor" d="m13.6 7.2-10-7A1 1 0 0 0 2 1v14a1 1 0 0 0 1.6.8l10-7c.5-.4.5-1.2 0-1.6Z" />
+    <path
+      fill="currentColor"
+      d="m13.6 7.2-10-7A1 1 0 0 0 2 1v14a1 1 0 0 0 1.6.8l10-7c.5-.4.5-1.2 0-1.6Z"
+    />
   ),
   Github: () => (
     <path
@@ -147,7 +150,13 @@ const Icons = {
     />
   ),
   MoveDown: () => (
-    <g strokeWidth="1" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+    <g
+      strokeWidth="1"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="12.5" y1="0.5" x2="12.5" y2="15.5" stroke="currentColor" />
       <polyline points="15.5 12.5 12.5 15.5 9.5 12.5" stroke="currentColor" />
       <polyline points="0.5 2.5 0.5 0.5 2.5 0.5" />

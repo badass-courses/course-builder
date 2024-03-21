@@ -7,7 +7,12 @@ import { Login } from '@/components/navigation/login'
 import { User } from '@/components/navigation/user'
 import { cn } from '@/utils/cn'
 import { cx } from 'class-variance-authority'
-import { AnimatePresence, motion, useAnimationControls, type AnimationControls } from 'framer-motion'
+import {
+  AnimatePresence,
+  motion,
+  useAnimationControls,
+  type AnimationControls,
+} from 'framer-motion'
 
 import { ThemeToggle } from './theme-toggle'
 
@@ -53,7 +58,10 @@ export function Links({ className }: { className?: string }) {
   return (
     <motion.nav
       aria-label="top"
-      className={cn('relative mx-auto flex w-full items-center justify-between px-3 text-sm', className)}
+      className={cn(
+        'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
+        className,
+      )}
     >
       <div className="flex items-center gap-2">
         <Link
@@ -75,7 +83,9 @@ export function Links({ className }: { className?: string }) {
               <Link
                 key={href}
                 href={href}
-                className={cx('group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5')}
+                className={cx(
+                  'group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5',
+                )}
                 passHref
               >
                 {icon()} {label}
@@ -133,7 +143,11 @@ type NavToggleProps = {
   menuControls?: AnimationControls
 }
 
-const NavToggle: React.FC<NavToggleProps> = ({ isMenuOpened, setMenuOpened, menuControls }) => {
+const NavToggle: React.FC<NavToggleProps> = ({
+  isMenuOpened,
+  setMenuOpened,
+  menuControls,
+}) => {
   const path01Variants = {
     open: { d: 'M3.06061 2.99999L21.0606 21' },
     closed: { d: 'M0 9.5L24 9.5' },

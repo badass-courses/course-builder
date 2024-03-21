@@ -16,7 +16,11 @@ import {
   SelectValue,
 } from '@coursebuilder/ui'
 
-export function MetadataFieldVisibility({ form }: { form: UseFormReturn<any> }) {
+export function MetadataFieldVisibility({
+  form,
+}: {
+  form: UseFormReturn<any>
+}) {
   return (
     <FormField
       control={form.control}

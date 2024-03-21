@@ -23,7 +23,11 @@ const TagBadge = ({
   }
 
   return (
-    <div tabIndex={1} className="badge flex flex-row items-center" onKeyDown={handleKeyDown}>
+    <div
+      tabIndex={1}
+      className="badge flex flex-row items-center"
+      onKeyDown={handleKeyDown}
+    >
       <span># </span>
       <div style={{ whiteSpace: 'nowrap' }}>{tagName}</div>
     </div>

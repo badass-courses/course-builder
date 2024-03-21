@@ -15,7 +15,9 @@ export function bindingSymbols(key?: string): string[] {
   const keys = key.toLowerCase().split('+')
   return keys
     .map(filterKeyForNonMacMeta)
-    .map((k) => (Boolean(Object.keys(symbols).includes(k)) ? symbols[k] : k)) as string[]
+    .map((k) =>
+      Boolean(Object.keys(symbols).includes(k)) ? symbols[k] : k,
+    ) as string[]
 }
 
 // if key is meta and not on a mac, change it to ctrl,

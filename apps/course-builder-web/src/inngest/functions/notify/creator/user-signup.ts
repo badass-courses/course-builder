@@ -27,24 +27,30 @@ Joel`,
       subject: 'Welcome to Course Builder!',
     }
 
-    const parsedEmailBody: string = await step.run(`parse email body`, async () => {
-      try {
-        const engine = new Liquid()
-        return engine.parseAndRender(email.body, { user: event.user })
-      } catch (e: any) {
-        console.error(e.message)
-        return email.body
-      }
-    })
+    const parsedEmailBody: string = await step.run(
+      `parse email body`,
+      async () => {
+        try {
+          const engine = new Liquid()
+          return engine.parseAndRender(email.body, { user: event.user })
+        } catch (e: any) {
+          console.error(e.message)
+          return email.body
+        }
+      },
+    )
 
-    const parsedEmailSubject: string = await step.run(`parse email subject`, async () => {
-      try {
-        const engine = new Liquid()
-        return engine.parseAndRender(email.subject, { user: event.user })
-      } catch (e) {
-        return email.subject
-      }
-    })
+    const parsedEmailSubject: string = await step.run(
+      `parse email subject`,
+      async () => {
+        try {
+          const engine = new Liquid()
+          return engine.parseAndRender(email.subject, { user: event.user })
+        } catch (e) {
+          return email.subject
+        }
+      },
+    )
 
     const sendResponse = await step.run('send the email', async () => {
       return await sendAnEmail({

@@ -44,7 +44,12 @@ export interface Workspace {
  * TODO: don't use file store because we are serverless
  * TODO: this could uses tests
  */
-export const createWorkspaceSlice: StateCreator<Workbench & Workspace, [], [], Workspace> = (set, get) => ({
+export const createWorkspaceSlice: StateCreator<
+  Workbench & Workspace,
+  [],
+  [],
+  Workspace
+> = (set, get) => ({
   initializeWorkspace: async (fs: FileStore) => {
     set({ fs, bus: new module.Bus() })
   },
@@ -169,7 +174,11 @@ export const createWorkspaceSlice: StateCreator<Workbench & Workspace, [], [], W
     state.save()
   },
   findAbove(path: Path): Path | null {
-    if (!path.head || !path.node || (path.node && path.head && path.node.id === path.head.id)) {
+    if (
+      !path.head ||
+      !path.node ||
+      (path.node && path.head && path.node.id === path.head.id)
+    ) {
       return null
     }
     const p = path.clone()
@@ -179,7 +188,9 @@ export const createWorkspaceSlice: StateCreator<Workbench & Workspace, [], [], W
       // if not a field and parent has fields, return last field
       const fieldCount = path.previous?.getLinked('Fields').length || 0
       if (path.node.raw.Rel !== 'Fields' && fieldCount > 0) {
-        return p.append(path.previous?.getLinked('Fields')[fieldCount - 1] as Node)
+        return p.append(
+          path.previous?.getLinked('Fields')[fieldCount - 1] as Node,
+        )
       }
       // if no prev sibling, and no fields, return parent
       return p
@@ -214,11 +225,20 @@ export const createWorkspaceSlice: StateCreator<Workbench & Workspace, [], [], W
   findBelow(path: Path): Path | null {
     // TODO: find a way to indicate pseudo "new" node for expanded leaf nodes
     const p = path.clone()
-    if (path.head && path.node && this.getExpanded(path.head, path.node) && path.node.getLinked('Fields').length > 0) {
+    if (
+      path.head &&
+      path.node &&
+      this.getExpanded(path.head, path.node) &&
+      path.node.getLinked('Fields').length > 0
+    ) {
       // if expanded and fields, return first field
       return p.append(path.node.getLinked('Fields')[0] as Node)
     }
-    if ((this.getExpanded(path.head as Node, path.node as Node) && path.node?.childCount) || 0 > 0) {
+    if (
+      (this.getExpanded(path.head as Node, path.node as Node) &&
+        path.node?.childCount) ||
+      0 > 0
+    ) {
       // if expanded and children, return first child
       return p.append(path.node?.children[0] as Node)
     }

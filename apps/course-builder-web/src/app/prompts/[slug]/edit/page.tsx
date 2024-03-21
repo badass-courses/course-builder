@@ -8,7 +8,11 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function PromptEditPage({ params }: { params: { slug: string } }) {
+export default async function PromptEditPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
   headers()
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })

@@ -1,4 +1,13 @@
-import React, { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  createContext,
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu'
@@ -10,7 +19,11 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/addon/closest-edge'
 import { getReorderDestinationIndex } from '@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index'
 import * as liveRegion from '@atlaskit/pragmatic-drag-and-drop-live-region'
-import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
+import {
+  draggable,
+  dropTargetForElements,
+  monitorForElements,
+} from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/util/combine'
 import { offsetFromPointer } from '@atlaskit/pragmatic-drag-and-drop/util/offset-from-pointer'
 import { reorder } from '@atlaskit/pragmatic-drag-and-drop/util/reorder'
@@ -28,7 +41,11 @@ type ListContextProps = {
   getItemIndex: ({ id }: { id: string }) => number
   getItemPosition: (itemData: ItemData) => ItemPosition
   registerItem: (args: { id: string; element: HTMLElement }) => CleanupFn
-  reorderItem: (args: { startIndex: number; indexOfTarget: number; closestEdgeOfTarget: Edge | null }) => void
+  reorderItem: (args: {
+    startIndex: number
+    indexOfTarget: number
+    closestEdgeOfTarget: Edge | null
+  }) => void
   instanceId: symbol
 }
 
@@ -64,7 +81,10 @@ const listItemStyles = xcss({
 
 const listItemDisabledStyles = xcss({ opacity: 0.4 })
 
-type DraggableState = { type: 'idle' } | { type: 'preview'; container: HTMLElement } | { type: 'dragging' }
+type DraggableState =
+  | { type: 'idle' }
+  | { type: 'preview'; container: HTMLElement }
+  | { type: 'dragging' }
 
 const idleState: DraggableState = { type: 'idle' }
 const draggingState: DraggableState = { type: 'dragging' }
@@ -95,7 +115,8 @@ function ListItem({ itemData }: { itemData: ItemData }) {
 
   const triggerRef = useRef<HTMLButtonElement>(null)
 
-  const [draggableState, setDraggableState] = useState<DraggableState>(idleState)
+  const [draggableState, setDraggableState] =
+    useState<DraggableState>(idleState)
 
   useEffect(() => {
     invariant(ref.current)
@@ -164,7 +185,8 @@ function ListItem({ itemData }: { itemData: ItemData }) {
           const isItemAfterSource = selfIndex === sourceIndex + 1
 
           const isDropIndicatorHidden =
-            (isItemBeforeSource && closestEdge === 'bottom') || (isItemAfterSource && closestEdge === 'top')
+            (isItemBeforeSource && closestEdge === 'bottom') ||
+            (isItemAfterSource && closestEdge === 'top')
 
           if (isDropIndicatorHidden) {
             setClosestEdge(null)
@@ -202,13 +224,30 @@ function ListItem({ itemData }: { itemData: ItemData }) {
           ]}
         >
           <Box xcss={itemLabelStyles}>
-            <Link href={`/tutorials/${params.module}/${itemData.id}/edit`}>{itemData.label}</Link>
+            <Link href={`/tutorials/${params.module}/${itemData.id}/edit`}>
+              {itemData.label}
+            </Link>
           </Box>
         </Grid>
-        {closestEdge && <span style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>◎</span>}
+        {closestEdge && (
+          <span
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          >
+            ◎
+          </span>
+        )}
       </Box>
       {draggableState.type === 'preview' &&
-        ReactDOM.createPortal(<Box xcss={listItemPreviewStyles}>{itemData.label}</Box>, draggableState.container)}
+        ReactDOM.createPortal(
+          <Box xcss={listItemPreviewStyles}>{itemData.label}</Box>,
+          draggableState.container,
+        )}
     </Fragment>
   )
 }
@@ -281,17 +320,20 @@ export default function LessonList({
   })
 
   const registryRef = useRef(new Map<string, HTMLElement>())
-  const registerItem = useCallback(({ id, element }: { id: string; element: HTMLElement }) => {
-    const registry = registryRef.current
-    if (!registry) {
-      return () => {}
-    }
-    registry.set(id, element)
+  const registerItem = useCallback(
+    ({ id, element }: { id: string; element: HTMLElement }) => {
+      const registry = registryRef.current
+      if (!registry) {
+        return () => {}
+      }
+      registry.set(id, element)
 
-    return function unregisterItem() {
-      registry.delete(id)
-    }
-  }, [])
+      return function unregisterItem() {
+        registry.delete(id)
+      }
+    },
+    [],
+  )
 
   useEffect(() => {
     return () => {
@@ -393,7 +435,9 @@ export default function LessonList({
           return
         }
 
-        const indexOfTarget = items.findIndex((item) => item.id === target.data.id)
+        const indexOfTarget = items.findIndex(
+          (item) => item.id === target.data.id,
+        )
         if (indexOfTarget < 0) {
           return
         }

@@ -31,7 +31,9 @@ export const videoUploaded = inngest.createFunction(
     })
 
     await step.run('create the video resource in database', async () => {
-      const playbackId = muxAsset.playback_ids.filter((playbackId) => playbackId.policy === 'public')[0]?.id
+      const playbackId = muxAsset.playback_ids.filter(
+        (playbackId) => playbackId.policy === 'public',
+      )[0]?.id
 
       if (!playbackId) {
         throw new Error('No public playback id found')
@@ -50,9 +52,12 @@ export const videoUploaded = inngest.createFunction(
       })
     })
 
-    const videoResource = await step.run('get the video resource from database', async () => {
-      return db.getVideoResource(event.data.fileName)
-    })
+    const videoResource = await step.run(
+      'get the video resource from database',
+      async () => {
+        return db.getVideoResource(event.data.fileName)
+      },
+    )
 
     if (!videoResource) {
       throw new Error('Failed to create video resource')

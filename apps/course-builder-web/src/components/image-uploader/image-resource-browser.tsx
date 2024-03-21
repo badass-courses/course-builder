@@ -32,7 +32,10 @@ export const ImageResourceBrowser = () => {
                 src={asset.url}
                 alt={asset._id}
                 onDragStart={(e) => {
-                  e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
+                  e.dataTransfer.setData(
+                    'text/plain',
+                    `![](${e.currentTarget.src})`,
+                  )
                 }}
               />
             </div>

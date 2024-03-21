@@ -1,5 +1,14 @@
 import { relations, sql } from 'drizzle-orm'
-import { bigint, index, int, mysqlTableCreator, primaryKey, text, timestamp, varchar } from 'drizzle-orm/mysql-core'
+import {
+  bigint,
+  index,
+  int,
+  mysqlTableCreator,
+  primaryKey,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/mysql-core'
 import { type AdapterAccount } from 'next-auth/adapters'
 
 /**
@@ -47,7 +56,9 @@ export const accounts = mysqlTable(
   'account',
   {
     userId: varchar('userId', { length: 255 }).notNull(),
-    type: varchar('type', { length: 255 }).$type<AdapterAccount['type']>().notNull(),
+    type: varchar('type', { length: 255 })
+      .$type<AdapterAccount['type']>()
+      .notNull(),
     provider: varchar('provider', { length: 255 }).notNull(),
     providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
     refresh_token: text('refresh_token'),
@@ -71,7 +82,9 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = mysqlTable(
   'session',
   {
-    sessionToken: varchar('sessionToken', { length: 255 }).notNull().primaryKey(),
+    sessionToken: varchar('sessionToken', { length: 255 })
+      .notNull()
+      .primaryKey(),
     userId: varchar('userId', { length: 255 }).notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },

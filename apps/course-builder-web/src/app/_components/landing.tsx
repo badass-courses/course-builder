@@ -26,7 +26,11 @@ export const Landing = () => {
               })
             }
           >
-            <Icon className="mr-2 flex items-center justify-center" name="Github" size="20" />
+            <Icon
+              className="mr-2 flex items-center justify-center"
+              name="Github"
+              size="20"
+            />
             Signup with Github for Updates
           </Button>
         </div>

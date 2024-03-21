@@ -3,14 +3,21 @@ import { getArticle } from '@/lib/articles-query'
 
 export const revalidate = 60
 
-export default async function ArticleOG({ params }: { params: { slug: string } }) {
+export default async function ArticleOG({
+  params,
+}: {
+  params: { slug: string }
+}) {
   //   const authorPhoto = fetch(
   //     new URL(`../../public/images/author.jpg`, import.meta.url)
   //   ).then(res => res.arrayBuffer());
 
   // fonts
   const inter600 = fetch(
-    new URL(`../../../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff`, import.meta.url),
+    new URL(
+      `../../../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff`,
+      import.meta.url,
+    ),
   ).then((res) => res.arrayBuffer())
 
   const resource = await getArticle(params.slug)

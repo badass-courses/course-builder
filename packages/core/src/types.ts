@@ -15,7 +15,9 @@ export interface ContentResource {
   fields: Record<string, any> | null
 }
 
-export interface ResponseInternal<Body extends string | Record<string, any> | any[] | null = any> {
+export interface ResponseInternal<
+  Body extends string | Record<string, any> | any[] | null = any,
+> {
   status?: number
   headers?: Headers | HeadersInit
   body?: Body
@@ -43,7 +45,9 @@ export interface RequestInternal {
 }
 
 /** @internal */
-export type InternalProvider<T = ProviderType> = T extends 'transcription' ? TranscriptionConfig : never
+export type InternalProvider<T = ProviderType> = T extends 'transcription'
+  ? TranscriptionConfig
+  : never
 
 export interface InternalOptions<TProviderType = ProviderType> {
   providers: InternalProvider[]

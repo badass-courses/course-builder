@@ -16,4 +16,6 @@ export const VideoTranscriptReadyEventSchema = z.object({
   transcript: z.string(),
 })
 
-export type VideoTranscriptReadyEvent = z.infer<typeof VideoTranscriptReadyEventSchema>
+export type VideoTranscriptReadyEvent = z.infer<
+  typeof VideoTranscriptReadyEventSchema
+>

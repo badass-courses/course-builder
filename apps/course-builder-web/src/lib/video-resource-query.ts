@@ -6,7 +6,10 @@ import { contentResource } from '@/db/schema'
 import { ExecutedQuery } from '@planetscale/database'
 import { sql } from 'drizzle-orm'
 
-import { VideoResourceSchema, type VideoResource } from '@coursebuilder/core/schemas/video-resource'
+import {
+  VideoResourceSchema,
+  type VideoResource,
+} from '@coursebuilder/core/schemas/video-resource'
 
 export async function updateVideoStatus({
   videoResourceId,
@@ -75,7 +78,9 @@ export async function updateVideoWithTranscripts({
     })
 }
 
-export async function getTranscriptWithScreenshots(videoResourceId?: string | null): Promise<string | null> {
+export async function getTranscriptWithScreenshots(
+  videoResourceId?: string | null,
+): Promise<string | null> {
   if (!videoResourceId) {
     return null
   }
@@ -99,7 +104,9 @@ export async function getTranscriptWithScreenshots(videoResourceId?: string | nu
     })
 }
 
-export async function getVideoResource(videoResourceId?: string | null): Promise<VideoResource | null> {
+export async function getVideoResource(
+  videoResourceId?: string | null,
+): Promise<VideoResource | null> {
   if (!videoResourceId) {
     throw new Error('videoResourceId is required')
   }

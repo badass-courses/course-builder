@@ -1,5 +1,13 @@
 import * as React from 'react'
-import { Body, Container, Head, Html, Preview, Section, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Html,
+  Preview,
+  Section,
+  Text,
+} from '@react-email/components'
 import { Markdown } from '@react-email/markdown'
 
 export type WeeklySignupsEmailProps = {

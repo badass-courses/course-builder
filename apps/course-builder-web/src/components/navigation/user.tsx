@@ -34,8 +34,14 @@ export const User: React.FC<{ className?: string }> = ({ className }) => {
     <>
       {isLoadingUserInfo || !sessionData?.user?.email ? null : (
         <DropdownMenu>
-          <DropdownMenuTrigger className={cn('mr-3 flex items-center space-x-1', className)}>
-            <Gravatar className="h-7 w-7 rounded-full" email={sessionData?.user?.email} default="mp" />
+          <DropdownMenuTrigger
+            className={cn('mr-3 flex items-center space-x-1', className)}
+          >
+            <Gravatar
+              className="h-7 w-7 rounded-full"
+              email={sessionData?.user?.email}
+              default="mp"
+            />
             <div className="flex flex-col pl-0.5">
               <span className="inline-flex items-center gap-0.5 text-sm font-bold leading-tight">
                 <span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
@@ -46,9 +52,14 @@ export const User: React.FC<{ className?: string }> = ({ className }) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>{sessionData?.user?.email || 'Account'}</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {sessionData?.user?.email || 'Account'}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center justify-between" asChild>
+            <DropdownMenuItem
+              className="flex items-center justify-between"
+              asChild
+            >
               <Link
                 href="/profile"
                 className={cx({
@@ -62,7 +73,10 @@ export const User: React.FC<{ className?: string }> = ({ className }) => {
               <>
                 {' '}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center justify-between" asChild>
+                <DropdownMenuItem
+                  className="flex items-center justify-between"
+                  asChild
+                >
                   <Link
                     href="/admin"
                     className={cx({

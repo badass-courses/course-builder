@@ -32,7 +32,13 @@ export const trpcInstaller: Installer = ({ projectDir, packages }) => {
   const apiHandlerDest = path.join(projectDir, routeHandlerFile)
 
   const trpcFile =
-    usingAuth && usingDb ? 'with-auth-db.ts' : usingAuth ? 'with-auth.ts' : usingDb ? 'with-db.ts' : 'base.ts'
+    usingAuth && usingDb
+      ? 'with-auth-db.ts'
+      : usingAuth
+        ? 'with-auth.ts'
+        : usingDb
+          ? 'with-db.ts'
+          : 'base.ts'
   const trpcSrc = path.join(extrasDir, 'src/server/api', 'trpc-app', trpcFile)
   const trpcDest = path.join(projectDir, 'src/server/api/trpc.ts')
 
@@ -52,8 +58,15 @@ export const trpcInstaller: Installer = ({ projectDir, packages }) => {
               ? 'with-drizzle.ts'
               : 'base.ts'
 
-  const exampleRouterSrc = path.join(extrasDir, 'src/server/api/routers/post', exampleRouterFile)
-  const exampleRouterDest = path.join(projectDir, 'src/server/api/routers/post.ts')
+  const exampleRouterSrc = path.join(
+    extrasDir,
+    'src/server/api/routers/post',
+    exampleRouterFile
+  )
+  const exampleRouterDest = path.join(
+    projectDir,
+    'src/server/api/routers/post.ts'
+  )
 
   const copySrcDest: [string, string][] = [
     [apiHandlerSrc, apiHandlerDest],
@@ -70,11 +83,24 @@ export const trpcInstaller: Installer = ({ projectDir, packages }) => {
 
   const trpcDir = path.join(extrasDir, 'src/trpc')
   copySrcDest.push(
-    [path.join(trpcDir, 'server.ts'), path.join(projectDir, 'src/trpc/server.ts')],
-    [path.join(trpcDir, 'react.tsx'), path.join(projectDir, 'src/trpc/react.tsx')],
-    [path.join(trpcDir, 'shared.ts'), path.join(projectDir, 'src/trpc/shared.ts')],
     [
-      path.join(extrasDir, 'src/app/_components', packages?.tailwind.inUse ? 'create-post-tw.tsx' : 'create-post.tsx'),
+      path.join(trpcDir, 'server.ts'),
+      path.join(projectDir, 'src/trpc/server.ts'),
+    ],
+    [
+      path.join(trpcDir, 'react.tsx'),
+      path.join(projectDir, 'src/trpc/react.tsx'),
+    ],
+    [
+      path.join(trpcDir, 'shared.ts'),
+      path.join(projectDir, 'src/trpc/shared.ts'),
+    ],
+    [
+      path.join(
+        extrasDir,
+        'src/app/_components',
+        packages?.tailwind.inUse ? 'create-post-tw.tsx' : 'create-post.tsx'
+      ),
       path.join(projectDir, 'src/app/_components/create-post.tsx'),
     ]
   )

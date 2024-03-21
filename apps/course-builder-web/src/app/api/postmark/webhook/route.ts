@@ -6,7 +6,9 @@ import { withSkill } from '@/server/with-skill'
 export const POST = withSkill(async (req: NextRequest, res: NextResponse) => {
   const body = await req.json()
 
-  if (req.headers.get('course-builder') !== process.env.POSTMARK_WEBHOOK_SECRET) {
+  if (
+    req.headers.get('course-builder') !== process.env.POSTMARK_WEBHOOK_SECRET
+  ) {
     return new Response('ok', {
       status: 200,
     })

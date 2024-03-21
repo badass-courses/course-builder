@@ -24,7 +24,11 @@ export const metadata = {
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <Providers>
       <html lang="en" suppressHydrationWarning={true}>
@@ -32,7 +36,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body className={`font-sans ${inter.variable}`}>
           <TRPCReactProvider>
             <Party />
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
               <div key="1" className="flex min-h-screen w-full flex-col">
                 <Navigation />
                 <main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">

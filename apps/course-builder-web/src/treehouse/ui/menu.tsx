@@ -15,7 +15,15 @@ function isDisabled(item: MenuItem, cmd: Command, ctx: Context) {
   return item.disabled
 }
 
-export const Menu = ({ items, commands, ctx }: { items: any[]; commands: Command[]; ctx: Context }) => {
+export const Menu = ({
+  items,
+  commands,
+  ctx,
+}: {
+  items: any[]
+  commands: Command[]
+  ctx: Context
+}) => {
   const closeMenu = useTreehouseStore((s) => s.closeMenu)
   const executeCommand = useTreehouseStore((s) => s.executeCommand)
   const keybindings = useTreehouseStore((s) => s.keybindings)
@@ -73,7 +81,9 @@ export const Menu = ({ items, commands, ctx }: { items: any[]; commands: Command
             >
               <div>{title}</div>
               {binding && (
-                <div className="keybindings grow text-right">{bindingSymbols(binding.key).join(' ').toUpperCase()}</div>
+                <div className="keybindings grow text-right">
+                  {bindingSymbols(binding.key).join(' ').toUpperCase()}
+                </div>
               )}
             </li>
           )

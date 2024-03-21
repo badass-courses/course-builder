@@ -15,7 +15,8 @@ export const QuickAdd: React.FC<QuickAddProps> = ({ workbench, node }) => {
   return (
     <div className="notice">
       <h3>Quick Add</h3>
-      <OutlineEditor path={path} alwaysShowNew={true} /> {/* Make sure OutlineEditor is defined or imported */}
+      <OutlineEditor path={path} alwaysShowNew={true} />{' '}
+      {/* Make sure OutlineEditor is defined or imported */}
       <div className="button-bar">
         <button
           className="primary"

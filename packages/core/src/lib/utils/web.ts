@@ -2,7 +2,11 @@ import { parse as parseCookie, serialize } from 'cookie'
 
 import { CourseBuilderError } from '../../errors'
 import { CourseBuilderConfig } from '../../index'
-import { CourseBuilderAction, RequestInternal, ResponseInternal } from '../../types'
+import {
+  CourseBuilderAction,
+  RequestInternal,
+  ResponseInternal,
+} from '../../types'
 import { isCourseBuilderAction } from './actions'
 import { logger } from './logger'
 
@@ -27,7 +31,10 @@ export async function toInternalRequest(
 
     const url = new URL(req.url)
 
-    const { action, providerId } = parseActionAndProviderId(url.pathname, config.basePath)
+    const { action, providerId } = parseActionAndProviderId(
+      url.pathname,
+      config.basePath,
+    )
 
     return {
       url,
@@ -61,13 +68,16 @@ export function parseActionAndProviderId(
 
   const b = actionAndProviderId.replace(/^\//, '').split('/')
 
-  if (b.length !== 1 && b.length !== 2) throw new UnknownAction(`Cannot parse action at ${pathname}`)
+  if (b.length !== 1 && b.length !== 2)
+    throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
   const [action, providerId] = b
 
-  if (!isCourseBuilderAction(action)) throw new UnknownAction(`Cannot parse action at ${pathname}`)
+  if (!isCourseBuilderAction(action))
+    throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
-  if (providerId && !['webhook', 'srt'].includes(action)) throw new UnknownAction(`Cannot parse action at ${pathname}`)
+  if (providerId && !['webhook', 'srt'].includes(action))
+    throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
   return { action, providerId }
 }
@@ -88,7 +98,8 @@ export function toResponse(res: ResponseInternal): Response {
 
   let body = res.body
 
-  if (headers.get('content-type') === 'application/json') body = JSON.stringify(res.body)
+  if (headers.get('content-type') === 'application/json')
+    body = JSON.stringify(res.body)
   else if (headers.get('content-type') === 'application/x-www-form-urlencoded')
     body = new URLSearchParams(res.body).toString()
 

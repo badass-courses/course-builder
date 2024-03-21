@@ -19,7 +19,10 @@ export interface MinimumSchema {
   sqlite: SQLiteSchema & Record<string, AnySQLiteTable>
 }
 
-export type SqlFlavorOptions = AnyMySqlDatabase | AnyPgDatabase | AnySQLiteDatabase
+export type SqlFlavorOptions =
+  | AnyMySqlDatabase
+  | AnyPgDatabase
+  | AnySQLiteDatabase
 
 export type ClientFlavors<Flavor> = Flavor extends AnyMySqlDatabase
   ? MinimumSchema['mysql']

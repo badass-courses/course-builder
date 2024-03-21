@@ -7,7 +7,11 @@ export const TipStateSchema = z.union([
   z.literal('deleted'),
 ])
 
-export const TipVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
+export const TipVisibilitySchema = z.union([
+  z.literal('public'),
+  z.literal('private'),
+  z.literal('unlisted'),
+])
 
 export const TipSchema = z.object({
   _id: z.string(),

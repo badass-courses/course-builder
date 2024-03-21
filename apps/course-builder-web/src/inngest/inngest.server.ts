@@ -1,10 +1,22 @@
 import { db } from '@/db'
 import { mysqlTable } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { EMAIL_SEND_BROADCAST, EmailSendBroadcast } from '@/inngest/events/email-send-broadcast'
-import { IMAGE_RESOURCE_CREATED_EVENT, ImageResourceCreated } from '@/inngest/events/image-resource-created'
-import { POSTMARK_WEBHOOK_EVENT, PostmarkWebhook } from '@/inngest/events/postmark-webhook'
-import { RESOURCE_CHAT_REQUEST_EVENT, ResourceChat } from '@/inngest/events/resource-chat-request'
+import {
+  EMAIL_SEND_BROADCAST,
+  EmailSendBroadcast,
+} from '@/inngest/events/email-send-broadcast'
+import {
+  IMAGE_RESOURCE_CREATED_EVENT,
+  ImageResourceCreated,
+} from '@/inngest/events/image-resource-created'
+import {
+  POSTMARK_WEBHOOK_EVENT,
+  PostmarkWebhook,
+} from '@/inngest/events/postmark-webhook'
+import {
+  RESOURCE_CHAT_REQUEST_EVENT,
+  ResourceChat,
+} from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
 import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
 import { UTApi } from 'uploadthing/server'
@@ -35,7 +47,10 @@ import {
   type RequestConceptSelection,
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
-import { REQUEST_VIDEO_SPLIT_POINTS, type RequestVideoSplitPoints } from './events/split_video'
+import {
+  REQUEST_VIDEO_SPLIT_POINTS,
+  type RequestVideoSplitPoints,
+} from './events/split_video'
 
 // Create a client to send and receive events
 export type Events = {
@@ -57,7 +72,8 @@ export type Events = {
   [REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
 }
 
-const callbackBase = env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
+const callbackBase =
+  env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
 
 const middleware = new InngestMiddleware({
   name: 'Supply Context',

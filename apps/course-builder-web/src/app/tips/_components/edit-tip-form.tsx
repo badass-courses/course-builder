@@ -25,7 +25,10 @@ export type EditTipFormProps = {
   children?: React.ReactNode
 }
 
-export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps, 'form'>) {
+export function EditTipForm({
+  tip,
+  videoResourceLoader,
+}: Omit<EditTipFormProps, 'form'>) {
   const form = useForm<z.infer<typeof TipSchema>>({
     resolver: zodResolver(NewTipFormSchema),
     defaultValues: {
@@ -36,7 +39,11 @@ export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps,
   const isMobile = useIsMobile()
 
   return isMobile ? (
-    <MobileEditTipForm tip={tip} form={form} videoResourceLoader={videoResourceLoader} />
+    <MobileEditTipForm
+      tip={tip}
+      form={form}
+      videoResourceLoader={videoResourceLoader}
+    />
   ) : (
     <EditResourcesFormDesktop
       resource={tip}
@@ -45,7 +52,11 @@ export function EditTipForm({ tip, videoResourceLoader }: Omit<EditTipFormProps,
       updateResource={updateTip}
       form={form}
     >
-      <TipMetadataFormFields form={form} videoResourceLoader={videoResourceLoader} tip={tip} />
+      <TipMetadataFormFields
+        form={form}
+        videoResourceLoader={videoResourceLoader}
+        tip={tip}
+      />
     </EditResourcesFormDesktop>
   )
 }

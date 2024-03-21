@@ -22,9 +22,13 @@ import {
 } from '@coursebuilder/ui'
 
 export function NewResourceWithVideoForm() {
-  const [videoResourceId, setVideoResourceId] = React.useState<string | undefined>()
-  const [videoResourceValid, setVideoResourceValid] = React.useState<boolean>(false)
-  const [isValidatingVideoResource, setIsValidatingVideoResource] = React.useState<boolean>(false)
+  const [videoResourceId, setVideoResourceId] = React.useState<
+    string | undefined
+  >()
+  const [videoResourceValid, setVideoResourceValid] =
+    React.useState<boolean>(false)
+  const [isValidatingVideoResource, setIsValidatingVideoResource] =
+    React.useState<boolean>(false)
   const router = useRouter()
 
   const form = useForm<NewTip>({
@@ -105,7 +109,8 @@ export function NewResourceWithVideoForm() {
             <FormItem>
               <FormLabel className="text-lg font-bold">Title</FormLabel>
               <FormDescription className="mt-2 text-sm">
-                A title should summarize the tip and explain what it is about clearly.
+                A title should summarize the tip and explain what it is about
+                clearly.
               </FormDescription>
               <FormControl>
                 <Input {...field} />
@@ -120,7 +125,9 @@ export function NewResourceWithVideoForm() {
           name="videoResourceId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-bold">Upload a Tip Video*</FormLabel>
+              <FormLabel className="text-lg font-bold">
+                Upload a Tip Video*
+              </FormLabel>
               <FormDescription className="mt-2 text-sm">
                 Your video will be uploaded and then transcribed automatically.
               </FormDescription>
@@ -142,14 +149,21 @@ export function NewResourceWithVideoForm() {
                   </Button>
                 </div>
               )}
-              {isValidatingVideoResource && !videoResourceValid ? <FormMessage>Processing Upload</FormMessage> : null}
+              {isValidatingVideoResource && !videoResourceValid ? (
+                <FormMessage>Processing Upload</FormMessage>
+              ) : null}
 
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="mt-2" variant="default" disabled={!videoResourceValid}>
+        <Button
+          type="submit"
+          className="mt-2"
+          variant="default"
+          disabled={!videoResourceValid}
+        >
           Create Draft Tip
         </Button>
       </form>

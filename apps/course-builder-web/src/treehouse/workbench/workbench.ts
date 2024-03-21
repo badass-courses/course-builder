@@ -11,7 +11,11 @@ import { MenuRegistry } from '../action/menus'
 import { Backend } from '../backend/mod'
 import { Node } from '../model/mod'
 import { Menu } from '../ui/menu'
-import { FirstTimeMessage, GitHubMessage, LockStolenMessage } from '../ui/notices'
+import {
+  FirstTimeMessage,
+  GitHubMessage,
+  LockStolenMessage,
+} from '../ui/notices'
 import { CommandPalette } from '../ui/palette'
 import { QuickAdd } from '../ui/quickadd'
 import { Context } from './mod'
@@ -34,7 +38,12 @@ export interface Drawer {
  * trigger various pop-overs, work with quick add, or anything else
  * not provided by the backend or workspace.
  */
-export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], Workbench> = (set, get) => ({
+export const createWorkbenchSlice: StateCreator<
+  Workbench & Workspace,
+  [],
+  [],
+  Workbench
+> = (set, get) => ({
   commands: new CommandRegistry(),
   keybindings: new KeyBindings(),
   menus: new MenuRegistry(),
@@ -54,7 +63,15 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
 
   initializeWorkbench: async (backend: Backend) => {
     console.log('Initializing workbench with backend', backend)
-    const { openNewPanel, initializeWorkspace, load, observe, save, find, mainNode } = get()
+    const {
+      openNewPanel,
+      initializeWorkspace,
+      load,
+      observe,
+      save,
+      find,
+      mainNode,
+    } = get()
     await initializeWorkspace(backend.files)
 
     await load()
@@ -97,9 +114,14 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     const { showDialog, find, newWorkspace } = get()
     let node = find('@quickadd') || newWorkspace('@quickadd')
 
-    showDialog(() => React.createElement(QuickAdd, { workbench: get(), node }), true)
+    showDialog(
+      () => React.createElement(QuickAdd, { workbench: get(), node }),
+      true,
+    )
     setTimeout(() => {
-      ;(document.querySelector('main > dialog .new-node input') as HTMLElement)?.focus()
+      ;(
+        document.querySelector('main > dialog .new-node input') as HTMLElement
+      )?.focus()
     }, 1)
   },
   commitQuickAdd: () => {
@@ -249,7 +271,10 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     if (!trigger.dataset['menu']) return
 
     const items = menus.menus[trigger.dataset['menu']] || []
-    const cmds = items.filter((i) => i.command).map((i) => commands.commands[i.command] as Command) || []
+    const cmds =
+      items
+        .filter((i) => i.command)
+        .map((i) => commands.commands[i.command] as Command) || []
     if (!items) {
       return
     }
@@ -261,20 +286,35 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     setTimeout(() => {
       // this next frame timeout is so any current dialog can close before attempting
       // to showModal on already open dialog, which causes exception.
-      ;(document.querySelector('main > dialog.menu') as HTMLDialogElement)?.showModal()
+      ;(
+        document.querySelector('main > dialog.menu') as HTMLDialogElement
+      )?.showModal()
     }, 0)
   },
   closeMenu: () => {
-    ;(document.querySelector('main > dialog.menu') as HTMLDialogElement)?.close()
+    ;(
+      document.querySelector('main > dialog.menu') as HTMLDialogElement
+    )?.close()
   },
   showPalette: (x: number, y: number, ctx: Context) => {
     const { showDialog } = get()
-    showDialog(() => React.createElement(CommandPalette, { workbench: get() as Workbench, ctx }), false, {
-      left: `${x}px`,
-      top: `${y}px`,
-    })
+    showDialog(
+      () =>
+        React.createElement(CommandPalette, {
+          workbench: get() as Workbench,
+          ctx,
+        }),
+      false,
+      {
+        left: `${x}px`,
+        top: `${y}px`,
+      },
+    )
   },
-  showNotice: (notice: 'firsttime' | 'github' | 'lockstolen', finished: any) => {
+  showNotice: (
+    notice: 'firsttime' | 'github' | 'lockstolen',
+    finished: any,
+  ) => {
     const { showDialog } = get()
     const NoticeComponent = {
       firsttime: FirstTimeMessage,
@@ -298,7 +338,10 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
   },
   showSettings: () => {
     const { showDialog } = get()
-    showDialog(() => React.createElement(Settings, { workbench: get() as Workbench }), true)
+    showDialog(
+      () => React.createElement(Settings, { workbench: get() as Workbench }),
+      true,
+    )
   },
   showPopover: (body: any, style?: {}) => {
     set({ popover: { body, style } })
@@ -306,24 +349,42 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
   closePopover: () => {
     set({ popover: null })
   },
-  showDialog: (body: any, backdrop?: boolean, style?: {}, explicitClose?: boolean) => {
+  showDialog: (
+    body: any,
+    backdrop?: boolean,
+    style?: {},
+    explicitClose?: boolean,
+  ) => {
     const { dialog } = get()
     // TODO actual dialog element
-    set({ dialog: React.createElement('div', { body, backdrop, style, explicitClose }) })
+    set({
+      dialog: React.createElement('div', {
+        body,
+        backdrop,
+        style,
+        explicitClose,
+      }),
+    })
 
     // TODO redraw
     // m.redraw();
     setTimeout(() => {
       // this next frame timeout is so any current dialog can close before attempting
       // to showModal on already open dialog, which causes exception.
-      ;(document.querySelector('main > dialog.modal') as HTMLDialogElement)?.showModal()
+      ;(
+        document.querySelector('main > dialog.modal') as HTMLDialogElement
+      )?.showModal()
     }, 0)
   },
   isDialogOpen: (): boolean => {
-    return (document.querySelector('main > dialog.modal') as HTMLDialogElement)?.hasAttribute('open')
+    return (
+      document.querySelector('main > dialog.modal') as HTMLDialogElement
+    )?.hasAttribute('open')
   },
   closeDialog: () => {
-    ;(document.querySelector('main > dialog.modal') as HTMLDialogElement)?.close()
+    ;(
+      document.querySelector('main > dialog.modal') as HTMLDialogElement
+    )?.close()
   },
   search: (query: string): Node[] => {
     if (!query) return []
@@ -332,7 +393,9 @@ export const createWorkbenchSlice: StateCreator<Workbench & Workspace, [], [], W
     let splitQuery = query.split(/\s+(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)/)
     let textQuery = splitQuery.filter((term) => !term.includes(':')).join(' ')
     let fieldQuery = Object.fromEntries(
-      splitQuery.filter((term) => term.includes(':')).map((term) => term.toLowerCase().split(':')),
+      splitQuery
+        .filter((term) => term.includes(':'))
+        .map((term) => term.toLowerCase().split(':')),
     )
     if (!textQuery && Object.keys(fieldQuery).length > 0) {
       // when text query is empty, no results will show up,
@@ -421,19 +484,29 @@ export interface Workbench {
   showMenu: (event: React.MouseEvent, ctx: Context, style?: {}) => void
   closeMenu: () => void
   showPalette: (x: number, y: number, ctx: Context) => void
-  showNotice: (notice: 'firsttime' | 'github' | 'lockstolen', finished: any) => void
+  showNotice: (
+    notice: 'firsttime' | 'github' | 'lockstolen',
+    finished: any,
+  ) => void
   toggleDrawer: () => void
   showSettings: () => void
   showPopover: (body: any, style?: {}) => void
   closePopover: () => void
-  showDialog: (body: any, backdrop?: boolean, style?: {}, explicitClose?: boolean) => void
+  showDialog: (
+    body: any,
+    backdrop?: boolean,
+    style?: {},
+    explicitClose?: boolean,
+  ) => void
   isDialogOpen: () => boolean
   closeDialog: () => void
   search: (query: string) => Node[]
 }
 
 function getWeekOfYear(date: Date) {
-  var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  var d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  )
   var dayNum = d.getUTCDay() || 7
   d.setUTCDate(d.getUTCDate() + 4 - dayNum)
   var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))

@@ -11,7 +11,11 @@ const PostmarkWebhookEventSchema = z.discriminatedUnion('RecordType', [
   z.object({
     RecordType: z.literal('SubscriptionChange'),
     Recipient: z.string().email(),
-    SuppressionReason: z.enum(['HardBounce', 'SpamComplaint', 'ManualSuppression']),
+    SuppressionReason: z.enum([
+      'HardBounce',
+      'SpamComplaint',
+      'ManualSuppression',
+    ]),
     SuppressSending: z.boolean(),
     MessageID: z.string(),
     MessageStream: z.string(),

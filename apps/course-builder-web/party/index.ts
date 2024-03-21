@@ -7,7 +7,8 @@ const BROADCAST_INTERVAL = 1000 / 60 // 60fps
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET',
-  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+  'Access-Control-Allow-Headers':
+    'Origin, X-Requested-With, Content-Type, Accept',
 }
 
 export default class Server implements Party.Server {
@@ -26,7 +27,10 @@ export default class Server implements Party.Server {
 
     return onConnect(conn, this.party, {
       async load() {
-        const tip = await sanityQuery<{ body: string | null } | null>(`*[_id == "${party.id}"][0]{body}`, party.env)
+        const tip = await sanityQuery<{ body: string | null } | null>(
+          `*[_id == "${party.id}"][0]{body}`,
+          party.env,
+        )
 
         const doc = new Y.Doc()
         if (tip?.body) {
@@ -64,11 +68,14 @@ export default class Server implements Party.Server {
     }
 
     if (req.method === 'POST') {
-      const messageBody: { requestId: string; body: string; name: string } = await req.json()
+      const messageBody: { requestId: string; body: string; name: string } =
+        await req.json()
 
       this.party.broadcast(JSON.stringify(messageBody))
 
-      return new Response(`Party ${this.party.id} has received ${this.messages.length} messages`)
+      return new Response(
+        `Party ${this.party.id} has received ${this.messages.length} messages`,
+      )
     }
 
     return new Response('Method Not Allowed', { status: 405 })

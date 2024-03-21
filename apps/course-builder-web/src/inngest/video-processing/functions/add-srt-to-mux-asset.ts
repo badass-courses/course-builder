@@ -2,7 +2,11 @@ import { inngest } from '@/inngest/inngest.server'
 import { NonRetriableError } from 'inngest'
 
 import { VIDEO_SRT_READY_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
-import { addSrtTrackToMuxAsset, deleteSrtTrackFromMuxAsset, getMuxAsset } from '@coursebuilder/core/lib/mux'
+import {
+  addSrtTrackToMuxAsset,
+  deleteSrtTrackFromMuxAsset,
+  getMuxAsset,
+} from '@coursebuilder/core/lib/mux'
 
 const COOLDOWN = 20000
 
@@ -13,9 +17,12 @@ export const addSrtToMuxAsset = inngest.createFunction(
   },
   { event: VIDEO_SRT_READY_EVENT },
   async ({ event, step, db, siteRootUrl }) => {
-    const videoResource = await step.run('get the video resource from Sanity', async () => {
-      return db.getVideoResource(event.data.videoResourceId)
-    })
+    const videoResource = await step.run(
+      'get the video resource from Sanity',
+      async () => {
+        return db.getVideoResource(event.data.videoResourceId)
+      },
+    )
 
     if (videoResource) {
       let muxAsset = await step.run('get the mux asset', async () => {

@@ -23,10 +23,13 @@ type OutlineEditorProps = {
 }
 
 export const OutlineEditor = ({ path, alwaysShowNew }: OutlineEditorProps) => {
-  return React.createElement(getView((path?.node?.getAttr('view') as any) || 'list'), {
-    path,
-    alwaysShowNew,
-  })
+  return React.createElement(
+    getView((path?.node?.getAttr('view') as any) || 'list'),
+    {
+      path,
+      alwaysShowNew,
+    },
+  )
 }
 
 type OutlineNodeProps = {
@@ -34,21 +37,29 @@ type OutlineNodeProps = {
 }
 
 export const OutlineNode = ({ path }: OutlineNodeProps) => {
-  const { executeCommand, clipboard, getExpanded, closePopover, findAbove, focus, context, showMenu } =
-    useTreehouseStore(
-      useShallow((s) => {
-        return {
-          executeCommand: s.executeCommand,
-          clipboard: s.clipboard,
-          getExpanded: s.getExpanded,
-          closePopover: s.closePopover,
-          findAbove: s.findAbove,
-          focus: s.focus,
-          context: s.context,
-          showMenu: s.showMenu,
-        }
-      }),
-    )
+  const {
+    executeCommand,
+    clipboard,
+    getExpanded,
+    closePopover,
+    findAbove,
+    focus,
+    context,
+    showMenu,
+  } = useTreehouseStore(
+    useShallow((s) => {
+      return {
+        executeCommand: s.executeCommand,
+        clipboard: s.clipboard,
+        getExpanded: s.getExpanded,
+        closePopover: s.closePopover,
+        findAbove: s.findAbove,
+        focus: s.focus,
+        context: s.context,
+        showMenu: s.showMenu,
+      }
+    }),
+  )
   const [hoverState, setHoverState] = useState(false)
   const [tagPopover, setTagPopover] = useState<Popover | undefined>(undefined)
   let node: Node | null = path.node
@@ -72,7 +83,9 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
   }
 
   const expanded = getExpanded(path.head, handleNode)
-  const placeholder = objectHas(node, 'handlePlaceholder') ? objectCall(node, 'handlePlaceholder') : ''
+  const placeholder = objectHas(node, 'handlePlaceholder')
+    ? objectCall(node, 'handlePlaceholder')
+    : ''
 
   const hover = (e: SyntheticEvent<HTMLDivElement>) => {
     setHoverState(true)
@@ -133,7 +146,12 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
     }
     const anyModifiers = e.shiftKey || e.metaKey || e.altKey || e.ctrlKey
     const inputElement = e.target as HTMLInputElement
-    console.log('onkeydown', e.key, inputElement.selectionStart, inputElement.selectionEnd)
+    console.log(
+      'onkeydown',
+      e.key,
+      inputElement.selectionStart,
+      inputElement.selectionEnd,
+    )
     switch (e.key) {
       case 'ArrowUp':
         if (inputElement.selectionStart !== 0 && !anyModifiers) {
@@ -161,7 +179,11 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           return
         }
         // cursor at beginning of non-empty text
-        if (inputElement.value !== '' && inputElement.selectionStart === 0 && inputElement.selectionEnd === 0) {
+        if (
+          inputElement.value !== '' &&
+          inputElement.selectionStart === 0 &&
+          inputElement.selectionEnd === 0
+        ) {
           e.preventDefault()
           e.stopPropagation()
           if (!node || node.childCount > 0) {
@@ -207,8 +229,16 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           inputElement.selectionStart > 0 &&
           inputElement.selectionStart < inputElement.value.length
         ) {
-          executeCommand('insert', { node, path }, inputElement.value.slice(inputElement.selectionStart)).then(() => {
-            if (node) node.name = inputElement.value.slice(0, inputElement.selectionStart as number)
+          executeCommand(
+            'insert',
+            { node, path },
+            inputElement.value.slice(inputElement.selectionStart),
+          ).then(() => {
+            if (node)
+              node.name = inputElement.value.slice(
+                0,
+                inputElement.selectionStart as number,
+              )
           })
           e.stopPropagation()
           return
@@ -269,7 +299,9 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
         <svg
           className="node-menu shrink-0"
           xmlns="http://www.w3.org/2000/svg"
-          onClick={(e: React.MouseEvent<SVGSVGElement>) => showMenu(e, { node: handleNode, path })}
+          onClick={(e: React.MouseEvent<SVGSVGElement>) =>
+            showMenu(e, { node: handleNode, path })
+          }
           onContextMenu={(e) => showMenu(e, { node: handleNode, path })}
           data-menu="node"
           viewBox="0 0 16 16"
@@ -294,8 +326,14 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           {objectHas(node, 'handleIcon') ? (
             objectCall(node, 'handleIcon', subCount(node) > 0 && !expanded)
           ) : (
-            <svg className="node-bullet" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-              {subCount(node) > 0 && !expanded ? <circle id="node-collapsed-handle" cx="8" cy="8" r="8" /> : null}
+            <svg
+              className="node-bullet"
+              viewBox="0 0 16 16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {subCount(node) > 0 && !expanded ? (
+                <circle id="node-collapsed-handle" cx="8" cy="8" r="8" />
+              ) : null}
               <circle cx="8" cy="8" r="3" fill="currentColor" />,
               {isRef ? (
                 <circle
@@ -317,10 +355,18 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
             <div>
               <NodeEditor path={path} onkeydown={onkeydown} oninput={oninput} />
             </div>
-            <NodeEditor editValue={true} path={path} onkeydown={onkeydown} oninput={oninput} />
+            <NodeEditor
+              editValue={true}
+              path={path}
+              onkeydown={onkeydown}
+              oninput={oninput}
+            />
           </div>
         ) : (
-          <div className="flex grow flex-row items-start" style={{ gap: '0.5rem' }}>
+          <div
+            className="flex grow flex-row items-start"
+            style={{ gap: '0.5rem' }}
+          >
             {objectHas(node, 'beforeEditor') &&
               componentsWith(node, 'beforeEditor').map((component) =>
                 React.createElement(component.beforeEditor(), {
@@ -328,7 +374,12 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
                   component,
                 }),
               )}
-            <NodeEditor path={path} onkeydown={onkeydown} oninput={oninput} placeholder={placeholder} />
+            <NodeEditor
+              path={path}
+              onkeydown={onkeydown}
+              oninput={oninput}
+              placeholder={placeholder}
+            />
             {objectHas(node, 'afterEditor') &&
               componentsWith(node, 'afterEditor').map((component) =>
                 React.createElement(component.afterEditor(), {
@@ -352,9 +403,12 @@ export const OutlineNode = ({ path }: OutlineNodeProps) => {
           <div className="indent flex" onClick={toggle}></div>
           <div className="view grow">
             {node &&
-              React.createElement(getView((node.getAttr('view') as unknown as any) || 'list'), {
-                path,
-              })}
+              React.createElement(
+                getView((node.getAttr('view') as unknown as any) || 'list'),
+                {
+                  path,
+                },
+              )}
           </div>
         </div>
       )}

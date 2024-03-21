@@ -3,7 +3,13 @@ import Link from 'next/link'
 import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@coursebuilder/ui'
 
 export default async function Tutorials() {
   const session = await getServerAuthSession()

@@ -13,12 +13,20 @@ export interface DeepgramTranscriptionResult extends Record<string, any> {
   wordLevelSrt: string
 }
 
-const defaultGetCallbackUrl = ({ baseUrl, params }: { baseUrl: string; params: Record<string, string> }) => {
+const defaultGetCallbackUrl = ({
+  baseUrl,
+  params,
+}: {
+  baseUrl: string
+  params: Record<string, string>
+}) => {
   const callbackParams = new URLSearchParams(params)
   return `${baseUrl}?${callbackParams.toString()}`
 }
 
-export default function Deepgram(options: TranscriptionUserConfig): TranscriptionConfig {
+export default function Deepgram(
+  options: TranscriptionUserConfig,
+): TranscriptionConfig {
   return {
     id: 'deepgram' as const,
     name: 'Deepgram',
@@ -28,7 +36,10 @@ export default function Deepgram(options: TranscriptionUserConfig): Transcriptio
     // Additional configuration options can be added here based on Deepgram's API requirements
     options,
     // Define how to initiate a transcription request to Deepgram
-    initiateTranscription: async (transcriptOptions: { mediaUrl: string; resourceId: string }) => {
+    initiateTranscription: async (transcriptOptions: {
+      mediaUrl: string
+      resourceId: string
+    }) => {
       const deepgramUrl = `https://api.deepgram.com/v1/listen`
 
       const getCallbackUrl = options.getCallbackUrl || defaultGetCallbackUrl
@@ -48,21 +59,26 @@ export default function Deepgram(options: TranscriptionUserConfig): Transcriptio
         }),
       })
 
-      const deepgramResponse = await fetch(`${deepgramUrl}?${deepgramParams.toString()}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Token ${options.apiKey}`,
+      const deepgramResponse = await fetch(
+        `${deepgramUrl}?${deepgramParams.toString()}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Token ${options.apiKey}`,
+          },
+          body: JSON.stringify({
+            url: transcriptOptions.mediaUrl,
+          }),
         },
-        body: JSON.stringify({
-          url: transcriptOptions.mediaUrl,
-        }),
-      })
+      )
 
       return await deepgramResponse.json()
     },
     // Define how to handle the callback with the transcription result
-    handleCallback: (callbackData: DeepgramResults): DeepgramTranscriptionResult => {
+    handleCallback: (
+      callbackData: DeepgramResults,
+    ): DeepgramTranscriptionResult => {
       const srt = srtFromTranscriptResult(callbackData)
       const wordLevelSrt = wordLevelSrtFromTranscriptResult(callbackData)
       const transcript = transcriptAsParagraphsWithTimestamps(callbackData)
@@ -146,7 +162,9 @@ function formatTimeString(str: string) {
   return `${h}:${m}:${s}`
 }
 
-export function transcriptAsParagraphsWithTimestamps(results: DeepgramResults): string {
+export function transcriptAsParagraphsWithTimestamps(
+  results: DeepgramResults,
+): string {
   let paragraphs: Paragraph[] = []
   if (results.channels[0]?.alternatives[0]?.paragraphs) {
     paragraphs = results.channels[0].alternatives[0].paragraphs.paragraphs
@@ -160,8 +178,9 @@ export function transcriptAsParagraphsWithTimestamps(results: DeepgramResults): 
             text,
             start: 0,
             end:
-              results.channels[0].alternatives[0].words[results.channels[0].alternatives[0].words?.length - 1 || 0]
-                ?.end || 0,
+              results.channels[0].alternatives[0].words[
+                results.channels[0].alternatives[0].words?.length - 1 || 0
+              ]?.end || 0,
           },
         ],
       },
@@ -170,8 +189,15 @@ export function transcriptAsParagraphsWithTimestamps(results: DeepgramResults): 
 
   return (
     paragraphs?.reduce(
-      (acc: string, paragraph: { sentences: { text: string; start: number; end: number }[] }): string => {
-        const startTime = formatTimeString(convertTime(paragraph?.sentences?.[0]?.start))
+      (
+        acc: string,
+        paragraph: {
+          sentences: { text: string; start: number; end: number }[]
+        },
+      ): string => {
+        const startTime = formatTimeString(
+          convertTime(paragraph?.sentences?.[0]?.start),
+        )
         const text = paragraph.sentences.map((x) => x.text).join(' ')
 
         return `${acc}[${startTime}] ${text}
@@ -196,7 +222,10 @@ function convertTimeSrt(inputSeconds?: number) {
   return `${hours}:${minutes}:${seconds},${milliseconds}`
 }
 
-export function srtProcessor(words?: Word[], toWordLevelTimestamps: boolean = false) {
+export function srtProcessor(
+  words?: Word[],
+  toWordLevelTimestamps: boolean = false,
+) {
   if (!words) {
     return ''
   }
@@ -223,8 +252,10 @@ ${text}
   let tempArray: Word[] = []
 
   words.forEach((item, index) => {
-    const timeExceeded = currentTimeInSeconds + (item.end - item.start) >= timeLimitInSeconds
-    const charCountExceeded = currentCharCount + item.punctuated_word.length > charLimit
+    const timeExceeded =
+      currentTimeInSeconds + (item.end - item.start) >= timeLimitInSeconds
+    const charCountExceeded =
+      currentCharCount + item.punctuated_word.length > charLimit
 
     if (timeExceeded || charCountExceeded || index === words.length - 1) {
       if (tempArray.length) {

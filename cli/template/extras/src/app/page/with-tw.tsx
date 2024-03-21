@@ -15,7 +15,8 @@ export default function HomePage() {
           >
             <h3 className="text-2xl font-bold">First Steps →</h3>
             <div className="text-lg">
-              Just the basics - Everything you need to know to set up your database and authentication.
+              Just the basics - Everything you need to know to set up your
+              database and authentication.
             </div>
           </Link>
           <Link
@@ -24,7 +25,10 @@ export default function HomePage() {
             target="_blank"
           >
             <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">Learn more about Create T3 App, the libraries it uses, and how to deploy it.</div>
+            <div className="text-lg">
+              Learn more about Create T3 App, the libraries it uses, and how to
+              deploy it.
+            </div>
           </Link>
         </div>
       </div>

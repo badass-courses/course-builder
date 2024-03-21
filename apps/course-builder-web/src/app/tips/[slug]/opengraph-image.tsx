@@ -5,7 +5,10 @@ export const revalidate = 60
 
 export default async function TipOG({ params }: { params: { slug: string } }) {
   const inter600 = fetch(
-    new URL(`../../../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff`, import.meta.url),
+    new URL(
+      `../../../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff`,
+      import.meta.url,
+    ),
   ).then((res) => res.arrayBuffer())
 
   const resource = await getTip(params.slug)

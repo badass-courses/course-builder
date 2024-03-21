@@ -113,7 +113,9 @@ export async function createTip(input: NewTip) {
   const tip = await getTip(newTipId)
 
   if (tip) {
-    await db.insert(contentResourceResource).values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
+    await db
+      .insert(contentResourceResource)
+      .values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
 
     revalidateTag('tips')
 

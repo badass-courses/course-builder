@@ -8,7 +8,13 @@ export function EditResourcesActionBar({
   resource,
   resourcePath,
 }: {
-  resource: { _type: string; _id: string; body?: string | null; title?: string | null; slug: string }
+  resource: {
+    _type: string
+    _id: string
+    body?: string | null
+    title?: string | null
+    slug: string
+  }
   onSubmit: () => void
   resourcePath: string
 }) {
@@ -22,7 +28,9 @@ export function EditResourcesActionBar({
         </Button>
         <span className="font-medium">
           {resource._type.toUpperCase()}{' '}
-          <span className="hidden font-mono text-xs font-normal md:inline-block">({resource._id})</span>
+          <span className="hidden font-mono text-xs font-normal md:inline-block">
+            ({resource._id})
+          </span>
         </span>
       </div>
       <Button

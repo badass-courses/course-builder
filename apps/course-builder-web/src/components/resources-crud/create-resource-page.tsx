@@ -6,7 +6,11 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function CreateResourcePage({ resourceType }: { resourceType: string }) {
+export default async function CreateResourcePage({
+  resourceType,
+}: {
+  resourceType: string
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
 

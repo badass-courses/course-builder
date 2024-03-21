@@ -13,7 +13,14 @@ export const envVariablesInstaller: Installer = ({ projectDir, packages }) => {
 
   const envContent = getEnvContent(!!usingAuth, !!usingPrisma, !!usingDrizzle)
 
-  const envFile = usingAuth && usingDb ? 'with-auth-db.js' : usingAuth ? 'with-auth.js' : usingDb ? 'with-db.js' : ''
+  const envFile =
+    usingAuth && usingDb
+      ? 'with-auth-db.js'
+      : usingAuth
+        ? 'with-auth.js'
+        : usingDb
+          ? 'with-db.js'
+          : ''
 
   if (envFile !== '') {
     const envSchemaSrc = path.join(PKG_ROOT, 'template/extras/src/env', envFile)
@@ -28,7 +35,11 @@ export const envVariablesInstaller: Installer = ({ projectDir, packages }) => {
   fs.writeFileSync(envExampleDest, exampleEnvContent + envContent, 'utf-8')
 }
 
-const getEnvContent = (usingAuth: boolean, usingPrisma: boolean, usingDrizzle: boolean) => {
+const getEnvContent = (
+  usingAuth: boolean,
+  usingPrisma: boolean,
+  usingDrizzle: boolean
+) => {
   let content = `
 # When adding additional environment variables, the schema in "/src/env.js"
 # should be updated accordingly.

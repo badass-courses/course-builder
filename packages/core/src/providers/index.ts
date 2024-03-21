@@ -10,9 +10,19 @@ export interface TranscriptionConfig {
   options: TranscriptionUserConfig
   apiKey: string
   callbackUrl: string
-  getCallbackUrl?: (options: { baseUrl: string; params: Record<string, string> }) => string
-  initiateTranscription: (options: { mediaUrl: string; resourceId: string }) => Promise<any>
-  handleCallback: (callbackData: any) => { srt: string; transcript: string; wordLevelSrt: string }
+  getCallbackUrl?: (options: {
+    baseUrl: string
+    params: Record<string, string>
+  }) => string
+  initiateTranscription: (options: {
+    mediaUrl: string
+    resourceId: string
+  }) => Promise<any>
+  handleCallback: (callbackData: any) => {
+    srt: string
+    transcript: string
+    wordLevelSrt: string
+  }
 }
 
 export const MockTranscriptionProvider: TranscriptionConfig = {
@@ -27,10 +37,17 @@ export const MockTranscriptionProvider: TranscriptionConfig = {
   callbackUrl: 'mock-callback-url',
   getCallbackUrl: () => 'mock-callback-url',
   initiateTranscription: async () => ({ mock: 'transcription' }),
-  handleCallback: () => ({ srt: 'mock-srt', transcript: 'mock-transcript', wordLevelSrt: 'mock-word-level-srt' }),
+  handleCallback: () => ({
+    srt: 'mock-srt',
+    transcript: 'mock-transcript',
+    wordLevelSrt: 'mock-word-level-srt',
+  }),
 }
 
-export type TranscriptionUserConfig = Omit<Partial<TranscriptionConfig>, 'options' | 'type'> & {
+export type TranscriptionUserConfig = Omit<
+  Partial<TranscriptionConfig>,
+  'options' | 'type'
+> & {
   apiKey: string
   callbackUrl: string
 }

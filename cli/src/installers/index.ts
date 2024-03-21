@@ -8,7 +8,14 @@ import { drizzleInstaller } from './drizzle.js'
 
 // Turning this into a const allows the list to be iterated over for programatically creating prompt options
 // Should increase extensability in the future
-export const availablePackages = ['nextAuth', 'prisma', 'drizzle', 'tailwind', 'trpc', 'envVariables'] as const
+export const availablePackages = [
+  'nextAuth',
+  'prisma',
+  'drizzle',
+  'tailwind',
+  'trpc',
+  'envVariables',
+] as const
 export type AvailablePackages = (typeof availablePackages)[number]
 
 export interface InstallerOptions {
@@ -29,7 +36,9 @@ export type PkgInstallerMap = {
   }
 }
 
-export const buildPkgInstallerMap = (packages: AvailablePackages[]): PkgInstallerMap => ({
+export const buildPkgInstallerMap = (
+  packages: AvailablePackages[]
+): PkgInstallerMap => ({
   nextAuth: {
     inUse: packages.includes('nextAuth'),
     installer: nextAuthInstaller,

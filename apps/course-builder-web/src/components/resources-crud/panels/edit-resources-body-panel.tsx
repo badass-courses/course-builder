@@ -12,7 +12,10 @@ export function EditResourcesBodyPanel({
   form: UseFormReturn<any>
 }) {
   return (
-    <ResizablePanel defaultSize={50} className="min-h-[var(--pane-layout-height)] md:min-h-full">
+    <ResizablePanel
+      defaultSize={50}
+      className="min-h-[var(--pane-layout-height)] md:min-h-full"
+    >
       <ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
         <CodemirrorEditor
           roomName={`${resource._id}`}

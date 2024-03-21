@@ -1,7 +1,13 @@
 import * as React from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
-import { FormField, FormItem, FormLabel, FormMessage, Input } from '@coursebuilder/ui'
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@coursebuilder/ui'
 
 export function MetadataFieldSlug({ form }: { form: UseFormReturn<any> }) {
   return (

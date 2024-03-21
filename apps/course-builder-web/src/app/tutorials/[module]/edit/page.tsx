@@ -11,7 +11,11 @@ import { last } from 'lodash'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditTutorialPage({ params }: { params: { module: string } }) {
+export default async function EditTutorialPage({
+  params,
+}: {
+  params: { module: string }
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
 

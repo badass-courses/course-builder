@@ -8,7 +8,9 @@ import { api } from '@/trpc/react'
 import ReactMarkdown from 'react-markdown'
 
 export function ChatResponse({ requestIds = [] }: { requestIds: string[] }) {
-  const [messages, setMessages] = React.useState<{ requestId: string; body: string }[]>([])
+  const [messages, setMessages] = React.useState<
+    { requestId: string; body: string }[]
+  >([])
   const div = useRef<any>(null)
 
   const utils = api.useUtils()
@@ -17,8 +19,14 @@ export function ChatResponse({ requestIds = [] }: { requestIds: string[] }) {
     onMessage: (messageEvent) => {
       const messageData = JSON.parse(messageEvent.data)
 
-      if (messageData.body !== STREAM_COMPLETE && requestIds.includes(messageData.requestId)) {
-        setMessages((messages) => [...messages, { body: messageData.body, requestId: messageData.requestId }])
+      if (
+        messageData.body !== STREAM_COMPLETE &&
+        requestIds.includes(messageData.requestId)
+      ) {
+        setMessages((messages) => [
+          ...messages,
+          { body: messageData.body, requestId: messageData.requestId },
+        ])
       }
 
       if (div.current) {
@@ -40,7 +48,10 @@ export function ChatResponse({ requestIds = [] }: { requestIds: string[] }) {
   )
 
   return (
-    <div ref={div} className="max-h-400 bg-muted w-full max-w-md overflow-auto rounded-md border">
+    <div
+      ref={div}
+      className="max-h-400 bg-muted w-full max-w-md overflow-auto rounded-md border"
+    >
       {Object.entries(groupedMessages).map(([requestId, bodies], index) => (
         <div key={requestId} className="mb-4 rounded-md bg-blue-100 p-4 shadow">
           <h2 className="mb-2 font-bold text-blue-700">

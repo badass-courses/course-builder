@@ -29,14 +29,19 @@ export async function get_related_concepts(text: string) {
   const embedding = (await get_embedding(text)).embedding
   if (!embedding) return Promise.resolve([])
 
-  const synonyms = await index.query({ vector: embedding, topK: 5, includeMetadata: true })
+  const synonyms = await index.query({
+    vector: embedding,
+    topK: 5,
+    includeMetadata: true,
+  })
   return synonyms.matches.filter((record) => record.score && record.score < 0.2)
 }
 
 export async function add_concept(text: string) {
   const embedding = (await get_embedding(text)).embedding
 
-  if (!embedding) throw new Error('Unable to create embedding for concept: ' + text)
+  if (!embedding)
+    throw new Error('Unable to create embedding for concept: ' + text)
 
   const new_record: PineconeRecord = {
     id: text,

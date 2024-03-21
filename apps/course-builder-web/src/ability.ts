@@ -1,4 +1,9 @@
-import { AbilityBuilder, createMongoAbility, type CreateAbility, type MongoAbility } from '@casl/ability'
+import {
+  AbilityBuilder,
+  createMongoAbility,
+  type CreateAbility,
+  type MongoAbility,
+} from '@casl/ability'
 import z from 'zod'
 
 export const UserSchema = z.object({

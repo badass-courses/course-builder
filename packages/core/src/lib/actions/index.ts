@@ -8,7 +8,9 @@ export async function srt(
 ): Promise<ResponseInternal> {
   const client = options.adapter
 
-  const resource = await client?.getContentResource(request.query?.videoResourceId)
+  const resource = await client?.getContentResource(
+    request.query?.videoResourceId,
+  )
 
   if (!resource) throw new Error('Resource not found')
 
@@ -33,7 +35,8 @@ export async function webhook(
 
       const { results } = request.body
 
-      const { srt, transcript, wordLevelSrt } = options.provider.handleCallback(results)
+      const { srt, transcript, wordLevelSrt } =
+        options.provider.handleCallback(results)
       const videoResourceId = options.url.searchParams.get('videoResourceId')
       await options.inngest.send({
         name: 'video/transcript-ready-event',

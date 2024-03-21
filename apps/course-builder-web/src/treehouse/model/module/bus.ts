@@ -1,6 +1,13 @@
 import { componentName, getComponent, inflateToComponent } from '../components'
 import { hasHook, triggerHook } from '../hooks'
-import { Bus as IBus, Node as INode, ObserverFunc, RawNode, WalkFunc, WalkOptions } from '../mod'
+import {
+  Bus as IBus,
+  Node as INode,
+  ObserverFunc,
+  RawNode,
+  WalkFunc,
+  WalkOptions,
+} from '../mod'
 import { Node } from './mod'
 
 type CHANGE_ME = any
@@ -82,7 +89,9 @@ export class Bus implements IBus {
       console.log(`Parts after split: ${parts.join(', ')}`)
 
       parent = this.find(parts[0])
-      console.log(`Found parent node for part[0]: ${parts[0]}, parent: ${parent ? parent.id : 'null'}`)
+      console.log(
+        `Found parent node for part[0]: ${parts[0]}, parent: ${parent ? parent.id : 'null'}`,
+      )
 
       for (let i = 1; i < parts.length - 1; i++) {
         if (parent === null) {
@@ -90,10 +99,14 @@ export class Bus implements IBus {
         }
 
         let child = parent.find(parts[i])
-        console.log(`Looking for child: ${parts[i]}, found: ${child ? child.id : 'null'}`)
+        console.log(
+          `Looking for child: ${parts[i]}, found: ${child ? child.id : 'null'}`,
+        )
 
         if (!child) {
-          console.log(`Child not found, creating new node with name: ${parts.slice(0, i + 1).join('/')}`)
+          console.log(
+            `Child not found, creating new node with name: ${parts.slice(0, i + 1).join('/')}`,
+          )
           child = this.make(parts.slice(0, i + 1).join('/'))
         }
         parent = child

@@ -134,7 +134,8 @@ const TextAreaEditor = ({
       if (height === 0 && initialHeight > 0) {
         height = initialHeight
       }
-      textarea.style.height = height > 0 ? `${height}px` : `var(--body-line-height)`
+      textarea.style.height =
+        height > 0 ? `${height}px` : `var(--body-line-height)`
     }
 
     const handleInput = (e: any) => {
@@ -224,7 +225,10 @@ const TextAreaEditor = ({
         onKeyDown={onkeydown || defaultKeydown}
         value={value}
       />
-      <span ref={spanRef} style={{ visibility: 'hidden', position: 'fixed' }}></span>
+      <span
+        ref={spanRef}
+        style={{ visibility: 'hidden', position: 'fixed' }}
+      ></span>
     </div>
   )
 }

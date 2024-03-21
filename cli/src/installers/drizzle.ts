@@ -6,7 +6,11 @@ import { PKG_ROOT } from '~/consts.js'
 import { type Installer } from '~/installers/index.js'
 import { addPackageDependency } from '~/utils/addPackageDependency.js'
 
-export const drizzleInstaller: Installer = ({ projectDir, packages, scopedAppName }) => {
+export const drizzleInstaller: Installer = ({
+  projectDir,
+  packages,
+  scopedAppName,
+}) => {
   addPackageDependency({
     projectDir,
     dependencies: ['drizzle-kit', 'dotenv-cli', 'mysql2'],
@@ -26,13 +30,18 @@ export const drizzleInstaller: Installer = ({ projectDir, packages, scopedAppNam
   const schemaSrc = path.join(
     extrasDir,
     'src/server/db',
-    packages?.nextAuth.inUse ? 'drizzle-schema-auth.ts' : 'drizzle-schema-base.ts'
+    packages?.nextAuth.inUse
+      ? 'drizzle-schema-auth.ts'
+      : 'drizzle-schema-base.ts'
   )
   const schemaDest = path.join(projectDir, 'src/server/db/schema.ts')
 
   // Replace placeholder table prefix with project name
   let schemaContent = fs.readFileSync(schemaSrc, 'utf-8')
-  schemaContent = schemaContent.replace('project1_${name}', `${scopedAppName}_\${name}`)
+  schemaContent = schemaContent.replace(
+    'project1_${name}',
+    `${scopedAppName}_\${name}`
+  )
   let configContent = fs.readFileSync(configFile, 'utf-8')
   configContent = configContent.replace('project1_*', `${scopedAppName}_*`)
 

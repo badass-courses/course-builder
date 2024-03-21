@@ -52,7 +52,10 @@ export const updateResourcePosition = async ({
     .set({ position })
     .where(
       and(
-        like(contentResourceResource.resourceOfId, `%${last(tutorialId.split('-'))}%`),
+        like(
+          contentResourceResource.resourceOfId,
+          `%${last(tutorialId.split('-'))}%`,
+        ),
         eq(contentResourceResource.resourceId, resourceId),
       ),
     )

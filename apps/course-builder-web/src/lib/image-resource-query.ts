@@ -15,7 +15,10 @@ const ImageResourceSchema = z.object({
   alt: z.string().optional().nullable(),
 })
 
-export async function createImageResource(input: { asset_id: string; secure_url: string }) {
+export async function createImageResource(input: {
+  asset_id: string
+  secure_url: string
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const user = session?.user

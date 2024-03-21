@@ -4,7 +4,9 @@ import { CourseBuilder } from '@coursebuilder/core'
 
 import { NextCourseBuilderConfig } from './lib'
 
-export default function NextCourseBuilder(config: NextCourseBuilderConfig): NextCourseBuilderResult {
+export default function NextCourseBuilder(
+  config: NextCourseBuilderConfig,
+): NextCourseBuilderResult {
   const httpHandler = (req: NextRequest) => CourseBuilder(req, config)
   return {
     handlers: { POST: httpHandler, GET: httpHandler } as const,
@@ -13,7 +15,10 @@ export default function NextCourseBuilder(config: NextCourseBuilderConfig): Next
 
 export { type NextCourseBuilderConfig }
 
-type AppRouteHandlers = Record<'GET' | 'POST', (req: NextRequest) => Promise<Response>>
+type AppRouteHandlers = Record<
+  'GET' | 'POST',
+  (req: NextRequest) => Promise<Response>
+>
 
 export interface NextCourseBuilderResult {
   handlers: AppRouteHandlers

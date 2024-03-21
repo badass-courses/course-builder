@@ -26,7 +26,13 @@ export interface PickerProps {
   onchange: (state: State) => void
 }
 
-export const Picker: React.FC<PickerProps> = ({ input = '', inputview, itemview, onpick, onchange }) => {
+export const Picker: React.FC<PickerProps> = ({
+  input = '',
+  inputview,
+  itemview,
+  onpick,
+  onchange,
+}) => {
   const [state, setState] = useState<State>({
     selected: 0,
     input: input || '',
@@ -88,7 +94,9 @@ export const Picker: React.FC<PickerProps> = ({ input = '', inputview, itemview,
             key={item.title}
             className={state.selected === idx ? 'item selected' : 'item'}
             onClick={() => onpick(item)}
-            onMouseOver={() => setState((prevState) => ({ ...prevState, selected: idx }))}
+            onMouseOver={() =>
+              setState((prevState) => ({ ...prevState, selected: idx }))
+            }
           >
             {itemview(item, idx)}
           </div>

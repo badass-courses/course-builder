@@ -19,23 +19,38 @@ export const generateTranscriptWithScreenshots = inngest.createFunction(
       throw new Error('video resource id is required')
     }
 
-    const videoResource = await step.run('get the video resource from Sanity', async () => {
-      return db.getVideoResource(videoResourceId)
-    })
+    const videoResource = await step.run(
+      'get the video resource from Sanity',
+      async () => {
+        return db.getVideoResource(videoResourceId)
+      },
+    )
 
     if (!videoResource) {
-      throw new NonRetriableError(`Video resource not found for id (${event.data.videoResourceId})`)
+      throw new NonRetriableError(
+        `Video resource not found for id (${event.data.videoResourceId})`,
+      )
     }
 
-    const { transcriptWithScreenshots } = await step.run('generate transcript with screenshots', async () => {
-      if (!videoResource.muxPlaybackId) {
-        throw new Error(`Video resource (${event.data.videoResourceId}) does not have a muxPlaybackId`)
-      }
-      if (!event.data.srt) {
-        throw new Error(`Video resource (${event.data.videoResourceId}) does not have an srt`)
-      }
-      return await mergeSrtWithScreenshots(event.data.srt, videoResource.muxPlaybackId)
-    })
+    const { transcriptWithScreenshots } = await step.run(
+      'generate transcript with screenshots',
+      async () => {
+        if (!videoResource.muxPlaybackId) {
+          throw new Error(
+            `Video resource (${event.data.videoResourceId}) does not have a muxPlaybackId`,
+          )
+        }
+        if (!event.data.srt) {
+          throw new Error(
+            `Video resource (${event.data.videoResourceId}) does not have an srt`,
+          )
+        }
+        return await mergeSrtWithScreenshots(
+          event.data.srt,
+          videoResource.muxPlaybackId,
+        )
+      },
+    )
 
     await step.run('update the video resource in the database', async () => {
       return db.updateContentResourceFields({

@@ -4,7 +4,15 @@ import { useState } from 'react'
 import { AI } from '@/app/rsc/action'
 import { useActions, useAIState, useUIState } from 'ai/rsc'
 
-export function Purchase({ defaultAmount, name, price }: { defaultAmount?: number; name: string; price: number }) {
+export function Purchase({
+  defaultAmount,
+  name,
+  price,
+}: {
+  defaultAmount?: number
+  name: string
+  price: number
+}) {
   const [value, setValue] = useState(defaultAmount || 100)
   const [purchasingUI, setPurchasingUI] = useState<null | React.ReactNode>(null)
   const [history, setHistory] = useAIState<typeof AI>()
@@ -19,7 +27,10 @@ export function Purchase({ defaultAmount, name, price }: { defaultAmount?: numbe
         setPurchasingUI(response.purchasingUI)
 
         // Insert a new system message to the UI.
-        setMessages((currentMessages: any) => [...currentMessages, response.newMessage])
+        setMessages((currentMessages: any) => [
+          ...currentMessages,
+          response.newMessage,
+        ])
       }}
     >
       Buy {value} of {name} for ${price}

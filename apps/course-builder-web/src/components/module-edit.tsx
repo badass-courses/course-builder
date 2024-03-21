@@ -16,7 +16,12 @@ export default function Component({
   tutorial,
 }: {
   tutorial: ContentResource & {
-    resources: { position: number; resource: ContentResource; resourceId: string; resourceOfId: string }[]
+    resources: {
+      position: number
+      resource: ContentResource
+      resourceId: string
+      resourceOfId: string
+    }[]
   }
 }) {
   const router = useRouter()
@@ -24,7 +29,9 @@ export default function Component({
     <div key="1" className="grid grid-cols-8 gap-4 p-4">
       <div className="col-span-2">
         <h1 className="text-2xl font-bold">{tutorial.fields?.title}</h1>
-        {tutorial.fields?.description && <p className="my-2 text-sm">{tutorial.fields?.description}</p>}
+        {tutorial.fields?.description && (
+          <p className="my-2 text-sm">{tutorial.fields?.description}</p>
+        )}
         <div className="space-y-2">
           <CreateResourceForm
             resourceType={'lesson'}

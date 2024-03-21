@@ -1,7 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 
-function replaceTextInFiles(directoryPath: string, search: string, replacement: string): void {
+function replaceTextInFiles(
+  directoryPath: string,
+  search: string,
+  replacement: string
+): void {
   const files = fs.readdirSync(directoryPath)
 
   files.forEach((file) => {

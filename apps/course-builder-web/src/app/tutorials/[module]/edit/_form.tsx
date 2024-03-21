@@ -52,7 +52,10 @@ export function EditTutorialForm({ moduleSlug }: { moduleSlug: string }) {
         <form onSubmit={form.handleSubmit(() => {})}>
           {fields.map((field, index) => (
             <FormItem key={field.id}>
-              <Input type="hidden" {...form.register(`lessons.${index}.title`)} />
+              <Input
+                type="hidden"
+                {...form.register(`lessons.${index}.title`)}
+              />
             </FormItem>
           ))}
           <div>Edit Tutorial Form</div>
@@ -62,7 +65,8 @@ export function EditTutorialForm({ moduleSlug }: { moduleSlug: string }) {
               <FormItem>
                 <FormLabel className="text-lg font-bold">Title</FormLabel>
                 <FormDescription className="mt-2 text-sm">
-                  A title should summarize the tip and explain what it is about clearly.
+                  A title should summarize the tip and explain what it is about
+                  clearly.
                 </FormDescription>
                 <Input {...field} />
                 <FormMessage />

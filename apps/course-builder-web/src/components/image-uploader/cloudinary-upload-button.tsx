@@ -8,7 +8,10 @@ import { useSession } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
 
-export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({ dir, id }) => {
+export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
+  dir,
+  id,
+}) => {
   const session = useSession()
   const cloudinaryRef = React.useRef<any>()
   const widgetRef = React.useRef<any>()

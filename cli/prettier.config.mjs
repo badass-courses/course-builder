@@ -7,7 +7,10 @@ import baseConfig from '../prettier.config.cjs'
 const config = {
   ...baseConfig,
   arrowParens: 'always',
-  plugins: ['@ianvs/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
+  plugins: [
+    '@ianvs/prettier-plugin-sort-imports',
+    'prettier-plugin-tailwindcss',
+  ],
   tailwindConfig: './template/extras/config/tailwind.config.ts',
   trailingComma: 'es5',
   importOrder: ['<THIRD_PARTY_MODULES>', '', '^~/', '^[.][.]/', '^[.]/'],

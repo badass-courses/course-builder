@@ -1,5 +1,9 @@
 import { CourseBuilderAdapter } from '../../adapters'
-import { MissingAdapter, MissingAdapterMethods, UnsupportedStrategy } from '../../errors'
+import {
+  MissingAdapter,
+  MissingAdapterMethods,
+  UnsupportedStrategy,
+} from '../../errors'
 import { CourseBuilderConfig } from '../../index'
 import { RequestInternal } from '../../types'
 import { WarningCode } from './logger'
@@ -9,7 +13,10 @@ type ConfigError = MissingAdapter | MissingAdapterMethods | UnsupportedStrategy
 let hasTranscript = false
 let warned = false
 
-export function assertConfig(request: RequestInternal, options: CourseBuilderConfig): ConfigError | WarningCode[] {
+export function assertConfig(
+  request: RequestInternal,
+  options: CourseBuilderConfig,
+): ConfigError | WarningCode[] {
   const { url } = request
   const warnings: WarningCode[] = []
 
@@ -35,7 +42,9 @@ export function assertConfig(request: RequestInternal, options: CourseBuilderCon
     const missing = requiredMethods.filter((m) => !(m in adapter))
 
     if (missing.length) {
-      return new MissingAdapterMethods(`Required adapter methods were missing: ${missing.join(', ')}`)
+      return new MissingAdapterMethods(
+        `Required adapter methods were missing: ${missing.join(', ')}`,
+      )
     }
   }
 

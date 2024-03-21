@@ -1,10 +1,19 @@
 import { env } from '@/env.mjs'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { DetectDocumentTextCommand, TextractClient } from '@aws-sdk/client-textract'
+import {
+  DetectDocumentTextCommand,
+  TextractClient,
+} from '@aws-sdk/client-textract'
 import { fromEnv } from '@aws-sdk/credential-providers'
 
-const s3Client = new S3Client({ region: env.AWS_REGION, credentials: fromEnv() })
-const textractClient = new TextractClient({ region: env.AWS_REGION, credentials: fromEnv() })
+const s3Client = new S3Client({
+  region: env.AWS_REGION,
+  credentials: fromEnv(),
+})
+const textractClient = new TextractClient({
+  region: env.AWS_REGION,
+  credentials: fromEnv(),
+})
 
 export async function performOCR(s3_bucket: string, s3_key: string) {
   const command = new DetectDocumentTextCommand({

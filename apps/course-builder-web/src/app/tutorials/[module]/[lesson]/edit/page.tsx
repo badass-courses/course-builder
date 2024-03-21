@@ -4,7 +4,11 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditTutorialLessonPage({ params }: { params: { module: string; lesson: string } }) {
+export default async function EditTutorialLessonPage({
+  params,
+}: {
+  params: { module: string; lesson: string }
+}) {
   const { module, lesson } = params
 
   const session = await getServerAuthSession()

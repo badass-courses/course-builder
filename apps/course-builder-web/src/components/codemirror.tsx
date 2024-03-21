@@ -3,7 +3,13 @@ import { env } from '@/env.mjs'
 import { markdown } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
 import { SearchCursor, SearchQuery } from '@codemirror/search'
-import { EditorState, Extension, Range, StateEffect, StateField } from '@codemirror/state'
+import {
+  EditorState,
+  Extension,
+  Range,
+  StateEffect,
+  StateField,
+} from '@codemirror/state'
 import { Decoration } from '@codemirror/view'
 import { tags as t } from '@lezer/highlight'
 import { createTheme } from '@uiw/codemirror-themes'
@@ -125,7 +131,8 @@ const useCodemirror = ({
         value = value.map(transaction.changes)
 
         for (let effect of transaction.effects) {
-          if (effect.is(highlight_effect)) value = value.update({ add: effect.value, sort: true })
+          if (effect.is(highlight_effect))
+            value = value.update({ add: effect.value, sort: true })
         }
 
         return value
@@ -133,7 +140,10 @@ const useCodemirror = ({
       provide: (f) => EditorView.decorations.from(f),
     })
 
-    let provider = new YPartyKitProvider(env.NEXT_PUBLIC_PARTY_KIT_URL, roomName)
+    let provider = new YPartyKitProvider(
+      env.NEXT_PUBLIC_PARTY_KIT_URL,
+      roomName,
+    )
 
     if (!element) {
       return
@@ -144,16 +154,18 @@ const useCodemirror = ({
     const undoManager = new Y.UndoManager(ytext)
     setYUndoManager(undoManager)
 
-    let updateListenerExtension = EditorView.updateListener.of(async (update) => {
-      if (update.docChanged) {
-        const docText = update.state.doc.toString()
-        const hash = await generateHash(docText)
-        if (hash !== currentText) {
-          onChange(docText)
-          setCurrentText(hash)
+    let updateListenerExtension = EditorView.updateListener.of(
+      async (update) => {
+        if (update.docChanged) {
+          const docText = update.state.doc.toString()
+          const hash = await generateHash(docText)
+          if (hash !== currentText) {
+            onChange(docText)
+            setCurrentText(hash)
+          }
         }
-      }
-    })
+      },
+    )
 
     const awareness = provider.awareness
 
@@ -171,7 +183,9 @@ const useCodemirror = ({
         basicSetup,
         highlight_extension,
         updateListenerExtension,
-        theme === 'dark' ? CourseBuilderEditorThemeDark : CourseBuilderEditorThemeLight,
+        theme === 'dark'
+          ? CourseBuilderEditorThemeDark
+          : CourseBuilderEditorThemeLight,
         markdown({
           codeLanguages: languages,
         }),
@@ -224,8 +238,14 @@ const CourseBuilderEditorThemeLight = createTheme({
     { tag: [t.standard(t.tagName), t.tagName], color: '#116329' },
     { tag: [t.comment, t.bracket], color: '#6a737d' },
     { tag: [t.className, t.propertyName], color: '#6f42c1' },
-    { tag: [t.variableName, t.attributeName, t.number, t.operator], color: '#005cc5' },
-    { tag: [t.keyword, t.typeName, t.typeOperator, t.typeName], color: '#d73a49' },
+    {
+      tag: [t.variableName, t.attributeName, t.number, t.operator],
+      color: '#005cc5',
+    },
+    {
+      tag: [t.keyword, t.typeName, t.typeOperator, t.typeName],
+      color: '#d73a49',
+    },
     { tag: [t.string, t.meta, t.regexp], color: '#032f62' },
     { tag: [t.name, t.quote], color: '#22863a' },
     { tag: [t.heading, t.strong], color: '#24292e', fontWeight: 'bold' },
@@ -260,8 +280,14 @@ const CourseBuilderEditorThemeDark = createTheme({
     { tag: [t.standard(t.tagName), t.tagName], color: '#7ee787' },
     { tag: [t.comment, t.bracket], color: '#8b949e' },
     { tag: [t.className, t.propertyName], color: '#d2a8ff' },
-    { tag: [t.variableName, t.attributeName, t.number, t.operator], color: '#79c0ff' },
-    { tag: [t.keyword, t.typeName, t.typeOperator, t.typeName], color: '#ff7b72' },
+    {
+      tag: [t.variableName, t.attributeName, t.number, t.operator],
+      color: '#79c0ff',
+    },
+    {
+      tag: [t.keyword, t.typeName, t.typeOperator, t.typeName],
+      color: '#ff7b72',
+    },
     { tag: [t.string, t.meta, t.regexp], color: '#a5d6ff' },
     { tag: [t.name, t.quote], color: '#7ee787' },
     { tag: [t.heading, t.strong], color: '#d2a8ff', fontWeight: 'bold' },

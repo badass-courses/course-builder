@@ -1,4 +1,8 @@
-import { getServerSession, type DefaultSession, type NextAuthOptions } from 'next-auth'
+import {
+  getServerSession,
+  type DefaultSession,
+  type NextAuthOptions,
+} from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
 
 import { env } from '~/env'

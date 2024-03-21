@@ -1,6 +1,21 @@
-import React, { Fragment, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Instruction, ItemMode } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
-import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
+import React, {
+  Fragment,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import {
+  Instruction,
+  ItemMode,
+} from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
+import {
+  draggable,
+  dropTargetForElements,
+  monitorForElements,
+} from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/util/combine'
 import { offsetFromPointer } from '@atlaskit/pragmatic-drag-and-drop/util/offset-from-pointer'
@@ -36,7 +51,9 @@ function Icon({ item }: { item: TreeItemType }) {
 }
 
 function Preview({ item }: { item: TreeItemType }) {
-  return <div className="rounded-s bg-red-300 p-[var(--grid)]">Item {item.id}</div>
+  return (
+    <div className="rounded-s bg-red-300 p-[var(--grid)]">Item {item.id}</div>
+  )
 }
 
 function getParentLevelOfInstruction(instruction: Instruction): number {
@@ -49,7 +66,13 @@ function getParentLevelOfInstruction(instruction: Instruction): number {
   return instruction.currentLevel - 1
 }
 
-function delay({ waitMs: timeMs, fn }: { waitMs: number; fn: () => void }): () => void {
+function delay({
+  waitMs: timeMs,
+  fn,
+}: {
+  waitMs: number
+  fn: () => void
+}): () => void {
   let timeoutId: number | null = window.setTimeout(() => {
     timeoutId = null
     fn()
@@ -62,15 +85,26 @@ function delay({ waitMs: timeMs, fn }: { waitMs: number; fn: () => void }): () =
   }
 }
 
-const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemType; mode: ItemMode; level: number }) {
+const TreeItem = memo(function TreeItem({
+  item,
+  mode,
+  level,
+}: {
+  item: TreeItemType
+  mode: ItemMode
+  level: number
+}) {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  const [state, setState] = useState<'idle' | 'dragging' | 'preview' | 'parent-of-instruction'>('idle')
+  const [state, setState] = useState<
+    'idle' | 'dragging' | 'preview' | 'parent-of-instruction'
+  >('idle')
   const [instruction, setInstruction] = useState<Instruction | null>(null)
   const cancelExpandRef = useRef<(() => void) | null>(null)
 
   const { dispatch, uniqueContextId, getPathToItem } = useContext(TreeContext)
-  const { DropIndicator, attachInstruction, extractInstruction } = useContext(DependencyContext)
+  const { DropIndicator, attachInstruction, extractInstruction } =
+    useContext(DependencyContext)
   const toggleOpen = useCallback(() => {
     dispatch({ type: 'toggle', itemId: item.id })
   }, [dispatch, item])
@@ -81,7 +115,9 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
   }, [])
 
   const clearParentOfInstructionState = useCallback(() => {
-    setState((current) => (current === 'parent-of-instruction' ? 'idle' : current))
+    setState((current) =>
+      current === 'parent-of-instruction' ? 'idle' : current,
+    )
   }, [])
 
   // When an item has an instruction applied
@@ -114,7 +150,11 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
   useEffect(() => {
     invariant(buttonRef.current)
 
-    function updateIsParentOfInstruction({ location }: { location: DragLocationHistory }) {
+    function updateIsParentOfInstruction({
+      location,
+    }: {
+      location: DragLocationHistory
+    }) {
       if (shouldHighlightParent(location)) {
         setState('parent-of-instruction')
         return
@@ -170,7 +210,9 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
             block: item.type === 'lesson' ? ['make-child'] : [],
           })
         },
-        canDrop: ({ source }) => source.data.type === 'tree-item' && source.data.uniqueContextId === uniqueContextId,
+        canDrop: ({ source }) =>
+          source.data.type === 'tree-item' &&
+          source.data.uniqueContextId === uniqueContextId,
         getIsSticky: () => true,
         onDrag: ({ self, source }) => {
           const instruction = extractInstruction(self.data)
@@ -211,7 +253,8 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
         },
       }),
       monitorForElements({
-        canMonitor: ({ source }) => source.data.uniqueContextId === uniqueContextId,
+        canMonitor: ({ source }) =>
+          source.data.uniqueContextId === uniqueContextId,
         onDragStart: updateIsParentOfInstruction,
         onDrag: updateIsParentOfInstruction,
         onDrop() {
@@ -258,7 +301,9 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
   return (
     <Fragment>
       <div
-        className={state === 'idle' ? `cursor-pointer rounded-s hover:bg-blue-100` : ''}
+        className={
+          state === 'idle' ? `cursor-pointer rounded-s hover:bg-blue-100` : ''
+        }
         style={{ position: 'relative' }}
       >
         <button
@@ -272,18 +317,36 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
         >
           <span
             className={`flex flex-row items-center rounded-s bg-transparent p-[var(--grid)] pr-40 ${
-              state === 'dragging' ? `opacity-40` : state === 'parent-of-instruction' ? `transparent` : ``
+              state === 'dragging'
+                ? `opacity-40`
+                : state === 'parent-of-instruction'
+                  ? `transparent`
+                  : ``
             }`}
           >
             <Icon item={item} />
-            <span className="m-0 text-neutral-500">{item.label ?? item.id}</span>
+            <span className="m-0 text-neutral-500">
+              {item.label ?? item.id}
+            </span>
             <small className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap text-left">
               {item.type === 'lesson' ? <code>Lesson</code> : null}
-              <code className="text- absolute bottom-0 right-[var(--grid)] text-xs">({mode})</code>
+              <code className="text- absolute bottom-0 right-[var(--grid)] text-xs">
+                ({mode})
+              </code>
             </small>
           </span>
           {instruction ? (
-            <span style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>◎ {instruction.type}</span>
+            <span
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+            >
+              ◎ {instruction.type}
+            </span>
           ) : null}
         </button>
       </div>
@@ -301,7 +364,14 @@ const TreeItem = memo(function TreeItem({ item, mode, level }: { item: TreeItemT
 
               return 'standard'
             })()
-            return <TreeItem item={child} key={child.id} level={level + 1} mode={childType} />
+            return (
+              <TreeItem
+                item={child}
+                key={child.id}
+                level={level + 1}
+                mode={childType}
+              />
+            )
           })}
         </div>
       ) : null}

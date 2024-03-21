@@ -1,6 +1,12 @@
 import * as React from 'react'
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@coursebuilder/ui'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@coursebuilder/ui'
 
 export function AssistantWorkflowSelector({
   onValueChange,

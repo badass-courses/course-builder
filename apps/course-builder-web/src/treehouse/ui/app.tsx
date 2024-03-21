@@ -16,14 +16,25 @@ export const TreehouseApp = () => {
   console.log('TreehouseApp', { panels })
 
   return (
-    <main className="treehouse workbench absolute inset-0 m-0 flex flex-row" style={{ overflow: 'none' }}>
-      <div className="sidebar mt-5 flex flex-col" style={{ width: open ? '256px' : '52px' }}>
+    <main
+      className="treehouse workbench absolute inset-0 m-0 flex flex-row"
+      style={{ overflow: 'none' }}
+    >
+      <div
+        className="sidebar mt-5 flex flex-col"
+        style={{ width: open ? '256px' : '52px' }}
+      >
         <div className="sidebar-main grow">
           {open &&
             bus?.root().children.map((node) => {
               return (
                 <>
-                  <NavNode key={node.id} node={node} expanded={true} level={0} />
+                  <NavNode
+                    key={node.id}
+                    node={node}
+                    expanded={true}
+                    level={0}
+                  />
                 </>
               )
             })}
@@ -67,8 +78,15 @@ export const TreehouseApp = () => {
           }}
           onClick={(e: React.MouseEvent<HTMLDialogElement>) => {
             const dialog = (e.target as HTMLDialogElement).closest('dialog')
-            const rect = dialog?.getBoundingClientRect() || (e.target as HTMLDialogElement).getBoundingClientRect()
-            if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+            const rect =
+              dialog?.getBoundingClientRect() ||
+              (e.target as HTMLDialogElement).getBoundingClientRect()
+            if (
+              e.clientX < rect.left ||
+              e.clientX > rect.right ||
+              e.clientY < rect.top ||
+              e.clientY > rect.bottom
+            ) {
               closeMenu()
             }
           }}
@@ -80,7 +98,15 @@ export const TreehouseApp = () => {
   )
 }
 
-const NavNode = ({ node, expanded: initialExpanded, level }: { node: Node; expanded: boolean; level: number }) => {
+const NavNode = ({
+  node,
+  expanded: initialExpanded,
+  level,
+}: {
+  node: Node
+  expanded: boolean
+  level: number
+}) => {
   const [expanded, setExpanded] = useState(initialExpanded)
   const expandable = node.childCount > 0 && level < 3
   const { open } = useTreehouseStore((state) => ({ open: state.open }))
@@ -94,7 +120,8 @@ const NavNode = ({ node, expanded: initialExpanded, level }: { node: Node; expan
   const openNode = (e: React.MouseEvent) => {
     const mobileNav = document.querySelector('.mobile-nav') as HTMLElement
     if (mobileNav?.offsetHeight) {
-      ;(document.querySelector('.sidebar') as HTMLElement).style.display = 'none'
+      ;(document.querySelector('.sidebar') as HTMLElement).style.display =
+        'none'
     }
     open(node)
   }
@@ -115,7 +142,11 @@ const NavNode = ({ node, expanded: initialExpanded, level }: { node: Node; expan
           strokeLinejoin="round"
         >
           {expandable &&
-            (expanded ? <polyline points="6 9 12 15 18 9"></polyline> : <polyline points="9 18 15 12 9 6"></polyline>)}
+            (expanded ? (
+              <polyline points="6 9 12 15 18 9"></polyline>
+            ) : (
+              <polyline points="9 18 15 12 9 6"></polyline>
+            ))}
         </svg>
         <div
           className="sidebar-item-label grow"
@@ -136,7 +167,12 @@ const NavNode = ({ node, expanded: initialExpanded, level }: { node: Node; expan
           {node.children
             .filter((n) => n.name !== '')
             .map((n, index) => (
-              <NavNode key={index} node={n} level={level + 1} expanded={false} />
+              <NavNode
+                key={index}
+                node={n}
+                level={level + 1}
+                expanded={false}
+              />
             ))}
         </div>
       )}

@@ -9,14 +9,17 @@ export const imageResourceCreated = inngest.createFunction(
   },
   async ({ event, step }) => {
     await step.run('announce asset created', async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          body: event.data,
-          requestId: event.data.resourceId,
-          name: 'image.resource.created',
-        }),
-      }).catch((e) => {
+      await fetch(
+        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            body: event.data,
+            requestId: event.data.resourceId,
+            name: 'image.resource.created',
+          }),
+        },
+      ).catch((e) => {
         console.error(e)
       })
     })

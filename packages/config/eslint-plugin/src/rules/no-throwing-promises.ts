@@ -34,7 +34,8 @@ export default ESLintUtils.RuleCreator.withoutDocs({
   },
   meta: {
     messages: {
-      'no-throwing-promises': 'Throwing promises is not allowed. Await the promise and throw the result instead.',
+      'no-throwing-promises':
+        'Throwing promises is not allowed. Await the promise and throw the result instead.',
     },
     type: 'suggestion',
     fixable: 'code',

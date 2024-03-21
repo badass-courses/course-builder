@@ -6,14 +6,24 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from '@coursebuilder/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@coursebuilder/ui'
 
 export default function Component() {
   return (
     <div key="1" className="flex min-h-screen w-full flex-col">
       <header className="flex h-16 shrink-0 items-center border-b px-4 md:px-6">
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-          <Link className="flex items-center gap-2 text-lg font-semibold md:text-base" href="#">
+          <Link
+            className="flex items-center gap-2 text-lg font-semibold md:text-base"
+            href="#"
+          >
             <svg
               className=" h-6 w-6"
               fill="none"
@@ -53,7 +63,9 @@ export default function Component() {
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Create a Tip</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Create a Tip
+              </CardTitle>
               <svg
                 className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
                 fill="none"
@@ -72,13 +84,20 @@ export default function Component() {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-bold">Enter your tip summary here</div>
+              <div className="text-lg font-bold">
+                Enter your tip summary here
+              </div>
               <p className="mt-2 text-sm">
-                Your summary will be used to generate the title and draft body text based on the transcript of the
-                video.
+                Your summary will be used to generate the title and draft body
+                text based on the transcript of the video.
               </p>
-              <textarea aria-label="Enter your tip summary here" className="mt-2 h-20 w-full rounded-md border p-2" />
-              <div className="mt-4 text-lg font-bold">Upload your tip video here</div>
+              <textarea
+                aria-label="Enter your tip summary here"
+                className="mt-2 h-20 w-full rounded-md border p-2"
+              />
+              <div className="mt-4 text-lg font-bold">
+                Upload your tip video here
+              </div>
               <input
                 aria-label="Upload your tip video here"
                 className="mt-2 h-20 w-full rounded-md border p-2"
@@ -166,7 +185,9 @@ export default function Component() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Most Recent Unpublished Module</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Most Recent Unpublished Module
+              </CardTitle>
               <svg
                 className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
                 fill="none"
@@ -296,7 +317,8 @@ export default function Component() {
                   <Card className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
                     <CardHeader>
                       <CardTitle className="text-lg font-bold text-gray-900 dark:text-white">
-                        TypeScript: Advanced Concepts - Deep Dive into TypeScript
+                        TypeScript: Advanced Concepts - Deep Dive into
+                        TypeScript
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-gray-700 dark:text-gray-300">
@@ -326,7 +348,9 @@ export default function Component() {
                     </CardContent>
                   </Card>
                 </div>
-                <h2 className="mt-4 text-lg font-bold">Next Steps for Module Creation and Review</h2>
+                <h2 className="mt-4 text-lg font-bold">
+                  Next Steps for Module Creation and Review
+                </h2>
                 <div className="mt-2 flex flex-col gap-2">
                   <Button variant="default">Create New Module</Button>
                   <Button variant="outline">Review Unpublished Modules</Button>
@@ -339,7 +363,9 @@ export default function Component() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Add Media Resources</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Add Media Resources
+              </CardTitle>
               <svg
                 className=" h-4 w-4 text-zinc-500 dark:text-zinc-400"
                 fill="none"
@@ -374,7 +400,9 @@ export default function Component() {
                 />
               </section>
               <section className="mt-4">
-                <h2 className="text-lg font-bold">Recently Added Media Resources</h2>
+                <h2 className="text-lg font-bold">
+                  Recently Added Media Resources
+                </h2>
                 <div className="mt-2 grid grid-cols-3 gap-4">
                   <div className="font-bold">Filename</div>
                   <div className="font-bold">Status</div>

@@ -13,13 +13,30 @@ import { updateTip } from '@/lib/tips-query'
 import { RefreshCcw } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
-import { Button, Form, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@coursebuilder/ui'
+import {
+  Button,
+  Form,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@coursebuilder/ui'
 
-export const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, videoResourceLoader }) => {
+export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
+  tip,
+  form,
+  videoResourceLoader,
+}) => {
   const videoResource = use(videoResourceLoader)
-  const [updateTipStatus, setUpdateTipStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [transcript, setTranscript] = React.useState<string | null>(videoResource?.transcript || null)
-  const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
+  const [updateTipStatus, setUpdateTipStatus] = React.useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle')
+  const [transcript, setTranscript] = React.useState<string | null>(
+    videoResource?.transcript || null,
+  )
+  const [videoResourceId, setVideoResourceId] = React.useState<
+    string | null | undefined
+  >(tip.videoResourceId)
   const router = useRouter()
 
   useSocket({
@@ -76,7 +93,10 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, video
             </Link>
           </Button>
           <span className="font-medium">
-            Tip <span className="hidden font-mono text-xs font-normal md:inline-block">({tip._id})</span>
+            Tip{' '}
+            <span className="hidden font-mono text-xs font-normal md:inline-block">
+              ({tip._id})
+            </span>
           </span>
         </div>
         <Button
@@ -112,10 +132,16 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, video
                   }
                 >
                   <TipPlayer videoResourceLoader={videoResourceLoader} />
-                  <div className="px-5 text-xs">video is {videoResource?.state}</div>
+                  <div className="px-5 text-xs">
+                    video is {videoResource?.state}
+                  </div>
                 </Suspense>
               </div>
-              <TipMetadataFormFields form={form} videoResourceLoader={videoResourceLoader} tip={tip} />
+              <TipMetadataFormFields
+                form={form}
+                videoResourceLoader={videoResourceLoader}
+                tip={tip}
+              />
               <div className="px-5">
                 <div className="flex items-center justify-between gap-2">
                   <label className="text-lg font-bold">Transcript</label>
@@ -136,7 +162,9 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({ tip, form, video
                             <RefreshCcw className="w-3" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="top">Reprocess Transcript</TooltipContent>
+                        <TooltipContent side="top">
+                          Reprocess Transcript
+                        </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   )}

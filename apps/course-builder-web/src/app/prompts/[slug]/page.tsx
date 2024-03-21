@@ -17,7 +17,10 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const prompt = await getPrompt(params.prompt)
 
   if (!prompt) {
@@ -30,7 +33,11 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
   }
 }
 
-async function PromptActionBar({ promptLoader }: { promptLoader: Promise<Prompt | null> }) {
+async function PromptActionBar({
+  promptLoader,
+}: {
+  promptLoader: Promise<Prompt | null>
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const user = session?.user
@@ -47,7 +54,9 @@ async function PromptActionBar({ promptLoader }: { promptLoader: Promise<Prompt 
         <div className="bg-muted flex h-9 w-full items-center justify-between px-1">
           <div />
           <Button asChild size="sm">
-            <Link href={`/prompts/${prompt.slug || prompt._id}/edit`}>Edit</Link>
+            <Link href={`/prompts/${prompt.slug || prompt._id}/edit`}>
+              Edit
+            </Link>
           </Button>
         </div>
       ) : (
@@ -57,7 +66,11 @@ async function PromptActionBar({ promptLoader }: { promptLoader: Promise<Prompt 
   )
 }
 
-async function Prompt({ promptLoader }: { promptLoader: Promise<Prompt | null> }) {
+async function Prompt({
+  promptLoader,
+}: {
+  promptLoader: Promise<Prompt | null>
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const user = session?.user
@@ -70,7 +83,9 @@ async function Prompt({ promptLoader }: { promptLoader: Promise<Prompt | null> }
 
   return (
     <div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
-      <ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">{prompt.body}</ReactMarkdown>
+      <ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">
+        {prompt.body}
+      </ReactMarkdown>
       {prompt.description && (
         <aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
           <div className="border-t pt-5">
@@ -83,13 +98,21 @@ async function Prompt({ promptLoader }: { promptLoader: Promise<Prompt | null> }
   )
 }
 
-async function PromptTitle({ promptLoader }: { promptLoader: Promise<Prompt | null> }) {
+async function PromptTitle({
+  promptLoader,
+}: {
+  promptLoader: Promise<Prompt | null>
+}) {
   const prompt = await promptLoader
 
   return <h1 className="text-3xl font-bold sm:text-4xl">{prompt?.title}</h1>
 }
 
-export default async function PromptPage({ params }: { params: { slug: string } }) {
+export default async function PromptPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const user = session?.user
@@ -102,7 +125,11 @@ export default async function PromptPage({ params }: { params: { slug: string } 
 
   return (
     <div>
-      <Suspense fallback={<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />}>
+      <Suspense
+        fallback={
+          <div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+        }
+      >
         <PromptActionBar promptLoader={promptLoader} />
       </Suspense>
       <article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">

@@ -60,10 +60,25 @@ export const runCli = async (): Promise<CliResults> => {
   const program = new Command()
     .name(CREATE_T3_APP)
     .description('A CLI for creating web applications with the t3 stack')
-    .argument('[dir]', 'The name of the application, as well as the name of the directory to create')
-    .option('--noGit', 'Explicitly tell the CLI to not initialize a new git repo in the project', false)
-    .option('--noInstall', "Explicitly tell the CLI to not run the package manager's install command", false)
-    .option('-y, --default', 'Bypass the CLI and use all default options to bootstrap a new t3-app', false)
+    .argument(
+      '[dir]',
+      'The name of the application, as well as the name of the directory to create'
+    )
+    .option(
+      '--noGit',
+      'Explicitly tell the CLI to not initialize a new git repo in the project',
+      false
+    )
+    .option(
+      '--noInstall',
+      "Explicitly tell the CLI to not run the package manager's install command",
+      false
+    )
+    .option(
+      '-y, --default',
+      'Bypass the CLI and use all default options to bootstrap a new t3-app',
+      false
+    )
     /** START CI-FLAGS */
     /**
      * @experimental Used for CI E2E tests. If any of the following option-flags are provided, we
@@ -112,7 +127,9 @@ export const runCli = async (): Promise<CliResults> => {
       'afterAll',
       `\n Course Builder is a fork of the t3 stack that was inspired by ${chalk
         .hex('#E8DCFF')
-        .bold('@t3dotgg')} and has been used to build awesome fullstack applications like ${chalk
+        .bold(
+          '@t3dotgg'
+        )} and has been used to build awesome fullstack applications like ${chalk
         .hex('#E24A8D')
         .underline('https://coursebuilder.dev')} \n`
     )
@@ -232,7 +249,8 @@ export const runCli = async (): Promise<CliResults> => {
         ...(!cliResults.flags.noGit && {
           git: () => {
             return p.confirm({
-              message: 'Should we initialize a Git repository and stage the changes?',
+              message:
+                'Should we initialize a Git repository and stage the changes?',
               initialValue: !defaultOptions.flags.noGit,
             })
           },
@@ -240,7 +258,9 @@ export const runCli = async (): Promise<CliResults> => {
         ...(!cliResults.flags.noInstall && {
           install: () => {
             return p.confirm({
-              message: `Should we run '${pkgManager}` + (pkgManager === 'yarn' ? `'?` : ` install' for you?`),
+              message:
+                `Should we run '${pkgManager}` +
+                (pkgManager === 'yarn' ? `'?` : ` install' for you?`),
               initialValue: !defaultOptions.flags.noInstall,
             })
           },

@@ -12,7 +12,11 @@ export const ArticleStateSchema = z.union([
   z.literal('deleted'),
 ])
 
-export const ResourceVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
+export const ResourceVisibilitySchema = z.union([
+  z.literal('public'),
+  z.literal('private'),
+  z.literal('unlisted'),
+])
 
 export const ArticleSchema = z.object({
   _id: z.string(),

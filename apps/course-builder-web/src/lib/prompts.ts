@@ -12,7 +12,11 @@ export const PromptStateSchema = z.union([
   z.literal('deleted'),
 ])
 
-export const PromptVisibilitySchema = z.union([z.literal('public'), z.literal('private'), z.literal('unlisted')])
+export const PromptVisibilitySchema = z.union([
+  z.literal('public'),
+  z.literal('private'),
+  z.literal('unlisted'),
+])
 
 export const PromptSchema = z.object({
   _id: z.string(),

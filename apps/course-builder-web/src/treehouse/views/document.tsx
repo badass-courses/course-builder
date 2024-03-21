@@ -15,7 +15,10 @@ const DocumentView: React.FC<DocumentViewProps> = ({ path, alwaysShowNew }) => {
     node = path.node.refTo
   }
   let showNew = false
-  if ((node.childCount === 0 && node.getLinked('Fields').length === 0) || alwaysShowNew) {
+  if (
+    (node.childCount === 0 && node.getLinked('Fields').length === 0) ||
+    alwaysShowNew
+  ) {
     showNew = true
   }
 
@@ -23,10 +26,15 @@ const DocumentView: React.FC<DocumentViewProps> = ({ path, alwaysShowNew }) => {
     <div className="document-view">
       <div className="fields">
         {node.getLinked('Fields').length > 0 &&
-          node.getLinked('Fields').map((n: any) => <OutlineNode key={n.id} path={path.append(n)} />)}
+          node
+            .getLinked('Fields')
+            .map((n: any) => <OutlineNode key={n.id} path={path.append(n)} />)}
       </div>
       <div className="children">
-        {node.childCount > 0 && node.children.map((n: any) => <OutlineNode key={n.id} path={path.append(n)} />)}
+        {node.childCount > 0 &&
+          node.children.map((n: any) => (
+            <OutlineNode key={n.id} path={path.append(n)} />
+          ))}
         {showNew && <NewNode path={path} />}
       </div>
     </div>

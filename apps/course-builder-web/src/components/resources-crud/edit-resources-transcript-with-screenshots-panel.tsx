@@ -14,11 +14,12 @@ export function EditResourcesTranscriptWithScreenshotsPanel({
   transcriptWithScreenshotsLoader?: Promise<string | null>
   videoResourceId: string
 }) {
-  const initialTranscriptWithScreenshots = transcriptWithScreenshotsLoader ? use(transcriptWithScreenshotsLoader) : null
+  const initialTranscriptWithScreenshots = transcriptWithScreenshotsLoader
+    ? use(transcriptWithScreenshotsLoader)
+    : null
 
-  const [transcriptWithScreenshots, setTranscriptWithScreenshots] = React.useState<string | null>(
-    initialTranscriptWithScreenshots,
-  )
+  const [transcriptWithScreenshots, setTranscriptWithScreenshots] =
+    React.useState<string | null>(initialTranscriptWithScreenshots)
 
   useSocket({
     room: videoResourceId,
@@ -65,7 +66,10 @@ export function EditResourcesTranscriptWithScreenshotsPanel({
                         width={1960}
                         height={1080}
                         onDragStart={(e) => {
-                          e.dataTransfer.setData('text/plain', `![](${e.currentTarget.src})`)
+                          e.dataTransfer.setData(
+                            'text/plain',
+                            `![](${e.currentTarget.src})`,
+                          )
                         }}
                       />
                     </a>
@@ -75,7 +79,10 @@ export function EditResourcesTranscriptWithScreenshotsPanel({
                         const screenshotUrl = new URL(props.src as string)
                         screenshotUrl.searchParams.set('width', '1920')
                         screenshotUrl.searchParams.set('height', '1080')
-                        requestCodeExtraction({ imageUrl: screenshotUrl.toString(), resourceId: videoResourceId })
+                        requestCodeExtraction({
+                          imageUrl: screenshotUrl.toString(),
+                          resourceId: videoResourceId,
+                        })
                       }}
                     >
                       Get Code Text

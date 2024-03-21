@@ -35,12 +35,18 @@ export function EditResourcesFormMobile({
       <div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
         <div className="flex items-center gap-2">
           <Button className="px-0" asChild variant="link">
-            <Link href={getResourcePath(resource.slug)} className="aspect-square">
+            <Link
+              href={getResourcePath(resource.slug)}
+              className="aspect-square"
+            >
               ←
             </Link>
           </Button>
           <span className="font-medium">
-            Article <span className="hidden font-mono text-xs font-normal md:inline-block">({resource._id})</span>
+            Article{' '}
+            <span className="hidden font-mono text-xs font-normal md:inline-block">
+              ({resource._id})
+            </span>
           </span>
         </div>
         <Button

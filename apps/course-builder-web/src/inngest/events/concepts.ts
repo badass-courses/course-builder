@@ -1,5 +1,6 @@
 export const CONCEPT_TAGS_REQUESTED = 'concepts/tags-requested-event'
-export const REQUEST_CONCEPT_SELECTION = 'concepts/request-concept-selection-event'
+export const REQUEST_CONCEPT_SELECTION =
+  'concepts/request-concept-selection-event'
 export const CONCEPT_SELECTED = 'concepts/concept-selected-event'
 
 export type ConceptTagsRequested = {

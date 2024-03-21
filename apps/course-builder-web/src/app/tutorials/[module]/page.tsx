@@ -6,7 +6,11 @@ import { getServerAuthSession } from '@/server/auth'
 
 import { Separator } from '@coursebuilder/ui'
 
-export default async function ModulePage({ params }: { params: { module: string } }) {
+export default async function ModulePage({
+  params,
+}: {
+  params: { module: string }
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
 
@@ -25,7 +29,9 @@ export default async function ModulePage({ params }: { params: { module: string 
       <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
         <h2 className="text-lg font-semibold">{course.title}</h2>
         <p>{course.description}</p>
-        {ability.can('update', 'Content') && <Link href={`/tutorials/${params.module}/edit`}>edit module</Link>}
+        {ability.can('update', 'Content') && (
+          <Link href={`/tutorials/${params.module}/edit`}>edit module</Link>
+        )}
       </div>
       <Separator />
     </div>

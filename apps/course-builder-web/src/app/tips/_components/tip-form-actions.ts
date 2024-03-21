@@ -5,7 +5,10 @@ import { OCR_WEBHOOK_EVENT } from '@/inngest/events/ocr-webhook'
 import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
 
-export async function requestCodeExtraction(options: { imageUrl?: string; resourceId?: string }) {
+export async function requestCodeExtraction(options: {
+  imageUrl?: string
+  resourceId?: string
+}) {
   const session = await getServerAuthSession()
   const ability = getAbility({ user: session?.user })
   const user = session?.user

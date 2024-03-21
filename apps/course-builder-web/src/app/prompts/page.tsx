@@ -5,7 +5,13 @@ import { getAbility } from '@/ability'
 import { getPrompts } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@coursebuilder/ui'
 
 export default async function PromptsIndexPage() {
   const session = await getServerAuthSession()
@@ -34,7 +40,9 @@ export default async function PromptsIndexPage() {
           <Card key={prompt._id}>
             <CardHeader>
               <CardTitle>
-                <Link href={`/prompts/${prompt.slug || prompt._id}`}>{prompt.title}</Link>
+                <Link href={`/prompts/${prompt.slug || prompt._id}`}>
+                  {prompt.title}
+                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent></CardContent>

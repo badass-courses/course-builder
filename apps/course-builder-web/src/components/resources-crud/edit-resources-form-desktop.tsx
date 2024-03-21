@@ -50,7 +50,9 @@ export function EditResourcesFormDesktop({
         <ResizableHandle />
         <EditResourcesBodyPanel resource={resource} form={form} />
         <ResizableHandle />
-        <EditResourcesToolPanel resource={{ ...resource, ...form.getValues() }} />
+        <EditResourcesToolPanel
+          resource={{ ...resource, ...form.getValues() }}
+        />
       </EditResourcePanelGroup>
     </>
   )

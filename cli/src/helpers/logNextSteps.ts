@@ -10,7 +10,10 @@ export const logNextSteps = async ({
   packages,
   noInstall,
   projectDir,
-}: Pick<InstallerOptions, 'projectName' | 'packages' | 'noInstall' | 'projectDir'>) => {
+}: Pick<
+  InstallerOptions,
+  'projectName' | 'packages' | 'noInstall' | 'projectDir'
+>) => {
   const pkgManager = getUserPkgManager()
 
   logger.info('Next steps:')
@@ -43,7 +46,9 @@ export const logNextSteps = async ({
   }
   logger.info(`  git commit -m "initial commit"`)
 
-  logger.warn(`\nThank you for trying out the App Router option. If you encounter any issues, please open an issue!`)
+  logger.warn(
+    `\nThank you for trying out the App Router option. If you encounter any issues, please open an issue!`
+  )
 
   if (packages?.drizzle.inUse) {
     logger.warn(

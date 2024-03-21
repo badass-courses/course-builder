@@ -102,7 +102,10 @@ export const publishToPartykit = async (body: string, requestId: string) => {
   })
 }
 
-const parseStreamToText = async (stream: ReadableStream, requestId: string): Promise<AIOutput> => {
+const parseStreamToText = async (
+  stream: ReadableStream,
+  requestId: string,
+): Promise<AIOutput> => {
   // And then pass this through the standard text response
   const text = await new StreamingTextResponse(stream).text()
   return { role: 'assistant', content: text }

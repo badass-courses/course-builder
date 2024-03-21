@@ -1,6 +1,11 @@
 type ErrorOptions = Error | Record<string, unknown>
 
-type ErrorType = 'AdapterError' | 'UnknownAction' | 'UnsupportedStrategy' | 'MissingAdapter' | 'MissingAdapterMethods'
+type ErrorType =
+  | 'AdapterError'
+  | 'UnknownAction'
+  | 'UnsupportedStrategy'
+  | 'MissingAdapter'
+  | 'MissingAdapterMethods'
 
 export class CourseBuilderError extends Error {
   /** The error type. Used to identify the error in the logs. */
@@ -12,7 +17,10 @@ export class CourseBuilderError extends Error {
    */
   kind?: 'error'
   cause?: Record<string, unknown> & { err?: Error }
-  constructor(message?: string | Error | ErrorOptions, errorOptions?: ErrorOptions) {
+  constructor(
+    message?: string | Error | ErrorOptions,
+    errorOptions?: ErrorOptions,
+  ) {
     if (message instanceof Error) {
       super(undefined, {
         cause: { err: message, ...(message.cause as any), ...errorOptions },

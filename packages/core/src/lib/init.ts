@@ -22,7 +22,10 @@ export async function init({
   action,
   isPost,
   cookies: reqCookies,
-}: InitParams): Promise<{ options: InternalOptions; cookies: cookie.Cookie[] }> {
+}: InitParams): Promise<{
+  options: InternalOptions
+  cookies: cookie.Cookie[]
+}> {
   const { providers, provider } = parseProviders({
     providers: courseBuilderOptions.providers,
     url,
@@ -41,7 +44,9 @@ export async function init({
     // @ts-expect-errors
     provider,
     cookies: merge(
-      cookie.defaultCookies(courseBuilderOptions.useSecureCookies ?? url.protocol === 'https:'),
+      cookie.defaultCookies(
+        courseBuilderOptions.useSecureCookies ?? url.protocol === 'https:',
+      ),
       courseBuilderOptions.cookies,
     ),
     providers,
@@ -56,7 +61,10 @@ export async function init({
 
 type Method = (...args: any[]) => Promise<any>
 
-function adapterErrorHandler(adapter: CourseBuilderConfig['adapter'], logger: LoggerInstance) {
+function adapterErrorHandler(
+  adapter: CourseBuilderConfig['adapter'],
+  logger: LoggerInstance,
+) {
   if (!adapter) return
 
   return Object.keys(adapter).reduce<any>((acc, name) => {

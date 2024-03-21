@@ -1,6 +1,9 @@
 import { inngest } from '@/inngest/inngest.server'
 
-import { add_concept, get_related_concepts } from '../../../utils/vector-utils/concepts'
+import {
+  add_concept,
+  get_related_concepts,
+} from '../../../utils/vector-utils/concepts'
 import { CONCEPT_TAGS_REQUESTED } from '../../events/concepts'
 
 export const getOrCreateConcept = inngest.createFunction(
@@ -9,9 +12,12 @@ export const getOrCreateConcept = inngest.createFunction(
     event: CONCEPT_TAGS_REQUESTED,
   },
   async ({ event, step }) => {
-    const related_concepts = await step.run('check for similar concepts', async () => {
-      return await get_related_concepts(event.data.key)
-    })
+    const related_concepts = await step.run(
+      'check for similar concepts',
+      async () => {
+        return await get_related_concepts(event.data.key)
+      },
+    )
 
     const new_concept = await step.run('create new concept', async () => {
       return await add_concept(event.data.key)

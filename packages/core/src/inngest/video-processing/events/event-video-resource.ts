@@ -13,4 +13,6 @@ export const VideoResourceCreatedEventSchema = z.object({
   moduleSlug: z.string().optional(),
 })
 
-export type VideoResourceCreatedEvent = z.infer<typeof VideoResourceCreatedEventSchema>
+export type VideoResourceCreatedEvent = z.infer<
+  typeof VideoResourceCreatedEventSchema
+>

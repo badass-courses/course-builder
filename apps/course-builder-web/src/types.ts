@@ -40,6 +40,8 @@ export type AIError = { error: string }
 export type AIOutput = AIMessage | AIError
 
 export interface ProgressWriter {
-  writeResponseInChunks(streamingResponse: Response | ReadableStream): Promise<AIOutput>
+  writeResponseInChunks(
+    streamingResponse: Response | ReadableStream,
+  ): Promise<AIOutput>
   publishMessage(message: string): Promise<void>
 }

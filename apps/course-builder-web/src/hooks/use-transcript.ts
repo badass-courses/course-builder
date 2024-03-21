@@ -11,7 +11,9 @@ export function useTranscript(options: {
   videoResourceId: string | null | undefined
   initialTranscript?: string | null
 }) {
-  const [transcript, setTranscript] = React.useState<string | null>(options.initialTranscript || null)
+  const [transcript, setTranscript] = React.useState<string | null>(
+    options.initialTranscript || null,
+  )
   async function* pollVideoResourceTranscript(
     videoResourceId: string,
     maxAttempts = 30,
@@ -38,7 +40,9 @@ export function useTranscript(options: {
     async function run() {
       try {
         if (options.videoResourceId) {
-          const { value: transcript } = await pollVideoResourceTranscript(options.videoResourceId).next()
+          const { value: transcript } = await pollVideoResourceTranscript(
+            options.videoResourceId,
+          ).next()
           if (transcript) {
             setTranscript(transcript)
           }

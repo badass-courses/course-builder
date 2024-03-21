@@ -3,7 +3,13 @@ import { SHA1 } from '@/treehouse/workbench/util'
 
 import { componentName, duplicate, getComponent } from '../components'
 import { hasHook, triggerHook } from '../hooks'
-import { Bus as IBus, Node as INode, RawNode, WalkFunc, WalkOptions } from '../mod'
+import {
+  Bus as IBus,
+  Node as INode,
+  RawNode,
+  WalkFunc,
+  WalkOptions,
+} from '../mod'
 import { Bus } from './mod'
 
 export class Node implements INode {
@@ -209,7 +215,8 @@ export class Node implements INode {
       this.refTo.removeChild(node)
       return
     }
-    const children = this.raw.Linked.Children?.filter((id) => id === node.id) || []
+    const children =
+      this.raw.Linked.Children?.filter((id) => id === node.id) || []
     this.raw.Linked.Children = children
     this.changed()
   }

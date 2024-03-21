@@ -28,7 +28,10 @@ const TableView: React.FC<TableViewProps> = ({ path }) => {
   }
 
   return (
-    <table className="table-view" style={{ gridTemplateColumns: `repeat(${fields.size + 1}, 1fr)` }}>
+    <table
+      className="table-view"
+      style={{ gridTemplateColumns: `repeat(${fields.size + 1}, 1fr)` }}
+    >
       <thead>
         <tr>
           <th>Title</th>

@@ -10,7 +10,12 @@ export type TreeItem = {
   type?: string
   children: TreeItem[]
   isOpen?: boolean
-  itemData?: { position: number; resource: ContentResource; resourceId: string; resourceOfId: string }
+  itemData?: {
+    position: number
+    resource: ContentResource
+    resourceId: string
+    resourceOfId: string
+  }
 }
 
 export type TreeState = {
@@ -107,7 +112,11 @@ export const tree = {
         return item
       })
   },
-  insertBefore(data: TreeItem[], targetId: string, newItem: TreeItem): TreeItem[] {
+  insertBefore(
+    data: TreeItem[],
+    targetId: string,
+    newItem: TreeItem,
+  ): TreeItem[] {
     return data.flatMap((item) => {
       if (item.id === targetId) {
         return [newItem, item]
@@ -121,7 +130,11 @@ export const tree = {
       return item
     })
   },
-  insertAfter(data: TreeItem[], targetId: string, newItem: TreeItem): TreeItem[] {
+  insertAfter(
+    data: TreeItem[],
+    targetId: string,
+    newItem: TreeItem,
+  ): TreeItem[] {
     return data.flatMap((item) => {
       if (item.id === targetId) {
         return [item, newItem]
@@ -137,7 +150,11 @@ export const tree = {
       return item
     })
   },
-  insertChild(data: TreeItem[], targetId: string, newItem: TreeItem): TreeItem[] {
+  insertChild(
+    data: TreeItem[],
+    targetId: string,
+    newItem: TreeItem,
+  ): TreeItem[] {
     return data.flatMap((item) => {
       if (item.id === targetId) {
         // already a parent: add as first child
@@ -201,7 +218,10 @@ export const tree = {
   },
 }
 
-export function treeStateReducer(state: TreeState, action: TreeAction): TreeState {
+export function treeStateReducer(
+  state: TreeState,
+  action: TreeAction,
+): TreeState {
   return {
     data: dataReducer(state.data, action),
     lastAction: action,

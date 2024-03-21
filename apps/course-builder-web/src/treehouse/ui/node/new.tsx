@@ -17,13 +17,21 @@ export const NewNode: React.FC<NewNodeProps> = ({ path }) => {
         executeCommand('insert-child', { node: lastchild, path })
       }
     } else {
-      executeCommand('insert-child', { node: path.node, path }, e.currentTarget.value)
+      executeCommand(
+        'insert-child',
+        { node: path.node, path },
+        e.currentTarget.value,
+      )
     }
   }
 
   return (
     <div className="new-node flex flex-row items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
         <circle cx="8" cy="7" r="7" />
         <path
           style={{ transform: 'translate(0px, -1px)' }}
@@ -31,7 +39,12 @@ export const NewNode: React.FC<NewNodeProps> = ({ path }) => {
         />
       </svg>
       <div className="flex grow">
-        <input className="grow" type="text" onKeyDown={keydown} defaultValue={''} />
+        <input
+          className="grow"
+          type="text"
+          onKeyDown={keydown}
+          defaultValue={''}
+        />
       </div>
     </div>
   )

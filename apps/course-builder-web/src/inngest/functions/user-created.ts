@@ -24,15 +24,21 @@ export const userCreated = inngest.createFunction(
       subject: 'Course Builder Signup from {{user.email}}',
     }
 
-    const { preferenceType, preferenceChannel } = await step.run('load the preference type and channel', async () => {
-      const preferenceType = await db.query.communicationPreferenceTypes.findFirst({
-        where: (cpt, { eq }) => eq(cpt.name, 'Newsletter'),
-      })
-      const preferenceChannel = await db.query.communicationChannel.findFirst({
-        where: (cc, { eq }) => eq(cc.name, 'Email'),
-      })
-      return { preferenceType, preferenceChannel }
-    })
+    const { preferenceType, preferenceChannel } = await step.run(
+      'load the preference type and channel',
+      async () => {
+        const preferenceType =
+          await db.query.communicationPreferenceTypes.findFirst({
+            where: (cpt, { eq }) => eq(cpt.name, 'Newsletter'),
+          })
+        const preferenceChannel = await db.query.communicationChannel.findFirst(
+          {
+            where: (cc, { eq }) => eq(cc.name, 'Email'),
+          },
+        )
+        return { preferenceType, preferenceChannel }
+      },
+    )
 
     if (!preferenceType || !preferenceChannel) {
       throw new NonRetriableError('Preference type or channel not found')

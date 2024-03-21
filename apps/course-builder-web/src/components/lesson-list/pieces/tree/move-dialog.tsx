@@ -1,7 +1,19 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import Button from '@atlaskit/button'
 import Form, { Field } from '@atlaskit/form'
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog'
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@atlaskit/modal-dialog'
 import Select from '@atlaskit/select'
 import invariant from 'tiny-invariant'
 
@@ -12,8 +24,15 @@ type FormData = {
   position: { value: number }
 }
 
-export function MoveDialog({ onClose, itemId }: { onClose: () => void; itemId: string }) {
-  const { dispatch, getChildrenOfItem, getMoveTargets, getPathToItem } = useContext(TreeContext)
+export function MoveDialog({
+  onClose,
+  itemId,
+}: {
+  onClose: () => void
+  itemId: string
+}) {
+  const { dispatch, getChildrenOfItem, getMoveTargets, getPathToItem } =
+    useContext(TreeContext)
 
   const options = useMemo(() => {
     const targets = getMoveTargets({ itemId })
@@ -35,7 +54,9 @@ export function MoveDialog({ onClose, itemId }: { onClose: () => void; itemId: s
 
   const [parentId, setParentId] = useState(defaultParent.value)
   const positionOptions = useMemo(() => {
-    const targets = getChildrenOfItem(parentId).filter((item) => item.id !== itemId)
+    const targets = getChildrenOfItem(parentId).filter(
+      (item) => item.id !== itemId,
+    )
     return Array.from({ length: targets.length + 1 }, (_, index) => {
       /**
        * Adding one to convert index to positions
@@ -91,13 +112,21 @@ export function MoveDialog({ onClose, itemId }: { onClose: () => void; itemId: s
                   />
                 )}
               </Field>
-              <PositionSelectField options={positionOptions} setFieldValue={setFieldValue} />
+              <PositionSelectField
+                options={positionOptions}
+                setFieldValue={setFieldValue}
+              />
             </ModalBody>
             <ModalFooter>
               <Button appearance="subtle" onClick={onClose}>
                 Cancel
               </Button>
-              <Button appearance="primary" onClick={onClose} autoFocus type="submit">
+              <Button
+                appearance="primary"
+                onClick={onClose}
+                autoFocus
+                type="submit"
+              >
                 Move
               </Button>
             </ModalFooter>
@@ -132,7 +161,9 @@ function PositionSelectField({
       isRequired
       defaultValue={options[0]}
     >
-      {({ fieldProps }) => <Select {...fieldProps} menuPosition="fixed" options={options} />}
+      {({ fieldProps }) => (
+        <Select {...fieldProps} menuPosition="fixed" options={options} />
+      )}
     </Field>
   )
 }

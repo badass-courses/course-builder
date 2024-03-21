@@ -8,7 +8,10 @@ import { getPrompt } from '@/lib/prompts-query'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
-import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum } from 'openai-edge'
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+} from 'openai-edge'
 import { z } from 'zod'
 
 /**
@@ -112,10 +115,15 @@ export async function resourceChatWorkflowExecutor({
 
     const actionMessages: ChatCompletionRequestMessage[] = []
     for (const actionMessage of actionParsed) {
-      const liquidParsedContent = await step.run('parse json content', async () => {
-        const engine = new Liquid()
-        return await engine.parseAndRender(actionMessage.content, { ...resource })
-      })
+      const liquidParsedContent = await step.run(
+        'parse json content',
+        async () => {
+          const engine = new Liquid()
+          return await engine.parseAndRender(actionMessage.content, {
+            ...resource,
+          })
+        },
+      )
 
       actionMessages.push({
         role: actionMessage.role,
@@ -138,7 +146,10 @@ export async function resourceChatWorkflowExecutor({
         const engine = new Liquid()
         return {
           role: systemPrompt.role,
-          content: await engine.parseAndRender(systemPrompt.content || '', resource),
+          content: await engine.parseAndRender(
+            systemPrompt.content || '',
+            resource,
+          ),
         }
       } catch (e: any) {
         console.error(e.message)
@@ -158,19 +169,22 @@ export async function resourceChatWorkflowExecutor({
   const currentResourceMetadata = messages[messages.length - 2]
 
   if (currentUserMessage?.content) {
-    await step.run(`partykit broadcast user prompt [${resourceId}]`, async () => {
-      await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          body: currentUserMessage.content,
-          requestId: resourceId,
-          name: 'resource.chat.prompted',
-          userId: user.id,
-        }),
-      }).catch((e) => {
-        console.error(e)
-      })
-    })
+    await step.run(
+      `partykit broadcast user prompt [${resourceId}]`,
+      async () => {
+        await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            body: currentUserMessage.content,
+            requestId: resourceId,
+            name: 'resource.chat.prompted',
+            userId: user.id,
+          }),
+        }).catch((e) => {
+          console.error(e)
+        })
+      },
+    )
   }
 
   messages = await step.run('answer the user prompt', async () => {
@@ -178,9 +192,15 @@ export async function resourceChatWorkflowExecutor({
       throw new Error('No user message')
     }
     const engine = new Liquid()
-    currentUserMessage.content = await engine.parseAndRender(currentUserMessage.content ?? '', resource)
+    currentUserMessage.content = await engine.parseAndRender(
+      currentUserMessage.content ?? '',
+      resource,
+    )
     if (currentResourceMetadata) {
-      currentResourceMetadata.content = await engine.parseAndRender(currentResourceMetadata.content ?? '', resource)
+      currentResourceMetadata.content = await engine.parseAndRender(
+        currentResourceMetadata.content ?? '',
+        resource,
+      )
     }
     return streamingChatPromptExecutor({
       requestId: resourceId,

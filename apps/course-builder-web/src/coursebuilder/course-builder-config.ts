@@ -8,7 +8,8 @@ import { type CourseBuilderConfig } from '@coursebuilder/core'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import NextCourseBuilder from '@coursebuilder/next'
 
-const callbackBase = env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
+const callbackBase =
+  env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
 
 export const transcriptProvider = DeepgramProvider({
   apiKey: env.DEEPGRAM_API_KEY,

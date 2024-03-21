@@ -30,7 +30,9 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 
   const isMobile = useIsMobile()
 
-  const ResourceForm = isMobile ? EditResourcesFormMobile : EditResourcesFormDesktop
+  const ResourceForm = isMobile
+    ? EditResourcesFormMobile
+    : EditResourcesFormDesktop
 
   return (
     <ResourceForm
@@ -45,11 +47,18 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
   )
 }
 
-const ArticleMetadataFormFields = ({ form }: { form: UseFormReturn<z.infer<typeof ArticleSchema>> }) => {
+const ArticleMetadataFormFields = ({
+  form,
+}: {
+  form: UseFormReturn<z.infer<typeof ArticleSchema>>
+}) => {
   const currentSocialImage = form.watch('socialImage')
   return (
     <EditResourcesMetadataFields form={form}>
-      <MetadataFieldSocialImage form={form} currentSocialImage={currentSocialImage} />
+      <MetadataFieldSocialImage
+        form={form}
+        currentSocialImage={currentSocialImage}
+      />
     </EditResourcesMetadataFields>
   )
 }

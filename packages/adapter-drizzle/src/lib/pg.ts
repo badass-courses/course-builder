@@ -1,4 +1,8 @@
-import type { AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
+import type {
+  AdapterAccount,
+  AdapterSession,
+  AdapterUser,
+} from '@auth/core/adapters'
 import { and, eq } from 'drizzle-orm'
 import {
   pgTable as defaultPgTableFn,
@@ -43,7 +47,9 @@ export function createTables(pgTable: PgTableFn) {
       session_state: text('session_state'),
     },
     (account) => ({
-      pk: primaryKey({ columns: [account.provider, account.providerAccountId] }),
+      pk: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
     }),
   )
 
@@ -126,7 +132,8 @@ export function pgDrizzleAdapter(
   client: InstanceType<typeof PgDatabase>,
   tableFn = defaultPgTableFn,
 ): CourseBuilderAdapter {
-  const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
+  const { users, accounts, sessions, verificationTokens, contentResource } =
+    createTables(tableFn)
 
   return {
     async updateContentResourceFields(options) {
@@ -223,7 +230,10 @@ export function pgDrizzleAdapter(
           .select()
           .from(accounts)
           .where(
-            and(eq(accounts.providerAccountId, account.providerAccountId), eq(accounts.provider, account.provider)),
+            and(
+              eq(accounts.providerAccountId, account.providerAccountId),
+              eq(accounts.provider, account.provider),
+            ),
           )
           .leftJoin(users, eq(accounts.userId, users.id))
           .then((res) => res[0])) ?? null
@@ -250,7 +260,12 @@ export function pgDrizzleAdapter(
       try {
         return await client
           .delete(verificationTokens)
-          .where(and(eq(verificationTokens.identifier, token.identifier), eq(verificationTokens.token, token.token)))
+          .where(
+            and(
+              eq(verificationTokens.identifier, token.identifier),
+              eq(verificationTokens.token, token.token),
+            ),
+          )
           .returning()
           .then((res) => res[0] ?? null)
       } catch (err) {
@@ -267,7 +282,12 @@ export function pgDrizzleAdapter(
     async unlinkAccount(account) {
       const { type, provider, providerAccountId, userId } = await client
         .delete(accounts)
-        .where(and(eq(accounts.providerAccountId, account.providerAccountId), eq(accounts.provider, account.provider)))
+        .where(
+          and(
+            eq(accounts.providerAccountId, account.providerAccountId),
+            eq(accounts.provider, account.provider),
+          ),
+        )
         .returning()
         .then((res) => (res[0] as AdapterAccount) ?? null)
 

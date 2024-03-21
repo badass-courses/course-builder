@@ -1,5 +1,8 @@
 import React, { createContext } from 'react'
-import { attachInstruction, extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
+import {
+  attachInstruction,
+  extractInstruction,
+} from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 
 import type { TreeAction, TreeItem } from '../../data/tree'
 
@@ -9,7 +12,11 @@ export type TreeContextValue = {
   getPathToItem: (itemId: string) => string[]
   getMoveTargets: ({ itemId }: { itemId: string }) => TreeItem[]
   getChildrenOfItem: (itemId: string) => TreeItem[]
-  registerTreeItem: (args: { itemId: string; element: HTMLElement; actionMenuTrigger: HTMLElement }) => void
+  registerTreeItem: (args: {
+    itemId: string
+    element: HTMLElement
+    actionMenuTrigger: HTMLElement
+  }) => void
 }
 
 export const TreeContext = createContext<TreeContextValue>({
@@ -28,7 +35,13 @@ export type DependencyContext = {
 }
 
 export const DependencyContext = createContext<DependencyContext>({
-  DropIndicator: <span style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>◎</span>,
+  DropIndicator: (
+    <span
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+    >
+      ◎
+    </span>
+  ),
   attachInstruction: attachInstruction,
   extractInstruction: extractInstruction,
 })

@@ -4,7 +4,13 @@ import { getAbility } from '@/ability'
 import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@coursebuilder/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@coursebuilder/ui'
 
 export default async function ArticlesIndexPage() {
   const session = await getServerAuthSession()
@@ -27,7 +33,9 @@ export default async function ArticlesIndexPage() {
           <Card key={article._id}>
             <CardHeader>
               <CardTitle>
-                <Link href={`/${article.slug || article._id}`}>{article.title}</Link>
+                <Link href={`/${article.slug || article._id}`}>
+                  {article.title}
+                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent></CardContent>

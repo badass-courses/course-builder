@@ -1,4 +1,8 @@
-import type { AdapterAccount, AdapterSession, AdapterUser } from '@auth/core/adapters'
+import type {
+  AdapterAccount,
+  AdapterSession,
+  AdapterUser,
+} from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
 import { and, eq, sql } from 'drizzle-orm'
 import {
@@ -37,7 +41,9 @@ export function createTables(mySqlTable: MySqlTableFn) {
       userId: varchar('userId', { length: 255 })
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
-      type: varchar('type', { length: 255 }).$type<AdapterAccount['type']>().notNull(),
+      type: varchar('type', { length: 255 })
+        .$type<AdapterAccount['type']>()
+        .notNull(),
       provider: varchar('provider', { length: 255 }).notNull(),
       providerAccountId: varchar('providerAccountId', {
         length: 255,
@@ -51,7 +57,9 @@ export function createTables(mySqlTable: MySqlTableFn) {
       session_state: varchar('session_state', { length: 255 }),
     },
     (account) => ({
-      pk: primaryKey({ columns: [account.provider, account.providerAccountId] }),
+      pk: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
       userIdIdx: index('userId_idx').on(account.userId),
     }),
   )
@@ -59,7 +67,9 @@ export function createTables(mySqlTable: MySqlTableFn) {
   const sessions = mySqlTable(
     'session',
     {
-      sessionToken: varchar('sessionToken', { length: 255 }).notNull().primaryKey(),
+      sessionToken: varchar('sessionToken', { length: 255 })
+        .notNull()
+        .primaryKey(),
       userId: varchar('userId', { length: 255 })
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
@@ -140,7 +150,14 @@ export function createTables(mySqlTable: MySqlTableFn) {
     }),
   )
 
-  return { users, accounts, sessions, verificationTokens, contentResource, contentResourceResource }
+  return {
+    users,
+    accounts,
+    sessions,
+    verificationTokens,
+    contentResource,
+    contentResourceResource,
+  }
 }
 
 export type DefaultSchema = ReturnType<typeof createTables>
@@ -149,7 +166,8 @@ export function mySqlDrizzleAdapter(
   client: InstanceType<typeof MySqlDatabase>,
   tableFn = defaultMySqlTableFn,
 ): CourseBuilderAdapter {
-  const { users, accounts, sessions, verificationTokens, contentResource } = createTables(tableFn)
+  const { users, accounts, sessions, verificationTokens, contentResource } =
+    createTables(tableFn)
 
   return {
     async updateContentResourceFields(options) {
@@ -296,7 +314,10 @@ export function mySqlDrizzleAdapter(
         .then((res) => res[0] as AdapterUser)
     },
     async updateSession(data) {
-      await client.update(sessions).set(data).where(eq(sessions.sessionToken, data.sessionToken))
+      await client
+        .update(sessions)
+        .set(data)
+        .where(eq(sessions.sessionToken, data.sessionToken))
 
       return await client
         .select()
@@ -313,7 +334,10 @@ export function mySqlDrizzleAdapter(
           .select()
           .from(accounts)
           .where(
-            and(eq(accounts.providerAccountId, account.providerAccountId), eq(accounts.provider, account.provider)),
+            and(
+              eq(accounts.providerAccountId, account.providerAccountId),
+              eq(accounts.provider, account.provider),
+            ),
           )
           .leftJoin(users, eq(accounts.userId, users.id))
           .then((res) => res[0])) ?? null
@@ -332,7 +356,9 @@ export function mySqlDrizzleAdapter(
           .where(eq(sessions.sessionToken, sessionToken))
           .then((res) => res[0])) ?? null
 
-      await client.delete(sessions).where(eq(sessions.sessionToken, sessionToken))
+      await client
+        .delete(sessions)
+        .where(eq(sessions.sessionToken, sessionToken))
 
       return session
     },
@@ -351,12 +377,20 @@ export function mySqlDrizzleAdapter(
           (await client
             .select()
             .from(verificationTokens)
-            .where(and(eq(verificationTokens.identifier, token.identifier), eq(verificationTokens.token, token.token)))
+            .where(
+              and(
+                eq(verificationTokens.identifier, token.identifier),
+                eq(verificationTokens.token, token.token),
+              ),
+            )
             .then((res) => res[0])) ?? null
 
         if (deletedToken?.createdAt) {
           const TIMEOUT_IN_SECONDS = 90
-          const expireMultipleClicks = addSeconds(deletedToken.createdAt, TIMEOUT_IN_SECONDS)
+          const expireMultipleClicks = addSeconds(
+            deletedToken.createdAt,
+            TIMEOUT_IN_SECONDS,
+          )
           const now = new Date()
 
           if (isAfter(expireMultipleClicks, now)) {
@@ -367,7 +401,10 @@ export function mySqlDrizzleAdapter(
             await client
               .delete(verificationTokens)
               .where(
-                and(eq(verificationTokens.identifier, token.identifier), eq(verificationTokens.token, token.token)),
+                and(
+                  eq(verificationTokens.identifier, token.identifier),
+                  eq(verificationTokens.token, token.token),
+                ),
               )
             return deletedToken
           }
@@ -392,7 +429,12 @@ export function mySqlDrizzleAdapter(
     async unlinkAccount(account) {
       await client
         .delete(accounts)
-        .where(and(eq(accounts.providerAccountId, account.providerAccountId), eq(accounts.provider, account.provider)))
+        .where(
+          and(
+            eq(accounts.providerAccountId, account.providerAccountId),
+            eq(accounts.provider, account.provider),
+          ),
+        )
 
       return undefined
     },

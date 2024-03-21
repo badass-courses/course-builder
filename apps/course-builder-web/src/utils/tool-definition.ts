@@ -3,7 +3,9 @@ import { z } from 'zod'
 /**
  * Any array of ToolDefinitions.
  */
-export type TAnyToolDefinitionArray = Array<ToolDefinition<string, z.AnyZodObject>>
+export type TAnyToolDefinitionArray = Array<
+  ToolDefinition<string, z.AnyZodObject>
+>
 
 /**
  * A map of ToolDefinitions, indexed by name.
@@ -15,10 +17,9 @@ export type TAnyToolDefinitionMap = Readonly<{
 /**
  * Helper type to create a map of ToolDefinitions, indexed by name, from an array of ToolDefinitions.
  */
-export type TToolDefinitionMap<TToolDefinitionArray extends TAnyToolDefinitionArray> = TToolDefinitionArray extends [
-  infer TFirst,
-  ...infer Rest,
-]
+export type TToolDefinitionMap<
+  TToolDefinitionArray extends TAnyToolDefinitionArray,
+> = TToolDefinitionArray extends [infer TFirst, ...infer Rest]
   ? TFirst extends TAnyToolDefinitionArray[number]
     ? Rest extends TAnyToolDefinitionArray
       ? Readonly<{ [K in TFirst['name']]: TFirst }> & TToolDefinitionMap<Rest>
@@ -29,7 +30,10 @@ export type TToolDefinitionMap<TToolDefinitionArray extends TAnyToolDefinitionAr
 /**
  * A tool definition contains all information required for a language model to generate tool calls.
  */
-export interface ToolDefinition<NAME extends string, PARAMETERS extends z.AnyZodObject> {
+export interface ToolDefinition<
+  NAME extends string,
+  PARAMETERS extends z.AnyZodObject,
+> {
   /**
    * The name of the tool.
    * Should be understandable for language models and unique among the tools that they know.

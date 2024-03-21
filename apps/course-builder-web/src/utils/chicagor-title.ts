@@ -28,7 +28,11 @@ export function toChicagoTitleCase(str: string): string {
 
   return str
     .replace(/\w\S*/g, (word, index) => {
-      if (index > 0 && index < str.length - 1 && lowerCaseWords.has(word.toLowerCase())) {
+      if (
+        index > 0 &&
+        index < str.length - 1 &&
+        lowerCaseWords.has(word.toLowerCase())
+      ) {
         return word.toLowerCase()
       }
       if (specialCases.hasOwnProperty(word.toUpperCase())) {
@@ -36,5 +40,8 @@ export function toChicagoTitleCase(str: string): string {
       }
       return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase()
     })
-    .replace(/(\b(?:Mc|Mac)\w)/g, (s) => s.charAt(0).toUpperCase() + s.substr(1))
+    .replace(
+      /(\b(?:Mc|Mac)\w)/g,
+      (s) => s.charAt(0).toUpperCase() + s.substr(1),
+    )
 }

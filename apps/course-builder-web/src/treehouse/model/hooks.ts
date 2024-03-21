@@ -35,7 +35,11 @@ export function objectHas(obj: Node | null, hook: string): boolean {
   return false
 }
 
-export function objectCall(obj: Node | null, hook: string, ...args: any[]): any {
+export function objectCall(
+  obj: Node | null,
+  hook: string,
+  ...args: any[]
+): any {
   if (!obj) return
   for (const com of obj.components) {
     if (hasHook(com, hook)) {
@@ -44,7 +48,11 @@ export function objectCall(obj: Node | null, hook: string, ...args: any[]): any 
   }
 }
 
-export function componentsWith(obj: Node | null, hook: string, ...args: any[]): any[] {
+export function componentsWith(
+  obj: Node | null,
+  hook: string,
+  ...args: any[]
+): any[] {
   const ret: any[] = []
   if (!obj) return ret
   for (const com of obj.components) {

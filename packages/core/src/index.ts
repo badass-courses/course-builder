@@ -8,7 +8,10 @@ import { toInternalRequest, toResponse } from './lib/utils/web'
 import type { Provider } from './providers'
 import { CookiesOptions } from './types'
 
-export async function CourseBuilder(request: Request, config: CourseBuilderConfig): Promise<Response> {
+export async function CourseBuilder(
+  request: Request,
+  config: CourseBuilderConfig,
+): Promise<Response> {
   setLogger(config.logger, config.debug)
 
   const internalRequest = await toInternalRequest(request, config)
@@ -26,7 +29,10 @@ export async function CourseBuilder(request: Request, config: CourseBuilderConfi
   const isRedirect = request.headers?.has('X-Course-Builder-Return-Redirect')
 
   try {
-    const internalResponse = await CourseBuilderInternal(internalRequest, config)
+    const internalResponse = await CourseBuilderInternal(
+      internalRequest,
+      config,
+    )
     const response = toResponse(internalResponse)
     const url = response.headers.get('Location')
     if (!isRedirect || !url) return response

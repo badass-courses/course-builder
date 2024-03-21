@@ -1,4 +1,10 @@
-import { Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger } from './primitives/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionHeader,
+  AccordionItem,
+  AccordionTrigger,
+} from './primitives/accordion'
 import { Alert, AlertDescription, AlertTitle } from './primitives/alert'
 import {
   AlertDialog,
@@ -15,7 +21,14 @@ import {
 } from './primitives/alert-dialog'
 import { Button } from './primitives/button'
 import { Calendar } from './primitives/calendar'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './primitives/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './primitives/card'
 import { Checkbox } from './primitives/checkbox'
 import {
   Dialog,
@@ -46,12 +59,24 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './primitives/dropdown-menu'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './primitives/form'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from './primitives/form'
 import { Input } from './primitives/input'
 import { Label } from './primitives/label'
 import { Popover, PopoverContent, PopoverTrigger } from './primitives/popover'
 import { Progress } from './primitives/progress'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './primitives/resizable'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from './primitives/resizable'
 import { ScrollArea, ScrollBar } from './primitives/scroll-area'
 import {
   Select,
@@ -86,7 +111,12 @@ import {
   ToastTitle,
   ToastViewport,
 } from './primitives/toast'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './primitives/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './primitives/tooltip'
 import { useToast } from './primitives/use-toast'
 
 export {

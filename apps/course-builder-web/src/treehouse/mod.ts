@@ -20,8 +20,14 @@ import { Document } from '@/treehouse/com/document'
 import { objectManaged } from '@/treehouse/model/hooks'
 import { Node } from '@/treehouse/model/mod'
 import { Context } from '@/treehouse/workbench/mod'
-import { createWorkbenchSlice, Workbench } from '@/treehouse/workbench/workbench'
-import { createWorkspaceSlice, Workspace } from '@/treehouse/workbench/workspace'
+import {
+  createWorkbenchSlice,
+  Workbench,
+} from '@/treehouse/workbench/workbench'
+import {
+  createWorkspaceSlice,
+  Workspace,
+} from '@/treehouse/workbench/workspace'
 import { create } from 'zustand'
 
 import { Backend } from './backend/mod'
@@ -142,10 +148,15 @@ export async function setup(document: Document, backend: Backend) {
     },
     action: (ctx: Context) => {
       if (!ctx.node) return
-      useTreehouseStore.setState({ clipboard: { op: 'copyref', node: ctx.node } })
+      useTreehouseStore.setState({
+        clipboard: { op: 'copyref', node: ctx.node },
+      })
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'copy-reference', key: 'shift+ctrl+c' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'copy-reference',
+    key: 'shift+ctrl+c',
+  })
 
   treehouseStore.commands.registerCommand({
     id: 'paste',
@@ -164,22 +175,30 @@ export async function setup(document: Document, backend: Backend) {
       if (!clipboard?.op || !clipboard.node) return
       switch (clipboard.op) {
         case 'copy':
-          useTreehouseStore.setState({ clipboard: { op: clipboard.op, node: clipboard.node.duplicate() } })
+          useTreehouseStore.setState({
+            clipboard: { op: clipboard.op, node: clipboard.node.duplicate() },
+          })
           break
         case 'copyref':
           const ref = treehouseStore.newWorkspace('')
           ref.refTo = clipboard.node
-          useTreehouseStore.setState({ clipboard: { op: clipboard.op, node: ref } })
+          useTreehouseStore.setState({
+            clipboard: { op: clipboard.op, node: ref },
+          })
           break
       }
       if (clipboard.node.raw.Rel === 'Fields') {
         clipboard.node.raw.Parent = ctx.node.parent?.id
-        useTreehouseStore.setState({ clipboard: { op: clipboard.op, node: clipboard.node } })
+        useTreehouseStore.setState({
+          clipboard: { op: clipboard.op, node: clipboard.node },
+        })
         ctx.node.parent?.addLinked('Fields', clipboard.node)
       } else {
         clipboard.node.parent = ctx.node.parent
         clipboard.node.siblingIndex = ctx.node.siblingIndex
-        useTreehouseStore.setState({ clipboard: { op: clipboard.op, node: clipboard.node } })
+        useTreehouseStore.setState({
+          clipboard: { op: clipboard.op, node: clipboard.node },
+        })
       }
       const p = ctx.path.clone()
       p.pop()
@@ -192,7 +211,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'paste', key: 'meta+v' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'paste',
+    key: 'meta+v',
+  })
 
   treehouseStore.commands.registerCommand({
     id: 'view-list',
@@ -200,13 +222,16 @@ export async function setup(document: Document, backend: Backend) {
     when: (ctx: Context) => {
       if (!ctx.node) return false
       if (ctx.node.raw.Rel === 'Fields') return false
-      if (ctx.node.parent && ctx.node.parent.hasComponent(Document)) return false
+      if (ctx.node.parent && ctx.node.parent.hasComponent(Document))
+        return false
       return true
     },
     action: (ctx: Context) => {
       if (!ctx.node) return
       ctx.node.setAttr('view', 'list')
-      useTreehouseStore.setState({ context: { node: ctx.node, path: ctx.path } })
+      useTreehouseStore.setState({
+        context: { node: ctx.node, path: ctx.path },
+      })
     },
   })
 
@@ -240,7 +265,9 @@ export async function setup(document: Document, backend: Backend) {
     action: (ctx: Context) => {
       if (!ctx.node) return
       ctx.node.setAttr('view', 'tabs')
-      useTreehouseStore.setState({ context: { node: ctx.node, path: ctx.path } })
+      useTreehouseStore.setState({
+        context: { node: ctx.node, path: ctx.path },
+      })
     },
   })
 
@@ -336,7 +363,10 @@ export async function setup(document: Document, backend: Backend) {
       treehouseStore.setExpanded(ctx.path.head, ctx.node, true)
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'expand', key: 'meta+arrowdown' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'expand',
+    key: 'meta+arrowdown',
+  })
   treehouseStore.commands.registerCommand({
     id: 'collapse',
     title: 'Collapse',
@@ -345,7 +375,10 @@ export async function setup(document: Document, backend: Backend) {
       treehouseStore.setExpanded(ctx.path.head, ctx.node, false)
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'collapse', key: 'meta+arrowup' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'collapse',
+    key: 'meta+arrowup',
+  })
   treehouseStore.commands.registerCommand({
     id: 'indent',
     title: 'Indent',
@@ -391,13 +424,20 @@ export async function setup(document: Document, backend: Backend) {
       const parent = ctx.path.previous
       const path = ctx.path.clone()
       const { lastOpenedID } = useTreehouseStore.getState()
-      if (parent !== null && parent.id !== '@root' && parent.id !== lastOpenedID) {
+      if (
+        parent !== null &&
+        parent.id !== '@root' &&
+        parent.id !== lastOpenedID
+      ) {
         path.pop() // drop node
         path.pop() // drop parent
         node.parent = parent.parent
         path.push(node)
         node.siblingIndex = parent.siblingIndex + 1
-        if (parent.childCount === 0 && parent.getLinked('Fields').length === 0) {
+        if (
+          parent.childCount === 0 &&
+          parent.getLinked('Fields').length === 0
+        ) {
           treehouseStore.setExpanded(ctx.path.head, parent, false)
         }
         setTimeout(() => {
@@ -406,7 +446,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'outdent', key: 'shift+tab' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'outdent',
+    key: 'shift+tab',
+  })
   treehouseStore.commands.registerCommand({
     id: 'move-up',
     title: 'Move Up',
@@ -445,7 +488,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'move-up', key: 'shift+meta+arrowup' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'move-up',
+    key: 'shift+meta+arrowup',
+  })
   treehouseStore.commands.registerCommand({
     id: 'move-down',
     title: 'Move Down',
@@ -485,7 +531,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'move-down', key: 'shift+meta+arrowdown' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'move-down',
+    key: 'shift+meta+arrowdown',
+  })
   treehouseStore.commands.registerCommand({
     id: 'insert-child',
     title: 'Insert Child',
@@ -540,7 +589,10 @@ export async function setup(document: Document, backend: Backend) {
       }, 0)
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'insert', key: 'shift+enter' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'insert',
+    key: 'shift+enter',
+  })
   treehouseStore.commands.registerCommand({
     id: 'create-reference',
     title: 'Create Reference',
@@ -590,7 +642,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'delete', key: 'shift+meta+backspace' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'delete',
+    key: 'shift+meta+backspace',
+  })
   treehouseStore.commands.registerCommand({
     id: 'prev',
     title: 'Previous Node',
@@ -604,7 +659,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'prev', key: 'arrowup' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'prev',
+    key: 'arrowup',
+  })
   treehouseStore.commands.registerCommand({
     id: 'next',
     title: 'Next Node',
@@ -618,7 +676,10 @@ export async function setup(document: Document, backend: Backend) {
       }
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'next', key: 'arrowdown' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'next',
+    key: 'arrowdown',
+  })
   treehouseStore.commands.registerCommand({
     id: 'pick-command',
     title: 'Command Palette',
@@ -639,7 +700,8 @@ export async function setup(document: Document, backend: Backend) {
       }
       const trigger = treehouseStore.getInput(path)
       const rect = trigger.getBoundingClientRect()
-      let x = document.body.scrollLeft + rect.x + trigger.selectionStart * 10 + 20
+      let x =
+        document.body.scrollLeft + rect.x + trigger.selectionStart * 10 + 20
       let y = document.body.scrollTop + rect.y - 8
       if (trigger.coordsAtCursor) {
         x = trigger.coordsAtCursor.left - 17
@@ -652,7 +714,10 @@ export async function setup(document: Document, backend: Backend) {
       treehouseStore.showPalette(x, y, treehouseStore.newContext({ node }))
     },
   })
-  treehouseStore.keybindings.registerBinding({ command: 'pick-command', key: 'meta+k' })
+  treehouseStore.keybindings.registerBinding({
+    command: 'pick-command',
+    key: 'meta+k',
+  })
   treehouseStore.commands.registerCommand({
     id: 'new-panel',
     title: 'Open in New Panel',
@@ -668,7 +733,9 @@ export async function setup(document: Document, backend: Backend) {
       if (!ctx.path) return
       const { context } = useTreehouseStore.getState()
       treehouseStore.closePanel(panel || ctx.path)
-      useTreehouseStore.setState({ context: { ...context, path: treehouseStore.mainPanel() } })
+      useTreehouseStore.setState({
+        context: { ...context, path: treehouseStore.mainPanel() },
+      })
     },
   })
   treehouseStore.commands.registerCommand({

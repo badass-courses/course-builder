@@ -33,8 +33,13 @@ export const TipMetadataFormFields: React.FC<{
 }> = ({ form, videoResourceLoader, tip }) => {
   const router = useRouter()
   const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
-  const [videoResourceId, setVideoResourceId] = React.useState<string | null | undefined>(tip.videoResourceId)
-  const [transcript, setTranscript] = useTranscript({ videoResourceId, initialTranscript: videoResource?.transcript })
+  const [videoResourceId, setVideoResourceId] = React.useState<
+    string | null | undefined
+  >(tip.videoResourceId)
+  const [transcript, setTranscript] = useTranscript({
+    videoResourceId,
+    initialTranscript: videoResource?.transcript,
+  })
 
   console.log({ videoResource })
 
@@ -87,7 +92,10 @@ export const TipMetadataFormFields: React.FC<{
         render={({ field }) => (
           <FormItem className="px-5">
             <FormLabel className="text-lg font-bold">Title</FormLabel>
-            <FormDescription>A title should summarize the tip and explain what it is about clearly.</FormDescription>
+            <FormDescription>
+              A title should summarize the tip and explain what it is about
+              clearly.
+            </FormDescription>
             <Input {...field} />
             <FormMessage />
           </FormItem>

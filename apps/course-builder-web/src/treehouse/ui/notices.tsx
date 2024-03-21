@@ -4,7 +4,10 @@ export const LockStolenMessage: React.FC = () => {
   return (
     <div className="notice">
       <h3>Refresh to view latest updates</h3>
-      <p>Your notes were updated in another browser session. Refresh the page to view the latest version.</p>
+      <p>
+        Your notes were updated in another browser session. Refresh the page to
+        view the latest version.
+      </p>
       <div className="button-bar">
         <button
           className="primary"
@@ -23,11 +26,16 @@ interface FirstTimeMessageProps {
   workbench: Workbench
 }
 
-export const FirstTimeMessage: React.FC<FirstTimeMessageProps> = ({ workbench }) => {
+export const FirstTimeMessage: React.FC<FirstTimeMessageProps> = ({
+  workbench,
+}) => {
   return (
     <div className="notice">
       <h3>Treehouse is under active development</h3>
-      <p>This is a preview based on our main branch, which is actively being developed.</p>
+      <p>
+        This is a preview based on our main branch, which is actively being
+        developed.
+      </p>
       <p>
         If you find a bug, please report it via
         <svg
@@ -88,14 +96,19 @@ interface GitHubMessageProps {
   finished: () => void // Callback function when finished
 }
 
-export const GitHubMessage: React.FC<GitHubMessageProps> = ({ workbench, finished }) => {
+export const GitHubMessage: React.FC<GitHubMessageProps> = ({
+  workbench,
+  finished,
+}) => {
   return (
     <div className="notice">
       <h3>Login with GitHub</h3>
       <p>The GitHub backend is experimental so use at your own risk!</p>
       <p>
-        To store your workbench we will create a public repository called <pre style={{ display: 'inline' }}></pre> if
-        it doesn&apos;t already exist. You can manually make this repository private via GitHub if you want.
+        To store your workbench we will create a public repository called{' '}
+        <pre style={{ display: 'inline' }}></pre> if it doesn&apos;t already
+        exist. You can manually make this repository private via GitHub if you
+        want.
       </p>
       <p>
         You can Logout via the

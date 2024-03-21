@@ -13,8 +13,14 @@ function useEnterSubmit(): {
 } {
   const formRef = useRef<HTMLFormElement>(null)
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
-    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ): void => {
+    if (
+      event.key === 'Enter' &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
       formRef.current?.requestSubmit()
       event.preventDefault()
     }
@@ -71,7 +77,10 @@ export default function PlaygroundPage() {
             try {
               // Submit and get response message
               const responseMessage = await submitUserMessage(value)
-              setMessages((currentMessages) => [...currentMessages, responseMessage])
+              setMessages((currentMessages) => [
+                ...currentMessages,
+                responseMessage,
+              ])
             } catch (error) {
               // You may want to show a toast or trigger an error state.
               console.error(error)

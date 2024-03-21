@@ -16,31 +16,37 @@ export const performCodeExtraction = inngest.createFunction(
     const screenshotUrl = event.data.ocrWebhookEvent.screenshotUrl as string
     const resourceId = event.data.ocrWebhookEvent.resourceId as string
 
-    const extractedCode = await step.run('extract code from screenshot', async () => {
-      return extractCodeFromScreenshot(screenshotUrl)
-        .then((codeString) => {
-          return {
-            codeString,
-          }
-        })
-        .catch((e) => {
-          console.error(e)
-          throw new NonRetriableError('Error extracting code from screenshot')
-        })
-    })
+    const extractedCode = await step.run(
+      'extract code from screenshot',
+      async () => {
+        return extractCodeFromScreenshot(screenshotUrl)
+          .then((codeString) => {
+            return {
+              codeString,
+            }
+          })
+          .catch((e) => {
+            console.error(e)
+            throw new NonRetriableError('Error extracting code from screenshot')
+          })
+      },
+    )
 
     await step.run(`partykit broadcast [${resourceId}]`, async () => {
-      return await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          body: {
-            content: extractedCode.codeString,
-            role: 'assistant',
-          },
-          requestId: resourceId,
-          name: 'code.extraction.completed',
-        }),
-      })
+      return await fetch(
+        `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            body: {
+              content: extractedCode.codeString,
+              role: 'assistant',
+            },
+            requestId: resourceId,
+            name: 'code.extraction.completed',
+          }),
+        },
+      )
         .then((res) => {
           return res.text()
         })

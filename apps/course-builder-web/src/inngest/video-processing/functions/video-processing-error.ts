@@ -17,14 +17,17 @@ export const videoProcessingError = inngest.createFunction(
       throw new Error('Video Resource not found')
     }
 
-    await step.run('update the video resource in Sanity as errored', async () => {
-      return db.updateContentResourceFields({
-        id: videoResource._id as string,
-        fields: {
-          state: 'errored',
-        },
-      })
-    })
+    await step.run(
+      'update the video resource in Sanity as errored',
+      async () => {
+        return db.updateContentResourceFields({
+          id: videoResource._id as string,
+          fields: {
+            state: 'errored',
+          },
+        })
+      },
+    )
 
     await step.run('announce asset errored', async () => {
       const roomName = event.data.muxWebhookEvent.data.passthrough
