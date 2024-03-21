@@ -44,7 +44,7 @@
     "@codemirror/state": "^6.3.3",
     "@codemirror/view": "^6.22.3",
     "@coursebuilder/adapter-drizzle": "0.0.3",
-    "@coursebuilder/core": "0.0.3",
+    "@coursebuilder/core": "0.0.4",
     "@coursebuilder/next": "workspace:^",
     "@coursebuilder/ui": "^1.0.3",
     "@fontsource/inter": "^5.0.16",
