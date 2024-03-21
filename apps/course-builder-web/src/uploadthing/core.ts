@@ -5,7 +5,7 @@ import { createUploadthing, type FileRouter } from 'uploadthing/next'
 import { UTApi } from 'uploadthing/server'
 import { z } from 'zod'
 
-import { VIDEO_UPLOADED_EVENT } from '@coursebuilder/core/inngest/video-processing/events'
+import { VIDEO_UPLOADED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-uploaded'
 
 const f = createUploadthing()
 
