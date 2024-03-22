@@ -1,5 +1,11 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.0.4
+
+### Patch Changes
+
+- [`9402139f9ded1656c68daec0a422fa640f34748e`](https://github.com/badass-courses/course-builder/commit/9402139f9ded1656c68daec0a422fa640f34748e) Thanks [@joelhooks](https://github.com/joelhooks)! - adapter-drizzle now exports schemas
+
 ## 0.0.3
 
 ### Patch Changes
