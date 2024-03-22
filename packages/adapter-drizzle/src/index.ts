@@ -8,7 +8,7 @@ import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import {
 	createTables as createMySqlTables,
 	mySqlDrizzleAdapter,
-} from './lib/mysql.js'
+} from './lib/mysql'
 import { pgDrizzleAdapter } from './lib/pg.js'
 import { SQLiteDrizzleAdapter } from './lib/sqlite.js'
 import { type SqlFlavorOptions, type TableFn } from './lib/utils.js'

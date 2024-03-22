@@ -1,162 +1,57 @@
-import type {
-	AdapterAccount,
-	AdapterSession,
-	AdapterUser,
-} from '@auth/core/adapters'
+import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
 import { and, eq, sql } from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
-	double,
-	index,
-	int,
-	json,
 	MySqlDatabase,
-	mysqlEnum,
 	MySqlTableFn,
-	primaryKey,
-	timestamp,
-	varchar,
 } from 'drizzle-orm/mysql-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
+import { getAccountsSchema } from './schemas/auth/accounts'
+import { getSessionsSchema } from './schemas/auth/sessions'
+import { getUsersSchema } from './schemas/auth/users'
+import { getVerificationTokensSchema } from './schemas/auth/verification-tokens'
+import { getCouponSchema } from './schemas/commerce/coupon'
+import { getMerchantAccountSchema } from './schemas/commerce/merchant-account'
+import { getMerchantChargeSchema } from './schemas/commerce/merchant-charge'
+import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon'
+import { getMerchantCustomerSchema } from './schemas/commerce/merchant-customer'
+import { getMerchantPriceSchema } from './schemas/commerce/merchant-price'
+import { getMerchantProductSchema } from './schemas/commerce/merchant-product'
+import { getMerchantSessionSchema } from './schemas/commerce/merchant-session'
+import { getPriceSchema } from './schemas/commerce/price'
+import { getProductSchema } from './schemas/commerce/product'
+import { getPurchaseSchema } from './schemas/commerce/purchase'
+import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer'
+import { getContentResourceSchema } from './schemas/content/content-resource'
+import { getContentResourceResourceSchema } from './schemas/content/content-resource-resource'
+
 export function createTables(mySqlTable: MySqlTableFn) {
-	const users = mySqlTable('user', {
-		id: varchar('id', { length: 255 }).notNull().primaryKey(),
-		name: varchar('name', { length: 255 }),
-		email: varchar('email', { length: 255 }).notNull(),
-		role: mysqlEnum('role', ['user', 'admin']).default('user'),
-		emailVerified: timestamp('emailVerified', {
-			mode: 'date',
-			fsp: 3,
-		}).defaultNow(),
-		image: varchar('image', { length: 255 }),
-	})
-
-	const accounts = mySqlTable(
-		'account',
-		{
-			userId: varchar('userId', { length: 255 })
-				.notNull()
-				.references(() => users.id, { onDelete: 'cascade' }),
-			type: varchar('type', { length: 255 })
-				.$type<AdapterAccount['type']>()
-				.notNull(),
-			provider: varchar('provider', { length: 255 }).notNull(),
-			providerAccountId: varchar('providerAccountId', {
-				length: 255,
-			}).notNull(),
-			refresh_token: varchar('refresh_token', { length: 255 }),
-			access_token: varchar('access_token', { length: 255 }),
-			expires_at: int('expires_at'),
-			token_type: varchar('token_type', { length: 255 }),
-			scope: varchar('scope', { length: 255 }),
-			id_token: varchar('id_token', { length: 255 }),
-			session_state: varchar('session_state', { length: 255 }),
-		},
-		(account) => ({
-			pk: primaryKey({
-				columns: [account.provider, account.providerAccountId],
-			}),
-			userIdIdx: index('userId_idx').on(account.userId),
-		}),
-	)
-
-	const sessions = mySqlTable(
-		'session',
-		{
-			sessionToken: varchar('sessionToken', { length: 255 })
-				.notNull()
-				.primaryKey(),
-			userId: varchar('userId', { length: 255 })
-				.notNull()
-				.references(() => users.id, { onDelete: 'cascade' }),
-			expires: timestamp('expires', { mode: 'date' }).notNull(),
-		},
-		(session) => ({
-			userIdIdx: index('userId_idx').on(session.userId),
-		}),
-	)
-
-	const verificationTokens = mySqlTable(
-		'verificationToken',
-		{
-			identifier: varchar('identifier', { length: 255 }).notNull(),
-			token: varchar('token', { length: 255 }).notNull(),
-			expires: timestamp('expires', { mode: 'date' }).notNull(),
-			createdAt: timestamp('createdAt', {
-				mode: 'date',
-				fsp: 3,
-			}).default(sql`CURRENT_TIMESTAMP(3)`),
-		},
-		(vt) => ({
-			pk: primaryKey({ columns: [vt.identifier, vt.token] }),
-		}),
-	)
-
-	const contentResource = mySqlTable(
-		'contentResource',
-		{
-			id: varchar('id', { length: 255 }).notNull().primaryKey(),
-			type: varchar('type', { length: 255 }).notNull(),
-			createdById: varchar('createdById', { length: 255 }).notNull(),
-			fields: json('fields').$type<Record<string, any>>().default({}),
-			createdAt: timestamp('createdAt', {
-				mode: 'date',
-				fsp: 3,
-			}).defaultNow(),
-			updatedAt: timestamp('updatedAt', {
-				mode: 'date',
-				fsp: 3,
-			}).defaultNow(),
-			deletedAt: timestamp('deletedAt', {
-				mode: 'date',
-				fsp: 3,
-			}),
-		},
-		(cm) => ({
-			typeIdx: index('type_idx').on(cm.type),
-			createdByIdx: index('createdById_idx').on(cm.createdById),
-			createdAtIdx: index('createdAt_idx').on(cm.createdAt),
-		}),
-	)
-
-	const contentResourceResource = mySqlTable(
-		'contentResourceResource',
-		{
-			resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
-			resourceId: varchar('resourceId', { length: 255 }).notNull(),
-			position: double('position').notNull().default(0),
-			metadata: json('fields').$type<Record<string, any>>().default({}),
-			createdAt: timestamp('createdAt', {
-				mode: 'date',
-				fsp: 3,
-			}).defaultNow(),
-			updatedAt: timestamp('updatedAt', {
-				mode: 'date',
-				fsp: 3,
-			}).defaultNow(),
-			deletedAt: timestamp('deletedAt', {
-				mode: 'date',
-				fsp: 3,
-			}),
-		},
-		(crr) => ({
-			pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
-			contentResourceIdIdx: index('contentResourceId_idx').on(crr.resourceOfId),
-			resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
-		}),
-	)
-
 	return {
-		users,
-		accounts,
-		sessions,
-		verificationTokens,
-		contentResource,
-		contentResourceResource,
+		users: getUsersSchema(mySqlTable).users,
+		accounts: getAccountsSchema(mySqlTable).accounts,
+		sessions: getSessionsSchema(mySqlTable).sessions,
+		verificationTokens:
+			getVerificationTokensSchema(mySqlTable).verificationTokens,
+		contentResource: getContentResourceSchema(mySqlTable).contentResource,
+		contentResourceResource:
+			getContentResourceResourceSchema(mySqlTable).contentResourceResource,
+		purchase: getPurchaseSchema(mySqlTable).purchase,
+		price: getPriceSchema(mySqlTable).price,
+		product: getProductSchema(mySqlTable).product,
+		purchaseUserTransfer:
+			getPurchaseUserTransferSchema(mySqlTable).purchaseUserTransfer,
+		merchantSession: getMerchantSessionSchema(mySqlTable).merchantSession,
+		merchantProduct: getMerchantProductSchema(mySqlTable).merchantProduct,
+		merchantPrice: getMerchantPriceSchema(mySqlTable).merchantPrice,
+		merchantCustomer: getMerchantCustomerSchema(mySqlTable).merchantCustomer,
+		merchantCoupon: getMerchantCouponSchema(mySqlTable).merchantCoupon,
+		merchantCharge: getMerchantChargeSchema(mySqlTable).merchantCharge,
+		merchantAccount: getMerchantAccountSchema(mySqlTable).merchantAccount,
+		coupon: getCouponSchema(mySqlTable).coupon,
 	}
 }
 
@@ -166,8 +61,26 @@ export function mySqlDrizzleAdapter(
 	client: InstanceType<typeof MySqlDatabase>,
 	tableFn = defaultMySqlTableFn,
 ): CourseBuilderAdapter {
-	const { users, accounts, sessions, verificationTokens, contentResource } =
-		createTables(tableFn)
+	const {
+		users,
+		accounts,
+		sessions,
+		verificationTokens,
+		contentResource,
+		contentResourceResource,
+		purchase,
+		purchaseUserTransfer,
+		coupon,
+		merchantCoupon,
+		merchantCharge,
+		merchantAccount,
+		merchantPrice,
+		merchantCustomer,
+		merchantSession,
+		merchantProduct,
+		price,
+		product,
+	} = createTables(tableFn)
 
 	return {
 		async updateContentResourceFields(options) {
@@ -237,14 +150,13 @@ export function mySqlDrizzleAdapter(
 				.then((res) => res[0])
 		},
 		async getContentResource(data) {
-			const thing =
+			return (
 				(await client
 					.select()
 					.from(contentResource)
 					.where(eq(contentResource.id, data))
 					.then((res) => res[0])) ?? null
-
-			return thing
+			)
 		},
 		async createUser(data) {
 			const id = crypto.randomUUID()
@@ -258,24 +170,22 @@ export function mySqlDrizzleAdapter(
 				.then((res) => res[0] as AdapterUser)
 		},
 		async getUser(data) {
-			const thing =
+			return (
 				(await client
 					.select()
 					.from(users)
 					.where(eq(users.id, data))
 					.then((res) => res[0])) ?? null
-
-			return thing
+			)
 		},
 		async getUserByEmail(data) {
-			const user =
+			return (
 				(await client
 					.select()
 					.from(users)
 					.where(eq(users.email, data))
 					.then((res) => res[0])) ?? null
-
-			return user
+			)
 		},
 		async createSession(data) {
 			await client.insert(sessions).values(data)
@@ -287,7 +197,7 @@ export function mySqlDrizzleAdapter(
 				.then((res) => res[0] as AdapterSession)
 		},
 		async getSessionAndUser(data) {
-			const sessionAndUser =
+			return (
 				(await client
 					.select({
 						session: sessions,
@@ -297,8 +207,7 @@ export function mySqlDrizzleAdapter(
 					.where(eq(sessions.sessionToken, data))
 					.innerJoin(users, eq(users.id, sessions.userId))
 					.then((res) => res[0])) ?? null
-
-			return sessionAndUser
+			)
 		},
 		async updateUser(data) {
 			if (!data.id) {
