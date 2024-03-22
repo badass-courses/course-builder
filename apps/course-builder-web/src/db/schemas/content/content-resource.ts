@@ -1,7 +1,7 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { contentContributions } from '@/db/schemas/content-contributions'
-import { contentResourceResource } from '@/db/schemas/content-resource-resource'
-import { users } from '@/db/schemas/users'
+import { users } from '@/db/schemas/auth/users'
+import { contentContributions } from '@/db/schemas/content/content-contributions'
+import { contentResourceResource } from '@/db/schemas/content/content-resource-resource'
 import { relations, sql } from 'drizzle-orm'
 import { index, json, timestamp, varchar } from 'drizzle-orm/mysql-core'
 

@@ -1,5 +1,5 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { contentContributions } from '@/db/schemas/content-contributions'
+import { contentContributions } from '@/db/schemas/content/content-contributions'
 import { relations } from 'drizzle-orm'
 import {
 	boolean,

@@ -1,7 +1,7 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { communicationChannel } from '@/db/schemas/communication-channel'
-import { communicationPreferenceTypes } from '@/db/schemas/communication-preference-types'
-import { users } from '@/db/schemas/users'
+import { users } from '@/db/schemas/auth/users'
+import { communicationChannel } from '@/db/schemas/communication/communication-channel'
+import { communicationPreferenceTypes } from '@/db/schemas/communication/communication-preference-types'
 import { relations } from 'drizzle-orm'
 import {
 	boolean,

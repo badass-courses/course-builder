@@ -1,5 +1,5 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { users } from '@/db/schemas/users'
+import { users } from '@/db/schemas/auth/users'
 import { relations } from 'drizzle-orm'
 import { index, timestamp, varchar } from 'drizzle-orm/mysql-core'
 

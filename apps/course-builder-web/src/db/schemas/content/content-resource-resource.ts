@@ -1,5 +1,5 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { contentResource } from '@/db/schemas/content-resource'
+import { contentResource } from '@/db/schemas/content/content-resource'
 import { relations, sql } from 'drizzle-orm'
 import {
 	double,

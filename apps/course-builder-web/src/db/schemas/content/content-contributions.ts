@@ -1,7 +1,7 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { contentResource } from '@/db/schemas/content-resource'
-import { contributionTypes } from '@/db/schemas/contribution-types'
-import { users } from '@/db/schemas/users'
+import { users } from '@/db/schemas/auth/users'
+import { contentResource } from '@/db/schemas/content/content-resource'
+import { contributionTypes } from '@/db/schemas/content/contribution-types'
 import { relations } from 'drizzle-orm'
 import { boolean, index, timestamp, varchar } from 'drizzle-orm/mysql-core'
 

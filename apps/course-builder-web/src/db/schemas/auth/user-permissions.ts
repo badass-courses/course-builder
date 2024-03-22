@@ -1,6 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { permissions } from '@/db/schemas/permissions'
-import { users } from '@/db/schemas/users'
+import { permissions } from '@/db/schemas/auth/permissions'
+import { users } from '@/db/schemas/auth/users'
 import { relations } from 'drizzle-orm'
 import {
 	boolean,
