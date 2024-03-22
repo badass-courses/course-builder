@@ -1,5 +1,7 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { users } from '@/db/schemas/users'
 import { AdapterAccount } from '@auth/core/adapters'
+import { relations } from 'drizzle-orm'
 import { index, int, primaryKey, text, varchar } from 'drizzle-orm/mysql-core'
 
 export const accounts = mysqlTable(
@@ -27,3 +29,7 @@ export const accounts = mysqlTable(
 		userIdIdx: index('userId_idx').on(account.userId),
 	}),
 )
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+	user: one(users, { fields: [accounts.userId], references: [users.id] }),
+}))

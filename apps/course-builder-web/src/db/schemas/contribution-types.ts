@@ -1,4 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { contentContributions } from '@/db/schemas/content-contributions'
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -31,5 +33,12 @@ export const contributionTypes = mysqlTable(
 	(ct) => ({
 		nameIdx: index('name_idx').on(ct.name),
 		slugIdx: index('slug_idx').on(ct.slug),
+	}),
+)
+
+export const contributionTypesRelations = relations(
+	contributionTypes,
+	({ many }) => ({
+		contributions: many(contentContributions),
 	}),
 )

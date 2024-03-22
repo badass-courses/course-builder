@@ -1,4 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { users } from '@/db/schemas/users'
+import { relations } from 'drizzle-orm'
 import { index, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
 export const sessions = mysqlTable(
@@ -14,3 +16,7 @@ export const sessions = mysqlTable(
 		userIdIdx: index('userId_idx').on(session.userId),
 	}),
 )
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+	user: one(users, { fields: [sessions.userId], references: [users.id] }),
+}))

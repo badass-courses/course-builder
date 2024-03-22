@@ -1,4 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { userRoles } from '@/db/schemas/user-roles'
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -31,3 +33,7 @@ export const roles = mysqlTable(
 		nameIdx: index('name_idx').on(role.name),
 	}),
 )
+
+export const rolesRelations = relations(roles, ({ many }) => ({
+	userRoles: many(userRoles),
+}))

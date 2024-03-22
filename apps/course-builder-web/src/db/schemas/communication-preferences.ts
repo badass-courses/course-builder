@@ -1,4 +1,8 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { communicationChannel } from '@/db/schemas/communication-channel'
+import { communicationPreferenceTypes } from '@/db/schemas/communication-preference-types'
+import { users } from '@/db/schemas/users'
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -43,5 +47,23 @@ export const communicationPreferences = mysqlTable(
 		userIdIdx: index('userId_idx').on(cp.userId),
 		preferenceTypeIdx: index('preferenceTypeId_idx').on(cp.preferenceTypeId),
 		channelIdIdx: index('channelId_idx').on(cp.channelId),
+	}),
+)
+
+export const communicationPreferencesRelations = relations(
+	communicationPreferences,
+	({ one }) => ({
+		user: one(users, {
+			fields: [communicationPreferences.userId],
+			references: [users.id],
+		}),
+		channel: one(communicationChannel, {
+			fields: [communicationPreferences.channelId],
+			references: [communicationChannel.id],
+		}),
+		preferenceType: one(communicationPreferenceTypes, {
+			fields: [communicationPreferences.preferenceTypeId],
+			references: [communicationPreferenceTypes.id],
+		}),
 	}),
 )

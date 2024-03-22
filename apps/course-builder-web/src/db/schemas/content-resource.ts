@@ -1,5 +1,8 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { sql } from 'drizzle-orm'
+import { contentContributions } from '@/db/schemas/content-contributions'
+import { contentResourceResource } from '@/db/schemas/content-resource-resource'
+import { users } from '@/db/schemas/users'
+import { relations, sql } from 'drizzle-orm'
 import { index, json, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
 export const contentResource = mysqlTable(
@@ -26,5 +29,18 @@ export const contentResource = mysqlTable(
 		typeIdx: index('type_idx').on(cm.type),
 		createdByIdx: index('createdById_idx').on(cm.createdById),
 		createdAtIdx: index('createdAt_idx').on(cm.createdAt),
+	}),
+)
+
+export const contentResourceRelations = relations(
+	contentResource,
+	({ one, many }) => ({
+		createdBy: one(users, {
+			fields: [contentResource.createdById],
+			references: [users.id],
+		}),
+		contributions: many(contentContributions),
+		resources: many(contentResourceResource, { relationName: 'resourceOf' }),
+		resourceOf: many(contentResourceResource, { relationName: 'resource' }),
 	}),
 )

@@ -1,4 +1,8 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { contentResource } from '@/db/schemas/content-resource'
+import { contributionTypes } from '@/db/schemas/contribution-types'
+import { users } from '@/db/schemas/users'
+import { relations } from 'drizzle-orm'
 import { boolean, index, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
 export const contentContributions = mysqlTable(
@@ -30,5 +34,23 @@ export const contentContributions = mysqlTable(
 		contributionTypeIdIdx: index('contributionTypeId_idx').on(
 			cc.contributionTypeId,
 		),
+	}),
+)
+
+export const contentContributionRelations = relations(
+	contentContributions,
+	({ one }) => ({
+		user: one(users, {
+			fields: [contentContributions.userId],
+			references: [users.id],
+		}),
+		content: one(contentResource, {
+			fields: [contentContributions.contentId],
+			references: [contentResource.id],
+		}),
+		contributionType: one(contributionTypes, {
+			fields: [contentContributions.contributionTypeId],
+			references: [contributionTypes.id],
+		}),
 	}),
 )

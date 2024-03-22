@@ -1,5 +1,11 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { sql } from 'drizzle-orm'
+import { accounts } from '@/db/schemas/accounts'
+import { communicationPreferences } from '@/db/schemas/communication-preferences'
+import { contentContributions } from '@/db/schemas/content-contributions'
+import { contentResource } from '@/db/schemas/content-resource'
+import { userPermissions } from '@/db/schemas/user-permissions'
+import { userRoles } from '@/db/schemas/user-roles'
+import { relations, sql } from 'drizzle-orm'
 import { index, mysqlEnum, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
 export const users = mysqlTable(
@@ -24,3 +30,12 @@ export const users = mysqlTable(
 		roleIdx: index('role_idx').on(user.role),
 	}),
 )
+
+export const usersRelations = relations(users, ({ many }) => ({
+	accounts: many(accounts),
+	communicationPreferences: many(communicationPreferences),
+	userRoles: many(userRoles),
+	userPermissions: many(userPermissions),
+	contributions: many(contentContributions),
+	createdContent: many(contentResource),
+}))

@@ -1,4 +1,7 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { permissions } from '@/db/schemas/permissions'
+import { roles } from '@/db/schemas/roles'
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -30,5 +33,19 @@ export const rolePermissions = mysqlTable(
 		pk: primaryKey({ columns: [rp.roleId, rp.permissionId] }),
 		roleIdIdx: index('roleId_idx').on(rp.roleId),
 		permissionIdIdx: index('permissionId_idx').on(rp.permissionId),
+	}),
+)
+
+export const rolePermissionsRelations = relations(
+	rolePermissions,
+	({ one }) => ({
+		role: one(roles, {
+			fields: [rolePermissions.roleId],
+			references: [roles.id],
+		}),
+		permission: one(permissions, {
+			fields: [rolePermissions.permissionId],
+			references: [permissions.id],
+		}),
 	}),
 )

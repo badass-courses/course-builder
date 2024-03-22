@@ -1,5 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { sql } from 'drizzle-orm'
+import { contentResource } from '@/db/schemas/content-resource'
+import { relations, sql } from 'drizzle-orm'
 import {
 	double,
 	index,
@@ -33,5 +34,21 @@ export const contentResourceResource = mysqlTable(
 		pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
 		contentResourceIdIdx: index('contentResourceId_idx').on(crr.resourceOfId),
 		resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
+	}),
+)
+
+export const contentResourceResourceRelations = relations(
+	contentResourceResource,
+	({ one }) => ({
+		resourceOf: one(contentResource, {
+			fields: [contentResourceResource.resourceOfId],
+			references: [contentResource.id],
+			relationName: 'resourceOf',
+		}),
+		resource: one(contentResource, {
+			fields: [contentResourceResource.resourceId],
+			references: [contentResource.id],
+			relationName: 'resource',
+		}),
 	}),
 )

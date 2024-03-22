@@ -1,4 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { rolePermissions } from '@/db/schemas/role-permissions'
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -31,3 +33,7 @@ export const permissions = mysqlTable(
 		nameIdx: index('name_idx').on(permission.name),
 	}),
 )
+
+export const permissionsRelations = relations(permissions, ({ many }) => ({
+	rolePermissions: many(rolePermissions),
+}))
