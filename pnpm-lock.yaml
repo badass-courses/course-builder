@@ -761,6 +761,9 @@ importers:
       postgres:
         specifier: ^3.3.4
         version: 3.4.3
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(postcss@8.4.35)(typescript@5.4.3)
 
   packages/config/eslint-config:
     dependencies:

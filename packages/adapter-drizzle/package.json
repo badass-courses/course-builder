@@ -4,8 +4,8 @@
 	"description": "Drizzle adapter for Course Builder.",
 	"scripts": {
 		"clean": "rm -rf ./dist",
-		"build": "tsc",
-		"dev": "tsc --watch"
+		"build": "tsup",
+		"dev": "tsup --watch"
 	},
 	"keywords": [
 		"coursebuilder",
@@ -14,17 +14,25 @@
 	"author": "",
 	"license": "ISC",
 	"type": "module",
-	"types": "./index.d.ts",
+	"types": "./dist/index.d.ts",
 	"files": [
-		"*.d.ts*",
-		"*.js",
-		"lib",
+		"/dist/*.d.ts*",
+		"/dist/*.js",
+		"/dist/lib/mysql/*.d.ts*",
+		"/dist/lib/mysql/*.js",
+		"dist/lib",
 		"src"
 	],
 	"exports": {
 		".": {
-			"types": "./index.d.ts",
-			"import": "./index.js"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./mysql": {
+			"types": "./dist/lib/mysql/index.d.ts",
+			"import": "./dist/lib/mysql/index.js",
+			"require": "./dist/lib/mysql/index.cjs"
 		}
 	},
 	"private": false,
@@ -44,7 +52,8 @@
 		"drizzle-kit": "^0.20.14",
 		"drizzle-orm": "0.30.2",
 		"mysql2": "^3.6.1",
-		"postgres": "^3.3.4"
+		"postgres": "^3.3.4",
+		"tsup": "6.7.0"
 	},
 	"peerDependencies": {
 		"drizzle-orm": "0.30.x"

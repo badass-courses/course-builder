@@ -11,7 +11,12 @@ import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 import { getAccountsSchema } from './schemas/auth/accounts'
+import { getPermissionsSchema } from './schemas/auth/permissions'
+import { getRolePermissionsSchema } from './schemas/auth/role-permissions'
+import { getRolesSchema } from './schemas/auth/roles'
 import { getSessionsSchema } from './schemas/auth/sessions'
+import { getUserPermissionsSchema } from './schemas/auth/user-permissions'
+import { getUserRolesSchema } from './schemas/auth/user-roles'
 import { getUsersSchema } from './schemas/auth/users'
 import { getVerificationTokensSchema } from './schemas/auth/verification-tokens'
 import { getCouponSchema } from './schemas/commerce/coupon'
@@ -26,8 +31,46 @@ import { getPriceSchema } from './schemas/commerce/price'
 import { getProductSchema } from './schemas/commerce/product'
 import { getPurchaseSchema } from './schemas/commerce/purchase'
 import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer'
+import { getCommunicationChannelSchema } from './schemas/communication/communication-channel'
+import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types'
+import { getCommunicationPreferencesSchema } from './schemas/communication/communication-preferences'
+import { getContentContributionsSchema } from './schemas/content/content-contributions'
 import { getContentResourceSchema } from './schemas/content/content-resource'
 import { getContentResourceResourceSchema } from './schemas/content/content-resource-resource'
+import { getContributionTypesSchema } from './schemas/content/contribution-types'
+import { getResourceProgressSchema } from './schemas/content/resource-progress'
+
+export {
+	getAccountsSchema,
+	getSessionsSchema,
+	getUsersSchema,
+	getVerificationTokensSchema,
+	getCouponSchema,
+	getMerchantAccountSchema,
+	getMerchantChargeSchema,
+	getMerchantCouponSchema,
+	getMerchantCustomerSchema,
+	getMerchantPriceSchema,
+	getMerchantProductSchema,
+	getMerchantSessionSchema,
+	getPriceSchema,
+	getProductSchema,
+	getPurchaseSchema,
+	getPurchaseUserTransferSchema,
+	getContentResourceSchema,
+	getContentResourceResourceSchema,
+	getPermissionsSchema,
+	getRolePermissionsSchema,
+	getRolesSchema,
+	getUserPermissionsSchema,
+	getUserRolesSchema,
+	getCommunicationChannelSchema,
+	getCommunicationPreferenceTypesSchema,
+	getCommunicationPreferencesSchema,
+	getContentContributionsSchema,
+	getContributionTypesSchema,
+	getResourceProgressSchema,
+}
 
 export function createTables(mySqlTable: MySqlTableFn) {
 	return {
