@@ -1,5 +1,4 @@
 import { db } from '@/db'
-import { mysqlTable } from '@/db/schema'
 import { env } from '@/env.mjs'
 import {
 	EMAIL_SEND_BROADCAST,
@@ -25,6 +24,8 @@ import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 
 import '@coursebuilder/core/inngest/video-processing/events'
+
+import { mysqlTable } from '@/db/mysql-table'
 
 import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'

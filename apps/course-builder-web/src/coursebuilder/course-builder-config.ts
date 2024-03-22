@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { mysqlTable } from '@/db/schema'
+import { mysqlTable } from '@/db/mysql-table'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 

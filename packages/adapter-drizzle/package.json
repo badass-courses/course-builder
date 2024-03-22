@@ -25,6 +25,10 @@
 		".": {
 			"types": "./index.d.ts",
 			"import": "./index.js"
+		},
+		"./schema": {
+			"types": "./schema.d.ts",
+			"import": "./schema.js"
 		}
 	},
 	"private": false,
