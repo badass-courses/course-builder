@@ -41,6 +41,13 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 			resourceSchema={ArticleSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updateArticle}
+			availableWorkflows={[
+				{
+					value: 'article-chat-default-5aj1o',
+					label: 'Article Chat',
+					default: true,
+				},
+			]}
 		>
 			<ArticleMetadataFormFields form={form} />
 		</ResourceForm>

@@ -3,10 +3,11 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { getAbility } from '@/ability'
 import { CreateTip } from '@/app/tips/_components/create-tip'
+import { DeleteTipButton } from '@/app/tips/_components/delete-tip-button'
 import { getTipsModule } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { Card, CardHeader, CardTitle } from '@coursebuilder/ui'
+import { Card, CardFooter, CardHeader, CardTitle } from '@coursebuilder/ui'
 
 export default async function TipsListPage() {
 	return (
@@ -24,6 +25,9 @@ export default async function TipsListPage() {
 
 async function TipList() {
 	const tipsModule = await getTipsModule()
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
 
 	return (
 		<>
@@ -31,9 +35,18 @@ async function TipList() {
 				<Card key={tip._id}>
 					<CardHeader>
 						<CardTitle>
-							<Link href={`/tips/${tip.slug || tip._id}`}>{tip.title}</Link>
+							<Link className="w-full" href={`/tips/${tip.slug || tip._id}`}>
+								{tip.title}
+							</Link>
 						</CardTitle>
 					</CardHeader>
+					{ability.can('delete', 'Content') && (
+						<CardFooter>
+							<div className="flex w-full justify-end">
+								<DeleteTipButton id={tip._id} />
+							</div>
+						</CardFooter>
+					)}
 				</Card>
 			))}
 		</>

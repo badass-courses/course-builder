@@ -37,6 +37,13 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 			resourceSchema={PromptSchema}
 			getResourcePath={(slug) => `/prompts/${slug}`}
 			updateResource={updatePrompt}
+			availableWorkflows={[
+				{
+					value: 'prompt-prompt-default-g8v77',
+					label: 'Prompt Chat',
+					default: true,
+				},
+			]}
 		>
 			<EditResourcesMetadataFields form={form} />
 		</ResourceForm>

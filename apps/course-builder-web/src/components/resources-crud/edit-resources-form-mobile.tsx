@@ -21,6 +21,7 @@ export function EditResourcesFormMobile({
 	children?: React.ReactNode
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
 	updateResource: (values: z.infer<typeof resourceSchema>) => Promise<any>
+	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
 	const router = useRouter()
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {

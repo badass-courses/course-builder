@@ -17,6 +17,7 @@ export function EditResourcesFormDesktop({
 	children,
 	form,
 	updateResource,
+	availableWorkflows,
 }: {
 	resource: any
 	getResourcePath: (slug: string) => string
@@ -24,6 +25,7 @@ export function EditResourcesFormDesktop({
 	children?: React.ReactNode
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
 	updateResource: (values: z.infer<typeof resourceSchema>) => Promise<any>
+	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
 	const router = useRouter()
 
@@ -52,6 +54,7 @@ export function EditResourcesFormDesktop({
 				<ResizableHandle />
 				<EditResourcesToolPanel
 					resource={{ ...resource, ...form.getValues() }}
+					availableWorkflows={availableWorkflows}
 				/>
 			</EditResourcePanelGroup>
 		</>

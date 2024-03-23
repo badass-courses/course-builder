@@ -9,9 +9,41 @@ import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
+
+export async function deleteTip(id: string) {
+	const session = await getServerAuthSession()
+	const user = session?.user
+	const ability = getAbility({ user })
+	if (!user || !ability.can('delete', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const tip = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, id),
+		with: {
+			resources: true,
+		},
+	})
+
+	if (!tip) {
+		throw new Error(`Tip with id ${id} not found.`)
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(eq(contentResourceResource.resourceOfId, id))
+
+	await db.delete(contentResource).where(eq(contentResource.id, id))
+
+	revalidateTag('tips')
+	revalidateTag(id)
+	revalidatePath('/tips')
+
+	return true
+}
 
 export async function getTip(slug: string): Promise<Tip | null> {
 	const query = sql`

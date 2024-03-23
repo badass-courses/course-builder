@@ -5,6 +5,7 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 export function EditResourcesToolPanelContents({
 	resource,
 	activeToolId,
+	availableWorkflows,
 }: {
 	resource: {
 		_type: string
@@ -13,11 +14,15 @@ export function EditResourcesToolPanelContents({
 		title?: string | null
 	}
 	activeToolId: string
+	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
 	return (
 		<>
 			{activeToolId === 'assistant' && (
-				<ResourceChatAssistant resource={resource} />
+				<ResourceChatAssistant
+					resource={resource}
+					availableWorkflows={availableWorkflows}
+				/>
 			)}
 			{activeToolId === 'media' && (
 				<ImageResourceUploader

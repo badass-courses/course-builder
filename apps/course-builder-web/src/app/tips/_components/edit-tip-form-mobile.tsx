@@ -121,58 +121,11 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 						})}
 					>
 						<div className="flex flex-col gap-8">
-							<div>
-								<Suspense
-									fallback={
-										<>
-											<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-												video is loading
-											</div>
-										</>
-									}
-								>
-									<TipPlayer videoResourceLoader={videoResourceLoader} />
-									<div className="px-5 text-xs">
-										video is {videoResource?.state}
-									</div>
-								</Suspense>
-							</div>
 							<TipMetadataFormFields
 								form={form}
 								videoResourceLoader={videoResourceLoader}
 								tip={tip}
 							/>
-							<div className="px-5">
-								<div className="flex items-center justify-between gap-2">
-									<label className="text-lg font-bold">Transcript</label>
-									{Boolean(videoResourceId) && (
-										<TooltipProvider delayDuration={0}>
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<Button
-														variant="ghost"
-														size="icon"
-														type="button"
-														onClick={async (event) => {
-															event.preventDefault()
-															await reprocessTranscript({ videoResourceId })
-														}}
-														title="Reprocess"
-													>
-														<RefreshCcw className="w-3" />
-													</Button>
-												</TooltipTrigger>
-												<TooltipContent side="top">
-													Reprocess Transcript
-												</TooltipContent>
-											</Tooltip>
-										</TooltipProvider>
-									)}
-								</div>
-								<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-									{transcript ? transcript : 'Transcript Processing'}
-								</ReactMarkdown>
-							</div>
 						</div>
 					</form>
 				</Form>

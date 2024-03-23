@@ -25,6 +25,7 @@ export function EditResourcesToolPanel({
 	minSize = 15,
 	maxSize = 50,
 	defaultSize = 25,
+	availableWorkflows,
 }: {
 	minSize?: number
 	defaultSize?: number
@@ -36,6 +37,7 @@ export function EditResourcesToolPanel({
 		body?: string | null
 		title?: string | null
 	}
+	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
 	const [activeToolId, setActiveToolId] = React.useState<string>(
 		WIDGETS.values().next().value.id,
@@ -54,6 +56,7 @@ export function EditResourcesToolPanel({
 				<EditResourcesToolPanelContents
 					resource={resource}
 					activeToolId={activeToolId}
+					availableWorkflows={availableWorkflows}
 				/>
 			</ResizablePanel>
 			<EditResourcesToolbar

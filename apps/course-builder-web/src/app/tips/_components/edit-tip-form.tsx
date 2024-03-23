@@ -23,6 +23,7 @@ export type EditTipFormProps = {
 	videoResourceLoader: Promise<VideoResource | null>
 	form: UseFormReturn<z.infer<typeof TipSchema>>
 	children?: React.ReactNode
+	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }
 
 export function EditTipForm({
@@ -43,6 +44,9 @@ export function EditTipForm({
 			tip={tip}
 			form={form}
 			videoResourceLoader={videoResourceLoader}
+			availableWorkflows={[
+				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+			]}
 		/>
 	) : (
 		<EditResourcesFormDesktop
@@ -51,6 +55,9 @@ export function EditTipForm({
 			getResourcePath={(slug) => `/tips/${slug}`}
 			updateResource={updateTip}
 			form={form}
+			availableWorkflows={[
+				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+			]}
 		>
 			<TipMetadataFormFields
 				form={form}

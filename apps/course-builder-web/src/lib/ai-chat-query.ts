@@ -26,6 +26,8 @@ export async function sendResourceChatMessage({
 		throw new Error('Unauthorized')
 	}
 
+	console.log('sendResourceChatMessage')
+
 	await inngest.send({
 		name: RESOURCE_CHAT_REQUEST_EVENT,
 		data: {

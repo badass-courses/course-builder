@@ -47,6 +47,7 @@ export function ResourceChatAssistant({
 		messages: ChatCompletionRequestMessage[],
 		selectedWorkflow?: string,
 	) => {
+		console.log('SEND A MESSAGE')
 		sendResourceChatMessage({
 			resourceId: resource._id,
 			messages: [
