@@ -37,10 +37,10 @@ export default async function PromptsIndexPage() {
 			<div className="flex flex-col space-y-4 p-5 sm:p-10">
 				<h2 className="text-lg font-bold">Prompts</h2>
 				{prompts.map((prompt) => (
-					<Card key={prompt._id}>
+					<Card key={prompt.id}>
 						<CardHeader>
 							<CardTitle>
-								<Link href={`/prompts/${prompt.slug || prompt._id}`}>
+								<Link href={`/prompts/${prompt.slug || prompt.id}`}>
 									{prompt.title}
 								</Link>
 							</CardTitle>

@@ -3,14 +3,18 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getAbility } from '@/ability'
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentContributions,
+	contentResource,
+	contentResourceResource,
+	contributionTypes,
+} from '@/db/schema'
 import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { eq, sql } from 'drizzle-orm'
-import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {
@@ -48,10 +52,10 @@ export async function deleteTip(id: string) {
 export async function getTip(slug: string): Promise<Tip | null> {
 	const query = sql`
     SELECT
-      tips.id as _id,
-      tips.type as _type,
-      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
-      CAST(tips.createdAt AS DATETIME) as _createdAt,
+      tips.id,
+      tips.type,
+      CAST(tips.updatedAt AS DATETIME),
+      CAST(tips.createdAt AS DATETIME),
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
       JSON_EXTRACT (tips.fields, "$.body") AS body,
@@ -79,10 +83,10 @@ export async function getTip(slug: string): Promise<Tip | null> {
 export async function getTipsModule(): Promise<Tip[]> {
 	const query = sql<Tip[]>`
     SELECT
-      tips.id as _id,
-      tips.type as _type,
-      CAST(tips.updatedAt AS DATETIME) as _updatedAt,
-      CAST(tips.createdAt AS DATETIME) as _createdAt,
+      tips.id,
+      tips.type,
+      CAST(tips.updatedAt AS DATETIME),
+      CAST(tips.createdAt AS DATETIME),
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
       JSON_EXTRACT (tips.fields, "$.state") AS state,
@@ -113,7 +117,7 @@ export async function createTip(input: NewTip) {
 		throw new Error('Unauthorized')
 	}
 
-	const newTipId = v4()
+	const newTipId = `tip_${guid()}`
 
 	const videoResource = await getVideoResource(input.videoResourceId)
 
@@ -121,7 +125,7 @@ export async function createTip(input: NewTip) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
-	await db
+	const resource = await db
 		.insert(contentResource)
 		.values({
 			id: newTipId,
@@ -134,8 +138,10 @@ export async function createTip(input: NewTip) {
 				slug: slugify(`${input.title}~${guid()}`),
 			},
 		})
-		.then((result) => {
-			return result
+		.then(() => {
+			return db.query.contentResource.findFirst({
+				where: eq(contentResource.id, newTipId),
+			})
 		})
 		.catch((error) => {
 			console.error('🚨 Error creating tip', error)
@@ -147,7 +153,20 @@ export async function createTip(input: NewTip) {
 	if (tip) {
 		await db
 			.insert(contentResourceResource)
-			.values({ resourceOfId: tip._id, resourceId: input.videoResourceId })
+			.values({ resourceOfId: tip.id, resourceId: input.videoResourceId })
+
+		const contributionType = await db.query.contributionTypes.findFirst({
+			where: eq(contributionTypes.name, 'Author'),
+		})
+
+		if (contributionType) {
+			await db.insert(contentContributions).values({
+				id: `cc-${guid}`,
+				userId: user.id,
+				contentId: tip.id,
+				contributionTypeId: contributionType.id,
+			})
+		}
 
 		revalidateTag('tips')
 
@@ -165,10 +184,10 @@ export async function updateTip(input: TipUpdate) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentTip = await getTip(input._id)
+	const currentTip = await getTip(input.id)
 
 	if (!currentTip) {
-		throw new Error(`Tip with id ${input._id} not found.`)
+		throw new Error(`Tip with id ${input.id} not found.`)
 	}
 
 	let tipSlug = currentTip.slug
@@ -188,7 +207,7 @@ export async function updateTip(input: TipUpdate) {
         '$.body', ${input.body}
       )
     WHERE
-      id = ${input._id};
+      id = ${input.id};
   `
 
 	await db.execute(query).catch((error) => {
@@ -197,9 +216,9 @@ export async function updateTip(input: TipUpdate) {
 	})
 
 	revalidateTag('tips')
-	revalidateTag(input._id)
+	revalidateTag(input.id)
 	revalidateTag(tipSlug)
 	revalidatePath(`/tips/${tipSlug}`)
 
-	return await getTip(input._id)
+	return await getTip(input.id)
 }

@@ -48,7 +48,7 @@ async function ArticleActionBar({
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button asChild size="sm">
-						<Link href={`/articles/${article.slug || article._id}/edit`}>
+						<Link href={`/articles/${article.slug || article.id}/edit`}>
 							Edit
 						</Link>
 					</Button>

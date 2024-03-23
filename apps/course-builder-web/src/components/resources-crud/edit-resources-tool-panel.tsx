@@ -32,8 +32,8 @@ export function EditResourcesToolPanel({
 	maxSize?: number
 	className?: string
 	resource: {
-		_type: string
-		_id: string
+		type: string
+		id: string
 		body?: string | null
 		title?: string | null
 	}

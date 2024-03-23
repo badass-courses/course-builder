@@ -15,10 +15,10 @@ import { z } from 'zod'
 export async function getPrompts(): Promise<Prompt[]> {
 	const query = sql`
     SELECT
-      prompts.id as _id,
-      prompts.type as _type,
-      CAST(prompts.updatedAt AS DATETIME) as _updatedAt,
-      CAST(prompts.createdAt AS DATETIME) as _createdAt,
+      prompts.id as id,
+      prompts.type as type,
+      CAST(prompts.updatedAt AS DATETIME) as updatedAt,
+      CAST(prompts.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (prompts.fields, "$.title") AS title,
       JSON_EXTRACT (prompts.fields, "$.state") AS state,
       JSON_EXTRACT (prompts.fields, "$.slug") AS slug
@@ -78,7 +78,7 @@ export async function updatePrompt(input: Prompt) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentPrompt = await getPrompt(input._id)
+	const currentPrompt = await getPrompt(input.id)
 
 	if (!currentPrompt) {
 		return createPrompt(input)
@@ -102,7 +102,7 @@ export async function updatePrompt(input: Prompt) {
         '$.state', ${input.state}
       )
     WHERE
-      id = ${input._id};
+      id = ${input.id};
   `
 
 	await db
@@ -116,20 +116,20 @@ export async function updatePrompt(input: Prompt) {
 		})
 
 	revalidateTag('prompts')
-	revalidateTag(input._id)
+	revalidateTag(input.id)
 	revalidateTag(promptSlug)
 	revalidatePath(`/${promptSlug}`)
 
-	return await getPrompt(input._id)
+	return await getPrompt(input.id)
 }
 
 export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
 	const query = sql`
     SELECT
-      prompts.id as _id,
-      prompts.type as _type,
-      CAST(prompts.updatedAt AS DATETIME) as _updatedAt,
-      CAST(prompts.createdAt AS DATETIME) as _createdAt,
+      prompts.id as id,
+      prompts.type as type,
+      CAST(prompts.updatedAt AS DATETIME) as updatedAt,
+      CAST(prompts.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (prompts.fields, "$.title") AS title,
       JSON_EXTRACT (prompts.fields, "$.state") AS state,
       JSON_EXTRACT (prompts.fields, "$.body") AS body,

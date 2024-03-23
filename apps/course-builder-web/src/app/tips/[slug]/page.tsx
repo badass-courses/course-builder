@@ -87,7 +87,7 @@ async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button size="sm" asChild>
-						<Link href={`/tips/${tip.slug || tip._id}/edit`}>Edit</Link>
+						<Link href={`/tips/${tip.slug || tip.id}/edit`}>Edit</Link>
 					</Button>
 				</div>
 			) : (

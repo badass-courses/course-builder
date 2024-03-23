@@ -27,7 +27,7 @@ export default async function Tutorials() {
 				</div>
 			) : null}
 			{tutorials.map((tutorial) => (
-				<Link href={`/tutorials/${tutorial.slug}`} key={tutorial._id}>
+				<Link href={`/tutorials/${tutorial.slug}`} key={tutorial.id}>
 					<Card>
 						<CardHeader>
 							<CardTitle>{tutorial.title}</CardTitle>

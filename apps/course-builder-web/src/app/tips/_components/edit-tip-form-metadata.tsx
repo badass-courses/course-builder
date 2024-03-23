@@ -41,8 +41,6 @@ export const TipMetadataFormFields: React.FC<{
 		initialTranscript: videoResource?.transcript,
 	})
 
-	console.log({ videoResource })
-
 	useSocket({
 		room: videoResourceId,
 		onMessage: async (messageEvent) => {

@@ -19,10 +19,10 @@ export const PromptVisibilitySchema = z.union([
 ])
 
 export const PromptSchema = z.object({
-	_id: z.string(),
-	_type: z.literal('prompt'),
-	_updatedAt: z.string(),
-	_createdAt: z.string(),
+	id: z.string(),
+	type: z.literal('prompt'),
+	updatedAt: z.string(),
+	createdAt: z.string(),
 	title: z.string().min(2).max(90),
 	body: z.string().optional().nullable(),
 	description: z.string().optional().nullable(),

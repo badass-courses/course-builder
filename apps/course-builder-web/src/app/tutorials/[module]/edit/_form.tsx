@@ -22,7 +22,7 @@ const EditTutorialFormSchema = z.object({
 	description: z.string().optional(),
 	lessons: z.array(
 		z.object({
-			_id: z.string(),
+			id: z.string(),
 			title: z.string().min(2).max(90),
 		}),
 	),

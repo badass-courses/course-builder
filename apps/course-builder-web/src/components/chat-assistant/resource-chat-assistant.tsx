@@ -25,8 +25,8 @@ export function ResourceChatAssistant({
 	],
 }: {
 	resource: {
-		_type: string
-		_id: string
+		type: string
+		id: string
 		body?: string | null
 		title?: string | null
 	}
@@ -49,7 +49,7 @@ export function ResourceChatAssistant({
 	) => {
 		console.log('SEND A MESSAGE')
 		sendResourceChatMessage({
-			resourceId: resource._id,
+			resourceId: resource.id,
 			messages: [
 				...messages,
 				{
@@ -69,14 +69,14 @@ export function ResourceChatAssistant({
 	}
 
 	useSocket({
-		room: resource._id,
+		room: resource.id,
 		onMessage: (messageEvent) => {
 			try {
 				const messageData = JSON.parse(messageEvent.data)
 
 				if (
 					messageData.name === 'resource.chat.completed' &&
-					messageData.requestId === resource._id
+					messageData.requestId === resource.id
 				) {
 					setMessages(messageData.body)
 				}
@@ -103,7 +103,7 @@ export function ResourceChatAssistant({
 			</div>
 			<ResizablePanelGroup direction="vertical">
 				<ResizablePanel defaultSize={85} className="none">
-					<ResourceChatResponse requestId={resource._id} />
+					<ResourceChatResponse requestId={resource.id} />
 				</ResizablePanel>
 				<ResizableHandle />
 				<ResizablePanel

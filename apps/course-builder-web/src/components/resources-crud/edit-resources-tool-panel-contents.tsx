@@ -8,8 +8,8 @@ export function EditResourcesToolPanelContents({
 	availableWorkflows,
 }: {
 	resource: {
-		_type: string
-		_id: string
+		type: string
+		id: string
 		body?: string | null
 		title?: string | null
 	}
@@ -26,8 +26,8 @@ export function EditResourcesToolPanelContents({
 			)}
 			{activeToolId === 'media' && (
 				<ImageResourceUploader
-					belongsToResourceId={resource._id}
-					uploadDirectory={`${resource._type}s`}
+					belongsToResourceId={resource.id}
+					uploadDirectory={`${resource.type}s`}
 				/>
 			)}
 		</>

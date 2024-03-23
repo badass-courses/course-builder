@@ -10,7 +10,7 @@ const engine = new Liquid()
 
 export async function promptActionExecutor(options: {
 	action: {
-		_type: string
+		type: string
 		role: ChatCompletionRequestMessageRoleEnum
 		name?: string
 		content?: string

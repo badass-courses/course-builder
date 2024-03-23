@@ -1,26 +1,15 @@
 import * as React from 'react'
-import { Suspense, use } from 'react'
+import { use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { EditTipFormProps } from '@/app/tips/_components/edit-tip-form'
 import { TipMetadataFormFields } from '@/app/tips/_components/edit-tip-form-metadata'
-import { TipPlayer } from '@/app/tips/_components/tip-player'
-import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { CodemirrorEditor } from '@/components/codemirror'
 import { useSocket } from '@/hooks/use-socket'
 import { TipUpdate } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
-import { RefreshCcw } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
 
-import {
-	Button,
-	Form,
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '@coursebuilder/ui'
+import { Button, Form } from '@coursebuilder/ui'
 
 export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	tip,
@@ -69,7 +58,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	})
 
 	const onSubmit = async (values: TipUpdate) => {
-		const updatedTip = await updateTip({ ...values, _id: tip._id })
+		const updatedTip = await updateTip({ ...values, id: tip.id })
 		setUpdateTipStatus('success')
 
 		if (!updatedTip) {
@@ -95,7 +84,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 					<span className="font-medium">
 						Tip{' '}
 						<span className="hidden font-mono text-xs font-normal md:inline-block">
-							({tip._id})
+							({tip.id})
 						</span>
 					</span>
 				</div>
@@ -132,7 +121,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 				<div className="pt-5">
 					<label className="px-5 text-lg font-bold">Content</label>
 					<CodemirrorEditor
-						roomName={`${tip._id}`}
+						roomName={`${tip.id}`}
 						value={tip.body || ''}
 						onChange={(data) => {
 							form.setValue('body', data)

@@ -26,7 +26,7 @@ const videoReadyHandler: CoreInngestHandler = async ({
 	if (videoResource) {
 		await step.run('update the video resource in database', async () => {
 			return db.updateContentResourceFields({
-				id: videoResource._id as string,
+				id: videoResource.id as string,
 				fields: {
 					state: 'ready',
 				},

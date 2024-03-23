@@ -8,7 +8,7 @@ export function EditResourcesBodyPanel({
 	resource,
 	form,
 }: {
-	resource: { _id: string; body?: string | null }
+	resource: { id: string; body?: string | null }
 	form: UseFormReturn<any>
 }) {
 	return (
@@ -18,7 +18,7 @@ export function EditResourcesBodyPanel({
 		>
 			<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
 				<CodemirrorEditor
-					roomName={`${resource._id}`}
+					roomName={`${resource.id}`}
 					value={resource.body || ''}
 					onChange={async (data) => {
 						form.setValue('body', data)

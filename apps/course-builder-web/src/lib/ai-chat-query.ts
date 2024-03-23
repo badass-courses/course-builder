@@ -42,11 +42,11 @@ export async function sendResourceChatMessage({
 export async function getChatResource(id: string) {
 	const query = sql`
     SELECT
-      resources.id as _id,
-      resources.type as _type,
+      resources.id as id,
+      resources.type as type,
       resources.fields,
-      CAST(resources.updatedAt AS DATETIME) as _updatedAt,
-      CAST(resources.createdAt AS DATETIME) as _createdAt,
+      CAST(resources.updatedAt AS DATETIME) as updatedAt,
+      CAST(resources.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (resources.fields, "$.title") AS title,
       JSON_EXTRACT (resources.fields, "$.body") AS body,
       JSON_EXTRACT (videoResources.fields, "$.transcript") AS transcript,

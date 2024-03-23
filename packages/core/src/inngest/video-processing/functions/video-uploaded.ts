@@ -36,28 +36,31 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 		})
 	})
 
-	await step.run('create the video resource in database', async () => {
-		const playbackId = muxAsset.playback_ids.filter(
-			(playbackId: any) => playbackId.policy === 'public',
-		)[0]?.id
+	const contentResource = await step.run(
+		'create the video resource in database',
+		async () => {
+			const playbackId = muxAsset.playback_ids.filter(
+				(playbackId: any) => playbackId.policy === 'public',
+			)[0]?.id
 
-		if (!playbackId) {
-			throw new Error('No public playback id found')
-		}
+			if (!playbackId) {
+				throw new Error('No public playback id found')
+			}
 
-		return db.createContentResource({
-			id: event.data.fileName,
-			type: 'videoResource',
-			fields: {
-				state: 'processing',
-				originalMediaUrl: event.data.originalMediaUrl,
-				muxAssetId: muxAsset.id,
-				muxPlaybackId: playbackId,
-			},
-			// @ts-expect-error
-			createdById: event.user.id,
-		})
-	})
+			return db.createContentResource({
+				id: event.data.fileName,
+				type: 'videoResource',
+				fields: {
+					state: 'processing',
+					originalMediaUrl: event.data.originalMediaUrl,
+					muxAssetId: muxAsset.id,
+					muxPlaybackId: playbackId,
+				},
+				// @ts-expect-error
+				createdById: event.user.id,
+			})
+		},
+	)
 
 	const videoResource = await step.run(
 		'get the video resource from database',
@@ -71,7 +74,7 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 	}
 
 	await step.run('announce video resource created', async () => {
-		await fetch(`${partyKitRootUrl}/party/${videoResource._id}`, {
+		await fetch(`${partyKitRootUrl}/party/${videoResource.id}`, {
 			method: 'POST',
 			body: JSON.stringify({
 				body: videoResource,
@@ -83,13 +86,13 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 		})
 	})
 
-	if (videoResource && videoResource._id) {
+	if (videoResource && videoResource.id) {
 		await step.sendEvent('announce new video resource', {
 			name: VIDEO_RESOURCE_CREATED_EVENT,
 			data: {
 				moduleSlug: event.data.moduleSlug,
 				originalMediaUrl: event.data.originalMediaUrl,
-				videoResourceId: videoResource._id,
+				videoResourceId: videoResource.id,
 			},
 		})
 
@@ -98,7 +101,7 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 				name: VIDEO_STATUS_CHECK_EVENT,
 				data: {
 					fileKey: event.data.fileKey,
-					videoResourceId: videoResource._id,
+					videoResourceId: videoResource.id,
 				},
 			})
 		}

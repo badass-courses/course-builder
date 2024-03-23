@@ -54,9 +54,7 @@ async function PromptActionBar({
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button asChild size="sm">
-						<Link href={`/prompts/${prompt.slug || prompt._id}/edit`}>
-							Edit
-						</Link>
+						<Link href={`/prompts/${prompt.slug || prompt.id}/edit`}>Edit</Link>
 					</Button>
 				</div>
 			) : (

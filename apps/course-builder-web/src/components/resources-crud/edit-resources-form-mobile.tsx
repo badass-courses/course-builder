@@ -46,7 +46,7 @@ export function EditResourcesFormMobile({
 					<span className="font-medium">
 						Article{' '}
 						<span className="hidden font-mono text-xs font-normal md:inline-block">
-							({resource._id})
+							({resource.id})
 						</span>
 					</span>
 				</div>
@@ -74,7 +74,7 @@ export function EditResourcesFormMobile({
 			</Form>
 			<label className="px-5 text-lg font-bold">Content</label>
 			<CodemirrorEditor
-				roomName={`${resource._id}`}
+				roomName={`${resource.id}`}
 				value={resource.body || ''}
 				onChange={async (data) => {
 					form.setValue('body', data)

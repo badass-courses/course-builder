@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
 export const ChatResourceSchema = z.object({
-	_id: z.string(),
-	_type: z.string(),
-	_updatedAt: z.string(),
-	_createdAt: z.string(),
+	id: z.string(),
+	type: z.string(),
+	updatedAt: z.string(),
+	createdAt: z.string(),
 	title: z.string().nullable().optional(),
 	body: z.string().nullable().optional(),
 	transcript: z.string().nullable().optional(),

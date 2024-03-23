@@ -29,7 +29,7 @@ const videoProcessingErrorHandler: CoreInngestHandler = async ({
 
 	await step.run('update the video resource in Sanity as errored', async () => {
 		return db.updateContentResourceFields({
-			id: videoResource._id as string,
+			id: videoResource.id as string,
 			fields: {
 				state: 'errored',
 			},

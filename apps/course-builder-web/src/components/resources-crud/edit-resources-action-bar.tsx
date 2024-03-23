@@ -9,8 +9,8 @@ export function EditResourcesActionBar({
 	resourcePath,
 }: {
 	resource: {
-		_type: string
-		_id: string
+		type: string
+		id: string
 		body?: string | null
 		title?: string | null
 		slug: string
@@ -27,9 +27,9 @@ export function EditResourcesActionBar({
 					</Link>
 				</Button>
 				<span className="font-medium">
-					{resource._type.toUpperCase()}{' '}
+					{resource.type.toUpperCase()}{' '}
 					<span className="hidden font-mono text-xs font-normal md:inline-block">
-						({resource._id})
+						({resource.id})
 					</span>
 				</span>
 			</div>

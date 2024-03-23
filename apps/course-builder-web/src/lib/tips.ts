@@ -14,10 +14,10 @@ export const TipVisibilitySchema = z.union([
 ])
 
 export const TipSchema = z.object({
-	_id: z.string(),
-	_type: z.literal('tip'),
-	_updatedAt: z.string(),
-	_createdAt: z.string(),
+	id: z.string(),
+	type: z.literal('tip'),
+	updatedAt: z.string(),
+	createdAt: z.string(),
 	title: z.string(),
 	summary: z.string().optional().nullable(),
 	body: z.string().nullable().optional(),
@@ -37,7 +37,7 @@ export const NewTipSchema = z.object({
 export type NewTip = z.infer<typeof NewTipSchema>
 
 export const TipUpdateSchema = z.object({
-	_id: z.string(),
+	id: z.string(),
 	title: z.string().min(2).max(90),
 	body: z.string().optional().nullable(),
 })

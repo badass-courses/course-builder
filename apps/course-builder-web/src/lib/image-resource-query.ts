@@ -10,7 +10,7 @@ import { sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 const ImageResourceSchema = z.object({
-	_id: z.string(),
+	id: z.string(),
 	url: z.string(),
 	alt: z.string().optional().nullable(),
 })
@@ -58,7 +58,7 @@ export async function createImageResource(input: {
 export async function getAllImageResources() {
 	const query = sql`
       SELECT    
-        id as _id,
+        id as id,
         JSON_EXTRACT (${contentResource.fields}, "$.url") AS url,
         JSON_EXTRACT (${contentResource.fields}, "$.alt") AS alt
       FROM

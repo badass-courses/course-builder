@@ -19,10 +19,10 @@ export const ResourceVisibilitySchema = z.union([
 ])
 
 export const ArticleSchema = z.object({
-	_id: z.string(),
-	_type: z.literal('article'),
-	_updatedAt: z.string(),
-	_createdAt: z.string(),
+	id: z.string(),
+	type: z.literal('article'),
+	updatedAt: z.string(),
+	createdAt: z.string(),
 	title: z.string().min(2).max(90),
 	body: z.string().optional().nullable(),
 	description: z.string().optional().nullable(),

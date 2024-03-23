@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export const VideoResourceSchema = z.object({
-	_id: z.string(),
-	_updatedAt: z.string().optional(),
-	_createdAt: z.string().optional(),
+	id: z.string(),
+	updatedAt: z.string().optional(),
+	createdAt: z.string().optional(),
 	title: z.string().optional().nullable(),
 	duration: z.number().optional().nullable(),
 	muxPlaybackId: z.string().optional().nullable(),

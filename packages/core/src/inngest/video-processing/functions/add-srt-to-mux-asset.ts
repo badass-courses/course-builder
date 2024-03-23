@@ -54,7 +54,7 @@ export const addSrtToMuxAssetHandler: CoreInngestHandler = async ({
 			await step.run('add srt track to mux asset', async () => {
 				return addSrtTrackToMuxAsset({
 					assetId: muxAsset?.id,
-					srtUrl: `${siteRootUrl}/api/coursebuilder/srt/internal?videoResourceId=${videoResource._id}`,
+					srtUrl: `${siteRootUrl}/api/coursebuilder/srt/internal?videoResourceId=${videoResource.id}`,
 				})
 			})
 

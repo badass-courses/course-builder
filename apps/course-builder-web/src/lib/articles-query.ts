@@ -15,10 +15,10 @@ import { z } from 'zod'
 export async function getArticles(): Promise<Article[]> {
 	const query = sql`
     SELECT
-      articles.id as _id,
-      articles.type as _type,
-      CAST(articles.updatedAt AS DATETIME) as _updatedAt,
-      CAST(articles.createdAt AS DATETIME) as _createdAt,
+      articles.id as id,
+      articles.type as type,
+      CAST(articles.updatedAt AS DATETIME) as updatedAt,
+      CAST(articles.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (articles.fields, "$.title") AS title,
       JSON_EXTRACT (articles.fields, "$.state") AS state,
       JSON_EXTRACT (articles.fields, "$.slug") AS slug
@@ -78,7 +78,7 @@ export async function updateArticle(input: Article) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentArticle = await getArticle(input._id)
+	const currentArticle = await getArticle(input.id)
 
 	if (!currentArticle) {
 		return createArticle(input)
@@ -102,7 +102,7 @@ export async function updateArticle(input: Article) {
         '$.state', ${input.state}
       )
     WHERE
-      id = ${input._id};
+      id = ${input.id};
   `
 
 	await db.execute(query).catch((error) => {
@@ -111,20 +111,20 @@ export async function updateArticle(input: Article) {
 	})
 
 	revalidateTag('articles')
-	revalidateTag(input._id)
+	revalidateTag(input.id)
 	revalidateTag(articleSlug)
 	revalidatePath(`/${articleSlug}`)
 
-	return await getArticle(input._id)
+	return await getArticle(input.id)
 }
 
 export async function getArticle(slugOrId: string) {
 	const query = sql`
     SELECT
-      articles.id as _id,
-      articles.type as _type,
-      CAST(articles.updatedAt AS DATETIME) as _updatedAt,
-      CAST(articles.createdAt AS DATETIME) as _createdAt,
+      articles.id as id,
+      articles.type as type,
+      CAST(articles.updatedAt AS DATETIME) as updatedAt,
+      CAST(articles.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (articles.fields, "$.title") AS title,
       JSON_EXTRACT (articles.fields, "$.state") AS state,
       JSON_EXTRACT (articles.fields, "$.body") AS body,

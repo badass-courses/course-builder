@@ -32,10 +32,10 @@ async function TipList() {
 	return (
 		<>
 			{tipsModule.map((tip) => (
-				<Card key={tip._id}>
+				<Card key={tip.id}>
 					<CardHeader>
 						<CardTitle>
-							<Link className="w-full" href={`/tips/${tip.slug || tip._id}`}>
+							<Link className="w-full" href={`/tips/${tip.slug || tip.id}`}>
 								{tip.title}
 							</Link>
 						</CardTitle>
@@ -43,7 +43,7 @@ async function TipList() {
 					{ability.can('delete', 'Content') && (
 						<CardFooter>
 							<div className="flex w-full justify-end">
-								<DeleteTipButton id={tip._id} />
+								<DeleteTipButton id={tip.id} />
 							</div>
 						</CardFooter>
 					)}

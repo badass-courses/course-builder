@@ -25,12 +25,12 @@ export const ImageResourceBrowser = () => {
 				{images.map((asset) => {
 					return asset?.url ? (
 						<div
-							key={asset._id}
+							key={asset.id}
 							className="flex aspect-square items-center justify-center overflow-hidden rounded border"
 						>
 							<img
 								src={asset.url}
-								alt={asset._id}
+								alt={asset.id}
 								onDragStart={(e) => {
 									e.dataTransfer.setData(
 										'text/plain',

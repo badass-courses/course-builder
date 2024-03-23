@@ -30,10 +30,10 @@ export default async function ArticlesIndexPage() {
 			<div className="flex flex-col space-y-4 p-5 sm:p-10">
 				<h2 className="text-lg font-bold">Articles</h2>
 				{articles.map((article) => (
-					<Card key={article._id}>
+					<Card key={article.id}>
 						<CardHeader>
 							<CardTitle>
-								<Link href={`/${article.slug || article._id}`}>
+								<Link href={`/${article.slug || article.id}`}>
 									{article.title}
 								</Link>
 							</CardTitle>
