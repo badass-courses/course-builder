@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { EditTipFormProps } from '@/app/tips/_components/edit-tip-form'
 import { TipMetadataFormFields } from '@/app/tips/_components/edit-tip-form-metadata'
+import { ResourceChatAssistant } from '@/components/chat-assistant/resource-chat-assistant'
 import { CodemirrorEditor } from '@/components/codemirror'
 import { useSocket } from '@/hooks/use-socket'
 import { TipUpdate } from '@/lib/tips'
@@ -15,6 +16,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	tip,
 	form,
 	videoResourceLoader,
+	availableWorkflows,
 }) => {
 	const videoResource = use(videoResourceLoader)
 	const [updateTipStatus, setUpdateTipStatus] = React.useState<
@@ -126,6 +128,12 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 						onChange={(data) => {
 							form.setValue('body', data)
 						}}
+					/>
+				</div>
+				<div className="pt-5">
+					<ResourceChatAssistant
+						resource={tip}
+						availableWorkflows={availableWorkflows}
 					/>
 				</div>
 			</div>

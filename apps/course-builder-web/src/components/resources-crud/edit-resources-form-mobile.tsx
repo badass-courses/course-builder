@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ResourceChatAssistant } from '@/components/chat-assistant/resource-chat-assistant'
 import { CodemirrorEditor } from '@/components/codemirror'
 import type { UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
@@ -14,6 +15,7 @@ export function EditResourcesFormMobile({
 	children,
 	form,
 	updateResource,
+	availableWorkflows,
 }: {
 	resource: any
 	getResourcePath: (slug: string) => string
@@ -79,6 +81,10 @@ export function EditResourcesFormMobile({
 				onChange={async (data) => {
 					form.setValue('body', data)
 				}}
+			/>
+			<ResourceChatAssistant
+				resource={resource}
+				availableWorkflows={availableWorkflows}
 			/>
 		</>
 	)
