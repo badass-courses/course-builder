@@ -42,7 +42,7 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const users = getUsersSchema(mysqlTable)
 	return relations(users, ({ many }) => ({
-		accounts: many(getAccountsSchema(mysqlTable).accounts),
+		accounts: many(getAccountsSchema(mysqlTable)),
 		communicationPreferences: many(
 			getCommunicationPreferencesSchema(mysqlTable).communicationPreferences,
 		),

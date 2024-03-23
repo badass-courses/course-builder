@@ -1,4 +1,5 @@
 import { AdapterAccount } from '@auth/core/adapters'
+import { relations } from 'drizzle-orm'
 import {
 	index,
 	int,
@@ -7,6 +8,8 @@ import {
 	text,
 	varchar,
 } from 'drizzle-orm/mysql-core'
+
+import { getUsersSchema } from './users'
 
 export const getAccountsSchema = (mysqlTable: MySqlTableFn) => {
 	const accounts = mysqlTable(
@@ -39,5 +42,13 @@ export const getAccountsSchema = (mysqlTable: MySqlTableFn) => {
 		}),
 	)
 
-	return { accounts }
+	return accounts
+}
+
+export function getAccountsRelationsSchema(mysqlTable: MySqlTableFn) {
+	const accounts = getAccountsSchema(mysqlTable)
+	const users = getUsersSchema(mysqlTable)
+	return relations(accounts, ({ one }) => ({
+		user: one(users, { fields: [accounts.userId], references: [users.id] }),
+	}))
 }

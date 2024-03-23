@@ -10,7 +10,10 @@ import {
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
-import { getAccountsSchema } from './schemas/auth/accounts'
+import {
+	getAccountsRelationsSchema,
+	getAccountsSchema,
+} from './schemas/auth/accounts'
 import { getPermissionsSchema } from './schemas/auth/permissions'
 import { getRolePermissionsSchema } from './schemas/auth/role-permissions'
 import { getRolesSchema } from './schemas/auth/roles'
@@ -42,6 +45,7 @@ import { getResourceProgressSchema } from './schemas/content/resource-progress'
 
 export {
 	getAccountsSchema,
+	getAccountsRelationsSchema,
 	getSessionsSchema,
 	getUsersSchema,
 	getUsersRelationsSchema,
@@ -76,7 +80,7 @@ export {
 export function createTables(mySqlTable: MySqlTableFn) {
 	return {
 		users: getUsersSchema(mySqlTable),
-		accounts: getAccountsSchema(mySqlTable).accounts,
+		accounts: getAccountsSchema(mySqlTable),
 		sessions: getSessionsSchema(mySqlTable).sessions,
 		verificationTokens:
 			getVerificationTokensSchema(mySqlTable).verificationTokens,
