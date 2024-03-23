@@ -8,8 +8,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getMerchantChargeSchema = (mysqlTable: MySqlTableFn) => {
-	const merchantCharge = mysqlTable(
+export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'merchantCharges',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
@@ -41,6 +41,4 @@ export const getMerchantChargeSchema = (mysqlTable: MySqlTableFn) => {
 			}
 		},
 	)
-
-	return { merchantCharge }
 }

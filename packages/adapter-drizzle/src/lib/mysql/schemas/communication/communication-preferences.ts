@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -7,8 +8,12 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getCommunicationPreferencesSchema = (mysqlTable: MySqlTableFn) => {
-	const communicationPreferences = mysqlTable(
+import { getUsersSchema } from '../auth/users'
+import { getCommunicationChannelSchema } from './communication-channel'
+import { getCommunicationPreferenceTypesSchema } from './communication-preference-types'
+
+export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'communicationPreference',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -46,6 +51,28 @@ export const getCommunicationPreferencesSchema = (mysqlTable: MySqlTableFn) => {
 			channelIdIdx: index('channelId_idx').on(cp.channelId),
 		}),
 	)
+}
 
-	return { communicationPreferences }
+export function getCommunicationPreferencesRelationsSchema(
+	mysqlTable: MySqlTableFn,
+) {
+	const communicationPreferences = getCommunicationPreferencesSchema(mysqlTable)
+	const users = getUsersSchema(mysqlTable)
+	const communicationChannel = getCommunicationChannelSchema(mysqlTable)
+	const communicationPreferenceTypes =
+		getCommunicationPreferenceTypesSchema(mysqlTable)
+	return relations(communicationPreferences, ({ one }) => ({
+		user: one(users, {
+			fields: [communicationPreferences.userId],
+			references: [users.id],
+		}),
+		channel: one(communicationChannel, {
+			fields: [communicationPreferences.channelId],
+			references: [communicationChannel.id],
+		}),
+		preferenceType: one(communicationPreferenceTypes, {
+			fields: [communicationPreferences.preferenceTypeId],
+			references: [communicationPreferenceTypes.id],
+		}),
+	}))
 }

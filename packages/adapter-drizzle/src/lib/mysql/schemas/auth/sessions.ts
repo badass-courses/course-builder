@@ -1,7 +1,10 @@
+import { relations } from 'drizzle-orm'
 import { index, MySqlTableFn, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
-export const getSessionsSchema = (mysqlTable: MySqlTableFn) => {
-	const sessions = mysqlTable(
+import { getUsersSchema } from './users'
+
+export function getSessionsSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'session',
 		{
 			sessionToken: varchar('sessionToken', { length: 255 })
@@ -14,6 +17,12 @@ export const getSessionsSchema = (mysqlTable: MySqlTableFn) => {
 			userIdIdx: index('userId_idx').on(session.userId),
 		}),
 	)
+}
 
-	return { sessions }
+export function getSessionRelationsSchema(mysqlTable: MySqlTableFn) {
+	const sessions = getSessionsSchema(mysqlTable)
+	const users = getUsersSchema(mysqlTable)
+	return relations(sessions, ({ one }) => ({
+		user: one(users, { fields: [sessions.userId], references: [users.id] }),
+	}))
 }

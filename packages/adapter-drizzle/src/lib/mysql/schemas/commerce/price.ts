@@ -9,8 +9,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getPriceSchema = (mysqlTable: MySqlTableFn) => {
-	const price = mysqlTable(
+export function getPriceSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'prices',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
@@ -29,6 +29,4 @@ export const getPriceSchema = (mysqlTable: MySqlTableFn) => {
 			}
 		},
 	)
-
-	return { price }
 }

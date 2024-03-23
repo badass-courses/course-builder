@@ -1,7 +1,7 @@
 import { MySqlTableFn, primaryKey, varchar } from 'drizzle-orm/mysql-core'
 
-export const getMerchantSessionSchema = (mysqlTable: MySqlTableFn) => {
-	const merchantSession = mysqlTable(
+export function getMerchantSessionSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'merchantSessions',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
@@ -19,6 +19,4 @@ export const getMerchantSessionSchema = (mysqlTable: MySqlTableFn) => {
 			}
 		},
 	)
-
-	return { merchantSession }
 }

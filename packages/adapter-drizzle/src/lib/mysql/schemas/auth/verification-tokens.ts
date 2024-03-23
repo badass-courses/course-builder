@@ -5,8 +5,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getVerificationTokensSchema = (mysqlTable: MySqlTableFn) => {
-	const verificationTokens = mysqlTable(
+export function getVerificationTokensSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'verificationToken',
 		{
 			identifier: varchar('identifier', { length: 255 }).notNull(),
@@ -21,6 +21,4 @@ export const getVerificationTokensSchema = (mysqlTable: MySqlTableFn) => {
 			pk: primaryKey({ columns: [vt.identifier, vt.token] }),
 		}),
 	)
-
-	return { verificationTokens }
 }
