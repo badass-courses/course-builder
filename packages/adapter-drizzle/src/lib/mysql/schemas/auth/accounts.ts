@@ -11,8 +11,8 @@ import {
 
 import { getUsersSchema } from './users'
 
-export const getAccountsSchema = (mysqlTable: MySqlTableFn) => {
-	const accounts = mysqlTable(
+export function getAccountsSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'account',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
@@ -41,8 +41,6 @@ export const getAccountsSchema = (mysqlTable: MySqlTableFn) => {
 			userIdIdx: index('userId_idx').on(account.userId),
 		}),
 	)
-
-	return accounts
 }
 
 export function getAccountsRelationsSchema(mysqlTable: MySqlTableFn) {

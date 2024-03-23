@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	double,
 	index,
@@ -9,8 +9,10 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getContentResourceResourceSchema = (mysqlTable: MySqlTableFn) => {
-	const contentResourceResource = mysqlTable(
+import { getContentResourceSchema } from './content-resource'
+
+export function getContentResourceResourceSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'contentResourceResource',
 		{
 			resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
@@ -36,6 +38,23 @@ export const getContentResourceResourceSchema = (mysqlTable: MySqlTableFn) => {
 			resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
 		}),
 	)
+}
 
-	return { contentResourceResource }
+export function getContentResourceResourceRelationsSchema(
+	mysqlTable: MySqlTableFn,
+) {
+	const contentResource = getContentResourceSchema(mysqlTable)
+	const contentResourceResource = getContentResourceResourceSchema(mysqlTable)
+	return relations(contentResourceResource, ({ one }) => ({
+		resourceOf: one(contentResource, {
+			fields: [contentResourceResource.resourceOfId],
+			references: [contentResource.id],
+			relationName: 'resourceOf',
+		}),
+		resource: one(contentResource, {
+			fields: [contentResourceResource.resourceId],
+			references: [contentResource.id],
+			relationName: 'resource',
+		}),
+	}))
 }

@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -7,8 +8,10 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getContributionTypesSchema = (mysqlTable: MySqlTableFn) => {
-	const contributionTypes = mysqlTable(
+import { getContentContributionsSchema } from './content-contributions'
+
+export function getContributionTypesSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'contributionType',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -34,6 +37,13 @@ export const getContributionTypesSchema = (mysqlTable: MySqlTableFn) => {
 			slugIdx: index('slug_idx').on(ct.slug),
 		}),
 	)
+}
 
-	return { contributionTypes }
+export function getContributionTypesRelationsSchema(mysqlTable: MySqlTableFn) {
+	const contributionTypes = getContributionTypesSchema(mysqlTable)
+	const contentContributions = getContentContributionsSchema(mysqlTable)
+
+	return relations(contributionTypes, ({ many }) => ({
+		contributions: many(contentContributions),
+	}))
 }

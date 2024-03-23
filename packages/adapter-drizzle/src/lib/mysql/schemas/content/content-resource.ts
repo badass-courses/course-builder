@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	index,
 	json,
@@ -7,8 +7,12 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getContentResourceSchema = (mysqlTable: MySqlTableFn) => {
-	const contentResource = mysqlTable(
+import { getUsersSchema } from '../auth/users'
+import { getContentContributionsSchema } from './content-contributions'
+import { getContentResourceResourceSchema } from './content-resource-resource'
+
+export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'contentResource',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -34,6 +38,20 @@ export const getContentResourceSchema = (mysqlTable: MySqlTableFn) => {
 			createdAtIdx: index('createdAt_idx').on(cm.createdAt),
 		}),
 	)
+}
 
-	return { contentResource }
+export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
+	const contentResource = getContentResourceSchema(mysqlTable)
+	const users = getUsersSchema(mysqlTable)
+	const contentContributions = getContentContributionsSchema(mysqlTable)
+	const contentResourceResource = getContentResourceResourceSchema(mysqlTable)
+	return relations(contentResource, ({ one, many }) => ({
+		createdBy: one(users, {
+			fields: [contentResource.createdById],
+			references: [users.id],
+		}),
+		contributions: many(contentContributions),
+		resources: many(contentResourceResource, { relationName: 'resourceOf' }),
+		resourceOf: many(contentResourceResource, { relationName: 'resource' }),
+	}))
 }

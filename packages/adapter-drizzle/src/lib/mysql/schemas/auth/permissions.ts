@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -7,8 +8,10 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getPermissionsSchema = (mysqlTable: MySqlTableFn) => {
-	const permissions = mysqlTable(
+import { getRolePermissionsSchema } from './role-permissions'
+
+export function getPermissionsSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'permission',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -32,6 +35,10 @@ export const getPermissionsSchema = (mysqlTable: MySqlTableFn) => {
 			nameIdx: index('name_idx').on(permission.name),
 		}),
 	)
+}
 
-	return { permissions }
+export function getPermissionsRelationsSchema(mysqlTable: MySqlTableFn) {
+	return relations(getPermissionsSchema(mysqlTable), ({ many }) => ({
+		rolePermissions: many(getRolePermissionsSchema(mysqlTable)),
+	}))
 }

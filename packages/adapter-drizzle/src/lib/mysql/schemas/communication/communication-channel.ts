@@ -7,8 +7,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getCommunicationChannelSchema = (mysqlTable: MySqlTableFn) => {
-	const communicationChannel = mysqlTable(
+export function getCommunicationChannelSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'communicationChannel',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -32,6 +32,4 @@ export const getCommunicationChannelSchema = (mysqlTable: MySqlTableFn) => {
 			nameIdx: index('name_idx').on(cc.name),
 		}),
 	)
-
-	return { communicationChannel }
 }

@@ -14,12 +14,27 @@ import {
 	getAccountsRelationsSchema,
 	getAccountsSchema,
 } from './schemas/auth/accounts'
-import { getPermissionsSchema } from './schemas/auth/permissions'
-import { getRolePermissionsSchema } from './schemas/auth/role-permissions'
-import { getRolesSchema } from './schemas/auth/roles'
-import { getSessionsSchema } from './schemas/auth/sessions'
-import { getUserPermissionsSchema } from './schemas/auth/user-permissions'
-import { getUserRolesSchema } from './schemas/auth/user-roles'
+import {
+	getPermissionsRelationsSchema,
+	getPermissionsSchema,
+} from './schemas/auth/permissions'
+import {
+	getRolePermissionsRelationsSchema,
+	getRolePermissionsSchema,
+} from './schemas/auth/role-permissions'
+import { getRolesRelationsSchema, getRolesSchema } from './schemas/auth/roles'
+import {
+	getSessionRelationsSchema,
+	getSessionsSchema,
+} from './schemas/auth/sessions'
+import {
+	getUserPermissionsRelationsSchema,
+	getUserPermissionsSchema,
+} from './schemas/auth/user-permissions'
+import {
+	getUserRolesRelationsSchema,
+	getUserRolesSchema,
+} from './schemas/auth/user-roles'
 import { getUsersRelationsSchema, getUsersSchema } from './schemas/auth/users'
 import { getVerificationTokensSchema } from './schemas/auth/verification-tokens'
 import { getCouponSchema } from './schemas/commerce/coupon'
@@ -36,17 +51,43 @@ import { getPurchaseSchema } from './schemas/commerce/purchase'
 import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer'
 import { getCommunicationChannelSchema } from './schemas/communication/communication-channel'
 import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types'
-import { getCommunicationPreferencesSchema } from './schemas/communication/communication-preferences'
-import { getContentContributionsSchema } from './schemas/content/content-contributions'
-import { getContentResourceSchema } from './schemas/content/content-resource'
-import { getContentResourceResourceSchema } from './schemas/content/content-resource-resource'
-import { getContributionTypesSchema } from './schemas/content/contribution-types'
+import {
+	getCommunicationPreferencesRelationsSchema,
+	getCommunicationPreferencesSchema,
+} from './schemas/communication/communication-preferences'
+import {
+	getContentContributionRelationsSchema,
+	getContentContributionsSchema,
+} from './schemas/content/content-contributions'
+import {
+	getContentResourceRelationsSchema,
+	getContentResourceSchema,
+} from './schemas/content/content-resource'
+import {
+	getContentResourceResourceRelationsSchema,
+	getContentResourceResourceSchema,
+} from './schemas/content/content-resource-resource'
+import {
+	getContributionTypesRelationsSchema,
+	getContributionTypesSchema,
+} from './schemas/content/contribution-types'
 import { getResourceProgressSchema } from './schemas/content/resource-progress'
 
 export {
 	getAccountsSchema,
 	getAccountsRelationsSchema,
+	getPermissionsSchema,
+	getPermissionsRelationsSchema,
+	getRolePermissionsSchema,
+	getRolePermissionsRelationsSchema,
+	getRolesSchema,
+	getRolesRelationsSchema,
 	getSessionsSchema,
+	getSessionRelationsSchema,
+	getUserPermissionsSchema,
+	getUserPermissionsRelationsSchema,
+	getUserRolesSchema,
+	getUserRolesRelationsSchema,
 	getUsersSchema,
 	getUsersRelationsSchema,
 	getVerificationTokensSchema,
@@ -63,17 +104,17 @@ export {
 	getPurchaseSchema,
 	getPurchaseUserTransferSchema,
 	getContentResourceSchema,
+	getContentResourceRelationsSchema,
 	getContentResourceResourceSchema,
-	getPermissionsSchema,
-	getRolePermissionsSchema,
-	getRolesSchema,
-	getUserPermissionsSchema,
-	getUserRolesSchema,
+	getContentResourceResourceRelationsSchema,
 	getCommunicationChannelSchema,
 	getCommunicationPreferenceTypesSchema,
 	getCommunicationPreferencesSchema,
+	getCommunicationPreferencesRelationsSchema,
 	getContentContributionsSchema,
+	getContentContributionRelationsSchema,
 	getContributionTypesSchema,
+	getContributionTypesRelationsSchema,
 	getResourceProgressSchema,
 }
 
@@ -81,25 +122,22 @@ export function createTables(mySqlTable: MySqlTableFn) {
 	return {
 		users: getUsersSchema(mySqlTable),
 		accounts: getAccountsSchema(mySqlTable),
-		sessions: getSessionsSchema(mySqlTable).sessions,
-		verificationTokens:
-			getVerificationTokensSchema(mySqlTable).verificationTokens,
-		contentResource: getContentResourceSchema(mySqlTable).contentResource,
-		contentResourceResource:
-			getContentResourceResourceSchema(mySqlTable).contentResourceResource,
-		purchase: getPurchaseSchema(mySqlTable).purchase,
-		price: getPriceSchema(mySqlTable).price,
-		product: getProductSchema(mySqlTable).product,
-		purchaseUserTransfer:
-			getPurchaseUserTransferSchema(mySqlTable).purchaseUserTransfer,
-		merchantSession: getMerchantSessionSchema(mySqlTable).merchantSession,
-		merchantProduct: getMerchantProductSchema(mySqlTable).merchantProduct,
-		merchantPrice: getMerchantPriceSchema(mySqlTable).merchantPrice,
-		merchantCustomer: getMerchantCustomerSchema(mySqlTable).merchantCustomer,
-		merchantCoupon: getMerchantCouponSchema(mySqlTable).merchantCoupon,
-		merchantCharge: getMerchantChargeSchema(mySqlTable).merchantCharge,
-		merchantAccount: getMerchantAccountSchema(mySqlTable).merchantAccount,
-		coupon: getCouponSchema(mySqlTable).coupon,
+		sessions: getSessionsSchema(mySqlTable),
+		verificationTokens: getVerificationTokensSchema(mySqlTable),
+		contentResource: getContentResourceSchema(mySqlTable),
+		contentResourceResource: getContentResourceResourceSchema(mySqlTable),
+		purchase: getPurchaseSchema(mySqlTable),
+		price: getPriceSchema(mySqlTable),
+		product: getProductSchema(mySqlTable),
+		purchaseUserTransfer: getPurchaseUserTransferSchema(mySqlTable),
+		merchantSession: getMerchantSessionSchema(mySqlTable),
+		merchantProduct: getMerchantProductSchema(mySqlTable),
+		merchantPrice: getMerchantPriceSchema(mySqlTable),
+		merchantCustomer: getMerchantCustomerSchema(mySqlTable),
+		merchantCoupon: getMerchantCouponSchema(mySqlTable),
+		merchantCharge: getMerchantChargeSchema(mySqlTable),
+		merchantAccount: getMerchantAccountSchema(mySqlTable),
+		coupon: getCouponSchema(mySqlTable),
 	}
 }
 

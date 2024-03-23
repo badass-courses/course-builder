@@ -8,8 +8,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getResourceProgressSchema = (mysqlTable: MySqlTableFn) => {
-	const resourceProgress = mysqlTable(
+export function getResourceProgressSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'resourceProgresses',
 		{
 			userId: varchar('userId', { length: 191 }).notNull(),
@@ -35,6 +35,4 @@ export const getResourceProgressSchema = (mysqlTable: MySqlTableFn) => {
 			}
 		},
 	)
-
-	return { resourceProgress }
 }

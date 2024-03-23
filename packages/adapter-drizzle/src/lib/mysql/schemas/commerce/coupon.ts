@@ -11,8 +11,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getCouponSchema = (mysqlTable: MySqlTableFn) => {
-	const coupon = mysqlTable(
+export function getCouponSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'coupons',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
@@ -44,6 +44,4 @@ export const getCouponSchema = (mysqlTable: MySqlTableFn) => {
 			}
 		},
 	)
-
-	return { coupon }
 }

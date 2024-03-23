@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
 	boolean,
 	index,
@@ -6,8 +7,12 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const getContentContributionsSchema = (mysqlTable: MySqlTableFn) => {
-	const contentContributions = mysqlTable(
+import { getUsersSchema } from '../auth/users'
+import { getContentResourceSchema } from './content-resource'
+import { getContributionTypesSchema } from './contribution-types'
+
+export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
 		'contentContribution',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -38,5 +43,28 @@ export const getContentContributionsSchema = (mysqlTable: MySqlTableFn) => {
 			),
 		}),
 	)
-	return { contentContributions }
+}
+
+export function getContentContributionRelationsSchema(
+	mysqlTable: MySqlTableFn,
+) {
+	const contentContributions = getContentContributionsSchema(mysqlTable)
+	const users = getUsersSchema(mysqlTable)
+	const contentResource = getContentResourceSchema(mysqlTable)
+	const contributionTypes = getContributionTypesSchema(mysqlTable)
+
+	return relations(contentContributions, ({ one }) => ({
+		user: one(users, {
+			fields: [contentContributions.userId],
+			references: [users.id],
+		}),
+		content: one(contentResource, {
+			fields: [contentContributions.contentId],
+			references: [contentResource.id],
+		}),
+		contributionType: one(contributionTypes, {
+			fields: [contentContributions.contributionTypeId],
+			references: [contributionTypes.id],
+		}),
+	}))
 }

@@ -41,16 +41,18 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 
 export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const users = getUsersSchema(mysqlTable)
+	const accounts = getAccountsSchema(mysqlTable)
+	const communicationPreferences = getCommunicationPreferencesSchema(mysqlTable)
+	const userRoles = getUserRolesSchema(mysqlTable)
+	const userPermissions = getUserPermissionsSchema(mysqlTable)
+	const contentContributions = getContentContributionsSchema(mysqlTable)
+	const contentResource = getContentResourceSchema(mysqlTable)
 	return relations(users, ({ many }) => ({
-		accounts: many(getAccountsSchema(mysqlTable)),
-		communicationPreferences: many(
-			getCommunicationPreferencesSchema(mysqlTable).communicationPreferences,
-		),
-		userRoles: many(getUserRolesSchema(mysqlTable).userRoles),
-		userPermissions: many(getUserPermissionsSchema(mysqlTable).userPermissions),
-		contributions: many(
-			getContentContributionsSchema(mysqlTable).contentContributions,
-		),
-		createdContent: many(getContentResourceSchema(mysqlTable).contentResource),
+		accounts: many(accounts),
+		communicationPreferences: many(communicationPreferences),
+		userRoles: many(userRoles),
+		userPermissions: many(userPermissions),
+		contributions: many(contentContributions),
+		createdContent: many(contentResource),
 	}))
 }
