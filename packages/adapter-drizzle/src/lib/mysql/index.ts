@@ -121,7 +121,7 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contributionTypes: getContributionTypesSchema(mysqlTable),
 		contributionTypesRelations: getContributionTypesRelationsSchema(mysqlTable),
 		resourceProgress: getResourceProgressSchema(mysqlTable),
-	}
+	} as const
 }
 
 export function createTables(mySqlTable: MySqlTableFn) {
