@@ -17,7 +17,7 @@ import { getRolesSchema } from './schemas/auth/roles'
 import { getSessionsSchema } from './schemas/auth/sessions'
 import { getUserPermissionsSchema } from './schemas/auth/user-permissions'
 import { getUserRolesSchema } from './schemas/auth/user-roles'
-import { getUsersSchema } from './schemas/auth/users'
+import { getUsersRelationsSchema, getUsersSchema } from './schemas/auth/users'
 import { getVerificationTokensSchema } from './schemas/auth/verification-tokens'
 import { getCouponSchema } from './schemas/commerce/coupon'
 import { getMerchantAccountSchema } from './schemas/commerce/merchant-account'
@@ -44,6 +44,7 @@ export {
 	getAccountsSchema,
 	getSessionsSchema,
 	getUsersSchema,
+	getUsersRelationsSchema,
 	getVerificationTokensSchema,
 	getCouponSchema,
 	getMerchantAccountSchema,
@@ -74,7 +75,7 @@ export {
 
 export function createTables(mySqlTable: MySqlTableFn) {
 	return {
-		users: getUsersSchema(mySqlTable).users,
+		users: getUsersSchema(mySqlTable),
 		accounts: getAccountsSchema(mySqlTable).accounts,
 		sessions: getSessionsSchema(mySqlTable).sessions,
 		verificationTokens:

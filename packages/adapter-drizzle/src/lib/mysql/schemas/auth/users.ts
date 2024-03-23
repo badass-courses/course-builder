@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	index,
 	mysqlEnum,
@@ -7,8 +7,15 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
+import { getCommunicationPreferencesSchema } from '../communication/communication-preferences'
+import { getContentContributionsSchema } from '../content/content-contributions'
+import { getContentResourceSchema } from '../content/content-resource'
+import { getAccountsSchema } from './accounts'
+import { getUserPermissionsSchema } from './user-permissions'
+import { getUserRolesSchema } from './user-roles'
+
 export function getUsersSchema(mysqlTable: MySqlTableFn) {
-	const users = mysqlTable(
+	return mysqlTable(
 		'user',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
@@ -30,6 +37,20 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 			roleIdx: index('role_idx').on(user.role),
 		}),
 	)
+}
 
-	return { users }
+export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
+	const users = getUsersSchema(mysqlTable)
+	return relations(users, ({ many }) => ({
+		accounts: many(getAccountsSchema(mysqlTable).accounts),
+		communicationPreferences: many(
+			getCommunicationPreferencesSchema(mysqlTable).communicationPreferences,
+		),
+		userRoles: many(getUserRolesSchema(mysqlTable).userRoles),
+		userPermissions: many(getUserPermissionsSchema(mysqlTable).userPermissions),
+		contributions: many(
+			getContentContributionsSchema(mysqlTable).contentContributions,
+		),
+		createdContent: many(getContentResourceSchema(mysqlTable).contentResource),
+	}))
 }
