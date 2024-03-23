@@ -1,5 +1,11 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.0.5
+
+### Patch Changes
+
+- [#121](https://github.com/badass-courses/course-builder/pull/121) [`250abc1db555d9f49960679964fd1b12243297fb`](https://github.com/badass-courses/course-builder/commit/250abc1db555d9f49960679964fd1b12243297fb) Thanks [@joelhooks](https://github.com/joelhooks)! - exports the full mysql schema with relations
+
 ## 0.0.4
 
 ### Patch Changes

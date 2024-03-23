@@ -168,7 +168,7 @@ importers:
         specifier: ^6.22.3
         version: 6.26.0
       '@coursebuilder/adapter-drizzle':
-        specifier: 0.0.4
+        specifier: 0.0.5
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
         specifier: 0.0.7
