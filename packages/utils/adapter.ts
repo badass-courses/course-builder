@@ -131,8 +131,12 @@ export async function runBasicTests(options: TestOptions) {
 
 	// All adapters must define these methods
 
-	test('Required (User, Account, Session) methods exist', () => {
+	test('Required (User, Account, Session, Content) methods exist', () => {
 		const requiredMethods = [
+			'createContentResource',
+			'getContentResource',
+			'getVideoResource',
+			'updateContentResourceFields',
 			'createUser',
 			'getUser',
 			'getUserByEmail',
@@ -146,6 +150,49 @@ export async function runBasicTests(options: TestOptions) {
 		]
 		requiredMethods.forEach((method) => {
 			expect(adapter).toHaveProperty(method)
+		})
+	})
+
+	test('createContentResource', async () => {
+		const resource = {
+			id: id(),
+			type: 'tip',
+			createdById: user.id,
+			createdAt: new Date(),
+			deletedAt: null,
+			updatedAt: new Date(),
+			fields: {
+				title: 'Video Titles',
+			},
+		}
+		const createdResource = await adapter.createContentResource(resource)
+		expect(createdResource).toEqual(resource)
+	})
+
+	test('updateContentResourceFields', async () => {
+		const resource = {
+			id: id(),
+			type: 'tip',
+			createdById: user.id,
+			createdAt: new Date(),
+			deletedAt: null,
+			updatedAt: new Date(),
+			fields: {
+				title: 'Video Titles',
+			},
+		}
+		const createdResource = await adapter.createContentResource(resource)
+		const updatedResource = await adapter.updateContentResourceFields({
+			id: createdResource.id,
+			fields: {
+				title: 'Updated Video Titles',
+			},
+		})
+		expect(updatedResource).toEqual({
+			...createdResource,
+			fields: {
+				title: 'Updated Video Titles',
+			},
 		})
 	})
 

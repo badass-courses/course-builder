@@ -7,7 +7,8 @@
 		"build": "tsup",
 		"dev": "tsup --watch",
 		"test": "pnpm test:mysql",
-		"test:mysql": "pnpm clean && ./test/mysql/test.sh"
+		"test:mysql": "pnpm clean && ./test/mysql/test.sh",
+		"test:mysql:watch": "pnpm clean && ./test/mysql/test.sh watch"
 	},
 	"keywords": [
 		"coursebuilder",
