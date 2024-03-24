@@ -7,12 +7,12 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getCommunicationPreferencesSchema } from '../communication/communication-preferences'
-import { getContentContributionsSchema } from '../content/content-contributions'
-import { getContentResourceSchema } from '../content/content-resource'
-import { getAccountsSchema } from './accounts'
-import { getUserPermissionsSchema } from './user-permissions'
-import { getUserRolesSchema } from './user-roles'
+import { getCommunicationPreferencesSchema } from '../communication/communication-preferences.js'
+import { getContentContributionsSchema } from '../content/content-contributions.js'
+import { getContentResourceSchema } from '../content/content-resource.js'
+import { getAccountsSchema } from './accounts.js'
+import { getUserPermissionsSchema } from './user-permissions.js'
+import { getUserRolesSchema } from './user-roles.js'
 
 export function getUsersSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(

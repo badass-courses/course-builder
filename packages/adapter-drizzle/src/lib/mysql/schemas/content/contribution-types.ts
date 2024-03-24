@@ -8,7 +8,7 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getContentContributionsSchema } from './content-contributions'
+import { getContentContributionsSchema } from './content-contributions.js'
 
 export function getContributionTypesSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
