@@ -29,7 +29,7 @@ export function createActionURL(
 	envObject: any,
 	basePath?: string,
 ): URL {
-	let envUrl = envObject.AUTH_URL ?? envObject.NEXTAUTH_URL
+	let envUrl = envObject.COURSEBUILDER_URL
 
 	let url: URL
 	if (envUrl) {
