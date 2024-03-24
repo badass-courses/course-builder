@@ -38,13 +38,8 @@
 			"dependsOn": ["^topo", "^build"]
 		},
 		"test": {
-			"outputs": [
-				"coverage/**"
-			],
-			"inputs": [
-				"src/**/",
-				"test/**/"
-			],
+			"outputs": ["coverage/**"],
+			"inputs": ["src/**/", "test/**/"],
 			"outputMode": "new-only"
 		},
 		"test:e2e": {
