@@ -44,7 +44,6 @@ export interface RequestInternal {
 	error?: string
 }
 
-/** @internal */
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
 	? TranscriptionConfig
 	: never

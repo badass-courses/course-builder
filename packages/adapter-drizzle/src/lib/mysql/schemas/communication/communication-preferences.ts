@@ -8,9 +8,9 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getUsersSchema } from '../auth/users'
-import { getCommunicationChannelSchema } from './communication-channel'
-import { getCommunicationPreferenceTypesSchema } from './communication-preference-types'
+import { getUsersSchema } from '../auth/users.js'
+import { getCommunicationChannelSchema } from './communication-channel.js'
+import { getCommunicationPreferenceTypesSchema } from './communication-preference-types.js'
 
 export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(

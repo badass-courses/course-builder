@@ -13,65 +13,71 @@ import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import {
 	getAccountsRelationsSchema,
 	getAccountsSchema,
-} from './schemas/auth/accounts'
+} from './schemas/auth/accounts.js'
 import {
 	getPermissionsRelationsSchema,
 	getPermissionsSchema,
-} from './schemas/auth/permissions'
+} from './schemas/auth/permissions.js'
 import {
 	getRolePermissionsRelationsSchema,
 	getRolePermissionsSchema,
-} from './schemas/auth/role-permissions'
-import { getRolesRelationsSchema, getRolesSchema } from './schemas/auth/roles'
+} from './schemas/auth/role-permissions.js'
+import {
+	getRolesRelationsSchema,
+	getRolesSchema,
+} from './schemas/auth/roles.js'
 import {
 	getSessionRelationsSchema,
 	getSessionsSchema,
-} from './schemas/auth/sessions'
+} from './schemas/auth/sessions.js'
 import {
 	getUserPermissionsRelationsSchema,
 	getUserPermissionsSchema,
-} from './schemas/auth/user-permissions'
+} from './schemas/auth/user-permissions.js'
 import {
 	getUserRolesRelationsSchema,
 	getUserRolesSchema,
-} from './schemas/auth/user-roles'
-import { getUsersRelationsSchema, getUsersSchema } from './schemas/auth/users'
-import { getVerificationTokensSchema } from './schemas/auth/verification-tokens'
-import { getCouponSchema } from './schemas/commerce/coupon'
-import { getMerchantAccountSchema } from './schemas/commerce/merchant-account'
-import { getMerchantChargeSchema } from './schemas/commerce/merchant-charge'
-import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon'
-import { getMerchantCustomerSchema } from './schemas/commerce/merchant-customer'
-import { getMerchantPriceSchema } from './schemas/commerce/merchant-price'
-import { getMerchantProductSchema } from './schemas/commerce/merchant-product'
-import { getMerchantSessionSchema } from './schemas/commerce/merchant-session'
-import { getPriceSchema } from './schemas/commerce/price'
-import { getProductSchema } from './schemas/commerce/product'
-import { getPurchaseSchema } from './schemas/commerce/purchase'
-import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer'
-import { getCommunicationChannelSchema } from './schemas/communication/communication-channel'
-import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types'
+} from './schemas/auth/user-roles.js'
+import {
+	getUsersRelationsSchema,
+	getUsersSchema,
+} from './schemas/auth/users.js'
+import { getVerificationTokensSchema } from './schemas/auth/verification-tokens.js'
+import { getCouponSchema } from './schemas/commerce/coupon.js'
+import { getMerchantAccountSchema } from './schemas/commerce/merchant-account.js'
+import { getMerchantChargeSchema } from './schemas/commerce/merchant-charge.js'
+import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon.js'
+import { getMerchantCustomerSchema } from './schemas/commerce/merchant-customer.js'
+import { getMerchantPriceSchema } from './schemas/commerce/merchant-price.js'
+import { getMerchantProductSchema } from './schemas/commerce/merchant-product.js'
+import { getMerchantSessionSchema } from './schemas/commerce/merchant-session.js'
+import { getPriceSchema } from './schemas/commerce/price.js'
+import { getProductSchema } from './schemas/commerce/product.js'
+import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer.js'
+import { getPurchaseSchema } from './schemas/commerce/purchase.js'
+import { getCommunicationChannelSchema } from './schemas/communication/communication-channel.js'
+import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types.js'
 import {
 	getCommunicationPreferencesRelationsSchema,
 	getCommunicationPreferencesSchema,
-} from './schemas/communication/communication-preferences'
+} from './schemas/communication/communication-preferences.js'
 import {
 	getContentContributionRelationsSchema,
 	getContentContributionsSchema,
-} from './schemas/content/content-contributions'
-import {
-	getContentResourceRelationsSchema,
-	getContentResourceSchema,
-} from './schemas/content/content-resource'
+} from './schemas/content/content-contributions.js'
 import {
 	getContentResourceResourceRelationsSchema,
 	getContentResourceResourceSchema,
-} from './schemas/content/content-resource-resource'
+} from './schemas/content/content-resource-resource.js'
+import {
+	getContentResourceRelationsSchema,
+	getContentResourceSchema,
+} from './schemas/content/content-resource.js'
 import {
 	getContributionTypesRelationsSchema,
 	getContributionTypesSchema,
-} from './schemas/content/contribution-types'
-import { getResourceProgressSchema } from './schemas/content/resource-progress'
+} from './schemas/content/contribution-types.js'
+import { getResourceProgressSchema } from './schemas/content/resource-progress.js'
 
 export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 	return {

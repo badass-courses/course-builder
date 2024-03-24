@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { index, MySqlTableFn, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
-import { getUsersSchema } from './users'
+import { getUsersSchema } from './users.js'
 
 export function getSessionsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(

@@ -9,7 +9,7 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getContentResourceSchema } from './content-resource'
+import { getContentResourceSchema } from './content-resource.js'
 
 export function getContentResourceResourceSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(

@@ -9,7 +9,7 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getUsersSchema } from './users'
+import { getUsersSchema } from './users.js'
 
 export function getAccountsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(

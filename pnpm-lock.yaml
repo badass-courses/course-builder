@@ -862,6 +862,9 @@ importers:
       '@auth/core':
         specifier: ^0.28.0
         version: 0.28.0
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(postcss@8.4.35)(typescript@5.4.3)
       zod:
         specifier: ^3.22.4
         version: 3.22.4

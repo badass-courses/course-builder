@@ -8,8 +8,8 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getPermissionsSchema } from './permissions'
-import { getRolesSchema } from './roles'
+import { getPermissionsSchema } from './permissions.js'
+import { getRolesSchema } from './roles.js'
 
 export function getRolePermissionsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
