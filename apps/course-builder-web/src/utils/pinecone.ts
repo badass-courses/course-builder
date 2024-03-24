@@ -3,13 +3,11 @@ import {
 	Index,
 	Pinecone,
 } from '@pinecone-database/pinecone'
-import { PineconeConflictError } from '@pinecone-database/pinecone/dist/errors'
-
-const pc = new Pinecone()
 
 export async function get_or_create_index(
 	opts: CreateIndexOptions,
 ): Promise<Index> {
+	const pc = new Pinecone()
 	const { indexes = [] } = await pc.listIndexes()
 	for (const indexModel of indexes) {
 		if (indexModel.name === opts.name) {
@@ -32,5 +30,6 @@ export async function get_or_create_index(
 }
 
 export async function get_index(name: string) {
+	const pc = new Pinecone()
 	return await pc.index(name)
 }
