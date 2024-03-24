@@ -29,8 +29,13 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"unplugin-swc": "^1.4.4"
+	},
 	"devDependencies": {
+		"@coursebuilder/core": "workspace:*",
+		"@preact/preset-vite": "^2.8.1",
+		"dotenv": "^10.0.0",
 		"tsup": "6.7.0"
 	}
 }

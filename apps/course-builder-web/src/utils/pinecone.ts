@@ -10,6 +10,12 @@ const pc = new Pinecone()
 export async function get_or_create_index(
 	opts: CreateIndexOptions,
 ): Promise<Index> {
+	const { indexes = [] } = await pc.listIndexes()
+	for (const indexModel of indexes) {
+		if (indexModel.name === opts.name) {
+			return await pc.index(opts.name)
+		}
+	}
 	try {
 		await pc.createIndex(opts)
 	} catch (e) {
