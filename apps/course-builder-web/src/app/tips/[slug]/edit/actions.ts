@@ -1,6 +1,5 @@
 'use server'
 
-import { getAbility } from '@/ability'
 import { inngest } from '@/inngest/inngest.server'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -14,8 +13,7 @@ export async function reprocessTranscript({
 }) {
 	// template for the url to download the mp4 file from mux
 	// https://stream.mux.com/{PLAYBACK_ID}/{MP4_FILE_NAME}?download={FILE_NAME}
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 
 	if (!session || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')

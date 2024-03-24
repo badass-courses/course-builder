@@ -2,6 +2,7 @@
 	"name": "course-builder-web",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
 		"dev:next": "next dev",
@@ -12,6 +13,7 @@
 		"build": "next build",
 		"db:push": "dotenv drizzle-kit push:mysql",
 		"db:studio": "dotenv drizzle-kit studio",
+		"db:seed": "dotenv tsx ./src/db/seed.ts",
 		"lint": "next lint",
 		"start": "next start",
 		"typecheck": "tsc --noEmit"
@@ -179,6 +181,7 @@
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.12",
 		"tailwindcss": "^3.3.3",
+		"tsx": "^4.7.1",
 		"typescript": "5.4.3"
 	},
 	"ct3aMetadata": {

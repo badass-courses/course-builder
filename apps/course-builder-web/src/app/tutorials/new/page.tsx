@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import CreateResourcePage from '@/components/resources-crud/create-resource-page'
 import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
 export default async function NewTutorialPage() {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('create', 'Content')) {
 		notFound()

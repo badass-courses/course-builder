@@ -38,8 +38,7 @@ async function ArticleActionBar({
 }: {
 	articleLoader: Promise<Article | null>
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const article = await articleLoader
 
 	return (

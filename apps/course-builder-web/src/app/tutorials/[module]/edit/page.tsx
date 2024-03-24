@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
-import { getAbility } from '@/ability'
 import ModuleEdit from '@/components/module-edit'
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
@@ -15,8 +14,7 @@ export default async function EditTutorialPage({
 }: {
 	params: { module: string }
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('update', 'Content')) {
 		redirect('/login')

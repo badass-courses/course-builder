@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { communicationPreferences } from '@/db/schema'
+import { communicationPreferences, userRoles } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
@@ -43,6 +43,21 @@ export const userCreated = inngest.createFunction(
 		if (!preferenceType || !preferenceChannel) {
 			throw new NonRetriableError('Preference type or channel not found')
 		}
+
+		await step.run('create user role', async () => {
+			const userRole = await db.query.roles.findFirst({
+				where: (ur, { eq }) => eq(ur.name, 'user'),
+			})
+
+			if (!userRole) {
+				throw new Error('User role not found')
+			}
+
+			await db.insert(userRoles).values({
+				roleId: userRole.id,
+				userId: event.user.id,
+			})
+		})
 
 		await step.run('create the user preference', async () => {
 			await db.insert(communicationPreferences).values({

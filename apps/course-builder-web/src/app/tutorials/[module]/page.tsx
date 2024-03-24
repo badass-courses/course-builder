@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 import { Separator } from '@coursebuilder/ui'
@@ -11,8 +10,7 @@ export default async function ModulePage({
 }: {
 	params: { module: string }
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('read', 'Content')) {
 		redirect('/login')

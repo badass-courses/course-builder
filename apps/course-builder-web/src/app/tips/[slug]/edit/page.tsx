@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { getTip } from '@/lib/tips-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -14,8 +13,7 @@ export default async function TipEditPage({
 }: {
 	params: { slug: string }
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	const tip = await getTip(params.slug)
 
 	if (!tip || !ability.can('create', 'Content')) {

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { getAbility } from '@/ability'
 import { CreateTip } from '@/app/tips/_components/create-tip'
 import { DeleteTipButton } from '@/app/tips/_components/delete-tip-button'
 import { getTipsModule } from '@/lib/tips-query'
@@ -25,9 +24,7 @@ export default async function TipsListPage() {
 
 async function TipList() {
 	const tipsModule = await getTipsModule()
-	const session = await getServerAuthSession()
-	const user = session?.user
-	const ability = getAbility({ user })
+	const { ability } = await getServerAuthSession()
 
 	return (
 		<>
@@ -54,8 +51,7 @@ async function TipList() {
 }
 
 async function TipListActions() {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	return (
 		<>
 			{ability.can('create', 'Content') ? (

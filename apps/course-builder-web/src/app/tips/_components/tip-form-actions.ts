@@ -1,6 +1,5 @@
 'use server'
 
-import { getAbility } from '@/ability'
 import { OCR_WEBHOOK_EVENT } from '@/inngest/events/ocr-webhook'
 import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
@@ -9,15 +8,13 @@ export async function requestCodeExtraction(options: {
 	imageUrl?: string
 	resourceId?: string
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
-	const user = session?.user
+	const { session, ability } = await getServerAuthSession()
 
 	if (!options.imageUrl) {
 		throw new Error('Image URL is required')
 	}
 
-	if (!user || !ability.can('create', 'Content')) {
+	if (!session?.user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
@@ -29,6 +26,6 @@ export async function requestCodeExtraction(options: {
 				resourceId: options.resourceId,
 			},
 		},
-		user,
+		user: session.user,
 	})
 }

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { EditArticleForm } from '@/app/articles/_components/edit-article-form'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -14,8 +13,7 @@ export default async function ArticleEditPage({
 	params: { slug: string }
 }) {
 	headers()
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	const article = await getArticle(params.slug)
 
 	if (!article || !ability.can('create', 'Content')) {

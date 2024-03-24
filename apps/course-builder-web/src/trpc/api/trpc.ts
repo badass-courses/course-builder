@@ -26,11 +26,12 @@ import { ZodError } from 'zod'
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 
 	return {
 		db,
 		session,
+		ability,
 		...opts,
 	}
 }

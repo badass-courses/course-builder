@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
@@ -11,8 +10,7 @@ export default async function EditTutorialLessonPage({
 }) {
 	const { module, lesson } = params
 
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 
 	const lessonData = null
 

@@ -4,7 +4,6 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { TipPlayer } from '@/app/tips/_components/tip-player'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
@@ -77,8 +76,7 @@ export default async function TipPage({
 }
 
 async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	const tip = await tipLoader
 
 	return (

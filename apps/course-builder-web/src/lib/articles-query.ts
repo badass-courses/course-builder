@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { getAbility } from '@/ability'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
@@ -42,9 +41,8 @@ export async function getArticles(): Promise<Article[]> {
 }
 
 export async function createArticle(input: NewArticle) {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	const ability = getAbility({ user })
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
@@ -71,9 +69,8 @@ export async function createArticle(input: NewArticle) {
 }
 
 export async function updateArticle(input: Article) {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	const ability = getAbility({ user })
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}

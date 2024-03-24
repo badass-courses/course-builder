@@ -1,6 +1,5 @@
 'use server'
 
-import { getAbility } from '@/ability'
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
@@ -8,7 +7,6 @@ import { inngest } from '@/inngest/inngest.server'
 import { ChatResourceSchema } from '@/lib/ai-chat'
 import { getServerAuthSession } from '@/server/auth'
 import { sql } from 'drizzle-orm'
-import { z } from 'zod'
 
 export async function sendResourceChatMessage({
 	resourceId,
@@ -19,9 +17,8 @@ export async function sendResourceChatMessage({
 	messages: any[]
 	selectedWorkflow?: string
 }) {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	const ability = getAbility({ user })
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}

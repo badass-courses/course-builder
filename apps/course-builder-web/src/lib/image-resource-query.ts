@@ -1,6 +1,5 @@
 'use server'
 
-import { getAbility } from '@/ability'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { IMAGE_RESOURCE_CREATED_EVENT } from '@/inngest/events/image-resource-created'
@@ -19,8 +18,7 @@ export async function createImageResource(input: {
 	asset_id: string
 	secure_url: string
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
 	if (!user || !ability.can('create', 'Content')) {

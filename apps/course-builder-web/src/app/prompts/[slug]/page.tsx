@@ -3,7 +3,6 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { type Prompt } from '@/lib/prompts'
 import { getPrompt } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -38,8 +37,7 @@ async function PromptActionBar({
 }: {
 	promptLoader: Promise<Prompt | null>
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
 	const prompt = await promptLoader
@@ -69,8 +67,7 @@ async function Prompt({
 }: {
 	promptLoader: Promise<Prompt | null>
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
 	const prompt = await promptLoader
@@ -111,8 +108,7 @@ export default async function PromptPage({
 }: {
 	params: { slug: string }
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
 	if (!user || !ability.can('create', 'Content')) {

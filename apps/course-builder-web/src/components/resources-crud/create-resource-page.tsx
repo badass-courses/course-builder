@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { CreateResourceCard } from '@/components/resources-crud/create-resource-card'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -11,8 +10,7 @@ export default async function CreateResourcePage({
 }: {
 	resourceType: string
 }) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('create', 'Content')) {
 		notFound()

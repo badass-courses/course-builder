@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getAbility } from '@/ability'
 import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -13,8 +12,7 @@ import {
 } from '@coursebuilder/ui'
 
 export default async function ArticlesIndexPage() {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	const articles = await getArticles()
 
 	return (

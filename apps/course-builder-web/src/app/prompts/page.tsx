@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { getPrompts } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -14,8 +13,7 @@ import {
 } from '@coursebuilder/ui'
 
 export default async function PromptsIndexPage() {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
 	if (!user || !ability.can('create', 'Content')) {

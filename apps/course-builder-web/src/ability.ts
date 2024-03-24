@@ -6,23 +6,50 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
+import { ContentResource } from '@coursebuilder/core/types'
+
 export const UserSchema = z.object({
 	role: z.string().optional(),
 	id: z.string().optional(),
 	name: z.nullable(z.string().optional()),
 	email: z.string().optional(),
+	roles: z.array(
+		z.object({
+			id: z.string(),
+			name: z.string(),
+			description: z.string().nullable(),
+			active: z.boolean(),
+			createdAt: z.date().nullable(),
+			updatedAt: z.date().nullable(),
+			deletedAt: z.date().nullable(),
+		}),
+	),
 })
 
 export type User = z.infer<typeof UserSchema>
 
 type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage'
-type Subjects = 'Content' | 'User' | User | 'all'
+type Subjects = 'Content' | 'User' | ContentResource | User | 'all'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
-type GetAbilityOptions = { user?: { id: string; role?: string } }
+type GetAbilityOptions = {
+	user?: {
+		id: string
+		role?: string
+		roles: {
+			id: string
+			name: string
+			description: string | null
+			active: boolean
+			createdAt: Date | null
+			updatedAt: Date | null
+			deletedAt: Date | null
+		}[]
+	}
+}
 
 /**
  * serializable CASL rules object
@@ -33,13 +60,23 @@ type GetAbilityOptions = { user?: { id: string; role?: string } }
 export function getAbilityRules(options: GetAbilityOptions = {}) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
 
-	if (options.user?.role === 'admin') {
-		can('manage', 'all')
-	}
-
 	if (options.user) {
+		if (options.user.roles.map((role) => role.name).includes('admin')) {
+			can('manage', 'all')
+		}
+
+		if (options.user.roles.map((role) => role.name).includes('contributor')) {
+			can('create', 'Content')
+			can('manage', 'Content', { createdById: { $eq: options.user.id } })
+		}
+
 		can('read', 'User', { id: options.user.id })
 	}
+
+	can('read', 'Content', {
+		createdAt: { $lte: new Date() },
+		status: { $in: ['review', 'published'] },
+	})
 
 	return rules
 }

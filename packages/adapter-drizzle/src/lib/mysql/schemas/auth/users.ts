@@ -35,6 +35,7 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 		(user) => ({
 			emailIdx: index('email_idx').on(user.email),
 			roleIdx: index('role_idx').on(user.role),
+			createdAtIdx: index('created_at_idx').on(user.createdAt),
 		}),
 	)
 }

@@ -1,3 +1,4 @@
+import { getAbility } from '@/ability'
 import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
 import { db } from '@/db'
 import { env } from '@/env.mjs'
@@ -26,6 +27,15 @@ declare module 'next-auth' {
 	interface User {
 		// ...other properties
 		role?: Role
+		roles: {
+			id: string
+			name: string
+			description: string | null
+			active: boolean
+			createdAt: Date | null
+			updatedAt: Date | null
+			deletedAt: Date | null
+		}[]
 	}
 }
 
@@ -46,6 +56,13 @@ export const authOptions: NextAuthConfig = {
 				where: (users, { eq }) => eq(users.id, user.id),
 			})
 
+			const userRoles = await db.query.userRoles.findMany({
+				where: (ur, { eq }) => eq(ur.userId, user.id),
+				with: {
+					role: true,
+				},
+			})
+
 			const role: Role = dbUser?.role || 'user'
 
 			return {
@@ -54,6 +71,7 @@ export const authOptions: NextAuthConfig = {
 					...session.user,
 					id: user.id,
 					role,
+					roles: userRoles.map((userRole) => userRole.role),
 				},
 			}
 		},
@@ -100,4 +118,9 @@ export const {
 	auth,
 } = NextAuth(authOptions)
 
-export const getServerAuthSession = async () => auth()
+export const getServerAuthSession = async () => {
+	const session = await auth()
+	const ability = getAbility({ user: session?.user })
+
+	return { session, ability }
+}

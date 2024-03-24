@@ -1,15 +1,11 @@
-import { getAbility } from '@/ability'
 import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
 import { createUploadthing, type FileRouter } from 'uploadthing/next'
-import { UTApi } from 'uploadthing/server'
 import { z } from 'zod'
 
 import { VIDEO_UPLOADED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-uploaded'
 
 const f = createUploadthing()
-
-export const utapi = new UTApi()
 
 export const ourFileRouter = {
 	videoUploader: f({ video: { maxFileSize: '2GB', maxFileCount: 5 } })
@@ -19,8 +15,7 @@ export const ourFileRouter = {
 			}),
 		)
 		.middleware(async ({ req, input }) => {
-			const session = await getServerAuthSession()
-			const ability = getAbility({ user: session?.user })
+			const { session, ability } = await getServerAuthSession()
 
 			if (!session || !ability.can('create', 'Content')) {
 				throw new Error('Unauthorized')
@@ -47,8 +42,7 @@ export const ourFileRouter = {
 		}),
 	tipUploader: f({ video: { maxFileSize: '2GB', maxFileCount: 1 } })
 		.middleware(async ({ req }) => {
-			const session = await getServerAuthSession()
-			const ability = getAbility({ user: session?.user })
+			const { session, ability } = await getServerAuthSession()
 
 			if (!session || !ability.can('create', 'Content')) {
 				throw new Error('Unauthorized')

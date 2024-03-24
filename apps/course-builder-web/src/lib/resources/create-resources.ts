@@ -1,6 +1,5 @@
 'use server'
 
-import { getAbility } from '@/ability'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
@@ -16,9 +15,8 @@ const NewResourceSchema = z.object({
 type NewResource = z.infer<typeof NewResourceSchema>
 
 export async function createResource(input: NewResource) {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	const ability = getAbility({ user })
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}

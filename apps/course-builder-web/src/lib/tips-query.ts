@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { getAbility } from '@/ability'
 import { db } from '@/db'
 import {
 	contentContributions,
@@ -18,9 +17,8 @@ import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	const ability = getAbility({ user })
 	if (!user || !ability.can('delete', 'Content')) {
 		throw new Error('Unauthorized')
 	}
@@ -109,8 +107,7 @@ export async function getTipsModule(): Promise<Tip[]> {
 }
 
 export async function createTip(input: NewTip) {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
 	if (!user || !ability.can('create', 'Content')) {
@@ -156,7 +153,7 @@ export async function createTip(input: NewTip) {
 			.values({ resourceOfId: tip.id, resourceId: input.videoResourceId })
 
 		const contributionType = await db.query.contributionTypes.findFirst({
-			where: eq(contributionTypes.name, 'Author'),
+			where: eq(contributionTypes.slug, 'author'),
 		})
 
 		if (contributionType) {
@@ -177,9 +174,8 @@ export async function createTip(input: NewTip) {
 }
 
 export async function updateTip(input: TipUpdate) {
-	const session = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	const ability = getAbility({ user })
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}

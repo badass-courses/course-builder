@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { getAbility } from '@/ability'
 import { EditPromptForm } from '@/app/prompts/_components/edit-prompt-form'
 import { getPrompt } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -14,8 +13,7 @@ export default async function PromptEditPage({
 	params: { slug: string }
 }) {
 	headers()
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	const prompt = await getPrompt(params.slug)
 
 	if (!prompt || !ability.can('create', 'Content')) {

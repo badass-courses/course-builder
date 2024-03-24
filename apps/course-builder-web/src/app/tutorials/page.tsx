@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getAbility } from '@/ability'
 import { getServerAuthSession } from '@/server/auth'
 
 import {
@@ -12,8 +11,7 @@ import {
 } from '@coursebuilder/ui'
 
 export default async function Tutorials() {
-	const session = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user })
+	const { ability } = await getServerAuthSession()
 	const tutorials: any[] = []
 
 	return (
