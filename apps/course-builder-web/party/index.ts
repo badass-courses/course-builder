@@ -1,8 +1,25 @@
+import * as schema from '@/db/schema'
+import { contentResource } from '@/db/schema'
+import { env } from '@/env.mjs'
+import { Client, connect } from '@planetscale/database'
+import { eq, sql } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/planetscale-serverless'
 import type * as Party from 'partykit/server'
 import { onConnect } from 'y-partykit'
 import * as Y from 'yjs'
 
 const BROADCAST_INTERVAL = 1000 / 60 // 60fps
+
+const db = drizzle(
+	new Client({
+		url: env.DATABASE_URL,
+		fetch: (url: string, init: any) => {
+			delete (init as any)['cache'] // Remove cache header
+			return fetch(url, init)
+		},
+	}),
+	{ schema },
+)
 
 const CORS = {
 	'Access-Control-Allow-Origin': '*',
@@ -27,14 +44,16 @@ export default class Server implements Party.Server {
 
 		return onConnect(conn, this.party, {
 			async load() {
-				const tip = await sanityQuery<{ body: string | null } | null>(
-					`*[_id == "${party.id}"][0]{body}`,
-					party.env,
-				)
+				const tip = await db.query.contentResource.findFirst({
+					where: eq(contentResource.id, party.id),
+					with: {
+						resources: true,
+					},
+				})
 
 				const doc = new Y.Doc()
-				if (tip?.body) {
-					doc.getText('codemirror').insert(0, tip.body)
+				if (tip?.fields?.body) {
+					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
 				return doc
 			},
