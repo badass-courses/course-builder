@@ -62,7 +62,7 @@
 		"prettier-plugin-tailwindcss": "^0.5.12",
 		"turbo": "^1.13.0",
 		"typescript": "5.4.3",
-		"@coursebuilder/utils": "workspace:*",
+		"utils": "workspace:*",
 		"vite": "5.0.12",
 		"vitest": "1.2.2"
 	}

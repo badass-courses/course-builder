@@ -1,34 +1,8 @@
 {
-	"name": "@coursebuilder/utils",
+	"name": "utils",
 	"version": "0.0.0",
-	"description": "Course Builder Package",
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"build": "tsup",
-		"dev": "tsup --watch"
-	},
-	"keywords": [
-		"coursebuilder"
-	],
-	"author": "",
-	"license": "ISC",
 	"type": "module",
-	"types": "./dist/index.d.ts",
-	"files": [
-		"dist",
-		"src"
-	],
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js",
-			"require": "./dist/index.cjs"
-		}
-	},
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
+	"private": true,
 	"dependencies": {
 		"unplugin-swc": "^1.4.4"
 	},

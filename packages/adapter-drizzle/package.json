@@ -3,9 +3,11 @@
 	"version": "0.0.5",
 	"description": "Drizzle adapter for Course Builder.",
 	"scripts": {
-		"clean": "rm -rf ./dist",
+		"clean": "find . -type d -name \".drizzle\" | xargs rm -rf",
 		"build": "tsup",
-		"dev": "tsup --watch"
+		"dev": "tsup --watch",
+		"test": "pnpm test:mysql",
+		"test:mysql": "pnpm clean && ./test/mysql/test.sh"
 	},
 	"keywords": [
 		"coursebuilder",
@@ -53,7 +55,8 @@
 		"drizzle-orm": "0.30.2",
 		"mysql2": "^3.6.1",
 		"postgres": "^3.3.4",
-		"tsup": "6.7.0"
+		"tsup": "6.7.0",
+		"tsx": "^4.7.0"
 	},
 	"peerDependencies": {
 		"drizzle-orm": "0.30.x"

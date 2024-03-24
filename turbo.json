@@ -19,7 +19,8 @@
 				"*.d.ts",
 				"*.d.ts.map",
 				"!.next/cache/**"
-			]
+			],
+			"outputMode": "new-only"
 		},
 		"lint": {
 			"dependsOn": ["^topo", "^build"],
@@ -37,7 +38,22 @@
 			"dependsOn": ["^topo", "^build"]
 		},
 		"test": {
-			"dependsOn": ["build"]
+			"outputs": [
+				"coverage/**"
+			],
+			"inputs": [
+				"src/**/",
+				"test/**/"
+			],
+			"outputMode": "new-only"
+		},
+		"test:e2e": {
+			"outputs": [
+				"blob-report/**",
+				"playwright-report/**",
+				"playwright/.cache/**",
+				"test-results/**"
+			]
 		},
 		"test:watch": {
 			"cache": false

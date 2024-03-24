@@ -411,6 +411,8 @@ export function mySqlDrizzleAdapter(
 				.then((res) => res[0] ?? null)
 
 			await client.delete(users).where(eq(users.id, id))
+			await client.delete(sessions).where(eq(sessions.userId, id))
+			await client.delete(accounts).where(eq(accounts.userId, id))
 
 			return user
 		},
