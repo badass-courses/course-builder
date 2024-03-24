@@ -5,7 +5,8 @@
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib",
 		"build": "tsup",
-		"dev": "tsup --watch"
+		"dev": "tsup --watch",
+		"test": "vitest run -c ../utils/vitest.config.ts"
 	},
 	"keywords": [
 		"coursebuilder",
@@ -27,7 +28,8 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
 		},
 		"./adapters": {
 			"types": "./dist/adapters.d.ts"
@@ -37,39 +39,48 @@
 		},
 		"./providers/*": {
 			"types": "./dist/providers/*.d.ts",
-			"import": "./dist/providers/*.js"
+			"import": "./dist/providers/*.js",
+			"require": "./dist/providers/*.js"
 		},
 		"./schemas/*": {
 			"types": "./dist/schemas/*.d.ts",
-			"import": "./dist/schemas/*.js"
+			"import": "./dist/schemas/*.js",
+			"require": "./dist/schemas/*.js"
 		},
 		"./lib/*": {
 			"types": "./dist/lib/*.d.ts",
-			"import": "./dist/lib/*.js"
+			"import": "./dist/lib/*.js",
+			"require": "./dist/lib/*.js"
 		},
 		"./inngest/video-processing/events": {
 			"types": "./dist/inngest/video-processing/events/index.d.ts",
-			"import": "./dist/inngest/video-processing/events/index.js"
+			"import": "./dist/inngest/video-processing/events/index.js",
+			"require": "./dist/inngest/video-processing/events/index.js"
 		},
 		"./inngest/video-processing/events/*": {
 			"types": "./dist/inngest/video-processing/events/*.d.ts",
-			"import": "./dist/inngest/video-processing/events/*.js"
+			"import": "./dist/inngest/video-processing/events/*.js",
+			"require": "./dist/inngest/video-processing/events/*.js"
 		},
 		"./inngest/video-processing/functions": {
 			"types": "./dist/inngest/video-processing/functions/index.d.ts",
-			"import": "./dist/inngest/video-processing/functions/index.js"
+			"import": "./dist/inngest/video-processing/functions/index.js",
+			"require": "./dist/inngest/video-processing/functions/index.js"
 		},
 		"./inngest/video-processing/functions/*": {
 			"types": "./dist/inngest/video-processing/functions/*.d.ts",
-			"import": "./dist/inngest/video-processing/functions/*.js"
+			"import": "./dist/inngest/video-processing/functions/*.js",
+			"require": "./dist/inngest/video-processing/functions/*.js"
 		},
 		"./inngest/video-processing/utils": {
 			"types": "./dist/inngest/video-processing/utils.d.ts",
-			"import": "./dist/inngest/video-processing/utils.js"
+			"import": "./dist/inngest/video-processing/utils.js",
+			"require": "./dist/inngest/video-processing/utils.js"
 		},
 		"./inngest/*": {
 			"types": "./dist/inngest/*.d.ts",
-			"import": "./dist/inngest/*.js"
+			"import": "./dist/inngest/*.js",
+			"require": "./dist/inngest/*.js"
 		},
 		"./types": {
 			"types": "./dist/types.d.ts"

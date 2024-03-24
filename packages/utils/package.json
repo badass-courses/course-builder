@@ -1,36 +1,15 @@
 {
-	"name": "@coursebuilder/utils",
+	"name": "utils",
 	"version": "0.0.0",
-	"description": "Course Builder Package",
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"build": "tsup",
-		"dev": "tsup --watch"
-	},
-	"keywords": [
-		"coursebuilder"
-	],
-	"author": "",
-	"license": "ISC",
 	"type": "module",
-	"types": "./dist/index.d.ts",
-	"files": [
-		"dist",
-		"src"
-	],
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js",
-			"require": "./dist/index.cjs"
-		}
+	"private": true,
+	"dependencies": {
+		"unplugin-swc": "^1.4.4"
 	},
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"dependencies": {},
 	"devDependencies": {
+		"@coursebuilder/core": "workspace:*",
+		"@preact/preset-vite": "^2.8.1",
+		"dotenv": "^10.0.0",
 		"tsup": "6.7.0"
 	}
 }

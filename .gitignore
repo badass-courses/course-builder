@@ -23,3 +23,16 @@ packages/core/lib
 packages/core/providers
 packages/core/inngest
 packages/core/schemas
+
+# Tests
+coverage
+dynamodblocal-bin
+firestore-debug.log
+test.schema.gql
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
+## Drizzle migration folder
+.drizzle

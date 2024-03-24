@@ -8,17 +8,13 @@
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
 		"isolatedModules": true,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
+		"module": "ESNext",
+		"moduleResolution": "node",
 		"skipDefaultLibCheck": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": true,
 		"stripInternal": true,
-		"target": "es2020",
-		"outDir": ".",
-		"rootDir": "src"
-	},
-	"include": [".eslintrc.cjs", "src/**/*"],
-	"exclude": ["node_modules", "*.js", "*.d.ts", "dist"]
+		"target": "es2020"
+	}
 }

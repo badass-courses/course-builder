@@ -1,9 +1,9 @@
 import { inngest } from '@/inngest/inngest.server'
-
 import {
 	add_concept,
 	get_related_concepts,
-} from '../../../utils/vector-utils/concepts'
+} from '@/utils/vector-utils/concepts'
+
 import { CONCEPT_TAGS_REQUESTED } from '../../events/concepts'
 
 export const getOrCreateConcept = inngest.createFunction(

@@ -12,7 +12,7 @@ export type Concent = {
 	}
 }
 
-const index: Index = await get_or_create_index({
+const index: Index | undefined = await get_or_create_index({
 	name: 'concepts',
 	dimension: 1536,
 	metric: 'cosine',
@@ -29,11 +29,11 @@ export async function get_related_concepts(text: string) {
 	const embedding = (await get_embedding(text)).embedding
 	if (!embedding) return Promise.resolve([])
 
-	const synonyms = await index.query({
+	const synonyms = (await index?.query({
 		vector: embedding,
 		topK: 5,
 		includeMetadata: true,
-	})
+	})) || { matches: [] }
 	return synonyms.matches.filter((record) => record.score && record.score < 0.2)
 }
 
@@ -50,14 +50,14 @@ export async function add_concept(text: string) {
 			aliases: [],
 		},
 	}
-	await index.upsert([new_record])
+	await index?.upsert([new_record])
 	return new_record
 }
 
 export async function add_alias_to_concept(concept_id: string, alias: string) {
-	const fetch_results = await index.fetch([concept_id])
+	const fetch_results = await index?.fetch([concept_id])
 
-	const concept = fetch_results.records[concept_id]
+	const concept = fetch_results?.records[concept_id]
 
 	if (!concept) {
 		throw new Error('Concept not found')
@@ -69,6 +69,6 @@ export async function add_alias_to_concept(concept_id: string, alias: string) {
 
 	concept.metadata.aliases = [...(concept.metadata.aliases as string[]), alias]
 
-	await index.upsert([concept])
+	await index?.upsert([concept])
 	return concept
 }
