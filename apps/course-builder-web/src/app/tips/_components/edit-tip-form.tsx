@@ -33,6 +33,7 @@ export function EditTipForm({
 	const form = useForm<z.infer<typeof TipSchema>>({
 		resolver: zodResolver(NewTipFormSchema),
 		defaultValues: {
+			id: tip.id,
 			title: tip.title,
 			body: tip.body,
 		},

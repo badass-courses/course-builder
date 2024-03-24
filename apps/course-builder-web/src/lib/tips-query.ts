@@ -50,10 +50,10 @@ export async function deleteTip(id: string) {
 export async function getTip(slug: string): Promise<Tip | null> {
 	const query = sql`
     SELECT
-      tips.id,
-      tips.type,
-      CAST(tips.updatedAt AS DATETIME),
-      CAST(tips.createdAt AS DATETIME),
+      tips.id as id,
+      tips.type as type,
+      CAST(tips.updatedAt AS DATETIME) as updatedAt,
+      CAST(tips.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
       JSON_EXTRACT (tips.fields, "$.body") AS body,
@@ -81,10 +81,10 @@ export async function getTip(slug: string): Promise<Tip | null> {
 export async function getTipsModule(): Promise<Tip[]> {
 	const query = sql<Tip[]>`
     SELECT
-      tips.id,
-      tips.type,
-      CAST(tips.updatedAt AS DATETIME),
-      CAST(tips.createdAt AS DATETIME),
+      tips.id as id,
+      tips.type as type,
+      CAST(tips.updatedAt AS DATETIME) as updatedAt,
+      CAST(tips.createdAt AS DATETIME) as createdAt,
       JSON_EXTRACT (tips.fields, "$.slug") AS slug,
       JSON_EXTRACT (tips.fields, "$.title") AS title,
       JSON_EXTRACT (tips.fields, "$.state") AS state,

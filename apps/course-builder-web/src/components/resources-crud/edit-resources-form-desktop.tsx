@@ -19,7 +19,13 @@ export function EditResourcesFormDesktop({
 	updateResource,
 	availableWorkflows,
 }: {
-	resource: any
+	resource: {
+		type: string
+		id: string
+		body?: string | null
+		title?: string | null
+		slug: string
+	}
 	getResourcePath: (slug: string) => string
 	resourceSchema: Schema
 	children?: React.ReactNode
@@ -30,6 +36,7 @@ export function EditResourcesFormDesktop({
 	const router = useRouter()
 
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
+		console.log({ values })
 		const updatedResource = await updateResource(values)
 		if (updatedResource) {
 			router.push(getResourcePath(updatedResource.slug))

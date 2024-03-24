@@ -86,6 +86,11 @@ export const TipMetadataFormFields: React.FC<{
 			</div>
 			<FormField
 				control={form.control}
+				name="id"
+				render={({ field }) => <Input type="hidden" {...field} />}
+			/>
+			<FormField
+				control={form.control}
 				name="title"
 				render={({ field }) => (
 					<FormItem className="px-5">
