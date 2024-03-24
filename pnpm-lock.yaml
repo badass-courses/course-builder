@@ -991,6 +991,12 @@ importers:
         specifier: ^18.2.15
         version: 18.2.22
 
+  packages/utils:
+    devDependencies:
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(postcss@8.4.35)(typescript@5.4.3)
+
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:
