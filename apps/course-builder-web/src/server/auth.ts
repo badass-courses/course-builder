@@ -1,5 +1,4 @@
 import { getAbility } from '@/ability'
-import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'

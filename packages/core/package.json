@@ -99,7 +99,7 @@
 		"srt-parser-2": "^1.2.3"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.28.0",
+		"@auth/core": "^0.28.1",
 		"tsup": "6.7.0",
 		"zod": "^3.22.4"
 	}

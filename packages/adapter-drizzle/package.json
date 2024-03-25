@@ -46,7 +46,7 @@
 		"date-fns": "^2.30.0"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.28.0",
+		"@auth/core": "^0.28.1",
 		"@coursebuilder/core": "0.0.8",
 		"@libsql/client": "0.5.6",
 		"@types/better-sqlite3": "7.6.9",
