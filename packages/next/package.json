@@ -45,7 +45,7 @@
 	},
 	"peerDependencies": {
 		"next": "^14",
-		"next-auth": "^5",
+		"next-auth": "5.0.0-beta.15",
 		"react": "^18"
 	}
 }
