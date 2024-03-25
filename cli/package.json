@@ -80,7 +80,7 @@
 		"@types/node": "^20.11.24",
 		"drizzle-kit": "^0.20.14",
 		"next": "canary",
-		"next-auth": "5.0.0-beta.15",
+		"next-auth": "5.0.0-beta.16",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.12",
 		"prisma": "^5.6.0",

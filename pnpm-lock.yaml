@@ -411,8 +411,8 @@ importers:
         specifier: 14.2.0-canary.40
         version: 14.2.0-canary.40(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-auth:
-        specifier: 5.0.0-beta.15
-        version: 5.0.0-beta.15(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: 5.0.0-beta.16
+        version: 5.0.0-beta.16(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -636,7 +636,7 @@ importers:
         version: link:../packages/config/tsconfig
       '@next-auth/prisma-adapter':
         specifier: ^1.0.7
-        version: 1.0.7(@prisma/client@5.11.0)(next-auth@5.0.0-beta.15)
+        version: 1.0.7(@prisma/client@5.11.0)(next-auth@5.0.0-beta.16)
       '@planetscale/database':
         specifier: 1.14.0
         version: 1.14.0
@@ -680,8 +680,8 @@ importers:
         specifier: canary
         version: 14.2.0-canary.26(@babel/core@7.24.0)(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
       next-auth:
-        specifier: 5.0.0-beta.15
-        version: 5.0.0-beta.15(next@14.2.0-canary.26)(react@18.3.0-canary-a870b2d54-20240314)
+        specifier: 5.0.0-beta.16
+        version: 5.0.0-beta.16(next@14.2.0-canary.26)(react@18.3.0-canary-a870b2d54-20240314)
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
@@ -906,8 +906,8 @@ importers:
         specifier: 14.2.0-canary.40
         version: 14.2.0-canary.40(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
       next-auth:
-        specifier: 5.0.0-beta.15
-        version: 5.0.0-beta.15(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: 5.0.0-beta.16
+        version: 5.0.0-beta.16(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209)
       react:
         specifier: 18.3.0-canary-03d6f7cf0-20240209
         version: 18.3.0-canary-03d6f7cf0-20240209
@@ -1798,6 +1798,28 @@ packages:
 
   /@auth/core@0.28.0:
     resolution: {integrity: sha512-/fh/tb/L4NMSYcyPoo4Imn8vN6MskcVfgESF8/ndgtI4fhD/7u7i5fTVzWgNRZ4ebIEGHNDbWFRxaTu1NtQgvA==}
+    peerDependencies:
+      '@simplewebauthn/browser': ^9.0.1
+      '@simplewebauthn/server': ^9.0.2
+      nodemailer: ^6.8.0
+    peerDependenciesMeta:
+      '@simplewebauthn/browser':
+        optional: true
+      '@simplewebauthn/server':
+        optional: true
+      nodemailer:
+        optional: true
+    dependencies:
+      '@panva/hkdf': 1.1.1
+      '@types/cookie': 0.6.0
+      cookie: 0.6.0
+      jose: 5.2.3
+      oauth4webapi: 2.10.3
+      preact: 10.11.3
+      preact-render-to-string: 5.2.3(preact@10.11.3)
+
+  /@auth/core@0.28.1:
+    resolution: {integrity: sha512-gvp74mypYZADpTlfGRp6HE0G3pIHWvtJpy+KZ+8FvY0cmlIpHog+jdMOdd29dQtLtN25kF2YbfHsesCFuGUQbg==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
@@ -5308,14 +5330,14 @@ packages:
     resolution: {integrity: sha512-kTPhdZyTQxB+2wpiRcFWrDcejc4JI6tkPuS7UZCG4l6Zvc5kU/gGQ/ozvHTh1XR5tS+UlfAfGuPajjzQjCiHCw==}
     dev: true
 
-  /@next-auth/prisma-adapter@1.0.7(@prisma/client@5.11.0)(next-auth@5.0.0-beta.15):
+  /@next-auth/prisma-adapter@1.0.7(@prisma/client@5.11.0)(next-auth@5.0.0-beta.16):
     resolution: {integrity: sha512-Cdko4KfcmKjsyHFrWwZ//lfLUbcLqlyFqjd/nYE2m3aZ7tjMNUjpks47iw7NTCnXf+5UWz5Ypyt1dSs1EP5QJw==}
     peerDependencies:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
       '@prisma/client': 5.11.0(prisma@5.11.0)
-      next-auth: 5.0.0-beta.15(next@14.2.0-canary.26)(react@18.3.0-canary-a870b2d54-20240314)
+      next-auth: 5.0.0-beta.16(next@14.2.0-canary.26)(react@18.3.0-canary-a870b2d54-20240314)
     dev: true
 
   /@next/env@14.1.0:
@@ -18619,8 +18641,8 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: false
 
-  /next-auth@5.0.0-beta.15(next@14.2.0-canary.26)(react@18.3.0-canary-a870b2d54-20240314):
-    resolution: {integrity: sha512-UQggNq8CDu3/w8CYkihKLLnRPNXel98K0j7mtjj9a6XTNYo4Hni8xg/2h1YhElW6vXE8mgtvmH11rU8NKw86jQ==}
+  /next-auth@5.0.0-beta.16(next@14.2.0-canary.26)(react@18.3.0-canary-a870b2d54-20240314):
+    resolution: {integrity: sha512-dX2snB+ezN23tFzSes3n3uosT9iBf0eILPYWH/R2fd9n3ZzdMQlRzq7JIOPeS1aLc84IuRlyuyXyx9XmmZB6og==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
@@ -18635,13 +18657,13 @@ packages:
       nodemailer:
         optional: true
     dependencies:
-      '@auth/core': 0.28.0
+      '@auth/core': 0.28.1
       next: 14.2.0-canary.26(@babel/core@7.24.0)(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
       react: 18.3.0-canary-a870b2d54-20240314
     dev: true
 
-  /next-auth@5.0.0-beta.15(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-UQggNq8CDu3/w8CYkihKLLnRPNXel98K0j7mtjj9a6XTNYo4Hni8xg/2h1YhElW6vXE8mgtvmH11rU8NKw86jQ==}
+  /next-auth@5.0.0-beta.16(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-dX2snB+ezN23tFzSes3n3uosT9iBf0eILPYWH/R2fd9n3ZzdMQlRzq7JIOPeS1aLc84IuRlyuyXyx9XmmZB6og==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
@@ -18656,7 +18678,7 @@ packages:
       nodemailer:
         optional: true
     dependencies:
-      '@auth/core': 0.28.0
+      '@auth/core': 0.28.1
       next: 14.2.0-canary.40(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
 
