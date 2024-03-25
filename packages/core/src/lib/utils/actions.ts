@@ -1,6 +1,6 @@
 import { CourseBuilderAction } from '../../types'
 
-const actions: CourseBuilderAction[] = ['webhook', 'srt']
+const actions: CourseBuilderAction[] = ['webhook', 'srt', 'session']
 
 export function isCourseBuilderAction(
 	action: string,

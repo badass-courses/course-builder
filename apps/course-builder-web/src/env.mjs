@@ -7,6 +7,7 @@ export const env = createEnv({
 	 * isn't built with invalid env vars.
 	 */
 	server: {
+		COURSEBUILDER_URL: z.string().url(),
 		DATABASE_URL: z
 			.string()
 			.url()
@@ -77,6 +78,7 @@ export const env = createEnv({
 	 * middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		COURSEBUILDER_URL: process.env.COURSEBUILDER_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		NODE_ENV: process.env.NODE_ENV,
 		NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,

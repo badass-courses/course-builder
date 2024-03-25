@@ -3,30 +3,49 @@ import {
 	NextApiRequest,
 	NextApiResponse,
 } from 'next'
-import { headers } from 'next/headers'
-import { NextMiddleware, NextRequest, NextResponse } from 'next/server'
+import { headers } from 'next/headers.js'
+import {
+	NextFetchEvent,
+	NextMiddleware,
+	NextRequest,
+	NextResponse,
+} from 'next/server.js'
 
 import {
 	CourseBuilder,
 	CourseBuilderConfig,
 	createActionURL,
 } from '@coursebuilder/core'
+import {
+	CourseBuilderAction,
+	CourseBuilderSession,
+} from '@coursebuilder/core/types'
 
-import { reqWithEnvURL } from './env'
-import { AppRouteHandlerFn } from './types'
+import { reqWithEnvURL } from './env.js'
+import { AppRouteHandlerFn } from './types.js'
 
-export interface NextCourseBuilderConfig extends CourseBuilderConfig {}
+export interface NextCourseBuilderConfig extends CourseBuilderConfig {
+	callbacks?: CourseBuilderConfig['callbacks']
+}
 
 export type WithCourseBuilderArgs =
 	| [NextCourseBuilderRequest, any]
+	| [NextCourseBuilderMiddleware]
 	| [AppRouteHandlerFn]
 	| [NextApiRequest, NextApiResponse]
 	| [GetServerSidePropsContext]
 	| []
 
-function isReqWrapper(arg: any): arg is AppRouteHandlerFn {
+function isReqWrapper(
+	arg: any,
+): arg is NextCourseBuilderMiddleware | AppRouteHandlerFn {
 	return typeof arg === 'function'
 }
+
+export type NextCourseBuilderMiddleware = (
+	request: NextCourseBuilderRequest,
+	event: NextFetchEvent,
+) => ReturnType<NextMiddleware>
 
 export function initCourseBuilder(
 	config:
@@ -62,7 +81,9 @@ export function initCourseBuilder(
 				// import { auth } from "auth"
 				// export default auth((req) => { console.log(req.auth) }})
 				const userMiddlewareOrRoute = args[0]
-				return async (...args: Parameters<AppRouteHandlerFn>) => {
+				return async (
+					...args: Parameters<NextCourseBuilderMiddleware | AppRouteHandlerFn>
+				) => {
 					return handleCourseBuilder(
 						args,
 						config(args[0]),
@@ -79,23 +100,23 @@ export function initCourseBuilder(
 
 			// @ts-expect-error -- request is NextRequest
 			return getSession(new Headers(request.headers), _config).then(
-				async (authResponse) => {
-					const auth = await authResponse.json()
+				async (courseBuilderResponse) => {
+					const coursebuilder = await courseBuilderResponse.json()
 
-					for (const cookie of authResponse.headers.getSetCookie())
+					for (const cookie of courseBuilderResponse.headers.getSetCookie())
 						if ('headers' in response)
 							response.headers.append('set-cookie', cookie)
 						else response.appendHeader('set-cookie', cookie)
 
-					return auth satisfies any | null
+					return coursebuilder satisfies CourseBuilderSession | null
 				},
 			)
 		}
 	}
 	return (...args: WithCourseBuilderArgs) => {
 		if (!args.length) {
-			const _headers = headers()
-			return getSession(_headers, config)
+			// React Server Components
+			return getSession(headers(), config).then((r) => r.json())
 		}
 
 		if (args[0] instanceof Request) {
@@ -105,6 +126,40 @@ export function initCourseBuilder(
 			const ev = args[1]
 			return handleCourseBuilder([req, ev], config)
 		}
+
+		if (isReqWrapper(args[0])) {
+			// middleware.ts wrapper/route.ts
+			// import { auth } from "auth"
+			// export default auth((req) => { console.log(req.auth) }})
+			const userMiddlewareOrRoute = args[0]
+			return async (
+				...args: Parameters<NextCourseBuilderMiddleware | AppRouteHandlerFn>
+			) => {
+				return handleCourseBuilder(args, config, userMiddlewareOrRoute).then(
+					(res) => {
+						return res
+					},
+				)
+			}
+		}
+
+		// API Routes, getServerSideProps
+		const request = 'req' in args[0] ? args[0].req : args[0]
+		const response: any = 'res' in args[0] ? args[0].res : args[1]
+
+		return getSession(
+			// @ts-expect-error
+			new Headers(request.headers),
+			config,
+		).then(async (courseBuilderResponse) => {
+			const coursebuilder = await courseBuilderResponse.json()
+
+			for (const cookie of courseBuilderResponse.headers.getSetCookie())
+				if ('headers' in response) response.headers.append('set-cookie', cookie)
+				else response.appendHeader('set-cookie', cookie)
+
+			return coursebuilder satisfies CourseBuilderSession | null
+		})
 	}
 }
 
@@ -124,19 +179,39 @@ async function getSession(headers: Headers, config: CourseBuilderConfig) {
 		headers: { cookie: headers.get('cookie') ?? '' },
 	})
 
-	return CourseBuilder(request, config)
+	return CourseBuilder(request, {
+		...config,
+		callbacks: {
+			...config.callbacks,
+			async session(...args) {
+				const session =
+					// If the user defined a custom session callback, use that instead
+					(await config.callbacks?.session?.(...args)) ?? {}
+				return session satisfies CourseBuilderSession
+			},
+		},
+	}) as Promise<Response>
 }
 
 async function handleCourseBuilder(
 	args: Parameters<NextMiddleware | AppRouteHandlerFn>,
 	config: CourseBuilderConfig,
-	userRoute?: AppRouteHandlerFn,
+	userMiddlewareOrRoute?: NextCourseBuilderMiddleware | AppRouteHandlerFn,
 ) {
 	const request = reqWithEnvURL(args[0])
 	const sessionResponse = await getSession(request.headers, config)
 	const coursebuilder = await sessionResponse.json()
 
 	let response: any = NextResponse.next?.()
+
+	if (userMiddlewareOrRoute) {
+		const augmentedReq = request as NextCourseBuilderRequest
+		augmentedReq.coursebuilder = coursebuilder
+		response =
+			// @ts-expect-error
+			(await userMiddlewareOrRoute(augmentedReq, args[1])) ??
+			NextResponse.next()
+	}
 
 	const finalResponse = new Response(response?.body, response)
 
@@ -146,6 +221,21 @@ async function handleCourseBuilder(
 	return finalResponse
 }
 
+function isSameAuthAction(
+	requestPath: string,
+	redirectPath: string,
+	config: NextCourseBuilderConfig,
+) {
+	const action = redirectPath.replace(
+		`${requestPath}/`,
+		'',
+	) as CourseBuilderAction
+
+	return actions.has(action) && redirectPath === requestPath
+}
+
+const actions = new Set<CourseBuilderAction>(['webhook', 'session', 'srt'])
+
 export interface NextCourseBuilderRequest extends NextRequest {
-	coursebuilder: any | null
+	coursebuilder: CourseBuilderSession | null
 }

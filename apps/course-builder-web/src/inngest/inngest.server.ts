@@ -1,4 +1,4 @@
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import {
 	EMAIL_SEND_BROADCAST,
@@ -62,7 +62,7 @@ const callbackBase =
 	env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
 
 const middleware = createInngestMiddleware({
-	db: DrizzleAdapter(db, mysqlTable),
+	db: courseBuilderAdapter,
 	siteRootUrl: env.NEXT_PUBLIC_URL,
 	partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
 	mediaUploadProvider: new UTApi(),

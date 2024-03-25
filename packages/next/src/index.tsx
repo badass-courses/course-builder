@@ -1,9 +1,10 @@
-import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server.js'
 
 import { CourseBuilder } from '@coursebuilder/core'
+import { ResponseInternal } from '@coursebuilder/core/types'
 
-import { initCourseBuilder, NextCourseBuilderConfig } from './lib'
-import { reqWithEnvURL, setEnvDefaults } from './lib/env'
+import { reqWithEnvURL, setEnvDefaults } from './lib/env.js'
+import { initCourseBuilder, NextCourseBuilderConfig } from './lib/index.js'
 
 export default function NextCourseBuilder(
 	config:
@@ -34,7 +35,7 @@ export { type NextCourseBuilderConfig }
 
 type AppRouteHandlers = Record<
 	'GET' | 'POST',
-	(req: NextRequest) => Promise<Response>
+	(req: NextRequest) => Promise<Response | ResponseInternal>
 >
 
 export interface NextCourseBuilderResult {

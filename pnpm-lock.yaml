@@ -899,9 +899,15 @@ importers:
         specifier: ^3.16.1
         version: 3.16.1(encoding@0.1.13)(typescript@5.4.3)
     devDependencies:
+      '@auth/core':
+        specifier: ^0.28.0
+        version: 0.28.0
       next:
         specifier: 14.2.0-canary.40
         version: 14.2.0-canary.40(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
+      next-auth:
+        specifier: 5.0.0-beta.15
+        version: 5.0.0-beta.15(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209)
       react:
         specifier: 18.3.0-canary-03d6f7cf0-20240209
         version: 18.3.0-canary-03d6f7cf0-20240209
@@ -18653,7 +18659,6 @@ packages:
       '@auth/core': 0.28.0
       next: 14.2.0-canary.40(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
-    dev: false
 
   /next-axiom@1.1.1(next@14.2.0-canary.40)(react@18.3.0-canary-03d6f7cf0-20240209):
     resolution: {integrity: sha512-0r/TJ+/zetD+uDc7B+2E7WpC86hEtQ1U+DuWYrP/JNmUz+ZdPFbrZgzOSqaZ6TwYbXP56VVlPfYwq1YsKHTHYQ==}

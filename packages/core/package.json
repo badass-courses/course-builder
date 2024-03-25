@@ -18,18 +18,23 @@
 	"types": "./dist/index.d.ts",
 	"files": [
 		"*.d.ts*",
-		"*.js",
+		"*.js*",
 		"lib",
 		"src",
 		"providers",
 		"inngest",
-		"dist"
+		"dist",
+		"dist/*.d.ts*",
+		"dist/*.js*"
 	],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"require": "./dist/index.js"
+		},
+		"./types": {
+			"types": "./dist/types.d.ts"
 		},
 		"./adapters": {
 			"types": "./dist/adapters.d.ts"
@@ -81,9 +86,6 @@
 			"types": "./dist/inngest/*.d.ts",
 			"import": "./dist/inngest/*.js",
 			"require": "./dist/inngest/*.js"
-		},
-		"./types": {
-			"types": "./dist/types.d.ts"
 		}
 	},
 	"private": false,

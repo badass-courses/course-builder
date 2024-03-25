@@ -1,4 +1,6 @@
-import type { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server.js'
+
+import { CourseBuilderSession } from '@coursebuilder/core/types'
 
 /**
  * AppRouteHandlerFnContext is the context that is passed to the handler as the

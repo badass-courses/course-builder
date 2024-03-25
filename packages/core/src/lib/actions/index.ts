@@ -1,6 +1,27 @@
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { Cookie } from '../utils/cookie'
 
+export async function session(
+	options: InternalOptions,
+	cookies: Cookie[],
+): Promise<ResponseInternal<any | null>> {
+	const { callbacks, logger } = options
+
+	const response: ResponseInternal<any | null> = {
+		body: null,
+		headers: { 'Content-Type': 'application/json' },
+		cookies,
+	}
+
+	try {
+		response.body = await callbacks.session({})
+	} catch (e) {
+		logger.error(e as Error)
+	}
+
+	return response
+}
+
 export async function srt(
 	request: RequestInternal,
 	cookies: Cookie[],
