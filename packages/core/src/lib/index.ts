@@ -19,12 +19,12 @@ export async function CourseBuilderInternal(
 		isPost: method === 'POST',
 	})
 
-	console.log('options', options)
-
 	if (method === 'GET') {
 		switch (action) {
 			case 'srt':
 				return await actions.srt(request, cookies, options)
+			case 'session':
+				return {}
 		}
 	} else {
 		switch (action) {

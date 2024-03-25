@@ -1,14 +1,6 @@
-import {
-	afterAll,
-	afterEach,
-	beforeEach,
-	describe,
-	expect,
-	it,
-	vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
-import { CourseBuilderConfig, setEnvDefaults } from '../src/index.js'
+import { CourseBuilderConfig, setEnvDefaults } from '../src'
 import Deepgram from '../src/providers/deepgram.js'
 
 const testConfig: CourseBuilderConfig = {
@@ -30,5 +22,25 @@ describe('config is inferred from environment variables', () => {
 		const [p1] = courseBuilderConfig.providers
 		// @ts-expect-error
 		expect(p1.apiKey).toBe(env.COURSEBUILDER_DEEPGRAM_API_KEY)
+	})
+
+	it('COURSEBUILDER_URL', () => {
+		const env = { COURSEBUILDER_URL: 'http://n/api/coursebuilder' }
+		setEnvDefaults(env, courseBuilderConfig)
+		expect(courseBuilderConfig.basePath).toBe('/api/coursebuilder')
+	})
+
+	it('COURSEBUILDER_URL + prefer config', () => {
+		const env = { COURSEBUILDER_URL: 'http://n/api/coursebuilder' }
+		const fromConfig = '/basepath-from-config'
+		courseBuilderConfig.basePath = fromConfig
+		setEnvDefaults(env, courseBuilderConfig)
+		expect(courseBuilderConfig.basePath).toBe(fromConfig)
+	})
+
+	it('COURSEBUILDER_URL, but invalid value', () => {
+		const env = { COURSEBUILDER_URL: 'secret' }
+		setEnvDefaults(env, courseBuilderConfig)
+		expect(courseBuilderConfig.basePath).toBe('/coursebuilder')
 	})
 })

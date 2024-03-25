@@ -25,4 +25,5 @@ export const courseBuilderConfig: CourseBuilderConfig = {
 
 export const {
 	handlers: { POST, GET },
+	coursebuilder,
 } = NextCourseBuilder(courseBuilderConfig)

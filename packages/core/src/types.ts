@@ -30,7 +30,7 @@ export interface CookieOption {
 	options: CookieSerializeOptions
 }
 
-export type CourseBuilderAction = 'webhook' | 'srt'
+export type CourseBuilderAction = 'webhook' | 'srt' | 'session'
 
 export interface RequestInternal {
 	url: URL
