@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.6
+
+### Patch Changes
+
+- [#126](https://github.com/badass-courses/course-builder/pull/126) [`0b590f9`](https://github.com/badass-courses/course-builder/commit/0b590f984b038d951fc2bceb243415e0cf49ce20) Thanks [@joelhooks](https://github.com/joelhooks)! - updates next-auth and auth-core and gives a "session" to coursebuilder
+
 ## 8.0.5
 
 ### Patch Changes
