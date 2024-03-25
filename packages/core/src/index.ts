@@ -4,10 +4,10 @@ import type { CourseBuilderAdapter } from './adapters'
 import { CourseBuilderInternal } from './lib'
 import { assertConfig } from './lib/utils/assert'
 import { createActionURL, setEnvDefaults } from './lib/utils/env.js'
-import { logger, LoggerInstance, setLogger } from './lib/utils/logger'
+import { logger, setLogger, type LoggerInstance } from './lib/utils/logger'
 import { toInternalRequest, toResponse } from './lib/utils/web'
 import type { Provider } from './providers'
-import { CallbacksOptions, CookiesOptions, ResponseInternal } from './types'
+import type { CallbacksOptions, CookiesOptions } from './types'
 
 export { createActionURL, setEnvDefaults }
 
