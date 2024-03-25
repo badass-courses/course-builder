@@ -14,7 +14,7 @@ export { createActionURL, setEnvDefaults }
 export async function CourseBuilder(
 	request: Request,
 	config: CourseBuilderConfig,
-): Promise<Response | ResponseInternal> {
+): Promise<Response> {
 	setLogger(config.logger, config.debug)
 
 	const internalRequest = await toInternalRequest(request, config)

@@ -35,7 +35,7 @@ export { type NextCourseBuilderConfig }
 
 type AppRouteHandlers = Record<
 	'GET' | 'POST',
-	(req: NextRequest) => Promise<Response | ResponseInternal>
+	(req: NextRequest) => Promise<Response>
 >
 
 export interface NextCourseBuilderResult {
