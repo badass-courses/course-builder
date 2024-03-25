@@ -1,6 +1,6 @@
 import { AdapterError } from '../errors'
 import { CourseBuilderConfig } from '../index'
-import { InternalOptions, RequestInternal } from '../types'
+import { CallbacksOptions, InternalOptions, RequestInternal } from '../types'
 import * as cookie from './utils/cookie.js'
 import { logger, LoggerInstance } from './utils/logger'
 import { merge } from './utils/merge'
@@ -51,6 +51,7 @@ export async function init({
 		),
 		providers,
 		adapter: adapterErrorHandler(courseBuilderOptions.adapter, logger),
+		callbacks: { ...defaultCallbacks, ...courseBuilderOptions.callbacks },
 		logger,
 	}
 
@@ -60,6 +61,12 @@ export async function init({
 }
 
 type Method = (...args: any[]) => Promise<any>
+
+export const defaultCallbacks: CallbacksOptions = {
+	session(payload) {
+		return payload
+	},
+}
 
 function adapterErrorHandler(
 	adapter: CourseBuilderConfig['adapter'],

@@ -1,6 +1,5 @@
 import { getAbility } from '@/ability'
-import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
@@ -76,7 +75,7 @@ export const authOptions: NextAuthConfig = {
 			}
 		},
 	},
-	adapter: courseBuilderConfig.adapter,
+	adapter: courseBuilderAdapter,
 	providers: [
 		/**
 		 * ...add more providers here.

@@ -59,6 +59,7 @@ export interface InternalOptions<TProviderType = ProviderType> {
 	cookies: Record<keyof CookiesOptions, CookieOption>
 	basePath: string
 	inngest: Inngest
+	callbacks: CallbacksOptions
 }
 
 export interface CookieOption {
@@ -67,3 +68,13 @@ export interface CookieOption {
 }
 
 export interface CookiesOptions {}
+
+export interface DefaultCourseBuilderSession {}
+
+export interface CourseBuilderSession extends DefaultCourseBuilderSession {}
+
+export interface CallbacksOptions {
+	session: (
+		params: any,
+	) => Awaitable<CourseBuilderSession | DefaultCourseBuilderSession>
+}

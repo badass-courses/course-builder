@@ -38,11 +38,14 @@
 		"inngest": "^3.16.1"
 	},
 	"devDependencies": {
+		"@auth/core": "^0.28.1",
 		"next": "14.2.0-canary.40",
+		"next-auth": "5.0.0-beta.16",
 		"react": "18.3.0-canary-03d6f7cf0-20240209"
 	},
 	"peerDependencies": {
 		"next": "^14",
+		"next-auth": "5.0.0-beta.16",
 		"react": "^18"
 	}
 }

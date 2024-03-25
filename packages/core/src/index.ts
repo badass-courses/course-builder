@@ -4,10 +4,10 @@ import type { CourseBuilderAdapter } from './adapters'
 import { CourseBuilderInternal } from './lib'
 import { assertConfig } from './lib/utils/assert'
 import { createActionURL, setEnvDefaults } from './lib/utils/env.js'
-import { logger, LoggerInstance, setLogger } from './lib/utils/logger'
+import { logger, setLogger, type LoggerInstance } from './lib/utils/logger'
 import { toInternalRequest, toResponse } from './lib/utils/web'
 import type { Provider } from './providers'
-import { CookiesOptions } from './types'
+import type { CallbacksOptions, CookiesOptions } from './types'
 
 export { createActionURL, setEnvDefaults }
 
@@ -19,15 +19,16 @@ export async function CourseBuilder(
 
 	const internalRequest = await toInternalRequest(request, config)
 	if (!internalRequest) {
-		return new Response('Bad request', { status: 400 })
+		return Response.json('Bad request', { status: 400 })
 	}
 
 	const warningsOrError = assertConfig(internalRequest, config)
+
 	if (Array.isArray(warningsOrError)) {
 		warningsOrError.forEach(logger.warn)
 	} else if (warningsOrError) {
 		logger.error(warningsOrError)
-		return new Response('Internal Server Error', { status: 500 })
+		return Response.json('Internal Server Error', { status: 500 })
 	}
 	const isRedirect = request.headers?.has('X-Course-Builder-Return-Redirect')
 
@@ -43,11 +44,14 @@ export async function CourseBuilder(
 		return Response.json({ url }, { headers: response.headers })
 	} catch (e) {
 		logger.error(e as Error)
-		return new Response('Internal Server Error', { status: 500 })
+		if (request.method === 'POST' && internalRequest.action === 'session')
+			return Response.json(null, { status: 400 })
+		return Response.json('bacon and eggs', { status: 400 })
 	}
 }
 
 export interface CourseBuilderConfig {
+	callbacks?: Partial<CallbacksOptions>
 	adapter?: CourseBuilderAdapter
 	providers: Provider[]
 	debug?: boolean
