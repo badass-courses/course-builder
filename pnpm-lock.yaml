@@ -111,47 +111,32 @@ importers:
         specifier: ^0.17.1
         version: 0.17.2(encoding@0.1.13)
       '@atlaskit/button':
-        specifier: ^17.4.0
-        version: 17.7.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/dropdown-menu':
-        specifier: ^12.5.1
-        version: 12.8.2(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/ds-lib':
-        specifier: ^2.2.3
-        version: 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^17.7.2
+        version: 17.7.2(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/form':
-        specifier: ^9.0.7
-        version: 9.0.10(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/icon':
-        specifier: ^22.0.1
-        version: 22.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^9.1.0
+        version: 9.1.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/modal-dialog':
-        specifier: ^12.10.6
-        version: 12.10.8(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^12.10.10
+        version: 12.10.10(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/pragmatic-drag-and-drop':
-        specifier: ^0.25.0
-        version: 0.25.0
+        specifier: ^1.1.3
+        version: 1.1.3
       '@atlaskit/pragmatic-drag-and-drop-flourish':
-        specifier: ^0.2.0
-        version: 0.2.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/pragmatic-drag-and-drop-hitbox':
-        specifier: ^0.12.1
-        version: 0.12.1
+        specifier: ^1.0.3
+        version: 1.0.3
       '@atlaskit/pragmatic-drag-and-drop-live-region':
-        specifier: ^0.5.3
-        version: 0.5.3
-      '@atlaskit/pragmatic-drag-and-drop-react-accessibility':
-        specifier: ^0.5.1
-        version: 0.5.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/primitives':
-        specifier: ^2.0.2
-        version: 2.1.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^1.0.3
+        version: 1.0.3
       '@atlaskit/select':
-        specifier: ^17.1.0
-        version: 17.3.1(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^17.3.4
+        version: 17.3.4(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/tokens':
-        specifier: ^1.37.1
-        version: 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+        specifier: ^1.42.1
+        version: 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@auth/core':
         specifier: ^0.28.1
         version: 0.28.1
@@ -1286,7 +1271,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       bind-event-listener: 2.1.1
       react: 18.3.0-canary-03d6f7cf0-20240209
@@ -1303,7 +1288,7 @@ packages:
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
@@ -1312,8 +1297,8 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/button@17.7.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-yp+LehV5K65YrbyFjZiNLqDPZUs2KfhaCkpwyLjVWOLxRwi9wI1Q1Evscg4xJfFS6Rjy6hX+vACG3R85vcpukA==}
+  /@atlaskit/button@17.7.2(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-zRnEhMCKsA4iyICz6oRSRmvcC84qAV230j2z97QhCUlQHvpl89Ohudi03Bj7IuxzQNirx3Q75sgSC1DLA/1Oug==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -1322,10 +1307,10 @@ packages:
       '@atlaskit/focus-ring': 1.3.7(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/icon': 22.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/interaction-context': 2.1.3(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/primitives': 4.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/primitives': 5.1.2(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/spinner': 16.0.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -1341,44 +1326,16 @@ packages:
       '@babel/runtime': 7.24.0
     dev: false
 
-  /@atlaskit/css@0.0.3(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-+gvQq4p9qrg7yi9ceh36GNis+eV4mBT87sHYqEiUoMAOJrh2w1+IubsEvIlw/A8tXWennpd2WutYM4PKWKuDaQ==}
+  /@atlaskit/css@0.0.5(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-3OtNcsBhjUwaZJFEGNKxbkg8jS7oEeY3tkuddZv/SwBmj/dAdTIN0MaqFFB5znafGF2k2Bjh4k3PwTU3kT5MVg==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
-      '@compiled/react': 0.16.10(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@compiled/react': 0.17.0(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
     transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@atlaskit/dropdown-menu@12.8.2(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-u+wtettDxrJM1HCkb5yZ9Rq8Bgz64EHppzHMpRP0gKcG3khLffafS8QCWNqNqYkXSxcUCWpBWx3MURJN9rFjTA==}
-    peerDependencies:
-      react: ^16.8.0
-      react-dom: ^16.8.0
-    dependencies:
-      '@atlaskit/button': 17.7.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/codemod-utils': 4.2.3
-      '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/icon': 22.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/layering': 0.2.3(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/menu': 2.1.9(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/platform-feature-flags': 0.2.5
-      '@atlaskit/popup': 1.13.1(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/primitives': 4.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/spinner': 16.0.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@babel/runtime': 7.24.0
-      '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      bind-event-listener: 2.1.1
-      react: 18.3.0-canary-03d6f7cf0-20240209
-      react-dom: 18.2.0(react@18.3.0-canary-03d6f7cf0-20240209)
-    transitivePeerDependencies:
-      - '@types/react'
       - supports-color
     dev: false
 
@@ -1397,7 +1354,7 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
@@ -1406,15 +1363,15 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/form@9.0.10(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-H6p5k6sh4/ez9LklCW5RQ5bUABm1MO4JRKVcNlxVxBwNwEjVvJclc8dIZjwxO56Tk3kefZOHBZmFiElK3K4elA==}
+  /@atlaskit/form@9.1.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-PnqZjCmdjSvrZHmHvaek7JB6d2sd2SFg6XDcC8m3glYQG3r3y6qMs0KUy/lByas1RCJ2hbk8gioBZuA29GYWNw==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
       '@atlaskit/icon': 22.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/primitives': 4.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/primitives': 5.1.2(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       final-form: 4.20.10
@@ -1433,19 +1390,13 @@ packages:
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
-    dev: false
-
-  /@atlaskit/in-product-testing@0.2.3:
-    resolution: {integrity: sha512-tB1GfdM6GVBirm9Ag9Qgo5bNTA1x2unc6o8iMTHDp8OkyEFCDS3l7XgmR7nrBQXv8D4BUzX6laX25vCf0ef0dw==}
-    dependencies:
-      '@babel/runtime': 7.24.0
     dev: false
 
   /@atlaskit/interaction-context@2.1.3(react@18.3.0-canary-03d6f7cf0-20240209):
@@ -1468,29 +1419,8 @@ packages:
       react: 18.3.0-canary-03d6f7cf0-20240209
     dev: false
 
-  /@atlaskit/menu@2.1.9(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-v8tiPn6ROLAZEbA8cLrffk2DXQNDlrCrFrGza0HD6DsqFZldp1nBPuLIG+VBjzr/fSnu9Gc5zN5VBCSbajc2gQ==}
-    peerDependencies:
-      react: ^16.8.0
-      react-dom: ^16.8.0
-    dependencies:
-      '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/focus-ring': 1.3.7(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/platform-feature-flags': 0.2.5
-      '@atlaskit/primitives': 4.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@babel/runtime': 7.24.0
-      '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      react: 18.3.0-canary-03d6f7cf0-20240209
-      react-dom: 18.2.0(react@18.3.0-canary-03d6f7cf0-20240209)
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
-    dev: false
-
-  /@atlaskit/modal-dialog@12.10.8(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-MaSdUUYRnorMOYB7H67lWQa+jbdH2k/F7arjNduv+iifpEHCnHEKN3/xN6l3wL9D6J1xdI+EfkzwMrRMiPxQ0w==}
+  /@atlaskit/modal-dialog@12.10.10(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-dHv/L2WXYpJXMIs3ow81l19r0LNz5GkgU3pv6vAgu+z4mGY5ahhRWtURlARr2UwGvz0HfJHFfVMzDzMC/VjgLA==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -1504,9 +1434,9 @@ packages:
       '@atlaskit/motion': 1.5.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/primitives': 4.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/primitives': 5.1.2(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       bind-event-listener: 2.1.1
@@ -1541,45 +1471,6 @@ packages:
       '@babel/runtime': 7.24.0
     dev: false
 
-  /@atlaskit/popper@5.5.4(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-ALMgyXhMntmJOHdiXb/Y3SoLJ8JneMuTlnkC1UClm2nNvn4WmFfZ+ak8Z1yecLdk2HJ5Z6PgcDsPZ34QmKjhCQ==}
-    peerDependencies:
-      react: ^16.8.0
-    dependencies:
-      '@atlaskit/in-product-testing': 0.2.3
-      '@babel/runtime': 7.24.0
-      '@popperjs/core': 2.11.8
-      react: 18.3.0-canary-03d6f7cf0-20240209
-      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-    transitivePeerDependencies:
-      - react-dom
-    dev: false
-
-  /@atlaskit/popup@1.13.1(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-ifSTebAODI/xy+JHZkBXi3l0cd/+mXkmB5ndEOklDupZ2hq6arBDFbCOMSucw4Em44hsgryLPncEMbPLISCT0Q==}
-    peerDependencies:
-      react: ^16.8.0
-      react-dom: ^16.8.0
-    dependencies:
-      '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/layering': 0.2.3(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/platform-feature-flags': 0.2.5
-      '@atlaskit/popper': 5.5.4(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/portal': 4.4.0(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@babel/runtime': 7.24.0
-      '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      bind-event-listener: 2.1.1
-      focus-trap: 2.4.6
-      memoize-one: 6.0.0
-      react: 18.3.0-canary-03d6f7cf0-20240209
-      react-dom: 18.2.0(react@18.3.0-canary-03d6f7cf0-20240209)
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
-    dev: false
-
   /@atlaskit/portal@4.4.0(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
     resolution: {integrity: sha512-/peuEGQt3W8qqsza8j/jGNuhE1SHkPXaXFww5DWr8lm22BhutTpHrHrOrkaSS9WOxgs0s1CZ+OixQFsHCJEiMQ==}
     peerDependencies:
@@ -1594,13 +1485,13 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop-flourish@0.2.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-ivJ3pTGvdIuoWV8CbNGrN9DE7OpB7251nOlVlEB+EJbU8KWTeBhb36CzadZ69lWqzpSTIo7sARvx0OudZIgIMg==}
+  /@atlaskit/pragmatic-drag-and-drop-flourish@1.0.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-AXGTVssoRC956RS8Wr2fyk3/IsFwYWLlYOBEbhdhEXKTRxF8mPkNOcB5cyhQq0LMXFNOrLZN1orpBZo3uwRVIw==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
       '@atlaskit/motion': 1.5.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       react: 18.3.0-canary-03d6f7cf0-20240209
     transitivePeerDependencies:
@@ -1608,54 +1499,38 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop-hitbox@0.12.1:
-    resolution: {integrity: sha512-kasSifl+wIYGUCEqF+VMbxPxgoQjW6S5rj5MzQ8ULZnOgqDJ5xuiMAcI2px0osftEg6wusX0jRkPOWpSeEXz3Q==}
+  /@atlaskit/pragmatic-drag-and-drop-hitbox@1.0.3:
+    resolution: {integrity: sha512-/Sbu/HqN2VGLYBhnsG7SbRNg98XKkbF6L7XDdBi+izRybfaK1FeMfodPpm/xnBHPJzwYMdkE0qtLyv6afhgMUA==}
     dependencies:
-      '@atlaskit/pragmatic-drag-and-drop': 0.25.0
+      '@atlaskit/pragmatic-drag-and-drop': 1.1.3
       '@babel/runtime': 7.24.0
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop-live-region@0.5.3:
-    resolution: {integrity: sha512-zrsvM5/Rv3IkekANI7BKvgqy4zMTlz/lUXlr1CTObN7k5Ak6EE+mpRKDaEECxUHzWU/Hgcggt/Y+6/0hRTjH3A==}
+  /@atlaskit/pragmatic-drag-and-drop-live-region@1.0.3:
+    resolution: {integrity: sha512-p+/rA1Go2vRsiiEbMCvYfQPElZKhZialQqAfOihJ6OlaAt6yQpttEH/8qraubundnA9VsWQGIoX3E7X1V6GrfQ==}
     dependencies:
       '@babel/runtime': 7.24.0
     dev: false
 
-  /@atlaskit/pragmatic-drag-and-drop-react-accessibility@0.5.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-TgXWKoExkhCD3xa7zf7AVeLrzquSMMJn+85oH3ler5Bu0y5j1OasXhTnyhFNOWbgpwSPcyGG+aXAsgVPyTGbbg==}
-    peerDependencies:
-      react: ^16.8.0
-    dependencies:
-      '@atlaskit/focus-ring': 1.3.7(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/icon': 22.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/primitives': 2.1.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@babel/runtime': 7.24.0
-      '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      react: 18.3.0-canary-03d6f7cf0-20240209
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
-    dev: false
-
-  /@atlaskit/pragmatic-drag-and-drop@0.25.0:
-    resolution: {integrity: sha512-odIEqRtKhBqSNnAOfqVCVKP9aEy5oWO80bmQORXGCiBv0sIexWdn0RH4j8NUf6Glce/iV/tJLOh/irqcqtGo4Q==}
+  /@atlaskit/pragmatic-drag-and-drop@1.1.3:
+    resolution: {integrity: sha512-lx6ZMPSU8zPhUfAkdKajNAFWDDIqdtM8eQzCsqCRalXWumpclcvqeN8VCLkmclcQDEUhV8c2utKbcuhm7hvRIw==}
     dependencies:
       '@babel/runtime': 7.24.0
       bind-event-listener: 2.1.1
       raf-schd: 4.0.3
     dev: false
 
-  /@atlaskit/primitives@2.1.0(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-s+A8nfKAskighYWJzp0ANxgBl1DnZjSn26e4RUxJA+WUZX9PtOX6gNQrTrmOA2C3Neme8s5OJHTyjMq14AyS2A==}
+  /@atlaskit/primitives@5.1.2(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-PUrih8oCB906Jq1xBXSU8X9kk6ojeWnCNK1oG8mO8CXdws26seudgSh3tfHASWZ/7uvLjVaIiJ+fn0+Jh4/c+A==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@atlaskit/analytics-next': 9.2.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/app-provider': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/css': 0.0.5(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/interaction-context': 2.1.3(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@emotion/serialize': 1.1.3
@@ -1667,30 +1542,8 @@ packages:
       - supports-color
     dev: false
 
-  /@atlaskit/primitives@4.1.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-hrxPm0rSO0h+egM/hmwjtG4yEOdZ99GxRdX0JWm58H2gvUDp4gaieZ26Ma5RNuQrgqVQU/EltF2Y68J1XhT46g==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      '@atlaskit/analytics-next': 9.2.1(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/app-provider': 1.0.0(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/css': 0.0.3(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/interaction-context': 2.1.3(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@babel/runtime': 7.24.0
-      '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@emotion/serialize': 1.1.3
-      bind-event-listener: 2.1.1
-      react: 18.3.0-canary-03d6f7cf0-20240209
-      tiny-invariant: 1.3.3
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
-    dev: false
-
-  /@atlaskit/select@17.3.1(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-UU6v0m1R9InuMh/0eV1vce78ItNSZkmrglvr/yJ/yVkw/n5qWSWrk3HgxQAdhDLxFu1xVoerKPeX5fGfT5pKQQ==}
+  /@atlaskit/select@17.3.4(@types/react@18.2.66)(react-dom@18.2.0)(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-PAOfYqCip1HjwjRjiFrPh9I3RMxwYo5svEtHivJ/4Z6JojhbvZA6T1IH1KmDuHNn7S294E2PzSawIrm1gkCdQw==}
     peerDependencies:
       react: ^16.8.0
       react-dom: ^16.8.0
@@ -1700,7 +1553,7 @@ packages:
       '@atlaskit/platform-feature-flags': 0.2.5
       '@atlaskit/spinner': 16.0.1(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/visually-hidden': 1.2.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -1728,7 +1581,7 @@ packages:
     dependencies:
       '@atlaskit/interaction-context': 2.1.3(react@18.3.0-canary-03d6f7cf0-20240209)
       '@atlaskit/theme': 12.6.5(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       '@emotion/react': 11.11.4(@types/react@18.2.66)(react@18.3.0-canary-03d6f7cf0-20240209)
       react: 18.3.0-canary-03d6f7cf0-20240209
@@ -1744,15 +1597,15 @@ packages:
     dependencies:
       '@atlaskit/codemod-utils': 4.2.3
       '@atlaskit/ds-lib': 2.2.4(react@18.3.0-canary-03d6f7cf0-20240209)
-      '@atlaskit/tokens': 1.41.1(react@18.3.0-canary-03d6f7cf0-20240209)
+      '@atlaskit/tokens': 1.42.1(react@18.3.0-canary-03d6f7cf0-20240209)
       '@babel/runtime': 7.24.0
       react: 18.3.0-canary-03d6f7cf0-20240209
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@atlaskit/tokens@1.41.1(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-E8tgnxBuiSPOJKRdPK5sebfuNJVD8Aj+pfA3j7G2u3izHYDspQol4+lIkgVbEjmWzhH5mtv0FbeWSGZtlolJhw==}
+  /@atlaskit/tokens@1.42.1(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-P2JNxcwQGjeYDBF03kkQpJ3UPMIC20VN3VAotMIyPU4M3Z8HVvoBgGoKis3ahG0s3tNnph6R3hsw9snRAyGJsQ==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
@@ -3529,8 +3382,8 @@ packages:
       w3c-keyname: 2.2.8
     dev: false
 
-  /@compiled/react@0.16.10(react@18.3.0-canary-03d6f7cf0-20240209):
-    resolution: {integrity: sha512-R7ds8aaRd7LKh36P0kO6Cjdf7Ybo3jglV3QpofM7Wnc2YhKunWpN4h5xi5yx5HLjC5kNLMHTiTTQOMS179z51Q==}
+  /@compiled/react@0.17.0(react@18.3.0-canary-03d6f7cf0-20240209):
+    resolution: {integrity: sha512-0I0kYIIdzeofxtJHOmAzo/9Tc39AdGwyvCd4uwwYkns4VJAMXdPVmUp8HPZJJmmsgbtxklDjJpw7hCMljhnK8A==}
     peerDependencies:
       react: '>= 16.12.0'
     dependencies:
@@ -14609,12 +14462,6 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /focus-trap@2.4.6:
-    resolution: {integrity: sha512-vWZTPtBU6pBoyWZDRZJHkXsyP2ZCZBHE3DRVXnSVdQKH/mcDtu9S5Kz8CUDyIqpfZfLEyI9rjKJLnc4Y40BRBg==}
-    dependencies:
-      tabbable: 1.1.3
-    dev: false
-
   /follow-redirects@1.15.6:
     resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
     engines: {node: '>=4.0'}
@@ -22156,10 +22003,6 @@ packages:
     resolution: {integrity: sha512-ulAk51I9UVUyJgxlv9M6lFot2WP3e7t8Kz9+IS6D4rVba1tR9kON+Ey69f+1R4Q8cd45Lod6a4IcJIxnzGc/zA==}
     engines: {node: '>=18'}
     dev: true
-
-  /tabbable@1.1.3:
-    resolution: {integrity: sha512-nOWwx35/JuDI4ONuF0ZTo6lYvI0fY0tZCH1ErzY2EXfu4az50ZyiUX8X073FLiZtmWUVlkRnuXsehjJgCw9tYg==}
-    dev: false
 
   /tailwind-merge@1.14.0:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}

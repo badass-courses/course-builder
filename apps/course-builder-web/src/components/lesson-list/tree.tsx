@@ -16,15 +16,17 @@ import {
 	ItemMode,
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 import * as liveRegion from '@atlaskit/pragmatic-drag-and-drop-live-region'
-import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/util/combine'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import memoizeOne from 'memoize-one'
 import invariant from 'tiny-invariant'
 
 import {
 	getInitialTreeState,
 	tree,
+	TreeAction,
 	TreeItem as TreeItemType,
+	TreeState,
 	treeStateReducer,
 } from './data/tree'
 import {
@@ -61,15 +63,14 @@ function createTreeItemRegistry() {
 }
 
 export default function Tree({
-	initialData,
+	state,
+	updateState,
+	rootResourceId,
 }: {
-	initialData?: TreeItemType[]
+	state: TreeState
+	updateState: React.Dispatch<TreeAction>
+	rootResourceId: string
 }) {
-	const [state, updateState] = useReducer(
-		treeStateReducer,
-		initialData,
-		getInitialTreeState,
-	)
 	const params = useParams<{ module: string }>()
 
 	const ref = useRef<HTMLDivElement>(null)
@@ -86,15 +87,29 @@ export default function Tree({
 	const saveTreeData = useCallback(async () => {
 		const currentData = lastStateRef.current
 		console.log('currentData', currentData)
+
 		for (const item of currentData) {
 			if (!item.itemData) continue
+			if (item.children.length > 0) {
+				for (const childItem of item.children) {
+					if (!childItem.itemData) continue
+					console.log('childItem', { item, childItem })
+					await updateResourcePosition({
+						currentParentResourceId: childItem.itemData.resourceOfId,
+						parentResourceId: item.itemData.resourceId,
+						resourceId: childItem.itemData.resourceId,
+						position: item.children.indexOf(childItem),
+					})
+				}
+			}
 			await updateResourcePosition({
-				tutorialId: params.module as string,
+				currentParentResourceId: item.itemData.resourceOfId,
+				parentResourceId: rootResourceId,
 				resourceId: item.itemData.resourceId,
 				position: currentData.indexOf(item),
 			})
 		}
-	}, [params])
+	}, [rootResourceId])
 
 	useEffect(() => {
 		if (lastAction === null) {
@@ -215,7 +230,7 @@ export default function Tree({
 			getChildrenOfItem,
 			registerTreeItem,
 		}),
-		[getChildrenOfItem, getMoveTargets, registerTreeItem],
+		[getChildrenOfItem, getMoveTargets, registerTreeItem, updateState],
 	)
 
 	useEffect(() => {
@@ -258,7 +273,7 @@ export default function Tree({
 				},
 			}),
 		)
-	}, [context, extractInstruction])
+	}, [context, extractInstruction, updateState])
 
 	return (
 		<TreeContext.Provider value={context}>

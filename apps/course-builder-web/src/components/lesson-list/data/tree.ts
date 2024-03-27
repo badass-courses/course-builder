@@ -89,6 +89,11 @@ export type TreeAction =
 			itemId: string
 	  }
 	| {
+			type: 'add-item'
+			item: TreeItem
+			itemId: string
+	  }
+	| {
 			type: 'expand'
 			itemId: string
 	  }
@@ -229,6 +234,10 @@ export function treeStateReducer(
 }
 
 const dataReducer = (data: TreeItem[], action: TreeAction) => {
+	if (action.type === 'add-item') {
+		return [...data, action.item]
+	}
+
 	const item = tree.find(data, action.itemId)
 	if (!item) {
 		return data

@@ -11,15 +11,15 @@ import {
 	Instruction,
 	ItemMode,
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import {
 	draggable,
 	dropTargetForElements,
 	monitorForElements,
-} from '@atlaskit/pragmatic-drag-and-drop/adapter/element'
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview'
+import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/util/combine'
-import { offsetFromPointer } from '@atlaskit/pragmatic-drag-and-drop/util/offset-from-pointer'
-import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/util/set-custom-native-drag-preview'
 import { token } from '@atlaskit/tokens'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
@@ -170,10 +170,11 @@ const TreeItem = memo(function TreeItem({
 					type: 'tree-item',
 					isOpenOnDragStart: item.isOpen,
 					uniqueContextId,
+					item: item,
 				}),
 				onGenerateDragPreview: ({ nativeSetDragImage }) => {
 					setCustomNativeDragPreview({
-						getOffset: offsetFromPointer({ x: '16px', y: '8px' }),
+						getOffset: pointerOutsideOfPreview({ x: '16px', y: '8px' }),
 						render: ({ container }) => {
 							const root = createRoot(container)
 							root.render(<Preview item={item} />)
@@ -198,7 +199,7 @@ const TreeItem = memo(function TreeItem({
 			}),
 			dropTargetForElements({
 				element: buttonRef.current,
-				getData: ({ input, element }) => {
+				getData: ({ input, element, source }) => {
 					const data = { id: item.id }
 
 					return attachInstruction(data, {
@@ -207,12 +208,21 @@ const TreeItem = memo(function TreeItem({
 						indentPerLevel,
 						currentLevel: level,
 						mode,
-						block: item.type === 'lesson' ? ['make-child'] : [],
+						block:
+							(source.data.item as any).type === 'section' ||
+							item.type !== 'section'
+								? ['make-child']
+								: [],
 					})
 				},
-				canDrop: ({ source }) =>
-					source.data.type === 'tree-item' &&
-					source.data.uniqueContextId === uniqueContextId,
+				canDrop: (allData) => {
+					const { source } = allData
+					return (
+						source.data.type === 'tree-item' &&
+						source.data.uniqueContextId === uniqueContextId
+					)
+				},
+
 				getIsSticky: () => true,
 				onDrag: ({ self, source }) => {
 					const instruction = extractInstruction(self.data)
