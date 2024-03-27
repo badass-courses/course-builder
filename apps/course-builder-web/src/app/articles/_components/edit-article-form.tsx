@@ -25,7 +25,10 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 			...article,
 			fields: {
 				description: article.fields?.description ?? '',
-				socialImage: defaultSocialImage,
+				socialImage: {
+					type: 'imageUrl',
+					url: defaultSocialImage,
+				},
 				slug: article.fields?.slug ?? '',
 			},
 		},
@@ -62,7 +65,7 @@ const ArticleMetadataFormFields = ({
 }: {
 	form: UseFormReturn<z.infer<typeof ArticleSchema>>
 }) => {
-	const currentSocialImage = form.watch('fields.socialImage')
+	const currentSocialImage = form.watch('fields.socialImage.url')
 	return (
 		<EditResourcesMetadataFields form={form}>
 			<MetadataFieldSocialImage
