@@ -8,6 +8,7 @@ import { EditResourcesMetadataPanel } from '@/components/resources-crud/panels/e
 import { type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import { ResizableHandle } from '@coursebuilder/ui'
 
 export function EditResourcesFormDesktop({
@@ -19,14 +20,14 @@ export function EditResourcesFormDesktop({
 	updateResource,
 	availableWorkflows,
 }: {
-	resource: {
-		type: string
-		id: string
-		body?: string | null
-		title?: string | null
-		slug: string
+	resource: ContentResource & {
+		fields?: {
+			body?: string | null
+			title?: string | null
+			slug: string
+		}
 	}
-	getResourcePath: (slug: string) => string
+	getResourcePath: (slug?: string) => string
 	resourceSchema: Schema
 	children?: React.ReactNode
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
@@ -47,7 +48,7 @@ export function EditResourcesFormDesktop({
 		<>
 			<EditResourcesActionBar
 				resource={resource}
-				resourcePath={getResourcePath(resource.slug)}
+				resourcePath={getResourcePath(resource.fields?.slug)}
 				onSubmit={() => {
 					onSubmit(form.getValues())
 				}}

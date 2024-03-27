@@ -20,7 +20,7 @@ export function MetadataFieldSocialImage({
 	return (
 		<FormField
 			control={form.control}
-			name="socialImage"
+			name="fields.socialImage"
 			render={({ field }) => (
 				<FormItem className="px-5">
 					<FormLabel>Social Image</FormLabel>

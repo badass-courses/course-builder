@@ -7,37 +7,22 @@ import { NewPrompt, Prompt, PromptSchema } from '@/lib/prompts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function getPrompts(): Promise<Prompt[]> {
-	const query = sql`
-    SELECT
-      prompts.id as id,
-      prompts.type as type,
-      CAST(prompts.updatedAt AS DATETIME) as updatedAt,
-      CAST(prompts.createdAt AS DATETIME) as createdAt,
-      JSON_EXTRACT (prompts.fields, "$.title") AS title,
-      JSON_EXTRACT (prompts.fields, "$.state") AS state,
-      JSON_EXTRACT (prompts.fields, "$.slug") AS slug
-    FROM
-      ${contentResource} as prompts
-    WHERE
-      prompts.type = 'prompt'
-    ORDER BY prompts.createdAt DESC;
-  `
+	const prompts = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'prompt'),
+	})
 
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsed = z.array(PromptSchema).safeParse(result.rows)
-			return parsed.success ? parsed.data : []
-		})
-		.catch((error) => {
-			console.error(error)
-			throw error
-		})
+	const promptsParsed = z.array(PromptSchema).safeParse(prompts)
+	if (!promptsParsed.success) {
+		console.error('Error parsing prompts', promptsParsed)
+		return []
+	}
+
+	return promptsParsed.data
 }
 
 export async function createPrompt(input: NewPrompt) {
@@ -53,10 +38,10 @@ export async function createPrompt(input: NewPrompt) {
 		id: newPromptId,
 		type: 'prompt',
 		fields: {
-			title: input.title,
+			title: input.fields.title,
 			state: 'draft',
 			visibility: 'unlisted',
-			slug: slugify(`${input.title}~${guid()}`),
+			slug: slugify(`${input.fields.title}~${guid()}`),
 		},
 		createdById: user.id,
 	})
@@ -81,11 +66,11 @@ export async function updatePrompt(input: Prompt) {
 		return createPrompt(input)
 	}
 
-	let promptSlug = input.slug
+	let promptSlug = input.fields.slug
 
-	if (input.title !== currentPrompt?.title) {
-		const splitSlug = currentPrompt?.slug.split('~') || ['', guid()]
-		promptSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
+	if (input.fields.title !== currentPrompt?.fields.title) {
+		const splitSlug = currentPrompt?.fields.slug.split('~') || ['', guid()]
+		promptSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
 	const query = sql`
@@ -93,10 +78,10 @@ export async function updatePrompt(input: Prompt) {
     SET
       ${contentResource.fields} = JSON_SET(
         ${contentResource.fields},
-        '$.title', ${input.title},
+        '$.title', ${input.fields.title},
         '$.slug', ${promptSlug},
-        '$.body', ${input.body},
-        '$.state', ${input.state}
+        '$.body', ${input.fields.body},
+        '$.state', ${input.fields.state}
       )
     WHERE
       id = ${input.id};

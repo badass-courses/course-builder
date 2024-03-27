@@ -2,7 +2,7 @@ import * as schema from '@/db/schema'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { Client, connect } from '@planetscale/database'
-import { eq, sql } from 'drizzle-orm'
+import { eq, or, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/planetscale-serverless'
 import type * as Party from 'partykit/server'
 import { onConnect } from 'y-partykit'
@@ -45,11 +45,16 @@ export default class Server implements Party.Server {
 		return onConnect(conn, this.party, {
 			async load() {
 				const tip = await db.query.contentResource.findFirst({
-					where: eq(contentResource.id, party.id),
-					with: {
-						resources: true,
-					},
+					where: or(
+						eq(
+							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+							party.id,
+						),
+						eq(contentResource.id, party.id),
+					),
 				})
+
+				console.log('tip', tip)
 
 				const doc = new Y.Doc()
 				if (tip?.fields?.body) {

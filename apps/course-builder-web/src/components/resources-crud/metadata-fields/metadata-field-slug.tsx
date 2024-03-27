@@ -13,7 +13,7 @@ export function MetadataFieldSlug({ form }: { form: UseFormReturn<any> }) {
 	return (
 		<FormField
 			control={form.control}
-			name="slug"
+			name="fields.slug"
 			render={({ field }) => (
 				<FormItem className="px-5">
 					<FormLabel>Slug</FormLabel>

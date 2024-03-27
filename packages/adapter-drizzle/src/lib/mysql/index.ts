@@ -1,6 +1,6 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, asc, eq, sql } from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
 	MySqlDatabase,
@@ -8,6 +8,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 import {
@@ -178,11 +179,35 @@ export function mySqlDrizzleAdapter(
 				.set({ fields: { ...currentResource.fields, ...options.fields } })
 				.where(eq(contentResource.id, options.id))
 
-			return await client
-				.select()
-				.from(contentResource)
-				.where(eq(contentResource.id, options.id))
-				.then((res) => res[0])
+			const resource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, options.id),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			const parsedResource = ContentResourceSchema.safeParse(resource)
+
+			if (!parsedResource.success) {
+				console.error('Error parsing resource', resource)
+				return null
+			}
+
+			return parsedResource.data
 		},
 		async getVideoResource(id) {
 			if (!id) {
@@ -222,20 +247,66 @@ export function mySqlDrizzleAdapter(
 
 			await client.insert(contentResource).values({ ...data, id })
 
-			return await client
-				.select()
-				.from(contentResource)
-				.where(eq(contentResource.id, id))
-				.then((res) => res[0])
+			const resource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, id),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			const parsedResource = ContentResourceSchema.safeParse(resource)
+
+			if (!parsedResource.success) {
+				console.error('Error parsing resource', resource)
+				throw new Error('Error parsing resource')
+			}
+
+			return parsedResource.data
 		},
 		async getContentResource(data) {
-			return (
-				(await client
-					.select()
-					.from(contentResource)
-					.where(eq(contentResource.id, data))
-					.then((res) => res[0])) ?? null
-			)
+			const resource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, data),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			const parsedResource = ContentResourceSchema.safeParse(resource)
+
+			if (!parsedResource.success) {
+				console.error('Error parsing resource', resource)
+				return null
+			}
+
+			return parsedResource.data
 		},
 		async createUser(data) {
 			const id = crypto.randomUUID()

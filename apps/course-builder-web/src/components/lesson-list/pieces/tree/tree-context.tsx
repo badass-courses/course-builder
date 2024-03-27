@@ -4,6 +4,8 @@ import {
 	extractInstruction,
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 
+import { ContentResource } from '@coursebuilder/core/types'
+
 import type { TreeAction, TreeItem } from '../../data/tree'
 
 export type TreeContextValue = {
@@ -12,6 +14,8 @@ export type TreeContextValue = {
 	getPathToItem: (itemId: string) => string[]
 	getMoveTargets: ({ itemId }: { itemId: string }) => TreeItem[]
 	getChildrenOfItem: (itemId: string) => TreeItem[]
+	rootResourceId: string | null
+	rootResource: ContentResource | null
 	registerTreeItem: (args: {
 		itemId: string
 		element: HTMLElement
@@ -26,6 +30,8 @@ export const TreeContext = createContext<TreeContextValue>({
 	getMoveTargets: () => [],
 	getChildrenOfItem: () => [],
 	registerTreeItem: () => {},
+	rootResourceId: null,
+	rootResource: null,
 })
 
 export type DependencyContext = {

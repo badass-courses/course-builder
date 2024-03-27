@@ -27,16 +27,20 @@ export function CreateResourceForm({
 }) {
 	const router = useRouter()
 
-	const form = useForm<{ title: string }>({
-		resolver: zodResolver(z.object({ title: z.string() })),
+	const form = useForm<{ fields: { title: string } }>({
+		resolver: zodResolver(
+			z.object({ fields: z.object({ title: z.string() }) }),
+		),
 		defaultValues: {
-			title: '',
+			fields: {
+				title: '',
+			},
 		},
 	})
 
-	const internalOnSubmit = async (values: { title: string }) => {
+	const internalOnSubmit = async (values: { fields: { title: string } }) => {
 		const resource = await createResource({
-			title: values.title,
+			title: values.fields.title,
 			type: resourceType,
 		})
 		form.reset()
@@ -44,7 +48,7 @@ export function CreateResourceForm({
 			if (onCreate) {
 				await onCreate(resource)
 			} else {
-				router.push(`/${resourceType}s/${resource.fields.slug}/edit`)
+				router.push(`/${resourceType}s/${resource.fields?.slug}/edit`)
 			}
 		}
 	}
@@ -57,7 +61,7 @@ export function CreateResourceForm({
 			>
 				<FormField
 					control={form.control}
-					name="title"
+					name="fields.title"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel className="text-lg font-bold">Title</FormLabel>

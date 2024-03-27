@@ -1,26 +1,38 @@
+import * as React from 'react'
 import { notFound } from 'next/navigation'
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
+import { LessonSchema } from '@/lib/lessons'
+import { getTip } from '@/lib/tips-query'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
+import { asc, like } from 'drizzle-orm'
+import { last } from 'lodash'
+import { z } from 'zod'
+
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+
+import { EditLessonForm } from './_components/edit-lesson-form'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditTutorialLessonPage({
+export default async function LessonEditPage({
 	params,
 }: {
-	params: { module: string; lesson: string }
+	params: { lesson: string }
 }) {
-	const { module, lesson } = params
-
 	const { ability } = await getServerAuthSession()
+	const parsedLesson = LessonSchema.safeParse(
+		await db.query.contentResource.findFirst({
+			where: like(contentResource.id, `%${last(params.lesson.split('-'))}%`),
+		}),
+	)
 
-	const lessonData = null
-
-	if (!lessonData || !ability.can('update', 'Content')) {
+	if (!parsedLesson.success || !ability.can('create', 'Content')) {
 		notFound()
 	}
 
 	return (
-		<div className="flex flex-col">
-			<div>Edit Tutorial Lesson Form</div>
-		</div>
+		<EditLessonForm key={parsedLesson.data.id} lesson={parsedLesson.data} />
 	)
 }

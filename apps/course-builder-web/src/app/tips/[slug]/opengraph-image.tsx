@@ -24,7 +24,7 @@ export default async function TipOG({ params }: { params: { slug: string } }) {
 				}}
 			>
 				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
-					<div tw="text-[60px] text-white">{resource?.title}</div>
+					<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
 				</main>
 			</div>
 		),

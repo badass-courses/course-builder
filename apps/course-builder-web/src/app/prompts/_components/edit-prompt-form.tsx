@@ -20,7 +20,9 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 		resolver: zodResolver(PromptSchema),
 		defaultValues: {
 			...prompt,
-			description: prompt.description ?? '',
+			fields: {
+				description: prompt.fields?.description ?? '',
+			},
 		},
 	})
 

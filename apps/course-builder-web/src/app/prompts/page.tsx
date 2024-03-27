@@ -38,8 +38,8 @@ export default async function PromptsIndexPage() {
 					<Card key={prompt.id}>
 						<CardHeader>
 							<CardTitle>
-								<Link href={`/prompts/${prompt.slug || prompt.id}`}>
-									{prompt.title}
+								<Link href={`/prompts/${prompt.fields.slug || prompt.id}`}>
+									{prompt.fields.title}
 								</Link>
 							</CardTitle>
 						</CardHeader>

@@ -7,6 +7,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
+import { useRouter } from 'next/navigation'
 import {
 	Instruction,
 	ItemMode,
@@ -21,6 +22,7 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
+import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
 
@@ -102,7 +104,8 @@ const TreeItem = memo(function TreeItem({
 	const [instruction, setInstruction] = useState<Instruction | null>(null)
 	const cancelExpandRef = useRef<(() => void) | null>(null)
 
-	const { dispatch, uniqueContextId, getPathToItem } = useContext(TreeContext)
+	const { dispatch, uniqueContextId, getPathToItem, rootResource } =
+		useContext(TreeContext)
 	const { DropIndicator, attachInstruction, extractInstruction } =
 		useContext(DependencyContext)
 	const toggleOpen = useCallback(() => {
@@ -308,6 +311,8 @@ const TreeItem = memo(function TreeItem({
 		}
 	})()
 
+	const router = useRouter()
+
 	return (
 		<Fragment>
 			<div
@@ -320,7 +325,18 @@ const TreeItem = memo(function TreeItem({
 					{...aria}
 					className="relative m-0 w-full cursor-pointer rounded-s border-0 bg-transparent p-0"
 					id={`tree-item-${item.id}`}
-					onClick={toggleOpen}
+					onClick={
+						item.type === 'section'
+							? toggleOpen
+							: () => {
+									if (rootResource) {
+										console.log(rootResource)
+										router.push(
+											`/${pluralize(rootResource?.type)}/${rootResource?.fields?.slug}/${item.id}`,
+										)
+									}
+								}
+					}
 					ref={buttonRef}
 					type="button"
 					style={{ paddingLeft: level * indentPerLevel }}
@@ -339,7 +355,7 @@ const TreeItem = memo(function TreeItem({
 							{item.label ?? item.id}
 						</span>
 						<small className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap text-left">
-							{item.type === 'lesson' ? <code>Lesson</code> : null}
+							{item.type ? <code>{item.type}</code> : null}
 							<code className="text- absolute bottom-0 right-[var(--grid)] text-xs">
 								({mode})
 							</code>

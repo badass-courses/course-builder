@@ -14,7 +14,7 @@ export function MetadataFieldTitle({ form }: { form: UseFormReturn<any> }) {
 	return (
 		<FormField
 			control={form.control}
-			name="title"
+			name="fields.title"
 			render={({ field }) => (
 				<FormItem className="px-5">
 					<FormLabel>Title</FormLabel>

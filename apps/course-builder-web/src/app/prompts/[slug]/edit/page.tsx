@@ -20,5 +20,5 @@ export default async function PromptEditPage({
 		notFound()
 	}
 
-	return <EditPromptForm key={prompt.slug} prompt={prompt} />
+	return <EditPromptForm key={prompt.fields?.slug} prompt={prompt} />
 }

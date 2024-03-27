@@ -27,7 +27,7 @@ export async function generateMetadata(
 	}
 
 	return {
-		title: prompt.title,
+		title: prompt.fields?.title,
 		openGraph: { images: [getOGImageUrlForResource(prompt)] },
 	}
 }
@@ -52,7 +52,9 @@ async function PromptActionBar({
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button asChild size="sm">
-						<Link href={`/prompts/${prompt.slug || prompt.id}/edit`}>Edit</Link>
+						<Link href={`/prompts/${prompt.fields?.slug || prompt.id}/edit`}>
+							Edit
+						</Link>
 					</Button>
 				</div>
 			) : (
@@ -79,13 +81,13 @@ async function Prompt({
 	return (
 		<div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
 			<ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">
-				{prompt.body}
+				{prompt.fields?.body}
 			</ReactMarkdown>
-			{prompt.description && (
+			{prompt.fields?.description && (
 				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
 					<div className="border-t pt-5">
 						<strong>Description</strong>
-						<ReactMarkdown>{prompt.description}</ReactMarkdown>
+						<ReactMarkdown>{prompt.fields?.description}</ReactMarkdown>
 					</div>
 				</aside>
 			)}
@@ -100,7 +102,9 @@ async function PromptTitle({
 }) {
 	const prompt = await promptLoader
 
-	return <h1 className="text-3xl font-bold sm:text-4xl">{prompt?.title}</h1>
+	return (
+		<h1 className="text-3xl font-bold sm:text-4xl">{prompt?.fields?.title}</h1>
+	)
 }
 
 export default async function PromptPage({

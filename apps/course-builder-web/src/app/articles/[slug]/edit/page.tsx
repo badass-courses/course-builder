@@ -20,5 +20,5 @@ export default async function ArticleEditPage({
 		notFound()
 	}
 
-	return <EditArticleForm key={article.slug} article={article} />
+	return <EditArticleForm key={article.fields.slug} article={article} />
 }

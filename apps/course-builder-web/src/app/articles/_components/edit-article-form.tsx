@@ -23,8 +23,11 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 		resolver: zodResolver(ArticleSchema),
 		defaultValues: {
 			...article,
-			description: article.description ?? '',
-			socialImage: defaultSocialImage,
+			fields: {
+				description: article.fields?.description ?? '',
+				socialImage: defaultSocialImage,
+				slug: article.fields?.slug ?? '',
+			},
 		},
 	})
 
@@ -59,7 +62,7 @@ const ArticleMetadataFormFields = ({
 }: {
 	form: UseFormReturn<z.infer<typeof ArticleSchema>>
 }) => {
-	const currentSocialImage = form.watch('socialImage')
+	const currentSocialImage = form.watch('fields.socialImage')
 	return (
 		<EditResourcesMetadataFields form={form}>
 			<MetadataFieldSocialImage

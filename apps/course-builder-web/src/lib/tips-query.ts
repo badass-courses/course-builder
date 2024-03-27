@@ -13,7 +13,8 @@ import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, sql } from 'drizzle-orm'
+import { asc, desc, eq, like, sql } from 'drizzle-orm'
+import { last } from 'lodash'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {
@@ -48,62 +49,40 @@ export async function deleteTip(id: string) {
 }
 
 export async function getTip(slug: string): Promise<Tip | null> {
-	const query = sql`
-    SELECT
-      tips.id as id,
-      tips.type as type,
-      CAST(tips.updatedAt AS DATETIME) as updatedAt,
-      CAST(tips.createdAt AS DATETIME) as createdAt,
-      JSON_EXTRACT (tips.fields, "$.slug") AS slug,
-      JSON_EXTRACT (tips.fields, "$.title") AS title,
-      JSON_EXTRACT (tips.fields, "$.body") AS body,
-      JSON_EXTRACT (tips.fields, "$.state") AS state,
-      JSON_EXTRACT (tips.fields, "$.visibility") AS visibility,
-      refs.resourceId as videoResourceId
-    FROM
-      ${contentResource} as tips
-    LEFT JOIN ${contentResourceResource} as refs ON tips.id = refs.resourceOfId
-    WHERE
-      tips.type = 'tip'
-      AND (JSON_EXTRACT (tips.fields, "$.slug") = ${slug} OR tips.id = ${slug});
-  `
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsedTip = TipSchema.safeParse(result.rows[0])
-			return parsedTip.success ? parsedTip.data : null
-		})
-		.catch((error) => {
-			return error
-		})
+	const tip = await db.query.contentResource.findFirst({
+		where: eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
+
+	const tipParsed = TipSchema.safeParse(tip)
+	if (!tipParsed.success) {
+		console.error('Error parsing tip', tipParsed)
+		return null
+	}
+
+	return tipParsed.data
 }
 
 export async function getTipsModule(): Promise<Tip[]> {
-	const query = sql<Tip[]>`
-    SELECT
-      tips.id as id,
-      tips.type as type,
-      CAST(tips.updatedAt AS DATETIME) as updatedAt,
-      CAST(tips.createdAt AS DATETIME) as createdAt,
-      JSON_EXTRACT (tips.fields, "$.slug") AS slug,
-      JSON_EXTRACT (tips.fields, "$.title") AS title,
-      JSON_EXTRACT (tips.fields, "$.state") AS state,
-      JSON_EXTRACT (tips.fields, "$.visibility") AS visibility
-    FROM
-      ${contentResource} as tips
-    WHERE
-      tips.type = 'tip'
-    ORDER BY tips.updatedAt DESC;
-  `
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsedTips = z.array(TipSchema).safeParse(result.rows)
-			return parsedTips.success ? parsedTips.data : []
-		})
-		.catch((error) => {
-			throw error
-		})
+	const tips = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'tip'),
+		orderBy: desc(contentResource.createdAt),
+	})
+
+	const tipsParsed = z.array(TipSchema).safeParse(tips)
+	if (!tipsParsed.success) {
+		console.error('Error parsing tips', tipsParsed)
+		return []
+	}
+
+	return tipsParsed.data
 }
 
 export async function createTip(input: NewTip) {
@@ -186,11 +165,11 @@ export async function updateTip(input: TipUpdate) {
 		throw new Error(`Tip with id ${input.id} not found.`)
 	}
 
-	let tipSlug = currentTip.slug
+	let tipSlug = currentTip.fields.slug
 
-	if (input.title !== currentTip.title) {
-		const splitSlug = currentTip?.slug.split('~') || ['', guid()]
-		tipSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
+	if (input.fields.title !== currentTip.fields.title) {
+		const splitSlug = currentTip?.fields.slug.split('~') || ['', guid()]
+		tipSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
 	const query = sql`
@@ -198,9 +177,9 @@ export async function updateTip(input: TipUpdate) {
     SET
       ${contentResource.fields} = JSON_SET(
         ${contentResource.fields},
-        '$.title', ${input.title},
+        '$.title', ${input.fields.title},
         '$.slug', ${tipSlug},
-        '$.body', ${input.body}
+        '$.body', ${input.fields.body}
       )
     WHERE
       id = ${input.id};

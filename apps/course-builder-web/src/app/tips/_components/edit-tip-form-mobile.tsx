@@ -27,7 +27,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	)
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(tip.videoResourceId)
+	>(tip.resources?.[0]?.resource.id)
 	const router = useRouter()
 
 	useSocket({
@@ -66,7 +66,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 		if (!updatedTip) {
 			// handle edge case, e.g. toast an error message
 		} else {
-			const { slug } = updatedTip
+			const { fields: slug } = updatedTip
 
 			router.push(`/tips/${slug}`)
 		}
@@ -79,7 +79,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 			<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
 				<div className="flex items-center gap-2">
 					<Button className="px-0" asChild variant="link">
-						<Link href={`/tips/${tip.slug}`} className="aspect-square">
+						<Link href={`/tips/${tip?.fields.slug}`} className="aspect-square">
 							←
 						</Link>
 					</Button>
@@ -124,9 +124,9 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 					<label className="px-5 text-lg font-bold">Content</label>
 					<CodemirrorEditor
 						roomName={`${tip.id}`}
-						value={tip.body || ''}
+						value={tip.fields.body || ''}
 						onChange={(data) => {
-							form.setValue('body', data)
+							form.setValue('fields.body', data)
 						}}
 					/>
 				</div>

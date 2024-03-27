@@ -20,11 +20,13 @@ export default async function TipEditPage({
 		notFound()
 	}
 
-	const videoResourceLoader = getVideoResource(tip.videoResourceId)
+	const resource = tip.resources?.[0]?.resource.id
+
+	const videoResourceLoader = getVideoResource(resource)
 
 	return (
 		<EditTipForm
-			key={tip.slug}
+			key={tip.fields.slug}
 			tip={tip}
 			videoResourceLoader={videoResourceLoader}
 		/>

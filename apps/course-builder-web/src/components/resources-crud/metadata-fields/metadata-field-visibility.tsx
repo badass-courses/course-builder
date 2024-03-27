@@ -24,7 +24,7 @@ export function MetadataFieldVisibility({
 	return (
 		<FormField
 			control={form.control}
-			name="visibility"
+			name="fields.visibility"
 			render={({ field }) => (
 				<FormItem className="px-5">
 					<FormLabel>Visibility</FormLabel>

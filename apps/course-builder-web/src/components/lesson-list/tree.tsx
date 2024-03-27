@@ -21,6 +21,8 @@ import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/ad
 import memoizeOne from 'memoize-one'
 import invariant from 'tiny-invariant'
 
+import { ContentResource } from '@coursebuilder/core/types'
+
 import {
 	getInitialTreeState,
 	tree,
@@ -66,10 +68,12 @@ export default function Tree({
 	state,
 	updateState,
 	rootResourceId,
+	rootResource,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
+	rootResource: ContentResource
 }) {
 	const params = useParams<{ module: string }>()
 
@@ -229,8 +233,17 @@ export default function Tree({
 			getMoveTargets,
 			getChildrenOfItem,
 			registerTreeItem,
+			rootResourceId,
+			rootResource,
 		}),
-		[getChildrenOfItem, getMoveTargets, registerTreeItem, updateState],
+		[
+			getChildrenOfItem,
+			getMoveTargets,
+			registerTreeItem,
+			updateState,
+			rootResourceId,
+			rootResource,
+		],
 	)
 
 	useEffect(() => {

@@ -32,8 +32,11 @@ async function TipList() {
 				<Card key={tip.id}>
 					<CardHeader>
 						<CardTitle>
-							<Link className="w-full" href={`/tips/${tip.slug || tip.id}`}>
-								{tip.title}
+							<Link
+								className="w-full"
+								href={`/tips/${tip.fields.slug || tip.id}`}
+							>
+								{tip.fields.title}
 							</Link>
 						</CardTitle>
 					</CardHeader>
