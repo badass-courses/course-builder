@@ -164,6 +164,7 @@ export async function runBasicTests(options: TestOptions) {
 			fields: {
 				title: 'Video Titles',
 			},
+			resources: [],
 		}
 		const createdResource = await adapter.createContentResource(resource)
 		expect(createdResource).toEqual(resource)
