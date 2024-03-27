@@ -1,6 +1,9 @@
 import * as React from 'react'
 import Link from 'next/link'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
+import { eq } from 'drizzle-orm'
 
 import {
 	Button,
@@ -12,7 +15,10 @@ import {
 
 export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
-	const tutorials: any[] = []
+
+	const tutorials: any[] = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'tutorial'),
+	})
 
 	return (
 		<div className="flex flex-col">
@@ -25,12 +31,12 @@ export default async function Tutorials() {
 				</div>
 			) : null}
 			{tutorials.map((tutorial) => (
-				<Link href={`/tutorials/${tutorial.slug}`} key={tutorial.id}>
+				<Link href={`/tutorials/${tutorial.fields.slug}`} key={tutorial.id}>
 					<Card>
 						<CardHeader>
-							<CardTitle>{tutorial.title}</CardTitle>
+							<CardTitle>{tutorial.fields.title}</CardTitle>
 						</CardHeader>
-						<CardContent>{tutorial.description}</CardContent>
+						<CardContent>{tutorial.fields.description}</CardContent>
 					</Card>
 				</Link>
 			))}

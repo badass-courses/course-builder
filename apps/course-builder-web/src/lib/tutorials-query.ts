@@ -26,36 +26,45 @@ export const addResourceToTutorial = async ({
 	}
 	console.log('resource', resource)
 
-	const result = await db.insert(contentResourceResource).values({
-		resourceOfId: tutorialId,
+	await db.insert(contentResourceResource).values({
+		resourceOfId: tutorial.id,
 		resourceId: resource.id,
 		position: tutorial.resources.length,
 	})
 
-	console.log(result)
-
-	return result
+	return db.query.contentResourceResource.findFirst({
+		where: and(
+			eq(contentResourceResource.resourceOfId, tutorial.id),
+			eq(contentResourceResource.resourceId, resource.id),
+		),
+		with: {
+			resource: true,
+		},
+	})
 }
 
 export const updateResourcePosition = async ({
-	tutorialId,
+	currentParentResourceId,
+	parentResourceId,
 	resourceId,
 	position,
 }: {
-	tutorialId: string
+	currentParentResourceId: string
+	parentResourceId: string
 	resourceId: string
 	position: number
 }) => {
-	console.log('updateResourcePosition', { tutorialId, resourceId, position })
+	console.log('updateResourcePosition', {
+		parentResourceId,
+		resourceId,
+		position,
+	})
 	const result = await db
 		.update(contentResourceResource)
-		.set({ position })
+		.set({ position, resourceOfId: parentResourceId })
 		.where(
 			and(
-				like(
-					contentResourceResource.resourceOfId,
-					`%${last(tutorialId.split('-'))}%`,
-				),
+				eq(contentResourceResource.resourceOfId, currentParentResourceId),
 				eq(contentResourceResource.resourceId, resourceId),
 			),
 		)
