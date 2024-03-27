@@ -36,7 +36,10 @@ const vectorStore = new PineconeVectorStore({
 	indexName: 'rag',
 })
 
-const nodeParser = new MarkdownNodeParser()
+const nodeParser = new MarkdownNodeParser({
+	includeMetadata: true,
+	includePrevNextRel: true,
+})
 
 const storageContext = await storageContextFromDefaults({
 	vectorStore,
@@ -48,6 +51,8 @@ const serviceContext = serviceContextFromDefaults({
 		model: 'gpt-4-0125-preview',
 	}),
 	embedModel: new OpenAIEmbedding(),
+	chunkSize: 10000,
+	chunkOverlap: 100,
 })
 
 export async function ingest(source_filename: string) {
