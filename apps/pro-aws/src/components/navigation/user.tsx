@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { LogoutIcon } from '@heroicons/react/outline'
+import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import { cx } from 'class-variance-authority'
 import { ChevronDownIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
@@ -97,7 +97,7 @@ export const User: React.FC<{ className?: string }> = ({ className }) => {
 						>
 							{' '}
 							<span>Log out</span>
-							<LogoutIcon className="h-4 w-4" />
+							<ArrowRightEndOnRectangleIcon className="h-4 w-4" />
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
