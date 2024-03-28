@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 export function EditResourcesActionBar({
@@ -8,12 +9,12 @@ export function EditResourcesActionBar({
 	resource,
 	resourcePath,
 }: {
-	resource: {
-		type: string
-		id: string
-		body?: string | null
-		title?: string | null
-		slug: string
+	resource: ContentResource & {
+		fields?: {
+			body?: string | null
+			title?: string | null
+			slug: string
+		}
 	}
 	onSubmit: () => void
 	resourcePath: string

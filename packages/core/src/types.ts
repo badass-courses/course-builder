@@ -1,18 +1,25 @@
 import { CookieSerializeOptions } from 'cookie'
 import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
+import { z } from 'zod'
 
 import { CourseBuilderAdapter } from './adapters'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { ProviderType, TranscriptionConfig } from './providers'
+import {
+	ContentResourceResourceSchema,
+	ContentResourceSchema,
+} from './schemas/content-resource-schema'
 
 export type Awaitable<T> = T | PromiseLike<T>
 
-export interface ContentResource {
-	id: string
-	type: string
-	createdById: string
-	fields: Record<string, any> | null
+export type ContentResource = z.infer<typeof ContentResourceSchema> & {
+	resources?: ContentResourceResource[] | null
+}
+export type ContentResourceResource = z.infer<
+	typeof ContentResourceResourceSchema
+> & {
+	resource?: ContentResource | null
 }
 
 export interface ResponseInternal<

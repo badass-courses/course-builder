@@ -31,8 +31,8 @@ export default async function ArticlesIndexPage() {
 					<Card key={article.id}>
 						<CardHeader>
 							<CardTitle>
-								<Link href={`/${article.slug || article.id}`}>
-									{article.title}
+								<Link href={`/${article.fields?.slug || article.id}`}>
+									{article.fields?.title}
 								</Link>
 							</CardTitle>
 						</CardHeader>

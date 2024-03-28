@@ -3,7 +3,7 @@ import type {
 	AdapterSession,
 	AdapterUser,
 } from '@auth/core/adapters'
-import { and, eq } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 import {
 	pgTable as defaultPgTableFn,
 	integer,
@@ -18,6 +18,7 @@ import {
 } from 'drizzle-orm/pg-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export function createTables(pgTable: PgTableFn) {
 	const users = pgTable('user', {
@@ -123,7 +124,14 @@ export function createTables(pgTable: PgTableFn) {
 		}),
 	)
 
-	return { users, accounts, sessions, verificationTokens, contentResource }
+	return {
+		users,
+		accounts,
+		sessions,
+		verificationTokens,
+		contentResource,
+		contentResourceResource,
+	}
 }
 
 export type DefaultSchema = ReturnType<typeof createTables>
@@ -132,8 +140,14 @@ export function pgDrizzleAdapter(
 	client: InstanceType<typeof PgDatabase>,
 	tableFn = defaultPgTableFn,
 ): CourseBuilderAdapter {
-	const { users, accounts, sessions, verificationTokens, contentResource } =
-		createTables(tableFn)
+	const {
+		users,
+		accounts,
+		sessions,
+		verificationTokens,
+		contentResource,
+		contentResourceResource,
+	} = createTables(tableFn)
 
 	return {
 		async updateContentResourceFields(options) {
@@ -143,20 +157,71 @@ export function pgDrizzleAdapter(
 			//  TODO Implement
 			return null
 		},
-		async createContentResource(resource) {
-			return client
-				.insert(contentResource)
-				.values({ ...resource, id: crypto.randomUUID() })
-				.returning()
-				.then((res) => res[0] ?? null)
+		async createContentResource(data) {
+			const id = data.id || crypto.randomUUID()
+
+			await client.insert(contentResource).values({ ...data, id })
+
+			const resource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, id),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			const parsedResource = ContentResourceSchema.safeParse(resource)
+
+			if (!parsedResource.success) {
+				console.error('Error parsing resource', resource)
+				throw new Error('Error parsing resource')
+			}
+
+			return parsedResource.data
 		},
 		async getContentResource(data) {
-			const result = await client
-				.select()
-				.from(contentResource)
-				.where(eq(contentResource.id, data))
-				.then((res) => res[0] ?? null)
-			return result ?? null
+			const resource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, data),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			const parsedResource = ContentResourceSchema.safeParse(resource)
+
+			if (!parsedResource.success) {
+				console.error('Error parsing resource', resource)
+				return null
+			}
+
+			return parsedResource.data
 		},
 		async createUser(data) {
 			return await client

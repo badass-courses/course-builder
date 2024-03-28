@@ -4,7 +4,12 @@ import { VideoResource } from './schemas/video-resource'
 import { type Awaitable, type ContentResource } from './types'
 
 export interface CourseBuilderAdapter extends Adapter {
-	createContentResource(resource: ContentResource): Awaitable<ContentResource>
+	createContentResource(resource: {
+		id: string
+		type: string
+		fields: Record<string, any>
+		createdById: string
+	}): Awaitable<ContentResource>
 	getContentResource(id: string): Awaitable<ContentResource | null>
 	getVideoResource(id: string): Awaitable<VideoResource | null>
 	updateContentResourceFields(options: {
@@ -15,7 +20,7 @@ export interface CourseBuilderAdapter extends Adapter {
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	createContentResource: async (resource) => {
-		return resource
+		return resource as ContentResource
 	},
 	getContentResource: async (_) => {
 		return null

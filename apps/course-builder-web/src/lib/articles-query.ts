@@ -2,42 +2,28 @@
 
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { sql } from 'drizzle-orm'
+import { desc, eq, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function getArticles(): Promise<Article[]> {
-	const query = sql`
-    SELECT
-      articles.id as id,
-      articles.type as type,
-      CAST(articles.updatedAt AS DATETIME) as updatedAt,
-      CAST(articles.createdAt AS DATETIME) as createdAt,
-      JSON_EXTRACT (articles.fields, "$.title") AS title,
-      JSON_EXTRACT (articles.fields, "$.state") AS state,
-      JSON_EXTRACT (articles.fields, "$.slug") AS slug
-    FROM
-      ${contentResource} as articles
-    WHERE
-      articles.type = 'article'
-    ORDER BY articles.createdAt DESC;
-  `
+	const articles = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'article'),
+		orderBy: desc(contentResource.createdAt),
+	})
 
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsed = z.array(ArticleSchema).safeParse(result.rows)
-			return parsed.success ? parsed.data : []
-		})
-		.catch((error) => {
-			console.error(error)
-			throw error
-		})
+	const articlesParsed = z.array(ArticleSchema).safeParse(articles)
+	if (!articlesParsed.success) {
+		console.error('Error parsing articles', articlesParsed)
+		return []
+	}
+
+	return articlesParsed.data
 }
 
 export async function createArticle(input: NewArticle) {
@@ -53,10 +39,10 @@ export async function createArticle(input: NewArticle) {
 		id: newArticleId,
 		type: 'article',
 		fields: {
-			title: input.title,
+			title: input.fields.title,
 			state: 'draft',
 			visibility: 'unlisted',
-			slug: slugify(`${input.title}~${guid()}`),
+			slug: slugify(`${input.fields.title}~${guid()}`),
 		},
 		createdById: user.id,
 	})
@@ -81,11 +67,11 @@ export async function updateArticle(input: Article) {
 		return createArticle(input)
 	}
 
-	let articleSlug = input.slug
+	let articleSlug = input.fields.slug
 
-	if (input.title !== currentArticle?.title) {
-		const splitSlug = currentArticle?.slug.split('~') || ['', guid()]
-		articleSlug = `${slugify(input.title)}~${splitSlug[1] || guid()}`
+	if (input.fields.title !== currentArticle?.fields.title) {
+		const splitSlug = currentArticle?.fields.slug.split('~') || ['', guid()]
+		articleSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
 	const query = sql`
@@ -93,10 +79,10 @@ export async function updateArticle(input: Article) {
     SET
       ${contentResource.fields} = JSON_SET(
         ${contentResource.fields},
-        '$.title', ${input.title},
+        '$.title', ${input.fields.title},
         '$.slug', ${articleSlug},
-        '$.body', ${input.body},
-        '$.state', ${input.state}
+        '$.body', ${input.fields.body},
+        '$.state', ${input.fields.state}
       )
     WHERE
       id = ${input.id};
@@ -116,37 +102,18 @@ export async function updateArticle(input: Article) {
 }
 
 export async function getArticle(slugOrId: string) {
-	const query = sql`
-    SELECT
-      articles.id as id,
-      articles.type as type,
-      CAST(articles.updatedAt AS DATETIME) as updatedAt,
-      CAST(articles.createdAt AS DATETIME) as createdAt,
-      JSON_EXTRACT (articles.fields, "$.title") AS title,
-      JSON_EXTRACT (articles.fields, "$.state") AS state,
-      JSON_EXTRACT (articles.fields, "$.body") AS body,
-      JSON_EXTRACT (articles.fields, "$.slug") AS slug
-    FROM
-      ${contentResource} as articles
-    WHERE
-      articles.type = 'article' AND (articles.id = ${slugOrId} OR JSON_EXTRACT (articles.fields, "$.slug") = ${slugOrId});
-  `
+	const article = await db.query.contentResource.findFirst({
+		where: or(
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+			eq(contentResource.id, slugOrId),
+		),
+	})
 
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsed = ArticleSchema.safeParse(result.rows[0])
+	const articleParsed = ArticleSchema.safeParse(article)
+	if (!articleParsed.success) {
+		console.error('Error parsing article', articleParsed)
+		return null
+	}
 
-			if (!parsed.success) {
-				console.error('Error parsing article', slugOrId)
-				console.error(parsed.error)
-				return null
-			} else {
-				return parsed.data
-			}
-		})
-		.catch((error) => {
-			console.error(error)
-			return error
-		})
+	return articleParsed.data
 }

@@ -19,7 +19,7 @@ export function MetadataFieldDescription({
 	return (
 		<FormField
 			control={form.control}
-			name="description"
+			name="fields.description"
 			render={({ field }) => (
 				<FormItem className="px-5">
 					<FormLabel>Short Description</FormLabel>

@@ -69,7 +69,7 @@ export function NewResourceWithVideoForm() {
 				// Handle edge case, e.g., toast an error message
 				return
 			}
-			router.push(`/tips/${tip.slug}/edit`)
+			router.push(`/tips/${tip.fields.slug}/edit`)
 		} catch (error) {
 			console.error('Error polling video resource:', error)
 			// handle error, e.g. toast an error message

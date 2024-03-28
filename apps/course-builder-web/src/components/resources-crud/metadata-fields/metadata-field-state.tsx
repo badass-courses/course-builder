@@ -13,7 +13,7 @@ export function MetadataFieldState({ form }: { form: UseFormReturn<any> }) {
 	return (
 		<FormField
 			control={form.control}
-			name="state"
+			name="fields.state"
 			render={({ field }) => (
 				<FormItem className="px-5">
 					<FormLabel>State</FormLabel>

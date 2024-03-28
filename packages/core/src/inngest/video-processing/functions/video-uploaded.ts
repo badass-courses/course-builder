@@ -56,7 +56,7 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 					muxAssetId: muxAsset.id,
 					muxPlaybackId: playbackId,
 				},
-				// @ts-expect-error
+				// @ts-expect-error - no user on event😭
 				createdById: event.user.id,
 			})
 		},

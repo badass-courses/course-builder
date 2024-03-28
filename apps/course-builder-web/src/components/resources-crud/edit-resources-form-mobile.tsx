@@ -6,6 +6,7 @@ import { CodemirrorEditor } from '@/components/codemirror'
 import type { UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import { Button, Form } from '@coursebuilder/ui'
 
 export function EditResourcesFormMobile({
@@ -17,8 +18,14 @@ export function EditResourcesFormMobile({
 	updateResource,
 	availableWorkflows,
 }: {
-	resource: any
-	getResourcePath: (slug: string) => string
+	resource: ContentResource & {
+		fields?: {
+			body?: string | null
+			title?: string | null
+			slug: string
+		}
+	}
+	getResourcePath: (slug?: string) => string
 	resourceSchema: Schema
 	children?: React.ReactNode
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
@@ -39,7 +46,7 @@ export function EditResourcesFormMobile({
 				<div className="flex items-center gap-2">
 					<Button className="px-0" asChild variant="link">
 						<Link
-							href={getResourcePath(resource.slug)}
+							href={getResourcePath(resource.fields?.slug)}
 							className="aspect-square"
 						>
 							←
@@ -77,7 +84,7 @@ export function EditResourcesFormMobile({
 			<label className="px-5 text-lg font-bold">Content</label>
 			<CodemirrorEditor
 				roomName={`${resource.id}`}
-				value={resource.body || ''}
+				value={resource.fields?.body || ''}
 				onChange={async (data) => {
 					form.setValue('body', data)
 				}}

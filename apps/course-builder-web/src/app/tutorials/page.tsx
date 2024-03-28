@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 
 import {
 	Button,
@@ -18,6 +18,7 @@ export default async function Tutorials() {
 
 	const tutorials: any[] = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'tutorial'),
+		orderBy: desc(contentResource.createdAt),
 	})
 
 	return (

@@ -32,10 +32,10 @@ export async function generateMetadata(
 
 	const previousImages = (await parent).openGraph?.images || []
 
-	const ogImage = getOGImageUrlForResource(tip, 'tips')
+	const ogImage = getOGImageUrlForResource(tip)
 
 	return {
-		title: tip.title,
+		title: tip.fields?.title,
 		openGraph: {
 			images: [ogImage, ...previousImages],
 		},
@@ -85,7 +85,7 @@ async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button size="sm" asChild>
-						<Link href={`/tips/${tip.slug || tip.id}/edit`}>Edit</Link>
+						<Link href={`/tips/${tip.fields.slug || tip.id}/edit`}>Edit</Link>
 					</Button>
 				</div>
 			) : (
@@ -121,7 +121,9 @@ async function PlayerContainer({
 		notFound()
 	}
 
-	const videoResourceLoader = getVideoResource(tip.videoResourceId)
+	const resource = tip.resources?.[0]?.resource.id
+
+	const videoResourceLoader = getVideoResource(resource)
 
 	return (
 		<Suspense fallback={<PlayerContainerSkeleton />}>
@@ -152,18 +154,20 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 		notFound()
 	}
 
-	const transcript = await getTranscript(tip.videoResourceId)
+	const resource = tip.resources?.[0]?.resource.id
+
+	const transcript = await getTranscript(resource)
 
 	return (
 		<>
 			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
-				{tip.title}
+				{tip.fields.title}
 			</h1>
 
-			{tip.body && (
+			{tip.fields.body && (
 				<>
 					<ReactMarkdown className="prose dark:prose-invert">
-						{tip.body}
+						{tip.fields.body}
 					</ReactMarkdown>
 				</>
 			)}

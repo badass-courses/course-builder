@@ -419,6 +419,9 @@ importers:
       partysocket:
         specifier: 0.0.25
         version: 0.0.25
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
       prism-react-renderer:
         specifier: ^2.2.0
         version: 2.3.1(react@18.3.0-canary-03d6f7cf0-20240209)
@@ -522,6 +525,9 @@ importers:
       '@types/node':
         specifier: ^20.11.24
         version: 20.11.28
+      '@types/pluralize':
+        specifier: ^0.0.33
+        version: 0.0.33
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.66
@@ -10136,6 +10142,10 @@ packages:
     resolution: {integrity: sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==}
     dev: false
 
+  /@types/pluralize@0.0.33:
+    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
+    dev: true
+
   /@types/prismjs@1.26.3:
     resolution: {integrity: sha512-A0D0aTXvjlqJ5ZILMz3rNfDBOx9hHxLZYv2by47Sm/pqW35zzjusrZTryatjN/Rf8Us2gZrJD+KeHbUSTux1Cw==}
     dev: false
@@ -19483,6 +19493,11 @@ packages:
       node-plop: 0.32.0
       ora: 8.0.1
       v8flags: 4.0.1
+    dev: false
+
+  /pluralize@8.0.0:
+    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
+    engines: {node: '>=4'}
     dev: false
 
   /possible-typed-array-names@1.0.0:

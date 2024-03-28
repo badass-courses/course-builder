@@ -1,59 +1,50 @@
 'use client'
 
 import * as React from 'react'
-import { TipMetadataFormFields } from '@/app/tips/_components/edit-tip-form-metadata'
-import { MobileEditTipForm } from '@/app/tips/_components/edit-tip-form-mobile'
 import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
 import { useIsMobile } from '@/hooks/use-is-mobile'
-import { TipSchema, type Tip } from '@/lib/tips'
+import { Lesson } from '@/lib/lessons'
+import { TipSchema } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
+import {
+	ContentResource,
+	ContentResourceResource,
+} from '@coursebuilder/core/types'
 
 const NewTipFormSchema = z.object({
-	title: z.string().min(2).max(90),
-	body: z.string().optional().nullable(),
+	fields: z.object({
+		title: z.string().min(2).max(90),
+		body: z.string().optional().nullable(),
+	}),
 })
 
 export type EditTipFormProps = {
-	tip: Tip
-	videoResourceLoader: Promise<VideoResource | null>
+	lesson: Lesson
 	form: UseFormReturn<z.infer<typeof TipSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }
 
-export function EditTipForm({
-	tip,
-	videoResourceLoader,
-}: Omit<EditTipFormProps, 'form'>) {
+export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
 	const form = useForm<z.infer<typeof TipSchema>>({
 		resolver: zodResolver(NewTipFormSchema),
 		defaultValues: {
-			id: tip.id,
+			id: lesson.id,
 			fields: {
-				title: tip.fields?.title,
-				body: tip.fields?.body,
+				title: lesson.fields?.title || '',
+				body: lesson.fields?.body || '',
 			},
 		},
 	})
 	const isMobile = useIsMobile()
 
-	return isMobile ? (
-		<MobileEditTipForm
-			tip={tip}
-			form={form}
-			videoResourceLoader={videoResourceLoader}
-			availableWorkflows={[
-				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
-			]}
-		/>
-	) : (
+	return (
 		<EditResourcesFormDesktop
-			resource={tip}
+			resource={lesson}
 			resourceSchema={TipSchema}
 			getResourcePath={(slug) => `/tips/${slug}`}
 			updateResource={updateTip}
@@ -61,12 +52,6 @@ export function EditTipForm({
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
 			]}
-		>
-			<TipMetadataFormFields
-				form={form}
-				videoResourceLoader={videoResourceLoader}
-				tip={tip}
-			/>
-		</EditResourcesFormDesktop>
+		></EditResourcesFormDesktop>
 	)
 }

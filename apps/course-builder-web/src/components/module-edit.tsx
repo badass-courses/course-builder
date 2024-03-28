@@ -11,47 +11,39 @@ import Tree from '@/components/lesson-list/tree'
 import { CreateResourceForm } from '@/components/resources-crud/create-resource-form'
 import { addResourceToTutorial } from '@/lib/tutorials-query'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import {
+	ContentResource,
+	ContentResourceResource,
+} from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
-export default function Component({
-	tutorial,
-}: {
-	tutorial: ContentResource & {
-		resources: {
-			position: number
-			resource: ContentResource & {
-				resources: {
-					position: number
-					resource: ContentResource
-					resourceId: string
-					resourceOfId: string
-				}[]
-			}
-			resourceId: string
-			resourceOfId: string
-		}[]
-	}
-}) {
+export default function Component({ tutorial }: { tutorial: ContentResource }) {
 	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
 	const [isAddingSection, setIsAddingSection] = React.useState(false)
 	const initialData = [
 		...(tutorial.resources
 			? tutorial.resources.map((resourceItem) => {
+					if (!resourceItem.resource) {
+						throw new Error('resourceItem.resource is required')
+					}
+					const resources = resourceItem.resource.resources ?? []
 					return {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
-						children: resourceItem.resource.resources.map((resourceItem) => {
+						children: resources.map((resourceItem: any) => {
+							if (!resourceItem.resource) {
+								throw new Error('resourceItem.resource is required')
+							}
 							return {
 								id: resourceItem.resource.id,
 								label: resourceItem.resource.fields?.title,
 								type: resourceItem.resource.type,
 								children: [],
-								itemData: resourceItem,
+								itemData: resourceItem as any,
 							}
 						}),
-						itemData: resourceItem,
+						itemData: resourceItem as any,
 					}
 				})
 			: []),
@@ -78,7 +70,7 @@ export default function Component({
 					label: resourceItem.resource.fields?.title,
 					type: resourceItem.resource.type,
 					children: [],
-					itemData: resourceItem,
+					itemData: resourceItem as any,
 				},
 			})
 		}
@@ -122,8 +114,8 @@ export default function Component({
 					</Button>
 				</div>
 				<div className="flex flex-col">
-					sss
 					<Tree
+						rootResource={tutorial}
 						rootResourceId={tutorial.id}
 						state={state}
 						updateState={updateState}

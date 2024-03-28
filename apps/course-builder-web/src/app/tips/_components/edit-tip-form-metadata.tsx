@@ -6,6 +6,7 @@ import { reprocessTranscript } from '@/app/tips/[slug]/edit/actions'
 import { useSocket } from '@/hooks/use-socket'
 import { useTranscript } from '@/hooks/use-transcript'
 import { TipSchema, type Tip } from '@/lib/tips'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -33,9 +34,10 @@ export const TipMetadataFormFields: React.FC<{
 }> = ({ form, videoResourceLoader, tip }) => {
 	const router = useRouter()
 	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
+
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(tip.videoResourceId)
+	>(tip.resources?.[0]?.resource.id)
 	const [transcript, setTranscript] = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
@@ -91,7 +93,7 @@ export const TipMetadataFormFields: React.FC<{
 			/>
 			<FormField
 				control={form.control}
-				name="title"
+				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<FormLabel className="text-lg font-bold">Title</FormLabel>
