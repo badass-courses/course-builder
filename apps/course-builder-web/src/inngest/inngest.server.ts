@@ -1,4 +1,4 @@
-import { courseBuilderAdapter, db } from '@/db'
+import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
 	EMAIL_SEND_BROADCAST,
@@ -20,12 +20,9 @@ import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
 
-import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 
 import '@coursebuilder/core/inngest/video-processing/events'
-
-import { mysqlTable } from '@/db/mysql-table'
 
 import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
