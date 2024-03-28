@@ -1,4 +1,29 @@
-import { WebAuthnConfig } from '@auth/core/providers/webauthn'
+import { AdapterUser } from '@auth/core/adapters'
+
+export interface EmailListSubscribeOptions {
+	listId: string
+	user: AdapterUser
+	fields: Record<string, string>
+	listType: 'form' | 'sequence' | 'tag'
+}
+
+export interface EmailListConfig {
+	id: string
+	name: string
+	type: string
+	options: EmailListConsumerConfig
+	apiKey: string
+	apiSecret: string
+	subscribeToList: (options: EmailListSubscribeOptions) => Promise<any>
+}
+
+export type EmailListConsumerConfig = Omit<
+	Partial<EmailListConfig>,
+	'options' | 'type'
+> & {
+	apiKey: string
+	apiSecret: string
+}
 
 /**
  * The configuration object for a transcription service provider.
@@ -54,7 +79,7 @@ export type TranscriptionUserConfig = Omit<
 /**
  * The user configuration object for a transcription service provider.
  */
-export type ProviderType = 'transcription'
+export type ProviderType = 'transcription' | 'email-list'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config
@@ -62,8 +87,26 @@ interface InternalProviderOptions {
 	options?: Record<string, any>
 }
 
+export interface CommonProviderOptions {
+	/**
+	 * Uniquely identifies the provider in {@link CourseBuilderConfig.providers}.
+	 * It's also part of the URL
+	 */
+	id: string
+	/**
+	 * The provider name used on the default sign-in page's sign-in button.
+	 * For example if it's "Google", the corresponding button will say:
+	 * "Sign in with Google"
+	 */
+	name: string
+	/** See {@link ProviderType} */
+	type: ProviderType
+}
+
 export type Provider<P = any> = (
-	| (TranscriptionConfig & InternalProviderOptions)
-	| ((...args: any) => TranscriptionConfig & InternalProviderOptions)
+	| ((TranscriptionConfig | EmailListConfig) & InternalProviderOptions)
+	| ((
+			...args: any
+	  ) => (TranscriptionConfig | EmailListConfig) & InternalProviderOptions)
 ) &
 	InternalProviderOptions
