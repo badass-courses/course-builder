@@ -22,6 +22,10 @@
 			],
 			"outputMode": "new-only"
 		},
+		"postbuild": {
+			"dependsOn": ["build"],
+			"outputs": ["public/sitemap.xml", "public/robots.txt"]
+		},
 		"lint": {
 			"dependsOn": ["^topo", "^build"],
 			"outputs": []
