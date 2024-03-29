@@ -6,6 +6,7 @@ import Script from 'next/script'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import { ThemeProvider } from '@/components/theme-provider'
+import config from '@/config'
 import { env } from '@/env.mjs'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
@@ -16,7 +17,7 @@ import { extractRouterConfig } from 'uploadthing/server'
 
 export const metadata: Metadata = {
 	title: 'Pro AWS by Adam Elmore',
-	description: 'Course building workflows in the cloud 🌦️',
+	description: config.description,
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 

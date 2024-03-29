@@ -15,7 +15,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	componentProps,
 	Subject,
 	To,
-	From = `joel <joel@coursebuilder.dev>`,
+	From = `Adam <adam@proaws.dev>`,
 	type = 'transactional',
 	unsubscribeLinkUrl,
 }: {
@@ -127,12 +127,12 @@ export const emailSendBroadcast = inngest.createFunction(
 			return await sendAnEmail<BasicEmailProps>({
 				Component: BasicEmail,
 				componentProps: {
-					body: `hi`,
-					preview: `hi there guy`,
+					body: `hi from proaws`,
+					preview: `hi there!`,
 					unsubscribeLinkUrl: `${env.NEXT_PUBLIC_URL}unsubscribed?userId=${user.id}`,
 					messageType: 'broadcast',
 				},
-				Subject: 'Course Builder Test',
+				Subject: 'Pro AWS Test',
 				To: user.email,
 				type: 'broadcast',
 				unsubscribeLinkUrl: `${env.NEXT_PUBLIC_URL}unsubscribed?userId=${user.id}`,
