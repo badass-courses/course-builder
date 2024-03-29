@@ -1,5 +1,6 @@
 // ./app/api/chat/route.js
 import { redis } from '@/server/redis-client'
+import { withSkill } from '@/server/with-skill'
 import { Ratelimit } from '@upstash/ratelimit'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
@@ -10,7 +11,7 @@ const openai = new OpenAI({
 
 export const runtime = 'edge'
 
-export async function POST(req: Request) {
+async function handler(req: Request) {
 	// Use a constant string to limit all requests with a single ratelimit
 	// Or use a userID, apiKey or ip address for individual limits.
 	const ip = req.headers.get('x-forwarded-for')
@@ -44,3 +45,5 @@ export async function POST(req: Request) {
 	const stream = OpenAIStream(response)
 	return new StreamingTextResponse(stream)
 }
+
+export const POST = withSkill(handler)
