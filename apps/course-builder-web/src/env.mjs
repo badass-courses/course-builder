@@ -73,6 +73,7 @@ export const env = createEnv({
 	 * `NEXT_PUBLIC_`.
 	 */
 	client: {
+		NEXT_PUBLIC_APP_NAME: z.string(),
 		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: z.string(),
 		NEXT_PUBLIC_PARTY_KIT_URL: z.string(),
 		NEXT_PUBLIC_URL: z.string(),
@@ -85,6 +86,7 @@ export const env = createEnv({
 	 * middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
 		COURSEBUILDER_URL: process.env.COURSEBUILDER_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		NODE_ENV: process.env.NODE_ENV,

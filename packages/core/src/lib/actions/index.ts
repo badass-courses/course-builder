@@ -1,5 +1,64 @@
+import { z } from 'zod'
+
+import {
+	filterNullFields,
+	getConvertkitSubscriberCookie,
+} from '../../providers/convertkit'
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { Cookie } from '../utils/cookie'
+
+export async function subscribeToList(
+	request: RequestInternal,
+	cookies: Cookie[],
+	options: InternalOptions<'email-list'>,
+): Promise<ResponseInternal<any | null>> {
+	const response: ResponseInternal<any | null> = {
+		body: null,
+		headers: { 'Content-Type': 'application/json' },
+		cookies,
+	}
+
+	switch (options.provider.type) {
+		case 'email-list':
+			const subscribeOptions = z
+				.object({
+					listId: z.union([z.number(), z.string()]).optional(),
+					listType: z.enum(['sequence', 'tag', 'form']).optional(),
+					fields: z.record(z.string(), z.any()).optional().nullable(),
+					email: z.string(),
+					name: z.string().optional().nullable(),
+				})
+				.parse(request.body)
+
+			let user = await options.adapter?.getUserByEmail(subscribeOptions.email)
+
+			if (!user) {
+				user = await options.adapter?.createUser({
+					id: crypto.randomUUID(),
+					email: subscribeOptions.email,
+					name: subscribeOptions.name,
+					emailVerified: null,
+				})
+				if (!user) throw new Error('Could not create user')
+				options.logger.debug(`created user ${user.id}`)
+			} else {
+				options.logger.debug(`found user ${user.id}`)
+			}
+
+			response.body = await options.provider.subscribeToList({
+				user,
+				listId: subscribeOptions.listId || options.provider.defaultListId,
+				fields: subscribeOptions.fields || {},
+				listType: subscribeOptions.listType || options.provider.defaultListType,
+			})
+
+			response.cookies = getConvertkitSubscriberCookie(
+				filterNullFields(response.body),
+			)
+	}
+
+	return response
+}
 
 export async function session(
 	options: InternalOptions,
@@ -46,7 +105,7 @@ export async function srt(
 export async function webhook(
 	request: RequestInternal,
 	cookies: Cookie[],
-	options: InternalOptions,
+	options: InternalOptions<'transcription'>,
 ): Promise<ResponseInternal> {
 	if (!options.provider) throw new Error('Provider not found')
 

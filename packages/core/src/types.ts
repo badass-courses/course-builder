@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { CourseBuilderAdapter } from './adapters'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
-import { ProviderType, TranscriptionConfig } from './providers'
+import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -37,7 +37,11 @@ export interface CookieOption {
 	options: CookieSerializeOptions
 }
 
-export type CourseBuilderAction = 'webhook' | 'srt' | 'session'
+export type CourseBuilderAction =
+	| 'webhook'
+	| 'srt'
+	| 'session'
+	| 'subscribe-to-list'
 
 export interface RequestInternal {
 	url: URL
@@ -53,7 +57,9 @@ export interface RequestInternal {
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
 	? TranscriptionConfig
-	: never
+	: T extends 'email-list'
+		? EmailListConfig
+		: never
 
 export interface InternalOptions<TProviderType = ProviderType> {
 	providers: InternalProvider[]

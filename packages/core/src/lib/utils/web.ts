@@ -76,7 +76,10 @@ export function parseActionAndProviderId(
 	if (!isCourseBuilderAction(action))
 		throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
-	if (providerId && !['webhook', 'srt', 'session'].includes(action))
+	if (
+		providerId &&
+		!['webhook', 'srt', 'session', 'subscribe-to-list'].includes(action)
+	)
 		throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
 	return { action, providerId }
