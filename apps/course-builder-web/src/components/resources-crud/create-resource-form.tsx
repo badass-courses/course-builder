@@ -20,7 +20,7 @@ import {
 
 export function CreateResourceForm({
 	resourceType,
-	onCreate = async () => {},
+	onCreate = async () => Promise.resolve(),
 }: {
 	resourceType: string
 	onCreate?: (resource: ContentResource) => Promise<void>
@@ -45,11 +45,8 @@ export function CreateResourceForm({
 		})
 		form.reset()
 		if (resource) {
-			if (onCreate) {
-				await onCreate(resource)
-			} else {
-				router.push(`/${resourceType}s/${resource.fields?.slug}/edit`)
-			}
+			await onCreate(resource)
+			router.push(`/${resourceType}s/${resource.fields?.slug}/edit`)
 		}
 	}
 
