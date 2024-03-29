@@ -30,6 +30,8 @@ export async function CourseBuilderInternal(
 		switch (action) {
 			case 'webhook':
 				return await actions.webhook(request, cookies, options)
+			case 'subscribe-to-list':
+				return await actions.subscribeToList(request, cookies, options)
 		}
 	}
 

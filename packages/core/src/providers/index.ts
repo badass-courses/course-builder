@@ -1,7 +1,7 @@
 import { AdapterUser } from '@auth/core/adapters'
 
 export interface EmailListSubscribeOptions {
-	listId: string
+	listId?: string | number
 	user: AdapterUser
 	fields: Record<string, string>
 	listType: 'form' | 'sequence' | 'tag'
@@ -14,6 +14,8 @@ export interface EmailListConfig {
 	options: EmailListConsumerConfig
 	apiKey: string
 	apiSecret: string
+	defaultListType: 'form' | 'sequence' | 'tag'
+	defaultListId?: number | string
 	subscribeToList: (options: EmailListSubscribeOptions) => Promise<any>
 }
 

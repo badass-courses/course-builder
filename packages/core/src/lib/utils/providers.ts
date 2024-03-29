@@ -18,9 +18,7 @@ export default function parseProviders(params: {
 		const provider = typeof p === 'function' ? p() : p
 		const { options: userOptions, ...defaults } = provider
 
-		const merged = merge(defaults, userOptions)
-
-		return merged
+		return merge(defaults, userOptions)
 	})
 
 	return {

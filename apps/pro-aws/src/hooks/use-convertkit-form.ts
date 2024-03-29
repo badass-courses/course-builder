@@ -1,16 +1,11 @@
 import { type Subscriber } from '@/schemas/subscriber'
-import {
-	CONVERTKIT_SIGNUP_FORM,
-	CONVERTKIT_SUBSCRIBE_API_URL,
-} from '@skillrecordings/config'
 import axios from 'axios'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
 export function useConvertkitForm({
-	submitUrl = process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBE_URL ||
-		CONVERTKIT_SUBSCRIBE_API_URL,
-	formId = (CONVERTKIT_SIGNUP_FORM || 0) as number,
+	submitUrl = `/api/coursebuilder/subscribe-to-list/convertkit`,
+	formId = 0,
 	fields,
 	onSuccess,
 	onError,
@@ -51,7 +46,12 @@ export function useConvertkitForm({
 			enableReinitialize: true,
 			onSubmit: async ({ email, first_name }, { setStatus }) => {
 				return axios
-					.post(submitUrl, { email, first_name, form: formId, fields })
+					.post(submitUrl, {
+						email,
+						name: first_name,
+						...(formId > 0 ? { form: formId } : {}),
+						fields,
+					})
 					.then((response: any) => {
 						const subscriber: Subscriber = response.data
 						onSuccess(subscriber, email)

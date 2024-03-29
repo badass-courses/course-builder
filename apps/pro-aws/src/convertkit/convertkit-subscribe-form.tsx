@@ -57,7 +57,11 @@ export type SubscribeFormProps = {
  * @param onError function to call on error
  * @param onSuccess function to call on success
  * @param subscribeApiURL optional param to override the api url that gets posted to
+ * @param id
  * @param fields custom subscriber fields to create or update
+ * @param className
+ * @param validationSchema
+ * @param validateOnChange
  * @param rest anything else!
  * @constructor
  */

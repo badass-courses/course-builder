@@ -1,10 +1,10 @@
 import { find, isEmpty } from 'lodash'
 
+import { Cookie } from '../lib/utils/cookie'
 import {
 	EmailListConfig,
 	EmailListConsumerConfig,
 	EmailListSubscribeOptions,
-	type TranscriptionConfig,
 } from './index'
 
 export default function ConvertkitProvider(
@@ -14,11 +14,16 @@ export default function ConvertkitProvider(
 		id: 'convertkit',
 		name: 'Convertkit',
 		type: 'email-list',
+		defaultListType: 'form',
 		options,
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
 		subscribeToList: async (subscribeOptions: EmailListSubscribeOptions) => {
 			const { listId, user, listType, fields } = subscribeOptions
+
+			if (!listId) {
+				throw new Error('No listId provided')
+			}
 
 			const getEndpoint = () => {
 				switch (listType) {
@@ -67,9 +72,38 @@ export default function ConvertkitProvider(
 	}
 }
 
+const hour = 3600000
+export const oneYear = 365 * 24 * hour
+
+export function getConvertkitSubscriberCookie(subscriber: any): Cookie[] {
+	return [
+		{
+			name: 'ck_subscriber',
+			value: JSON.stringify(subscriber),
+			options: {
+				secure: process.env.NODE_ENV === 'production',
+				httpOnly: true,
+				path: '/',
+				maxAge: oneYear,
+			},
+		},
+		{
+			name:
+				process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY || 'ck_subscriber_id',
+			value: subscriber.id,
+			options: {
+				secure: process.env.NODE_ENV === 'production',
+				httpOnly: true,
+				path: '/',
+				maxAge: 31556952,
+			},
+		},
+	]
+}
+
 type Subscriber = Record<string, any>
 
-function filterNullFields(obj: Subscriber): Subscriber {
+export function filterNullFields(obj: Subscriber): Subscriber {
 	const filteredObj: Subscriber = {}
 
 	for (const key in obj) {
@@ -112,6 +146,10 @@ export async function subscribeToEndpoint({
 				return subscription.subscriber
 			},
 		)
+		.catch((error) => {
+			console.error(error)
+			throw error
+		})
 }
 
 async function fetchSubscriber({

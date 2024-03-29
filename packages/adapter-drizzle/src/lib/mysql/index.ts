@@ -309,15 +309,21 @@ export function mySqlDrizzleAdapter(
 			return parsedResource.data
 		},
 		async createUser(data) {
-			const id = crypto.randomUUID()
+			console.log(data)
+			try {
+				const id = crypto.randomUUID()
 
-			await client.insert(users).values({ ...data, id })
+				await client.insert(users).values({ ...data, id })
 
-			return await client
-				.select()
-				.from(users)
-				.where(eq(users.id, id))
-				.then((res) => res[0] as AdapterUser)
+				return await client
+					.select()
+					.from(users)
+					.where(eq(users.id, id))
+					.then((res) => res[0] as AdapterUser)
+			} catch (error) {
+				console.error(error)
+				throw error
+			}
 		},
 		async getUser(data) {
 			return (

@@ -10,24 +10,6 @@ import {
 	ShikiRemotePluginOptions,
 } from './shiki-remote-plugin'
 
-/**
- * Serialize MDX with next-mdx-remote. Uses remark-code-hike for syntax highlighting.
- * @param {string} text - The text to serialize
- * @param {boolean} useShikiTwoslash - Whether to use remark-shiki-twoslash instead of remark-code-hike, defaults to `false`
- * @param {SyntaxHighlighterOptions} syntaxHighlighterOptions - The options to pass to the remarkCodeHike or remarkShikiTwoslash plugin
- * @param {ShikiTheme} options.theme - The theme to use for syntax highlighting, defaults to `github-dark`
- * @param {boolean} options.lineNumbers - Whether to render line numbers, defaults to `false`
- * @param {boolean} options.showCopyButton - Whether to render a copy button, defaults to `false`
- * @param {scope} options.scope - Pass-through variables for use in the MDX content
- * @see themes https://github.com/shikijs/shiki/blob/main/docs/themes.md
- * @returns {Promise<MDXRemoteSerializeResult>} The serialized MDX
- * @example
- * const mdx = await serializeMDX('# Hello World')
- * // <h1>Hello World</h1>
- * @example
- * const mdx = await serializeMDX('# Hello World', {theme: 'github-light', lineNumbers: true, showCopyButton: true})
- */
-
 type RemarkCodeHikePluginOptions = {
 	theme?: ShikiTheme
 	lineNumbers?: boolean

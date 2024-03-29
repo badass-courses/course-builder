@@ -1,20 +1,11 @@
 import React from 'react'
 import Image from 'next/image'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
-import MDX from '@/markdown/mdx'
-import serializeMDX from '@/markdown/serialize-mdx'
+import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
 
 const Home = async () => {
 	const title = `Navigate the AWS Maze with Confidence`
-	const landingCopy =
-		await serializeMDX(`You're a skilled web developer, but you're stuck. Again. You know you need to leverage AWS to take your product where it needs to go, but you're lost in The Console, staring blankly. You've seen others build on the cloud to great success. But, how? 200+ services?! Where do you even begin?
-
-You could go back to the comfort of a simplified platform, but you're tired of feeling limited. Tired of being boxed—err, "triangled"—in. You've been painting in black and white, and it's time to expand your palette.
-
-You can build anything you can imagine on AWS. You're more than capable. You just need a guide. You need an opinionated, pragmatic view of a vast platform that exists to serve an infinite number of use cases. AWS provides all of the fundamental elements needed to craft brilliant web experiences. But, how you mix them is crucial.
-
-That's where Pro AWS comes in. This isn't a typical AWS course. You won't study arcane architectural diagrams or listen to academic lectures on best practices. Every lesson is rooted in practicality and born out of real-world experience. You'll learn AWS through the lens of modern web development, because today you don't have to sacrifice developer experience to build on AWS.`)
 
 	return (
 		<>
@@ -49,11 +40,17 @@ That's where Pro AWS comes in. This isn't a typical AWS course. You won't study 
 				/>
 			</header>
 			<main className="mx-auto w-full max-w-screen-xl border-x border-b pt-5 sm:pt-24">
-				{landingCopy && (
-					<article className="prose sm:prose-lg mx-auto w-full max-w-[45rem] px-6 sm:px-3">
-						<MDX contents={landingCopy} />
-					</article>
-				)}
+				<article className="prose sm:prose-lg mx-auto w-full max-w-[45rem] px-6 sm:px-3">
+					<ReactMarkdown className="prose dark:prose-invert">
+						{`You're a skilled web developer, but you're stuck. Again. You know you need to leverage AWS to take your product where it needs to go, but you're lost in The Console, staring blankly. You've seen others build on the cloud to great success. But, how? 200+ services?! Where do you even begin?
+
+You could go back to the comfort of a simplified platform, but you're tired of feeling limited. Tired of being boxed—err, "triangled"—in. You've been painting in black and white, and it's time to expand your palette.
+
+You can build anything you can imagine on AWS. You're more than capable. You just need a guide. You need an opinionated, pragmatic view of a vast platform that exists to serve an infinite number of use cases. AWS provides all of the fundamental elements needed to craft brilliant web experiences. But, how you mix them is crucial.
+
+That's where Pro AWS comes in. This isn't a typical AWS course. You won't study arcane architectural diagrams or listen to academic lectures on best practices. Every lesson is rooted in practicality and born out of real-world experience. You'll learn AWS through the lens of modern web development, because today you don't have to sacrifice developer experience to build on AWS.`}
+					</ReactMarkdown>
+				</article>
 
 				<PrimaryNewsletterCta className="px-6 pt-8 sm:px-0 sm:pt-20" />
 
