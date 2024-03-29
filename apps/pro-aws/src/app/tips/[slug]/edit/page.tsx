@@ -26,7 +26,7 @@ export default async function TipEditPage({
 
 	return (
 		<EditTipForm
-			key={tip.fields.slug}
+			key={tip.id}
 			tip={tip}
 			videoResourceLoader={videoResourceLoader}
 		/>

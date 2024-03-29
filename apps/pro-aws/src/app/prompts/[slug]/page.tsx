@@ -20,7 +20,7 @@ export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const prompt = await getPrompt(params.prompt)
+	const prompt = await getPrompt(params.slug)
 
 	if (!prompt) {
 		return parent as Metadata

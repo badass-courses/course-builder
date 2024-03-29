@@ -1,4 +1,6 @@
 import { User } from '@/ability'
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
@@ -6,6 +8,8 @@ import { ChatResource } from '@/lib/ai-chat'
 import { getChatResource } from '@/lib/ai-chat-query'
 import { getPrompt } from '@/lib/prompts-query'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
+import { getVideoResource } from '@/lib/video-resource-query'
+import { asc, eq, or, sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
 import {
@@ -35,23 +39,43 @@ export const resourceChat = inngest.createFunction(
 		const workflowTrigger = event.data.selectedWorkflow
 
 		const resource = await step.run('get the resource', async () => {
-			return getChatResource(resourceId)
+			return await db.query.contentResource.findFirst({
+				where: or(
+					eq(
+						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+						resourceId,
+					),
+					eq(contentResource.id, resourceId),
+				),
+				with: {
+					resources: {
+						with: {
+							resource: true,
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
 		})
 
 		if (!resource) {
 			throw new NonRetriableError(`Resource not found for id (${resourceId})`)
 		}
 
+		const videoResource = await step.run('get the video resource', async () => {
+			return getVideoResource(resource.resources?.[0]?.resource.id)
+		})
+
 		const messages = await resourceChatWorkflowExecutor({
 			step,
 			workflowTrigger,
 			resourceId,
-			resource,
+			resource: { ...videoResource, ...resource, ...resource.fields },
 			messages: event.data.messages,
 			user: event.user,
 		})
 
-		return { resource, messages }
+		return { resource: { ...videoResource, ...resource }, messages }
 	},
 )
 
@@ -92,9 +116,11 @@ export async function resourceChatWorkflowExecutor({
 		throw new NonRetriableError(`Prompt not found for id (${workflowTrigger})`)
 	}
 
+	console.log({ prompt })
+
 	let systemPrompt: ChatCompletionRequestMessage = {
 		role: 'system',
-		content: prompt.body,
+		content: prompt.fields.body,
 	}
 	let seedMessages: ChatCompletionRequestMessage[] = []
 
@@ -111,7 +137,7 @@ export async function resourceChatWorkflowExecutor({
 					content: z.string(),
 				}),
 			)
-			.parse(JSON.parse(prompt.body))
+			.parse(JSON.parse(prompt.fields.body))
 
 		const actionMessages: ChatCompletionRequestMessage[] = []
 		for (const actionMessage of actionParsed) {
@@ -134,7 +160,7 @@ export async function resourceChatWorkflowExecutor({
 			;[
 				systemPrompt = {
 					role: 'system',
-					content: prompt.body,
+					content: prompt.fields.body,
 				},
 				...seedMessages
 			] = actionMessages
@@ -155,7 +181,7 @@ export async function resourceChatWorkflowExecutor({
 				console.error(e.message)
 				return {
 					role: 'system',
-					content: prompt.body,
+					content: prompt.fields.body,
 				}
 			}
 		})

@@ -19,9 +19,9 @@ export function EditResourcesBodyPanel({
 			<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
 				<CodemirrorEditor
 					roomName={`${resource.id}`}
-					value={resource.body || ''}
+					value={resource.fields.body || ''}
 					onChange={async (data) => {
-						form.setValue('body', data)
+						form.setValue('fields.body', data)
 					}}
 				/>
 			</ScrollArea>

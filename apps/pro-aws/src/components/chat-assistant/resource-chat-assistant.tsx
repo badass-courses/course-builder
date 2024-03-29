@@ -27,8 +27,10 @@ export function ResourceChatAssistant({
 	resource: {
 		type: string
 		id: string
-		body?: string | null
-		title?: string | null
+		fields: {
+			body?: string | null
+			title?: string | null
+		}
 	}
 
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
@@ -54,9 +56,9 @@ export function ResourceChatAssistant({
 				...messages,
 				{
 					role: ChatCompletionRequestMessageRoleEnum.System,
-					content: `## current state of article
-          current title: ${resource.title}
-          current body: ${resource.body}
+					content: `## current state of resource
+          current title: ${resource.fields.title}
+          current body: ${resource.fields.body}
           `,
 				},
 				{

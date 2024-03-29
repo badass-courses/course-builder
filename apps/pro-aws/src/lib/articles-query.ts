@@ -1,8 +1,8 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { contentResource } from '@/db/schema'
 import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
@@ -93,31 +93,14 @@ export async function updateArticle(input: Article) {
 		articleSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	const query = sql`
-    UPDATE ${contentResource}
-    SET
-      ${contentResource.fields} = JSON_SET(
-        ${contentResource.fields},
-        '$.title', ${input.fields.title},
-        '$.slug', ${articleSlug},
-        '$.body', ${input.fields.body},
-        '$.state', ${input.fields.state}
-      )
-    WHERE
-      id = ${input.id};
-  `
-
-	await db.execute(query).catch((error) => {
-		console.error(error)
-		throw error
+	return courseBuilderAdapter.updateContentResourceFields({
+		id: currentArticle.id,
+		fields: {
+			...currentArticle.fields,
+			...input.fields,
+			slug: articleSlug,
+		},
 	})
-
-	revalidateTag('articles')
-	revalidateTag(input.id)
-	revalidateTag(articleSlug)
-	revalidatePath(`/${articleSlug}`)
-
-	return await getArticle(input.id)
 }
 
 export async function getArticle(slugOrId: string) {

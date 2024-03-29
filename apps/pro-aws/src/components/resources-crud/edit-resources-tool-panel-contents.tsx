@@ -10,8 +10,10 @@ export function EditResourcesToolPanelContents({
 	resource: {
 		type: string
 		id: string
-		body?: string | null
-		title?: string | null
+		fields: {
+			body?: string | null
+			title?: string | null
+		}
 	}
 	activeToolId: string
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]

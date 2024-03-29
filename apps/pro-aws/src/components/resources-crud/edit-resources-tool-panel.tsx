@@ -34,8 +34,10 @@ export function EditResourcesToolPanel({
 	resource: {
 		type: string
 		id: string
-		body?: string | null
-		title?: string | null
+		fields: {
+			body?: string | null
+			title?: string | null
+		}
 	}
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {

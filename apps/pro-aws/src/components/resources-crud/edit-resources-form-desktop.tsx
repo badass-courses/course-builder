@@ -40,7 +40,7 @@ export function EditResourcesFormDesktop({
 		console.log({ values })
 		const updatedResource = await updateResource(values)
 		if (updatedResource) {
-			router.push(getResourcePath(updatedResource.slug))
+			router.push(getResourcePath(updatedResource.fields.slug))
 		}
 	}
 
