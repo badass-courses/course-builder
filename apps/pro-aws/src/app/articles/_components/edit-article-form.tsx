@@ -24,6 +24,7 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 		defaultValues: {
 			...article,
 			fields: {
+				...article.fields,
 				description: article.fields?.description ?? '',
 				socialImage: {
 					type: 'imageUrl',

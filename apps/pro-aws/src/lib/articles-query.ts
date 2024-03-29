@@ -7,13 +7,32 @@ import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { desc, eq, or, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export async function getArticles(): Promise<Article[]> {
+	const { ability } = await getServerAuthSession()
+
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public']
+	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
+		? ['draft', 'published']
+		: ['published']
+
 	const articles = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'article'),
+		where: and(
+			eq(contentResource.type, 'article'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
+		),
 		orderBy: desc(contentResource.createdAt),
 	})
 
@@ -102,10 +121,29 @@ export async function updateArticle(input: Article) {
 }
 
 export async function getArticle(slugOrId: string) {
+	const { ability } = await getServerAuthSession()
+
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public']
+	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
+		? ['draft', 'published']
+		: ['published']
+
 	const article = await db.query.contentResource.findFirst({
-		where: or(
-			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
-			eq(contentResource.id, slugOrId),
+		where: and(
+			or(
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+				eq(contentResource.id, slugOrId),
+			),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 	})
 

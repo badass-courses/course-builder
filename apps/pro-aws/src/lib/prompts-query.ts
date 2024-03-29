@@ -7,7 +7,7 @@ import { NewPrompt, Prompt, PromptSchema } from '@/lib/prompts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, sql } from 'drizzle-orm'
+import { eq, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -122,21 +122,19 @@ export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
       prompts.type = 'prompt' AND (prompts.id = ${slugOrId} OR JSON_EXTRACT (prompts.fields, "$.slug") = ${slugOrId});
   `
 
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsed = PromptSchema.safeParse(result.rows[0])
+	const prompt = await db.query.contentResource.findFirst({
+		where: or(
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+			eq(contentResource.id, slugOrId),
+		),
+	})
 
-			if (!parsed.success) {
-				console.error('Error parsing prompt', slugOrId)
-				console.error(parsed.error)
-				return null
-			} else {
-				return parsed.data
-			}
-		})
-		.catch((error) => {
-			console.error(error)
-			return error
-		})
+	const parsed = PromptSchema.safeParse(prompt)
+
+	if (!parsed.success) {
+		console.error('Error parsing prompt', prompt)
+		return null
+	}
+
+	return parsed.data
 }
