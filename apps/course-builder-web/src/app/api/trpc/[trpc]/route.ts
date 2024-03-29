@@ -1,5 +1,6 @@
 import { type NextRequest } from 'next/server'
 import { env } from '@/env.mjs'
+import { withSkill } from '@/server/with-skill'
 import { appRouter } from '@/trpc/api/root'
 import { createTRPCContext } from '@/trpc/api/trpc'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
@@ -14,7 +15,7 @@ const createContext = async (req: NextRequest) => {
 	})
 }
 
-const handler = (req: NextRequest) =>
+const baseHandler = (req: NextRequest) =>
 	fetchRequestHandler({
 		endpoint: '/api/trpc',
 		req,
@@ -29,5 +30,7 @@ const handler = (req: NextRequest) =>
 					}
 				: undefined,
 	})
+
+const handler = withSkill(baseHandler)
 
 export { handler as GET, handler as POST }
