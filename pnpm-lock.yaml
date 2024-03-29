@@ -780,9 +780,6 @@ importers:
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
-      '@skillrecordings/next-seo':
-        specifier: ^1.0.2
-        version: 1.0.2(next@14.2.0-canary.40)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       '@skillrecordings/time':
         specifier: ^0.0.13
         version: 0.0.13
@@ -11511,18 +11508,6 @@ packages:
 
   /@skillrecordings/config@0.0.3:
     resolution: {integrity: sha512-0a89yYp0xWDsSJr7SCo0qXc8OoY3SitR5+ePBrJuUReogv771yzsiiZEKK4oIORNwF7RWE+4IdJ2KYahYz31Qw==}
-    dev: false
-
-  /@skillrecordings/next-seo@1.0.2(next@14.2.0-canary.40)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118):
-    resolution: {integrity: sha512-RnSLFwqRJkgww+InC6BFgC3cZ9xeZk9QIYQ4tAHqAYyTZ4X4L4S2aJiy7rcp6UsOAhMDR7YHu/8OMZUv1u7NuQ==}
-    peerDependencies:
-      next: '>= 11.1.2 < 13'
-      react: ^17.0.2 < 18.0.0
-      react-dom: ^17.0.2 < 18.0.0
-    dependencies:
-      next: 14.2.0-canary.40(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
-      react: 18.3.0-canary-feed8f3f9-20240118
-      react-dom: 18.3.0-canary-feed8f3f9-20240118(react@18.3.0-canary-feed8f3f9-20240118)
     dev: false
 
   /@skillrecordings/time@0.0.13:

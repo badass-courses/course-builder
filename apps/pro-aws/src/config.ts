@@ -1,6 +1,4 @@
-import { DefaultSeoProps } from '@skillrecordings/next-seo'
-
-const config: DefaultSeoProps & { author: string } = {
+const config = {
 	defaultTitle: `${process.env.NEXT_PUBLIC_SITE_TITLE}`,
 	description: process.env.NEXT_PUBLIC_PRODUCT_DESCRIPTION,
 	author: `${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME} ${process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}`,
