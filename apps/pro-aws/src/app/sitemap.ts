@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		{
 			url: env.NEXT_PUBLIC_URL,
 			lastModified: new Date(),
-			changeFrequency: 'yearly',
+			changeFrequency: 'daily',
 			priority: 1,
 		},
 	]
