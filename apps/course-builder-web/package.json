@@ -16,7 +16,8 @@
 		"db:seed": "dotenv tsx ./src/db/seed.ts",
 		"lint": "next lint",
 		"start": "next start",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"ingest_database_dump_into_rag": "ts-node migrations/rag/ingest_database_export.ts"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",

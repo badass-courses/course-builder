@@ -10,6 +10,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { coreVideoProcessingFunctions } from '@coursebuilder/core/inngest/video-processing/functions'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
+import { queryRAG } from './functions/rag'
 import { computeVideoSplitPoints } from './functions/split_video'
 
 export const inngestConfig = {
@@ -27,5 +28,6 @@ export const inngestConfig = {
 		performCodeExtraction,
 		getOrCreateConcept,
 		computeVideoSplitPoints,
+		queryRAG,
 	],
 }

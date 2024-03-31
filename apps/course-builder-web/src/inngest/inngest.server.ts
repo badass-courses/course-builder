@@ -36,6 +36,7 @@ import {
 	type RequestConceptSelection,
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
+import { PERFORM_RAG_QUERY, PerformRagQuery } from './events/rag'
 import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
@@ -53,6 +54,7 @@ export type Events = {
 	[REQUEST_CONCEPT_SELECTION]: RequestConceptSelection
 	[CONCEPT_SELECTED]: ConceptSelected
 	[REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
+	[PERFORM_RAG_QUERY]: PerformRagQuery
 }
 
 const callbackBase =
