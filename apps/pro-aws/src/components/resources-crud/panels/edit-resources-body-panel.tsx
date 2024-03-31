@@ -2,13 +2,20 @@ import * as React from 'react'
 import { CodemirrorEditor } from '@/components/codemirror'
 import type { UseFormReturn } from 'react-hook-form'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import { ResizablePanel, ScrollArea } from '@coursebuilder/ui'
 
 export function EditResourcesBodyPanel({
 	resource,
 	form,
 }: {
-	resource: { id: string; body?: string | null }
+	resource: ContentResource & {
+		fields: {
+			body?: string | null
+			title?: string | null
+			slug: string
+		}
+	}
 	form: UseFormReturn<any>
 }) {
 	return (

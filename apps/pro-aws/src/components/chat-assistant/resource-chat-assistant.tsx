@@ -10,6 +10,7 @@ import {
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	ResizableHandle,
@@ -24,12 +25,11 @@ export function ResourceChatAssistant({
 		{ value: 'summarize', label: 'Summarize', default: true },
 	],
 }: {
-	resource: {
-		type: string
-		id: string
+	resource: ContentResource & {
 		fields: {
 			body?: string | null
 			title?: string | null
+			slug: string
 		}
 	}
 

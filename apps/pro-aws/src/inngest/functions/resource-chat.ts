@@ -5,7 +5,6 @@ import { env } from '@/env.mjs'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
 import { ChatResource } from '@/lib/ai-chat'
-import { getChatResource } from '@/lib/ai-chat-query'
 import { getPrompt } from '@/lib/prompts-query'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
 import { getVideoResource } from '@/lib/video-resource-query'
@@ -17,6 +16,9 @@ import {
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 import { z } from 'zod'
+
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+import { ContentResource } from '@coursebuilder/core/types'
 
 /**
  * TODO: Cancellation conditions need to be added $$
@@ -39,7 +41,7 @@ export const resourceChat = inngest.createFunction(
 		const workflowTrigger = event.data.selectedWorkflow
 
 		const resource = await step.run('get the resource', async () => {
-			return await db.query.contentResource.findFirst({
+			const loadResource = await db.query.contentResource.findFirst({
 				where: or(
 					eq(
 						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
@@ -56,6 +58,11 @@ export const resourceChat = inngest.createFunction(
 					},
 				},
 			})
+			const parsedResource = ContentResourceSchema.safeParse(loadResource)
+			if (!parsedResource.success) {
+				throw new NonRetriableError('Error parsing resource')
+			}
+			return parsedResource.data
 		})
 
 		if (!resource) {
@@ -70,6 +77,7 @@ export const resourceChat = inngest.createFunction(
 			step,
 			workflowTrigger,
 			resourceId,
+			// @ts-expect-error
 			resource: { ...videoResource, ...resource, ...resource.fields },
 			messages: event.data.messages,
 			user: event.user,

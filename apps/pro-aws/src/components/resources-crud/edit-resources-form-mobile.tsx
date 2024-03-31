@@ -19,7 +19,7 @@ export function EditResourcesFormMobile({
 	availableWorkflows,
 }: {
 	resource: ContentResource & {
-		fields?: {
+		fields: {
 			body?: string | null
 			title?: string | null
 			slug: string
