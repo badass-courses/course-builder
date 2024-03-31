@@ -12,7 +12,7 @@ import ReactMarkdown from 'react-markdown'
 import { Button } from '@coursebuilder/ui'
 
 type Props = {
-	params: { prompt: string }
+	params: { slug: string }
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import Image from 'next/image'
 import { Layout } from '@/components/app/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'

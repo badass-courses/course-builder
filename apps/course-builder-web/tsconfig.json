@@ -34,7 +34,6 @@
 		"**/*.cjs",
 		"**/*.mjs",
 		".next/types/**/*.ts",
-		"/Users/joel/Code/joelhooks/course-builder/apps/course-builder-web/.next/types/**/*.ts",
 		"./node_modules/y-codemirror.next/dist/src/index.d.ts"
 	],
 	"exclude": ["node_modules"]

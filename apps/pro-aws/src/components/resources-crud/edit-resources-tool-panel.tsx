@@ -4,6 +4,7 @@ import { EditResourcesToolbar } from '@/components/resources-crud/edit-resources
 import { cn } from '@/utils/cn'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import { ResizablePanel } from '@coursebuilder/ui'
 
 const WIDGETS = new Set([
@@ -31,12 +32,11 @@ export function EditResourcesToolPanel({
 	defaultSize?: number
 	maxSize?: number
 	className?: string
-	resource: {
-		type: string
-		id: string
+	resource: ContentResource & {
 		fields: {
 			body?: string | null
 			title?: string | null
+			slug: string
 		}
 	}
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]

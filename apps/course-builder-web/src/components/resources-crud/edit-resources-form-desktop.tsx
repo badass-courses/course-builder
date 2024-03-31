@@ -21,7 +21,7 @@ export function EditResourcesFormDesktop({
 	availableWorkflows,
 }: {
 	resource: ContentResource & {
-		fields?: {
+		fields: {
 			body?: string | null
 			title?: string | null
 			slug: string
@@ -40,7 +40,7 @@ export function EditResourcesFormDesktop({
 		console.log({ values })
 		const updatedResource = await updateResource(values)
 		if (updatedResource) {
-			router.push(getResourcePath(updatedResource.slug))
+			router.push(getResourcePath(updatedResource.fields.slug))
 		}
 	}
 

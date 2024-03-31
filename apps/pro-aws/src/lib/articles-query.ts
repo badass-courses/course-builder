@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidateTag } from 'next/cache'
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { Article, ArticleSchema, NewArticle } from '@/lib/articles'
 import { getServerAuthSession } from '@/server/auth'
