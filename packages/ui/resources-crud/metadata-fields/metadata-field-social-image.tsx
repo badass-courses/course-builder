@@ -16,6 +16,7 @@ export function MetadataFieldSocialImage({
 	form: UseFormReturn<any>
 	currentSocialImage: string | null | undefined
 }) {
+	console.log({ currentSocialImage })
 	return (
 		<FormField
 			control={form.control}
@@ -28,7 +29,7 @@ export function MetadataFieldSocialImage({
 					</FormDescription>
 					{currentSocialImage && (
 						<img
-							src={currentSocialImage.toString()}
+							src={currentSocialImage}
 							alt={'social image preview'}
 							width={1200 / 2}
 							height={630 / 2}

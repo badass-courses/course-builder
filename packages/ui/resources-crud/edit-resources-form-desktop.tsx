@@ -28,6 +28,7 @@ export function EditResourcesFormDesktop({
 	hostUrl,
 	user,
 	tools = [],
+	theme = 'light',
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
@@ -51,6 +52,7 @@ export function EditResourcesFormDesktop({
 	hostUrl: string
 	user?: User | null
 	tools?: ResourceTool[]
+	theme?: string
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
@@ -65,6 +67,14 @@ export function EditResourcesFormDesktop({
 				resource={resource}
 				resourcePath={getResourcePath(resource.fields?.slug)}
 				onSubmit={() => {
+					onSubmit(form.getValues())
+				}}
+				onPublish={() => {
+					form.setValue('fields.state', 'published')
+					onSubmit(form.getValues())
+				}}
+				onArchive={() => {
+					form.setValue('fields.state', 'archived')
 					onSubmit(form.getValues())
 				}}
 			/>

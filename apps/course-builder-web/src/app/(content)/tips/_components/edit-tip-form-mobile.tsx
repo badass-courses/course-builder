@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { EditTipFormProps } from '@/app/(content)/tips/_components/edit-tip-form'
 import { TipMetadataFormFields } from '@/app/(content)/tips/_components/edit-tip-form-metadata'
 import { env } from '@/env.mjs'
+import { useSocket } from '@/hooks/use-socket'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { TipUpdate } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
@@ -13,7 +14,6 @@ import { useSession } from 'next-auth/react'
 import { Button, Form } from '@coursebuilder/ui'
 import { ResourceChatAssistant } from '@coursebuilder/ui/chat-assistant/resource-chat-assistant'
 import { CodemirrorEditor } from '@coursebuilder/ui/codemirror/editor'
-import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
 export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	tip,
@@ -36,7 +36,6 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 
 	useSocket({
 		room: videoResourceId,
-		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
 		onMessage: async (messageEvent) => {
 			try {
 				const data = JSON.parse(messageEvent.data)

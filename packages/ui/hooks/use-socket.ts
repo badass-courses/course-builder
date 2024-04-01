@@ -5,7 +5,7 @@ export function useSocket(options: {
 	onMessage?: (event: WebSocketEventMap['message']) => void
 	onClose?: (event: WebSocketEventMap['close']) => void
 	onError?: (event: WebSocketEventMap['error']) => void
-	room?: string
+	room?: string | null
 	host: string
 }) {
 	return usePartySocket({

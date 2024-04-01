@@ -13,12 +13,6 @@ export default async function PromptOG({
 	//   ).then(res => res.arrayBuffer());
 
 	// fonts
-	const inter600 = fetch(
-		new URL(
-			`../../../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff`,
-			import.meta.url,
-		),
-	).then((res) => res.arrayBuffer())
 
 	const resource = await getPrompt(params.slug)
 
@@ -27,9 +21,7 @@ export default async function PromptOG({
 			<div
 				tw="flex p-10 h-full w-full bg-white flex-col"
 				style={{
-					...font('Inter 600'),
-					backgroundImage:
-						'url(https://res.cloudinary.com/badass-courses/image/upload/v1700690096/course-builder-og-image-template_qfarun.png)',
+					...font('sans'),
 				}}
 			>
 				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
@@ -47,12 +39,6 @@ export default async function PromptOG({
 		{
 			width: 1200,
 			height: 630,
-			fonts: [
-				{
-					name: 'Inter 600',
-					data: await inter600,
-				},
-			],
 		},
 	)
 }

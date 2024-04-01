@@ -14,6 +14,7 @@ export function EditResourcesMetadataFields({
 	form: UseFormReturn<any>
 	children?: React.ReactNode
 }) {
+	console.log({ form })
 	return (
 		<>
 			<MetadataFieldTitle form={form} />

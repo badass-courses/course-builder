@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useParams } from 'next/navigation'
-import { onLessonSave } from '@/app/tutorials/[module]/[lesson]/edit/actions'
+import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'

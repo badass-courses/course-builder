@@ -10,6 +10,7 @@ import { ScrollArea } from '../../primitives/scroll-area'
 export function EditResourcesBodyPanel({
 	resource,
 	form,
+	theme = 'light',
 }: {
 	resource: ContentResource & {
 		fields: {
@@ -19,6 +20,7 @@ export function EditResourcesBodyPanel({
 		}
 	}
 	form: UseFormReturn<any>
+	theme?: string
 }) {
 	return (
 		<ResizablePanel
@@ -32,6 +34,7 @@ export function EditResourcesBodyPanel({
 					onChange={async (data) => {
 						form.setValue('fields.body', data)
 					}}
+					theme={theme}
 				/>
 			</ScrollArea>
 		</ResizablePanel>
