@@ -8,6 +8,8 @@ export function EditResourcesActionBar({
 	onSubmit,
 	resource,
 	resourcePath,
+	onPublish,
+	onArchive,
 }: {
 	resource: ContentResource & {
 		fields?: {
@@ -17,6 +19,8 @@ export function EditResourcesActionBar({
 		}
 	}
 	onSubmit: () => void
+	onPublish: () => void
+	onArchive: () => void
 	resourcePath: string
 }) {
 	return (
@@ -34,17 +38,45 @@ export function EditResourcesActionBar({
 					</span>
 				</span>
 			</div>
-			<Button
-				onClick={(e) => {
-					onSubmit()
-				}}
-				type="button"
-				variant="default"
-				size="sm"
-				className="h-7 disabled:cursor-wait"
-			>
-				Save
-			</Button>
+			<div className="flex items-center gap-2">
+				{resource.fields?.state === 'draft' && (
+					<Button
+						onClick={(e) => {
+							onPublish()
+						}}
+						type="button"
+						variant="default"
+						size="sm"
+						className="h-7 disabled:cursor-wait"
+					>
+						Publish
+					</Button>
+				)}
+				{resource.fields?.state === 'published' && (
+					<Button
+						onClick={(e) => {
+							onPublish()
+						}}
+						type="button"
+						variant="default"
+						size="sm"
+						className="h-7 disabled:cursor-wait"
+					>
+						Archive
+					</Button>
+				)}
+				<Button
+					onClick={(e) => {
+						onSubmit()
+					}}
+					type="button"
+					variant="default"
+					size="sm"
+					className="h-7 disabled:cursor-wait"
+				>
+					Save
+				</Button>
+			</div>
 		</div>
 	)
 }

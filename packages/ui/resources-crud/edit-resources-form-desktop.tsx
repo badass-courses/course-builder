@@ -7,7 +7,10 @@ import { ContentResource } from '@coursebuilder/core/types'
 
 import { ResizableHandle } from '../primitives/resizable'
 import { EditResourcesActionBar } from './edit-resources-action-bar'
-import { EditResourcesToolPanel } from './edit-resources-tool-panel'
+import {
+	EditResourcesToolPanel,
+	ResourceTool,
+} from './edit-resources-tool-panel'
 import { EditResourcePanelGroup } from './panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from './panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from './panels/edit-resources-metadata-panel'
@@ -24,6 +27,8 @@ export function EditResourcesFormDesktop({
 	sendResourceChatMessage,
 	hostUrl,
 	user,
+	tools = [],
+	theme = 'light',
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
@@ -46,6 +51,8 @@ export function EditResourcesFormDesktop({
 	}) => Promise<void>
 	hostUrl: string
 	user?: User | null
+	tools?: ResourceTool[]
+	theme?: string
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
@@ -62,6 +69,14 @@ export function EditResourcesFormDesktop({
 				onSubmit={() => {
 					onSubmit(form.getValues())
 				}}
+				onPublish={() => {
+					form.setValue('fields.state', 'published')
+					onSubmit(form.getValues())
+				}}
+				onArchive={() => {
+					form.setValue('fields.state', 'archived')
+					onSubmit(form.getValues())
+				}}
 			/>
 			<EditResourcePanelGroup>
 				<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
@@ -76,6 +91,7 @@ export function EditResourcesFormDesktop({
 					sendResourceChatMessage={sendResourceChatMessage}
 					hostUrl={hostUrl}
 					user={user}
+					tools={tools}
 				/>
 			</EditResourcePanelGroup>
 		</>

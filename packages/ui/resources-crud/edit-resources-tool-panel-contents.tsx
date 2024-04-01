@@ -4,6 +4,7 @@ import { User } from '@auth/core/types'
 import { ContentResource } from '@coursebuilder/core/types'
 
 import { ResourceChatAssistant } from '../chat-assistant/resource-chat-assistant'
+import { ResourceTool } from './edit-resources-tool-panel'
 
 export function EditResourcesToolPanelContents({
 	resource,
@@ -13,6 +14,7 @@ export function EditResourcesToolPanelContents({
 	sendResourceChatMessage,
 	hostUrl,
 	user,
+	tools = [],
 }: {
 	resource: ContentResource & {
 		fields: {
@@ -31,7 +33,9 @@ export function EditResourcesToolPanelContents({
 	}) => Promise<void>
 	hostUrl: string
 	user?: User | null
+	tools?: ResourceTool[]
 }) {
+	console.log({ activeToolId, tools })
 	return (
 		<>
 			{activeToolId === 'assistant' && (
@@ -43,6 +47,9 @@ export function EditResourcesToolPanelContents({
 					user={user}
 				/>
 			)}
+			{tools.map((tool) => (
+				<>{activeToolId === tool.id && tool.toolComponent}</>
+			))}
 			{children}
 		</>
 	)

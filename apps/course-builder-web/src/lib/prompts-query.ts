@@ -1,13 +1,13 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
-import { db } from '@/db'
+import { revalidateTag } from 'next/cache'
+import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { NewPrompt, Prompt, PromptSchema } from '@/lib/prompts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, sql } from 'drizzle-orm'
+import { eq, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -73,70 +73,30 @@ export async function updatePrompt(input: Prompt) {
 		promptSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	const query = sql`
-    UPDATE ${contentResource}
-    SET
-      ${contentResource.fields} = JSON_SET(
-        ${contentResource.fields},
-        '$.title', ${input.fields.title},
-        '$.slug', ${promptSlug},
-        '$.body', ${input.fields.body},
-        '$.state', ${input.fields.state}
-      )
-    WHERE
-      id = ${input.id};
-  `
-
-	await db
-		.execute(query)
-		.then((result) => {
-			console.log('Updated Prompt')
-		})
-		.catch((error) => {
-			console.error(error)
-			throw error
-		})
-
-	revalidateTag('prompts')
-	revalidateTag(input.id)
-	revalidateTag(promptSlug)
-	revalidatePath(`/${promptSlug}`)
-
-	return await getPrompt(input.id)
+	return courseBuilderAdapter.updateContentResourceFields({
+		id: currentPrompt.id,
+		fields: {
+			...currentPrompt.fields,
+			...input.fields,
+			slug: promptSlug,
+		},
+	})
 }
 
 export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
-	const query = sql`
-    SELECT
-      prompts.id as id,
-      prompts.type as type,
-      CAST(prompts.updatedAt AS DATETIME) as updatedAt,
-      CAST(prompts.createdAt AS DATETIME) as createdAt,
-      JSON_EXTRACT (prompts.fields, "$.title") AS title,
-      JSON_EXTRACT (prompts.fields, "$.state") AS state,
-      JSON_EXTRACT (prompts.fields, "$.body") AS body,
-      JSON_EXTRACT (prompts.fields, "$.slug") AS slug
-    FROM
-      ${contentResource} as prompts
-    WHERE
-      prompts.type = 'prompt' AND (prompts.id = ${slugOrId} OR JSON_EXTRACT (prompts.fields, "$.slug") = ${slugOrId});
-  `
+	const prompt = await db.query.contentResource.findFirst({
+		where: or(
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+			eq(contentResource.id, slugOrId),
+		),
+	})
 
-	return db
-		.execute(query)
-		.then((result) => {
-			const parsed = PromptSchema.safeParse(result.rows[0])
+	const parsed = PromptSchema.safeParse(prompt)
 
-			if (!parsed.success) {
-				console.error('Error parsing prompt', slugOrId)
-				console.error(parsed.error)
-				return null
-			} else {
-				return parsed.data
-			}
-		})
-		.catch((error) => {
-			console.error(error)
-			return error
-		})
+	if (!parsed.success) {
+		console.error('Error parsing prompt', prompt)
+		return null
+	}
+
+	return parsed.data
 }

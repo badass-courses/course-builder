@@ -9,6 +9,7 @@ import { ResourceChatAssistant } from '../chat-assistant/resource-chat-assistant
 import { CodemirrorEditor } from '../codemirror/editor'
 import { Button } from '../primitives/button'
 import { Form } from '../primitives/form'
+import { ResourceTool } from './edit-resources-tool-panel'
 
 export function EditResourcesFormMobile({
 	resource,
@@ -22,6 +23,7 @@ export function EditResourcesFormMobile({
 	sendResourceChatMessage,
 	hostUrl,
 	user,
+	tools = [],
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
@@ -44,6 +46,7 @@ export function EditResourcesFormMobile({
 	}) => Promise<void>
 	hostUrl: string
 	user?: User | null
+	tools?: ResourceTool[]
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)

@@ -9,6 +9,15 @@ import { cn } from '../utils/cn'
 import { EditResourcesToolPanelContents } from './edit-resources-tool-panel-contents'
 import { EditResourcesToolbar } from './edit-resources-toolbar'
 
+export type ResourceTool = {
+	id: string
+	icon: () => React.JSX.Element
+	label?: string
+	tooltip?: string
+	description?: string
+	toolComponent?: React.ReactNode
+}
+
 const WIDGETS = new Set([
 	{
 		id: 'assistant',
@@ -32,6 +41,7 @@ export function EditResourcesToolPanel({
 	sendResourceChatMessage,
 	hostUrl,
 	user,
+	tools = [],
 }: {
 	minSize?: number
 	defaultSize?: number
@@ -52,6 +62,7 @@ export function EditResourcesToolPanel({
 	}) => Promise<void>
 	hostUrl: string
 	user?: User | null
+	tools?: ResourceTool[]
 }) {
 	const [activeToolId, setActiveToolId] = React.useState<string>(
 		WIDGETS.values().next().value.id,
@@ -74,6 +85,7 @@ export function EditResourcesToolPanel({
 					sendResourceChatMessage={sendResourceChatMessage}
 					hostUrl={hostUrl}
 					user={user}
+					tools={tools}
 				/>
 			</ResizablePanel>
 			<EditResourcesToolbar
