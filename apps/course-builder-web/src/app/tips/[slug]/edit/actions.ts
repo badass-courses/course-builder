@@ -1,10 +1,12 @@
 'use server'
 
+import { redirect } from 'next/navigation'
 import { inngest } from '@/inngest/inngest.server'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-resource'
+import { ContentResource } from '@coursebuilder/core/types'
 
 export async function reprocessTranscript({
 	videoResourceId,
@@ -31,4 +33,9 @@ export async function reprocessTranscript({
 			user: session.user,
 		})
 	}
+}
+
+export const onTipSave = async (resource: ContentResource) => {
+	'use server'
+	redirect(`/tips/${resource.fields?.slug}`)
 }

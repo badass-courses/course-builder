@@ -1,10 +1,9 @@
 import * as React from 'react'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
+import { Layout } from '@/components/app/layout'
 import { getTip } from '@/lib/tips-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
-
-import { ContentResource } from '@coursebuilder/core/types'
 
 import { EditTipForm } from '../../_components/edit-tip-form'
 
@@ -27,13 +26,12 @@ export default async function TipEditPage({
 	const videoResourceLoader = getVideoResource(resource)
 
 	return (
-		<EditTipForm
-			key={tip.fields.slug}
-			tip={tip}
-			videoResourceLoader={videoResourceLoader}
-			onSave={(resource: ContentResource) =>
-				redirect(`/tips/${resource.fields.slug}`)
-			}
-		/>
+		<Layout>
+			<EditTipForm
+				key={tip.id}
+				tip={tip}
+				videoResourceLoader={videoResourceLoader}
+			/>
+		</Layout>
 	)
 }

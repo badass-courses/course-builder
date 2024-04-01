@@ -1,26 +1,29 @@
 'use client'
 
 import * as React from 'react'
-import { redirect } from 'next/navigation'
-import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@/components/resources-crud/edit-resources-form-mobile'
-import { EditResourcesMetadataFields } from '@/components/resources-crud/edit-resources-metadata-fields'
-import { MetadataFieldSocialImage } from '@/components/resources-crud/metadata-fields/metadata-field-social-image'
+import { onArticleSave } from '@/app/articles/[slug]/edit/actions'
+import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { ArticleSchema, type Article } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSession } from 'next-auth/react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 type EditArticleFormProps = {
 	article: Article
 }
 
 export function EditArticleForm({ article }: EditArticleFormProps) {
+	const { data: session } = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(article)
 	const form = useForm<z.infer<typeof ArticleSchema>>({
 		resolver: zodResolver(ArticleSchema),
@@ -48,12 +51,9 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 			resource={article}
 			form={form}
 			resourceSchema={ArticleSchema}
-			getResourcePath={(slug) => `/${slug}`}
+			getResourcePath={(slug?: string) => `/${slug}`}
 			updateResource={updateArticle}
-			onSave={(resource: ContentResource) => {
-				'use server'
-				redirect(`/${resource.fields?.slug}`)
-			}}
+			onSave={onArticleSave}
 			availableWorkflows={[
 				{
 					value: 'article-chat-default-5aj1o',
@@ -61,6 +61,9 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 					default: true,
 				},
 			]}
+			sendResourceChatMessage={sendResourceChatMessage}
+			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
+			user={session?.user}
 		>
 			<ArticleMetadataFormFields form={form} />
 		</ResourceForm>

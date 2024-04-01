@@ -6,7 +6,6 @@ import { contentResource, contentResourceResource } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { asc, like, sql } from 'drizzle-orm'
 import { last } from 'lodash'
-import pluralize from 'pluralize'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,12 +49,7 @@ export default async function EditTutorialPage({
 
 	return (
 		<>
-			<ModuleEdit
-				tutorial={tutorial}
-				onSave={(resource) => {
-					redirect(`/${pluralize(resource.type)}/${resource.fields.slug}`)
-				}}
-			/>
+			<ModuleEdit tutorial={tutorial} />
 		</>
 	)
 }
