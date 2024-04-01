@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { useRef } from 'react'
-import { useSocket } from '@/hooks/use-socket'
-import { sendResourceChatMessage } from '@/lib/ai-chat-query'
+import { User } from '@auth/core/types'
 import {
 	ChatCompletionRequestMessage,
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 
+import { useSocket } from '../hooks/use-socket'
 import { Button } from '../primitives/button'
 import {
 	ResizableHandle,
@@ -22,6 +22,9 @@ export function ResourceChatAssistant({
 	availableWorkflows = [
 		{ value: 'summarize', label: 'Summarize', default: true },
 	],
+	user,
+	hostUrl,
+	sendResourceChatMessage,
 }: {
 	resource: {
 		type: string
@@ -29,7 +32,13 @@ export function ResourceChatAssistant({
 		body?: string | null
 		title?: string | null
 	}
-
+	sendResourceChatMessage: (options: {
+		resourceId: string
+		messages: any[]
+		selectedWorkflow?: string
+	}) => Promise<void>
+	hostUrl: string
+	user?: User | null
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }) {
 	const [messages, setMessages] = React.useState<
@@ -69,6 +78,7 @@ export function ResourceChatAssistant({
 
 	useSocket({
 		room: resource.id,
+		host: hostUrl,
 		onMessage: (messageEvent) => {
 			try {
 				const messageData = JSON.parse(messageEvent.data)
@@ -102,7 +112,11 @@ export function ResourceChatAssistant({
 			</div>
 			<ResizablePanelGroup direction="vertical">
 				<ResizablePanel defaultSize={85} className="none">
-					<ResourceChatResponse requestId={resource.id} />
+					<ResourceChatResponse
+						requestId={resource.id}
+						hostUrl={hostUrl}
+						user={user}
+					/>
 				</ResizablePanel>
 				<ResizableHandle />
 				<ResizablePanel
@@ -134,7 +148,7 @@ export function ResourceChatAssistant({
 							}
 						}}
 					>
-						<EnterIcon className="w-4" />
+						<div className="w-4">send</div>
 					</Button>
 				</ResizablePanel>
 			</ResizablePanelGroup>

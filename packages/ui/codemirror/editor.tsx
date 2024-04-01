@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { AdapterUser } from '@auth/core/adapters'
+import { User } from '@auth/core/types'
 import { markdown } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
 import {
@@ -34,7 +34,7 @@ export const CodemirrorEditor = ({
 	roomName: string
 	value: string
 	onChange: (data: any) => void
-	user?: AdapterUser | null
+	user?: User | null
 }) => {
 	const { codemirrorElementRef } = useCodemirror({
 		roomName,
@@ -112,7 +112,7 @@ const useCodemirror = ({
 	value: string
 	onChange: (data: any) => void
 	partykitUrl?: string
-	user?: AdapterUser | null
+	user?: User | null
 	theme?: string
 }) => {
 	const [element, setElement] = useState<HTMLElement>()

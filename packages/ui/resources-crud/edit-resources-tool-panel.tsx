@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { User } from '@auth/core/types'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 
 import { ContentResource } from '@coursebuilder/core/types'
@@ -28,6 +29,9 @@ export function EditResourcesToolPanel({
 	maxSize = 50,
 	defaultSize = 25,
 	availableWorkflows,
+	sendResourceChatMessage,
+	hostUrl,
+	user,
 }: {
 	minSize?: number
 	defaultSize?: number
@@ -41,6 +45,13 @@ export function EditResourcesToolPanel({
 		}
 	}
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
+	sendResourceChatMessage: (options: {
+		resourceId: string
+		messages: any[]
+		selectedWorkflow?: string
+	}) => Promise<void>
+	hostUrl: string
+	user?: User | null
 }) {
 	const [activeToolId, setActiveToolId] = React.useState<string>(
 		WIDGETS.values().next().value.id,
@@ -60,6 +71,9 @@ export function EditResourcesToolPanel({
 					resource={resource}
 					activeToolId={activeToolId}
 					availableWorkflows={availableWorkflows}
+					sendResourceChatMessage={sendResourceChatMessage}
+					hostUrl={hostUrl}
+					user={user}
 				/>
 			</ResizablePanel>
 			<EditResourcesToolbar

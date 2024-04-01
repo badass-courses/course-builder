@@ -1,7 +1,10 @@
 import * as React from 'react'
-import { notFound } from 'next/navigation'
-import { CreateResourceCard } from '@/components/resources-crud/create-resource-card'
+import { notFound, redirect } from 'next/navigation'
+import { createResource } from '@/lib/resources/create-resources'
 import { getServerAuthSession } from '@/server/auth'
+
+import { ContentResource } from '@coursebuilder/core/types'
+import { CreateResourceCard } from '@coursebuilder/ui/resources-crud/create-resource-card'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,7 +21,14 @@ export default async function CreateResourcePage({
 
 	return (
 		<div className="flex flex-col">
-			<CreateResourceCard resourceType={resourceType} />
+			<CreateResourceCard
+				resourceType={resourceType}
+				onCreate={async (resource: ContentResource) => {
+					'use server'
+					redirect(`/${resource.fields?.slug}`)
+				}}
+				createResource={createResource}
+			/>
 		</div>
 	)
 }

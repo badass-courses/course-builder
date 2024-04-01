@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useRef } from 'react'
-import { AdapterUser } from '@auth/core/adapters'
+import { User } from '@auth/core/types'
 import Gravatar from 'react-gravatar'
 import ReactMarkdown from 'react-markdown'
 
@@ -22,7 +22,7 @@ export function ResourceChatResponse({
 }: {
 	requestId: string
 	hostUrl: string
-	user?: AdapterUser
+	user?: User | null
 }) {
 	const [messages, setMessages] = React.useState<Message[]>([])
 	const div = useRef<any>(null)
@@ -127,7 +127,7 @@ export function ResourceChatResponse({
 	)
 }
 
-function MessageHeader({ userData }: { userData?: AdapterUser }) {
+function MessageHeader({ userData }: { userData?: User | null }) {
 	return (
 		<div className="pb-1">
 			{userData ? (
