@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { CreateTip } from '@/app/tips/_components/create-tip'
 import { getServerAuthSession } from '@/server/auth'
+
+import { CreateTip } from '../_components/create-tip'
 
 export const dynamic = 'force-dynamic'
 

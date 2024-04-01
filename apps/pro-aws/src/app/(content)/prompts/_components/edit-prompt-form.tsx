@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { onPromptSave } from '@/app/prompts/[slug]/edit/actions'
+import { onPromptSave } from '@/app/(content)/prompts/[slug]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'

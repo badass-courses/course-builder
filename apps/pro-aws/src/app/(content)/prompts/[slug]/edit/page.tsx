@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
-import { EditPromptForm } from '@/app/prompts/_components/edit-prompt-form'
+import { EditPromptForm } from '@/app/(content)/prompts/_components/edit-prompt-form'
 import { getPrompt } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
 

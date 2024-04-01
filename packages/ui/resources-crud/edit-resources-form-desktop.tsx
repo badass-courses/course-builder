@@ -7,7 +7,10 @@ import { ContentResource } from '@coursebuilder/core/types'
 
 import { ResizableHandle } from '../primitives/resizable'
 import { EditResourcesActionBar } from './edit-resources-action-bar'
-import { EditResourcesToolPanel } from './edit-resources-tool-panel'
+import {
+	EditResourcesToolPanel,
+	ResourceTool,
+} from './edit-resources-tool-panel'
 import { EditResourcePanelGroup } from './panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from './panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from './panels/edit-resources-metadata-panel'
@@ -24,6 +27,7 @@ export function EditResourcesFormDesktop({
 	sendResourceChatMessage,
 	hostUrl,
 	user,
+	tools = [],
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
@@ -46,6 +50,7 @@ export function EditResourcesFormDesktop({
 	}) => Promise<void>
 	hostUrl: string
 	user?: User | null
+	tools?: ResourceTool[]
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
@@ -76,6 +81,7 @@ export function EditResourcesFormDesktop({
 					sendResourceChatMessage={sendResourceChatMessage}
 					hostUrl={hostUrl}
 					user={user}
+					tools={tools}
 				/>
 			</EditResourcePanelGroup>
 		</>
