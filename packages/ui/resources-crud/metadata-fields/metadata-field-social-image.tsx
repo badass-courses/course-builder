@@ -6,8 +6,8 @@ import {
 	FormField,
 	FormItem,
 	FormLabel,
-	Input,
-} from '@coursebuilder/ui'
+} from '../../primitives/form'
+import { Input } from '../../primitives/input'
 
 export function MetadataFieldSocialImage({
 	form,

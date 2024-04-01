@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { createResource } from '@/lib/resources/create-resources'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/types'
+
+import { Button } from '../primitives/button'
 import {
-	Button,
 	Form,
 	FormControl,
 	FormDescription,
@@ -14,15 +14,24 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-	Input,
-} from '@coursebuilder/ui'
+} from '../primitives/form'
+import { Input } from '../primitives/input'
+
+const NewResourceSchema = z.object({
+	type: z.string(),
+	title: z.string().min(2).max(90),
+})
+
+export type NewResource = z.infer<typeof NewResourceSchema>
 
 export function CreateResourceForm({
 	resourceType,
 	onCreate,
+	createResource,
 }: {
 	resourceType: string
 	onCreate: (resource: ContentResource) => Promise<void>
+	createResource: (values: NewResource) => Promise<ContentResource | null>
 }) {
 	const form = useForm<{ fields: { title: string } }>({
 		resolver: zodResolver(

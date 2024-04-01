@@ -1,7 +1,10 @@
 import * as React from 'react'
-import { notFound } from 'next/navigation'
-import CreateResourcePage from '@/components/resources-crud/create-resource-page'
+import { notFound, redirect } from 'next/navigation'
+import { CreateResourceCard } from '@/components/resources-crud/create-resource-card'
 import { getServerAuthSession } from '@/server/auth'
+import pluralize from 'pluralize'
+
+import { ContentResource } from '@coursebuilder/core/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,8 +17,13 @@ export default async function NewTutorialPage() {
 
 	return (
 		<div className="flex flex-col">
-			<h1 className="text-3xl font-bold sm:text-4xl">Create a New Tutorial</h1>
-			<CreateResourcePage resourceType="tutorial" />
+			<CreateResourceCard
+				resourceType={'tutorial'}
+				onCreate={(resource: ContentResource) => {
+					'use server'
+					redirect(`/${pluralize(resource.type)}/edit/${resource.fields.slug}`)
+				}}
+			/>
 		</div>
 	)
 }

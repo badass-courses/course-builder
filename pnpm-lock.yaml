@@ -1449,6 +1449,33 @@ importers:
 
   packages/ui:
     dependencies:
+      '@auth/core':
+        specifier: ^0.28.1
+        version: 0.28.1
+      '@codemirror/lang-markdown':
+        specifier: ^6.2.3
+        version: 6.2.4
+      '@codemirror/language-data':
+        specifier: ^6.4.1
+        version: 6.4.1(@codemirror/view@6.26.0)
+      '@codemirror/search':
+        specifier: ^6.5.5
+        version: 6.5.6
+      '@codemirror/state':
+        specifier: ^6.3.3
+        version: 6.4.1
+      '@codemirror/view':
+        specifier: ^6.22.3
+        version: 6.26.0
+      '@coursebuilder/core':
+        specifier: 0.0.9
+        version: link:../core
+      '@hookform/resolvers':
+        specifier: ^3.3.2
+        version: 3.3.4(react-hook-form@7.51.0)
+      '@lezer/highlight':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@radix-ui/react-accordion':
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.22)(@types/react@18.2.73)(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
@@ -1509,6 +1536,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.0.7(@types/react-dom@18.2.22)(@types/react@18.2.73)(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
+      '@uiw/codemirror-themes':
+        specifier: ^4.21.24
+        version: 4.21.24(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1518,12 +1548,21 @@ importers:
       cmdk:
         specifier: ^0.2.0
         version: 0.2.1(@types/react@18.2.73)(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
+      codemirror:
+        specifier: ^6.0.1
+        version: 6.0.1(@lezer/common@1.2.1)
       framer-motion:
         specifier: ^10.16.5
         version: 10.18.0(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@18.3.0-canary-a870b2d54-20240314)
+      openai-edge:
+        specifier: ^1.2.2
+        version: 1.2.2
+      partysocket:
+        specifier: 0.0.25
+        version: 0.0.25
       react:
         specifier: canary
         version: 18.3.0-canary-a870b2d54-20240314
@@ -1533,9 +1572,15 @@ importers:
       react-dom:
         specifier: canary
         version: 18.3.0-canary-a870b2d54-20240314(react@18.3.0-canary-a870b2d54-20240314)
+      react-gravatar:
+        specifier: ^2.6.3
+        version: 2.6.3(react@18.3.0-canary-a870b2d54-20240314)
       react-hook-form:
         specifier: ^7.48.0
         version: 7.51.0(react@18.3.0-canary-a870b2d54-20240314)
+      react-markdown:
+        specifier: ^9.0.0
+        version: 9.0.1(@types/react@18.2.73)(react@18.3.0-canary-a870b2d54-20240314)
       react-resizable-panels:
         specifier: ^2.0.12
         version: 2.0.13(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
@@ -1545,6 +1590,24 @@ importers:
       tailwind-merge:
         specifier: ^1.14.0
         version: 1.14.0
+      y-codemirror.jh:
+        specifier: 0.3.2-joel-fork
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14)
+      y-partykit:
+        specifier: ^0.0.21
+        version: 0.0.21
+      y-prosemirror:
+        specifier: ^1.2.2
+        version: 1.2.3(prosemirror-model@1.19.4)(prosemirror-state@1.4.3)(prosemirror-view@1.33.1)(y-protocols@1.0.6)(yjs@13.6.14)
+      y-protocols:
+        specifier: ^1.0.6
+        version: 1.0.6(yjs@13.6.14)
+      yjs:
+        specifier: ^13.6.10
+        version: 13.6.14
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
     devDependencies:
       '@types/react':
         specifier: ^18.2.73
@@ -1552,6 +1615,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.22
         version: 18.2.22
+      '@types/react-gravatar':
+        specifier: ^2.6.13
+        version: 2.6.14
 
   packages/utils:
     dependencies:
@@ -20927,6 +20993,17 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118)
     dev: false
 
+  /react-gravatar@2.6.3(react@18.3.0-canary-a870b2d54-20240314):
+    resolution: {integrity: sha512-yITonigS2LmG7Fw0gWfZfcVwy1mpiBHNVmoFyetitQjXu7JCYoE6jtub0GIfq+ydpnQSYyJT3kwpX6zj1wXR4w==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      is-retina: 1.0.3
+      md5: 2.3.0
+      query-string: 4.3.4
+      react: 18.3.0-canary-a870b2d54-20240314
+    dev: false
+
   /react-gravatar@2.6.3(react@18.3.0-canary-feed8f3f9-20240118):
     resolution: {integrity: sha512-yITonigS2LmG7Fw0gWfZfcVwy1mpiBHNVmoFyetitQjXu7JCYoE6jtub0GIfq+ydpnQSYyJT3kwpX6zj1wXR4w==}
     peerDependencies:
@@ -20969,6 +21046,28 @@ packages:
 
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+    dev: false
+
+  /react-markdown@9.0.1(@types/react@18.2.73)(react@18.3.0-canary-a870b2d54-20240314):
+    resolution: {integrity: sha512-186Gw/vF1uRkydbsOIkcGXw7aHq0sZOCRFFjGrr7b9+nVZg4UfA4enXCaxm4fUzecU38sWfrNDitGhshuU7rdg==}
+    peerDependencies:
+      '@types/react': '>=18'
+      react: '>=18'
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/react': 18.2.73
+      devlop: 1.1.0
+      hast-util-to-jsx-runtime: 2.3.0
+      html-url-attributes: 3.0.0
+      mdast-util-to-hast: 13.1.0
+      react: 18.3.0-canary-a870b2d54-20240314
+      remark-parse: 11.0.0
+      remark-rehype: 11.1.0
+      unified: 11.0.4
+      unist-util-visit: 5.0.0
+      vfile: 6.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /react-markdown@9.0.1(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118):

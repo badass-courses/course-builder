@@ -21,3 +21,16 @@ export const ContentResourceSchema = z.object({
 	deletedAt: z.date().nullable(),
 	resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 })
+
+export const ResourceStateSchema = z.union([
+	z.literal('draft'),
+	z.literal('published'),
+	z.literal('archived'),
+	z.literal('deleted'),
+])
+
+export const ResourceVisibilitySchema = z.union([
+	z.literal('public'),
+	z.literal('private'),
+	z.literal('unlisted'),
+])
