@@ -1,16 +1,11 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { contentResource } from '@/db/schema'
 import { LessonSchema } from '@/lib/lessons'
-import { getTip } from '@/lib/tips-query'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
-import { asc, like } from 'drizzle-orm'
+import { like } from 'drizzle-orm'
 import { last } from 'lodash'
-import { z } from 'zod'
-
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 import { EditLessonForm } from './_components/edit-lesson-form'
 

@@ -8,6 +8,15 @@
 	"main": "index.tsx",
 	"types": "index.tsx",
 	"dependencies": {
+		"@auth/core": "^0.28.1",
+		"@codemirror/lang-markdown": "^6.2.3",
+		"@codemirror/language-data": "^6.4.1",
+		"@codemirror/search": "^6.5.5",
+		"@codemirror/state": "^6.3.3",
+		"@codemirror/view": "^6.22.3",
+		"@coursebuilder/core": "0.0.9",
+		"@hookform/resolvers": "^3.3.2",
+		"@lezer/highlight": "^1.2.0",
 		"@radix-ui/react-accordion": "^1.1.2",
 		"@radix-ui/react-alert-dialog": "^1.0.5",
 		"@radix-ui/react-checkbox": "^1.0.4",
@@ -28,21 +37,34 @@
 		"@radix-ui/react-switch": "^1.0.3",
 		"@radix-ui/react-toast": "^1.1.5",
 		"@radix-ui/react-tooltip": "^1.0.7",
+		"@uiw/codemirror-themes": "^4.21.24",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
 		"cmdk": "^0.2.0",
+		"codemirror": "^6.0.1",
 		"framer-motion": "^10.16.5",
 		"lucide-react": "^0.288.0",
+		"openai-edge": "^1.2.2",
+		"partysocket": "0.0.25",
 		"react": "canary",
 		"react-day-picker": "^8.9.0",
 		"react-dom": "canary",
+		"react-gravatar": "^2.6.3",
 		"react-hook-form": "^7.48.0",
+		"react-markdown": "^9.0.0",
 		"react-resizable-panels": "^2.0.12",
 		"react-wrap-balancer": "^0.2.4",
-		"tailwind-merge": "^1.14.0"
+		"tailwind-merge": "^1.14.0",
+		"y-codemirror.jh": "0.3.2-joel-fork",
+		"y-partykit": "^0.0.21",
+		"y-prosemirror": "^1.2.2",
+		"y-protocols": "^1.0.6",
+		"yjs": "^13.6.10",
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"@types/react": "^18.2.73",
-		"@types/react-dom": "^18.2.22"
+		"@types/react-dom": "^18.2.22",
+		"@types/react-gravatar": "^2.6.13"
 	}
 }

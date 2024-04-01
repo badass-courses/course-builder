@@ -4,13 +4,16 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { EditTipFormProps } from '@/app/tips/_components/edit-tip-form'
 import { TipMetadataFormFields } from '@/app/tips/_components/edit-tip-form-metadata'
-import { ResourceChatAssistant } from '@/components/chat-assistant/resource-chat-assistant'
-import { CodemirrorEditor } from '@/components/codemirror'
+import { env } from '@/env.mjs'
 import { useSocket } from '@/hooks/use-socket'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { TipUpdate } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
+import { useSession } from 'next-auth/react'
 
 import { Button, Form } from '@coursebuilder/ui'
+import { ResourceChatAssistant } from '@coursebuilder/ui/chat-assistant/resource-chat-assistant'
+import { CodemirrorEditor } from '@coursebuilder/ui/codemirror/editor'
 
 export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	tip,
@@ -18,6 +21,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	videoResourceLoader,
 	availableWorkflows,
 }) => {
+	const session = useSession()
 	const videoResource = use(videoResourceLoader)
 	const [updateTipStatus, setUpdateTipStatus] = React.useState<
 		'idle' | 'loading' | 'success' | 'error'
@@ -134,6 +138,9 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 					<ResourceChatAssistant
 						resource={tip}
 						availableWorkflows={availableWorkflows}
+						user={session?.data?.user}
+						hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+						sendResourceChatMessage={sendResourceChatMessage}
 					/>
 				</div>
 			</div>

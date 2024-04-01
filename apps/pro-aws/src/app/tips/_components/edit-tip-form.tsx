@@ -1,17 +1,23 @@
 'use client'
 
 import * as React from 'react'
+import { redirect } from 'next/navigation'
 import { TipMetadataFormFields } from '@/app/tips/_components/edit-tip-form-metadata'
 import { MobileEditTipForm } from '@/app/tips/_components/edit-tip-form-mobile'
-import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
+import { onTipSave } from '@/app/tips/[slug]/edit/actions'
+import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { TipSchema, type Tip } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSession } from 'next-auth/react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
+import { ContentResource } from '@coursebuilder/core/types'
+import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 const NewTipFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -30,6 +36,7 @@ export function EditTipForm({
 	tip,
 	videoResourceLoader,
 }: Omit<EditTipFormProps, 'form'>) {
+	const session = useSession()
 	const form = useForm<z.infer<typeof TipSchema>>({
 		resolver: zodResolver(NewTipFormSchema),
 		defaultValues: {
@@ -61,6 +68,10 @@ export function EditTipForm({
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
 			]}
+			sendResourceChatMessage={sendResourceChatMessage}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+			user={session?.data?.user}
+			onSave={onTipSave}
 		>
 			<TipMetadataFormFields
 				form={form}
