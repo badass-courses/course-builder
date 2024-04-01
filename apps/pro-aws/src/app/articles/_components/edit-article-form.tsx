@@ -1,23 +1,29 @@
 'use client'
 
 import * as React from 'react'
-import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@/components/resources-crud/edit-resources-form-mobile'
-import { EditResourcesMetadataFields } from '@/components/resources-crud/edit-resources-metadata-fields'
-import { MetadataFieldSocialImage } from '@/components/resources-crud/metadata-fields/metadata-field-social-image'
+import { onArticleSave } from '@/app/articles/[slug]/edit/actions'
+import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { ArticleSchema, type Article } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSession } from 'next-auth/react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
+
+import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 type EditArticleFormProps = {
 	article: Article
 }
 
 export function EditArticleForm({ article }: EditArticleFormProps) {
+	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(article)
 	const form = useForm<z.infer<typeof ArticleSchema>>({
 		resolver: zodResolver(ArticleSchema),
@@ -55,6 +61,10 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 					default: true,
 				},
 			]}
+			sendResourceChatMessage={sendResourceChatMessage}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+			user={session?.data?.user}
+			onSave={onArticleSave}
 		>
 			<ArticleMetadataFormFields form={form} />
 		</ResourceForm>

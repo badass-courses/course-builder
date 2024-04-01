@@ -1,19 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
+import { useParams } from 'next/navigation'
+import { onLessonSave } from '@/app/tutorials/[module]/[lesson]/edit/actions'
+import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson } from '@/lib/lessons'
 import { TipSchema } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSession } from 'next-auth/react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/types'
+import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 const NewTipFormSchema = z.object({
 	fields: z.object({
@@ -30,6 +31,12 @@ export type EditTipFormProps = {
 }
 
 export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
+	const { module } = useParams()
+	const onLessonSaveWithModule = onLessonSave.bind(
+		null,
+		`/tutorials/${module}/`,
+	)
+	const session = useSession()
 	const form = useForm<z.infer<typeof TipSchema>>({
 		resolver: zodResolver(NewTipFormSchema),
 		defaultValues: {
@@ -46,12 +53,16 @@ export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
 		<EditResourcesFormDesktop
 			resource={lesson}
 			resourceSchema={TipSchema}
-			getResourcePath={(slug) => `/tips/${slug}`}
+			getResourcePath={(slug?: string) => `/tips/${slug}`}
 			updateResource={updateTip}
 			form={form}
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
 			]}
+			sendResourceChatMessage={sendResourceChatMessage}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+			user={session?.data?.user}
+			onSave={onLessonSaveWithModule}
 		></EditResourcesFormDesktop>
 	)
 }

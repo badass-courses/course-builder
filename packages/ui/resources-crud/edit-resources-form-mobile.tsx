@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { User } from '@auth/core/types'
 import type { UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
@@ -18,6 +19,9 @@ export function EditResourcesFormMobile({
 	updateResource,
 	availableWorkflows,
 	onSave,
+	sendResourceChatMessage,
+	hostUrl,
+	user,
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
@@ -33,6 +37,13 @@ export function EditResourcesFormMobile({
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
 	updateResource: (values: z.infer<typeof resourceSchema>) => Promise<any>
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
+	sendResourceChatMessage: (options: {
+		resourceId: string
+		messages: any[]
+		selectedWorkflow?: string
+	}) => Promise<void>
+	hostUrl: string
+	user?: User | null
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
@@ -93,6 +104,8 @@ export function EditResourcesFormMobile({
 			<ResourceChatAssistant
 				resource={resource}
 				availableWorkflows={availableWorkflows}
+				sendResourceChatMessage={sendResourceChatMessage}
+				hostUrl={hostUrl}
 			/>
 		</>
 	)
