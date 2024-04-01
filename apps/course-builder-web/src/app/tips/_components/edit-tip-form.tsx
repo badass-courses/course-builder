@@ -12,6 +12,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
+import { ContentResource } from '@coursebuilder/core/types'
 
 const NewTipFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -24,11 +25,13 @@ export type EditTipFormProps = {
 	form: UseFormReturn<z.infer<typeof TipSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
+	onSave: (resource: ContentResource) => Promise<void>
 }
 
 export function EditTipForm({
 	tip,
 	videoResourceLoader,
+	onSave,
 }: Omit<EditTipFormProps, 'form'>) {
 	const form = useForm<z.infer<typeof TipSchema>>({
 		resolver: zodResolver(NewTipFormSchema),
@@ -50,6 +53,7 @@ export function EditTipForm({
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
 			]}
+			onSave={onSave}
 		/>
 	) : (
 		<EditResourcesFormDesktop
@@ -61,6 +65,7 @@ export function EditTipForm({
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
 			]}
+			onSave={onSave}
 		>
 			<TipMetadataFormFields
 				form={form}

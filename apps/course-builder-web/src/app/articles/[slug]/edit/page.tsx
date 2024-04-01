@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { EditArticleForm } from '@/app/articles/_components/edit-article-form'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
+
+import { ContentResource } from '@coursebuilder/core/types'
 
 export const dynamic = 'force-dynamic'
 

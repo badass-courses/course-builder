@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { redirect } from 'next/navigation'
 import { EditResourcesFormDesktop } from '@/components/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@/components/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@/components/resources-crud/edit-resources-metadata-fields'
@@ -12,6 +13,8 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
+
+import { ContentResource } from '@coursebuilder/core/types'
 
 type EditArticleFormProps = {
 	article: Article
@@ -47,6 +50,10 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 			resourceSchema={ArticleSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updateArticle}
+			onSave={(resource: ContentResource) => {
+				'use server'
+				redirect(`/${resource.fields?.slug}`)
+			}}
 			availableWorkflows={[
 				{
 					value: 'article-chat-default-5aj1o',

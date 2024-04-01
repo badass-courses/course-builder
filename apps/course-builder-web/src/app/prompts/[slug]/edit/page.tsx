@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { EditPromptForm } from '@/app/prompts/_components/edit-prompt-form'
 import { getPrompt } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -20,5 +20,13 @@ export default async function PromptEditPage({
 		notFound()
 	}
 
-	return <EditPromptForm key={prompt.fields?.slug} prompt={prompt} />
+	return (
+		<EditPromptForm
+			key={prompt.fields?.slug}
+			prompt={prompt}
+			onSave={(resource: ContentResource) =>
+				redirect(`/prompts/${resource.fields.slug}`)
+			}
+		/>
+	)
 }

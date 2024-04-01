@@ -1,7 +1,9 @@
 import * as React from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
-import { Form, ResizablePanel, ScrollArea } from '@coursebuilder/ui'
+import { Form } from '../../primitives/form'
+import { ResizablePanel } from '../../primitives/resizable'
+import { ScrollArea } from '../../primitives/scroll-area'
 
 export function EditResourcesMetadataPanel({
 	form,

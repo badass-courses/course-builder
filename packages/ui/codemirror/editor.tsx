@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { env } from '@/env.mjs'
+import { AdapterUser } from '@auth/core/adapters'
 import { markdown } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
 import {
@@ -13,8 +13,6 @@ import { Decoration } from '@codemirror/view'
 import { tags as t } from '@lezer/highlight'
 import { createTheme } from '@uiw/codemirror-themes'
 import { basicSetup, EditorView } from 'codemirror'
-import { useSession } from 'next-auth/react'
-import { useTheme } from 'next-themes'
 import { yCollab } from 'y-codemirror.jh'
 import YPartyKitProvider from 'y-partykit/provider'
 import * as Y from 'yjs'
@@ -36,6 +34,7 @@ export const CodemirrorEditor = ({
 	roomName: string
 	value: string
 	onChange: (data: any) => void
+	user?: AdapterUser | null
 }) => {
 	const { codemirrorElementRef } = useCodemirror({
 		roomName,
@@ -105,17 +104,20 @@ const useCodemirror = ({
 	roomName,
 	value,
 	onChange,
+	partykitUrl,
+	user,
+	theme = 'dark',
 }: {
 	roomName: string
 	value: string
 	onChange: (data: any) => void
+	partykitUrl?: string
+	user?: AdapterUser | null
+	theme?: string
 }) => {
 	const [element, setElement] = useState<HTMLElement>()
 	const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
 	const [currentText, setCurrentText] = useState<string>('')
-
-	const { data: session } = useSession()
-	const { theme } = useTheme()
 
 	useEffect(() => {
 		let view: EditorView
@@ -139,16 +141,16 @@ const useCodemirror = ({
 			provide: (f) => EditorView.decorations.from(f),
 		})
 
-		let provider = new YPartyKitProvider(
-			env.NEXT_PUBLIC_PARTY_KIT_URL,
-			roomName,
-		)
+		let provider = partykitUrl
+			? new YPartyKitProvider(partykitUrl, roomName)
+			: null
 
 		if (!element) {
 			return
 		}
 
-		const ytext = provider.doc.getText('codemirror')
+		const ytext =
+			provider?.doc.getText('codemirror') || new Y.Doc().getText('codemirror')
 
 		const undoManager = new Y.UndoManager(ytext)
 		setYUndoManager(undoManager)
@@ -166,11 +168,11 @@ const useCodemirror = ({
 			},
 		)
 
-		const awareness = provider.awareness
+		const awareness = provider?.awareness
 
-		if (session) {
+		if (user && awareness) {
 			awareness.setLocalStateField('user', {
-				...session.user,
+				...user,
 				color: '#ffb61e', // should be a hex color
 			})
 		}
@@ -188,7 +190,9 @@ const useCodemirror = ({
 				markdown({
 					codeLanguages: languages,
 				}),
-				yCollab(ytext, provider.awareness, { undoManager }),
+				...(provider
+					? [yCollab(ytext, provider.awareness, { undoManager })]
+					: []),
 				...styles,
 			],
 		})
@@ -206,7 +210,7 @@ const useCodemirror = ({
 			provider?.destroy()
 			view?.destroy()
 		}
-	}, [element, roomName, value, session, theme])
+	}, [element, roomName, value, user, theme])
 
 	return {
 		codemirrorElementRef: useCallback((node: HTMLElement | null) => {

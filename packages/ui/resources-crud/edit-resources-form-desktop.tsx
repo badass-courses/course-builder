@@ -1,14 +1,15 @@
 import * as React from 'react'
-import { EditResourcesActionBar } from '@/components/resources-crud/edit-resources-action-bar'
-import { EditResourcesToolPanel } from '@/components/resources-crud/edit-resources-tool-panel'
-import { EditResourcePanelGroup } from '@/components/resources-crud/panels/edit-resource-panel-group'
-import { EditResourcesBodyPanel } from '@/components/resources-crud/panels/edit-resources-body-panel'
-import { EditResourcesMetadataPanel } from '@/components/resources-crud/panels/edit-resources-metadata-panel'
 import { type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/types'
-import { ResizableHandle } from '@coursebuilder/ui'
+
+import { ResizableHandle } from '../primitives/resizable'
+import { EditResourcesActionBar } from './edit-resources-action-bar'
+import { EditResourcesToolPanel } from './edit-resources-tool-panel'
+import { EditResourcePanelGroup } from './panels/edit-resource-panel-group'
+import { EditResourcesBodyPanel } from './panels/edit-resources-body-panel'
+import { EditResourcesMetadataPanel } from './panels/edit-resources-metadata-panel'
 
 export function EditResourcesFormDesktop({
 	resource,
