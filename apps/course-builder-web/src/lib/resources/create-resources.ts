@@ -8,6 +8,8 @@ import slugify from '@sindresorhus/slugify'
 import { asc, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+
 const NewResourceSchema = z.object({
 	type: z.string(),
 	title: z.string().min(2).max(90),
@@ -39,7 +41,7 @@ export async function createResource(input: NewResource) {
 
 	await db.insert(contentResource).values(newResource)
 
-	return db.query.contentResource.findFirst({
+	const resource = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, newResourceId),
 		with: {
 			resources: {
@@ -59,4 +61,11 @@ export async function createResource(input: NewResource) {
 			},
 		},
 	})
+
+	const parsedResource = ContentResourceSchema.safeParse(resource)
+	if (!parsedResource.success) {
+		console.error('Error parsing resource', resource)
+		throw new Error('Error parsing resource')
+	}
+	return parsedResource.data
 }

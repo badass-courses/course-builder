@@ -5,8 +5,6 @@ import { EditArticleForm } from '@/app/articles/_components/edit-article-form'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { ContentResource } from '@coursebuilder/core/types'
-
 export const dynamic = 'force-dynamic'
 
 export default async function ArticleEditPage({
