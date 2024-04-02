@@ -3,11 +3,13 @@ import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
+import { LessonPlayer } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/lesson-player'
 import { NewLessonVideoForm } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Lesson } from '@/lib/lessons'
 import { TipSchema, type Tip } from '@/lib/tips'
+import { api } from '@/trpc/react'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -31,15 +33,19 @@ import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
 export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof TipSchema>>
-	videoResourceLoader: Promise<VideoResource | null>
+	initialVideoResourceId: string | null | undefined
 	lesson: Lesson
-}> = ({ form, videoResourceLoader, lesson }) => {
+}> = ({ form, initialVideoResourceId, lesson }) => {
 	const router = useRouter()
-	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(lesson.resources?.[0]?.resource.id)
+	>(initialVideoResourceId)
+
+	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
+		videoResourceId: videoResourceId,
+	})
+
 	const [transcript, setTranscript] = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
@@ -61,9 +67,12 @@ export const LessonMetadataFormFields: React.FC<{
 
 						router.refresh()
 
+						refetch()
+
 						break
 					case 'transcript.ready':
 						setTranscript(data.body)
+						refetch()
 						break
 					default:
 						break
@@ -85,15 +94,27 @@ export const LessonMetadataFormFields: React.FC<{
 						</>
 					}
 				>
-					{videoResource ? (
+					{videoResourceId ? (
 						<>
-							<TipPlayer videoResourceLoader={videoResourceLoader} />
-							<div className="px-5 text-xs">
-								video is {videoResource?.state}
-							</div>
+							{videoResource && videoResource.state === 'ready' ? (
+								<LessonPlayer videoResource={videoResource} />
+							) : videoResource ? (
+								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+									video is {videoResource.state}
+								</div>
+							) : (
+								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+									video is loading
+								</div>
+							)}
 						</>
 					) : (
-						<NewLessonVideoForm lessonId={lesson.id} />
+						<NewLessonVideoForm
+							lessonId={lesson.id}
+							onSuccess={(videoResourceId) =>
+								setVideoResourceId(videoResourceId)
+							}
+						/>
 					)}
 				</Suspense>
 			</div>
@@ -118,35 +139,40 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<div className="px-5">
-				<div className="flex items-center justify-between gap-2">
-					<label className="text-lg font-bold">Transcript</label>
-					{Boolean(videoResourceId) && (
-						<TooltipProvider delayDuration={0}>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<Button
-										variant="ghost"
-										size="icon"
-										type="button"
-										onClick={async (event) => {
-											event.preventDefault()
-											await reprocessTranscript({ videoResourceId })
-										}}
-										title="Reprocess"
-									>
-										<RefreshCcw className="w-3" />
-									</Button>
-								</TooltipTrigger>
-								<TooltipContent side="top">Reprocess Transcript</TooltipContent>
-							</Tooltip>
-						</TooltipProvider>
-					)}
+			{videoResourceId ? (
+				<div className="px-5">
+					<div className="flex items-center justify-between gap-2">
+						<label className="text-lg font-bold">Transcript</label>
+						{Boolean(videoResourceId) && (
+							<TooltipProvider delayDuration={0}>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<Button
+											variant="ghost"
+											size="icon"
+											type="button"
+											onClick={async (event) => {
+												event.preventDefault()
+												await reprocessTranscript({ videoResourceId })
+											}}
+											title="Reprocess"
+										>
+											<RefreshCcw className="w-3" />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent side="top">
+										Reprocess Transcript
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+						)}
+					</div>
+
+					<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
+						{transcript ? transcript : 'Transcript Processing'}
+					</ReactMarkdown>
 				</div>
-				<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-					{transcript ? transcript : 'Transcript Processing'}
-				</ReactMarkdown>
-			</div>
+			) : null}
 		</>
 	)
 }

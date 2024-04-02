@@ -49,13 +49,7 @@ export default async function LessonEditPage({
 
 	console.log({ lesson: parsedLesson.data })
 
-	const videoResourceLoader = getVideoResource(resource)
-
 	return (
-		<EditLessonForm
-			videoResourceLoader={videoResourceLoader}
-			key={parsedLesson.data.id}
-			lesson={parsedLesson.data}
-		/>
+		<EditLessonForm key={parsedLesson.data.id} lesson={parsedLesson.data} />
 	)
 }

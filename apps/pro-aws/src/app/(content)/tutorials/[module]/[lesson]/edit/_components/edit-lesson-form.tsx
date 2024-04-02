@@ -31,13 +31,9 @@ export type EditLessonFormProps = {
 	form: UseFormReturn<z.infer<typeof TipSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
-	videoResourceLoader: Promise<VideoResource | null>
 }
 
-export function EditLessonForm({
-	lesson,
-	videoResourceLoader,
-}: Omit<EditLessonFormProps, 'form'>) {
+export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 	const { module: moduleSlug } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(
 		null,
@@ -72,8 +68,8 @@ export function EditLessonForm({
 			onSave={onLessonSaveWithModule}
 		>
 			<LessonMetadataFormFields
+				initialVideoResourceId={lesson.resources?.[0]?.resource.id}
 				form={form}
-				videoResourceLoader={videoResourceLoader}
 				lesson={lesson}
 			/>
 		</EditResourcesFormDesktop>

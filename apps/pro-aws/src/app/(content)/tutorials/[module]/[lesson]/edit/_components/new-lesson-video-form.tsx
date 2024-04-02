@@ -1,46 +1,48 @@
-'use client'
-
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { TipUploader } from '@/app/(content)/tips/_components/tip-uploader'
 import { addVideoResourceToLesson } from '@/lib/lessons-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 
-export function NewLessonVideoForm({ lessonId }: { lessonId: string }) {
-	const router = useRouter()
+async function* pollVideoResource(
+	videoResourceId: string,
+	maxAttempts = 30,
+	initialDelay = 250,
+	delayIncrement = 250,
+) {
+	let delay = initialDelay
 
-	async function* pollVideoResource(
-		videoResourceId: string,
-		maxAttempts = 30,
-		initialDelay = 250,
-		delayIncrement = 250,
-	) {
-		let delay = initialDelay
-
-		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-			const videoResource = await getVideoResource(videoResourceId)
-			console.log('videoResource', videoResource)
-			if (videoResource) {
-				yield videoResource
-				return
-			}
-
-			await new Promise((resolve) => setTimeout(resolve, delay))
-			delay += delayIncrement
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		const videoResource = await getVideoResource(videoResourceId)
+		if (videoResource) {
+			yield videoResource
+			return
 		}
 
-		throw new Error('Video resource not found after maximum attempts')
+		await new Promise((resolve) => setTimeout(resolve, delay))
+		delay += delayIncrement
 	}
+
+	throw new Error('Video resource not found after maximum attempts')
+}
+
+export function NewLessonVideoForm({
+	lessonId,
+	onSuccess,
+}: {
+	lessonId: string
+	onSuccess: (videoResourceId: string) => void
+}) {
+	const router = useRouter()
 
 	async function handleSetVideoResourceId(videoResourceId: string) {
 		try {
-			console.log('setVideoResourceId', videoResourceId)
 			await pollVideoResource(videoResourceId).next()
-			const assoc = await addVideoResourceToLesson({
+			await addVideoResourceToLesson({
 				videoResourceId,
 				lessonId,
 			})
-			console.log('assoc', assoc)
+			onSuccess(videoResourceId)
 			router.refresh()
 		} catch (error) {}
 	}
