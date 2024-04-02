@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useParams } from 'next/navigation'
+import { LessonMetadataFormFields } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/edit-lesson-form-metadata'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -14,23 +15,28 @@ import { useSession } from 'next-auth/react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
-const NewTipFormSchema = z.object({
+const NewLessonFormSchema = z.object({
 	fields: z.object({
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
 	}),
 })
 
-export type EditTipFormProps = {
+export type EditLessonFormProps = {
 	lesson: Lesson
 	form: UseFormReturn<z.infer<typeof TipSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
+	videoResourceLoader: Promise<VideoResource | null>
 }
 
-export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
+export function EditLessonForm({
+	lesson,
+	videoResourceLoader,
+}: Omit<EditLessonFormProps, 'form'>) {
 	const { module } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(
 		null,
@@ -38,7 +44,7 @@ export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
 	)
 	const session = useSession()
 	const form = useForm<z.infer<typeof TipSchema>>({
-		resolver: zodResolver(NewTipFormSchema),
+		resolver: zodResolver(NewLessonFormSchema),
 		defaultValues: {
 			id: lesson.id,
 			fields: {
@@ -48,6 +54,8 @@ export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
 		},
 	})
 	const isMobile = useIsMobile()
+
+	console.log({ lesson })
 
 	return (
 		<EditResourcesFormDesktop
@@ -63,6 +71,12 @@ export function EditLessonForm({ lesson }: Omit<EditTipFormProps, 'form'>) {
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onLessonSaveWithModule}
-		></EditResourcesFormDesktop>
+		>
+			<LessonMetadataFormFields
+				form={form}
+				videoResourceLoader={videoResourceLoader}
+				lesson={lesson}
+			/>
+		</EditResourcesFormDesktop>
 	)
 }

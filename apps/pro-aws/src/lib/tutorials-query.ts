@@ -2,10 +2,60 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { and, eq, like } from 'drizzle-orm'
+import { TutorialSchema } from '@/lib/tutorial'
+import { getServerAuthSession } from '@/server/auth'
+import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import { ContentResource } from '@coursebuilder/core/types'
+
+export async function getTutorial(moduleSlugOrId: string) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const tutorial = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					moduleSlugOrId,
+				),
+				eq(contentResource.id, moduleSlugOrId),
+			),
+			eq(contentResource.type, 'tutorial'),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
+
+	const parsedTutorial = TutorialSchema.safeParse(tutorial)
+	if (!parsedTutorial.success) {
+		console.error('Error parsing tutorial', tutorial)
+		throw new Error('Error parsing tutorial')
+	}
+
+	return parsedTutorial.data
+}
 
 export const addResourceToTutorial = async ({
 	resource,

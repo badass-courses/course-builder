@@ -1,12 +1,10 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
-import { eq, like } from 'drizzle-orm'
-import { last } from 'lodash'
 
+import { ContentResourceResource } from '@coursebuilder/core/types'
 import { Separator } from '@coursebuilder/ui'
 
 export default async function ModulePage({
@@ -20,27 +18,49 @@ export default async function ModulePage({
 		redirect('/login')
 	}
 
-	const course: any = await db.query.contentResource.findFirst({
-		where: eq(
-			contentResource.id,
-			like(contentResource.id, `%${last(params.module.split('-'))}%`),
-		),
-	})
+	const tutorial = await getTutorial(params.module)
 
-	if (!course) {
+	if (!tutorial) {
 		notFound()
 	}
 
 	return (
 		<div className="hidden h-full flex-col md:flex">
 			<div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-				<h2 className="text-lg font-semibold">{course.fields.title}</h2>
-				<p>{course.fields.description}</p>
+				<h2 className="text-lg font-semibold">{tutorial.fields.title}</h2>
+				<p>{tutorial.fields.description}</p>
 				{ability.can('update', 'Content') && (
 					<Link href={`/tutorials/${params.module}/edit`}>edit module</Link>
 				)}
 			</div>
-			<Separator />
+			<div className="flex flex-col">
+				{tutorial.resources.map((resource) => {
+					return (
+						<div key={resource.resourceId}>
+							{resource.resource.type === 'section' ? (
+								<h3>{resource.resource.fields.title}</h3>
+							) : (
+								<h3>{resource.resource.fields.title}</h3>
+							)}
+							{resource.resource.resources.length > 0 && (
+								<ul>
+									{resource.resource.resources.map((lesson) => {
+										return (
+											<li key={lesson.resourceId}>
+												<Link
+													href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
+												>
+													{lesson.resource.fields.title}
+												</Link>
+											</li>
+										)
+									})}
+								</ul>
+							)}
+						</div>
+					)
+				})}
+			</div>
 		</div>
 	)
 }

@@ -108,7 +108,7 @@ export async function getVideoResource(
 	videoResourceId?: string | null,
 ): Promise<VideoResource | null> {
 	if (!videoResourceId) {
-		throw new Error('videoResourceId is required')
+		return null
 	}
 
 	const query = sql`
