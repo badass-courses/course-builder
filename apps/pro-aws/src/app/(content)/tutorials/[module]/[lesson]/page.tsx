@@ -49,11 +49,62 @@ export default async function LessonPage({ params }: Props) {
 							<div className="flex flex-col lg:col-span-8">
 								<LessonBody lessonLoader={lessonLoader} />
 							</div>
+							<div className="flex w-full flex-col lg:col-span-3">
+								<TutorialLessonList tutorialLoader={tutorialLoader} />
+							</div>
 						</div>
 					</div>
 				</article>
 			</main>
 		</div>
+	)
+}
+
+async function TutorialLessonList({
+	tutorialLoader,
+}: {
+	tutorialLoader: Promise<Tutorial>
+}) {
+	const tutorial = await tutorialLoader
+
+	if (!tutorial) {
+		return null
+	}
+
+	return (
+		<>
+			<h3>
+				<Link href={`/tutorials/${tutorial.fields.slug}`}>
+					{tutorial.fields.title}
+				</Link>
+			</h3>
+			{tutorial.resources.map((resource) => {
+				return (
+					<div key={resource.resourceId}>
+						{resource.resource.type === 'section' ? (
+							<h4>{resource.resource.fields.title}</h4>
+						) : (
+							<h4>{resource.resource.fields.title}</h4>
+						)}
+						{resource.resource.resources.length > 0 && (
+							<ul>
+								{resource.resource.resources.map((lesson) => {
+									return (
+										<li key={lesson.resourceId}>
+											<Link
+												href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
+											>
+												{lesson.resource.fields.title}
+											</Link>
+										</li>
+									)
+								})}
+							</ul>
+						)}
+					</div>
+				)
+			})}
+		</>
 	)
 }
 

@@ -11,6 +11,7 @@ export function EditResourcesBodyPanel({
 	resource,
 	form,
 	theme = 'light',
+	partykitUrl,
 }: {
 	resource: ContentResource & {
 		fields: {
@@ -21,6 +22,7 @@ export function EditResourcesBodyPanel({
 	}
 	form: UseFormReturn<any>
 	theme?: string
+	partykitUrl: string
 }) {
 	return (
 		<ResizablePanel
@@ -29,6 +31,7 @@ export function EditResourcesBodyPanel({
 		>
 			<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
 				<CodemirrorEditor
+					partykitUrl={partykitUrl}
 					roomName={`${resource.id}`}
 					value={resource.fields.body || ''}
 					onChange={async (data) => {

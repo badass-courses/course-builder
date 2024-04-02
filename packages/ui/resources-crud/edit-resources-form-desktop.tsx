@@ -15,6 +15,24 @@ import { EditResourcePanelGroup } from './panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from './panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from './panels/edit-resources-metadata-panel'
 
+/**
+ * This is a form that is used to create or edit a resource.
+ *
+ * @param resource @type {ContentResource}
+ * @param getResourcePath
+ * @param resourceSchema
+ * @param children
+ * @param form
+ * @param updateResource
+ * @param availableWorkflows
+ * @param onSave
+ * @param sendResourceChatMessage
+ * @param hostUrl @type {string} - the host url of the Partykit
+ * @param user
+ * @param tools
+ * @param theme
+ * @constructor
+ */
 export function EditResourcesFormDesktop({
 	resource,
 	getResourcePath,
@@ -83,7 +101,11 @@ export function EditResourcesFormDesktop({
 					{children}
 				</EditResourcesMetadataPanel>
 				<ResizableHandle />
-				<EditResourcesBodyPanel resource={resource} form={form} />
+				<EditResourcesBodyPanel
+					partykitUrl={hostUrl}
+					resource={resource}
+					form={form}
+				/>
 				<ResizableHandle />
 				<EditResourcesToolPanel
 					resource={{ ...resource, ...form.getValues() }}

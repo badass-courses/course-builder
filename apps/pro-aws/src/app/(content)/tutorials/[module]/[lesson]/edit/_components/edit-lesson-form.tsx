@@ -8,6 +8,7 @@ import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson } from '@/lib/lessons'
+import { updateLesson } from '@/lib/lessons-query'
 import { TipSchema } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -37,10 +38,10 @@ export function EditLessonForm({
 	lesson,
 	videoResourceLoader,
 }: Omit<EditLessonFormProps, 'form'>) {
-	const { module } = useParams()
+	const { module: moduleSlug } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(
 		null,
-		`/tutorials/${module}/`,
+		`/tutorials/${moduleSlug}/`,
 	)
 	const session = useSession()
 	const form = useForm<z.infer<typeof TipSchema>>({
@@ -55,14 +56,12 @@ export function EditLessonForm({
 	})
 	const isMobile = useIsMobile()
 
-	console.log({ lesson })
-
 	return (
 		<EditResourcesFormDesktop
 			resource={lesson}
 			resourceSchema={TipSchema}
-			getResourcePath={(slug?: string) => `/tips/${slug}`}
-			updateResource={updateTip}
+			getResourcePath={(slug?: string) => `/tutorials/${moduleSlug}/${slug}`}
+			updateResource={updateLesson}
 			form={form}
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },

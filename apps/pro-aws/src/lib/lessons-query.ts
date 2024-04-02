@@ -1,9 +1,13 @@
 'use server'
 
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { LessonSchema } from '@/lib/lessons'
+import type { TipUpdate } from '@/lib/tips'
+import { getTip } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
+import { guid } from '@/utils/guid'
+import slugify from '@sindresorhus/slugify'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
@@ -110,4 +114,34 @@ export async function getLesson(lessonSlugOrId: string) {
 	}
 
 	return parsedLesson.data
+}
+
+export async function updateLesson(input: TipUpdate) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const currentLesson = await getLesson(input.id)
+
+	if (!currentLesson) {
+		throw new Error(`Tip with id ${input.id} not found.`)
+	}
+
+	let lessonSlug = currentLesson.fields.slug
+
+	if (input.fields.title !== currentLesson.fields.title) {
+		const splitSlug = currentLesson?.fields.slug.split('~') || ['', guid()]
+		lessonSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	}
+
+	return courseBuilderAdapter.updateContentResourceFields({
+		id: currentLesson.id,
+		fields: {
+			...currentLesson.fields,
+			...input.fields,
+			slug: lessonSlug,
+		},
+	})
 }
