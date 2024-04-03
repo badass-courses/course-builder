@@ -42,6 +42,7 @@ export const TipUpdateSchema = z.object({
 	fields: z.object({
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
+		state: TipStateSchema.default('draft'),
 	}),
 })
 

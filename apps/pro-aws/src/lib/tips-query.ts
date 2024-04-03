@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentContributions,
 	contentResource,
@@ -13,8 +13,7 @@ import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { asc, desc, eq, like, sql } from 'drizzle-orm'
-import { last } from 'lodash'
+import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {
@@ -50,7 +49,13 @@ export async function deleteTip(id: string) {
 
 export async function getTip(slug: string): Promise<Tip | null> {
 	const tip = await db.query.contentResource.findFirst({
-		where: eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
+		where: and(
+			or(
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
+				eq(contentResource.id, slug),
+			),
+			eq(contentResource.type, 'tip'),
+		),
 		with: {
 			resources: {
 				with: {
@@ -114,11 +119,6 @@ export async function createTip(input: NewTip) {
 				slug: slugify(`${input.title}~${guid()}`),
 			},
 		})
-		.then(() => {
-			return db.query.contentResource.findFirst({
-				where: eq(contentResource.id, newTipId),
-			})
-		})
 		.catch((error) => {
 			console.error('🚨 Error creating tip', error)
 			throw error
@@ -172,28 +172,12 @@ export async function updateTip(input: TipUpdate) {
 		tipSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	const query = sql`
-    UPDATE ${contentResource}
-    SET
-      ${contentResource.fields} = JSON_SET(
-        ${contentResource.fields},
-        '$.title', ${input.fields.title},
-        '$.slug', ${tipSlug},
-        '$.body', ${input.fields.body}
-      )
-    WHERE
-      id = ${input.id};
-  `
-
-	await db.execute(query).catch((error) => {
-		console.error('🚨 Error updating tip', error)
-		throw error
+	return courseBuilderAdapter.updateContentResourceFields({
+		id: currentTip.id,
+		fields: {
+			...currentTip.fields,
+			...input.fields,
+			slug: tipSlug,
+		},
 	})
-
-	revalidateTag('tips')
-	revalidateTag(input.id)
-	revalidateTag(tipSlug)
-	revalidatePath(`/tips/${tipSlug}`)
-
-	return await getTip(input.id)
 }

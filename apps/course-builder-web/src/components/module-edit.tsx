@@ -8,14 +8,12 @@ import {
 	treeStateReducer,
 } from '@/components/lesson-list/data/tree'
 import Tree from '@/components/lesson-list/tree'
-import { CreateResourceForm } from '@/components/resources-crud/create-resource-form'
+import { createResource } from '@/lib/resources/create-resources'
 import { addResourceToTutorial } from '@/lib/tutorials-query'
 
-import {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
+import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
 
 export default function Component({ tutorial }: { tutorial: ContentResource }) {
 	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
@@ -90,12 +88,14 @@ export default function Component({ tutorial }: { tutorial: ContentResource }) {
 						<CreateResourceForm
 							resourceType={'lesson'}
 							onCreate={handleResourceCreated}
+							createResource={createResource}
 						/>
 					)}
 					{isAddingSection && (
 						<CreateResourceForm
 							resourceType={'section'}
 							onCreate={handleResourceCreated}
+							createResource={createResource}
 						/>
 					)}
 					<Button

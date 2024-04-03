@@ -4,7 +4,7 @@
 	"compilerOptions": {
 		"jsx": "react-jsx",
 		"lib": ["dom", "ES2019"],
-		"module": "ESNext",
+		"module": "preserve",
 		"target": "es6",
 		"composite": false,
 		"declaration": true,
@@ -13,7 +13,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"inlineSources": false,
 		"isolatedModules": true,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"preserveWatchOutput": true,

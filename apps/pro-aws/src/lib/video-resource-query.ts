@@ -100,7 +100,7 @@ export async function getTranscriptWithScreenshots(
 		})
 		.catch((error) => {
 			console.log(error)
-			return error
+			throw error
 		})
 }
 
@@ -108,7 +108,7 @@ export async function getVideoResource(
 	videoResourceId?: string | null,
 ): Promise<VideoResource | null> {
 	if (!videoResourceId) {
-		throw new Error('videoResourceId is required')
+		return null
 	}
 
 	const query = sql`
@@ -136,7 +136,7 @@ export async function getVideoResource(
 		})
 		.catch((error) => {
 			console.error(error)
-			return error
+			throw error
 		})
 }
 
@@ -159,7 +159,7 @@ export async function getTranscript(videoResourceId?: string | null) {
 			return (result.rows[0] as { transcript: string | null })?.transcript
 		})
 		.catch((error) => {
-			return error
+			throw error
 		})
 }
 
