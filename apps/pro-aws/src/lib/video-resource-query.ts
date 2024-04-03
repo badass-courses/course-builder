@@ -100,7 +100,7 @@ export async function getTranscriptWithScreenshots(
 		})
 		.catch((error) => {
 			console.log(error)
-			return error
+			throw error
 		})
 }
 
@@ -159,7 +159,7 @@ export async function getTranscript(videoResourceId?: string | null) {
 			return (result.rows[0] as { transcript: string | null })?.transcript
 		})
 		.catch((error) => {
-			return error
+			throw error
 		})
 }
 
