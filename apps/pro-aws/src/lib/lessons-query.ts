@@ -4,14 +4,11 @@ import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { LessonSchema } from '@/lib/lessons'
 import type { TipUpdate } from '@/lib/tips'
-import { getTip } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
-
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
