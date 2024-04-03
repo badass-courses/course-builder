@@ -31,18 +31,21 @@ export const CodemirrorEditor = ({
 	value,
 	onChange,
 	theme = 'light',
+	partykitUrl,
 }: {
 	roomName: string
 	value: string
 	onChange: (data: any) => void
 	user?: User | null
 	theme?: string
+	partykitUrl: string
 }) => {
 	const { codemirrorElementRef } = useCodemirror({
 		roomName,
 		value,
 		onChange,
 		theme,
+		partykitUrl,
 	})
 
 	return (

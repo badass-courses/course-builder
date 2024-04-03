@@ -13,7 +13,7 @@ import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { asc, desc, eq, like, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import { z } from 'zod'
 
@@ -50,9 +50,12 @@ export async function deleteTip(id: string) {
 
 export async function getTip(slug: string): Promise<Tip | null> {
 	const tip = await db.query.contentResource.findFirst({
-		where: or(
-			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
-			eq(contentResource.id, slug),
+		where: and(
+			or(
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
+				eq(contentResource.id, slug),
+			),
+			eq(contentResource.type, 'tip'),
 		),
 		with: {
 			resources: {

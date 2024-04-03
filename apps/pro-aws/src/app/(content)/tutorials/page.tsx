@@ -1,10 +1,11 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
-import { desc, eq } from 'drizzle-orm'
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	Card,
@@ -16,8 +17,42 @@ import {
 export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
 
-	const tutorials: any[] = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'tutorial'),
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public']
+	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
+		? ['draft', 'published']
+		: ['published']
+
+	const tutorials: ContentResource[] = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'tutorial'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
@@ -32,12 +67,12 @@ export default async function Tutorials() {
 				</div>
 			) : null}
 			{tutorials.map((tutorial) => (
-				<Link href={`/tutorials/${tutorial.fields.slug}`} key={tutorial.id}>
+				<Link href={`/tutorials/${tutorial.fields?.slug}`} key={tutorial.id}>
 					<Card>
 						<CardHeader>
-							<CardTitle>{tutorial.fields.title}</CardTitle>
+							<CardTitle>{tutorial.fields?.title}</CardTitle>
 						</CardHeader>
-						<CardContent>{tutorial.fields.description}</CardContent>
+						<CardContent>{tutorial.fields?.description}</CardContent>
 					</Card>
 				</Link>
 			))}

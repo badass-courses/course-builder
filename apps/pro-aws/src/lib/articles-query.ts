@@ -122,6 +122,7 @@ export async function getArticle(slugOrId: string) {
 				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
 				eq(contentResource.id, slugOrId),
 			),
+			eq(contentResource.type, 'article'),
 			inArray(
 				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
 				visibility,

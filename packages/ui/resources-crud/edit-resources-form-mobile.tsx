@@ -98,6 +98,7 @@ export function EditResourcesFormMobile({
 			</Form>
 			<label className="px-5 text-lg font-bold">Content</label>
 			<CodemirrorEditor
+				partykitUrl={hostUrl}
 				roomName={`${resource.id}`}
 				value={resource.fields?.body || ''}
 				onChange={async (data) => {
