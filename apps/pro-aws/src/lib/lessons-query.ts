@@ -103,7 +103,7 @@ export async function getLesson(lessonSlugOrId: string) {
 	const parsedLesson = LessonSchema.safeParse(lesson)
 	if (!parsedLesson.success) {
 		console.error('Error parsing lesson', lesson)
-		throw new Error('Error parsing lesson')
+		return null
 	}
 
 	return parsedLesson.data
