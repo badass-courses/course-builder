@@ -4,13 +4,16 @@ import { UploadDropzone } from '@/utils/uploadthing'
 
 export function TipUploader({
 	setVideoResourceId,
+	parentResourceId,
 }: {
 	setVideoResourceId: (value: string) => void
+	parentResourceId?: string
 }) {
 	return (
 		<div>
 			<UploadDropzone
-				endpoint="tipUploader"
+				input={{ parentResourceId }}
+				endpoint="videoUploader"
 				config={{
 					mode: 'auto',
 				}}

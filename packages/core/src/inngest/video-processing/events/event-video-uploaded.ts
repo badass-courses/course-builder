@@ -11,7 +11,7 @@ export const VideoUploadedEventSchema = z.object({
 	originalMediaUrl: z.string(),
 	fileName: z.string(),
 	title: z.string().optional(),
-	moduleSlug: z.string().optional(),
+	parentResourceId: z.string().optional(),
 	resourceType: z.string().optional(),
 	resourceId: z.string().optional(),
 	fileKey: z.string().optional(),

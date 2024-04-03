@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
 import { LessonPlayer } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/lesson-player'
 import { NewLessonVideoForm } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
@@ -38,8 +38,9 @@ export const LessonMetadataFormFields: React.FC<{
 	lesson: Lesson
 }> = ({ form, initialVideoResourceId, lesson }) => {
 	const router = useRouter()
+	const { module } = useParams<{ module: string }>()
 	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
-		'loading' | 'processing'
+		'loading' | 'finalizing upload'
 	>('loading')
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
@@ -128,8 +129,9 @@ export const LessonMetadataFormFields: React.FC<{
 					) : (
 						<NewLessonVideoForm
 							lessonId={lesson.id}
+							moduleSlugOrId={module}
 							onVideoUploadCompleted={(videoResourceId) => {
-								setVideoUploadStatus('processing')
+								setVideoUploadStatus('finalizing upload')
 								setVideoResourceId(videoResourceId)
 							}}
 							onVideoResourceCreated={(videoResourceId) =>

@@ -1,9 +1,17 @@
 import { type Adapter } from '@auth/core/adapters'
 
 import { VideoResource } from './schemas/video-resource'
-import { type Awaitable, type ContentResource } from './types'
+import {
+	ContentResourceResource,
+	type Awaitable,
+	type ContentResource,
+} from './types'
 
 export interface CourseBuilderAdapter extends Adapter {
+	addResourceToResource(options: {
+		childResourceId: string
+		parentResourceId: string
+	}): Awaitable<ContentResourceResource | null>
 	createContentResource(resource: {
 		id: string
 		type: string
@@ -19,6 +27,9 @@ export interface CourseBuilderAdapter extends Adapter {
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
+	addResourceToResource: async (options) => {
+		return {} as ContentResourceResource
+	},
 	createContentResource: async (resource) => {
 		return resource as ContentResource
 	},

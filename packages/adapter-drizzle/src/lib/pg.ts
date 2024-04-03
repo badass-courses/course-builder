@@ -150,6 +150,9 @@ export function pgDrizzleAdapter(
 	} = createTables(tableFn)
 
 	return {
+		async addResourceToResource(options) {
+			return null
+		},
 		async updateContentResourceFields(options) {
 			return null
 		},

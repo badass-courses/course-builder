@@ -1,6 +1,6 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
-import { and, asc, eq, sql } from 'drizzle-orm'
+import { and, asc, eq, or, sql } from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
 	MySqlDatabase,
@@ -8,7 +8,10 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+import {
+	ContentResourceResourceSchema,
+	ContentResourceSchema,
+} from '@coursebuilder/core/schemas/content-resource-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 import {
@@ -163,6 +166,48 @@ export function mySqlDrizzleAdapter(
 	} = createTables(tableFn)
 
 	return {
+		addResourceToResource: async function (options) {
+			const { parentResourceId, childResourceId } = options
+
+			const parentResourceData = await client.query.contentResource.findFirst({
+				where: or(
+					eq(
+						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+						parentResourceId,
+					),
+					eq(contentResource.id, parentResourceId),
+				),
+				with: {
+					resources: true,
+				},
+			})
+
+			const parentResource = ContentResourceSchema.parse(parentResourceData)
+
+			await client.insert(contentResourceResource).values({
+				resourceOfId: parentResource.id,
+				resourceId: childResourceId,
+				position: parentResource.resources?.length || 0,
+			})
+
+			const resourceJoin = client.query.contentResourceResource.findFirst({
+				where: and(
+					eq(contentResourceResource.resourceOfId, parentResourceId),
+					eq(contentResourceResource.resourceId, childResourceId),
+				),
+				with: {
+					resource: true,
+				},
+			})
+
+			const parsedResourceJoin =
+				ContentResourceResourceSchema.safeParse(resourceJoin)
+			if (!parsedResourceJoin.success) {
+				return null
+			}
+
+			return parsedResourceJoin.data
+		},
 		async updateContentResourceFields(options) {
 			if (!options.id) {
 				throw new Error('No content resource id.')
