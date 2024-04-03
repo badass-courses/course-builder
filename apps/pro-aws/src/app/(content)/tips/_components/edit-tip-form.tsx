@@ -11,6 +11,7 @@ import { TipSchema, type Tip } from '@/lib/tips'
 import { updateTip } from '@/lib/tips-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -28,12 +29,14 @@ export type EditTipFormProps = {
 	form: UseFormReturn<z.infer<typeof TipSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
+	theme?: string
 }
 
 export function EditTipForm({
 	tip,
 	videoResourceLoader,
 }: Omit<EditTipFormProps, 'form'>) {
+	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof TipSchema>>({
 		resolver: zodResolver(NewTipFormSchema),
@@ -55,6 +58,7 @@ export function EditTipForm({
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
 			]}
+			theme={theme}
 		/>
 	) : (
 		<EditResourcesFormDesktop
@@ -70,6 +74,7 @@ export function EditTipForm({
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onTipSave}
+			theme={theme}
 		>
 			<TipMetadataFormFields
 				form={form}

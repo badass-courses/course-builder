@@ -125,6 +125,8 @@ const useCodemirror = ({
 	const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
 	const [currentText, setCurrentText] = useState<string>('')
 
+	console.log({ theme })
+
 	useEffect(() => {
 		let view: EditorView
 

@@ -32,15 +32,16 @@ export default function RootLayout({
 }) {
 	return (
 		<Providers>
-			<html lang="en" suppressHydrationWarning={true}>
+			<html lang="en" suppressHydrationWarning>
 				<AxiomWebVitals />
-				<body className={`dark relative ${patron.variable} font-sans`}>
+				<body className={`relative ${patron.variable} font-sans`}>
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
 							attribute="class"
-							defaultTheme="system"
-							enableSystem
+							forcedTheme="dark"
+							defaultTheme="dark"
+							enableSystem={false}
 							disableTransitionOnChange
 						>
 							<NextSSRPlugin

@@ -20,6 +20,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	form,
 	videoResourceLoader,
 	availableWorkflows,
+	theme = 'light',
 }) => {
 	const session = useSession()
 	const videoResource = use(videoResourceLoader)

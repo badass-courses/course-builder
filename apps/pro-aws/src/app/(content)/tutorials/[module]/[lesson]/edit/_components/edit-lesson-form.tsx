@@ -10,13 +10,12 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
 import { TipSchema } from '@/lib/tips'
-import { updateTip } from '@/lib/tips-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 const NewLessonFormSchema = z.object({
@@ -34,6 +33,8 @@ export type EditLessonFormProps = {
 }
 
 export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
+	const { forcedTheme: theme } = useTheme()
+
 	const { module: moduleSlug } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(
 		null,
@@ -47,10 +48,16 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 			fields: {
 				title: lesson.fields?.title || '',
 				body: lesson.fields?.body || '',
+				visibility: lesson.fields?.visibility || 'unlisted',
+				state: lesson.fields?.state || 'draft',
 			},
 		},
 	})
 	const isMobile = useIsMobile()
+
+	const initialVideoResourceId = lesson.resources?.find((resourceJoin) => {
+		return resourceJoin.resource.type === 'videoResource'
+	})?.resource.id
 
 	return (
 		<EditResourcesFormDesktop
@@ -66,9 +73,10 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onLessonSaveWithModule}
+			theme={theme}
 		>
 			<LessonMetadataFormFields
-				initialVideoResourceId={lesson.resources?.[0]?.resource.id}
+				initialVideoResourceId={initialVideoResourceId}
 				form={form}
 				lesson={lesson}
 			/>

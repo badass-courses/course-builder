@@ -10,6 +10,7 @@ export function EditResourcesActionBar({
 	resourcePath,
 	onPublish,
 	onArchive,
+	onUnPublish,
 }: {
 	resource: ContentResource & {
 		fields?: {
@@ -20,6 +21,7 @@ export function EditResourcesActionBar({
 	}
 	onSubmit: () => void
 	onPublish: () => void
+	onUnPublish: () => void
 	onArchive: () => void
 	resourcePath: string
 }) {
@@ -49,13 +51,13 @@ export function EditResourcesActionBar({
 						size="sm"
 						className="h-7 disabled:cursor-wait"
 					>
-						Publish
+						Save & Publish
 					</Button>
 				)}
 				{resource.fields?.state === 'published' && (
 					<Button
 						onClick={(e) => {
-							onPublish()
+							onArchive()
 						}}
 						type="button"
 						variant="default"
@@ -63,6 +65,19 @@ export function EditResourcesActionBar({
 						className="h-7 disabled:cursor-wait"
 					>
 						Archive
+					</Button>
+				)}
+				{resource.fields?.state === 'published' && (
+					<Button
+						onClick={(e) => {
+							onUnPublish()
+						}}
+						type="button"
+						variant="default"
+						size="sm"
+						className="h-7 disabled:cursor-wait"
+					>
+						Return to Draft
 					</Button>
 				)}
 				<Button

@@ -1,11 +1,9 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { EditPromptForm } from '@/app/(content)/prompts/_components/edit-prompt-form'
 import { getPrompt } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
-
-import { ContentResource } from '@coursebuilder/core/types'
 
 export const dynamic = 'force-dynamic'
 

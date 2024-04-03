@@ -1,11 +1,9 @@
 import * as React from 'react'
+import { Metadata } from 'next'
 import Link from 'next/link'
-import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { getAllTutorials } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm'
 
-import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	Card,
@@ -14,47 +12,13 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+export const metadata: Metadata = {
+	title: 'Pro AWS Tutorials by Adam Elmore',
+}
+
 export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
-
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
-
-	const tutorials: ContentResource[] = await db.query.contentResource.findMany({
-		where: and(
-			eq(contentResource.type, 'tutorial'),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
-			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
-		),
-		with: {
-			resources: {
-				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: true,
-								},
-								orderBy: asc(contentResourceResource.position),
-							},
-						},
-					},
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-		orderBy: desc(contentResource.createdAt),
-	})
+	const tutorials = await getAllTutorials()
 
 	return (
 		<div className="flex flex-col">

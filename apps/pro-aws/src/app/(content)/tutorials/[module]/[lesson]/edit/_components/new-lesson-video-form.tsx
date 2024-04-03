@@ -3,46 +3,28 @@ import { useRouter } from 'next/navigation'
 import { TipUploader } from '@/app/(content)/tips/_components/tip-uploader'
 import { addVideoResourceToLesson } from '@/lib/lessons-query'
 import { getVideoResource } from '@/lib/video-resource-query'
-
-async function* pollVideoResource(
-	videoResourceId: string,
-	maxAttempts = 30,
-	initialDelay = 250,
-	delayIncrement = 250,
-) {
-	let delay = initialDelay
-
-	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-		const videoResource = await getVideoResource(videoResourceId)
-		if (videoResource) {
-			yield videoResource
-			return
-		}
-
-		await new Promise((resolve) => setTimeout(resolve, delay))
-		delay += delayIncrement
-	}
-
-	throw new Error('Video resource not found after maximum attempts')
-}
+import { pollVideoResource } from '@/utils/poll-video-resource'
 
 export function NewLessonVideoForm({
 	lessonId,
-	onSuccess,
+	onVideoResourceCreated,
+	onVideoUploadCompleted,
 }: {
 	lessonId: string
-	onSuccess: (videoResourceId: string) => void
+	onVideoResourceCreated: (videoResourceId: string) => void
+	onVideoUploadCompleted: (videoResourceId: string) => void
 }) {
 	const router = useRouter()
 
 	async function handleSetVideoResourceId(videoResourceId: string) {
 		try {
+			onVideoUploadCompleted(videoResourceId)
 			await pollVideoResource(videoResourceId).next()
 			await addVideoResourceToLesson({
 				videoResourceId,
 				lessonId,
 			})
-			onSuccess(videoResourceId)
+			onVideoResourceCreated(videoResourceId)
 			router.refresh()
 		} catch (error) {}
 	}
