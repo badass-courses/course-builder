@@ -14,7 +14,6 @@ import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
-import { last } from 'lodash'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {

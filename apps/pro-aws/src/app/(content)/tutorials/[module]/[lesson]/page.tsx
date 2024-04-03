@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
@@ -21,28 +22,29 @@ type Props = {
 }
 
 export default async function LessonPage({ params }: Props) {
+	headers()
 	const tutorialLoader = getTutorial(params.module)
-	// const lessonLoader = getLesson(params.lesson)
+	const lessonLoader = getLesson(params.lesson)
 	return (
 		<div>
 			<main className="mx-auto w-full" id="tip">
-				{/*	<Suspense*/}
-				{/*		fallback={*/}
-				{/*			<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />*/}
-				{/*		}*/}
-				{/*	>*/}
-				{/*		<LessonActionBar*/}
-				{/*			lessonLoader={lessonLoader}*/}
-				{/*			tutorialLoader={tutorialLoader}*/}
-				{/*		/>*/}
-				{/*	</Suspense>*/}
-				{/*<PlayerContainer lessonLoader={lessonLoader} />*/}
+				<Suspense
+					fallback={
+						<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+					}
+				>
+					<LessonActionBar
+						lessonLoader={lessonLoader}
+						tutorialLoader={tutorialLoader}
+					/>
+				</Suspense>
+				<PlayerContainer lessonLoader={lessonLoader} />
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
 					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
-							{/*<div className="flex flex-col lg:col-span-8">*/}
-							{/*	<LessonBody lessonLoader={lessonLoader} />*/}
-							{/*</div>*/}
+							<div className="flex flex-col lg:col-span-8">
+								<LessonBody lessonLoader={lessonLoader} />
+							</div>
 							<div className="flex w-full flex-col lg:col-span-3">
 								<TutorialLessonList tutorialLoader={tutorialLoader} />
 							</div>
