@@ -79,13 +79,6 @@ export const addVideoResourceToLesson = async ({
 }
 
 export async function getLesson(lessonSlugOrId: string) {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-
-	if (!user || !ability.can('create', 'Content')) {
-		throw new Error('Unauthorized')
-	}
-
 	const lesson = await db.query.contentResource.findFirst({
 		where: and(
 			or(

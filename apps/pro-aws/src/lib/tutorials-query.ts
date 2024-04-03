@@ -3,21 +3,12 @@
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { TutorialSchema } from '@/lib/tutorial'
-import { getServerAuthSession } from '@/server/auth'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import { ContentResource } from '@coursebuilder/core/types'
 
 export async function getTutorial(moduleSlugOrId: string) {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-
-	if (!user || !ability.can('create', 'Content')) {
-		throw new Error('Unauthorized')
-	}
-
 	const tutorial = await db.query.contentResource.findFirst({
 		where: and(
 			or(
