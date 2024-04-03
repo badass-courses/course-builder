@@ -22,10 +22,9 @@ type Props = {
 
 export default async function LessonPage({ params }: Props) {
 	// const tutorialLoader = getTutorial(params.module)
-	// const lessonLoader = getLesson(params.lesson)
+	const lessonLoader = getLesson(params.lesson)
 	return (
 		<div>
-			sad
 			{/*<main className="mx-auto w-full" id="tip">*/}
 			{/*	<Suspense*/}
 			{/*		fallback={*/}
@@ -37,7 +36,7 @@ export default async function LessonPage({ params }: Props) {
 			{/*			tutorialLoader={tutorialLoader}*/}
 			{/*		/>*/}
 			{/*	</Suspense>*/}
-			{/*	<PlayerContainer lessonLoader={lessonLoader} />*/}
+			<PlayerContainer lessonLoader={lessonLoader} />
 			{/*	<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">*/}
 			{/*		<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">*/}
 			{/*			<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">*/}
