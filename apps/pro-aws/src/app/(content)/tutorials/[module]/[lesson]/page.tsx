@@ -70,7 +70,9 @@ export default async function LessonPage({ params }: Props) {
 								<LessonBody lessonLoader={lessonLoader} />
 							</div>
 							<div className="flex w-full flex-col lg:col-span-3">
-								<TutorialLessonList tutorialLoader={tutorialLoader} />
+								<Suspense>
+									<TutorialLessonList tutorialLoader={tutorialLoader} />
+								</Suspense>
 							</div>
 						</div>
 					</div>

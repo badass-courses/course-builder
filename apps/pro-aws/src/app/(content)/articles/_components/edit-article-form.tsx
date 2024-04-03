@@ -10,6 +10,7 @@ import { updateArticle } from '@/lib/articles-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -27,6 +28,7 @@ type EditArticleFormProps = {
 export function EditArticleForm({ article, tools = [] }: EditArticleFormProps) {
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(article)
+	const { forcedTheme: theme } = useTheme()
 	const form = useForm<z.infer<typeof ArticleSchema>>({
 		resolver: zodResolver(ArticleSchema),
 		defaultValues: {
@@ -68,6 +70,7 @@ export function EditArticleForm({ article, tools = [] }: EditArticleFormProps) {
 			user={session?.data?.user}
 			onSave={onArticleSave}
 			tools={tools}
+			theme={theme}
 		>
 			<ArticleMetadataFormFields form={form} />
 		</ResourceForm>

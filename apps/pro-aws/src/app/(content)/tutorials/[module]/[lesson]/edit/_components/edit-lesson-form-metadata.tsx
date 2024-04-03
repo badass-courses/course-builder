@@ -1,21 +1,20 @@
 import * as React from 'react'
-import { Suspense, use } from 'react'
-import { useRouter } from 'next/navigation'
-import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { Suspense } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
 import { LessonPlayer } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/lesson-player'
 import { NewLessonVideoForm } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Lesson } from '@/lib/lessons'
-import { TipSchema, type Tip } from '@/lib/tips'
+import { TipSchema } from '@/lib/tips'
 import { api } from '@/trpc/react'
+import { pollVideoResource } from '@/utils/poll-video-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
 
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
 	Button,
 	FormDescription,
@@ -30,6 +29,8 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof TipSchema>>
@@ -37,6 +38,10 @@ export const LessonMetadataFormFields: React.FC<{
 	lesson: Lesson
 }> = ({ form, initialVideoResourceId, lesson }) => {
 	const router = useRouter()
+	const { module } = useParams<{ module: string }>()
+	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
+		'loading' | 'finalizing upload'
+	>('loading')
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
@@ -50,6 +55,19 @@ export const LessonMetadataFormFields: React.FC<{
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
 	})
+
+	React.useEffect(() => {
+		async function run() {
+			if (videoResourceId) {
+				await pollVideoResource(videoResourceId).next()
+				refetch()
+			}
+		}
+
+		if (!['ready', 'errored'].includes(videoResource?.state || '')) {
+			run()
+		}
+	}, [videoResource?.state, videoResourceId, refetch])
 
 	useSocket({
 		room: videoResourceId,
@@ -104,14 +122,19 @@ export const LessonMetadataFormFields: React.FC<{
 								</div>
 							) : (
 								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-									video is loading
+									video is {videoUploadStatus}
 								</div>
 							)}
 						</>
 					) : (
 						<NewLessonVideoForm
 							lessonId={lesson.id}
-							onSuccess={(videoResourceId) =>
+							moduleSlugOrId={module}
+							onVideoUploadCompleted={(videoResourceId) => {
+								setVideoUploadStatus('finalizing upload')
+								setVideoResourceId(videoResourceId)
+							}}
+							onVideoResourceCreated={(videoResourceId) =>
 								setVideoResourceId(videoResourceId)
 							}
 						/>
@@ -139,6 +162,8 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
 			{videoResourceId ? (
 				<div className="px-5">
 					<div className="flex items-center justify-between gap-2">

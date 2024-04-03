@@ -9,6 +9,7 @@ import { PromptSchema, type Prompt } from '@/lib/prompts'
 import { updatePrompt } from '@/lib/prompts-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -21,6 +22,7 @@ type EditPromptFormProps = {
 }
 
 export function EditPromptForm({ prompt }: EditPromptFormProps) {
+	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof PromptSchema>>({
 		resolver: zodResolver(PromptSchema),
@@ -56,6 +58,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onPromptSave}
+			theme={theme}
 		>
 			<EditResourcesMetadataFields form={form} />
 		</ResourceForm>

@@ -11,11 +11,6 @@ import { VIDEO_UPLOADED_EVENT } from '../events/event-video-uploaded'
 const videoUploadedConfig = {
 	id: `video-uploaded`,
 	name: 'Video Uploaded',
-	rateLimit: {
-		key: 'event.user.id',
-		limit: 5,
-		period: '10m',
-	},
 }
 const videoUploadedTrigger: CoreInngestTrigger = { event: VIDEO_UPLOADED_EVENT }
 const videoUploadedHandler: CoreInngestHandler = async ({
@@ -73,20 +68,29 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 		throw new Error('Failed to create video resource')
 	}
 
-	await step.run('announce video resource created', async () => {
-		await fetch(`${partyKitRootUrl}/party/${videoResource.id}`, {
-			method: 'POST',
-			body: JSON.stringify({
-				body: videoResource,
-				requestId: event.data.fileName,
-				name: 'videoResource.created',
-			}),
-		}).catch((e) => {
-			console.error(e)
-		})
-	})
-
 	if (videoResource && videoResource.id) {
+		if (event.data.parentResourceId) {
+			await step.run('attach video to parent resource', async () => {
+				await db.addResourceToResource({
+					childResourceId: videoResource.id,
+					parentResourceId: event.data.parentResourceId,
+				})
+			})
+		}
+
+		await step.run('announce video resource created', async () => {
+			await fetch(`${partyKitRootUrl}/party/${videoResource.id}`, {
+				method: 'POST',
+				body: JSON.stringify({
+					body: videoResource,
+					requestId: event.data.fileName,
+					name: 'videoResource.created',
+				}),
+			}).catch((e) => {
+				console.error(e)
+			})
+		})
+
 		await step.sendEvent('announce new video resource', {
 			name: VIDEO_RESOURCE_CREATED_EVENT,
 			data: {

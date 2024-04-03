@@ -95,6 +95,10 @@ export function EditResourcesFormDesktop({
 					form.setValue('fields.state', 'archived')
 					onSubmit(form.getValues())
 				}}
+				onUnPublish={() => {
+					form.setValue('fields.state', 'draft')
+					onSubmit(form.getValues())
+				}}
 			/>
 			<EditResourcePanelGroup>
 				<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
@@ -105,6 +109,7 @@ export function EditResourcesFormDesktop({
 					partykitUrl={hostUrl}
 					resource={resource}
 					form={form}
+					theme={theme}
 				/>
 				<ResizableHandle />
 				<EditResourcesToolPanel
