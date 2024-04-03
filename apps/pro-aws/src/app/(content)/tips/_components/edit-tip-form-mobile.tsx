@@ -128,6 +128,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 				<div className="pt-5">
 					<label className="px-5 text-lg font-bold">Content</label>
 					<CodemirrorEditor
+						partykitUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 						roomName={`${tip.id}`}
 						value={tip.fields.body || ''}
 						onChange={(data) => {
