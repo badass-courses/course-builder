@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
+import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -10,11 +11,34 @@ import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+
+export async function generateMetadata(
+	{ params, searchParams }: Props,
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const lesson = await getLesson(params.lesson)
+
+	if (!lesson) {
+		return parent as Metadata
+	}
+
+	const previousImages = (await parent).openGraph?.images || []
+
+	const ogImage = getOGImageUrlForResource(lesson)
+
+	return {
+		title: lesson.fields?.title,
+		openGraph: {
+			images: [ogImage, ...previousImages],
+		},
+	}
+}
 
 type Props = {
 	params: { lesson: string; module: string }
@@ -27,7 +51,7 @@ export default async function LessonPage({ params }: Props) {
 	const lessonLoader = getLesson(params.lesson)
 	return (
 		<div>
-			<main className="mx-auto w-full" id="tip">
+			<main className="mx-auto w-full" id="lesson">
 				<Suspense
 					fallback={
 						<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
