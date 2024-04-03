@@ -136,7 +136,7 @@ export async function getVideoResource(
 		})
 		.catch((error) => {
 			console.error(error)
-			return error
+			throw error
 		})
 }
 
