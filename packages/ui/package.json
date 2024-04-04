@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/ui",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "",
 	"keywords": [],
 	"license": "ISC",
@@ -14,7 +14,7 @@
 		"@codemirror/search": "^6.5.5",
 		"@codemirror/state": "^6.3.3",
 		"@codemirror/view": "^6.22.3",
-		"@coursebuilder/core": "0.0.9",
+		"@coursebuilder/core": "0.0.10",
 		"@hookform/resolvers": "^3.3.2",
 		"@lezer/highlight": "^1.2.0",
 		"@radix-ui/react-accordion": "^1.1.2",
