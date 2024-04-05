@@ -12,6 +12,9 @@ import { z } from 'zod'
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import {
 	Coupon,
+	couponSchema,
+	MerchantCharge,
+	merchantChargeSchema,
 	MerchantCoupon,
 	MerchantCustomer,
 	MerchantProduct,
@@ -226,24 +229,204 @@ export function mySqlDrizzleAdapter(
 		}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null> {
 			throw new Error('Method not implemented.')
 		},
-		createMerchantChargeAndPurchase(options: {
-			userId: string
-			productId: string
-			stripeChargeId: string
-			stripeCouponId?: string
-			merchantAccountId: string
-			merchantProductId: string
-			merchantCustomerId: string
-			stripeChargeAmount: number
-			quantity?: number
-			bulk?: boolean
-			checkoutSessionId: string
-			appliedPPPStripeCouponId: string | undefined
-			upgradedFromPurchaseId: string | undefined
-			usedCouponId: string | undefined
-			country?: string
-		}): Promise<Purchase> {
-			throw new Error('Method not implemented.')
+		async createMerchantChargeAndPurchase(options): Promise<Purchase> {
+			const purchaseId = await client.transaction(async (trx) => {
+				try {
+					const {
+						userId,
+						stripeChargeId,
+						stripeCouponId,
+						merchantAccountId,
+						merchantProductId,
+						merchantCustomerId,
+						productId,
+						stripeChargeAmount,
+						quantity = 1,
+						checkoutSessionId,
+						appliedPPPStripeCouponId,
+						upgradedFromPurchaseId,
+						country,
+						usedCouponId,
+					} = options
+
+					const existingMerchantCharge =
+						(await client.query.merchantCharge.findFirst({
+							where: eq(merchantCharge.identifier, stripeChargeId),
+						})) as MerchantCharge | null
+
+					const existingPurchaseForCharge = existingMerchantCharge
+						? await client.query.purchase.findFirst({
+								where: eq(
+									purchaseTable.merchantChargeId,
+									existingMerchantCharge.id,
+								),
+								with: {
+									user: true,
+									product: true,
+									bulkCoupon: true,
+								},
+							})
+						: null
+
+					if (existingPurchaseForCharge) {
+						return purchaseSchema.parse(existingPurchaseForCharge)
+					}
+
+					const merchantChargeId = v4()
+					const purchaseId = v4()
+
+					await client.insert(merchantCharge).values({
+						id: merchantChargeId,
+						userId,
+						identifier: stripeChargeId,
+						merchantAccountId,
+						merchantProductId,
+						merchantCustomerId,
+					})
+
+					const newMerchantCharge = trx.query.merchantCharge.findFirst({
+						where: eq(merchantCharge.id, merchantChargeId),
+					})
+
+					const existingPurchase = (await client.query.purchases.findFirst({
+						where: and(
+							eq(purchaseTable.productId, productId),
+							eq(purchaseTable.userId, userId),
+							inArray(purchaseTable.status, ['Valid', 'Restricted']),
+						),
+					})) as Purchase | null
+
+					const existingBulkCoupon = couponSchema.nullable().parse(
+						await client
+							.select()
+							.from(coupon)
+							.leftJoin(
+								purchaseTable,
+								and(
+									eq(coupon.id, purchaseTable.bulkCouponId),
+									eq(purchaseTable.userId, userId),
+								),
+							)
+							.then((res) => res[0] ?? null),
+					)
+
+					const isBulkPurchase =
+						quantity > 1 ||
+						Boolean(existingBulkCoupon) ||
+						options.bulk ||
+						Boolean(existingPurchase?.status === 'Valid')
+
+					let bulkCouponId: string | null = null
+					let couponToUpdate = null
+
+					if (isBulkPurchase) {
+						bulkCouponId =
+							existingBulkCoupon !== null ? existingBulkCoupon.id : v4()
+
+						if (existingBulkCoupon !== null) {
+							couponToUpdate = trx
+								.update(coupon)
+								.set({
+									maxUses: (existingBulkCoupon?.maxUses || 0) + quantity,
+								})
+								.where(eq(coupon.id, bulkCouponId))
+						} else {
+							const merchantCouponToUse = stripeCouponId
+								? await client.query.merchantCoupon.findFirst({
+										where: eq(merchantCoupon.identifier, stripeCouponId),
+									})
+								: null
+
+							couponToUpdate = await trx.insert(coupon).values({
+								id: bulkCouponId as string,
+								percentageDiscount: '1.0',
+								restrictedToProductId: productId,
+								maxUses: quantity,
+								status: 1,
+								...(merchantCouponToUse
+									? {
+											merchantCouponId: merchantCouponToUse.id as string,
+										}
+									: {}),
+							})
+						}
+					}
+
+					const merchantSessionId = v4()
+
+					const newMerchantSession = trx.insert(merchantSession).values({
+						id: merchantSessionId,
+						identifier: checkoutSessionId,
+						merchantAccountId,
+					})
+
+					const merchantCouponUsed = stripeCouponId
+						? await client.query.merchantCoupon.findFirst({
+								where: eq(merchantCoupon.identifier, stripeCouponId),
+							})
+						: null
+
+					const pppMerchantCoupon = appliedPPPStripeCouponId
+						? await client.query.merchantCoupon.findFirst({
+								where: and(
+									eq(merchantCoupon.identifier, appliedPPPStripeCouponId),
+									eq(merchantCoupon.type, 'ppp'),
+								),
+							})
+						: null
+
+					const newPurchaseStatus =
+						merchantCouponUsed?.type === 'ppp' || pppMerchantCoupon
+							? 'Restricted'
+							: 'Valid'
+
+					const newPurchase = trx.insert(purchaseTable).values({
+						id: purchaseId,
+						status: newPurchaseStatus,
+						userId,
+						productId,
+						merchantChargeId,
+						totalAmount: (stripeChargeAmount / 100).toFixed(),
+						bulkCouponId,
+						merchantSessionId,
+						country,
+						upgradedFromId: upgradedFromPurchaseId || null,
+						couponId: usedCouponId || null,
+					})
+
+					const oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7
+
+					const newPurchaseUserTransfer = trx
+						.insert(purchaseUserTransfer)
+						.values({
+							id: v4(),
+							purchaseId: purchaseId as string,
+							expiresAt: existingPurchase
+								? new Date()
+								: new Date(Date.now() + oneWeekInMilliseconds),
+							sourceUserId: userId,
+						})
+
+					await Promise.all([
+						newMerchantCharge,
+						newPurchase,
+						newPurchaseUserTransfer,
+						newMerchantSession,
+						...(couponToUpdate ? [couponToUpdate] : []),
+					])
+
+					return purchaseId
+				} catch (error) {
+					trx.rollback()
+					throw error
+				}
+			})
+
+			return purchaseSchema.parse(
+				await client.query.purchases.findFirst({
+					where: eq(purchaseTable.id, purchaseId as string),
+				}),
+			)
 		},
 		findOrCreateMerchantCustomer(options: {
 			user: User
@@ -292,11 +475,9 @@ export function mySqlDrizzleAdapter(
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('Method not implemented.')
 		},
-		getMerchantCharge(merchantChargeId: string): Promise<{
-			id: string
-			identifier: string
-			merchantProductId: string
-		} | null> {
+		getMerchantCharge(
+			merchantChargeId: string,
+		): Promise<MerchantCharge | null> {
 			throw new Error('Method not implemented.')
 		},
 		getMerchantCoupon(
@@ -405,10 +586,28 @@ export function mySqlDrizzleAdapter(
 				purchase: parsedPurchase.data,
 			})
 		},
-		getPurchaseForStripeCharge(
+		async getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
-			throw new Error('Method not implemented.')
+			const purchase = purchaseSchema.safeParse(
+				await client
+					.select()
+					.from(purchaseTable)
+					.leftJoin(
+						merchantCharge,
+						and(
+							eq(merchantCharge.identifier, stripeChargeId),
+							eq(merchantCharge.id, purchaseTable.merchantChargeId),
+						),
+					)
+					.then((res) => res[0] ?? null),
+			)
+
+			if (!purchase.success) {
+				return null
+			}
+
+			return purchase.data
 		},
 		getPurchaseUserTransferById(options: { id: string }): Promise<
 			| (PurchaseUserTransfer & {

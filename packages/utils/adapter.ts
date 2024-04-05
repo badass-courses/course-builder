@@ -156,6 +156,26 @@ export async function runBasicTests(options: TestOptions) {
 		})
 	})
 
+	test('createMerchantChargeAndPurchase', async () => {
+		const purchase = await adapter.createMerchantChargeAndPurchase({
+			userId: id(),
+			productId: id(),
+			stripeChargeId: id(),
+			merchantAccountId: id(),
+			appliedPPPStripeCouponId: undefined,
+			upgradedFromPurchaseId: undefined,
+			usedCouponId: undefined,
+			merchantProductId: id(),
+			merchantCustomerId: id(),
+			stripeChargeAmount: 1000,
+			quantity: 1,
+			checkoutSessionId: id(),
+			country: 'US',
+		})
+		const newPurchase = await adapter.getPurchase(purchase.id)
+		expect(newPurchase).toEqual(purchaseSchema.parse(purchase))
+	})
+
 	test('getPurchase returns a purchase', async () => {
 		const newPurchase = await adapter.createPurchase({
 			userId: user.id,

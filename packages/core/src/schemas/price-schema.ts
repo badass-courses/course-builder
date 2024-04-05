@@ -9,7 +9,7 @@ export const priceSchema = z.object({
 		const decimalPlaces = value.toString().split('.')[1]?.length || 0
 		return decimalPlaces <= 2
 	}),
-	createdAt: z.string().default(() => new Date().toISOString()),
+	createdAt: z.date().nullable(),
 	metadata: z.record(z.any()).default({}),
 })
 

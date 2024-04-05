@@ -1,11 +1,11 @@
 import { sql } from 'drizzle-orm'
 import {
-	datetime,
 	decimal,
 	int,
 	json,
 	MySqlTableFn,
 	primaryKey,
+	timestamp,
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
@@ -18,7 +18,7 @@ export function getPriceSchema(mysqlTable: MySqlTableFn) {
 			nickname: varchar('nickname', { length: 191 }),
 			status: int('status').default(0).notNull(),
 			unitAmount: decimal('unitAmount', { precision: 10, scale: 2 }).notNull(),
-			createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
 			metadata: json('fields').$type<Record<string, any>>().default({}),

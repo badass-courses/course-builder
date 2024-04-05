@@ -7,7 +7,7 @@ import { userSchema } from './user-schema'
 export const purchaseSchema = z.object({
 	id: z.string().max(191),
 	userId: z.string().max(191).optional().nullable(),
-	createdAt: z.string().default(() => new Date().toISOString()),
+	createdAt: z.date(),
 	totalAmount: z.string(),
 	ipAddress: z.string().max(191).optional().nullable(),
 	city: z.string().max(191).optional().nullable(),

@@ -6,7 +6,7 @@ export const merchantProductSchema = z.object({
 	productId: z.string().max(191),
 	status: z.number().int().default(0),
 	identifier: z.string().max(191).optional().nullable(),
-	createdAt: z.string().default(() => new Date().toISOString()),
+	createdAt: z.date().nullable(),
 })
 
 export type MerchantProduct = z.infer<typeof merchantProductSchema>

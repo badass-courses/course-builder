@@ -35,7 +35,7 @@ export const fixtures = {
 	purchase: purchaseSchema.parse({
 		id: randomUUID(),
 		userId,
-		createdAt: createdAt.toISOString(),
+		createdAt: createdAt,
 		totalAmount: '123',
 		ipAddress: '127.0.0.1',
 		couponId: randomUUID(),

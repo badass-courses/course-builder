@@ -5,9 +5,9 @@ export const userSchema = z.object({
 	name: z.string().length(255).optional().nullable(),
 	role: z.enum(['user', 'admin']).default('user'),
 	email: z.string().length(255).email(),
-	emailVerified: z.string().datetime().optional().nullable(),
+	emailVerified: z.date().nullable(),
 	image: z.string().length(255).optional().nullable(),
-	createdAt: z.string().default(() => new Date().toISOString()),
+	createdAt: z.date().nullable(),
 })
 
 export type User = z.infer<typeof userSchema>

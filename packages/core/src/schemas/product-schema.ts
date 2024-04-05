@@ -5,10 +5,7 @@ export const productSchema = z.object({
 	name: z.string().max(191),
 	key: z.string().max(191).optional().nullable(),
 	metadata: z.record(z.any()).default({}),
-	createdAt: z
-		.string()
-		.datetime()
-		.default(() => new Date().toISOString()),
+	createdAt: z.date().nullable(),
 	status: z.number().int().default(0),
 	quantityAvailable: z.number().int().default(-1),
 })

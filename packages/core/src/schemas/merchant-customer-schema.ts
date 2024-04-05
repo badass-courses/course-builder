@@ -5,7 +5,7 @@ export const merchantCustomerSchema = z.object({
 	userId: z.string().max(191),
 	merchantAccountId: z.string().max(191),
 	identifier: z.string().max(191),
-	createdAt: z.string().default(() => new Date().toISOString()),
+	createdAt: z.date().nullable(),
 	status: z.number().int().default(0),
 })
 

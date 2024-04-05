@@ -3,8 +3,8 @@ import { z } from 'zod'
 export const couponSchema = z.object({
 	id: z.string(),
 	code: z.string().max(191).optional().nullable(),
-	createdAt: z.string().default(() => new Date().toISOString()),
-	expires: z.string().datetime().optional().nullable(),
+	createdAt: z.date().nullable(),
+	expires: z.date().nullable(),
 	metadata: z.record(z.any()).default({}),
 	maxUses: z.number().int().default(-1),
 	default: z.boolean().default(false),

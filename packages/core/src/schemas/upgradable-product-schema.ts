@@ -5,9 +5,9 @@ export const upgradableProductSchema = z.object({
 	upgradableFromId: z.string().length(255),
 	position: z.number().default(0),
 	metadata: z.record(z.any()).default({}),
-	createdAt: z.string().default(() => new Date().toISOString()),
-	updatedAt: z.string().default(() => new Date().toISOString()),
-	deletedAt: z.string().datetime().optional(),
+	createdAt: z.date().nullable(),
+	updatedAt: z.date().nullable(),
+	deletedAt: z.date().nullable(),
 })
 
 export type UpgradableProduct = z.infer<typeof upgradableProductSchema>
