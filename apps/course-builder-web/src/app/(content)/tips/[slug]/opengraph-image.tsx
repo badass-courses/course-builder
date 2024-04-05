@@ -12,8 +12,6 @@ export default async function TipOG({ params }: { params: { slug: string } }) {
 				tw="flex p-10 h-full w-full bg-white flex-col"
 				style={{
 					...font('sans'),
-					backgroundImage:
-						'url(https://res.cloudinary.com/badass-courses/image/upload/v1700690096/course-builder-og-image-template_qfarun.png)',
 				}}
 			>
 				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">

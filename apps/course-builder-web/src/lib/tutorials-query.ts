@@ -2,10 +2,113 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { and, eq, like } from 'drizzle-orm'
+import { TutorialSchema } from '@/lib/tutorial'
+import { getServerAuthSession } from '@/server/auth'
+import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
+import z from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/types'
+
+export async function getTutorial(moduleSlugOrId: string) {
+	const { ability } = await getServerAuthSession()
+
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public', 'unlisted']
+
+	const tutorial = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					moduleSlugOrId,
+				),
+				eq(contentResource.id, moduleSlugOrId),
+			),
+			eq(contentResource.type, 'tutorial'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
+
+	const parsedTutorial = TutorialSchema.safeParse(tutorial)
+	if (!parsedTutorial.success) {
+		console.error('Error parsing tutorial', tutorial)
+		throw new Error('Error parsing tutorial')
+	}
+
+	return parsedTutorial.data
+}
+
+export async function getAllTutorials() {
+	const { ability } = await getServerAuthSession()
+
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public']
+
+	const tutorials: ContentResource[] = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'tutorial'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+		orderBy: desc(contentResource.createdAt),
+	})
+
+	const parsedTutorial = z.array(TutorialSchema).safeParse(tutorials)
+	if (!parsedTutorial.success) {
+		console.error('Error parsing tutorial', tutorials)
+		throw new Error('Error parsing tutorial')
+	}
+
+	return parsedTutorial.data
+}
 
 export const addResourceToTutorial = async ({
 	resource,

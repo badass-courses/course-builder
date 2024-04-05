@@ -1,11 +1,7 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
-import { LessonSchema } from '@/lib/lessons'
+import { getLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
-import { like } from 'drizzle-orm'
-import { last } from 'lodash'
 
 import { EditLessonForm } from './_components/edit-lesson-form'
 
@@ -17,17 +13,11 @@ export default async function LessonEditPage({
 	params: { lesson: string }
 }) {
 	const { ability } = await getServerAuthSession()
-	const parsedLesson = LessonSchema.safeParse(
-		await db.query.contentResource.findFirst({
-			where: like(contentResource.id, `%${last(params.lesson.split('-'))}%`),
-		}),
-	)
+	const lesson = await getLesson(params.lesson)
 
-	if (!parsedLesson.success || !ability.can('create', 'Content')) {
+	if (!lesson || !ability.can('create', 'Content')) {
 		notFound()
 	}
 
-	return (
-		<EditLessonForm key={parsedLesson.data.id} lesson={parsedLesson.data} />
-	)
+	return <EditLessonForm key={lesson.id} lesson={lesson} />
 }

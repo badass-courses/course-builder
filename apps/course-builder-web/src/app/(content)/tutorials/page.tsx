@@ -1,9 +1,8 @@
 import * as React from 'react'
+import { Metadata } from 'next'
 import Link from 'next/link'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { getAllTutorials } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
-import { desc, eq } from 'drizzle-orm'
 
 import {
 	Button,
@@ -13,13 +12,13 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+export const metadata: Metadata = {
+	title: 'Pro AWS Tutorials by Adam Elmore',
+}
+
 export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
-
-	const tutorials: any[] = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'tutorial'),
-		orderBy: desc(contentResource.createdAt),
-	})
+	const tutorials = await getAllTutorials()
 
 	return (
 		<div className="flex flex-col">
@@ -32,12 +31,12 @@ export default async function Tutorials() {
 				</div>
 			) : null}
 			{tutorials.map((tutorial) => (
-				<Link href={`/tutorials/${tutorial.fields.slug}`} key={tutorial.id}>
+				<Link href={`/tutorials/${tutorial.fields?.slug}`} key={tutorial.id}>
 					<Card>
 						<CardHeader>
-							<CardTitle>{tutorial.fields.title}</CardTitle>
+							<CardTitle>{tutorial.fields?.title}</CardTitle>
 						</CardHeader>
-						<CardContent>{tutorial.fields.description}</CardContent>
+						<CardContent>{tutorial.fields?.description}</CardContent>
 					</Card>
 				</Link>
 			))}

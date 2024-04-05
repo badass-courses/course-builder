@@ -332,7 +332,7 @@ const TreeItem = memo(function TreeItem({
 									if (rootResource) {
 										console.log(rootResource)
 										router.push(
-											`/${pluralize(rootResource?.type)}/${rootResource?.fields?.slug}/${item.id}`,
+											`/${pluralize(rootResource?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
 										)
 									}
 								}

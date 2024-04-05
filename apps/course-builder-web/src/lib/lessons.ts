@@ -8,6 +8,10 @@ export const LessonSchema = ContentResourceSchema.merge(
 			title: z.string().min(2).max(90),
 			body: z.string().optional(),
 			slug: z.string(),
+			state: z
+				.enum(['draft', 'published', 'archived', 'deleted'])
+				.default('draft'),
+			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 		}),
 	}),
 )
