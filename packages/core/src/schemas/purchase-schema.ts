@@ -8,7 +8,10 @@ export const purchaseSchema = z.object({
 	id: z.string().max(191),
 	userId: z.string().max(191).optional().nullable(),
 	createdAt: z.date(),
-	totalAmount: z.string(),
+	totalAmount: z.coerce.number().refine((value) => {
+		const decimalPlaces = value.toString().split('.')[1]?.length || 0
+		return decimalPlaces <= 2
+	}),
 	ipAddress: z.string().max(191).optional().nullable(),
 	city: z.string().max(191).optional().nullable(),
 	state: z.string().max(191).optional().nullable(),

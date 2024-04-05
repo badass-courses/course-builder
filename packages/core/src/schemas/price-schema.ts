@@ -5,7 +5,7 @@ export const priceSchema = z.object({
 	productId: z.string().max(191).optional().nullable(),
 	nickname: z.string().max(191).optional().nullable(),
 	status: z.number().int().default(0),
-	unitAmount: z.number().refine((value) => {
+	unitAmount: z.coerce.number().refine((value) => {
 		const decimalPlaces = value.toString().split('.')[1]?.length || 0
 		return decimalPlaces <= 2
 	}),

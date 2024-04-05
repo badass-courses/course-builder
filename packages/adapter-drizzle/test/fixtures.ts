@@ -36,7 +36,7 @@ export const fixtures = {
 		id: randomUUID(),
 		userId,
 		createdAt: createdAt,
-		totalAmount: '123',
+		totalAmount: 123,
 		ipAddress: '127.0.0.1',
 		couponId: randomUUID(),
 		productId: randomUUID(),

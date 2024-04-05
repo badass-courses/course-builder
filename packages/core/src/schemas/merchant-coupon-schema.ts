@@ -5,7 +5,7 @@ export const merchantCouponSchema = z.object({
 	identifier: z.string().max(191).optional().nullable(),
 	status: z.number().int().default(0),
 	merchantAccountId: z.string().max(191),
-	percentageDiscount: z.number().refine((value) => {
+	percentageDiscount: z.coerce.number().refine((value) => {
 		const decimalPlaces = value.toString().split('.')[1]?.length || 0
 		return decimalPlaces <= 2
 	}),
