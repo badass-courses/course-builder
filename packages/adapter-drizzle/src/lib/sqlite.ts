@@ -213,15 +213,7 @@ export function SQLiteDrizzleAdapter(
 			user: User
 			isNewUser: boolean
 		}> {
-			return Promise.resolve({
-				isNewUser: false,
-				user: {
-					id: '123',
-					createdAt: '2022-01-01T00:00:00.000Z',
-					role: 'user',
-					email: 'user@example.com',
-				},
-			})
+			throw new Error('Method not implemented.')
 		},
 		getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
 			return Promise.resolve(null)
@@ -330,9 +322,7 @@ export function SQLiteDrizzleAdapter(
 		}): Promise<Price[]> {
 			return Promise.resolve([])
 		},
-		async createPurchase(
-			options: Partial<Omit<Purchase, 'id'>>,
-		): Promise<Purchase> {
+		async createPurchase(options): Promise<Purchase> {
 			throw new Error('Method not implemented.')
 		},
 		toggleLessonProgressForUser(options: {
