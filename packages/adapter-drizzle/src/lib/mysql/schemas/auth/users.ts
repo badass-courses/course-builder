@@ -51,14 +51,26 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentResource = getContentResourceSchema(mysqlTable)
 	const purchases = getPurchaseSchema(mysqlTable)
 	return relations(users, ({ many }) => ({
-		accounts: many(accounts),
-		purchases: many(purchases),
-		communicationPreferences: many(communicationPreferences),
+		accounts: many(accounts, {
+			relationName: 'user',
+		}),
+		purchases: many(purchases, {
+			relationName: 'user',
+		}),
+		communicationPreferences: many(communicationPreferences, {
+			relationName: 'user',
+		}),
 		roles: many(userRoles, {
 			relationName: 'user',
 		}),
-		userPermissions: many(userPermissions),
-		contributions: many(contentContributions),
-		createdContent: many(contentResource),
+		userPermissions: many(userPermissions, {
+			relationName: 'user',
+		}),
+		contributions: many(contentContributions, {
+			relationName: 'user',
+		}),
+		createdContent: many(contentResource, {
+			relationName: 'user',
+		}),
 	}))
 }

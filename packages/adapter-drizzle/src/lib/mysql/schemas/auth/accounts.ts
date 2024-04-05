@@ -47,6 +47,10 @@ export function getAccountsRelationsSchema(mysqlTable: MySqlTableFn) {
 	const accounts = getAccountsSchema(mysqlTable)
 	const users = getUsersSchema(mysqlTable)
 	return relations(accounts, ({ one }) => ({
-		user: one(users, { fields: [accounts.userId], references: [users.id] }),
+		user: one(users, {
+			fields: [accounts.userId],
+			references: [users.id],
+			relationName: 'user',
+		}),
 	}))
 }

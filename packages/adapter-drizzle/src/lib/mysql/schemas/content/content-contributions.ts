@@ -57,14 +57,17 @@ export function getContentContributionRelationsSchema(
 		user: one(users, {
 			fields: [contentContributions.userId],
 			references: [users.id],
+			relationName: 'user',
 		}),
 		content: one(contentResource, {
 			fields: [contentContributions.contentId],
 			references: [contentResource.id],
+			relationName: 'contributions',
 		}),
 		contributionType: one(contributionTypes, {
 			fields: [contentContributions.contributionTypeId],
 			references: [contributionTypes.id],
+			relationName: 'contributionType',
 		}),
 	}))
 }

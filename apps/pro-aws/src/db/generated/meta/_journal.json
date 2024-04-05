@@ -1,13 +1,20 @@
 {
-	"version": "5",
-	"dialect": "mysql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "5",
-			"when": 1712253218725,
-			"tag": "0000_tidy_shiver_man",
-			"breakpoints": true
-		}
-	]
+  "version": "5",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1712253218725,
+      "tag": "0000_tidy_shiver_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712351930132,
+      "tag": "0001_striped_catseye",
+      "breakpoints": true
+    }
+  ]
 }

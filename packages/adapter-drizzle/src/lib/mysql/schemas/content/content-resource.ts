@@ -43,14 +43,13 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentResource = getContentResourceSchema(mysqlTable)
 	const users = getUsersSchema(mysqlTable)
-	const contentContributions = getContentContributionsSchema(mysqlTable)
 	const contentResourceResource = getContentResourceResourceSchema(mysqlTable)
 	return relations(contentResource, ({ one, many }) => ({
 		createdBy: one(users, {
 			fields: [contentResource.createdById],
 			references: [users.id],
+			relationName: 'user',
 		}),
-		contributions: many(contentContributions),
 		resources: many(contentResourceResource, { relationName: 'resourceOf' }),
 		resourceOf: many(contentResourceResource, { relationName: 'resource' }),
 	}))

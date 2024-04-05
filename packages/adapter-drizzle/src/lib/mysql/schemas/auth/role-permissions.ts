@@ -47,10 +47,12 @@ export function getRolePermissionsRelationsSchema(mysqlTable: MySqlTableFn) {
 		role: one(roles, {
 			fields: [rolePermissions.roleId],
 			references: [roles.id],
+			relationName: 'role',
 		}),
 		permission: one(permissions, {
 			fields: [rolePermissions.permissionId],
 			references: [permissions.id],
+			relationName: 'permission',
 		}),
 	}))
 }

@@ -65,14 +65,17 @@ export function getCommunicationPreferencesRelationsSchema(
 		user: one(users, {
 			fields: [communicationPreferences.userId],
 			references: [users.id],
+			relationName: 'user',
 		}),
 		channel: one(communicationChannel, {
 			fields: [communicationPreferences.channelId],
 			references: [communicationChannel.id],
+			relationName: 'channel',
 		}),
 		preferenceType: one(communicationPreferenceTypes, {
 			fields: [communicationPreferences.preferenceTypeId],
 			references: [communicationPreferenceTypes.id],
+			relationName: 'preferenceType',
 		}),
 	}))
 }

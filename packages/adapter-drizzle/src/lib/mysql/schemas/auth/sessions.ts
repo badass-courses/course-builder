@@ -23,6 +23,10 @@ export function getSessionRelationsSchema(mysqlTable: MySqlTableFn) {
 	const sessions = getSessionsSchema(mysqlTable)
 	const users = getUsersSchema(mysqlTable)
 	return relations(sessions, ({ one }) => ({
-		user: one(users, { fields: [sessions.userId], references: [users.id] }),
+		user: one(users, {
+			fields: [sessions.userId],
+			references: [users.id],
+			relationName: 'user',
+		}),
 	}))
 }

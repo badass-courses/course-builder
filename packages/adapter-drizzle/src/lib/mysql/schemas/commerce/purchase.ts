@@ -68,6 +68,7 @@ export function getPurchaseRelationsSchema(mysqlTable: MySqlTableFn) {
 		user: one(users, {
 			fields: [purchases.userId],
 			references: [users.id],
+			relationName: 'user',
 		}),
 		product: one(products, {
 			fields: [purchases.productId],
