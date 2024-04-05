@@ -5,11 +5,8 @@ export const merchantProductSchema = z.object({
 	merchantAccountId: z.string().max(191),
 	productId: z.string().max(191),
 	status: z.number().int().default(0),
-	identifier: z.string().max(191).optional(),
-	createdAt: z
-		.string()
-		.datetime()
-		.default(() => new Date().toISOString()),
+	identifier: z.string().max(191).optional().nullable(),
+	createdAt: z.string().default(() => new Date().toISOString()),
 })
 
 export type MerchantProduct = z.infer<typeof merchantProductSchema>
