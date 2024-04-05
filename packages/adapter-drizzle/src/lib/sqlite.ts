@@ -150,6 +150,7 @@ export function SQLiteDrizzleAdapter(
 	} = createTables(tableFn)
 
 	return {
+		client,
 		availableUpgradesForProduct(
 			purchases: any,
 			productId: string,

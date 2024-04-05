@@ -164,6 +164,7 @@ export function pgDrizzleAdapter(
 	} = createTables(tableFn)
 
 	return {
+		client,
 		async createPurchase(
 			options: Partial<Omit<Purchase, 'id'>>,
 		): Promise<Purchase> {

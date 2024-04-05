@@ -1,7 +1,9 @@
 // This work is needed as workaround to Drizzle truncating millisecond precision.
 // https://github.com/drizzle-team/drizzle-orm/pull/668
 
-import { randomUUID } from 'utils/adapter'
+import { randomUUID } from 'utils/adapter.js'
+
+import { purchaseSchema } from '@coursebuilder/core/schemas'
 
 const emailVerified = new Date()
 emailVerified.setMilliseconds(0)
@@ -18,9 +20,11 @@ const ONE_MONTH = 1000 * 60 * 60 * 24 * 30
 const ONE_MONTH_FROM_NOW = new Date(Date.now() + ONE_MONTH)
 ONE_MONTH_FROM_NOW.setMilliseconds(0)
 
+const userId = randomUUID()
+
 export const fixtures = {
 	user: {
-		id: randomUUID(),
+		id: userId,
 		email: 'fill@murray.com',
 		image: 'https://www.fillmurray.com/460/300',
 		name: 'Fill Murray',
@@ -28,6 +32,22 @@ export const fixtures = {
 		emailVerified,
 		createdAt,
 	},
+	purchase: purchaseSchema.parse({
+		id: randomUUID(),
+		userId,
+		createdAt: createdAt.toISOString(),
+		totalAmount: '123',
+		ipAddress: '127.0.0.1',
+		couponId: randomUUID(),
+		productId: randomUUID(),
+		merchantChargeId: randomUUID(),
+		merchantSessionId: randomUUID(),
+		purchasedAt: new Date(),
+		status: 'Valid',
+		bulkCouponId: randomUUID(),
+		merchantCouponId: randomUUID(),
+		type: 'Valid',
+	}),
 	session: {
 		sessionToken: randomUUID(),
 		expires: ONE_WEEK_FROM_NOW,

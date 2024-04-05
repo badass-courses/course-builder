@@ -76,7 +76,10 @@ import { getMerchantSessionSchema } from './schemas/commerce/merchant-session.js
 import { getPriceSchema } from './schemas/commerce/price.js'
 import { getProductSchema } from './schemas/commerce/product.js'
 import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer.js'
-import { getPurchaseSchema } from './schemas/commerce/purchase.js'
+import {
+	getPurchaseRelationsSchema,
+	getPurchaseSchema,
+} from './schemas/commerce/purchase.js'
 import {
 	getUpgradableProductsRelationsSchema,
 	getUpgradableProductsSchema,
@@ -132,9 +135,10 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		merchantPrice: getMerchantPriceSchema(mysqlTable),
 		merchantProduct: getMerchantProductSchema(mysqlTable),
 		merchantSession: getMerchantSessionSchema(mysqlTable),
-		price: getPriceSchema(mysqlTable),
-		product: getProductSchema(mysqlTable),
-		purchase: getPurchaseSchema(mysqlTable),
+		prices: getPriceSchema(mysqlTable),
+		products: getProductSchema(mysqlTable),
+		purchases: getPurchaseSchema(mysqlTable),
+		purchaseRelations: getPurchaseRelationsSchema(mysqlTable),
 		purchaseUserTransfer: getPurchaseUserTransferSchema(mysqlTable),
 		communicationChannel: getCommunicationChannelSchema(mysqlTable),
 		communicationPreferenceTypes:
@@ -168,7 +172,7 @@ export type DefaultSchema = ReturnType<typeof createTables>
 export function mySqlDrizzleAdapter(
 	client: InstanceType<typeof MySqlDatabase>,
 	tableFn = defaultMySqlTableFn,
-): CourseBuilderAdapter {
+): CourseBuilderAdapter<typeof MySqlDatabase> {
 	const {
 		users,
 		accounts,
@@ -176,7 +180,7 @@ export function mySqlDrizzleAdapter(
 		verificationTokens,
 		contentResource,
 		contentResourceResource,
-		purchase,
+		purchases: purchaseTable,
 		purchaseUserTransfer,
 		coupon,
 		merchantCoupon,
@@ -186,12 +190,13 @@ export function mySqlDrizzleAdapter(
 		merchantCustomer,
 		merchantSession,
 		merchantProduct,
-		price,
-		product,
+		prices,
+		products,
 		upgradableProducts,
 	} = createTables(tableFn)
 
 	return {
+		client,
 		availableUpgradesForProduct(
 			purchases: any,
 			productId: string,
@@ -310,31 +315,24 @@ export function mySqlDrizzleAdapter(
 		getProduct(productId: string): Promise<Product | null> {
 			throw new Error('Method not implemented.')
 		},
-		getPurchase(purchaseId: string): Promise<Purchase | null> {
-			throw new Error('Method not implemented.')
+		async getPurchase(purchaseId: string): Promise<Purchase | null> {
+			const purchase = await client.query.purchases.findFirst({
+				where: eq(purchaseTable.id, purchaseId),
+			})
+
+			return purchase ? purchaseSchema.parse(purchase) : null
 		},
-		async createPurchase(options: Omit<Purchase, 'id'>): Promise<Purchase> {
-			const newPurchaseId = v4()
-			await client.insert(purchase).values({
-				id: newPurchaseId,
+		async createPurchase(options): Promise<Purchase> {
+			const newPurchaseId = options.id || `purchase-${v4()}`
+			await client.insert(purchaseTable).values({
+				state: 'Valid',
 				...options,
+				id: newPurchaseId,
 			})
 
-			const newPurchase = await client.query.purchase.findFirst({
-				where: eq(purchase.id, newPurchaseId),
-			})
+			const newPurchase = await this.getPurchase(newPurchaseId)
 
-			const parsedPurchase = purchaseSchema.safeParse(newPurchase)
-
-			if (!parsedPurchase.success) {
-				console.error(
-					'purchase schema validation failed',
-					JSON.stringify(parsedPurchase.error, null, 2),
-				)
-				throw new Error('Error creating purchase')
-			}
-
-			return parsedPurchase.data
+			return purchaseSchema.parse(newPurchase)
 		},
 		async getPurchaseDetails(
 			purchaseId: string,
@@ -345,8 +343,11 @@ export function mySqlDrizzleAdapter(
 			availableUpgrades: UpgradableProduct[]
 		}> {
 			const allPurchases = await this.getPurchasesForUser(userId)
-			const thePurchase = await client.query.purchase.findFirst({
-				where: and(eq(purchase.id, purchaseId), eq(purchase.userId, userId)),
+			const thePurchase = await client.query.purchases.findFirst({
+				where: and(
+					eq(purchaseTable.id, purchaseId),
+					eq(purchaseTable.userId, userId),
+				),
 				with: {
 					user: true,
 					product: true,
@@ -434,17 +435,17 @@ export function mySqlDrizzleAdapter(
 
 			const visiblePurchaseStates = ['Valid', 'Refunded', 'Restricted']
 
-			const userPurchases = await client.query.purchase.findMany({
+			const userPurchases = await client.query.purchases.findMany({
 				where: and(
-					eq(purchase.userId, userId),
-					inArray(purchase.state, visiblePurchaseStates),
+					eq(purchaseTable.userId, userId),
+					inArray(purchaseTable.state, visiblePurchaseStates),
 				),
 				with: {
 					user: true,
 					product: true,
 					bulkCoupon: true,
 				},
-				orderBy: asc(purchase.createdAt),
+				orderBy: asc(purchaseTable.createdAt),
 			})
 
 			const parsedPurchases = z.array(purchaseSchema).safeParse(userPurchases)

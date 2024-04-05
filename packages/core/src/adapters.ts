@@ -21,10 +21,21 @@ import {
 	type ContentResource,
 } from './types'
 
-export interface CourseBuilderAdapter
-	extends Adapter,
+export interface CourseBuilderAdapter<
+	TDatabaseInstance extends abstract new (...args: any) => any = any,
+> extends Adapter,
 		SkillProductsCommerceSdk {
-	createPurchase(options: Partial<Omit<Purchase, 'id'>>): Promise<Purchase>
+	client: InstanceType<TDatabaseInstance>
+	createPurchase(options: {
+		id?: string
+		userId: string
+		productId: string
+		merchantChargeId: string
+		merchantSessionId: string
+		totalAmount: string
+		status?: string
+		metadata?: Record<string, any>
+	}): Promise<Purchase>
 	addResourceToResource(options: {
 		childResourceId: string
 		parentResourceId: string
@@ -44,6 +55,7 @@ export interface CourseBuilderAdapter
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
+	client: null,
 	createPurchase: async (options) => {
 		throw new Error('Method not implemented.')
 	},

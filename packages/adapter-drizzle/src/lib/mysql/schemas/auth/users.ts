@@ -7,6 +7,7 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
+import { getPurchaseSchema } from '../commerce/purchase.js'
 import { getCommunicationPreferencesSchema } from '../communication/communication-preferences.js'
 import { getContentContributionsSchema } from '../content/content-contributions.js'
 import { getContentResourceSchema } from '../content/content-resource.js'
@@ -48,8 +49,10 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const userPermissions = getUserPermissionsSchema(mysqlTable)
 	const contentContributions = getContentContributionsSchema(mysqlTable)
 	const contentResource = getContentResourceSchema(mysqlTable)
+	const purchases = getPurchaseSchema(mysqlTable)
 	return relations(users, ({ many }) => ({
 		accounts: many(accounts),
+		purchases: many(purchases),
 		communicationPreferences: many(communicationPreferences),
 		roles: many(userRoles, {
 			relationName: 'user',

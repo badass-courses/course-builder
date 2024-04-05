@@ -10,6 +10,7 @@ export interface TestOptions {
 		user?: any
 		session?: any
 		account?: any
+		purchase?: any
 		sessionUpdateExpires?: Date
 		verificationTokenExpires?: Date
 		createdAt?: Date
@@ -29,6 +30,7 @@ export interface TestOptions {
 		connect?: () => Promise<any>
 		/** A simple query function that returns a session directly from the db. */
 		session: (sessionToken: string) => any
+		purchase: (id: string) => any
 		/** A simple query function that returns a user directly from the db. */
 		user: (id: string) => any
 		/** A simple query function that returns an account directly from the db. */
@@ -37,7 +39,7 @@ export interface TestOptions {
 			providerAccountId: string
 		}) => any
 		/**
-		 * A simple query function that returns an verification token directly from the db,
+		 * A simple query function that returns a verification token directly from the db,
 		 * based on the user identifier and the verification token (hashed).
 		 */
 		verificationToken: (params: { identifier: string; token: string }) => any
@@ -154,18 +156,52 @@ export async function runBasicTests(options: TestOptions) {
 		})
 	})
 
+	test('getPurchase returns a purchase', async () => {
+		const newPurchase = await adapter.createPurchase({
+			userId: user.id,
+			productId: id(),
+			merchantChargeId: id(),
+			merchantSessionId: id(),
+			totalAmount: '123',
+		})
+
+		const purchase = await adapter.getPurchase(newPurchase.id)
+
+		expect(purchase).toBeTruthy()
+	})
+
 	test('createPurchase returns a new purchase', async () => {
 		const purchase = await adapter.createPurchase({
 			userId: user.id,
-			productId: 'fake-product-id',
-			merchantChargeId: 'fake-charge-id',
-			merchantSessionId: 'fake-session-id',
+			productId: id(),
+			merchantChargeId: id(),
+			merchantSessionId: id(),
 			totalAmount: '123',
 		})
 
 		const parsedPurchase = purchaseSchema.safeParse(purchase)
 
 		expect(parsedPurchase.success).toBeTruthy()
+	})
+
+	test('getPurchasesForUser returns a list of purchases', async () => {
+		await adapter.createPurchase({
+			userId: user.id,
+			productId: id(),
+			merchantChargeId: id(),
+			merchantSessionId: id(),
+			totalAmount: '1232',
+		})
+		await adapter.createPurchase({
+			userId: user.id,
+			productId: id(),
+			merchantChargeId: id(),
+			merchantSessionId: id(),
+			totalAmount: '123',
+		})
+		const purchases = await adapter.getPurchasesForUser(user.id)
+
+		expect(purchases.length).toBeGreaterThanOrEqual(2)
 	})
 
 	test('createContentResource', async () => {
