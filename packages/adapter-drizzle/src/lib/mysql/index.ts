@@ -201,25 +201,25 @@ export function mySqlDrizzleAdapter(
 				upgradableFrom: { id: string; name: string }
 			}[]
 		> {
-			return Promise.resolve([])
+			throw new Error('Method not implemented.')
 		},
 		clearLessonProgressForUser(options: {
 			userId: string
 			lessons: { id: string; slug: string }[]
 		}): Promise<void> {
-			return Promise.resolve(undefined)
+			throw new Error('Method not implemented.')
 		},
 		completeLessonProgressForUser(options: {
 			userId: string
 			lessonId?: string
 		}): Promise<ResourceProgress | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		couponForIdOrCode(options: {
 			code?: string
 			couponId?: string
 		}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		createMerchantChargeAndPurchase(options: {
 			userId: string
@@ -245,7 +245,7 @@ export function mySqlDrizzleAdapter(
 			identifier: string
 			merchantAccountId: string
 		}): Promise<MerchantCustomer | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		findOrCreateUser(
 			email: string,
@@ -257,7 +257,7 @@ export function mySqlDrizzleAdapter(
 			throw new Error('Method not implemented.')
 		},
 		getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
@@ -265,13 +265,13 @@ export function mySqlDrizzleAdapter(
 			  })
 			| null
 		> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getDefaultCoupon(productIds?: string[]): Promise<{
 			defaultMerchantCoupon: MerchantCoupon
 			defaultCoupon: Coupon
 		} | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getLessonProgressCountsByDate(): Promise<
 			{
@@ -279,39 +279,39 @@ export function mySqlDrizzleAdapter(
 				completedAt: string
 			}[]
 		> {
-			return Promise.resolve([])
+			throw new Error('Method not implemented.')
 		},
 		getLessonProgressForUser(userId: string): Promise<ResourceProgress[]> {
-			return Promise.resolve([])
+			throw new Error('Method not implemented.')
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {
-			return Promise.resolve([])
+			throw new Error('Method not implemented.')
 		},
 		getMerchantCharge(merchantChargeId: string): Promise<{
 			id: string
 			identifier: string
 			merchantProductId: string
 		} | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getMerchantCoupon(
 			merchantCouponId: string,
 		): Promise<MerchantCoupon | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getMerchantProduct(
 			stripeProductId: string,
 		): Promise<MerchantProduct | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getPrice(productId: string): Promise<Price | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getProduct(productId: string): Promise<Product | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getPurchase(purchaseId: string): Promise<Purchase | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		async createPurchase(options: Omit<Purchase, 'id'>): Promise<Purchase> {
 			const newPurchaseId = v4()
@@ -407,7 +407,7 @@ export function mySqlDrizzleAdapter(
 		getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getPurchaseUserTransferById(options: { id: string }): Promise<
 			| (PurchaseUserTransfer & {
@@ -417,7 +417,7 @@ export function mySqlDrizzleAdapter(
 			  })
 			| null
 		> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		getPurchaseWithUser(purchaseId: string): Promise<
 			| (Purchase & {
@@ -425,7 +425,7 @@ export function mySqlDrizzleAdapter(
 			  })
 			| null
 		> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		async getPurchasesForUser(userId?: string): Promise<Purchase[]> {
 			if (!userId) {
@@ -457,38 +457,38 @@ export function mySqlDrizzleAdapter(
 			return parsedPurchases.data
 		},
 		getUserById(userId: string): Promise<User | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		pricesOfPurchasesTowardOneBundle(options: {
 			userId: string | undefined
 			bundleId: string
 		}): Promise<Price[]> {
-			return Promise.resolve([])
+			throw new Error('Method not implemented.')
 		},
 		toggleLessonProgressForUser(options: {
 			userId: string
 			lessonId?: string
 			lessonSlug?: string
 		}): Promise<ResourceProgress | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		transferPurchasesToNewUser(options: {
 			merchantCustomerId: string
 			userId: string
 		}): Promise<unknown> {
-			return Promise.resolve(undefined)
+			throw new Error('Method not implemented.')
 		},
 		updatePurchaseStatusForCharge(
 			chargeId: string,
 			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
 		): Promise<Purchase | undefined> {
-			return Promise.resolve(undefined)
+			throw new Error('Method not implemented.')
 		},
 		updatePurchaseUserTransferTransferState(options: {
 			id: string
 			transferState: PurchaseUserTransferState
 		}): Promise<PurchaseUserTransfer | null> {
-			return Promise.resolve(null)
+			throw new Error('Method not implemented.')
 		},
 		addResourceToResource: async function (options) {
 			const { parentResourceId, childResourceId } = options
