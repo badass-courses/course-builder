@@ -1,0 +1,25 @@
+import { z } from 'zod'
+
+export const couponSchema = z.object({
+	id: z.string(),
+	code: z.string().max(191).optional(),
+	createdAt: z
+		.string()
+		.datetime()
+		.default(() => new Date().toISOString()),
+	expires: z.string().datetime().optional(),
+	metadata: z.record(z.any()).default({}),
+	maxUses: z.number().int().default(-1),
+	default: z.boolean().default(false),
+	merchantCouponId: z.string().max(191).optional(),
+	status: z.number().int().default(0),
+	usedCount: z.number().int().default(0),
+	percentageDiscount: z.number().refine((value) => {
+		const decimalPlaces = value.toString().split('.')[1]?.length || 0
+		return decimalPlaces <= 2
+	}),
+	restrictedToProductId: z.string().max(191).optional(),
+	bulkPurchaseId: z.string().max(191).optional(),
+})
+
+export type Coupon = z.infer<typeof couponSchema>

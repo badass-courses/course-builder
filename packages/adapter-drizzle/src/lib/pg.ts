@@ -18,6 +18,20 @@ import {
 } from 'drizzle-orm/pg-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import {
+	Coupon,
+	MerchantCoupon,
+	MerchantCustomer,
+	MerchantProduct,
+	Price,
+	Product,
+	Purchase,
+	PurchaseUserTransfer,
+	PurchaseUserTransferState,
+	ResourceProgress,
+	UpgradableProduct,
+	User,
+} from '@coursebuilder/core/schemas'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export function createTables(pgTable: PgTableFn) {
@@ -150,6 +164,215 @@ export function pgDrizzleAdapter(
 	} = createTables(tableFn)
 
 	return {
+		async createPurchase(
+			options: Partial<Omit<Purchase, 'id'>>,
+		): Promise<Purchase> {
+			throw new Error('Method not implemented.')
+		},
+		availableUpgradesForProduct(
+			purchases: any,
+			productId: string,
+		): Promise<
+			{
+				upgradableTo: { id: string; name: string }
+				upgradableFrom: { id: string; name: string }
+			}[]
+		> {
+			return Promise.resolve([])
+		},
+		clearLessonProgressForUser(options: {
+			userId: string
+			lessons: { id: string; slug: string }[]
+		}): Promise<void> {
+			return Promise.resolve(undefined)
+		},
+		completeLessonProgressForUser(options: {
+			userId: string
+			lessonId?: string
+		}): Promise<ResourceProgress | null> {
+			return Promise.resolve(null)
+		},
+		couponForIdOrCode(options: {
+			code?: string
+			couponId?: string
+		}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null> {
+			return Promise.resolve(null)
+		},
+		createMerchantChargeAndPurchase(options: {
+			userId: string
+			productId: string
+			stripeChargeId: string
+			stripeCouponId?: string
+			merchantAccountId: string
+			merchantProductId: string
+			merchantCustomerId: string
+			stripeChargeAmount: number
+			quantity?: number
+			bulk?: boolean
+			checkoutSessionId: string
+			appliedPPPStripeCouponId: string | undefined
+			upgradedFromPurchaseId: string | undefined
+			usedCouponId: string | undefined
+			country?: string
+		}): Promise<Purchase> {
+			throw new Error('Method not implemented.')
+		},
+		findOrCreateMerchantCustomer(options: {
+			user: User
+			identifier: string
+			merchantAccountId: string
+		}): Promise<MerchantCustomer | null> {
+			return Promise.resolve(null)
+		},
+		findOrCreateUser(
+			email: string,
+			name?: string | null,
+		): Promise<{
+			user: User
+			isNewUser: boolean
+		}> {
+			return Promise.resolve({
+				isNewUser: false,
+				user: {
+					id: '123',
+					createdAt: '2022-01-01T00:00:00.000Z',
+					role: 'user',
+					email: 'user@example.com',
+				},
+			})
+		},
+		getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
+			return Promise.resolve(null)
+		},
+		getCouponWithBulkPurchases(couponId: string): Promise<
+			| (Coupon & {
+					bulkCouponPurchases: { bulkCouponId: string }[]
+			  })
+			| null
+		> {
+			return Promise.resolve(null)
+		},
+		getDefaultCoupon(productIds?: string[]): Promise<{
+			defaultMerchantCoupon: MerchantCoupon
+			defaultCoupon: Coupon
+		} | null> {
+			return Promise.resolve(null)
+		},
+		getLessonProgressCountsByDate(): Promise<
+			{
+				count: number
+				completedAt: string
+			}[]
+		> {
+			return Promise.resolve([])
+		},
+		getLessonProgressForUser(userId: string): Promise<ResourceProgress[]> {
+			return Promise.resolve([])
+		},
+		getLessonProgresses(): Promise<ResourceProgress[]> {
+			return Promise.resolve([])
+		},
+		getMerchantCharge(merchantChargeId: string): Promise<{
+			id: string
+			identifier: string
+			merchantProductId: string
+		} | null> {
+			return Promise.resolve(null)
+		},
+		getMerchantCoupon(
+			merchantCouponId: string,
+		): Promise<MerchantCoupon | null> {
+			return Promise.resolve(null)
+		},
+		getMerchantProduct(
+			stripeProductId: string,
+		): Promise<MerchantProduct | null> {
+			return Promise.resolve(null)
+		},
+		getPrice(productId: string): Promise<Price | null> {
+			return Promise.resolve(null)
+		},
+		getProduct(productId: string): Promise<Product | null> {
+			return Promise.resolve(null)
+		},
+		getPurchase(purchaseId: string): Promise<Purchase | null> {
+			return Promise.resolve(null)
+		},
+		getPurchaseDetails(
+			purchaseId: string,
+			userId: string,
+		): Promise<{
+			purchase?: Purchase
+			existingPurchase?: Purchase
+			availableUpgrades: UpgradableProduct[]
+		}> {
+			return Promise.resolve({ availableUpgrades: [] })
+		},
+		getPurchaseForStripeCharge(
+			stripeChargeId: string,
+		): Promise<Purchase | null> {
+			return Promise.resolve(null)
+		},
+		getPurchaseUserTransferById(options: { id: string }): Promise<
+			| (PurchaseUserTransfer & {
+					sourceUser: User
+					targetUser: User | null
+					purchase: Purchase
+			  })
+			| null
+		> {
+			return Promise.resolve(null)
+		},
+		getPurchaseWithUser(purchaseId: string): Promise<
+			| (Purchase & {
+					user: User
+			  })
+			| null
+		> {
+			return Promise.resolve(null)
+		},
+		getPurchasesForUser(userId?: string): Promise<
+			(Purchase & {
+				bulkCoupon: { id: string; maxUses: number; usedCount: number } | null
+				product: { id: string; name: string }
+			})[]
+		> {
+			return Promise.resolve([])
+		},
+		getUserById(userId: string): Promise<User | null> {
+			return Promise.resolve(null)
+		},
+		pricesOfPurchasesTowardOneBundle(options: {
+			userId: string | undefined
+			bundleId: string
+		}): Promise<Price[]> {
+			return Promise.resolve([])
+		},
+		toggleLessonProgressForUser(options: {
+			userId: string
+			lessonId?: string
+			lessonSlug?: string
+		}): Promise<ResourceProgress | null> {
+			return Promise.resolve(null)
+		},
+		transferPurchasesToNewUser(options: {
+			merchantCustomerId: string
+			userId: string
+		}): Promise<unknown> {
+			return Promise.resolve(undefined)
+		},
+		updatePurchaseStatusForCharge(
+			chargeId: string,
+			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
+		): Promise<Purchase | undefined> {
+			return Promise.resolve(undefined)
+		},
+		updatePurchaseUserTransferTransferState(options: {
+			id: string
+			transferState: PurchaseUserTransferState
+		}): Promise<PurchaseUserTransfer | null> {
+			return Promise.resolve(null)
+		},
 		async addResourceToResource(options) {
 			return null
 		},

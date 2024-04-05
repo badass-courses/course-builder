@@ -1,13 +1,31 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
+import { and, asc, eq, inArray, not, notInArray, or, sql } from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
 	MySqlDatabase,
 	MySqlTableFn,
 } from 'drizzle-orm/mysql-core'
+import { v4 } from 'uuid'
+import { z } from 'zod'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import {
+	Coupon,
+	MerchantCoupon,
+	MerchantCustomer,
+	MerchantProduct,
+	Price,
+	Product,
+	Purchase,
+	purchaseSchema,
+	PurchaseUserTransfer,
+	PurchaseUserTransferState,
+	ResourceProgress,
+	UpgradableProduct,
+	upgradableProductSchema,
+	User,
+} from '@coursebuilder/core/schemas'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -59,6 +77,10 @@ import { getPriceSchema } from './schemas/commerce/price.js'
 import { getProductSchema } from './schemas/commerce/product.js'
 import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer.js'
 import { getPurchaseSchema } from './schemas/commerce/purchase.js'
+import {
+	getUpgradableProductsRelationsSchema,
+	getUpgradableProductsSchema,
+} from './schemas/commerce/upgradable-products.js'
 import { getCommunicationChannelSchema } from './schemas/communication/communication-channel.js'
 import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types.js'
 import {
@@ -131,6 +153,9 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contributionTypes: getContributionTypesSchema(mysqlTable),
 		contributionTypesRelations: getContributionTypesRelationsSchema(mysqlTable),
 		resourceProgress: getResourceProgressSchema(mysqlTable),
+		upgradableProducts: getUpgradableProductsSchema(mysqlTable),
+		upgradableProductsRelations:
+			getUpgradableProductsRelationsSchema(mysqlTable),
 	} as const
 }
 
@@ -163,9 +188,316 @@ export function mySqlDrizzleAdapter(
 		merchantProduct,
 		price,
 		product,
+		upgradableProducts,
 	} = createTables(tableFn)
 
 	return {
+		availableUpgradesForProduct(
+			purchases: any,
+			productId: string,
+		): Promise<
+			{
+				upgradableTo: { id: string; name: string }
+				upgradableFrom: { id: string; name: string }
+			}[]
+		> {
+			return Promise.resolve([])
+		},
+		clearLessonProgressForUser(options: {
+			userId: string
+			lessons: { id: string; slug: string }[]
+		}): Promise<void> {
+			return Promise.resolve(undefined)
+		},
+		completeLessonProgressForUser(options: {
+			userId: string
+			lessonId?: string
+		}): Promise<ResourceProgress | null> {
+			return Promise.resolve(null)
+		},
+		couponForIdOrCode(options: {
+			code?: string
+			couponId?: string
+		}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null> {
+			return Promise.resolve(null)
+		},
+		createMerchantChargeAndPurchase(options: {
+			userId: string
+			productId: string
+			stripeChargeId: string
+			stripeCouponId?: string
+			merchantAccountId: string
+			merchantProductId: string
+			merchantCustomerId: string
+			stripeChargeAmount: number
+			quantity?: number
+			bulk?: boolean
+			checkoutSessionId: string
+			appliedPPPStripeCouponId: string | undefined
+			upgradedFromPurchaseId: string | undefined
+			usedCouponId: string | undefined
+			country?: string
+		}): Promise<Purchase> {
+			throw new Error('Method not implemented.')
+		},
+		findOrCreateMerchantCustomer(options: {
+			user: User
+			identifier: string
+			merchantAccountId: string
+		}): Promise<MerchantCustomer | null> {
+			return Promise.resolve(null)
+		},
+		findOrCreateUser(
+			email: string,
+			name?: string | null,
+		): Promise<{
+			user: User
+			isNewUser: boolean
+		}> {
+			return Promise.resolve({
+				isNewUser: false,
+				user: {
+					id: '123',
+					createdAt: '2022-01-01T00:00:00.000Z',
+					role: 'user',
+					email: 'user@example.com',
+				},
+			})
+		},
+		getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
+			return Promise.resolve(null)
+		},
+		getCouponWithBulkPurchases(couponId: string): Promise<
+			| (Coupon & {
+					bulkCouponPurchases: { bulkCouponId: string }[]
+			  })
+			| null
+		> {
+			return Promise.resolve(null)
+		},
+		getDefaultCoupon(productIds?: string[]): Promise<{
+			defaultMerchantCoupon: MerchantCoupon
+			defaultCoupon: Coupon
+		} | null> {
+			return Promise.resolve(null)
+		},
+		getLessonProgressCountsByDate(): Promise<
+			{
+				count: number
+				completedAt: string
+			}[]
+		> {
+			return Promise.resolve([])
+		},
+		getLessonProgressForUser(userId: string): Promise<ResourceProgress[]> {
+			return Promise.resolve([])
+		},
+		getLessonProgresses(): Promise<ResourceProgress[]> {
+			return Promise.resolve([])
+		},
+		getMerchantCharge(merchantChargeId: string): Promise<{
+			id: string
+			identifier: string
+			merchantProductId: string
+		} | null> {
+			return Promise.resolve(null)
+		},
+		getMerchantCoupon(
+			merchantCouponId: string,
+		): Promise<MerchantCoupon | null> {
+			return Promise.resolve(null)
+		},
+		getMerchantProduct(
+			stripeProductId: string,
+		): Promise<MerchantProduct | null> {
+			return Promise.resolve(null)
+		},
+		getPrice(productId: string): Promise<Price | null> {
+			return Promise.resolve(null)
+		},
+		getProduct(productId: string): Promise<Product | null> {
+			return Promise.resolve(null)
+		},
+		getPurchase(purchaseId: string): Promise<Purchase | null> {
+			return Promise.resolve(null)
+		},
+		async createPurchase(options: Omit<Purchase, 'id'>): Promise<Purchase> {
+			const newPurchaseId = v4()
+			await client.insert(purchase).values({
+				id: newPurchaseId,
+				...options,
+			})
+
+			const newPurchase = await client.query.purchase.findFirst({
+				where: eq(purchase.id, newPurchaseId),
+			})
+
+			const parsedPurchase = purchaseSchema.safeParse(newPurchase)
+
+			if (!parsedPurchase.success) {
+				console.error(
+					'purchase schema validation failed',
+					JSON.stringify(parsedPurchase.error, null, 2),
+				)
+				throw new Error('Error creating purchase')
+			}
+
+			return parsedPurchase.data
+		},
+		async getPurchaseDetails(
+			purchaseId: string,
+			userId: string,
+		): Promise<{
+			purchase?: Purchase
+			existingPurchase?: Purchase
+			availableUpgrades: UpgradableProduct[]
+		}> {
+			const allPurchases = await this.getPurchasesForUser(userId)
+			const thePurchase = await client.query.purchase.findFirst({
+				where: and(eq(purchase.id, purchaseId), eq(purchase.userId, userId)),
+				with: {
+					user: true,
+					product: true,
+					bulkCoupon: true,
+				},
+			})
+
+			const parsedPurchase = purchaseSchema.safeParse(thePurchase)
+
+			if (!parsedPurchase.success) {
+				console.error('Error parsing purchase', parsedPurchase)
+				return {
+					availableUpgrades: [],
+				}
+			}
+
+			const purchaseCanUpgrade = ['Valid', 'Restricted'].includes(
+				parsedPurchase.data.state || '',
+			)
+
+			if (!purchaseCanUpgrade) {
+				return {
+					availableUpgrades: [],
+				}
+			}
+
+			const availableUpgrades = await client.query.upgradableProducts.findMany({
+				where: and(
+					eq(
+						upgradableProducts.upgradableFromId,
+						parsedPurchase.data.product?.id as string,
+					),
+					not(
+						inArray(
+							upgradableProducts.upgradableToId,
+							allPurchases.map((p) => p.product?.id as string),
+						),
+					),
+				),
+				with: {
+					upgradableTo: true,
+					upgradableFrom: true,
+				},
+			})
+
+			const existingPurchase = allPurchases.find(
+				(p) => p.product?.id === parsedPurchase.data.product?.id,
+			)
+
+			return Promise.resolve({
+				availableUpgrades: z
+					.array(upgradableProductSchema)
+					.parse(availableUpgrades),
+				existingPurchase,
+				purchase: parsedPurchase.data,
+			})
+		},
+		getPurchaseForStripeCharge(
+			stripeChargeId: string,
+		): Promise<Purchase | null> {
+			return Promise.resolve(null)
+		},
+		getPurchaseUserTransferById(options: { id: string }): Promise<
+			| (PurchaseUserTransfer & {
+					sourceUser: User
+					targetUser: User | null
+					purchase: Purchase
+			  })
+			| null
+		> {
+			return Promise.resolve(null)
+		},
+		getPurchaseWithUser(purchaseId: string): Promise<
+			| (Purchase & {
+					user: User
+			  })
+			| null
+		> {
+			return Promise.resolve(null)
+		},
+		async getPurchasesForUser(userId?: string): Promise<Purchase[]> {
+			if (!userId) {
+				return []
+			}
+
+			const visiblePurchaseStates = ['Valid', 'Refunded', 'Restricted']
+
+			const userPurchases = await client.query.purchase.findMany({
+				where: and(
+					eq(purchase.userId, userId),
+					inArray(purchase.state, visiblePurchaseStates),
+				),
+				with: {
+					user: true,
+					product: true,
+					bulkCoupon: true,
+				},
+				orderBy: asc(purchase.createdAt),
+			})
+
+			const parsedPurchases = z.array(purchaseSchema).safeParse(userPurchases)
+
+			if (!parsedPurchases.success) {
+				console.error('Error parsing purchases', parsedPurchases)
+				return []
+			}
+
+			return parsedPurchases.data
+		},
+		getUserById(userId: string): Promise<User | null> {
+			return Promise.resolve(null)
+		},
+		pricesOfPurchasesTowardOneBundle(options: {
+			userId: string | undefined
+			bundleId: string
+		}): Promise<Price[]> {
+			return Promise.resolve([])
+		},
+		toggleLessonProgressForUser(options: {
+			userId: string
+			lessonId?: string
+			lessonSlug?: string
+		}): Promise<ResourceProgress | null> {
+			return Promise.resolve(null)
+		},
+		transferPurchasesToNewUser(options: {
+			merchantCustomerId: string
+			userId: string
+		}): Promise<unknown> {
+			return Promise.resolve(undefined)
+		},
+		updatePurchaseStatusForCharge(
+			chargeId: string,
+			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
+		): Promise<Purchase | undefined> {
+			return Promise.resolve(undefined)
+		},
+		updatePurchaseUserTransferTransferState(options: {
+			id: string
+			transferState: PurchaseUserTransferState
+		}): Promise<PurchaseUserTransfer | null> {
+			return Promise.resolve(null)
+		},
 		addResourceToResource: async function (options) {
 			const { parentResourceId, childResourceId } = options
 

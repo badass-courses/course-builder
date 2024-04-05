@@ -1,7 +1,8 @@
 import { createHash, randomInt, randomUUID } from 'crypto'
 import { afterAll, beforeAll, expect, test } from 'vitest'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/dist/adapters'
+import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { purchaseSchema } from '@coursebuilder/core/schemas'
 
 export interface TestOptions {
 	adapter: CourseBuilderAdapter
@@ -151,6 +152,20 @@ export async function runBasicTests(options: TestOptions) {
 		requiredMethods.forEach((method) => {
 			expect(adapter).toHaveProperty(method)
 		})
+	})
+
+	test('createPurchase returns a new purchase', async () => {
+		const purchase = await adapter.createPurchase({
+			userId: user.id,
+			productId: 'fake-product-id',
+			merchantChargeId: 'fake-charge-id',
+			merchantSessionId: 'fake-session-id',
+			totalAmount: '123',
+		})
+
+		const parsedPurchase = purchaseSchema.safeParse(purchase)
+
+		expect(parsedPurchase.success).toBeTruthy()
 	})
 
 	test('createContentResource', async () => {

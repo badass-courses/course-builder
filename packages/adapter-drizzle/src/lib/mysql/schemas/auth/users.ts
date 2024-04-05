@@ -51,7 +51,9 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	return relations(users, ({ many }) => ({
 		accounts: many(accounts),
 		communicationPreferences: many(communicationPreferences),
-		userRoles: many(userRoles),
+		roles: many(userRoles, {
+			relationName: 'user',
+		}),
 		userPermissions: many(userPermissions),
 		contributions: many(contentContributions),
 		createdContent: many(contentResource),

@@ -47,6 +47,11 @@
 			"import": "./dist/providers/*.js",
 			"require": "./dist/providers/*.js"
 		},
+		"./schemas": {
+			"types": "./dist/schemas/index.d.ts",
+			"import": "./dist/schemas/index.js",
+			"require": "./dist/schemas/index.js"
+		},
 		"./schemas/*": {
 			"types": "./dist/schemas/*.d.ts",
 			"import": "./dist/schemas/*.js",
@@ -95,6 +100,7 @@
 	"dependencies": {
 		"@types/cookie": "0.6.0",
 		"cookie": "0.6.0",
+		"drizzle-zod": "^0.5.1",
 		"inngest": "^3.16.1",
 		"lodash": "^4.17.21",
 		"srt-parser-2": "^1.2.3"
