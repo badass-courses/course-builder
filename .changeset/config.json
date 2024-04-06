@@ -13,6 +13,7 @@
   },
   "ignore": [
     "course-builder-docs",
-    "course-builder-web"
+    "course-builder-web",
+    "pro-aws"
   ]
 }
