@@ -6,6 +6,7 @@ import { TipUploader } from '@/app/(content)/tips/_components/tip-uploader'
 import { courseBuilderAdapter } from '@/db'
 import { NewTip, NewTipSchema } from '@/lib/tips'
 import { createTip } from '@/lib/tips-query'
+import { getVideoResource } from '@/lib/video-resource-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
@@ -48,8 +49,7 @@ export function NewResourceWithVideoForm() {
 		let delay = initialDelay
 
 		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-			const videoResource =
-				await courseBuilderAdapter.getVideoResource(videoResourceId)
+			const videoResource = await getVideoResource(videoResourceId)
 			if (videoResource) {
 				yield videoResource
 				return
