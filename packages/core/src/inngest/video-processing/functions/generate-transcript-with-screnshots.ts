@@ -17,7 +17,7 @@ export const generateTranscriptWithScreenshotsTrigger: CoreInngestTrigger = {
 }
 
 export const generateTranscriptWithScreenshotsHandler: CoreInngestHandler =
-	async ({ event, step, db, partyKitRootUrl }: CoreInngestFunctionInput) => {
+	async ({ event, step, db, partyProvider }: CoreInngestFunctionInput) => {
 		const videoResourceId = event.data.videoResourceId
 
 		if (!videoResourceId) {
@@ -65,15 +65,13 @@ export const generateTranscriptWithScreenshotsHandler: CoreInngestHandler =
 		})
 
 		await step.run('send the transcript to the party', async () => {
-			await fetch(`${partyKitRootUrl}/party/${event.data.videoResourceId}`, {
-				method: 'POST',
-				body: JSON.stringify({
+			return await partyProvider.broadcastMessage({
+				body: {
 					body: transcriptWithScreenshots,
 					requestId: event.data.videoResourceId,
 					name: 'transcriptWithScreenshots.ready',
-				}),
-			}).catch((e) => {
-				console.error(e)
+				},
+				roomId: event.data.videoResourceId,
 			})
 		})
 

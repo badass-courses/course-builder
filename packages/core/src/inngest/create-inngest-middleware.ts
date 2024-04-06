@@ -17,14 +17,18 @@ import {
 	type TranscriptionConfig,
 } from '../providers'
 import { LlmProviderConfig, MockOpenAIProvider } from '../providers/openai'
+import {
+	MockPartykitProvider,
+	PartyProviderConfig,
+} from '../providers/partykit'
 import { CourseBuilderCoreEvents } from './video-processing/events'
 
 export interface CoreInngestContext {
 	db: CourseBuilderAdapter
 	siteRootUrl: string
-	partyKitRootUrl: string
 	transcriptProvider: TranscriptionConfig
 	openaiProvider: LlmProviderConfig
+	partyProvider: PartyProviderConfig
 	mediaUploadProvider: {
 		deleteFiles: (fileKey: string) => Promise<{ success: boolean }>
 	}
@@ -74,6 +78,7 @@ export const coreInngest = new Inngest({
 			partyKitRootUrl: '',
 			transcriptProvider: MockTranscriptionProvider,
 			openaiProvider: MockOpenAIProvider,
+			partyProvider: MockPartykitProvider,
 			mediaUploadProvider: {
 				deleteFiles: async (_) => Promise.resolve({ success: true }),
 			},

@@ -17,7 +17,7 @@ const videoReadyHandler: CoreInngestHandler = async ({
 	event,
 	step,
 	db,
-	partyKitRootUrl,
+	partyProvider,
 }: CoreInngestFunctionInput) => {
 	const videoResource = await step.run('Load Video Resource', async () => {
 		return db.getVideoResource(event.data.muxWebhookEvent.data.passthrough)
@@ -35,17 +35,13 @@ const videoReadyHandler: CoreInngestHandler = async ({
 	}
 
 	await step.run('announce asset ready', async () => {
-		const roomName = event.data.muxWebhookEvent.data.passthrough
-
-		await fetch(`${partyKitRootUrl}/party/${roomName}`, {
-			method: 'POST',
-			body: JSON.stringify({
+		return await partyProvider.broadcastMessage({
+			body: {
 				body: videoResource?.muxPlaybackId,
 				requestId: event.data.muxWebhookEvent.data.passthrough,
 				name: 'video.asset.ready',
-			}),
-		}).catch((e) => {
-			console.error(e)
+			},
+			roomId: event.data.muxWebhookEvent.data.passthrough,
 		})
 	})
 	return event.data.muxWebhookEvent.data

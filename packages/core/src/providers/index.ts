@@ -1,6 +1,7 @@
 import { AdapterUser } from '@auth/core/adapters'
 
 import { LlmProviderConfig } from './openai'
+import { PartyProviderConfig } from './partykit'
 
 export interface EmailListSubscribeOptions {
 	listId?: string | number
@@ -108,11 +109,21 @@ export interface CommonProviderOptions {
 }
 
 export type Provider<P = any> = (
-	| ((TranscriptionConfig | EmailListConfig | LlmProviderConfig) &
+	| ((
+			| TranscriptionConfig
+			| EmailListConfig
+			| LlmProviderConfig
+			| PartyProviderConfig
+	  ) &
 			InternalProviderOptions)
 	| ((
 			...args: any
-	  ) => (TranscriptionConfig | EmailListConfig | LlmProviderConfig) &
+	  ) => (
+			| TranscriptionConfig
+			| EmailListConfig
+			| LlmProviderConfig
+			| PartyProviderConfig
+	  ) &
 			InternalProviderOptions)
 ) &
 	InternalProviderOptions

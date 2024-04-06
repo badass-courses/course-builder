@@ -1,4 +1,4 @@
-import { courseBuilderAdapter, db } from '@/db'
+import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
 	EMAIL_SEND_BROADCAST,
@@ -27,6 +27,7 @@ import {
 import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
+import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
 	CONCEPT_SELECTED,
@@ -62,10 +63,12 @@ const callbackBase =
 const middleware = createInngestMiddleware({
 	db: courseBuilderAdapter,
 	siteRootUrl: env.NEXT_PUBLIC_URL,
-	partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
 	mediaUploadProvider: new UTApi(),
 	openaiProvider: OpenAIProvider({
 		apiKey: env.OPENAI_API_KEY,
+		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL,
+	}),
+	partyProvider: PartykitProvider({
 		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL,
 	}),
 	transcriptProvider: DeepgramProvider({
