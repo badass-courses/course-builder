@@ -1,5 +1,6 @@
 import { CookieSerializeOptions } from 'cookie'
-import { EventSchemas, Inngest, InngestMiddleware } from 'inngest'
+import { Inngest } from 'inngest'
+import { type ChatCompletionRequestMessage } from 'openai-edge'
 import { z } from 'zod'
 
 import { CourseBuilderAdapter } from './adapters'
@@ -90,4 +91,26 @@ export interface CallbacksOptions {
 	session: (
 		params: any,
 	) => Awaitable<CourseBuilderSession | DefaultCourseBuilderSession>
+}
+
+export type FunctionCall = {
+	arguments: Record<string, any>
+	name: string // function name.
+}
+
+export type AIMessage = ChatCompletionRequestMessage & {
+	content: null | string
+	createdAt?: Date
+	id?: string
+}
+
+export type AIError = { error: string }
+
+export type AIOutput = AIMessage | AIError
+
+export interface ProgressWriter {
+	writeResponseInChunks(
+		streamingResponse: Response | ReadableStream,
+	): Promise<AIOutput>
+	publishMessage(message: string): Promise<void>
 }

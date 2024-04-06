@@ -1,4 +1,5 @@
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
+import { openaiProvider } from '@/coursebuilder/openai-provider'
 import { transcriptProvider } from '@/coursebuilder/transcript-provider'
 import { courseBuilderAdapter } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
@@ -10,7 +11,7 @@ import NextCourseBuilder, {
 export const courseBuilderConfig: NextCourseBuilderConfig = {
 	adapter: courseBuilderAdapter,
 	inngest,
-	providers: [transcriptProvider, emailListProvider],
+	providers: [transcriptProvider, emailListProvider, openaiProvider],
 	basePath: '/api/coursebuilder',
 	callbacks: {
 		session: async (req) => {

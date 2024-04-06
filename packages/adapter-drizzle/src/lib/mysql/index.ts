@@ -856,7 +856,13 @@ export function mySqlDrizzleAdapter(
 		},
 		async getContentResource(data) {
 			const resource = await client.query.contentResource.findFirst({
-				where: eq(contentResource.id, data),
+				where: or(
+					eq(contentResource.id, data),
+					eq(
+						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+						`${data}`,
+					),
+				),
 				with: {
 					resources: {
 						with: {
