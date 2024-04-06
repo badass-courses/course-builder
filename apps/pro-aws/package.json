@@ -1,6 +1,6 @@
 {
 	"name": "pro-aws",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -42,10 +42,10 @@
 		"@codemirror/search": "^6.5.5",
 		"@codemirror/state": "^6.3.3",
 		"@codemirror/view": "^6.22.3",
-		"@coursebuilder/adapter-drizzle": "0.0.7",
-		"@coursebuilder/core": "0.0.10",
+		"@coursebuilder/adapter-drizzle": "0.1.0",
+		"@coursebuilder/core": "0.1.0",
 		"@coursebuilder/next": "workspace:^",
-		"@coursebuilder/ui": "^1.0.4",
+		"@coursebuilder/ui": "^1.0.5",
 		"@fontsource/inter": "^5.0.16",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
