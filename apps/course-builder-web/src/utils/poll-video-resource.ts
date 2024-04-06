@@ -1,4 +1,4 @@
-import { getVideoResource } from '@/lib/video-resource-query'
+import { courseBuilderAdapter } from '@/db'
 
 export async function* pollVideoResource(
 	videoResourceId: string,
@@ -9,7 +9,8 @@ export async function* pollVideoResource(
 	let delay = initialDelay
 
 	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-		const videoResource = await getVideoResource(videoResourceId)
+		const videoResource =
+			await courseBuilderAdapter.getVideoResource(videoResourceId)
 		if (videoResource) {
 			yield videoResource
 			return

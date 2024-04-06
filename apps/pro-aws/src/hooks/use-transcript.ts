@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getVideoResource } from '@/lib/video-resource-query'
+import { courseBuilderAdapter } from '@/db'
 
 /**
  * Custom hook to poll for video resource transcript because sometimes
@@ -23,7 +23,8 @@ export function useTranscript(options: {
 		let delay = initialDelay
 
 		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-			const videoResource = await getVideoResource(videoResourceId)
+			const videoResource =
+				await courseBuilderAdapter.getVideoResource(videoResourceId)
 			if (videoResource?.transcript) {
 				yield videoResource.transcript
 				return

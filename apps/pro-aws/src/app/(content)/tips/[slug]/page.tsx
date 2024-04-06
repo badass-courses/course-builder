@@ -5,9 +5,10 @@ import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
-import { getTranscript, getVideoResource } from '@/lib/video-resource-query'
+import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
@@ -123,7 +124,7 @@ async function PlayerContainer({
 
 	const resource = tip.resources?.[0]?.resource.id
 
-	const videoResourceLoader = getVideoResource(resource)
+	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 
 	return (
 		<Suspense fallback={<PlayerContainerSkeleton />}>

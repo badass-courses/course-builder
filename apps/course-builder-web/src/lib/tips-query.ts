@@ -9,12 +9,10 @@ import {
 	contributionTypes,
 } from '@/db/schema'
 import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { asc, desc, eq, like, or, sql } from 'drizzle-orm'
-import { last } from 'lodash'
+import { asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {
@@ -98,7 +96,9 @@ export async function createTip(input: NewTip) {
 
 	const newTipId = `tip_${guid()}`
 
-	const videoResource = await getVideoResource(input.videoResourceId)
+	const videoResource = await courseBuilderAdapter.getVideoResource(
+		input.videoResourceId,
+	)
 
 	if (!videoResource) {
 		throw new Error('🚨 Video Resource not found')
