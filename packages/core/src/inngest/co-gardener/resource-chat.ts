@@ -8,6 +8,7 @@ import { z } from 'zod'
 
 import { CourseBuilderAdapter } from '../../adapters'
 import { LlmProviderConfig } from '../../providers/openai'
+import { PartyProviderConfig } from '../../providers/partykit'
 import { User } from '../../schemas'
 import {
 	CoreInngestFunctionInput,
@@ -62,6 +63,7 @@ export const resourceChat: CoreInngestHandler = async ({
 	event,
 	step,
 	openaiProvider,
+	partyProvider,
 	db,
 }: CoreInngestFunctionInput) => {
 	const resourceId = event.data.resourceId
@@ -82,6 +84,7 @@ export const resourceChat: CoreInngestHandler = async ({
 	const messages = await resourceChatWorkflowExecutor({
 		db,
 		openaiProvider,
+		partyProvider,
 		step,
 		workflowTrigger,
 		resourceId,
@@ -117,9 +120,11 @@ export async function resourceChatWorkflowExecutor({
 	resource,
 	user,
 	openaiProvider,
+	partyProvider,
 	db,
 }: {
 	openaiProvider: LlmProviderConfig
+	partyProvider: PartyProviderConfig
 	db: CourseBuilderAdapter
 	resource: ChatResource
 	step: any
@@ -216,16 +221,14 @@ export async function resourceChatWorkflowExecutor({
 		await step.run(
 			`partykit broadcast user prompt [${resourceId}]`,
 			async () => {
-				await fetch(`${openaiProvider.partyUrlBase}/party/${resourceId}`, {
-					method: 'POST',
-					body: JSON.stringify({
+				await partyProvider.broadcastMessage({
+					body: {
 						body: currentUserMessage.content,
 						requestId: resourceId,
 						name: 'resource.chat.prompted',
 						userId: user.id,
-					}),
-				}).catch((e) => {
-					console.error(e)
+					},
+					roomId: resourceId,
 				})
 			},
 		)
@@ -255,20 +258,14 @@ export async function resourceChatWorkflowExecutor({
 	})
 
 	await step.run(`partykit broadcast [${resourceId}]`, async () => {
-		return await fetch(`${openaiProvider.partyUrlBase}/party/${resourceId}`, {
-			method: 'POST',
-			body: JSON.stringify({
+		return await partyProvider.broadcastMessage({
+			body: {
 				body: messages,
 				requestId: resourceId,
 				name: 'resource.chat.completed',
-			}),
+			},
+			roomId: resourceId,
 		})
-			.then((res) => {
-				return res.text()
-			})
-			.catch((e) => {
-				console.error(e)
-			})
 	})
 
 	return messages

@@ -12,7 +12,7 @@ export const performCodeExtraction = inngest.createFunction(
 	{
 		event: OCR_WEBHOOK_EVENT,
 	},
-	async ({ event, step }) => {
+	async ({ event, step, partyProvider }) => {
 		const screenshotUrl = event.data.ocrWebhookEvent.screenshotUrl as string
 		const resourceId = event.data.ocrWebhookEvent.resourceId as string
 
@@ -33,26 +33,17 @@ export const performCodeExtraction = inngest.createFunction(
 		)
 
 		await step.run(`partykit broadcast [${resourceId}]`, async () => {
-			return await fetch(
-				`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`,
-				{
-					method: 'POST',
-					body: JSON.stringify({
-						body: {
-							content: extractedCode.codeString,
-							role: 'assistant',
-						},
-						requestId: resourceId,
-						name: 'code.extraction.completed',
-					}),
+			return await partyProvider.broadcastMessage({
+				body: {
+					body: {
+						content: extractedCode.codeString,
+						role: 'assistant',
+					},
+					requestId: resourceId,
+					name: 'code.extraction.completed',
 				},
-			)
-				.then((res) => {
-					return res.text()
-				})
-				.catch((e) => {
-					console.error(e)
-				})
+				roomId: resourceId,
+			})
 		})
 
 		return extractedCode.codeString

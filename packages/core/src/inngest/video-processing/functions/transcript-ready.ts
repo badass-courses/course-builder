@@ -16,7 +16,7 @@ const transcriptReadyTrigger: CoreInngestTrigger = {
 const transcriptReadyHandler: CoreInngestHandler = async ({
 	event,
 	step,
-	partyKitRootUrl,
+	partyProvider,
 	db,
 }: CoreInngestFunctionInput) => {
 	const videoResourceId = event.data.videoResourceId
@@ -52,15 +52,13 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 	}
 
 	await step.run('send the transcript to the party', async () => {
-		await fetch(`${partyKitRootUrl}/party/${videoResourceId}`, {
-			method: 'POST',
-			body: JSON.stringify({
+		return await partyProvider.broadcastMessage({
+			body: {
 				body: transcript,
 				requestId: videoResourceId,
 				name: 'transcript.ready',
-			}),
-		}).catch((e) => {
-			console.error(e)
+			},
+			roomId: videoResourceId,
 		})
 	})
 

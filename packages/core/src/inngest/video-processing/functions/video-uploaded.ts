@@ -17,7 +17,7 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 	event,
 	step,
 	db,
-	partyKitRootUrl,
+	partyProvider,
 }: CoreInngestFunctionInput) => {
 	// @ts-expect-error
 	if (!event.user.id) {
@@ -79,15 +79,13 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 		}
 
 		await step.run('announce video resource created', async () => {
-			await fetch(`${partyKitRootUrl}/party/${videoResource.id}`, {
-				method: 'POST',
-				body: JSON.stringify({
+			return await partyProvider.broadcastMessage({
+				body: {
 					body: videoResource,
-					requestId: event.data.fileName,
+					requestId: videoResource.id,
 					name: 'videoResource.created',
-				}),
-			}).catch((e) => {
-				console.error(e)
+				},
+				roomId: videoResource.id,
 			})
 		})
 

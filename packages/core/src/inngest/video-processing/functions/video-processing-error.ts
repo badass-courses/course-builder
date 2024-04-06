@@ -17,7 +17,7 @@ const videoProcessingErrorHandler: CoreInngestHandler = async ({
 	event,
 	step,
 	db,
-	partyKitRootUrl,
+	partyProvider,
 }: CoreInngestFunctionInput) => {
 	const videoResource = await step.run('Load Video Resource', async () => {
 		return db.getVideoResource(event.data.muxWebhookEvent.data.passthrough)
@@ -37,15 +37,13 @@ const videoProcessingErrorHandler: CoreInngestHandler = async ({
 	})
 
 	await step.run('announce asset errored', async () => {
-		const roomName = event.data.muxWebhookEvent.data.passthrough
-		await fetch(`${partyKitRootUrl}/party/${roomName}`, {
-			method: 'POST',
-			body: JSON.stringify({
+		return await partyProvider.broadcastMessage({
+			body: {
 				body: `Mux Asset Errored: ${event.data.muxWebhookEvent.data.id}`,
 				requestId: event.data.muxWebhookEvent.data.passthrough,
-			}),
-		}).catch((e) => {
-			console.error(e)
+				name: 'video.asset.errored',
+			},
+			roomId: event.data.muxWebhookEvent.data.passthrough,
 		})
 	})
 	return event.data.muxWebhookEvent.data
