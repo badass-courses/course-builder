@@ -1,5 +1,11 @@
 # @coursebuilder/core
 
+## 0.1.2
+
+### Patch Changes
+
+- [#146](https://github.com/badass-courses/course-builder/pull/146) [`c56c4f9`](https://github.com/badass-courses/course-builder/commit/c56c4f98836b5869b3af575ec3e55db08ca45c21) Thanks [@joelhooks](https://github.com/joelhooks)! - adds a partykit provider to core
+
 ## 0.1.1
 
 ### Patch Changes
