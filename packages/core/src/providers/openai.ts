@@ -6,15 +6,14 @@ import {
 
 import { OpenAIStreamingDataPartykitChunkPublisher } from '../inngest/util/streaming-chunk-publisher'
 import { AIOutput, ProgressWriter } from '../types'
-import { TranscriptionConfig } from './index'
 
 export interface LlmProviderConfig {
-	readonly id: string
-	readonly name: string
-	readonly type: string
-	readonly options: LlmProviderConsumerConfig
-	readonly apiKey: string
-	readonly partyUrlBase: string
+	id: string
+	name: string
+	type: string
+	options: LlmProviderConsumerConfig
+	apiKey: string
+	partyUrlBase: string
 	createChatCompletion: (
 		options: CreateChatCompletionOptions,
 	) => Promise<AIOutput | null>
