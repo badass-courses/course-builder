@@ -6,6 +6,8 @@ import {
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 
+import { ContentResource } from '@coursebuilder/core/types'
+
 import { useSocket } from '../hooks/use-socket'
 import { Button } from '../primitives/button'
 import {
@@ -26,12 +28,7 @@ export function ResourceChatAssistant({
 	hostUrl,
 	sendResourceChatMessage,
 }: {
-	resource: {
-		type: string
-		id: string
-		body?: string | null
-		title?: string | null
-	}
+	resource: ContentResource
 	sendResourceChatMessage: (options: {
 		resourceId: string
 		messages: any[]
@@ -45,7 +42,8 @@ export function ResourceChatAssistant({
 		ChatCompletionRequestMessage[]
 	>([])
 	const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>(
-		availableWorkflows.find((w) => w.default)?.value || 'summarize',
+		availableWorkflows.find((w) => w.default)?.value ||
+			availableWorkflows[0].value,
 	)
 
 	const handleSendMessage = (
@@ -62,9 +60,9 @@ export function ResourceChatAssistant({
 				...messages,
 				{
 					role: ChatCompletionRequestMessageRoleEnum.System,
-					content: `## current state of article
-          current title: ${resource.title}
-          current body: ${resource.body}
+					content: `## current state of content
+          current title: ${resource.fields?.title}
+          current body: ${resource.fields?.body}
           `,
 				},
 				{
@@ -100,7 +98,7 @@ export function ResourceChatAssistant({
 		<div className="flex h-full w-full flex-col justify-start">
 			<div className="flex items-center justify-between gap-10 border-b p-5">
 				<h3 className="inline-flex text-lg font-bold">Assistant</h3>
-				{availableWorkflows.length > 1 && (
+				{availableWorkflows.length > 1 ? (
 					<AssistantWorkflowSelector
 						initialValue={selectedWorkflow}
 						onValueChange={(value) => {
@@ -108,6 +106,8 @@ export function ResourceChatAssistant({
 						}}
 						availableWorkflows={availableWorkflows}
 					/>
+				) : (
+					<div>{selectedWorkflow}</div>
 				)}
 			</div>
 			<ResizablePanelGroup direction="vertical">

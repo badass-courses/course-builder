@@ -7,7 +7,7 @@ import { NewPrompt, Prompt, PromptSchema } from '@/lib/prompts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, or, sql } from 'drizzle-orm'
+import { and, eq, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -85,9 +85,15 @@ export async function updatePrompt(input: Prompt) {
 
 export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
 	const prompt = await db.query.contentResource.findFirst({
-		where: or(
-			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
-			eq(contentResource.id, slugOrId),
+		where: and(
+			eq(contentResource.type, 'prompt'),
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					`${slugOrId}`,
+				),
+				eq(contentResource.id, slugOrId),
+			),
 		),
 	})
 

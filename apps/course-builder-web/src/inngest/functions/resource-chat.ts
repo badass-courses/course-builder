@@ -1,11 +1,16 @@
 import { User } from '@/ability'
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
 import { ChatResource } from '@/lib/ai-chat'
 import { getChatResource } from '@/lib/ai-chat-query'
+import { Prompt } from '@/lib/prompts'
 import { getPrompt } from '@/lib/prompts-query'
 import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
+import { getVideoResource } from '@/lib/video-resource-query'
+import { asc, eq, or, sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
 import {
@@ -13,6 +18,8 @@ import {
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 import { z } from 'zod'
+
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 /**
  * TODO: Cancellation conditions need to be added $$
@@ -30,28 +37,33 @@ export const resourceChat = inngest.createFunction(
 	{
 		event: RESOURCE_CHAT_REQUEST_EVENT,
 	},
-	async ({ event, step }) => {
+	async ({ event, step, db }) => {
 		const resourceId = event.data.resourceId
 		const workflowTrigger = event.data.selectedWorkflow
 
 		const resource = await step.run('get the resource', async () => {
-			return getChatResource(resourceId)
+			return db.getContentResource(resourceId)
 		})
 
 		if (!resource) {
 			throw new NonRetriableError(`Resource not found for id (${resourceId})`)
 		}
 
+		const videoResource = await step.run('get the video resource', async () => {
+			return db.getVideoResource(resource.resources?.[0]?.resource.id)
+		})
+
 		const messages = await resourceChatWorkflowExecutor({
 			step,
 			workflowTrigger,
 			resourceId,
-			resource,
+			// @ts-expect-error
+			resource: { ...videoResource, ...resource, ...resource.fields },
 			messages: event.data.messages,
 			user: event.user,
 		})
 
-		return { resource, messages }
+		return { resource: { ...videoResource, ...resource }, messages }
 	},
 )
 
@@ -94,7 +106,7 @@ export async function resourceChatWorkflowExecutor({
 
 	let systemPrompt: ChatCompletionRequestMessage = {
 		role: 'system',
-		content: prompt.body,
+		content: prompt.fields.body,
 	}
 	let seedMessages: ChatCompletionRequestMessage[] = []
 
@@ -111,7 +123,7 @@ export async function resourceChatWorkflowExecutor({
 					content: z.string(),
 				}),
 			)
-			.parse(JSON.parse(prompt.body))
+			.parse(JSON.parse(prompt.fields.body))
 
 		const actionMessages: ChatCompletionRequestMessage[] = []
 		for (const actionMessage of actionParsed) {
@@ -134,7 +146,7 @@ export async function resourceChatWorkflowExecutor({
 			;[
 				systemPrompt = {
 					role: 'system',
-					content: prompt.body,
+					content: prompt.fields.body,
 				},
 				...seedMessages
 			] = actionMessages
@@ -155,7 +167,7 @@ export async function resourceChatWorkflowExecutor({
 				console.error(e.message)
 				return {
 					role: 'system',
-					content: prompt.body,
+					content: prompt.fields.body,
 				}
 			}
 		})

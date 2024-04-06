@@ -16,6 +16,7 @@ import {
 	MerchantCharge,
 	merchantChargeSchema,
 	MerchantCoupon,
+	merchantCouponSchema,
 	MerchantCustomer,
 	MerchantProduct,
 	Price,
@@ -28,6 +29,7 @@ import {
 	UpgradableProduct,
 	upgradableProductSchema,
 	User,
+	userSchema,
 } from '@coursebuilder/core/schemas'
 import {
 	ContentResourceResourceSchema,
@@ -275,7 +277,7 @@ export function mySqlDrizzleAdapter(
 					const merchantChargeId = v4()
 					const purchaseId = v4()
 
-					await client.insert(merchantCharge).values({
+					const newMerchantCharge = trx.insert(merchantCharge).values({
 						id: merchantChargeId,
 						userId,
 						identifier: stripeChargeId,
@@ -284,17 +286,15 @@ export function mySqlDrizzleAdapter(
 						merchantCustomerId,
 					})
 
-					const newMerchantCharge = trx.query.merchantCharge.findFirst({
-						where: eq(merchantCharge.id, merchantChargeId),
-					})
-
-					const existingPurchase = (await client.query.purchases.findFirst({
-						where: and(
-							eq(purchaseTable.productId, productId),
-							eq(purchaseTable.userId, userId),
-							inArray(purchaseTable.status, ['Valid', 'Restricted']),
-						),
-					})) as Purchase | null
+					const existingPurchase = purchaseSchema.nullable().parse(
+						await client.query.purchases.findFirst({
+							where: and(
+								eq(purchaseTable.productId, productId),
+								eq(purchaseTable.userId, userId),
+								inArray(purchaseTable.status, ['Valid', 'Restricted']),
+							),
+						}),
+					)
 
 					const existingBulkCoupon = couponSchema.nullable().parse(
 						await client
@@ -332,9 +332,11 @@ export function mySqlDrizzleAdapter(
 								.where(eq(coupon.id, bulkCouponId))
 						} else {
 							const merchantCouponToUse = stripeCouponId
-								? await client.query.merchantCoupon.findFirst({
-										where: eq(merchantCoupon.identifier, stripeCouponId),
-									})
+								? merchantCouponSchema.nullable().parse(
+										await client.query.merchantCoupon.findFirst({
+											where: eq(merchantCoupon.identifier, stripeCouponId),
+										}),
+									)
 								: null
 
 							couponToUpdate = await trx.insert(coupon).values({
@@ -345,7 +347,7 @@ export function mySqlDrizzleAdapter(
 								status: 1,
 								...(merchantCouponToUse
 									? {
-											merchantCouponId: merchantCouponToUse.id as string,
+											merchantCouponId: merchantCouponToUse.id,
 										}
 									: {}),
 							})
@@ -656,8 +658,12 @@ export function mySqlDrizzleAdapter(
 
 			return parsedPurchases.data
 		},
-		getUserById(userId: string): Promise<User | null> {
-			throw new Error('Method not implemented.')
+		async getUserById(userId: string): Promise<User | null> {
+			return userSchema.nullable().parse(
+				await client.query.users.findFirst({
+					where: eq(users.id, userId),
+				}),
+			)
 		},
 		pricesOfPurchasesTowardOneBundle(options: {
 			userId: string | undefined
@@ -808,7 +814,7 @@ export function mySqlDrizzleAdapter(
 				})
 				.catch((error) => {
 					console.error(error)
-					return error
+					throw error
 				})
 		},
 		async createContentResource(data) {
