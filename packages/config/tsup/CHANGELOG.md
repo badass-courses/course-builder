@@ -1,5 +1,11 @@
 # @coursebuilder/tsup-config
 
+## 0.0.4
+
+### Patch Changes
+
+- [#142](https://github.com/badass-courses/course-builder/pull/142) [`f30b19e`](https://github.com/badass-courses/course-builder/commit/f30b19ed3e45a9a91f76c17a0c265359c36e5096) Thanks [@joelhooks](https://github.com/joelhooks)! - version maitenance and github actions
+
 ## 0.0.3
 
 ### Patch Changes
