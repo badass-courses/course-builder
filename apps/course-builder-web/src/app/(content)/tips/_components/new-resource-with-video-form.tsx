@@ -3,7 +3,6 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { TipUploader } from '@/app/(content)/tips/_components/tip-uploader'
-import { courseBuilderAdapter } from '@/db'
 import { NewTip, NewTipSchema } from '@/lib/tips'
 import { createTip } from '@/lib/tips-query'
 import { getVideoResource } from '@/lib/video-resource-query'
