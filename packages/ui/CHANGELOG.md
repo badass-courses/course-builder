@@ -1,5 +1,12 @@
 # @coursebuilder/ui
 
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`2b1ee5b`](https://github.com/badass-courses/course-builder/commit/2b1ee5bfddc417f5f8112f297e03b4ad8d281aa0)]:
+  - @coursebuilder/core@0.1.1
+
 ## 1.0.5
 
 ### Patch Changes

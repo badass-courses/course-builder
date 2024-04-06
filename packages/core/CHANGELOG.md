@@ -1,5 +1,11 @@
 # @coursebuilder/core
 
+## 0.1.1
+
+### Patch Changes
+
+- [#144](https://github.com/badass-courses/course-builder/pull/144) [`2b1ee5b`](https://github.com/badass-courses/course-builder/commit/2b1ee5bfddc417f5f8112f297e03b4ad8d281aa0) Thanks [@joelhooks](https://github.com/joelhooks)! - adds LLM provider (openai) to core
+
 ## 0.1.0
 
 ### Minor Changes
