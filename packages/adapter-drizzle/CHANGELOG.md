@@ -1,5 +1,11 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.1.0
+
+### Minor Changes
+
+- [#139](https://github.com/badass-courses/course-builder/pull/139) [`7e422eb`](https://github.com/badass-courses/course-builder/commit/7e422eb3f19aa99f465f444e4180635dac5baa50) Thanks [@joelhooks](https://github.com/joelhooks)! - starts the process for migrating the `prisma-api` from Skill Stack
+
 ## 0.0.7
 
 ### Patch Changes
