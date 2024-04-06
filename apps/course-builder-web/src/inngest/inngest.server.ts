@@ -12,10 +12,6 @@ import {
 	POSTMARK_WEBHOOK_EVENT,
 	PostmarkWebhook,
 } from '@/inngest/events/postmark-webhook'
-import {
-	RESOURCE_CHAT_REQUEST_EVENT,
-	ResourceChat,
-} from '@/inngest/events/resource-chat-request'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
@@ -24,8 +20,13 @@ import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inng
 
 import '@coursebuilder/core/inngest/video-processing/events'
 
+import {
+	RESOURCE_CHAT_REQUEST_EVENT,
+	ResourceChat,
+} from '@coursebuilder/core/inngest/co-gardener/resource-chat'
 import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
+import OpenAIProvider from '@coursebuilder/core/providers/openai'
 
 import {
 	CONCEPT_SELECTED,
@@ -63,6 +64,10 @@ const middleware = createInngestMiddleware({
 	siteRootUrl: env.NEXT_PUBLIC_URL,
 	partyKitRootUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
 	mediaUploadProvider: new UTApi(),
+	openaiProvider: OpenAIProvider({
+		apiKey: env.OPENAI_API_KEY,
+		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL,
+	}),
 	transcriptProvider: DeepgramProvider({
 		apiKey: env.DEEPGRAM_API_KEY,
 		callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,

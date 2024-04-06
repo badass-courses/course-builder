@@ -2,11 +2,12 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
 import { inngest } from '@/inngest/inngest.server'
 import { ChatResourceSchema } from '@/lib/ai-chat'
 import { getServerAuthSession } from '@/server/auth'
 import { sql } from 'drizzle-orm'
+
+import { RESOURCE_CHAT_REQUEST_EVENT } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
 
 export async function sendResourceChatMessage({
 	resourceId,

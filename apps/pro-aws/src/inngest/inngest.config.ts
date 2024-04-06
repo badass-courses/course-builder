@@ -3,10 +3,14 @@ import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
-import { resourceChat } from '@/inngest/functions/resource-chat'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
+import {
+	resourceChat,
+	resourceChatConfig,
+	resourceChatTrigger,
+} from '@coursebuilder/core/inngest/co-gardener/resource-chat'
 import { coreVideoProcessingFunctions } from '@coursebuilder/core/inngest/video-processing/functions'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
@@ -22,7 +26,11 @@ export const inngestConfig = {
 		userSignupAdminEmail,
 		postmarkWebhook,
 		imageResourceCreated,
-		resourceChat,
+		inngest.createFunction(
+			resourceChatConfig,
+			resourceChatTrigger,
+			resourceChat,
+		),
 		emailSendBroadcast,
 		performCodeExtraction,
 		getOrCreateConcept,

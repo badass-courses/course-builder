@@ -1,4 +1,8 @@
 import {
+	RESOURCE_CHAT_REQUEST_EVENT,
+	ResourceChat,
+} from '../../co-gardener/resource-chat'
+import {
 	EventVideoMuxWebhook,
 	MUX_WEBHOOK_EVENT,
 } from './event-video-mux-webhook'
@@ -30,4 +34,5 @@ export type CourseBuilderCoreEvents = {
 	[VIDEO_UPLOADED_EVENT]: EventVideoUploaded
 	[VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
 	[MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
+	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 }

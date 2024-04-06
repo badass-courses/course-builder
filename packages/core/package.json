@@ -62,6 +62,11 @@
 			"import": "./dist/lib/*.js",
 			"require": "./dist/lib/*.js"
 		},
+		"./inngest/co-gardener/resource-chat": {
+			"types": "./dist/inngest/co-gardener/resource-chat.d.ts",
+			"import": "./dist/inngest/co-gardener/resource-chat.js",
+			"require": "./dist/inngest/co-gardener/resource-chat.js"
+		},
 		"./inngest/video-processing/events": {
 			"types": "./dist/inngest/video-processing/events/index.d.ts",
 			"import": "./dist/inngest/video-processing/events/index.js",
@@ -98,12 +103,16 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"ai": "3.0.19",
+		"@anthropic-ai/sdk": "^0.17.1",
+		"liquidjs": "^10.9.4",
 		"@types/cookie": "0.6.0",
 		"cookie": "0.6.0",
 		"drizzle-zod": "^0.5.1",
 		"inngest": "^3.16.1",
 		"lodash": "^4.17.21",
-		"srt-parser-2": "^1.2.3"
+		"srt-parser-2": "^1.2.3",
+		"openai-edge": "^1.2.2"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.28.1",

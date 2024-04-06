@@ -16,6 +16,7 @@ import {
 	MockTranscriptionProvider,
 	type TranscriptionConfig,
 } from '../providers'
+import { LlmProviderConfig, MockOpenAIProvider } from '../providers/openai'
 import { CourseBuilderCoreEvents } from './video-processing/events'
 
 export interface CoreInngestContext {
@@ -23,6 +24,7 @@ export interface CoreInngestContext {
 	siteRootUrl: string
 	partyKitRootUrl: string
 	transcriptProvider: TranscriptionConfig
+	openaiProvider: LlmProviderConfig
 	mediaUploadProvider: {
 		deleteFiles: (fileKey: string) => Promise<{ success: boolean }>
 	}
@@ -71,6 +73,7 @@ export const coreInngest = new Inngest({
 			siteRootUrl: '',
 			partyKitRootUrl: '',
 			transcriptProvider: MockTranscriptionProvider,
+			openaiProvider: MockOpenAIProvider,
 			mediaUploadProvider: {
 				deleteFiles: async (_) => Promise.resolve({ success: true }),
 			},

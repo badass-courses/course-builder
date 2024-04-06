@@ -1,14 +1,3 @@
-import { User } from '@/ability'
-import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
-import { env } from '@/env.mjs'
-import { RESOURCE_CHAT_REQUEST_EVENT } from '@/inngest/events/resource-chat-request'
-import { inngest } from '@/inngest/inngest.server'
-import { ChatResource } from '@/lib/ai-chat'
-import { getPrompt } from '@/lib/prompts-query'
-import { streamingChatPromptExecutor } from '@/lib/streaming-chat-prompt-executor'
-import { getVideoResource } from '@/lib/video-resource-query'
-import { asc, eq, or, sql } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
 import {
@@ -17,75 +6,94 @@ import {
 } from 'openai-edge'
 import { z } from 'zod'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
-import { ContentResource } from '@coursebuilder/core/types'
+import { CourseBuilderAdapter } from '../../adapters'
+import { LlmProviderConfig } from '../../providers/openai'
+import { User } from '../../schemas'
+import {
+	CoreInngestFunctionInput,
+	CoreInngestHandler,
+	CoreInngestTrigger,
+} from '../create-inngest-middleware'
+import { streamingChatPromptExecutor } from '../util/streaming-chat-prompt-executor'
+
+export const ChatResourceSchema = z.object({
+	id: z.string(),
+	type: z.string(),
+	updatedAt: z.string().nullable(),
+	createdAt: z.string().nullable(),
+	title: z.string().nullable().optional(),
+	body: z.string().nullable().optional(),
+	transcript: z.string().nullable().optional(),
+	wordLevelSrt: z.string().nullable().optional(),
+})
+
+export type ChatResource = z.infer<typeof ChatResourceSchema>
+
+export const RESOURCE_CHAT_REQUEST_EVENT = 'resource/chat-request-event'
+export type ResourceChat = {
+	name: typeof RESOURCE_CHAT_REQUEST_EVENT
+	data: {
+		resourceId: string
+		messages: ChatCompletionRequestMessage[]
+		promptId?: string
+		selectedWorkflow: string
+	}
+	user: Record<string, any>
+}
+
+export const resourceChatConfig = {
+	id: `resource-chat`,
+	name: 'Resource Chat',
+	rateLimit: {
+		key: 'event.user.id',
+		limit: 5,
+		period: '1m' as `${number}m`,
+	},
+}
+
+export const resourceChatTrigger: CoreInngestTrigger = {
+	event: RESOURCE_CHAT_REQUEST_EVENT,
+}
 
 /**
  * TODO: Cancellation conditions need to be added $$
  */
-export const resourceChat = inngest.createFunction(
-	{
-		id: `resource-chat`,
-		name: 'Resource Chat',
-		rateLimit: {
-			key: 'event.user.id',
-			limit: 5,
-			period: '1m',
-		},
-	},
-	{
-		event: RESOURCE_CHAT_REQUEST_EVENT,
-	},
-	async ({ event, step }) => {
-		const resourceId = event.data.resourceId
-		const workflowTrigger = event.data.selectedWorkflow
+export const resourceChat: CoreInngestHandler = async ({
+	event,
+	step,
+	openaiProvider,
+	db,
+}: CoreInngestFunctionInput) => {
+	const resourceId = event.data.resourceId
+	const workflowTrigger = event.data.selectedWorkflow
 
-		const resource = await step.run('get the resource', async () => {
-			const loadResource = await db.query.contentResource.findFirst({
-				where: or(
-					eq(
-						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-						resourceId,
-					),
-					eq(contentResource.id, resourceId),
-				),
-				with: {
-					resources: {
-						with: {
-							resource: true,
-						},
-						orderBy: asc(contentResourceResource.position),
-					},
-				},
-			})
-			const parsedResource = ContentResourceSchema.safeParse(loadResource)
-			if (!parsedResource.success) {
-				throw new NonRetriableError('Error parsing resource')
-			}
-			return parsedResource.data
-		})
+	const resource = await step.run('get the resource', async () => {
+		return db.getContentResource(resourceId)
+	})
 
-		if (!resource) {
-			throw new NonRetriableError(`Resource not found for id (${resourceId})`)
-		}
+	if (!resource) {
+		throw new NonRetriableError(`Resource not found for id (${resourceId})`)
+	}
 
-		const videoResource = await step.run('get the video resource', async () => {
-			return getVideoResource(resource.resources?.[0]?.resource.id)
-		})
+	const videoResource = await step.run('get the video resource', async () => {
+		return db.getVideoResource(resource.resources?.[0]?.resource.id)
+	})
 
-		const messages = await resourceChatWorkflowExecutor({
-			step,
-			workflowTrigger,
-			resourceId,
-			// @ts-expect-error
-			resource: { ...videoResource, ...resource, ...resource.fields },
-			messages: event.data.messages,
-			user: event.user,
-		})
+	const messages = await resourceChatWorkflowExecutor({
+		db,
+		openaiProvider,
+		step,
+		workflowTrigger,
+		resourceId,
+		// @ts-expect-error
+		resource: { ...videoResource, ...resource, ...resource.fields },
+		messages: event.data.messages,
+		// @ts-expect-error
+		user: event.user,
+	})
 
-		return { resource: { ...videoResource, ...resource }, messages }
-	},
-)
+	return { resource: { ...videoResource, ...resource }, messages }
+}
 
 /**
  * loads the workflow from sanity based on the trigger and then executes the workflow using the `resource` as
@@ -108,7 +116,11 @@ export async function resourceChatWorkflowExecutor({
 	messages,
 	resource,
 	user,
+	openaiProvider,
+	db,
 }: {
+	openaiProvider: LlmProviderConfig
+	db: CourseBuilderAdapter
 	resource: ChatResource
 	step: any
 	workflowTrigger: string
@@ -117,14 +129,12 @@ export async function resourceChatWorkflowExecutor({
 	user: User
 }) {
 	const prompt = await step.run('Load Prompt', async () => {
-		return await getPrompt(workflowTrigger)
+		return db.getContentResource(workflowTrigger)
 	})
 
 	if (!prompt) {
 		throw new NonRetriableError(`Prompt not found for id (${workflowTrigger})`)
 	}
-
-	console.log({ prompt })
 
 	let systemPrompt: ChatCompletionRequestMessage = {
 		role: 'system',
@@ -206,7 +216,7 @@ export async function resourceChatWorkflowExecutor({
 		await step.run(
 			`partykit broadcast user prompt [${resourceId}]`,
 			async () => {
-				await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
+				await fetch(`${openaiProvider.partyUrlBase}/party/${resourceId}`, {
 					method: 'POST',
 					body: JSON.stringify({
 						body: currentUserMessage.content,
@@ -239,11 +249,13 @@ export async function resourceChatWorkflowExecutor({
 		return streamingChatPromptExecutor({
 			requestId: resourceId,
 			promptMessages: messages,
+			model: prompt.model || 'gpt-4',
+			provider: openaiProvider,
 		})
 	})
 
 	await step.run(`partykit broadcast [${resourceId}]`, async () => {
-		return await fetch(`${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${resourceId}`, {
+		return await fetch(`${openaiProvider.partyUrlBase}/party/${resourceId}`, {
 			method: 'POST',
 			body: JSON.stringify({
 				body: messages,

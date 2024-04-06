@@ -1,6 +1,6 @@
-import { env } from '@/env.mjs'
-import { type AIOutput } from '@/types'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
+
+import { AIOutput } from '../../types'
 
 export const STREAM_COMPLETE = `\\ok`
 
@@ -20,15 +20,19 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
 		signal?: Promise<unknown>
 	}
 
-	constructor(requestId: string) {
+	partyUrl: string
+
+	constructor(requestId: string, partyUrlBase: string) {
 		this.requestId = requestId
 		this.buffer = {
 			contents: '',
 		}
+
+		this.partyUrl = `${partyUrlBase}/party/${requestId}`
 	}
 
 	async publishMessage(message: string) {
-		await publishToPartykit(message, this.requestId)
+		await publishToPartykit(message, this.requestId, this.partyUrl)
 	}
 
 	async writeResponseInChunks(streamingResponse: Response): Promise<AIOutput> {
@@ -71,7 +75,7 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
 				resolve()
 				return
 			}
-			publishToPartykit(this.buffer.contents, this.requestId)
+			publishToPartykit(this.buffer.contents, this.requestId, this.partyUrl)
 			resolve()
 			this.buffer = {
 				contents: '',
@@ -87,9 +91,11 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
  * @param body
  * @param requestId
  */
-export const publishToPartykit = async (body: string, requestId: string) => {
-	const partyUrl = `${env.NEXT_PUBLIC_PARTY_KIT_URL}/party/${requestId}`
-
+export const publishToPartykit = async (
+	body: string,
+	requestId: string,
+	partyUrl: string,
+) => {
 	return await fetch(partyUrl, {
 		method: 'POST',
 		body: JSON.stringify({
