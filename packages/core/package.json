@@ -103,16 +103,16 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"ai": "3.0.19",
 		"@anthropic-ai/sdk": "^0.17.1",
-		"liquidjs": "^10.9.4",
 		"@types/cookie": "0.6.0",
+		"ai": "3.0.19",
 		"cookie": "0.6.0",
 		"drizzle-zod": "^0.5.1",
 		"inngest": "^3.16.1",
+		"liquidjs": "^10.9.4",
 		"lodash": "^4.17.21",
-		"srt-parser-2": "^1.2.3",
-		"openai-edge": "^1.2.2"
+		"openai-edge": "^1.2.2",
+		"srt-parser-2": "^1.2.3"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.28.1",
