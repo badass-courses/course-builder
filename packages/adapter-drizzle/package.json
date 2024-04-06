@@ -43,7 +43,8 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"date-fns": "^2.30.0"
+		"date-fns": "^2.30.0",
+		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.28.1",
@@ -57,7 +58,8 @@
 		"mysql2": "^3.6.1",
 		"postgres": "^3.3.4",
 		"tsup": "6.7.0",
-		"tsx": "^4.7.1"
+		"tsx": "^4.7.1",
+		"zod": "^3.22.4"
 	},
 	"peerDependencies": {
 		"drizzle-orm": "0.30.x"

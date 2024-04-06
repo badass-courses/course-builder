@@ -1,9 +1,9 @@
 import { sql } from 'drizzle-orm'
 import {
-	datetime,
 	int,
 	MySqlTableFn,
 	primaryKey,
+	timestamp,
 	unique,
 	varchar,
 } from 'drizzle-orm/mysql-core'
@@ -21,7 +21,7 @@ export function getMerchantPriceSchema(mysqlTable: MySqlTableFn) {
 			}).notNull(),
 			status: int('status').default(0),
 			identifier: varchar('identifier', { length: 191 }),
-			createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
 			priceId: varchar('priceId', { length: 191 }),

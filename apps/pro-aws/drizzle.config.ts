@@ -7,6 +7,6 @@ export default {
 	dbCredentials: {
 		uri: env.DATABASE_URL,
 	},
-	tablesFilter: ['inngest-gpt_*'],
+	tablesFilter: [`${env.NEXT_PUBLIC_APP_NAME}_*`],
 	out: './src/db/generated',
 } satisfies Config

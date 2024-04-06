@@ -47,10 +47,12 @@ export function getUserRolesRelationsSchema(mysqlTable: MySqlTableFn) {
 		user: one(users, {
 			fields: [userRoles.userId],
 			references: [users.id],
+			relationName: 'role',
 		}),
 		role: one(roles, {
 			fields: [userRoles.roleId],
 			references: [roles.id],
+			relationName: 'user',
 		}),
 	}))
 }

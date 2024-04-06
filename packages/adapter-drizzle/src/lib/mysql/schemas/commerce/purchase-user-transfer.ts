@@ -1,9 +1,9 @@
 import { sql } from 'drizzle-orm'
 import {
-	datetime,
 	mysqlEnum,
 	MySqlTableFn,
 	primaryKey,
+	timestamp,
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
@@ -26,13 +26,13 @@ export function getPurchaseUserTransferSchema(mysqlTable: MySqlTableFn) {
 			purchaseId: varchar('purchaseId', { length: 191 }).notNull(),
 			sourceUserId: varchar('sourceUserId', { length: 191 }).notNull(),
 			targetUserId: varchar('targetUserId', { length: 191 }),
-			createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
-			expiresAt: datetime('expiresAt', { mode: 'string', fsp: 3 }),
-			canceledAt: datetime('canceledAt', { mode: 'string', fsp: 3 }),
-			confirmedAt: datetime('confirmedAt', { mode: 'string', fsp: 3 }),
-			completedAt: datetime('completedAt', { mode: 'string', fsp: 3 }),
+			expiresAt: timestamp('expiresAt', { mode: 'date', fsp: 3 }),
+			canceledAt: timestamp('canceledAt', { mode: 'date', fsp: 3 }),
+			confirmedAt: timestamp('confirmedAt', { mode: 'date', fsp: 3 }),
+			completedAt: timestamp('completedAt', { mode: 'date', fsp: 3 }),
 		},
 		(table) => {
 			return {

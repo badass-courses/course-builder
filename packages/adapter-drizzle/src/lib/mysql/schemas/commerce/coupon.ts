@@ -1,11 +1,11 @@
 import { sql } from 'drizzle-orm'
 import {
-	datetime,
 	decimal,
 	int,
 	json,
 	MySqlTableFn,
 	primaryKey,
+	timestamp,
 	tinyint,
 	unique,
 	varchar,
@@ -17,10 +17,10 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			code: varchar('code', { length: 191 }),
-			createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
-			expires: datetime('expires', { mode: 'string', fsp: 3 }),
+			expires: timestamp('expires', { mode: 'date', fsp: 3 }),
 			metadata: json('fields').$type<Record<string, any>>().default({}),
 			maxUses: int('maxUses').default(-1).notNull(),
 			default: tinyint('default').default(0).notNull(),

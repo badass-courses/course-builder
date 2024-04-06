@@ -41,6 +41,6 @@ export function getRolesRelationsSchema(mysqlTable: MySqlTableFn) {
 	const roles = getRolesSchema(mysqlTable)
 	const userRoles = getUserRolesSchema(mysqlTable)
 	return relations(roles, ({ many }) => ({
-		userRoles: many(userRoles),
+		userRoles: many(userRoles, { relationName: 'role' }),
 	}))
 }

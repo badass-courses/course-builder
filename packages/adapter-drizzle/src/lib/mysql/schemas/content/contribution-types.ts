@@ -41,9 +41,6 @@ export function getContributionTypesSchema(mysqlTable: MySqlTableFn) {
 
 export function getContributionTypesRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contributionTypes = getContributionTypesSchema(mysqlTable)
-	const contentContributions = getContentContributionsSchema(mysqlTable)
 
-	return relations(contributionTypes, ({ many }) => ({
-		contributions: many(contentContributions),
-	}))
+	return relations(contributionTypes, ({ many }) => ({}))
 }

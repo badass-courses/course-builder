@@ -45,6 +45,8 @@ export default async function EditTutorialPage({
 		notFound()
 	}
 
+	console.log(`page load`, { tutorial })
+
 	return (
 		<>
 			<ModuleEdit tutorial={tutorial} />

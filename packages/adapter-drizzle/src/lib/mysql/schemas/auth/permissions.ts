@@ -38,7 +38,5 @@ export function getPermissionsSchema(mysqlTable: MySqlTableFn) {
 }
 
 export function getPermissionsRelationsSchema(mysqlTable: MySqlTableFn) {
-	return relations(getPermissionsSchema(mysqlTable), ({ many }) => ({
-		rolePermissions: many(getRolePermissionsSchema(mysqlTable)),
-	}))
+	return relations(getPermissionsSchema(mysqlTable), ({ many }) => ({}))
 }

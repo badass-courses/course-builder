@@ -1,9 +1,9 @@
 import { sql } from 'drizzle-orm'
 import {
-	datetime,
 	int,
 	MySqlTableFn,
 	primaryKey,
+	timestamp,
 	unique,
 	varchar,
 } from 'drizzle-orm/mysql-core'
@@ -18,7 +18,7 @@ export function getMerchantCustomerSchema(mysqlTable: MySqlTableFn) {
 				length: 191,
 			}).notNull(),
 			identifier: varchar('identifier', { length: 191 }).notNull(),
-			createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
 			status: int('status').default(0),

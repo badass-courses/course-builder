@@ -15,9 +15,9 @@ export function getResourceProgressSchema(mysqlTable: MySqlTableFn) {
 			userId: varchar('userId', { length: 191 }).notNull(),
 			contentResourceId: varchar('contentResourceId', { length: 191 }),
 			metadata: json('fields').$type<Record<string, any>>().default({}),
-			completedAt: datetime('completedAt', { mode: 'string', fsp: 3 }),
-			updatedAt: datetime('updatedAt', { mode: 'string', fsp: 3 }),
-			createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			completedAt: datetime('completedAt', { mode: 'date', fsp: 3 }),
+			updatedAt: datetime('updatedAt', { mode: 'date', fsp: 3 }),
+			createdAt: datetime('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
 		},

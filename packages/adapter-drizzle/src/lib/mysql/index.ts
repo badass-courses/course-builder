@@ -1,13 +1,34 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
+import { and, asc, eq, inArray, not, notInArray, or, sql } from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
 	MySqlDatabase,
 	MySqlTableFn,
 } from 'drizzle-orm/mysql-core'
+import { v4 } from 'uuid'
+import { z } from 'zod'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import {
+	Coupon,
+	couponSchema,
+	MerchantCharge,
+	merchantChargeSchema,
+	MerchantCoupon,
+	MerchantCustomer,
+	MerchantProduct,
+	Price,
+	Product,
+	Purchase,
+	purchaseSchema,
+	PurchaseUserTransfer,
+	PurchaseUserTransferState,
+	ResourceProgress,
+	UpgradableProduct,
+	upgradableProductSchema,
+	User,
+} from '@coursebuilder/core/schemas'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -58,7 +79,14 @@ import { getMerchantSessionSchema } from './schemas/commerce/merchant-session.js
 import { getPriceSchema } from './schemas/commerce/price.js'
 import { getProductSchema } from './schemas/commerce/product.js'
 import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer.js'
-import { getPurchaseSchema } from './schemas/commerce/purchase.js'
+import {
+	getPurchaseRelationsSchema,
+	getPurchaseSchema,
+} from './schemas/commerce/purchase.js'
+import {
+	getUpgradableProductsRelationsSchema,
+	getUpgradableProductsSchema,
+} from './schemas/commerce/upgradable-products.js'
 import { getCommunicationChannelSchema } from './schemas/communication/communication-channel.js'
 import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types.js'
 import {
@@ -110,9 +138,10 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		merchantPrice: getMerchantPriceSchema(mysqlTable),
 		merchantProduct: getMerchantProductSchema(mysqlTable),
 		merchantSession: getMerchantSessionSchema(mysqlTable),
-		price: getPriceSchema(mysqlTable),
-		product: getProductSchema(mysqlTable),
-		purchase: getPurchaseSchema(mysqlTable),
+		prices: getPriceSchema(mysqlTable),
+		products: getProductSchema(mysqlTable),
+		purchases: getPurchaseSchema(mysqlTable),
+		purchaseRelations: getPurchaseRelationsSchema(mysqlTable),
 		purchaseUserTransfer: getPurchaseUserTransferSchema(mysqlTable),
 		communicationChannel: getCommunicationChannelSchema(mysqlTable),
 		communicationPreferenceTypes:
@@ -131,6 +160,9 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contributionTypes: getContributionTypesSchema(mysqlTable),
 		contributionTypesRelations: getContributionTypesRelationsSchema(mysqlTable),
 		resourceProgress: getResourceProgressSchema(mysqlTable),
+		upgradableProducts: getUpgradableProductsSchema(mysqlTable),
+		upgradableProductsRelations:
+			getUpgradableProductsRelationsSchema(mysqlTable),
 	} as const
 }
 
@@ -143,7 +175,7 @@ export type DefaultSchema = ReturnType<typeof createTables>
 export function mySqlDrizzleAdapter(
 	client: InstanceType<typeof MySqlDatabase>,
 	tableFn = defaultMySqlTableFn,
-): CourseBuilderAdapter {
+): CourseBuilderAdapter<typeof MySqlDatabase> {
 	const {
 		users,
 		accounts,
@@ -151,7 +183,7 @@ export function mySqlDrizzleAdapter(
 		verificationTokens,
 		contentResource,
 		contentResourceResource,
-		purchase,
+		purchases: purchaseTable,
 		purchaseUserTransfer,
 		coupon,
 		merchantCoupon,
@@ -161,11 +193,503 @@ export function mySqlDrizzleAdapter(
 		merchantCustomer,
 		merchantSession,
 		merchantProduct,
-		price,
-		product,
+		prices,
+		products,
+		upgradableProducts,
 	} = createTables(tableFn)
 
 	return {
+		client,
+		availableUpgradesForProduct(
+			purchases: any,
+			productId: string,
+		): Promise<
+			{
+				upgradableTo: { id: string; name: string }
+				upgradableFrom: { id: string; name: string }
+			}[]
+		> {
+			throw new Error('Method not implemented.')
+		},
+		clearLessonProgressForUser(options: {
+			userId: string
+			lessons: { id: string; slug: string }[]
+		}): Promise<void> {
+			throw new Error('Method not implemented.')
+		},
+		completeLessonProgressForUser(options: {
+			userId: string
+			lessonId?: string
+		}): Promise<ResourceProgress | null> {
+			throw new Error('Method not implemented.')
+		},
+		couponForIdOrCode(options: {
+			code?: string
+			couponId?: string
+		}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null> {
+			throw new Error('Method not implemented.')
+		},
+		async createMerchantChargeAndPurchase(options): Promise<Purchase> {
+			const purchaseId = await client.transaction(async (trx) => {
+				try {
+					const {
+						userId,
+						stripeChargeId,
+						stripeCouponId,
+						merchantAccountId,
+						merchantProductId,
+						merchantCustomerId,
+						productId,
+						stripeChargeAmount,
+						quantity = 1,
+						checkoutSessionId,
+						appliedPPPStripeCouponId,
+						upgradedFromPurchaseId,
+						country,
+						usedCouponId,
+					} = options
+
+					const existingMerchantCharge =
+						(await client.query.merchantCharge.findFirst({
+							where: eq(merchantCharge.identifier, stripeChargeId),
+						})) as MerchantCharge | null
+
+					const existingPurchaseForCharge = existingMerchantCharge
+						? await client.query.purchase.findFirst({
+								where: eq(
+									purchaseTable.merchantChargeId,
+									existingMerchantCharge.id,
+								),
+								with: {
+									user: true,
+									product: true,
+									bulkCoupon: true,
+								},
+							})
+						: null
+
+					if (existingPurchaseForCharge) {
+						return purchaseSchema.parse(existingPurchaseForCharge)
+					}
+
+					const merchantChargeId = v4()
+					const purchaseId = v4()
+
+					await client.insert(merchantCharge).values({
+						id: merchantChargeId,
+						userId,
+						identifier: stripeChargeId,
+						merchantAccountId,
+						merchantProductId,
+						merchantCustomerId,
+					})
+
+					const newMerchantCharge = trx.query.merchantCharge.findFirst({
+						where: eq(merchantCharge.id, merchantChargeId),
+					})
+
+					const existingPurchase = (await client.query.purchases.findFirst({
+						where: and(
+							eq(purchaseTable.productId, productId),
+							eq(purchaseTable.userId, userId),
+							inArray(purchaseTable.status, ['Valid', 'Restricted']),
+						),
+					})) as Purchase | null
+
+					const existingBulkCoupon = couponSchema.nullable().parse(
+						await client
+							.select()
+							.from(coupon)
+							.leftJoin(
+								purchaseTable,
+								and(
+									eq(coupon.id, purchaseTable.bulkCouponId),
+									eq(purchaseTable.userId, userId),
+								),
+							)
+							.then((res) => res[0] ?? null),
+					)
+
+					const isBulkPurchase =
+						quantity > 1 ||
+						Boolean(existingBulkCoupon) ||
+						options.bulk ||
+						Boolean(existingPurchase?.status === 'Valid')
+
+					let bulkCouponId: string | null = null
+					let couponToUpdate = null
+
+					if (isBulkPurchase) {
+						bulkCouponId =
+							existingBulkCoupon !== null ? existingBulkCoupon.id : v4()
+
+						if (existingBulkCoupon !== null) {
+							couponToUpdate = trx
+								.update(coupon)
+								.set({
+									maxUses: (existingBulkCoupon?.maxUses || 0) + quantity,
+								})
+								.where(eq(coupon.id, bulkCouponId))
+						} else {
+							const merchantCouponToUse = stripeCouponId
+								? await client.query.merchantCoupon.findFirst({
+										where: eq(merchantCoupon.identifier, stripeCouponId),
+									})
+								: null
+
+							couponToUpdate = await trx.insert(coupon).values({
+								id: bulkCouponId as string,
+								percentageDiscount: '1.0',
+								restrictedToProductId: productId,
+								maxUses: quantity,
+								status: 1,
+								...(merchantCouponToUse
+									? {
+											merchantCouponId: merchantCouponToUse.id as string,
+										}
+									: {}),
+							})
+						}
+					}
+
+					const merchantSessionId = v4()
+
+					const newMerchantSession = trx.insert(merchantSession).values({
+						id: merchantSessionId,
+						identifier: checkoutSessionId,
+						merchantAccountId,
+					})
+
+					const merchantCouponUsed = stripeCouponId
+						? await client.query.merchantCoupon.findFirst({
+								where: eq(merchantCoupon.identifier, stripeCouponId),
+							})
+						: null
+
+					const pppMerchantCoupon = appliedPPPStripeCouponId
+						? await client.query.merchantCoupon.findFirst({
+								where: and(
+									eq(merchantCoupon.identifier, appliedPPPStripeCouponId),
+									eq(merchantCoupon.type, 'ppp'),
+								),
+							})
+						: null
+
+					const newPurchaseStatus =
+						merchantCouponUsed?.type === 'ppp' || pppMerchantCoupon
+							? 'Restricted'
+							: 'Valid'
+
+					const newPurchase = trx.insert(purchaseTable).values({
+						id: purchaseId,
+						status: newPurchaseStatus,
+						userId,
+						productId,
+						merchantChargeId,
+						totalAmount: (stripeChargeAmount / 100).toFixed(),
+						bulkCouponId,
+						merchantSessionId,
+						country,
+						upgradedFromId: upgradedFromPurchaseId || null,
+						couponId: usedCouponId || null,
+					})
+
+					const oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7
+
+					const newPurchaseUserTransfer = trx
+						.insert(purchaseUserTransfer)
+						.values({
+							id: v4(),
+							purchaseId: purchaseId as string,
+							expiresAt: existingPurchase
+								? new Date()
+								: new Date(Date.now() + oneWeekInMilliseconds),
+							sourceUserId: userId,
+						})
+
+					await Promise.all([
+						newMerchantCharge,
+						newPurchase,
+						newPurchaseUserTransfer,
+						newMerchantSession,
+						...(couponToUpdate ? [couponToUpdate] : []),
+					])
+
+					return purchaseId
+				} catch (error) {
+					trx.rollback()
+					throw error
+				}
+			})
+
+			return purchaseSchema.parse(
+				await client.query.purchases.findFirst({
+					where: eq(purchaseTable.id, purchaseId as string),
+				}),
+			)
+		},
+		findOrCreateMerchantCustomer(options: {
+			user: User
+			identifier: string
+			merchantAccountId: string
+		}): Promise<MerchantCustomer | null> {
+			throw new Error('Method not implemented.')
+		},
+		findOrCreateUser(
+			email: string,
+			name?: string | null,
+		): Promise<{
+			user: User
+			isNewUser: boolean
+		}> {
+			throw new Error('Method not implemented.')
+		},
+		getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
+			throw new Error('Method not implemented.')
+		},
+		getCouponWithBulkPurchases(couponId: string): Promise<
+			| (Coupon & {
+					bulkCouponPurchases: { bulkCouponId: string }[]
+			  })
+			| null
+		> {
+			throw new Error('Method not implemented.')
+		},
+		getDefaultCoupon(productIds?: string[]): Promise<{
+			defaultMerchantCoupon: MerchantCoupon
+			defaultCoupon: Coupon
+		} | null> {
+			throw new Error('Method not implemented.')
+		},
+		getLessonProgressCountsByDate(): Promise<
+			{
+				count: number
+				completedAt: string
+			}[]
+		> {
+			throw new Error('Method not implemented.')
+		},
+		getLessonProgressForUser(userId: string): Promise<ResourceProgress[]> {
+			throw new Error('Method not implemented.')
+		},
+		getLessonProgresses(): Promise<ResourceProgress[]> {
+			throw new Error('Method not implemented.')
+		},
+		getMerchantCharge(
+			merchantChargeId: string,
+		): Promise<MerchantCharge | null> {
+			throw new Error('Method not implemented.')
+		},
+		getMerchantCoupon(
+			merchantCouponId: string,
+		): Promise<MerchantCoupon | null> {
+			throw new Error('Method not implemented.')
+		},
+		getMerchantProduct(
+			stripeProductId: string,
+		): Promise<MerchantProduct | null> {
+			throw new Error('Method not implemented.')
+		},
+		getPrice(productId: string): Promise<Price | null> {
+			throw new Error('Method not implemented.')
+		},
+		getProduct(productId: string): Promise<Product | null> {
+			throw new Error('Method not implemented.')
+		},
+		async getPurchase(purchaseId: string): Promise<Purchase | null> {
+			const purchase = await client.query.purchases.findFirst({
+				where: eq(purchaseTable.id, purchaseId),
+			})
+
+			return purchase ? purchaseSchema.parse(purchase) : null
+		},
+		async createPurchase(options): Promise<Purchase> {
+			const newPurchaseId = options.id || `purchase-${v4()}`
+			await client.insert(purchaseTable).values({
+				state: 'Valid',
+				...options,
+				id: newPurchaseId,
+			})
+
+			const newPurchase = await this.getPurchase(newPurchaseId)
+
+			return purchaseSchema.parse(newPurchase)
+		},
+		async getPurchaseDetails(
+			purchaseId: string,
+			userId: string,
+		): Promise<{
+			purchase?: Purchase
+			existingPurchase?: Purchase
+			availableUpgrades: UpgradableProduct[]
+		}> {
+			const allPurchases = await this.getPurchasesForUser(userId)
+			const thePurchase = await client.query.purchases.findFirst({
+				where: and(
+					eq(purchaseTable.id, purchaseId),
+					eq(purchaseTable.userId, userId),
+				),
+				with: {
+					user: true,
+					product: true,
+					bulkCoupon: true,
+				},
+			})
+
+			const parsedPurchase = purchaseSchema.safeParse(thePurchase)
+
+			if (!parsedPurchase.success) {
+				console.error('Error parsing purchase', parsedPurchase)
+				return {
+					availableUpgrades: [],
+				}
+			}
+
+			const purchaseCanUpgrade = ['Valid', 'Restricted'].includes(
+				parsedPurchase.data.state || '',
+			)
+
+			if (!purchaseCanUpgrade) {
+				return {
+					availableUpgrades: [],
+				}
+			}
+
+			const availableUpgrades = await client.query.upgradableProducts.findMany({
+				where: and(
+					eq(
+						upgradableProducts.upgradableFromId,
+						parsedPurchase.data.product?.id as string,
+					),
+					not(
+						inArray(
+							upgradableProducts.upgradableToId,
+							allPurchases.map((p) => p.product?.id as string),
+						),
+					),
+				),
+				with: {
+					upgradableTo: true,
+					upgradableFrom: true,
+				},
+			})
+
+			const existingPurchase = allPurchases.find(
+				(p) => p.product?.id === parsedPurchase.data.product?.id,
+			)
+
+			return Promise.resolve({
+				availableUpgrades: z
+					.array(upgradableProductSchema)
+					.parse(availableUpgrades),
+				existingPurchase,
+				purchase: parsedPurchase.data,
+			})
+		},
+		async getPurchaseForStripeCharge(
+			stripeChargeId: string,
+		): Promise<Purchase | null> {
+			const purchase = purchaseSchema.safeParse(
+				await client
+					.select()
+					.from(purchaseTable)
+					.leftJoin(
+						merchantCharge,
+						and(
+							eq(merchantCharge.identifier, stripeChargeId),
+							eq(merchantCharge.id, purchaseTable.merchantChargeId),
+						),
+					)
+					.then((res) => res[0] ?? null),
+			)
+
+			if (!purchase.success) {
+				return null
+			}
+
+			return purchase.data
+		},
+		getPurchaseUserTransferById(options: { id: string }): Promise<
+			| (PurchaseUserTransfer & {
+					sourceUser: User
+					targetUser: User | null
+					purchase: Purchase
+			  })
+			| null
+		> {
+			throw new Error('Method not implemented.')
+		},
+		getPurchaseWithUser(purchaseId: string): Promise<
+			| (Purchase & {
+					user: User
+			  })
+			| null
+		> {
+			throw new Error('Method not implemented.')
+		},
+		async getPurchasesForUser(userId?: string): Promise<Purchase[]> {
+			if (!userId) {
+				return []
+			}
+
+			const visiblePurchaseStates = ['Valid', 'Refunded', 'Restricted']
+
+			const userPurchases = await client.query.purchases.findMany({
+				where: and(
+					eq(purchaseTable.userId, userId),
+					inArray(purchaseTable.state, visiblePurchaseStates),
+				),
+				with: {
+					user: true,
+					product: true,
+					bulkCoupon: true,
+				},
+				orderBy: asc(purchaseTable.createdAt),
+			})
+
+			const parsedPurchases = z.array(purchaseSchema).safeParse(userPurchases)
+
+			if (!parsedPurchases.success) {
+				console.error('Error parsing purchases', parsedPurchases)
+				return []
+			}
+
+			return parsedPurchases.data
+		},
+		getUserById(userId: string): Promise<User | null> {
+			throw new Error('Method not implemented.')
+		},
+		pricesOfPurchasesTowardOneBundle(options: {
+			userId: string | undefined
+			bundleId: string
+		}): Promise<Price[]> {
+			throw new Error('Method not implemented.')
+		},
+		toggleLessonProgressForUser(options: {
+			userId: string
+			lessonId?: string
+			lessonSlug?: string
+		}): Promise<ResourceProgress | null> {
+			throw new Error('Method not implemented.')
+		},
+		transferPurchasesToNewUser(options: {
+			merchantCustomerId: string
+			userId: string
+		}): Promise<unknown> {
+			throw new Error('Method not implemented.')
+		},
+		updatePurchaseStatusForCharge(
+			chargeId: string,
+			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
+		): Promise<Purchase | undefined> {
+			throw new Error('Method not implemented.')
+		},
+		updatePurchaseUserTransferTransferState(options: {
+			id: string
+			transferState: PurchaseUserTransferState
+		}): Promise<PurchaseUserTransfer | null> {
+			throw new Error('Method not implemented.')
+		},
 		addResourceToResource: async function (options) {
 			const { parentResourceId, childResourceId } = options
 

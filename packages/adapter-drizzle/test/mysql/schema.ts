@@ -2,7 +2,7 @@ import { mysqlTable } from 'drizzle-orm/mysql-core'
 import { drizzle } from 'drizzle-orm/mysql2'
 import { createPool } from 'mysql2'
 
-import { createTables } from '../../src/lib/mysql'
+import { createTables } from '../../src/lib/mysql/index.js'
 
 const poolConnection = createPool({
 	host: 'localhost',
@@ -37,9 +37,10 @@ export const {
 	merchantPrice,
 	merchantProduct,
 	merchantSession,
-	price,
-	product,
-	purchase,
+	prices,
+	products,
+	purchases,
+	purchaseRelations,
 	purchaseUserTransfer,
 	communicationChannel,
 	communicationPreferenceTypes,
@@ -54,6 +55,8 @@ export const {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	upgradableProducts,
+	upgradableProductsRelations,
 } = createTables(mysqlTable)
 export const schema = {
 	accounts,
@@ -81,9 +84,10 @@ export const schema = {
 	merchantPrice,
 	merchantProduct,
 	merchantSession,
-	price,
-	product,
-	purchase,
+	prices,
+	products,
+	purchases,
+	purchaseRelations,
 	purchaseUserTransfer,
 	communicationChannel,
 	communicationPreferenceTypes,
@@ -98,6 +102,8 @@ export const schema = {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	upgradableProducts,
+	upgradableProductsRelations,
 }
 
 export const db = drizzle(poolConnection, { schema, mode: 'default' })
