@@ -5,7 +5,7 @@ import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { ContentResourceResource } from '@coursebuilder/core/types'
-import { Separator } from '@coursebuilder/ui'
+import { Button, Separator } from '@coursebuilder/ui'
 
 export default async function ModulePage({
 	params,
@@ -40,18 +40,52 @@ export default async function ModulePage({
 							{resource.resource.type === 'section' ? (
 								<h3>{resource.resource.fields.title}</h3>
 							) : (
-								<h3>{resource.resource.fields.title}</h3>
+								<div className="flex w-full flex-row hover:bg-gray-900">
+									<Link
+										className="w-full"
+										href={`/tutorials/${params.module}/${resource.resource.fields.slug}`}
+									>
+										{resource.resource.fields.title}
+									</Link>
+									{ability.can('create', 'Content') ? (
+										<div className="w-full justify-end">
+											<Button asChild size="sm">
+												<Link
+													className="text-xs"
+													href={`/tutorials/${params.module}/${resource.resource.fields.slug}/edit`}
+												>
+													edit
+												</Link>
+											</Button>
+										</div>
+									) : null}
+								</div>
 							)}
 							{resource.resource.resources.length > 0 && (
 								<ul>
 									{resource.resource.resources.map((lesson) => {
 										return (
 											<li key={lesson.resourceId}>
-												<Link
-													href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
-												>
-													{lesson.resource.fields.title}
-												</Link>
+												<div className="flex w-full flex-row hover:bg-gray-900">
+													<Link
+														className="w-full"
+														href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
+													>
+														{lesson.resource.fields.title}
+													</Link>
+													{ability.can('create', 'Content') ? (
+														<div className="w-full justify-end">
+															<Button asChild size="sm">
+																<Link
+																	className="text-xs"
+																	href={`/tutorials/${params.module}/${lesson.resource.fields.slug}/edit`}
+																>
+																	edit
+																</Link>
+															</Button>
+														</div>
+													) : null}
+												</div>
 											</li>
 										)
 									})}

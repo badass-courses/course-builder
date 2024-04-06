@@ -4,8 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { ContentResourceResource } from '@coursebuilder/core/types'
-import { Separator } from '@coursebuilder/ui'
+import { Button } from '@coursebuilder/ui'
 
 export default async function ModulePage({
 	params,
@@ -34,29 +33,57 @@ export default async function ModulePage({
 				)}
 			</div>
 			<div className="flex flex-col">
-				{tutorial.resources.map((resource) => {
+				{tutorial.resources.map((tutorialResource) => {
 					return (
-						<div key={resource.resourceId}>
-							{resource.resource.type === 'section' ? (
-								<h3>{resource.resource.fields.title}</h3>
+						<div key={tutorialResource.resourceId}>
+							{tutorialResource.resource.type === 'section' ? (
+								<h3>{tutorialResource.resource.fields.title}</h3>
 							) : (
-								<h3>{resource.resource.fields.title}</h3>
+								<div>
+									<Link
+										href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}`}
+									>
+										{tutorialResource.resource.fields.title}
+									</Link>
+									{ability.can('create', 'Content') ? (
+										<>
+											<Link
+												className="text-xs"
+												href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}/edit`}
+											>
+												edit
+											</Link>
+										</>
+									) : null}
+								</div>
 							)}
-							{resource.resource.resources.length > 0 && (
+							{tutorialResource.resource.resources.length > 0 ? (
 								<ul>
-									{resource.resource.resources.map((lesson) => {
+									{tutorialResource.resource.resources.map((lesson) => {
 										return (
 											<li key={lesson.resourceId}>
-												<Link
-													href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
-												>
-													{lesson.resource.fields.title}
-												</Link>
+												<div>
+													<Link
+														href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
+													>
+														{lesson.resource.fields.title}
+													</Link>
+													{ability.can('create', 'Content') ? (
+														<>
+															<Link
+																className="text-xs"
+																href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}/edit`}
+															>
+																edit
+															</Link>
+														</>
+													) : null}
+												</div>
 											</li>
 										)
 									})}
 								</ul>
-							)}
+							) : null}
 						</div>
 					)
 				})}
