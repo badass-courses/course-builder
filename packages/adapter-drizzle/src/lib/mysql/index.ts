@@ -251,10 +251,11 @@ export function mySqlDrizzleAdapter(
 						usedCouponId,
 					} = options
 
-					const existingMerchantCharge =
+					const existingMerchantCharge = merchantChargeSchema.nullable().parse(
 						(await client.query.merchantCharge.findFirst({
 							where: eq(merchantCharge.identifier, stripeChargeId),
-						})) as MerchantCharge | null
+						})) || null,
+					)
 
 					const existingPurchaseForCharge = existingMerchantCharge
 						? await client.query.purchase.findFirst({
@@ -287,13 +288,13 @@ export function mySqlDrizzleAdapter(
 					})
 
 					const existingPurchase = purchaseSchema.nullable().parse(
-						await client.query.purchases.findFirst({
+						(await client.query.purchases.findFirst({
 							where: and(
 								eq(purchaseTable.productId, productId),
 								eq(purchaseTable.userId, userId),
 								inArray(purchaseTable.status, ['Valid', 'Restricted']),
 							),
-						}),
+						})) || null,
 					)
 
 					const existingBulkCoupon = couponSchema.nullable().parse(
@@ -419,6 +420,7 @@ export function mySqlDrizzleAdapter(
 
 					return purchaseId
 				} catch (error) {
+					console.error(error)
 					trx.rollback()
 					throw error
 				}
