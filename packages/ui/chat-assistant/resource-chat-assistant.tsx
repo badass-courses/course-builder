@@ -43,7 +43,8 @@ export function ResourceChatAssistant({
 	>([])
 	const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>(
 		availableWorkflows.find((w) => w.default)?.value ||
-			availableWorkflows[0].value,
+			availableWorkflows[0]?.value ||
+			'summarize',
 	)
 
 	const handleSendMessage = (
