@@ -1,5 +1,11 @@
 # @coursebuilder/core
 
+## 0.1.3
+
+### Patch Changes
+
+- [#148](https://github.com/badass-courses/course-builder/pull/148) [`8e5d28e`](https://github.com/badass-courses/course-builder/commit/8e5d28eb27c3c4fc6f181c4d1e118aa23828c0c4) Thanks [@joelhooks](https://github.com/joelhooks)! - general cleanup
+
 ## 0.1.2
 
 ### Patch Changes
