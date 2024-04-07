@@ -876,6 +876,9 @@ importers:
       groq:
         specifier: ^3.18.1
         version: 3.34.0
+      holy-loader:
+        specifier: ^2.2.10
+        version: 2.2.10(react@18.3.0-canary-feed8f3f9-20240118)
       i:
         specifier: ^0.3.7
         version: 0.3.7
@@ -16226,6 +16229,14 @@ packages:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
     dependencies:
       react-is: 16.13.1
+
+  /holy-loader@2.2.10(react@18.3.0-canary-feed8f3f9-20240118):
+    resolution: {integrity: sha512-swykIEP14z+eYajeAzyQAIzIOXdxnbnMBqLvCODfmnS+cAITUtw6TpWiKhNX+wbQkHvCzmk2ve4jyotPYlN6rg==}
+    peerDependencies:
+      react: '>= 16.0.0'
+    dependencies:
+      react: 18.3.0-canary-feed8f3f9-20240118
+    dev: false
 
   /homedir-polyfill@1.0.3:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}

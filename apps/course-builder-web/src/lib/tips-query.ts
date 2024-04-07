@@ -135,7 +135,7 @@ export async function createTip(input: NewTip) {
 
 		if (contributionType) {
 			await db.insert(contentContributions).values({
-				id: `cc-${guid}`,
+				id: `cc-${guid()}`,
 				userId: user.id,
 				contentId: tip.id,
 				contributionTypeId: contributionType.id,

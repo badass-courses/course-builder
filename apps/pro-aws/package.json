@@ -115,6 +115,7 @@
 		"formik": "2.2.9",
 		"framer-motion": "^10.16.5",
 		"groq": "^3.18.1",
+		"holy-loader": "^2.2.10",
 		"i": "^0.3.7",
 		"inngest": "^3.16.1",
 		"intl-segmenter-polyfill": "^0.4.4",

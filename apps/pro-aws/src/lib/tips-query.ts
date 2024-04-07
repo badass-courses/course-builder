@@ -107,9 +107,8 @@ export async function createTip(input: NewTip) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
-	const resource = await db
-		.insert(contentResource)
-		.values({
+	const tip = TipSchema.parse(
+		await courseBuilderAdapter.createContentResource({
 			id: newTipId,
 			type: 'tip',
 			createdById: user.id,
@@ -119,13 +118,8 @@ export async function createTip(input: NewTip) {
 				visibility: 'unlisted',
 				slug: slugify(`${input.title}~${guid()}`),
 			},
-		})
-		.catch((error) => {
-			console.error('🚨 Error creating tip', error)
-			throw error
-		})
-
-	const tip = await getTip(newTipId)
+		}),
+	)
 
 	if (tip) {
 		await db
@@ -137,15 +131,16 @@ export async function createTip(input: NewTip) {
 		})
 
 		if (contributionType) {
-			await db.insert(contentContributions).values({
-				id: `cc-${guid}`,
+			const contentContributionValues = {
+				id: `cc-${guid()}`,
 				userId: user.id,
 				contentId: tip.id,
 				contributionTypeId: contributionType.id,
-			})
+			}
+			await db.insert(contentContributions).values(contentContributionValues)
 		}
 
-		revalidateTag('tips')
+		revalidatePath('/tips')
 
 		return tip
 	} else {
