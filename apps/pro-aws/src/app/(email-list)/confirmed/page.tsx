@@ -11,7 +11,7 @@ export default async function ConfirmedSubscriptionPage() {
 					</h1>
 					<p className="mx-auto pb-8 leading-relaxed sm:text-xl">
 						Thanks for confirming your email address — you&apos;re all set to
-						receive emails from me about Epic Web Dev.
+						receive emails from me about Pro AWS.
 					</p>
 					<Signature />
 				</div>
