@@ -13,10 +13,8 @@
 	"author": "",
 	"license": "ISC",
 	"type": "module",
-	"types": "./dist/index.d.ts",
 	"files": [
-		"dist/client",
-		"dist/server",
+		"dist",
 		"src"
 	],
 	"exports": {

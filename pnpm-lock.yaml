@@ -669,6 +669,9 @@ importers:
       '@coursebuilder/next':
         specifier: workspace:^
         version: link:../../packages/next
+      '@coursebuilder/react-rsc':
+        specifier: workspace:^
+        version: link:../../packages/react-rsc
       '@coursebuilder/ui':
         specifier: ^1.0.8
         version: link:../../packages/ui
