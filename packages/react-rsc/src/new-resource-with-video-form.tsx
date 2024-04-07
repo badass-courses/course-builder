@@ -1,14 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
-import { TipUploader } from '@/app/(content)/tips/_components/tip-uploader'
-import { NewTip, NewTipSchema } from '@/lib/tips'
-import { createTip } from '@/lib/tips-query'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
+import { type VideoResource } from '@coursebuilder/core/schemas'
+import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	Form,
@@ -21,7 +19,26 @@ import {
 	Input,
 } from '@coursebuilder/ui'
 
-export function NewResourceWithVideoForm() {
+const NewResourceWithVideoSchema = z.object({
+	title: z.string().min(2).max(90),
+	videoResourceId: z.string().min(4, 'Please upload a video'),
+})
+
+type NewResourceWithVideo = z.infer<typeof NewResourceWithVideoSchema>
+
+export function NewResourceWithVideoForm({
+	getVideoResource,
+	createResource,
+	onResourceCreated,
+	children,
+}: {
+	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
+	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
+	onResourceCreated: (resource: ContentResource) => Promise<void>
+	children: (
+		handleSetVideoResourceId: (value: string) => void,
+	) => React.ReactNode
+}) {
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | undefined
 	>()
@@ -29,10 +46,9 @@ export function NewResourceWithVideoForm() {
 		React.useState<boolean>(false)
 	const [isValidatingVideoResource, setIsValidatingVideoResource] =
 		React.useState<boolean>(false)
-	const router = useRouter()
 
-	const form = useForm<NewTip>({
-		resolver: zodResolver(NewTipSchema),
+	const form = useForm<NewResourceWithVideo>({
+		resolver: zodResolver(NewResourceWithVideoSchema),
 		defaultValues: {
 			title: '',
 			videoResourceId: '',
@@ -61,15 +77,15 @@ export function NewResourceWithVideoForm() {
 		throw new Error('Video resource not found after maximum attempts')
 	}
 
-	const onSubmit = async (values: NewTip) => {
+	const onSubmit = async (values: NewResourceWithVideo) => {
 		try {
 			await pollVideoResource(values.videoResourceId).next()
-			const tip = await createTip(values)
+			const tip = await createResource(values)
 			if (!tip) {
 				// Handle edge case, e.g., toast an error message
 				return
 			}
-			router.push(`/tips/${tip.fields.slug}/edit`)
+			onResourceCreated(tip)
 		} catch (error) {
 			console.error('Error polling video resource:', error)
 			// handle error, e.g. toast an error message
@@ -135,7 +151,7 @@ export function NewResourceWithVideoForm() {
 								<Input type="hidden" {...field} />
 							</FormControl>
 							{!videoResourceId ? (
-								<TipUploader setVideoResourceId={handleSetVideoResourceId} />
+								<>{children(handleSetVideoResourceId)}</>
 							) : (
 								<div>
 									{videoResourceId}{' '}
