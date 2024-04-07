@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/react-rsc",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Course Builder Package",
 	"scripts": {
 		"clean": "rm -rf ./dist",
