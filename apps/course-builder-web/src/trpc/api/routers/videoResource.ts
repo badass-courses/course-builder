@@ -1,4 +1,4 @@
-import { getVideoResource } from '@/lib/video-resource-query'
+import { courseBuilderAdapter } from '@/db'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
 
@@ -10,6 +10,6 @@ export const videoResourceRouter = createTRPCRouter({
 			}),
 		)
 		.query(async ({ input }) => {
-			return getVideoResource(input.videoResourceId)
+			return courseBuilderAdapter.getVideoResource(input.videoResourceId)
 		}),
 })

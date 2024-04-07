@@ -13,6 +13,7 @@ import { ourFileRouter } from '@/uploadthing/core'
 import { patron } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
+import HolyLoader from 'holy-loader'
 import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
 
@@ -33,6 +34,7 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning>
+				<HolyLoader color="#f28f5a" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
 				<body className={`relative ${patron.variable} font-sans`}>
 					<TRPCReactProvider>

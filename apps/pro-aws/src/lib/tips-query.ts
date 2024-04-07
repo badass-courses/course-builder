@@ -9,7 +9,6 @@ import {
 	contributionTypes,
 } from '@/db/schema'
 import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -100,15 +99,16 @@ export async function createTip(input: NewTip) {
 
 	const newTipId = `tip_${guid()}`
 
-	const videoResource = await getVideoResource(input.videoResourceId)
+	const videoResource = await courseBuilderAdapter.getVideoResource(
+		input.videoResourceId,
+	)
 
 	if (!videoResource) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
-	const resource = await db
-		.insert(contentResource)
-		.values({
+	const tip = TipSchema.parse(
+		await courseBuilderAdapter.createContentResource({
 			id: newTipId,
 			type: 'tip',
 			createdById: user.id,
@@ -118,13 +118,8 @@ export async function createTip(input: NewTip) {
 				visibility: 'unlisted',
 				slug: slugify(`${input.title}~${guid()}`),
 			},
-		})
-		.catch((error) => {
-			console.error('🚨 Error creating tip', error)
-			throw error
-		})
-
-	const tip = await getTip(newTipId)
+		}),
+	)
 
 	if (tip) {
 		await db
@@ -136,15 +131,16 @@ export async function createTip(input: NewTip) {
 		})
 
 		if (contributionType) {
-			await db.insert(contentContributions).values({
-				id: `cc-${guid}`,
+			const contentContributionValues = {
+				id: `cc-${guid()}`,
 				userId: user.id,
 				contentId: tip.id,
 				contributionTypeId: contributionType.id,
-			})
+			}
+			await db.insert(contentContributions).values(contentContributionValues)
 		}
 
-		revalidateTag('tips')
+		revalidatePath('/tips')
 
 		return tip
 	} else {

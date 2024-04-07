@@ -788,7 +788,7 @@ export function mySqlDrizzleAdapter(
 		},
 		async getVideoResource(id) {
 			if (!id) {
-				throw new Error('videoResourceId is required')
+				return null
 			}
 
 			const query = sql`

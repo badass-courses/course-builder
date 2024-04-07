@@ -13,7 +13,7 @@ export function DeleteTipButton({ id }: { id: string }) {
 			onClick={async () => {
 				if (confirm('Are you sure you want to delete this tip?')) {
 					await deleteTip(id)
-					router.push('/tips')
+					router.refresh()
 				}
 			}}
 		>

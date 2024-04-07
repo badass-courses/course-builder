@@ -5,11 +5,11 @@ import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { courseBuilderAdapter } from '@/db'
 import { Lesson } from '@/lib/lessons'
 import { getLesson } from '@/lib/lessons-query'
 import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
@@ -69,7 +69,7 @@ export default async function LessonPage({ params }: Props) {
 							<div className="flex flex-col lg:col-span-8">
 								<LessonBody lessonLoader={lessonLoader} />
 							</div>
-							<div className="flex w-full flex-col lg:col-span-3">
+							<div className="lg:col-span-3">
 								<Suspense>
 									<TutorialLessonList tutorialLoader={tutorialLoader} />
 								</Suspense>
@@ -87,6 +87,7 @@ async function TutorialLessonList({
 }: {
 	tutorialLoader: Promise<Tutorial>
 }) {
+	const { ability } = await getServerAuthSession()
 	const tutorial = await tutorialLoader
 
 	if (!tutorial) {
@@ -102,22 +103,56 @@ async function TutorialLessonList({
 			</h3>
 			{tutorial.resources.map((resource) => {
 				return (
-					<div key={resource.resourceId}>
+					<div key={resource.resourceId} className="w-full">
 						{resource.resource.type === 'section' ? (
-							<h4>{resource.resource.fields.title}</h4>
+							<h3>{resource.resource.fields.title}</h3>
 						) : (
-							<h4>{resource.resource.fields.title}</h4>
+							<div className="flex w-full flex-row hover:bg-gray-900">
+								<Link
+									className="w-full"
+									href={`/tutorials/${tutorial.fields.slug}/${resource.resource.fields.slug}`}
+								>
+									{resource.resource.fields.title}
+								</Link>
+								{ability.can('create', 'Content') ? (
+									<div className="w-full justify-end">
+										<Button asChild size="sm">
+											<Link
+												className="text-xs"
+												href={`/tutorials/${tutorial.fields.slug}/${resource.resource.fields.slug}/edit`}
+											>
+												edit
+											</Link>
+										</Button>
+									</div>
+								) : null}
+							</div>
 						)}
 						{resource.resource.resources.length > 0 && (
 							<ul>
 								{resource.resource.resources.map((lesson) => {
 									return (
 										<li key={lesson.resourceId}>
-											<Link
-												href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
-											>
-												{lesson.resource.fields.title}
-											</Link>
+											<div className="flex w-full flex-row space-y-2 hover:bg-gray-900">
+												<Link
+													className="w-full"
+													href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
+												>
+													{lesson.resource.fields.title}
+												</Link>
+												{ability.can('create', 'Content') ? (
+													<div className="justify-end">
+														<Button asChild size="sm">
+															<Link
+																className="text-xs"
+																href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}/edit`}
+															>
+																edit
+															</Link>
+														</Button>
+													</div>
+												) : null}
+											</div>
 										</li>
 									)
 								})}
@@ -189,7 +224,7 @@ async function PlayerContainer({
 
 	const resource = lesson.resources?.[0]?.resource.id
 
-	const videoResourceLoader = getVideoResource(resource)
+	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 
 	return (
 		<Suspense fallback={<PlayerContainerSkeleton />}>

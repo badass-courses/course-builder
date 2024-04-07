@@ -1,8 +1,8 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { courseBuilderAdapter } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
-import { getVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-resource'
@@ -21,7 +21,8 @@ export async function reprocessTranscript({
 		throw new Error('Unauthorized')
 	}
 
-	const videoResource = await getVideoResource(videoResourceId)
+	const videoResource =
+		await courseBuilderAdapter.getVideoResource(videoResourceId)
 
 	if (videoResource?.id) {
 		await inngest.send({

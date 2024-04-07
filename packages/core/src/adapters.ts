@@ -1,6 +1,6 @@
 import { type Adapter } from '@auth/core/adapters'
 
-import { purchaseSchema, UpgradableProduct } from './schemas'
+import { UpgradableProduct } from './schemas'
 import { Coupon } from './schemas/coupon-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
@@ -47,7 +47,7 @@ export interface CourseBuilderAdapter<
 		createdById: string
 	}): Awaitable<ContentResource>
 	getContentResource(id: string): Awaitable<ContentResource | null>
-	getVideoResource(id: string): Awaitable<VideoResource | null>
+	getVideoResource(id: string | null | undefined): Promise<VideoResource | null>
 	updateContentResourceFields(options: {
 		id: string
 		fields: Record<string, any>
