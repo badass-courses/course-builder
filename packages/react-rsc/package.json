@@ -48,8 +48,8 @@
 	"dependencies": {
 		"@coursebuilder/core": "^0.1.3",
 		"@coursebuilder/ui": "^1.0.8",
+		"@hookform/resolvers": "^3.3.2",
 		"react-hook-form": "^7.48.0",
-		"zod": "^3.22.4",
-		"@hookform/resolvers": "^3.3.2"
+		"zod": "^3.22.4"
 	}
 }
