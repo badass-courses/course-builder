@@ -43,6 +43,7 @@
 		"@coursebuilder/adapter-drizzle": "0.1.2",
 		"@coursebuilder/core": "0.1.3",
 		"@coursebuilder/next": "workspace:^",
+		"@coursebuilder/react-rsc": "workspace:^",
 		"@coursebuilder/ui": "^1.0.8",
 		"@fontsource/inter": "^5.0.16",
 		"@heroicons/react": "^2.0.18",
