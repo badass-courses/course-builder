@@ -59,6 +59,8 @@ export default async function AdminPage() {
 			return
 		}
 
+		console.log(user)
+
 		if (user.roles?.map((role) => role.role.name).includes('admin')) {
 			console.debug('🚫 User is already admin')
 			return
