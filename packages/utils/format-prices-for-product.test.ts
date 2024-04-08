@@ -8,10 +8,7 @@ import {
 	test,
 } from 'vitest'
 
-import {
-	CourseBuilderAdapter,
-	MockCourseBuilderAdapter,
-} from '@coursebuilder/core/adapters'
+import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import { formatPricesForProduct } from '@coursebuilder/core/lib/pricing/format-prices-for-product'
 import { getCalculatedPrice } from '@coursebuilder/core/lib/pricing/get-calculated-price'
 import { Coupon, MerchantCoupon } from '@coursebuilder/core/schemas'

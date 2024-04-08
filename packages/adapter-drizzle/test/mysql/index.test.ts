@@ -1,7 +1,6 @@
 import { and, eq } from 'drizzle-orm'
 import { runBasicTests } from 'utils/adapter.js'
 import { runFormatPricingTests } from 'utils/format-prices-for-product.test.js'
-import { v4 } from 'uuid'
 
 import { DrizzleAdapter } from '../../src/index.js'
 import { fixtures } from '../fixtures.js'
