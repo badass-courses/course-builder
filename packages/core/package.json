@@ -37,7 +37,9 @@
 			"types": "./dist/types.d.ts"
 		},
 		"./adapters": {
-			"types": "./dist/adapters.d.ts"
+			"types": "./dist/adapters.d.ts",
+			"import": "./dist/adapters.js",
+			"require": "./dist/adapters.js"
 		},
 		"./providers": {
 			"types": "./dist/providers/index.d.ts"
