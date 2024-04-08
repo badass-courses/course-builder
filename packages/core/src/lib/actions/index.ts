@@ -115,8 +115,6 @@ export async function webhook(
 
 			const { results } = request.body
 
-			const { srt, transcript, wordLevelSrt } =
-				options.provider.handleCallback(results)
 			const videoResourceId = options.url.searchParams.get('videoResourceId')
 			await options.inngest.send({
 				name: 'video/transcript-ready-event',
@@ -124,9 +122,6 @@ export async function webhook(
 					videoResourceId,
 					moduleSlug: options.url.searchParams.get('moduleSlug'),
 					results,
-					srt,
-					wordLevelSrt,
-					transcript,
 				},
 			})
 			return {

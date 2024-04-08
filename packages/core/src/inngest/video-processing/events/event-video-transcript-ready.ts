@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { DeepgramResultsSchema } from '../../../providers/deepgram'
+
 export const VIDEO_TRANSCRIPT_READY_EVENT = 'video/transcript-ready-event'
 
 export type EventVideoTranscriptReady = {
@@ -10,10 +12,7 @@ export type EventVideoTranscriptReady = {
 export const VideoTranscriptReadyEventSchema = z.object({
 	videoResourceId: z.string().nullable(),
 	moduleSlug: z.string().nullable(),
-	results: z.any(),
-	srt: z.string(),
-	wordLevelSrt: z.string(),
-	transcript: z.string(),
+	results: DeepgramResultsSchema,
 })
 
 export type VideoTranscriptReadyEvent = z.infer<

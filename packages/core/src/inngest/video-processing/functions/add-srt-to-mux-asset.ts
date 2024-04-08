@@ -29,17 +29,19 @@ export const addSrtToMuxAssetHandler: CoreInngestHandler = async ({
 	db,
 	siteRootUrl,
 }: CoreInngestFunctionInput) => {
-	const videoResource = await step.run(
+	const muxAssetId = await step.run(
 		'get the video resource from Sanity',
 		async () => {
-			return db.getVideoResource(event.data.videoResourceId)
+			const videoResource = await db.getVideoResource(
+				event.data.videoResourceId,
+			)
+			return videoResource?.muxAssetId ?? null
 		},
 	)
 
-	if (videoResource) {
+	if (muxAssetId) {
 		let muxAsset = await step.run('get the mux asset', async () => {
-			const assetId = videoResource.muxAssetId
-			return getMuxAsset(assetId)
+			return getMuxAsset(muxAssetId)
 		})
 
 		if (!muxAsset) {
@@ -54,16 +56,15 @@ export const addSrtToMuxAssetHandler: CoreInngestHandler = async ({
 			await step.run('add srt track to mux asset', async () => {
 				return addSrtTrackToMuxAsset({
 					assetId: muxAsset?.id,
-					srtUrl: `${siteRootUrl}/api/coursebuilder/srt/internal?videoResourceId=${videoResource.id}`,
+					srtUrl: `${siteRootUrl}/api/coursebuilder/srt/internal?videoResourceId=${event.data.videoResourceId}`,
 				})
 			})
 
 			muxAsset = await step.run('get the updated mux asset', async () => {
-				const assetId = videoResource.muxAssetId
-				return getMuxAsset(assetId)
+				return getMuxAsset(muxAssetId)
 			})
 
-			return { muxAsset, videoResource }
+			return { muxAsset }
 		} else if (muxAsset.status !== 'errored') {
 			await step.sleep(`wait for ${COOLDOWN / 1000} seconds`, COOLDOWN)
 			await step.sendEvent('Re-run After Cool Down', {

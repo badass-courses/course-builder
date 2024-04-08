@@ -1,4 +1,9 @@
 import {
+	srtFromTranscriptResult,
+	transcriptAsParagraphsWithTimestamps,
+	wordLevelSrtFromTranscriptResult,
+} from '../../../providers/deepgram'
+import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
 	CoreInngestTrigger,
@@ -24,12 +29,12 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 		throw new Error('video resource id is required')
 	}
 
-	const transcript = event.data.transcript
-	const srt = event.data.srt
-	const wordLevelSrt = event.data.wordLevelSrt
+	const srt = srtFromTranscriptResult(event.data.results)
+	const wordLevelSrt = wordLevelSrtFromTranscriptResult(event.data.results)
+	const transcript = transcriptAsParagraphsWithTimestamps(event.data.results)
 
 	await step.run('update the video resource in the database', async () => {
-		db.updateContentResourceFields({
+		await db.updateContentResourceFields({
 			id: videoResourceId,
 			fields: {
 				transcript,
@@ -44,9 +49,7 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 			name: VIDEO_SRT_READY_EVENT,
 			data: {
 				videoResourceId: videoResourceId,
-				moduleSlug: event.data.moduleSlug,
 				srt,
-				wordLevelSrt,
 			},
 		})
 	}
@@ -62,7 +65,7 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 		})
 	})
 
-	return { srt, wordLevelSrt, transcript }
+	return event.data.results
 }
 
 export const transcriptReady = {

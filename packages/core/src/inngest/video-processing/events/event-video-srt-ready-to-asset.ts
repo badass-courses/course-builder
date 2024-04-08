@@ -9,7 +9,6 @@ export type VideoSrtReady = {
 
 export const VideoSrtReadyEventSchema = z.object({
 	videoResourceId: z.string(),
-	srt: z.string(),
 })
 
 export type VideoSrtReadyEvent = z.infer<typeof VideoSrtReadyEventSchema>
