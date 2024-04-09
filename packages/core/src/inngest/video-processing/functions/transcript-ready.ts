@@ -30,32 +30,14 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 		throw new Error('video resource id is required')
 	}
 
-	const { srt, wordLevelSrt, transcript } = await step.run(
-		'decompress results',
-		async () => {
-			const results = event.data.results
-			const srt = srtFromTranscriptResult(results)
-			const wordLevelSrt = wordLevelSrtFromTranscriptResult(results)
-			const transcript = transcriptAsParagraphsWithTimestamps(results)
-			return { srt, wordLevelSrt, transcript }
-		},
-	)
-
-	await step.run('update the video resource in the database', async () => {
-		await db.updateContentResourceFields({
-			id: videoResourceId,
-			fields: {
-				transcript,
-				srt,
-				wordLevelSrt,
-			},
-		})
+	const videoResource = await step.run('get video resource', async () => {
+		return db.getVideoResource(videoResourceId)
 	})
 
 	await step.run('send the transcript to the party', async () => {
 		return await partyProvider.broadcastMessage({
 			body: {
-				body: transcript,
+				body: videoResource?.transcript,
 				requestId: videoResourceId,
 				name: 'transcript.ready',
 			},
