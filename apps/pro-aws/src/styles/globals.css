@@ -33,8 +33,8 @@
 		--background: 0 0% 100%;
 		--foreground: 222.2 47.4% 11.2%;
 
-		--muted: 210 40% 96.1%;
-		--muted-foreground: 215.4 16.3% 46.9%;
+		--muted: 0 0% 11%;
+		--muted-foreground: 0 0% 60%;
 
 		--popover: 0 0% 100%;
 		--popover-foreground: 222.2 47.4% 11.2%;
@@ -48,8 +48,8 @@
 		--primary: 222 47% 11%;
 		--primary-foreground: 0 0% 100%;
 
-		--secondary: 214 32% 91%;
-		--secondary-foreground: 222 47% 11%;
+		--secondary: 0 0% 11%;
+		--secondary-foreground: 0 0% 70%;
 
 		--accent: 214 32% 91%;
 		--accent-foreground: 222 47% 11%;
@@ -67,8 +67,8 @@
 		--background: 0 0% 3%;
 		--foreground: 0 0% 71%;
 
-		--muted: 223 47% 11%;
-		--muted-foreground: 215.4 16.3% 56.9%;
+		--muted: 0 0% 11%;
+		--muted-foreground: 0 0% 60%;
 
 		--popover: 0 0% 5%;
 		--popover-foreground: 0 0% 71%;
@@ -82,8 +82,8 @@
 		--primary: 21 85% 65%;
 		--primary-foreground: 0 0% 3%;
 
-		--secondary: 222.2 47.4% 11.2%;
-		--secondary-foreground: 210 40% 98%;
+		--secondary: 0 0% 11%;
+		--secondary-foreground: 0 0% 70%;
 
 		--accent: 0 0% 10%;
 		--accent-foreground: 0 0% 71%;
@@ -102,12 +102,7 @@
 	* {
 		@apply border-border;
 	}
-	h1,
-	h2,
-	h3,
-	h4 {
-		@apply font-heading;
-	}
+
 	body {
 		@apply bg-background text-foreground font-light antialiased;
 		font-feature-settings:

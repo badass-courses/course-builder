@@ -19,7 +19,7 @@ module.exports = withUt({
 			center: true,
 			padding: '2rem',
 			screens: {
-				'2xl': '1400px',
+				'2xl': '1280px',
 			},
 		},
 		extend: {
@@ -27,7 +27,7 @@ module.exports = withUt({
 				'2xl': '1820px',
 			},
 			colors: {
-				gray: colors.slate,
+				gray: colors.neutral,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
