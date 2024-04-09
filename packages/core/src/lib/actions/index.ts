@@ -1,10 +1,15 @@
-import { compress } from 'shrink-string'
 import { z } from 'zod'
 
+import { VIDEO_SRT_READY_EVENT } from '../../inngest/video-processing/events/event-video-srt-ready-to-asset'
 import {
 	filterNullFields,
 	getConvertkitSubscriberCookie,
 } from '../../providers/convertkit'
+import {
+	srtFromTranscriptResult,
+	transcriptAsParagraphsWithTimestamps,
+	wordLevelSrtFromTranscriptResult,
+} from '../../providers/deepgram'
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { Cookie } from '../utils/cookie'
 
@@ -117,14 +122,35 @@ export async function webhook(
 			const { results } = request.body
 
 			const videoResourceId = options.url.searchParams.get('videoResourceId')
+
+			const srt = srtFromTranscriptResult(results)
+			const wordLevelSrt = wordLevelSrtFromTranscriptResult(results)
+			const transcript = transcriptAsParagraphsWithTimestamps(results)
+
+			await options.adapter?.updateContentResourceFields({
+				id: videoResourceId as string,
+				fields: {
+					transcript,
+					srt,
+					wordLevelSrt,
+				},
+			})
+
 			await options.inngest.send({
 				name: 'video/transcript-ready-event',
 				data: {
 					videoResourceId,
-					moduleSlug: options.url.searchParams.get('moduleSlug'),
-					results: await compress(results),
 				},
 			})
+
+			if (srt && wordLevelSrt && videoResourceId) {
+				await options.inngest.send({
+					name: VIDEO_SRT_READY_EVENT,
+					data: {
+						videoResourceId: videoResourceId,
+					},
+				})
+			}
 			return {
 				status: 200,
 				body: null,

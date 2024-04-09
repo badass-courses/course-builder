@@ -1,5 +1,3 @@
-import { decompress } from 'shrink-string'
-
 import {
 	DeepgramResultsSchema,
 	srtFromTranscriptResult,
@@ -35,9 +33,7 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 	const { srt, wordLevelSrt, transcript } = await step.run(
 		'decompress results',
 		async () => {
-			const results = DeepgramResultsSchema.parse(
-				await decompress(event.data.results),
-			)
+			const results = event.data.results
 			const srt = srtFromTranscriptResult(results)
 			const wordLevelSrt = wordLevelSrtFromTranscriptResult(results)
 			const transcript = transcriptAsParagraphsWithTimestamps(results)
@@ -55,16 +51,6 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 			},
 		})
 	})
-
-	if (srt && wordLevelSrt && videoResourceId) {
-		await step.sendEvent('announce that srt is ready', {
-			name: VIDEO_SRT_READY_EVENT,
-			data: {
-				videoResourceId: videoResourceId,
-				srt,
-			},
-		})
-	}
 
 	await step.run('send the transcript to the party', async () => {
 		return await partyProvider.broadcastMessage({
