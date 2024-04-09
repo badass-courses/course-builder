@@ -1,3 +1,4 @@
+import { compress } from 'shrink-string'
 import { z } from 'zod'
 
 import {
@@ -121,7 +122,7 @@ export async function webhook(
 				data: {
 					videoResourceId,
 					moduleSlug: options.url.searchParams.get('moduleSlug'),
-					results,
+					results: await compress(results),
 				},
 			})
 			return {

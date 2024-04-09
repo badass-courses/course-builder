@@ -112,6 +112,7 @@
 		"liquidjs": "^10.9.4",
 		"lodash": "^4.17.21",
 		"openai-edge": "^1.2.2",
+		"shrink-string": "^3.1.9",
 		"srt-parser-2": "^1.2.3"
 	},
 	"devDependencies": {

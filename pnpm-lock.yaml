@@ -1438,6 +1438,9 @@ importers:
       openai-edge:
         specifier: ^1.2.2
         version: 1.2.2
+      shrink-string:
+        specifier: ^3.1.9
+        version: 3.1.9
       srt-parser-2:
         specifier: ^1.2.3
         version: 1.2.3
@@ -22383,6 +22386,11 @@ packages:
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     dependencies:
       nanoid: 2.1.11
+    dev: false
+
+  /shrink-string@3.1.9:
+    resolution: {integrity: sha512-fk1x3ovK1kaUotGCGO5Npv/7bKL8Qw7jkPUlqqPK/5U7vCr021SGkrkSu8BuBZxG0f/j4SqR2BN8gJcAtapfIg==}
+    engines: {node: '>=18.0.0'}
     dev: false
 
   /side-channel@1.0.6:

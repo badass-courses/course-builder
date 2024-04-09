@@ -1,4 +1,7 @@
+import { decompress } from 'shrink-string'
+
 import {
+	DeepgramResultsSchema,
 	srtFromTranscriptResult,
 	transcriptAsParagraphsWithTimestamps,
 	wordLevelSrtFromTranscriptResult,
@@ -29,9 +32,18 @@ const transcriptReadyHandler: CoreInngestHandler = async ({
 		throw new Error('video resource id is required')
 	}
 
-	const srt = srtFromTranscriptResult(event.data.results)
-	const wordLevelSrt = wordLevelSrtFromTranscriptResult(event.data.results)
-	const transcript = transcriptAsParagraphsWithTimestamps(event.data.results)
+	const { srt, wordLevelSrt, transcript } = await step.run(
+		'decompress results',
+		async () => {
+			const results = DeepgramResultsSchema.parse(
+				await decompress(event.data.results),
+			)
+			const srt = srtFromTranscriptResult(results)
+			const wordLevelSrt = wordLevelSrtFromTranscriptResult(results)
+			const transcript = transcriptAsParagraphsWithTimestamps(results)
+			return { srt, wordLevelSrt, transcript }
+		},
+	)
 
 	await step.run('update the video resource in the database', async () => {
 		await db.updateContentResourceFields({
