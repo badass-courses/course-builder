@@ -1,8 +1,8 @@
+import { Suspense } from 'react'
 import { Metadata } from 'next/types'
+import { Email } from '@/app/(email-list)/_components/email'
 import { Signature } from '@/app/(email-list)/_components/signature'
 import { Layout } from '@/components/app/layout'
-
-import { Email } from '../_components/email'
 
 export const metadata: Metadata = {
 	title: 'Confirm your subscription',
@@ -19,9 +19,9 @@ export default async function ConfirmSubscriptionPage() {
 					<div className="prose sm:prose-lg prose-p:text-balance mx-auto leading-relaxed">
 						<p>
 							We sent an email to{' '}
-							<strong>
+							<Suspense>
 								<Email />
-							</strong>{' '}
+							</Suspense>{' '}
 							with a confirmation link. Click the link to finish your
 							subscription.
 						</p>
