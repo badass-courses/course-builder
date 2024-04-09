@@ -22,7 +22,86 @@ ONE_MONTH_FROM_NOW.setMilliseconds(0)
 
 const userId = randomUUID()
 
+const UPGRADE_PURCHASE_ID = 'upgrade-product-id'
+const DEFAULT_PRODUCT_ID = 'default-product-id'
+const UPGRADE_PRODUCT_ID = 'upgrade-product-id'
+const VALID_INDIA_COUPON_ID = 'valid-india-coupon-id'
+const SITE_SALE_COUPON_ID = 'valid-site-coupon-id'
+const LARGE_SITE_SALE_COUPON_ID = 'valid-jumbo-coupon-id'
+const ORIGINAL_PPP_PURCHASE_ID = 'original-ppp-purchase-id'
+const UPGRADED_PPP_PURCHASE_ID = 'upgraded-ppp-purchase-id'
+
+const mockProduct = {
+	id: DEFAULT_PRODUCT_ID,
+	name: 'professional',
+	createdAt: new Date(),
+	key: 'hey',
+	status: 1,
+	quantityAvailable: -1,
+}
+
+const mockUpgradeProduct = {
+	id: UPGRADE_PRODUCT_ID,
+	name: 'professional',
+	createdAt: new Date(),
+	key: 'hey',
+	status: 1,
+	quantityAvailable: -1,
+}
+
+const mockPrice = {
+	id: 'price-id',
+	createdAt: new Date(),
+	status: 1,
+	productId: DEFAULT_PRODUCT_ID,
+	nickname: 'bah',
+	unitAmount: 100,
+}
+
+const mockUpgradePrice = {
+	id: 'price-id',
+	createdAt: new Date(),
+	status: 1,
+	productId: UPGRADE_PRODUCT_ID,
+	nickname: 'bah',
+	unitAmount: 180,
+}
+
+const MOCK_SITE_SALE_COUPON = {
+	id: SITE_SALE_COUPON_ID,
+	type: 'special',
+	percentageDiscount: '0.2',
+	identifier: 'coupon',
+	status: 1,
+	merchantAccountId: 'merchant-account',
+}
+
+const MOCK_LARGE_SITE_SALE_COUPON = {
+	id: LARGE_SITE_SALE_COUPON_ID,
+	type: 'special',
+	percentageDiscount: 0.8,
+	identifier: 'coupon',
+	status: 1,
+	merchantAccountId: 'merchant-account',
+}
+
+const MOCK_INDIA_COUPON = {
+	id: VALID_INDIA_COUPON_ID,
+	type: 'ppp',
+	percentageDiscount: 0.75,
+	identifier: 'coupon',
+	status: 1,
+	merchantAccountId: 'merchant-account',
+}
+
 export const fixtures = {
+	product: mockProduct,
+	upgradeProduct: mockUpgradeProduct,
+	price: mockPrice,
+	upgradePrice: mockUpgradePrice,
+	coupon: MOCK_SITE_SALE_COUPON,
+	largeCoupon: MOCK_LARGE_SITE_SALE_COUPON,
+	indiaCoupon: MOCK_INDIA_COUPON,
 	user: {
 		id: userId,
 		email: 'fill@murray.com',

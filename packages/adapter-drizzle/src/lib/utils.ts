@@ -6,8 +6,6 @@ import { type BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core'
 import type { AnySQLiteTable, SQLiteTableFn } from 'drizzle-orm/sqlite-core'
 
 import type { DefaultSchema as MySqlSchema } from './mysql/index.js'
-import type { DefaultSchema as PgSchema } from './pg.js'
-import type { DefaultSchema as SQLiteSchema } from './sqlite.js'
 
 export type AnyMySqlDatabase = MySqlDatabase<any, any>
 export type AnyPgDatabase = PgDatabase<any, any, any>
@@ -15,8 +13,6 @@ export type AnySQLiteDatabase = BaseSQLiteDatabase<any, any, any, any>
 
 export interface MinimumSchema {
 	mysql: MySqlSchema & Record<string, AnyMySqlTable>
-	pg: PgSchema & Record<string, AnyPgTable>
-	sqlite: SQLiteSchema & Record<string, AnySQLiteTable>
 }
 
 export type SqlFlavorOptions =
@@ -26,11 +22,7 @@ export type SqlFlavorOptions =
 
 export type ClientFlavors<Flavor> = Flavor extends AnyMySqlDatabase
 	? MinimumSchema['mysql']
-	: Flavor extends AnyPgDatabase
-		? MinimumSchema['pg']
-		: Flavor extends AnySQLiteDatabase
-			? MinimumSchema['sqlite']
-			: never
+	: never
 
 export type TableFn<Flavor> = Flavor extends AnyMySqlDatabase
 	? MySqlTableFn

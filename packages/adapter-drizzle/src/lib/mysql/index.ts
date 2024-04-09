@@ -19,8 +19,11 @@ import {
 	merchantCouponSchema,
 	MerchantCustomer,
 	MerchantProduct,
+	merchantProductSchema,
 	Price,
+	priceSchema,
 	Product,
+	productSchema,
 	Purchase,
 	purchaseSchema,
 	PurchaseUserTransfer,
@@ -79,7 +82,10 @@ import { getMerchantPriceSchema } from './schemas/commerce/merchant-price.js'
 import { getMerchantProductSchema } from './schemas/commerce/merchant-product.js'
 import { getMerchantSessionSchema } from './schemas/commerce/merchant-session.js'
 import { getPriceSchema } from './schemas/commerce/price.js'
-import { getProductSchema } from './schemas/commerce/product.js'
+import {
+	getProductRelationsSchema,
+	getProductSchema,
+} from './schemas/commerce/product.js'
 import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer.js'
 import {
 	getPurchaseRelationsSchema,
@@ -99,6 +105,10 @@ import {
 	getContentContributionRelationsSchema,
 	getContentContributionsSchema,
 } from './schemas/content/content-contributions.js'
+import {
+	getContentResourceProductRelationsSchema,
+	getContentResourceProductSchema,
+} from './schemas/content/content-resource-product.js'
 import {
 	getContentResourceResourceRelationsSchema,
 	getContentResourceResourceSchema,
@@ -165,6 +175,10 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		upgradableProducts: getUpgradableProductsSchema(mysqlTable),
 		upgradableProductsRelations:
 			getUpgradableProductsRelationsSchema(mysqlTable),
+		contentResourceProduct: getContentResourceProductSchema(mysqlTable),
+		contentResourceProductRelations:
+			getContentResourceProductRelationsSchema(mysqlTable),
+		productRelations: getProductRelationsSchema(mysqlTable),
 	} as const
 }
 
@@ -448,8 +462,16 @@ export function mySqlDrizzleAdapter(
 		}> {
 			throw new Error('Method not implemented.')
 		},
-		getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
-			throw new Error('Method not implemented.')
+		async getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
+			return couponSchema.nullable().parse(
+				await client
+					.select()
+					.from(coupon)
+					.where(
+						or(eq(coupon.id, couponIdOrCode), eq(coupon.code, couponIdOrCode)),
+					)
+					.then((res) => res[0] ?? null),
+			)
 		},
 		getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
@@ -484,21 +506,72 @@ export function mySqlDrizzleAdapter(
 		): Promise<MerchantCharge | null> {
 			throw new Error('Method not implemented.')
 		},
-		getMerchantCoupon(
+		async getMerchantCouponsForTypeAndPercent(params: {
+			type: string
+			percentageDiscount: number
+		}): Promise<MerchantCoupon[]> {
+			return z.array(merchantCouponSchema).parse(
+				await client.query.merchantCoupon.findMany({
+					where: and(
+						eq(merchantCoupon.type, params.type),
+						eq(
+							merchantCoupon.percentageDiscount,
+							params.percentageDiscount.toString(),
+						),
+					),
+				}),
+			)
+		},
+		async getMerchantCouponForTypeAndPercent(params: {
+			type: string
+			percentageDiscount: number
+		}): Promise<MerchantCoupon | null> {
+			return merchantCouponSchema.nullable().parse(
+				await client.query.merchantCoupon.findFirst({
+					where: and(
+						eq(merchantCoupon.type, params.type),
+						eq(
+							merchantCoupon.percentageDiscount,
+							params.percentageDiscount.toString(),
+						),
+					),
+				}),
+			)
+		},
+		async getMerchantCoupon(
 			merchantCouponId: string,
 		): Promise<MerchantCoupon | null> {
-			throw new Error('Method not implemented.')
+			return merchantCouponSchema.nullable().parse(
+				await client.query.merchantCoupon.findFirst({
+					where: eq(merchantCoupon.id, merchantCouponId),
+				}),
+			)
 		},
-		getMerchantProduct(
+		async getMerchantProduct(
 			stripeProductId: string,
 		): Promise<MerchantProduct | null> {
-			throw new Error('Method not implemented.')
+			return merchantProductSchema.nullable().parse(
+				await client.query.merchantProduct.findFirst({
+					where: eq(merchantProduct.identifier, stripeProductId),
+				}),
+			)
 		},
 		getPrice(productId: string): Promise<Price | null> {
 			throw new Error('Method not implemented.')
 		},
-		getProduct(productId: string): Promise<Product | null> {
-			throw new Error('Method not implemented.')
+		async getPriceForProduct(productId: string): Promise<Price | null> {
+			return priceSchema.nullable().parse(
+				await client.query.prices.findFirst({
+					where: eq(prices.productId, productId),
+				}),
+			)
+		},
+		async getProduct(productId: string): Promise<Product | null> {
+			return productSchema.nullable().parse(
+				await client.query.products.findFirst({
+					where: eq(products.id, productId),
+				}),
+			)
 		},
 		async getPurchase(purchaseId: string): Promise<Purchase | null> {
 			const purchase = await client.query.purchases.findFirst({
@@ -524,7 +597,7 @@ export function mySqlDrizzleAdapter(
 			userId: string,
 		): Promise<{
 			purchase?: Purchase
-			existingPurchase?: Purchase
+			existingPurchase?: Purchase & { product?: Product | null }
 			availableUpgrades: UpgradableProduct[]
 		}> {
 			const allPurchases = await this.getPurchasesForUser(userId)
@@ -806,7 +879,7 @@ export function mySqlDrizzleAdapter(
     WHERE
       type = 'videoResource'
       AND (id = ${id});
-      
+
  `
 			return client
 				.execute(query)

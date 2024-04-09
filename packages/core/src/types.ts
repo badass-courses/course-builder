@@ -7,6 +7,7 @@ import { CourseBuilderAdapter } from './adapters'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
+import { MerchantCoupon, Price, Product, Purchase } from './schemas'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -113,4 +114,33 @@ export interface ProgressWriter {
 		streamingResponse: Response | ReadableStream,
 	): Promise<AIOutput>
 	publishMessage(message: string): Promise<void>
+}
+
+type MerchantCouponWithCountry = MerchantCoupon & {
+	country?: string | undefined
+}
+
+export type MinimalMerchantCoupon = Omit<
+	MerchantCouponWithCountry,
+	'identifier' | 'merchantAccountId'
+>
+
+type ProductWithPrices = Product & { prices?: Price[] }
+
+export type FormattedPrice = {
+	id: string
+	quantity: number
+	unitPrice: number
+	fullPrice: number
+	fixedDiscountForUpgrade: number
+	calculatedPrice: number
+	availableCoupons: Array<
+		Omit<MerchantCouponWithCountry, 'identifier'> | undefined
+	>
+	appliedMerchantCoupon?: MinimalMerchantCoupon
+	upgradeFromPurchaseId?: string
+	upgradeFromPurchase?: Purchase
+	upgradedProduct?: ProductWithPrices | null
+	bulk: boolean
+	usedCouponId?: string
 }

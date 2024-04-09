@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	decimal,
 	int,
@@ -8,6 +8,9 @@ import {
 	timestamp,
 	varchar,
 } from 'drizzle-orm/mysql-core'
+
+import { getMerchantPriceSchema } from './merchant-price.js'
+import { getProductSchema } from './product.js'
 
 export function getPriceSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -29,4 +32,22 @@ export function getPriceSchema(mysqlTable: MySqlTableFn) {
 			}
 		},
 	)
+}
+
+export function getProductRelationsSchema(mysqlTable: MySqlTableFn) {
+	const product = getProductSchema(mysqlTable)
+	const price = getPriceSchema(mysqlTable)
+	const merchantPrice = getMerchantPriceSchema(mysqlTable)
+	return relations(price, ({ one, many }) => ({
+		product: one(product, {
+			fields: [price.productId],
+			references: [product.id],
+			relationName: 'user',
+		}),
+		merchantPrice: one(merchantPrice, {
+			fields: [price.id],
+			references: [merchantPrice.priceId],
+			relationName: 'merchantPrice',
+		}),
+	}))
 }

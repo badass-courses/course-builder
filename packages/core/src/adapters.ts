@@ -52,6 +52,7 @@ export interface CourseBuilderAdapter<
 		id: string
 		fields: Record<string, any>
 	}): Awaitable<ContentResource | null>
+	getPriceForProduct(productId: string): Promise<Price | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -161,6 +162,18 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	} | null> {
 		return Promise.resolve(null)
 	},
+	getMerchantCouponForTypeAndPercent(params: {
+		type: string
+		percentageDiscount: number
+	}): Promise<MerchantCoupon | null> {
+		return Promise.resolve(null)
+	},
+	getMerchantCouponsForTypeAndPercent(params: {
+		type: string
+		percentageDiscount: number
+	}): Promise<MerchantCoupon[]> {
+		return Promise.resolve([])
+	},
 	getMerchantCoupon(merchantCouponId: string): Promise<MerchantCoupon | null> {
 		return Promise.resolve(null)
 	},
@@ -168,6 +181,9 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 		return Promise.resolve(null)
 	},
 	getPrice(productId: string): Promise<Price | null> {
+		return Promise.resolve(null)
+	},
+	getPriceForProduct(productId: string): Promise<Price | null> {
 		return Promise.resolve(null)
 	},
 	getProduct(productId: string): Promise<Product | null> {
@@ -361,6 +377,14 @@ interface SkillProductsCommerceSdk {
 	getProduct(productId: string): Promise<Product | null>
 	getPrice(productId: string): Promise<Price | null>
 	getMerchantCoupon(merchantCouponId: string): Promise<MerchantCoupon | null>
+	getMerchantCouponForTypeAndPercent(params: {
+		type: string
+		percentageDiscount: number
+	}): Promise<MerchantCoupon | null>
+	getMerchantCouponsForTypeAndPercent(params: {
+		type: string
+		percentageDiscount: number
+	}): Promise<MerchantCoupon[]>
 	getCoupon(couponIdOrCode: string): Promise<Coupon | null>
 	getDefaultCoupon(productIds?: string[]): Promise<{
 		defaultMerchantCoupon: MerchantCoupon

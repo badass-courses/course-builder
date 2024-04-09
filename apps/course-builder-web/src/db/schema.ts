@@ -30,7 +30,9 @@ export const {
 	merchantSession,
 	prices,
 	products,
+	productRelations,
 	purchases,
+	purchaseRelations,
 	purchaseUserTransfer,
 	communicationChannel,
 	communicationPreferenceTypes,
@@ -45,4 +47,6 @@ export const {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	contentResourceProduct,
+	contentResourceProductRelations,
 } = getCourseBuilderSchema(mysqlTable)
