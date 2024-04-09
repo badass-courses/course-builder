@@ -177,6 +177,17 @@ export async function formatPricesForProduct(
 	if (!price) throw new PriceFormattingError(`no-price-found`, noContextOptions)
 
 	// TODO: give this function a better name like, `determineCouponDetails`
+	console.log({
+		merchantCouponId,
+		country,
+		quantity,
+		userId,
+		productId: product.id,
+		purchaseToBeUpgraded: upgradeFromPurchase,
+		autoApplyPPP,
+		usedCoupon,
+	})
+
 	const { appliedMerchantCoupon, appliedCouponType, ...result } =
 		await determineCouponToApply({
 			prismaCtx: ctx,
@@ -200,13 +211,15 @@ export async function formatPricesForProduct(
 		})
 	}
 
-	// Right now, we have fixed discounts to apply to upgrades for indvidual
+	// Right now, we have fixed discounts to apply to upgrades for individual
 	// purchases. If it is a bulk purchase, a fixed discount shouldn't be
 	// applied. It's likely this will change in the future, so this allows us
 	// to handle both and distinguishes them as two different flows.
 	const fixedDiscountForUpgrade = result.bulk
 		? 0
 		: await fireFixedDiscountForIndividualUpgrade()
+
+	console.log({ fixedDiscountForUpgrade, result })
 
 	const unitPrice: number = price.unitAmount
 	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade

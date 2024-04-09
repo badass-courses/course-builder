@@ -53,6 +53,11 @@ export const determineCouponToApply = async (
 	// TODO: What are the lookups and logic checks we can
 	// skip when there is no appliedMerchantCouponId?
 
+	console.log('🎈 determineCouponToApply', {
+		country,
+		quantity,
+	})
+
 	const { getMerchantCoupon, getPurchasesForUser } = prismaCtx
 
 	// if usedCoupon is restricted to a different product, we shouldn't apply it
@@ -72,6 +77,8 @@ export const determineCouponToApply = async (
 			: null
 
 	const userPurchases = await getPurchasesForUser(userId)
+
+	console.log({ userPurchases })
 
 	const pppDetails = await getPPPDetails({
 		specialMerchantCoupon: specialMerchantCouponToApply,
@@ -93,6 +100,8 @@ export const determineCouponToApply = async (
 		pppApplied: pppDetails.pppApplied,
 	})
 
+	console.log({ bulkCouponToBeApplied, consideredBulk })
+
 	let couponToApply: MinimalMerchantCoupon | null = null
 	if (pppDetails.status === VALID_PPP) {
 		couponToApply = pppDetails.pppCouponToBeApplied
@@ -101,6 +110,8 @@ export const determineCouponToApply = async (
 	} else {
 		couponToApply = specialMerchantCouponToApply
 	}
+
+	console.log({ couponToApply })
 
 	// It is only every PPP that ends up in the Available Coupons
 	// list because with Special and Bulk we auto-apply those if
@@ -169,6 +180,8 @@ const getPPPDetails = async ({
 	const hasOnlyPPPDiscountedPurchases = !hasMadeNonPPPDiscountedPurchase
 
 	const expectedPPPDiscountPercent = getPPPDiscountPercent(country)
+
+	console.log({ expectedPPPDiscountPercent, hasOnlyPPPDiscountedPurchases })
 
 	const shouldLookupPPPMerchantCouponForUpgrade =
 		appliedMerchantCoupon === null &&
@@ -318,6 +331,7 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 		newPurchaseQuantity: quantity,
 		prismaCtx,
 	})
+
 	const consideredBulk = seatCount > 1
 
 	const bulkCouponPercent = getBulkDiscountPercent(seatCount)
@@ -335,6 +349,8 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 			prismaCtx,
 		)
 		const bulkCoupon = bulkCoupons[0]
+
+		console.log({ bulkCoupon })
 
 		return { bulkCouponToBeApplied: bulkCoupon, consideredBulk }
 	} else {
@@ -359,6 +375,7 @@ const getQualifyingSeatCount = async ({
 		({ productId, bulkCoupon }) =>
 			productId === purchasingProductId && Boolean(bulkCoupon),
 	)
+
 	const existingSeatsPurchasedForThisProduct =
 		bulkPurchase?.bulkCoupon?.maxUses || 0
 

@@ -526,17 +526,24 @@ export function mySqlDrizzleAdapter(
 			type: string
 			percentageDiscount: number
 		}): Promise<MerchantCoupon | null> {
-			return merchantCouponSchema.nullable().parse(
-				await client.query.merchantCoupon.findFirst({
-					where: and(
-						eq(merchantCoupon.type, params.type),
-						eq(
-							merchantCoupon.percentageDiscount,
-							params.percentageDiscount.toString(),
-						),
+			const foundMerchantCoupon = await client.query.merchantCoupon.findFirst({
+				where: and(
+					eq(merchantCoupon.type, params.type),
+					eq(
+						merchantCoupon.percentageDiscount,
+						params.percentageDiscount.toString(),
 					),
-				}),
-			)
+				),
+			})
+
+			const parsed = merchantCouponSchema
+				.nullable()
+				.safeParse(foundMerchantCoupon)
+			if (parsed.success) {
+				return parsed.data
+			}
+
+			return null
 		},
 		async getMerchantCoupon(
 			merchantCouponId: string,
@@ -583,7 +590,6 @@ export function mySqlDrizzleAdapter(
 		async createPurchase(options): Promise<Purchase> {
 			const newPurchaseId = options.id || `purchase-${v4()}`
 			await client.insert(purchaseTable).values({
-				state: 'Valid',
 				...options,
 				id: newPurchaseId,
 			})
@@ -714,7 +720,7 @@ export function mySqlDrizzleAdapter(
 			const userPurchases = await client.query.purchases.findMany({
 				where: and(
 					eq(purchaseTable.userId, userId),
-					inArray(purchaseTable.state, visiblePurchaseStates),
+					inArray(purchaseTable.status, visiblePurchaseStates),
 				),
 				with: {
 					user: true,
@@ -965,7 +971,6 @@ export function mySqlDrizzleAdapter(
 			return parsedResource.data
 		},
 		async createUser(data) {
-			console.log(data)
 			try {
 				const id = crypto.randomUUID()
 

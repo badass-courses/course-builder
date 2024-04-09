@@ -1,14 +1,17 @@
 import { first } from 'lodash'
+import { v4 } from 'uuid'
 import {
 	afterAll,
 	afterEach,
 	beforeAll,
 	beforeEach,
+	describe,
 	expect,
 	test,
 } from 'vitest'
 
 import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { getBulkDiscountPercent } from '@coursebuilder/core/lib/pricing/bulk-coupon'
 import { formatPricesForProduct } from '@coursebuilder/core/lib/pricing/format-prices-for-product'
 import { getCalculatedPrice } from '@coursebuilder/core/lib/pricing/get-calculated-price'
 import { Coupon, MerchantCoupon } from '@coursebuilder/core/schemas'
@@ -20,10 +23,14 @@ export async function runFormatPricingTests(options: TestOptions) {
 
 	beforeEach(async () => {
 		await options.db.createProduct?.(options.fixtures?.product)
+		await options.db.createStandardMerchantCoupons?.()
+		await options.db.createMerchantCoupon?.(options.fixtures?.coupon)
 	})
 
 	afterEach(async () => {
 		await options.db.deleteProduct?.(options.fixtures?.product?.id)
+		await options.db.deleteMerchantCoupons?.()
+		await options.db.deletePurchases?.(options.fixtures?.product?.id)
 	})
 
 	test('basic product returns product', async () => {
@@ -61,177 +68,194 @@ export async function runFormatPricingTests(options: TestOptions) {
 		expect(expectedPrice).toBe(calculatedPrice)
 	})
 
-	// for (const quantity of [7, 13, 26, 42]) {
-	// 	test(`applies sale coupon when bulk [${quantity}] discount is smaller`, async () => {
-	// 		mockCtx.merchantCoupon.findMany.mockResolvedValue([
-	// 			getMockCoupon('bulk', getBulkDiscountPercent(quantity)),
-	// 		])
-	//
-	// 		mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_SITE_SALE_COUPON)
-	//
-	// 		const { expectedPrice, calculatedPrice } =
-	// 			await expectedPriceForDefaultCoupon(quantity)
-	// 		expect(expectedPrice).toBe(calculatedPrice)
-	// 	})
-	// }
-	//
-	// for (const quantity of [69, 89, 99]) {
-	// 	test(`applies bulk [${quantity}] discount is more than default`, async () => {
-	// 		mockCtx.merchantCoupon.findMany.mockResolvedValue([
-	// 			getMockCoupon('bulk', getBulkDiscountPercent(quantity)),
-	// 		])
-	//
-	// 		mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_SITE_SALE_COUPON)
-	//
-	// 		const { calculatedPrice, unitPrice, appliedMerchantCoupon } =
-	// 			await formatPricesForProduct({
-	// 				productId: DEFAULT_PRODUCT_ID,
-	// 				quantity,
-	// 				merchantCouponId: SITE_SALE_COUPON_ID,
-	// 				ctx,
-	// 			})
-	//
-	// 		const expectedPrice = getCalculatedPrice({
-	// 			unitPrice,
-	// 			percentOfDiscount: appliedMerchantCoupon?.percentageDiscount,
-	// 			quantity,
-	// 		})
-	//
-	// 		expect(expectedPrice).toBe(calculatedPrice)
-	// 	})
-	// }
+	describe('bulk discount', () => {
+		beforeEach(async () => {})
 
-	// test('does not apply restricted coupon to other product', async () => {
-	// 	const OTHER_PRODUCT_ID = 'other-product-id'
-	// 	const ONE_OFF_COUPON_FROM_CODE = 'one-off-coupon-from-code-id'
-	// 	const ONE_OFF_MERCHANT_COUPON_ID = 'one-off-merchant-coupon-id'
-	//
-	// 	const mockOneOffCoupon = {
-	// 		id: ONE_OFF_COUPON_FROM_CODE,
-	// 		merchantCouponId: ONE_OFF_MERCHANT_COUPON_ID,
-	// 		restrictedToProductId: OTHER_PRODUCT_ID,
-	// 	} as Coupon
-	//
-	// 	const mockOneOffMerchantCoupon = {
-	// 		id: ONE_OFF_MERCHANT_COUPON_ID,
-	// 		type: 'special',
-	// 		percentageDiscount: new Prisma.Decimal(0.2),
-	// 		identifier: 'coupon',
-	// 		status: 1,
-	// 		merchantAccountId: 'merchant-account',
-	// 	}
-	//
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(mockOneOffMerchantCoupon)
-	//
-	// 	mockCtx.coupon.findFirst.mockResolvedValue(mockOneOffCoupon)
-	//
-	// 	const { calculatedPrice, unitPrice, appliedMerchantCoupon } =
-	// 		await formatPricesForProduct({
-	// 			productId: DEFAULT_PRODUCT_ID,
-	// 			quantity: 1,
-	// 			merchantCouponId: ONE_OFF_MERCHANT_COUPON_ID,
-	// 			usedCouponId: ONE_OFF_COUPON_FROM_CODE,
-	// 			ctx,
-	// 		})
-	//
-	// 	const expectedPrice = 100
-	//
-	// 	expect(expectedPrice).toBe(calculatedPrice)
-	// 	expect(appliedMerchantCoupon).toBe(undefined)
-	// })
-	//
-	// test('product with quantity 5 calculatedPrice to have discount applied', async () => {
-	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([
-	// 		getMockCoupon('bulk', 0.05),
-	// 	])
-	// 	const quantity = 5
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		quantity,
-	// 		ctx,
-	// 	})
-	// 	const expectedPrice = 475
-	//
-	// 	expect(expectedPrice).toBe(product?.calculatedPrice)
-	// })
-	//
-	// test('multiple purchases meeting quantity threshold have bulk discount applied', async () => {
-	// 	const userId = 'user-123'
-	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([
-	// 		getMockCoupon('bulk', 0.05),
-	// 	])
-	// 	mockCtx.purchase.findMany.mockResolvedValue([
-	// 		getMockExistingBulkPurchase(userId, DEFAULT_PRODUCT_ID, 3),
-	// 	])
-	// 	const quantity = 2
-	// 	const product = await formatPricesForProduct({
-	// 		userId,
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		quantity,
-	// 		ctx,
-	// 	})
-	// 	const expectedPrice = 190 // discounted 5% on 200
-	//
-	// 	expect(expectedPrice).toBe(product?.calculatedPrice)
-	// })
-	//
-	// test('product no available coupons if country is "US"', async () => {
-	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([MOCK_INDIA_COUPON])
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		country: 'US',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(product?.availableCoupons.length).toBe(0)
-	// })
-	//
-	// test('upgrade PPP purchase to unrestricted access', async () => {
-	// 	const ORIGINAL_PPP_PURCHASE_ID = 'original-ppp-purchase-id'
-	// 	const originalPurchasePrice = 25
-	// 	// mock the purchase to be upgraded, which was PPP restricted
-	// 	const mockPurchaseToBeUpgraded = {
-	// 		id: ORIGINAL_PPP_PURCHASE_ID,
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		userId: 'default-user',
-	// 		createdAt: new Date(),
-	// 		status: 'Restricted',
-	// 		totalAmount: new Prisma.Decimal(originalPurchasePrice),
-	// 	}
-	//
-	// 	mockCtx.purchase.findFirst.mockResolvedValue(
-	// 		// @ts-ignore
-	// 		mockPurchaseToBeUpgraded,
-	// 	)
-	//
-	// 	const expectedPrice = mockPrice.unitAmount - originalPurchasePrice
-	//
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		upgradeFromPurchaseId: ORIGINAL_PPP_PURCHASE_ID,
-	// 		country: 'US',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(product.calculatedPrice).toBe(expectedPrice)
-	// })
+		for (const quantity of [7, 13, 26, 42]) {
+			test(`applies sale coupon when bulk [${quantity}] discount is smaller`, async () => {
+				const { expectedPrice, calculatedPrice } =
+					await expectedPriceForDefaultCoupon(quantity)
 
-	// test('upgrade PPP Purchase to Bundle w/ Unrestricted Access', async () => {
-	// 	const originalPurchasePrice = 25
-	//
-	// 	mockPPPPurchaseAndUpgradeProduct()
-	//
-	// 	const expectedPrice = mockUpgradePrice.unitAmount - originalPurchasePrice
-	//
-	// 	const product = await formatPricesForProduct({
-	// 		productId: UPGRADE_PRODUCT_ID,
-	// 		upgradeFromPurchaseId: ORIGINAL_PPP_PURCHASE_ID,
-	// 		country: 'US',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(product.calculatedPrice).toBe(expectedPrice)
-	// })
+				expect(expectedPrice).toBe(calculatedPrice)
+			})
+		}
+
+		for (const quantity of [69, 89, 99]) {
+			test(`applies bulk [${quantity}] discount is more than default`, async () => {
+				const { calculatedPrice, unitPrice, appliedMerchantCoupon } =
+					await formatPricesForProduct({
+						productId: options.fixtures?.product?.id,
+						quantity,
+						merchantCouponId: options.fixtures?.coupon?.id,
+						ctx,
+					})
+
+				const expectedPrice = getCalculatedPrice({
+					unitPrice,
+					percentOfDiscount: appliedMerchantCoupon?.percentageDiscount,
+					quantity,
+				})
+
+				expect(expectedPrice).toBe(calculatedPrice)
+			})
+		}
+	})
+
+	test('does not apply restricted coupon to other product', async () => {
+		const OTHER_PRODUCT_ID = v4()
+		const ONE_OFF_COUPON_FROM_CODE = v4()
+		const ONE_OFF_MERCHANT_COUPON_ID = v4()
+
+		await options.db.createProduct?.({
+			id: OTHER_PRODUCT_ID,
+			name: 'basic',
+			createdAt: new Date(),
+			key: 'hey',
+			status: 1,
+			quantityAvailable: -1,
+		})
+
+		const mockOneOffCoupon = {
+			id: ONE_OFF_COUPON_FROM_CODE,
+			merchantCouponId: ONE_OFF_MERCHANT_COUPON_ID,
+			restrictedToProductId: OTHER_PRODUCT_ID,
+			percentageDiscount: 0.2,
+		} as Coupon
+
+		const mockOneOffMerchantCoupon = {
+			id: ONE_OFF_MERCHANT_COUPON_ID,
+			type: 'special',
+			percentageDiscount: 0.2,
+			identifier: v4(),
+			status: 1,
+			merchantAccountId: 'merchant-account',
+		}
+
+		await options.db.createCoupon?.(mockOneOffCoupon)
+		await options.db.createMerchantCoupon?.(mockOneOffMerchantCoupon)
+
+		const { calculatedPrice, unitPrice, appliedMerchantCoupon } =
+			await formatPricesForProduct({
+				productId: options.fixtures?.product?.id,
+				quantity: 1,
+				merchantCouponId: ONE_OFF_MERCHANT_COUPON_ID,
+				usedCouponId: ONE_OFF_COUPON_FROM_CODE,
+				ctx,
+			})
+
+		const expectedPrice = 100
+
+		expect(expectedPrice).toBe(calculatedPrice)
+		expect(appliedMerchantCoupon).toBe(undefined)
+	})
+
+	test('product with quantity 5 calculatedPrice to have discount applied', async () => {
+		const quantity = 5
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			quantity,
+			ctx,
+		})
+		const expectedPrice = 475
+
+		expect(expectedPrice).toBe(product?.calculatedPrice)
+	})
+
+	test('multiple purchases meeting quantity threshold have bulk discount applied', async () => {
+		const userId = v4()
+
+		const basePurchaseValues = getMockExistingBulkPurchase(
+			userId,
+			options.fixtures?.product?.id,
+			3,
+		)
+		const bulkCoupon = await options.db.createCoupon?.({
+			id: `coupon-${v4()}`,
+			identifier: `coupon-${v4()}`,
+			maxUses: 3,
+			status: 1,
+			merchantAccountId: 'merchant-account',
+			usedCount: 3,
+			percentageDiscount: 1.0,
+			restrictedToProductId: options.fixtures?.product?.id,
+		})
+
+		await options.db.createPurchase?.({
+			...basePurchaseValues,
+			userId,
+			bulkCouponId: bulkCoupon.id,
+		})
+
+		const quantity = 2
+		const { calculatedPrice } = await formatPricesForProduct({
+			userId,
+			productId: options.fixtures?.product?.id,
+			quantity,
+			ctx,
+		})
+		const expectedPrice = 190 // discounted 5% on 200
+
+		expect(expectedPrice).toBe(calculatedPrice)
+	})
+
+	test('product no available coupons if country is "US"', async () => {
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			country: 'US',
+			ctx,
+		})
+
+		expect(product?.availableCoupons.length).toBe(0)
+	})
+
+	test('upgrade PPP purchase to unrestricted access', async () => {
+		const ORIGINAL_PPP_PURCHASE_ID = v4()
+		const originalPurchasePrice = 25
+		// mock the purchase to be upgraded, which was PPP restricted
+
+		await options.db.createPurchase?.({
+			id: ORIGINAL_PPP_PURCHASE_ID,
+			productId: options.fixtures?.product?.id,
+			userId: options.fixtures?.user?.id,
+			createdAt: new Date(),
+			status: 'Restricted',
+			totalAmount: originalPurchasePrice,
+		})
+
+		const price = await options.db.getPriceForProduct?.(
+			options.fixtures?.product?.id,
+		)
+
+		const expectedPrice = price.unitAmount - originalPurchasePrice
+
+		const { calculatedPrice } = await formatPricesForProduct({
+			userId: options.fixtures?.user?.id,
+			productId: options.fixtures?.product?.id,
+			upgradeFromPurchaseId: ORIGINAL_PPP_PURCHASE_ID,
+			country: 'US',
+			ctx,
+		})
+
+		expect(expectedPrice).toBe(calculatedPrice)
+	})
+
+	test('upgrade PPP Purchase to Bundle w/ Unrestricted Access', async () => {
+		const originalPurchasePrice = 25
+
+		const { originalPurchaseId, upgradedProductId } =
+			await mockPPPPurchaseAndUpgradeProduct()
+
+		const expectedPrice = 200 - originalPurchasePrice
+
+		const product = await formatPricesForProduct({
+			productId: upgradedProductId,
+			upgradeFromPurchaseId: originalPurchaseId,
+			country: 'US',
+			ctx,
+		})
+
+		expect(product.calculatedPrice).toBe(expectedPrice)
+	})
 
 	// test('an applied coupon should calculate the correct price even with ppp applied', async () => {
 	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([MOCK_INDIA_COUPON])
@@ -277,27 +301,25 @@ export async function runFormatPricingTests(options: TestOptions) {
 	// 	expect(availableCoupons.length).toBe(0)
 	// })
 	//
-	// test('product should have available coupons if country is "IN"', async () => {
-	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([MOCK_INDIA_COUPON])
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		country: 'IN',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(product?.availableCoupons.length).toBeGreaterThan(0)
-	// })
-	//
-	// test('available ppp coupons should have country "IN" set', async () => {
-	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([MOCK_INDIA_COUPON])
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		country: 'IN',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(first(product?.availableCoupons)?.country).toBe('IN')
-	// })
+	test('product should have available coupons if country is "IN"', async () => {
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			country: 'IN',
+			ctx,
+		})
+
+		expect(product?.availableCoupons.length).toBeGreaterThan(0)
+	})
+
+	test('available ppp coupons should have country "IN" set', async () => {
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			country: 'IN',
+			ctx,
+		})
+
+		expect(first(product?.availableCoupons)?.country).toBe('IN')
+	})
 	//
 	// test('available ppp coupons should have country "IN" set with active sale', async () => {
 	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([MOCK_INDIA_COUPON])
@@ -326,66 +348,56 @@ export async function runFormatPricingTests(options: TestOptions) {
 	// 	expect(product.appliedMerchantCoupon?.id).toBeDefined()
 	// })
 
-	// test('product should have applied coupon present if "IN" and valid couponId', async () => {
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_INDIA_COUPON)
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		merchantCouponId: VALID_INDIA_COUPON_ID,
-	// 		country: 'IN',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(product?.appliedMerchantCoupon).toBeDefined()
-	// })
-	//
-	// test('product should calculate discount if country is "IN" and couponId', async () => {
-	// 	mockDefaultProduct()
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_INDIA_COUPON)
-	//
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		merchantCouponId: VALID_INDIA_COUPON_ID,
-	// 		country: 'IN',
-	// 		ctx,
-	// 	})
-	//
-	// 	const expectedPrice = 25
-	//
-	// 	expect(expectedPrice).toBe(product?.calculatedPrice)
-	// })
-	//
-	// test('PPP should be un-applied if quantity is over 1', async () => {
-	// 	mockDefaultProduct()
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_INDIA_COUPON)
-	//
-	// 	const quantity = 3
-	//
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		merchantCouponId: VALID_INDIA_COUPON_ID,
-	// 		country: 'IN',
-	// 		quantity,
-	// 		ctx,
-	// 	})
-	//
-	// 	const expectedPrice = 100 * quantity
-	//
-	// 	expect(expectedPrice).toBe(product?.calculatedPrice)
-	// })
-	//
-	// test('applied ppp coupon should have id property', async () => {
-	// 	mockDefaultProduct()
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_INDIA_COUPON)
-	//
-	// 	const product = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		merchantCouponId: VALID_INDIA_COUPON_ID,
-	// 		country: 'IN',
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(product.appliedMerchantCoupon?.id).toBeDefined()
-	// })
+	test('product should have applied coupon present if "IN" and valid couponId', async () => {
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			merchantCouponId: '5d0a929cb56b',
+			country: 'IN',
+			ctx,
+		})
+
+		expect(product?.appliedMerchantCoupon).toBeDefined()
+	})
+
+	test('product should calculate discount if country is "IN" and couponId', async () => {
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			merchantCouponId: '5d0a929cb56b',
+			country: 'IN',
+			ctx,
+		})
+
+		const expectedPrice = 25
+
+		expect(expectedPrice).toBe(product?.calculatedPrice)
+	})
+
+	test('PPP should be un-applied if quantity is over 1', async () => {
+		const quantity = 3
+
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			merchantCouponId: '5d0a929cb56b',
+			country: 'IN',
+			quantity,
+			ctx,
+		})
+
+		const expectedPrice = 100 * quantity
+
+		expect(expectedPrice).toBe(product?.calculatedPrice)
+	})
+
+	test('applied ppp coupon should have id property', async () => {
+		const product = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			merchantCouponId: '5d0a929cb56b',
+			country: 'IN',
+			ctx,
+		})
+
+		expect(product.appliedMerchantCoupon?.id).toBeDefined()
+	})
 
 	// test('applies fixed discount for previous purchase', async () => {
 	// 	const userId = 'user-123'
@@ -696,63 +708,50 @@ export async function runFormatPricingTests(options: TestOptions) {
 	// 	mockCtx.price.findMany.mockResolvedValueOnce([mockPrice])
 	// }
 	//
-	// const mockPPPPurchaseAndUpgradeProduct = () => {
-	// 	const originalPurchasePrice = 25
-	// 	// mock the purchase to be upgraded, which was PPP restricted
-	// 	const mockPurchaseToBeUpgraded = {
-	// 		id: ORIGINAL_PPP_PURCHASE_ID,
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		userId: 'default-user',
-	// 		createdAt: new Date(),
-	// 		status: 'Restricted',
-	// 		totalAmount: new Prisma.Decimal(originalPurchasePrice),
-	// 	}
-	//
-	// 	mockCtx.purchase.findFirst.mockResolvedValueOnce(
-	// 		// @ts-ignore
-	// 		mockPurchaseToBeUpgraded,
-	// 	)
-	//
-	// 	mockCtx.upgradableProducts.findMany.mockResolvedValue([
-	// 		{
-	// 			// @ts-ignore
-	// 			upgradableTo: {
-	// 				id: mockUpgradeProduct.id,
-	// 				name: mockUpgradeProduct.name,
-	// 			},
-	// 			upgradableFrom: { id: mockProduct.id, name: mockProduct.name },
-	// 		},
-	// 	])
-	//
-	// 	// mock the originally purchased product and its price
-	// 	// @ts-ignore
-	// 	mockCtx.product.findFirst.mockResolvedValueOnce({
-	// 		...mockProduct,
-	// 		prices: [mockPrice],
-	// 	})
-	//
-	// 	// mock all purchases for user
-	// 	const mockAllPurchasesForUser = [
-	// 		{
-	// 			status: 'Restricted',
-	// 		},
-	// 	]
-	// 	// @ts-ignore
-	// 	mockCtx.purchase.findMany.mockResolvedValue(mockAllPurchasesForUser)
-	//
-	// 	// mock the product being upgraded to, with price
-	// 	// @ts-ignore
-	// 	mockCtx.product.findFirst.mockResolvedValueOnce({
-	// 		...mockUpgradeProduct,
-	// 		prices: [mockUpgradePrice],
-	// 	})
-	// 	mockCtx.price.findFirst.mockResolvedValueOnce(mockUpgradePrice)
-	//
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(MOCK_INDIA_COUPON)
-	//
-	// 	// fixed discount price lookup
-	// 	mockCtx.price.findMany.mockResolvedValueOnce([mockPrice])
-	// }
+	const mockPPPPurchaseAndUpgradeProduct = async () => {
+		const ORIGINAL_PPP_PURCHASE_ID = v4()
+		const originalPurchasePrice = 25
+
+		// mock the purchase to be upgraded, which was PPP restricted
+		await options.db.createPurchase?.({
+			id: ORIGINAL_PPP_PURCHASE_ID,
+			productId: options.fixtures?.product?.id,
+			userId: options.fixtures?.user?.id,
+			createdAt: new Date(),
+			status: 'Restricted',
+			totalAmount: originalPurchasePrice,
+		})
+
+		// create a fancy bundle to upgrade to
+		const fancyProductId = v4()
+		await options.db.createProduct?.(
+			{
+				id: fancyProductId,
+				name: 'way better bundle',
+				createdAt: new Date(),
+				key: options.fixtures?.product?.key,
+				status: 1,
+				quantityAvailable: -1,
+			},
+			{
+				createdAt: new Date(),
+				status: 1,
+				productId: fancyProductId,
+				nickname: 'fancy',
+				unitAmount: '200',
+			},
+		)
+
+		await options.db.createUpgradableProduct?.(
+			options.fixtures?.product?.id,
+			fancyProductId,
+		)
+
+		return {
+			upgradedProductId: fancyProductId,
+			originalPurchaseId: ORIGINAL_PPP_PURCHASE_ID,
+		}
+	}
 
 	// const mockTwoPurchasePPPPathToUpgradeProduct = () => {
 	// 	const originalPurchasePrice = 25
@@ -822,10 +821,10 @@ export async function runFormatPricingTests(options: TestOptions) {
 		percentageDiscount: number,
 	): MerchantCoupon {
 		return {
-			id: `${type}-coupon`,
+			id: `${type}-coupon-${v4()}`,
 			type,
 			percentageDiscount: percentageDiscount,
-			identifier: 'coupon',
+			identifier: `coupon-${v4()}`,
 			status: 1,
 			merchantAccountId: 'merchant-account',
 		}
@@ -856,7 +855,7 @@ export async function runFormatPricingTests(options: TestOptions) {
 			id: 'purchase-123',
 			userId,
 			productId,
-			bulkCoupon: { maxUses: quantity },
+
 			...inconsequentialValues,
 		}
 	}
@@ -867,6 +866,7 @@ export async function runFormatPricingTests(options: TestOptions) {
 		const appliedMerchantCoupon = await getMerchantCoupon(
 			appliedMerchantCouponId,
 		)
+
 		const { calculatedPrice, unitPrice } = await formatPricesForProduct({
 			productId: options.fixtures?.product?.id,
 			quantity,

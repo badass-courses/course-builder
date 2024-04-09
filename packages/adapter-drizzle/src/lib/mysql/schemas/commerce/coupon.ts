@@ -1,12 +1,12 @@
 import { sql } from 'drizzle-orm'
 import {
+	boolean,
 	decimal,
 	int,
 	json,
 	MySqlTableFn,
 	primaryKey,
 	timestamp,
-	tinyint,
 	unique,
 	varchar,
 } from 'drizzle-orm/mysql-core'
@@ -23,7 +23,7 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 			expires: timestamp('expires', { mode: 'date', fsp: 3 }),
 			metadata: json('fields').$type<Record<string, any>>().default({}),
 			maxUses: int('maxUses').default(-1).notNull(),
-			default: tinyint('default').default(0).notNull(),
+			default: boolean('default').default(false).notNull(),
 			merchantCouponId: varchar('merchantCouponId', { length: 191 }),
 			status: int('status').default(0).notNull(),
 			usedCount: int('usedCount').default(0).notNull(),
