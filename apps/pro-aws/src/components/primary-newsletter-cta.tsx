@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
-import Balancer from 'react-wrap-balancer'
 import { twMerge } from 'tailwind-merge'
 
 import common from '../text/common'
@@ -54,8 +53,8 @@ export const PrimaryNewsletterCta: React.FC<
 			) : (
 				<div className="relative flex flex-col items-center justify-center py-16">
 					<Image className="absolute -z-10" />
-					<h2 className="max-w-lg text-center text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-						<Balancer>{title}</Balancer>
+					<h2 className="font-heading max-w-lg text-balance text-center text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+						{title}
 					</h2>
 					<h3 className="pt-4 text-center text-lg">{byline}</h3>
 				</div>
@@ -63,6 +62,7 @@ export const PrimaryNewsletterCta: React.FC<
 			<SubscribeToConvertkitForm
 				onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 				actionLabel={actionLabel}
+				className="[&_input]:h-16"
 			/>
 			<div className="h-10 w-10" />
 			<p data-nospam="" className="pt-0 text-center text-sm opacity-75 sm:pt-8">

@@ -16,10 +16,10 @@ const Home = async () => {
 	return (
 		<Layout>
 			<header className="relative mx-auto flex aspect-square w-full max-w-screen-xl flex-col items-center justify-center border-x border-b py-24 sm:aspect-[1280/800]">
-				<h1 className="leading-0 w-full text-center text-5xl font-bold text-white sm:text-7xl lg:text-8xl">
+				<h1 className="leading-0 font-heading w-full text-center text-5xl font-bold text-white sm:text-7xl lg:text-8xl">
 					<Balancer>Navigate the AWS Maze with Confidence</Balancer>
 				</h1>
-				<h2 className="text-primary pt-2 text-base font-medium tracking-widest sm:pt-5 sm:text-xl lg:text-2xl">
+				<h2 className="text-primary font-heading pt-2 text-base font-medium tracking-widest sm:pt-5 sm:text-xl lg:text-2xl">
 					Professional AWS Training
 				</h2>
 				<div className="bottom-[20%] right-[15%] mt-8 flex items-center gap-2 lg:absolute lg:mt-0">
@@ -57,9 +57,7 @@ You can build anything you can imagine on AWS. You're more than capable. You jus
 That's where Pro AWS comes in. This isn't a typical AWS course. You won't study arcane architectural diagrams or listen to academic lectures on best practices. Every lesson is rooted in practicality and born out of real-world experience. You'll learn AWS through the lens of modern web development, because today you don't have to sacrifice developer experience to build on AWS.`}
 					</ReactMarkdown>
 				</article>
-
 				<PrimaryNewsletterCta className="px-6 pt-8 sm:px-0 sm:pt-20" />
-
 				<section className="relative mt-16 flex flex-col items-center gap-10  border-t sm:mt-32 sm:flex-row sm:gap-20">
 					<div className="relative">
 						<Image
@@ -78,7 +76,7 @@ That's where Pro AWS comes in. This isn't a typical AWS course. You won't study 
 						</div>
 					</div>
 					<div className="max-w-lg px-6 pb-32 sm:px-0 sm:pb-5">
-						<h3 className="text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">
+						<h3 className="font-heading text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">
 							I&apos;m Adam.
 						</h3>
 						<p className="pt-5 text-lg leading-relaxed sm:pt-8">
