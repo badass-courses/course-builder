@@ -26,9 +26,9 @@ export default async function ConfirmSubscriptionPage() {
 							subscription.
 						</p>
 						<p>
-							Didn't get an email? Check your spam folder or other filters and
-							add <strong>{process.env.NEXT_PUBLIC_SUPPORT_EMAIL}</strong> to
-							your contacts.
+							Didn&apos;t get an email? Check your spam folder or other filters
+							and add <strong>{process.env.NEXT_PUBLIC_SUPPORT_EMAIL}</strong>{' '}
+							to your contacts.
 						</p>
 						<p>
 							Thanks, <br />
