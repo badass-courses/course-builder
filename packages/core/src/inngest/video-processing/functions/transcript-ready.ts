@@ -1,15 +1,8 @@
 import {
-	DeepgramResultsSchema,
-	srtFromTranscriptResult,
-	transcriptAsParagraphsWithTimestamps,
-	wordLevelSrtFromTranscriptResult,
-} from '../../../providers/deepgram'
-import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
 	CoreInngestTrigger,
 } from '../../create-inngest-middleware'
-import { VIDEO_SRT_READY_EVENT } from '../events/event-video-srt-ready-to-asset'
 import { VIDEO_TRANSCRIPT_READY_EVENT } from '../events/event-video-transcript-ready'
 
 const transcriptReadyConfig = {
