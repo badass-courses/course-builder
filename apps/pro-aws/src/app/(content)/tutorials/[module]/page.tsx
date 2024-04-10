@@ -5,6 +5,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { PencilIcon } from '@heroicons/react/24/outline'
+import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/types'
 import { Button, Separator } from '@coursebuilder/ui'
@@ -62,7 +63,7 @@ export default async function ModulePage({ params }: Props) {
 			<div className="flex flex-col border-t md:flex-row">
 				{tutorial.fields.body && (
 					<article className="prose sm:prose-lg prose-invert w-full max-w-none px-8 pt-8">
-						{tutorial.fields.body}
+						<ReactMarkdown>{tutorial.fields.body}</ReactMarkdown>
 					</article>
 				)}
 				<div className="flex w-full max-w-sm flex-col gap-3 border-l pb-16 pt-5">
