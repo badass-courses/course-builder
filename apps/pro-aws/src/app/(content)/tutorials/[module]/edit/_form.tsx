@@ -13,6 +13,7 @@ import { useTheme } from 'next-themes'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import type { ContentResource } from '@coursebuilder/core/types'
 import {
 	FormDescription,
@@ -34,7 +35,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 		defaultValues: {
 			id: tutorial.id,
 			fields: {
-				title: tutorial?.fields?.title,
+				title: tutorial?.fields?.title || '',
 				description: tutorial?.fields?.description || '',
 				body: tutorial?.fields?.body || '',
 			},
@@ -53,7 +54,16 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 	return (
 		<>
 			<ResourceForm
-				resource={tutorial as any}
+				resource={ContentResourceSchema.merge(
+					z.object({
+						fields: z.object({
+							title: z.string().nullable().optional(),
+							slug: z.string(),
+							description: z.string(),
+							body: z.string().nullable().optional(),
+						}),
+					}),
+				).parse(tutorial)}
 				resourceSchema={TutorialSchema}
 				getResourcePath={(slug) => `/tutorials/${slug}`}
 				updateResource={updateTutorial}
