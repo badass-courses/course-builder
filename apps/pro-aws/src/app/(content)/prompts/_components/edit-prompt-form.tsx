@@ -29,7 +29,9 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 		defaultValues: {
 			...prompt,
 			fields: {
+				...prompt.fields,
 				description: prompt.fields?.description ?? '',
+				slug: prompt.fields?.slug ?? '',
 			},
 		},
 	})

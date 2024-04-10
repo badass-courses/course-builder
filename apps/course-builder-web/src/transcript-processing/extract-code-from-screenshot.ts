@@ -42,7 +42,7 @@ export async function extractCodeFromScreenshot(screenshotUrl: string) {
 
 	try {
 		response = await openai.chat.completions.create({
-			model: 'gpt-4',
+			model: 'gpt-4-turbo',
 			messages: [
 				{
 					role: 'system',
@@ -56,11 +56,11 @@ export async function extractCodeFromScreenshot(screenshotUrl: string) {
 		})
 	} catch (e) {
 		console.error(`
-    
+
       ERROR on GPT request:
 
       ${(e as Error).message}
-    
+
     `)
 
 		throw new Error('Error extracting code from screenshot')

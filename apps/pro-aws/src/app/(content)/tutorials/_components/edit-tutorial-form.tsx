@@ -79,7 +79,11 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				updateResource={updateTutorial}
 				form={form}
 				availableWorkflows={[
-					{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+					{
+						value: 'tutorial-chat-default-ohvsv',
+						label: 'Tutorial Chat',
+						default: true,
+					},
 				]}
 				sendResourceChatMessage={sendResourceChatMessage}
 				hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}

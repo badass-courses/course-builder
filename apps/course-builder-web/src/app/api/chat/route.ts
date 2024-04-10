@@ -38,7 +38,7 @@ async function handler(req: Request) {
 
 	const { messages } = await req.json()
 	const response = await openai.chat.completions.create({
-		model: 'gpt-4',
+		model: 'gpt-4-turbo',
 		stream: true,
 		messages,
 	})

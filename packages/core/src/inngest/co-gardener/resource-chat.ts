@@ -88,8 +88,14 @@ export const resourceChat: CoreInngestHandler = async ({
 		step,
 		workflowTrigger,
 		resourceId,
-		// @ts-expect-error
-		resource: { ...videoResource, ...resource, ...resource.fields },
+
+		resource: {
+			...videoResource,
+			...resource,
+			// @ts-expect-error
+			...resource.fields,
+			resources: JSON.stringify(resource.resources ?? []),
+		},
 		messages: event.data.messages,
 		// @ts-expect-error
 		user: event.user,
@@ -252,7 +258,7 @@ export async function resourceChatWorkflowExecutor({
 		return streamingChatPromptExecutor({
 			requestId: resourceId,
 			promptMessages: messages,
-			model: prompt.model || 'gpt-4',
+			model: prompt.model || 'gpt-4-turbo',
 			provider: openaiProvider,
 		})
 	})
