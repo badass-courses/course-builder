@@ -1,5 +1,11 @@
 # @coursebuilder/core
 
+## 0.1.4
+
+### Patch Changes
+
+- [`f949262`](https://github.com/badass-courses/course-builder/commit/f9492620ffc94d5de28dff3b7fd3ee38ca06869d) Thanks [@joelhooks](https://github.com/joelhooks)! - fix the dang inngest event size
+
 ## 0.1.3
 
 ### Patch Changes
