@@ -4,7 +4,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { AuthedVideoPlayer } from '@/app/_components/authed-video-player'
 import { courseBuilderAdapter } from '@/db'
 import { Lesson } from '@/lib/lessons'
 import { getLesson } from '@/lib/lessons-query'
@@ -49,12 +49,13 @@ export default async function LessonPage({ params }: Props) {
 	headers()
 	const tutorialLoader = getTutorial(params.module)
 	const lessonLoader = getLesson(params.lesson)
+
 	return (
 		<div>
-			<main className="mx-auto w-full" id="lesson">
+			<div className="mx-auto w-full" id="lesson">
 				<Suspense
 					fallback={
-						<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+						<div className="bg-background container flex h-9 w-full items-center justify-between" />
 					}
 				>
 					<LessonActionBar
@@ -62,7 +63,9 @@ export default async function LessonPage({ params }: Props) {
 						tutorialLoader={tutorialLoader}
 					/>
 				</Suspense>
-				<PlayerContainer lessonLoader={lessonLoader} />
+				<main className="container px-0">
+					<PlayerContainer lessonLoader={lessonLoader} />
+				</main>
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
 					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
@@ -77,7 +80,7 @@ export default async function LessonPage({ params }: Props) {
 						</div>
 					</div>
 				</article>
-			</main>
+			</div>
 		</div>
 	)
 }
@@ -179,13 +182,13 @@ async function LessonActionBar({
 	return (
 		<>
 			{lesson && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+				<div className="container flex h-9 w-full items-center justify-between border-x px-1">
 					<div />
 					<Button size="sm" asChild>
 						<Link
 							href={`/tutorials/${tutorial?.fields.slug}/${lesson.fields?.slug || lesson.id}/edit`}
 						>
-							Edit
+							Edit Lesson
 						</Link>
 					</Button>
 				</div>
@@ -228,22 +231,7 @@ async function PlayerContainer({
 
 	return (
 		<Suspense fallback={<PlayerContainerSkeleton />}>
-			<div className="relative z-10 flex items-center justify-center">
-				<div className="flex w-full max-w-screen-lg flex-col">
-					<div className="relative aspect-[16/9]">
-						<div
-							className={cn(
-								'flex items-center justify-center  overflow-hidden',
-								{
-									hidden: displayOverlay,
-								},
-							)}
-						>
-							<TipPlayer videoResourceLoader={videoResourceLoader} />
-						</div>
-					</div>
-				</div>
-			</div>
+			<AuthedVideoPlayer videoResourceLoader={videoResourceLoader} />
 		</Suspense>
 	)
 }

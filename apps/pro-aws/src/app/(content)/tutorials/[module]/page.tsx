@@ -7,8 +7,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 
-import { ContentResourceResource } from '@coursebuilder/core/types'
-import { Button, Separator } from '@coursebuilder/ui'
+import { Button } from '@coursebuilder/ui'
 
 type Props = {
 	params: { module: string }
@@ -46,7 +45,7 @@ export default async function ModulePage({ params }: Props) {
 	return (
 		<div className="container relative border-x px-0">
 			<div className="px-8">
-				<h1 className="font-heading py-16 text-5xl font-bold sm:text-6xl lg:text-7xl">
+				<h1 className="font-heading py-16 text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
 					{tutorial.fields.title}
 				</h1>
 				<p>{tutorial.fields.description}</p>
@@ -62,7 +61,7 @@ export default async function ModulePage({ params }: Props) {
 			</div>
 			<div className="flex flex-col border-t md:flex-row">
 				{tutorial.fields.body && (
-					<article className="prose sm:prose-lg prose-invert w-full max-w-none px-8 pt-8">
+					<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-8 py-8">
 						<ReactMarkdown>{tutorial.fields.body}</ReactMarkdown>
 					</article>
 				)}
