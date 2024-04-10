@@ -74,12 +74,10 @@ export function CreateResourceForm({
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
-
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-
 				<Button
 					type="submit"
 					className="mt-2"

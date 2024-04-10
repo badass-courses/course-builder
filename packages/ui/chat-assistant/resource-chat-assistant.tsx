@@ -149,7 +149,7 @@ export function ResourceChatAssistant({
 							}
 						}}
 					>
-						<div className="w-4">send</div>
+						<div className="w-4">↑</div>
 					</Button>
 				</ResizablePanel>
 			</ResizablePanelGroup>

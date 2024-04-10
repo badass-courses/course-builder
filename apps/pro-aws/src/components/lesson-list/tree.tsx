@@ -290,28 +290,22 @@ export default function Tree({
 
 	return (
 		<TreeContext.Provider value={context}>
-			<div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
-				<div
-					className="w-px[280] box box-border flex flex-col p-8"
-					id="tree"
-					ref={ref}
-				>
-					{data.map((item, index, array) => {
-						const type: ItemMode = (() => {
-							if (item.children.length && item.isOpen) {
-								return 'expanded'
-							}
+			<div className="flex flex-col py-4" id="tree" ref={ref}>
+				{data.map((item, index, array) => {
+					const type: ItemMode = (() => {
+						if (item.children.length && item.isOpen) {
+							return 'expanded'
+						}
 
-							if (index === array.length - 1) {
-								return 'last-in-group'
-							}
+						if (index === array.length - 1) {
+							return 'last-in-group'
+						}
 
-							return 'standard'
-						})()
+						return 'standard'
+					})()
 
-						return <TreeItem item={item} level={0} key={item.id} mode={type} />
-					})}
-				</div>
+					return <TreeItem item={item} level={0} key={item.id} mode={type} />
+				})}
 			</div>
 		</TreeContext.Provider>
 	)
