@@ -468,7 +468,7 @@ export async function runFormatPricingTests(options: TestOptions) {
 		const { upgradedProductId, originalPurchaseId, priceForProduct } =
 			await mockPPPPurchaseAndUpgradeProduct()
 
-		const product = await formatPricesForProduct({
+		const { calculatedPrice } = await formatPricesForProduct({
 			productId: upgradedProductId,
 			upgradeFromPurchaseId: originalPurchaseId,
 			country: 'IN',
@@ -476,9 +476,7 @@ export async function runFormatPricingTests(options: TestOptions) {
 			ctx,
 		})
 
-		expect(product.calculatedPrice).toBe(
-			Number(priceForProduct.unitAmount) * 0.25,
-		)
+		expect(calculatedPrice).toBe(Number(priceForProduct.unitAmount) * 0.25)
 	})
 
 	test('PPP can be forced to not auto-apply for upgrade', async () => {
@@ -524,35 +522,29 @@ export async function runFormatPricingTests(options: TestOptions) {
 		expect(product.availableCoupons.length).toBe(0)
 	})
 
-	test.skip('multiple purchases applies fixed discount for bundle upgrade', async () => {
+	test('multiple purchases applies fixed discount for bundle upgrade', async () => {
 		const purchaseOneId = v4()
 		const purchaseTwoId = v4()
+		const newUserId = v4()
 
+		// a previous purchase that can be upgraded
 		await options.db.createPurchase?.({
 			id: purchaseOneId,
 			productId: options.fixtures?.product?.id,
-			userId: options.fixtures?.user?.id,
+			userId: newUserId,
 			createdAt: new Date(),
 			status: 'Valid',
 			totalAmount: 100,
 		})
 
-		await options.db.createPurchase?.({
-			id: purchaseTwoId,
-			productId: options.fixtures?.product?.id,
-			userId: options.fixtures?.user?.id,
-			createdAt: new Date(),
-			status: 'Valid',
-			totalAmount: 100,
-		})
-
+		// some other product that can be upgraded
 		const anotherProductId = v4()
 		const anotherProductPrice = {
 			createdAt: new Date(),
 			status: 1,
 			productId: anotherProductId,
-			nickname: 'fancy',
-			unitAmount: 100,
+			nickname: 'another bundled product',
+			unitAmount: 200,
 		}
 		await options.db.createProduct?.(
 			{
@@ -566,6 +558,17 @@ export async function runFormatPricingTests(options: TestOptions) {
 			anotherProductPrice,
 		)
 
+		// another previous purchase that can be upgraded
+		await options.db.createPurchase?.({
+			id: purchaseTwoId,
+			productId: anotherProductId,
+			userId: newUserId,
+			createdAt: new Date(),
+			status: 'Valid',
+			totalAmount: 200,
+		})
+
+		// the bundled product that they are upgrading to
 		const fancyProductId = v4()
 		const priceForProduct = {
 			createdAt: new Date(),
@@ -586,41 +589,46 @@ export async function runFormatPricingTests(options: TestOptions) {
 			priceForProduct,
 		)
 
+		// this is the upgrade path from the two individual purchases
 		const productToBePurchased =
 			await options.adapter.getProduct(fancyProductId)
 
+		// both products can be upgraded to the new fancy one
+		await options.db.createUpgradableProduct?.(anotherProductId, fancyProductId)
 		await options.db.createUpgradableProduct?.(
 			options.fixtures?.product?.id,
 			fancyProductId,
 		)
 
-		await options.db.createUpgradableProduct?.(
-			options.fixtures?.product?.id,
-			anotherProductId,
-		)
-
-		const purchaseToBeUpgraded = options.adapter.getPurchase(purchaseOneId)
+		// could be either purchases, so we grab the first here
+		const purchaseToBeUpgraded =
+			await options.adapter.getPurchase(purchaseOneId)
 
 		const fixedDiscount = await getFixedDiscountForIndividualUpgrade({
 			purchaseToBeUpgraded: purchaseToBeUpgraded as unknown as Purchase,
 			productToBePurchased: productToBePurchased as Product,
-			purchaseWillBeRestricted: false, // ppp
-			userId: options.fixtures?.user.id,
+			purchaseWillBeRestricted: false, // not ppp
+			userId: newUserId,
 			ctx,
 		})
 
-		expect(fixedDiscount).toBe(110)
+		// this is the total amount of the two existing purchases that can be upgraded
+		const expectedFixedDiscount =
+			anotherProductPrice.unitAmount + options.fixtures?.price.unitAmount
+
+		expect(fixedDiscount).toBe(expectedFixedDiscount)
 	})
 
 	const mockPPPPurchaseAndUpgradeProduct = async () => {
 		const ORIGINAL_PPP_PURCHASE_ID = v4()
 		const originalPurchasePrice = 25
+		const newUser = v4()
 
 		// mock the purchase to be upgraded, which was PPP restricted
 		await options.db.createPurchase?.({
 			id: ORIGINAL_PPP_PURCHASE_ID,
 			productId: options.fixtures?.product?.id,
-			userId: options.fixtures?.user?.id,
+			userId: newUser,
 			createdAt: new Date(),
 			status: 'Restricted',
 			totalAmount: originalPurchasePrice,

@@ -788,19 +788,16 @@ export function mySqlDrizzleAdapter(
 				),
 			})
 
-			const purchasesMade = z.array(z.string()).parse(
+			const productsPurchased = z.array(z.string()).parse(
 				purchases.map((purchase) => {
 					return purchase.productId
 				}),
 			)
 
-			if (purchasesMade.length === 0) return []
+			if (productsPurchased.length === 0) return []
 
 			const foundPrices = await client.query.prices.findMany({
-				where: and(
-					eq(prices.productId, bundleId),
-					inArray(prices.productId, purchasesMade),
-				),
+				where: inArray(prices.productId, productsPurchased),
 			})
 
 			return z.array(priceSchema).parse(foundPrices)

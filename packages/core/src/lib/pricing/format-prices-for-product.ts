@@ -103,17 +103,14 @@ export async function getFixedDiscountForIndividualUpgrade({
 
 	// if Purchase To Be Upgraded is upgradeable to the Product To Be Purchased,
 	// then look up the Price of the original product
-	const {
-		getPrice,
-		availableUpgradesForProduct,
-		pricesOfPurchasesTowardOneBundle,
-	} = ctx
+	const { availableUpgradesForProduct, pricesOfPurchasesTowardOneBundle } = ctx
 	const upgradeIsAvailable = !isEmpty(
 		await availableUpgradesForProduct(
 			[purchaseToBeUpgraded],
 			productToBePurchased.id,
 		),
 	)
+
 	if (upgradeIsAvailable) {
 		const pricesToBeDiscounted = await pricesOfPurchasesTowardOneBundle({
 			userId,
