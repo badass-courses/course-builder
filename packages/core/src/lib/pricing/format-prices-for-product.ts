@@ -177,17 +177,6 @@ export async function formatPricesForProduct(
 	if (!price) throw new PriceFormattingError(`no-price-found`, noContextOptions)
 
 	// TODO: give this function a better name like, `determineCouponDetails`
-	console.log({
-		merchantCouponId,
-		country,
-		quantity,
-		userId,
-		productId: product.id,
-		purchaseToBeUpgraded: upgradeFromPurchase,
-		autoApplyPPP,
-		usedCoupon,
-	})
-
 	const { appliedMerchantCoupon, appliedCouponType, ...result } =
 		await determineCouponToApply({
 			prismaCtx: ctx,
@@ -200,8 +189,6 @@ export async function formatPricesForProduct(
 			autoApplyPPP,
 			usedCoupon,
 		})
-
-	console.log({ appliedMerchantCoupon, result })
 
 	const fireFixedDiscountForIndividualUpgrade = async () => {
 		return await getFixedDiscountForIndividualUpgrade({
@@ -221,14 +208,10 @@ export async function formatPricesForProduct(
 		? 0
 		: await fireFixedDiscountForIndividualUpgrade()
 
-	console.log({ fixedDiscountForUpgrade, result })
-
 	const unitPrice: number = price.unitAmount
 	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade
 
 	const percentOfDiscount = appliedMerchantCoupon?.percentageDiscount
-
-	console.log({ percentOfDiscount })
 
 	const upgradeDetails =
 		upgradeFromPurchase !== null && appliedCouponType !== 'bulk' // we don't handle bulk with upgrades (yet), so be explicit here

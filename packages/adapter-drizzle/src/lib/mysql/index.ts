@@ -559,8 +559,6 @@ export function mySqlDrizzleAdapter(
 				where: eq(merchantCoupon.id, merchantCouponId),
 			})
 
-			console.log({ foundMerchantCoupon })
-
 			const parsed = merchantCouponSchema
 				.nullable()
 				.safeParse(foundMerchantCoupon)

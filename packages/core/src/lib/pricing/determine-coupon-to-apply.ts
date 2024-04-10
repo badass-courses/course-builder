@@ -53,11 +53,6 @@ export const determineCouponToApply = async (
 	// TODO: What are the lookups and logic checks we can
 	// skip when there is no appliedMerchantCouponId?
 
-	console.log('🎈 determineCouponToApply', {
-		country,
-		quantity,
-	})
-
 	const { getMerchantCoupon, getPurchasesForUser } = prismaCtx
 
 	// if usedCoupon is restricted to a different product, we shouldn't apply it
@@ -71,22 +66,12 @@ export const determineCouponToApply = async (
 			? await getMerchantCoupon(merchantCouponId)
 			: null
 
-	console.log({
-		candidateMerchantCoupon,
-		couponRestrictedToDifferentProduct,
-		merchantCouponId,
-	})
-
 	const specialMerchantCouponToApply =
 		candidateMerchantCoupon?.type === SPECIAL_TYPE
 			? candidateMerchantCoupon
 			: null
 
-	console.log({ specialMerchantCouponToApply })
-
 	const userPurchases = await getPurchasesForUser(userId)
-
-	console.log({ userPurchases })
 
 	const pppDetails = await getPPPDetails({
 		specialMerchantCoupon: specialMerchantCouponToApply,
@@ -99,8 +84,6 @@ export const determineCouponToApply = async (
 		prismaCtx,
 	})
 
-	console.log({ pppDetails })
-
 	const { bulkCouponToBeApplied, consideredBulk } = await getBulkCouponDetails({
 		prismaCtx,
 		userId,
@@ -110,8 +93,6 @@ export const determineCouponToApply = async (
 		pppApplied: pppDetails.pppApplied,
 	})
 
-	console.log({ bulkCouponToBeApplied, consideredBulk })
-
 	let couponToApply: MinimalMerchantCoupon | null = null
 	if (pppDetails.status === VALID_PPP) {
 		couponToApply = pppDetails.pppCouponToBeApplied
@@ -120,8 +101,6 @@ export const determineCouponToApply = async (
 	} else {
 		couponToApply = specialMerchantCouponToApply
 	}
-
-	console.log({ couponToApply })
 
 	// It is only every PPP that ends up in the Available Coupons
 	// list because with Special and Bulk we auto-apply those if
@@ -191,15 +170,11 @@ const getPPPDetails = async ({
 
 	const expectedPPPDiscountPercent = getPPPDiscountPercent(country)
 
-	console.log({ expectedPPPDiscountPercent, hasOnlyPPPDiscountedPurchases })
-
 	const shouldLookupPPPMerchantCouponForUpgrade =
 		appliedMerchantCoupon === null &&
 		purchaseToBeUpgraded !== null &&
 		hasOnlyPPPDiscountedPurchases &&
 		autoApplyPPP
-
-	console.log({ shouldLookupPPPMerchantCouponForUpgrade })
 
 	let pppMerchantCouponForUpgrade: MerchantCoupon | null = null
 	if (shouldLookupPPPMerchantCouponForUpgrade) {
@@ -209,14 +184,10 @@ const getPPPDetails = async ({
 		})
 	}
 
-	console.log({ pppMerchantCouponForUpgrade, appliedMerchantCoupon })
-
 	const pppCouponToBeApplied =
 		appliedMerchantCoupon?.type === PPP_TYPE
 			? appliedMerchantCoupon
 			: pppMerchantCouponForUpgrade
-
-	console.log({ pppCouponToBeApplied })
 
 	// TODO: Move this sort of price comparison to the parent method, for the
 	// purposes of this method we'll just assume that if the PPP looks
@@ -262,8 +233,6 @@ const getPPPDetails = async ({
 		}
 	}
 
-	console.log({ baseDetails })
-
 	// Check *applied* PPP coupon validity
 	const couponPercentDoesNotMatchCountry =
 		expectedPPPDiscountPercent !== pppCouponToBeApplied?.percentageDiscount
@@ -275,13 +244,6 @@ const getPPPDetails = async ({
 		couponPercentOutOfRange ||
 		pppAppliedToBulkPurchase
 
-	console.log({
-		invalidCoupon,
-		pppAppliedToBulkPurchase,
-		couponPercentOutOfRange,
-		couponPercentDoesNotMatchCountry,
-	})
-
 	if (invalidCoupon) {
 		return {
 			...baseDetails,
@@ -289,13 +251,6 @@ const getPPPDetails = async ({
 			availableCoupons: [],
 		}
 	}
-
-	console.log({
-		...baseDetails,
-		status: VALID_PPP,
-		pppApplied,
-		pppCouponToBeApplied,
-	})
 
 	return {
 		...baseDetails,
@@ -326,8 +281,6 @@ const lookupApplicablePPPMerchantCoupon = async (
 		type: PPP_TYPE,
 		percentageDiscount: pppDiscountPercent,
 	})
-
-	console.log({ pppMerchantCoupon, PPP_TYPE })
 
 	// early return if there is no PPP coupon that fits the bill
 	// report this to Sentry? Seems like a bug if we aren't able to find one.
@@ -383,8 +336,6 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 			prismaCtx,
 		)
 		const bulkCoupon = bulkCoupons[0]
-
-		console.log({ bulkCoupon })
 
 		return { bulkCouponToBeApplied: bulkCoupon, consideredBulk }
 	} else {
