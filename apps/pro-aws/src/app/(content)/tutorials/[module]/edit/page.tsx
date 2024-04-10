@@ -1,11 +1,8 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
-import ModuleEdit from '@/components/module-edit'
-import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { EditTutorialForm } from '@/app/(content)/tutorials/_components/edit-tutorial-form'
+import { courseBuilderAdapter } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
-import { asc, like, sql } from 'drizzle-orm'
-import { last } from 'lodash'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,26 +17,7 @@ export default async function EditTutorialPage({
 		redirect('/login')
 	}
 
-	const tutorial = await db.query.contentResource.findFirst({
-		where: like(contentResource.id, `%${last(params.module.split('-'))}%`),
-		with: {
-			resources: {
-				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: true,
-								},
-								orderBy: asc(contentResourceResource.position),
-							},
-						},
-					},
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-	})
+	const tutorial = await courseBuilderAdapter.getContentResource(params.module)
 
 	if (!tutorial) {
 		notFound()
@@ -47,9 +25,5 @@ export default async function EditTutorialPage({
 
 	console.log(`page load`, { tutorial })
 
-	return (
-		<>
-			<ModuleEdit tutorial={tutorial} />
-		</>
-	)
+	return <EditTutorialForm tutorial={tutorial} />
 }

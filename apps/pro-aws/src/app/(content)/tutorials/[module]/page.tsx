@@ -61,11 +61,11 @@ export default async function ModulePage({ params }: Props) {
 			</div>
 			<div className="flex flex-col border-t md:flex-row">
 				{tutorial.fields.body && (
-					<article className="prose sm:prose-lg px-8 pt-8">
+					<article className="prose sm:prose-lg prose-invert w-full max-w-none px-8 pt-8">
 						{tutorial.fields.body}
 					</article>
 				)}
-				<div className="flex w-full flex-col gap-3 border-l pb-16 pt-5">
+				<div className="flex w-full max-w-sm flex-col gap-3 border-l pb-16 pt-5">
 					{tutorial.resources.map((resource) => {
 						return (
 							<div key={resource.resourceId}>

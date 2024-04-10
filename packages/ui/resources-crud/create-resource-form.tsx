@@ -59,7 +59,7 @@ export function CreateResourceForm({
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(internalOnSubmit)}
-				className="space-y-8"
+				className="bg-muted rounded p-3"
 			>
 				<FormField
 					control={form.control}
@@ -74,12 +74,10 @@ export function CreateResourceForm({
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
-
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-
 				<Button
 					type="submit"
 					className="mt-2"

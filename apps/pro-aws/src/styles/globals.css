@@ -24,7 +24,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 3.5rem;
+		--nav-height: 0rem;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
