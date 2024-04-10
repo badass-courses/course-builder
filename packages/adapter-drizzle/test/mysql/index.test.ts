@@ -1,17 +1,22 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { runBasicTests } from 'utils/adapter.js'
 import { runFormatPricingTests } from 'utils/format-prices-for-product.test.js'
+import { v4 } from 'uuid'
+
+import { priceSchema } from '@coursebuilder/core/schemas'
 
 import { DrizzleAdapter } from '../../src/index.js'
 import { fixtures } from '../fixtures.js'
 import {
 	accounts,
+	coupon,
 	db,
 	merchantCoupon,
 	prices,
 	products,
 	purchases,
 	sessions,
+	upgradableProducts,
 	users,
 	verificationTokens,
 } from './schema.js'
@@ -27,6 +32,9 @@ runBasicTests({
 				db.delete(verificationTokens),
 				db.delete(users),
 				db.delete(purchases),
+				db.delete(merchantCoupon),
+				db.delete(coupon),
+				db.delete(products),
 			])
 		},
 		disconnect: async () => {
@@ -36,6 +44,9 @@ runBasicTests({
 				db.delete(verificationTokens),
 				db.delete(users),
 				db.delete(purchases),
+				db.delete(merchantCoupon),
+				db.delete(coupon),
+				db.delete(products),
 			])
 		},
 		purchase: async (id) => {
@@ -94,6 +105,11 @@ runFormatPricingTests({
 	adapter: DrizzleAdapter(db),
 	fixtures,
 	db: {
+		createStandardMerchantCoupons: async () => {
+			for (const coupon of fixtures.standardMerchantCoupons) {
+				await db.insert(merchantCoupon).values(coupon)
+			}
+		},
 		connect: async () => {
 			await Promise.all([
 				db.delete(sessions),
@@ -161,18 +177,32 @@ runFormatPricingTests({
 					),
 				)
 				.then((res) => res[0]) ?? null,
-		createProduct: async (product) => {
-			await db.insert(products).values(product)
-			await db.insert(prices).values({
-				id: 'price-id',
+		createProduct: async (
+			product,
+			price = {
 				createdAt: new Date(),
 				status: 1,
 				productId: product.id,
 				nickname: 'bah',
 				unitAmount: '100',
+			},
+		) => {
+			const priceId = v4()
+			await db.insert(products).values(product)
+			await db.insert(prices).values({
+				id: price.id || priceId,
+				...price,
 			})
-			await db.insert(merchantCoupon).values(fixtures?.coupon)
-			return product
+
+			const newPrice = await db.query.prices.findFirst({
+				where: eq(prices.id, priceId),
+			})
+
+			const newProduct = await db.query.products.findFirst({
+				where: eq(products.id, product.id),
+			})
+
+			return { product: newProduct, price: newPrice }
 		},
 		deleteProduct: async (productId) => {
 			await db
@@ -183,10 +213,45 @@ runFormatPricingTests({
 				.delete(prices)
 				.where(eq(prices.productId, productId))
 				.then((res) => res[0])
-			await db
-				.delete(merchantCoupon)
-				.where(eq(merchantCoupon.id, fixtures?.coupon.id))
-				.then((res) => res[0])
+		},
+		createCoupon: async (newCoupon) => {
+			await db.insert(coupon).values(newCoupon)
+			return db.query.coupon.findFirst({
+				where: eq(coupon.id, newCoupon.id),
+			})
+		},
+		createMerchantCoupon: async (newCoupon) => {
+			await db.insert(merchantCoupon).values(newCoupon)
+			return merchantCoupon
+		},
+		deleteMerchantCoupons: async () => {
+			await db.delete(merchantCoupon)
+			await db.delete(coupon)
+		},
+		deleteMerchantCoupon: async (id) => {
+			await db.delete(merchantCoupon).where(eq(merchantCoupon.id, id))
+		},
+		createPurchase: async (purchase) => {
+			await db.insert(purchases).values(purchase)
+			return db.query.purchases.findFirst({
+				where: eq(purchases.id, purchase.id),
+			})
+		},
+		getPriceForProduct: async (productId) => {
+			const price = await db.query.prices.findFirst({
+				where: eq(prices.productId, productId),
+			})
+
+			return priceSchema.nullable().parse(price)
+		},
+		deletePurchases: async () => {
+			await db.delete(purchases)
+		},
+		createUpgradableProduct: async (upgradableFromId, upgradableToId) => {
+			await db.insert(upgradableProducts).values({
+				upgradableFromId,
+				upgradableToId,
+			})
 		},
 	},
 })

@@ -200,7 +200,7 @@ export async function formatPricesForProduct(
 		})
 	}
 
-	// Right now, we have fixed discounts to apply to upgrades for indvidual
+	// Right now, we have fixed discounts to apply to upgrades for individual
 	// purchases. If it is a bulk purchase, a fixed discount shouldn't be
 	// applied. It's likely this will change in the future, so this allows us
 	// to handle both and distinguishes them as two different flows.

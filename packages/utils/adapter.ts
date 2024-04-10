@@ -2,7 +2,11 @@ import { createHash, randomInt, randomUUID } from 'crypto'
 import { afterAll, beforeAll, expect, test } from 'vitest'
 
 import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
-import { Product, purchaseSchema } from '@coursebuilder/core/schemas'
+import {
+	MerchantCoupon,
+	Product,
+	purchaseSchema,
+} from '@coursebuilder/core/schemas'
 
 export interface TestOptions {
 	adapter: CourseBuilderAdapter
@@ -21,6 +25,7 @@ export interface TestOptions {
 		coupon?: any
 		largeCoupon?: any
 		indiaCoupon?: any
+		standardMerchantCoupons?: any[]
 	}
 	db: {
 		/** Generates UUID v4 by default. Use it to override how the test suite should generate IDs, like user id. */
@@ -54,15 +59,30 @@ export interface TestOptions {
 		 * A simple query function that returns an authenticator directly from the db.
 		 */
 		authenticator?: (credentialID: string) => any
-		createProduct?: (product: {
-			id: string
-			name: string
-			createdAt: Date
-			key: string
-			status: number
-			quantityAvailable: number
-		}) => any
+		createProduct?: (
+			product: {
+				id: string
+				name: string
+				createdAt: Date
+				key: string
+				status: number
+				quantityAvailable: number
+			},
+			price?: any,
+		) => any
 		deleteProduct?: (productId: string) => any
+		createCoupon?: (coupon: any) => any
+		createMerchantCoupon?: (merchantCoupo: any) => any
+		deleteMerchantCoupons?: () => any
+		deleteMerchantCoupon?: (id: string) => any
+		createStandardMerchantCoupons?: () => any
+		createPurchase?: (purchase: any) => any
+		getPriceForProduct?: (productId: string) => any
+		deletePurchases?: (productId: string) => any
+		createUpgradableProduct?: (
+			upgradeFromId: string,
+			upgradeToId: string,
+		) => any
 	}
 	skipTests?: string[]
 	/**

@@ -318,6 +318,7 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 		newPurchaseQuantity: quantity,
 		prismaCtx,
 	})
+
 	const consideredBulk = seatCount > 1
 
 	const bulkCouponPercent = getBulkDiscountPercent(seatCount)
@@ -359,6 +360,7 @@ const getQualifyingSeatCount = async ({
 		({ productId, bulkCoupon }) =>
 			productId === purchasingProductId && Boolean(bulkCoupon),
 	)
+
 	const existingSeatsPurchasedForThisProduct =
 		bulkPurchase?.bulkCoupon?.maxUses || 0
 
