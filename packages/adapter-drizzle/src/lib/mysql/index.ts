@@ -548,11 +548,20 @@ export function mySqlDrizzleAdapter(
 		async getMerchantCoupon(
 			merchantCouponId: string,
 		): Promise<MerchantCoupon | null> {
-			return merchantCouponSchema.nullable().parse(
-				await client.query.merchantCoupon.findFirst({
-					where: eq(merchantCoupon.id, merchantCouponId),
-				}),
-			)
+			const foundMerchantCoupon = await client.query.merchantCoupon.findFirst({
+				where: eq(merchantCoupon.id, merchantCouponId),
+			})
+
+			console.log({ foundMerchantCoupon })
+
+			const parsed = merchantCouponSchema
+				.nullable()
+				.safeParse(foundMerchantCoupon)
+			if (parsed.success) {
+				return parsed.data
+			}
+
+			return null
 		},
 		async getMerchantProduct(
 			stripeProductId: string,

@@ -285,22 +285,26 @@ export async function runFormatPricingTests(options: TestOptions) {
 	//
 	// 	expect(availableCoupons.length).toBeGreaterThan(0)
 	// })
-	//
-	// test('PPP discount not available if less than sale price', async () => {
-	// 	mockCtx.merchantCoupon.findMany.mockResolvedValue([MOCK_INDIA_COUPON])
-	// 	mockCtx.merchantCoupon.findFirst.mockResolvedValue(
-	// 		MOCK_LARGE_SITE_SALE_COUPON,
-	// 	)
-	// 	const { availableCoupons } = await formatPricesForProduct({
-	// 		productId: DEFAULT_PRODUCT_ID,
-	// 		country: 'IN',
-	// 		merchantCouponId: LARGE_SITE_SALE_COUPON_ID,
-	// 		ctx,
-	// 	})
-	//
-	// 	expect(availableCoupons.length).toBe(0)
-	// })
-	//
+
+	test('PPP discount not available if less than sale price', async () => {
+		const couponId = v4()
+		await options.db.createCoupon?.({
+			id: couponId,
+			percentageDiscount: 0.9,
+			status: 1,
+			default: true,
+			merchantCouponId: '3d7923347ea5', // see fixtures for standard
+		})
+		const { availableCoupons } = await formatPricesForProduct({
+			productId: options.fixtures?.product?.id,
+			country: 'IN',
+			merchantCouponId: '3d7923347ea5',
+			ctx,
+		})
+
+		expect(availableCoupons.length).toBe(0)
+	})
+
 	test('product should have available coupons if country is "IN"', async () => {
 		const product = await formatPricesForProduct({
 			productId: options.fixtures?.product?.id,

@@ -71,10 +71,18 @@ export const determineCouponToApply = async (
 			? await getMerchantCoupon(merchantCouponId)
 			: null
 
+	console.log({
+		candidateMerchantCoupon,
+		couponRestrictedToDifferentProduct,
+		merchantCouponId,
+	})
+
 	const specialMerchantCouponToApply =
 		candidateMerchantCoupon?.type === SPECIAL_TYPE
 			? candidateMerchantCoupon
 			: null
+
+	console.log({ specialMerchantCouponToApply })
 
 	const userPurchases = await getPurchasesForUser(userId)
 
