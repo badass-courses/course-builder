@@ -10,6 +10,7 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { formatPricesForProduct } from '@coursebuilder/core/lib/pricing/format-prices-for-product'
 import {
 	Coupon,
 	couponSchema,

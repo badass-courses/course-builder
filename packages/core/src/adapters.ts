@@ -17,6 +17,7 @@ import { User } from './schemas/user-schema'
 import { VideoResource } from './schemas/video-resource'
 import {
 	ContentResourceResource,
+	FormattedPrice,
 	type Awaitable,
 	type ContentResource,
 } from './types'

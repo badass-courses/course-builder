@@ -2,11 +2,13 @@ import * as React from 'react'
 import { Dispatch, SetStateAction } from 'react'
 
 import {
+	Coupon,
 	MerchantCoupon,
 	Price,
 	Product,
 	Purchase,
 } from '@coursebuilder/core/schemas'
+import { FormattedPrice } from '@coursebuilder/core/types'
 
 type MinimalMerchantCoupon = Omit<
 	MerchantCoupon & {
@@ -20,27 +22,9 @@ type MerchantCouponWithCountry = MerchantCoupon & {
 }
 type ProductWithPrices = Product & { prices?: Price[] }
 
-export type FormattedPrice = {
-	id: string
-	quantity: number
-	unitPrice: number
-	fullPrice: number
-	fixedDiscountForUpgrade: number
-	calculatedPrice: number
-	availableCoupons: Array<
-		Omit<MerchantCouponWithCountry, 'identifier'> | undefined
-	>
-	appliedMerchantCoupon?: MinimalMerchantCoupon
-	upgradeFromPurchaseId?: string
-	upgradeFromPurchase?: Purchase
-	upgradedProduct?: ProductWithPrices | null
-	bulk: boolean
-	usedCouponId?: string
-}
-
 type PricingContextType = {
 	addPrice: (price: FormattedPrice, productId: string) => void
-	isDowngrade: (price?: FormattedPrice) => boolean
+	isDowngrade: (price?: FormattedPrice | null) => boolean
 	isDiscount: (price?: FormattedPrice) => boolean
 	merchantCoupon?: MinimalMerchantCoupon | undefined
 	setMerchantCoupon: Dispatch<SetStateAction<MinimalMerchantCoupon | undefined>>
@@ -84,7 +68,7 @@ export const PriceCheckProvider: React.FC<React.PropsWithChildren<any>> = ({
 	)
 
 	const isDowngrade = React.useCallback(
-		(price?: FormattedPrice) => {
+		(price?: FormattedPrice | null) => {
 			if (!price || !purchasedProductIds || purchasedProductIds.length === 0) {
 				return false
 			}
