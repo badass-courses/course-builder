@@ -26,18 +26,22 @@ import {
 } from '@coursebuilder/ui'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
-import { onTutorialSave } from './actions'
+import { onTutorialSave } from '../[module]/edit/actions'
 
 export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
-	const form = useForm<z.infer<typeof TutorialSchema>>({
-		resolver: zodResolver(TutorialSchema),
+	const form = useForm<z.infer<typeof ContentResourceSchema>>({
+		resolver: zodResolver(ContentResourceSchema),
 		defaultValues: {
 			id: tutorial.id,
 			fields: {
 				title: tutorial?.fields?.title || '',
 				description: tutorial?.fields?.description || '',
+				state: tutorial.fields?.state || 'draft',
 				body: tutorial?.fields?.body || '',
+				visibility: tutorial.fields?.visibility || 'unlisted',
 			},
 		},
 	})
@@ -60,6 +64,12 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 							title: z.string().nullable().optional(),
 							slug: z.string(),
 							description: z.string(),
+							state: z
+								.enum(['draft', 'published', 'archived', 'deleted'])
+								.default('draft'),
+							visibility: z
+								.enum(['public', 'private', 'unlisted'])
+								.default('unlisted'),
 							body: z.string().nullable().optional(),
 						}),
 					}),
@@ -92,6 +102,8 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 					)}
 					name="fields.title"
 				/>
+				<MetadataFieldVisibility form={form} />
+				<MetadataFieldState form={form} />
 				<FormField
 					control={form.control}
 					render={({ field }) => (

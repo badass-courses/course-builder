@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
+import { EditTutorialForm } from '@/app/(content)/tutorials/_components/edit-tutorial-form'
 import { courseBuilderAdapter } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
-
-import { EditTutorialForm } from './_form'
 
 export const dynamic = 'force-dynamic'
 
