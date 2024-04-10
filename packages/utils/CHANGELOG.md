@@ -1,5 +1,11 @@
 # utils
 
+## 0.1.1
+
+### Patch Changes
+
+- [`86bbb4d`](https://github.com/badass-courses/course-builder/commit/86bbb4da02d18d694b88542791d9e19b49353287) Thanks [@joelhooks](https://github.com/joelhooks)! - make the unit tests pass for format prices for prodcut 🎉
+
 ## 0.1.0
 
 ### Minor Changes

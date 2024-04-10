@@ -1,5 +1,11 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.1.3
+
+### Patch Changes
+
+- [`1e669e3`](https://github.com/badass-courses/course-builder/commit/1e669e3c91c90b7a71bf4157b6ac1444f14b80b1) Thanks [@joelhooks](https://github.com/joelhooks)! - make roles association correct
+
 ## 0.1.2
 
 ### Patch Changes
