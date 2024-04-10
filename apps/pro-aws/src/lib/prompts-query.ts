@@ -62,14 +62,11 @@ export async function updatePrompt(input: Prompt) {
 
 	const currentPrompt = await getPrompt(input.id)
 
-	console.log('currentPrompt', currentPrompt, input)
 	if (!currentPrompt) {
 		return createPrompt(input)
 	}
 
 	let promptSlug = input.fields.slug
-
-	console.log('promptSlug', promptSlug)
 
 	if (input.fields.title !== currentPrompt?.fields.title) {
 		const splitSlug = currentPrompt?.fields.slug.split('-') || ['', guid()]
