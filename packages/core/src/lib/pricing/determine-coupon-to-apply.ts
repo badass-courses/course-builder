@@ -99,6 +99,8 @@ export const determineCouponToApply = async (
 		prismaCtx,
 	})
 
+	console.log({ pppDetails })
+
 	const { bulkCouponToBeApplied, consideredBulk } = await getBulkCouponDetails({
 		prismaCtx,
 		userId,
@@ -197,6 +199,8 @@ const getPPPDetails = async ({
 		hasOnlyPPPDiscountedPurchases &&
 		autoApplyPPP
 
+	console.log({ shouldLookupPPPMerchantCouponForUpgrade })
+
 	let pppMerchantCouponForUpgrade: MerchantCoupon | null = null
 	if (shouldLookupPPPMerchantCouponForUpgrade) {
 		pppMerchantCouponForUpgrade = await lookupApplicablePPPMerchantCoupon({
@@ -205,10 +209,14 @@ const getPPPDetails = async ({
 		})
 	}
 
+	console.log({ pppMerchantCouponForUpgrade, appliedMerchantCoupon })
+
 	const pppCouponToBeApplied =
 		appliedMerchantCoupon?.type === PPP_TYPE
 			? appliedMerchantCoupon
 			: pppMerchantCouponForUpgrade
+
+	console.log({ pppCouponToBeApplied })
 
 	// TODO: Move this sort of price comparison to the parent method, for the
 	// purposes of this method we'll just assume that if the PPP looks
@@ -254,6 +262,8 @@ const getPPPDetails = async ({
 		}
 	}
 
+	console.log({ baseDetails })
+
 	// Check *applied* PPP coupon validity
 	const couponPercentDoesNotMatchCountry =
 		expectedPPPDiscountPercent !== pppCouponToBeApplied?.percentageDiscount
@@ -265,6 +275,13 @@ const getPPPDetails = async ({
 		couponPercentOutOfRange ||
 		pppAppliedToBulkPurchase
 
+	console.log({
+		invalidCoupon,
+		pppAppliedToBulkPurchase,
+		couponPercentOutOfRange,
+		couponPercentDoesNotMatchCountry,
+	})
+
 	if (invalidCoupon) {
 		return {
 			...baseDetails,
@@ -272,6 +289,13 @@ const getPPPDetails = async ({
 			availableCoupons: [],
 		}
 	}
+
+	console.log({
+		...baseDetails,
+		status: VALID_PPP,
+		pppApplied,
+		pppCouponToBeApplied,
+	})
 
 	return {
 		...baseDetails,
@@ -302,6 +326,8 @@ const lookupApplicablePPPMerchantCoupon = async (
 		type: PPP_TYPE,
 		percentageDiscount: pppDiscountPercent,
 	})
+
+	console.log({ pppMerchantCoupon, PPP_TYPE })
 
 	// early return if there is no PPP coupon that fits the bill
 	// report this to Sentry? Seems like a bug if we aren't able to find one.

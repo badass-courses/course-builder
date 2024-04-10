@@ -219,13 +219,20 @@ export function mySqlDrizzleAdapter(
 		availableUpgradesForProduct(
 			purchases: any,
 			productId: string,
-		): Promise<
-			{
-				upgradableTo: { id: string; name: string }
-				upgradableFrom: { id: string; name: string }
-			}[]
-		> {
-			throw new Error('Method not implemented.')
+		): Promise<any[]> {
+			const previousPurchaseProductIds = purchases.map(
+				({ productId }: Purchase) => productId,
+			)
+
+			return client.query.upgradableProducts.findMany({
+				where: and(
+					eq(upgradableProducts.upgradableToId, productId),
+					inArray(
+						upgradableProducts.upgradableFromId,
+						previousPurchaseProductIds,
+					),
+				),
+			})
 		},
 		clearLessonProgressForUser(options: {
 			userId: string
@@ -755,11 +762,50 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
-		pricesOfPurchasesTowardOneBundle(options: {
+		async pricesOfPurchasesTowardOneBundle({
+			userId,
+			bundleId,
+		}: {
 			userId: string | undefined
 			bundleId: string
 		}): Promise<Price[]> {
-			throw new Error('Method not implemented.')
+			if (userId === undefined) return []
+
+			const canUpgradeProducts = await client.query.upgradableProducts.findMany(
+				{
+					where: eq(upgradableProducts.upgradableToId, bundleId),
+				},
+			)
+
+			const upgradableFrom = z.array(z.string()).parse(
+				canUpgradeProducts.map((product) => {
+					return product.upgradableFromId
+				}),
+			)
+
+			const purchases = await client.query.purchases.findMany({
+				where: and(
+					eq(purchaseTable.userId, userId),
+					inArray(purchaseTable.productId, upgradableFrom),
+				),
+			})
+
+			const purchasesMade = z.array(z.string()).parse(
+				purchases.map((purchase) => {
+					return purchase.productId
+				}),
+			)
+
+			if (purchasesMade.length === 0) return []
+
+			const foundPrices = await client.query.prices.findMany({
+				where: and(
+					eq(prices.productId, bundleId),
+					inArray(prices.productId, purchasesMade),
+				),
+			})
+
+			return z.array(priceSchema).parse(foundPrices)
 		},
 		toggleLessonProgressForUser(options: {
 			userId: string

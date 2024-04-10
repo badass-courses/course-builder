@@ -201,6 +201,8 @@ export async function formatPricesForProduct(
 			usedCoupon,
 		})
 
+	console.log({ appliedMerchantCoupon, result })
+
 	const fireFixedDiscountForIndividualUpgrade = async () => {
 		return await getFixedDiscountForIndividualUpgrade({
 			purchaseToBeUpgraded: upgradeFromPurchase,
@@ -225,6 +227,8 @@ export async function formatPricesForProduct(
 	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade
 
 	const percentOfDiscount = appliedMerchantCoupon?.percentageDiscount
+
+	console.log({ percentOfDiscount })
 
 	const upgradeDetails =
 		upgradeFromPurchase !== null && appliedCouponType !== 'bulk' // we don't handle bulk with upgrades (yet), so be explicit here

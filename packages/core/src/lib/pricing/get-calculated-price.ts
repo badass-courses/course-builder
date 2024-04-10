@@ -26,5 +26,7 @@ export function getCalculatedPrice({
 		(fullPrice - fixedDiscount) *
 		discountMultiplier
 	).toFixed(2)
+
+	console.log({ calculatedPrice, unitPrice, fullPrice, discountMultiplier })
 	return Number(calculatedPrice)
 }
