@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Image from 'next/image'
-import { Layout } from '@/components/app/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
@@ -14,7 +13,7 @@ export const metadata = {
 
 const Home = async () => {
 	return (
-		<Layout>
+		<div>
 			<header className="relative mx-auto flex aspect-square w-full max-w-screen-xl flex-col items-center justify-center border-x border-b py-24 sm:aspect-[1280/800]">
 				<h1 className="leading-0 font-heading w-full text-center text-5xl font-bold text-white sm:text-7xl lg:text-8xl">
 					<Balancer>Navigate the AWS Maze with Confidence</Balancer>
@@ -99,7 +98,7 @@ That's where Pro AWS comes in. This isn't a typical AWS course. You won't study 
 				</section>
 			</main>
 			<div aria-hidden="true" className="py-10" />
-		</Layout>
+		</div>
 	)
 }
 

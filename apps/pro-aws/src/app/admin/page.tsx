@@ -1,6 +1,5 @@
 import { revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { Layout } from '@/components/app/layout'
 import { db } from '@/db'
 import { roles, userRoles, users as usersTable } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
@@ -75,21 +74,18 @@ export default async function AdminPage() {
 	}
 
 	return (
-		<Layout>
-			<div className={`flex flex-col gap-4 p-4`}>
-				{users.map((user) => (
-					<div key={user.id}>
-						{user.email} [{user.roles?.map((role) => role.role.name).join(', ')}
-						]
-						<div>
-							<form action={handleMakeAdmin}>
-								<input type="hidden" name="id" value={user.id} />
-								<Button type="submit">Make Admin</Button>
-							</form>
-						</div>
+		<div className={`flex flex-col gap-4 p-4`}>
+			{users.map((user) => (
+				<div key={user.id}>
+					{user.email} [{user.roles?.map((role) => role.role.name).join(', ')}]
+					<div>
+						<form action={handleMakeAdmin}>
+							<input type="hidden" name="id" value={user.id} />
+							<Button type="submit">Make Admin</Button>
+						</form>
 					</div>
-				))}
-			</div>
-		</Layout>
+				</div>
+			))}
+		</div>
 	)
 }

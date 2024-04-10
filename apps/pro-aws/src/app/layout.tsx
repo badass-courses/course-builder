@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import Script from 'next/script'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
+import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import config from '@/config'
 import { env } from '@/env.mjs'
@@ -55,6 +56,7 @@ export default function RootLayout({
 								 */
 								routerConfig={extractRouterConfig(ourFileRouter)}
 							/>
+							<Navigation />
 							{children}
 						</ThemeProvider>
 					</TRPCReactProvider>
