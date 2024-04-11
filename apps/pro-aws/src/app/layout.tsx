@@ -22,6 +22,16 @@ export const metadata: Metadata = {
 	title: 'Pro AWS by Adam Elmore',
 	description: config.description,
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
+	twitter: {
+		card: 'summary_large_image',
+	},
+	openGraph: {
+		images: [
+			{
+				url: config.openGraph.images[0]!.url,
+			},
+		],
+	},
 }
 
 const isGoogleAnalyticsAvailable =
