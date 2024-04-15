@@ -39,6 +39,8 @@ import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
+import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
+import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 import {
@@ -217,6 +219,44 @@ export function mySqlDrizzleAdapter(
 
 	return {
 		client,
+		createMerchantCustomer: async (options) => {
+			await client.insert(merchantCustomer).values({
+				id: v4(),
+				identifier: options.identifier,
+				merchantAccountId: options.merchantAccountId,
+				userId: options.userId,
+			})
+			return merchantCustomerSchema.parse(
+				await client.query.merchantCustomer.findFirst({
+					where: eq(merchantCustomer.identifier, options.identifier),
+				}),
+			)
+		},
+		getMerchantAccount: async (options) => {
+			return merchantAccountSchema.parse(
+				await client.query.merchantAccount.findFirst({
+					where: eq(merchantAccount.label, options.provider),
+				}),
+			)
+		},
+		getMerchantCustomerForUserId: async (userId) => {
+			return merchantCustomerSchema.parse(
+				await client.query.merchantCustomer.findFirst({
+					where: eq(merchantCustomer.userId, userId),
+				}),
+			)
+		},
+		getUpgradableProducts: async (options) => {
+			const { upgradableFromId, upgradableToId } = options
+			return z.array(upgradableProductSchema).parse(
+				await client.query.upgradableProducts.findMany({
+					where: and(
+						eq(upgradableProducts.upgradableFromId, upgradableFromId),
+						eq(upgradableProducts.upgradableToId, upgradableToId),
+					),
+				}),
+			)
+		},
 		availableUpgradesForProduct(
 			purchases: any,
 			productId: string,

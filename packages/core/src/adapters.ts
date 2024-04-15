@@ -2,6 +2,7 @@ import { type Adapter } from '@auth/core/adapters'
 
 import { UpgradableProduct } from './schemas'
 import { Coupon } from './schemas/coupon-schema'
+import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
@@ -54,10 +55,27 @@ export interface CourseBuilderAdapter<
 		fields: Record<string, any>
 	}): Awaitable<ContentResource | null>
 	getPriceForProduct(productId: string): Promise<Price | null>
+	getUpgradableProducts(options: {
+		upgradableFromId: string
+		upgradableToId: string
+	}): Promise<UpgradableProduct[]>
+	getMerchantCustomerForUserId(userId: string): Promise<MerchantCustomer | null>
+	getMerchantAccount(options: {
+		provider: 'stripe'
+	}): Promise<MerchantAccount | null>
+	createMerchantCustomer(options: {
+		userId: string
+		identifier: string
+		merchantAccountId: string
+	}): Promise<MerchantCustomer | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
+	getMerchantAccount: async () => null,
+	createMerchantCustomer: async () => null,
+	getMerchantCustomerForUserId: async () => null,
+	getUpgradableProducts: async () => [],
 	createPurchase: async (options) => {
 		throw new Error('Method not implemented.')
 	},

@@ -7,7 +7,7 @@ import { CourseBuilderAdapter } from './adapters'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
-import { MerchantCoupon, Price, Product, Purchase } from './schemas'
+import { Coupon, MerchantCoupon, Price, Product, Purchase } from './schemas'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -143,4 +143,5 @@ export type FormattedPrice = {
 	upgradedProduct?: ProductWithPrices | null
 	bulk: boolean
 	usedCouponId?: string
+	defaultCoupon?: Coupon | null
 }

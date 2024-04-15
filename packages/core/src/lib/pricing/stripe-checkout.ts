@@ -44,30 +44,23 @@ const buildSearchParams = (params: object) => {
  * create it.
  * @param userId
  */
-async function findOrCreateStripeCustomerId(userId: string, stripe: Stripe) {
-	const user = await prisma.user.findUnique({
-		where: {
-			id: userId as string,
-		},
-		include: {
-			merchantCustomers: true,
-		},
-	})
+async function findOrCreateStripeCustomerId(
+	userId: string,
+	stripe: Stripe,
+	adapter: CourseBuilderAdapter,
+) {
+	const user = await adapter.getUser?.(userId)
 
 	if (user) {
+		const merchantCustomer = await adapter.getMerchantCustomerForUserId(user.id)
 		const customerId =
-			user && user.merchantCustomers
-				? first(user.merchantCustomers)?.identifier
-				: false
+			user && merchantCustomer ? merchantCustomer.identifier : false
 
 		if (customerId) {
 			return customerId
 		} else {
-			const merchantAccount = await prisma.merchantAccount.findFirst({
-				where: {
-					status: 1,
-					label: 'stripe',
-				},
+			const merchantAccount = await adapter.getMerchantAccount({
+				provider: 'stripe',
 			})
 			if (merchantAccount) {
 				const customer = await stripe.customers.create({
@@ -76,12 +69,10 @@ async function findOrCreateStripeCustomerId(userId: string, stripe: Stripe) {
 						userId: user.id,
 					},
 				})
-				await prisma.merchantCustomer.create({
-					data: {
-						identifier: customer.id,
-						merchantAccountId: merchantAccount.id,
-						userId,
-					},
+				await adapter.createMerchantCustomer({
+					identifier: customer.id,
+					merchantAccountId: merchantAccount.id,
+					userId,
 				})
 				return customer.id
 			}
@@ -124,11 +115,11 @@ const buildCouponNameWithProductName = (
 const buildCouponName = (
 	upgradeFromPurchase:
 		| (Purchase & {
-				product: Product
+				product: Product | null
 		  })
 		| null,
 	productId: string,
-	availableUpgrade: UpgradableProduct | null,
+	availableUpgrade: UpgradableProduct | null | undefined,
 	purchaseWillBeRestricted: boolean,
 	stripeCouponPercentOff: number,
 ) => {
@@ -145,7 +136,7 @@ const buildCouponName = (
 		// if there is an availableUpgrade (e.g. Core -> Bundle) and the original purchase wasn't region restricted
 		couponName = buildCouponNameWithProductName(
 			'Upgrade from ',
-			upgradeFromPurchase.product.name,
+			upgradeFromPurchase.product?.name || '',
 			'',
 		)
 	} else if (
@@ -159,7 +150,7 @@ const buildCouponName = (
 		// } + PPP ${stripeCouponPercentOff * 100}% off`
 		couponName = buildCouponNameWithProductName(
 			'Upgrade from ',
-			upgradeFromPurchase.product.name,
+			upgradeFromPurchase.product?.name || '',
 			` + PPP ${Math.floor(stripeCouponPercentOff * 100)}% off`,
 		)
 	} else if (
@@ -171,7 +162,7 @@ const buildCouponName = (
 		// couponName = `Unrestricted Upgrade from ${upgradeFromPurchase.product.name}`
 		couponName = buildCouponNameWithProductName(
 			'Unrestricted Upgrade from ',
-			upgradeFromPurchase.product.name,
+			upgradeFromPurchase.product?.name || '',
 			'',
 		)
 	} else {
@@ -241,49 +232,32 @@ export async function stripeCheckout({
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
 			const upgradeFromPurchase = upgradeFromPurchaseId
-				? await prisma.purchase.findFirst({
-						where: {
-							id: upgradeFromPurchaseId as string,
-							status: { in: ['Valid', 'Restricted'] },
-						},
-						include: {
-							product: true,
-						},
-					})
+				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
+
+			// const availableUpgrade =
+			// 	quantity === 1 && upgradeFromPurchase
+			// 		? await prisma.upgradableProducts.findFirst({
+			// 				where: {
+			// 					upgradableFromId: upgradeFromPurchase.productId,
+			// 					upgradableToId: productId as string,
+			// 				},
+			// 			})
+			// 		: null
 
 			const availableUpgrade =
 				quantity === 1 && upgradeFromPurchase
-					? await prisma.upgradableProducts.findFirst({
-							where: {
-								upgradableFromId: upgradeFromPurchase.productId,
-								upgradableToId: productId as string,
-							},
+					? await adapter.getUpgradableProducts({
+							upgradableFromId: upgradeFromPurchase.productId,
+							upgradableToId: productId as string,
 						})
 					: null
 
 			const customerId = user
-				? await findOrCreateStripeCustomerId(user.id, stripe)
+				? await findOrCreateStripeCustomerId(user.id, stripe, adapter)
 				: false
 
-			const loadedProduct = await prisma.product.findFirst({
-				where: { id: productId as string },
-				include: {
-					prices: true,
-					merchantProducts: {
-						where: {
-							status: 1,
-						},
-						include: {
-							merchantPrices: {
-								where: {
-									status: 1,
-								},
-							},
-						},
-					},
-				},
-			})
+			const loadedProduct = await adapter.getProduct(productId)
 
 			const result = LoadedProductSchema.safeParse(loadedProduct)
 
@@ -350,7 +324,9 @@ export async function stripeCheckout({
 						ctx: adapter,
 					})
 
-				const fullPrice = loadedProduct.prices?.[0].unitAmount.toNumber()
+				const productPrice = await adapter.getPriceForProduct(loadedProduct.id)
+
+				const fullPrice = productPrice?.unitAmount || 0
 				const calculatedPrice = getCalculatedPrice({
 					unitPrice: fullPrice,
 					percentOfDiscount: stripeCouponPercentOff || 0,
@@ -358,11 +334,15 @@ export async function stripeCheckout({
 					fixedDiscount: fixedDiscountForIndividualUpgrade,
 				})
 
+				const upgradeFromProduct = await adapter.getProduct(
+					upgradeFromPurchase.productId,
+				)
+
 				if (fixedDiscountForIndividualUpgrade > 0) {
 					const couponName = buildCouponName(
-						upgradeFromPurchase,
+						{ ...upgradeFromPurchase, product: upgradeFromProduct },
 						productId,
-						availableUpgrade,
+						first(availableUpgrade),
 						purchaseWillBeRestricted,
 						stripeCouponPercentOff,
 					)
@@ -439,7 +419,7 @@ export async function stripeCheckout({
 				productId: loadedProduct.id,
 				product: loadedProduct.name,
 				...(user && { userId: user.id }),
-				siteName: process.env.NEXT_PUBLIC_APP_NAME,
+				siteName: process.env.NEXT_PUBLIC_APP_NAME as string,
 			}
 
 			const session = await stripe.checkout.sessions.create({
