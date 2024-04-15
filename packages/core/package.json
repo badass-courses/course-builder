@@ -114,7 +114,9 @@
 		"liquidjs": "^10.9.4",
 		"lodash": "^4.17.21",
 		"openai-edge": "^1.2.2",
-		"srt-parser-2": "^1.2.3"
+		"srt-parser-2": "^1.2.3",
+		"stripe": "^8.186.1",
+		"date-fns": "^2.30.0"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.28.1",

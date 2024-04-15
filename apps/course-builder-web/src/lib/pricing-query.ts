@@ -1,4 +1,6 @@
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
+import { purchases } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 import { formatPricesForProduct } from '@coursebuilder/core'
 import { Purchase } from '@coursebuilder/core/schemas'
@@ -26,6 +28,9 @@ export async function getPricingData(
 	})
 
 	const product = await courseBuilderAdapter.getProduct(productId)
+	const totalPurchases = await db.query.purchases.findMany({
+		where: eq(purchases.productId, productId),
+	})
 
 	const purchaseToUpgrade = formattedPrice.upgradeFromPurchaseId
 		? await courseBuilderAdapter.getPurchase(
@@ -35,6 +40,7 @@ export async function getPricingData(
 	return {
 		formattedPrice,
 		purchaseToUpgrade,
-		quantityAvailable: product?.quantityAvailable || -1,
+		quantityAvailable:
+			(product?.quantityAvailable || 0) - totalPurchases.length,
 	}
 }

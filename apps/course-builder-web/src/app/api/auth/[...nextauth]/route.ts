@@ -4,4 +4,4 @@ import { withSkill } from '@/server/with-skill'
 export const GET = withSkill(authGet)
 export const POST = withSkill(authPost)
 
-export const runtime = 'edge' // optional
+// export const runtime = 'edge' // optional

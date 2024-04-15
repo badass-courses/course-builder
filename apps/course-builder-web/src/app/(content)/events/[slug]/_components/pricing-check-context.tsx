@@ -25,7 +25,7 @@ type ProductWithPrices = Product & { prices?: Price[] }
 type PricingContextType = {
 	addPrice: (price: FormattedPrice, productId: string) => void
 	isDowngrade: (price?: FormattedPrice | null) => boolean
-	isDiscount: (price?: FormattedPrice) => boolean
+	isDiscount: (price?: FormattedPrice | null) => boolean
 	merchantCoupon?: MinimalMerchantCoupon | undefined
 	setMerchantCoupon: Dispatch<SetStateAction<MinimalMerchantCoupon | undefined>>
 	quantity: number
@@ -87,7 +87,7 @@ export const PriceCheckProvider: React.FC<React.PropsWithChildren<any>> = ({
 		[prices],
 	)
 
-	const isDiscount = React.useCallback((price?: FormattedPrice) => {
+	const isDiscount = React.useCallback((price?: FormattedPrice | null) => {
 		if (!price) {
 			return false
 		}

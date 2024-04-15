@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './commerce.css';
+
 @layer base {
 	:root {
 		--nav-height: 3.5rem;

@@ -2,6 +2,7 @@ import { AdapterUser } from '@auth/core/adapters'
 
 import { LlmProviderConfig } from './openai'
 import { PartyProviderConfig } from './partykit'
+import { StripeProviderConfig } from './stripe'
 
 export interface EmailListSubscribeOptions {
 	listId?: string | number
@@ -84,7 +85,7 @@ export type TranscriptionUserConfig = Omit<
 /**
  * The user configuration object for a transcription service provider.
  */
-export type ProviderType = 'transcription' | 'email-list'
+export type ProviderType = 'transcription' | 'email-list' | 'payment' | 'party'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config
@@ -114,6 +115,7 @@ export type Provider<P = any> = (
 			| EmailListConfig
 			| LlmProviderConfig
 			| PartyProviderConfig
+			| StripeProviderConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -123,6 +125,7 @@ export type Provider<P = any> = (
 			| EmailListConfig
 			| LlmProviderConfig
 			| PartyProviderConfig
+			| StripeProviderConfig
 	  ) &
 			InternalProviderOptions)
 ) &

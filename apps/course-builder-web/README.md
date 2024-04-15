@@ -96,7 +96,7 @@ This app can be run locally. It requires API keys for many 3rd-party services. Y
 
 ### Env Vars from Vercel
 
-For those with access to the project in Vercel, here is how to grab those env vars. 
+For those with access to the project in Vercel, here is how to grab those env vars.
 
 **NOTE: you'll want to make sure you've `cd`'d into `<project-root>/apps/course-builder-web` for this**:
 
@@ -179,10 +179,24 @@ You'll need to set the `DATABASE_URL` in `.env` to a (non-production) Planetscal
 
 First, create a new database in Planetscale. Copy the connection string that you get into the `.env` file as `DATABASE_URL` and make sure that it ends with an SSL query parameter formatted as `?ssl={"rejectUnauthorized":true}`.
 
+#### Local MySQL via Docker
+
+```bash
+docker compose up -d
+```
+
+This will start a local MySQL server on port 3309. The `DATABASE_URL` in `.env` should be set to `mysql://root@localhost:3309/{DATABASE_NAME}`.
+
 Then, apply the database schema to that new database with:
 
 ```
 $ pnpm db:push
+```
+
+Now you can seed the database with basic roles/permissions:
+
+```bash
+$ pnpm db:seed
 ```
 
 ### Start the Local Dev Server
