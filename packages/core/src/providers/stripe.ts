@@ -40,7 +40,7 @@ export interface PaymentsAdapter {
 	 */
 	createCheckoutSession(
 		params: Stripe.Checkout.SessionCreateParams,
-	): Promise<string>
+	): Promise<string | null>
 	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
 }
 
