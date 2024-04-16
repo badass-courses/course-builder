@@ -1,8 +1,8 @@
 import { AdapterUser } from '@auth/core/adapters'
 
+import { PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
 import { PartyProviderConfig } from './partykit'
-import { StripeProviderConfig } from './stripe'
 
 export interface EmailListSubscribeOptions {
 	listId?: string | number
@@ -120,7 +120,7 @@ export type Provider<P = any> = (
 			| EmailListConfig
 			| LlmProviderConfig
 			| PartyProviderConfig
-			| StripeProviderConfig
+			| PaymentsProviderConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -130,7 +130,7 @@ export type Provider<P = any> = (
 			| EmailListConfig
 			| LlmProviderConfig
 			| PartyProviderConfig
-			| StripeProviderConfig
+			| PaymentsProviderConfig
 	  ) &
 			InternalProviderOptions)
 ) &

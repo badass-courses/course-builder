@@ -5,12 +5,12 @@ import { CourseBuilderAdapter } from 'src/adapters'
 // import Stripe from 'stripe'
 import { z } from 'zod'
 
+import { Product, Purchase, UpgradableProduct } from '../../schemas'
 import {
 	PaymentsAdapter,
-	StripeProviderConfig,
-	StripeProviderConsumerConfig,
-} from '../../providers/stripe'
-import { Product, Purchase, UpgradableProduct } from '../../schemas'
+	PaymentsProviderConfig,
+	PaymentsProviderConsumerConfig,
+} from '../../types'
 import { getFixedDiscountForIndividualUpgrade } from './format-prices-for-product'
 import { getCalculatedPrice } from './get-calculated-price'
 
@@ -193,7 +193,7 @@ export async function stripeCheckout({
 	adapter,
 }: {
 	params: CheckoutParams
-	config: StripeProviderConsumerConfig
+	config: PaymentsProviderConsumerConfig
 	adapter?: CourseBuilderAdapter
 }): Promise<any> {
 	try {

@@ -1,62 +1,13 @@
-import Stripe from 'stripe'
-
 import { CourseBuilderAdapter } from '../adapters'
 import { CheckoutParams, stripeCheckout } from '../lib/pricing/stripe-checkout'
-
-export interface StripeProviderConfig {
-	id: string
-	name: string
-	type: 'payment'
-	options: StripeProviderConsumerConfig
-	createCheckoutSession: (
-		checkoutParams: CheckoutParams,
-		adapter?: CourseBuilderAdapter,
-	) => Promise<{ redirect: string; status: number }>
-}
-
-export interface PaymentsAdapter {
-	/**
-	 * Returns the percent off for a given coupon
-	 * @param identifier
-	 */
-	getCouponPercentOff(identifier: string): Promise<number>
-	/**
-	 * Returns a coupon id.
-	 *
-	 * TODO: these use the stripe types and we probably want to use an
-	 *   internal interface so that we can think about different providers
-	 *   in the future.
-	 * @param params
-	 */
-	createCoupon(params: Stripe.CouponCreateParams): Promise<string>
-	/**
-	 * Returns a promotion code.
-	 * @param params
-	 */
-	createPromotionCode(params: Stripe.PromotionCodeCreateParams): Promise<string>
-	/**
-	 * Returns the URL to redirect to for a checkout session.
-	 * @param params
-	 */
-	createCheckoutSession(
-		params: Stripe.Checkout.SessionCreateParams,
-	): Promise<string | null>
-	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
-}
-
-export type StripeProviderConsumerConfig = Omit<
-	Partial<StripeProviderConfig>,
-	'options' | 'type'
-> & {
-	paymentsAdapter: PaymentsAdapter
-	errorRedirectUrl: string
-	cancelUrl: string
-	baseSuccessUrl: string
-}
+import {
+	PaymentsProviderConfig,
+	PaymentsProviderConsumerConfig,
+} from '../types'
 
 export default function StripeProvider(
-	options: StripeProviderConsumerConfig,
-): StripeProviderConfig {
+	options: PaymentsProviderConsumerConfig,
+): PaymentsProviderConfig {
 	return {
 		id: 'stripe',
 		name: 'Stripe',
@@ -76,7 +27,7 @@ export default function StripeProvider(
 	} as const
 }
 
-export const MockStripeProvider: StripeProviderConfig = {
+export const MockStripeProvider: PaymentsProviderConfig = {
 	id: 'mock-stripe' as const,
 	name: 'Mock Stripe',
 	type: 'payment',
