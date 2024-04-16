@@ -19,6 +19,7 @@ import {
 	MerchantCoupon,
 	merchantCouponSchema,
 	MerchantCustomer,
+	merchantPriceSchema,
 	MerchantProduct,
 	merchantProductSchema,
 	Price,
@@ -239,12 +240,40 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
+		getMerchantPriceForProductId: async (productId) => {
+			const merchantPriceData = await client.query.merchantPrice.findFirst({
+				where: eq(merchantPrice.merchantProductId, productId),
+			})
+
+			const parsedMerchantPrice =
+				merchantPriceSchema.safeParse(merchantPriceData)
+
+			if (!parsedMerchantPrice.success) {
+				console.error(
+					'Error parsing merchant price',
+					JSON.stringify(parsedMerchantPrice.error),
+				)
+				return null
+			}
+
+			return parsedMerchantPrice.data
+		},
+		getMerchantProductForProductId: async (productId) => {
+			const merchantProductData = await client.query.merchantProduct.findFirst({
+				where: eq(merchantProduct.productId, productId),
+			})
+
+			if (!merchantProductData) return null
+			return merchantProductSchema.parse(merchantProductData)
+		},
 		getMerchantCustomerForUserId: async (userId) => {
-			return merchantCustomerSchema.parse(
+			const merchantCustomerData =
 				await client.query.merchantCustomer.findFirst({
 					where: eq(merchantCustomer.userId, userId),
-				}),
-			)
+				})
+
+			if (!merchantCustomerData) return null
+			return merchantCustomerSchema.parse(merchantCustomerData)
 		},
 		getUpgradableProducts: async (options) => {
 			const { upgradableFromId, upgradableToId } = options

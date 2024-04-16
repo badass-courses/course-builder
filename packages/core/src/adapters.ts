@@ -5,6 +5,7 @@ import { Coupon } from './schemas/coupon-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
+import { MerchantPrice } from './schemas/merchant-price-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
 import { Price } from './schemas/price-schema'
 import { Product } from './schemas/product-schema'
@@ -68,10 +69,13 @@ export interface CourseBuilderAdapter<
 		identifier: string
 		merchantAccountId: string
 	}): Promise<MerchantCustomer | null>
+	getMerchantPriceForProductId(productId: string): Promise<MerchantPrice | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
+	getMerchantPriceForProductId: async (productId) => null,
+	getMerchantProductForProductId: async (productId) => null,
 	getMerchantAccount: async () => null,
 	createMerchantCustomer: async () => null,
 	getMerchantCustomerForUserId: async () => null,
@@ -361,6 +365,9 @@ interface SkillProductsCommerceSdk {
 	getPurchase(purchaseId: string): Promise<Purchase | null>
 	getPurchasesForUser(userId?: string): Promise<Purchase[]>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>
+	getMerchantProductForProductId(
+		productId: string,
+	): Promise<MerchantProduct | null>
 	getMerchantCharge(merchantChargeId: string): Promise<{
 		id: string
 		identifier: string

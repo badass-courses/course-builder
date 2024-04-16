@@ -1,11 +1,15 @@
-import { CheckoutParams } from '../lib/pricing/stripe-checkout'
+import { CourseBuilderAdapter } from '../adapters'
+import { CheckoutParams, stripeCheckout } from '../lib/pricing/stripe-checkout'
 
 export interface StripeProviderConfig {
 	id: string
 	name: string
 	type: 'payment'
 	options: StripeProviderConsumerConfig
-	createCheckoutSession: (checkoutParams: CheckoutParams) => Promise<string>
+	createCheckoutSession: (
+		checkoutParams: CheckoutParams,
+		adapter?: CourseBuilderAdapter,
+	) => Promise<{ redirect: string; status: number }>
 }
 
 export type StripeProviderConsumerConfig = Omit<
@@ -27,8 +31,15 @@ export default function StripeProvider(
 		type: 'payment',
 		options,
 		...options,
-		createCheckoutSession: async (checkoutParams: CheckoutParams) => {
-			return Promise.resolve('mock-checkout-session-id')
+		createCheckoutSession: async (
+			checkoutParams: CheckoutParams,
+			adapter?: CourseBuilderAdapter,
+		) => {
+			return stripeCheckout({
+				params: checkoutParams,
+				config: options,
+				adapter,
+			})
 		},
 	} as const
 }
@@ -44,6 +55,9 @@ export const MockStripeProvider: StripeProviderConfig = {
 		baseSuccessUrl: 'mock-base-success-url',
 	},
 	createCheckoutSession: async () => {
-		return Promise.resolve('mock-checkout-session-id')
+		return {
+			redirect: 'mock-checkout-session-id',
+			status: 303,
+		}
 	},
 }

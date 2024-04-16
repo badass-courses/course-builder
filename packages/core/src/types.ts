@@ -7,6 +7,7 @@ import { CourseBuilderAdapter } from './adapters'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
+import { StripeProviderConfig } from './providers/stripe'
 import { Coupon, MerchantCoupon, Price, Product, Purchase } from './schemas'
 import {
 	ContentResourceResourceSchema,
@@ -44,6 +45,7 @@ export type CourseBuilderAction =
 	| 'srt'
 	| 'session'
 	| 'subscribe-to-list'
+	| 'checkout'
 
 export interface RequestInternal {
 	url: URL
@@ -61,7 +63,9 @@ export type InternalProvider<T = ProviderType> = T extends 'transcription'
 	? TranscriptionConfig
 	: T extends 'email-list'
 		? EmailListConfig
-		: never
+		: T extends 'checkout'
+			? StripeProviderConfig
+			: never
 
 export interface InternalOptions<TProviderType = ProviderType> {
 	providers: InternalProvider[]

@@ -37,6 +37,8 @@ export async function CourseBuilder(
 			internalRequest,
 			config,
 		)
+
+		console.log({ internalResponse })
 		const response = toResponse(internalResponse)
 		const url = response.headers.get('Location')
 		if (!isRedirect || !url) return response

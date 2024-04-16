@@ -85,7 +85,12 @@ export type TranscriptionUserConfig = Omit<
 /**
  * The user configuration object for a transcription service provider.
  */
-export type ProviderType = 'transcription' | 'email-list' | 'payment' | 'party'
+export type ProviderType =
+	| 'transcription'
+	| 'email-list'
+	| 'payment'
+	| 'party'
+	| 'checkout'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config

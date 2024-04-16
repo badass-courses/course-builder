@@ -4,23 +4,31 @@ import { CourseBuilderAdapter } from 'src/adapters'
 import Stripe from 'stripe'
 import { z } from 'zod'
 
-import { StripeProviderConfig } from '../../providers/stripe'
+import {
+	StripeProviderConfig,
+	StripeProviderConsumerConfig,
+} from '../../providers/stripe'
 import { Product, Purchase, UpgradableProduct } from '../../schemas'
 import { getFixedDiscountForIndividualUpgrade } from './format-prices-for-product'
 import { getCalculatedPrice } from './get-calculated-price'
 
-export type CheckoutParams = {
-	ip_address: string
-	productId: string
-	quantity?: number
-	country?: string
-	couponId: string
-	userId?: string
-	upgradeFromPurchaseId?: string
-	bulk: boolean
-	cancelUrl: string
-	usedCouponId?: string
-}
+export const CheckoutParamsSchema = z.object({
+	ip_address: z.string().optional(),
+	productId: z.string(),
+	quantity: z.coerce
+		.number()
+		.optional()
+		.transform((val) => Number(val) || 0),
+	country: z.string().optional(),
+	couponId: z.string().optional(),
+	userId: z.string().optional(),
+	upgradeFromPurchaseId: z.string().optional(),
+	bulk: z.coerce.boolean().transform((val) => Boolean(val) || false),
+	cancelUrl: z.string(),
+	usedCouponId: z.string().optional(),
+})
+
+export type CheckoutParams = z.infer<typeof CheckoutParamsSchema>
 
 const buildSearchParams = (params: object) => {
 	// implementing this instead of using `URLSearchParams` because that API
@@ -175,20 +183,6 @@ const buildCouponName = (
 
 const LoadedProductSchema = z.object({
 	id: z.string(),
-	merchantProducts: z
-		.array(
-			z.object({
-				identifier: z.string(),
-				merchantPrices: z
-					.array(
-						z.object({
-							identifier: z.string(),
-						}),
-					)
-					.nonempty({ message: 'MerchantPrice is missing' }),
-			}),
-		)
-		.nonempty({ message: 'MerchantProduct is missing' }),
 })
 
 export async function stripeCheckout({
@@ -197,15 +191,19 @@ export async function stripeCheckout({
 	adapter,
 }: {
 	params: CheckoutParams
-	config: StripeProviderConfig
-	adapter: CourseBuilderAdapter
+	config: StripeProviderConsumerConfig
+	adapter?: CourseBuilderAdapter
 }): Promise<any> {
 	try {
+		if (!adapter) {
+			throw new Error('Adapter is required')
+		}
+
 		const ip_address = params.ip_address
 
 		let errorRedirectUrl: string | undefined = undefined
 
-		const stripe = new Stripe(config.options.apiKey, {
+		const stripe = new Stripe(config.apiKey, {
 			apiVersion: '2020-08-27',
 		})
 
@@ -224,10 +222,14 @@ export async function stripeCheckout({
 				usedCouponId,
 			} = params
 
-			errorRedirectUrl = config.options.errorRedirectUrl
-			const cancelUrl = config.options.cancelUrl
+			console.log('lets build a product checkout link', { productId })
+
+			errorRedirectUrl = config.errorRedirectUrl
+			const cancelUrl = config.cancelUrl
 
 			const quantity = Number(queryQuantity)
+
+			console.log({ quantity })
 
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
@@ -235,15 +237,7 @@ export async function stripeCheckout({
 				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
 
-			// const availableUpgrade =
-			// 	quantity === 1 && upgradeFromPurchase
-			// 		? await prisma.upgradableProducts.findFirst({
-			// 				where: {
-			// 					upgradableFromId: upgradeFromPurchase.productId,
-			// 					upgradableToId: productId as string,
-			// 				},
-			// 			})
-			// 		: null
+			console.log({ upgradeFromPurchase })
 
 			const availableUpgrade =
 				quantity === 1 && upgradeFromPurchase
@@ -253,11 +247,17 @@ export async function stripeCheckout({
 						})
 					: null
 
+			console.log({ availableUpgrade })
+
 			const customerId = user
 				? await findOrCreateStripeCustomerId(user.id, stripe, adapter)
 				: false
 
+			console.log({ customerId })
+
 			const loadedProduct = await adapter.getProduct(productId)
+
+			console.log({ loadedProduct })
 
 			const result = LoadedProductSchema.safeParse(loadedProduct)
 
@@ -278,14 +278,35 @@ export async function stripeCheckout({
 
 			const loadedProductData = result.data
 
-			const merchantProductIdentifier =
-				loadedProductData.merchantProducts[0].identifier
-			const merchantPriceIdentifier =
-				loadedProductData.merchantProducts[0].merchantPrices[0].identifier
+			const merchantProduct = await adapter.getMerchantProductForProductId(
+				loadedProductData.id,
+			)
+
+			console.log({ merchantProduct })
+
+			const merchantProductIdentifier = merchantProduct?.identifier
+
+			if (!merchantProduct) {
+				throw new Error('No merchant product found')
+			}
+
+			const merchantPrice = await adapter.getMerchantPriceForProductId(
+				merchantProduct.id,
+			)
+
+			console.log({ merchantPrice })
+
+			const merchantPriceIdentifier = merchantPrice?.identifier
+
+			if (!merchantPriceIdentifier || !merchantProductIdentifier) {
+				throw new Error('No merchant price or product found')
+			}
 
 			const merchantCoupon = couponId
 				? await adapter.getMerchantCoupon(couponId as string)
 				: null
+
+			console.log({ merchantCoupon })
 
 			const stripeCoupon =
 				merchantCoupon && merchantCoupon.identifier
@@ -326,6 +347,8 @@ export async function stripeCheckout({
 
 				const productPrice = await adapter.getPriceForProduct(loadedProduct.id)
 
+				console.log({ productPrice })
+
 				const fullPrice = productPrice?.unitAmount || 0
 				const calculatedPrice = getCalculatedPrice({
 					unitPrice: fullPrice,
@@ -334,9 +357,13 @@ export async function stripeCheckout({
 					fixedDiscount: fixedDiscountForIndividualUpgrade,
 				})
 
+				console.log({ calculatedPrice })
+
 				const upgradeFromProduct = await adapter.getProduct(
 					upgradeFromPurchase.productId,
 				)
+
+				console.log({ upgradeFromProduct })
 
 				if (fixedDiscountForIndividualUpgrade > 0) {
 					const couponName = buildCouponName(
@@ -384,7 +411,7 @@ export async function stripeCheckout({
 			}
 
 			if (!loadedProduct) {
-				throw new CheckoutError('No product was found', productId as string)
+				throw new Error('No product was found')
 			}
 
 			let successUrl: string = (() => {
@@ -398,13 +425,15 @@ export async function stripeCheckout({
 						...baseQueryParams,
 						upgrade: 'true',
 					})
-					return `${config.options.baseSuccessUrl}/welcome?${queryParamString}`
+					return `${config.baseSuccessUrl}/welcome?${queryParamString}`
 				} else {
 					const queryParamString = buildSearchParams(baseQueryParams)
 
-					return `${config.options.baseSuccessUrl}/thanks/purchase?${queryParamString}`
+					return `${config.baseSuccessUrl}/thanks/purchase?${queryParamString}`
 				}
 			})()
+
+			console.log({ successUrl: successUrl })
 
 			const metadata = {
 				...(Boolean(availableUpgrade && upgradeFromPurchase) && {
@@ -414,7 +443,7 @@ export async function stripeCheckout({
 				...(appliedPPPStripeCouponId && { appliedPPPStripeCouponId }),
 				...(upgradedFromPurchaseId && { upgradedFromPurchaseId }),
 				country: params.country || process.env.DEFAULT_COUNTRY || 'US',
-				ip_address,
+				ip_address: params.ip_address || '',
 				...(usedCouponId && { usedCouponId }),
 				productId: loadedProduct.id,
 				product: loadedProduct.name,
@@ -441,7 +470,16 @@ export async function stripeCheckout({
 				},
 			})
 
+			console.log({ session })
+
 			if (session.url) {
+				console.log()
+				console.log()
+				console.log()
+				console.log({ sessionUrl: session.url })
+				console.log()
+				console.log()
+				console.log()
 				return {
 					redirect: session.url,
 					status: 303,
@@ -454,6 +492,13 @@ export async function stripeCheckout({
 				)
 			}
 		} catch (err: any) {
+			console.log()
+			console.log()
+			console.log()
+			console.log({ err: JSON.stringify(err) })
+			console.log()
+			console.log()
+			console.log()
 			if (errorRedirectUrl) {
 				return {
 					redirect: errorRedirectUrl,
