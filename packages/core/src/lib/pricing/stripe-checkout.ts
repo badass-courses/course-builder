@@ -1,10 +1,12 @@
 import { add } from 'date-fns'
 import { first, isEmpty } from 'lodash'
+import { options } from 'prettier-plugin-tailwindcss'
 import { CourseBuilderAdapter } from 'src/adapters'
-import Stripe from 'stripe'
+// import Stripe from 'stripe'
 import { z } from 'zod'
 
 import {
+	PaymentsAdapter,
 	StripeProviderConfig,
 	StripeProviderConsumerConfig,
 } from '../../providers/stripe'
@@ -54,8 +56,8 @@ const buildSearchParams = (params: object) => {
  */
 async function findOrCreateStripeCustomerId(
 	userId: string,
-	stripe: Stripe,
 	adapter: CourseBuilderAdapter,
+	paymentsAdapter: PaymentsAdapter,
 ) {
 	const user = await adapter.getUser?.(userId)
 
@@ -71,18 +73,18 @@ async function findOrCreateStripeCustomerId(
 				provider: 'stripe',
 			})
 			if (merchantAccount) {
-				const customer = await stripe.customers.create({
+				const customerId = await paymentsAdapter.createCustomer({
 					email: user.email,
 					metadata: {
 						userId: user.id,
 					},
 				})
 				await adapter.createMerchantCustomer({
-					identifier: customer.id,
+					identifier: customerId,
 					merchantAccountId: merchantAccount.id,
 					userId,
 				})
-				return customer.id
+				return customerId
 			}
 		}
 	}
@@ -203,14 +205,6 @@ export async function stripeCheckout({
 
 		let errorRedirectUrl: string | undefined = undefined
 
-		const stripe = new Stripe(config.apiKey, {
-			apiVersion: '2020-08-27',
-		})
-
-		if (!stripe) {
-			throw new Error('Stripe client is missing')
-		}
-
 		try {
 			const {
 				productId,
@@ -250,7 +244,11 @@ export async function stripeCheckout({
 			console.log({ availableUpgrade })
 
 			const customerId = user
-				? await findOrCreateStripeCustomerId(user.id, stripe, adapter)
+				? await findOrCreateStripeCustomerId(
+						user.id,
+						adapter,
+						config.paymentsAdapter,
+					)
 				: false
 
 			console.log({ customerId })
@@ -308,15 +306,18 @@ export async function stripeCheckout({
 
 			console.log({ merchantCoupon })
 
-			const stripeCoupon =
-				merchantCoupon && merchantCoupon.identifier
-					? await stripe.coupons.retrieve(merchantCoupon.identifier)
-					: false
-
 			const stripeCouponPercentOff =
-				stripeCoupon && stripeCoupon.percent_off
-					? stripeCoupon.percent_off / 100
+				merchantCoupon && merchantCoupon.identifier
+					? await config.paymentsAdapter.getCouponPercentOff(
+							merchantCoupon.identifier,
+						)
 					: 0
+
+			// const stripeCouponPercentOff =
+			// 	stripeCoupon && stripeCoupon.percent_off
+			// 		? stripeCoupon.percent_off / 100
+			// 		: 0
+			// TODO: be sure to divide it by 100 in the method🤡
 
 			let discounts = []
 			let appliedPPPStripeCouponId: string | undefined | null = undefined
@@ -352,7 +353,7 @@ export async function stripeCheckout({
 				const fullPrice = productPrice?.unitAmount || 0
 				const calculatedPrice = getCalculatedPrice({
 					unitPrice: fullPrice,
-					percentOfDiscount: stripeCouponPercentOff || 0,
+					percentOfDiscount: stripeCouponPercentOff,
 					quantity: 1,
 					fixedDiscount: fixedDiscountForIndividualUpgrade,
 				})
@@ -376,7 +377,7 @@ export async function stripeCheckout({
 
 					const amount_off_in_cents = (fullPrice - calculatedPrice) * 100
 
-					const coupon = await stripe.coupons.create({
+					const couponId = await config.paymentsAdapter.createCoupon({
 						amount_off: amount_off_in_cents,
 						name: couponName,
 						max_redemptions: 1,
@@ -388,7 +389,7 @@ export async function stripeCheckout({
 					})
 
 					discounts.push({
-						coupon: coupon.id,
+						coupon: couponId,
 					})
 				}
 			} else if (merchantCoupon && merchantCoupon.identifier) {
@@ -399,13 +400,14 @@ export async function stripeCheckout({
 						merchantCoupon.type === 'ppp'
 							? merchantCoupon?.identifier
 							: undefined
-					const { id } = await stripe.promotionCodes.create({
-						coupon: merchantCoupon.identifier,
-						max_redemptions: 1,
-						expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
-					})
+					const promotionCodeId =
+						await config.paymentsAdapter.createPromotionCode({
+							coupon: merchantCoupon.identifier,
+							max_redemptions: 1,
+							expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+						})
 					discounts.push({
-						promotion_code: id,
+						promotion_code: promotionCodeId,
 					})
 				}
 			}
@@ -451,7 +453,7 @@ export async function stripeCheckout({
 				siteName: process.env.NEXT_PUBLIC_APP_NAME as string,
 			}
 
-			const session = await stripe.checkout.sessions.create({
+			const sessionUrl = await config.paymentsAdapter.createCheckoutSession({
 				discounts,
 				line_items: [
 					{
@@ -470,18 +472,17 @@ export async function stripeCheckout({
 				},
 			})
 
-			console.log({ session })
+			console.log({ sessionUrl })
 
-			if (session.url) {
+			if (sessionUrl) {
 				console.log()
 				console.log()
 				console.log()
-				console.log({ sessionUrl: session.url })
 				console.log()
 				console.log()
 				console.log()
 				return {
-					redirect: session.url,
+					redirect: sessionUrl,
 					status: 303,
 				}
 			} else {

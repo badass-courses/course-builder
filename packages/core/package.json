@@ -109,14 +109,14 @@
 		"@types/cookie": "0.6.0",
 		"ai": "3.0.19",
 		"cookie": "0.6.0",
+		"date-fns": "^2.30.0",
 		"drizzle-zod": "^0.5.1",
 		"inngest": "^3.16.1",
 		"liquidjs": "^10.9.4",
 		"lodash": "^4.17.21",
 		"openai-edge": "^1.2.2",
 		"srt-parser-2": "^1.2.3",
-		"stripe": "^8.186.1",
-		"date-fns": "^2.30.0"
+		"stripe": "^8.186.1"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.28.1",
