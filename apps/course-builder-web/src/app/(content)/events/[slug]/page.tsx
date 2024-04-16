@@ -5,6 +5,8 @@ import { EventTemplate } from '@/app/(content)/events/[slug]/_components/event-t
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, products, purchases } from '@/db/schema'
 import { Event, EventSchema } from '@/lib/events'
+import { getEvent } from '@/lib/events-query'
+import { getPricingData, PricingData } from '@/lib/pricing-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { and, count, eq, or, sql } from 'drizzle-orm'
@@ -45,6 +47,7 @@ export type EventPageProps = {
 	existingPurchase?: Purchase & { product?: Product | null }
 	purchases?: Purchase[]
 	userId?: string
+	pricingDataLoader: Promise<PricingData>
 } & CommerceProps
 
 export default async function EventPage({
@@ -55,32 +58,7 @@ export default async function EventPage({
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
-	const event = EventSchema.parse(
-		await db.query.contentResource.findFirst({
-			where: and(
-				eq(contentResource.type, 'event'),
-				or(
-					eq(contentResource.id, params.slug),
-					eq(
-						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-						params.slug,
-					),
-				),
-			),
-			with: {
-				resources: true,
-				resourceProducts: {
-					with: {
-						product: {
-							with: {
-								price: true,
-							},
-						},
-					},
-				},
-			},
-		}),
-	)
+	const event = await getEvent(params.slug)
 
 	if (!event) {
 		notFound()
@@ -95,6 +73,7 @@ export default async function EventPage({
 
 	if (productParsed.success) {
 		product = productParsed.data
+		const pricingDataLoader = getPricingData(product?.id)
 
 		const commerceProps = await propsForCommerce({
 			query: {
@@ -134,6 +113,7 @@ export default async function EventPage({
 			quantityAvailable,
 			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
 			product,
+			pricingDataLoader,
 			...commerceProps,
 		}
 
@@ -168,10 +148,15 @@ export default async function EventPage({
 			quantityAvailable: -1,
 			totalQuantity: -1,
 			purchaseCount: 0,
+			pricingDataLoader: Promise.resolve({
+				formattedPrice: null,
+				purchaseToUpgrade: null,
+				quantityAvailable: -1,
+			}),
 		}
 	}
 
-	console.log({ eventProps })
+	console.log(eventProps)
 
 	return (
 		<div>

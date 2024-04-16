@@ -11,6 +11,7 @@ import {
 	wordLevelSrtFromTranscriptResult,
 } from '../../providers/deepgram'
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
+import { CheckoutParamsSchema } from '../pricing/stripe-checkout'
 import { Cookie } from '../utils/cookie'
 
 export async function subscribeToList(
@@ -106,6 +107,43 @@ export async function srt(
 		headers: { 'Content-Type': 'application/text' },
 		cookies,
 	}
+}
+
+export async function checkout(
+	request: RequestInternal,
+	cookies: Cookie[],
+	options: InternalOptions<'checkout'>,
+): Promise<ResponseInternal> {
+	const { callbacks, logger } = options
+
+	const response: ResponseInternal<any | null> = {
+		body: null,
+		headers: { 'Content-Type': 'application/json' },
+		cookies,
+	}
+
+	const checkoutParamsParsed = CheckoutParamsSchema.safeParse(request.query)
+
+	if (!checkoutParamsParsed.success) {
+		console.error('Error parsing checkout params', checkoutParamsParsed)
+		console.log({ error: JSON.stringify(checkoutParamsParsed.error.format()) })
+		throw new Error('Error parsing checkout params')
+	}
+
+	const checkoutParams = checkoutParamsParsed.data
+
+	try {
+		const stripe = await options.provider.createCheckoutSession(
+			checkoutParams,
+			options.adapter,
+		)
+
+		return Response.redirect(stripe.redirect)
+	} catch (e) {
+		logger.error(e as Error)
+	}
+
+	return response
 }
 
 export async function webhook(

@@ -37,6 +37,7 @@ export async function CourseBuilder(
 			internalRequest,
 			config,
 		)
+
 		const response = toResponse(internalResponse)
 		const url = response.headers.get('Location')
 		if (!isRedirect || !url) return response
@@ -61,3 +62,5 @@ export interface CourseBuilderConfig {
 	useSecureCookies?: boolean
 	inngest?: Inngest
 }
+
+export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'

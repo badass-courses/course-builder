@@ -10,6 +10,8 @@ import {
 
 const currentContributionTypes = await db.query.contributionTypes.findMany()
 
+console.log({ currentContributionTypes })
+
 const seededContributionTypes = [
 	{
 		name: 'Author',
@@ -25,6 +27,7 @@ const seededContributionTypes = [
 ]
 
 for (const seedType of seededContributionTypes) {
+	console.log({ seedType })
 	const existingContributionType = currentContributionTypes.find(
 		(ct) => ct.slug === seedType.slug,
 	)
@@ -35,6 +38,8 @@ for (const seedType of seededContributionTypes) {
 }
 
 const currentRoles = await db.query.roles.findMany()
+
+console.log({ currentRoles })
 
 const seededRoles = [
 	{
@@ -52,6 +57,7 @@ const seededRoles = [
 ]
 
 for (const seedRole of seededRoles) {
+	console.log({ seedRole })
 	const existingRole = currentRoles.find((role) => role.name === seedRole.name)
 
 	if (!existingRole) {
@@ -60,6 +66,8 @@ for (const seedRole of seededRoles) {
 }
 
 const currentPermissions = await db.query.permissions.findMany()
+
+console.log({ currentPermissions })
 
 const seededPermissions = [
 	{
@@ -77,6 +85,7 @@ const seededPermissions = [
 ]
 
 for (const seedPermission of seededPermissions) {
+	console.log({ seedPermission })
 	const existingPermission = currentPermissions.find(
 		(permission) => permission.name === seedPermission.name,
 	)
@@ -87,6 +96,8 @@ for (const seedPermission of seededPermissions) {
 }
 
 const currentRolePermissions = await db.query.rolePermissions.findMany()
+
+console.log({ currentRolePermissions })
 
 const seededRolePermissions = [
 	{
@@ -104,6 +115,8 @@ const seededRolePermissions = [
 ]
 
 for (const seedRolePermission of seededRolePermissions) {
+	console.log({ seedRolePermission })
+
 	const existingRolePermission = currentRolePermissions.find(
 		(rp) =>
 			rp.roleId === seedRolePermission.roleId &&

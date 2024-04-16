@@ -7,6 +7,7 @@ export const env = createEnv({
 	 * isn't built with invalid env vars.
 	 */
 	server: {
+		STRIPE_SECRET_TOKEN: z.string().optional(),
 		COURSEBUILDER_URL: z.preprocess(
 			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 			// Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -40,10 +41,6 @@ export const env = createEnv({
 		OPENAI_API_KEY: z.string(),
 		REPLICATE_API_KEY: z.string().optional(),
 		ANTHROPIC_API_KEY: z.string().optional(),
-		SANITY_STUDIO_PROJECT_ID: z.string(),
-		SANITY_STUDIO_DATASET: z.string(),
-		SANITY_STUDIO_API_VERSION: z.string(),
-		SANITY_API_TOKEN: z.string(),
 		INNGEST_EVENT_KEY: z.string(),
 		INNGEST_SIGNING_KEY: z.string(),
 		MUX_SECRET_KEY: z.string(),
@@ -86,6 +83,7 @@ export const env = createEnv({
 	 * middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		STRIPE_SECRET_TOKEN: process.env.STRIPE_SECRET_TOKEN,
 		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
 		COURSEBUILDER_URL: process.env.COURSEBUILDER_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -97,10 +95,6 @@ export const env = createEnv({
 		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 		OPENAI_MODEL_ID: process.env.OPENAI_MODEL_ID,
 		OPENAI_EMBEDDINGS_MODEL: process.env.OPENAI_EMBEDDINGS_MODEL,
-		SANITY_STUDIO_PROJECT_ID: process.env.SANITY_STUDIO_PROJECT_ID,
-		SANITY_STUDIO_DATASET: process.env.SANITY_STUDIO_DATASET,
-		SANITY_STUDIO_API_VERSION: process.env.SANITY_STUDIO_API_VERSION,
-		SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
 		INNGEST_EVENT_KEY: process.env.INNGEST_EVENT_KEY,
 		INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
 		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: process.env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,

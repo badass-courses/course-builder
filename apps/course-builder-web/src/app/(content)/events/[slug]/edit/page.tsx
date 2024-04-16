@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
 import { EventSchema } from '@/lib/events'
+import { getEvent } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { EditEventForm } from './_components/edit-event-form'
@@ -16,11 +17,7 @@ export default async function EventEditPage({
 }) {
 	headers()
 	const { ability } = await getServerAuthSession()
-	const event = EventSchema.parse(
-		await courseBuilderAdapter.getContentResource(params.slug),
-	)
-
-	console.log({ event })
+	const event = await getEvent(params.slug)
 
 	if (!event || !ability.can('create', 'Content')) {
 		notFound()

@@ -28,6 +28,8 @@ export async function CourseBuilderInternal(
 		}
 	} else {
 		switch (action) {
+			case 'checkout':
+				return await actions.checkout(request, cookies, options)
 			case 'webhook':
 				return await actions.webhook(request, cookies, options)
 			case 'subscribe-to-list':

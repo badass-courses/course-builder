@@ -76,5 +76,10 @@ module.exports = withUt({
 			},
 		},
 	},
-	plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+	plugins: [
+		require('@tailwindcss/typography'),
+		require('tailwind-scrollbar'),
+		require('tailwindcss-radix'),
+		require('tailwindcss-animate'),
+	],
 })

@@ -10,6 +10,7 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
+import { formatPricesForProduct } from '@coursebuilder/core/lib/pricing/format-prices-for-product'
 import {
 	Coupon,
 	couponSchema,
@@ -18,6 +19,7 @@ import {
 	MerchantCoupon,
 	merchantCouponSchema,
 	MerchantCustomer,
+	merchantPriceSchema,
 	MerchantProduct,
 	merchantProductSchema,
 	Price,
@@ -38,6 +40,8 @@ import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
+import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
+import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 import {
@@ -216,6 +220,72 @@ export function mySqlDrizzleAdapter(
 
 	return {
 		client,
+		createMerchantCustomer: async (options) => {
+			await client.insert(merchantCustomer).values({
+				id: v4(),
+				identifier: options.identifier,
+				merchantAccountId: options.merchantAccountId,
+				userId: options.userId,
+			})
+			return merchantCustomerSchema.parse(
+				await client.query.merchantCustomer.findFirst({
+					where: eq(merchantCustomer.identifier, options.identifier),
+				}),
+			)
+		},
+		getMerchantAccount: async (options) => {
+			return merchantAccountSchema.parse(
+				await client.query.merchantAccount.findFirst({
+					where: eq(merchantAccount.label, options.provider),
+				}),
+			)
+		},
+		getMerchantPriceForProductId: async (productId) => {
+			const merchantPriceData = await client.query.merchantPrice.findFirst({
+				where: eq(merchantPrice.merchantProductId, productId),
+			})
+
+			const parsedMerchantPrice =
+				merchantPriceSchema.safeParse(merchantPriceData)
+
+			if (!parsedMerchantPrice.success) {
+				console.error(
+					'Error parsing merchant price',
+					JSON.stringify(parsedMerchantPrice.error),
+				)
+				return null
+			}
+
+			return parsedMerchantPrice.data
+		},
+		getMerchantProductForProductId: async (productId) => {
+			const merchantProductData = await client.query.merchantProduct.findFirst({
+				where: eq(merchantProduct.productId, productId),
+			})
+
+			if (!merchantProductData) return null
+			return merchantProductSchema.parse(merchantProductData)
+		},
+		getMerchantCustomerForUserId: async (userId) => {
+			const merchantCustomerData =
+				await client.query.merchantCustomer.findFirst({
+					where: eq(merchantCustomer.userId, userId),
+				})
+
+			if (!merchantCustomerData) return null
+			return merchantCustomerSchema.parse(merchantCustomerData)
+		},
+		getUpgradableProducts: async (options) => {
+			const { upgradableFromId, upgradableToId } = options
+			return z.array(upgradableProductSchema).parse(
+				await client.query.upgradableProducts.findMany({
+					where: and(
+						eq(upgradableProducts.upgradableFromId, upgradableFromId),
+						eq(upgradableProducts.upgradableToId, upgradableToId),
+					),
+				}),
+			)
+		},
 		availableUpgradesForProduct(
 			purchases: any,
 			productId: string,

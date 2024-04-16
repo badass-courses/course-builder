@@ -1,5 +1,6 @@
 import { AdapterUser } from '@auth/core/adapters'
 
+import { PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
 import { PartyProviderConfig } from './partykit'
 
@@ -84,7 +85,12 @@ export type TranscriptionUserConfig = Omit<
 /**
  * The user configuration object for a transcription service provider.
  */
-export type ProviderType = 'transcription' | 'email-list'
+export type ProviderType =
+	| 'transcription'
+	| 'email-list'
+	| 'payment'
+	| 'party'
+	| 'checkout'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config
@@ -114,6 +120,7 @@ export type Provider<P = any> = (
 			| EmailListConfig
 			| LlmProviderConfig
 			| PartyProviderConfig
+			| PaymentsProviderConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -123,6 +130,7 @@ export type Provider<P = any> = (
 			| EmailListConfig
 			| LlmProviderConfig
 			| PartyProviderConfig
+			| PaymentsProviderConfig
 	  ) &
 			InternalProviderOptions)
 ) &

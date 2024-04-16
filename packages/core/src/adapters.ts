@@ -2,8 +2,10 @@ import { type Adapter } from '@auth/core/adapters'
 
 import { UpgradableProduct } from './schemas'
 import { Coupon } from './schemas/coupon-schema'
+import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
+import { MerchantPrice } from './schemas/merchant-price-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
 import { Price } from './schemas/price-schema'
 import { Product } from './schemas/product-schema'
@@ -17,6 +19,7 @@ import { User } from './schemas/user-schema'
 import { VideoResource } from './schemas/video-resource'
 import {
 	ContentResourceResource,
+	FormattedPrice,
 	type Awaitable,
 	type ContentResource,
 } from './types'
@@ -53,10 +56,30 @@ export interface CourseBuilderAdapter<
 		fields: Record<string, any>
 	}): Awaitable<ContentResource | null>
 	getPriceForProduct(productId: string): Promise<Price | null>
+	getUpgradableProducts(options: {
+		upgradableFromId: string
+		upgradableToId: string
+	}): Promise<UpgradableProduct[]>
+	getMerchantCustomerForUserId(userId: string): Promise<MerchantCustomer | null>
+	getMerchantAccount(options: {
+		provider: 'stripe'
+	}): Promise<MerchantAccount | null>
+	createMerchantCustomer(options: {
+		userId: string
+		identifier: string
+		merchantAccountId: string
+	}): Promise<MerchantCustomer | null>
+	getMerchantPriceForProductId(productId: string): Promise<MerchantPrice | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
+	getMerchantPriceForProductId: async (productId) => null,
+	getMerchantProductForProductId: async (productId) => null,
+	getMerchantAccount: async () => null,
+	createMerchantCustomer: async () => null,
+	getMerchantCustomerForUserId: async () => null,
+	getUpgradableProducts: async () => [],
 	createPurchase: async (options) => {
 		throw new Error('Method not implemented.')
 	},
@@ -342,6 +365,9 @@ interface SkillProductsCommerceSdk {
 	getPurchase(purchaseId: string): Promise<Purchase | null>
 	getPurchasesForUser(userId?: string): Promise<Purchase[]>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>
+	getMerchantProductForProductId(
+		productId: string,
+	): Promise<MerchantProduct | null>
 	getMerchantCharge(merchantChargeId: string): Promise<{
 		id: string
 		identifier: string

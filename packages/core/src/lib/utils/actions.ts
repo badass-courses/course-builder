@@ -5,6 +5,7 @@ const actions: CourseBuilderAction[] = [
 	'srt',
 	'session',
 	'subscribe-to-list',
+	'checkout',
 ]
 
 export function isCourseBuilderAction(

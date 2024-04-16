@@ -36,7 +36,7 @@ export default async function EventIndexPage() {
 					<Card key={event.id}>
 						<CardHeader>
 							<CardTitle>
-								<Link href={`/${event.fields?.slug || event.id}`}>
+								<Link href={`/events/${event.fields?.slug || event.id}`}>
 									{event.fields?.title}
 								</Link>
 							</CardTitle>

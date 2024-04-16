@@ -69,7 +69,6 @@ export async function deleteSrtTrackFromMuxAsset(assetId?: string) {
 }
 
 export async function getMuxAsset(assetId?: string | null) {
-	console.log('getMuxAsset', assetId)
 	if (!assetId) {
 		return null
 	}
@@ -80,11 +79,7 @@ export async function getMuxAsset(assetId?: string | null) {
 		},
 	).then(async (response) => await response.json())
 
-	console.log('getMuxAsset', data)
-
 	const parsedData = MuxAssetSchema.safeParse(data)
-
-	console.log('getMuxAsset', JSON.stringify(parsedData))
 
 	return parsedData.success ? parsedData.data : null
 }

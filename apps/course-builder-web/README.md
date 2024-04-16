@@ -96,7 +96,7 @@ This app can be run locally. It requires API keys for many 3rd-party services. Y
 
 ### Env Vars from Vercel
 
-For those with access to the project in Vercel, here is how to grab those env vars. 
+For those with access to the project in Vercel, here is how to grab those env vars.
 
 **NOTE: you'll want to make sure you've `cd`'d into `<project-root>/apps/course-builder-web` for this**:
 
@@ -183,6 +183,12 @@ Then, apply the database schema to that new database with:
 
 ```
 $ pnpm db:push
+```
+
+Now you can seed the new database with basic roles/permissions:
+
+```bash
+$ pnpm db:seed
 ```
 
 ### Start the Local Dev Server

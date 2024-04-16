@@ -234,7 +234,12 @@ function isSameAuthAction(
 	return actions.has(action) && redirectPath === requestPath
 }
 
-const actions = new Set<CourseBuilderAction>(['webhook', 'session', 'srt'])
+const actions = new Set<CourseBuilderAction>([
+	'webhook',
+	'session',
+	'srt',
+	'checkout',
+])
 
 export interface NextCourseBuilderRequest extends NextRequest {
 	coursebuilder: CourseBuilderSession | null

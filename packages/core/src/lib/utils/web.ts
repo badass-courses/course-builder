@@ -69,18 +69,20 @@ export function parseActionAndProviderId(
 	const b = actionAndProviderId.replace(/^\//, '').split('/')
 
 	if (b.length !== 1 && b.length !== 2)
-		throw new UnknownAction(`Cannot parse action at ${pathname}`)
+		throw new UnknownAction(`**Cannot parse action at ${pathname}`)
 
 	const [action, providerId] = b
 
 	if (!isCourseBuilderAction(action))
-		throw new UnknownAction(`Cannot parse action at ${pathname}`)
+		throw new UnknownAction(`***Cannot parse action at ${pathname}`)
 
 	if (
 		providerId &&
-		!['webhook', 'srt', 'session', 'subscribe-to-list'].includes(action)
+		!['webhook', 'srt', 'session', 'subscribe-to-list', 'checkout'].includes(
+			action,
+		)
 	)
-		throw new UnknownAction(`Cannot parse action at ${pathname}`)
+		throw new UnknownAction(`**** Cannot parse action at ${pathname}`)
 
 	return { action, providerId }
 }
