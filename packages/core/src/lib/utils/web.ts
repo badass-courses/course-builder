@@ -60,11 +60,7 @@ export function parseActionAndProviderId(
 	action: CourseBuilderAction
 	providerId?: string
 } {
-	console.log({ pathname, base })
-
 	const a = pathname.match(new RegExp(`^${base}(.+)`))
-
-	console.log({ a })
 
 	if (a === null) throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
@@ -72,14 +68,10 @@ export function parseActionAndProviderId(
 
 	const b = actionAndProviderId.replace(/^\//, '').split('/')
 
-	console.log({ b })
-
 	if (b.length !== 1 && b.length !== 2)
 		throw new UnknownAction(`**Cannot parse action at ${pathname}`)
 
 	const [action, providerId] = b
-
-	console.log({ action, providerId })
 
 	if (!isCourseBuilderAction(action))
 		throw new UnknownAction(`***Cannot parse action at ${pathname}`)

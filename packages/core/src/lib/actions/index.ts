@@ -138,8 +138,6 @@ export async function checkout(
 			options.adapter,
 		)
 
-		console.log('****', { stripe })
-
 		return Response.redirect(stripe.redirect)
 	} catch (e) {
 		logger.error(e as Error)

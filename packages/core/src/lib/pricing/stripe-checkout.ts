@@ -223,15 +223,11 @@ export async function stripeCheckout({
 
 			const quantity = Number(queryQuantity)
 
-			console.log({ quantity })
-
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
 			const upgradeFromPurchase = upgradeFromPurchaseId
 				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
-
-			console.log({ upgradeFromPurchase })
 
 			const availableUpgrade =
 				quantity === 1 && upgradeFromPurchase
@@ -241,8 +237,6 @@ export async function stripeCheckout({
 						})
 					: null
 
-			console.log({ availableUpgrade })
-
 			const customerId = user
 				? await findOrCreateStripeCustomerId(
 						user.id,
@@ -251,11 +245,7 @@ export async function stripeCheckout({
 					)
 				: false
 
-			console.log({ customerId })
-
 			const loadedProduct = await adapter.getProduct(productId)
-
-			console.log({ loadedProduct })
 
 			const result = LoadedProductSchema.safeParse(loadedProduct)
 
@@ -265,7 +255,7 @@ export async function stripeCheckout({
 					.join(', ')
 
 				// Send `errorMessages` to Sentry so we can deal with it right away.
-				console.log(`No product (${productId}) was found (${errorMessages})`)
+				console.error(`No product (${productId}) was found (${errorMessages})`)
 
 				throw new CheckoutError(
 					`No product was found`,
@@ -280,8 +270,6 @@ export async function stripeCheckout({
 				loadedProductData.id,
 			)
 
-			console.log({ merchantProduct })
-
 			const merchantProductIdentifier = merchantProduct?.identifier
 
 			if (!merchantProduct) {
@@ -291,8 +279,6 @@ export async function stripeCheckout({
 			const merchantPrice = await adapter.getMerchantPriceForProductId(
 				merchantProduct.id,
 			)
-
-			console.log({ merchantPrice })
 
 			const merchantPriceIdentifier = merchantPrice?.identifier
 
@@ -304,20 +290,12 @@ export async function stripeCheckout({
 				? await adapter.getMerchantCoupon(couponId as string)
 				: null
 
-			console.log({ merchantCoupon })
-
 			const stripeCouponPercentOff =
 				merchantCoupon && merchantCoupon.identifier
 					? await config.paymentsAdapter.getCouponPercentOff(
 							merchantCoupon.identifier,
 						)
 					: 0
-
-			// const stripeCouponPercentOff =
-			// 	stripeCoupon && stripeCoupon.percent_off
-			// 		? stripeCoupon.percent_off / 100
-			// 		: 0
-			// TODO: be sure to divide it by 100 in the method🤡
 
 			let discounts = []
 			let appliedPPPStripeCouponId: string | undefined | null = undefined
@@ -348,8 +326,6 @@ export async function stripeCheckout({
 
 				const productPrice = await adapter.getPriceForProduct(loadedProduct.id)
 
-				console.log({ productPrice })
-
 				const fullPrice = productPrice?.unitAmount || 0
 				const calculatedPrice = getCalculatedPrice({
 					unitPrice: fullPrice,
@@ -358,13 +334,9 @@ export async function stripeCheckout({
 					fixedDiscount: fixedDiscountForIndividualUpgrade,
 				})
 
-				console.log({ calculatedPrice })
-
 				const upgradeFromProduct = await adapter.getProduct(
 					upgradeFromPurchase.productId,
 				)
-
-				console.log({ upgradeFromProduct })
 
 				if (fixedDiscountForIndividualUpgrade > 0) {
 					const couponName = buildCouponName(
@@ -435,8 +407,6 @@ export async function stripeCheckout({
 				}
 			})()
 
-			console.log({ successUrl: successUrl })
-
 			const metadata = {
 				...(Boolean(availableUpgrade && upgradeFromPurchase) && {
 					upgradeFromPurchaseId: upgradeFromPurchaseId as string,
@@ -472,15 +442,7 @@ export async function stripeCheckout({
 				},
 			})
 
-			console.log({ sessionUrl })
-
 			if (sessionUrl) {
-				console.log()
-				console.log()
-				console.log()
-				console.log()
-				console.log()
-				console.log()
 				return {
 					redirect: sessionUrl,
 					status: 303,
@@ -493,13 +455,6 @@ export async function stripeCheckout({
 				)
 			}
 		} catch (err: any) {
-			console.log()
-			console.log()
-			console.log()
-			console.log({ err: JSON.stringify(err) })
-			console.log()
-			console.log()
-			console.log()
 			if (errorRedirectUrl) {
 				return {
 					redirect: errorRedirectUrl,

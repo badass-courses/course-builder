@@ -19,8 +19,6 @@ export async function CourseBuilderInternal(
 		isPost: method === 'POST',
 	})
 
-	console.log({ action, providerId, error, method })
-
 	if (method === 'GET') {
 		switch (action) {
 			case 'srt':
@@ -31,9 +29,7 @@ export async function CourseBuilderInternal(
 	} else {
 		switch (action) {
 			case 'checkout':
-				const checkout = await actions.checkout(request, cookies, options)
-				console.log({ checkout })
-				return checkout
+				return await actions.checkout(request, cookies, options)
 			case 'webhook':
 				return await actions.webhook(request, cookies, options)
 			case 'subscribe-to-list':

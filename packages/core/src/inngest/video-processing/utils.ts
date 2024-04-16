@@ -57,7 +57,6 @@ export async function mergeSrtWithScreenshots(
 	let arrayByTimes = []
 	let tempArray: any = []
 	withTimes.forEach((x, i) => {
-		console.log(`inside withTimes number ${i} of ${withTimes.length}`)
 		if (currentTimeInSeconds + x.totalSeconds >= timeLimitInSeconds) {
 			arrayByTimes.push(tempArray)
 			tempArray = []

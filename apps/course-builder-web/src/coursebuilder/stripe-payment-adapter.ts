@@ -2,7 +2,7 @@ import { env } from '@/env.mjs'
 import { add } from 'date-fns'
 import Stripe from 'stripe'
 
-import { PaymentsAdapter } from '@coursebuilder/core/providers/stripe'
+import { type PaymentsAdapter } from '@coursebuilder/core/types'
 
 export class StripePaymentAdapter implements PaymentsAdapter {
 	stripe: Stripe
