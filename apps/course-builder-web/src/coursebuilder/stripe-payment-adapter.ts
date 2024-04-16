@@ -1,5 +1,4 @@
 import { env } from '@/env.mjs'
-import { add } from 'date-fns'
 import Stripe from 'stripe'
 
 import { type PaymentsAdapter } from '@coursebuilder/core/types'
@@ -25,9 +24,6 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		return coupon.id
 	}
 	async createPromotionCode(params: Stripe.PromotionCodeCreateParams) {
-		const TWELVE_FOUR_HOURS_FROM_NOW = Math.floor(
-			add(new Date(), { hours: 12 }).getTime() / 1000,
-		)
 		const { id } = await this.stripe.promotionCodes.create(params)
 		return id
 	}
