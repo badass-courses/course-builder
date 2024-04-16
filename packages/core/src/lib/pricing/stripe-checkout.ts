@@ -1,16 +1,10 @@
 import { add } from 'date-fns'
 import { first, isEmpty } from 'lodash'
-import { options } from 'prettier-plugin-tailwindcss'
 import { CourseBuilderAdapter } from 'src/adapters'
-// import Stripe from 'stripe'
 import { z } from 'zod'
 
 import { Product, Purchase, UpgradableProduct } from '../../schemas'
-import {
-	PaymentsAdapter,
-	PaymentsProviderConfig,
-	PaymentsProviderConsumerConfig,
-} from '../../types'
+import { PaymentsAdapter, PaymentsProviderConsumerConfig } from '../../types'
 import { getFixedDiscountForIndividualUpgrade } from './format-prices-for-product'
 import { getCalculatedPrice } from './get-calculated-price'
 
@@ -53,6 +47,8 @@ const buildSearchParams = (params: object) => {
  * customer ID and if one doesn't exist we will
  * create it.
  * @param userId
+ * @param adapter
+ * @param paymentsAdapter
  */
 async function findOrCreateStripeCustomerId(
 	userId: string,
