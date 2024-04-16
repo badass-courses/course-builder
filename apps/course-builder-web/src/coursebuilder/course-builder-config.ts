@@ -11,7 +11,6 @@ import NextCourseBuilder, {
 } from '@coursebuilder/next'
 
 const stripeProvider = StripeProvider({
-	apiKey: env.STRIPE_SECRET_TOKEN,
 	errorRedirectUrl: `${env.COURSEBUILDER_URL}/checkout-error`,
 	baseSuccessUrl: `${env.COURSEBUILDER_URL}/checkout-success`,
 	cancelUrl: `${env.COURSEBUILDER_URL}/checkout-cancel`,

@@ -8,6 +8,9 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	stripe: Stripe
 
 	constructor() {
+		if (!env.STRIPE_SECRET_TOKEN) {
+			throw new Error('Stripe secret token not found')
+		}
 		this.stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
 			apiVersion: '2020-08-27',
 		})

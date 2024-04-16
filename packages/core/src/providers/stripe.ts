@@ -48,7 +48,6 @@ export type StripeProviderConsumerConfig = Omit<
 	Partial<StripeProviderConfig>,
 	'options' | 'type'
 > & {
-	apiKey: string
 	paymentsAdapter: PaymentsAdapter
 	errorRedirectUrl: string
 	cancelUrl: string
@@ -82,7 +81,6 @@ export const MockStripeProvider: StripeProviderConfig = {
 	name: 'Mock Stripe',
 	type: 'payment',
 	options: {
-		apiKey: 'mock-api-key',
 		errorRedirectUrl: 'mock-error-redirect-url',
 		cancelUrl: 'mock-cancel-url',
 		baseSuccessUrl: 'mock-base-success-url',
