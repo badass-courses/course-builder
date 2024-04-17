@@ -1,3 +1,4 @@
+import { headers } from 'next/headers.js'
 import { NextRequest } from 'next/server.js'
 
 import { CourseBuilder } from '@coursebuilder/core'
@@ -14,6 +15,11 @@ export default function NextCourseBuilder(
 ): NextCourseBuilderResult {
 	if (typeof config === 'function') {
 		const httpHandler = (req: NextRequest) => {
+			const isWebhook = ['stripe-signature'].every(
+				(prop: string) => prop in req.headers,
+			)
+
+			console.log('hmmm', { isWebhook, headers: req.headers })
 			const _config = config(req)
 			setEnvDefaults(_config)
 			return CourseBuilder(reqWithEnvURL(req), _config)
@@ -24,8 +30,25 @@ export default function NextCourseBuilder(
 		}
 	}
 	setEnvDefaults(config)
-	const httpHandler = (req: NextRequest) =>
-		CourseBuilder(reqWithEnvURL(req), config)
+	const httpHandler = async (req: NextRequest) => {
+		const stripeHeader = headers().get('stripe-signature')
+		const isWebhook = ['stripe-signature'].every((prop: string) => {
+			console.log('prop', prop)
+			return prop in req.headers
+		})
+
+		// const body = await req.text()
+
+		const newReq = reqWithEnvURL(req)
+
+		console.log('hah', { isWebhook, stripeHeader, config })
+		const handler = CourseBuilder(newReq, config)
+
+		// const body = await newReq.text()
+		// console.log('body', body)
+
+		return handler
+	}
 	return {
 		handlers: { POST: httpHandler, GET: httpHandler } as const,
 		coursebuilder: initCourseBuilder(config, (c) => setEnvDefaults(c)),

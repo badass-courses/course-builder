@@ -5,6 +5,7 @@ import { type PaymentsAdapter } from '@coursebuilder/core/types'
 
 export class StripePaymentAdapter implements PaymentsAdapter {
 	stripe: Stripe
+	webhookSecret: string
 
 	constructor() {
 		if (!env.STRIPE_SECRET_TOKEN) {
@@ -13,6 +14,20 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		this.stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
 			apiVersion: '2020-08-27',
 		})
+
+		if (!env.STRIPE_WEBHOOK_SECRET) {
+			throw new Error('Stripe webhook secret not found')
+		}
+		this.webhookSecret = env.STRIPE_WEBHOOK_SECRET
+	}
+
+	async verifyWebhookSignature(rawBody: string, sig: string) {
+		const event = this.stripe.webhooks.constructEvent(
+			rawBody,
+			sig,
+			this.webhookSecret,
+		)
+		return Boolean(event)
 	}
 
 	async getCouponPercentOff(identifier: string) {

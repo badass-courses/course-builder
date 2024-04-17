@@ -113,13 +113,14 @@ export interface PaymentsAdapter {
 	): Promise<string | null>
 
 	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
+	verifyWebhookSignature(rawBody: string, sig: string): Promise<boolean>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
 	? TranscriptionConfig
 	: T extends 'email-list'
 		? EmailListConfig
-		: T extends 'checkout'
+		: T extends 'payment'
 			? PaymentsProviderConfig
 			: never
 

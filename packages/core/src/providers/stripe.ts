@@ -8,12 +8,13 @@ import {
 export default function StripeProvider(
 	options: PaymentsProviderConsumerConfig,
 ): PaymentsProviderConfig {
+	console.log({ options })
 	return {
 		id: 'stripe',
 		name: 'Stripe',
 		type: 'payment',
-		options,
 		...options,
+		options,
 		createCheckoutSession: async (
 			checkoutParams: CheckoutParams,
 			adapter?: CourseBuilderAdapter,
@@ -24,7 +25,7 @@ export default function StripeProvider(
 				adapter,
 			})
 		},
-	} as const
+	}
 }
 
 export const MockStripeProvider: PaymentsProviderConfig = {
@@ -41,6 +42,7 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 			createPromotionCode: async () => 'mock-promotion-code-id',
 			createCheckoutSession: async () => 'mock-checkout-session-id',
 			createCustomer: async () => 'mock-customer-id',
+			verifyWebhookSignature: async () => true,
 		},
 	},
 	createCheckoutSession: async () => {
