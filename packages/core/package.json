@@ -69,6 +69,11 @@
 			"import": "./dist/inngest/co-gardener/resource-chat.js",
 			"require": "./dist/inngest/co-gardener/resource-chat.js"
 		},
+		"./inngest/stripe/*": {
+			"types": "./dist/inngest/stripe/*.d.ts",
+			"import": "./dist/inngest/stripe/*.js",
+			"require": "./dist/inngest/stripe/*.js"
+		},
 		"./inngest/video-processing/events": {
 			"types": "./dist/inngest/video-processing/events/index.d.ts",
 			"import": "./dist/inngest/video-processing/events/index.js",

@@ -1,5 +1,7 @@
 import Stripe from 'stripe'
 
+import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '../../inngest/stripe/event-checkout-session-completed'
+import { checkoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
 import {
 	InternalOptions,
 	InternalProvider,
@@ -112,7 +114,7 @@ const exampleEvent = {
 }
 
 export async function processStripeWebhook(
-	event: Stripe.Event,
+	event: any,
 	options: InternalOptions<'payment'>,
 ) {
 	const stripeProvider: InternalProvider<'payment'> = options.provider
@@ -122,6 +124,13 @@ export async function processStripeWebhook(
 	switch (event.type) {
 		case 'checkout.session.completed':
 			console.log('checkout.session.completed', { event })
+			// dispatch inngest event
+			await options.inngest.send({
+				name: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
+				data: {
+					stripeEvent: checkoutSessionCompletedEvent.parse(event),
+				},
+			})
 			break
 		case 'charge.refunded':
 			console.log('charge.refunded', { event })
