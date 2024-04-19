@@ -112,6 +112,8 @@ export interface PaymentsAdapter {
 		params: Stripe.Checkout.SessionCreateParams,
 	): Promise<string | null>
 
+	getCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>
+
 	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
 	verifyWebhookSignature(rawBody: string, sig: string): Promise<boolean>
 }

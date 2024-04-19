@@ -1,4 +1,5 @@
 import { AdapterUser } from '@auth/core/adapters'
+import { EmailConfig } from '@auth/core/providers'
 
 import { PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
@@ -121,6 +122,7 @@ export type Provider<P = any> = (
 			| LlmProviderConfig
 			| PartyProviderConfig
 			| PaymentsProviderConfig
+			| EmailConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -131,6 +133,7 @@ export type Provider<P = any> = (
 			| LlmProviderConfig
 			| PartyProviderConfig
 			| PaymentsProviderConfig
+			| EmailConfig
 	  ) &
 			InternalProviderOptions)
 ) &

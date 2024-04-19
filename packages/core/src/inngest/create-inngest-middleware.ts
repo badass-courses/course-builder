@@ -21,6 +21,8 @@ import {
 	MockPartykitProvider,
 	PartyProviderConfig,
 } from '../providers/partykit'
+import { MockStripeProvider } from '../providers/stripe'
+import { PaymentsProviderConfig } from '../types'
 import { CourseBuilderCoreEvents } from './video-processing/events'
 
 export interface CoreInngestContext {
@@ -29,6 +31,7 @@ export interface CoreInngestContext {
 	transcriptProvider: TranscriptionConfig
 	openaiProvider: LlmProviderConfig
 	partyProvider: PartyProviderConfig
+	paymentProvider?: PaymentsProviderConfig
 	mediaUploadProvider: {
 		deleteFiles: (fileKey: string) => Promise<{ success: boolean }>
 	}
@@ -79,6 +82,7 @@ export const coreInngest = new Inngest({
 			transcriptProvider: MockTranscriptionProvider,
 			openaiProvider: MockOpenAIProvider,
 			partyProvider: MockPartykitProvider,
+			paymentProvider: MockStripeProvider,
 			mediaUploadProvider: {
 				deleteFiles: async (_) => Promise.resolve({ success: true }),
 			},

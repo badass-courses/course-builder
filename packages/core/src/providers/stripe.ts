@@ -8,7 +8,6 @@ import {
 export default function StripeProvider(
 	options: PaymentsProviderConsumerConfig,
 ): PaymentsProviderConfig {
-	console.log({ options })
 	return {
 		id: 'stripe',
 		name: 'Stripe',
@@ -43,6 +42,8 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 			createCheckoutSession: async () => 'mock-checkout-session-id',
 			createCustomer: async () => 'mock-customer-id',
 			verifyWebhookSignature: async () => true,
+			getCheckoutSession: async () =>
+				({ id: 'mock-checkout-session-id' }) as any,
 		},
 	},
 	createCheckoutSession: async () => {

@@ -8,8 +8,6 @@ const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 })
 
-export const runtime = 'edge'
-
 export async function POST(req: Request) {
 	// Use a constant string to limit all requests with a single ratelimit
 	// Or use a userID, apiKey or ip address for individual limits.

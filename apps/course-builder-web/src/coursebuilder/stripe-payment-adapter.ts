@@ -46,6 +46,17 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		const session = await this.stripe.checkout.sessions.create(params)
 		return session.url
 	}
+
+	async getCheckoutSession(checkoutSessionId: string) {
+		return await this.stripe.checkout.sessions.retrieve(checkoutSessionId, {
+			expand: [
+				'customer',
+				'line_items.data.price.product',
+				'line_items.data.discounts',
+				'payment_intent.charges',
+			],
+		})
+	}
 	async createCustomer(params: { email: string; userId: string }) {
 		const stripeCustomer = await this.stripe.customers.create({
 			email: params.email,

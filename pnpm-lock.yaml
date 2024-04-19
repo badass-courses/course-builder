@@ -139,7 +139,7 @@ importers:
         version: 1.42.1(react@18.3.0-canary-feed8f3f9-20240118)
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@aws-sdk/client-s3':
         specifier: ^3.525.0
         version: 3.535.0
@@ -406,7 +406,7 @@ importers:
         version: 14.3.0-canary.5(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       next-auth:
         specifier: 5.0.0-beta.16
-        version: 5.0.0-beta.16(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 5.0.0-beta.16(next@14.3.0-canary.5)(nodemailer@6.9.11)(react@18.3.0-canary-feed8f3f9-20240118)
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118)
@@ -416,6 +416,12 @@ importers:
       next-themes:
         specifier: ^0.2.1
         version: 0.2.1(next@14.3.0-canary.5)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
+      nodemailer:
+        specifier: ^6.7.2
+        version: 6.9.11
+      nodemailer-postmark-transport:
+        specifier: ^5.2.1
+        version: 5.3.0(nodemailer@6.9.11)
       npm:
         specifier: ^10.2.1
         version: 10.5.0
@@ -650,7 +656,7 @@ importers:
         version: 1.42.1(react@18.3.0-canary-feed8f3f9-20240118)
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@aws-sdk/client-s3':
         specifier: ^3.525.0
         version: 3.535.0
@@ -941,7 +947,7 @@ importers:
         version: 14.3.0-canary.5(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       next-auth:
         specifier: 5.0.0-beta.16
-        version: 5.0.0-beta.16(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 5.0.0-beta.16(next@14.3.0-canary.5)(nodemailer@6.9.11)(react@18.3.0-canary-feed8f3f9-20240118)
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118)
@@ -1319,7 +1325,7 @@ importers:
     devDependencies:
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@coursebuilder/core':
         specifier: 0.1.4
         version: link:../core
@@ -1474,7 +1480,7 @@ importers:
     devDependencies:
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@types/lodash':
         specifier: ^4.14.200
         version: 4.17.0
@@ -1496,13 +1502,13 @@ importers:
     devDependencies:
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       next:
         specifier: 14.3.0-canary.5
         version: 14.3.0-canary.5(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.3.0-canary-feed8f3f9-20240118)
       next-auth:
         specifier: 5.0.0-beta.16
-        version: 5.0.0-beta.16(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 5.0.0-beta.16(next@14.3.0-canary.5)(nodemailer@6.9.11)(react@18.3.0-canary-feed8f3f9-20240118)
       react:
         specifier: 18.3.0-canary-feed8f3f9-20240118
         version: 18.3.0-canary-feed8f3f9-20240118
@@ -1548,7 +1554,7 @@ importers:
     dependencies:
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@codemirror/lang-markdown':
         specifier: ^6.2.3
         version: 6.2.4
@@ -2429,7 +2435,7 @@ packages:
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: true
 
-  /@auth/core@0.28.1:
+  /@auth/core@0.28.1(nodemailer@6.9.11):
     resolution: {integrity: sha512-gvp74mypYZADpTlfGRp6HE0G3pIHWvtJpy+KZ+8FvY0cmlIpHog+jdMOdd29dQtLtN25kF2YbfHsesCFuGUQbg==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -2447,6 +2453,7 @@ packages:
       '@types/cookie': 0.6.0
       cookie: 0.6.0
       jose: 5.2.3
+      nodemailer: 6.9.11
       oauth4webapi: 2.10.3
       preact: 10.11.3
       preact-render-to-string: 5.2.3(preact@10.11.3)
@@ -12991,6 +12998,10 @@ packages:
     resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
     dev: false
 
+  /addressparser@1.0.1:
+    resolution: {integrity: sha512-aQX7AISOMM7HFE0iZ3+YnD07oIeJqWGVnJ+ZIKaBZAk03ftmVYVqsGas/rbXKR21n4D/hKCSHypvcyOkds/xzg==}
+    dev: false
+
   /agentkeepalive@4.5.0:
     resolution: {integrity: sha512-5GG/5IbQQpC9FpkRGsSvZI5QYeSCzlJHdpBQntCsuTOxhKD8lqKhrleg2Yi7yvMIf82Ycmmqln9U8V9qwEiJew==}
     engines: {node: '>= 8.0.0'}
@@ -13432,6 +13443,10 @@ packages:
       - typescript
     dev: false
 
+  /async@3.2.5:
+    resolution: {integrity: sha512-baNZyqaaLhyLVKm/DlvdW051MSgO6b8eVfIezl9E5PqWxFgzLm/wQntEW4zOytVburDEr0JlALEpdOFwvErLsg==}
+    dev: false
+
   /asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
@@ -13497,6 +13512,14 @@ packages:
     resolution: {integrity: sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==}
     engines: {node: '>=4'}
     dev: true
+
+  /axios@0.25.0:
+    resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
+    dependencies:
+      follow-redirects: 1.15.6
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /axios@1.6.8:
     resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
@@ -20861,12 +20884,12 @@ packages:
       nodemailer:
         optional: true
     dependencies:
-      '@auth/core': 0.28.1
+      '@auth/core': 0.28.1(nodemailer@6.9.11)
       next: 14.2.0-canary.26(@babel/core@7.24.0)(react-dom@18.3.0-canary-a870b2d54-20240314)(react@18.3.0-canary-a870b2d54-20240314)
       react: 18.3.0-canary-a870b2d54-20240314
     dev: true
 
-  /next-auth@5.0.0-beta.16(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118):
+  /next-auth@5.0.0-beta.16(next@14.3.0-canary.5)(nodemailer@6.9.11)(react@18.3.0-canary-feed8f3f9-20240118):
     resolution: {integrity: sha512-dX2snB+ezN23tFzSes3n3uosT9iBf0eILPYWH/R2fd9n3ZzdMQlRzq7JIOPeS1aLc84IuRlyuyXyx9XmmZB6og==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -20882,8 +20905,9 @@ packages:
       nodemailer:
         optional: true
     dependencies:
-      '@auth/core': 0.28.1
+      '@auth/core': 0.28.1(nodemailer@6.9.11)
       next: 14.3.0-canary.5(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
+      nodemailer: 6.9.11
       react: 18.3.0-canary-feed8f3f9-20240118
 
   /next-axiom@1.1.1(next@14.3.0-canary.5)(react@18.3.0-canary-feed8f3f9-20240118):
@@ -21178,6 +21202,34 @@ packages:
   /node-releases@2.0.14:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
 
+  /nodemailer-build-attachment@3.0.0:
+    resolution: {integrity: sha512-8hoic5t/tpNMfrRoHW7rwpEpjrp1ZMSYloBZHhCZHnin+Htxr+egR4ufrFeHC0ueSFjmsvMDr5veaQ4KpYvTNA==}
+    engines: {node: '>=10'}
+    dependencies:
+      libbase64: 1.2.1
+      libmime: 5.0.0
+      nodemailer-fetch: 2.1.0
+    dev: false
+
+  /nodemailer-fetch@2.1.0:
+    resolution: {integrity: sha512-XwPvtBfUgIHhrJora9wIRbI4fvx8iYpSE2iItpM3e+SnsVRKm+9UeMfKQbk8I1WcOaT370E8oaLJE/vN15/ggQ==}
+    dev: false
+
+  /nodemailer-postmark-transport@5.3.0(nodemailer@6.9.11):
+    resolution: {integrity: sha512-cCt22fbedgUNBpGOQIYtvyXuxz8NwBoZ+x/f3KTDnolepkwNyjrjgh6njGkU5z4p3Gfp+A3UZ/qi27oa9YRd/g==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      nodemailer: '>=4.x'
+    dependencies:
+      addressparser: 1.0.1
+      async: 3.2.5
+      nodemailer: 6.9.11
+      nodemailer-build-attachment: 3.0.0
+      postmark: 2.9.5
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /nodemailer@6.4.11:
     resolution: {integrity: sha512-BVZBDi+aJV4O38rxsUh164Dk1NCqgh6Cm0rQSb9SK/DHGll/DrCMnycVDD7msJgZCnmVa8ASo8EZzR7jsgTukQ==}
     engines: {node: '>=6.0.0'}
@@ -21187,7 +21239,6 @@ packages:
   /nodemailer@6.9.11:
     resolution: {integrity: sha512-UiAkgiERuG94kl/3bKfE8o10epvDnl0vokNEtZDPTq9BWzIl6EFT9336SbIT4oaTBD8NmmUTLsQyXHV82eXSWg==}
     engines: {node: '>=6.0.0'}
-    dev: false
 
   /nopt@7.2.0:
     resolution: {integrity: sha512-CVDtwCdhYIvnAzFoJ6NJ6dX3oga9/HyciQDnG1vQDjSLMeKLJ4A93ZqYKDrgYSr1FBY5/hMYC+2VCi24pgpkGA==}
@@ -22086,6 +22137,14 @@ packages:
     resolution: {integrity: sha512-iHJn4+M9vbTdHSdDzNkC0crHq+1CUdFhx+YqCE+SqWxPjm+Zu63jq7yZborOBF64c8pc58O5uMudyL1FQcHacA==}
     engines: {node: '>=12'}
     dev: true
+
+  /postmark@2.9.5:
+    resolution: {integrity: sha512-F27gc6wrxdn7GADodGpECoWez7FK2Pdach7A9ni5vVZiYz1YUY7T68nvVCzxrbWCjOS7ZujyclYlq1C0a4ar1w==}
+    dependencies:
+      axios: 0.25.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /preact-render-to-string@5.2.3(preact@10.11.3):
     resolution: {integrity: sha512-aPDxUn5o3GhWdtJtW0svRC2SS/l8D9MAgo2+AWml+BhDImb27ALf04Q2d+AHqUUOc6RdSXFIBVa2gxzgMKgtZA==}
