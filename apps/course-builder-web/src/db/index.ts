@@ -1,20 +1,19 @@
 import { mysqlTable } from '@/db/mysql-table'
 import { env } from '@/env.mjs'
-import { Client } from '@planetscale/database'
-import {
-	PlanetScaleDatabase,
-	drizzle as planetscaleDrizzle,
-} from 'drizzle-orm/planetscale-serverless'
+import { drizzle } from 'drizzle-orm/mysql2'
+import { createPool, Pool } from 'mysql2/promise'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 
 import * as schema from './schema'
 
-export const db: PlanetScaleDatabase<typeof schema> = planetscaleDrizzle(
-	new Client({
-		url: env.DATABASE_URL,
-	}),
-	{ schema },
-)
+const globalForDb = globalThis as unknown as {
+	conn: Pool | undefined
+}
+
+const conn = globalForDb.conn ?? createPool({ uri: env.DATABASE_URL })
+if (env.NODE_ENV !== 'production') globalForDb.conn = conn
+
+export const db = drizzle(conn, { schema, mode: 'default' })
 
 export const courseBuilderAdapter = DrizzleAdapter(db, mysqlTable)
