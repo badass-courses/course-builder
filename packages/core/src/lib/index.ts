@@ -10,8 +10,6 @@ export async function CourseBuilderInternal(
 ): Promise<ResponseInternal> {
 	const { action, providerId, error, method } = request
 
-	console.log('lets process a request', { request })
-
 	const { options, cookies } = await init({
 		courseBuilderOptions,
 		action,
@@ -21,7 +19,6 @@ export async function CourseBuilderInternal(
 		isPost: method === 'POST',
 	})
 
-	console.log('request initialized')
 	if (method === 'GET') {
 		switch (action) {
 			case 'srt':
@@ -32,7 +29,6 @@ export async function CourseBuilderInternal(
 	} else {
 		switch (action) {
 			case 'checkout':
-				console.log('lets process a checkout')
 				return await actions.checkout(request, cookies, options)
 			case 'webhook':
 				return await actions.webhook(request, cookies, options)
