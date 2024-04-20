@@ -38,6 +38,7 @@ export type ResourceChat = {
 		messages: ChatCompletionRequestMessage[]
 		promptId?: string
 		selectedWorkflow: string
+		model?: string
 	}
 	user: Record<string, any>
 }
@@ -128,6 +129,7 @@ export async function resourceChatWorkflowExecutor({
 	openaiProvider,
 	partyProvider,
 	db,
+	model,
 }: {
 	openaiProvider: LlmProviderConfig
 	partyProvider: PartyProviderConfig
@@ -138,6 +140,7 @@ export async function resourceChatWorkflowExecutor({
 	resourceId: string
 	messages: ChatCompletionRequestMessage[]
 	user: User
+	model?: string
 }) {
 	const prompt = await step.run('Load Prompt', async () => {
 		return db.getContentResource(workflowTrigger)
@@ -258,7 +261,7 @@ export async function resourceChatWorkflowExecutor({
 		return streamingChatPromptExecutor({
 			requestId: resourceId,
 			promptMessages: messages,
-			model: prompt.model || 'gpt-4-turbo',
+			model: prompt.model || model || 'gpt-4-turbo',
 			provider: openaiProvider,
 		})
 	})

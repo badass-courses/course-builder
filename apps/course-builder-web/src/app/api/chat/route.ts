@@ -1,4 +1,5 @@
 // ./app/api/chat/route.js
+import { env } from '@/env.mjs'
 import { redis } from '@/server/redis-client'
 import { withSkill } from '@/server/with-skill'
 import { Ratelimit } from '@upstash/ratelimit'
@@ -36,7 +37,7 @@ async function handler(req: Request) {
 
 	const { messages } = await req.json()
 	const response = await openai.chat.completions.create({
-		model: 'gpt-4-turbo',
+		model: env.OPENAI_MODEL_ID,
 		stream: true,
 		messages,
 	})

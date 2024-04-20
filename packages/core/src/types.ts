@@ -14,6 +14,7 @@ import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
 } from './schemas/content-resource-schema'
+import { PurchaseInfo } from './schemas/purchase-info'
 
 export type Awaitable<T> = T | PromiseLike<T>
 
@@ -65,6 +66,10 @@ export interface PaymentsProviderConfig {
 	name: string
 	type: 'payment'
 	options: PaymentsProviderConsumerConfig
+	getPurchaseInfo: (
+		checkoutSessionId: string,
+		adapter: CourseBuilderAdapter,
+	) => Promise<PurchaseInfo>
 	createCheckoutSession: (
 		checkoutParams: CheckoutParams,
 		adapter?: CourseBuilderAdapter,

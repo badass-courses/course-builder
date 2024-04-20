@@ -799,10 +799,18 @@ export function mySqlDrizzleAdapter(
 							eq(merchantCharge.id, purchaseTable.merchantChargeId),
 						),
 					)
-					.then((res) => res[0] ?? null),
+					.then((res) => {
+						console.log('res', res)
+						return res[0].purchases ?? null
+					}),
 			)
 
 			if (!purchase.success) {
+				console.log(
+					'purchase',
+					purchase,
+					JSON.stringify(purchase.error.format()),
+				)
 				return null
 			}
 

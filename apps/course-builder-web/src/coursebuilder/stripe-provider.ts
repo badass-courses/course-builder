@@ -5,7 +5,7 @@ import StripeProvider from '@coursebuilder/core/providers/stripe'
 
 export const stripeProvider = StripeProvider({
 	errorRedirectUrl: `${env.COURSEBUILDER_URL}/checkout-error`,
-	baseSuccessUrl: `${env.COURSEBUILDER_URL}/checkout-success`,
+	baseSuccessUrl: `${env.COURSEBUILDER_URL}`,
 	cancelUrl: `${env.COURSEBUILDER_URL}/checkout-cancel`,
 	paymentsAdapter: new StripePaymentAdapter(),
 })

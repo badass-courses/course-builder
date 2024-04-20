@@ -2,6 +2,7 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { ChatResourceSchema } from '@/lib/ai-chat'
 import { getServerAuthSession } from '@/server/auth'
@@ -32,6 +33,7 @@ export async function sendResourceChatMessage({
 			resourceId,
 			messages,
 			selectedWorkflow: selectedWorkflow || 'article/chat-event',
+			model: env.OPENAI_MODEL_ID,
 		},
 		user,
 	})
@@ -61,7 +63,7 @@ export async function getChatResource(id: string) {
       JOIN ${contentResource} as videoResources
         ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'
     ) as videoResources
-      ON resources.id = videoResources.resourceOfId 
+      ON resources.id = videoResources.resourceOfId
     WHERE
       resources.id = ${id};
   `

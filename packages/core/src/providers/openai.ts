@@ -36,7 +36,10 @@ export type CreateChatCompletionOptions = {
 export default function OpenAIProvider(
 	options: LlmProviderConsumerConfig,
 ): LlmProviderConfig {
-	const config = new Configuration({ apiKey: options.apiKey })
+	const config = new Configuration({
+		apiKey: options.apiKey,
+		basePath: `http://localhost:11434/v1`,
+	})
 	const openai = new OpenAIApi(config)
 	return {
 		id: 'openai',
