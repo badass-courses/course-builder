@@ -14,6 +14,8 @@ export interface LlmProviderConfig {
 	options: LlmProviderConsumerConfig
 	apiKey: string
 	partyUrlBase: string
+	baseUrl?: string
+	defaultModel?: string
 	createChatCompletion: (
 		options: CreateChatCompletionOptions,
 	) => Promise<AIOutput | null>
@@ -25,6 +27,8 @@ export type LlmProviderConsumerConfig = Omit<
 > & {
 	apiKey: string
 	partyUrlBase: string
+	baseUrl?: string
+	defaultModel?: string
 }
 
 export type CreateChatCompletionOptions = {
@@ -36,7 +40,12 @@ export type CreateChatCompletionOptions = {
 export default function OpenAIProvider(
 	options: LlmProviderConsumerConfig,
 ): LlmProviderConfig {
-	const config = new Configuration({ apiKey: options.apiKey })
+	const config = new Configuration({
+		apiKey: options.apiKey,
+		...(options.baseUrl && {
+			baseUrl: options.baseUrl,
+		}),
+	})
 	const openai = new OpenAIApi(config)
 	return {
 		id: 'openai',
@@ -56,7 +65,7 @@ export default function OpenAIProvider(
 			const response = await openai.createChatCompletion({
 				messages: createChatOptions.messages,
 				stream: true,
-				model: createChatOptions.model,
+				model: createChatOptions.model || options.defaultModel || 'gpt-4-turbo',
 			})
 			if (response.status >= 400) {
 				result = await response.json()

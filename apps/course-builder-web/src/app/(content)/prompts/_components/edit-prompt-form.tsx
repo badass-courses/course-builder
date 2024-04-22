@@ -39,6 +39,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 				title: prompt.fields.title || '',
 				description: prompt.fields.description ?? '',
 				slug: prompt.fields.slug ?? '',
+				forResourceType: prompt.fields.forResourceType || 'any',
 			},
 		},
 	})
@@ -76,6 +77,20 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 						<FormItem className="px-5">
 							<FormLabel>Model</FormLabel>
 							<FormDescription>The Model to use for the prompt</FormDescription>
+							<Input {...field} />
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="fields.forResourceType"
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel>For Resource Type</FormLabel>
+							<FormDescription>
+								Specify the resource type to use for the prompt
+							</FormDescription>
 							<Input {...field} />
 							<FormMessage />
 						</FormItem>
