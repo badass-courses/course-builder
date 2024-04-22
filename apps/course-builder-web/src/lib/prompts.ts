@@ -34,6 +34,7 @@ export const PromptSchema = ContentResourceSchema.merge(
 			visibility: PromptVisibilitySchema.default('unlisted'),
 			model: z.string().default(env.OPENAI_MODEL_ID),
 			provider: z.string().default('openai'),
+			forResourceType: z.string().optional().default('any'),
 		}),
 	}),
 )

@@ -18,7 +18,7 @@ export async function getPrompts(): Promise<Prompt[]> {
 
 	const promptsParsed = z.array(PromptSchema).safeParse(prompts)
 	if (!promptsParsed.success) {
-		console.error('Error parsing prompts', promptsParsed)
+		console.error('Error parsing prompts', JSON.stringify(promptsParsed))
 		return []
 	}
 

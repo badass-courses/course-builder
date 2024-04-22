@@ -69,6 +69,7 @@ export function EditTipForm({
 			form={form}
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+				{ value: 'zany-video-prompt-2~2jeyw', label: 'Another Prompt' },
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
