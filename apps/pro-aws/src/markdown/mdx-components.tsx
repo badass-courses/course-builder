@@ -1,5 +1,4 @@
 import Image, { ImageProps } from 'next/image'
-import { Icon } from '@/icons'
 import MuxPlayer from '@mux/mux-player-react'
 import ReactMarkdown from 'react-markdown'
 
@@ -30,7 +29,29 @@ const Tweet: React.FC<TweetProps> = ({ text, url, author }) => {
 					</div>
 				</a>
 				<a href={url} target="_blank" rel="noopener noreferrer">
-					<Icon name="Twitter" size="20" />
+					<svg
+						width={20}
+						height={20}
+						viewBox={'0 0 16 16'}
+						role="img"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<title>{'X (formerly twitter)'}</title>
+						<g>
+							<path
+								d="M7.22852 10.101L2.93802 15H0.561523L6.11852 8.652L7.22852 10.101Z"
+								fill="currentColor"
+							/>
+							<path
+								d="M8.52539 5.494L12.4539 1H14.8289L9.62539 6.951L8.52539 5.494Z"
+								fill="currentColor"
+							/>
+							<path
+								d="M15.7439 15H10.9644L0.255859 1H5.15636L15.7439 15ZM11.6199 13.5785H12.9359L4.44136 2.347H3.02936L11.6199 13.5785Z"
+								fill="currentColor"
+							/>
+						</g>
+					</svg>
 				</a>
 			</div>
 			<div data-body="">
