@@ -12,6 +12,14 @@ import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import {
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	Input,
+} from '@coursebuilder/ui'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
@@ -27,7 +35,10 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 		defaultValues: {
 			...prompt,
 			fields: {
-				description: prompt.fields?.description ?? '',
+				...prompt.fields,
+				title: prompt.fields.title || '',
+				description: prompt.fields.description ?? '',
+				slug: prompt.fields.slug ?? '',
 			},
 		},
 	})
@@ -53,11 +64,24 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 				},
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
 			onSave={onPromptSave}
 		>
-			<EditResourcesMetadataFields form={form} />
+			<EditResourcesMetadataFields form={form}>
+				<FormField
+					control={form.control}
+					name="fields.model"
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel>Model</FormLabel>
+							<FormDescription>The Model to use for the prompt</FormDescription>
+							<Input {...field} />
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</EditResourcesMetadataFields>
 		</ResourceForm>
 	)
 }
