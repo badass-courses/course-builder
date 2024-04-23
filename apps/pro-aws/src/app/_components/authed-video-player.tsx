@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { use } from 'react'
-import { useVideoPlayerOverlay } from '@/hooks/use-video-player-overlay'
 import {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
@@ -10,6 +9,7 @@ import {
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
+import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function AuthedVideoPlayer({
