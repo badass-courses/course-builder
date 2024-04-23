@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export const upgradableProductSchema = z.object({
-	upgradableToId: z.string().length(255),
-	upgradableFromId: z.string().length(255),
+	upgradableToId: z.string().max(255),
+	upgradableFromId: z.string().max(255),
 	position: z.number().default(0),
 	metadata: z.record(z.any()).default({}),
 	createdAt: z.date().nullable(),

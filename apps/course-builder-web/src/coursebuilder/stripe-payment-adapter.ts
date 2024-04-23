@@ -3,18 +3,18 @@ import Stripe from 'stripe'
 
 import { type PaymentsAdapter } from '@coursebuilder/core/types'
 
+if (!env.STRIPE_SECRET_TOKEN) {
+	throw new Error('Stripe secret token not found')
+}
+
+const stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
+	apiVersion: '2020-08-27',
+})
+
 export class StripePaymentAdapter implements PaymentsAdapter {
-	stripe: Stripe
 	webhookSecret: string
 
 	constructor() {
-		if (!env.STRIPE_SECRET_TOKEN) {
-			throw new Error('Stripe secret token not found')
-		}
-		this.stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
-			apiVersion: '2020-08-27',
-		})
-
 		if (!env.STRIPE_WEBHOOK_SECRET) {
 			throw new Error('Stripe webhook secret not found')
 		}
@@ -22,7 +22,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	}
 
 	async verifyWebhookSignature(rawBody: string, sig: string) {
-		const event = this.stripe.webhooks.constructEvent(
+		const event = stripe.webhooks.constructEvent(
 			rawBody,
 			sig,
 			this.webhookSecret,
@@ -31,24 +31,24 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	}
 
 	async getCouponPercentOff(identifier: string) {
-		const coupon = await this.stripe.coupons.retrieve(identifier)
+		const coupon = await stripe.coupons.retrieve(identifier)
 		return coupon && coupon.percent_off ? coupon.percent_off / 100 : 0
 	}
 	async createCoupon(params: Stripe.CouponCreateParams) {
-		const coupon = await this.stripe.coupons.create(params)
+		const coupon = await stripe.coupons.create(params)
 		return coupon.id
 	}
 	async createPromotionCode(params: Stripe.PromotionCodeCreateParams) {
-		const { id } = await this.stripe.promotionCodes.create(params)
+		const { id } = await stripe.promotionCodes.create(params)
 		return id
 	}
 	async createCheckoutSession(params: Stripe.Checkout.SessionCreateParams) {
-		const session = await this.stripe.checkout.sessions.create(params)
+		const session = await stripe.checkout.sessions.create(params)
 		return session.url
 	}
 
 	async getCheckoutSession(checkoutSessionId: string) {
-		return await this.stripe.checkout.sessions.retrieve(checkoutSessionId, {
+		return await stripe.checkout.sessions.retrieve(checkoutSessionId, {
 			expand: [
 				'customer',
 				'line_items.data.price.product',
@@ -58,7 +58,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		})
 	}
 	async createCustomer(params: { email: string; userId: string }) {
-		const stripeCustomer = await this.stripe.customers.create({
+		const stripeCustomer = await stripe.customers.create({
 			email: params.email,
 			metadata: {
 				userId: params.userId,

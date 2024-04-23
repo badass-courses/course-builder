@@ -800,17 +800,11 @@ export function mySqlDrizzleAdapter(
 						),
 					)
 					.then((res) => {
-						console.log('res', res)
 						return res[0].purchases ?? null
 					}),
 			)
 
 			if (!purchase.success) {
-				console.log(
-					'purchase',
-					purchase,
-					JSON.stringify(purchase.error.format()),
-				)
 				return null
 			}
 
@@ -857,7 +851,10 @@ export function mySqlDrizzleAdapter(
 			const parsedPurchases = z.array(purchaseSchema).safeParse(userPurchases)
 
 			if (!parsedPurchases.success) {
-				console.error('Error parsing purchases', parsedPurchases)
+				console.error(
+					'Error parsing purchases',
+					JSON.stringify(parsedPurchases.error),
+				)
 				return []
 			}
 

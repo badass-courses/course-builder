@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const purchaseUserTransferSchema = z.object({
+export const purchaseUserTransferSchema = z.object({
 	id: z.string().max(191),
 	transferState: z
 		.enum([

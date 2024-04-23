@@ -22,7 +22,10 @@ import { z } from 'zod'
 
 import { PURCHASE_TRANSFERRED_EVENT } from '@coursebuilder/core/inngest/purchase-transfer/event-purchase-transferred'
 import { sendServerEmail } from '@coursebuilder/core/lib/send-server-email'
-import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
+import {
+	PurchaseUserTransfer,
+	purchaseUserTransferSchema,
+} from '@coursebuilder/core/schemas'
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
 	apiVersion: '2020-08-27',
@@ -168,7 +171,7 @@ export const purchaseUserTransferRouter = createTRPCRouter({
 				sourceUserId: purchaseUserTransfer.sourceUserId,
 			})
 
-			return await db.query.purchaseUserTransfer.findFirst({
+			return db.query.purchaseUserTransfer.findFirst({
 				where: eq(purchaseUserTransferTable.id, newPutId),
 			})
 		}),
@@ -325,11 +328,12 @@ export const purchaseUserTransferRouter = createTRPCRouter({
 		)
 		.query(async ({ ctx, input }) => {
 			const token = await getServerAuthSession()
+			console.log({ token, input })
 			if (!token && !input.sourceUserId) {
 				return []
 			}
 
-			await db.query.purchaseUserTransfer.findMany({
+			const transfers = await db.query.purchaseUserTransfer.findMany({
 				where: and(
 					eq(
 						purchaseUserTransferTable.sourceUserId,
@@ -339,6 +343,10 @@ export const purchaseUserTransferRouter = createTRPCRouter({
 					gte(purchaseUserTransferTable.expiresAt, new Date()),
 				),
 			})
+
+			console.log(transfers)
+
+			return z.array(purchaseUserTransferSchema).parse(transfers)
 		}),
 })
 

@@ -2,51 +2,49 @@ import * as React from 'react'
 import { GetServerSideProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import Layout from '@/components/app/layout'
-import { InvoiceCard } from '@/pages/invoices'
+import { Icon } from '@/components/icons'
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
+import { courseBuilderAdapter } from '@/db'
+import { InvoiceCard } from '@/path-to-purchase/invoice-card'
+import { convertToSerializeForNextResponse } from '@/path-to-purchase/serialize-for-next-response'
 import { Transfer } from '@/purchase-transfer/purchase-transfer'
+import { getServerAuthSession } from '@/server/auth'
+import InviteTeam from '@/team'
+import { api } from '@/trpc/react'
 import MuxPlayer from '@mux/mux-player-react'
-import { SanityDocument } from '@sanity/client'
-import { convertToSerializeForNextResponse } from '@skillrecordings/commerce-server'
-import { getSdk, prisma } from '@skillrecordings/database'
-import { Icon } from '@skillrecordings/skill-lesson/icons'
-import { getProduct } from '@skillrecordings/skill-lesson/path-to-purchase/products.server'
-import InviteTeam from '@skillrecordings/skill-lesson/team'
 import { isString } from 'lodash'
 import { getToken } from 'next-auth/jwt'
 import { getProviders, signIn, useSession } from 'next-auth/react'
 import Balancer from 'react-wrap-balancer'
 
-import { trpc } from '../../trpc/trpc.client'
-import { paymentOptions } from '../api/skill/[...skillRecordings]'
+import { Product, PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 
 export const getServerSideProps: GetServerSideProps = async ({
 	req,
 	query,
 }) => {
 	const { purchaseId: purchaseQueryParam, upgrade } = query
-	const token = await getToken({ req })
+	const token = await getServerAuthSession()
+	const user = token.session?.user
+
 	const providers = await getProviders()
-	const { getPurchaseDetails } = getSdk()
+	const { getPurchaseDetails } = courseBuilderAdapter
 
 	let purchaseId = purchaseQueryParam
 
 	const session_id =
 		query.session_id instanceof Array ? query.session_id[0] : query.session_id
 
-	const paymentProvider = paymentOptions.providers.stripe
+	const paymentProvider = stripeProvider
 
 	if (session_id && paymentProvider) {
-		const { chargeIdentifier } =
-			await paymentProvider.getPurchaseInfo(session_id)
+		const { chargeIdentifier } = await paymentProvider.getPurchaseInfo(
+			session_id,
+			courseBuilderAdapter,
+		)
 
-		const purchase = await prisma.purchase.findFirst({
-			where: {
-				merchantCharge: {
-					identifier: chargeIdentifier,
-				},
-			},
-		})
+		const purchase =
+			await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
 
 		if (purchase) {
 			purchaseId = purchase.id
@@ -60,12 +58,12 @@ export const getServerSideProps: GetServerSideProps = async ({
 		}
 	}
 
-	if (token && isString(purchaseId) && isString(token?.sub)) {
+	if (token && isString(purchaseId) && isString(user?.id)) {
 		const { purchase, existingPurchase, availableUpgrades } =
-			await getPurchaseDetails(purchaseId, token.sub)
+			await getPurchaseDetails(purchaseId, user?.id)
 
 		if (purchase) {
-			const product = await getProduct(purchase.product.id)
+			const product = await courseBuilderAdapter.getProduct(purchase.productId)
 
 			return {
 				props: {
@@ -120,7 +118,7 @@ const Welcome: React.FC<
 		token: any
 		availableUpgrades: { upgradableTo: { id: string; name: string } }[]
 		upgrade: boolean
-		product?: SanityDocument
+		product?: Product
 		providers?: any
 	}>
 > = ({
@@ -144,25 +142,23 @@ const Welcome: React.FC<
 	const hasCharge = Boolean(purchase.merchantChargeId)
 
 	const { data: purchaseUserTransfers, refetch } =
-		trpc.purchaseUserTransfer.forPurchaseId.useQuery({
+		api.purchaseUserTransfer.forPurchaseId.useQuery({
 			id: purchase.id,
 		})
 
 	const isTransferAvailable =
 		!purchase.bulkCoupon &&
 		Boolean(
-			purchaseUserTransfers?.filter((purchaseUserTransfer) =>
-				['AVAILABLE', 'INITIATED', 'COMPLETED'].includes(
-					purchaseUserTransfer.transferState,
-				),
+			purchaseUserTransfers?.filter(
+				(purchaseUserTransfer: PurchaseUserTransfer) =>
+					['AVAILABLE', 'INITIATED', 'COMPLETED'].includes(
+						purchaseUserTransfer.transferState,
+					),
 			).length,
 		)
 
 	return (
-		<Layout
-			meta={{ title: `Welcome to ${process.env.NEXT_PUBLIC_SITE_TITLE}` }}
-			footer={null}
-		>
+		<div>
 			<main
 				className="mx-auto flex w-full flex-grow flex-col items-center justify-center px-5 pb-32 pt-24"
 				id="welcome"
@@ -231,7 +227,7 @@ const Welcome: React.FC<
 					</div>
 				</div>
 			</main>
-		</Layout>
+		</div>
 	)
 }
 
@@ -240,22 +236,22 @@ const Header: React.FC<
 		upgrade: boolean
 		purchase: Purchase
 		personalPurchase?: PersonalPurchase | Purchase
-		product?: SanityDocument
+		product?: Product
 		providers?: any
 	}>
 > = ({ upgrade, purchase, product, personalPurchase, providers = {} }) => {
 	const githubProvider = providers.github
 	const { data: isGithubConnected, status } =
-		trpc.user.githubConnected.useQuery()
+		api.users.githubConnected.useQuery()
 
 	return (
 		<header>
 			<div className="flex flex-col items-center gap-10 pb-8 sm:flex-row">
-				{product?.image && (
+				{product?.metadata.image && (
 					<div className="flex flex-shrink-0 items-center justify-center">
 						<Image
-							src={product.image.url}
-							alt={product.title}
+							src={product.metadata.image.url}
+							alt={product.metadata.title}
 							width={250}
 							height={250}
 						/>
@@ -272,7 +268,7 @@ const Header: React.FC<
 						<div>
 							<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">
 								<Link
-									href={`/workshops/${product?.modules[0]?.slug.current}`}
+									href={`/workshops/${product?.resources?.[0]?.fields?.slug}`}
 									className="bg-primary text-primary-foreground w-full rounded px-5 py-3 text-lg font-semibold text-gray-900 shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
 								>
 									Start Learning
