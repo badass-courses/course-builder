@@ -14,7 +14,7 @@ type InviteTeamProps = {
 		id: string
 		product: { id: string; name: string }
 	}
-	session: any
+	userEmail: string | null
 	setPersonalPurchase: (props: any) => void
 	className?: string
 }
@@ -22,7 +22,7 @@ type InviteTeamProps = {
 const InviteTeam: React.FC<React.PropsWithChildren<InviteTeamProps>> = ({
 	purchase,
 	existingPurchase,
-	session,
+	userEmail,
 	setPersonalPurchase,
 	className = '',
 }) => {
@@ -66,7 +66,6 @@ const InviteTeam: React.FC<React.PropsWithChildren<InviteTeamProps>> = ({
 	} = bulkCouponSchema.parse(purchase.bulkCoupon)
 
 	const [canRedeem, setCanRedeem] = React.useState(Boolean(!existingPurchase))
-	const userEmail = session?.user?.email
 
 	return (
 		<div data-invite-team="" className={className}>

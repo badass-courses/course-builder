@@ -10,12 +10,12 @@ import {
 	useRouter,
 	useSearchParams,
 } from 'next/navigation'
+import { buildStripeCheckoutPath } from '@/app/(commerce)/pricing/build-stripe-checkout-path'
 import {
 	CommerceProps,
 	CouponForCode,
 	EventPageProps,
 } from '@/app/(content)/events/[slug]/page'
-import { buildStripeCheckoutPath } from '@/app/pricing/build-stripe-checkout-path'
 import { Layout } from '@/components/app/layout'
 import { env } from '@/env.mjs'
 import { Event } from '@/lib/events'

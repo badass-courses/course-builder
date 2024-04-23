@@ -1,6 +1,6 @@
 import React from 'react'
+import { buildStripeCheckoutPath } from '@/app/(commerce)/pricing/build-stripe-checkout-path'
 import { PriceDisplay } from '@/app/(content)/events/[slug]/_components/event-template'
-import { buildStripeCheckoutPath } from '@/app/pricing/build-stripe-checkout-path'
 import { api } from '@/trpc/react'
 import { z } from 'zod'
 

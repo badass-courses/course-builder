@@ -109,7 +109,7 @@ const ThanksVerify: React.FC<
 	purchase,
 }) => {
 	let byline = null
-	let title = `Thank you for purchasing Total TypeScript ${stripeProductName}`
+	let title = `Thank you for purchasing ${stripeProductName}`
 	let loginLink = null
 	let inviteTeam = (
 		<InlineTeamInvite
