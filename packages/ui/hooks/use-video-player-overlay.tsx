@@ -14,6 +14,8 @@ export type FinishedAction = {
 
 type VideoPlayerOverlayAction =
 	| FinishedAction
+	| { type: 'SOFT_BLOCKED' }
+	| { type: 'HARD_BLOCKED' }
 	| { type: 'HIDDEN' }
 	| { type: 'REPLAYED' }
 
@@ -28,7 +30,16 @@ const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
 	switch (action.type) {
 		case 'LESSON_FINISHED':
 			// TODO: Track video completion
-
+			return {
+				...state,
+				action,
+			}
+		case 'SOFT_BLOCKED':
+			return {
+				...state,
+				action,
+			}
+		case 'HARD_BLOCKED':
 			return {
 				...state,
 				action,

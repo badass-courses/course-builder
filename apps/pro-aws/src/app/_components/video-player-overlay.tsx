@@ -12,18 +12,29 @@ export const FinishedLessonOverlay: React.FC<{
 	const { playerRef } = action
 
 	return (
-		<div className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full items-center justify-center text-lg backdrop-blur-md">
-			Video ended
-			<Button
-				type="button"
-				onClick={() => {
-					if (playerRef.current) {
-						playerRef.current.play()
-					}
-				}}
-			>
-				Replay
-			</Button>
+		<div
+			aria-live="polite"
+			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+		>
+			<p className="font-heading text-center text-4xl font-bold">
+				Next Up: [Next Lesson Title]
+			</p>
+			<div className="flex w-full items-center justify-center gap-3">
+				<Button
+					variant="secondary"
+					type="button"
+					onClick={() => {
+						if (playerRef.current) {
+							playerRef.current.play()
+						}
+					}}
+				>
+					Replay
+				</Button>
+				<Button type="button" onClick={() => {}}>
+					[Complete & Continue]
+				</Button>
+			</div>
 		</div>
 	)
 }
