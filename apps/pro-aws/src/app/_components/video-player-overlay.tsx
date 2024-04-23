@@ -1,10 +1,10 @@
 'use client'
 
 import React from 'react'
-import { useVideoPlayerOverlay } from '@/hooks/use-video-player-overlay'
-import type { FinishedAction } from '@/hooks/use-video-player-overlay'
 
 import { Button } from '@coursebuilder/ui'
+import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+import type { FinishedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export const FinishedLessonOverlay: React.FC<{
 	action: FinishedAction
