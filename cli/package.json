@@ -78,7 +78,7 @@
 		"@types/gradient-string": "^1.1.2",
 		"@types/inquirer": "^9.0.3",
 		"@types/node": "^20.12.5",
-		"drizzle-kit": "^0.20.14",
+		"drizzle-kit": "^0.20.17",
 		"next": "canary",
 		"next-auth": "5.0.0-beta.16",
 		"prettier": "^3.2.5",
