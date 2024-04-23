@@ -5,8 +5,9 @@ import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AuthedVideoPlayer } from '@/app/_components/authed-video-player'
+import VideoPlayerOverlay from '@/app/_components/video-player-overlay'
 import { courseBuilderAdapter } from '@/db'
-import { Lesson } from '@/lib/lessons'
+import { VideoPlayerOverlayProvider } from '@/hooks/use-video-player-overlay'
 import { getLesson } from '@/lib/lessons-query'
 import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
@@ -16,7 +17,6 @@ import ReactMarkdown from 'react-markdown'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
-import { cn } from '@coursebuilder/ui/utils/cn'
 
 export async function generateMetadata(
 	{ params, searchParams }: Props,
@@ -216,10 +216,9 @@ function PlayerContainerSkeleton() {
 async function PlayerContainer({
 	lessonLoader,
 }: {
-	lessonLoader: Promise<Lesson | null>
+	lessonLoader: Promise<ContentResource | null>
 }) {
 	const lesson = await lessonLoader
-	const displayOverlay = false
 
 	if (!lesson) {
 		notFound()
@@ -230,9 +229,14 @@ async function PlayerContainer({
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 
 	return (
-		<Suspense fallback={<PlayerContainerSkeleton />}>
-			<AuthedVideoPlayer videoResourceLoader={videoResourceLoader} />
-		</Suspense>
+		<VideoPlayerOverlayProvider>
+			<div className="relative">
+				<VideoPlayerOverlay />
+				<Suspense fallback={<PlayerContainerSkeleton />}>
+					<AuthedVideoPlayer videoResourceLoader={videoResourceLoader} />
+				</Suspense>
+			</div>
+		</VideoPlayerOverlayProvider>
 	)
 }
 
