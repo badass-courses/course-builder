@@ -2,7 +2,11 @@
 
 import * as React from 'react'
 import { use } from 'react'
-import { type MuxPlayerProps } from '@mux/mux-player-react'
+import { useVideoPlayerOverlay } from '@/hooks/use-video-player-overlay'
+import {
+	type MuxPlayerProps,
+	type MuxPlayerRefAttributes,
+} from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
@@ -17,6 +21,10 @@ export function AuthedVideoPlayer({
 	videoResourceLoader: Promise<VideoResource | null>
 	className?: string
 }) {
+	const videoResource = use(videoResourceLoader)
+	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
+	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+
 	const playerProps = {
 		id: 'mux-player',
 		defaultHiddenCaptions: true,
@@ -25,9 +33,17 @@ export function AuthedVideoPlayer({
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
+		accentColor: '#F28F5A',
+		onEnded: () => {
+			dispatchVideoPlayerOverlay({
+				type: 'LESSON_FINISHED',
+				playerRef,
+			})
+		},
+		onPlay: () => {
+			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
+		},
 	} as MuxPlayerProps
-
-	const videoResource = use(videoResourceLoader)
 
 	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
 
@@ -35,6 +51,7 @@ export function AuthedVideoPlayer({
 		<>
 			{playbackId ? (
 				<MuxPlayer
+					ref={playerRef}
 					playbackId={playbackId}
 					className={cn(className)}
 					{...playerProps}
