@@ -34,10 +34,6 @@ export function AuthedVideoPlayer({
 		maxResolution: '2160p',
 		minResolution: '540p',
 		accentColor: '#F28F5A',
-		onLoadedData: () => {
-			// TODO: Implement blocked video handling
-			// dispatchVideoPlayerOverlay({ type: 'SOFT_BLOCKED' })
-		},
 		onEnded: () => {
 			dispatchVideoPlayerOverlay({
 				type: 'LESSON_FINISHED',
