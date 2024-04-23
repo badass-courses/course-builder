@@ -7,7 +7,7 @@ import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import { InvoiceCard } from '@/path-to-purchase/invoice-card'
 import { convertToSerializeForNextResponse } from '@/path-to-purchase/serialize-for-next-response'
-import { Transfer } from '@/purchase-transfer/purchase-transfer'
+import { PurchaseTransferStatus } from '@/purchase-transfer/purchase-transfer-status'
 import { getServerAuthSession } from '@/server/auth'
 import InviteTeam from '@/team'
 import { api } from '@/trpc/react'
@@ -218,7 +218,7 @@ const Welcome: React.FC<
 								<h2 className="pb-2 font-semibold uppercase tracking-wide">
 									Transfer this purchase to another email address
 								</h2>
-								<Transfer
+								<PurchaseTransferStatus
 									purchaseUserTransfers={purchaseUserTransfers}
 									refetch={refetch}
 								/>

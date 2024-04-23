@@ -74,6 +74,11 @@ export interface PaymentsProviderConfig {
 		checkoutParams: CheckoutParams,
 		adapter?: CourseBuilderAdapter,
 	) => Promise<{ redirect: string; status: number }>
+	getCustomer: (customerId: string) => Promise<Stripe.Customer>
+	updateCustomer: (
+		customerId: string,
+		customer: { name: string; email: string },
+	) => Promise<void>
 }
 
 export type PaymentsProviderConsumerConfig = Omit<
@@ -121,6 +126,11 @@ export interface PaymentsAdapter {
 
 	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
 	verifyWebhookSignature(rawBody: string, sig: string): Promise<boolean>
+	getCustomer(customerId: string): Promise<Stripe.Customer>
+	updateCustomer(
+		customerId: string,
+		customer: { name: string; email: string },
+	): Promise<void>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'

@@ -15,7 +15,7 @@ export const purchaseUserTransferSchema = z.object({
 		.default('AVAILABLE'),
 	purchaseId: z.string().max(191),
 	sourceUserId: z.string().max(191),
-	targetUserId: z.string().max(191).optional(),
+	targetUserId: z.string().max(191).optional().nullable(),
 	createdAt: z.date().nullable(),
 	expiresAt: z.date().nullable(),
 	canceledAt: z.date().nullable(),

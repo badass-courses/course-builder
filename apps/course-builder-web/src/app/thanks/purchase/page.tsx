@@ -44,7 +44,7 @@ const getServerSideProps = async (session_id: string) => {
 		await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
 
 	if (!purchase || !email) {
-		notFound()
+		return notFound()
 	}
 
 	const product = await courseBuilderAdapter.getProduct(purchase.productId)

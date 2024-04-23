@@ -48,6 +48,15 @@ export default function StripeProvider(
 				adapter,
 			})
 		},
+		getCustomer: async (customerId: string) => {
+			return options.paymentsAdapter.getCustomer(customerId)
+		},
+		updateCustomer: async (
+			customerId: string,
+			customer: { name: string; email: string },
+		) => {
+			return options.paymentsAdapter.updateCustomer(customerId, customer)
+		},
 	}
 }
 
@@ -68,6 +77,8 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 			verifyWebhookSignature: async () => true,
 			getCheckoutSession: async () =>
 				({ id: 'mock-checkout-session-id' }) as any,
+			getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
+			updateCustomer: async () => {},
 		},
 	},
 	getPurchaseInfo: async (
@@ -82,6 +93,8 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 			status: 303,
 		}
 	},
+	getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
+	updateCustomer: async () => {},
 }
 
 type DeterminePurchaseTypeOptions = {
