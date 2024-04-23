@@ -1,9 +1,9 @@
 import React from 'react'
-import { Purchase } from '@skillrecordings/database'
-import { Button } from '@skillrecordings/react'
+import { handleSelfRedeem } from '@/path-to-purchase/handle-self-redeem'
 import toast from 'react-hot-toast'
 
-import { handleSelfRedeem } from '../path-to-purchase/handle-self-redeem'
+import { Purchase } from '@coursebuilder/core/schemas'
+import { Button } from '@coursebuilder/ui'
 
 const SelfRedeemButton: React.FC<
 	React.PropsWithChildren<{
@@ -19,7 +19,6 @@ const SelfRedeemButton: React.FC<
 	return (
 		<Button
 			data-self-redeem-button=""
-			isLoading={isLoading}
 			disabled={disabled || !userEmail}
 			onClick={() => {
 				if (userEmail) {

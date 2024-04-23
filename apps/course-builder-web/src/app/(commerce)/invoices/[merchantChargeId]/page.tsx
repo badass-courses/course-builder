@@ -1,14 +1,17 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
+import { coupon } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { InvoiceCustomText } from '@/path-to-purchase/invoice-custom-text'
 import { InvoicePrintButton } from '@/path-to-purchase/invoice-print-button'
 import { getPurchaseTransferForPurchaseId } from '@/purchase-transfer/purchase-transfer-actions'
 import { PurchaseTransferStatus } from '@/purchase-transfer/purchase-transfer-status'
 import { format, fromUnixTime } from 'date-fns'
+import { eq } from 'drizzle-orm'
 import { MailIcon } from 'lucide-react'
 import Stripe from 'stripe'
 
@@ -22,13 +25,25 @@ async function getChargeDetails(merchantChargeId: string) {
 
 	const merchantCharge = await getMerchantCharge(merchantChargeId)
 
+	console.log('merchantCharge', merchantCharge)
+
 	if (merchantCharge && merchantCharge.identifier) {
 		const charge = await stripe.charges.retrieve(merchantCharge.identifier, {
 			expand: ['customer'],
 		})
 
+		console.log('charge', charge)
+
 		const purchase = await getPurchaseForStripeCharge(merchantCharge.identifier)
-		const bulkCoupon = purchase && purchase.bulkCoupon
+		const bulkCoupon =
+			purchase &&
+			purchase.bulkCouponId &&
+			(await db.query.coupon.findFirst({
+				where: eq(coupon.id, purchase.bulkCouponId),
+			}))
+
+		console.log('bulkCoupon', bulkCoupon)
+		console.log('purchase', purchase)
 
 		const merchantSession = purchase?.merchantSessionId
 			? await db.query.merchantSession.findFirst({
@@ -36,6 +51,8 @@ async function getChargeDetails(merchantChargeId: string) {
 						eq(merchantSession.id, purchase.merchantSessionId as string),
 				})
 			: null
+
+		console.log('merchantSession', merchantSession)
 
 		let quantity = 1
 		if (merchantSession?.identifier) {
@@ -52,6 +69,8 @@ async function getChargeDetails(merchantChargeId: string) {
 		const product = purchase?.productId
 			? await getProduct(purchase?.productId)
 			: null
+
+		console.log({ charge, product, bulkCoupon, purchase, merchantSession })
 
 		if (product && charge && purchase) {
 			return {
@@ -78,7 +97,10 @@ const Invoice = async ({
 }: {
 	params: { merchantChargeId: string }
 }) => {
+	headers()
 	const chargeDetails = await getChargeDetails(params.merchantChargeId)
+
+	console.log('chargeDetails', chargeDetails)
 
 	if (chargeDetails?.state !== 'SUCCESS') {
 		redirect('/invoices')

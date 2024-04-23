@@ -1,9 +1,7 @@
 'use client'
 
-import * as queryString from 'querystring'
 import * as React from 'react'
 import { Suspense, use } from 'react'
-import Link from 'next/link'
 import {
 	useParams,
 	usePathname,
@@ -315,7 +313,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 			<button
 				data-pricing-product-checkout-button=""
 				type="submit"
-				disabled={status === 'loading' || status === 'error'}
+				disabled={status === 'pending' || status === 'error'}
 			>
 				<span>
 					{formattedPrice?.upgradeFromPurchaseId
@@ -826,7 +824,7 @@ export const PriceDisplay = ({
 
 	return (
 		<div data-price-container={status} className={className}>
-			{status === 'loading' ? (
+			{status === 'pending' ? (
 				<div data-loading-price="">
 					<span className="sr-only">Loading price</span>
 					<Spinner aria-hidden="true" className="h-8 w-8" />

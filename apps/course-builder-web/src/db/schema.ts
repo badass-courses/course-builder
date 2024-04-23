@@ -21,6 +21,7 @@ export const {
 	usersRelations,
 	verificationTokens,
 	coupon,
+	couponRelations,
 	merchantAccount,
 	merchantCharge,
 	merchantCoupon,

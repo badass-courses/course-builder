@@ -4,6 +4,7 @@ import * as React from 'react'
 import { revalidatePath } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Icon } from '@/components/icons'
 import { InvoiceCard } from '@/path-to-purchase/invoice-card'
 import { PurchaseTransferStatus } from '@/purchase-transfer/purchase-transfer-status'
@@ -50,6 +51,7 @@ export function WelcomePage({
 	hasCharge: boolean
 	userEmail?: string | null
 }) {
+	const router = useRouter()
 	const [personalPurchase, setPersonalPurchase] = React.useState<
 		PersonalPurchase | Purchase
 	>(purchase?.bulkCoupon && existingPurchase ? existingPurchase : purchase)
@@ -109,8 +111,7 @@ export function WelcomePage({
 							<PurchaseTransferStatus
 								purchaseUserTransfers={purchaseUserTransfers}
 								refetch={async () => {
-									'use server'
-									revalidatePath('/welcome')
+									router.refresh()
 								}}
 							/>
 						</div>

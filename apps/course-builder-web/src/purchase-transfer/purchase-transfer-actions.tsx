@@ -283,19 +283,19 @@ const initiateTransfer = async ({
 			throw new Error('No purchaseUserTransfer found')
 		}
 
-		nextAuthOptions &&
-			(await sendServerEmail({
-				email: toUser.email,
-				callbackUrl: `${process.env.NEXT_PUBLIC_URL}/transfer/${initiatedTransfer.id}`,
-				baseUrl: env.COURSEBUILDER_URL,
-				authOptions: nextAuthOptions,
-				type: 'transfer',
-				html: defaultHtml,
-				text: defaultText,
-				expiresAt: initiatedTransfer.expiresAt,
-				adapter: courseBuilderAdapter,
-				emailProvider: emailProvider,
-			}))
+		// nextAuthOptions &&
+		// 	(await sendServerEmail({
+		// 		email: toUser.email,
+		// 		callbackUrl: `${process.env.NEXT_PUBLIC_URL}/transfer/${initiatedTransfer.id}`,
+		// 		baseUrl: env.COURSEBUILDER_URL,
+		// 		authOptions: nextAuthOptions,
+		// 		type: 'transfer',
+		// 		html: defaultHtml,
+		// 		text: defaultText,
+		// 		expiresAt: initiatedTransfer.expiresAt,
+		// 		adapter: courseBuilderAdapter,
+		// 		emailProvider: emailProvider,
+		// 	}))
 	}
 }
 
@@ -329,94 +329,94 @@ const canInitiateTransfer = async ({
 	return true
 }
 
-export type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
-	expires?: Date
-}
-export type TextEmailParams = Record<'url' | 'host', string> & {
-	expires?: Date
-}
-
-function defaultHtml(
-	{ url, host, email, expires }: HTMLEmailParams,
-	theme: Theme,
-) {
-	// Insert invisible space into domains and email address to prevent both the
-	// email address and the domain from being turned into a hyperlink by email
-	// clients like Outlook and Apple mail, as this is confusing because it seems
-	// like they are supposed to click on their email address to sign in.
-	const escapedEmail = `${email.replace(/\./g, '&#8203;.')}`
-	const escapedHost = `${host.replace(/\./g, '&#8203;.')}`
-
-	// Some simple styling options
-	const backgroundColor = '#F9FAFB'
-	const textColor = '#3E3A38'
-	const mainBackgroundColor = '#ffffff'
-	const buttonBackgroundColor = theme ? theme.brandColor : '#F9FAFB'
-	const buttonTextColor = '#ffffff'
-
-	// use datefns to format the expiration date with Pacific timezone
-	const formattedExpires = expires ? format(expires, 'PPPPppp') : null
-
-	let expiresText = `        <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
-          The link is valid for 24 hours or until it is used once. You will stay logged in for 60 days. <a href='${process.env.NEXT_PUBLIC_URL}/login' target='_blank'>Click here to request another link</a>.
-        </mj-text>`
-
-	if (formattedExpires) {
-		expiresText = `        <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
-          This link is valid until ${formattedExpires}.
-        </mj-text>`
-	}
-
-	const { html } = mjml2html(`
-<mjml>
-  <mj-head>
-    <mj-font name='Inter' href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600' />
-    <mj-attributes>
-      <mj-all font-family='Inter, Helvetica, sans-serif' line-height='1.5' />
-    </mj-attributes>
-    <mj-raw>
-      <meta name='color-scheme' content='light' />
-      <meta name='supported-color-schemes' content='light' />
-    </mj-raw>
-  </mj-head>
-  <mj-body background-color='${backgroundColor}'>
-    ${
-			theme?.logo &&
-			`<mj-section padding='10px 0 10px 0'>
-          <mj-column background-color='${backgroundColor}'>
-            <mj-image alt='${process.env.NEXT_PUBLIC_SITE_TITLE}' width='180px' src='${theme.logo}' />
-          </mj-column>
-        </mj-section>`
-		}
-    <mj-section padding-top='0'>
-      <mj-column background-color='${mainBackgroundColor}' padding='16px 10px'>
-        <mj-text font-size='18px' color='${textColor}' align='center' padding-bottom='20px'>
-          Accept your license <strong color='${textColor}'>${escapedEmail}</strong> for ${
-						process.env.NEXT_PUBLIC_SITE_TITLE
-					}.
-        </mj-text>
-        <mj-button href='${url}' background-color='${buttonBackgroundColor}' color='${buttonTextColor}' target='_blank' border-radius='6px' font-size='18px' font-weight='bold'>
-          Accept License
-        </mj-button>
-
-        ${expiresText}
-        <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
-          If you need additional help, reply!
-        </mj-text>
-        <mj-text color='gray' align='center' padding-top='40px'>
-          If this email is unexpected you can safely ignore it.
-        </mj-text>
-    </mj-section>
-  </mj-body>
-</mjml>
-`)
-
-	return html
-}
-
-// Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
-function defaultText({ url, host, expires }: TextEmailParams) {
-	const formattedExpires = expires ? format(expires, 'PPPPppp') : null
-
-	return `Log in to ${host}\n${url}\n\nexpires at ${formattedExpires}`
-}
+// export type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
+// 	expires?: Date
+// }
+// export type TextEmailParams = Record<'url' | 'host', string> & {
+// 	expires?: Date
+// }
+//
+// function defaultHtml(
+// 	{ url, host, email, expires }: HTMLEmailParams,
+// 	theme: Theme,
+// ) {
+// 	// Insert invisible space into domains and email address to prevent both the
+// 	// email address and the domain from being turned into a hyperlink by email
+// 	// clients like Outlook and Apple mail, as this is confusing because it seems
+// 	// like they are supposed to click on their email address to sign in.
+// 	const escapedEmail = `${email.replace(/\./g, '&#8203;.')}`
+// 	const escapedHost = `${host.replace(/\./g, '&#8203;.')}`
+//
+// 	// Some simple styling options
+// 	const backgroundColor = '#F9FAFB'
+// 	const textColor = '#3E3A38'
+// 	const mainBackgroundColor = '#ffffff'
+// 	const buttonBackgroundColor = theme ? theme.brandColor : '#F9FAFB'
+// 	const buttonTextColor = '#ffffff'
+//
+// 	// use datefns to format the expiration date with Pacific timezone
+// 	const formattedExpires = expires ? format(expires, 'PPPPppp') : null
+//
+// 	let expiresText = `        <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
+//           The link is valid for 24 hours or until it is used once. You will stay logged in for 60 days. <a href='${process.env.NEXT_PUBLIC_URL}/login' target='_blank'>Click here to request another link</a>.
+//         </mj-text>`
+//
+// 	if (formattedExpires) {
+// 		expiresText = `        <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
+//           This link is valid until ${formattedExpires}.
+//         </mj-text>`
+// 	}
+//
+// 	const { html } = mjml2html(`
+// <mjml>
+//   <mj-head>
+//     <mj-font name='Inter' href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600' />
+//     <mj-attributes>
+//       <mj-all font-family='Inter, Helvetica, sans-serif' line-height='1.5' />
+//     </mj-attributes>
+//     <mj-raw>
+//       <meta name='color-scheme' content='light' />
+//       <meta name='supported-color-schemes' content='light' />
+//     </mj-raw>
+//   </mj-head>
+//   <mj-body background-color='${backgroundColor}'>
+//     ${
+// 			theme?.logo &&
+// 			`<mj-section padding='10px 0 10px 0'>
+//           <mj-column background-color='${backgroundColor}'>
+//             <mj-image alt='${process.env.NEXT_PUBLIC_SITE_TITLE}' width='180px' src='${theme.logo}' />
+//           </mj-column>
+//         </mj-section>`
+// 		}
+//     <mj-section padding-top='0'>
+//       <mj-column background-color='${mainBackgroundColor}' padding='16px 10px'>
+//         <mj-text font-size='18px' color='${textColor}' align='center' padding-bottom='20px'>
+//           Accept your license <strong color='${textColor}'>${escapedEmail}</strong> for ${
+// 						process.env.NEXT_PUBLIC_SITE_TITLE
+// 					}.
+//         </mj-text>
+//         <mj-button href='${url}' background-color='${buttonBackgroundColor}' color='${buttonTextColor}' target='_blank' border-radius='6px' font-size='18px' font-weight='bold'>
+//           Accept License
+//         </mj-button>
+//
+//         ${expiresText}
+//         <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
+//           If you need additional help, reply!
+//         </mj-text>
+//         <mj-text color='gray' align='center' padding-top='40px'>
+//           If this email is unexpected you can safely ignore it.
+//         </mj-text>
+//     </mj-section>
+//   </mj-body>
+// </mjml>
+// `)
+//
+// 	return html
+// }
+//
+// // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
+// function defaultText({ url, host, expires }: TextEmailParams) {
+// 	const formattedExpires = expires ? format(expires, 'PPPPppp') : null
+//
+// 	return `Log in to ${host}\n${url}\n\nexpires at ${formattedExpires}`
+// }

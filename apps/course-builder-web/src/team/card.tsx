@@ -1,5 +1,5 @@
 import React from 'react'
-import { UserGroupIcon } from '@heroicons/react/solid'
+import { UserGroupIcon } from '@heroicons/react/24/solid'
 
 const Card: React.FC<
 	React.PropsWithChildren<{

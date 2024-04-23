@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
@@ -74,6 +75,7 @@ const Welcome = async ({
 }: {
 	searchParams: { session_id: string; provider: string; purchaseId: string }
 }) => {
+	headers()
 	const { session } = await getServerAuthSession()
 
 	const {

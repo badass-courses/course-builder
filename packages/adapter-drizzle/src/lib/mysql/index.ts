@@ -76,7 +76,10 @@ import {
 	getUsersSchema,
 } from './schemas/auth/users.js'
 import { getVerificationTokensSchema } from './schemas/auth/verification-tokens.js'
-import { getCouponSchema } from './schemas/commerce/coupon.js'
+import {
+	getCouponRelationsSchema,
+	getCouponSchema,
+} from './schemas/commerce/coupon.js'
 import { getMerchantAccountSchema } from './schemas/commerce/merchant-account.js'
 import { getMerchantChargeSchema } from './schemas/commerce/merchant-charge.js'
 import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon.js'
@@ -146,6 +149,7 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		usersRelations: getUsersRelationsSchema(mysqlTable),
 		verificationTokens: getVerificationTokensSchema(mysqlTable),
 		coupon: getCouponSchema(mysqlTable),
+		couponRelations: getCouponRelationsSchema(mysqlTable),
 		merchantAccount: getMerchantAccountSchema(mysqlTable),
 		merchantCharge: getMerchantChargeSchema(mysqlTable),
 		merchantCoupon: getMerchantCouponSchema(mysqlTable),
@@ -610,10 +614,19 @@ export function mySqlDrizzleAdapter(
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('Method not implemented.')
 		},
-		getMerchantCharge(
+		async getMerchantCharge(
 			merchantChargeId: string,
 		): Promise<MerchantCharge | null> {
-			throw new Error('Method not implemented.')
+			const mCharge = await client.query.merchantCharge.findFirst({
+				where: eq(merchantCharge.id, merchantChargeId),
+			})
+			console.log('mCharge', mCharge)
+			const parsed = merchantChargeSchema.safeParse(mCharge)
+			if (!parsed.success) {
+				console.error('Error parsing merchantCharge', mCharge)
+				return null
+			}
+			return parsed.data
 		},
 		async getMerchantCouponsForTypeAndPercent(params: {
 			type: string

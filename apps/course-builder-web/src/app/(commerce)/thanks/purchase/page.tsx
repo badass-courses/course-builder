@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
@@ -65,6 +66,7 @@ export default async function ThanksPurchasePage({
 }: {
 	searchParams: { session_id: string; provider: string }
 }) {
+	headers()
 	const { session_id } = searchParams
 	const {
 		purchase,
@@ -180,7 +182,6 @@ const ThanksVerify: React.FC<
 							purchase={{ product: { name: stripeProductName }, ...purchase }}
 						/>
 					</div>
-					xxxx
 					<PurchaseTransfer purchase={purchase} />
 				</main>
 			</div>

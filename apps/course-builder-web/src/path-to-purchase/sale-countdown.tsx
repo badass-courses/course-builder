@@ -1,4 +1,5 @@
 import React from 'react'
+import { ClockIcon } from 'lucide-react'
 import pluralize from 'pluralize'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
 
