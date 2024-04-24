@@ -43,13 +43,13 @@ export function AuthedVideoPlayer({
 		playbackRate,
 		onRateChange: (evt: Event) => {
 			const target = evt.target as HTMLVideoElement
-			const value = target?.playbackRate
+			const value = target.playbackRate || 1
 			setPlayerPrefs({ playbackRate: value })
 		},
 		volume,
 		onVolumeChange: (evt: Event) => {
 			const target = evt.target as HTMLVideoElement
-			const value = target?.volume
+			const value = target.volume || 1
 			setPlayerPrefs({ volume: value })
 		},
 		onLoadedData: () => {

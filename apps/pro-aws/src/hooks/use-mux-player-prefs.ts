@@ -31,10 +31,6 @@ export type PlayerPrefs = {
 		width: any
 	}
 	subtitle: Subtitle
-	muted: boolean
-	theater: boolean
-	defaultView: string
-	activeSidebarTab: number
 }
 
 const defaultPlayerPreferences: PlayerPrefs = {
@@ -48,10 +44,6 @@ const defaultPlayerPreferences: PlayerPrefs = {
 		width: null,
 	},
 	subtitle: defaultSubtitlePreference,
-	muted: false,
-	theater: false,
-	defaultView: 'transcript',
-	activeSidebarTab: 0,
 }
 
 export const getPlayerPrefs = () => {
