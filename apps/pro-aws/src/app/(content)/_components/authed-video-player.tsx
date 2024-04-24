@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
+import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
 	handleTextTrackChange,
 	setPreferredTextTrack,
@@ -29,8 +30,8 @@ export function AuthedVideoPlayer({
 	const videoResource = use(videoResourceLoader)
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
-
 	const { playbackRate, volume, setPlayerPrefs } = useMuxPlayerPrefs()
+	const { setMuxPlayerRef } = useMuxPlayer()
 
 	const playerProps = {
 		defaultHiddenCaptions: true,
@@ -55,6 +56,7 @@ export function AuthedVideoPlayer({
 		onLoadedData: () => {
 			handleTextTrackChange(playerRef, setPlayerPrefs)
 			setPreferredTextTrack(playerRef)
+			setMuxPlayerRef(playerRef)
 		},
 		onEnded: () => {
 			dispatchVideoPlayerOverlay({
@@ -65,7 +67,7 @@ export function AuthedVideoPlayer({
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 		},
-	} satisfies MuxPlayerProps
+	} as MuxPlayerProps
 
 	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
 

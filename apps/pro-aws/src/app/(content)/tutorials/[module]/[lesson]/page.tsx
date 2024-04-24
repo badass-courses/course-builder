@@ -4,8 +4,9 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { AuthedVideoPlayer } from '@/app/_components/authed-video-player'
-import VideoPlayerOverlay from '@/app/_components/video-player-overlay'
+import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
+import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
+import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { getLesson } from '@/lib/lessons-query'
@@ -87,28 +88,6 @@ export default async function LessonPage({ params }: Props) {
 					</Suspense>
 				</div>
 			</div>
-		</div>
-	)
-}
-
-async function Transcript({
-	lessonLoader,
-}: {
-	lessonLoader: Promise<ContentResource | null | undefined>
-}) {
-	const lesson = await lessonLoader
-	const transcript = lesson?.resources?.[0]?.resource?.fields?.transcript
-	return (
-		<div className="pt-16">
-			<div className="mb-5 flex w-full items-center gap-2">
-				<h3 className="font-heading text-2xl font-bold leading-none text-white">
-					Transcript
-				</h3>
-				<div className="bg-border h-px w-full" aria-hidden="true" />
-			</div>
-			<ReactMarkdown className="prose dark:prose-invert max-w-none">
-				{transcript}
-			</ReactMarkdown>
 		</div>
 	)
 }
