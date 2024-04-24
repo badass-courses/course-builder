@@ -951,6 +951,9 @@ importers:
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
       json-schema:
         specifier: ^0.4.0
         version: 0.4.0
@@ -1120,6 +1123,9 @@ importers:
       '@types/eslint':
         specifier: ^8.44.2
         version: 8.56.5
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/json-schema':
         specifier: ^7.0.14
         version: 7.0.15
@@ -12494,6 +12500,10 @@ packages:
   /@types/js-cookie@2.2.7:
     resolution: {integrity: sha512-aLkWa0C0vO5b4Sr798E26QgOkss68Un0bLjs7u9qxzPT5CG+8DuNTffWES58YzJs3hrVAOs1wonycqEBqNJubA==}
     dev: false
+
+  /@types/js-cookie@3.0.6:
+    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
+    dev: true
 
   /@types/js-yaml@4.0.9:
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
