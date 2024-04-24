@@ -88,6 +88,7 @@
 		"@skillrecordings/time": "^0.0.13",
 		"@t3-oss/env-nextjs": "^0.7.1",
 		"@tanstack/react-query": "^5.25.0",
+		"@tanstack/react-query-devtools": "^5.31.0",
 		"@trpc/client": "next",
 		"@trpc/next": "next",
 		"@trpc/react-query": "next",
