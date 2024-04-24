@@ -1,6 +1,6 @@
 import { type Adapter } from '@auth/core/adapters'
 
-import { UpgradableProduct } from './schemas'
+import { MerchantCharge, UpgradableProduct } from './schemas'
 import { Coupon } from './schemas/coupon-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
@@ -178,11 +178,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	getLessonProgresses(): Promise<ResourceProgress[]> {
 		return Promise.resolve([])
 	},
-	getMerchantCharge(merchantChargeId: string): Promise<{
-		id: string
-		identifier: string
-		merchantProductId: string
-	} | null> {
+	getMerchantCharge(merchantChargeId: string): Promise<MerchantCharge | null> {
 		return Promise.resolve(null)
 	},
 	getMerchantCouponForTypeAndPercent(params: {
@@ -368,11 +364,7 @@ interface SkillProductsCommerceSdk {
 	getMerchantProductForProductId(
 		productId: string,
 	): Promise<MerchantProduct | null>
-	getMerchantCharge(merchantChargeId: string): Promise<{
-		id: string
-		identifier: string
-		merchantProductId: string
-	} | null>
+	getMerchantCharge(merchantChargeId: string): Promise<MerchantCharge | null>
 	createMerchantChargeAndPurchase(options: {
 		userId: string
 		productId: string

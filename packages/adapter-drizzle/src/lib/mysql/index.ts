@@ -1,6 +1,6 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
-import { and, asc, eq, inArray, not, notInArray, or, sql } from 'drizzle-orm'
+import { and, asc, eq, inArray, not, or, sql } from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
 	MySqlDatabase,
@@ -10,7 +10,6 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
-import { formatPricesForProduct } from '@coursebuilder/core/lib/pricing/format-prices-for-product'
 import {
 	Coupon,
 	couponSchema,
@@ -77,7 +76,10 @@ import {
 	getUsersSchema,
 } from './schemas/auth/users.js'
 import { getVerificationTokensSchema } from './schemas/auth/verification-tokens.js'
-import { getCouponSchema } from './schemas/commerce/coupon.js'
+import {
+	getCouponRelationsSchema,
+	getCouponSchema,
+} from './schemas/commerce/coupon.js'
 import { getMerchantAccountSchema } from './schemas/commerce/merchant-account.js'
 import { getMerchantChargeSchema } from './schemas/commerce/merchant-charge.js'
 import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon.js'
@@ -147,6 +149,7 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		usersRelations: getUsersRelationsSchema(mysqlTable),
 		verificationTokens: getVerificationTokensSchema(mysqlTable),
 		coupon: getCouponSchema(mysqlTable),
+		couponRelations: getCouponRelationsSchema(mysqlTable),
 		merchantAccount: getMerchantAccountSchema(mysqlTable),
 		merchantCharge: getMerchantChargeSchema(mysqlTable),
 		merchantCoupon: getMerchantCouponSchema(mysqlTable),
@@ -222,7 +225,7 @@ export function mySqlDrizzleAdapter(
 		client,
 		createMerchantCustomer: async (options) => {
 			await client.insert(merchantCustomer).values({
-				id: v4(),
+				id: `mc_${v4()}`,
 				identifier: options.identifier,
 				merchantAccountId: options.merchantAccountId,
 				userId: options.userId,
@@ -366,8 +369,8 @@ export function mySqlDrizzleAdapter(
 						return purchaseSchema.parse(existingPurchaseForCharge)
 					}
 
-					const merchantChargeId = v4()
-					const purchaseId = v4()
+					const merchantChargeId = `mc_${v4()}`
+					const purchaseId = `purch_${v4()}`
 
 					const newMerchantCharge = trx.insert(merchantCharge).values({
 						id: merchantChargeId,
@@ -446,7 +449,7 @@ export function mySqlDrizzleAdapter(
 						}
 					}
 
-					const merchantSessionId = v4()
+					const merchantSessionId = `ms_${v4()}`
 
 					const newMerchantSession = trx.insert(merchantSession).values({
 						id: merchantSessionId,
@@ -493,7 +496,7 @@ export function mySqlDrizzleAdapter(
 					const newPurchaseUserTransfer = trx
 						.insert(purchaseUserTransfer)
 						.values({
-							id: v4(),
+							id: `put_${v4()}`,
 							purchaseId: purchaseId as string,
 							expiresAt: existingPurchase
 								? new Date()
@@ -523,21 +526,54 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
-		findOrCreateMerchantCustomer(options: {
+		async findOrCreateMerchantCustomer(options: {
 			user: User
 			identifier: string
 			merchantAccountId: string
 		}): Promise<MerchantCustomer | null> {
-			throw new Error('Method not implemented.')
+			const merchantCustomer = this.getMerchantCustomerForUserId(
+				options.user.id,
+			)
+
+			if (merchantCustomer) {
+				return merchantCustomer
+			}
+
+			return await this.createMerchantCustomer({
+				identifier: options.identifier,
+				merchantAccountId: options.merchantAccountId,
+				userId: options.user.id,
+			})
 		},
-		findOrCreateUser(
+		async findOrCreateUser(
 			email: string,
 			name?: string | null,
 		): Promise<{
 			user: User
 			isNewUser: boolean
 		}> {
-			throw new Error('Method not implemented.')
+			const user = await this.getUserByEmail?.(email)
+
+			if (!user) {
+				const newUser = await this.createUser?.({
+					id: `u_${v4()}`,
+					email,
+					name,
+					emailVerified: null,
+				})
+				if (!newUser) {
+					throw new Error('Could not create user')
+				}
+				return {
+					user: newUser as User,
+					isNewUser: true,
+				}
+			}
+
+			return {
+				user: user as User,
+				isNewUser: false,
+			}
 		},
 		async getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
 			return couponSchema.nullable().parse(
@@ -578,10 +614,19 @@ export function mySqlDrizzleAdapter(
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('Method not implemented.')
 		},
-		getMerchantCharge(
+		async getMerchantCharge(
 			merchantChargeId: string,
 		): Promise<MerchantCharge | null> {
-			throw new Error('Method not implemented.')
+			const mCharge = await client.query.merchantCharge.findFirst({
+				where: eq(merchantCharge.id, merchantChargeId),
+			})
+			console.log('mCharge', mCharge)
+			const parsed = merchantChargeSchema.safeParse(mCharge)
+			if (!parsed.success) {
+				console.error('Error parsing merchantCharge', mCharge)
+				return null
+			}
+			return parsed.data
 		},
 		async getMerchantCouponsForTypeAndPercent(params: {
 			type: string
@@ -767,7 +812,9 @@ export function mySqlDrizzleAdapter(
 							eq(merchantCharge.id, purchaseTable.merchantChargeId),
 						),
 					)
-					.then((res) => res[0] ?? null),
+					.then((res) => {
+						return res[0].purchases ?? null
+					}),
 			)
 
 			if (!purchase.success) {
@@ -817,7 +864,10 @@ export function mySqlDrizzleAdapter(
 			const parsedPurchases = z.array(purchaseSchema).safeParse(userPurchases)
 
 			if (!parsedPurchases.success) {
-				console.error('Error parsing purchases', parsedPurchases)
+				console.error(
+					'Error parsing purchases',
+					JSON.stringify(parsedPurchases.error),
+				)
 				return []
 			}
 

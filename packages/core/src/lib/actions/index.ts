@@ -11,6 +11,7 @@ import {
 	wordLevelSrtFromTranscriptResult,
 } from '../../providers/deepgram'
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
+import { processStripeWebhook } from '../pricing/process-stripe-webhook'
 import { CheckoutParamsSchema } from '../pricing/stripe-checkout'
 import { Cookie } from '../utils/cookie'
 
@@ -112,7 +113,7 @@ export async function srt(
 export async function checkout(
 	request: RequestInternal,
 	cookies: Cookie[],
-	options: InternalOptions<'checkout'>,
+	options: InternalOptions<'payment'>,
 ): Promise<ResponseInternal> {
 	const { callbacks, logger } = options
 
@@ -149,11 +150,21 @@ export async function checkout(
 export async function webhook(
 	request: RequestInternal,
 	cookies: Cookie[],
-	options: InternalOptions<'transcription'>,
+	options: InternalOptions<'transcription' | 'payment'>,
 ): Promise<ResponseInternal> {
 	if (!options.provider) throw new Error('Provider not found')
 
 	switch (options.provider.type) {
+		case 'payment':
+			console.log('webhook', { request })
+
+			if (options.provider.id === 'stripe') {
+				await processStripeWebhook(request.body, options)
+				return Response.json('ok', { status: 200 })
+			} else {
+				throw new Error('Unsupported provider')
+			}
+
 		case 'transcription':
 			if (!request.body) throw new Error('No body')
 

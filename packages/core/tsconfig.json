@@ -11,7 +11,7 @@
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": false,
+		"allowSyntheticDefaultImports": true,
 		"isolatedModules": true,
 		"module": "ESNext",
 		"moduleResolution": "node",

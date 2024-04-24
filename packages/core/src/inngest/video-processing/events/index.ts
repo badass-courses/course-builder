@@ -3,6 +3,10 @@ import {
 	ResourceChat,
 } from '../../co-gardener/resource-chat'
 import {
+	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
+	StripeCheckoutSessionCompleted,
+} from '../../stripe/event-checkout-session-completed'
+import {
 	EventVideoMuxWebhook,
 	MUX_WEBHOOK_EVENT,
 } from './event-video-mux-webhook'
@@ -35,4 +39,5 @@ export type CourseBuilderCoreEvents = {
 	[VIDEO_RESOURCE_CREATED_EVENT]: VideoResourceCreated
 	[MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
+	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
 }

@@ -65,6 +65,11 @@ export function getPurchaseRelationsSchema(mysqlTable: MySqlTableFn) {
 	const coupons = getCouponSchema(mysqlTable)
 
 	return relations(purchases, ({ many, one }) => ({
+		redeemedBulkCoupon: one(coupons, {
+			fields: [purchases.redeemedBulkCouponId],
+			references: [coupons.id],
+			relationName: 'redeemedBulkCoupon',
+		}),
 		user: one(users, {
 			fields: [purchases.userId],
 			references: [users.id],

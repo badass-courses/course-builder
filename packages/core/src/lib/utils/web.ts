@@ -10,7 +10,27 @@ import {
 import { isCourseBuilderAction } from './actions'
 import { logger } from './logger'
 
-async function getBody(req: Request): Promise<Record<string, any> | undefined> {
+async function getBody(
+	req: Request,
+	config: CourseBuilderConfig,
+): Promise<Record<string, any> | undefined> {
+	const headers = Object.fromEntries(req.headers)
+	const isStripeWebhook = ['stripe-signature'].every((prop: string) => {
+		return prop in headers
+	})
+
+	if (isStripeWebhook) {
+		let parsedBody
+		const stripeProvider = config.providers.find((p: any) => p.id === 'stripe')
+		parsedBody = await req.text()
+		stripeProvider?.options?.paymentsAdapter.verifyWebhookSignature(
+			parsedBody,
+			headers['stripe-signature'],
+		)
+		parsedBody = JSON.parse(parsedBody)
+		return parsedBody
+	}
+
 	if (!('body' in req) || !req.body || req.method !== 'POST') return
 
 	const contentType = req.headers.get('content-type')
@@ -42,7 +62,7 @@ export async function toInternalRequest(
 			providerId,
 			method: req.method as 'POST' | 'GET',
 			headers: Object.fromEntries(req.headers),
-			body: req.body ? await getBody(req) : undefined,
+			body: req.body ? await getBody(req, config) : undefined,
 			cookies: parseCookie(req.headers.get('cookie') ?? '') ?? {},
 			error: url.searchParams.get('error') ?? undefined,
 			query: Object.fromEntries(url.searchParams),

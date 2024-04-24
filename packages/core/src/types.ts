@@ -14,6 +14,7 @@ import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
 } from './schemas/content-resource-schema'
+import { PurchaseInfo } from './schemas/purchase-info'
 
 export type Awaitable<T> = T | PromiseLike<T>
 
@@ -65,10 +66,19 @@ export interface PaymentsProviderConfig {
 	name: string
 	type: 'payment'
 	options: PaymentsProviderConsumerConfig
+	getPurchaseInfo: (
+		checkoutSessionId: string,
+		adapter: CourseBuilderAdapter,
+	) => Promise<PurchaseInfo>
 	createCheckoutSession: (
 		checkoutParams: CheckoutParams,
 		adapter?: CourseBuilderAdapter,
 	) => Promise<{ redirect: string; status: number }>
+	getCustomer: (customerId: string) => Promise<Stripe.Customer>
+	updateCustomer: (
+		customerId: string,
+		customer: { name: string; email: string },
+	) => Promise<void>
 }
 
 export type PaymentsProviderConsumerConfig = Omit<
@@ -112,14 +122,22 @@ export interface PaymentsAdapter {
 		params: Stripe.Checkout.SessionCreateParams,
 	): Promise<string | null>
 
+	getCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>
+
 	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
+	verifyWebhookSignature(rawBody: string, sig: string): Promise<boolean>
+	getCustomer(customerId: string): Promise<Stripe.Customer>
+	updateCustomer(
+		customerId: string,
+		customer: { name: string; email: string },
+	): Promise<void>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
 	? TranscriptionConfig
 	: T extends 'email-list'
 		? EmailListConfig
-		: T extends 'checkout'
+		: T extends 'payment'
 			? PaymentsProviderConfig
 			: never
 

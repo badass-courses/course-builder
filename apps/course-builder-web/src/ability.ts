@@ -28,8 +28,8 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>
 
-type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage'
-type Subjects = 'Content' | 'User' | ContentResource | User | 'all'
+type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'view'
+type Subjects = 'Content' | 'User' | ContentResource | User | 'all' | 'Invoice'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 

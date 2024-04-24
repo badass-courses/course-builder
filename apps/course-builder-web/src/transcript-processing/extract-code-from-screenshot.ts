@@ -42,7 +42,7 @@ export async function extractCodeFromScreenshot(screenshotUrl: string) {
 
 	try {
 		response = await openai.chat.completions.create({
-			model: 'gpt-4-turbo',
+			model: env.OPENAI_MODEL_ID,
 			messages: [
 				{
 					role: 'system',

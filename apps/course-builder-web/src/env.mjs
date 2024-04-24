@@ -8,6 +8,7 @@ export const env = createEnv({
 	 */
 	server: {
 		STRIPE_SECRET_TOKEN: z.string().optional(),
+		STRIPE_WEBHOOK_SECRET: z.string().optional(),
 		COURSEBUILDER_URL: z.preprocess(
 			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 			// Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -62,6 +63,9 @@ export const env = createEnv({
 		AWS_ACCESS_KEY_ID: z.string().optional(),
 		AWS_SECRET_ACCESS_KEY: z.string().optional(),
 		AWS_BUCKET_NAME: z.string().optional(),
+		EMAIL_SERVER_HOST: z.string().optional(),
+		EMAIL_SERVER_PORT: z.number().optional(),
+		POSTMARK_KEY: z.string().optional(),
 	},
 
 	/**
@@ -76,6 +80,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_URL: z.string(),
 		NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string(),
 		NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string(),
+		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 	},
 
 	/**
@@ -83,6 +88,7 @@ export const env = createEnv({
 	 * middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 		STRIPE_SECRET_TOKEN: process.env.STRIPE_SECRET_TOKEN,
 		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
 		COURSEBUILDER_URL: process.env.COURSEBUILDER_URL,
@@ -99,6 +105,7 @@ export const env = createEnv({
 		INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
 		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: process.env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
 		NEXT_PUBLIC_PARTY_KIT_URL: process.env.NEXT_PUBLIC_PARTY_KIT_URL,
+		NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
 		MUX_ACCESS_TOKEN_ID: process.env.MUX_ACCESS_TOKEN_ID,
 		MUX_SECRET_KEY: process.env.MUX_SECRET_KEY,
 		GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
@@ -121,6 +128,9 @@ export const env = createEnv({
 		AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
 		AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
 		AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+		EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
+		EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT,
+		POSTMARK_KEY: process.env.POSTMARK_KEY,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

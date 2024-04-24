@@ -10,7 +10,8 @@ export function reqWithEnvURL(req: NextRequest): NextRequest {
 	if (!url) return req
 	const { origin: envOrigin } = new URL(url)
 	const { href, origin } = req.nextUrl
-	return new NextRequest(href.replace(origin, envOrigin), req)
+	const newReq = new NextRequest(href.replace(origin, envOrigin), req)
+	return newReq
 }
 
 export function setEnvDefaults(config: CourseBuilderConfig) {

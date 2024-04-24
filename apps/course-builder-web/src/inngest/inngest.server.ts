@@ -20,6 +20,8 @@ import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inng
 
 import '@coursebuilder/core/inngest/video-processing/events'
 
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
+
 import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
@@ -75,6 +77,7 @@ const middleware = createInngestMiddleware({
 		apiKey: env.DEEPGRAM_API_KEY,
 		callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
 	}),
+	paymentProvider: stripeProvider,
 })
 
 export const inngest = new Inngest({

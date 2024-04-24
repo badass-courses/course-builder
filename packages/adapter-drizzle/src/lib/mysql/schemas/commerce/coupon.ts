@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	boolean,
 	decimal,
@@ -10,6 +10,12 @@ import {
 	unique,
 	varchar,
 } from 'drizzle-orm/mysql-core'
+
+import { getContentResourceProductSchema } from '../content/content-resource-product.js'
+import { getMerchantProductSchema } from './merchant-product.js'
+import { getPriceSchema } from './price.js'
+import { getProductSchema } from './product.js'
+import { getPurchaseSchema } from './purchase.js'
 
 export function getCouponSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -44,4 +50,14 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 			}
 		},
 	)
+}
+
+export function getCouponRelationsSchema(mysqlTable: MySqlTableFn) {
+	const purchase = getPurchaseSchema(mysqlTable)
+	const coupon = getCouponSchema(mysqlTable)
+	return relations(coupon, ({ many }) => ({
+		bulkCouponRedemptionPurchases: many(purchase, {
+			relationName: 'redeemedBulkCoupon',
+		}),
+	}))
 }
