@@ -8,7 +8,6 @@ import {
 	useRouter,
 	useSearchParams,
 } from 'next/navigation'
-import { buildStripeCheckoutPath } from '@/app/(commerce)/pricing/build-stripe-checkout-path'
 import {
 	CommerceProps,
 	CouponForCode,
@@ -18,6 +17,7 @@ import { Layout } from '@/components/app/layout'
 import { env } from '@/env.mjs'
 import { Event } from '@/lib/events'
 import { PricingData } from '@/lib/pricing-query'
+import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import * as Switch from '@radix-ui/react-switch'
 import { QueryStatus } from '@tanstack/react-query'
 import { formatInTimeZone } from 'date-fns-tz'
