@@ -3,6 +3,11 @@
 import * as React from 'react'
 import { use } from 'react'
 import {
+	handleTextTrackChange,
+	setPreferredTextTrack,
+	useMuxPlayerPrefs,
+} from '@/hooks/use-mux-player-prefs'
+import {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
@@ -25,8 +30,9 @@ export function AuthedVideoPlayer({
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
+	const { playbackRate, volume, setPlayerPrefs } = useMuxPlayerPrefs()
+
 	const playerProps = {
-		id: 'mux-player',
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
 		thumbnailTime: 0,
@@ -34,6 +40,22 @@ export function AuthedVideoPlayer({
 		maxResolution: '2160p',
 		minResolution: '540p',
 		accentColor: '#F28F5A',
+		playbackRate,
+		onRateChange: (evt: Event) => {
+			const target = evt.target as HTMLVideoElement
+			const value = target.playbackRate || 1
+			setPlayerPrefs({ playbackRate: value })
+		},
+		volume,
+		onVolumeChange: (evt: Event) => {
+			const target = evt.target as HTMLVideoElement
+			const value = target.volume || 1
+			setPlayerPrefs({ volume: value })
+		},
+		onLoadedData: () => {
+			handleTextTrackChange(playerRef, setPlayerPrefs)
+			setPreferredTextTrack(playerRef)
+		},
 		onEnded: () => {
 			dispatchVideoPlayerOverlay({
 				type: 'LESSON_FINISHED',
@@ -43,7 +65,7 @@ export function AuthedVideoPlayer({
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 		},
-	} as MuxPlayerProps
+	} satisfies MuxPlayerProps
 
 	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
 

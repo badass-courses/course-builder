@@ -7,11 +7,14 @@ import { notFound } from 'next/navigation'
 import { AuthedVideoPlayer } from '@/app/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/_components/video-player-overlay'
 import { courseBuilderAdapter } from '@/db'
+import { env } from '@/env.mjs'
 import { getLesson } from '@/lib/lessons-query'
 import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
+import { cn } from '@/utils/cn'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { PencilIcon } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResource } from '@coursebuilder/core/types'
@@ -33,6 +36,7 @@ export async function generateMetadata(
 	const ogImage = getOGImageUrlForResource(lesson)
 
 	return {
+		metadataBase: new URL(env.NEXT_PUBLIC_URL),
 		title: lesson.fields?.title,
 		openGraph: {
 			images: [ogImage, ...previousImages],
@@ -66,29 +70,55 @@ export default async function LessonPage({ params }: Props) {
 				<main className="container px-0">
 					<PlayerContainer lessonLoader={lessonLoader} />
 				</main>
-				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
-					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
-						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
-							<div className="flex flex-col lg:col-span-8">
-								<LessonBody lessonLoader={lessonLoader} />
-							</div>
-							<div className="lg:col-span-3">
-								<Suspense>
-									<TutorialLessonList tutorialLoader={tutorialLoader} />
-								</Suspense>
-							</div>
-						</div>
+				<div className="container flex flex-col-reverse border-x pr-0 lg:flex-row">
+					<div className="flex flex-col py-8 pr-5">
+						<Suspense fallback={<div>Loading...</div>}>
+							<LessonBody lessonLoader={lessonLoader} />
+						</Suspense>
+						<Suspense fallback={<div>Loading...</div>}>
+							<Transcript lessonLoader={lessonLoader} />
+						</Suspense>
 					</div>
-				</article>
+					<Suspense>
+						<TutorialLessonList
+							params={params}
+							tutorialLoader={tutorialLoader}
+						/>
+					</Suspense>
+				</div>
 			</div>
+		</div>
+	)
+}
+
+async function Transcript({
+	lessonLoader,
+}: {
+	lessonLoader: Promise<ContentResource | null | undefined>
+}) {
+	const lesson = await lessonLoader
+	const transcript = lesson?.resources?.[0]?.resource?.fields?.transcript
+	return (
+		<div className="pt-16">
+			<div className="mb-5 flex w-full items-center gap-2">
+				<h3 className="font-heading text-2xl font-bold leading-none text-white">
+					Transcript
+				</h3>
+				<div className="bg-border h-px w-full" aria-hidden="true" />
+			</div>
+			<ReactMarkdown className="prose dark:prose-invert max-w-none">
+				{transcript}
+			</ReactMarkdown>
 		</div>
 	)
 }
 
 async function TutorialLessonList({
 	tutorialLoader,
+	params,
 }: {
 	tutorialLoader: Promise<Tutorial>
+	params: Props['params']
 }) {
 	const { ability } = await getServerAuthSession()
 	const tutorial = await tutorialLoader
@@ -98,73 +128,97 @@ async function TutorialLessonList({
 	}
 
 	return (
-		<>
-			<h3>
-				<Link href={`/tutorials/${tutorial.fields.slug}`}>
+		<nav className="w-full max-w-sm flex-shrink-0 border-l">
+			<div className="flex items-center p-5">
+				<Link
+					className="font-heading text-balance text-2xl font-bold"
+					href={`/tutorials/${tutorial.fields.slug}`}
+				>
 					{tutorial.fields.title}
 				</Link>
-			</h3>
-			{tutorial.resources.map((resource) => {
-				return (
-					<div key={resource.resourceId} className="w-full">
-						{resource.resource.type === 'section' ? (
-							<h3>{resource.resource.fields.title}</h3>
-						) : (
-							<div className="flex w-full flex-row hover:bg-gray-900">
-								<Link
-									className="w-full"
-									href={`/tutorials/${tutorial.fields.slug}/${resource.resource.fields.slug}`}
-								>
+			</div>
+			<div className="flex flex-col gap-3 border-t pb-16 pt-3">
+				{tutorial.resources.map((resource) => {
+					return (
+						<div key={resource.resourceId}>
+							{resource.resource.type === 'section' ? (
+								<h3 className="px-5 py-2 text-lg font-bold">
 									{resource.resource.fields.title}
-								</Link>
-								{ability.can('create', 'Content') ? (
-									<div className="w-full justify-end">
-										<Button asChild size="sm">
-											<Link
-												className="text-xs"
-												href={`/tutorials/${tutorial.fields.slug}/${resource.resource.fields.slug}/edit`}
-											>
-												edit
-											</Link>
-										</Button>
-									</div>
-								) : null}
-							</div>
-						)}
-						{resource.resource.resources.length > 0 && (
-							<ul>
-								{resource.resource.resources.map((lesson) => {
-									return (
-										<li key={lesson.resourceId}>
-											<div className="flex w-full flex-row space-y-2 hover:bg-gray-900">
+								</h3>
+							) : (
+								<div className="flex w-full flex-row hover:bg-gray-900">
+									<Link
+										className="w-full"
+										href={`/tutorials/${tutorial.fields.slug}/${resource.resource.fields.slug}`}
+									>
+										{resource.resource.fields.title}
+									</Link>
+									{ability.can('create', 'Content') ? (
+										<div className="w-full justify-end">
+											<Button asChild size="sm">
 												<Link
-													className="w-full"
+													className="text-xs"
+													href={`/tutorials/${tutorial.fields.slug}/${resource.resource.fields.slug}/edit`}
+												>
+													edit
+												</Link>
+											</Button>
+										</div>
+									) : null}
+								</div>
+							)}
+							{resource.resource.resources.length > 0 && (
+								<ol>
+									{resource.resource.resources.map((lesson, i) => {
+										const isActive =
+											lesson.resource.fields.slug === params.lesson
+
+										return (
+											<li
+												key={lesson.resourceId}
+												className="flex w-full items-center"
+											>
+												<Link
+													className={cn(
+														'hover:bg-secondary flex w-full items-baseline px-5 py-2',
+														{
+															'bg-secondary': isActive,
+														},
+													)}
 													href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
 												>
+													<span
+														className="w-6 pr-1 text-sm opacity-60"
+														aria-hidden="true"
+													>
+														{i + 1}
+													</span>
 													{lesson.resource.fields.title}
 												</Link>
 												{ability.can('create', 'Content') ? (
-													<div className="justify-end">
-														<Button asChild size="sm">
-															<Link
-																className="text-xs"
-																href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}/edit`}
-															>
-																edit
-															</Link>
-														</Button>
-													</div>
+													<Button
+														asChild
+														variant="outline"
+														size="icon"
+														className="scale-75"
+													>
+														<Link
+															href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}/edit`}
+														>
+															<PencilIcon className="w-3" />
+														</Link>
+													</Button>
 												) : null}
-											</div>
-										</li>
-									)
-								})}
-							</ul>
-						)}
-					</div>
-				)
-			})}
-		</>
+											</li>
+										)
+									})}
+								</ol>
+							)}
+						</div>
+					)
+				})}
+			</div>
+		</nav>
 	)
 }
 
@@ -200,17 +254,7 @@ async function LessonActionBar({
 }
 
 function PlayerContainerSkeleton() {
-	return (
-		<div className="relative z-10 flex items-center justify-center">
-			<div className="flex w-full max-w-screen-lg flex-col">
-				<div className="relative aspect-[16/9]">
-					<div className="flex items-center justify-center  overflow-hidden">
-						<div className="h-full w-full bg-gray-100" />
-					</div>
-				</div>
-			</div>
-		</div>
-	)
+	return <div className="aspect-video h-full w-full border-x" />
 }
 
 async function PlayerContainer({
@@ -233,7 +277,10 @@ async function PlayerContainer({
 			<div className="relative">
 				<VideoPlayerOverlay />
 				<Suspense fallback={<PlayerContainerSkeleton />}>
-					<AuthedVideoPlayer videoResourceLoader={videoResourceLoader} />
+					<AuthedVideoPlayer
+						className="overflow-hidden border-x"
+						videoResourceLoader={videoResourceLoader}
+					/>
 				</Suspense>
 			</div>
 		</VideoPlayerOverlayProvider>
@@ -252,18 +299,15 @@ async function LessonBody({
 	}
 
 	return (
-		<>
-			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
+		<article>
+			<h1 className="font-heading w-full text-balance pb-5 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
 				{lesson.fields?.title}
 			</h1>
-
 			{lesson.fields?.body && (
-				<>
-					<ReactMarkdown className="prose dark:prose-invert">
-						{lesson.fields?.body}
-					</ReactMarkdown>
-				</>
+				<ReactMarkdown className="prose dark:prose-invert mt-5 max-w-none">
+					{lesson.fields?.body}
+				</ReactMarkdown>
 			)}
-		</>
+		</article>
 	)
 }
