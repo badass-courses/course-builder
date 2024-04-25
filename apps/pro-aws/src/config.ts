@@ -31,7 +31,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `${process.env.NEXT_PUBLIC_URL}/card@2x.jpg`,
+				url: `card@2x.jpg`,
 				width: 1200,
 				height: 630,
 			},
