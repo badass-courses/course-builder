@@ -20,11 +20,11 @@ export const ThankYou: React.FC<ThankYouProps> = ({
 	return (
 		<header className="mx-auto w-full">
 			<div className="flex flex-col items-center gap-10 sm:flex-row">
-				{product?.metadata.image && (
+				{product?.fields.image && (
 					<div className="flex flex-shrink-0 items-center justify-center">
 						<Image
-							src={product.metadata.image.url}
-							alt={product.metadata.title}
+							src={product.fields.image.url}
+							alt={product.fields.title}
 							width={250}
 							height={250}
 						/>

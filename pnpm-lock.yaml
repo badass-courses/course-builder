@@ -277,7 +277,7 @@ importers:
         version: 1.0.7(@types/react-dom@18.2.22)(@types/react@18.2.73)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       '@react-email/components':
         specifier: ^0.0.11
-        version: 0.0.11(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 0.0.11(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118)(ts-node@10.9.2)
       '@react-email/markdown':
         specifier: ^0.0.7
         version: 0.0.7(react-email@2.1.0)(react@18.3.0-canary-feed8f3f9-20240118)
@@ -633,9 +633,15 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.5.12
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
+      stripe:
+        specifier: ^8.186.1
+        version: 8.222.0
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.12.5)(typescript@5.4.3)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -680,7 +686,7 @@ importers:
         version: 1.42.1(react@18.3.0-canary-feed8f3f9-20240118)
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@aws-sdk/client-s3':
         specifier: ^3.525.0
         version: 3.535.0
@@ -824,7 +830,7 @@ importers:
         version: 1.0.7(@types/react-dom@18.2.22)(@types/react@18.2.73)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       '@react-email/components':
         specifier: ^0.0.11
-        version: 0.0.11(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 0.0.11(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118)(ts-node@10.9.2)
       '@react-email/markdown':
         specifier: ^0.0.7
         version: 0.0.7(react-email@2.1.0)(react@18.3.0-canary-feed8f3f9-20240118)
@@ -977,7 +983,7 @@ importers:
         version: 14.3.0-canary.18(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       next-auth:
         specifier: 5.0.0-beta.16
-        version: 5.0.0-beta.16(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 5.0.0-beta.16(next@14.3.0-canary.18)(nodemailer@6.9.11)(react@18.3.0-canary-feed8f3f9-20240118)
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118)
@@ -1179,16 +1185,19 @@ importers:
         version: 3.2.5
       prettier-plugin-tailwindcss:
         specifier: ^0.5.12
-        version: 0.5.12(prettier@3.2.5)
+        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
+      stripe:
+        specifier: ^8.186.1
+        version: 8.222.0
       tailwind-scrollbar:
         specifier: ^3.0.0
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -1303,7 +1312,7 @@ importers:
         version: 2.2.1
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsup:
         specifier: 6.7.0
         version: 6.7.0(postcss@8.4.35)(typescript@5.4.3)
@@ -1342,7 +1351,7 @@ importers:
         version: 0.32.6
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       typescript:
         specifier: 5.4.3
         version: 5.4.3
@@ -2026,7 +2035,7 @@ packages:
     dependencies:
       '@astrojs/starlight': 0.12.1(astro@3.6.5)
       '@astrojs/tailwind': 5.1.0(astro@3.6.5)(tailwindcss@3.4.1)
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /@astrojs/starlight@0.12.1(astro@3.6.5):
@@ -2063,8 +2072,8 @@ packages:
       astro: 3.6.5(@types/node@20.12.5)(typescript@5.4.3)
       autoprefixer: 10.4.18(postcss@8.4.38)
       postcss: 8.4.38
-      postcss-load-config: 4.0.2(postcss@8.4.38)
-      tailwindcss: 3.4.1
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     transitivePeerDependencies:
       - ts-node
     dev: false
@@ -2488,29 +2497,6 @@ packages:
       preact: 10.11.3
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: true
-
-  /@auth/core@0.28.1:
-    resolution: {integrity: sha512-gvp74mypYZADpTlfGRp6HE0G3pIHWvtJpy+KZ+8FvY0cmlIpHog+jdMOdd29dQtLtN25kF2YbfHsesCFuGUQbg==}
-    peerDependencies:
-      '@simplewebauthn/browser': ^9.0.1
-      '@simplewebauthn/server': ^9.0.2
-      nodemailer: ^6.8.0
-    peerDependenciesMeta:
-      '@simplewebauthn/browser':
-        optional: true
-      '@simplewebauthn/server':
-        optional: true
-      nodemailer:
-        optional: true
-    dependencies:
-      '@panva/hkdf': 1.1.1
-      '@types/cookie': 0.6.0
-      cookie: 0.6.0
-      jose: 5.2.3
-      oauth4webapi: 2.10.3
-      preact: 10.11.3
-      preact-render-to-string: 5.2.3(preact@10.11.3)
-    dev: false
 
   /@auth/core@0.28.1(nodemailer@6.9.11):
     resolution: {integrity: sha512-gvp74mypYZADpTlfGRp6HE0G3pIHWvtJpy+KZ+8FvY0cmlIpHog+jdMOdd29dQtLtN25kF2YbfHsesCFuGUQbg==}
@@ -4276,7 +4262,6 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
-    dev: true
 
   /@emmetio/abbreviation@2.3.3:
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -5884,7 +5869,6 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
-    dev: true
 
   /@lezer/common@1.2.1:
     resolution: {integrity: sha512-yemX0ZD2xS/73llMZIK6KplkjIjf2EvAHcinDi/TfJ9hS25G0388+ClHt6/3but0oOxinTcQHJLDXh6w1crzFQ==}
@@ -10485,7 +10469,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@react-email/components@0.0.11(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118):
+  /@react-email/components@0.0.11(@types/react@18.2.73)(react@18.3.0-canary-feed8f3f9-20240118)(ts-node@10.9.2):
     resolution: {integrity: sha512-wj9Sra/AGQvadb3ZABz44ll9Fb9FvXPEmODXRWbNRSc8pJTFGWorrsm4M/yj8dnewd4HtnbLkV1eDOvuiLAVLA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -10506,7 +10490,7 @@ packages:
       '@react-email/render': 0.0.9
       '@react-email/row': 0.0.6(react@18.3.0-canary-feed8f3f9-20240118)
       '@react-email/section': 0.0.10(react@18.3.0-canary-feed8f3f9-20240118)
-      '@react-email/tailwind': 0.0.12(react@18.3.0-canary-feed8f3f9-20240118)
+      '@react-email/tailwind': 0.0.12(react@18.3.0-canary-feed8f3f9-20240118)(ts-node@10.9.2)
       '@react-email/text': 0.0.6(react@18.3.0-canary-feed8f3f9-20240118)
       react: 18.3.0-canary-feed8f3f9-20240118
     transitivePeerDependencies:
@@ -10790,7 +10774,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@react-email/tailwind@0.0.12(react@18.3.0-canary-feed8f3f9-20240118):
+  /@react-email/tailwind@0.0.12(react@18.3.0-canary-feed8f3f9-20240118)(ts-node@10.9.2):
     resolution: {integrity: sha512-s8Ch7GL30qRKScn9NWwItMqxjtzbyUtCnXfC6sL2YTVtulbfvZZ06W+aA0S6f7fdrVlOOlQzZuK/sVaQCHhcSw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -10798,7 +10782,7 @@ packages:
     dependencies:
       react: 18.3.0-canary-feed8f3f9-20240118
       react-dom: 18.2.0(react@18.3.0-canary-feed8f3f9-20240118)
-      tw-to-css: 0.0.12
+      tw-to-css: 0.0.12(ts-node@10.9.2)
     transitivePeerDependencies:
       - ts-node
     dev: false
@@ -12224,7 +12208,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: true
 
   /@tanstack/query-core@5.31.0:
@@ -12354,6 +12338,18 @@ packages:
 
   /@trpc/server@11.0.0-rc.351:
     resolution: {integrity: sha512-Y1Iw9iiF9LCJ2ldS/af+2RXzIbgWvQ4DHVVgHYOGB+uINpAugsUmogoEkZ6rYOgusNz6qkRzY8JKOSR7FQ1aUg==}
+
+  /@tsconfig/node10@1.0.11:
+    resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
+
+  /@tsconfig/node12@1.0.11:
+    resolution: {integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==}
+
+  /@tsconfig/node14@1.0.3:
+    resolution: {integrity: sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==}
+
+  /@tsconfig/node16@1.0.4:
+    resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
   /@types/acorn@4.0.6:
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
@@ -13578,6 +13574,9 @@ packages:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
+
+  /arg@4.1.3:
+    resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
 
   /arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
@@ -15008,6 +15007,9 @@ packages:
       - ts-node
     dev: false
 
+  /create-require@1.1.1:
+    resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+
   /crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
     dev: false
@@ -15457,6 +15459,10 @@ packages:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dev: false
+
+  /diff@4.0.2:
+    resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
+    engines: {node: '>=0.3.1'}
 
   /diff@5.2.0:
     resolution: {integrity: sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==}
@@ -20106,6 +20112,9 @@ packages:
       semver: 7.6.0
     dev: false
 
+  /make-error@1.3.6:
+    resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
+
   /make-iterator@1.0.1:
     resolution: {integrity: sha512-pxiuXh0iVEq7VM7KMIhs5gxsfxCux2URptUQaXo4iZZJxBAzTPOLE2BumO5dbfVYq/hBJFBR/a1mFDmOx5AGmw==}
     engines: {node: '>=0.10.0'}
@@ -20162,7 +20171,7 @@ packages:
     dependencies:
       marked: 7.0.4
       react: 18.2.0
-      react-email: 2.1.0(@babel/core@7.24.0)(eslint@8.57.0)
+      react-email: 2.1.0(@babel/core@7.24.0)(eslint@8.57.0)(ts-node@10.9.2)
     dev: false
 
   /md-to-react-email@4.1.0(react-email@2.1.0)(react@18.3.0-canary-feed8f3f9-20240118):
@@ -20173,7 +20182,7 @@ packages:
     dependencies:
       marked: 7.0.4
       react: 18.3.0-canary-feed8f3f9-20240118
-      react-email: 2.1.0(@babel/core@7.24.0)(eslint@8.57.0)
+      react-email: 2.1.0(@babel/core@7.24.0)(eslint@8.57.0)(ts-node@10.9.2)
     dev: false
 
   /md5@2.3.0:
@@ -22266,27 +22275,6 @@ packages:
       nodemailer: 6.9.11
       react: 18.3.0-canary-feed8f3f9-20240118
 
-  /next-auth@5.0.0-beta.16(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118):
-    resolution: {integrity: sha512-dX2snB+ezN23tFzSes3n3uosT9iBf0eILPYWH/R2fd9n3ZzdMQlRzq7JIOPeS1aLc84IuRlyuyXyx9XmmZB6og==}
-    peerDependencies:
-      '@simplewebauthn/browser': ^9.0.1
-      '@simplewebauthn/server': ^9.0.2
-      next: ^14
-      nodemailer: ^6.6.5
-      react: ^18.2.0
-    peerDependenciesMeta:
-      '@simplewebauthn/browser':
-        optional: true
-      '@simplewebauthn/server':
-        optional: true
-      nodemailer:
-        optional: true
-    dependencies:
-      '@auth/core': 0.28.1
-      next: 14.3.0-canary.18(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
-      react: 18.3.0-canary-feed8f3f9-20240118
-    dev: false
-
   /next-axiom@1.1.1(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118):
     resolution: {integrity: sha512-0r/TJ+/zetD+uDc7B+2E7WpC86hEtQ1U+DuWYrP/JNmUz+ZdPFbrZgzOSqaZ6TwYbXP56VVlPfYwq1YsKHTHYQ==}
     engines: {node: '>=18'}
@@ -23433,7 +23421,7 @@ packages:
       yaml: 1.10.2
     dev: true
 
-  /postcss-load-config@4.0.2(postcss@8.4.35):
+  /postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -23447,9 +23435,10 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.35
+      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.3)
       yaml: 2.4.1
 
-  /postcss-load-config@4.0.2(postcss@8.4.38):
+  /postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -23463,6 +23452,7 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.38
+      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.3)
       yaml: 2.4.1
     dev: false
 
@@ -23645,61 +23635,6 @@ packages:
       '@ianvs/prettier-plugin-sort-imports': 4.2.1(prettier@3.2.5)
       prettier: 3.2.5
 
-  /prettier-plugin-tailwindcss@0.5.12(prettier@3.2.5):
-    resolution: {integrity: sha512-o74kiDBVE73oHW+pdkFSluHBL3cYEvru5YgEqNkBMFF7Cjv+w1vI565lTlfoJT4VLWDe0FMtZ7FkE/7a4pMXSQ==}
-    engines: {node: '>=14.21.3'}
-    peerDependencies:
-      '@ianvs/prettier-plugin-sort-imports': '*'
-      '@prettier/plugin-pug': '*'
-      '@shopify/prettier-plugin-liquid': '*'
-      '@trivago/prettier-plugin-sort-imports': '*'
-      prettier: ^3.0
-      prettier-plugin-astro: '*'
-      prettier-plugin-css-order: '*'
-      prettier-plugin-import-sort: '*'
-      prettier-plugin-jsdoc: '*'
-      prettier-plugin-marko: '*'
-      prettier-plugin-organize-attributes: '*'
-      prettier-plugin-organize-imports: '*'
-      prettier-plugin-sort-imports: '*'
-      prettier-plugin-style-order: '*'
-      prettier-plugin-svelte: '*'
-      prettier-plugin-twig-melody: '*'
-    peerDependenciesMeta:
-      '@ianvs/prettier-plugin-sort-imports':
-        optional: true
-      '@prettier/plugin-pug':
-        optional: true
-      '@shopify/prettier-plugin-liquid':
-        optional: true
-      '@trivago/prettier-plugin-sort-imports':
-        optional: true
-      prettier-plugin-astro:
-        optional: true
-      prettier-plugin-css-order:
-        optional: true
-      prettier-plugin-import-sort:
-        optional: true
-      prettier-plugin-jsdoc:
-        optional: true
-      prettier-plugin-marko:
-        optional: true
-      prettier-plugin-organize-attributes:
-        optional: true
-      prettier-plugin-organize-imports:
-        optional: true
-      prettier-plugin-sort-imports:
-        optional: true
-      prettier-plugin-style-order:
-        optional: true
-      prettier-plugin-svelte:
-        optional: true
-      prettier-plugin-twig-melody:
-        optional: true
-    dependencies:
-      prettier: 3.2.5
-    dev: true
-
   /prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
@@ -23878,7 +23813,6 @@ packages:
     engines: {node: '>=0.6'}
     dependencies:
       side-channel: 1.0.6
-    dev: false
 
   /query-string@4.3.4:
     resolution: {integrity: sha512-O2XLNDBIg1DnTOa+2XrIwSiXEV8h2KImXUnjhhn2+UsvZ+Es2uyd5CCRTNQlDGbzUQOW3aYCBx9rVA6dzsiY7Q==}
@@ -24075,7 +24009,7 @@ packages:
       scheduler: 0.25.0-canary-e3ebcd54b-20240405
     dev: true
 
-  /react-email@2.1.0(@babel/core@7.24.0)(eslint@8.57.0):
+  /react-email@2.1.0(@babel/core@7.24.0)(eslint@8.57.0)(ts-node@10.9.2):
     resolution: {integrity: sha512-fTt85ca1phsBu57iy32wn4LTR37rOzDZoY2AOWVq3JQYVwk6GlBdUuQWif2cudkwWINL9COf9kRMS4/QWtKtAQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -24119,7 +24053,7 @@ packages:
       source-map-js: 1.0.2
       stacktrace-parser: 0.1.10
       tailwind-merge: 2.2.0
-      tailwindcss: 3.4.0
+      tailwindcss: 3.4.0(ts-node@10.9.2)
       tree-cli: 0.6.7
       typescript: 5.1.6
     transitivePeerDependencies:
@@ -26084,7 +26018,6 @@ packages:
     dependencies:
       '@types/node': 20.12.5
       qs: 6.11.0
-    dev: false
 
   /strnum@1.0.5:
     resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
@@ -26334,21 +26267,21 @@ packages:
     peerDependencies:
       tailwindcss: 3.x
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
 
   /tailwindcss-animate@1.0.7(tailwindcss@3.4.1):
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /tailwindcss-radix@2.9.0:
     resolution: {integrity: sha512-N49SnciSeRgLC+VK+Fu5VULNJIvJUvN7tUKF1kEHPXrS76WAlwrSVthCbJ9NUw0Cj/ptxs73pdVEdosomAN5Lg==}
     dev: false
 
-  /tailwindcss@3.3.2:
+  /tailwindcss@3.3.2(ts-node@10.9.2):
     resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -26370,7 +26303,7 @@ packages:
       postcss: 8.4.38
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.0.16
       postcss-value-parser: 4.2.0
@@ -26380,7 +26313,7 @@ packages:
       - ts-node
     dev: false
 
-  /tailwindcss@3.4.0:
+  /tailwindcss@3.4.0(ts-node@10.9.2):
     resolution: {integrity: sha512-VigzymniH77knD1dryXbyxR+ePHihHociZbXnLZHUyzf2MMs2ZVqlUrZ3FvpXP8pno9JzmILt1sZPD19M3IxtA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -26402,7 +26335,7 @@ packages:
       postcss: 8.4.38
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
@@ -26411,7 +26344,7 @@ packages:
       - ts-node
     dev: false
 
-  /tailwindcss@3.4.1:
+  /tailwindcss@3.4.1(ts-node@10.9.2):
     resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -26433,7 +26366,7 @@ packages:
       postcss: 8.4.35
       postcss-import: 15.1.0(postcss@8.4.35)
       postcss-js: 4.0.1(postcss@8.4.35)
-      postcss-load-config: 4.0.2(postcss@8.4.35)
+      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.35)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
@@ -26729,6 +26662,36 @@ packages:
   /ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
+  /ts-node@10.9.2(@types/node@20.12.5)(typescript@5.4.3):
+    resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 20.12.5
+      acorn: 8.11.3
+      acorn-walk: 8.3.2
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.4.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
   /tsconfck@3.0.3(typescript@5.4.3):
     resolution: {integrity: sha512-4t0noZX9t6GcPTfBAbIbbIU4pfpCwh0ueq3S4O/5qXI1VwK1outmxhe9dOiEWqMz3MW2LKgDTpqWV+37IWuVbA==}
     engines: {node: ^18 || >=20}
@@ -26921,13 +26884,13 @@ packages:
       turbo-windows-arm64: 1.13.2
     dev: false
 
-  /tw-to-css@0.0.12:
+  /tw-to-css@0.0.12(ts-node@10.9.2):
     resolution: {integrity: sha512-rQAsQvOtV1lBkyCw+iypMygNHrShYAItES5r8fMsrhhaj5qrV2LkZyXc8ccEH+u5bFjHjQ9iuxe90I7Kykf6pw==}
     engines: {node: '>=16.0.0'}
     dependencies:
       postcss: 8.4.31
       postcss-css-variables: 0.18.0(postcss@8.4.31)
-      tailwindcss: 3.3.2
+      tailwindcss: 3.3.2(ts-node@10.9.2)
     transitivePeerDependencies:
       - ts-node
     dev: false
@@ -27492,6 +27455,9 @@ packages:
       kleur: 4.1.5
       sade: 1.8.1
     dev: false
+
+  /v8-compile-cache-lib@3.0.1:
+    resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
   /v8-to-istanbul@9.2.0:
     resolution: {integrity: sha512-/EH/sDgxU2eGxajKdwLCDmQ4FWq+kpi3uCmBGpw1xJtnAxEjlD8j8PEiGWpCIMIs3ciNAgH0d3TTJiUkYzyZjA==}
@@ -28394,6 +28360,10 @@ packages:
     dependencies:
       lib0: 0.2.92
     dev: false
+
+  /yn@3.1.1:
+    resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
+    engines: {node: '>=6'}
 
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}

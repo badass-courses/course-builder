@@ -7,8 +7,8 @@ export const env = createEnv({
 	 * isn't built with invalid env vars.
 	 */
 	server: {
-		STRIPE_SECRET_TOKEN: z.string().optional(),
-		STRIPE_WEBHOOK_SECRET: z.string().optional(),
+		STRIPE_SECRET_TOKEN: z.string(),
+		STRIPE_WEBHOOK_SECRET: z.string(),
 		COURSEBUILDER_URL: z.preprocess(
 			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 			// Since NextAuth.js automatically uses the VERCEL_URL if present.
