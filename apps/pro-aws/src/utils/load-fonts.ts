@@ -1,8 +1,67 @@
 import localFont from 'next/font/local'
 
+export const r = localFont({
+	preload: true,
+	display: 'block',
+	variable: '--font-r',
+	src: [
+		{
+			path: '../styles/fonts/r_300_italic.woff2',
+			weight: '300',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/r_400_italic.woff2',
+			weight: '400',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/r_500_italic.woff2',
+			weight: '500',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/r_600_italic.woff2',
+			weight: '600',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/r_700_italic.woff2',
+			weight: '700',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/r_300_italic.woff2',
+			weight: '300',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/r_400_normal.woff2',
+			weight: '400',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/r_500_normal.woff2',
+			weight: '500',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/r_600_normal.woff2',
+			weight: '600',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/r_700_normal.woff2',
+			weight: '700',
+			style: 'normal',
+		},
+	],
+})
+
 export const patron = localFont({
 	preload: true,
 	display: 'block',
+	variable: '--font-patron',
 	src: [
 		{
 			path: '../styles/fonts/3c1f208f-b857-4c68-9b05-4260bbbb2c63.woff2',
@@ -65,5 +124,4 @@ export const patron = localFont({
 			style: 'italic',
 		},
 	],
-	variable: '--font-patron',
 })

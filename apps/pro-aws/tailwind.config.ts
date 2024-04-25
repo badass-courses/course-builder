@@ -69,7 +69,7 @@ module.exports = withUt({
 			},
 			fontFamily: {
 				sans: ['var(--font-patron)', ...fontFamily.sans],
-				heading: ['rift', ...fontFamily.sans],
+				heading: ['var(--font-r)', ...fontFamily.sans],
 			},
 			keyframes: {
 				'accordion-down': {

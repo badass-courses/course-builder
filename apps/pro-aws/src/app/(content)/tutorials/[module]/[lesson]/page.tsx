@@ -37,7 +37,6 @@ export async function generateMetadata(
 	const ogImage = getOGImageUrlForResource(lesson)
 
 	return {
-		metadataBase: new URL(env.NEXT_PUBLIC_URL),
 		title: lesson.fields?.title,
 		openGraph: {
 			images: [ogImage, ...previousImages],
@@ -73,14 +72,12 @@ export default async function LessonPage({ params }: Props) {
 				</main>
 				<div className="container flex flex-col-reverse border-x pr-0 lg:flex-row">
 					<div className="flex flex-col py-8 pr-5">
-						<Suspense fallback={<div>Loading...</div>}>
-							<LessonBody lessonLoader={lessonLoader} />
-						</Suspense>
+						<LessonBody lessonLoader={lessonLoader} />
 						<Suspense fallback={<div>Loading...</div>}>
 							<Transcript lessonLoader={lessonLoader} />
 						</Suspense>
 					</div>
-					<Suspense>
+					<Suspense fallback={<div>Loading...</div>}>
 						<TutorialLessonList
 							params={params}
 							tutorialLoader={tutorialLoader}
@@ -225,9 +222,7 @@ async function LessonActionBar({
 						</Link>
 					</Button>
 				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+			) : null}
 		</>
 	)
 }

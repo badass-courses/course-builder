@@ -11,7 +11,7 @@ import config from '@/config'
 import { env } from '@/env.mjs'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { patron } from '@/utils/load-fonts'
+import { patron, r } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -47,7 +47,7 @@ export default function RootLayout({
 			<html lang="en" suppressHydrationWarning>
 				<HolyLoader color="#f28f5a" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
-				<body className={`relative ${patron.variable} font-sans`}>
+				<body className={`relative ${patron.variable} ${r.variable} font-sans`}>
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
