@@ -88,14 +88,31 @@ module.exports = withUt({
 			typography: (theme: any) => ({
 				DEFAULT: {
 					css: {
-						'p, li, strong, blockquote': {
+						'p, li, blockquote': {
 							color: theme('colors.foreground'),
 						},
-						'h1, h2, h3, h4, h5, h6': {
+						'h1, h2, h3, h4, h5, h6, strong': {
 							color: theme('colors.white'),
 						},
 						a: {
-							color: theme('colors.primary'),
+							color: theme('colors.primary.DEFAULT'),
+						},
+
+						'code::before': {
+							content: '""',
+						},
+						'code::after': {
+							content: '""',
+						},
+						code: {
+							backgroundColor: theme('colors.muted.DEFAULT'),
+							color: theme('colors.white'),
+							padding: '0.25rem',
+							borderRadius: '0.25rem',
+							whiteSpace: 'nowrap',
+						},
+						'pre code': {
+							whiteSpace: 'pre-wrap',
 						},
 					},
 				},

@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 
 import type { ContentResource } from '@coursebuilder/core/types'
 
-export async function Transcript({
+export function Transcript({
 	lessonLoader,
 }: {
 	lessonLoader: Promise<ContentResource | null | undefined>
@@ -19,27 +19,19 @@ export async function Transcript({
 	const canShowVideo = true // TODO: Determine if video is available
 
 	return (
-		<div className="pt-16">
-			<div className="mb-5 flex w-full items-center gap-2">
-				<h3 className="font-heading text-2xl font-bold leading-none text-white">
-					Transcript
-				</h3>
-				<div className="bg-border h-px w-full" aria-hidden="true" />
-			</div>
-			<ReactMarkdown
-				components={{
-					p: ({ children }) =>
-						paragraphWithTimestampButtons({
-							children,
-							canShowVideo,
-							muxPlayerRef,
-						}),
-				}}
-				className="prose dark:prose-invert max-w-none"
-			>
-				{transcript}
-			</ReactMarkdown>
-		</div>
+		<ReactMarkdown
+			components={{
+				p: ({ children }) =>
+					paragraphWithTimestampButtons({
+						children,
+						canShowVideo,
+						muxPlayerRef,
+					}),
+			}}
+			className="prose dark:prose-invert max-w-none"
+		>
+			{transcript}
+		</ReactMarkdown>
 	)
 }
 

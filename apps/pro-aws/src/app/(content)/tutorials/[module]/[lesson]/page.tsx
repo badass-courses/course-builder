@@ -4,9 +4,11 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
+import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { getLesson } from '@/lib/lessons-query'
@@ -15,11 +17,20 @@ import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { codeToHtml } from '@/utils/shiki'
 import { PencilIcon } from '@heroicons/react/24/outline'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResource } from '@coursebuilder/core/types'
-import { Button } from '@coursebuilder/ui'
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+	Button,
+	Skeleton,
+} from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export async function generateMetadata(
@@ -70,19 +81,61 @@ export default async function LessonPage({ params }: Props) {
 				<main className="container px-0">
 					<PlayerContainer lessonLoader={lessonLoader} />
 				</main>
-				<div className="container flex flex-col-reverse border-x pr-0 lg:flex-row">
-					<div className="flex flex-col py-8 pr-5">
-						<LessonBody lessonLoader={lessonLoader} />
+				<div className="container flex flex-col-reverse border-t px-0 lg:flex-row lg:border-x">
+					<div className="flex flex-col py-8">
 						<Suspense fallback={<div>Loading...</div>}>
-							<Transcript lessonLoader={lessonLoader} />
+							<LessonBody lessonLoader={lessonLoader} />
 						</Suspense>
+						<div className="mt-10 border-t px-5 pt-8 sm:px-8">
+							<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
+								Transcript
+							</h3>
+							<Suspense fallback={<div>Loading...</div>}>
+								<Transcript lessonLoader={lessonLoader} />
+							</Suspense>
+						</div>
 					</div>
-					<Suspense fallback={<div>Loading...</div>}>
+					<Suspense
+						fallback={
+							<div className="flex w-full max-w-sm flex-shrink-0 flex-col gap-2 border-l p-5">
+								<Skeleton className="mb-8 h-8 w-full bg-gray-800" />
+								{new Array(10).fill(null).map((_, i) => (
+									<Skeleton key={i} className="h-8 w-full bg-gray-800" />
+								))}
+							</div>
+						}
+					>
 						<TutorialLessonList
+							className="hidden lg:block"
 							params={params}
 							tutorialLoader={tutorialLoader}
 						/>
 					</Suspense>
+					<Accordion type="single" collapsible className="block lg:hidden">
+						<AccordionItem value="contents">
+							<AccordionTrigger className="flex w-full items-center p-5 font-medium text-white">
+								Tutorial Contents
+							</AccordionTrigger>
+							<AccordionContent>
+								<Suspense
+									fallback={
+										<div className="flex w-full max-w-sm flex-shrink-0 flex-col gap-2 border-l p-5">
+											<Skeleton className="mb-8 h-8 w-full bg-gray-800" />
+											{new Array(10).fill(null).map((_, i) => (
+												<Skeleton key={i} className="h-8 w-full bg-gray-800" />
+											))}
+										</div>
+									}
+								>
+									<TutorialLessonList
+										params={params}
+										className="max-w-none border-l-0 border-t"
+										tutorialLoader={tutorialLoader}
+									/>
+								</Suspense>
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
 				</div>
 			</div>
 		</div>
@@ -92,9 +145,11 @@ export default async function LessonPage({ params }: Props) {
 async function TutorialLessonList({
 	tutorialLoader,
 	params,
+	className,
 }: {
 	tutorialLoader: Promise<Tutorial>
 	params: Props['params']
+	className?: string
 }) {
 	const { ability } = await getServerAuthSession()
 	const tutorial = await tutorialLoader
@@ -104,10 +159,18 @@ async function TutorialLessonList({
 	}
 
 	return (
-		<nav className="w-full max-w-sm flex-shrink-0 border-l">
-			<div className="flex items-center p-5">
+		<nav className={cn('w-full max-w-sm flex-shrink-0 border-l', className)}>
+			<div className="flex flex-col p-5">
+				<div className="flex items-center gap-2">
+					<Link
+						href="/tutorials"
+						className="font-heading text-primary text-lg font-medium hover:underline"
+					>
+						Tutorial
+					</Link>{' '}
+				</div>
 				<Link
-					className="font-heading text-balance text-2xl font-bold"
+					className="font-heading text-balance text-2xl font-bold hover:underline"
 					href={`/tutorials/${tutorial.fields.slug}`}
 				>
 					{tutorial.fields.title}
@@ -158,7 +221,7 @@ async function TutorialLessonList({
 													className={cn(
 														'hover:bg-secondary flex w-full items-baseline px-5 py-2',
 														{
-															'bg-secondary': isActive,
+															'bg-secondary text-primary': isActive,
 														},
 													)}
 													href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
@@ -228,7 +291,11 @@ async function LessonActionBar({
 }
 
 function PlayerContainerSkeleton() {
-	return <div className="aspect-video h-full w-full border-x" />
+	return (
+		<div className="flex aspect-video h-auto w-full items-center justify-center border-x">
+			<Spinner />
+		</div>
+	)
 }
 
 async function PlayerContainer({
@@ -248,7 +315,7 @@ async function PlayerContainer({
 
 	return (
 		<VideoPlayerOverlayProvider>
-			<div className="relative">
+			<div className="relative flex aspect-video h-auto w-full items-center justify-center">
 				<VideoPlayerOverlay />
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<AuthedVideoPlayer
@@ -274,13 +341,33 @@ async function LessonBody({
 
 	return (
 		<article>
-			<h1 className="font-heading w-full text-balance pb-5 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+			<h1 className="font-heading w-full text-balance px-5 pb-5 text-3xl font-bold text-white sm:px-8 sm:text-4xl lg:text-5xl">
 				{lesson.fields?.title}
 			</h1>
+			<div className="px-5 sm:px-8">
+				<Contributor />
+			</div>
 			{lesson.fields?.body && (
-				<ReactMarkdown className="prose dark:prose-invert mt-5 max-w-none">
-					{lesson.fields?.body}
-				</ReactMarkdown>
+				<div className="prose dark:prose-invert mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
+					<MDXRemote
+						source={lesson.fields.body}
+						components={{
+							pre: async (props: any) => {
+								const children = props?.children.props.children
+								const language =
+									props?.children.props.className?.split('-')[1] || 'typescript'
+
+								try {
+									const html = await codeToHtml({ code: children, language })
+									return <div dangerouslySetInnerHTML={{ __html: html }} />
+								} catch (error) {
+									console.error(error)
+									return <pre {...props} />
+								}
+							},
+						}}
+					/>
+				</div>
 			)}
 		</article>
 	)
