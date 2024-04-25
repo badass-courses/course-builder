@@ -45,13 +45,8 @@ export async function generateMetadata(
 
 	const previousImages = (await parent).openGraph?.images || []
 
-	const ogImage = getOGImageUrlForResource(lesson)
-
 	return {
 		title: lesson.fields?.title,
-		openGraph: {
-			images: [ogImage, ...previousImages],
-		},
 	}
 }
 

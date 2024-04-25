@@ -1,18 +1,22 @@
 import { ImageResponse } from 'next/og'
-import { getTutorial } from '@/lib/tutorials-query'
+import { getLesson } from '@/lib/lessons-query'
 
 export const revalidate = 60
 export const contentType = 'image/png'
 export const runtime = 'edge'
 
-export default async function TutorialOG({
+export default async function Image({
 	params,
 }: {
-	params: { module: string }
+	params: { module: string; lesson: string }
 }) {
-	const resource = await getTutorial(params.module)
+	const resource = await getLesson(params.lesson)
+
 	const rift = fetch(
-		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
+		new URL(
+			'../../../../../styles/fonts/rift_600_normal.woff',
+			import.meta.url,
+		),
 	).then((res) => res.arrayBuffer())
 
 	return new ImageResponse(
@@ -27,9 +31,8 @@ export default async function TutorialOG({
 					height: 630,
 				}}
 			>
-				<main tw="flex p-10 bg-background flex-col w-full gap-5 h-full flex-grow items-center text-center justify-center">
+				<main tw="flex p-24 bg-background flex-colw-full gap-5 h-full flex-grow items-center text-center justify-center">
 					<div tw="text-[90px] text-white">{resource?.fields?.title}</div>
-					<div tw="text-[40px] text-white text-[#F28F5A]">Free Tutorial</div>
 				</main>
 			</div>
 		),
