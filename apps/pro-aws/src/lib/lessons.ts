@@ -8,6 +8,7 @@ export const LessonSchema = ContentResourceSchema.merge(
 			title: z.string().min(2).max(90),
 			body: z.string().optional(),
 			slug: z.string(),
+			description: z.string().optional(),
 			state: z
 				.enum(['draft', 'published', 'archived', 'deleted'])
 				.default('draft'),

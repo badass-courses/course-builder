@@ -6,9 +6,9 @@ import { LessonPlayer } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_
 import { NewLessonVideoForm } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
-import { Lesson } from '@/lib/lessons'
-import { TipSchema } from '@/lib/tips'
+import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -23,6 +23,7 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
@@ -33,12 +34,15 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 export const LessonMetadataFormFields: React.FC<{
-	form: UseFormReturn<z.infer<typeof TipSchema>>
+	form: UseFormReturn<z.infer<typeof LessonSchema>>
 	initialVideoResourceId: string | null | undefined
 	lesson: Lesson
 }> = ({ form, initialVideoResourceId, lesson }) => {
 	const router = useRouter()
-	const { module } = useParams<{ module: string }>()
+	const { module } = useParams<{
+		module: string
+		lesson: string
+	}>()
 	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
 		'loading' | 'finalizing upload'
 	>('loading')
@@ -100,6 +104,7 @@ export const LessonMetadataFormFields: React.FC<{
 			}
 		},
 	})
+
 	return (
 		<>
 			<div>
@@ -141,7 +146,6 @@ export const LessonMetadataFormFields: React.FC<{
 					)}
 				</Suspense>
 			</div>
-
 			<FormField
 				control={form.control}
 				name="id"
@@ -158,6 +162,25 @@ export const LessonMetadataFormFields: React.FC<{
 							clearly.
 						</FormDescription>
 						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<FormDescription>
+							A short snippet that summarizes the lesson.
+						</FormDescription>
+						<Textarea {...field} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
 						<FormMessage />
 					</FormItem>
 				)}
