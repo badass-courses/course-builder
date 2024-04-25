@@ -21,6 +21,11 @@ import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inng
 import '@coursebuilder/core/inngest/video-processing/events'
 
 import {
+	LESSON_COMPLETED_EVENT,
+	LessonCompleted,
+} from '@/inngest/events/lesson-completed'
+
+import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
@@ -55,6 +60,7 @@ export type Events = {
 	[REQUEST_CONCEPT_SELECTION]: RequestConceptSelection
 	[CONCEPT_SELECTED]: ConceptSelected
 	[REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
+	[LESSON_COMPLETED_EVENT]: LessonCompleted
 }
 
 const callbackBase =
