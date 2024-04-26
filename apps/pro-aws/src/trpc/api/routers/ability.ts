@@ -85,11 +85,13 @@ export const abilityRouter = createTRPCRouter({
 
 			const { session } = await getServerAuthSession()
 
-			const lesson = input && (await getLesson(input.lessonId))
-			const module =
+			const lessonResource = input && (await getLesson(input.lessonId))
+			const moduleResource =
 				input && (await courseBuilderAdapter.getContentResource(input.moduleId))
-			const section =
-				lesson && module && (await getResourceSection(lesson.id, module))
+			const sectionResource =
+				lessonResource &&
+				module &&
+				(await getResourceSection(lessonResource.id, moduleResource))
 
 			return defineRulesForPurchases({
 				user: session?.user,
@@ -97,9 +99,9 @@ export const abilityRouter = createTRPCRouter({
 					subscriber: convertkitSubscriber,
 				}),
 				country,
-				...(lesson && { lesson: lesson }),
-				...(module && { module: module }),
-				...(section ? { section: section } : {}),
+				...(lessonResource && { lesson: lessonResource }),
+				...(moduleResource && { module: moduleResource }),
+				...(sectionResource ? { section: sectionResource } : {}),
 				isSolution: false,
 				purchasedModules: [],
 			})
@@ -108,12 +110,12 @@ export const abilityRouter = createTRPCRouter({
 
 async function getResourceSection(
 	resourceId: string,
-	module: ContentResource | null,
+	moduleResource?: ContentResource | null,
 ) {
-	if (!module?.resources) return null
+	if (!moduleResource?.resources) return null
 	let sectionData = null
 
-	module.resources.forEach((section) => {
+	moduleResource.resources.forEach((section) => {
 		if (section.resourceId === resourceId) {
 			sectionData = section.resource
 		}
