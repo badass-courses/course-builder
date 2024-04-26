@@ -21,6 +21,71 @@ const stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
 	apiVersion: '2020-08-27',
 })
 
+export async function archiveProduct(productId: string) {
+	const product = await db.query.products.findFirst({
+		where: eq(products.id, productId),
+		with: {
+			price: true,
+			resources: true,
+		},
+	})
+
+	if (!product) {
+		throw new Error(`Product not found for id (${productId})`)
+	}
+
+	await db
+		.update(products)
+		.set({ status: 0, name: `${product.name} (Archived)` })
+		.where(eq(products.id, productId))
+
+	await db
+		.update(prices)
+		.set({ status: 0, nickname: `${product.name} (Archived)` })
+		.where(eq(prices.productId, productId))
+
+	await db
+		.update(merchantProduct)
+		.set({ status: 0 })
+		.where(eq(merchantProduct.productId, productId))
+
+	await db
+		.update(merchantPrice)
+		.set({ status: 0 })
+		.where(eq(merchantPrice.priceId, product.price.id))
+
+	const currentMerchantProduct = await db.query.merchantProduct.findFirst({
+		where: eq(merchantProduct.productId, productId),
+	})
+
+	if (!currentMerchantProduct || !currentMerchantProduct.identifier) {
+		throw new Error(`Merchant product not found for id (${productId})`)
+	}
+
+	await stripe.products.update(currentMerchantProduct.identifier, {
+		active: false,
+	})
+
+	const currentMerchantPrice = await db.query.merchantPrice.findFirst({
+		where: eq(merchantPrice.priceId, product.price.id),
+	})
+
+	if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
+		throw new Error(`Merchant price not found for id (${productId})`)
+	}
+
+	await stripe.prices.update(currentMerchantPrice.identifier, {
+		active: false,
+	})
+
+	return db.query.products.findFirst({
+		where: eq(products.id, productId),
+		with: {
+			price: true,
+		},
+	})
+}
+
 export async function updateProduct(input: Product) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -145,7 +210,7 @@ export async function updateProduct(input: Product) {
 		})
 		.where(eq(products.id, currentProduct.id))
 
-	return await db.query.products.findFirst({
+	return db.query.products.findFirst({
 		where: eq(products.id, currentProduct.id),
 		with: {
 			price: true,

@@ -5,7 +5,7 @@ import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { updateProduct } from '@/lib/products-query'
+import { archiveProduct, updateProduct } from '@/lib/products-query'
 import { User } from '@auth/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
@@ -152,7 +152,7 @@ function EditProductFormDesktop({
 	tools = [],
 	theme = 'light',
 }: {
-	onSave: (resource: Product) => Promise<void>
+	onSave: (resource: { fields: Record<string, any> | null }) => Promise<void>
 	product: Product & {
 		fields: {
 			body?: string | null
@@ -177,6 +177,14 @@ function EditProductFormDesktop({
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
+		console.log({ updatedResource })
+		if (updatedResource) {
+			onSave(updatedResource)
+		}
+	}
+
+	const onArchive = async (values: z.infer<typeof resourceSchema>) => {
+		const updatedResource = await archiveProduct(values)
 		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
