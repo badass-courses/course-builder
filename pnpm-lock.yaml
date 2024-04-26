@@ -680,7 +680,7 @@ importers:
         version: 1.42.1(react@18.3.0-canary-feed8f3f9-20240118)
       '@auth/core':
         specifier: ^0.28.1
-        version: 0.28.1
+        version: 0.28.1(nodemailer@6.9.11)
       '@aws-sdk/client-s3':
         specifier: ^3.525.0
         version: 3.535.0
@@ -729,6 +729,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^1.0.9
         version: link:../../packages/ui
+      '@designbycode/tailwindcss-text-stroke':
+        specifier: ^1.2.1
+        version: 1.2.1(tailwindcss@3.4.1)
       '@fontsource/inter':
         specifier: ^5.0.16
         version: 5.0.17
@@ -977,7 +980,7 @@ importers:
         version: 14.3.0-canary.18(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
       next-auth:
         specifier: 5.0.0-beta.16
-        version: 5.0.0-beta.16(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118)
+        version: 5.0.0-beta.16(next@14.3.0-canary.18)(nodemailer@6.9.11)(react@18.3.0-canary-feed8f3f9-20240118)
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118)
@@ -1044,6 +1047,9 @@ importers:
       satori:
         specifier: ^0.10.9
         version: 0.10.13
+      schema-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(typescript@5.4.3)
       shortid:
         specifier: ^2.2.16
         version: 2.2.16
@@ -1179,7 +1185,7 @@ importers:
         version: 3.2.5
       prettier-plugin-tailwindcss:
         specifier: ^0.5.12
-        version: 0.5.12(prettier@3.2.5)
+        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -2488,29 +2494,6 @@ packages:
       preact: 10.11.3
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: true
-
-  /@auth/core@0.28.1:
-    resolution: {integrity: sha512-gvp74mypYZADpTlfGRp6HE0G3pIHWvtJpy+KZ+8FvY0cmlIpHog+jdMOdd29dQtLtN25kF2YbfHsesCFuGUQbg==}
-    peerDependencies:
-      '@simplewebauthn/browser': ^9.0.1
-      '@simplewebauthn/server': ^9.0.2
-      nodemailer: ^6.8.0
-    peerDependenciesMeta:
-      '@simplewebauthn/browser':
-        optional: true
-      '@simplewebauthn/server':
-        optional: true
-      nodemailer:
-        optional: true
-    dependencies:
-      '@panva/hkdf': 1.1.1
-      '@types/cookie': 0.6.0
-      cookie: 0.6.0
-      jose: 5.2.3
-      oauth4webapi: 2.10.3
-      preact: 10.11.3
-      preact-render-to-string: 5.2.3(preact@10.11.3)
-    dev: false
 
   /@auth/core@0.28.1(nodemailer@6.9.11):
     resolution: {integrity: sha512-gvp74mypYZADpTlfGRp6HE0G3pIHWvtJpy+KZ+8FvY0cmlIpHog+jdMOdd29dQtLtN25kF2YbfHsesCFuGUQbg==}
@@ -4277,6 +4260,14 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
+
+  /@designbycode/tailwindcss-text-stroke@1.2.1(tailwindcss@3.4.1):
+    resolution: {integrity: sha512-6SqiFuMjJaWWv5Mm+RIu8Ui3Kc/8AK3m0qSocPOFhk4yS6aMVioy8QLghAj5KOR/8lsfZe3r7I1uJ7YM1FimUA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || >=3.0.0-alpha.1'
+    dependencies:
+      tailwindcss: 3.4.1
+    dev: false
 
   /@emmetio/abbreviation@2.3.3:
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -22266,27 +22257,6 @@ packages:
       nodemailer: 6.9.11
       react: 18.3.0-canary-feed8f3f9-20240118
 
-  /next-auth@5.0.0-beta.16(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118):
-    resolution: {integrity: sha512-dX2snB+ezN23tFzSes3n3uosT9iBf0eILPYWH/R2fd9n3ZzdMQlRzq7JIOPeS1aLc84IuRlyuyXyx9XmmZB6og==}
-    peerDependencies:
-      '@simplewebauthn/browser': ^9.0.1
-      '@simplewebauthn/server': ^9.0.2
-      next: ^14
-      nodemailer: ^6.6.5
-      react: ^18.2.0
-    peerDependenciesMeta:
-      '@simplewebauthn/browser':
-        optional: true
-      '@simplewebauthn/server':
-        optional: true
-      nodemailer:
-        optional: true
-    dependencies:
-      '@auth/core': 0.28.1
-      next: 14.3.0-canary.18(@babel/core@7.24.0)(react-dom@18.3.0-canary-feed8f3f9-20240118)(react@18.3.0-canary-feed8f3f9-20240118)
-      react: 18.3.0-canary-feed8f3f9-20240118
-    dev: false
-
   /next-axiom@1.1.1(next@14.3.0-canary.18)(react@18.3.0-canary-feed8f3f9-20240118):
     resolution: {integrity: sha512-0r/TJ+/zetD+uDc7B+2E7WpC86hEtQ1U+DuWYrP/JNmUz+ZdPFbrZgzOSqaZ6TwYbXP56VVlPfYwq1YsKHTHYQ==}
     engines: {node: '>=18'}
@@ -23644,61 +23614,6 @@ packages:
     dependencies:
       '@ianvs/prettier-plugin-sort-imports': 4.2.1(prettier@3.2.5)
       prettier: 3.2.5
-
-  /prettier-plugin-tailwindcss@0.5.12(prettier@3.2.5):
-    resolution: {integrity: sha512-o74kiDBVE73oHW+pdkFSluHBL3cYEvru5YgEqNkBMFF7Cjv+w1vI565lTlfoJT4VLWDe0FMtZ7FkE/7a4pMXSQ==}
-    engines: {node: '>=14.21.3'}
-    peerDependencies:
-      '@ianvs/prettier-plugin-sort-imports': '*'
-      '@prettier/plugin-pug': '*'
-      '@shopify/prettier-plugin-liquid': '*'
-      '@trivago/prettier-plugin-sort-imports': '*'
-      prettier: ^3.0
-      prettier-plugin-astro: '*'
-      prettier-plugin-css-order: '*'
-      prettier-plugin-import-sort: '*'
-      prettier-plugin-jsdoc: '*'
-      prettier-plugin-marko: '*'
-      prettier-plugin-organize-attributes: '*'
-      prettier-plugin-organize-imports: '*'
-      prettier-plugin-sort-imports: '*'
-      prettier-plugin-style-order: '*'
-      prettier-plugin-svelte: '*'
-      prettier-plugin-twig-melody: '*'
-    peerDependenciesMeta:
-      '@ianvs/prettier-plugin-sort-imports':
-        optional: true
-      '@prettier/plugin-pug':
-        optional: true
-      '@shopify/prettier-plugin-liquid':
-        optional: true
-      '@trivago/prettier-plugin-sort-imports':
-        optional: true
-      prettier-plugin-astro:
-        optional: true
-      prettier-plugin-css-order:
-        optional: true
-      prettier-plugin-import-sort:
-        optional: true
-      prettier-plugin-jsdoc:
-        optional: true
-      prettier-plugin-marko:
-        optional: true
-      prettier-plugin-organize-attributes:
-        optional: true
-      prettier-plugin-organize-imports:
-        optional: true
-      prettier-plugin-sort-imports:
-        optional: true
-      prettier-plugin-style-order:
-        optional: true
-      prettier-plugin-svelte:
-        optional: true
-      prettier-plugin-twig-melody:
-        optional: true
-    dependencies:
-      prettier: 3.2.5
-    dev: true
 
   /prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
@@ -25214,6 +25129,14 @@ packages:
   /scheduler@0.25.0-canary-e3ebcd54b-20240405:
     resolution: {integrity: sha512-xI+jJ4zTJfULtwgO1GgoT3I3MiEV1OisswVdS9LdoQr0QwKpH0Al7IlW68R5ceIXE/a8RfuYZc7Aq34DwBqr7A==}
     dev: true
+
+  /schema-dts@1.1.2(typescript@5.4.3):
+    resolution: {integrity: sha512-MpNwH0dZJHinVxk9bT8XUdjKTxMYrA5bLtrrGmFA6PTLwlOKnhi67XoRd6/ty+Djt6ZC0slR57qFhZDNMI6DhQ==}
+    peerDependencies:
+      typescript: '>=4.1.0'
+    dependencies:
+      typescript: 5.4.3
+    dev: false
 
   /schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}

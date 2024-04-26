@@ -4,17 +4,24 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { Contributor } from '@/app/_components/contributor'
+import Spinner from '@/components/spinner'
+import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import ReactMarkdown from 'react-markdown'
+import { codeToHtml } from '@/utils/shiki'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { VideoObject } from 'schema-dts'
 
 import { Button } from '@coursebuilder/ui'
-import { cn } from '@coursebuilder/ui/utils/cn'
+import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+
+import { AuthedVideoPlayer } from '../../_components/authed-video-player'
+import VideoPlayerOverlay from '../../_components/video-player-overlay'
+import { Transcript } from '../../_components/video-transcript-renderer'
 
 type Props = {
 	params: { slug: string }
@@ -31,15 +38,9 @@ export async function generateMetadata(
 		return parent as Metadata
 	}
 
-	const previousImages = (await parent).openGraph?.images || []
-
-	const ogImage = getOGImageUrlForResource(tip)
-
 	return {
 		title: tip.fields?.title,
-		openGraph: {
-			images: [ogImage, ...previousImages],
-		},
+		description: tip.fields?.description,
 	}
 }
 
@@ -50,28 +51,46 @@ export default async function TipPage({
 }) {
 	headers()
 	const tipLoader = getTip(params.slug)
+
 	return (
 		<div>
-			<main className="mx-auto w-full" id="tip">
+			<div className="mx-auto w-full" id="tip">
 				<Suspense
 					fallback={
-						<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+						<div className="bg-background container flex h-9 w-full items-center justify-between" />
 					}
 				>
 					<TipActionBar tipLoader={tipLoader} />
 				</Suspense>
-
-				<PlayerContainer tipLoader={tipLoader} />
-				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
-					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
+				<Suspense>
+					<VideoObjectMetadata tipLoader={tipLoader} />
+				</Suspense>
+				<main className="container px-0">
+					<PlayerContainer tipLoader={tipLoader} />
+				</main>
+				<div className="container flex flex-col-reverse border-t px-0 lg:flex-row lg:border-x">
+					<div className="flex flex-col py-8">
+						<Suspense fallback={<div>Loading...</div>}>
+							<TipBody tipLoader={tipLoader} />
+						</Suspense>
+						<div className="mt-10 border-t px-5 pt-8 sm:px-8">
+							<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
+								Transcript
+							</h3>
+							<Suspense fallback={<div>Loading...</div>}>
+								<Transcript resourceLoader={tipLoader} />
+							</Suspense>
+						</div>
+					</div>
+					{/* <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
 							<div className="flex flex-col lg:col-span-8">
 								<TipBody tipLoader={tipLoader} />
 							</div>
 						</div>
-					</div>
-				</article>
-			</main>
+					</div> */}
+				</div>
+			</div>
 		</div>
 	)
 }
@@ -83,29 +102,21 @@ async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	return (
 		<>
 			{tip && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+				<div className="container flex h-9 w-full items-center justify-between border-x px-1">
 					<div />
 					<Button size="sm" asChild>
 						<Link href={`/tips/${tip.fields.slug || tip.id}/edit`}>Edit</Link>
 					</Button>
 				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+			) : null}
 		</>
 	)
 }
 
 function PlayerContainerSkeleton() {
 	return (
-		<div className="relative z-10 flex items-center justify-center">
-			<div className="flex w-full max-w-screen-lg flex-col">
-				<div className="relative aspect-[16/9]">
-					<div className="flex items-center justify-center  overflow-hidden">
-						<div className="h-full w-full bg-gray-100" />
-					</div>
-				</div>
-			</div>
+		<div className="flex aspect-video h-auto w-full items-center justify-center border-x">
+			<Spinner />
 		</div>
 	)
 }
@@ -116,7 +127,6 @@ async function PlayerContainer({
 	tipLoader: Promise<Tip | null>
 }) {
 	const tip = await tipLoader
-	const displayOverlay = false
 
 	if (!tip) {
 		notFound()
@@ -127,27 +137,19 @@ async function PlayerContainer({
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 
 	return (
-		<Suspense fallback={<PlayerContainerSkeleton />}>
-			<div className="relative z-10 flex items-center justify-center">
-				<div className="flex w-full max-w-screen-lg flex-col">
-					<div className="relative aspect-[16/9]">
-						<div
-							className={cn(
-								'flex items-center justify-center  overflow-hidden',
-								{
-									hidden: displayOverlay,
-								},
-							)}
-						>
-							<TipPlayer videoResourceLoader={videoResourceLoader} />
-						</div>
-					</div>
-				</div>
+		<VideoPlayerOverlayProvider>
+			<div className="relative flex aspect-video h-auto w-full items-center justify-center">
+				{/* <VideoPlayerOverlay /> */}
+				<Suspense fallback={<PlayerContainerSkeleton />}>
+					<AuthedVideoPlayer
+						className="overflow-hidden border-x"
+						videoResourceLoader={videoResourceLoader}
+					/>
+				</Suspense>
 			</div>
-		</Suspense>
+		</VideoPlayerOverlayProvider>
 	)
 }
-
 async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	const tip = await tipLoader
 
@@ -160,26 +162,68 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	const transcript = await getTranscript(resource)
 
 	return (
-		<>
-			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
-				{tip.fields.title}
+		<article>
+			<h1 className="font-heading w-full text-balance px-5 pb-5 text-3xl font-bold text-white sm:px-8 sm:text-4xl lg:text-5xl">
+				{tip.fields?.title}
 			</h1>
+			<div className="px-5 sm:px-8">
+				<Contributor />
+			</div>
+			{tip.fields?.body && (
+				<div className="prose dark:prose-invert mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
+					<MDXRemote
+						source={tip.fields.body}
+						components={{
+							pre: async (props: any) => {
+								const children = props?.children.props.children
+								const language =
+									props?.children.props.className?.split('-')[1] || 'typescript'
 
-			{tip.fields.body && (
-				<>
-					<ReactMarkdown className="prose dark:prose-invert">
-						{tip.fields.body}
-					</ReactMarkdown>
-				</>
-			)}
-			{transcript && (
-				<div className="w-full max-w-2xl pt-5">
-					<h3 className="font-bold">Transcript</h3>
-					<ReactMarkdown className="prose dark:prose-invert">
-						{transcript}
-					</ReactMarkdown>
+								try {
+									const html = await codeToHtml({ code: children, language })
+									return <div dangerouslySetInnerHTML={{ __html: html }} />
+								} catch (error) {
+									console.error(error)
+									return <pre {...props} />
+								}
+							},
+						}}
+					/>
 				</div>
 			)}
-		</>
+		</article>
+	)
+}
+
+const VideoObjectMetadata = async ({
+	tipLoader,
+}: {
+	tipLoader: Promise<Tip | null>
+}) => {
+	const tip = await tipLoader
+	if (!tip) {
+		return null
+	}
+
+	const resource = tip?.resources?.[0]?.resource.id
+	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
+
+	const jsonLd: VideoObject = {
+		'@type': 'VideoObject',
+		name: tip?.fields.title,
+		creator: {
+			'@type': 'Person',
+			name: config.author,
+		},
+		description: tip?.fields.description,
+		duration: videoResource?.duration as any,
+		uploadDate: tip?.createdAt as any,
+	}
+
+	return (
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+		/>
 	)
 }
