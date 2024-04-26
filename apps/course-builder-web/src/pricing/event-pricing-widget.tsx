@@ -10,6 +10,8 @@ export const EventPricingWidget: React.FC<{
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
 }> = ({ product, quantityAvailable, commerceProps, pricingDataLoader }) => {
+	console.log({ product, quantityAvailable, commerceProps, pricingDataLoader })
+
 	const pathname = usePathname()
 	const params = useParams()
 	const searchParams = useSearchParams()

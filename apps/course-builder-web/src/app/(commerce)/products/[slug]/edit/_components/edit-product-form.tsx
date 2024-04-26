@@ -17,12 +17,10 @@ import {
 	archiveProduct,
 	updateProduct,
 } from '@/lib/products-query'
-import { addResourceToTutorial } from '@/lib/tutorials-query'
 import { api } from '@/trpc/react'
-import { cn } from '@/utils/cn'
 import { User } from '@auth/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, ChevronsUpDown, ImagePlusIcon } from 'lucide-react'
+import { ChevronsUpDown, ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -401,7 +399,7 @@ function EditProductFormDesktop({
 				}}
 				onArchive={() => {
 					form.setValue('fields.state', 'archived')
-					onSubmit(form.getValues())
+					onArchive(form.getValues())
 				}}
 				onUnPublish={() => {
 					form.setValue('fields.state', 'draft')

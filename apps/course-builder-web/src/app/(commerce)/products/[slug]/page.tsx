@@ -2,11 +2,18 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
+import { EventPageProps } from '@/app/(content)/events/[slug]/_components/event-page-props'
+import { courseBuilderAdapter, db } from '@/db'
+import { products, purchases } from '@/db/schema'
+import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
+import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
+import { count, eq } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
 
-import { Product } from '@coursebuilder/core/schemas'
+import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
 async function ProductActionBar({
@@ -93,7 +100,92 @@ export default async function ProductPage({
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
 				<ProductTitle productLoader={productLoader} />
 				<ProductDetails productLoader={productLoader} />
+				<ProductCommerce productLoader={productLoader} />
 			</article>
 		</div>
 	)
+}
+
+async function ProductCommerce({
+	productLoader,
+}: {
+	productLoader: Promise<Product | null>
+}) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	const product = await productLoader
+	console.log({ product })
+	if (!product) return null
+	const pricingDataLoader = getPricingData(product?.id)
+	let productProps: any
+
+	let commerceProps = await propsForCommerce({
+		query: {
+			allowPurchase: 'true',
+		},
+		userId: user?.id,
+		products: [product],
+	})
+
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, product.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	const productWithQuantityAvailable = await db
+		.select({ quantityAvailable: products.quantityAvailable })
+		.from(products)
+		.where(eq(products.id, product.id))
+		.then((res) => res[0])
+
+	let quantityAvailable = -1
+
+	if (productWithQuantityAvailable) {
+		quantityAvailable =
+			productWithQuantityAvailable.quantityAvailable - purchaseCount
+	}
+
+	if (quantityAvailable < 0) {
+		quantityAvailable = -1
+	}
+
+	const purchaseForProduct = commerceProps.purchases?.find(
+		(purchase: Purchase) => {
+			return purchase.productId === product.id
+		},
+	)
+
+	const baseProps = {
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+		product,
+		pricingDataLoader,
+		...commerceProps,
+	}
+
+	console.log({ baseProps })
+
+	productProps = baseProps
+
+	if (user && purchaseForProduct) {
+		const { purchase, existingPurchase } =
+			await courseBuilderAdapter.getPurchaseDetails(
+				purchaseForProduct.id,
+				user.id,
+			)
+
+		productProps = {
+			...baseProps,
+			hasPurchasedCurrentProduct: Boolean(purchase),
+			...(existingPurchase && {
+				purchasedProductIds: [existingPurchase.productId],
+				existingPurchase,
+			}),
+		}
+	}
+
+	return <ProductPricing {...productProps} />
 }
