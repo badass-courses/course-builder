@@ -1047,6 +1047,9 @@ importers:
       satori:
         specifier: ^0.10.9
         version: 0.10.13
+      schema-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(typescript@5.4.3)
       shortid:
         specifier: ^2.2.16
         version: 2.2.16
@@ -25126,6 +25129,14 @@ packages:
   /scheduler@0.25.0-canary-e3ebcd54b-20240405:
     resolution: {integrity: sha512-xI+jJ4zTJfULtwgO1GgoT3I3MiEV1OisswVdS9LdoQr0QwKpH0Al7IlW68R5ceIXE/a8RfuYZc7Aq34DwBqr7A==}
     dev: true
+
+  /schema-dts@1.1.2(typescript@5.4.3):
+    resolution: {integrity: sha512-MpNwH0dZJHinVxk9bT8XUdjKTxMYrA5bLtrrGmFA6PTLwlOKnhi67XoRd6/ty+Djt6ZC0slR57qFhZDNMI6DhQ==}
+    peerDependencies:
+      typescript: '>=4.1.0'
+    dependencies:
+      typescript: 5.4.3
+    dev: false
 
   /schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}

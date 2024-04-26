@@ -10,6 +10,7 @@ import { getServerAuthSession } from '@/server/auth'
 import {
 	Button,
 	Card,
+	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
@@ -68,6 +69,13 @@ async function TipList() {
 								</Link>
 							</CardTitle>
 						</CardHeader>
+						{tip.fields.description && (
+							<CardContent className="px-0 py-3">
+								<p className="text-muted-foreground text-sm">
+									{tip.fields.description}
+								</p>
+							</CardContent>
+						)}
 						<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
 							<Contributor className="text-sm font-light" />
 							<div className="flex items-center gap-2">

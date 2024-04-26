@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import Spinner from '@/components/spinner'
+import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
@@ -13,11 +14,10 @@ import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import { codeToHtml } from '@/utils/shiki'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import ReactMarkdown from 'react-markdown'
+import { VideoObject } from 'schema-dts'
 
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
-import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { AuthedVideoPlayer } from '../../_components/authed-video-player'
 import VideoPlayerOverlay from '../../_components/video-player-overlay'
@@ -40,6 +40,7 @@ export async function generateMetadata(
 
 	return {
 		title: tip.fields?.title,
+		description: tip.fields?.description,
 	}
 }
 
@@ -60,6 +61,9 @@ export default async function TipPage({
 					}
 				>
 					<TipActionBar tipLoader={tipLoader} />
+				</Suspense>
+				<Suspense>
+					<VideoObjectMetadata tipLoader={tipLoader} />
 				</Suspense>
 				<main className="container px-0">
 					<PlayerContainer tipLoader={tipLoader} />
@@ -188,5 +192,38 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 				</div>
 			)}
 		</article>
+	)
+}
+
+const VideoObjectMetadata = async ({
+	tipLoader,
+}: {
+	tipLoader: Promise<Tip | null>
+}) => {
+	const tip = await tipLoader
+	if (!tip) {
+		return null
+	}
+
+	const resource = tip?.resources?.[0]?.resource.id
+	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
+
+	const jsonLd: VideoObject = {
+		'@type': 'VideoObject',
+		name: tip?.fields.title,
+		creator: {
+			'@type': 'Person',
+			name: config.author,
+		},
+		description: tip?.fields.description,
+		duration: videoResource?.duration as any,
+		uploadDate: tip?.createdAt as any,
+	}
+
+	return (
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+		/>
 	)
 }
