@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import TutorialResourcesList from '@/components/tutorial-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -8,6 +9,7 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { TutorialSchema } from '@/lib/tutorial'
 import { updateTutorial } from '@/lib/tutorials-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm } from 'react-hook-form'
@@ -42,6 +44,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				state: tutorial.fields?.state || 'draft',
 				body: tutorial?.fields?.body || '',
 				visibility: tutorial.fields?.visibility || 'unlisted',
+				coverImage: tutorial?.fields?.coverImage || { url: '', alt: '' },
 			},
 		},
 	})
@@ -90,6 +93,25 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				user={session?.data?.user}
 				onSave={onTutorialSave}
 				theme={theme}
+				tools={[
+					{
+						id: 'media',
+						icon: () => (
+							<ImagePlusIcon
+								strokeWidth={1.5}
+								size={24}
+								width={18}
+								height={18}
+							/>
+						),
+						toolComponent: (
+							<ImageResourceUploader
+								belongsToResourceId={tutorial.id}
+								uploadDirectory={`tutorials`}
+							/>
+						),
+					},
+				]}
 			>
 				<FormField
 					control={form.control}
@@ -118,6 +140,45 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						</FormItem>
 					)}
 					name="fields.description"
+				/>
+				<div className="px-5">
+					<FormLabel className="text-lg font-bold">Cover Image</FormLabel>
+					{form.watch('fields.coverImage.url') && (
+						<img src={form.watch('fields.coverImage.url')} />
+					)}
+				</div>
+				<FormField
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel className="">Image URL</FormLabel>
+							<Input
+								{...field}
+								onDrop={(e) => {
+									console.log(e)
+									const result = e.dataTransfer.getData('text/plain')
+									const parsedResult = result.match(/\(([^)]+)\)/)
+									if (parsedResult) {
+										field.onChange(parsedResult[1])
+									}
+								}}
+								value={field.value || ''}
+							/>
+							<FormMessage />
+						</FormItem>
+					)}
+					name="fields.coverImage.url"
+				/>
+				<FormField
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel className="">Image alt</FormLabel>
+							<Input {...field} value={field.value || ''} />
+							<FormMessage />
+						</FormItem>
+					)}
+					name="fields.coverImage.alt"
 				/>
 				<TutorialResourcesList tutorial={tutorial} />
 			</ResourceForm>
