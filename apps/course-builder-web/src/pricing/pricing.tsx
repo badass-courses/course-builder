@@ -180,7 +180,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	}, [])
 
 	const isSoldOut =
-		product.fields.type === 'live' && !purchased && quantityAvailable <= 0
+		product.type === 'live' && !purchased && quantityAvailable <= 0
 
 	const isSellingLive = true
 	return (
@@ -203,7 +203,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 				<article>
 					{(isSellingLive || allowPurchase) && !purchased ? (
 						<div data-pricing-product-header="">
-							{product.fields.type === 'live' && quantityAvailable! <= -1 && (
+							{product.type === 'live' && quantityAvailable! <= -1 && (
 								<div
 									data-quantity-available={
 										isSoldOut ? 'sold-out' : quantityAvailable

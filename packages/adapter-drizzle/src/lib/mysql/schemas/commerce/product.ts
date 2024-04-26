@@ -19,6 +19,7 @@ export function getProductSchema(mysqlTable: MySqlTableFn) {
 			id: varchar('id', { length: 191 }).notNull(),
 			name: varchar('name', { length: 191 }).notNull(),
 			key: varchar('key', { length: 191 }),
+			type: varchar('type', { length: 191 }),
 			fields: json('fields').$type<Record<string, any>>().default({}),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)

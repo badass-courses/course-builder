@@ -165,7 +165,7 @@ const Header: React.FC<
 						<div>
 							<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">
 								<Link
-									href={`/workshops/${product?.resources?.[0]?.fields?.slug}`}
+									href={`/workshops/${product?.resources?.[0]?.resource.fields?.slug}`}
 									className="bg-primary text-primary-foreground w-full rounded px-5 py-3 text-lg font-semibold text-gray-900 shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
 								>
 									Start Learning

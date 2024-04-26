@@ -44,6 +44,11 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 	ResizableHandle,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '@coursebuilder/ui'
 import {
 	Command,
@@ -239,6 +244,33 @@ export function EditProductForm({ product }: { product: Product }) {
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<FormField
+				control={form.control}
+				name="type"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Type</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								What type of product is this? Live or self-paced?
+							</FormDescription>
+
+							<Select onValueChange={field.onChange} defaultValue={field.value}>
+								<FormControl>
+									<SelectTrigger className="w-[180px]">
+										<SelectValue placeholder="Theme" />
+									</SelectTrigger>
+								</FormControl>
+								<SelectContent>
+									<SelectItem value="live">Live</SelectItem>
+									<SelectItem value="self-paced">Self-paced</SelectItem>
+								</SelectContent>
+							</Select>
 							<FormMessage />
 						</FormItem>
 					)
