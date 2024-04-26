@@ -3,7 +3,7 @@
 
 import { randomUUID } from 'utils/adapter.js'
 
-import { purchaseSchema } from '@coursebuilder/core/schemas'
+import { Product, purchaseSchema } from '@coursebuilder/core/schemas'
 
 const emailVerified = new Date()
 emailVerified.setMilliseconds(0)
@@ -31,8 +31,9 @@ const LARGE_SITE_SALE_COUPON_ID = 'valid-jumbo-coupon-id'
 const ORIGINAL_PPP_PURCHASE_ID = 'original-ppp-purchase-id'
 const UPGRADED_PPP_PURCHASE_ID = 'upgraded-ppp-purchase-id'
 
-const mockProduct = {
+const mockProduct: Product = {
 	id: DEFAULT_PRODUCT_ID,
+	type: 'self-paced',
 	name: 'professional',
 	createdAt: new Date(),
 	key: 'hey',
@@ -40,11 +41,16 @@ const mockProduct = {
 	quantityAvailable: -1,
 	fields: {
 		slug: 'professional',
+		state: 'published',
+		visibility: 'public',
+		action: 'Buy Now',
 	},
+	resources: [],
 }
 
-const mockUpgradeProduct = {
+const mockUpgradeProduct: Product = {
 	id: UPGRADE_PRODUCT_ID,
+	type: 'self-paced',
 	name: 'professional',
 	createdAt: new Date(),
 	key: 'hey',
@@ -52,7 +58,11 @@ const mockUpgradeProduct = {
 	quantityAvailable: -1,
 	fields: {
 		slug: 'super-professional',
+		state: 'published',
+		visibility: 'public',
+		action: 'Buy Now',
 	},
+	resources: [],
 }
 
 const mockPrice = {

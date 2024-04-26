@@ -59,20 +59,7 @@ export interface TestOptions {
 		 * A simple query function that returns an authenticator directly from the db.
 		 */
 		authenticator?: (credentialID: string) => any
-		createProduct?: (
-			product: {
-				id: string
-				name: string
-				createdAt: Date
-				key: string
-				status: number
-				quantityAvailable: number
-				fields: {
-					slug: string
-				}
-			},
-			price?: any,
-		) => any
+		createProduct?: (product: Product, price?: any) => any
 		deleteProduct?: (productId: string) => any
 		createCoupon?: (coupon: any) => any
 		createMerchantCoupon?: (merchantCoupo: any) => any

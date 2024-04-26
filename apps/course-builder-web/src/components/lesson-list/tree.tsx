@@ -21,6 +21,7 @@ import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/ad
 import memoizeOne from 'memoize-one'
 import invariant from 'tiny-invariant'
 
+import { Product } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 
 import {
@@ -73,7 +74,7 @@ export default function Tree({
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
-	rootResource: ContentResource
+	rootResource: ContentResource | Product
 }) {
 	const params = useParams<{ module: string }>()
 

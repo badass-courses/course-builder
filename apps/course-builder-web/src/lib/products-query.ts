@@ -1,7 +1,13 @@
 'use server'
 
 import { db } from '@/db'
-import { merchantPrice, merchantProduct, prices, products } from '@/db/schema'
+import {
+	contentResourceProduct,
+	merchantPrice,
+	merchantProduct,
+	prices,
+	products,
+} from '@/db/schema'
 import { env } from '@/env.mjs'
 import { NewProduct } from '@/lib/products'
 import { getServerAuthSession } from '@/server/auth'
@@ -12,6 +18,7 @@ import Stripe from 'stripe'
 import { v4 } from 'uuid'
 
 import { Product, productSchema } from '@coursebuilder/core/schemas'
+import { ContentResource } from '@coursebuilder/core/types'
 
 if (!env.STRIPE_SECRET_TOKEN) {
 	throw new Error('Stripe secret token not found')
@@ -20,6 +27,48 @@ if (!env.STRIPE_SECRET_TOKEN) {
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
 	apiVersion: '2020-08-27',
 })
+
+export async function addResourceToProduct({
+	resource,
+	productId,
+}: {
+	resource: ContentResource
+	productId: string
+}) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const product = await db.query.products.findFirst({
+		where: eq(products.id, productId),
+		with: {
+			resources: true,
+		},
+	})
+
+	if (!product) {
+		throw new Error(`Product not found for id (${productId})`)
+	}
+
+	await db.insert(contentResourceProduct).values({
+		resourceId: resource.id,
+		productId,
+		position: product.resources.length,
+		metadata: {
+			addedBy: user.id,
+		},
+	})
+
+	return db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, resource.id),
+		with: {
+			resource: true,
+			product: true,
+		},
+	})
+}
 
 export async function archiveProduct(productId: string) {
 	const product = await db.query.products.findFirst({
@@ -231,6 +280,15 @@ export async function getProduct(productSlugOrId: string) {
 		),
 		with: {
 			price: true,
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: true,
+						},
+					},
+				},
+			},
 		},
 	})
 

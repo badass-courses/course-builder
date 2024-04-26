@@ -109,7 +109,12 @@ export async function runFormatPricingTests(options: TestOptions) {
 			quantityAvailable: -1,
 			fields: {
 				slug: 'basic',
+				state: 'published',
+				visibility: 'public',
+				action: 'Buy Now',
 			},
+			type: 'self-paced',
+			resources: [],
 		})
 
 		const mockOneOffCoupon = {
@@ -559,7 +564,12 @@ export async function runFormatPricingTests(options: TestOptions) {
 				quantityAvailable: -1,
 				fields: {
 					slug: 'another-bundled-product',
+					state: 'published',
+					visibility: 'public',
+					action: 'Buy Now',
 				},
+				type: 'self-paced',
+				resources: [],
 			},
 			anotherProductPrice,
 		)
@@ -593,7 +603,12 @@ export async function runFormatPricingTests(options: TestOptions) {
 				quantityAvailable: -1,
 				fields: {
 					slug: 'another-bundled-product',
+					state: 'published',
+					visibility: 'public',
+					action: 'Buy Now',
 				},
+				type: 'self-paced',
+				resources: [],
 			},
 			priceForProduct,
 		)
@@ -662,7 +677,12 @@ export async function runFormatPricingTests(options: TestOptions) {
 				quantityAvailable: -1,
 				fields: {
 					slug: 'another-bundled-product',
+					state: 'published',
+					visibility: 'public',
+					action: 'Buy Now',
 				},
+				type: 'self-paced',
+				resources: [],
 			},
 			priceForProduct,
 		)
@@ -713,7 +733,12 @@ export async function runFormatPricingTests(options: TestOptions) {
 				quantityAvailable: -1,
 				fields: {
 					slug: 'another-bundled-product',
+					state: 'published',
+					visibility: 'public',
+					action: 'Buy Now',
 				},
+				type: 'self-paced',
+				resources: [],
 			},
 			priceForProduct,
 		)
@@ -771,6 +796,7 @@ export async function runFormatPricingTests(options: TestOptions) {
 		await options.db.createProduct?.(
 			{
 				id: fancyProductId,
+				type: 'self-paced',
 				name: 'way better bundle',
 				createdAt: new Date(),
 				key: options.fixtures?.product?.key,
@@ -778,7 +804,11 @@ export async function runFormatPricingTests(options: TestOptions) {
 				quantityAvailable: -1,
 				fields: {
 					slug: 'another-bundled-product',
+					state: 'published',
+					visibility: 'public',
+					action: 'Buy Now',
 				},
+				resources: [],
 			},
 			priceForProduct,
 		)
