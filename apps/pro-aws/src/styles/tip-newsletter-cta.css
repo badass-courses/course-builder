@@ -13,6 +13,6 @@
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply text-background h-9 w-full text-base font-medium sm:w-auto !important;
+		@apply text-background h-9 w-full text-sm font-medium sm:w-auto !important;
 	}
 }

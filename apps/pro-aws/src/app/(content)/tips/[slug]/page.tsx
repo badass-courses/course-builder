@@ -18,7 +18,7 @@ import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { VideoObject } from 'schema-dts'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import { AuthedVideoPlayer } from '../../_components/authed-video-player'
@@ -85,14 +85,26 @@ export default async function TipPage({
 				)}
 				<div className="container flex flex-col-reverse border-t px-0 lg:flex-row lg:border-x">
 					<div className="flex flex-col py-8">
-						<Suspense fallback={<div>Loading...</div>}>
+						<Suspense
+							fallback={
+								<div className="px-5 sm:px-8">
+									<Skeleton className="h-16 w-full bg-gray-900" />
+								</div>
+							}
+						>
 							<TipBody tipLoader={tipLoader} />
 						</Suspense>
 						<div className="mt-10 border-t px-5 pt-8 sm:px-8">
 							<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
 								Transcript
 							</h3>
-							<Suspense fallback={<div>Loading...</div>}>
+							<Suspense
+								fallback={
+									<div className="p-5">
+										<Skeleton className="h-5 w-full bg-gray-900" />
+									</div>
+								}
+							>
 								<Transcript resourceLoader={tipLoader} />
 							</Suspense>
 						</div>
