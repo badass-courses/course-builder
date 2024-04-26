@@ -86,7 +86,7 @@ export default async function LessonPage({ params }: Props) {
 								Transcript
 							</h3>
 							<Suspense fallback={<div>Loading...</div>}>
-								<Transcript lessonLoader={lessonLoader} />
+								<Transcript resourceLoader={lessonLoader} />
 							</Suspense>
 						</div>
 					</div>

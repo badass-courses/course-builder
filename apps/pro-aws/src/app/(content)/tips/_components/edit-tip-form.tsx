@@ -45,6 +45,9 @@ export function EditTipForm({
 			fields: {
 				title: tip.fields?.title,
 				body: tip.fields?.body,
+				description: tip.fields?.description || '',
+				visibility: tip.fields?.visibility || 'unlisted',
+				state: tip.fields?.state || 'draft',
 			},
 		},
 	})

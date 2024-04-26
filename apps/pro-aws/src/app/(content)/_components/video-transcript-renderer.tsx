@@ -8,12 +8,12 @@ import ReactMarkdown from 'react-markdown'
 import type { ContentResource } from '@coursebuilder/core/types'
 
 export function Transcript({
-	lessonLoader,
+	resourceLoader,
 }: {
-	lessonLoader: Promise<ContentResource | null | undefined>
+	resourceLoader: Promise<ContentResource | null | undefined>
 }) {
-	const lesson = use(lessonLoader)
-	const transcript = lesson?.resources?.[0]?.resource?.fields?.transcript
+	const resource = use(resourceLoader)
+	const transcript = resource?.resources?.[0]?.resource?.fields?.transcript
 	const { muxPlayerRef } = useMuxPlayer()
 
 	const canShowVideo = true // TODO: Determine if video is available
