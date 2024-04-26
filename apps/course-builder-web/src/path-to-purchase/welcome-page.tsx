@@ -148,7 +148,7 @@ const Header: React.FC<
 					<div className="flex flex-shrink-0 items-center justify-center">
 						<Image
 							src={product.fields.image.url}
-							alt={product.fields.title}
+							alt={product.name}
 							width={250}
 							height={250}
 						/>

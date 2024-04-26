@@ -11,10 +11,16 @@ export const productSchema = z.object({
 		body: z.string().nullable().optional(),
 		description: z.string().optional().nullable(),
 		slug: z.string(),
+		image: z.object({
+			url: z.string().url(),
+			alt: z.string().optional().nullable(),
+		}),
+		action: z.string().optional().nullable().default('Buy Now'),
 		state: z
 			.enum(['draft', 'published', 'archived', 'deleted'])
 			.default('draft'),
 		visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
+		type: z.enum(['live', 'self-paced']).default('self-paced'),
 	}),
 	createdAt: z.date().nullable(),
 	status: z.number().int().default(0),

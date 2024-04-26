@@ -83,7 +83,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		// title,
 		fields,
 	} = product
-	const { title } = fields
 	// const { subscriber, loadingSubscriber } = useConvertkit()
 	const router = useRouter()
 	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)
@@ -214,9 +213,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 								</div>
 							)}
 							<p data-name-badge="">{name}</p>
-							{title && (
+							{product.name && (
 								<h2 data-title>
-									<Balancer>{title}</Balancer>
+									<Balancer>{product.name}</Balancer>
 								</h2>
 							)}
 							{isSoldOut ? (
@@ -274,9 +273,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 						<Suspense>
 							<div data-pricing-product-header="">
 								<p data-name-badge="">{name}</p>
-								{title && (
+								{product.name && (
 									<h2 data-title>
-										<Balancer>{title}</Balancer>
+										<Balancer>{product.name}</Balancer>
 									</h2>
 								)}
 							</div>

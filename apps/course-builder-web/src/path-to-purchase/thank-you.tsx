@@ -24,7 +24,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({
 					<div className="flex flex-shrink-0 items-center justify-center">
 						<Image
 							src={product.fields.image.url}
-							alt={product.fields.title}
+							alt={product.fields.image.alt || product.name}
 							width={250}
 							height={250}
 						/>
