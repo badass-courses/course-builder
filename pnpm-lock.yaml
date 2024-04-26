@@ -735,6 +735,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^1.0.9
         version: link:../../packages/ui
+      '@designbycode/tailwindcss-text-stroke':
+        specifier: ^1.2.1
+        version: 1.2.1(tailwindcss@3.4.1)
       '@fontsource/inter':
         specifier: ^5.0.16
         version: 5.0.17
@@ -1050,6 +1053,9 @@ importers:
       satori:
         specifier: ^0.10.9
         version: 0.10.13
+      schema-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(typescript@5.4.3)
       shortid:
         specifier: ^2.2.16
         version: 2.2.16
@@ -4262,6 +4268,14 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+
+  /@designbycode/tailwindcss-text-stroke@1.2.1(tailwindcss@3.4.1):
+    resolution: {integrity: sha512-6SqiFuMjJaWWv5Mm+RIu8Ui3Kc/8AK3m0qSocPOFhk4yS6aMVioy8QLghAj5KOR/8lsfZe3r7I1uJ7YM1FimUA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || >=3.0.0-alpha.1'
+    dependencies:
+      tailwindcss: 3.4.1
+    dev: false
 
   /@emmetio/abbreviation@2.3.3:
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -25148,6 +25162,14 @@ packages:
   /scheduler@0.25.0-canary-e3ebcd54b-20240405:
     resolution: {integrity: sha512-xI+jJ4zTJfULtwgO1GgoT3I3MiEV1OisswVdS9LdoQr0QwKpH0Al7IlW68R5ceIXE/a8RfuYZc7Aq34DwBqr7A==}
     dev: true
+
+  /schema-dts@1.1.2(typescript@5.4.3):
+    resolution: {integrity: sha512-MpNwH0dZJHinVxk9bT8XUdjKTxMYrA5bLtrrGmFA6PTLwlOKnhi67XoRd6/ty+Djt6ZC0slR57qFhZDNMI6DhQ==}
+    peerDependencies:
+      typescript: '>=4.1.0'
+    dependencies:
+      typescript: 5.4.3
+    dev: false
 
   /schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}

@@ -30,6 +30,7 @@ import {
 	PurchaseUserTransfer,
 	PurchaseUserTransferState,
 	ResourceProgress,
+	resourceProgressSchema,
 	UpgradableProduct,
 	upgradableProductSchema,
 	User,
@@ -219,6 +220,7 @@ export function mySqlDrizzleAdapter(
 		prices,
 		products,
 		upgradableProducts,
+		resourceProgress,
 	} = createTables(tableFn)
 
 	return {
@@ -313,11 +315,56 @@ export function mySqlDrizzleAdapter(
 		}): Promise<void> {
 			throw new Error('Method not implemented.')
 		},
-		completeLessonProgressForUser(options: {
+		async completeLessonProgressForUser(options: {
 			userId: string
 			lessonId?: string
 		}): Promise<ResourceProgress | null> {
-			throw new Error('Method not implemented.')
+			if (!options.lessonId) {
+				throw new Error('No lessonId provided')
+			}
+
+			let lessonProgress = await client.query.resourceProgress.findFirst({
+				where: and(
+					eq(resourceProgress.userId, options.userId),
+					eq(resourceProgress.contentResourceId, options.lessonId),
+				),
+			})
+
+			const now = new Date()
+
+			if (lessonProgress) {
+				if (!lessonProgress.completedAt) {
+					await client
+						.update(resourceProgress)
+						.set({
+							completedAt: now,
+							updatedAt: now,
+						})
+						.where(eq(resourceProgress.contentResourceId, options.lessonId))
+				}
+			} else {
+				await client.insert(resourceProgress).values({
+					userId: options.userId,
+					contentResourceId: options.lessonId,
+					completedAt: now,
+					updatedAt: now,
+				})
+			}
+			lessonProgress = await client.query.resourceProgress.findFirst({
+				where: and(
+					eq(resourceProgress.userId, options.userId),
+					eq(resourceProgress.contentResourceId, options.lessonId),
+				),
+			})
+			const parsedLessonProgress =
+				resourceProgressSchema.safeParse(lessonProgress)
+
+			if (!parsedLessonProgress.success) {
+				console.error('Error parsing lesson progress', lessonProgress)
+				return null
+			}
+
+			return parsedLessonProgress.data
 		},
 		couponForIdOrCode(options: {
 			code?: string

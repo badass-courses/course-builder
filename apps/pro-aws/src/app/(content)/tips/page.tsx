@@ -1,68 +1,107 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
+import { Contributor } from '@/app/_components/contributor'
 import { CreateTip } from '@/app/(content)/tips/_components/create-tip'
 import { DeleteTipButton } from '@/app/(content)/tips/_components/delete-tip-button'
 import { getTipsModule } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { Card, CardFooter, CardHeader, CardTitle } from '@coursebuilder/ui'
+import {
+	Button,
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@coursebuilder/ui'
 
 export default async function TipsListPage() {
 	return (
-		<div className="bg-muted flex h-full flex-grow flex-col-reverse gap-3 p-5 md:flex-row">
-			<div className="flex h-full flex-grow flex-col space-y-2 md:order-2">
-				<h2 className="text-lg font-bold">Published Tips</h2>
-				<TipList />
+		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center lg:border-x">
+			<div className=" w-full max-w-screen-md border-b py-16 md:border-dashed">
+				<h1 className="font-heading text-center text-5xl font-bold">
+					<span className="text-stroke-1 text-stroke-foreground text-stroke-fill-background">
+						Pro
+					</span>{' '}
+					<span className="text-gray-100">AWS Tips</span>
+				</h1>
 			</div>
+			<TipList />
 			<Suspense>
 				<TipListActions />
 			</Suspense>
-		</div>
+			<div
+				className="absolute top-0 -z-10 h-full w-full max-w-screen-md border-dashed md:border-x"
+				aria-hidden="true"
+			/>
+		</main>
 	)
 }
 
 async function TipList() {
 	const tipsModule = await getTipsModule()
 	const { ability } = await getServerAuthSession()
+	const tips = [...tipsModule].filter((tip) => {
+		if (ability.can('create', 'Content')) {
+			return tip
+		} else {
+			return tip.fields.visibility === 'public'
+		}
+	})
+	const publicTips = [...tipsModule].filter(
+		(tip) => tip.fields.visibility === 'public',
+	)
 
 	return (
-		<>
-			{tipsModule.map((tip) => (
-				<Card key={tip.id}>
-					<CardHeader>
-						<CardTitle>
-							<Link
-								className="w-full"
-								href={`/tips/${tip.fields.slug || tip.id}`}
-							>
-								{tip.fields.title}
-							</Link>
-						</CardTitle>
-					</CardHeader>
-					{ability.can('delete', 'Content') && (
-						<CardFooter>
-							<div className="flex w-full justify-end">
-								<DeleteTipButton id={tip.id} />
+		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 md:px-8">
+			{publicTips.length === 0 && <p>There are no public tips.</p>}
+			{tips.map((tip) => (
+				<li key={tip.id}>
+					<Card className="bg-background rounded-none border-none p-0">
+						<CardHeader className="p-0">
+							<CardTitle className="text-lg font-normal text-gray-100 sm:text-xl">
+								<Link
+									className="w-full text-balance hover:underline"
+									href={`/tips/${tip.fields.slug || tip.id}`}
+								>
+									{tip.fields.title}
+								</Link>
+							</CardTitle>
+						</CardHeader>
+						{tip.fields.description && (
+							<CardContent className="px-0 py-3">
+								<p className="text-muted-foreground text-sm">
+									{tip.fields.description}
+								</p>
+							</CardContent>
+						)}
+						<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
+							<Contributor className="text-sm font-light" />
+							<div className="flex items-center gap-2">
+								{ability.can('create', 'Content') && (
+									<>
+										<span className="text-sm">{tip.fields.visibility}</span>
+										<Button asChild variant="outline" size="sm">
+											<Link href={`/tips/${tip.fields.slug || tip.id}/edit`}>
+												Edit
+											</Link>
+										</Button>
+									</>
+								)}
+								{ability.can('delete', 'Content') && (
+									<DeleteTipButton id={tip.id} />
+								)}
 							</div>
 						</CardFooter>
-					)}
-				</Card>
+					</Card>
+				</li>
 			))}
-		</>
+		</ul>
 	)
 }
 
 async function TipListActions() {
 	const { ability } = await getServerAuthSession()
-	return (
-		<>
-			{ability.can('create', 'Content') ? (
-				<div className="order-1 h-full flex-grow md:order-2">
-					<h1 className="pb-2 text-lg font-bold">Create Tip</h1>
-					<CreateTip />
-				</div>
-			) : null}
-		</>
-	)
+	return ability.can('create', 'Content') ? <CreateTip /> : null
 }

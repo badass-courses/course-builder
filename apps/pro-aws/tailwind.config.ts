@@ -124,5 +124,6 @@ module.exports = withUt({
 		require('tailwind-scrollbar'),
 		require('tailwindcss-radix'),
 		require('tailwindcss-animate'),
+		require('@designbycode/tailwindcss-text-stroke'),
 	],
 })

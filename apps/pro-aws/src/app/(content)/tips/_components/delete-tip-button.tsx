@@ -11,6 +11,7 @@ export function DeleteTipButton({ id }: { id: string }) {
 	return (
 		<Button
 			size="sm"
+			variant="destructive"
 			onClick={async () => {
 				if (confirm('Are you sure you want to delete this tip?')) {
 					await deleteTip(id)

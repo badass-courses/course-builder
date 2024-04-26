@@ -1,11 +1,20 @@
 'use client'
 
+import React from 'react'
 import Image from 'next/image'
 import config from '@/config'
+import { cn } from '@/utils/cn'
 
-export const Contributor = () => {
+export const Contributor: React.FC<{ className?: string }> = ({
+	className,
+}) => {
 	return (
-		<div className="flex items-center gap-2">
+		<div
+			className={cn(
+				'flex items-center gap-2 font-medium text-white',
+				className,
+			)}
+		>
 			<Image
 				src={require('../../../public/instructor.png')}
 				alt={config.author}
@@ -13,7 +22,7 @@ export const Contributor = () => {
 				height={40}
 				className="rounded-full"
 			/>
-			<span className="font-medium text-white">{config.author}</span>
+			<span>{config.author}</span>
 		</div>
 	)
 }

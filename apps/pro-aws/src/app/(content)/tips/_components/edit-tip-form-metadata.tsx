@@ -20,12 +20,15 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 export const TipMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof TipSchema>>
@@ -107,6 +110,26 @@ export const TipMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<FormDescription>
+							A short snippet that summarizes the tip.
+						</FormDescription>
+						<Textarea {...field} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
+					</FormItem>
+				)}
+			/>
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">
 					<label className="text-lg font-bold">Transcript</label>
