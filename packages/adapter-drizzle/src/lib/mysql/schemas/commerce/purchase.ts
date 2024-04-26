@@ -43,7 +43,7 @@ export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 			bulkCouponId: varchar('bulkCouponId', { length: 191 }),
 			merchantSessionId: varchar('merchantSessionId', { length: 191 }),
 			redeemedBulkCouponId: varchar('redeemedBulkCouponId', { length: 191 }),
-			metadata: json('fields').$type<Record<string, any>>().default({}),
+			fields: json('fields').$type<Record<string, any>>().default({}),
 		},
 		(table) => {
 			return {

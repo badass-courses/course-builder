@@ -10,7 +10,7 @@ export const priceSchema = z.object({
 		return decimalPlaces <= 2
 	}),
 	createdAt: z.date().nullable(),
-	metadata: z.record(z.any()).default({}),
+	fields: z.record(z.any()).default({}),
 })
 
 export type Price = z.infer<typeof priceSchema>

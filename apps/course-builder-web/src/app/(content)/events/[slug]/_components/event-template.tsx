@@ -318,7 +318,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 				<span>
 					{formattedPrice?.upgradeFromPurchaseId
 						? `Upgrade Now`
-						: product?.metadata.action || `Buy Now`}
+						: product?.fields.action || `Buy Now`}
 				</span>
 			</button>
 		)
@@ -358,9 +358,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		// lessons,
 		// action,
 		// title,
-		metadata,
+		fields,
 	} = product
-	const { title } = metadata
+	const { title } = fields
 	// const { subscriber, loadingSubscriber } = useConvertkit()
 	const router = useRouter()
 	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)

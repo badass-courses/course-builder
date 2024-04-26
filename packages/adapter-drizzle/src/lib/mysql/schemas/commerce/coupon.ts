@@ -27,7 +27,7 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
 			expires: timestamp('expires', { mode: 'date', fsp: 3 }),
-			metadata: json('fields').$type<Record<string, any>>().default({}),
+			fields: json('fields').$type<Record<string, any>>().default({}),
 			maxUses: int('maxUses').default(-1).notNull(),
 			default: boolean('default').default(false).notNull(),
 			merchantCouponId: varchar('merchantCouponId', { length: 191 }),

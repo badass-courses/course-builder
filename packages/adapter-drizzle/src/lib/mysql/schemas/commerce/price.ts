@@ -24,7 +24,7 @@ export function getPriceSchema(mysqlTable: MySqlTableFn) {
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
-			metadata: json('fields').$type<Record<string, any>>().default({}),
+			fields: json('fields').$type<Record<string, any>>().default({}),
 		},
 		(table) => {
 			return {
