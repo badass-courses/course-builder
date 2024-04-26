@@ -14,14 +14,9 @@ async function ProductActionBar({
 }: {
 	productLoader: Promise<Product | null>
 }) {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
+	const { ability } = await getServerAuthSession()
 
 	const product = await productLoader
-
-	if (!user || !ability.can('create', 'Content')) {
-		notFound()
-	}
 
 	return (
 		<>
@@ -46,12 +41,9 @@ async function ProductDetails({
 }: {
 	productLoader: Promise<Product | null>
 }) {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-
 	const product = await productLoader
 
-	if (!product || !user || !ability.can('create', 'Content')) {
+	if (!product) {
 		notFound()
 	}
 
