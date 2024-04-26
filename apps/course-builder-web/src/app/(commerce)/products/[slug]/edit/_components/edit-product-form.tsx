@@ -71,10 +71,11 @@ function ComboboxDemo({
 
 	const { data = [] } = api.contentResources.getAll.useQuery()
 
-	const filteredResources = data.filter((resource) =>
-		currentResources
-			.map((currentResource) => currentResource.resourceId)
-			.includes(resource.id),
+	const filteredResources = data.filter(
+		(resource) =>
+			!currentResources
+				.map((currentResource) => currentResource.resourceId)
+				.includes(resource.id),
 	)
 
 	return (
@@ -95,7 +96,7 @@ function ComboboxDemo({
 					<CommandInput placeholder="Search resources..." />
 					<CommandEmpty>No resources found.</CommandEmpty>
 					<CommandGroup>
-						{data.map((resource) => (
+						{filteredResources.map((resource) => (
 							<CommandItem
 								key={resource.id}
 								value={resource.id}
