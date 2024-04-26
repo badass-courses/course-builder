@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown'
 import { Product } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
-async function PromptActionBar({
+async function ProductActionBar({
 	productLoader,
 }: {
 	productLoader: Promise<Product | null>
@@ -105,7 +105,7 @@ export default async function ProductPage({
 					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
 				}
 			>
-				<PromptActionBar productLoader={productLoader} />
+				<ProductActionBar productLoader={productLoader} />
 			</Suspense>
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
 				<ProductTitle productLoader={productLoader} />
