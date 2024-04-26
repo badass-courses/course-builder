@@ -67,6 +67,9 @@ export interface TestOptions {
 				key: string
 				status: number
 				quantityAvailable: number
+				fields: {
+					slug: string
+				}
 			},
 			price?: any,
 		) => any

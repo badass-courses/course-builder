@@ -11,10 +11,13 @@ export const productSchema = z.object({
 		body: z.string().nullable().optional(),
 		description: z.string().optional().nullable(),
 		slug: z.string(),
-		image: z.object({
-			url: z.string().url(),
-			alt: z.string().optional().nullable(),
-		}),
+		image: z
+			.object({
+				url: z.string().url(),
+				alt: z.string().optional().nullable(),
+			})
+			.optional()
+			.nullable(),
 		action: z.string().optional().nullable().default('Buy Now'),
 		state: z
 			.enum(['draft', 'published', 'archived', 'deleted'])

@@ -107,6 +107,9 @@ export async function runFormatPricingTests(options: TestOptions) {
 			key: 'hey',
 			status: 1,
 			quantityAvailable: -1,
+			fields: {
+				slug: 'basic',
+			},
 		})
 
 		const mockOneOffCoupon = {
@@ -554,6 +557,9 @@ export async function runFormatPricingTests(options: TestOptions) {
 				key: 'like whoa',
 				status: 1,
 				quantityAvailable: -1,
+				fields: {
+					slug: 'another-bundled-product',
+				},
 			},
 			anotherProductPrice,
 		)
@@ -585,6 +591,9 @@ export async function runFormatPricingTests(options: TestOptions) {
 				key: options.fixtures?.product?.key,
 				status: 1,
 				quantityAvailable: -1,
+				fields: {
+					slug: 'another-bundled-product',
+				},
 			},
 			priceForProduct,
 		)
@@ -651,6 +660,9 @@ export async function runFormatPricingTests(options: TestOptions) {
 				key: options.fixtures?.product?.key,
 				status: 1,
 				quantityAvailable: -1,
+				fields: {
+					slug: 'another-bundled-product',
+				},
 			},
 			priceForProduct,
 		)
@@ -699,6 +711,9 @@ export async function runFormatPricingTests(options: TestOptions) {
 				key: options.fixtures?.product?.key,
 				status: 1,
 				quantityAvailable: -1,
+				fields: {
+					slug: 'another-bundled-product',
+				},
 			},
 			priceForProduct,
 		)
@@ -761,6 +776,9 @@ export async function runFormatPricingTests(options: TestOptions) {
 				key: options.fixtures?.product?.key,
 				status: 1,
 				quantityAvailable: -1,
+				fields: {
+					slug: 'another-bundled-product',
+				},
 			},
 			priceForProduct,
 		)
