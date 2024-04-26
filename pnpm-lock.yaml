@@ -4274,7 +4274,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /@emmetio/abbreviation@2.3.3:
