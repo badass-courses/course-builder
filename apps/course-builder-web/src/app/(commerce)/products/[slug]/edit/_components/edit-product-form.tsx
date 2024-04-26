@@ -1,20 +1,36 @@
 'use client'
 
 import * as React from 'react'
+import { useReducer } from 'react'
+import { useRouter } from 'next/navigation'
 import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import {
+	getInitialTreeState,
+	treeStateReducer,
+} from '@/components/lesson-list/data/tree'
+import Tree from '@/components/lesson-list/tree'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { archiveProduct, updateProduct } from '@/lib/products-query'
+import {
+	addResourceToProduct,
+	archiveProduct,
+	updateProduct,
+} from '@/lib/products-query'
+import { addResourceToTutorial } from '@/lib/tutorials-query'
+import { api } from '@/trpc/react'
+import { cn } from '@/utils/cn'
 import { User } from '@auth/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
+import { Check, ChevronsUpDown, ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
 import { Product, productSchema } from '@coursebuilder/core/schemas'
+import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
+import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	FormControl,
@@ -24,8 +40,18 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 	ResizableHandle,
 } from '@coursebuilder/ui'
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+} from '@coursebuilder/ui/primitives/command'
 import {
 	EditResourcesToolPanel,
 	ResourceTool,
@@ -33,6 +59,68 @@ import {
 import { EditResourcePanelGroup } from '@coursebuilder/ui/resources-crud/panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from '@coursebuilder/ui/resources-crud/panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from '@coursebuilder/ui/resources-crud/panels/edit-resources-metadata-panel'
+
+function ComboboxDemo({
+	onSelect,
+	currentResources = [],
+}: {
+	onSelect: (value?: ContentResource | null) => void
+	currentResources: ContentResourceProduct[]
+}) {
+	const [open, setOpen] = React.useState(false)
+
+	const { data = [] } = api.contentResources.getAll.useQuery()
+
+	const filteredResources = data.filter((resource) =>
+		currentResources
+			.map((currentResource) => currentResource.resourceId)
+			.includes(resource.id),
+	)
+
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<Button
+					variant="outline"
+					role="combobox"
+					aria-expanded={open}
+					className="w-[200px] justify-between"
+				>
+					Select resource...
+					<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className="w-[200px] p-0">
+				<Command>
+					<CommandInput placeholder="Search resources..." />
+					<CommandEmpty>No resources found.</CommandEmpty>
+					<CommandGroup>
+						{data.map((resource) => (
+							<CommandItem
+								key={resource.id}
+								value={resource.id}
+								onSelect={(currentValue) => {
+									onSelect(
+										data.find((resource) => resource.id === currentValue),
+									)
+									setOpen(false)
+								}}
+							>
+								{/*<Check*/}
+								{/*	className={cn(*/}
+								{/*		'mr-2 h-4 w-4',*/}
+								{/*		value === resource.id ? 'opacity-100' : 'opacity-0',*/}
+								{/*	)}*/}
+								{/*/>*/}
+								{resource.fields?.title}
+							</CommandItem>
+						))}
+					</CommandGroup>
+				</Command>
+			</PopoverContent>
+		</Popover>
+	)
+}
 
 export function EditProductForm({ product }: { product: Product }) {
 	const { data: session } = useSession()
@@ -48,6 +136,66 @@ export function EditProductForm({ product }: { product: Product }) {
 		},
 	})
 
+	const initialData = [
+		...(product.resources
+			? product.resources.map((resourceItem) => {
+					if (!resourceItem.resource) {
+						throw new Error('resourceItem.resource is required')
+					}
+					const resources = resourceItem.resource.resources ?? []
+					return {
+						id: resourceItem.resource.id,
+						label: resourceItem.resource.fields?.title,
+						type: resourceItem.resource.type,
+						children: resources.map((resourceItem: any) => {
+							if (!resourceItem.resource) {
+								throw new Error('resourceItem.resource is required')
+							}
+							return {
+								id: resourceItem.resource.id,
+								label: resourceItem.resource.fields?.title,
+								type: resourceItem.resource.type,
+								children: [],
+								itemData: resourceItem as any,
+							}
+						}),
+						itemData: resourceItem as any,
+					}
+				})
+			: []),
+	]
+
+	const [state, updateState] = useReducer(
+		treeStateReducer,
+		initialData,
+		getInitialTreeState,
+	)
+
+	const router = useRouter()
+
+	const handleResourceAdded = async (resource?: ContentResource | null) => {
+		if (!resource) return
+		const resourceItem = await addResourceToProduct({
+			resource,
+			productId: product.id,
+		})
+
+		if (resourceItem) {
+			updateState({
+				type: 'add-item',
+				itemId: resourceItem.resourceId,
+				item: {
+					id: resourceItem.resourceId,
+					label: resourceItem.resource.fields?.title,
+					type: resourceItem.resource.type,
+					children: [],
+					itemData: resourceItem as any,
+				},
+			})
+		}
+		router.refresh()
+	}
+
 	return (
 		<EditProductFormDesktop
 			product={product}
@@ -58,7 +206,7 @@ export function EditProductForm({ product }: { product: Product }) {
 			onSave={onProductSave}
 			availableWorkflows={[]}
 			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
+			hostUrl={env.NEXT_PUBLIC_URL}
 			user={session?.user}
 			tools={[
 				{
@@ -132,6 +280,21 @@ export function EditProductForm({ product }: { product: Product }) {
 						</FormItem>
 					)
 				}}
+			/>
+			<div className="flex flex-col gap-5">
+				<ComboboxDemo
+					onSelect={(value) => {
+						handleResourceAdded(value)
+					}}
+					currentResources={product.resources || []}
+				/>
+			</div>
+
+			<Tree
+				rootResource={product}
+				rootResourceId={product.id}
+				state={state}
+				updateState={updateState}
 			/>
 		</EditProductFormDesktop>
 	)
