@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { getPrompt } from '@/lib/prompts-query'
+import { getProduct } from '@/lib/products-query'
 
 export const revalidate = 60
 
@@ -12,7 +12,7 @@ export default async function PromptOG({
 	//     new URL(`../../public/images/author.jpg`, import.meta.url)
 	//   ).then(res => res.arrayBuffer());
 
-	const resource = await getPrompt(params.slug)
+	const resource = await getProduct(params.slug)
 
 	return new ImageResponse(
 		(
@@ -25,7 +25,7 @@ export default async function PromptOG({
 				}}
 			>
 				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
-					<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
+					<div tw="text-[60px] text-white">{resource?.name}</div>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					{/* <img
                 tw="rounded-full h-74"
