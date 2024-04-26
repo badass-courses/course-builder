@@ -1,11 +1,12 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import Spinner from '@/components/spinner'
+import { TipNewsletterCta } from '@/components/tip-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
@@ -13,6 +14,7 @@ import { getTip } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import { codeToHtml } from '@/utils/shiki'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { VideoObject } from 'schema-dts'
 
@@ -51,6 +53,8 @@ export default async function TipPage({
 }) {
 	headers()
 	const tipLoader = getTip(params.slug)
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return (
 		<div>
@@ -68,6 +72,17 @@ export default async function TipPage({
 				<main className="container px-0">
 					<PlayerContainer tipLoader={tipLoader} />
 				</main>
+				{!ckSubscriber && (
+					<TipNewsletterCta
+						trackProps={{
+							event: 'subscribed',
+							params: {
+								source: 'tip',
+								slug: params.slug,
+							},
+						}}
+					/>
+				)}
 				<div className="container flex flex-col-reverse border-t px-0 lg:flex-row lg:border-x">
 					<div className="flex flex-col py-8">
 						<Suspense fallback={<div>Loading...</div>}>
@@ -97,6 +112,7 @@ export default async function TipPage({
 
 async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	const { ability } = await getServerAuthSession()
+
 	const tip = await tipLoader
 
 	return (

@@ -42,6 +42,7 @@ export const PrimaryNewsletterCta: React.FC<
 			router.push(redirectUrl)
 		}
 	}
+
 	return (
 		<section
 			id={id}
