@@ -116,7 +116,7 @@ export async function createProduct(input: NewProduct) {
 		id: newMerchantProductId,
 		merchantAccountId: merchantAccount.id,
 		productId: newProductId,
-		identifier: stripePrice.id,
+		identifier: stripeProduct.id,
 		status: 1,
 	})
 

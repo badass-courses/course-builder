@@ -7,10 +7,10 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
-const NewProductSchema = z.object({
+export const NewProductSchema = z.object({
 	name: z.string().min(2).max(90),
-	quantityAvailable: z.number().int().default(-1),
-	price: z.number().default(0),
+	quantityAvailable: z.number().default(-1),
+	price: z.coerce.number().gte(0).default(0),
 })
 
 export type NewProduct = z.infer<typeof NewProductSchema>

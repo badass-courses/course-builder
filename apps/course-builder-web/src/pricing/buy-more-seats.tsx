@@ -1,4 +1,3 @@
-// pricingDataLoader: Promise<PricingData>
 import * as React from 'react'
 import { use } from 'react'
 import { PricingData } from '@/lib/pricing-query'
@@ -13,6 +12,7 @@ const buyMoreSeatsSchema = z.object({
 	buttonLabel: z.string().default('Buy').nullish(),
 	className: z.string().optional(),
 })
+
 type BuyMoreSeatsProps = z.infer<typeof buyMoreSeatsSchema> & {
 	pricingDataLoader: Promise<PricingData>
 }
@@ -25,12 +25,6 @@ export const BuyMoreSeats = ({
 }: BuyMoreSeatsProps) => {
 	const [quantity, setQuantity] = React.useState(5)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
-
-	// const { data: formattedPrice, status } =
-	// 	trpcSkillLessons.pricing.formatted.useQuery({
-	// 		productId,
-	// 		quantity: debouncedQuantity,
-	// 	})
 
 	const { formattedPrice } = use(pricingDataLoader)
 

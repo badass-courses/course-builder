@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { NewProduct } from '@/lib/products'
+import { NewProduct, NewProductSchema } from '@/lib/products'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import { Product } from '@coursebuilder/core/schemas'
 import {
@@ -24,18 +23,9 @@ export function CreateProductForm({
 	onCreate: (resource: Product) => Promise<void>
 	createProduct: (values: NewProduct) => Promise<Product | null>
 }) {
-	const form = useForm<{
-		name: string
-		quantityAvailable: number
-		price: number
-	}>({
-		resolver: zodResolver(
-			z.object({
-				name: z.string().min(1),
-				quantityAvailable: z.number().default(-1),
-				price: z.number().default(0),
-			}),
-		),
+	const form = useForm<NewProduct>({
+		mode: 'onChange',
+		resolver: zodResolver(NewProductSchema),
 		defaultValues: {
 			name: '',
 			quantityAvailable: -1,
@@ -43,11 +33,7 @@ export function CreateProductForm({
 		},
 	})
 
-	const internalOnSubmit = async (values: {
-		name: string
-		quantityAvailable: number
-		price: number
-	}) => {
+	const internalOnSubmit = async (values: NewProduct) => {
 		const resource = await createProduct({
 			name: values.name,
 			quantityAvailable: values.quantityAvailable,
@@ -59,6 +45,8 @@ export function CreateProductForm({
 		}
 	}
 
+	console.log(form.formState.isValid, form.formState.errors)
+
 	return (
 		<Form {...form}>
 			<form
@@ -68,53 +56,62 @@ export function CreateProductForm({
 				<FormField
 					control={form.control}
 					name="name"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className="text-lg font-bold">Name</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								A name should summarize the product and explain what it is about
-								succinctly.
-							</FormDescription>
-							<FormControl>
-								<Input {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+					render={({ field, fieldState }) => {
+						console.log('name', { fieldState })
+						return (
+							<FormItem>
+								<FormLabel className="text-lg font-bold">Name</FormLabel>
+								<FormDescription className="mt-2 text-sm">
+									A name should summarize the product and explain what it is
+									about succinctly.
+								</FormDescription>
+								<FormControl>
+									<Input {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)
+					}}
 				/>
 				<FormField
 					control={form.control}
 					name="quantityAvailable"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className="text-lg font-bold">
-								Quantity Available
-							</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								The number of items that can be purchased at one time.
-							</FormDescription>
-							<FormControl>
-								<Input type="number" min={-1} {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+					render={({ field, fieldState }) => {
+						console.log('quantityAvailable', { fieldState })
+						return (
+							<FormItem>
+								<FormLabel className="text-lg font-bold">
+									Quantity Available
+								</FormLabel>
+								<FormDescription className="mt-2 text-sm">
+									The number of items that can be purchased at one time.
+								</FormDescription>
+								<FormControl>
+									<Input type="number" min={-1} {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)
+					}}
 				/>
 				<FormField
 					control={form.control}
 					name="price"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel className="text-lg font-bold">Price</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								The price of the product in USD.
-							</FormDescription>
-							<FormControl>
-								<Input type="number" min={0} {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+					render={({ field, fieldState }) => {
+						console.log('price', { fieldState })
+						return (
+							<FormItem>
+								<FormLabel className="text-lg font-bold">Price</FormLabel>
+								<FormDescription className="mt-2 text-sm">
+									The price of the product in USD.
+								</FormDescription>
+								<FormControl>
+									<Input type="number" {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)
+					}}
 				/>
 				<Button
 					type="submit"
