@@ -7,7 +7,7 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import { ContentResource } from '@coursebuilder/core/types'
 
 export const UserSchema = z.object({
@@ -121,11 +121,6 @@ export function defineRulesForPurchases(
 
 		can(['read', 'update'], 'User', { id: user.id })
 	}
-
-	can('read', 'Content', {
-		createdAt: { $lte: new Date() },
-		status: { $in: ['review', 'published'] },
-	})
 
 	// if (user && module && purchasedModules) {
 	// 	const modulePurchase = purchasedModules
@@ -243,14 +238,14 @@ const isFreelyVisible = ({
 	}
 
 	const lessons = z
-		.array(ContentResourceSchema)
+		.array(ContentResourceResourceSchema)
 		.parse(section ? section.resources : module?.resources || [])
 
 	const isFirstLesson =
 		(lesson?.type === 'exercise' ||
 			lesson?.type === 'explainer' ||
 			lesson?.type === 'lesson') &&
-		lesson.id === lessons?.[0]?.id
+		lesson.id === lessons?.[0]?.resourceId
 
 	return isFirstLesson && lesson && !isSolution
 }
