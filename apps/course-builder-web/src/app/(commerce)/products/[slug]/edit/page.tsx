@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { EditPromptForm } from '@/app/(content)/prompts/_components/edit-prompt-form'
-import { getPrompt } from '@/lib/prompts-query'
+import { EditProductForm } from '@/app/(commerce)/products/[slug]/edit/_components/edit-product-form'
+import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
@@ -14,11 +14,11 @@ export default async function PromptEditPage({
 }) {
 	headers()
 	const { ability } = await getServerAuthSession()
-	const prompt = await getPrompt(params.slug)
+	const product = await getProduct(params.slug)
 
-	if (!prompt || !ability.can('create', 'Content')) {
+	if (!product || !ability.can('create', 'Content')) {
 		notFound()
 	}
 
-	return <EditPromptForm key={prompt.fields?.slug} prompt={prompt} />
+	return <EditProductForm key={product.fields?.slug} product={product} />
 }

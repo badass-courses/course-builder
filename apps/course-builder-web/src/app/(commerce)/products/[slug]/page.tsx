@@ -79,9 +79,7 @@ async function ProductTitle({
 }) {
 	const product = await productLoader
 
-	return (
-		<h1 className="text-3xl font-bold sm:text-4xl">{product?.fields?.title}</h1>
-	)
+	return <h1 className="text-3xl font-bold sm:text-4xl">{product?.name}</h1>
 }
 
 export default async function ProductPage({
@@ -89,13 +87,6 @@ export default async function ProductPage({
 }: {
 	params: { slug: string }
 }) {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-
-	if (!user || !ability.can('create', 'Content')) {
-		notFound()
-	}
-
 	const productLoader = getProduct(params.slug)
 
 	return (

@@ -7,7 +7,15 @@ export const productSchema = z.object({
 	id: z.string().max(191),
 	name: z.string().max(191),
 	key: z.string().max(191).optional().nullable(),
-	fields: z.record(z.any()).default({}),
+	fields: z.object({
+		body: z.string().nullable().optional(),
+		description: z.string().optional().nullable(),
+		slug: z.string(),
+		state: z
+			.enum(['draft', 'published', 'archived', 'deleted'])
+			.default('draft'),
+		visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
+	}),
 	createdAt: z.date().nullable(),
 	status: z.number().int().default(0),
 	quantityAvailable: z.number().int().default(-1),

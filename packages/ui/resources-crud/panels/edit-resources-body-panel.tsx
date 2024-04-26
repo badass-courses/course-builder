@@ -13,7 +13,8 @@ export function EditResourcesBodyPanel({
 	theme = 'light',
 	partykitUrl,
 }: {
-	resource: ContentResource & {
+	resource: {
+		id: string
 		fields: {
 			body?: string | null
 			title?: string | null
