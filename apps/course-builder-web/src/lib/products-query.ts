@@ -11,7 +11,7 @@ import { and, eq, or, sql } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { v4 } from 'uuid'
 
-import { productSchema } from '@coursebuilder/core/schemas'
+import { Product, productSchema } from '@coursebuilder/core/schemas'
 
 if (!env.STRIPE_SECRET_TOKEN) {
 	throw new Error('Stripe secret token not found')
@@ -20,6 +20,138 @@ if (!env.STRIPE_SECRET_TOKEN) {
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
 	apiVersion: '2020-08-27',
 })
+
+export async function updateProduct(input: Product) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+	const currentProduct = await db.query.products.findFirst({
+		where: eq(products.id, input.id),
+		with: {
+			price: true,
+		},
+	})
+
+	if (!currentProduct) {
+		throw new Error(`Product not found`)
+	}
+
+	console.log({ currentProduct })
+
+	const merchantProduct = await db.query.merchantProduct.findFirst({
+		where: (merchantProduct, { eq }) => eq(merchantProduct.productId, input.id),
+	})
+
+	if (!merchantProduct || !merchantProduct.identifier) {
+		throw new Error(`Merchant product not found`)
+	}
+
+	console.log({ merchantProduct })
+
+	// TODO: handle upgrades
+
+	const stripeProduct = await stripe.products.retrieve(
+		merchantProduct.identifier,
+	)
+
+	const priceChanged =
+		currentProduct.price.unitAmount.toString() !==
+		input.price?.unitAmount.toString()
+
+	if (priceChanged) {
+		const currentMerchantPrice = await db.query.merchantPrice.findFirst({
+			where: (merchantPrice, { eq }) =>
+				eq(merchantPrice.merchantProductId, merchantProduct.id),
+		})
+
+		if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
+			throw new Error(`Merchant price not found`)
+		}
+
+		const currentStripePrice = await stripe.prices.retrieve(
+			currentMerchantPrice.identifier,
+		)
+
+		const newStripePrice = await stripe.prices.create({
+			product: stripeProduct.id,
+			unit_amount: Math.floor(Number(input.price?.unitAmount || 0) * 100),
+			currency: 'usd',
+			metadata: {
+				slug: input.fields.slug,
+				addedBy: user?.email || user.id,
+			},
+			active: true,
+		})
+
+		await stripe.products.update(stripeProduct.id, {
+			default_price: newStripePrice.id,
+		})
+
+		const newMerchantPriceId = `mprice_${v4()}`
+		await db.insert(merchantPrice).values({
+			id: newMerchantPriceId,
+			merchantProductId: merchantProduct.id,
+			merchantAccountId: merchantProduct.merchantAccountId,
+			priceId: currentProduct.price.id,
+			status: 1,
+			identifier: newStripePrice.id,
+		})
+
+		if (currentMerchantPrice) {
+			await db
+				.update(merchantPrice)
+				.set({
+					status: 0,
+				})
+				.where(eq(merchantPrice.id, currentMerchantPrice.id))
+		}
+
+		await db
+			.update(prices)
+			.set({
+				unitAmount: Math.floor(Number(input.price?.unitAmount || 0)).toString(),
+				nickname: input.name,
+			})
+			.where(eq(prices.id, currentProduct.price.id))
+
+		if (currentStripePrice) {
+			await stripe.prices.update(currentStripePrice.id, {
+				active: false,
+			})
+		}
+	}
+
+	const updatedStripeProduct = await stripe.products.update(stripeProduct.id, {
+		name: input.name,
+		active: true,
+		metadata: {
+			// TODO: Add image
+			slug: input.fields.slug,
+			lastUpdatedBy: user?.email || user.id,
+		},
+	})
+
+	await db
+		.update(products)
+		.set({
+			name: input.name,
+			quantityAvailable: input.quantityAvailable,
+			status: input.fields.state === 'published' ? 1 : 0,
+			fields: {
+				...input.fields,
+			},
+		})
+		.where(eq(products.id, currentProduct.id))
+
+	return await db.query.products.findFirst({
+		where: eq(products.id, currentProduct.id),
+		with: {
+			price: true,
+		},
+	})
+}
 
 export async function getProduct(productSlugOrId: string) {
 	const productData = await db.query.products.findFirst({

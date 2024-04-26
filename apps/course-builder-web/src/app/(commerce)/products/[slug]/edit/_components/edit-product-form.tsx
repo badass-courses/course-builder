@@ -1,17 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
-import { onEventSave } from '@/app/(content)/events/[slug]/edit/actions'
+import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { Event, EventSchema } from '@/lib/events'
-import { ProductContentSchema } from '@/lib/products'
-import { updateResource } from '@/lib/resources-query'
+import { updateProduct } from '@/lib/products-query'
 import { User } from '@auth/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { parseAbsolute } from '@internationalized/date'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -19,7 +15,6 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
 import { Product, productSchema } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	FormControl,
@@ -31,8 +26,6 @@ import {
 	Input,
 	ResizableHandle,
 } from '@coursebuilder/ui'
-import { EditResourcesActionBar } from '@coursebuilder/ui/resources-crud/edit-resources-action-bar'
-import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import {
 	EditResourcesToolPanel,
 	ResourceTool,
@@ -61,8 +54,8 @@ export function EditProductForm({ product }: { product: Product }) {
 			form={form}
 			resourceSchema={productSchema}
 			getResourcePath={(slug?: string) => `/events/${slug}`}
-			updateResource={updateResource}
-			onSave={onEventSave}
+			updateResource={updateProduct}
+			onSave={onProductSave}
 			availableWorkflows={[]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
@@ -159,7 +152,7 @@ function EditProductFormDesktop({
 	tools = [],
 	theme = 'light',
 }: {
-	onSave: (resource: ContentResource) => Promise<void>
+	onSave: (resource: Product) => Promise<void>
 	product: Product & {
 		fields: {
 			body?: string | null
@@ -184,6 +177,7 @@ function EditProductFormDesktop({
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
+		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}

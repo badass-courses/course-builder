@@ -2,9 +2,9 @@
 
 import { redirect } from 'next/navigation'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { Product } from '@coursebuilder/core/schemas'
 
-export const onPromptSave = async (resource: ContentResource) => {
+export const onProductSave = async (resource: Product) => {
 	'use server'
-	redirect(`/prompts/${resource.fields?.slug}`)
+	redirect(`/products/${resource.fields?.slug}`)
 }
