@@ -16,7 +16,8 @@
 		"db:seed": "dotenv tsx ./src/db/seed.ts",
 		"lint": "next lint",
 		"start": "next start",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"coupons": "dotenv tsx src/scripts/bootstrap-basic-coupons.ts"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
@@ -196,7 +197,9 @@
 		"postcss": "^8.4.27",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.12",
+		"stripe": "^8.186.1",
 		"tailwindcss": "^3.3.3",
+		"ts-node": "^10.9.2",
 		"tsx": "^4.7.1",
 		"typescript": "5.4.3"
 	},

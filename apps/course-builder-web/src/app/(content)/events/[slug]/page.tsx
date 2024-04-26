@@ -1,54 +1,20 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { EventTemplate } from '@/app/(content)/events/[slug]/_components/event-template'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, products, purchases } from '@/db/schema'
-import { Event, EventSchema } from '@/lib/events'
+import { products, purchases } from '@/db/schema'
 import { getEvent } from '@/lib/events-query'
-import { getPricingData, PricingData } from '@/lib/pricing-query'
+import { getPricingData } from '@/lib/pricing-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
-import { and, count, eq, or, sql } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 import { first } from 'lodash'
-import { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
-import {
-	Coupon,
-	Product,
-	productSchema,
-	Purchase,
-} from '@coursebuilder/core/schemas'
+import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
-export type CouponForCode = Coupon & {
-	isValid: boolean
-	isRedeemable: boolean
-}
-
-export type CommerceProps = {
-	couponIdFromCoupon?: string
-	couponFromCode?: CouponForCode
-	userId?: string
-	purchases?: Purchase[]
-	products?: Product[]
-	allowPurchase?: boolean
-}
-
-export type EventPageProps = {
-	event: Event
-	quantityAvailable: number
-	totalQuantity: number
-	purchaseCount: number
-	product?: Product
-	mdx?: MDXRemoteSerializeResult
-	hasPurchasedCurrentProduct?: boolean
-	availableBonuses: any[]
-	existingPurchase?: Purchase & { product?: Product | null }
-	purchases?: Purchase[]
-	userId?: string
-	pricingDataLoader: Promise<PricingData>
-} & CommerceProps
+import { EventPageProps } from './_components/event-page-props'
+import { EventTemplate } from './_components/event-template'
 
 export default async function EventPage({
 	params,
@@ -155,8 +121,6 @@ export default async function EventPage({
 			}),
 		}
 	}
-
-	console.log(eventProps)
 
 	return (
 		<div>

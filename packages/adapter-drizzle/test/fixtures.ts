@@ -38,6 +38,9 @@ const mockProduct = {
 	key: 'hey',
 	status: 1,
 	quantityAvailable: -1,
+	fields: {
+		slug: 'professional',
+	},
 }
 
 const mockUpgradeProduct = {
@@ -47,6 +50,9 @@ const mockUpgradeProduct = {
 	key: 'hey',
 	status: 1,
 	quantityAvailable: -1,
+	fields: {
+		slug: 'super-professional',
+	},
 }
 
 const mockPrice = {

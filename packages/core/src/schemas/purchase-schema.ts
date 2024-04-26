@@ -24,7 +24,7 @@ export const purchaseSchema = z.object({
 	bulkCouponId: z.string().max(191).optional().nullable(),
 	merchantSessionId: z.string().max(191).optional().nullable(),
 	redeemedBulkCouponId: z.string().max(191).optional().nullable(),
-	metadata: z.record(z.any()).default({}),
+	fields: z.record(z.any()).default({}),
 	user: userSchema.optional().nullable(),
 	bulkCoupon: couponSchema.optional().nullable(),
 	product: productSchema.optional().nullable(),

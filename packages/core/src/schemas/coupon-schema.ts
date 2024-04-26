@@ -5,7 +5,7 @@ export const couponSchema = z.object({
 	code: z.string().max(191).optional().nullable(),
 	createdAt: z.date().nullable(),
 	expires: z.date().nullable(),
-	metadata: z.record(z.any()).default({}),
+	fields: z.record(z.any()).default({}),
 	maxUses: z.number().int().default(-1),
 	default: z.boolean().default(false),
 	merchantCouponId: z.string().max(191).optional().nullable(),
