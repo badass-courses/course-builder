@@ -4,7 +4,7 @@ import { ParsedUrlQuery } from 'querystring'
 import { courseBuilderAdapter } from '@/db'
 import { isBefore } from 'date-fns'
 
-import { Coupon, Product } from '@coursebuilder/core/schemas'
+import { Coupon, Product, Purchase } from '@coursebuilder/core/schemas'
 
 export const validateCoupon = async (
 	coupon: Coupon | null,
@@ -64,6 +64,15 @@ export async function getCouponForCode(
 	}
 }
 
+type PropsForCommerce = {
+	products: Product[]
+	allowPurchase: boolean
+	purchases?: Purchase[] | undefined
+	couponIdFromCoupon?: string | undefined
+	couponFromCode?: any
+	userId?: string | undefined
+}
+
 export async function propsForCommerce({
 	query,
 	userId,
@@ -72,7 +81,7 @@ export async function propsForCommerce({
 	query: ParsedUrlQuery
 	userId: string | null | undefined
 	products: Product[]
-}) {
+}): Promise<PropsForCommerce> {
 	const productIds = products.map((product) => product.id)
 
 	const couponFromCode = await getCouponForCode(

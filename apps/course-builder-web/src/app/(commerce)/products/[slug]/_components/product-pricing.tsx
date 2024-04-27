@@ -3,8 +3,8 @@
 import * as React from 'react'
 import { PricingData } from '@/lib/pricing-query'
 import { CommerceProps } from '@/pricing/commerce-props'
-import { EventPricingWidget } from '@/pricing/event-pricing-widget'
 import { PriceCheckProvider } from '@/pricing/pricing-check-context'
+import { PricingWidget } from '@/pricing/pricing-widget'
 
 export function ProductPricing({
 	product,
@@ -26,7 +26,7 @@ export function ProductPricing({
 		<>
 			{product && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-					<EventPricingWidget
+					<PricingWidget
 						commerceProps={{ ...commerceProps, products: [product] }}
 						product={product}
 						quantityAvailable={quantityAvailable}

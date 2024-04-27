@@ -1,6 +1,16 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
 import { addSeconds, isAfter } from 'date-fns'
-import { and, asc, eq, inArray, not, or, sql } from 'drizzle-orm'
+import {
+	and,
+	asc,
+	eq,
+	inArray,
+	isNotNull,
+	isNull,
+	not,
+	or,
+	sql,
+} from 'drizzle-orm'
 import {
 	mysqlTable as defaultMySqlTableFn,
 	MySqlDatabase,
@@ -225,6 +235,36 @@ export function mySqlDrizzleAdapter(
 
 	return {
 		client,
+		createPurchaseTransfer: async (options) => {
+			const id = `put_${v4()}`
+			await client.insert(purchaseUserTransfer).values({
+				id,
+				purchaseId: options.purchaseId,
+				sourceUserId: options.sourceUserId,
+				expiresAt: options.expiresAt,
+			})
+		},
+		incrementCouponUsedCount: async (couponId) => {
+			await client
+				.update(coupon)
+				.set({ usedCount: sql`${coupon.usedCount} + 1` })
+				.where(eq(coupon.id, couponId))
+		},
+		getExistingNonBulkValidPurchasesOfProduct: async ({
+			userId,
+			productId,
+		}) => {
+			const existingPurchases = await client.query.purchases.findMany({
+				where: and(
+					eq(purchaseTable.userId, userId),
+					productId ? eq(purchaseTable.productId, productId) : undefined,
+					eq(purchaseTable.status, 'Valid'),
+					isNull(purchaseTable.bulkCouponId),
+				),
+			})
+
+			return z.array(purchaseSchema).parse(existingPurchases)
+		},
 		createMerchantCustomer: async (options) => {
 			await client.insert(merchantCustomer).values({
 				id: `mc_${v4()}`,

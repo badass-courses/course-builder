@@ -9,7 +9,14 @@ import { CheckoutParams } from './lib/pricing/stripe-checkout'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
-import { Coupon, MerchantCoupon, Price, Product, Purchase } from './schemas'
+import {
+	Coupon,
+	MerchantCoupon,
+	Price,
+	Product,
+	Purchase,
+	User,
+} from './schemas'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -48,6 +55,7 @@ export type CourseBuilderAction =
 	| 'session'
 	| 'subscribe-to-list'
 	| 'checkout'
+	| 'redeem'
 
 export interface RequestInternal {
 	url: URL
@@ -153,6 +161,7 @@ export interface InternalOptions<TProviderType = ProviderType> {
 	basePath: string
 	inngest: Inngest
 	callbacks: CallbacksOptions
+	getCurrentUser?: () => Promise<User | null>
 }
 
 export interface CookieOption {

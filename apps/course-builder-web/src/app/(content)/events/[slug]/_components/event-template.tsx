@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { env } from '@/env.mjs'
 import { EventDetails } from '@/pricing/event-details'
-import { EventPricingWidget } from '@/pricing/event-pricing-widget'
 import { PriceCheckProvider } from '@/pricing/pricing-check-context'
+import { PricingWidget } from '@/pricing/pricing-widget'
 import Balancer from 'react-wrap-balancer'
 
 import { EventPageProps } from './event-page-props'
@@ -59,7 +59,7 @@ export async function EventTemplate(props: EventPageProps) {
 					<div className="shadow-soft-xl dark:bg-foreground/5 flex w-full flex-col items-center rounded-xl bg-white pb-5">
 						{product && product.status === 1 && isUpcoming && (
 							<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-								<EventPricingWidget
+								<PricingWidget
 									commerceProps={{ ...commerceProps, products }}
 									product={product}
 									quantityAvailable={quantityAvailable}

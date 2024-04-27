@@ -1,3 +1,4 @@
+import { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
@@ -83,8 +84,11 @@ async function ProductTitle({
 
 export default async function ProductPage({
 	params,
+	searchParams,
 }: {
 	params: { slug: string }
+	//arbitrary search params or query string
+	searchParams: ParsedUrlQuery
 }) {
 	const productLoader = getProduct(params.slug)
 
@@ -100,7 +104,10 @@ export default async function ProductPage({
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
 				<ProductTitle productLoader={productLoader} />
 				<ProductDetails productLoader={productLoader} />
-				<ProductCommerce productLoader={productLoader} />
+				<ProductCommerce
+					productLoader={productLoader}
+					searchParams={searchParams}
+				/>
 			</article>
 		</div>
 	)
@@ -108,8 +115,10 @@ export default async function ProductPage({
 
 async function ProductCommerce({
 	productLoader,
+	searchParams,
 }: {
 	productLoader: Promise<Product | null>
+	searchParams: ParsedUrlQuery
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -121,6 +130,7 @@ async function ProductCommerce({
 
 	let commerceProps = await propsForCommerce({
 		query: {
+			...searchParams,
 			allowPurchase: 'true',
 		},
 		userId: user?.id,
@@ -187,5 +197,9 @@ async function ProductCommerce({
 		}
 	}
 
-	return <ProductPricing {...productProps} />
+	return (
+		<Suspense>
+			<ProductPricing {...productProps} />
+		</Suspense>
+	)
 }

@@ -56,6 +56,7 @@ export async function init({
 		adapter: adapterErrorHandler(courseBuilderOptions.adapter, logger),
 		callbacks: { ...defaultCallbacks, ...courseBuilderOptions.callbacks },
 		logger,
+		getCurrentUser: courseBuilderOptions.getCurrentUser,
 	}
 
 	const cookies: cookie.Cookie[] = []

@@ -1,6 +1,7 @@
 import { CourseBuilderConfig } from '../index'
 import { RequestInternal, ResponseInternal } from '../types'
 import * as actions from './actions'
+import { redeem } from './actions/redeem'
 import { init } from './init'
 import { UnknownAction } from './utils/web'
 
@@ -28,6 +29,8 @@ export async function CourseBuilderInternal(
 		}
 	} else {
 		switch (action) {
+			case 'redeem':
+				return await redeem(request, cookies, options)
 			case 'checkout':
 				return await actions.checkout(request, cookies, options)
 			case 'webhook':

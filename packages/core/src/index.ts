@@ -7,6 +7,7 @@ import { createActionURL, setEnvDefaults } from './lib/utils/env.js'
 import { logger, setLogger, type LoggerInstance } from './lib/utils/logger'
 import { toInternalRequest, toResponse } from './lib/utils/web'
 import type { Provider } from './providers'
+import { User } from './schemas'
 import type { CallbacksOptions, CookiesOptions } from './types'
 
 export { createActionURL, setEnvDefaults }
@@ -63,6 +64,7 @@ export interface CourseBuilderConfig {
 	cookies?: Partial<CookiesOptions>
 	useSecureCookies?: boolean
 	inngest?: Inngest
+	getCurrentUser?: () => Promise<User | null>
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'
