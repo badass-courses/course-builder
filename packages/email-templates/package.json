@@ -1,20 +1,24 @@
 {
-  "name": "@coursebuilder/email-templates",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
+	"name": "@coursebuilder/email-templates",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
 		"dev:preview": "email dev -p 3069",
 		"export": "email export"
-  },
+	},
 	"files": [
 		"emails",
 		"dist",
 		"dist/*.d.ts*",
 		"dist/*.js*"
 	],
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
 	"exports": {
 		"./emails/*": {
 			"types": "./dist/*.d.ts",
@@ -22,14 +26,14 @@
 			"require": "./dist/*.js"
 		}
 	},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@react-email/components": "^0.0.16",
-    "@types/react": "^18.2.73",
-    "react": "18.3.1",
-    "react-email": "2.1.1",
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@react-email/components": "^0.0.16",
+		"@types/react": "^18.2.73",
+		"react": "18.3.1",
+		"react-email": "2.1.1",
 		"tsup": "8.0.2"
 	}
 }
