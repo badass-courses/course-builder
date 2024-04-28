@@ -25,7 +25,7 @@ import {
 } from '../providers/partykit'
 import { MockStripeProvider } from '../providers/stripe'
 import { PaymentsProviderConfig } from '../types'
-import { CourseBuilderCoreEvents } from './video-processing/events'
+import { CourseBuilderCoreEvents } from './index'
 
 export interface CoreInngestContext {
 	db: CourseBuilderAdapter

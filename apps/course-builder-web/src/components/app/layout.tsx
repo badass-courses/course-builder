@@ -1,9 +1,23 @@
 import * as React from 'react'
+import { twMerge } from 'tailwind-merge'
 
-export async function Layout({ children }: { children: React.ReactNode }) {
+export async function Layout({
+	children,
+	className,
+}: {
+	children: React.ReactNode
+	className?: string
+}) {
 	return (
-		<div className={`font-sans`} id="layout">
-			{children}
+		<div className={`relative font-sans antialiased`} id="layout">
+			<div
+				className={twMerge(
+					'flex h-full min-h-[calc(100svh-4rem)] flex-grow flex-col',
+					className,
+				)}
+			>
+				{children}
+			</div>
 		</div>
 	)
 }

@@ -24,11 +24,11 @@ import { emailProvider } from '@/coursebuilder/email-provider'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { authOptions } from '@/server/auth'
 
+import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest'
 import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
-import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'

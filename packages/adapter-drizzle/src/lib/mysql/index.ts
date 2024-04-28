@@ -948,77 +948,7 @@ export function mySqlDrizzleAdapter(
 
 			return purchaseSchema.parse(newPurchase)
 		},
-		async getPurchaseDetails(
-			purchaseId: string,
-			userId: string,
-		): Promise<{
-			purchase?: Purchase
-			existingPurchase?: Purchase & { product?: Product | null }
-			availableUpgrades: UpgradableProduct[]
-		}> {
-			const allPurchases = await this.getPurchasesForUser(userId)
-			const thePurchase = await client.query.purchases.findFirst({
-				where: and(
-					eq(purchaseTable.id, purchaseId),
-					eq(purchaseTable.userId, userId),
-				),
-				with: {
-					user: true,
-					product: true,
-					bulkCoupon: true,
-				},
-			})
 
-			const parsedPurchase = purchaseSchema.safeParse(thePurchase)
-
-			if (!parsedPurchase.success) {
-				console.error('Error parsing purchase', parsedPurchase)
-				return {
-					availableUpgrades: [],
-				}
-			}
-
-			const purchaseCanUpgrade = ['Valid', 'Restricted'].includes(
-				parsedPurchase.data.state || '',
-			)
-
-			if (!purchaseCanUpgrade) {
-				return {
-					availableUpgrades: [],
-				}
-			}
-
-			const availableUpgrades = await client.query.upgradableProducts.findMany({
-				where: and(
-					eq(
-						upgradableProducts.upgradableFromId,
-						parsedPurchase.data.product?.id as string,
-					),
-					not(
-						inArray(
-							upgradableProducts.upgradableToId,
-							allPurchases.map((p) => p.product?.id as string),
-						),
-					),
-				),
-				with: {
-					upgradableTo: true,
-					upgradableFrom: true,
-				},
-			})
-
-			const existingPurchase = allPurchases.find(
-				(p) => p.product?.id === parsedPurchase.data.product?.id,
-			)
-
-			return Promise.resolve({
-				availableUpgrades: z
-					.array(upgradableProductSchema)
-					.parse(availableUpgrades),
-				existingPurchase,
-				purchase: parsedPurchase.data,
-			})
-		},
 		async getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
@@ -1093,6 +1023,97 @@ export function mySqlDrizzleAdapter(
 			}
 
 			return parsedPurchases.data
+		},
+		async getPurchaseDetails(
+			purchaseId: string,
+			userId: string,
+		): Promise<{
+			purchase?: Purchase
+			existingPurchase?: Purchase & { product?: Product | null }
+			availableUpgrades: UpgradableProduct[]
+		}> {
+			const visiblePurchaseStates = ['Valid', 'Refunded', 'Restricted']
+
+			const userPurchases = await client.query.purchases.findMany({
+				where: and(
+					eq(purchaseTable.userId, userId),
+					inArray(purchaseTable.status, visiblePurchaseStates),
+				),
+				with: {
+					user: true,
+					product: true,
+					bulkCoupon: true,
+				},
+				orderBy: asc(purchaseTable.createdAt),
+			})
+
+			const parsedPurchases = z.array(purchaseSchema).safeParse(userPurchases)
+
+			const allPurchases = parsedPurchases.success ? parsedPurchases.data : []
+
+			console.log('🦦', { allPurchases })
+
+			const thePurchase = await client.query.purchases.findFirst({
+				where: and(
+					eq(purchaseTable.id, purchaseId),
+					eq(purchaseTable.userId, userId),
+				),
+				with: {
+					user: true,
+					product: true,
+					bulkCoupon: true,
+				},
+			})
+
+			const parsedPurchase = purchaseSchema.safeParse(thePurchase)
+
+			if (!parsedPurchase.success) {
+				console.error('Error parsing purchase', parsedPurchase)
+				return {
+					availableUpgrades: [],
+				}
+			}
+
+			console.log('🦦', { parsedPurchase: parsedPurchase.data })
+
+			const purchaseCanUpgrade = ['Valid', 'Restricted'].includes(
+				parsedPurchase.data.state || '',
+			)
+
+			let availableUpgrades: any[] = []
+
+			if (purchaseCanUpgrade) {
+				availableUpgrades = await client.query.upgradableProducts.findMany({
+					where: and(
+						eq(
+							upgradableProducts.upgradableFromId,
+							parsedPurchase.data.product?.id as string,
+						),
+						not(
+							inArray(
+								upgradableProducts.upgradableToId,
+								allPurchases.map((p) => p.product?.id as string),
+							),
+						),
+					),
+					with: {
+						upgradableTo: true,
+						upgradableFrom: true,
+					},
+				})
+			}
+
+			const existingPurchase = allPurchases.find(
+				(p) => p.product?.id === parsedPurchase.data.product?.id,
+			)
+
+			return Promise.resolve({
+				availableUpgrades: z
+					.array(upgradableProductSchema)
+					.parse(availableUpgrades),
+				existingPurchase,
+				purchase: parsedPurchase.data,
+			})
 		},
 		async getUserById(userId: string): Promise<User | null> {
 			return userSchema.nullable().parse(

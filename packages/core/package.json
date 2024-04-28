@@ -69,6 +69,11 @@
 			"import": "./dist/lib/*.js",
 			"require": "./dist/lib/*.js"
 		},
+		"./inngest": {
+			"types": "./dist/inngest/index.d.ts",
+			"import": "./dist/inngest/index.js",
+			"require": "./dist/inngest/index.js"
+		},
 		"./inngest/co-gardener/resource-chat": {
 			"types": "./dist/inngest/co-gardener/resource-chat.d.ts",
 			"import": "./dist/inngest/co-gardener/resource-chat.js",

@@ -7,9 +7,8 @@ import { githubAccountsForCurrentUser } from '@/lib/users'
 import { convertToSerializeForNextResponse } from '@/path-to-purchase/serialize-for-next-response'
 import { WelcomePage } from '@/path-to-purchase/welcome-page'
 import { getPurchaseTransferForPurchaseId } from '@/purchase-transfer/purchase-transfer-actions'
-import { getServerAuthSession } from '@/server/auth'
+import { authOptions, getServerAuthSession } from '@/server/auth'
 import { isString } from 'lodash'
-import { getProviders } from 'next-auth/react'
 
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 
@@ -22,7 +21,15 @@ const getServerSideProps = async (query: {
 	const token = await getServerAuthSession()
 	const user = token.session?.user
 
-	const providers = await getProviders()
+	const providers = authOptions.providers.map((p) => {
+		return {
+			// @ts-ignore
+			id: p.id,
+			name: p.name,
+		}
+	})
+
+	console.log({ providers })
 	const { getPurchaseDetails } = courseBuilderAdapter
 
 	let purchaseId = query.purchaseId
@@ -47,9 +54,13 @@ const getServerSideProps = async (query: {
 		}
 	}
 
+	console.log({ user, purchaseId })
+
 	if (user && isString(purchaseId) && isString(user?.id)) {
 		const { purchase, existingPurchase, availableUpgrades } =
 			await getPurchaseDetails(purchaseId, user?.id)
+
+		console.log({ purchase, existingPurchase, availableUpgrades })
 
 		if (purchase) {
 			const product = await courseBuilderAdapter.getProduct(purchase.productId)
@@ -109,6 +120,20 @@ const Welcome = async ({
 		)
 
 	const isGithubConnected = await githubAccountsForCurrentUser()
+
+	console.log({
+		isGithubConnected,
+		product,
+		purchase,
+		existingPurchase,
+		upgrade,
+		providers,
+		hasCharge,
+		redemptionsLeft,
+		isTransferAvailable,
+		purchaseUserTransfers,
+		userEmail: session?.user?.email,
+	})
 
 	return (
 		<div>

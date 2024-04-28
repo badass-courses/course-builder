@@ -4,6 +4,7 @@ import { sendServerEmail } from '../../lib/send-server-email'
 import { parseCheckoutSession } from '../../providers/stripe'
 import { User } from '../../schemas'
 import { CheckoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
+import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
@@ -141,15 +142,12 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			},
 		)
 
-		await step.run('send email', async () => {
-			await sendServerEmail({
-				email: user.email as string,
-				callbackUrl: `${siteRootUrl}/welcome?purchaseId=${purchase.id}`,
-				baseUrl: siteRootUrl,
-				authOptions: getAuthConfig(),
-				emailProvider: emailProvider,
-				adapter: db,
-				merchantChargeId: purchase.merchantChargeId,
-			})
+		await step.sendEvent(NEW_PURCHASE_CREATED_EVENT, {
+			name: NEW_PURCHASE_CREATED_EVENT,
+			data: {
+				purchaseId: purchase.id,
+			},
 		})
+
+		return { purchase, purchaseInfo }
 	}
