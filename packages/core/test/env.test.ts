@@ -1,3 +1,4 @@
+import { AuthConfig } from '@auth/core'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { CourseBuilderConfig, setEnvDefaults } from '../src'
@@ -5,6 +6,8 @@ import Deepgram from '../src/providers/deepgram.js'
 
 const testConfig: CourseBuilderConfig = {
 	providers: [Deepgram],
+	baseUrl: '/coursebuilder',
+	authConfig: {} as AuthConfig,
 }
 
 let courseBuilderConfig: CourseBuilderConfig
