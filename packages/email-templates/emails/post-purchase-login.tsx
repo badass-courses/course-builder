@@ -39,7 +39,7 @@ export const PostPurchaseLoginEmail = (
 		host = 'https://coursebuilder.dev',
 		email = 'joel@coursebuilder.dev',
 		siteName = 'Course Builder',
-		invoiceUrl,
+		invoiceUrl = 'https://coursebuilder.dev',
 		previewText = 'Welcome!',
 	}: PostPurchaseLoginEmailProps,
 	theme: Theme,
@@ -51,7 +51,7 @@ export const PostPurchaseLoginEmail = (
 	const backgroundColor = '#F9FAFB'
 	const textColor = '#3E3A38'
 	const mainBackgroundColor = '#ffffff'
-	const buttonBackgroundColor = theme ? theme.brandColor : '#F9FAFB'
+	const buttonBackgroundColor = theme?.brandColor ? theme.brandColor : '#125eb6'
 	const buttonTextColor = '#ffffff'
 
 	return (
@@ -70,8 +70,12 @@ export const PostPurchaseLoginEmail = (
 				</Head>
 				<Preview>{previewText}</Preview>
 
-				<Body className="mx-auto my-auto bg-white font-sans">
-					<Container className="mx-auto my-[40px] rounded border border-solid border-[#eaeaea] p-[20px] md:w-[465px]">
+				<Body
+					className={`mx-auto my-auto bg-[${mainBackgroundColor}] font-sans`}
+				>
+					<Container
+						className={`mx-auto my-[40px] bg-[${backgroundColor}] rounded border border-solid border-[#eaeaea] p-[20px] md:w-[465px]`}
+					>
 						{theme?.logo && (
 							<Section className="mt-[32px]">
 								<Img
@@ -90,7 +94,7 @@ export const PostPurchaseLoginEmail = (
 
 						<Section className="mb-[32px] mt-[32px] text-center">
 							<Button
-								className="rounded bg-[#000000] px-4 py-3 text-center text-[16px] font-semibold text-white no-underline"
+								className={`rounded bg-[${buttonBackgroundColor}] px-4 py-3 text-center text-[16px] font-semibold text-[${buttonTextColor}] no-underline`}
 								href={url}
 							>
 								Log In
