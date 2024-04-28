@@ -149,6 +149,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				authOptions: getAuthConfig(),
 				emailProvider: emailProvider,
 				adapter: db,
+				merchantChargeId: purchase.merchantChargeId,
 			})
 		})
 	}

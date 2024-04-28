@@ -76,6 +76,7 @@ export async function sendServerEmail({
 	authOptions,
 	adapter,
 	baseUrl,
+	merchantChargeId,
 }: {
 	authOptions: AuthConfig
 	email: string
@@ -87,6 +88,7 @@ export async function sendServerEmail({
 	expiresAt?: Date | null
 	adapter: CourseBuilderAdapter
 	baseUrl: string
+	merchantChargeId?: string | null
 }) {
 	console.log({ emailProvider, authOptions })
 	if (!emailProvider) return
@@ -118,6 +120,7 @@ export async function sendServerEmail({
 				type,
 				html,
 				text,
+				merchantChargeId,
 			},
 			adapter,
 		)
