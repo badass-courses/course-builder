@@ -1,3 +1,5 @@
+import { AuthConfig } from '@auth/core'
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import {
 	EventSchemas,
 	GetEvents,
@@ -32,6 +34,8 @@ export interface CoreInngestContext {
 	openaiProvider: LlmProviderConfig
 	partyProvider: PartyProviderConfig
 	paymentProvider?: PaymentsProviderConfig
+	emailProvider?: NodemailerConfig
+	getAuthConfig: () => AuthConfig
 	mediaUploadProvider: {
 		deleteFiles: (fileKey: string) => Promise<{ success: boolean }>
 	}
@@ -83,6 +87,8 @@ export const coreInngest = new Inngest({
 			openaiProvider: MockOpenAIProvider,
 			partyProvider: MockPartykitProvider,
 			paymentProvider: MockStripeProvider,
+			emailProvider: {} as NodemailerConfig,
+			getAuthConfig: () => ({}) as AuthConfig,
 			mediaUploadProvider: {
 				deleteFiles: async (_) => Promise.resolve({ success: true }),
 			},

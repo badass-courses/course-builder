@@ -1,9 +1,10 @@
 import process from 'process'
-import { EmailConfig } from '@auth/core/providers'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { Theme } from '@auth/core/types'
-import mjml2html from 'mjml'
+import { render } from '@react-email/components'
 import { createTransport } from 'nodemailer'
+
+import { VercelInviteUserEmail } from '@coursebuilder/email-templates/emails/invite-user'
 
 import { CourseBuilderAdapter } from '../adapters'
 
@@ -23,6 +24,7 @@ export type TextEmailParams = Record<'url' | 'host', string> & {
 }
 
 function isValidateEmailServerConfig(server: any) {
+	console.log({ server })
 	return Boolean(
 		server &&
 			server.host &&
@@ -52,7 +54,9 @@ export const sendVerificationRequest = async (
 	const {
 		identifier: email,
 		url,
-		provider: { server, from },
+		provider: {
+			options: { server, from },
+		},
 		text = defaultText,
 		html = defaultHtml,
 		theme,
@@ -61,6 +65,8 @@ export const sendVerificationRequest = async (
 	const { host } = new URL(url)
 
 	const { getUserByEmail, findOrCreateUser } = adapter
+
+	console.log({ from })
 
 	let subject
 
@@ -134,58 +140,68 @@ function defaultHtml({ url, host, email }: HTMLEmailParams, theme: Theme) {
 	const buttonBackgroundColor = theme ? theme.brandColor : '#F9FAFB'
 	const buttonTextColor = '#ffffff'
 
-	const { html } = mjml2html(`
-<mjml>
-  <mj-head>
-    <mj-font name='Inter' href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600' />
-    <mj-attributes>
-      <mj-all font-family='Inter, Helvetica, sans-serif' line-height='1.5' />
-    </mj-attributes>
-    <mj-raw>
-      <meta name='color-scheme' content='light' />
-      <meta name='supported-color-schemes' content='light' />
-    </mj-raw>
-  </mj-head>
-  <mj-body background-color='${backgroundColor}'>
-    ${
-			theme?.logo &&
-			`<mj-section padding='10px 0 10px 0'>
-          <mj-column background-color='${backgroundColor}'>
-            <mj-image alt='${process.env.NEXT_PUBLIC_SITE_TITLE}' width='180px' src='${theme.logo}' />
-          </mj-column>
-        </mj-section>`
-		}
-    <mj-section padding-top='0'>
-      <mj-column background-color='${mainBackgroundColor}' padding='16px 10px'>
-        <mj-text font-size='18px' color='${textColor}' align='center' padding-bottom='20px'>
-          Log in as <strong color='${textColor}'>${escapedEmail}</strong> to ${
-						process.env.NEXT_PUBLIC_SITE_TITLE
-					}.
-        </mj-text>
-        <mj-button href='${url}' background-color='${buttonBackgroundColor}' color='${buttonTextColor}' target='_blank' border-radius='6px' font-size='18px' font-weight='bold'>
-          Log in
-        </mj-button>
+	console.log({ theme })
 
-        <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
-          The link is valid for 24 hours or until it is used once. You will stay logged in for 60 days. <a href='${
-						process.env.NEXT_PUBLIC_URL
-					}/login' target='_blank'>Click here to request another link</a>.
-        </mj-text>
-        <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
-          Once you are logged in, you can <a href='${
-						process.env.NEXT_PUBLIC_URL
-					}/invoices' target='_blank'>access your invoice here</a>.
-        </mj-text>
-        <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
-          If you need additional help, reply!
-        </mj-text>
-        <mj-text color='gray' align='center' padding-top='40px'>
-          If you did not request this email you can safely ignore it.
-        </mj-text>
-    </mj-section>
-  </mj-body>
-</mjml>
-`)
+	const html = render(VercelInviteUserEmail({}))
+
+	// 	const { html } = mjml2html(
+	// 		`
+	// <mjml>
+	//   <mj-head>
+	//     <mj-font name='Inter' href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600' />
+	//     <mj-attributes>
+	//       <mj-all font-family='Inter, Helvetica, sans-serif' line-height='1.5' />
+	//     </mj-attributes>
+	//     <mj-raw>
+	//       <meta name='color-scheme' content='light' />
+	//       <meta name='supported-color-schemes' content='light' />
+	//     </mj-raw>
+	//   </mj-head>
+	//   <mj-body background-color='${backgroundColor}'>
+	//     ${
+	// 			theme?.logo &&
+	// 			`<mj-section padding='10px 0 10px 0'>
+	//           <mj-column background-color='${backgroundColor}'>
+	//             <mj-image alt='${process.env.NEXT_PUBLIC_SITE_TITLE}' width='180px' src='${theme.logo}' />
+	//           </mj-column>
+	//         </mj-section>`
+	// 		}
+	//     <mj-section padding-top='0'>
+	//       <mj-column background-color='${mainBackgroundColor}' padding='16px 10px'>
+	//         <mj-text font-size='18px' color='${textColor}' align='center' padding-bottom='20px'>
+	//           Log in as <strong color='${textColor}'>${escapedEmail}</strong> to ${
+	// 						process.env.NEXT_PUBLIC_SITE_TITLE
+	// 					}.
+	//         </mj-text>
+	//         <mj-button href='${url}' background-color='${buttonBackgroundColor}' color='${buttonTextColor}' target='_blank' border-radius='6px' font-size='18px' font-weight='bold'>
+	//           Log in
+	//         </mj-button>
+	//
+	//         <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
+	//           The link is valid for 24 hours or until it is used once. You will stay logged in for 60 days. <a href='${
+	// 						process.env.NEXT_PUBLIC_URL
+	// 					}/login' target='_blank'>Click here to request another link</a>.
+	//         </mj-text>
+	//         <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
+	//           Once you are logged in, you can <a href='${
+	// 						process.env.NEXT_PUBLIC_URL
+	// 					}/invoices' target='_blank'>access your invoice here</a>.
+	//         </mj-text>
+	//         <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
+	//           If you need additional help, reply!
+	//         </mj-text>
+	//         <mj-text color='gray' align='center' padding-top='40px'>
+	//           If you did not request this email you can safely ignore it.
+	//         </mj-text>
+	//     </mj-section>
+	//   </mj-body>
+	// </mjml>
+	// `,
+	// 		{
+	// 			minify: false,
+	// 			beautify: false,
+	// 		},
+	// 	)
 
 	return html
 }

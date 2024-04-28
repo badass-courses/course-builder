@@ -53,6 +53,7 @@ import {
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import { validateCoupon } from '@coursebuilder/core/utils/validate-coupon'
 
 import {
 	getAccountsRelationsSchema,
@@ -235,6 +236,84 @@ export function mySqlDrizzleAdapter(
 
 	return {
 		client,
+		async redeemFullPriceCoupon(options) {
+			const {
+				email: baseEmail,
+				couponId,
+				productIds,
+				currentUserId,
+				redeemingProductId,
+			} = options
+			const email = String(baseEmail).replace(' ', '+')
+
+			const coupon = await this.getCouponWithBulkPurchases(couponId)
+
+			const productId =
+				(coupon && (coupon.restrictedToProductId as string)) ||
+				redeemingProductId
+
+			if (!productId) throw new Error(`unable-to-find-any-product-id`)
+
+			const couponValidation = validateCoupon(coupon, productIds)
+
+			if (coupon && couponValidation.isRedeemable) {
+				// if the Coupon is the Bulk Coupon of a Bulk Purchase,
+				// then a bulk coupon is being redeemed
+				const bulkCouponRedemption = Boolean(
+					coupon.bulkCouponPurchases[0]?.bulkCouponId,
+				)
+
+				const { user } = await this.findOrCreateUser(email)
+
+				if (!user) throw new Error(`unable-to-create-user-${email}`)
+
+				const currentUser = currentUserId
+					? await this.getUserById(currentUserId)
+					: null
+
+				const redeemingForCurrentUser = currentUser?.id === user.id
+
+				// To prevent double-purchasing, check if this user already has a
+				// Purchase record for this product that is valid and wasn't a bulk
+				// coupon purchase.
+				const existingPurchases =
+					await this.getExistingNonBulkValidPurchasesOfProduct({
+						userId: user.id,
+						productId,
+					})
+
+				if (existingPurchases.length > 0)
+					throw new Error(`already-purchased-${email}`)
+
+				const purchaseId = `purchase-${v4()}`
+
+				await this.createPurchase({
+					id: purchaseId,
+					userId: user.id,
+					couponId: bulkCouponRedemption ? null : coupon.id,
+					redeemedBulkCouponId: bulkCouponRedemption ? coupon.id : null,
+					productId,
+					totalAmount: '0',
+					metadata: {
+						couponUsedId: bulkCouponRedemption ? null : coupon.id,
+					},
+				})
+
+				const newPurchase = await this.getPurchase(purchaseId)
+
+				await this.incrementCouponUsedCount(coupon.id)
+
+				await this.createPurchaseTransfer({
+					sourceUserId: user.id,
+					purchaseId: purchaseId,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+				})
+
+				return { purchase: newPurchase, redeemingForCurrentUser }
+			}
+
+			return null
+		},
 		createPurchaseTransfer: async (options) => {
 			const id = `put_${v4()}`
 			await client.insert(purchaseUserTransfer).values({
@@ -271,6 +350,7 @@ export function mySqlDrizzleAdapter(
 				identifier: options.identifier,
 				merchantAccountId: options.merchantAccountId,
 				userId: options.userId,
+				status: 1,
 			})
 			return merchantCustomerSchema.parse(
 				await client.query.merchantCustomer.findFirst({
@@ -438,8 +518,10 @@ export function mySqlDrizzleAdapter(
 						})) || null,
 					)
 
+					console.log({ existingMerchantCharge })
+
 					const existingPurchaseForCharge = existingMerchantCharge
-						? await client.query.purchase.findFirst({
+						? await client.query.purchases.findFirst({
 								where: eq(
 									purchaseTable.merchantChargeId,
 									existingMerchantCharge.id,
@@ -452,14 +534,16 @@ export function mySqlDrizzleAdapter(
 							})
 						: null
 
+					console.log({ existingPurchaseForCharge })
+
 					if (existingPurchaseForCharge) {
-						return purchaseSchema.parse(existingPurchaseForCharge)
+						return existingPurchaseForCharge.id
 					}
 
 					const merchantChargeId = `mc_${v4()}`
 					const purchaseId = `purch_${v4()}`
 
-					const newMerchantCharge = trx.insert(merchantCharge).values({
+					const newMerchantCharge = await client.insert(merchantCharge).values({
 						id: merchantChargeId,
 						userId,
 						identifier: stripeChargeId,
@@ -467,6 +551,8 @@ export function mySqlDrizzleAdapter(
 						merchantProductId,
 						merchantCustomerId,
 					})
+
+					console.log({ newMerchantCharge })
 
 					const existingPurchase = purchaseSchema.nullable().parse(
 						(await client.query.purchases.findFirst({
@@ -477,6 +563,8 @@ export function mySqlDrizzleAdapter(
 							),
 						})) || null,
 					)
+
+					console.log({ existingPurchase })
 
 					const existingBulkCoupon = couponSchema.nullable().parse(
 						await client
@@ -489,8 +577,19 @@ export function mySqlDrizzleAdapter(
 									eq(purchaseTable.userId, userId),
 								),
 							)
-							.then((res) => res[0] ?? null),
+							.where(
+								and(
+									eq(coupon.restrictedToProductId, productId),
+									eq(purchaseTable.userId, userId),
+								),
+							)
+							.then((res) => {
+								console.log({ res })
+								return res[0]?.coupons ?? null
+							}),
 					)
+
+					console.log({ existingBulkCoupon })
 
 					const isBulkPurchase =
 						quantity > 1 ||
@@ -506,7 +605,7 @@ export function mySqlDrizzleAdapter(
 							existingBulkCoupon !== null ? existingBulkCoupon.id : v4()
 
 						if (existingBulkCoupon !== null) {
-							couponToUpdate = trx
+							couponToUpdate = await client
 								.update(coupon)
 								.set({
 									maxUses: (existingBulkCoupon?.maxUses || 0) + quantity,
@@ -521,7 +620,7 @@ export function mySqlDrizzleAdapter(
 									)
 								: null
 
-							couponToUpdate = await trx.insert(coupon).values({
+							couponToUpdate = await client.insert(coupon).values({
 								id: bulkCouponId as string,
 								percentageDiscount: '1.0',
 								restrictedToProductId: productId,
@@ -538,17 +637,23 @@ export function mySqlDrizzleAdapter(
 
 					const merchantSessionId = `ms_${v4()}`
 
-					const newMerchantSession = trx.insert(merchantSession).values({
-						id: merchantSessionId,
-						identifier: checkoutSessionId,
-						merchantAccountId,
-					})
+					const newMerchantSession = await client
+						.insert(merchantSession)
+						.values({
+							id: merchantSessionId,
+							identifier: checkoutSessionId,
+							merchantAccountId,
+						})
+
+					console.log({ newMerchantSession })
 
 					const merchantCouponUsed = stripeCouponId
 						? await client.query.merchantCoupon.findFirst({
 								where: eq(merchantCoupon.identifier, stripeCouponId),
 							})
 						: null
+
+					console.log({ merchantCouponUsed })
 
 					const pppMerchantCoupon = appliedPPPStripeCouponId
 						? await client.query.merchantCoupon.findFirst({
@@ -559,12 +664,14 @@ export function mySqlDrizzleAdapter(
 							})
 						: null
 
+					console.log({ pppMerchantCoupon })
+
 					const newPurchaseStatus =
 						merchantCouponUsed?.type === 'ppp' || pppMerchantCoupon
 							? 'Restricted'
 							: 'Valid'
 
-					const newPurchase = trx.insert(purchaseTable).values({
+					const newPurchase = await client.insert(purchaseTable).values({
 						id: purchaseId,
 						status: newPurchaseStatus,
 						userId,
@@ -578,9 +685,11 @@ export function mySqlDrizzleAdapter(
 						couponId: usedCouponId || null,
 					})
 
+					console.log({ newPurchase })
+
 					const oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7
 
-					const newPurchaseUserTransfer = trx
+					const newPurchaseUserTransfer = await client
 						.insert(purchaseUserTransfer)
 						.values({
 							id: `put_${v4()}`,
@@ -591,13 +700,19 @@ export function mySqlDrizzleAdapter(
 							sourceUserId: userId,
 						})
 
-					await Promise.all([
-						newMerchantCharge,
-						newPurchase,
-						newPurchaseUserTransfer,
-						newMerchantSession,
-						...(couponToUpdate ? [couponToUpdate] : []),
-					])
+					console.log({ newPurchaseUserTransfer })
+
+					// const result = await Promise.all([
+					// 	newMerchantCharge,
+					// 	newPurchase,
+					// 	newPurchaseUserTransfer,
+					// 	newMerchantSession,
+					// 	...(couponToUpdate ? [couponToUpdate] : []),
+					// ])
+					//
+					// console.log('result', { result })
+
+					console.log('inside', { purchaseId })
 
 					return purchaseId
 				} catch (error) {
@@ -607,20 +722,39 @@ export function mySqlDrizzleAdapter(
 				}
 			})
 
-			return purchaseSchema.parse(
+			console.log('putside', { purchaseId })
+
+			const parsedPurchase = purchaseSchema.safeParse(
 				await client.query.purchases.findFirst({
 					where: eq(purchaseTable.id, purchaseId as string),
 				}),
 			)
+
+			if (!parsedPurchase.success) {
+				console.error(
+					'Error parsing purchase',
+					parsedPurchase,
+					JSON.stringify(parsedPurchase, null, 2),
+				)
+				throw new Error('Error parsing purchase')
+			}
+
+			return parsedPurchase.data
 		},
 		async findOrCreateMerchantCustomer(options: {
 			user: User
 			identifier: string
 			merchantAccountId: string
 		}): Promise<MerchantCustomer | null> {
-			const merchantCustomer = this.getMerchantCustomerForUserId(
-				options.user.id,
-			)
+			const merchantCustomer = merchantCustomerSchema
+				.nullable()
+				.optional()
+				.parse(
+					await client.query.merchantCustomer.findFirst({
+						where: (merchantCustomer, { eq }) =>
+							eq(merchantCustomer.identifier, options.identifier),
+					}),
+				)
 
 			if (merchantCustomer) {
 				return merchantCustomer
@@ -900,7 +1034,7 @@ export function mySqlDrizzleAdapter(
 						),
 					)
 					.then((res) => {
-						return res[0].purchases ?? null
+						return res[0]?.purchases ?? null
 					}),
 			)
 

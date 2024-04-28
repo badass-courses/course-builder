@@ -1,9 +1,9 @@
-import { v4 } from 'uuid'
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { z } from 'zod'
 
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
+import { sendServerEmail } from '../send-server-email'
 import { Cookie } from '../utils/cookie'
-import { validateCoupon } from '../utils/validate-coupon'
 
 export async function redeem(
 	request: RequestInternal,
@@ -11,8 +11,6 @@ export async function redeem(
 	options: InternalOptions,
 ): Promise<ResponseInternal> {
 	if (!options.adapter) throw new Error('Adapter not found')
-
-	const { findOrCreateUser, getCouponWithBulkPurchases } = options.adapter
 
 	const {
 		email: baseEmail,
@@ -28,84 +26,43 @@ export async function redeem(
 		})
 		.parse(request.body)
 
-	if (!baseEmail) throw new Error(`invaild-email-${baseEmail}`)
+	if (!baseEmail) throw new Error(`invalid-email-${baseEmail}`)
 
-	// something in the chain strips out the plus and leaves a space
-	const email = String(baseEmail).replace(' ', '+')
+	const currentUser = options.getCurrentUser
+		? await options.getCurrentUser()
+		: null
 
-	const coupon = await getCouponWithBulkPurchases(couponId)
+	const createdPurchase = await options.adapter.redeemFullPriceCoupon({
+		email: baseEmail,
+		couponId,
+		productIds,
+		currentUserId: currentUser?.id,
+		redeemingProductId: process.env.NEXT_PUBLIC_DEFAULT_PRODUCT_ID,
+	})
 
-	const couponValidation = validateCoupon(coupon, productIds)
-
-	if (coupon && couponValidation.isRedeemable) {
-		// if the Coupon is the Bulk Coupon of a Bulk Purchase,
-		// then a bulk coupon is being redeemed
-		const bulkCouponRedemption = Boolean(
-			coupon.bulkCouponPurchases[0]?.bulkCouponId,
-		)
-
-		const { user } = await findOrCreateUser(email)
-
-		if (!user) throw new Error(`unable-to-create-user-${email}`)
-
-		const currentUser = await options.getCurrentUser?.()
-
-		const redeemingForCurrentUser = currentUser?.id === user.id
-
-		const productId =
-			(coupon.restrictedToProductId as string) ||
-			process.env.NEXT_PUBLIC_DEFAULT_PRODUCT_ID
-
-		// To prevent double-purchasing, check if this user already has a
-		// Purchase record for this product that is valid and wasn't a bulk
-		// coupon purchase.
-
-		const existingPurchases =
-			await options.adapter.getExistingNonBulkValidPurchasesOfProduct({
-				userId: user.id,
-				productId,
-			})
-
-		if (existingPurchases.length > 0)
-			throw new Error(`already-purchased-${email}`)
-
-		const purchaseId = `purchase-${v4()}`
-
-		await options.adapter.createPurchase({
-			id: purchaseId,
-			userId: user.id,
-			couponId: bulkCouponRedemption ? null : coupon.id,
-			redeemedBulkCouponId: bulkCouponRedemption ? coupon.id : null,
-			productId: productId as string,
-			totalAmount: '0',
-			metadata: {
-				couponUsedId: bulkCouponRedemption ? null : coupon.id,
-			},
-		})
-
-		const createPurchase = await options.adapter.getPurchase(purchaseId)
-
-		await options.adapter.incrementCouponUsedCount(coupon.id)
-
-		await options.adapter.createPurchaseTransfer({
-			sourceUserId: user.id,
-			purchaseId: purchaseId,
-			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-		})
-
-		// TODO: use a transaction for this
+	if (createdPurchase) {
+		const { purchase, redeemingForCurrentUser } = createdPurchase
 
 		// if it's redeemed for the current user we don't need to send a login email
-		// if (redeemingForCurrentUser) {
-		// 	// send an appropriate email
-		// } else if (sendEmail && authOptions) {
-		// 	await sendServerEmail({
-		// 		email: user.email,
-		// 		callbackUrl: `${process.env.NEXTAUTH_URL}/welcome?purchaseId=${purchase.id}`,
-		// 		adapter: options.adapter,
-		// 	})
-		// }
+		if (redeemingForCurrentUser) {
+			// send an appropriate email
+		} else if (purchase?.userId && sendEmail) {
+			const user = await options.adapter.getUserById(purchase.userId)
+			if (!user) throw new Error(`unable-to-find-user-with-id-${purchase.id}`)
+			const emailProvider = options.providers.find((p) => p.type === 'email')
+			await sendServerEmail({
+				email: user.email as string,
+				baseUrl: options.baseUrl,
+				callbackUrl: `${options.baseUrl}/welcome?purchaseId=${purchase.id}`,
+				adapter: options.adapter,
+				authOptions: options.authConfig,
+				emailProvider: emailProvider
+					? (emailProvider as NodemailerConfig)
+					: undefined,
+			})
+		}
 
+		// TODO: create Slack Provider
 		// Post to Slack to notify the team when a special-purpose coupon is
 		// redeemed. Ignore redemption of bulk coupon.
 		// if (params.options.slack?.redeem && !bulkCouponRedemption) {
@@ -117,7 +74,7 @@ export async function redeem(
 		// }
 
 		return {
-			body: { purchase: createPurchase, redeemingForCurrentUser },
+			body: { purchase, redeemingForCurrentUser },
 			headers: { 'Content-Type': 'application/json' },
 			cookies,
 		}

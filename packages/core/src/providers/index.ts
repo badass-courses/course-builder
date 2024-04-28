@@ -1,5 +1,6 @@
 import { AdapterUser } from '@auth/core/adapters'
 import { EmailConfig } from '@auth/core/providers'
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 
 import { PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
@@ -92,6 +93,7 @@ export type ProviderType =
 	| 'payment'
 	| 'party'
 	| 'checkout'
+	| 'email'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config
@@ -123,6 +125,7 @@ export type Provider<P = any> = (
 			| PartyProviderConfig
 			| PaymentsProviderConfig
 			| EmailConfig
+			| NodemailerConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -134,6 +137,7 @@ export type Provider<P = any> = (
 			| PartyProviderConfig
 			| PaymentsProviderConfig
 			| EmailConfig
+			| NodemailerConfig
 	  ) &
 			InternalProviderOptions)
 ) &

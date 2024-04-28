@@ -1,4 +1,5 @@
 import { getAbility } from '@/ability'
+import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
@@ -104,6 +105,7 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
+		emailProvider,
 	],
 	pages: {
 		signIn: '/login',

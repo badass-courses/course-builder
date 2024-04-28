@@ -41,6 +41,11 @@
 			"import": "./dist/adapters.js",
 			"require": "./dist/adapters.js"
 		},
+		"./utils/*": {
+			"types": "./dist/lib/utils/*.d.ts",
+			"import": "./dist/lib/utils/*.js",
+			"require": "./dist/lib/utils/*.js"
+		},
 		"./providers": {
 			"types": "./dist/providers/index.d.ts"
 		},
@@ -116,6 +121,8 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
+		"@coursebuilder/email-templates": "^1.0.0",
+		"@react-email/components": "^0.0.16",
 		"@types/cookie": "0.6.0",
 		"@types/uuid": "9.0.8",
 		"ai": "3.0.19",
@@ -125,7 +132,6 @@
 		"inngest": "^3.16.1",
 		"liquidjs": "^10.9.4",
 		"lodash": "^4.17.21",
-		"mjml": "^4.15.3",
 		"nodemailer": "^6.7.2",
 		"openai-edge": "^1.2.2",
 		"srt-parser-2": "^1.2.3",
@@ -137,7 +143,7 @@
 		"@types/lodash": "^4.14.200",
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
-		"tsup": "6.7.0",
+		"tsup": "8.0.2",
 		"zod": "^3.22.4"
 	}
 }

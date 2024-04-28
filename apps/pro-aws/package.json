@@ -128,6 +128,7 @@
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.288.0",
 		"memoize-one": "^6.0.0",
+		"mjml": "^4.15.3",
 		"nanoid": "^5.0.2",
 		"next": "14.3.0-canary.18",
 		"next-auth": "5.0.0-beta.16",

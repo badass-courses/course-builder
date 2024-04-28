@@ -1,3 +1,5 @@
+import { AuthConfig } from '@auth/core'
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { CookieSerializeOptions } from 'cookie'
 import { Inngest } from 'inngest'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
@@ -147,7 +149,9 @@ export type InternalProvider<T = ProviderType> = T extends 'transcription'
 		? EmailListConfig
 		: T extends 'payment'
 			? PaymentsProviderConfig
-			: never
+			: T extends 'email'
+				? NodemailerConfig
+				: never
 
 export interface InternalOptions<TProviderType = ProviderType> {
 	providers: InternalProvider[]
@@ -162,6 +166,8 @@ export interface InternalOptions<TProviderType = ProviderType> {
 	inngest: Inngest
 	callbacks: CallbacksOptions
 	getCurrentUser?: () => Promise<User | null>
+	authConfig: AuthConfig
+	baseUrl: string
 }
 
 export interface CookieOption {

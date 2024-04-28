@@ -1,3 +1,4 @@
+import { AuthConfig } from '@auth/core'
 import { Inngest } from 'inngest'
 
 import type { CourseBuilderAdapter } from './adapters'
@@ -50,7 +51,9 @@ export async function CourseBuilder(
 		logger.error(e as Error)
 		if (request.method === 'POST' && internalRequest.action === 'session')
 			return Response.json(null, { status: 400 })
-		return Response.json('bacon and eggs', { status: 400 })
+		return Response.json(`something broke: ${(e as Error).message}`, {
+			status: 400,
+		})
 	}
 }
 
@@ -65,6 +68,8 @@ export interface CourseBuilderConfig {
 	useSecureCookies?: boolean
 	inngest?: Inngest
 	getCurrentUser?: () => Promise<User | null>
+	authConfig: AuthConfig
+	baseUrl: string
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'

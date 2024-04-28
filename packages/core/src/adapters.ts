@@ -76,7 +76,9 @@ export interface CourseBuilderAdapter<
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
-
+	redeemFullPriceCoupon: async () => {
+		return {} as any
+	},
 	createPurchaseTransfer: async () => {
 		return Promise.resolve()
 	},
@@ -164,7 +166,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	getCouponWithBulkPurchases(couponId: string): Promise<
 		| (Coupon & {
-				bulkCouponPurchases: { bulkCouponId: string }[]
+				bulkCouponPurchases: Purchase[]
 		  })
 		| null
 	> {
@@ -309,6 +311,16 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 }
 
 interface SkillProductsCommerceSdk {
+	redeemFullPriceCoupon(options: {
+		email: string
+		couponId?: string
+		redeemingProductId?: string
+		productIds?: string[]
+		currentUserId?: string | null
+	}): Promise<{
+		purchase: Purchase | null
+		redeemingForCurrentUser: boolean
+	} | null>
 	createPurchaseTransfer(options: {
 		sourceUserId: string
 		purchaseId: string
@@ -377,9 +389,7 @@ interface SkillProductsCommerceSdk {
 	): Promise<(Purchase & { user: User }) | null>
 	getCouponWithBulkPurchases(
 		couponId?: string,
-	): Promise<
-		(Coupon & { bulkCouponPurchases: { bulkCouponId: string }[] }) | null
-	>
+	): Promise<(Coupon & { bulkCouponPurchases?: Purchase[] | null }) | null>
 	getPurchase(purchaseId: string): Promise<Purchase | null>
 	getPurchasesForUser(userId?: string): Promise<Purchase[]>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>

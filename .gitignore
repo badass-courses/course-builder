@@ -11,6 +11,7 @@ dist-ssr
 server/dist
 public/dist
 .idea
+.react-email
 
 packages/*/*.js
 packages/*/*.d.ts
