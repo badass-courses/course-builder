@@ -1,3 +1,4 @@
+import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
@@ -9,29 +10,24 @@ import {
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
 import {
+	LESSON_COMPLETED_EVENT,
+	LessonCompleted,
+} from '@/inngest/events/lesson-completed'
+import {
 	POSTMARK_WEBHOOK_EVENT,
 	PostmarkWebhook,
 } from '@/inngest/events/postmark-webhook'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
+import { authOptions } from '@/server/auth'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
-
-import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
-
-import '@coursebuilder/core/inngest/video-processing/events'
-
-import { emailProvider } from '@/coursebuilder/email-provider'
-import {
-	LESSON_COMPLETED_EVENT,
-	LessonCompleted,
-} from '@/inngest/events/lesson-completed'
-import { authOptions } from '@/server/auth'
 
 import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest'
 import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
+import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
