@@ -4,8 +4,8 @@
 	"description": "Core package for Course Builder",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib",
-		"build": "tsup",
-		"dev": "tsup --watch",
+		"build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
+		"dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
 		"test": "vitest run -c ../utils/vitest.config.ts"
 	},
 	"keywords": [
