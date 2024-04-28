@@ -31,8 +31,8 @@
 	"license": "ISC",
 	"dependencies": {
 		"@react-email/components": "^0.0.16",
-		"@types/react": "^18.2.73",
-		"react": "18.3.0-canary-feed8f3f9-20240118",
+		"@types/react": "^18.3.1",
+		"react": "18.3.1",
 		"react-email": "2.1.1",
 		"tsup": "8.0.2"
 	}

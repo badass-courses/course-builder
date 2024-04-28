@@ -47,7 +47,7 @@
 		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.28.1",
+		"@auth/core": "^0.30.0",
 		"@coursebuilder/core": "0.1.4",
 		"@libsql/client": "0.5.6",
 		"@types/better-sqlite3": "7.6.9",
