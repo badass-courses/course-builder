@@ -15,6 +15,7 @@ export default async function LoginPage() {
 		headers: {
 			...(cookie ? { cookie } : {}),
 		},
+		cache: 'no-cache',
 	}
 
 	console.log('options', options)
@@ -23,13 +24,10 @@ export default async function LoginPage() {
 
 	console.log('providers parsed', { providers })
 
-	console.log(
-		'csrf url',
-		`${env.NEXTAUTH_URL ? env.NEXTAUTH_URL : env.COURSEBUILDER_URL}/api/auth/csrf`,
-	)
+	console.log('csrf url', `${env.COURSEBUILDER_URL}/api/auth/csrf`)
 
 	const csrfToken = await fetch(
-		`${env.NEXTAUTH_URL ? env.NEXTAUTH_URL : env.COURSEBUILDER_URL}/api/auth/csrf`,
+		`${env.COURSEBUILDER_URL}/api/auth/csrf`,
 		options,
 	)
 		.then(async (res) => {
