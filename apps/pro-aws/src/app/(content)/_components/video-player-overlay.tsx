@@ -2,12 +2,15 @@
 
 import React, { use } from 'react'
 import { useRouter } from 'next/navigation'
+import { CldImage } from '@/app/_components/cld-image'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import type { Subscriber } from '@/schemas/subscriber'
+import common from '@/text/common'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
 import { useFormStatus } from 'react-dom'
+import ReactMarkdown from 'react-markdown'
 
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Button, useToast } from '@coursebuilder/ui'
@@ -169,10 +172,11 @@ export const SoftBlockOverlay: React.FC<{
 }> = ({ moduleResource, resource }) => {
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { toast } = useToast()
+
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/80 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 text-lg backdrop-blur-md"
+			className="bg-background/80 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:aspect-video lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleResource?.fields?.title}
@@ -188,7 +192,16 @@ export const SoftBlockOverlay: React.FC<{
 						})
 					}
 				}}
-			/>
+			>
+				{moduleResource?.fields?.coverImage?.url && (
+					<CldImage
+						src={moduleResource?.fields?.coverImage?.url}
+						alt={moduleResource?.fields?.coverImage?.alt}
+						width={150}
+						height={150}
+					/>
+				)}
+			</VideoBlockNewsletterCta>
 		</div>
 	)
 }
