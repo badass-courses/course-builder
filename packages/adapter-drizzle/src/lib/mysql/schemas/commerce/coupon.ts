@@ -56,7 +56,7 @@ export function getCouponRelationsSchema(mysqlTable: MySqlTableFn) {
 	const purchase = getPurchaseSchema(mysqlTable)
 	const coupon = getCouponSchema(mysqlTable)
 	return relations(coupon, ({ many }) => ({
-		bulkCouponRedemptionPurchases: many(purchase, {
+		bulkCouponPurchases: many(purchase, {
 			relationName: 'redeemedBulkCoupon',
 		}),
 	}))

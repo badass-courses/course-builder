@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import './commerce.css';
+@import './login.css';
 
 @layer base {
 	:root {

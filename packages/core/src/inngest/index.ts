@@ -1,35 +1,41 @@
 import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
-} from '../../co-gardener/resource-chat'
+} from './co-gardener/resource-chat'
+import {
+	NEW_PURCHASE_CREATED_EVENT,
+	NewPurchaseCreated,
+} from './commerce/event-new-purchase-created'
+import { sendPostPurchaseEmail } from './commerce/send-post-purchase-email'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 	StripeCheckoutSessionCompleted,
-} from '../../stripe/event-checkout-session-completed'
+} from './stripe/event-checkout-session-completed'
 import {
 	EventVideoMuxWebhook,
 	MUX_WEBHOOK_EVENT,
-} from './event-video-mux-webhook'
+} from './video-processing/events/event-video-mux-webhook'
 import {
 	VIDEO_RESOURCE_CREATED_EVENT,
 	VideoResourceCreated,
-} from './event-video-resource'
+} from './video-processing/events/event-video-resource'
 import {
 	VIDEO_SRT_READY_EVENT,
 	VideoSrtReady,
-} from './event-video-srt-ready-to-asset'
+} from './video-processing/events/event-video-srt-ready-to-asset'
 import {
 	EventVideoStatusCheck,
 	VIDEO_STATUS_CHECK_EVENT,
-} from './event-video-status-check'
+} from './video-processing/events/event-video-status-check'
 import {
 	EventVideoTranscriptReady,
 	VIDEO_TRANSCRIPT_READY_EVENT,
-} from './event-video-transcript-ready'
+} from './video-processing/events/event-video-transcript-ready'
 import {
 	EventVideoUploaded,
 	VIDEO_UPLOADED_EVENT,
-} from './event-video-uploaded'
+} from './video-processing/events/event-video-uploaded'
+import { coreVideoProcessingFunctions } from './video-processing/functions'
 
 export type CourseBuilderCoreEvents = {
 	[VIDEO_STATUS_CHECK_EVENT]: EventVideoStatusCheck
@@ -40,4 +46,10 @@ export type CourseBuilderCoreEvents = {
 	[MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
+	[NEW_PURCHASE_CREATED_EVENT]: NewPurchaseCreated
 }
+
+export const courseBuilderCoreFunctions = [
+	...coreVideoProcessingFunctions,
+	sendPostPurchaseEmail,
+]

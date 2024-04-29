@@ -3,18 +3,22 @@ import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import { PricingData } from '@/lib/pricing-query'
 import { CommerceProps } from '@/pricing/commerce-props'
 import { Pricing } from '@/pricing/pricing'
+import { useCoupon } from '@/pricing/use-coupon'
 
-export const EventPricingWidget: React.FC<{
+export const PricingWidget: React.FC<{
 	product: any
 	quantityAvailable: number
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
 }> = ({ product, quantityAvailable, commerceProps, pricingDataLoader }) => {
+	console.log({ product, quantityAvailable, commerceProps, pricingDataLoader })
+
 	const pathname = usePathname()
 	const params = useParams()
 	const searchParams = useSearchParams()
 	const couponFromCode = commerceProps?.couponFromCode
-	const { validCoupon } = { validCoupon: false } //useCoupon(commerceProps?.couponFromCode)
+	const { redeemableCoupon, RedeemDialogForCoupon, validCoupon } =
+		useCoupon(couponFromCode)
 	const couponId =
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)

@@ -34,12 +34,12 @@
 		"access": "public"
 	},
 	"devDependencies": {
-		"@types/react": "^18.2.73",
-		"@types/react-dom": "^18.2.22",
+		"@types/react": "^18.3.1",
+		"@types/react-dom": "^18.3.0",
 		"esbuild-react18-useclient": "^1.0.7",
 		"react": "canary",
 		"react-dom": "canary",
-		"tsup": "6.7.0"
+		"tsup": "8.0.2"
 	},
 	"peerDependencies": {
 		"react": "^18",

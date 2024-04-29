@@ -8,7 +8,7 @@
 	"main": "index.tsx",
 	"types": "index.tsx",
 	"dependencies": {
-		"@auth/core": "^0.28.1",
+		"@auth/core": "^0.30.0",
 		"@codemirror/lang-markdown": "^6.2.3",
 		"@codemirror/language-data": "^6.4.1",
 		"@codemirror/search": "^6.5.5",
@@ -64,8 +64,8 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@types/react": "^18.2.73",
-		"@types/react-dom": "^18.2.22",
+		"@types/react": "^18.3.1",
+		"@types/react-dom": "^18.3.0",
 		"@types/react-gravatar": "^2.6.13"
 	}
 }

@@ -3,7 +3,6 @@ import { getTip } from '@/lib/tips-query'
 
 export const revalidate = 60
 export const contentType = 'image/png'
-export const runtime = 'edge'
 
 export default async function Image({ params }: { params: { slug: string } }) {
 	const resource = await getTip(params.slug)

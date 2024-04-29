@@ -6,6 +6,7 @@ import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
+import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 import {
 	resourceChat,
 	resourceChatConfig,
@@ -16,7 +17,6 @@ import {
 	stripeCheckoutSessionCompletedHandler,
 	stripeCheckoutSessionCompletedTrigger,
 } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
-import { coreVideoProcessingFunctions } from '@coursebuilder/core/inngest/video-processing/functions'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { computeVideoSplitPoints } from './functions/split_video'
@@ -24,7 +24,7 @@ import { computeVideoSplitPoints } from './functions/split_video'
 export const inngestConfig = {
 	client: inngest,
 	functions: [
-		...coreVideoProcessingFunctions.map(({ config, trigger, handler }) =>
+		...courseBuilderCoreFunctions.map(({ config, trigger, handler }) =>
 			inngest.createFunction(config, trigger, handler),
 		),
 		inngest.createFunction(

@@ -1,11 +1,13 @@
 import * as React from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 import { useFormik } from 'formik'
 import { useSession } from 'next-auth/react'
 import Balancer from 'react-wrap-balancer'
 import * as Yup from 'yup'
+
+import { Product } from '@coursebuilder/core/schemas'
 
 import { redeemFullPriceCoupon } from './redeem-full-price-coupon'
 
@@ -16,16 +18,7 @@ const validationSchema = Yup.object().shape({
 interface RedeemDialogProps {
 	open: boolean
 	couponId: string
-	product?: {
-		id: string
-		image?: {
-			url: string
-			width: number
-			height: number
-		}
-		title?: string
-		description?: string
-	}
+	product?: Product
 }
 
 const RedeemDialog = ({
@@ -64,7 +57,13 @@ const RedeemDialog = ({
 			}
 		},
 	})
-	const { title, image, description } = product || {}
+	const {
+		name: title,
+		fields: { image, description },
+	} = product || { fields: {} }
+	const query = useSearchParams()
+	const pathName = usePathname()
+
 	return (
 		<AlertDialogPrimitive.Root data-redeem-dialog="" open={open}>
 			<Content>
@@ -114,8 +113,8 @@ const RedeemDialog = ({
 						<AlertDialogPrimitive.Cancel asChild>
 							<button
 								onClick={(e) => {
-									const code = router.query.code
-									const pathname = router.asPath.replace(`?code=${code}`, '')
+									const code = query.get('code')
+									const pathname = pathName.replace(`?code=${code}`, '')
 									router.push(pathname)
 								}}
 								data-cancel=""

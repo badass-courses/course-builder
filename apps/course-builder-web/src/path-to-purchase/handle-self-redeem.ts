@@ -4,9 +4,9 @@
  * @param {string} bulkCouponId current user's bulk coupon id from purchase
  * @param {(params) => void} callback function to be called after attempting coupon redemption
  */
-import { Purchase } from '@coursebuilder/core/schemas'
+import { redeemFullPriceCoupon } from '@/pricing/redeem-full-price-coupon'
 
-import { redeemFullPriceCoupon } from './redeem-full-price-coupon'
+import { Purchase } from '@coursebuilder/core/schemas'
 
 type CallbackParams =
 	| { status: 'success'; redeemedPurchase: Purchase }

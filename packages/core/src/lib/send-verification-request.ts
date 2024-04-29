@@ -1,9 +1,10 @@
 import process from 'process'
-import { EmailConfig } from '@auth/core/providers'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { Theme } from '@auth/core/types'
-import mjml2html from 'mjml'
+import { render } from '@react-email/components'
 import { createTransport } from 'nodemailer'
+
+import { PostPurchaseLoginEmail } from '@coursebuilder/email-templates/emails/post-purchase-login'
 
 import { CourseBuilderAdapter } from '../adapters'
 
@@ -17,12 +18,14 @@ export type MagicLinkEmailType =
 
 export type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
 	expires?: Date
+	merchantChargeId?: string | null
 }
 export type TextEmailParams = Record<'url' | 'host', string> & {
 	expires?: Date
 }
 
 function isValidateEmailServerConfig(server: any) {
+	console.log({ server })
 	return Boolean(
 		server &&
 			server.host &&
@@ -44,6 +47,7 @@ export interface SendVerificationRequestParams {
 export const sendVerificationRequest = async (
 	params: SendVerificationRequestParams & {
 		type?: MagicLinkEmailType
+		merchantChargeId?: string | null
 		html?: (options: HTMLEmailParams, theme: Theme) => string
 		text?: (options: TextEmailParams) => string
 	},
@@ -52,11 +56,14 @@ export const sendVerificationRequest = async (
 	const {
 		identifier: email,
 		url,
-		provider: { server, from },
+		provider: {
+			options: { server, from },
+		},
 		text = defaultText,
 		html = defaultHtml,
 		theme,
 		expires,
+		merchantChargeId,
 	} = params
 	const { host } = new URL(url)
 
@@ -106,8 +113,8 @@ export const sendVerificationRequest = async (
 			to: email,
 			from,
 			subject,
-			text: text({ url, host, expires }),
-			html: html({ url, host, email, expires }, theme),
+			text: text({ url, host, email, expires, merchantChargeId }, theme),
+			html: html({ url, host, email, expires, merchantChargeId }, theme),
 		})
 		console.debug(`📧 Email sent to ${email}! [${result.response}]`)
 	} else if (process.env.SKIP_EMAIL === 'true') {
@@ -119,78 +126,60 @@ export const sendVerificationRequest = async (
 	}
 }
 
-function defaultHtml({ url, host, email }: HTMLEmailParams, theme: Theme) {
-	// Insert invisible space into domains and email address to prevent both the
-	// email address and the domain from being turned into a hyperlink by email
-	// clients like Outlook and Apple mail, as this is confusing because it seems
-	// like they are supposed to click on their email address to sign in.
-	const escapedEmail = `${email.replace(/\./g, '&#8203;.')}`
-	const escapedHost = `${host.replace(/\./g, '&#8203;.')}`
-
-	// Some simple styling options
-	const backgroundColor = '#F9FAFB'
-	const textColor = '#3E3A38'
-	const mainBackgroundColor = '#ffffff'
-	const buttonBackgroundColor = theme ? theme.brandColor : '#F9FAFB'
-	const buttonTextColor = '#ffffff'
-
-	const { html } = mjml2html(`
-<mjml>
-  <mj-head>
-    <mj-font name='Inter' href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600' />
-    <mj-attributes>
-      <mj-all font-family='Inter, Helvetica, sans-serif' line-height='1.5' />
-    </mj-attributes>
-    <mj-raw>
-      <meta name='color-scheme' content='light' />
-      <meta name='supported-color-schemes' content='light' />
-    </mj-raw>
-  </mj-head>
-  <mj-body background-color='${backgroundColor}'>
-    ${
-			theme?.logo &&
-			`<mj-section padding='10px 0 10px 0'>
-          <mj-column background-color='${backgroundColor}'>
-            <mj-image alt='${process.env.NEXT_PUBLIC_SITE_TITLE}' width='180px' src='${theme.logo}' />
-          </mj-column>
-        </mj-section>`
-		}
-    <mj-section padding-top='0'>
-      <mj-column background-color='${mainBackgroundColor}' padding='16px 10px'>
-        <mj-text font-size='18px' color='${textColor}' align='center' padding-bottom='20px'>
-          Log in as <strong color='${textColor}'>${escapedEmail}</strong> to ${
-						process.env.NEXT_PUBLIC_SITE_TITLE
-					}.
-        </mj-text>
-        <mj-button href='${url}' background-color='${buttonBackgroundColor}' color='${buttonTextColor}' target='_blank' border-radius='6px' font-size='18px' font-weight='bold'>
-          Log in
-        </mj-button>
-
-        <mj-text color='${textColor}' align='center'  padding='30px 90px 10px 90px'>
-          The link is valid for 24 hours or until it is used once. You will stay logged in for 60 days. <a href='${
-						process.env.NEXT_PUBLIC_URL
-					}/login' target='_blank'>Click here to request another link</a>.
-        </mj-text>
-        <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
-          Once you are logged in, you can <a href='${
-						process.env.NEXT_PUBLIC_URL
-					}/invoices' target='_blank'>access your invoice here</a>.
-        </mj-text>
-        <mj-text color='${textColor}' align='center' padding='10px 90px 10px 90px'>
-          If you need additional help, reply!
-        </mj-text>
-        <mj-text color='gray' align='center' padding-top='40px'>
-          If you did not request this email you can safely ignore it.
-        </mj-text>
-    </mj-section>
-  </mj-body>
-</mjml>
-`)
-
-	return html
+function defaultHtml(
+	{ url, host, email, merchantChargeId }: HTMLEmailParams,
+	theme: Theme,
+) {
+	return render(
+		PostPurchaseLoginEmail(
+			{
+				url,
+				host,
+				email,
+				siteName:
+					process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+					process.env.NEXT_PUBLIC_SITE_TITLE ||
+					'',
+				...(merchantChargeId && {
+					invoiceUrl: `${process.env.COURSEBUILDER_URL}/invoices/${merchantChargeId}`,
+				}),
+				previewText:
+					process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+					process.env.NEXT_PUBLIC_SITE_TITLE ||
+					'login link',
+			},
+			theme,
+		),
+	)
 }
 
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
-function defaultText({ url, host }: TextEmailParams) {
-	return `Log in to ${host}\n${url}\n\n`
+function defaultText(
+	{ url, host, email, merchantChargeId }: HTMLEmailParams,
+	theme: Theme,
+) {
+	return render(
+		PostPurchaseLoginEmail(
+			{
+				url,
+				host,
+				email,
+				siteName:
+					process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+					process.env.NEXT_PUBLIC_SITE_TITLE ||
+					'',
+				...(merchantChargeId && {
+					invoiceUrl: `${process.env.COURSEBUILDER_URL}/invoices/${merchantChargeId}`,
+				}),
+				previewText:
+					process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+					process.env.NEXT_PUBLIC_SITE_TITLE ||
+					'login link',
+			},
+			theme,
+		),
+		{
+			plainText: true,
+		},
+	)
 }

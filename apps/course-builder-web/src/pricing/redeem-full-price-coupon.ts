@@ -9,7 +9,7 @@ export async function redeemFullPriceCoupon({
 	productIds: string[]
 	sendEmail?: boolean
 }) {
-	return await fetch(`/api/skill/redeem/coupon`, {
+	return await fetch(`/api/coursebuilder/redeem/coupon`, {
 		method: 'post',
 		body: JSON.stringify({
 			email,

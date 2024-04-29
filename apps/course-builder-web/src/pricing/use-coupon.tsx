@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import { Product } from '@coursebuilder/core/schemas'
+
 import RedeemDialog from './redeem-dialog'
 
 type CouponValidator = {
@@ -8,19 +10,7 @@ type CouponValidator = {
 	isRedeemable: boolean
 }
 
-export function useCoupon(
-	coupon?: CouponValidator,
-	product?: {
-		id: string
-		image?: {
-			url: string
-			width: number
-			height: number
-		}
-		title?: string
-		description?: string
-	},
-) {
+export function useCoupon(coupon?: CouponValidator, product?: Product) {
 	const [validCoupon, setValidCoupon] = React.useState(false)
 	React.useEffect(() => {
 		setTimeout(() => {

@@ -1,3 +1,4 @@
+import { AuthConfig } from '@auth/core'
 import { Inngest } from 'inngest'
 
 import type { CourseBuilderAdapter } from './adapters'
@@ -7,6 +8,7 @@ import { createActionURL, setEnvDefaults } from './lib/utils/env.js'
 import { logger, setLogger, type LoggerInstance } from './lib/utils/logger'
 import { toInternalRequest, toResponse } from './lib/utils/web'
 import type { Provider } from './providers'
+import { User } from './schemas'
 import type { CallbacksOptions, CookiesOptions } from './types'
 
 export { createActionURL, setEnvDefaults }
@@ -49,7 +51,9 @@ export async function CourseBuilder(
 		logger.error(e as Error)
 		if (request.method === 'POST' && internalRequest.action === 'session')
 			return Response.json(null, { status: 400 })
-		return Response.json('bacon and eggs', { status: 400 })
+		return Response.json(`something broke: ${(e as Error).message}`, {
+			status: 400,
+		})
 	}
 }
 
@@ -63,6 +67,9 @@ export interface CourseBuilderConfig {
 	cookies?: Partial<CookiesOptions>
 	useSecureCookies?: boolean
 	inngest?: Inngest
+	getCurrentUser?: () => Promise<User | null>
+	authConfig: AuthConfig
+	baseUrl: string
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'

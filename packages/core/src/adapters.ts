@@ -33,9 +33,11 @@ export interface CourseBuilderAdapter<
 		id?: string
 		userId: string
 		productId: string
-		merchantChargeId: string
-		merchantSessionId: string
+		merchantChargeId?: string
+		merchantSessionId?: string
 		totalAmount: string
+		couponId?: string | null
+		redeemedBulkCouponId?: string | null
 		status?: string
 		metadata?: Record<string, any>
 	}): Promise<Purchase>
@@ -74,6 +76,18 @@ export interface CourseBuilderAdapter<
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
+	redeemFullPriceCoupon: async () => {
+		return {} as any
+	},
+	createPurchaseTransfer: async () => {
+		return Promise.resolve()
+	},
+	incrementCouponUsedCount(_) {
+		return Promise.resolve()
+	},
+	getExistingNonBulkValidPurchasesOfProduct: async () => {
+		return []
+	},
 	getMerchantPriceForProductId: async (productId) => null,
 	getMerchantProductForProductId: async (productId) => null,
 	getMerchantAccount: async () => null,
@@ -152,7 +166,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	getCouponWithBulkPurchases(couponId: string): Promise<
 		| (Coupon & {
-				bulkCouponPurchases: { bulkCouponId: string }[]
+				bulkCouponPurchases: Purchase[]
 		  })
 		| null
 	> {
@@ -297,6 +311,26 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 }
 
 interface SkillProductsCommerceSdk {
+	redeemFullPriceCoupon(options: {
+		email: string
+		couponId?: string
+		redeemingProductId?: string
+		productIds?: string[]
+		currentUserId?: string | null
+	}): Promise<{
+		purchase: Purchase | null
+		redeemingForCurrentUser: boolean
+	} | null>
+	createPurchaseTransfer(options: {
+		sourceUserId: string
+		purchaseId: string
+		expiresAt: Date
+	}): Promise<void>
+	incrementCouponUsedCount(couponId: string): Promise<void>
+	getExistingNonBulkValidPurchasesOfProduct(options: {
+		userId: string
+		productId?: string
+	}): Promise<Purchase[]>
 	getPurchaseDetails(
 		purchaseId: string,
 		userId: string,
@@ -354,10 +388,8 @@ interface SkillProductsCommerceSdk {
 		purchaseId: string,
 	): Promise<(Purchase & { user: User }) | null>
 	getCouponWithBulkPurchases(
-		couponId: string,
-	): Promise<
-		(Coupon & { bulkCouponPurchases: { bulkCouponId: string }[] }) | null
-	>
+		couponId?: string,
+	): Promise<(Coupon & { bulkCouponPurchases?: Purchase[] | null }) | null>
 	getPurchase(purchaseId: string): Promise<Purchase | null>
 	getPurchasesForUser(userId?: string): Promise<Purchase[]>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>

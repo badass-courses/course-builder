@@ -6,9 +6,8 @@ export default function LoginPage() {
 	const providers = authOptions.providers
 	return (
 		<Login
-			providers={providers.map((provider: Provider) => {
+			providers={providers.map((provider: any) => {
 				return {
-					// @ts-ignore
 					id: provider.id,
 					name: provider.name,
 				}

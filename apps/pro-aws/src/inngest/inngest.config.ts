@@ -6,12 +6,12 @@ import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
+import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 import {
 	resourceChat,
 	resourceChatConfig,
 	resourceChatTrigger,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
-import { coreVideoProcessingFunctions } from '@coursebuilder/core/inngest/video-processing/functions'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { computeVideoSplitPoints } from './functions/split_video'
@@ -19,7 +19,7 @@ import { computeVideoSplitPoints } from './functions/split_video'
 export const inngestConfig = {
 	client: inngest,
 	functions: [
-		...coreVideoProcessingFunctions.map(({ config, trigger, handler }) =>
+		...courseBuilderCoreFunctions.map(({ config, trigger, handler }) =>
 			inngest.createFunction(config, trigger, handler),
 		),
 		userCreated,

@@ -1,3 +1,5 @@
+import { AuthConfig } from '@auth/core'
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { CookieSerializeOptions } from 'cookie'
 import { Inngest } from 'inngest'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
@@ -9,7 +11,14 @@ import { CheckoutParams } from './lib/pricing/stripe-checkout'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
-import { Coupon, MerchantCoupon, Price, Product, Purchase } from './schemas'
+import {
+	Coupon,
+	MerchantCoupon,
+	Price,
+	Product,
+	Purchase,
+	User,
+} from './schemas'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
@@ -48,6 +57,7 @@ export type CourseBuilderAction =
 	| 'session'
 	| 'subscribe-to-list'
 	| 'checkout'
+	| 'redeem'
 
 export interface RequestInternal {
 	url: URL
@@ -139,7 +149,9 @@ export type InternalProvider<T = ProviderType> = T extends 'transcription'
 		? EmailListConfig
 		: T extends 'payment'
 			? PaymentsProviderConfig
-			: never
+			: T extends 'email'
+				? NodemailerConfig
+				: never
 
 export interface InternalOptions<TProviderType = ProviderType> {
 	providers: InternalProvider[]
@@ -153,6 +165,9 @@ export interface InternalOptions<TProviderType = ProviderType> {
 	basePath: string
 	inngest: Inngest
 	callbacks: CallbacksOptions
+	getCurrentUser?: () => Promise<User | null>
+	authConfig: AuthConfig
+	baseUrl: string
 }
 
 export interface CookieOption {

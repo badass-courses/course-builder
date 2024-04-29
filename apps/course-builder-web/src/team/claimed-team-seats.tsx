@@ -24,7 +24,7 @@ export const ClaimedTeamSeats: React.FC<
 	const bulkCoupon = await db.query.coupon.findFirst({
 		where: eq(coupon.id, purchase.bulkCouponId),
 		with: {
-			bulkCouponRedemptionPurchases: {
+			bulkCouponPurchases: {
 				with: {
 					user: true,
 				},
@@ -32,7 +32,7 @@ export const ClaimedTeamSeats: React.FC<
 		},
 	})
 
-	const claims = bulkCoupon?.bulkCouponRedemptionPurchases || []
+	const claims = bulkCoupon?.bulkCouponPurchases || []
 
 	return (
 		<div data-claimed-seats-team="">

@@ -1,6 +1,10 @@
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+
+import { sendServerEmail } from '../../lib/send-server-email'
 import { parseCheckoutSession } from '../../providers/stripe'
 import { User } from '../../schemas'
 import { CheckoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
+import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
@@ -33,6 +37,8 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 		db,
 		siteRootUrl,
 		paymentProvider,
+		emailProvider,
+		getAuthConfig,
 	}: CoreInngestFunctionInput) => {
 		// break down the checkout session into the info we need
 
@@ -104,32 +110,44 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			},
 		)
 
-		return await step.run('create a merchant charge and purchase', async () => {
-			if (!merchantProduct) {
-				throw new Error('merchantProduct is null')
-			}
-			if (!merchantCustomer) {
-				throw new Error('merchantCustomer is null')
-			}
-			if (!purchaseInfo.chargeIdentifier) {
-				throw new Error('purchaseInfo.chargeIdentifier is null')
-			}
-			return await db.createMerchantChargeAndPurchase({
-				userId: user.id,
-				productId: merchantProduct.productId,
-				stripeChargeId: purchaseInfo.chargeIdentifier,
-				stripeCouponId: purchaseInfo.couponIdentifier,
-				merchantAccountId: merchantAccount.id,
-				merchantProductId: merchantProduct.id,
-				merchantCustomerId: merchantCustomer.id,
-				stripeChargeAmount: purchaseInfo.chargeAmount || 0,
-				quantity: purchaseInfo.quantity,
-				checkoutSessionId: stripeCheckoutSession.id,
-				country: purchaseInfo.metadata?.country,
-				appliedPPPStripeCouponId:
-					purchaseInfo.metadata?.appliedPPPStripeCouponId,
-				upgradedFromPurchaseId: purchaseInfo.metadata?.upgradedFromPurchaseId,
-				usedCouponId: purchaseInfo.metadata?.usedCouponId,
-			})
+		const purchase = await step.run(
+			'create a merchant charge and purchase',
+			async () => {
+				if (!merchantProduct) {
+					throw new Error('merchantProduct is null')
+				}
+				if (!merchantCustomer) {
+					throw new Error('merchantCustomer is null')
+				}
+				if (!purchaseInfo.chargeIdentifier) {
+					throw new Error('purchaseInfo.chargeIdentifier is null')
+				}
+				return await db.createMerchantChargeAndPurchase({
+					userId: user.id,
+					productId: merchantProduct.productId,
+					stripeChargeId: purchaseInfo.chargeIdentifier,
+					stripeCouponId: purchaseInfo.couponIdentifier,
+					merchantAccountId: merchantAccount.id,
+					merchantProductId: merchantProduct.id,
+					merchantCustomerId: merchantCustomer.id,
+					stripeChargeAmount: purchaseInfo.chargeAmount || 0,
+					quantity: purchaseInfo.quantity,
+					checkoutSessionId: stripeCheckoutSession.id,
+					country: purchaseInfo.metadata?.country,
+					appliedPPPStripeCouponId:
+						purchaseInfo.metadata?.appliedPPPStripeCouponId,
+					upgradedFromPurchaseId: purchaseInfo.metadata?.upgradedFromPurchaseId,
+					usedCouponId: purchaseInfo.metadata?.usedCouponId,
+				})
+			},
+		)
+
+		await step.sendEvent(NEW_PURCHASE_CREATED_EVENT, {
+			name: NEW_PURCHASE_CREATED_EVENT,
+			data: {
+				purchaseId: purchase.id,
+			},
 		})
+
+		return { purchase, purchaseInfo }
 	}

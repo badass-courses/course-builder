@@ -3,7 +3,6 @@ import { getLesson } from '@/lib/lessons-query'
 
 export const revalidate = 60
 export const contentType = 'image/png'
-export const runtime = 'edge'
 
 export default async function Image({
 	params,

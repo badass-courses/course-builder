@@ -76,18 +76,22 @@ export async function sendServerEmail({
 	authOptions,
 	adapter,
 	baseUrl,
+	merchantChargeId,
 }: {
 	authOptions: AuthConfig
 	email: string
 	callbackUrl: string
-	emailProvider: NodemailerConfig
+	emailProvider?: NodemailerConfig
 	type?: MagicLinkEmailType
 	html?: (options: HTMLEmailParams, theme: Theme) => string
 	text?: (options: TextEmailParams) => string
 	expiresAt?: Date | null
 	adapter: CourseBuilderAdapter
 	baseUrl: string
+	merchantChargeId?: string | null
 }) {
+	console.log({ emailProvider, authOptions })
+	if (!emailProvider) return
 	try {
 		const verificationDetails = await createVerificationUrl({
 			email,
@@ -109,13 +113,14 @@ export async function sendServerEmail({
 			{
 				identifier: email,
 				url,
-				theme: authOptions.theme || { colorScheme: 'auto' },
+				theme: { colorScheme: 'auto' },
 				provider: emailProvider,
 				token: token as string,
 				expires,
 				type,
 				html,
 				text,
+				merchantChargeId,
 			},
 			adapter,
 		)

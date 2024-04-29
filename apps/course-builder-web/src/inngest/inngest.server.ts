@@ -1,3 +1,5 @@
+import { emailProvider } from '@/coursebuilder/email-provider'
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
@@ -13,20 +15,16 @@ import {
 	PostmarkWebhook,
 } from '@/inngest/events/postmark-webhook'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
+import { authOptions } from '@/server/auth'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
 
-import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
-
-import '@coursebuilder/core/inngest/video-processing/events'
-
-import { stripeProvider } from '@/coursebuilder/stripe-provider'
-
+import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest'
 import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
-import { CourseBuilderCoreEvents } from '@coursebuilder/core/inngest/video-processing/events'
+import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
@@ -78,6 +76,8 @@ const middleware = createInngestMiddleware({
 		callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
 	}),
 	paymentProvider: stripeProvider,
+	emailProvider,
+	getAuthConfig: () => authOptions,
 })
 
 export const inngest = new Inngest({

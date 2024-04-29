@@ -17,6 +17,7 @@ export const couponSchema = z.object({
 	}),
 	restrictedToProductId: z.string().max(191).optional().nullable(),
 	bulkPurchaseId: z.string().max(191).optional().nullable(),
+	bulkCouponPurchases: z.any().optional().nullable(),
 })
 
 export type Coupon = z.infer<typeof couponSchema>

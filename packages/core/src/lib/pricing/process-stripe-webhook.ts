@@ -7,6 +7,7 @@ import {
 	InternalProvider,
 	PaymentsProviderConfig,
 } from '../../types'
+import { sendServerEmail } from '../send-server-email'
 
 const exampleEvent = {
 	id: 'evt_1P6e0gAclagrtXef9ybQkT50',
@@ -131,6 +132,7 @@ export async function processStripeWebhook(
 					stripeEvent: checkoutSessionCompletedEvent.parse(event),
 				},
 			})
+
 			break
 		case 'charge.refunded':
 			console.log('charge.refunded', { event })
