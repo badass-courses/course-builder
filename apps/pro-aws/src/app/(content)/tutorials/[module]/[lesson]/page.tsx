@@ -10,17 +10,16 @@ import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { env } from '@/env.mjs'
 import { getLesson } from '@/lib/lessons-query'
+import { getNextResource } from '@/lib/resources/get-next-resource'
 import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import ReactMarkdown from 'react-markdown'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import {
@@ -74,7 +73,13 @@ export default async function LessonPage({ params }: Props) {
 					/>
 				</Suspense>
 				<main className="container px-0">
-					<PlayerContainer lessonLoader={lessonLoader} />
+					<PlayerContainer
+						params={params}
+						lessonLoader={lessonLoader}
+						moduleLoader={
+							tutorialLoader as unknown as Promise<ContentResource | null>
+						}
+					/>
 				</main>
 				<div className="container flex flex-col-reverse border-t px-0 lg:flex-row lg:border-x">
 					<div className="flex flex-col py-8">
@@ -287,7 +292,7 @@ async function LessonActionBar({
 
 function PlayerContainerSkeleton() {
 	return (
-		<div className="flex aspect-video h-auto w-full items-center justify-center border-x">
+		<div className="flex aspect-video h-full w-full items-center justify-center">
 			<Spinner />
 		</div>
 	)
@@ -295,8 +300,12 @@ function PlayerContainerSkeleton() {
 
 async function PlayerContainer({
 	lessonLoader,
+	moduleLoader,
+	params,
 }: {
 	lessonLoader: Promise<ContentResource | null>
+	moduleLoader: Promise<ContentResource | null>
+	params: Props['params']
 }) {
 	const lesson = await lessonLoader
 
@@ -304,18 +313,28 @@ async function PlayerContainer({
 		notFound()
 	}
 
+	const canViewLoader = getViewingAbilityForResource(
+		params.lesson,
+		params.module,
+	)
 	const resource = lesson.resources?.[0]?.resource.id
-
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const nextResourceLoader = getNextResource(lesson.id)
 
 	return (
 		<VideoPlayerOverlayProvider>
-			<div className="relative flex aspect-video h-auto w-full items-center justify-center">
-				<VideoPlayerOverlay />
+			<div className="relative flex h-full w-full items-center justify-center border-x">
 				<Suspense fallback={<PlayerContainerSkeleton />}>
+					<VideoPlayerOverlay
+						nextResourceLoader={nextResourceLoader}
+						moduleLoader={moduleLoader}
+						lessonLoader={lessonLoader}
+						canViewLoader={canViewLoader}
+					/>
 					<AuthedVideoPlayer
-						className="overflow-hidden border-x"
+						className="aspect-video overflow-hidden"
 						videoResourceLoader={videoResourceLoader}
+						canViewLoader={canViewLoader}
 					/>
 				</Suspense>
 			</div>

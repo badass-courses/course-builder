@@ -6,6 +6,7 @@ import { getLesson } from '@/lib/lessons-query'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
+import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
 
@@ -69,63 +70,15 @@ export const abilityRouter = createTRPCRouter({
 		.input(
 			z
 				.object({
-					lessonId: z.string(),
-					moduleId: z.string(),
+					lessonId: z.string().optional(),
+					moduleId: z.string().optional(),
 				})
 				.optional(),
 		)
 		.query(async ({ ctx, input }) => {
-			const headerStore = headers()
-			const country =
-				headerStore.get('x-vercel-ip-country') ||
-				process.env.DEFAULT_COUNTRY ||
-				'US'
-
-			const convertkitSubscriber = await getSubscriberFromCookie()
-
-			const { session } = await getServerAuthSession()
-
-			const lessonResource = input && (await getLesson(input.lessonId))
-			const moduleResource =
-				input && (await courseBuilderAdapter.getContentResource(input.moduleId))
-			const sectionResource =
-				lessonResource &&
-				module &&
-				(await getResourceSection(lessonResource.id, moduleResource))
-
-			return defineRulesForPurchases({
-				user: session?.user,
-				...(convertkitSubscriber && {
-					subscriber: convertkitSubscriber,
-				}),
-				country,
-				...(lessonResource && { lesson: lessonResource }),
-				...(moduleResource && { module: moduleResource }),
-				...(sectionResource ? { section: sectionResource } : {}),
-				isSolution: false,
-				purchasedModules: [],
+			return getCurrentAbilityRules({
+				lessonId: input?.lessonId,
+				moduleId: input?.moduleId,
 			})
 		}),
 })
-
-async function getResourceSection(
-	resourceId: string,
-	moduleResource?: ContentResource | null,
-) {
-	if (!moduleResource?.resources) return null
-	let sectionData = null
-
-	moduleResource.resources.forEach((section) => {
-		if (section.resourceId === resourceId) {
-			sectionData = section.resource
-		}
-
-		section.resource.resources.forEach((lesson: { resourceId: string }) => {
-			if (lesson.resourceId === resourceId) {
-				sectionData = section.resource
-			}
-		})
-	})
-
-	return sectionData
-}

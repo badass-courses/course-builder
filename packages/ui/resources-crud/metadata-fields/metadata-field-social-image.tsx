@@ -16,7 +16,6 @@ export function MetadataFieldSocialImage({
 	form: UseFormReturn<any>
 	currentSocialImage: string | null | undefined
 }) {
-	console.log({ currentSocialImage })
 	return (
 		<FormField
 			control={form.control}
