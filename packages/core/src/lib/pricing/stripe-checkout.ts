@@ -212,8 +212,6 @@ export async function stripeCheckout({
 				usedCouponId,
 			} = params
 
-			console.log('lets build a product checkout link', { productId })
-
 			errorRedirectUrl = config.errorRedirectUrl
 			const cancelUrl = config.cancelUrl
 

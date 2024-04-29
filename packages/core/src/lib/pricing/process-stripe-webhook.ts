@@ -124,8 +124,6 @@ export async function processStripeWebhook(
 
 	switch (event.type) {
 		case 'checkout.session.completed':
-			console.log('checkout.session.completed', { event })
-			// dispatch inngest event
 			await options.inngest.send({
 				name: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 				data: {

@@ -19,8 +19,6 @@ export async function CourseBuilder(
 ): Promise<Response> {
 	setLogger(config.logger, config.debug)
 
-	console.log('lets course build')
-
 	const internalRequest = await toInternalRequest(request, config)
 	if (!internalRequest) {
 		return Response.json('Bad request', { status: 400 })

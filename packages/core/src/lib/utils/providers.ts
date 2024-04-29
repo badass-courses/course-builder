@@ -18,11 +18,7 @@ export default function parseProviders(params: {
 		const provider = typeof p === 'function' ? p() : p
 		const { options: userOptions, ...defaults } = provider
 
-		// having the adapter class here made it go into a tailspin
-
 		const { paymentsAdapter, ...userOptionsWithPaymentsAdapter } = userOptions
-
-		console.log({ userOptionsWithPaymentsAdapter, defaults })
 
 		return {
 			...merge(defaults, userOptionsWithPaymentsAdapter),

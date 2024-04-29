@@ -21,8 +21,13 @@ export default async function LoginPage() {
 
 	console.log('providers parsed', { providers })
 
+	console.log(
+		'csrf url',
+		`${env.NEXTAUTH_URL ? env.NEXTAUTH_URL : env.COURSEBUILDER_URL}/api/auth/csrf`,
+	)
+
 	const csrfToken = await fetch(
-		`${env.COURSEBUILDER_URL}/api/auth/csrf`,
+		`${env.NEXTAUTH_URL ? env.NEXTAUTH_URL : env.COURSEBUILDER_URL}/api/auth/csrf`,
 		options,
 	)
 		.then(async (res) => {
@@ -32,8 +37,6 @@ export default async function LoginPage() {
 				return csrfToken
 			} catch (e) {
 				console.log('error', e)
-				console.log(await res.text())
-				console.log('using getCsrfToken')
 				return getCsrfToken()
 			}
 		})

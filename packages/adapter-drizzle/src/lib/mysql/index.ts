@@ -518,8 +518,6 @@ export function mySqlDrizzleAdapter(
 						})) || null,
 					)
 
-					console.log({ existingMerchantCharge })
-
 					const existingPurchaseForCharge = existingMerchantCharge
 						? await client.query.purchases.findFirst({
 								where: eq(
@@ -533,8 +531,6 @@ export function mySqlDrizzleAdapter(
 								},
 							})
 						: null
-
-					console.log({ existingPurchaseForCharge })
 
 					if (existingPurchaseForCharge) {
 						return existingPurchaseForCharge.id
@@ -552,8 +548,6 @@ export function mySqlDrizzleAdapter(
 						merchantCustomerId,
 					})
 
-					console.log({ newMerchantCharge })
-
 					const existingPurchase = purchaseSchema.nullable().parse(
 						(await client.query.purchases.findFirst({
 							where: and(
@@ -563,8 +557,6 @@ export function mySqlDrizzleAdapter(
 							),
 						})) || null,
 					)
-
-					console.log({ existingPurchase })
 
 					const existingBulkCoupon = couponSchema.nullable().parse(
 						await client

@@ -19,7 +19,6 @@ export default function NextCourseBuilder(
 				(prop: string) => prop in req.headers,
 			)
 
-			console.log('hmmm', { isWebhook, headers: req.headers })
 			const _config = config(req)
 			setEnvDefaults(_config)
 			return CourseBuilder(reqWithEnvURL(req), _config)
@@ -33,7 +32,6 @@ export default function NextCourseBuilder(
 	const httpHandler = async (req: NextRequest) => {
 		const stripeHeader = headers().get('stripe-signature')
 		const isWebhook = ['stripe-signature'].every((prop: string) => {
-			console.log('prop', prop)
 			return prop in req.headers
 		})
 
@@ -41,7 +39,6 @@ export default function NextCourseBuilder(
 
 		const newReq = reqWithEnvURL(req)
 
-		console.log('hah', { isWebhook, stripeHeader, config })
 		const handler = CourseBuilder(newReq, config)
 
 		// const body = await newReq.text()

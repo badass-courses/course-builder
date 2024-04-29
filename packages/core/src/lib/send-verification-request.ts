@@ -25,7 +25,6 @@ export type TextEmailParams = Record<'url' | 'host', string> & {
 }
 
 function isValidateEmailServerConfig(server: any) {
-	console.log({ server })
 	return Boolean(
 		server &&
 			server.host &&

@@ -26,15 +26,12 @@ export async function init({
 	options: InternalOptions
 	cookies: cookie.Cookie[]
 }> {
-	console.log('init called')
 	const { providers, provider } = parseProviders({
 		providers: courseBuilderOptions.providers,
 		url,
 		providerId,
 		options: courseBuilderOptions,
 	})
-
-	console.log('providers parsed')
 
 	const maxAge = 30 * 24 * 60 * 60
 

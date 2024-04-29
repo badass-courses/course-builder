@@ -156,8 +156,6 @@ export async function webhook(
 
 	switch (options.provider.type) {
 		case 'payment':
-			console.log('webhook', { request })
-
 			if (options.provider.id === 'stripe') {
 				await processStripeWebhook(request.body, options)
 				return Response.json('ok', { status: 200 })

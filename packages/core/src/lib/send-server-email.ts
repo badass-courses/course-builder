@@ -90,7 +90,6 @@ export async function sendServerEmail({
 	baseUrl: string
 	merchantChargeId?: string | null
 }) {
-	console.log({ emailProvider, authOptions })
 	if (!emailProvider) return
 	try {
 		const verificationDetails = await createVerificationUrl({
@@ -106,8 +105,6 @@ export async function sendServerEmail({
 		if (!verificationDetails) return
 
 		const { url, token, expires } = verificationDetails
-
-		console.log('%%% about to sendVerificationRequest %%%')
 
 		await sendVerificationRequest(
 			{
