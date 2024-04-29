@@ -7,20 +7,21 @@ type VideoPlayerOverlayState = {
 	action: VideoPlayerOverlayAction | null
 }
 
-export type FinishedAction = {
-	type: 'LESSON_FINISHED' | 'COLLECTION_FINISHED'
+export type CompletedAction = {
+	type: 'COMPLETED'
 	playerRef: React.RefObject<MuxPlayerRefAttributes>
 }
 
 type VideoPlayerOverlayAction =
-	| FinishedAction
-	| { type: 'SOFT_BLOCKED' }
-	| { type: 'HARD_BLOCKED' }
+	| CompletedAction
+	| { type: 'BLOCKED' }
 	| { type: 'HIDDEN' }
-	| { type: 'REPLAYED' }
+	| { type: 'LOADING' }
 
 const initialState: VideoPlayerOverlayState = {
-	action: null,
+	action: {
+		type: 'HIDDEN',
+	},
 }
 
 const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
@@ -28,23 +29,18 @@ const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
 	action,
 ) => {
 	switch (action.type) {
-		case 'LESSON_FINISHED':
+		case 'COMPLETED':
 			// TODO: Track video completion
 			return {
 				...state,
 				action,
 			}
-		case 'SOFT_BLOCKED':
+		case 'BLOCKED':
 			return {
 				...state,
 				action,
 			}
-		case 'HARD_BLOCKED':
-			return {
-				...state,
-				action,
-			}
-		case 'COLLECTION_FINISHED':
+		case 'COMPLETED':
 			return {
 				...state,
 				action,
@@ -55,11 +51,6 @@ const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
 				action,
 			}
 		}
-		case 'REPLAYED':
-			return {
-				...state,
-				action,
-			}
 		default:
 			return state
 	}

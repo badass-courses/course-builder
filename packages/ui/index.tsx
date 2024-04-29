@@ -111,6 +111,7 @@ import {
 	ToastTitle,
 	ToastViewport,
 } from './primitives/toast'
+import { Toaster } from './primitives/toaster'
 import {
 	Tooltip,
 	TooltipContent,
@@ -218,6 +219,7 @@ export {
 	ToastTitle,
 	ToastViewport,
 	useToast,
+	Toaster,
 	ResizableHandle,
 	ResizablePanel,
 	ResizablePanelGroup,

@@ -2,7 +2,6 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Metadata } from 'next'
-import Script from 'next/script'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
@@ -17,6 +16,8 @@ import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
 import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
+
+import { Toaster } from '@coursebuilder/ui/primitives/toaster'
 
 export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_URL),
@@ -49,6 +50,7 @@ export default function RootLayout({
 				<HolyLoader color="#f28f5a" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
 				<body className={`relative ${patron.variable} ${r.variable} font-sans`}>
+					<Toaster />
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider

@@ -8,11 +8,10 @@ import {
 	setPreferredTextTrack,
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
-import {
+import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
-import MuxPlayer from '@mux/mux-player-react/lazy'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -22,12 +21,16 @@ export function AuthedVideoPlayer({
 	muxPlaybackId,
 	className,
 	videoResourceLoader,
+	canViewLoader,
+	...props
 }: {
 	muxPlaybackId?: string
 	videoResourceLoader: Promise<VideoResource | null>
 	className?: string
-}) {
-	const videoResource = use(videoResourceLoader)
+	canViewLoader?: Promise<boolean>
+} & MuxPlayerProps) {
+	const canView = canViewLoader ? use(canViewLoader) : true
+	const videoResource = canView ? use(videoResourceLoader) : null
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { playbackRate, volume, setPlayerPrefs } = useMuxPlayerPrefs()
@@ -54,13 +57,14 @@ export function AuthedVideoPlayer({
 			setPlayerPrefs({ volume: value })
 		},
 		onLoadedData: () => {
+			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 			handleTextTrackChange(playerRef, setPlayerPrefs)
 			setPreferredTextTrack(playerRef)
 			setMuxPlayerRef(playerRef)
 		},
 		onEnded: () => {
 			dispatchVideoPlayerOverlay({
-				type: 'LESSON_FINISHED',
+				type: 'COMPLETED',
 				playerRef,
 			})
 		},
@@ -71,16 +75,13 @@ export function AuthedVideoPlayer({
 
 	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
 
-	return (
-		<>
-			{playbackId ? (
-				<MuxPlayer
-					ref={playerRef}
-					playbackId={playbackId}
-					className={cn(className)}
-					{...playerProps}
-				/>
-			) : null}
-		</>
-	)
+	return playbackId ? (
+		<MuxPlayer
+			ref={playerRef}
+			playbackId={playbackId}
+			className={cn(className)}
+			{...playerProps}
+			{...props}
+		/>
+	) : null
 }
