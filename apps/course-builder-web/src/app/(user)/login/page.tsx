@@ -17,6 +17,8 @@ export default async function LoginPage() {
 		},
 	}
 
+	console.log('options', options)
+
 	const providers = getProviders()
 
 	console.log('providers parsed', { providers })
@@ -33,11 +35,13 @@ export default async function LoginPage() {
 		.then(async (res) => {
 			console.log('res', res)
 			try {
-				const { csrfToken } = await res.json()
+				const resonseText = await res.text()
+				console.log('resonseText', resonseText)
+				const { csrfToken } = JSON.parse(resonseText)
 				return csrfToken
 			} catch (e) {
 				console.log('error', e)
-				return getCsrfToken()
+				throw e
 			}
 		})
 		.catch((e) => {
