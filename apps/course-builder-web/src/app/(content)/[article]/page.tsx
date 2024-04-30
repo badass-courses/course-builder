@@ -16,21 +16,21 @@ type Props = {
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 
-// export async function generateMetadata(
-// 	{ params, searchParams }: Props,
-// 	parent: ResolvingMetadata,
-// ): Promise<Metadata> {
-// 	const article = await getArticle(params.article)
-//
-// 	if (!article) {
-// 		return parent as Metadata
-// 	}
-//
-// 	return {
-// 		title: article.fields.title,
-// 		openGraph: { images: [getOGImageUrlForResource(article)] },
-// 	}
-// }
+export async function generateMetadata(
+	{ params, searchParams }: Props,
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const article = await getArticle(params.article)
+
+	if (!article) {
+		return parent as Metadata
+	}
+
+	return {
+		title: article.fields.title,
+		openGraph: { images: [getOGImageUrlForResource(article)] },
+	}
+}
 
 async function ArticleActionBar({
 	articleLoader,
@@ -106,9 +106,9 @@ export default async function ArticlePage({
 	const articleLoader = getArticle(params.article)
 	return (
 		<div>
-			{/*<ArticleActionBar articleLoader={articleLoader} />*/}
+			<ArticleActionBar articleLoader={articleLoader} />
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
-				{/*<ArticleTitle articleLoader={articleLoader} />*/}
+				<ArticleTitle articleLoader={articleLoader} />
 				<Article articleLoader={articleLoader} />
 			</article>
 		</div>
