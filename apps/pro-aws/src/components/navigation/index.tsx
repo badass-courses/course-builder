@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { cn } from '@/utils/cn'
 
 import { getNavLinks } from '../app/get-nav-links'
@@ -14,13 +14,17 @@ const Navigation = () => {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
 	const isEditRoute = pathname.includes('/edit')
+	const params = useParams()
+	const isLessonRoute = params.lesson && params.module
+	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
 
 	return (
 		<header
 			className={cn(
 				'bg-background relative z-40 flex h-[var(--nav-height)] items-center justify-between px-0',
 				{
-					'container border-x border-b': !isEditRoute,
+					'container border-x': !isFullWidth,
+					'border-b': !isEditRoute,
 				},
 			)}
 		>
