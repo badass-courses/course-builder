@@ -1,5 +1,17 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.1.4
+
+### Patch Changes
+
+- [#161](https://github.com/badass-courses/course-builder/pull/161) [`acce952`](https://github.com/badass-courses/course-builder/commit/acce95260e808a74b94c81c165ff296c014d27ff) Thanks [@joelhooks](https://github.com/joelhooks)! - product crud ui and roundtrip to stripe for updates
+
+- [#162](https://github.com/badass-courses/course-builder/pull/162) [`480d095`](https://github.com/badass-courses/course-builder/commit/480d09554cd0e645ea33b8d5533be53e3f2ef250) Thanks [@joelhooks](https://github.com/joelhooks)! - adds progress router and adapter method
+
+- [#167](https://github.com/badass-courses/course-builder/pull/167) [`39b0ef5`](https://github.com/badass-courses/course-builder/commit/39b0ef5e4556ee1a1fd549f3bc48f405fe8b6984) Thanks [@joelhooks](https://github.com/joelhooks)! - redemptions and purchase recording with an email at the end
+
+- [#156](https://github.com/badass-courses/course-builder/pull/156) [`18169be`](https://github.com/badass-courses/course-builder/commit/18169be84613cac1cc2d35bc6cd386eaf803f53f) Thanks [@joelhooks](https://github.com/joelhooks)! - migrates commerce flows from Skill Stack into Course Builder
+
 ## 0.1.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # Changelog
 
+## 8.0.9
+
+### Patch Changes
+
+- [`ffb237b`](https://github.com/badass-courses/course-builder/commit/ffb237b34e792c15fdae4b554bb787e92403ccb8) Thanks [@joelhooks](https://github.com/joelhooks)! - updates postcss config in template
+
+- [#167](https://github.com/badass-courses/course-builder/pull/167) [`39b0ef5`](https://github.com/badass-courses/course-builder/commit/39b0ef5e4556ee1a1fd549f3bc48f405fe8b6984) Thanks [@joelhooks](https://github.com/joelhooks)! - redemptions and purchase recording with an email at the end
+
+- [#156](https://github.com/badass-courses/course-builder/pull/156) [`18169be`](https://github.com/badass-courses/course-builder/commit/18169be84613cac1cc2d35bc6cd386eaf803f53f) Thanks [@joelhooks](https://github.com/joelhooks)! - migrates commerce flows from Skill Stack into Course Builder
+
 ## 8.0.8
 
 ### Patch Changes
