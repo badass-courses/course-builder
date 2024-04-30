@@ -9,7 +9,7 @@ export const merchantCouponSchema = z.object({
 		const decimalPlaces = value.toString().split('.')[1]?.length || 0
 		return decimalPlaces <= 2
 	}),
-	type: z.string().max(191).optional().nullable(),
+	type: z.string().max(191),
 })
 
 export type MerchantCoupon = z.infer<typeof merchantCouponSchema>

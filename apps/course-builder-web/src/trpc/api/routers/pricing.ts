@@ -54,10 +54,14 @@ const checkForAnyAvailableUpgrades = async ({
 		(purchase) => purchase.productId,
 	)
 
+	console.log('📝 productIdsAlreadyPurchased', { productIdsAlreadyPurchased })
+
 	const potentialUpgrades = await availableUpgradesForProduct(
 		validPurchases,
 		productId,
 	)
+
+	console.log('📝 potentialUpgrades', { potentialUpgrades })
 
 	type AvailableUpgrade = Awaited<
 		ReturnType<typeof availableUpgradesForProduct>
@@ -123,6 +127,8 @@ async function getActiveMerchantCoupon({
 		? await getDefaultCoupon([productId])
 		: undefined
 
+	console.log('📝 defaultCoupons', { defaultCoupons })
+
 	const defaultMerchantCoupon = defaultCoupons
 		? defaultCoupons.defaultMerchantCoupon
 		: null
@@ -131,6 +137,8 @@ async function getActiveMerchantCoupon({
 		couponId: siteCouponId,
 		code,
 	})
+
+	console.log('📝 incomingCoupon', { incomingCoupon })
 
 	if (
 		// compare the discounts if there is a coupon and site/sale running
@@ -260,12 +268,16 @@ export const pricingRouter = createTRPCRouter({
 
 			const token = await getServerAuthSession()
 
+			console.log('📝 token', { token })
+
 			const verifiedUserId = token?.session?.user?.id
 
 			const { getPurchasesForUser } = courseBuilderAdapter
 			const purchases = getValidPurchases(
 				await getPurchasesForUser(verifiedUserId),
 			)
+
+			console.log('📝 purchases', { purchases })
 
 			if (!productId) throw new Error('productId is required')
 
@@ -281,11 +293,15 @@ export const pricingRouter = createTRPCRouter({
 				country,
 			})
 
+			console.log('📝 upgradeFromPurchaseId', { upgradeFromPurchaseId })
+
 			const restrictedPurchase = purchases.find((purchase) => {
 				return (
 					purchase.productId === productId && purchase.status === 'Restricted'
 				)
 			})
+
+			console.log('📝 restrictedPurchase', { restrictedPurchase })
 
 			if (restrictedPurchase) {
 				const validPurchase = purchases.find((purchase) => {
@@ -304,6 +320,12 @@ export const pricingRouter = createTRPCRouter({
 					productId,
 				})
 
+			console.log('📝 activeMerchantCoupon', {
+				activeMerchantCoupon,
+				defaultCoupon,
+				usedCouponId,
+			})
+
 			const productPrices = await formatPricesForProduct({
 				productId,
 				country,
@@ -315,6 +337,8 @@ export const pricingRouter = createTRPCRouter({
 				usedCouponId,
 				ctx: courseBuilderAdapter,
 			})
+
+			console.log('📝 productPrices', { productPrices })
 
 			return {
 				...productPrices,

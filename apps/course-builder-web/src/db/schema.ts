@@ -50,4 +50,6 @@ export const {
 	resourceProgress,
 	contentResourceProduct,
 	contentResourceProductRelations,
+	upgradableProducts,
+	upgradableProductsRelations,
 } = getCourseBuilderSchema(mysqlTable)

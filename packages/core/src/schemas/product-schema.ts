@@ -19,8 +19,8 @@ export const productSchema = z.object({
 			.object({
 				url: z.string().url(),
 				alt: z.string().optional().nullable(),
-				width: z.number(),
-				height: z.number(),
+				width: z.number().optional().nullable(),
+				height: z.number().optional().nullable(),
 			})
 			.optional()
 			.nullable(),

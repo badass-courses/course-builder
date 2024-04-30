@@ -34,6 +34,7 @@ export type PricingProps = {
 		isPPPEnabled?: boolean
 		teamQuantityLimit?: number
 		saleCountdownRenderer?: ({ coupon }: { coupon: any }) => React.ReactNode
+		allowTeamPurchase?: boolean
 	}
 	id?: string
 	pricingDataLoader: Promise<PricingData>

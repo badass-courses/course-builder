@@ -44,34 +44,6 @@ async function ProductActionBar({
 	)
 }
 
-async function ProductDetails({
-	productLoader,
-}: {
-	productLoader: Promise<Product | null>
-}) {
-	const product = await productLoader
-
-	if (!product) {
-		notFound()
-	}
-
-	return (
-		<div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
-			<ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">
-				{product.fields?.body}
-			</ReactMarkdown>
-			{product.fields?.description && (
-				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
-					<div className="border-t pt-5">
-						<strong>Description</strong>
-						<ReactMarkdown>{product.fields?.description}</ReactMarkdown>
-					</div>
-				</aside>
-			)}
-		</div>
-	)
-}
-
 async function ProductTitle({
 	productLoader,
 }: {
@@ -102,8 +74,6 @@ export default async function ProductPage({
 				<ProductActionBar productLoader={productLoader} />
 			</Suspense>
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
-				<ProductTitle productLoader={productLoader} />
-				<ProductDetails productLoader={productLoader} />
 				<ProductCommerce
 					productLoader={productLoader}
 					searchParams={searchParams}
@@ -193,7 +163,7 @@ async function ProductCommerce({
 			hasPurchasedCurrentProduct: Boolean(purchase),
 			...(Boolean(existingPurchase)
 				? {
-						purchasedProductIds: [existingPurchase.productId, '72', 69],
+						purchasedProductIds: [existingPurchase?.productId, '72', 69],
 						existingPurchase: existingPurchase,
 					}
 				: {}),
@@ -204,7 +174,7 @@ async function ProductCommerce({
 			hasPurchasedCurrentProduct: Boolean(purchase),
 			...(Boolean(existingPurchase)
 				? {
-						purchasedProductIds: [existingPurchase.productId, '72', 69],
+						purchasedProductIds: [existingPurchase?.productId, '72', 69],
 						existingPurchase: existingPurchase,
 					}
 				: {}),

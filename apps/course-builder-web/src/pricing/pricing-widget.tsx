@@ -5,8 +5,10 @@ import { CommerceProps } from '@/pricing/commerce-props'
 import { Pricing } from '@/pricing/pricing'
 import { useCoupon } from '@/pricing/use-coupon'
 
+import { Product } from '@coursebuilder/core/schemas'
+
 export const PricingWidget: React.FC<{
-	product: any
+	product: Product
 	quantityAvailable: number
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
@@ -35,12 +37,9 @@ export const PricingWidget: React.FC<{
 	const couponId =
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
-	const purchases = commerceProps?.purchases || []
-	const purchasedProductIds = purchases.map((purchase) => purchase.productId)
 	const ALLOW_PURCHASE = true
 	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
-	const hasPurchased = purchasedProductIds.includes(product.productId)
-	console.log({ commerceProps })
+	console.log('💰', { commerceProps, product })
 	return (
 		<div data-pricing-container="" id="buy" key={product.name}>
 			<Pricing
@@ -50,12 +49,12 @@ export const PricingWidget: React.FC<{
 				userId={commerceProps?.userId}
 				product={product}
 				options={{
-					withImage: false,
-					withGuaranteeBadge: false,
-					isLiveEvent: true,
+					withImage: true,
+					withGuaranteeBadge: true,
+					isLiveEvent: product.type === 'live',
 					teamQuantityLimit:
 						quantityAvailable && quantityAvailable > 5 ? 5 : quantityAvailable,
-					isPPPEnabled: false,
+					isPPPEnabled: product.type !== 'live',
 				}}
 				purchased={hasPurchasedCurrentProduct}
 				couponId={couponId}

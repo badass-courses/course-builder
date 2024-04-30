@@ -3,7 +3,9 @@ import { addSeconds, isAfter } from 'date-fns'
 import {
 	and,
 	asc,
+	desc,
 	eq,
+	gte,
 	inArray,
 	isNotNull,
 	isNull,
@@ -411,7 +413,7 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
-		availableUpgradesForProduct(
+		async availableUpgradesForProduct(
 			purchases: any,
 			productId: string,
 		): Promise<any[]> {
@@ -419,15 +421,18 @@ export function mySqlDrizzleAdapter(
 				({ productId }: Purchase) => productId,
 			)
 
-			return client.query.upgradableProducts.findMany({
-				where: and(
-					eq(upgradableProducts.upgradableToId, productId),
-					inArray(
-						upgradableProducts.upgradableFromId,
-						previousPurchaseProductIds,
+			if (previousPurchaseProductIds.length > 0) {
+				return await client.query.upgradableProducts.findMany({
+					where: and(
+						eq(upgradableProducts.upgradableToId, productId),
+						inArray(
+							upgradableProducts.upgradableFromId,
+							previousPurchaseProductIds,
+						),
 					),
-				),
-			})
+				})
+			}
+			return []
 		},
 		clearLessonProgressForUser(options: {
 			userId: string
@@ -486,11 +491,40 @@ export function mySqlDrizzleAdapter(
 
 			return parsedLessonProgress.data
 		},
-		couponForIdOrCode(options: {
+		async couponForIdOrCode(options: {
 			code?: string
 			couponId?: string
 		}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null> {
-			throw new Error('Method not implemented.')
+			if (!options.couponId && !options.code) return null
+			const couponForIdOrCode = await client.query.coupon.findFirst({
+				where: or(
+					and(
+						or(
+							options.code ? eq(coupon.code, options.code) : undefined,
+							options.couponId ? eq(coupon.id, options.couponId) : undefined,
+						),
+						gte(coupon.expires, new Date()),
+					),
+					and(
+						or(
+							options.code ? eq(coupon.code, options.code) : undefined,
+							options.couponId ? eq(coupon.id, options.couponId) : undefined,
+						),
+						isNull(coupon.expires),
+					),
+				),
+				with: {
+					merchantCoupon: true,
+				},
+			})
+
+			if (!couponForIdOrCode) return null
+
+			return couponSchema
+				.extend({
+					merchantCoupon: merchantCouponSchema,
+				})
+				.parse(couponForIdOrCode)
 		},
 		async createMerchantChargeAndPurchase(options): Promise<Purchase> {
 			const purchaseId = await client.transaction(async (trx) => {
@@ -807,11 +841,47 @@ export function mySqlDrizzleAdapter(
 		> {
 			throw new Error('Method not implemented.')
 		},
-		getDefaultCoupon(productIds?: string[]): Promise<{
+		async getDefaultCoupon(productIds?: string[]): Promise<{
 			defaultMerchantCoupon: MerchantCoupon
 			defaultCoupon: Coupon
 		} | null> {
-			throw new Error('Method not implemented.')
+			const activeSaleCoupon = await client.query.coupon.findFirst({
+				where: and(
+					eq(coupon.status, 1),
+					eq(coupon.default, true),
+					gte(coupon.expires, new Date()),
+					or(
+						productIds
+							? inArray(coupon.restrictedToProductId, productIds)
+							: undefined,
+						isNull(coupon.restrictedToProductId),
+					),
+				),
+				orderBy: desc(coupon.percentageDiscount),
+				with: {
+					merchantCoupon: true,
+					product: true,
+				},
+			})
+			if (activeSaleCoupon) {
+				const { restrictedToProductId } = activeSaleCoupon
+				const validForProdcutId = restrictedToProductId
+					? productIds?.includes(restrictedToProductId as string)
+					: true
+
+				const { merchantCoupon: defaultMerchantCoupon, ...defaultCoupon } =
+					activeSaleCoupon
+
+				if (validForProdcutId) {
+					return {
+						defaultMerchantCoupon: merchantCouponSchema.parse(
+							defaultMerchantCoupon,
+						),
+						defaultCoupon: couponSchema.parse(defaultCoupon),
+					}
+				}
+			}
+			return null
 		},
 		getLessonProgressCountsByDate(): Promise<
 			{

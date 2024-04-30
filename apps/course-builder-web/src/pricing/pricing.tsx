@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import { BuyMoreSeats } from '@/pricing/buy-more-seats'
@@ -9,6 +10,7 @@ import { usePriceCheck } from '@/pricing/pricing-check-context'
 import { PricingProps } from '@/pricing/pricing-props'
 import { redirectUrlBuilder } from '@/pricing/redirect-url-builder'
 import { useDebounce } from '@/pricing/use-debounce'
+import { api } from '@/trpc/react'
 import * as Switch from '@radix-ui/react-switch'
 import { AnimatePresence, motion } from 'framer-motion'
 import { find, first } from 'lodash'
@@ -53,6 +55,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		isLiveEvent: false,
 		saleCountdownRenderer: () => null,
 		teamQuantityLimit: 100,
+		allowTeamPurchase: true,
 	},
 }) => {
 	const {
@@ -61,6 +64,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		withGuaranteeBadge = true,
 		isLiveEvent = false,
 		teamQuantityLimit = 100,
+		allowTeamPurchase = true,
 	} = options
 	const {
 		addPrice,
@@ -75,23 +79,21 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 
 	const [isBuyingForTeam, setIsBuyingForTeam] = React.useState(false)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
-	const {
-		id: productId,
-		name,
-		// image,
-		// modules,
-		// features,
-		// lessons,
-		// action,
-		// title,
-		fields,
-	} = product
+	const { id: productId, name, resources, fields } = product
+	const { image, action } = fields
 	// const { subscriber, loadingSubscriber } = useConvertkit()
 	const router = useRouter()
 	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)
 
-	const { formattedPrice, purchaseToUpgrade, quantityAvailable } =
-		use(pricingDataLoader)
+	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
+
+	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
+		productId,
+		quantity: debouncedQuantity,
+		couponId,
+		merchantCoupon,
+		autoApplyPPP,
+	})
 
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
@@ -160,14 +162,16 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 			router.push(redirectUrl)
 		}
 	}
-	//
-	// const workshops = modules?.filter(
-	// 	(module) => module.moduleType === 'workshop',
-	// )
-	// const moduleBonuses = modules?.filter(
-	// 	(module) => module.moduleType === 'bonus' && module.state === 'published',
-	// )
-	//
+
+	const workshops = resources?.filter(
+		(module) => module.resource.type === 'workshop',
+	)
+	const moduleBonuses = resources?.filter(
+		(module) =>
+			module.resource.type === 'bonus' &&
+			module.resource.fields.state === 'published',
+	)
+
 	function getUnitPrice(formattedPrice: FormattedPrice) {
 		const price = first(formattedPrice?.upgradedProduct?.prices)
 		return Number(price?.unitAmount || 0)
@@ -189,19 +193,19 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	return (
 		<div id={id}>
 			<div data-pricing-product={index}>
-				{/*{withImage && image && (*/}
-				{/*	<div data-pricing-product-image="">*/}
-				{/*		<Image*/}
-				{/*			priority*/}
-				{/*			src={image.url}*/}
-				{/*			alt={image.alt}*/}
-				{/*			quality={100}*/}
-				{/*			layout={'fill'}*/}
-				{/*			objectFit="contain"*/}
-				{/*			aria-hidden="true"*/}
-				{/*		/>*/}
-				{/*	</div>*/}
-				{/*)}*/}
+				{withImage && image && (
+					<div data-pricing-product-image="">
+						<Image
+							priority
+							src={image.url}
+							alt={image.alt || name}
+							quality={100}
+							layout={'fill'}
+							objectFit="contain"
+							aria-hidden="true"
+						/>
+					</div>
+				)}
 
 				<article>
 					{(isSellingLive || allowPurchase) && !purchased ? (
@@ -235,7 +239,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 							) : (
 								<>
 									<PriceDisplay
-										status={'success'}
+										status={status}
 										formattedPrice={formattedPrice}
 									/>
 									{isRestrictedUpgrade ? (
@@ -342,44 +346,46 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 								>
 									<fieldset>
 										<legend className="sr-only">{name}</legend>
-										<div data-team-switch="">
-											<label htmlFor="team-switch">
-												Buying for myself or for my team
-											</label>
-											<button
-												role="button"
-												type="button"
-												onClick={() => {
-													setIsBuyingForTeam(false)
-													setQuantity(1)
-												}}
-											>
-												For myself
-											</button>
-											<Switch.Root
-												aria-label={
-													isBuyingForTeam ? 'For my team' : 'For myself'
-												}
-												onCheckedChange={() => {
-													setIsBuyingForTeam(!isBuyingForTeam)
-													isBuyingForTeam ? setQuantity(1) : setQuantity(5)
-												}}
-												checked={isBuyingForTeam}
-												id="team-switch"
-											>
-												<Switch.Thumb />
-											</Switch.Root>
-											<button
-												role="button"
-												type="button"
-												onClick={() => {
-													setIsBuyingForTeam(true)
-													setQuantity(5)
-												}}
-											>
-												For my team
-											</button>
-										</div>
+										{allowTeamPurchase && (
+											<div data-team-switch="">
+												<label htmlFor="team-switch">
+													Buying for myself or for my team
+												</label>
+												<button
+													role="button"
+													type="button"
+													onClick={() => {
+														setIsBuyingForTeam(false)
+														setQuantity(1)
+													}}
+												>
+													For myself
+												</button>
+												<Switch.Root
+													aria-label={
+														isBuyingForTeam ? 'For my team' : 'For myself'
+													}
+													onCheckedChange={() => {
+														setIsBuyingForTeam(!isBuyingForTeam)
+														isBuyingForTeam ? setQuantity(1) : setQuantity(5)
+													}}
+													checked={isBuyingForTeam}
+													id="team-switch"
+												>
+													<Switch.Thumb />
+												</Switch.Root>
+												<button
+													role="button"
+													type="button"
+													onClick={() => {
+														setIsBuyingForTeam(true)
+														setQuantity(5)
+													}}
+												>
+													For my team
+												</button>
+											</div>
+										)}
 										{isBuyingForTeam && (
 											<div data-quantity-input="">
 												<div>
@@ -505,7 +511,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 							!purchased && (
 								<div
 									data-product-description=""
-									className="prose prose-sm sm:prose-base prose-p:text-gray-200 mx-auto max-w-sm px-5"
+									className="prose prose-sm sm:prose-base prose-p:text-gray-900 mx-auto max-w-sm px-5"
 								>
 									<ReactMarkdown>{product.fields.description}</ReactMarkdown>
 								</div>
