@@ -9,7 +9,18 @@ export const env = createEnv({
 	server: {
 		STRIPE_SECRET_TOKEN: z.string(),
 		STRIPE_WEBHOOK_SECRET: z.string(),
-		COURSEBUILDER_URL: z.string(),
+		COURSEBUILDER_URL: z.preprocess(
+			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+			// Since NextAuth.js automatically uses the VERCEL_URL if present.
+			(str) =>
+				process.env.COURSEBUILDER_URL
+					? process.env.COURSEBUILDER_URL
+					: process.env.VERCEL_URL
+						? `https://${process.env.VERCEL_URL}`
+						: str,
+			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
+			process.env.VERCEL ? z.string() : z.string(),
+		),
 		DATABASE_URL: z
 			.string()
 			.url()
