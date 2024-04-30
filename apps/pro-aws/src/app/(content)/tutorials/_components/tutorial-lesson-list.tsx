@@ -61,11 +61,9 @@ export function TutorialLessonList(props: Props) {
 				? React.use(getResourceSection(lesson.id, tutorial))
 				: null
 
-	console.log({ section, lesson })
-
 	const className = 'className' in props ? props.className : ''
 	const maxHeight =
-		'maxHeight' in props ? props.maxHeight : 'calc(100vh - var(--nav-height))'
+		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
