@@ -173,7 +173,7 @@ async function ProductCommerce({
 		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
 		product,
 		pricingDataLoader,
-		...commerceProps,
+		commerceProps,
 	}
 
 	console.log({ baseProps })
@@ -187,15 +187,31 @@ async function ProductCommerce({
 				user.id,
 			)
 
+		console.log({ purchase, existingPurchase })
+		console.log('🎈', {
+			...baseProps,
+			hasPurchasedCurrentProduct: Boolean(purchase),
+			...(Boolean(existingPurchase)
+				? {
+						purchasedProductIds: [existingPurchase.productId, '72', 69],
+						existingPurchase: existingPurchase,
+					}
+				: {}),
+		})
+
 		productProps = {
 			...baseProps,
 			hasPurchasedCurrentProduct: Boolean(purchase),
-			...(existingPurchase && {
-				purchasedProductIds: [existingPurchase.productId],
-				existingPurchase,
-			}),
+			...(Boolean(existingPurchase)
+				? {
+						purchasedProductIds: [existingPurchase.productId, '72', 69],
+						existingPurchase: existingPurchase,
+					}
+				: {}),
 		}
 	}
+
+	console.log({ productProps })
 
 	return (
 		<Suspense>

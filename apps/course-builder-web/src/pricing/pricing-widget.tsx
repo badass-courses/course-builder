@@ -10,8 +10,21 @@ export const PricingWidget: React.FC<{
 	quantityAvailable: number
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
-}> = ({ product, quantityAvailable, commerceProps, pricingDataLoader }) => {
-	console.log({ product, quantityAvailable, commerceProps, pricingDataLoader })
+	hasPurchasedCurrentProduct?: boolean
+}> = ({
+	hasPurchasedCurrentProduct,
+	product,
+	quantityAvailable,
+	commerceProps,
+	pricingDataLoader,
+}) => {
+	console.log({
+		product,
+		quantityAvailable,
+		commerceProps,
+		pricingDataLoader,
+		hasPurchasedCurrentProduct,
+	})
 
 	const pathname = usePathname()
 	const params = useParams()
@@ -27,6 +40,7 @@ export const PricingWidget: React.FC<{
 	const ALLOW_PURCHASE = true
 	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
 	const hasPurchased = purchasedProductIds.includes(product.productId)
+	console.log({ commerceProps })
 	return (
 		<div data-pricing-container="" id="buy" key={product.name}>
 			<Pricing
@@ -43,7 +57,7 @@ export const PricingWidget: React.FC<{
 						quantityAvailable && quantityAvailable > 5 ? 5 : quantityAvailable,
 					isPPPEnabled: false,
 				}}
-				purchased={hasPurchased}
+				purchased={hasPurchasedCurrentProduct}
 				couponId={couponId}
 				couponFromCode={couponFromCode}
 			/>

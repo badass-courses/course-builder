@@ -70,6 +70,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		quantity,
 		setQuantity,
 	} = usePriceCheck()
+
+	console.log({ purchased })
+
 	const [isBuyingForTeam, setIsBuyingForTeam] = React.useState(false)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
 	const {

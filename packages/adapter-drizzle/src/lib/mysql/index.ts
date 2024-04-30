@@ -1096,16 +1096,18 @@ export function mySqlDrizzleAdapter(
 			}
 
 			const existingPurchase = allPurchases.find(
-				(p) => p.product?.id === parsedPurchase.data.product?.id,
+				(p) => p.productId === parsedPurchase.data.productId,
 			)
 
-			return Promise.resolve({
+			console.log('💀 existingPurchase', existingPurchase)
+
+			return {
 				availableUpgrades: z
 					.array(upgradableProductSchema)
 					.parse(availableUpgrades),
 				existingPurchase,
 				purchase: parsedPurchase.data,
-			})
+			}
 		},
 		async getUserById(userId: string): Promise<User | null> {
 			return userSchema.nullable().parse(

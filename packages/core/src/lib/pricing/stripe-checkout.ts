@@ -239,6 +239,9 @@ export async function stripeCheckout({
 					)
 				: false
 
+			console.log('customerId', customerId)
+			console.log('🤡 user', { user, userId, params })
+
 			const loadedProduct = await adapter.getProduct(productId)
 
 			const result = LoadedProductSchema.safeParse(loadedProduct)
