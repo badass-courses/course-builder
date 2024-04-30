@@ -1,5 +1,15 @@
 # @coursebuilder/react-rsc
 
+## 0.0.2
+
+### Patch Changes
+
+- [#167](https://github.com/badass-courses/course-builder/pull/167) [`39b0ef5`](https://github.com/badass-courses/course-builder/commit/39b0ef5e4556ee1a1fd549f3bc48f405fe8b6984) Thanks [@joelhooks](https://github.com/joelhooks)! - redemptions and purchase recording with an email at the end
+
+- Updated dependencies [[`acce952`](https://github.com/badass-courses/course-builder/commit/acce95260e808a74b94c81c165ff296c014d27ff), [`8671173`](https://github.com/badass-courses/course-builder/commit/8671173c90e581a7682eecce894d9dcb897e3cce), [`39b0ef5`](https://github.com/badass-courses/course-builder/commit/39b0ef5e4556ee1a1fd549f3bc48f405fe8b6984), [`18169be`](https://github.com/badass-courses/course-builder/commit/18169be84613cac1cc2d35bc6cd386eaf803f53f)]:
+  - @coursebuilder/core@0.1.5
+  - @coursebuilder/ui@1.0.10
+
 ## 0.0.1
 
 ### Patch Changes

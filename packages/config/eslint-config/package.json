@@ -1,9 +1,9 @@
 {
 	"name": "@coursebuilder/eslint-config",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"license": "MIT",
 	"dependencies": {
-		"@coursebuilder/eslint-plugin": "^0.0.3",
+		"@coursebuilder/eslint-plugin": "^0.0.4",
 		"@next/eslint-plugin-next": "^14.0.1",
 		"@types/eslint": "^8.44.2",
 		"@typescript-eslint/eslint-plugin": "^6.7.0",
