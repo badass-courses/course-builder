@@ -71,10 +71,6 @@ export function TutorialLessonList(props: Props) {
 	const ability = createAppAbility(abilityRules || [])
 	const params = useParams()
 
-	if (!tutorial) {
-		return null
-	}
-
 	const activeResourceRef = React.useRef<HTMLLIElement>(null)
 	const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
@@ -89,6 +85,10 @@ export function TutorialLessonList(props: Props) {
 			scrollAreaRef.current.scrollTop = scrollPosition
 		}
 	}, [])
+
+	if (!tutorial) {
+		return null
+	}
 
 	return (
 		<nav
