@@ -75,31 +75,23 @@ export default async function LessonPage({ params }: Props) {
 					/>
 				</Suspense> */}
 				<div className="flex">
-					<div>
-						<main className="px-0">
-							<PlayerContainer
-								params={params}
+					<div className="flex flex-col 2xl:flex-row">
+						<div>
+							<main className="">
+								<PlayerContainer
+									params={params}
+									lessonLoader={lessonLoader}
+									moduleLoader={
+										tutorialLoader as unknown as Promise<ContentResource | null>
+									}
+								/>
+							</main>
+							<TranscriptContainer
+								className="mt-0 hidden 2xl:block"
 								lessonLoader={lessonLoader}
-								moduleLoader={
-									tutorialLoader as unknown as Promise<ContentResource | null>
-								}
 							/>
-						</main>
-						<div className="flex flex-col-reverse border-t px-0 lg:flex-row">
-							<div className="flex flex-col py-5 sm:py-8">
-								<Suspense fallback={<div>Loading...</div>}>
-									<LessonBody lessonLoader={lessonLoader} />
-								</Suspense>
-								<div className="mt-10 border-t px-5 pt-8 sm:px-8">
-									<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
-										Transcript
-									</h3>
-									<Suspense fallback={<div>Loading...</div>}>
-										<Transcript resourceLoader={lessonLoader} />
-									</Suspense>
-								</div>
-							</div>
-
+						</div>
+						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:flex-shrink-0 2xl:border-l 2xl:border-t-0">
 							<Accordion type="single" collapsible className="block lg:hidden">
 								<AccordionItem value="contents">
 									<AccordionTrigger className="flex w-full items-center p-5 font-medium text-white">
@@ -133,10 +125,38 @@ export default async function LessonPage({ params }: Props) {
 									</AccordionContent>
 								</AccordionItem>
 							</Accordion>
+							<div className="flex flex-col py-5 sm:py-8">
+								<Suspense fallback={<div className="p-5">Loading...</div>}>
+									<LessonBody lessonLoader={lessonLoader} />
+								</Suspense>
+								<TranscriptContainer
+									className="block 2xl:hidden"
+									lessonLoader={lessonLoader}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
+	)
+}
+
+async function TranscriptContainer({
+	lessonLoader,
+	className,
+}: {
+	lessonLoader: Promise<ContentResource | null | undefined>
+	className?: string
+}) {
+	return (
+		<div className={cn('mt-10 border-t px-5 pt-8 sm:px-8', className)}>
+			<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
+				Transcript
+			</h3>
+			<Suspense fallback={<div className="p-5">Loading...</div>}>
+				<Transcript resourceLoader={lessonLoader} />
+			</Suspense>
 		</div>
 	)
 }
@@ -203,7 +223,7 @@ async function PlayerContainer({
 
 	return (
 		<VideoPlayerOverlayProvider>
-			<div className="relative flex h-full w-full items-center justify-center">
+			<div className="relative flex w-full items-center justify-center border-t">
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<VideoPlayerOverlay
 						nextResourceLoader={nextResourceLoader}
