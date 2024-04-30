@@ -3,6 +3,7 @@
 import React, { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
+import { addProgress } from '@/app/actions'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import type { Subscriber } from '@/schemas/subscriber'
@@ -15,7 +16,7 @@ import { Button, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
-import { completeLesson, revalidateTutorialLesson } from '../tutorials/actions'
+import { revalidateTutorialLesson } from '../tutorials/actions'
 
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
@@ -52,21 +53,11 @@ export const CompletedLessonOverlay: React.FC<{
 					<>
 						<form
 							action={async () => {
-								if (session?.data?.user) {
-									await completeLesson({
-										resourceId: resource.id,
-									})
-									if (nextLesson && moduleResource) {
-										router.push(
-											`/tutorials/${moduleResource?.fields?.slug}/${nextLesson?.fields?.slug}`,
-										)
-									}
-								} else {
-									if (nextLesson && moduleResource) {
-										router.push(
-											`/tutorials/${moduleResource?.fields?.slug}/${nextLesson?.fields?.slug}`,
-										)
-									}
+								await addProgress({
+									resourceId: resource.id,
+								})
+								if (nextLesson && moduleResource) {
+									router.push(nextLesson?.fields?.slug)
 								}
 							}}
 						>
@@ -102,12 +93,12 @@ export const CompletedModuleOverlay: React.FC<{
 
 	React.useEffect(() => {
 		if (resource && session?.data?.user) {
-			const triggerCompleteLesson = async () => {
-				await completeLesson({
+			const run = async () => {
+				await addProgress({
 					resourceId: resource.id,
 				})
 			}
-			triggerCompleteLesson()
+			run()
 		}
 	}, [resource, session])
 
@@ -158,7 +149,7 @@ const ContinueButton = () => {
 
 	return (
 		<Button type="submit" disabled={pending}>
-			{session?.data?.user && 'Complete & '}Continue
+			{'Complete & Continue'}
 			{pending && <Spinner className="ml-2 h-4 w-4" />}
 		</Button>
 	)
