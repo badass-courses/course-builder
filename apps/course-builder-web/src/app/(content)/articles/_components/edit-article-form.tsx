@@ -68,7 +68,7 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 				},
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
 			tools={[
 				{
