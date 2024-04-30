@@ -117,7 +117,7 @@ export function ResourceChatResponse({
 			) : null}
 			{messages.map((message, index) => (
 				<div key={index} className="border-b p-5 last-of-type:border-b-0">
-					<MessageHeader userData={user} />
+					<MessageHeader userData={message.userId ? user : null} />
 					<ReactMarkdown className="prose prose-sm dark:prose-invert">
 						{message.body}
 					</ReactMarkdown>

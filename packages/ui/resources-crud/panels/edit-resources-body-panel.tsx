@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { User } from '@auth/core/types'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { ContentResource } from '@coursebuilder/core/types'
@@ -12,6 +13,7 @@ export function EditResourcesBodyPanel({
 	form,
 	theme = 'light',
 	partykitUrl,
+	user,
 }: {
 	resource: {
 		id: string
@@ -24,6 +26,7 @@ export function EditResourcesBodyPanel({
 	form: UseFormReturn<any>
 	theme?: string
 	partykitUrl: string
+	user?: User | null
 }) {
 	return (
 		<ResizablePanel
@@ -39,6 +42,7 @@ export function EditResourcesBodyPanel({
 						form.setValue('fields.body', data)
 					}}
 					theme={theme}
+					user={user}
 				/>
 			</ScrollArea>
 		</ResizablePanel>

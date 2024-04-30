@@ -32,6 +32,7 @@ export const CodemirrorEditor = ({
 	onChange,
 	theme = 'light',
 	partykitUrl,
+	user,
 }: {
 	roomName: string
 	value: string
@@ -46,6 +47,7 @@ export const CodemirrorEditor = ({
 		onChange,
 		theme,
 		partykitUrl,
+		user,
 	})
 
 	return (
@@ -125,7 +127,7 @@ const useCodemirror = ({
 	const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
 	const [currentText, setCurrentText] = useState<string>('')
 
-	console.log({ theme })
+	console.log('📝 codemirror editor', { theme, user })
 
 	useEffect(() => {
 		let view: EditorView
@@ -157,8 +159,12 @@ const useCodemirror = ({
 			return
 		}
 
+		console.log({ provider })
+
 		const ytext =
 			provider?.doc.getText('codemirror') || new Y.Doc().getText('codemirror')
+
+		console.log({ ytext })
 
 		const undoManager = new Y.UndoManager(ytext)
 		setYUndoManager(undoManager)
@@ -169,6 +175,7 @@ const useCodemirror = ({
 					const docText = update.state.doc.toString()
 					const hash = await generateHash(docText)
 					if (hash !== currentText) {
+						console.log('📝 current text updated', { hash, currentText })
 						onChange(docText)
 						setCurrentText(hash)
 					}
@@ -204,6 +211,8 @@ const useCodemirror = ({
 				...styles,
 			],
 		})
+
+		console.log('📝 editorstate', { state })
 
 		// Attach CodeMirror to element
 		view = new EditorView({

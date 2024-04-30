@@ -70,6 +70,26 @@ export const resourceChat: CoreInngestHandler = async ({
 	const resourceId = event.data.resourceId
 	const workflowTrigger = event.data.selectedWorkflow
 
+	const currentUserMessage = event.data.messages[event.data.messages.length - 1]
+
+	if (currentUserMessage?.content) {
+		await step.run(
+			`partykit broadcast user prompt [${resourceId}]`,
+			async () => {
+				await partyProvider.broadcastMessage({
+					body: {
+						body: currentUserMessage.content,
+						requestId: resourceId,
+						name: 'resource.chat.prompted',
+						// @ts-expect-error
+						userId: event.user.id,
+					},
+					roomId: resourceId,
+				})
+			},
+		)
+	}
+
 	const resource = await step.run('get the resource', async () => {
 		return db.getContentResource(resourceId)
 	})
@@ -225,23 +245,6 @@ export async function resourceChatWorkflowExecutor({
 
 	const currentUserMessage = messages[messages.length - 1]
 	const currentResourceMetadata = messages[messages.length - 2]
-
-	if (currentUserMessage?.content) {
-		await step.run(
-			`partykit broadcast user prompt [${resourceId}]`,
-			async () => {
-				await partyProvider.broadcastMessage({
-					body: {
-						body: currentUserMessage.content,
-						requestId: resourceId,
-						name: 'resource.chat.prompted',
-						userId: user.id,
-					},
-					roomId: resourceId,
-				})
-			},
-		)
-	}
 
 	messages = await step.run('answer the user prompt', async () => {
 		if (!currentUserMessage) {

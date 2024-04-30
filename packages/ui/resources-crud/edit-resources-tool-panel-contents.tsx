@@ -40,6 +40,7 @@ export function EditResourcesToolPanelContents({
 		<>
 			{activeToolId === 'assistant' && (
 				<ResourceChatAssistant
+					key={'resource-chat-assistant'}
 					resource={resource}
 					availableWorkflows={availableWorkflows}
 					sendResourceChatMessage={sendResourceChatMessage}
@@ -48,7 +49,9 @@ export function EditResourcesToolPanelContents({
 				/>
 			)}
 			{tools.map((tool) => (
-				<>{activeToolId === tool.id && tool.toolComponent}</>
+				<div key={tool.id}>
+					{activeToolId === tool.id && tool.toolComponent}
+				</div>
 			))}
 			{children}
 		</>

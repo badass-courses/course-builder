@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/next",
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"description": "Next for Course Builder.",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib providers",
@@ -34,12 +34,12 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@coursebuilder/core": "0.1.4",
+		"@coursebuilder/core": "0.1.5",
 		"inngest": "^3.16.1"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.30.0",
-		"next": "14.3.0-canary.29",
+		"next": "14.2.3",
 		"next-auth": "5.0.0-beta.17",
 		"react": "18.3.1"
 	},

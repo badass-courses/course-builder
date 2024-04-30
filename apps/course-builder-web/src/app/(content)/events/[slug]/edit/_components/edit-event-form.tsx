@@ -73,7 +73,7 @@ export function EditEventForm({ event }: { event: Event }) {
 				},
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
 			tools={[
 				{
@@ -83,6 +83,7 @@ export function EditEventForm({ event }: { event: Event }) {
 					),
 					toolComponent: (
 						<ImageResourceUploader
+							key={'image-uploader'}
 							belongsToResourceId={event.id}
 							uploadDirectory={`events`}
 						/>

@@ -16,6 +16,7 @@ import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import { ContentResource } from '@coursebuilder/core/types'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
@@ -68,7 +69,7 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 				},
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME}
+			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
 			tools={[
 				{
@@ -78,6 +79,7 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 					),
 					toolComponent: (
 						<ImageResourceUploader
+							key={'image-uploader'}
 							belongsToResourceId={article.id}
 							uploadDirectory={`articles`}
 						/>
@@ -86,23 +88,25 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 			]}
 			theme={theme}
 		>
-			<ArticleMetadataFormFields form={form} />
+			<ArticleMetadataFormFields form={form} article={article} />
 		</ResourceForm>
 	)
 }
 
 const ArticleMetadataFormFields = ({
 	form,
+	article,
 }: {
 	form: UseFormReturn<z.infer<typeof ArticleSchema>>
+	article: ContentResource & { fields?: { slug: string } }
 }) => {
-	const currentSocialImage = form.watch('fields.socialImage.url')
+	const currentSocialImage = getOGImageUrlForResource(article)
 	console.log({ currentSocialImage })
 	return (
 		<EditResourcesMetadataFields form={form}>
 			<MetadataFieldSocialImage
 				form={form}
-				currentSocialImage={currentSocialImage}
+				currentSocialImage={getOGImageUrlForResource(article)}
 			/>
 		</EditResourcesMetadataFields>
 	)

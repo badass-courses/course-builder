@@ -106,13 +106,7 @@ export default async function ArticlePage({
 	const articleLoader = getArticle(params.article)
 	return (
 		<div>
-			<Suspense
-				fallback={
-					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-				}
-			>
-				<ArticleActionBar articleLoader={articleLoader} />
-			</Suspense>
+			<ArticleActionBar articleLoader={articleLoader} />
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
 				<ArticleTitle articleLoader={articleLoader} />
 				<Article articleLoader={articleLoader} />

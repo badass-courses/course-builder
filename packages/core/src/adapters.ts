@@ -51,7 +51,7 @@ export interface CourseBuilderAdapter<
 		fields: Record<string, any>
 		createdById: string
 	}): Awaitable<ContentResource>
-	getContentResource(id: string): Awaitable<ContentResource | null>
+	getContentResource(id: string): Promise<ContentResource | null>
 	getVideoResource(id: string | null | undefined): Promise<VideoResource | null>
 	updateContentResourceFields(options: {
 		id: string

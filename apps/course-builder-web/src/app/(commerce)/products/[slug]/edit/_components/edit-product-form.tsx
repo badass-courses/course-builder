@@ -220,6 +220,7 @@ export function EditProductForm({ product }: { product: Product }) {
 					),
 					toolComponent: (
 						<ImageResourceUploader
+							key={'image-uploader'}
 							belongsToResourceId={product.id}
 							uploadDirectory={`events`}
 						/>
@@ -412,6 +413,7 @@ function EditProductFormDesktop({
 				</EditResourcesMetadataPanel>
 				<ResizableHandle />
 				<EditResourcesBodyPanel
+					user={user}
 					partykitUrl={hostUrl}
 					resource={product}
 					form={form}
