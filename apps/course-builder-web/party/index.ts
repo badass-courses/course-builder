@@ -43,7 +43,9 @@ export default class Server implements Party.Server {
 		const party = this.party
 
 		return onConnect(conn, this.party, {
+			persist: { mode: 'snapshot' },
 			async load() {
+				console.log('loading the party', party.id)
 				const tip = await db.query.contentResource.findFirst({
 					where: or(
 						eq(
@@ -57,7 +59,7 @@ export default class Server implements Party.Server {
 				console.log('tip', tip)
 
 				const doc = new Y.Doc()
-				if (tip?.fields?.body) {
+				if (tip?.fields?.body && doc.getText('codemirror').length === 0) {
 					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
 				return doc

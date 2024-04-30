@@ -117,6 +117,7 @@ export const authOptions: NextAuthConfig = {
 export const {
 	handlers: { GET, POST },
 	auth,
+	signIn,
 } = NextAuth(authOptions)
 
 export const getServerAuthSession = async () => {

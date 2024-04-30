@@ -106,6 +106,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						),
 						toolComponent: (
 							<ImageResourceUploader
+								key={'image-uploader'}
 								belongsToResourceId={tutorial.id}
 								uploadDirectory={`tutorials`}
 							/>

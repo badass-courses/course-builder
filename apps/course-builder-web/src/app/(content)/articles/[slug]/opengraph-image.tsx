@@ -16,6 +16,8 @@ export default async function ArticleOG({
 
 	const resource = await getArticle(params.slug)
 
+	console.log({ resource })
+
 	return new ImageResponse(
 		(
 			<div

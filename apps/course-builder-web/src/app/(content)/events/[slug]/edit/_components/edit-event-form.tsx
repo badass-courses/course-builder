@@ -83,6 +83,7 @@ export function EditEventForm({ event }: { event: Event }) {
 					),
 					toolComponent: (
 						<ImageResourceUploader
+							key={'image-uploader'}
 							belongsToResourceId={event.id}
 							uploadDirectory={`events`}
 						/>
