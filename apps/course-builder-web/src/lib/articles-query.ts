@@ -104,6 +104,7 @@ export async function updateArticle(input: Article) {
 }
 
 export async function getArticle(slugOrId: string) {
+	console.log('getArticle', { slugOrId })
 	// const { ability } = await getServerAuthSession()
 
 	// const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
@@ -124,6 +125,8 @@ export async function getArticle(slugOrId: string) {
 			),
 		),
 	})
+
+	console.log('article', article)
 
 	const articleParsed = ArticleSchema.safeParse(article)
 	if (!articleParsed.success) {
