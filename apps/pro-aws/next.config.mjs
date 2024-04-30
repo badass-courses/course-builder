@@ -21,9 +21,6 @@ const withMDX = createMDX({
 
 /** @type {import("next").NextConfig} */
 const config = {
-	experimental: {
-		ppr: true,
-	},
 	images: {
 		remotePatterns: [
 			{
