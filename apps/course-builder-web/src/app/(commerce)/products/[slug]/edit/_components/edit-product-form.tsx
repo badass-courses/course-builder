@@ -412,6 +412,7 @@ function EditProductFormDesktop({
 				</EditResourcesMetadataPanel>
 				<ResizableHandle />
 				<EditResourcesBodyPanel
+					user={user}
 					partykitUrl={hostUrl}
 					resource={product}
 					form={form}

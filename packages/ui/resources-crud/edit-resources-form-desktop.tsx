@@ -106,6 +106,7 @@ export function EditResourcesFormDesktop({
 				</EditResourcesMetadataPanel>
 				<ResizableHandle />
 				<EditResourcesBodyPanel
+					user={user}
 					partykitUrl={hostUrl}
 					resource={resource}
 					form={form}
