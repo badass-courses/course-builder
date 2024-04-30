@@ -53,7 +53,11 @@ export const PricingWidget: React.FC<{
 					withGuaranteeBadge: true,
 					isLiveEvent: product.type === 'live',
 					teamQuantityLimit:
-						quantityAvailable && quantityAvailable > 5 ? 5 : quantityAvailable,
+						quantityAvailable >= 0 && quantityAvailable > 5
+							? 5
+							: quantityAvailable < 0
+								? 100
+								: quantityAvailable,
 					isPPPEnabled: product.type !== 'live',
 				}}
 				purchased={hasPurchasedCurrentProduct}
