@@ -104,17 +104,17 @@ export async function updateArticle(input: Article) {
 }
 
 export async function getArticle(slugOrId: string) {
-	const { ability } = await getServerAuthSession()
+	// const { ability } = await getServerAuthSession()
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	// const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+	// 	'update',
+	// 	'Content',
+	// )
+	// 	? ['public', 'private', 'unlisted']
+	// 	: ['public']
+	// const states: ('draft' | 'published')[] = ability.can('update', 'Content')
+	// 	? ['draft', 'published']
+	// 	: ['published']
 
 	const article = await db.query.contentResource.findFirst({
 		where: and(
@@ -122,11 +122,6 @@ export async function getArticle(slugOrId: string) {
 				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
 				eq(contentResource.id, slugOrId),
 			),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
-			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 	})
 
