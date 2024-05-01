@@ -49,6 +49,8 @@ import {
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
+	type ContentResource,
+	type ContentResourceResource,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
@@ -821,8 +823,79 @@ export function mySqlDrizzleAdapter(
 		> {
 			throw new Error('Method not implemented.')
 		},
-		getLessonProgressForUser(userId: string): Promise<ResourceProgress[]> {
-			throw new Error('Method not implemented.')
+		async getLessonProgressForUser(
+			userId: string,
+		): Promise<ResourceProgress[]> {
+			const userProgress = await client.query.resourceProgress.findMany({
+				where: eq(resourceProgress.userId, userId),
+			})
+			const parsed = z.array(resourceProgressSchema).safeParse(userProgress)
+			if (!parsed.success) {
+				console.error('Error parsing user progress', userProgress)
+				return []
+			}
+			return parsed.data
+		},
+		async getModuleProgressForUser(
+			userId: string,
+			moduleIdOrSlug: string,
+		): Promise<ResourceProgress[]> {
+			const module = await client.query.contentResource.findFirst({
+				where: or(
+					eq(contentResource.id, moduleIdOrSlug),
+					eq(
+						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+						moduleIdOrSlug,
+					),
+				),
+				with: {
+					resources: {
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			const parsedModule = ContentResourceSchema.parse(module)
+
+			const moduleResources =
+				await client.query.contentResourceResource.findMany({
+					where: inArray(
+						contentResourceResource.resourceOfId,
+						parsedModule.resources?.map((r) => r.resourceId) ?? [],
+					),
+					orderBy: asc(contentResourceResource.position),
+				})
+
+			const parsedModuleResources = z
+				.array(ContentResourceResourceSchema)
+				.safeParse(moduleResources)
+
+			if (!parsedModuleResources.success) {
+				console.error(
+					'Error parsing module resources',
+					parsedModuleResources.error,
+				)
+				return []
+			}
+
+			const userProgress = await client.query.resourceProgress.findMany({
+				where: and(
+					eq(resourceProgress.userId, userId),
+					inArray(
+						resourceProgress.contentResourceId,
+						parsedModuleResources.data.map((r) => r.resourceId),
+					),
+				),
+			})
+
+			const parsedProgress = z
+				.array(resourceProgressSchema)
+				.safeParse(userProgress)
+			if (!parsedProgress.success) {
+				console.error('Error parsing user progress', parsedProgress.error)
+				return []
+			}
+			return parsedProgress.data
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('Method not implemented.')

@@ -11,6 +11,7 @@ import { Transcript } from '@/app/(content)/_components/video-transcript-rendere
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
+import { getModuleProgressForUser } from '@/lib/progress'
 import { getNextResource } from '@/lib/resources/get-next-resource'
 import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
@@ -18,7 +19,6 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
-import { PencilIcon } from '@heroicons/react/24/outline'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { ContentResource } from '@coursebuilder/core/types'
@@ -58,8 +58,10 @@ type Props = {
 
 export default async function LessonPage({ params }: Props) {
 	headers()
+	const { session } = await getServerAuthSession()
 	const tutorialLoader = getTutorial(params.module)
 	const lessonLoader = getLesson(params.lesson)
+	const moduleProgressLoader = getModuleProgressForUser(params.module)
 
 	return (
 		<div>
@@ -114,6 +116,7 @@ export default async function LessonPage({ params }: Props) {
 											<TutorialLessonList
 												maxHeight="h-[600px]"
 												className="max-w-none border-l-0 border-t"
+												moduleProgressLoader={moduleProgressLoader}
 												tutorialLoader={
 													tutorialLoader as unknown as Promise<ContentResource | null>
 												}

@@ -8,8 +8,9 @@ import { CldImage } from '@/app/_components/cld-image'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { getResourceSection } from '@/utils/get-resource-section'
-import { PencilIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline'
 
+import type { ResourceProgress } from '@coursebuilder/core/schemas'
 import type {
 	ContentResource,
 	ContentResourceResource,
@@ -28,6 +29,7 @@ type ContentResourceProps = {
 	tutorial: ContentResource | null
 	lesson: ContentResource | null
 	section: ContentResource | null
+	moduleProgress: ResourceProgress[] | null
 	className?: string
 	maxHeight?: string
 }
@@ -35,6 +37,7 @@ type ContentResourceProps = {
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<ContentResource | null>
 	lessonLoader: Promise<ContentResource | null>
+	moduleProgressLoader: Promise<ResourceProgress[] | null>
 	className?: string
 	maxHeight?: string
 }
@@ -59,6 +62,12 @@ export function TutorialLessonList(props: Props) {
 			? props.section
 			: lesson
 				? React.use(getResourceSection(lesson.id, tutorial))
+				: null
+	const moduleProgress =
+		'moduleProgress' in props
+			? props.moduleProgress
+			: 'moduleProgressLoader' in props
+				? React.use(props.moduleProgressLoader)
 				: null
 
 	const className = 'className' in props ? props.className : ''
@@ -176,6 +185,11 @@ export function TutorialLessonList(props: Props) {
 													(lesson: ContentResourceResource, i: number) => {
 														const isActive =
 															lesson.resource.fields.slug === params.lesson
+														const isCompleted = moduleProgress?.some(
+															(progress) =>
+																progress.contentResourceId ===
+																	lesson.resourceId && progress.completedAt,
+														)
 
 														return (
 															<li
@@ -192,12 +206,25 @@ export function TutorialLessonList(props: Props) {
 																	)}
 																	href={lesson.resource.fields.slug}
 																>
-																	<span
-																		className="w-6 pr-1 text-sm opacity-60"
-																		aria-hidden="true"
-																	>
-																		{i + 1}
-																	</span>
+																	{isCompleted ? (
+																		<span
+																			aria-label="Completed"
+																			className="w-6 pr-1"
+																		>
+																			<CheckIcon
+																				aria-hidden="true"
+																				className="text-primary relative w-4 -translate-x-1 translate-y-1"
+																			/>
+																		</span>
+																	) : (
+																		<span
+																			className="w-6 pr-1 text-sm opacity-60"
+																			aria-hidden="true"
+																		>
+																			{i + 1}
+																		</span>
+																	)}
+
 																	{lesson.resource.fields.title}
 																</Link>
 																{ability.can('create', 'Content') ? (

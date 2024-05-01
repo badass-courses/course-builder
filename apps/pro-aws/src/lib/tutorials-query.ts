@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { notFound } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { TutorialSchema, type Tutorial } from '@/lib/tutorial'
@@ -59,8 +60,8 @@ export async function getTutorial(moduleSlugOrId: string) {
 
 	const parsedTutorial = TutorialSchema.safeParse(tutorial)
 	if (!parsedTutorial.success) {
-		console.error('Error parsing tutorial', tutorial)
-		throw new Error('Error parsing tutorial')
+		console.error('Error parsing tutorial', tutorial, parsedTutorial.error)
+		return null
 	}
 
 	return parsedTutorial.data
