@@ -51,9 +51,7 @@ export async function getCouponForCode(
 	code: string,
 	productIds: string[] = [],
 ) {
-	const { getCoupon } = courseBuilderAdapter
-
-	let couponFromCode = code && (await getCoupon(code))
+	let couponFromCode = code && (await courseBuilderAdapter.getCoupon(code))
 
 	if (couponFromCode) {
 		const validatedCoupon = await validateCoupon(couponFromCode, productIds)
@@ -90,9 +88,9 @@ export async function propsForCommerce({
 	)
 	const allowPurchase = true
 
-	const { getPurchasesForUser } = courseBuilderAdapter
-
-	const purchases = userId ? await getPurchasesForUser(userId) : false
+	const purchases = userId
+		? await courseBuilderAdapter.getPurchasesForUser(userId)
+		: false
 
 	const couponIdFromCoupon =
 		(query.coupon as string) || (couponFromCode?.isValid && couponFromCode.id)

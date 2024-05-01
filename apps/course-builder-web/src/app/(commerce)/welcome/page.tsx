@@ -30,7 +30,6 @@ const getServerSideProps = async (query: {
 	})
 
 	console.log({ providers })
-	const { getPurchaseDetails } = courseBuilderAdapter
 
 	let purchaseId = query.purchaseId
 
@@ -58,7 +57,7 @@ const getServerSideProps = async (query: {
 
 	if (user && isString(purchaseId) && isString(user?.id)) {
 		const { purchase, existingPurchase, availableUpgrades } =
-			await getPurchaseDetails(purchaseId, user?.id)
+			await courseBuilderAdapter.getPurchaseDetails(purchaseId, user?.id)
 
 		console.log({ purchase, existingPurchase, availableUpgrades })
 

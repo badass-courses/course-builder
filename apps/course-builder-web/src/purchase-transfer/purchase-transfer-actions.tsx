@@ -27,8 +27,7 @@ import {
 } from '@coursebuilder/core/schemas'
 
 export async function getPurchaseTransferById(input: { id: string }) {
-	const { getPurchaseUserTransferById } = courseBuilderAdapter
-	return await getPurchaseUserTransferById({
+	return await courseBuilderAdapter.getPurchaseUserTransferById({
 		id: input.id,
 	})
 }
@@ -36,10 +35,10 @@ export async function getPurchaseTransferById(input: { id: string }) {
 export async function cancelPurchaseTransfer(input: {
 	purchaseUserTransferId: string
 }) {
-	const { getPurchaseUserTransferById } = courseBuilderAdapter
-	const purchaseUserTransfer = await getPurchaseUserTransferById({
-		id: input.purchaseUserTransferId,
-	})
+	const purchaseUserTransfer =
+		await courseBuilderAdapter.getPurchaseUserTransferById({
+			id: input.purchaseUserTransferId,
+		})
 
 	if (!purchaseUserTransfer) {
 		throw new Error('No purchaseUserTransfer found')
@@ -225,10 +224,10 @@ export async function initiatePurchaseTransfer(input: {
 	purchaseUserTransferId: string
 	email: string
 }) {
-	const { getPurchaseUserTransferById } = courseBuilderAdapter
-	const purchaseUserTransfer = await getPurchaseUserTransferById({
-		id: input.purchaseUserTransferId,
-	})
+	const purchaseUserTransfer =
+		await courseBuilderAdapter.getPurchaseUserTransferById({
+			id: input.purchaseUserTransferId,
+		})
 	const { session } = await getServerAuthSession()
 
 	if (
@@ -259,11 +258,13 @@ const initiateTransfer = async ({
 	toEmail: string
 	nextAuthOptions?: NextAuthConfig
 }) => {
-	const { getPurchaseUserTransferById, findOrCreateUser } = courseBuilderAdapter
-	const { user: toUser } = await findOrCreateUser(toEmail.toLowerCase())
-	const purchaseUserTransfer = await getPurchaseUserTransferById({
-		id: purchaseUserTransferId,
-	})
+	const { user: toUser } = await courseBuilderAdapter.findOrCreateUser(
+		toEmail.toLowerCase(),
+	)
+	const purchaseUserTransfer =
+		await courseBuilderAdapter.getPurchaseUserTransferById({
+			id: purchaseUserTransferId,
+		})
 	const canTransfer = await canInitiateTransfer({ purchaseUserTransfer })
 
 	if (canTransfer) {
@@ -308,8 +309,6 @@ const canInitiateTransfer = async ({
 		return false
 	}
 
-	const { updatePurchaseUserTransferTransferState } = courseBuilderAdapter
-
 	const isNotAvailable = purchaseUserTransfer.transferState !== 'AVAILABLE'
 	const isExpired =
 		purchaseUserTransfer.expiresAt &&
@@ -319,7 +318,7 @@ const canInitiateTransfer = async ({
 		case isNotAvailable:
 			return false
 		case isExpired:
-			await updatePurchaseUserTransferTransferState({
+			await courseBuilderAdapter.updatePurchaseUserTransferTransferState({
 				id: purchaseUserTransfer.id,
 				transferState: 'EXPIRED',
 			})

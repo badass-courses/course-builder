@@ -48,19 +48,19 @@ const checkForAnyAvailableUpgrades = async ({
 }) => {
 	if (upgradeFromPurchaseId) return upgradeFromPurchaseId
 
-	const { availableUpgradesForProduct } = courseBuilderAdapter
 	const validPurchases = getValidPurchases(purchases)
 	const productIdsAlreadyPurchased = validPurchases.map(
 		(purchase) => purchase.productId,
 	)
 
-	const potentialUpgrades = await availableUpgradesForProduct(
-		validPurchases,
-		productId,
-	)
+	const potentialUpgrades =
+		await courseBuilderAdapter.availableUpgradesForProduct(
+			validPurchases,
+			productId,
+		)
 
 	type AvailableUpgrade = Awaited<
-		ReturnType<typeof availableUpgradesForProduct>
+		ReturnType<typeof courseBuilderAdapter.availableUpgradesForProduct>
 	>[0]
 	// filter out potential upgrades that have already been purchased
 	const availableUpgrades = potentialUpgrades.filter<AvailableUpgrade>(
@@ -114,20 +114,18 @@ async function getActiveMerchantCoupon({
 	siteCouponId: string | undefined
 	code: string | undefined
 }) {
-	const { getDefaultCoupon, couponForIdOrCode } = courseBuilderAdapter
-
 	let activeMerchantCoupon = null
 	let usedCouponId
 
 	const defaultCoupons = productId
-		? await getDefaultCoupon([productId])
+		? await courseBuilderAdapter.getDefaultCoupon([productId])
 		: undefined
 
 	const defaultMerchantCoupon = defaultCoupons
 		? defaultCoupons.defaultMerchantCoupon
 		: null
 
-	const incomingCoupon = await couponForIdOrCode({
+	const incomingCoupon = await courseBuilderAdapter.couponForIdOrCode({
 		couponId: siteCouponId,
 		code,
 	})
@@ -262,9 +260,8 @@ export const pricingRouter = createTRPCRouter({
 
 			const verifiedUserId = token?.session?.user?.id
 
-			const { getPurchasesForUser } = courseBuilderAdapter
 			const purchases = getValidPurchases(
-				await getPurchasesForUser(verifiedUserId),
+				await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
 			)
 
 			if (!productId) throw new Error('productId is required')
@@ -325,13 +322,13 @@ export const pricingRouter = createTRPCRouter({
 		const token = await getServerAuthSession()
 		const verifiedUserId = token?.session?.user?.id
 
-		const { getDefaultCoupon, getPurchasesForUser } = courseBuilderAdapter
 		const purchases = getValidPurchases(
-			await getPurchasesForUser(verifiedUserId),
+			await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
 		)
 		const products = await db.query.products.findMany()
 		const productIds = products.map((product) => product.id)
-		const defaultCoupons = await getDefaultCoupon(productIds)
+		const defaultCoupons =
+			await courseBuilderAdapter.getDefaultCoupon(productIds)
 
 		const defaultCoupon = defaultCoupons?.defaultCoupon
 
