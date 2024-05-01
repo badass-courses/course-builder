@@ -48,23 +48,19 @@ const checkForAnyAvailableUpgrades = async ({
 }) => {
 	if (upgradeFromPurchaseId) return upgradeFromPurchaseId
 
-	const { availableUpgradesForProduct } = courseBuilderAdapter
 	const validPurchases = getValidPurchases(purchases)
 	const productIdsAlreadyPurchased = validPurchases.map(
 		(purchase) => purchase.productId,
 	)
 
-	console.log('📝 productIdsAlreadyPurchased', { productIdsAlreadyPurchased })
-
-	const potentialUpgrades = await availableUpgradesForProduct(
-		validPurchases,
-		productId,
-	)
-
-	console.log('📝 potentialUpgrades', { potentialUpgrades })
+	const potentialUpgrades =
+		await courseBuilderAdapter.availableUpgradesForProduct(
+			validPurchases,
+			productId,
+		)
 
 	type AvailableUpgrade = Awaited<
-		ReturnType<typeof availableUpgradesForProduct>
+		ReturnType<typeof courseBuilderAdapter.availableUpgradesForProduct>
 	>[0]
 	// filter out potential upgrades that have already been purchased
 	const availableUpgrades = potentialUpgrades.filter<AvailableUpgrade>(
@@ -118,27 +114,21 @@ async function getActiveMerchantCoupon({
 	siteCouponId: string | undefined
 	code: string | undefined
 }) {
-	const { getDefaultCoupon, couponForIdOrCode } = courseBuilderAdapter
-
 	let activeMerchantCoupon = null
 	let usedCouponId
 
 	const defaultCoupons = productId
-		? await getDefaultCoupon([productId])
+		? await courseBuilderAdapter.getDefaultCoupon([productId])
 		: undefined
-
-	console.log('📝 defaultCoupons', { defaultCoupons })
 
 	const defaultMerchantCoupon = defaultCoupons
 		? defaultCoupons.defaultMerchantCoupon
 		: null
 
-	const incomingCoupon = await couponForIdOrCode({
+	const incomingCoupon = await courseBuilderAdapter.couponForIdOrCode({
 		couponId: siteCouponId,
 		code,
 	})
-
-	console.log('📝 incomingCoupon', { incomingCoupon })
 
 	if (
 		// compare the discounts if there is a coupon and site/sale running
@@ -268,16 +258,11 @@ export const pricingRouter = createTRPCRouter({
 
 			const token = await getServerAuthSession()
 
-			console.log('📝 token', { token })
-
 			const verifiedUserId = token?.session?.user?.id
 
-			const { getPurchasesForUser } = courseBuilderAdapter
 			const purchases = getValidPurchases(
-				await getPurchasesForUser(verifiedUserId),
+				await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
 			)
-
-			console.log('📝 purchases', { purchases })
 
 			if (!productId) throw new Error('productId is required')
 
@@ -293,15 +278,11 @@ export const pricingRouter = createTRPCRouter({
 				country,
 			})
 
-			console.log('📝 upgradeFromPurchaseId', { upgradeFromPurchaseId })
-
 			const restrictedPurchase = purchases.find((purchase) => {
 				return (
 					purchase.productId === productId && purchase.status === 'Restricted'
 				)
 			})
-
-			console.log('📝 restrictedPurchase', { restrictedPurchase })
 
 			if (restrictedPurchase) {
 				const validPurchase = purchases.find((purchase) => {
@@ -320,12 +301,6 @@ export const pricingRouter = createTRPCRouter({
 					productId,
 				})
 
-			console.log('📝 activeMerchantCoupon', {
-				activeMerchantCoupon,
-				defaultCoupon,
-				usedCouponId,
-			})
-
 			const productPrices = await formatPricesForProduct({
 				productId,
 				country,
@@ -338,8 +313,6 @@ export const pricingRouter = createTRPCRouter({
 				ctx: courseBuilderAdapter,
 			})
 
-			console.log('📝 productPrices', { productPrices })
-
 			return {
 				...productPrices,
 				...(defaultCoupon && { defaultCoupon }),
@@ -349,13 +322,13 @@ export const pricingRouter = createTRPCRouter({
 		const token = await getServerAuthSession()
 		const verifiedUserId = token?.session?.user?.id
 
-		const { getDefaultCoupon, getPurchasesForUser } = courseBuilderAdapter
 		const purchases = getValidPurchases(
-			await getPurchasesForUser(verifiedUserId),
+			await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
 		)
 		const products = await db.query.products.findMany()
 		const productIds = products.map((product) => product.id)
-		const defaultCoupons = await getDefaultCoupon(productIds)
+		const defaultCoupons =
+			await courseBuilderAdapter.getDefaultCoupon(productIds)
 
 		const defaultCoupon = defaultCoupons?.defaultCoupon
 

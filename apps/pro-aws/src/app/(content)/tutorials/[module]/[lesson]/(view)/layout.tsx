@@ -1,5 +1,6 @@
 import React from 'react'
 import { courseBuilderAdapter } from '@/db'
+import { getModuleProgressForUser } from '@/lib/progress'
 import { getResourceSection } from '@/utils/get-resource-section'
 
 import { Skeleton } from '@coursebuilder/ui'
@@ -20,6 +21,7 @@ const LessonLayout: React.FC<
 	)
 	const currentSection =
 		currentLesson && (await getResourceSection(currentLesson.id, tutorial))
+	const moduleProgress = await getModuleProgressForUser(params.module)
 
 	return (
 		<div className="flex">
@@ -38,6 +40,7 @@ const LessonLayout: React.FC<
 						className="hidden lg:block"
 						key={tutorial?.id}
 						section={currentSection}
+						moduleProgress={moduleProgress}
 						lesson={currentLesson}
 						tutorial={tutorial}
 					/>

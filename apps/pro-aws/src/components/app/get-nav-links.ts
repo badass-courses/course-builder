@@ -6,10 +6,10 @@ export function getNavLinks() {
 			href: '/tips',
 			label: 'Tips',
 		},
-		// {
-		// 	href: '/tutorials',
-		// 	label: 'Tutorials',
-		// },
+		{
+			href: '/tutorials',
+			label: 'Tutorials',
+		},
 		// {
 		// 	href: '/tips',
 		// 	label: 'Tips',

@@ -11,16 +11,13 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 
-	const { findOrCreateUser, completeLessonProgressForUser } =
-		courseBuilderAdapter
-
 	try {
 		if (user) {
-			await completeLessonProgressForUser({
+			await courseBuilderAdapter.completeLessonProgressForUser({
 				userId: user.id,
 				lessonId: resourceId,
 			})
-			await sendInngestProgressEvent({
+			return await sendInngestProgressEvent({
 				user: user,
 				lessonId: resourceId,
 			})
@@ -41,9 +38,12 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 				return { error: 'no subscriber found' }
 			}
 
-			const { user } = await findOrCreateUser(subscriber.email_address)
+			const { user } = await courseBuilderAdapter.findOrCreateUser(
+				subscriber.email_address,
+				subscriber.first_name,
+			)
 
-			await completeLessonProgressForUser({
+			return await courseBuilderAdapter.completeLessonProgressForUser({
 				userId: user.id,
 				lessonId: resourceId,
 			})
@@ -73,4 +73,40 @@ export async function sendInngestProgressEvent({
 		},
 		user,
 	})
+}
+
+export async function getModuleProgressForUser(moduleIdOrSlug: string) {
+	const { session } = await getServerAuthSession()
+	if (session) {
+		const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
+			session.user.id,
+			moduleIdOrSlug,
+		)
+		return moduleProgress
+	}
+
+	const subscriberCookie = cookies().get('ck_subscriber')
+
+	if (!subscriberCookie) {
+		console.error('no subscriber cookie')
+		return {
+			progress: [],
+			nextResource: null,
+		}
+	}
+
+	const subscriber = SubscriberSchema.parse(JSON.parse(subscriberCookie.value))
+
+	if (!subscriber?.email_address) {
+		console.error('no subscriber cookie')
+		return {
+			progress: [],
+			nextResource: null,
+		}
+	}
+	const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
+		subscriber.email_address,
+		moduleIdOrSlug,
+	)
+	return moduleProgress
 }

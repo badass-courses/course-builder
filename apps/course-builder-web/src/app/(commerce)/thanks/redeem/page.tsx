@@ -10,9 +10,10 @@ const ThanksRedeem = async ({
 	searchParams: { purchaseId: string }
 }) => {
 	headers()
-	const { getPurchaseWithUser } = courseBuilderAdapter
 
-	const purchase = await getPurchaseWithUser(searchParams.purchaseId)
+	const purchase = await courseBuilderAdapter.getPurchaseWithUser(
+		searchParams.purchaseId,
+	)
 
 	if (!purchase) {
 		return notFound()

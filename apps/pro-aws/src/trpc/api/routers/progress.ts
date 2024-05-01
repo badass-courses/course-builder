@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
-import { addProgress, sendInngestProgressEvent } from '@/app/actions'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
+import { addProgress, sendInngestProgressEvent } from '@/lib/progress'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
@@ -91,12 +91,12 @@ export const progressRouter = createTRPCRouter({
 			}
 		}),
 	get: publicProcedure.query(async ({ ctx }) => {
-		const { findOrCreateUser, getLessonProgressForUser } = courseBuilderAdapter
 		const { session, ability } = await getServerAuthSession()
 		const user = session?.user
 		if (user) {
 			try {
-				const lessonProgress = await getLessonProgressForUser(user.id as string)
+				const lessonProgress =
+					await courseBuilderAdapter.getLessonProgressForUser(user.id as string)
 				return lessonProgress || []
 			} catch (error) {
 				console.error(error)
@@ -121,9 +121,12 @@ export const progressRouter = createTRPCRouter({
 				return { error: 'no subscriber found' }
 			}
 
-			const { user } = await findOrCreateUser(subscriber.email_address)
+			const { user } = await courseBuilderAdapter.findOrCreateUser(
+				subscriber.email_address,
+			)
 
-			const lessonProgress = await getLessonProgressForUser(user.id as string)
+			const lessonProgress =
+				await courseBuilderAdapter.getLessonProgressForUser(user.id as string)
 			return lessonProgress || []
 		}
 	}),
@@ -144,8 +147,7 @@ export const progressRouter = createTRPCRouter({
 			const lessons = input.lessons
 			if (token) {
 				try {
-					const { clearLessonProgressForUser } = courseBuilderAdapter
-					await clearLessonProgressForUser({
+					await courseBuilderAdapter.clearLessonProgressForUser({
 						userId: token.id as string,
 						lessons: lessons,
 					})

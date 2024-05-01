@@ -4,12 +4,15 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { getModuleProgressForUser } from '@/lib/progress'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
-import { PencilIcon } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 
+import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
+
+import { TutorialLessonList } from '../_components/tutorial-lesson-list'
 
 type Props = {
 	params: { module: string }
@@ -44,6 +47,8 @@ export default async function ModulePage({ params }: Props) {
 		notFound()
 	}
 
+	const moduleProgress = await getModuleProgressForUser(tutorial.id)
+
 	const firstLesson = tutorial.resources[0]?.resource?.resources?.[0]?.resource
 
 	return (
@@ -69,12 +74,24 @@ export default async function ModulePage({ params }: Props) {
 						</h2>
 					)}
 					<Contributor className="mt-5" />
-					{firstLesson?.fields.slug && (
+					{moduleProgress?.nextResource?.fields?.slug ? (
 						<Button asChild size="lg" className="mt-10 w-full md:w-auto">
-							<Link href={`${params.module}/${firstLesson?.fields.slug}`}>
-								Start Watching
+							<Link
+								href={`${params.module}/${moduleProgress?.nextResource?.fields.slug}`}
+							>
+								Continue Watching
 							</Link>
 						</Button>
+					) : (
+						<>
+							{firstLesson?.fields.slug && (
+								<Button asChild size="lg" className="mt-10 w-full md:w-auto">
+									<Link href={`${params.module}/${firstLesson?.fields.slug}`}>
+										Start Watching
+									</Link>
+								</Button>
+							)}
+						</>
 					)}
 				</div>
 				{tutorial.fields.coverImage?.url && (
@@ -86,78 +103,23 @@ export default async function ModulePage({ params }: Props) {
 					/>
 				)}
 			</div>
-			<div className="flex flex-col border-t md:flex-row">
+			<div className="flex flex-col-reverse border-t md:flex-row">
 				{tutorial.fields.body && (
 					<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
 						<ReactMarkdown>{tutorial.fields.body}</ReactMarkdown>
 					</article>
 				)}
-				<div className="flex w-full max-w-sm flex-col gap-3 border-l pb-16 pt-5">
-					{tutorial.resources.map((resource) => {
-						return (
-							<div key={resource.resourceId}>
-								{resource.resource.type === 'section' ? (
-									<h3 className="px-5 py-2 text-lg font-bold">
-										{resource.resource.fields.title}
-									</h3>
-								) : (
-									<div className="flex w-full flex-row hover:bg-gray-900">
-										<Link
-											className="w-full"
-											href={`/tutorials/${params.module}/${resource.resource.fields.slug}`}
-										>
-											{resource.resource.fields.title}
-										</Link>
-										{ability.can('create', 'Content') ? (
-											<div className="w-full justify-end">
-												<Button asChild size="sm">
-													<Link
-														className="text-xs"
-														href={`/tutorials/${params.module}/${resource.resource.fields.slug}/edit`}
-													>
-														edit
-													</Link>
-												</Button>
-											</div>
-										) : null}
-									</div>
-								)}
-								{resource.resource.resources.length > 0 && (
-									<ul>
-										{resource.resource.resources.map((lesson) => {
-											return (
-												<li
-													key={lesson.resourceId}
-													className="flex w-full items-center"
-												>
-													<Link
-														className="hover:bg-secondary w-full px-5 py-2"
-														href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
-													>
-														{lesson.resource.fields.title}
-													</Link>
-													{ability.can('create', 'Content') ? (
-														<Button
-															asChild
-															variant="outline"
-															size="icon"
-															className="scale-75"
-														>
-															<Link
-																href={`/tutorials/${params.module}/${lesson.resource.fields.slug}/edit`}
-															>
-																<PencilIcon className="w-3" />
-															</Link>
-														</Button>
-													) : null}
-												</li>
-											)
-										})}
-									</ul>
-								)}
-							</div>
-						)
-					})}
+				<div className="flex w-full flex-col gap-3 border-l pb-16 pt-5 sm:max-w-sm">
+					<strong className="font-heading px-5 pb-2 text-xl font-bold">
+						Contents
+					</strong>
+					<TutorialLessonList
+						className="w-full max-w-none border-r-0"
+						tutorial={tutorial as unknown as ContentResource}
+						moduleProgress={moduleProgress}
+						maxHeight="h-auto"
+						withHeader={false}
+					/>
 				</div>
 			</div>
 		</main>

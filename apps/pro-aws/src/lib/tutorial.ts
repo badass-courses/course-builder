@@ -10,6 +10,11 @@ export const TutorialSchema = z.object({
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
 		description: z.string().optional().nullable(),
+		visibility: z.union([
+			z.literal('public'),
+			z.literal('private'),
+			z.literal('unlisted'),
+		]),
 		coverImage: z
 			.object({
 				url: z.string().optional().nullable(),

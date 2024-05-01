@@ -8,8 +8,9 @@ import { CldImage } from '@/app/_components/cld-image'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { getResourceSection } from '@/utils/get-resource-section'
-import { PencilIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline'
 
+import type { ResourceProgress } from '@coursebuilder/core/schemas'
 import type {
 	ContentResource,
 	ContentResourceResource,
@@ -26,17 +27,27 @@ import {
 
 type ContentResourceProps = {
 	tutorial: ContentResource | null
-	lesson: ContentResource | null
-	section: ContentResource | null
+	lesson?: ContentResource | null
+	section?: ContentResource | null
+	moduleProgress: {
+		progress: ResourceProgress[]
+		nextResource: ContentResource | null
+	}
 	className?: string
 	maxHeight?: string
+	withHeader?: boolean
 }
 
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<ContentResource | null>
 	lessonLoader: Promise<ContentResource | null>
+	moduleProgressLoader: Promise<{
+		progress: ResourceProgress[] | null
+		nextResource: ContentResource | null
+	}>
 	className?: string
 	maxHeight?: string
+	withHeader?: boolean
 }
 
 type Props = ContentResourceProps | ContentResourceLoaderProps
@@ -60,8 +71,15 @@ export function TutorialLessonList(props: Props) {
 			: lesson
 				? React.use(getResourceSection(lesson.id, tutorial))
 				: null
+	const moduleProgress =
+		'moduleProgress' in props
+			? props.moduleProgress
+			: 'moduleProgressLoader' in props
+				? React.use(props.moduleProgressLoader)
+				: null
 
 	const className = 'className' in props ? props.className : ''
+	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
@@ -97,38 +115,40 @@ export function TutorialLessonList(props: Props) {
 		>
 			<div className="sticky top-0 h-auto">
 				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
-					<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
-						{tutorial?.fields?.coverImage?.url && (
-							<CldImage
-								width={80}
-								height={80}
-								src={tutorial.fields.coverImage.url}
-								alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
-							/>
-						)}
-						<div className="flex flex-col">
-							<div className="flex items-center gap-2">
+					{withHeader && (
+						<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
+							{tutorial?.fields?.coverImage?.url && (
+								<CldImage
+									width={80}
+									height={80}
+									src={tutorial.fields.coverImage.url}
+									alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
+								/>
+							)}
+							<div className="flex flex-col">
+								<div className="flex items-center gap-2">
+									<Link
+										href="/tutorials"
+										className="font-heading text-primary text-lg font-medium hover:underline"
+									>
+										Tutorials
+									</Link>
+									<span className="opacity-50">/</span>
+								</div>
 								<Link
-									href="/tutorials"
-									className="font-heading text-primary text-lg font-medium hover:underline"
+									className="font-heading text-balance text-2xl font-bold hover:underline"
+									href={`/tutorials/${tutorial?.fields?.slug}`}
 								>
-									Tutorials
+									{tutorial?.fields?.title}
 								</Link>
-								<span className="opacity-50">/</span>
 							</div>
-							<Link
-								className="font-heading text-balance text-2xl font-bold hover:underline"
-								href={`/tutorials/${tutorial?.fields?.slug}`}
-							>
-								{tutorial?.fields?.title}
-							</Link>
 						</div>
-					</div>
+					)}
 					<Accordion
 						type="single"
 						collapsible
 						className="flex flex-col border-t pb-16"
-						defaultValue={section?.id}
+						defaultValue={section?.id || tutorial?.resources?.[0]?.resource?.id}
 					>
 						{tutorial?.resources?.map((resource) => {
 							return (
@@ -138,7 +158,6 @@ export function TutorialLessonList(props: Props) {
 								>
 									{resource.resource.type === 'section' ? (
 										// section
-
 										<AccordionTrigger className="relative flex w-full items-center px-5 py-5 text-lg font-bold">
 											<h3>{resource.resource.fields.title}</h3>
 											{section?.id === resource.resourceId && (
@@ -176,6 +195,11 @@ export function TutorialLessonList(props: Props) {
 													(lesson: ContentResourceResource, i: number) => {
 														const isActive =
 															lesson.resource.fields.slug === params.lesson
+														const isCompleted = moduleProgress?.progress?.some(
+															(progress) =>
+																progress.contentResourceId ===
+																	lesson.resourceId && progress.completedAt,
+														)
 
 														return (
 															<li
@@ -190,14 +214,27 @@ export function TutorialLessonList(props: Props) {
 																			'bg-secondary text-primary': isActive,
 																		},
 																	)}
-																	href={lesson.resource.fields.slug}
+																	href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																>
-																	<span
-																		className="w-6 pr-1 text-sm opacity-60"
-																		aria-hidden="true"
-																	>
-																		{i + 1}
-																	</span>
+																	{isCompleted ? (
+																		<span
+																			aria-label="Completed"
+																			className="w-6 pr-1"
+																		>
+																			<CheckIcon
+																				aria-hidden="true"
+																				className="text-primary relative w-4 -translate-x-1 translate-y-1"
+																			/>
+																		</span>
+																	) : (
+																		<span
+																			className="w-6 pr-1 text-sm opacity-60"
+																			aria-hidden="true"
+																		>
+																			{i + 1}
+																		</span>
+																	)}
+
 																	{lesson.resource.fields.title}
 																</Link>
 																{ability.can('create', 'Content') ? (

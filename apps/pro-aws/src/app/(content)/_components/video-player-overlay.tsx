@@ -3,9 +3,9 @@
 import React, { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
-import { addProgress } from '@/app/actions'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
+import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
@@ -57,7 +57,7 @@ export const CompletedLessonOverlay: React.FC<{
 									resourceId: resource.id,
 								})
 								if (nextLesson && moduleResource) {
-									router.push(nextLesson?.fields?.slug)
+									return router.push(nextLesson?.fields?.slug)
 								}
 							}}
 						>
@@ -92,7 +92,7 @@ export const CompletedModuleOverlay: React.FC<{
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
 	React.useEffect(() => {
-		if (resource && session?.data?.user) {
+		if (resource) {
 			const run = async () => {
 				await addProgress({
 					resourceId: resource.id,

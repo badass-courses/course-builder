@@ -189,6 +189,15 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	getLessonProgressForUser(userId: string): Promise<ResourceProgress[]> {
 		return Promise.resolve([])
 	},
+	getModuleProgressForUser(
+		userId: string,
+		moduleId: string,
+	): Promise<{
+		progress: ResourceProgress[]
+		nextResource: ContentResource | null
+	}> {
+		return Promise.resolve({ progress: [], nextResource: null })
+	},
 	getLessonProgresses(): Promise<ResourceProgress[]> {
 		return Promise.resolve([])
 	},
@@ -377,6 +386,13 @@ interface SkillProductsCommerceSdk {
 		lessonSlug?: string
 	}): Promise<ResourceProgress | null>
 	getLessonProgressForUser(userId: string): Promise<ResourceProgress[] | null>
+	getModuleProgressForUser(
+		userId: string,
+		moduleId: string,
+	): Promise<{
+		progress: ResourceProgress[]
+		nextResource: ContentResource | null
+	}>
 	getLessonProgresses(): Promise<ResourceProgress[]>
 	getLessonProgressCountsByDate(): Promise<
 		{
