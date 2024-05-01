@@ -839,7 +839,10 @@ export function mySqlDrizzleAdapter(
 		async getModuleProgressForUser(
 			userIdOrEmail: string,
 			moduleIdOrSlug: string,
-		): Promise<ResourceProgress[]> {
+		): Promise<{
+			progress: ResourceProgress[]
+			nextResource: ContentResource | null
+		}> {
 			const module = await client.query.contentResource.findFirst({
 				where: or(
 					eq(contentResource.id, moduleIdOrSlug),
@@ -875,7 +878,7 @@ export function mySqlDrizzleAdapter(
 					'Error parsing module resources',
 					parsedModuleResources.error,
 				)
-				return []
+				return { progress: [], nextResource: null }
 			}
 
 			const user = await client.query.users.findFirst({
@@ -884,7 +887,7 @@ export function mySqlDrizzleAdapter(
 
 			if (!user) {
 				console.error('User not found', userIdOrEmail)
-				return []
+				return { progress: [], nextResource: null }
 			}
 
 			const parsedUser = userSchema.parse(user)
@@ -897,16 +900,28 @@ export function mySqlDrizzleAdapter(
 						parsedModuleResources.data.map((r) => r.resourceId),
 					),
 				),
+				orderBy: asc(resourceProgress.completedAt),
 			})
+
+			const nextResourceId = moduleResources.find(
+				(r) => !userProgress.find((p) => p.contentResourceId === r.resourceId),
+			)?.resourceId
+
+			const nextResource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, nextResourceId as string),
+			})
+
+			const parsedNextResource =
+				ContentResourceSchema.nullable().parse(nextResource)
 
 			const parsedProgress = z
 				.array(resourceProgressSchema)
 				.safeParse(userProgress)
 			if (!parsedProgress.success) {
 				console.error('Error parsing user progress', parsedProgress.error)
-				return []
+				return { progress: [], nextResource: null }
 			}
-			return parsedProgress.data
+			return { progress: parsedProgress.data, nextResource: parsedNextResource }
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('Method not implemented.')

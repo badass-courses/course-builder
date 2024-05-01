@@ -29,7 +29,10 @@ type ContentResourceProps = {
 	tutorial: ContentResource | null
 	lesson?: ContentResource | null
 	section?: ContentResource | null
-	moduleProgress: ResourceProgress[] | null
+	moduleProgress: {
+		progress: ResourceProgress[]
+		nextResource: ContentResource | null
+	}
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -38,7 +41,10 @@ type ContentResourceProps = {
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<ContentResource | null>
 	lessonLoader: Promise<ContentResource | null>
-	moduleProgressLoader: Promise<ResourceProgress[] | null>
+	moduleProgressLoader: Promise<{
+		progress: ResourceProgress[] | null
+		nextResource: ContentResource | null
+	}>
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -189,7 +195,7 @@ export function TutorialLessonList(props: Props) {
 													(lesson: ContentResourceResource, i: number) => {
 														const isActive =
 															lesson.resource.fields.slug === params.lesson
-														const isCompleted = moduleProgress?.some(
+														const isCompleted = moduleProgress?.progress?.some(
 															(progress) =>
 																progress.contentResourceId ===
 																	lesson.resourceId && progress.completedAt,

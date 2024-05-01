@@ -74,12 +74,24 @@ export default async function ModulePage({ params }: Props) {
 						</h2>
 					)}
 					<Contributor className="mt-5" />
-					{firstLesson?.fields.slug && (
+					{moduleProgress?.nextResource?.fields?.slug ? (
 						<Button asChild size="lg" className="mt-10 w-full md:w-auto">
-							<Link href={`${params.module}/${firstLesson?.fields.slug}`}>
-								Start Watching
+							<Link
+								href={`${params.module}/${moduleProgress?.nextResource?.fields.slug}`}
+							>
+								Continue Watching
 							</Link>
 						</Button>
+					) : (
+						<>
+							{firstLesson?.fields.slug && (
+								<Button asChild size="lg" className="mt-10 w-full md:w-auto">
+									<Link href={`${params.module}/${firstLesson?.fields.slug}`}>
+										Start Watching
+									</Link>
+								</Button>
+							)}
+						</>
 					)}
 				</div>
 				{tutorial.fields.coverImage?.url && (

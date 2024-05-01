@@ -13,7 +13,7 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 
 	const { findOrCreateUser, completeLessonProgressForUser } =
 		courseBuilderAdapter
-	console.log('adding progress')
+
 	try {
 		if (user) {
 			await completeLessonProgressForUser({
@@ -41,14 +41,10 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 				return { error: 'no subscriber found' }
 			}
 
-			console.log({ subscriber })
-
 			const { user } = await findOrCreateUser(
 				subscriber.email_address,
 				subscriber.first_name,
 			)
-
-			console.log({ user })
 
 			return await completeLessonProgressForUser({
 				userId: user.id,
@@ -96,14 +92,20 @@ export async function getModuleProgressForUser(moduleIdOrSlug: string) {
 
 	if (!subscriberCookie) {
 		console.error('no subscriber cookie')
-		return []
+		return {
+			progress: [],
+			nextResource: null,
+		}
 	}
 
 	const subscriber = SubscriberSchema.parse(JSON.parse(subscriberCookie.value))
 
 	if (!subscriber?.email_address) {
 		console.error('no subscriber cookie')
-		return []
+		return {
+			progress: [],
+			nextResource: null,
+		}
 	}
 	const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
 		subscriber.email_address,
