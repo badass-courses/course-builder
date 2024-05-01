@@ -767,7 +767,10 @@ export function mySqlDrizzleAdapter(
 			user: User
 			isNewUser: boolean
 		}> {
-			const user = await this.getUserByEmail?.(email)
+			// const user = await this.getUserByEmail?.(email)
+			const user = await client.query.users.findFirst({
+				where: eq(users.email, email),
+			})
 
 			if (!user) {
 				const newUser = await this.createUser?.({
