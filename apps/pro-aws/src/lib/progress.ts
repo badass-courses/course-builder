@@ -11,12 +11,9 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 
-	const { findOrCreateUser, completeLessonProgressForUser } =
-		courseBuilderAdapter
-
 	try {
 		if (user) {
-			await completeLessonProgressForUser({
+			await courseBuilderAdapter.completeLessonProgressForUser({
 				userId: user.id,
 				lessonId: resourceId,
 			})
@@ -41,12 +38,12 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 				return { error: 'no subscriber found' }
 			}
 
-			const { user } = await findOrCreateUser(
+			const { user } = await courseBuilderAdapter.findOrCreateUser(
 				subscriber.email_address,
 				subscriber.first_name,
 			)
 
-			return await completeLessonProgressForUser({
+			return await courseBuilderAdapter.completeLessonProgressForUser({
 				userId: user.id,
 				lessonId: resourceId,
 			})
