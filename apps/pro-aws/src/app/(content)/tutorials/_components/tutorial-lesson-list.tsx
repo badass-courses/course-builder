@@ -27,11 +27,12 @@ import {
 
 type ContentResourceProps = {
 	tutorial: ContentResource | null
-	lesson: ContentResource | null
-	section: ContentResource | null
+	lesson?: ContentResource | null
+	section?: ContentResource | null
 	moduleProgress: ResourceProgress[] | null
 	className?: string
 	maxHeight?: string
+	withHeader?: boolean
 }
 
 type ContentResourceLoaderProps = {
@@ -40,6 +41,7 @@ type ContentResourceLoaderProps = {
 	moduleProgressLoader: Promise<ResourceProgress[] | null>
 	className?: string
 	maxHeight?: string
+	withHeader?: boolean
 }
 
 type Props = ContentResourceProps | ContentResourceLoaderProps
@@ -71,6 +73,7 @@ export function TutorialLessonList(props: Props) {
 				: null
 
 	const className = 'className' in props ? props.className : ''
+	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
@@ -106,38 +109,40 @@ export function TutorialLessonList(props: Props) {
 		>
 			<div className="sticky top-0 h-auto">
 				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
-					<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
-						{tutorial?.fields?.coverImage?.url && (
-							<CldImage
-								width={80}
-								height={80}
-								src={tutorial.fields.coverImage.url}
-								alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
-							/>
-						)}
-						<div className="flex flex-col">
-							<div className="flex items-center gap-2">
+					{withHeader && (
+						<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
+							{tutorial?.fields?.coverImage?.url && (
+								<CldImage
+									width={80}
+									height={80}
+									src={tutorial.fields.coverImage.url}
+									alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
+								/>
+							)}
+							<div className="flex flex-col">
+								<div className="flex items-center gap-2">
+									<Link
+										href="/tutorials"
+										className="font-heading text-primary text-lg font-medium hover:underline"
+									>
+										Tutorials
+									</Link>
+									<span className="opacity-50">/</span>
+								</div>
 								<Link
-									href="/tutorials"
-									className="font-heading text-primary text-lg font-medium hover:underline"
+									className="font-heading text-balance text-2xl font-bold hover:underline"
+									href={`/tutorials/${tutorial?.fields?.slug}`}
 								>
-									Tutorials
+									{tutorial?.fields?.title}
 								</Link>
-								<span className="opacity-50">/</span>
 							</div>
-							<Link
-								className="font-heading text-balance text-2xl font-bold hover:underline"
-								href={`/tutorials/${tutorial?.fields?.slug}`}
-							>
-								{tutorial?.fields?.title}
-							</Link>
 						</div>
-					</div>
+					)}
 					<Accordion
 						type="single"
 						collapsible
 						className="flex flex-col border-t pb-16"
-						defaultValue={section?.id}
+						defaultValue={section?.id || tutorial?.resources?.[0]?.resource?.id}
 					>
 						{tutorial?.resources?.map((resource) => {
 							return (
@@ -147,7 +152,6 @@ export function TutorialLessonList(props: Props) {
 								>
 									{resource.resource.type === 'section' ? (
 										// section
-
 										<AccordionTrigger className="relative flex w-full items-center px-5 py-5 text-lg font-bold">
 											<h3>{resource.resource.fields.title}</h3>
 											{section?.id === resource.resourceId && (
@@ -204,7 +208,7 @@ export function TutorialLessonList(props: Props) {
 																			'bg-secondary text-primary': isActive,
 																		},
 																	)}
-																	href={lesson.resource.fields.slug}
+																	href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																>
 																	{isCompleted ? (
 																		<span
