@@ -837,7 +837,7 @@ export function mySqlDrizzleAdapter(
 			return parsed.data
 		},
 		async getModuleProgressForUser(
-			userId: string,
+			userIdOrEmail: string,
 			moduleIdOrSlug: string,
 		): Promise<ResourceProgress[]> {
 			const module = await client.query.contentResource.findFirst({
@@ -878,9 +878,20 @@ export function mySqlDrizzleAdapter(
 				return []
 			}
 
+			const user = await client.query.users.findFirst({
+				where: or(eq(users.id, userIdOrEmail), eq(users.email, userIdOrEmail)),
+			})
+
+			if (!user) {
+				console.error('User not found', userIdOrEmail)
+				return []
+			}
+
+			const parsedUser = userSchema.parse(user)
+
 			const userProgress = await client.query.resourceProgress.findMany({
 				where: and(
-					eq(resourceProgress.userId, userId),
+					eq(resourceProgress.userId, parsedUser.id),
 					inArray(
 						resourceProgress.contentResourceId,
 						parsedModuleResources.data.map((r) => r.resourceId),

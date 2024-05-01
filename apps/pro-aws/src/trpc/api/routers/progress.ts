@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
-import { addProgress, sendInngestProgressEvent } from '@/app/actions'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
+import { addProgress, sendInngestProgressEvent } from '@/lib/progress'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
