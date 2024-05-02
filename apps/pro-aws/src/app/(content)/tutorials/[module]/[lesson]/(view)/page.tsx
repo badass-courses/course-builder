@@ -1,13 +1,18 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
+import {
+	LessonProgressToggle,
+	LessonProgressToggleSkeleton,
+} from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
+import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
@@ -19,8 +24,10 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+import type { ResourceProgress } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
@@ -31,8 +38,6 @@ import {
 	Skeleton,
 } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
-
-import { TutorialLessonList } from '../../../_components/tutorial-lesson-list'
 
 export async function generateMetadata(
 	{ params, searchParams }: Props,
@@ -58,7 +63,6 @@ type Props = {
 
 export default async function LessonPage({ params }: Props) {
 	headers()
-	const { session } = await getServerAuthSession()
 	const tutorialLoader = getTutorial(params.module)
 	const lessonLoader = getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
@@ -130,7 +134,10 @@ export default async function LessonPage({ params }: Props) {
 							</Accordion>
 							<div className="flex flex-col py-5 sm:py-8">
 								<Suspense fallback={<div className="p-5">Loading...</div>}>
-									<LessonBody lessonLoader={lessonLoader} />
+									<LessonBody
+										lessonLoader={lessonLoader}
+										moduleProgressLoader={moduleProgressLoader}
+									/>
 								</Suspense>
 								<TranscriptContainer
 									className="block 2xl:hidden"
@@ -226,7 +233,7 @@ async function PlayerContainer({
 
 	return (
 		<VideoPlayerOverlayProvider>
-			<div className="relative flex w-full items-center justify-center border-t">
+			<div className="relative flex w-full items-center justify-center">
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<VideoPlayerOverlay
 						nextResourceLoader={nextResourceLoader}
@@ -247,10 +254,18 @@ async function PlayerContainer({
 
 async function LessonBody({
 	lessonLoader,
+	moduleProgressLoader,
 }: {
-	lessonLoader: Promise<ContentResource | null | undefined>
+	lessonLoader: Promise<ContentResource | null>
+	moduleProgressLoader: Promise<{
+		progress: ResourceProgress[] | null
+		nextResource: ContentResource | null
+	}>
 }) {
 	const lesson = await lessonLoader
+	const { session } = await getServerAuthSession()
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	if (!lesson) {
 		notFound()
@@ -258,11 +273,25 @@ async function LessonBody({
 
 	return (
 		<article>
-			<h1 className="font-heading w-full text-balance px-5 pb-5 text-3xl font-bold text-white sm:px-8 sm:text-4xl lg:text-5xl">
-				{lesson.fields?.title}
-			</h1>
-			<div className="px-5 sm:px-8">
-				<Contributor />
+			<div className="flex w-full flex-col items-start justify-between gap-8 px-5 sm:flex-row sm:px-8 2xl:flex-col">
+				<div className="w-full">
+					<h1 className="font-heading w-full text-balance pb-5 text-4xl font-bold text-white sm:text-4xl lg:text-5xl">
+						{lesson.fields?.title}
+					</h1>
+					<div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+						<div className="">
+							<Contributor />
+						</div>
+						{session?.user || ckSubscriber ? (
+							<Suspense fallback={<LessonProgressToggleSkeleton />}>
+								<LessonProgressToggle
+									lessonLoader={lessonLoader}
+									moduleProgressLoader={moduleProgressLoader}
+								/>
+							</Suspense>
+						) : null}
+					</div>
+				</div>
 			</div>
 			{lesson.fields?.body && (
 				<div className="prose dark:prose-invert mt-5 max-w-none border-t px-5 pt-8 sm:px-8">

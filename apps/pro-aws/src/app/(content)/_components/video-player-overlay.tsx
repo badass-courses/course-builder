@@ -165,7 +165,7 @@ export const SoftBlockOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/80 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:aspect-video lg:p-16"
+			className="z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden bg-gray-900/90 p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleResource?.fields?.title}
@@ -184,6 +184,7 @@ export const SoftBlockOverlay: React.FC<{
 			>
 				{moduleResource?.fields?.coverImage?.url && (
 					<CldImage
+						// className="flex sm:hidden"
 						src={moduleResource?.fields?.coverImage?.url}
 						alt={moduleResource?.fields?.coverImage?.alt}
 						width={150}

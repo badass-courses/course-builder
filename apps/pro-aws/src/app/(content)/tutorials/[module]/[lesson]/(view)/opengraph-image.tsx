@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og'
 import { getLesson } from '@/lib/lessons-query'
 
 export const revalidate = 60
+export const runtime = 'edge'
 export const contentType = 'image/png'
 
 export default async function Image({
@@ -13,7 +14,7 @@ export default async function Image({
 
 	const rift = fetch(
 		new URL(
-			'../../../../../styles/fonts/rift_600_normal.woff',
+			'../../../../../../styles/fonts/rift_600_normal.woff',
 			import.meta.url,
 		),
 	).then((res) => res.arrayBuffer())
