@@ -5,7 +5,8 @@ export default {
 	out: './test/mysql/.drizzle',
 	driver: 'mysql2',
 	dbCredentials: {
-		host: 'localhost',
+		host: '127.0.0.1',
+		port: 3306,
 		user: 'root',
 		password: 'password',
 		database: 'coursebuilder',
