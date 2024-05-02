@@ -238,7 +238,7 @@ export function mySqlDrizzleAdapter(
 		resourceProgress,
 	} = createTables(tableFn)
 
-	return {
+	const adapter: CourseBuilderAdapter = {
 		client,
 		async redeemFullPriceCoupon(options) {
 			const {
@@ -250,7 +250,7 @@ export function mySqlDrizzleAdapter(
 			} = options
 			const email = String(baseEmail).replace(' ', '+')
 
-			const coupon = await this.getCouponWithBulkPurchases(couponId)
+			const coupon = await adapter.getCouponWithBulkPurchases(couponId)
 
 			const productId =
 				(coupon && (coupon.restrictedToProductId as string)) ||
@@ -267,12 +267,12 @@ export function mySqlDrizzleAdapter(
 					coupon.bulkCouponPurchases[0]?.bulkCouponId,
 				)
 
-				const { user } = await this.findOrCreateUser(email)
+				const { user } = await adapter.findOrCreateUser(email)
 
 				if (!user) throw new Error(`unable-to-create-user-${email}`)
 
 				const currentUser = currentUserId
-					? await this.getUserById(currentUserId)
+					? await adapter.getUserById(currentUserId)
 					: null
 
 				const redeemingForCurrentUser = currentUser?.id === user.id
@@ -281,7 +281,7 @@ export function mySqlDrizzleAdapter(
 				// Purchase record for this product that is valid and wasn't a bulk
 				// coupon purchase.
 				const existingPurchases =
-					await this.getExistingNonBulkValidPurchasesOfProduct({
+					await adapter.getExistingNonBulkValidPurchasesOfProduct({
 						userId: user.id,
 						productId,
 					})
@@ -291,7 +291,7 @@ export function mySqlDrizzleAdapter(
 
 				const purchaseId = `purchase-${v4()}`
 
-				await this.createPurchase({
+				await adapter.createPurchase({
 					id: purchaseId,
 					userId: user.id,
 					couponId: bulkCouponRedemption ? null : coupon.id,
@@ -303,11 +303,11 @@ export function mySqlDrizzleAdapter(
 					},
 				})
 
-				const newPurchase = await this.getPurchase(purchaseId)
+				const newPurchase = await adapter.getPurchase(purchaseId)
 
-				await this.incrementCouponUsedCount(coupon.id)
+				await adapter.incrementCouponUsedCount(coupon.id)
 
-				await this.createPurchaseTransfer({
+				await adapter.createPurchaseTransfer({
 					sourceUserId: user.id,
 					purchaseId: purchaseId,
 					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
@@ -788,7 +788,7 @@ export function mySqlDrizzleAdapter(
 				return merchantCustomer
 			}
 
-			return await this.createMerchantCustomer({
+			return await adapter.createMerchantCustomer({
 				identifier: options.identifier,
 				merchantAccountId: options.merchantAccountId,
 				userId: options.user.id,
@@ -801,10 +801,10 @@ export function mySqlDrizzleAdapter(
 			user: User
 			isNewUser: boolean
 		}> {
-			const user = await this.getUserByEmail?.(email)
+			const user = await adapter.getUserByEmail?.(email)
 
 			if (!user) {
-				const newUser = await this.createUser?.({
+				const newUser = await adapter.createUser?.({
 					id: `u_${v4()}`,
 					email,
 					name,
@@ -1105,7 +1105,7 @@ export function mySqlDrizzleAdapter(
 				id: newPurchaseId,
 			})
 
-			const newPurchase = await this.getPurchase(newPurchaseId)
+			const newPurchase = await adapter.getPurchase(newPurchaseId)
 
 			return purchaseSchema.parse(newPurchase)
 		},
@@ -1742,4 +1742,6 @@ export function mySqlDrizzleAdapter(
 			return undefined
 		},
 	}
+
+	return adapter
 }
