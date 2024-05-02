@@ -85,15 +85,24 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	const router = useRouter()
 	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)
 
-	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
+	const {
+		purchaseToUpgrade,
+		quantityAvailable,
+		formattedPrice: initialFormattedPrice,
+	} = use(pricingDataLoader)
 
-	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
-		productId,
-		quantity: debouncedQuantity,
-		couponId,
-		merchantCoupon,
-		autoApplyPPP,
-	})
+	const { data: formattedPrice, status } = api.pricing.formatted.useQuery(
+		{
+			productId,
+			quantity: debouncedQuantity,
+			couponId,
+			merchantCoupon,
+			autoApplyPPP,
+		},
+		{
+			...(initialFormattedPrice && { initialData: initialFormattedPrice }),
+		},
+	)
 
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
