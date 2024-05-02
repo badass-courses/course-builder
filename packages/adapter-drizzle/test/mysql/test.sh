@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 MODE=${1:-run}
 
 if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
@@ -9,6 +11,7 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
   MYSQL_ROOT_PASSWORD=password
   MYSQL_CONTAINER_NAME=coursebuilder-mysql-test
 
+  echo "Starting MySQL container..."
   docker run -d --rm \
     -e MYSQL_DATABASE=${MYSQL_DATABASE} \
     -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
@@ -17,25 +20,48 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
     mysql:8 \
     --default-authentication-plugin=mysql_native_password
 
-  echo "Waiting 10s for db to start..." && sleep 10
+  echo "Waiting for MySQL container to start..."
+  WAIT_TIMEOUT=60
+  WAIT_INTERVAL=5
+  WAIT_ELAPSED=0
+  while ! docker exec -i ${MYSQL_CONTAINER_NAME} mysql --user=root --password=${MYSQL_ROOT_PASSWORD} -e "SELECT 1" >/dev/null 2>&1; do
+    if [ ${WAIT_ELAPSED} -ge ${WAIT_TIMEOUT} ]; then
+      echo "Timed out waiting for MySQL container to start"
+      docker logs ${MYSQL_CONTAINER_NAME}
+      exit 1
+    fi
+    echo "Waiting for MySQL container to start... (${WAIT_ELAPSED}s elapsed)"
+    sleep ${WAIT_INTERVAL}
+    WAIT_ELAPSED=$((WAIT_ELAPSED + WAIT_INTERVAL))
+  done
+  echo "MySQL container started successfully"
 
-  # Push schema and seed
+  echo "Generating and pushing MySQL schema..."
   NODE_OPTIONS='--import tsx' drizzle-kit generate:mysql --config=./test/mysql/drizzle.config.ts
   NODE_OPTIONS='--import tsx' drizzle-kit push:mysql --config=./test/mysql/drizzle.config.ts
 
   if [[ "$MODE" == "run" ]]; then
+    echo "Running tests..."
     if vitest run -c ../utils/vitest.config.ts ./test/mysql/index.test.ts; then
-      docker stop ${MYSQL_CONTAINER_NAME}
+      echo "Tests passed"
     else
-      docker stop ${MYSQL_CONTAINER_NAME} && exit 1
+      echo "Tests failed"
+      docker logs ${MYSQL_CONTAINER_NAME}
+      exit 1
     fi
   elif [[ "$MODE" == "watch" ]]; then
+    echo "Watching tests..."
     if vitest watch -c ../utils/vitest.config.ts ./test/mysql/index.test.ts; then
-      docker stop ${MYSQL_CONTAINER_NAME}
+      echo "Watch mode exited"
     else
-      docker stop ${MYSQL_CONTAINER_NAME} && exit 1
+      echo "Watch mode failed"
+      docker logs ${MYSQL_CONTAINER_NAME}
+      exit 1
     fi
   fi
+
+  echo "Stopping MySQL container..."
+  docker stop ${MYSQL_CONTAINER_NAME}
 else
   echo "Usage: $0 [run|watch]"
   exit 1
