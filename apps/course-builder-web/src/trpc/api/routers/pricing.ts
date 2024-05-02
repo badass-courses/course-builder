@@ -18,14 +18,14 @@ import {
 
 const merchantCouponSchema = z.object({
 	id: z.string(),
-	type: z.string().nullable(),
+	type: z.string().nullable().optional(),
 })
 
 const PricingFormattedInputSchema = z.object({
 	productId: z.string().optional(),
 	quantity: z.number(),
 	couponId: z.string().optional(),
-	merchantCoupon: merchantCouponSchema.optional(),
+	merchantCoupon: merchantCouponSchema.optional().nullable(),
 	upgradeFromPurchaseId: z.string().optional(),
 	autoApplyPPP: z.boolean().default(true),
 })

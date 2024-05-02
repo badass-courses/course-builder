@@ -20,6 +20,8 @@ import Balancer from 'react-wrap-balancer'
 
 import { FormattedPrice } from '@coursebuilder/core/types'
 
+import { RegionalPricingBox } from './regional-pricing-box'
+
 export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	pricingDataLoader,
 	product,
@@ -502,18 +504,18 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 					{/*		)}*/}
 					{/*	</>*/}
 					{/*)}*/}
-					{/*{showPPPBox &&*/}
-					{/*	!canViewRegionRestriction &&*/}
-					{/*	(isSellingLive || allowPurchase) && (*/}
-					{/*		<RegionalPricingBox*/}
-					{/*			availablePPPCoupon={availablePPPCoupon}*/}
-					{/*			appliedPPPCoupon={appliedPPPCoupon}*/}
-					{/*			setMerchantCoupon={setMerchantCoupon}*/}
-					{/*			index={index}*/}
-					{/*			setAutoApplyPPP={setAutoApplyPPP}*/}
-					{/*			purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}*/}
-					{/*		/>*/}
-					{/*	)}*/}
+					{showPPPBox &&
+						!canViewRegionRestriction &&
+						(isSellingLive || allowPurchase) && (
+							<RegionalPricingBox
+								availablePPPCoupon={availablePPPCoupon}
+								appliedPPPCoupon={appliedPPPCoupon}
+								setMerchantCoupon={setMerchantCoupon}
+								index={index}
+								setAutoApplyPPP={setAutoApplyPPP}
+								purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}
+							/>
+						)}
 					<div data-pricing-footer="">
 						{product.fields.description &&
 							(isSellingLive || allowPurchase) &&

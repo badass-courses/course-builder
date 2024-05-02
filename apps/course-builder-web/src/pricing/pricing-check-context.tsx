@@ -26,7 +26,7 @@ type PricingContextType = {
 	addPrice: (price: FormattedPrice, productId: string) => void
 	isDowngrade: (price?: FormattedPrice | null) => boolean
 	isDiscount: (price?: FormattedPrice | null) => boolean
-	merchantCoupon?: MinimalMerchantCoupon | undefined
+	merchantCoupon?: MinimalMerchantCoupon | undefined | null
 	setMerchantCoupon: Dispatch<SetStateAction<MinimalMerchantCoupon | undefined>>
 	quantity: number
 	setQuantity: Dispatch<SetStateAction<number>>
