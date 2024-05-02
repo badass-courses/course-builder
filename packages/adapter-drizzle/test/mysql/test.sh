@@ -12,11 +12,12 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
   MYSQL_CONTAINER_NAME=coursebuilder-mysql-test
 
   echo "Starting MySQL container..."
-  if ! docker run -d --rm \
+  if ! docker run -d \
     -e MYSQL_DATABASE=${MYSQL_DATABASE} \
     -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
     --name "${MYSQL_CONTAINER_NAME}" \
     -p ${MYSQL_PORT}:3306 \
+    --detach-keys "ctrl-c" \
     mysql:8 \
     --default-authentication-plugin=mysql_native_password; then
     echo "Failed to start MySQL container"
@@ -24,7 +25,7 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
   fi
 
   echo "Waiting for MySQL container to start..."
-  WAIT_TIMEOUT=60
+  WAIT_TIMEOUT=120
   WAIT_INTERVAL=5
   WAIT_ELAPSED=0
   while ! docker exec -i ${MYSQL_CONTAINER_NAME} mysql --user=root --password=${MYSQL_ROOT_PASSWORD} -e "SELECT 1" >/dev/null 2>&1; do
