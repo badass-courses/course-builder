@@ -14,7 +14,7 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
     -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
     --name "${MYSQL_CONTAINER_NAME}" \
     -p 3306:3306 \
-    mysql:8.0.37
+    mysql:latest
 
   echo "Waiting 10s for db to start..." && sleep 10
 
