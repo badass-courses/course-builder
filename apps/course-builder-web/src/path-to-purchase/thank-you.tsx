@@ -37,7 +37,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({
 						</span>
 						<span className="w-full text-balance">{title}</span>
 					</h1>
-					<p className="pt-5 text-lg font-normal text-gray-100">
+					<p className="pt-5 text-lg font-normal">
 						<Balancer>{byline}</Balancer>
 					</p>
 				</div>

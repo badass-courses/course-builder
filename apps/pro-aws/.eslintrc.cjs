@@ -5,7 +5,9 @@ const config = {
 		project: true,
 	},
 	extends: ['next/core-web-vitals'],
-	rules: {},
+	rules: {
+		'react/no-unescaped-entities': 'off',
+	},
 }
 
 module.exports = config

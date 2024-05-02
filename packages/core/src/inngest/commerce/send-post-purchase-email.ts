@@ -51,6 +51,7 @@ export const sendPostPurchaseEmailHandler: CoreInngestHandler = async ({
 			emailProvider: emailProvider,
 			adapter: db,
 			merchantChargeId: purchase.merchantChargeId,
+			type: 'purchase',
 		})
 	})
 }

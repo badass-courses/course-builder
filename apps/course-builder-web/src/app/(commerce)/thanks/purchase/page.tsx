@@ -26,39 +26,56 @@ const getServerSideProps = async (session_id: string) => {
 		notFound()
 	}
 
-	const purchaseInfo = await paymentProvider.getPurchaseInfo(
-		session_id,
-		courseBuilderAdapter,
-	)
+	const maxRetries = 5
+	const initialDelay = 150
+	const maxDelay = 15000
 
-	const {
-		email,
-		chargeIdentifier,
-		quantity: seatsPurchased,
-		product: merchantProduct,
-		purchaseType,
-	} = purchaseInfo
+	let retries = 0
+	let delay = initialDelay
 
-	const stripeProductName = merchantProduct.name
+	while (retries < maxRetries) {
+		try {
+			const purchaseInfo = await paymentProvider.getPurchaseInfo(
+				session_id,
+				courseBuilderAdapter,
+			)
 
-	const purchase =
-		await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+			const {
+				email,
+				chargeIdentifier,
+				quantity: seatsPurchased,
+				product: merchantProduct,
+				purchaseType,
+			} = purchaseInfo
 
-	if (!purchase || !email) {
-		return notFound()
+			const stripeProductName = merchantProduct.name
+
+			const purchase =
+				await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+
+			if (!purchase || !email) {
+				throw new Error('Purchase or email not found')
+			}
+
+			const product = await courseBuilderAdapter.getProduct(purchase.productId)
+
+			return {
+				purchase: convertToSerializeForNextResponse(purchase),
+				email,
+				seatsPurchased,
+				purchaseType,
+				bulkCouponId: purchase.bulkCoupon?.id || null,
+				product: convertToSerializeForNextResponse(product) || null,
+				stripeProductName,
+			}
+		} catch (error) {
+			retries++
+			await new Promise((resolve) => setTimeout(resolve, delay))
+			delay = Math.min(delay * 2, maxDelay)
+		}
 	}
 
-	const product = await courseBuilderAdapter.getProduct(purchase.productId)
-
-	return {
-		purchase: convertToSerializeForNextResponse(purchase),
-		email,
-		seatsPurchased,
-		purchaseType,
-		bulkCouponId: purchase.bulkCoupon?.id || null,
-		product: convertToSerializeForNextResponse(product) || null,
-		stripeProductName,
-	}
+	notFound()
 }
 
 export default async function ThanksPurchasePage({
@@ -77,6 +94,16 @@ export default async function ThanksPurchasePage({
 		product,
 		stripeProductName,
 	} = await getServerSideProps(session_id)
+
+	console.log({
+		purchase,
+		email,
+		seatsPurchased,
+		purchaseType,
+		bulkCouponId,
+		product,
+		stripeProductName,
+	})
 
 	return (
 		<ThanksVerify

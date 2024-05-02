@@ -1114,20 +1114,31 @@ export function mySqlDrizzleAdapter(
 		async getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
+			const purchaseId = await client
+				.select({
+					id: purchaseTable.id,
+				})
+				.from(purchaseTable)
+				.leftJoin(
+					merchantCharge,
+					and(
+						eq(merchantCharge.identifier, stripeChargeId),
+						eq(merchantCharge.id, purchaseTable.merchantChargeId),
+					),
+				)
+				.then((res) => {
+					return res[0]?.id ?? null
+				})
+
 			const purchase = purchaseSchema.safeParse(
-				await client
-					.select()
-					.from(purchaseTable)
-					.leftJoin(
-						merchantCharge,
-						and(
-							eq(merchantCharge.identifier, stripeChargeId),
-							eq(merchantCharge.id, purchaseTable.merchantChargeId),
-						),
-					)
-					.then((res) => {
-						return res[0]?.purchases ?? null
-					}),
+				await client.query.purchases.findFirst({
+					where: eq(purchaseTable.id, purchaseId),
+					with: {
+						user: true,
+						product: true,
+						bulkCoupon: true,
+					},
+				}),
 			)
 
 			if (!purchase.success) {
