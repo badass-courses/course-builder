@@ -13,7 +13,7 @@ export default async function Image({
 
 	const rift = fetch(
 		new URL(
-			'../../../../../styles/fonts/rift_600_normal.woff',
+			'../../../../../../styles/fonts/rift_600_normal.woff',
 			import.meta.url,
 		),
 	).then((res) => res.arrayBuffer())

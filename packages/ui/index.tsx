@@ -90,6 +90,7 @@ import {
 } from './primitives/select'
 import { Separator } from './primitives/separator'
 import { Skeleton } from './primitives/skeleton'
+import { Switch } from './primitives/switch'
 import {
 	Table,
 	TableBody,
@@ -223,4 +224,5 @@ export {
 	ResizableHandle,
 	ResizablePanel,
 	ResizablePanelGroup,
+	Switch,
 }

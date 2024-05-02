@@ -2,10 +2,16 @@
 
 import { cookies } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
+import { resourceProgress } from '@/db/schema'
 import { LESSON_COMPLETED_EVENT } from '@/inngest/events/lesson-completed'
 import { inngest } from '@/inngest/inngest.server'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
+
+import {
+	resourceProgressSchema,
+	type ResourceProgress,
+} from '@coursebuilder/core/schemas'
 
 export async function addProgress({ resourceId }: { resourceId: string }) {
 	const { session } = await getServerAuthSession()
@@ -13,14 +19,17 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 
 	try {
 		if (user) {
-			await courseBuilderAdapter.completeLessonProgressForUser({
-				userId: user.id,
-				lessonId: resourceId,
-			})
-			return await sendInngestProgressEvent({
+			const progress = await courseBuilderAdapter.completeLessonProgressForUser(
+				{
+					userId: user.id,
+					lessonId: resourceId,
+				},
+			)
+			await sendInngestProgressEvent({
 				user: user,
 				lessonId: resourceId,
 			})
+			return progress
 		} else {
 			const subscriberCookie = cookies().get('ck_subscriber')
 
@@ -43,16 +52,81 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 				subscriber.first_name,
 			)
 
-			return await courseBuilderAdapter.completeLessonProgressForUser({
-				userId: user.id,
-				lessonId: resourceId,
-			})
+			const progress = await courseBuilderAdapter.completeLessonProgressForUser(
+				{
+					userId: user.id,
+					lessonId: resourceId,
+				},
+			)
+			return progress
 		}
 	} catch (error) {
 		console.error(error)
 		let message = 'Unknown Error'
 		if (error instanceof Error) message = error.message
 		return { error: message }
+	}
+}
+
+export async function toggleProgress({ resourceId }: { resourceId: string }) {
+	const { session } = await getServerAuthSession()
+	const user = session?.user
+
+	try {
+		if (user) {
+			const progress = await courseBuilderAdapter.toggleLessonProgressForUser({
+				userId: user.id,
+				lessonId: resourceId,
+			})
+			if (progress?.completedAt) {
+				await sendInngestProgressEvent({
+					user: user,
+					lessonId: resourceId,
+				})
+			}
+			const parsedProgress = resourceProgressSchema.parse(progress)
+			return progress
+		} else {
+			const subscriberCookie = cookies().get('ck_subscriber')
+
+			if (!subscriberCookie) {
+				console.debug('no subscriber cookie')
+				return null
+			}
+
+			const subscriber = SubscriberSchema.parse(
+				JSON.parse(subscriberCookie.value),
+			)
+
+			if (!subscriber?.email_address) {
+				console.debug('no subscriber cookie')
+				return null
+			}
+
+			const { user } = await courseBuilderAdapter.findOrCreateUser(
+				subscriber.email_address,
+				subscriber.first_name,
+			)
+
+			const progress = await courseBuilderAdapter.toggleLessonProgressForUser({
+				userId: user.id,
+				lessonId: resourceId,
+			})
+
+			if (progress?.completedAt) {
+				await sendInngestProgressEvent({
+					user: user,
+					lessonId: resourceId,
+				})
+			}
+			const parsedProgress = resourceProgressSchema.parse(progress)
+			return progress
+		}
+	} catch (error) {
+		console.error(error)
+		let message = 'Unknown Error'
+		if (error instanceof Error) message = error.message
+		return null
 	}
 }
 

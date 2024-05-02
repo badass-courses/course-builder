@@ -70,6 +70,7 @@ async function TutorialsList() {
 					<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
 						{tutorial?.fields?.coverImage?.url && (
 							<CldImage
+								className="flex-shrink-0"
 								width={200}
 								height={200}
 								src={tutorial.fields.coverImage.url}

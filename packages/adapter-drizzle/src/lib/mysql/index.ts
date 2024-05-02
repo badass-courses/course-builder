@@ -895,6 +895,7 @@ export function mySqlDrizzleAdapter(
 			const userProgress = await client.query.resourceProgress.findMany({
 				where: and(
 					eq(resourceProgress.userId, parsedUser.id),
+					isNotNull(resourceProgress.completedAt),
 					inArray(
 						resourceProgress.contentResourceId,
 						parsedModuleResources.data.map((r) => r.resourceId),
@@ -1255,12 +1256,56 @@ export function mySqlDrizzleAdapter(
 
 			return z.array(priceSchema).parse(foundPrices)
 		},
-		toggleLessonProgressForUser(options: {
+		async toggleLessonProgressForUser(options: {
 			userId: string
 			lessonId?: string
-			lessonSlug?: string
 		}): Promise<ResourceProgress | null> {
-			throw new Error('Method not implemented.')
+			if (!options.lessonId) {
+				throw new Error('No lessonId provided')
+			}
+
+			let lessonProgress = await client.query.resourceProgress.findFirst({
+				where: and(
+					eq(resourceProgress.userId, options.userId),
+					eq(resourceProgress.contentResourceId, options.lessonId),
+				),
+			})
+
+			const now = new Date()
+
+			if (lessonProgress) {
+				await client
+					.update(resourceProgress)
+					.set({
+						completedAt: lessonProgress.completedAt ? null : now,
+						updatedAt: now,
+					})
+					.where(eq(resourceProgress.contentResourceId, options.lessonId))
+			} else {
+				await client.insert(resourceProgress).values({
+					userId: options.userId,
+					contentResourceId: options.lessonId,
+					completedAt: now,
+					updatedAt: now,
+				})
+			}
+
+			lessonProgress = await client.query.resourceProgress.findFirst({
+				where: and(
+					eq(resourceProgress.userId, options.userId),
+					eq(resourceProgress.contentResourceId, options.lessonId),
+				),
+			})
+
+			const parsedLessonProgress =
+				resourceProgressSchema.safeParse(lessonProgress)
+
+			if (!parsedLessonProgress.success) {
+				console.error('Error parsing lesson progress', lessonProgress)
+				return null
+			}
+
+			return parsedLessonProgress.data
 		},
 		transferPurchasesToNewUser(options: {
 			merchantCustomerId: string
