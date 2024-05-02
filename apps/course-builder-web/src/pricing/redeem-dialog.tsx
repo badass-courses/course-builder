@@ -70,13 +70,7 @@ const RedeemDialog = ({
 				{image && title && (
 					<div className="flex w-full flex-col items-center justify-center border-b border-gray-200 px-5 pb-5 pt-8 text-center dark:border-gray-700">
 						{image && (
-							<Image
-								src={image.url}
-								alt=""
-								aria-hidden
-								width={image.width}
-								height={image.height}
-							/>
+							<Image src={image.url} alt="" aria-hidden layout="fill" />
 						)}
 						{title ? (
 							<div className="pt-5 text-lg font-medium">

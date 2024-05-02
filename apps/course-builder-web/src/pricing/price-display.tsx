@@ -18,6 +18,8 @@ export const PriceDisplay = ({
 }: PriceDisplayProps) => {
 	const { isDiscount } = usePriceCheck()
 
+	console.log({ status })
+
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
 
 	const fullPrice = formattedPrice?.fullPrice

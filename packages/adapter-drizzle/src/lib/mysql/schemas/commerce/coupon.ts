@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getContentResourceProductSchema } from '../content/content-resource-product.js'
+import { getMerchantCouponSchema } from './merchant-coupon.js'
 import { getMerchantProductSchema } from './merchant-product.js'
 import { getPriceSchema } from './price.js'
 import { getProductSchema } from './product.js'
@@ -55,9 +56,20 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 export function getCouponRelationsSchema(mysqlTable: MySqlTableFn) {
 	const purchase = getPurchaseSchema(mysqlTable)
 	const coupon = getCouponSchema(mysqlTable)
-	return relations(coupon, ({ many }) => ({
+	const merchantCoupon = getMerchantCouponSchema(mysqlTable)
+	return relations(coupon, ({ many, one }) => ({
 		bulkCouponPurchases: many(purchase, {
 			relationName: 'redeemedBulkCoupon',
+		}),
+		merchantCoupon: one(merchantCoupon, {
+			fields: [coupon.merchantCouponId],
+			references: [merchantCoupon.id],
+			relationName: 'merchantCoupon',
+		}),
+		product: one(getProductSchema(mysqlTable), {
+			fields: [coupon.restrictedToProductId],
+			references: [getProductSchema(mysqlTable).id],
+			relationName: 'product',
 		}),
 	}))
 }

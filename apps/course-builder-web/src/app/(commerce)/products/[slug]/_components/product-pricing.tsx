@@ -28,6 +28,7 @@ export function ProductPricing({
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 					<PricingWidget
 						commerceProps={{ ...commerceProps, products: [product] }}
+						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
 						product={product}
 						quantityAvailable={quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
