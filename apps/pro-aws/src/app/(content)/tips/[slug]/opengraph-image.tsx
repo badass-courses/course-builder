@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
-import { getTip } from '@/lib/tips-query'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
+import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 
@@ -7,7 +9,18 @@ export const revalidate = 60
 export const contentType = 'image/png'
 
 export default async function Image({ params }: { params: { slug: string } }) {
-	const resource = await getTip(params.slug)
+	const resource = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					params.slug,
+				),
+				eq(contentResource.id, params.slug),
+			),
+			eq(contentResource.type, 'tip'),
+		),
+	})
 
 	const rift = fetch(
 		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),

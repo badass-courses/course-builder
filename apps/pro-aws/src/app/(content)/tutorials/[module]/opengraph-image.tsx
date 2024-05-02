@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
-import { getTutorial } from '@/lib/tutorials-query'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
+import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 
@@ -11,7 +13,18 @@ export default async function TutorialOG({
 }: {
 	params: { module: string }
 }) {
-	const resource = await getTutorial(params.module)
+	const resource = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					params.module,
+				),
+				eq(contentResource.id, params.module),
+			),
+			eq(contentResource.type, 'tutorial'),
+		),
+	})
 	const rift = fetch(
 		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
 	).then((res) => res.arrayBuffer())

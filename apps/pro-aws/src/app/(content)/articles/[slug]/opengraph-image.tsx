@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
-import { getArticle } from '@/lib/articles-query'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
+import { and, eq, or, sql } from 'drizzle-orm'
 
 export const revalidate = 60
 
@@ -14,7 +16,18 @@ export default async function ArticleOG({
 
 	// fonts
 
-	const resource = await getArticle(params.slug)
+	const resource = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					params.slug,
+				),
+				eq(contentResource.id, params.slug),
+			),
+			eq(contentResource.type, 'article'),
+		),
+	})
 
 	return new ImageResponse(
 		(
@@ -25,7 +38,7 @@ export default async function ArticleOG({
 				}}
 			>
 				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
-					<div tw="text-[60px] text-white">{resource?.fields.title}</div>
+					<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					{/* <img
                 tw="rounded-full h-74"

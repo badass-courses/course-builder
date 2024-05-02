@@ -1,10 +1,23 @@
 import { ImageResponse } from 'next/og'
-import { getTip } from '@/lib/tips-query'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
+import { and, eq, or, sql } from 'drizzle-orm'
 
 export const revalidate = 60
 
 export default async function TipOG({ params }: { params: { slug: string } }) {
-	const resource = await getTip(params.slug)
+	const resource = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					params.slug,
+				),
+				eq(contentResource.id, params.slug),
+			),
+			eq(contentResource.type, 'tip'),
+		),
+	})
 
 	return new ImageResponse(
 		(
