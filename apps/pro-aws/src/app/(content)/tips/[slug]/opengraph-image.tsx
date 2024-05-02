@@ -1,8 +1,9 @@
 import { ImageResponse } from 'next/og'
 import { getTip } from '@/lib/tips-query'
 
-export const revalidate = 60
 export const runtime = 'edge'
+
+export const revalidate = 60
 export const contentType = 'image/png'
 
 export default async function Image({ params }: { params: { slug: string } }) {
