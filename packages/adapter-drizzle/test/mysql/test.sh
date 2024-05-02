@@ -14,10 +14,9 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
     -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
     --name "${MYSQL_CONTAINER_NAME}" \
     -p 3306:3306 \
-    mysql:8 \
-    --default-authentication-plugin=mysql_native_password
+    mysql:5
 
-  echo "Waiting 10s for db to start..." && sleep 30
+  echo "Waiting 10s for db to start..." && sleep 10
 
   # Push schema and seed
   NODE_OPTIONS='--import tsx' drizzle-kit generate:mysql --config=./test/mysql/drizzle.config.ts
