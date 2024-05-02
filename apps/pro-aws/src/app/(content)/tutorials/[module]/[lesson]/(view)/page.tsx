@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
@@ -24,6 +24,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import type { ResourceProgress } from '@coursebuilder/core/schemas'
@@ -232,7 +233,7 @@ async function PlayerContainer({
 
 	return (
 		<VideoPlayerOverlayProvider>
-			<div className="relative flex w-full items-center justify-center border-t">
+			<div className="relative flex w-full items-center justify-center">
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<VideoPlayerOverlay
 						nextResourceLoader={nextResourceLoader}
@@ -262,6 +263,9 @@ async function LessonBody({
 	}>
 }) {
 	const lesson = await lessonLoader
+	const { session } = await getServerAuthSession()
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	if (!lesson) {
 		notFound()
@@ -278,12 +282,14 @@ async function LessonBody({
 						<div className="">
 							<Contributor />
 						</div>
-						<Suspense fallback={<LessonProgressToggleSkeleton />}>
-							<LessonProgressToggle
-								lessonLoader={lessonLoader}
-								moduleProgressLoader={moduleProgressLoader}
-							/>
-						</Suspense>
+						{session?.user || ckSubscriber ? (
+							<Suspense fallback={<LessonProgressToggleSkeleton />}>
+								<LessonProgressToggle
+									lessonLoader={lessonLoader}
+									moduleProgressLoader={moduleProgressLoader}
+								/>
+							</Suspense>
+						) : null}
 					</div>
 				</div>
 			</div>

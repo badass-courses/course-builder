@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og'
 import { getTutorial } from '@/lib/tutorials-query'
 
 export const revalidate = 60
+export const runtime = 'edge'
 export const contentType = 'image/png'
 
 export default async function TutorialOG({

@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation'
 import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
-import { ShieldCheckIcon } from '@heroicons/react/24/outline'
+import {
+	InformationCircleIcon,
+	ShieldCheckIcon,
+} from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 import { twMerge } from 'tailwind-merge'
 
@@ -57,7 +60,7 @@ export const VideoBlockNewsletterCta: React.FC<
 		>
 			<div className="flex w-full flex-col items-center justify-center gap-2 md:gap-5">
 				{children}
-				<strong className="text-balance text-xl font-semibold lg:text-2xl">
+				<strong className="text-balance text-center text-xl font-semibold lg:text-2xl">
 					{common['video-block-newsletter-tittle'](moduleTitle)}
 				</strong>
 				<SubscribeToConvertkitForm
@@ -66,15 +69,15 @@ export const VideoBlockNewsletterCta: React.FC<
 				/>
 				<p
 					data-nospam=""
-					className="inline-flex items-center gap-1 pt-0 text-center text-sm opacity-75"
+					className="inline-flex items-center gap-1 pt-0 text-left text-sm opacity-75"
 				>
 					<ShieldCheckIcon className="h-4 w-4" aria-hidden="true" /> I respect
 					your privacy. Unsubscribe at any time.
 				</p>
 			</div>
 			<div>
-				<strong className="mb-4 inline-flex text-lg font-medium">
-					This is a free tutorial
+				<strong className="mb-4 inline-flex gap-1 text-lg font-medium">
+					<InformationCircleIcon className="w-5" /> This is a free tutorial
 				</strong>
 				<ReactMarkdown className="prose dark:prose-invert">
 					{common['video-block-newsletter-description']}
