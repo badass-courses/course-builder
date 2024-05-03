@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/utils/cn'
 
 import { getNavLinks } from '../app/get-nav-links'
@@ -16,9 +16,10 @@ const Navigation = () => {
 	const isRoot = pathname === '/'
 	const isEditRoute = pathname.includes('/edit')
 	const params = useParams()
+	const router = useRouter()
+
 	const isLessonRoute = params.lesson && params.module
 	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
-
 	return (
 		<header
 			className={cn(
@@ -30,13 +31,20 @@ const Navigation = () => {
 			)}
 		>
 			<div className="flex items-stretch">
-				<Link
-					tabIndex={isRoot ? -1 : 0}
-					href="/"
-					className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full flex-col items-center justify-center px-4 text-lg font-semibold leading-none transition"
+				<span
+					onContextMenu={(e) => {
+						e.preventDefault()
+						router.push('/brand')
+					}}
 				>
-					<Logo className="w-24" />
-				</Link>
+					<Link
+						tabIndex={isRoot ? -1 : 0}
+						href="/"
+						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full flex-col items-center justify-center px-4 text-lg font-semibold leading-none transition"
+					>
+						<Logo className="w-24" />
+					</Link>
+				</span>
 				{links.length > 0 && (
 					<nav
 						className="flex items-stretch"
