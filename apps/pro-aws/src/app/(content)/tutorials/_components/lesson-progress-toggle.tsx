@@ -6,7 +6,7 @@ import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { toggleProgress } from '@/lib/progress'
 import { cn } from '@/utils/cn'
 
-import type { ResourceProgress } from '@coursebuilder/core/schemas'
+import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Label, Switch } from '@coursebuilder/ui'
 
@@ -14,18 +14,17 @@ export function LessonProgressToggle({
 	moduleProgressLoader,
 	lessonLoader,
 }: {
-	moduleProgressLoader: Promise<{
-		progress: ResourceProgress[] | null
-		nextResource: ContentResource | null
-	}>
+	moduleProgressLoader: Promise<ModuleProgress>
 	lessonLoader: Promise<ContentResource | null>
 }) {
-	const { progress } = React.use(moduleProgressLoader)
+	const moduleProgress = React.use(moduleProgressLoader)
 	const lesson = React.use(lessonLoader)
 	const params = useParams()
 
 	const isLessonCompleted = Boolean(
-		progress?.some((p) => p.contentResourceId === lesson?.id && p.completedAt),
+		moduleProgress?.progress?.some(
+			(p) => p.contentResourceId === lesson?.id && p.completedAt,
+		),
 	)
 
 	const [optimisticState, addOptimistic] = React.useOptimistic(

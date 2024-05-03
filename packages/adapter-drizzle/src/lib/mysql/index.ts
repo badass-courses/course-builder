@@ -912,6 +912,7 @@ export function mySqlDrizzleAdapter(
 		): Promise<{
 			progress: ResourceProgress[]
 			nextResource: ContentResource | null
+			percentCompleted: number
 		}> {
 			const module = await client.query.contentResource.findFirst({
 				where: or(
@@ -948,7 +949,7 @@ export function mySqlDrizzleAdapter(
 					'Error parsing module resources',
 					parsedModuleResources.error,
 				)
-				return { progress: [], nextResource: null }
+				return { progress: [], nextResource: null, percentCompleted: 0 }
 			}
 
 			const user = await client.query.users.findFirst({
@@ -957,7 +958,7 @@ export function mySqlDrizzleAdapter(
 
 			if (!user) {
 				console.error('User not found', userIdOrEmail)
-				return { progress: [], nextResource: null }
+				return { progress: [], nextResource: null, percentCompleted: 0 }
 			}
 
 			const parsedUser = userSchema.parse(user)
@@ -990,9 +991,17 @@ export function mySqlDrizzleAdapter(
 				.safeParse(userProgress)
 			if (!parsedProgress.success) {
 				console.error('Error parsing user progress', parsedProgress.error)
-				return { progress: [], nextResource: null }
+				return { progress: [], nextResource: null, percentCompleted: 0 }
 			}
-			return { progress: parsedProgress.data, nextResource: parsedNextResource }
+			const percentCompleted = Math.round(
+				(parsedProgress.data.length / parsedModuleResources.data.length) * 100,
+			)
+
+			return {
+				progress: parsedProgress.data,
+				nextResource: parsedNextResource,
+				percentCompleted,
+			}
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('Method not implemented.')

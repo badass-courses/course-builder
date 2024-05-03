@@ -3,6 +3,7 @@
 import React, { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
+import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import { addProgress } from '@/lib/progress'
@@ -11,19 +12,19 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
 import { useFormStatus } from 'react-dom'
 
+import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/types'
-import { Button, useToast } from '@coursebuilder/ui'
+import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
-
-import { revalidateTutorialLesson } from '../tutorials/actions'
 
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
 	moduleResource: ContentResource | null
+	moduleProgress: ModuleProgress
 	nextLesson: ContentResource | null | undefined
-}> = ({ action, resource, moduleResource, nextLesson }) => {
+}> = ({ action, resource, moduleResource, nextLesson, moduleProgress }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const router = useRouter()
@@ -34,9 +35,16 @@ export const CompletedLessonOverlay: React.FC<{
 			aria-live="polite"
 			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 		>
-			<p className="font-heading text-center text-4xl font-bold">
-				Next Up: {nextLesson?.fields?.title}
-			</p>
+			<div className="flex flex-col items-center text-center">
+				<strong className="pb-2 opacity-75">Next Up:</strong>
+				<p className="font-heading text-4xl font-bold text-white lg:text-5xl">
+					{nextLesson?.fields?.title}
+				</p>
+				<Progress
+					value={moduleProgress?.percentCompleted}
+					className="mt-8 h-1 w-full"
+				/>
+			</div>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
 					variant="secondary"
@@ -201,12 +209,20 @@ const VideoPlayerOverlay: React.FC<{
 	lessonLoader: Promise<ContentResource | null>
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
-}> = ({ moduleLoader, lessonLoader, nextResourceLoader, canViewLoader }) => {
+	moduleProgressLoader: Promise<ModuleProgress>
+}> = ({
+	moduleLoader,
+	lessonLoader,
+	nextResourceLoader,
+	canViewLoader,
+	moduleProgressLoader,
+}) => {
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
 	const lesson = use(lessonLoader)
 	const moduleResource = use(moduleLoader)
 	const nextLesson = use(nextResourceLoader)
+	const moduleProgress = use(moduleProgressLoader)
 
 	if (!canView) {
 		if (moduleResource?.type === 'tutorial') {
@@ -233,6 +249,7 @@ const VideoPlayerOverlay: React.FC<{
 						action={overlayState.action}
 						resource={lesson}
 						moduleResource={moduleResource}
+						moduleProgress={moduleProgress}
 					/>
 				)
 			} else {
