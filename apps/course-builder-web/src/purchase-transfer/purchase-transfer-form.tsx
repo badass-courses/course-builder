@@ -28,10 +28,10 @@ export const PurchaseTransferForm = ({
 		if (!purchaseUserTransfer) {
 			throw new Error('No purchaseUserTransfer found')
 		}
-		// await initiatePurchaseTransfer({
-		// 	email: data.email,
-		// 	purchaseUserTransferId: purchaseUserTransfer.id,
-		// })
+		await initiatePurchaseTransfer({
+			email: data.email,
+			purchaseUserTransferId: purchaseUserTransfer.id,
+		})
 		router.refresh()
 	}
 

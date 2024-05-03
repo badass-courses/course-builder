@@ -8,7 +8,6 @@ import { CourseBuilderAdapter } from '../adapters'
 import type {
 	HTMLEmailParams,
 	MagicLinkEmailType,
-	TextEmailParams,
 } from './send-verification-request'
 import { sendVerificationRequest } from './send-verification-request'
 
@@ -83,8 +82,8 @@ export async function sendServerEmail({
 	callbackUrl: string
 	emailProvider?: NodemailerConfig
 	type?: MagicLinkEmailType
-	html?: (options: HTMLEmailParams, theme: Theme) => string
-	text?: (options: TextEmailParams) => string
+	html?: (options: HTMLEmailParams, theme?: Theme) => string
+	text?: (options: HTMLEmailParams, theme?: Theme) => string
 	expiresAt?: Date | null
 	adapter: CourseBuilderAdapter
 	baseUrl: string
