@@ -165,9 +165,11 @@ export async function getModuleProgressForUser(
 	if (!subscriberCookie) {
 		console.error('no subscriber cookie')
 		return {
-			progress: [],
+			completedLessons: [],
 			nextResource: null,
 			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
 		}
 	}
 
@@ -176,9 +178,11 @@ export async function getModuleProgressForUser(
 	if (!subscriber?.email_address) {
 		console.error('no subscriber cookie')
 		return {
-			progress: [],
+			completedLessons: [],
 			nextResource: null,
 			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
 		}
 	}
 	const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(

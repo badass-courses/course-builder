@@ -22,7 +22,7 @@ export function LessonProgressToggle({
 	const params = useParams()
 
 	const isLessonCompleted = Boolean(
-		moduleProgress?.progress?.some(
+		moduleProgress?.completedLessons?.some(
 			(p) => p.contentResourceId === lesson?.id && p.completedAt,
 		),
 	)

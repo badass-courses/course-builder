@@ -14,9 +14,11 @@ export const resourceProgressSchema = z.object({
 export type ResourceProgress = z.infer<typeof resourceProgressSchema>
 
 export const moduleProgressSchema = z.object({
-	progress: z.array(resourceProgressSchema),
+	completedLessons: z.array(resourceProgressSchema),
 	nextResource: ContentResourceSchema.nullable(),
 	percentCompleted: z.number().default(0),
+	completedLessonsCount: z.number().default(0),
+	totalLessonsCount: z.number().default(0),
 })
 
 export type ModuleProgress = z.infer<typeof moduleProgressSchema>

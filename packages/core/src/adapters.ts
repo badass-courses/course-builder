@@ -197,9 +197,11 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 		moduleId: string,
 	): Promise<ModuleProgress> {
 		return Promise.resolve({
-			progress: [],
+			completedLessons: [],
 			nextResource: null,
 			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
 		})
 	},
 	getLessonProgresses(): Promise<ResourceProgress[]> {
