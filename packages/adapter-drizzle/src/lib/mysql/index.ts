@@ -52,11 +52,10 @@ import {
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
-	type ContentResource,
-	type ContentResourceResource,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
+import { type ModuleProgress } from '@coursebuilder/core/schemas/resource-progress-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { validateCoupon } from '@coursebuilder/core/utils/validate-coupon'
 
@@ -919,10 +918,7 @@ export function mySqlDrizzleAdapter(
 		async getModuleProgressForUser(
 			userIdOrEmail: string,
 			moduleIdOrSlug: string,
-		): Promise<{
-			progress: ResourceProgress[]
-			nextResource: ContentResource | null
-		}> {
+		): Promise<ModuleProgress> {
 			const module = await client.query.contentResource.findFirst({
 				where: or(
 					eq(contentResource.id, moduleIdOrSlug),
@@ -958,7 +954,13 @@ export function mySqlDrizzleAdapter(
 					'Error parsing module resources',
 					parsedModuleResources.error,
 				)
-				return { progress: [], nextResource: null }
+				return {
+					completedLessons: [],
+					nextResource: null,
+					percentCompleted: 0,
+					completedLessonsCount: 0,
+					totalLessonsCount: 0,
+				}
 			}
 
 			const user = await client.query.users.findFirst({
@@ -967,7 +969,13 @@ export function mySqlDrizzleAdapter(
 
 			if (!user) {
 				console.error('User not found', userIdOrEmail)
-				return { progress: [], nextResource: null }
+				return {
+					completedLessons: [],
+					nextResource: null,
+					percentCompleted: 0,
+					completedLessonsCount: 0,
+					totalLessonsCount: parsedModuleResources.data.length,
+				}
 			}
 
 			const parsedUser = userSchema.parse(user)
@@ -1000,9 +1008,25 @@ export function mySqlDrizzleAdapter(
 				.safeParse(userProgress)
 			if (!parsedProgress.success) {
 				console.error('Error parsing user progress', parsedProgress.error)
-				return { progress: [], nextResource: null }
+				return {
+					completedLessons: [],
+					nextResource: null,
+					percentCompleted: 0,
+					completedLessonsCount: 0,
+					totalLessonsCount: parsedModuleResources.data.length,
+				}
 			}
-			return { progress: parsedProgress.data, nextResource: parsedNextResource }
+			const percentCompleted = Math.round(
+				(parsedProgress.data.length / parsedModuleResources.data.length) * 100,
+			)
+
+			return {
+				completedLessons: parsedProgress.data,
+				nextResource: parsedNextResource,
+				percentCompleted,
+				completedLessonsCount: parsedProgress.data.length,
+				totalLessonsCount: parsedModuleResources.data.length,
+			}
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {
 			throw new Error('getLessonProgresses Method not implemented.')

@@ -27,7 +27,10 @@ import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import type { ResourceProgress } from '@coursebuilder/core/schemas'
+import type {
+	ModuleProgress,
+	ResourceProgress,
+} from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
@@ -90,6 +93,7 @@ export default async function LessonPage({ params }: Props) {
 									moduleLoader={
 										tutorialLoader as unknown as Promise<ContentResource | null>
 									}
+									moduleProgressLoader={moduleProgressLoader}
 								/>
 							</main>
 							<TranscriptContainer
@@ -211,10 +215,12 @@ function PlayerContainerSkeleton() {
 async function PlayerContainer({
 	lessonLoader,
 	moduleLoader,
+	moduleProgressLoader,
 	params,
 }: {
 	lessonLoader: Promise<ContentResource | null>
 	moduleLoader: Promise<ContentResource | null>
+	moduleProgressLoader: Promise<ModuleProgress>
 	params: Props['params']
 }) {
 	const lesson = await lessonLoader
@@ -240,6 +246,7 @@ async function PlayerContainer({
 						moduleLoader={moduleLoader}
 						lessonLoader={lessonLoader}
 						canViewLoader={canViewLoader}
+						moduleProgressLoader={moduleProgressLoader}
 					/>
 					<AuthedVideoPlayer
 						className="aspect-video overflow-hidden"
@@ -257,10 +264,7 @@ async function LessonBody({
 	moduleProgressLoader,
 }: {
 	lessonLoader: Promise<ContentResource | null>
-	moduleProgressLoader: Promise<{
-		progress: ResourceProgress[] | null
-		nextResource: ContentResource | null
-	}>
+	moduleProgressLoader: Promise<ModuleProgress>
 }) {
 	const lesson = await lessonLoader
 	const { session } = await getServerAuthSession()

@@ -1,8 +1,11 @@
 import { ImageResponse } from 'next/og'
-import { getLesson } from '@/lib/lessons-query'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
+import { and, eq, or, sql } from 'drizzle-orm'
+
+export const runtime = 'edge'
 
 export const revalidate = 60
-export const runtime = 'edge'
 export const contentType = 'image/png'
 
 export default async function Image({
@@ -10,7 +13,18 @@ export default async function Image({
 }: {
 	params: { module: string; lesson: string }
 }) {
-	const resource = await getLesson(params.lesson)
+	const resource = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					params.lesson,
+				),
+				eq(contentResource.id, params.lesson),
+			),
+			eq(contentResource.type, 'lesson'),
+		),
+	})
 
 	const rift = fetch(
 		new URL(

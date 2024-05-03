@@ -31,6 +31,7 @@ export async function generateMetadata(
 
 	return {
 		title: tutorial.fields.title,
+		description: tutorial.fields.description,
 	}
 }
 

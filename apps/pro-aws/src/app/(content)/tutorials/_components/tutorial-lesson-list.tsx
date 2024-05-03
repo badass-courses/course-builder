@@ -10,7 +10,10 @@ import { cn } from '@/utils/cn'
 import { getResourceSection } from '@/utils/get-resource-section'
 import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline'
 
-import type { ResourceProgress } from '@coursebuilder/core/schemas'
+import type {
+	ModuleProgress,
+	ResourceProgress,
+} from '@coursebuilder/core/schemas'
 import type {
 	ContentResource,
 	ContentResourceResource,
@@ -29,10 +32,7 @@ type ContentResourceProps = {
 	tutorial: ContentResource | null
 	lesson?: ContentResource | null
 	section?: ContentResource | null
-	moduleProgress: {
-		progress: ResourceProgress[]
-		nextResource: ContentResource | null
-	}
+	moduleProgress: ModuleProgress
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -41,10 +41,7 @@ type ContentResourceProps = {
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<ContentResource | null>
 	lessonLoader: Promise<ContentResource | null>
-	moduleProgressLoader: Promise<{
-		progress: ResourceProgress[] | null
-		nextResource: ContentResource | null
-	}>
+	moduleProgressLoader: Promise<ModuleProgress>
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -195,11 +192,12 @@ export function TutorialLessonList(props: Props) {
 													(lesson: ContentResourceResource, i: number) => {
 														const isActive =
 															lesson.resource.fields.slug === params.lesson
-														const isCompleted = moduleProgress?.progress?.some(
-															(progress) =>
-																progress.contentResourceId ===
-																	lesson.resourceId && progress.completedAt,
-														)
+														const isCompleted =
+															moduleProgress?.completedLessons?.some(
+																(progress) =>
+																	progress.contentResourceId ===
+																		lesson.resourceId && progress.completedAt,
+															)
 
 														return (
 															<li

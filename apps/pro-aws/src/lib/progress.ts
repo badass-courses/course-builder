@@ -2,7 +2,6 @@
 
 import { cookies } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
-import { resourceProgress } from '@/db/schema'
 import { LESSON_COMPLETED_EVENT } from '@/inngest/events/lesson-completed'
 import { inngest } from '@/inngest/inngest.server'
 import { SubscriberSchema } from '@/schemas/subscriber'
@@ -10,7 +9,7 @@ import { getServerAuthSession } from '@/server/auth'
 
 import {
 	resourceProgressSchema,
-	type ResourceProgress,
+	type ModuleProgress,
 } from '@coursebuilder/core/schemas'
 
 export async function addProgress({ resourceId }: { resourceId: string }) {
@@ -149,7 +148,9 @@ export async function sendInngestProgressEvent({
 	})
 }
 
-export async function getModuleProgressForUser(moduleIdOrSlug: string) {
+export async function getModuleProgressForUser(
+	moduleIdOrSlug: string,
+): Promise<ModuleProgress> {
 	const { session } = await getServerAuthSession()
 	if (session) {
 		const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
@@ -164,8 +165,11 @@ export async function getModuleProgressForUser(moduleIdOrSlug: string) {
 	if (!subscriberCookie) {
 		console.error('no subscriber cookie')
 		return {
-			progress: [],
+			completedLessons: [],
 			nextResource: null,
+			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
 		}
 	}
 
@@ -174,8 +178,11 @@ export async function getModuleProgressForUser(moduleIdOrSlug: string) {
 	if (!subscriber?.email_address) {
 		console.error('no subscriber cookie')
 		return {
-			progress: [],
+			completedLessons: [],
 			nextResource: null,
+			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
 		}
 	}
 	const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(

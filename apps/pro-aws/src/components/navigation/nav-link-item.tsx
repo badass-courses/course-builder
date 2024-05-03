@@ -22,12 +22,15 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	const pathname = usePathname()
 	const isActive = pathname === href.replace(/\/$/, '')
 	return (
-		<li>
+		<li className="flex items-stretch">
 			<LinkOrButton
 				href={href}
-				className={cn('px-1 text-sm opacity-90 transition hover:opacity-100', {
-					underline: isActive,
-				})}
+				className={cn(
+					'hover:bg-border/50 flex h-full items-center px-4 text-sm opacity-90 transition hover:opacity-100',
+					{
+						underline: isActive,
+					},
+				)}
 				onClick={() => {
 					track('nav-link-clicked', { label, href })
 					onClick && onClick()

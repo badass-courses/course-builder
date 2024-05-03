@@ -26,7 +26,7 @@ export default async function Tutorials() {
 		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center lg:border-x">
 			<div className=" w-full max-w-screen-md border-b py-16 md:border-dashed">
 				<h1 className="font-heading text-center text-5xl font-bold">
-					<span className="text-stroke-1 text-stroke-foreground text-stroke-fill-background">
+					<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 						Free
 					</span>{' '}
 					<span className="text-gray-100">AWS Tutorials</span>
@@ -69,21 +69,26 @@ async function TutorialsList() {
 				<li key={tutorial.id}>
 					<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
 						{tutorial?.fields?.coverImage?.url && (
-							<CldImage
+							<Link
 								className="flex-shrink-0"
-								width={200}
-								height={200}
-								src={tutorial.fields.coverImage.url}
-								alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
-							/>
+								href={`/tutorials/${tutorial.fields.slug || tutorial.id}`}
+							>
+								<CldImage
+									className="flex-shrink-0"
+									width={200}
+									height={200}
+									src={tutorial.fields.coverImage.url}
+									alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
+								/>
+							</Link>
 						)}
 						<div>
 							<CardHeader className="p-0">
 								<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
 									<h2>
 										<Link
-											className="w-full text-balance hover:underline"
 											href={`/tutorials/${tutorial.fields.slug || tutorial.id}`}
+											className="w-full text-balance hover:underline"
 										>
 											{tutorial.fields.title}
 										</Link>
@@ -92,7 +97,7 @@ async function TutorialsList() {
 							</CardHeader>
 							{tutorial.fields.description && (
 								<CardContent className="px-0 py-3">
-									<p className="text-muted-foreground text-sm">
+									<p className="text-muted-foreground text-base">
 										{tutorial.fields.description}
 									</p>
 								</CardContent>

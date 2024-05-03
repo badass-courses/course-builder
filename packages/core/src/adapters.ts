@@ -14,7 +14,10 @@ import {
 	PurchaseUserTransfer,
 	PurchaseUserTransferState,
 } from './schemas/purchase-user-transfer-schema'
-import { ResourceProgress } from './schemas/resource-progress-schema'
+import {
+	ModuleProgress,
+	ResourceProgress,
+} from './schemas/resource-progress-schema'
 import { User } from './schemas/user-schema'
 import { VideoResource } from './schemas/video-resource'
 import {
@@ -192,11 +195,14 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	getModuleProgressForUser(
 		userId: string,
 		moduleId: string,
-	): Promise<{
-		progress: ResourceProgress[]
-		nextResource: ContentResource | null
-	}> {
-		return Promise.resolve({ progress: [], nextResource: null })
+	): Promise<ModuleProgress> {
+		return Promise.resolve({
+			completedLessons: [],
+			nextResource: null,
+			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
+		})
 	},
 	getLessonProgresses(): Promise<ResourceProgress[]> {
 		return Promise.resolve([])
@@ -389,10 +395,7 @@ interface SkillProductsCommerceSdk {
 	getModuleProgressForUser(
 		userId: string,
 		moduleId: string,
-	): Promise<{
-		progress: ResourceProgress[]
-		nextResource: ContentResource | null
-	}>
+	): Promise<ModuleProgress>
 	getLessonProgresses(): Promise<ResourceProgress[]>
 	getLessonProgressCountsByDate(): Promise<
 		{

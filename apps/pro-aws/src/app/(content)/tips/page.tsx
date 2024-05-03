@@ -18,10 +18,10 @@ import {
 
 export default async function TipsListPage() {
 	return (
-		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center lg:border-x">
-			<div className=" w-full max-w-screen-md border-b py-16 md:border-dashed">
+		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
+			<div className="w-full max-w-screen-md border-b py-16">
 				<h1 className="font-heading text-center text-5xl font-bold">
-					<span className="text-stroke-1 text-stroke-foreground text-stroke-fill-background">
+					<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 						Pro
 					</span>{' '}
 					<span className="text-gray-100">AWS Tips</span>
@@ -32,7 +32,7 @@ export default async function TipsListPage() {
 				<TipListActions />
 			</Suspense>
 			<div
-				className="absolute top-0 -z-10 h-full w-full max-w-screen-md border-dashed md:border-x"
+				className="absolute top-0 -z-10 h-full w-full max-w-screen-md md:border-x"
 				aria-hidden="true"
 			/>
 		</main>
@@ -54,13 +54,13 @@ async function TipList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 md:px-8">
+		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 px-5 md:px-8">
 			{publicTips.length === 0 && <p>There are no public tips.</p>}
 			{tips.map((tip) => (
 				<li key={tip.id}>
 					<Card className="bg-background rounded-none border-none p-0">
 						<CardHeader className="p-0">
-							<CardTitle className="text-lg font-normal text-gray-100 sm:text-xl">
+							<CardTitle className="text-xl font-normal text-gray-100 sm:text-2xl">
 								<Link
 									className="w-full text-balance hover:underline"
 									href={`/tips/${tip.fields.slug || tip.id}`}
