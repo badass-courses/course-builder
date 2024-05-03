@@ -29,6 +29,18 @@ export const CompletedLessonOverlay: React.FC<{
 	const session = useSession()
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
+		moduleProgress?.completedLessonsCount || 0,
+	)
+	const totalLessonsCount = moduleProgress?.totalLessonsCount || 0
+	const percentCompleted = Math.round(
+		(completedLessonsCount / totalLessonsCount) * 100,
+	)
+	const isCurrentLessonCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) => p.contentResourceId === resource?.id && p.completedAt,
+		),
+	)
 
 	return (
 		<div
@@ -40,10 +52,13 @@ export const CompletedLessonOverlay: React.FC<{
 				<p className="font-heading text-4xl font-bold text-white lg:text-5xl">
 					{nextLesson?.fields?.title}
 				</p>
-				<Progress
-					value={moduleProgress?.percentCompleted}
-					className="mt-8 h-1 w-full"
-				/>
+				<div className="mt-8 flex items-center gap-3 text-sm">
+					<Progress
+						value={percentCompleted}
+						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
+					/>
+					{completedLessonsCount}/{totalLessonsCount} completed
+				</div>
 			</div>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
@@ -61,15 +76,23 @@ export const CompletedLessonOverlay: React.FC<{
 					<>
 						<form
 							action={async () => {
-								await addProgress({
-									resourceId: resource.id,
-								})
+								if (!isCurrentLessonCompleted) {
+									await addProgress({
+										resourceId: resource.id,
+									})
+								}
 								if (nextLesson && moduleResource) {
 									return router.push(nextLesson?.fields?.slug)
 								}
 							}}
 						>
-							<ContinueButton />
+							<ContinueButton
+								setCompletedLessonsCount={
+									isCurrentLessonCompleted
+										? undefined
+										: setCompletedLessonsCount
+								}
+							/>
 						</form>
 					</>
 				)}
@@ -151,13 +174,28 @@ export const CompletedModuleOverlay: React.FC<{
 	)
 }
 
-const ContinueButton = () => {
+const ContinueButton: React.FC<{
+	setCompletedLessonsCount?: React.Dispatch<React.SetStateAction<number>>
+}> = ({ setCompletedLessonsCount }) => {
 	const session = useSession()
 	const { pending } = useFormStatus()
+	const isCompleted = !Boolean(setCompletedLessonsCount)
 
 	return (
-		<Button type="submit" disabled={pending}>
-			{'Complete & Continue'}
+		<Button
+			onMouseOver={() => {
+				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev + 1)
+			}}
+			onMouseOut={() => {
+				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev - 1)
+			}}
+			onClick={() => {
+				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev + 1)
+			}}
+			type="submit"
+			disabled={pending}
+		>
+			{isCompleted ? 'Continue' : 'Complete & Continue'}
 			{pending && <Spinner className="ml-2 h-4 w-4" />}
 		</Button>
 	)
