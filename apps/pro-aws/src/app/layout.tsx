@@ -23,7 +23,10 @@ export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_URL),
 	title: 'Pro AWS by Adam Elmore',
 	description: config.description,
-	icons: [{ rel: 'icon', url: '/favicon.ico' }],
+	icons: [
+		{ rel: 'icon', sizes: 'any', url: '/favicon.ico' },
+		{ rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' },
+	],
 	twitter: {
 		card: 'summary_large_image',
 	},

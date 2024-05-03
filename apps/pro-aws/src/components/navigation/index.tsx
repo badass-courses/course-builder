@@ -6,6 +6,7 @@ import { useParams, usePathname } from 'next/navigation'
 import { cn } from '@/utils/cn'
 
 import { getNavLinks } from '../app/get-nav-links'
+import { Logo } from '../logo'
 import { NavLinkItem } from './nav-link-item'
 import { User } from './user'
 
@@ -28,18 +29,20 @@ const Navigation = () => {
 				},
 			)}
 		>
-			<div className="flex items-center gap-5">
+			<div className="flex items-stretch">
 				<Link
 					tabIndex={isRoot ? -1 : 0}
 					href="/"
-					className="font-heading hover:bg-secondary flex h-[var(--nav-height)] w-[var(--nav-height)] flex-col justify-end border-r p-2.5 text-lg font-semibold leading-none"
+					className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full flex-col items-center justify-center px-4 text-lg font-semibold leading-none transition"
 				>
-					<span>Pro</span>
-					<span className="text-primary">AWS</span>
+					<Logo className="w-24" />
 				</Link>
 				{links.length > 0 && (
-					<nav aria-label={`Navigation header with ${links.length} links`}>
-						<ul className="flex gap-5">
+					<nav
+						className="flex items-stretch"
+						aria-label={`Navigation header with ${links.length} links`}
+					>
+						<ul className="flex items-stretch">
 							{links.map((link) => {
 								return <NavLinkItem key={link.href || link.label} {...link} />
 							})}
