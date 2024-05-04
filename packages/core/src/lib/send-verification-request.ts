@@ -22,6 +22,7 @@ export type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
 }
 
 function isValidateEmailServerConfig(server: any) {
+	console.log('server', server)
 	return Boolean(
 		server &&
 			server.host &&
@@ -35,7 +36,7 @@ export interface SendVerificationRequestParams {
 	identifier: string
 	url: string
 	expires: Date
-	provider: NodemailerConfig
+	provider: any
 	token: string
 	theme?: Theme
 }
@@ -52,9 +53,7 @@ export const sendVerificationRequest = async (
 	const {
 		identifier: email,
 		url,
-		provider: {
-			options: { server, from },
-		},
+		provider,
 		text = defaultText,
 		html = defaultHtml,
 		theme,
@@ -62,6 +61,8 @@ export const sendVerificationRequest = async (
 		merchantChargeId,
 	} = params
 	const { host } = new URL(url)
+
+	const { server, from } = provider.options ? provider.options : provider
 
 	const { getUserByEmail, findOrCreateUser } = adapter
 

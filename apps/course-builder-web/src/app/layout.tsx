@@ -7,6 +7,7 @@ import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
+import { CouponProvider } from '@/pricing/coupon-context'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
@@ -54,7 +55,7 @@ export default function RootLayout({
 										 */
 										routerConfig={extractRouterConfig(ourFileRouter)}
 									/>
-									{children}
+									<CouponProvider>{children}</CouponProvider>
 								</main>
 							</div>
 						</ThemeProvider>

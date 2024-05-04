@@ -259,15 +259,23 @@ export function mySqlDrizzleAdapter(
 			} = options
 			const email = String(baseEmail).replace(' ', '+')
 
+			console.log('email', email)
+
 			const coupon = await adapter.getCouponWithBulkPurchases(couponId)
+
+			console.log('💀 coupon', coupon)
 
 			const productId =
 				(coupon && (coupon.restrictedToProductId as string)) ||
 				redeemingProductId
 
+			console.log('🦄 productId', productId)
+
 			if (!productId) throw new Error(`unable-to-find-any-product-id`)
 
 			const couponValidation = validateCoupon(coupon, productIds)
+
+			console.log('🦄 couponValidation', couponValidation)
 
 			if (coupon && couponValidation.isRedeemable) {
 				// if the Coupon is the Bulk Coupon of a Bulk Purchase,
@@ -275,6 +283,8 @@ export function mySqlDrizzleAdapter(
 				const bulkCouponRedemption = Boolean(
 					coupon.bulkCouponPurchases[0]?.bulkCouponId,
 				)
+
+				console.log('🦄 bulkCouponRedemption', bulkCouponRedemption)
 
 				const { user } = await adapter.findOrCreateUser(email)
 
@@ -284,7 +294,11 @@ export function mySqlDrizzleAdapter(
 					? await adapter.getUserById(currentUserId)
 					: null
 
+				console.log('👶🏻 currentUser', currentUser)
+
 				const redeemingForCurrentUser = currentUser?.id === user.id
+
+				console.log('👶🏻 redeemingForCurrentUser', redeemingForCurrentUser)
 
 				// To prevent double-purchasing, check if this user already has a
 				// Purchase record for this product that is valid and wasn't a bulk
@@ -294,6 +308,8 @@ export function mySqlDrizzleAdapter(
 						userId: user.id,
 						productId,
 					})
+
+				console.log('🌽 existingPurchases', existingPurchases)
 
 				if (existingPurchases.length > 0)
 					throw new Error(`already-purchased-${email}`)
@@ -313,6 +329,8 @@ export function mySqlDrizzleAdapter(
 				})
 
 				const newPurchase = await adapter.getPurchase(purchaseId)
+
+				console.log('🌽 newPurchase', newPurchase)
 
 				await adapter.incrementCouponUsedCount(coupon.id)
 
@@ -844,13 +862,34 @@ export function mySqlDrizzleAdapter(
 					.then((res) => res[0] ?? null),
 			)
 		},
-		getCouponWithBulkPurchases(couponId: string): Promise<
+		async getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
-					bulkCouponPurchases: { bulkCouponId: string }[]
+					bulkCouponPurchases: { bulkCouponId?: string | null }[]
 			  })
 			| null
 		> {
-			throw new Error('getCouponWithBulkPurchases Method not implemented.')
+			const couponData =
+				(await client.query.coupon.findFirst({
+					where: eq(coupon.id, couponId),
+					with: {
+						bulkCouponPurchases: true,
+					},
+				})) || null
+
+			const parsedCoupon = couponSchema
+				.merge(
+					z.object({
+						bulkCouponPurchases: z.array(purchaseSchema),
+					}),
+				)
+				.nullable()
+				.safeParse(couponData)
+
+			if (!parsedCoupon.success) {
+				console.error('Error parsing coupon', couponData)
+				return null
+			}
+			return parsedCoupon.data
 		},
 		async getDefaultCoupon(productIds?: string[]): Promise<{
 			defaultMerchantCoupon: MerchantCoupon

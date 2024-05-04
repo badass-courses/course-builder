@@ -8,6 +8,7 @@ import Balancer from 'react-wrap-balancer'
 import * as Yup from 'yup'
 
 import { Product } from '@coursebuilder/core/schemas'
+import { Button, Input, Label } from '@coursebuilder/ui'
 
 import { redeemFullPriceCoupon } from './redeem-full-price-coupon'
 
@@ -22,10 +23,11 @@ interface RedeemDialogProps {
 }
 
 const RedeemDialog = ({
-	open = false,
+	open: initialOpen = false,
 	couponId,
 	product,
 }: RedeemDialogProps) => {
+	const [open, setOpen] = React.useState(initialOpen)
 	const { data: session } = useSession()
 	const router = useRouter()
 
@@ -54,6 +56,7 @@ const RedeemDialog = ({
 				} else {
 					router.push(`/thanks/redeem?purchaseId=${purchase?.id}`)
 				}
+				setOpen(false)
 			}
 		},
 	})
@@ -70,10 +73,17 @@ const RedeemDialog = ({
 				{image && title && (
 					<div className="flex w-full flex-col items-center justify-center border-b border-gray-200 px-5 pb-5 pt-8 text-center dark:border-gray-700">
 						{image && (
-							<Image src={image.url} alt="" aria-hidden layout="fill" />
+							<Image
+								src={image.url}
+								alt=""
+								aria-hidden
+								width={100}
+								height={100}
+								priority
+							/>
 						)}
 						{title ? (
-							<div className="pt-5 text-lg font-medium">
+							<div className="p-5 px-5 text-lg font-medium">
 								<Balancer>
 									Coupon for {title} by{' '}
 									{process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME}{' '}
@@ -93,8 +103,8 @@ const RedeemDialog = ({
 				</AlertDialogPrimitive.Description>
 				<form onSubmit={formik.handleSubmit}>
 					<div data-email="">
-						<label htmlFor="email">Email address</label>
-						<input
+						<Label htmlFor="email">Email address</Label>
+						<Input
 							required
 							id="email"
 							type="email"
@@ -105,21 +115,24 @@ const RedeemDialog = ({
 					</div>
 					<div data-actions="">
 						<AlertDialogPrimitive.Cancel asChild>
-							<button
+							<Button
 								onClick={(e) => {
 									const code = query.get('code')
-									const pathname = pathName.replace(`?code=${code}`, '')
+									let pathname = pathName.replace(`?code=${code}`, '')
+									const coupon = query.get('coupon')
+									pathname = pathname.replace(`?coupon=${coupon}`, '')
 									router.push(pathname)
+									setOpen(false)
 								}}
 								data-cancel=""
 							>
 								Cancel
-							</button>
+							</Button>
 						</AlertDialogPrimitive.Cancel>
 						<AlertDialogPrimitive.Action asChild>
-							<button data-submit="" type="submit">
+							<Button data-submit="" type="submit">
 								Yes, Claim License
-							</button>
+							</Button>
 						</AlertDialogPrimitive.Action>
 					</div>
 				</form>
