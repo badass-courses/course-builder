@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import { BuyMoreSeats } from '@/pricing/buy-more-seats'
@@ -18,7 +19,14 @@ import { CheckCircleIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
 
-import { FormattedPrice } from '@coursebuilder/core/types'
+import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
+import {
+	ContentResource,
+	ContentResourceResource,
+	FormattedPrice,
+} from '@coursebuilder/core/types'
+
+import { RegionalPricingBox } from './regional-pricing-box'
 
 export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	pricingDataLoader,
@@ -85,24 +93,15 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	const router = useRouter()
 	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)
 
-	const {
-		purchaseToUpgrade,
-		quantityAvailable,
-		formattedPrice: initialFormattedPrice,
-	} = use(pricingDataLoader)
+	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
 
-	const { data: formattedPrice, status } = api.pricing.formatted.useQuery(
-		{
-			productId,
-			quantity: debouncedQuantity,
-			couponId,
-			merchantCoupon,
-			autoApplyPPP,
-		},
-		{
-			...(initialFormattedPrice && { initialData: initialFormattedPrice }),
-		},
-	)
+	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
+		productId,
+		quantity: debouncedQuantity,
+		couponId,
+		merchantCoupon,
+		autoApplyPPP,
+	})
 
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
@@ -172,14 +171,17 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		}
 	}
 
-	const workshops = resources?.filter(
-		(module) => module.resource.type === 'workshop',
-	)
-	const moduleBonuses = resources?.filter(
-		(module) =>
-			module.resource.type === 'bonus' &&
-			module.resource.fields.state === 'published',
-	)
+	const workshops: ContentResourceProduct[] =
+		resources?.filter((module) =>
+			['workshop', 'tutorial'].includes(module.resource.type),
+		) ?? []
+
+	const moduleBonuses =
+		resources?.filter(
+			(module) =>
+				module.resource.type === 'bonus' &&
+				module.resource.fields.state === 'published',
+		) ?? []
 
 	function getUnitPrice(formattedPrice: FormattedPrice) {
 		const price = first(formattedPrice?.upgradedProduct?.prices)
@@ -502,18 +504,18 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 					{/*		)}*/}
 					{/*	</>*/}
 					{/*)}*/}
-					{/*{showPPPBox &&*/}
-					{/*	!canViewRegionRestriction &&*/}
-					{/*	(isSellingLive || allowPurchase) && (*/}
-					{/*		<RegionalPricingBox*/}
-					{/*			availablePPPCoupon={availablePPPCoupon}*/}
-					{/*			appliedPPPCoupon={appliedPPPCoupon}*/}
-					{/*			setMerchantCoupon={setMerchantCoupon}*/}
-					{/*			index={index}*/}
-					{/*			setAutoApplyPPP={setAutoApplyPPP}*/}
-					{/*			purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}*/}
-					{/*		/>*/}
-					{/*	)}*/}
+					{showPPPBox &&
+						!canViewRegionRestriction &&
+						(isSellingLive || allowPurchase) && (
+							<RegionalPricingBox
+								availablePPPCoupon={availablePPPCoupon}
+								appliedPPPCoupon={appliedPPPCoupon}
+								setMerchantCoupon={setMerchantCoupon}
+								index={index}
+								setAutoApplyPPP={setAutoApplyPPP}
+								purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}
+							/>
+						)}
 					<div data-pricing-footer="">
 						{product.fields.description &&
 							(isSellingLive || allowPurchase) &&
@@ -525,9 +527,259 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 									<ReactMarkdown>{product.fields.description}</ReactMarkdown>
 								</div>
 							)}
+						{(isSellingLive || allowPurchase) &&
+							!purchased &&
+							withGuaranteeBadge && (
+								<div data-guarantee-image="">
+									<Image
+										src="https://res.cloudinary.com/total-typescript/image/upload/v1669928567/money-back-guarantee-badge-16137430586cd8f5ec2a096bb1b1e4cf_o5teov.svg"
+										width={130}
+										height={130}
+										alt="Money Back Guarantee"
+									/>
+								</div>
+							)}
+						{/*{modules || features ? (*/}
+						{/*	<div data-header="">*/}
+						{/*		<div>*/}
+						{/*			<span>includes</span>*/}
+						{/*		</div>*/}
+						{/*	</div>*/}
+						{/*) : null}*/}
+						<div data-main="">
+							{/*{bonuses &&*/}
+							{/*	bonuses.length > 0 &&*/}
+							{/*	bonuses[0].expiresAt &&*/}
+							{/*	quantity === 1 &&*/}
+							{/*	!Boolean(merchantCoupon?.type === 'ppp') && (*/}
+							{/*		<Countdown*/}
+							{/*			date={bonuses[0].expiresAt}*/}
+							{/*			renderer={({*/}
+							{/*				days,*/}
+							{/*				hours,*/}
+							{/*				minutes,*/}
+							{/*				seconds,*/}
+							{/*				completed,*/}
+							{/*			}) => {*/}
+							{/*				return completed ? null : (*/}
+							{/*					<>*/}
+							{/*						<div data-limited-bonuses="">*/}
+							{/*							<strong>limited offer</strong>*/}
+							{/*							<ul role="list">*/}
+							{/*								{bonuses.map((bonus) => {*/}
+							{/*									return (*/}
+							{/*										<li key={bonus.slug}>*/}
+							{/*											<LimitedBonusItem*/}
+							{/*												module={bonus as any}*/}
+							{/*												key={bonus.slug}*/}
+							{/*											/>*/}
+							{/*										</li>*/}
+							{/*									)*/}
+							{/*								})}*/}
+							{/*								<div data-expires-at="">*/}
+							{/*									{mounted ? (*/}
+							{/*										<span>*/}
+							{/*											expires in: {days}d : {hours}h : {minutes}m*/}
+							{/*											: {seconds}s*/}
+							{/*										</span>*/}
+							{/*									) : null}*/}
+							{/*								</div>*/}
+							{/*								<div data-disclaimer="">*/}
+							{/*									Offer available for new purchases only. If*/}
+							{/*									you've already purchased both of the courses*/}
+							{/*									this offer does not apply. If you've purchased 1*/}
+							{/*									of the courses, you'll receive the other.*/}
+							{/*								</div>*/}
+							{/*							</ul>*/}
+							{/*						</div>*/}
+							{/*					</>*/}
+							{/*				)*/}
+							{/*			}}*/}
+							{/*		/>*/}
+							{/*	)}*/}
+							{moduleBonuses &&
+								moduleBonuses.length > 0 &&
+								!Boolean(merchantCoupon) && (
+									<div data-bonuses="">
+										<ul role="list">
+											{moduleBonuses.map((module) => {
+												return purchased ? (
+													<li key={module.resource.fields.slug}>
+														<Link
+															href={{
+																pathname: `/bonuses/[slug]`,
+																query: {
+																	slug: module.resource.fields.slug,
+																},
+															}}
+														>
+															<WorkshopListItem module={module} />
+														</Link>
+													</li>
+												) : (
+													<li key={module.resource.fields.slug}>
+														<WorkshopListItem
+															module={module}
+															key={module.resource.fields.slug}
+														/>
+													</li>
+												)
+											})}
+										</ul>
+									</div>
+								)}
+							{workshops && (
+								<div data-workshops="">
+									<strong>Workshops</strong>
+									<ul role="list">
+										{workshops.map((module) => {
+											return purchased ? (
+												<li key={module.resource.fields.slug}>
+													<Link
+														href={{
+															pathname: `/workshops/[slug]`,
+															query: {
+																slug: module.resource.fields.slug,
+															},
+														}}
+													>
+														<WorkshopListItem module={module} />
+													</Link>
+												</li>
+											) : (
+												<li key={module.resource.fields.slug}>
+													<WorkshopListItem
+														module={module}
+														key={module.resource.fields.slug}
+													/>
+												</li>
+											)
+										})}
+									</ul>
+								</div>
+							)}
+
+							{/*{features && (*/}
+							{/*	<div data-features="">*/}
+							{/*		<strong>Features</strong>*/}
+							{/*		<ul role="list">*/}
+							{/*			{features.map((feature: {value: string; icon?: string}) => (*/}
+							{/*				<li key={feature.value}>*/}
+							{/*					{feature.icon && (*/}
+							{/*						<span*/}
+							{/*							dangerouslySetInnerHTML={{__html: feature.icon}}*/}
+							{/*						/>*/}
+							{/*					)}*/}
+							{/*					<p>{feature.value}</p>*/}
+							{/*				</li>*/}
+							{/*			))}*/}
+							{/*		</ul>*/}
+							{/*	</div>*/}
+							{/*)}*/}
+							{/*{product.fields.slug && lessons && (*/}
+							{/*	<div data-contents="">*/}
+							{/*		{lessons ? `${lessons?.length} lessons` : null}*/}
+							{/*		<Link href={`/workshops/${product.slug}`}>*/}
+							{/*			View contents <span aria-hidden="true">→</span>*/}
+							{/*		</Link>*/}
+							{/*	</div>*/}
+							{/*)}*/}
+						</div>
 					</div>
 				</article>
 			</div>
 		</div>
+	)
+}
+
+const LimitedBonusItem: React.FC<{
+	module: {
+		image?: {
+			url: string
+		}
+		expiresAt?: string
+		title: string
+		description?: string
+	}
+}> = ({ module }) => {
+	return (
+		<>
+			{module.image && (
+				<div data-image="" aria-hidden="true">
+					<Image
+						src={module.image.url}
+						layout="fill"
+						alt={module.title}
+						aria-hidden="true"
+					/>
+				</div>
+			)}
+			<div>
+				<p>{module.title}</p>
+				{module?.description && (
+					<div data-description="">
+						<ReactMarkdown
+							components={{
+								a: (props) => <a {...props} target="_blank" rel="noopener" />,
+							}}
+						>
+							{module.description}
+						</ReactMarkdown>
+					</div>
+				)}
+			</div>
+		</>
+	)
+}
+
+const WorkshopListItem: React.FC<{
+	module: ContentResourceProduct
+}> = ({ module }) => {
+	const getLabelForState = (state: any) => {
+		switch (state) {
+			case 'draft':
+				return 'Coming soon'
+			default:
+				return ''
+		}
+	}
+	return (
+		<>
+			{module.resource.fields.image?.url && (
+				<div data-image="" aria-hidden="true">
+					<Image
+						src={module.resource.fields.image.url}
+						layout="fill"
+						alt={module.resource.fields.title}
+						aria-hidden="true"
+					/>
+				</div>
+			)}
+			<div>
+				<p>
+					{module.resource.fields.moduleType === 'bonus' && (
+						<strong>Bonus</strong>
+					)}
+
+					{module.resource.fields.title}
+				</p>
+				{module.resource.fields.state && (
+					<div data-state={module.resource.fields.state}>
+						{getLabelForState(module.resource.fields.state)}
+					</div>
+				)}
+				{module.resource.fields?.description && (
+					<div data-description="">
+						<ReactMarkdown
+							components={{
+								a: (props) => <a {...props} target="_blank" rel="noopener" />,
+							}}
+						>
+							{module.resource.fields.description}
+						</ReactMarkdown>
+					</div>
+				)}
+			</div>
+		</>
 	)
 }

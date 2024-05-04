@@ -16,7 +16,7 @@ export const InlineTeamInvite = ({
 			<h2 className="pb-2 text-sm font-semibold uppercase tracking-wide">
 				Invite your team
 			</h2>
-			<div className="flex flex-col rounded-lg border border-gray-700/30 bg-gray-800 p-5 shadow-xl shadow-black/10">
+			<div className="flex flex-col rounded-lg border border-gray-700/30  p-5 shadow-xl shadow-black/10">
 				<p className="pb-2 font-semibold">
 					You have purchased {seatsPurchased} seats.
 				</p>

@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	int,
 	MySqlTableFn,
@@ -7,6 +7,10 @@ import {
 	unique,
 	varchar,
 } from 'drizzle-orm/mysql-core'
+
+import { getMerchantAccountSchema } from './merchant-account.js'
+import { getMerchantCustomerSchema } from './merchant-customer.js'
+import { getMerchantProductSchema } from './merchant-product.js'
 
 export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -41,4 +45,28 @@ export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
 			}
 		},
 	)
+}
+
+export function getMerchantChargeRelationsSchema(mysqlTable: MySqlTableFn) {
+	const merchantCharge = getMerchantChargeSchema(mysqlTable)
+	const merchantAccount = getMerchantAccountSchema(mysqlTable)
+	const merchantProduct = getMerchantProductSchema(mysqlTable)
+	const merchantCustomer = getMerchantCustomerSchema(mysqlTable)
+	return relations(merchantCharge, ({ one }) => ({
+		merchantAccount: one(merchantAccount, {
+			fields: [merchantCharge.merchantAccountId],
+			references: [merchantAccount.id],
+			relationName: 'merchantAccount',
+		}),
+		merchantProduct: one(merchantProduct, {
+			fields: [merchantCharge.merchantProductId],
+			references: [merchantProduct.id],
+			relationName: 'merchantProduct',
+		}),
+		merchantCustomer: one(merchantCustomer, {
+			fields: [merchantCharge.merchantCustomerId],
+			references: [merchantCustomer.id],
+			relationName: 'merchantCustomer',
+		}),
+	}))
 }

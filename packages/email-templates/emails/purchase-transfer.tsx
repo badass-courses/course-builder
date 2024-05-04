@@ -2,28 +2,26 @@ import * as React from 'react'
 import {
 	Body,
 	Button,
-	Column,
 	Container,
 	Font,
 	Head,
-	Heading,
 	Hr,
 	Html,
 	Img,
 	Link,
 	Preview,
-	Row,
 	Section,
 	Tailwind,
 	Text,
 } from '@react-email/components'
+import { format } from 'date-fns'
 
-interface PostPurchaseLoginEmailProps {
+interface PurchaseTransferEmailEmailProps {
 	url: string
 	host: string
 	email: string
 	siteName: string
-	invoiceUrl?: string
+	expires?: Date
 	previewText: string
 }
 
@@ -33,26 +31,25 @@ interface Theme {
 	brandColor?: string
 }
 
-export const PostPurchaseLoginEmail = (
+export const PurchaseTransferEmail = (
 	{
 		url = 'https://coursebuilder.dev',
 		host = 'https://coursebuilder.dev',
 		email = 'joel@coursebuilder.dev',
 		siteName = 'Course Builder',
-		invoiceUrl = 'https://coursebuilder.dev',
-		previewText = 'Welcome!',
-	}: PostPurchaseLoginEmailProps,
+		expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+		previewText = 'Claim your seat.',
+	}: PurchaseTransferEmailEmailProps,
 	theme?: Theme,
 ) => {
-	const escapedEmail = `${email.replace(/\./g, '&#8203;.')}`
-	const escapedHost = `${host.replace(/\./g, '&#8203;.')}`
-
 	// Some simple styling options
 	const backgroundColor = '#F9FAFB'
 	const textColor = '#3E3A38'
 	const mainBackgroundColor = '#ffffff'
 	const buttonBackgroundColor = theme?.brandColor ? theme.brandColor : '#125eb6'
 	const buttonTextColor = '#ffffff'
+
+	const formattedExpires = expires ? format(expires, 'PPPPppp') : null
 
 	return (
 		<Html>
@@ -97,7 +94,7 @@ export const PostPurchaseLoginEmail = (
 								className={`rounded bg-[${buttonBackgroundColor}] px-4 py-3 text-center text-[16px] font-semibold text-[${buttonTextColor}] no-underline`}
 								href={url}
 							>
-								Log In
+								Accept License
 							</Button>
 						</Section>
 						<Text className="text-[14px] leading-[24px] text-black">
@@ -106,11 +103,9 @@ export const PostPurchaseLoginEmail = (
 								{url}
 							</Link>
 						</Text>
-						{invoiceUrl && (
+						{formattedExpires && (
 							<Text className="text-[14px] leading-[24px] text-black">
-								<Link href={invoiceUrl} className="text-blue-600 no-underline">
-									Get your customizable invoice here.
-								</Link>
+								This link is valid until ${formattedExpires}.
 							</Text>
 						)}
 						<Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
@@ -150,4 +145,4 @@ export const PostPurchaseLoginEmail = (
 	)
 }
 
-export default PostPurchaseLoginEmail
+export default PurchaseTransferEmail

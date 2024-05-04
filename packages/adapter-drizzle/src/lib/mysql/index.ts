@@ -40,6 +40,7 @@ import {
 	Purchase,
 	purchaseSchema,
 	PurchaseUserTransfer,
+	purchaseUserTransferSchema,
 	PurchaseUserTransferState,
 	ResourceProgress,
 	resourceProgressSchema,
@@ -96,7 +97,10 @@ import {
 	getCouponSchema,
 } from './schemas/commerce/coupon.js'
 import { getMerchantAccountSchema } from './schemas/commerce/merchant-account.js'
-import { getMerchantChargeSchema } from './schemas/commerce/merchant-charge.js'
+import {
+	getMerchantChargeRelationsSchema,
+	getMerchantChargeSchema,
+} from './schemas/commerce/merchant-charge.js'
 import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon.js'
 import { getMerchantCustomerSchema } from './schemas/commerce/merchant-customer.js'
 import { getMerchantPriceSchema } from './schemas/commerce/merchant-price.js'
@@ -107,7 +111,10 @@ import {
 	getProductRelationsSchema,
 	getProductSchema,
 } from './schemas/commerce/product.js'
-import { getPurchaseUserTransferSchema } from './schemas/commerce/purchase-user-transfer.js'
+import {
+	getPurchaseUserTransferRelationsSchema,
+	getPurchaseUserTransferSchema,
+} from './schemas/commerce/purchase-user-transfer.js'
 import {
 	getPurchaseRelationsSchema,
 	getPurchaseSchema,
@@ -167,6 +174,7 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		couponRelations: getCouponRelationsSchema(mysqlTable),
 		merchantAccount: getMerchantAccountSchema(mysqlTable),
 		merchantCharge: getMerchantChargeSchema(mysqlTable),
+		merchantChargeRelations: getMerchantChargeRelationsSchema(mysqlTable),
 		merchantCoupon: getMerchantCouponSchema(mysqlTable),
 		merchantCustomer: getMerchantCustomerSchema(mysqlTable),
 		merchantPrice: getMerchantPriceSchema(mysqlTable),
@@ -177,6 +185,8 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		purchases: getPurchaseSchema(mysqlTable),
 		purchaseRelations: getPurchaseRelationsSchema(mysqlTable),
 		purchaseUserTransfer: getPurchaseUserTransferSchema(mysqlTable),
+		purchaseUserTransferRelations:
+			getPurchaseUserTransferRelationsSchema(mysqlTable),
 		communicationChannel: getCommunicationChannelSchema(mysqlTable),
 		communicationPreferenceTypes:
 			getCommunicationPreferenceTypesSchema(mysqlTable),
@@ -439,7 +449,7 @@ export function mySqlDrizzleAdapter(
 			userId: string
 			lessons: { id: string; slug: string }[]
 		}): Promise<void> {
-			throw new Error('Method not implemented.')
+			throw new Error('clearLessonProgressForUser Method not implemented.')
 		},
 		async completeLessonProgressForUser(options: {
 			userId: string
@@ -840,7 +850,7 @@ export function mySqlDrizzleAdapter(
 			  })
 			| null
 		> {
-			throw new Error('Method not implemented.')
+			throw new Error('getCouponWithBulkPurchases Method not implemented.')
 		},
 		async getDefaultCoupon(productIds?: string[]): Promise<{
 			defaultMerchantCoupon: MerchantCoupon
@@ -890,7 +900,7 @@ export function mySqlDrizzleAdapter(
 				completedAt: string
 			}[]
 		> {
-			throw new Error('Method not implemented.')
+			throw new Error('getLessonProgressCountsByDate Method not implemented.')
 		},
 		async getLessonProgressForUser(
 			userId: string,
@@ -1019,7 +1029,7 @@ export function mySqlDrizzleAdapter(
 			}
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {
-			throw new Error('Method not implemented.')
+			throw new Error('getLessonProgresses Method not implemented.')
 		},
 		async getMerchantCharge(
 			merchantChargeId: string,
@@ -1100,7 +1110,7 @@ export function mySqlDrizzleAdapter(
 			)
 		},
 		getPrice(productId: string): Promise<Price | null> {
-			throw new Error('Method not implemented.')
+			throw new Error('getPrice  not implemented.')
 		},
 		async getPriceForProduct(productId: string): Promise<Price | null> {
 			return priceSchema.nullable().parse(
@@ -1138,20 +1148,31 @@ export function mySqlDrizzleAdapter(
 		async getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
+			const purchaseId = await client
+				.select({
+					id: purchaseTable.id,
+				})
+				.from(purchaseTable)
+				.leftJoin(
+					merchantCharge,
+					and(
+						eq(merchantCharge.identifier, stripeChargeId),
+						eq(merchantCharge.id, purchaseTable.merchantChargeId),
+					),
+				)
+				.then((res) => {
+					return res[0]?.id ?? null
+				})
+
 			const purchase = purchaseSchema.safeParse(
-				await client
-					.select()
-					.from(purchaseTable)
-					.leftJoin(
-						merchantCharge,
-						and(
-							eq(merchantCharge.identifier, stripeChargeId),
-							eq(merchantCharge.id, purchaseTable.merchantChargeId),
-						),
-					)
-					.then((res) => {
-						return res[0]?.purchases ?? null
-					}),
+				await client.query.purchases.findFirst({
+					where: eq(purchaseTable.id, purchaseId),
+					with: {
+						user: true,
+						product: true,
+						bulkCoupon: true,
+					},
+				}),
 			)
 
 			if (!purchase.success) {
@@ -1160,7 +1181,7 @@ export function mySqlDrizzleAdapter(
 
 			return purchase.data
 		},
-		getPurchaseUserTransferById(options: { id: string }): Promise<
+		async getPurchaseUserTransferById(options: { id: string }): Promise<
 			| (PurchaseUserTransfer & {
 					sourceUser: User
 					targetUser: User | null
@@ -1168,15 +1189,51 @@ export function mySqlDrizzleAdapter(
 			  })
 			| null
 		> {
-			throw new Error('Method not implemented.')
+			const purchaseTransferData =
+				await client.query.purchaseUserTransfer.findFirst({
+					where: eq(purchaseUserTransfer.id, options.id),
+					with: {
+						sourceUser: true,
+						targetUser: true,
+						purchase: true,
+					},
+				})
+
+			return purchaseUserTransferSchema
+				.merge(
+					z.object({
+						sourceUser: userSchema,
+						targetUser: userSchema.nullable(),
+						purchase: purchaseSchema,
+					}),
+				)
+				.nullable()
+				.parse(purchaseTransferData)
 		},
-		getPurchaseWithUser(purchaseId: string): Promise<
+		async getPurchaseWithUser(purchaseId: string): Promise<
 			| (Purchase & {
 					user: User
 			  })
 			| null
 		> {
-			throw new Error('Method not implemented.')
+			const purchaseData =
+				(await client.query.purchases.findFirst({
+					where: eq(purchaseTable.id, purchaseId),
+					with: {
+						user: true,
+					},
+				})) || null
+
+			const parsedPurchase = purchaseSchema
+				.merge(z.object({ user: userSchema }))
+				.nullable()
+				.safeParse(purchaseData)
+
+			if (!parsedPurchase.success) {
+				console.error('Error parsing purchase', parsedPurchase.error)
+				return null
+			}
+			return parsedPurchase.data
 		},
 		async getPurchasesForUser(userId?: string): Promise<Purchase[]> {
 			if (!userId) {
@@ -1305,9 +1362,9 @@ export function mySqlDrizzleAdapter(
 		},
 		async getUserById(userId: string): Promise<User | null> {
 			return userSchema.nullable().parse(
-				await client.query.users.findFirst({
+				(await client.query.users.findFirst({
 					where: eq(users.id, userId),
-				}),
+				})) || null,
 			)
 		},
 		async pricesOfPurchasesTowardOneBundle({
@@ -1413,13 +1470,27 @@ export function mySqlDrizzleAdapter(
 			chargeId: string,
 			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
 		): Promise<Purchase | undefined> {
-			throw new Error('Method not implemented.')
+			throw new Error('updatePurchaseStatusForCharge Method not implemented.')
 		},
-		updatePurchaseUserTransferTransferState(options: {
+		async updatePurchaseUserTransferTransferState(options: {
 			id: string
 			transferState: PurchaseUserTransferState
 		}): Promise<PurchaseUserTransfer | null> {
-			throw new Error('Method not implemented.')
+			await client
+				.update(purchaseUserTransfer)
+				.set({
+					transferState: options.transferState,
+				})
+				.where(eq(purchaseUserTransfer.id, options.id))
+
+			const purchaseUserTransferData =
+				(await client.query.purchaseUserTransfer.findFirst({
+					where: eq(purchaseUserTransfer.id, options.id),
+				})) || null
+
+			return purchaseUserTransferSchema
+				.nullable()
+				.parse(purchaseUserTransferData)
 		},
 		addResourceToResource: async function (options) {
 			const { parentResourceId, childResourceId } = options

@@ -28,10 +28,10 @@ export const PurchaseTransferForm = ({
 		if (!purchaseUserTransfer) {
 			throw new Error('No purchaseUserTransfer found')
 		}
-		// await initiatePurchaseTransfer({
-		// 	email: data.email,
-		// 	purchaseUserTransferId: purchaseUserTransfer.id,
-		// })
+		await initiatePurchaseTransfer({
+			email: data.email,
+			purchaseUserTransferId: purchaseUserTransfer.id,
+		})
 		router.refresh()
 	}
 
@@ -52,7 +52,7 @@ export const PurchaseTransferForm = ({
 			/>
 			{errors.email && <span>This field is required</span>}
 			<button
-				className="relative flex flex-shrink-0 items-center justify-center rounded-full bg-cyan-400/20 px-5 py-2 font-semibold text-white shadow-2xl shadow-cyan-900/50 transition hover:brightness-110 focus-visible:ring-white"
+				className="relative flex flex-shrink-0 items-center justify-center rounded-md bg-gray-400/20 px-5 py-2 font-semibold shadow-2xl shadow-gray-900/50 transition hover:brightness-110 focus-visible:ring-white"
 				type="submit"
 				disabled={!purchaseUserTransfer}
 			>

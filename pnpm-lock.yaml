@@ -176,6 +176,9 @@ importers:
       '@coursebuilder/core':
         specifier: 0.1.5
         version: link:../../packages/core
+      '@coursebuilder/email-templates':
+        specifier: ^1.0.1
+        version: link:../../packages/email-templates
       '@coursebuilder/next':
         specifier: workspace:^
         version: link:../../packages/next
@@ -366,7 +369,7 @@ importers:
         specifier: ^2.30.0
         version: 2.30.0
       date-fns-tz:
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.30.2
@@ -1580,6 +1583,12 @@ importers:
       '@types/react':
         specifier: ^18.3.1
         version: 18.3.1
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      date-fns-tz:
+        specifier: ^2.0.1
+        version: 2.0.1(date-fns@2.30.0)
       react:
         specifier: 18.3.1
         version: 18.3.1

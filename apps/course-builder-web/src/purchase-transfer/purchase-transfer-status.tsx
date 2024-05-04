@@ -1,3 +1,7 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { cancelPurchaseTransfer } from '@/purchase-transfer/purchase-transfer-actions'
 import { PurchaseTransferForm } from '@/purchase-transfer/purchase-transfer-form'
 import Balancer from 'react-wrap-balancer'
 
@@ -9,6 +13,7 @@ export const PurchaseTransferStatus = ({
 	purchaseUserTransfers: PurchaseUserTransfer[]
 	refetch: () => Promise<any>
 }) => {
+	const router = useRouter()
 	return (
 		<div id="purchase-transfer">
 			{purchaseUserTransfers.map((purchaseUserTransfer) => {
@@ -51,9 +56,12 @@ export const PurchaseTransferStatus = ({
 									or expires.
 								</h2>
 								<button
-									className="bg-brand-red relative flex flex-shrink-0 items-center justify-center rounded-full px-5 py-2 font-semibold text-white shadow-2xl shadow-cyan-900/50 transition hover:brightness-110 focus-visible:ring-white"
-									onClick={() => {
-										// TODO: CANCEL THE TRANSFER
+									className="bg-brand-red text-gray relative flex flex-shrink-0 items-center justify-center rounded-md px-5 py-2 font-semibold shadow-2xl shadow-gray-900/50 transition hover:brightness-110 focus-visible:ring-white"
+									onClick={async () => {
+										await cancelPurchaseTransfer({
+											purchaseUserTransferId: purchaseUserTransfer.id,
+										})
+										router.refresh()
 									}}
 								>
 									Cancel Transfer

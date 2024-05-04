@@ -20,9 +20,6 @@ export type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
 	expires?: Date
 	merchantChargeId?: string | null
 }
-export type TextEmailParams = Record<'url' | 'host', string> & {
-	expires?: Date
-}
 
 function isValidateEmailServerConfig(server: any) {
 	return Boolean(
@@ -40,15 +37,15 @@ export interface SendVerificationRequestParams {
 	expires: Date
 	provider: NodemailerConfig
 	token: string
-	theme: Theme
+	theme?: Theme
 }
 
 export const sendVerificationRequest = async (
 	params: SendVerificationRequestParams & {
 		type?: MagicLinkEmailType
 		merchantChargeId?: string | null
-		html?: (options: HTMLEmailParams, theme: Theme) => string
-		text?: (options: TextEmailParams) => string
+		html?: (options: HTMLEmailParams, theme?: Theme) => string
+		text?: (options: HTMLEmailParams, theme?: Theme) => string
 	},
 	adapter: CourseBuilderAdapter,
 ) => {
@@ -127,7 +124,7 @@ export const sendVerificationRequest = async (
 
 function defaultHtml(
 	{ url, host, email, merchantChargeId }: HTMLEmailParams,
-	theme: Theme,
+	theme?: Theme,
 ) {
 	return render(
 		PostPurchaseLoginEmail(
@@ -155,7 +152,7 @@ function defaultHtml(
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
 function defaultText(
 	{ url, host, email, merchantChargeId }: HTMLEmailParams,
-	theme: Theme,
+	theme?: Theme,
 ) {
 	return render(
 		PostPurchaseLoginEmail(

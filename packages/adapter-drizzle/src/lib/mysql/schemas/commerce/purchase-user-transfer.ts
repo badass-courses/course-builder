@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
 	mysqlEnum,
 	MySqlTableFn,
@@ -6,6 +6,9 @@ import {
 	timestamp,
 	varchar,
 } from 'drizzle-orm/mysql-core'
+
+import { getUsersSchema } from '../auth/users.js'
+import { getPurchaseSchema } from './purchase.js'
 
 export function getPurchaseUserTransferSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -43,4 +46,29 @@ export function getPurchaseUserTransferSchema(mysqlTable: MySqlTableFn) {
 			}
 		},
 	)
+}
+
+export function getPurchaseUserTransferRelationsSchema(
+	mysqlTable: MySqlTableFn,
+) {
+	const purchaseUserTransfer = getPurchaseUserTransferSchema(mysqlTable)
+	const user = getUsersSchema(mysqlTable)
+	const purchase = getPurchaseSchema(mysqlTable)
+	return relations(purchaseUserTransfer, ({ one }) => ({
+		sourceUser: one(user, {
+			fields: [purchaseUserTransfer.sourceUserId],
+			references: [user.id],
+			relationName: 'sourceUser',
+		}),
+		targetUser: one(user, {
+			fields: [purchaseUserTransfer.targetUserId],
+			references: [user.id],
+			relationName: 'targetUser',
+		}),
+		purchase: one(purchase, {
+			fields: [purchaseUserTransfer.purchaseId],
+			references: [purchase.id],
+			relationName: 'purchase',
+		}),
+	}))
 }
