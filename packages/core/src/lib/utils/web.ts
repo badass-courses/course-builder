@@ -98,11 +98,18 @@ export function parseActionAndProviderId(
 
 	if (
 		providerId &&
-		!['webhook', 'srt', 'session', 'subscribe-to-list', 'checkout'].includes(
-			action,
-		)
+		![
+			'webhook',
+			'srt',
+			'session',
+			'subscribe-to-list',
+			'checkout',
+			'redeem',
+		].includes(action)
 	)
-		throw new UnknownAction(`**** Cannot parse action at ${pathname}`)
+		throw new UnknownAction(
+			`**** Cannot parse action at ${pathname}. add it to the list in web.ts?`,
+		)
 
 	return { action, providerId }
 }

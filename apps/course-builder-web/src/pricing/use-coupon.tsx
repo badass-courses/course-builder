@@ -10,6 +10,7 @@ type CouponValidator = {
 	isRedeemable: boolean
 }
 
+// CouponValidator is from CommerceProps as `couponFromCode`
 export function useCoupon(coupon?: CouponValidator, product?: Product) {
 	const [validCoupon, setValidCoupon] = React.useState(false)
 	React.useEffect(() => {

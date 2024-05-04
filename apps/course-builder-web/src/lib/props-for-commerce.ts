@@ -48,18 +48,29 @@ export const validateCoupon = async (
 }
 
 export async function getCouponForCode(
-	code: string,
+	code: string | null,
 	productIds: string[] = [],
 ) {
+	if (!code) return undefined
+
 	let couponFromCode = code && (await courseBuilderAdapter.getCoupon(code))
 
 	if (couponFromCode) {
+		if (
+			productIds.length === 0 &&
+			couponFromCode.restrictedToProductId &&
+			couponFromCode.percentageDiscount === 1
+		) {
+			productIds = [couponFromCode?.restrictedToProductId]
+		}
 		const validatedCoupon = await validateCoupon(couponFromCode, productIds)
 		return {
 			...couponFromCode,
 			...validatedCoupon,
 		}
 	}
+
+	return undefined
 }
 
 type PropsForCommerce = {
