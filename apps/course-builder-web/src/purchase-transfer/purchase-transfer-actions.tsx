@@ -88,8 +88,8 @@ export async function acceptPurchaseTransfer(input: {
 	const purchaseUserTransfer = await getPurchaseUserTransferById({
 		id: input.purchaseUserTransferId,
 	})
-	const user = token
-		? await getUserById(token.session?.user.id as string)
+	const user = token.session?.user
+		? await getUserById(token.session.user.id)
 		: null
 
 	if (!user) {
@@ -212,9 +212,15 @@ export async function getPurchaseTransferForPurchaseId(input: {
 		return []
 	}
 
+	const user = session?.user
+
+	if (!user) {
+		return []
+	}
+
 	const transfers = await db.query.purchaseUserTransfer.findMany({
 		where: and(
-			eq(purchaseUserTransferTable.sourceUserId, session?.user.id as string),
+			eq(purchaseUserTransferTable.sourceUserId, user.id as string),
 			eq(purchaseUserTransferTable.purchaseId, input.id as string),
 			gte(purchaseUserTransferTable.expiresAt, new Date()),
 		),

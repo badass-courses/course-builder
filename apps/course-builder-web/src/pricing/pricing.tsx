@@ -327,7 +327,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 													productId={productId}
 													userId={userId as string}
 													buttonLabel="Buy more seats"
-													pricingDataLoader={pricingDataLoader}
 												/>
 											</motion.div>
 										)}
