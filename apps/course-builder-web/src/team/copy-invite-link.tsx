@@ -4,7 +4,7 @@ import React from 'react'
 import toast from 'react-hot-toast'
 import { useCopyToClipboard } from 'react-use'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, Input } from '@coursebuilder/ui'
 
 const CopyInviteLink: React.FC<
 	React.PropsWithChildren<{
@@ -20,7 +20,7 @@ const CopyInviteLink: React.FC<
 		<div data-copy-invite-link="" className={className}>
 			<label htmlFor="inviteLink">Invite link</label>
 			<div>
-				<input
+				<Input
 					readOnly
 					disabled={disabled}
 					id="inviteLink"
@@ -31,6 +31,7 @@ const CopyInviteLink: React.FC<
 					value={
 						disabled ? 'Buy more seats to view your invite link' : inviteLink
 					}
+					className="text-base"
 				/>
 				<Button
 					type="button"

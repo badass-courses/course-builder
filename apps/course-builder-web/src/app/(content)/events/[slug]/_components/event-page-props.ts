@@ -14,7 +14,7 @@ export type EventPageProps = {
 	mdx?: MDXRemoteSerializeResult
 	hasPurchasedCurrentProduct?: boolean
 	availableBonuses: any[]
-	existingPurchase?: Purchase & { product?: Product | null }
+	existingPurchase?: (Purchase & { product?: Product | null }) | null
 	purchases?: Purchase[]
 	userId?: string
 	pricingDataLoader: Promise<PricingData>

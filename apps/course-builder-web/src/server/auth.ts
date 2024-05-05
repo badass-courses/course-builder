@@ -8,6 +8,8 @@ import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
+import { userSchema } from '@coursebuilder/core/schemas'
+
 type Role = 'admin' | 'user'
 
 /**
@@ -122,9 +124,10 @@ export const {
 
 export const getServerAuthSession = async () => {
 	const session = await auth()
+	const user = userSchema.optional().nullable().parse(session?.user)
 	const ability = getAbility({ user: session?.user })
 
-	return { session, ability }
+	return { session: { ...session, user }, ability }
 }
 
 export type Provider = {

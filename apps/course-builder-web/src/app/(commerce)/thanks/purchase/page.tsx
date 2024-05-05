@@ -18,6 +18,7 @@ import {
 	NEW_INDIVIDUAL_PURCHASE,
 	PurchaseType,
 } from '@coursebuilder/core/schemas/purchase-type'
+import { logger } from '@coursebuilder/core/utils/logger'
 
 const getServerSideProps = async (session_id: string) => {
 	const paymentProvider = stripeProvider
@@ -40,6 +41,8 @@ const getServerSideProps = async (session_id: string) => {
 				courseBuilderAdapter,
 			)
 
+			console.log({ purchaseInfo })
+
 			const {
 				email,
 				chargeIdentifier,
@@ -52,6 +55,8 @@ const getServerSideProps = async (session_id: string) => {
 
 			const purchase =
 				await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+
+			logger.debug('purchase', { purchase })
 
 			if (!purchase || !email) {
 				throw new Error('Purchase or email not found')
@@ -146,6 +151,8 @@ const ThanksVerify: React.FC<
 			seatsPurchased={seatsPurchased}
 		/>
 	)
+
+	console.log({ purchase })
 
 	switch (purchaseType) {
 		case NEW_INDIVIDUAL_PURCHASE:

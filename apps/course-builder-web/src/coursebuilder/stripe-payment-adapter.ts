@@ -2,6 +2,7 @@ import { env } from '@/env.mjs'
 import Stripe from 'stripe'
 
 import { type PaymentsAdapter } from '@coursebuilder/core/types'
+import { logger } from '@coursebuilder/core/utils/logger'
 
 if (!env.STRIPE_SECRET_TOKEN) {
 	throw new Error('Stripe secret token not found')
@@ -48,6 +49,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	}
 
 	async getCheckoutSession(checkoutSessionId: string) {
+		logger.debug('getCheckoutSession', { checkoutSessionId })
 		return await stripe.checkout.sessions.retrieve(checkoutSessionId, {
 			expand: [
 				'customer',

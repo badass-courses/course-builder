@@ -57,6 +57,7 @@ import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-acco
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import { type ModuleProgress } from '@coursebuilder/core/schemas/resource-progress-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import { logger } from '@coursebuilder/core/utils/logger'
 import { validateCoupon } from '@coursebuilder/core/utils/validate-coupon'
 
 import {
@@ -280,9 +281,7 @@ export function mySqlDrizzleAdapter(
 			if (coupon && couponValidation.isRedeemable) {
 				// if the Coupon is the Bulk Coupon of a Bulk Purchase,
 				// then a bulk coupon is being redeemed
-				const bulkCouponRedemption = Boolean(
-					coupon.bulkCouponPurchases[0]?.bulkCouponId,
-				)
+				const bulkCouponRedemption = Boolean(coupon.bulkPurchase?.bulkCouponId)
 
 				console.log('🦄 bulkCouponRedemption', bulkCouponRedemption)
 
@@ -864,22 +863,40 @@ export function mySqlDrizzleAdapter(
 		},
 		async getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
+					bulkPurchase?: Purchase | null
 					bulkCouponPurchases: { bulkCouponId?: string | null }[]
 			  })
 			| null
 		> {
-			const couponData =
-				(await client.query.coupon.findFirst({
-					where: eq(coupon.id, couponId),
-					with: {
-						bulkCouponPurchases: true,
-					},
-				})) || null
+			logger.debug('getCouponWithBulkPurchases', { couponId })
+			let couponData
+			try {
+				couponData =
+					(await client.query.coupon.findFirst({
+						where: eq(coupon.id, couponId),
+						with: {
+							bulkPurchase: true,
+							bulkCouponPurchases: true,
+						},
+					})) || null
+			} catch (e) {
+				console.log('getCouponWithBulkPurchases')
+				logger.error(e as Error)
+			}
+
+			if (!couponData) {
+				logger.debug('getCouponWithBulkPurchases', {
+					couponId,
+					error: 'no coupon found',
+				})
+				return null
+			}
 
 			const parsedCoupon = couponSchema
 				.merge(
 					z.object({
 						bulkCouponPurchases: z.array(purchaseSchema),
+						bulkPurchase: purchaseSchema.nullable().optional(),
 					}),
 				)
 				.nullable()
@@ -1187,25 +1204,22 @@ export function mySqlDrizzleAdapter(
 		async getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
-			const purchaseId = await client
-				.select({
-					id: purchaseTable.id,
-				})
-				.from(purchaseTable)
-				.leftJoin(
-					merchantCharge,
-					and(
-						eq(merchantCharge.identifier, stripeChargeId),
-						eq(merchantCharge.id, purchaseTable.merchantChargeId),
-					),
-				)
-				.then((res) => {
-					return res[0]?.id ?? null
-				})
+			logger.debug('getPurchaseForStripeCharge', { stripeChargeId })
+
+			const chargeForPurchase = merchantChargeSchema.nullable().parse(
+				(await client.query.merchantCharge.findFirst({
+					where: eq(merchantCharge.identifier, stripeChargeId),
+				})) || null,
+			)
+
+			if (!chargeForPurchase) {
+				logger.error(new Error('No charge found for purchase'))
+				return null
+			}
 
 			const purchase = purchaseSchema.safeParse(
 				await client.query.purchases.findFirst({
-					where: eq(purchaseTable.id, purchaseId),
+					where: eq(purchaseTable.merchantChargeId, chargeForPurchase.id),
 					with: {
 						user: true,
 						product: true,
@@ -1311,7 +1325,7 @@ export function mySqlDrizzleAdapter(
 			userId: string,
 		): Promise<{
 			purchase?: Purchase
-			existingPurchase?: Purchase & { product?: Product | null }
+			existingPurchase?: Purchase | null
 			availableUpgrades: UpgradableProduct[]
 		}> {
 			const visiblePurchaseStates = ['Valid', 'Refunded', 'Restricted']
@@ -1385,9 +1399,25 @@ export function mySqlDrizzleAdapter(
 				})
 			}
 
-			const existingPurchase = allPurchases.find(
-				(p) => p.productId === parsedPurchase.data.productId,
-			)
+			const existingPurchase = purchaseSchema
+				.optional()
+				.nullable()
+				.parse(
+					(await client.query.purchases.findFirst({
+						where: and(
+							eq(purchaseTable.userId, userId),
+							eq(purchaseTable.productId, parsedPurchase.data.productId),
+							inArray(purchaseTable.status, ['Valid', 'Restricted']),
+							isNull(purchaseTable.bulkCouponId),
+							not(eq(purchaseTable.id, parsedPurchase.data.id)),
+						),
+						with: {
+							user: true,
+							product: true,
+							bulkCoupon: true,
+						},
+					})) || null,
+				)
 
 			console.log('💀 existingPurchase', existingPurchase)
 

@@ -16,9 +16,7 @@ export async function getCsrf() {
 
 	return await fetch(`${env.COURSEBUILDER_URL}/api/auth/csrf`, options)
 		.then(async (res) => {
-			console.log('res', res)
 			const resonseText = await res.text()
-			console.log('resonseText', resonseText)
 			const { csrfToken } = JSON.parse(resonseText)
 			return csrfToken
 		})
