@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 
 import { CourseBuilderAdapter } from '../adapters'
 import { CheckoutParams, stripeCheckout } from '../lib/pricing/stripe-checkout'
+import { logger } from '../lib/utils/logger'
 import { Purchase } from '../schemas'
 import {
 	PurchaseInfo,
@@ -189,6 +190,8 @@ export async function parseCheckoutSession(
 
 	const discount = first(lineItem.discounts)
 	const stripeCouponId = discount?.discount.coupon.id
+
+	logger.debug('parseCheckoutSession', { stripeChargeId })
 
 	const parsedMetadata = metadata ? PurchaseMetadata.parse(metadata) : undefined
 

@@ -13,7 +13,7 @@ export interface LoggerInstance extends Record<string, Function> {
 
 const red = '\x1b[31m'
 const yellow = '\x1b[33m'
-const grey = '\x1b[90m'
+const grey = '\x1b[38;5;246m'
 const reset = '\x1b[0m'
 
 export const logger: LoggerInstance = {

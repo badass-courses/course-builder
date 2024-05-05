@@ -16,6 +16,7 @@ import * as Switch from '@radix-ui/react-switch'
 import { AnimatePresence, motion } from 'framer-motion'
 import { find, first } from 'lodash'
 import { CheckCircleIcon } from 'lucide-react'
+import pluralize from 'pluralize'
 import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
 
@@ -636,12 +637,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 											return purchased ? (
 												<li key={module.resource.fields.slug}>
 													<Link
-														href={{
-															pathname: `/workshops/[slug]`,
-															query: {
-																slug: module.resource.fields.slug,
-															},
-														}}
+														href={`/${pluralize(module.resource.type)}/${module.resource.fields.slug}`}
 													>
 														<WorkshopListItem module={module} />
 													</Link>

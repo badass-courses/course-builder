@@ -1,9 +1,13 @@
+'use client'
+
 import * as React from 'react'
 import { use } from 'react'
+import { usePathname } from 'next/navigation'
 import { PricingData } from '@/lib/pricing-query'
 import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import { PriceDisplay } from '@/pricing/price-display'
 import { useDebounce } from '@/pricing/use-debounce'
+import { api } from '@/trpc/react'
 import { z } from 'zod'
 
 const buyMoreSeatsSchema = z.object({
@@ -25,21 +29,25 @@ export const BuyMoreSeats = ({
 }: BuyMoreSeatsProps) => {
 	const [quantity, setQuantity] = React.useState(5)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
+	const pathname = usePathname()
+	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
 
-	const { formattedPrice } = use(pricingDataLoader)
-
-	const formActionPath = buildStripeCheckoutPath({
-		userId,
-		quantity: debouncedQuantity,
+	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
 		productId,
-		bulk: Boolean(formattedPrice?.bulk),
-		couponId: formattedPrice?.appliedMerchantCoupon?.id,
+		quantity: debouncedQuantity,
 	})
 
 	return (
 		<form
 			data-buy-more-seats-form=""
-			action={formActionPath}
+			action={buildStripeCheckoutPath({
+				userId,
+				quantity: debouncedQuantity,
+				productId,
+				bulk: Boolean(formattedPrice?.bulk),
+				couponId: formattedPrice?.appliedMerchantCoupon?.id,
+				cancelUrl,
+			})}
 			method="POST"
 			className={className}
 		>
@@ -82,7 +90,7 @@ export const BuyMoreSeats = ({
 				<div data-pricing-product="">
 					<div data-pricing-product-header="">
 						<PriceDisplay status={'success'} formattedPrice={formattedPrice} />
-						<button type="submit" disabled={false}>
+						<button type="submit" disabled={status !== 'success'}>
 							{buttonLabel}
 						</button>
 					</div>

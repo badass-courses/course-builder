@@ -6,18 +6,16 @@ import { getServerAuthSession } from '@/server/auth'
 import { Purchase } from '@coursebuilder/core/schemas'
 
 const Invoices = async () => {
-	const { ability, session } = await getServerAuthSession()
-	if (ability.can('view', 'Invoice')) {
-		redirect('/login')
-	}
+	const { session } = await getServerAuthSession()
 
-	const purchases = await courseBuilderAdapter.getPurchasesForUser(
-		session?.user?.id,
-	)
+	const purchases =
+		(await courseBuilderAdapter.getPurchasesForUser(session?.user?.id)) || []
 	return (
 		<div>
 			<main className="mx-auto flex h-full w-full max-w-2xl flex-grow flex-col px-5 py-24 sm:py-32">
-				<h1 className="font-heading pb-4 text-3xl font-black">Your Invoices</h1>
+				<h1 className="font-heading pb-4 text-3xl font-black">
+					{purchases.length > 0 ? 'Your Invoices' : 'No invoices'}
+				</h1>
 				<ul className="flex flex-col gap-2">
 					{purchases
 						.filter((purchase: Purchase) => purchase.merchantChargeId)

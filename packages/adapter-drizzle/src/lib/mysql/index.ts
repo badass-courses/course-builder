@@ -57,6 +57,7 @@ import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-acco
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import { type ModuleProgress } from '@coursebuilder/core/schemas/resource-progress-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import { logger } from '@coursebuilder/core/utils/logger'
 import { validateCoupon } from '@coursebuilder/core/utils/validate-coupon'
 
 import {
@@ -1187,25 +1188,22 @@ export function mySqlDrizzleAdapter(
 		async getPurchaseForStripeCharge(
 			stripeChargeId: string,
 		): Promise<Purchase | null> {
-			const purchaseId = await client
-				.select({
-					id: purchaseTable.id,
-				})
-				.from(purchaseTable)
-				.leftJoin(
-					merchantCharge,
-					and(
-						eq(merchantCharge.identifier, stripeChargeId),
-						eq(merchantCharge.id, purchaseTable.merchantChargeId),
-					),
-				)
-				.then((res) => {
-					return res[0]?.id ?? null
-				})
+			logger.debug('getPurchaseForStripeCharge', { stripeChargeId })
+
+			const chargeForPurchase = merchantChargeSchema.nullable().parse(
+				(await client.query.merchantCharge.findFirst({
+					where: eq(merchantCharge.identifier, stripeChargeId),
+				})) || null,
+			)
+
+			if (!chargeForPurchase) {
+				logger.error(new Error('No charge found for purchase'))
+				return null
+			}
 
 			const purchase = purchaseSchema.safeParse(
 				await client.query.purchases.findFirst({
-					where: eq(purchaseTable.id, purchaseId),
+					where: eq(purchaseTable.merchantChargeId, chargeForPurchase.id),
 					with: {
 						user: true,
 						product: true,
