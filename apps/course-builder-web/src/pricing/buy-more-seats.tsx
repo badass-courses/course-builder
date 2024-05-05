@@ -17,15 +17,12 @@ const buyMoreSeatsSchema = z.object({
 	className: z.string().optional(),
 })
 
-type BuyMoreSeatsProps = z.infer<typeof buyMoreSeatsSchema> & {
-	pricingDataLoader: Promise<PricingData>
-}
+type BuyMoreSeatsProps = z.infer<typeof buyMoreSeatsSchema>
 export const BuyMoreSeats = ({
 	productId,
 	userId,
 	buttonLabel = 'Buy',
 	className = '',
-	pricingDataLoader,
 }: BuyMoreSeatsProps) => {
 	const [quantity, setQuantity] = React.useState(5)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)

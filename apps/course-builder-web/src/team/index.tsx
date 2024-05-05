@@ -1,19 +1,14 @@
 import React from 'react'
 import { z } from 'zod'
 
+import { Purchase } from '@coursebuilder/core/schemas'
+
 import CopyInviteLink from './copy-invite-link'
 import SelfRedeemButton from './self-redeem-button'
 
 type InviteTeamProps = {
-	purchase: {
-		merchantChargeId: string | null
-		bulkCoupon: { id: string; maxUses: number; usedCount: number } | null
-		product: { id: string; name: string }
-	}
-	existingPurchase: {
-		id: string
-		product: { id: string; name: string }
-	}
+	purchase?: Purchase
+	existingPurchase?: Purchase | null
 	userEmail: string | null
 	setPersonalPurchase: (props: any) => void
 	className?: string
@@ -63,9 +58,11 @@ const InviteTeam: React.FC<React.PropsWithChildren<InviteTeamProps>> = ({
 		usedCount,
 		numberOfRedemptionsLeft,
 		hasRedemptionsLeft,
-	} = bulkCouponSchema.parse(purchase.bulkCoupon)
+	} = bulkCouponSchema.parse(purchase?.bulkCoupon)
 
 	const [canRedeem, setCanRedeem] = React.useState(Boolean(!existingPurchase))
+
+	console.log({ canRedeem, purchase, existingPurchase })
 
 	return (
 		<div data-invite-team="" className={className}>
@@ -97,7 +94,7 @@ const InviteTeam: React.FC<React.PropsWithChildren<InviteTeamProps>> = ({
 									setPersonalPurchase(redeemedPurchase)
 									setSelfRedemptionSucceeded(true)
 								}}
-								productId={purchase.product.id}
+								productId={purchase?.product?.id}
 								disabled={!hasRedemptionsLeft}
 							/>
 						</div>

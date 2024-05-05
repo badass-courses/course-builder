@@ -1,44 +1,24 @@
 import React from 'react'
-import { db } from '@/db'
-import { coupon } from '@/db/schema'
-import { eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 
 import { Purchase } from '@coursebuilder/core/schemas'
 
 type ClaimedTeamSeatsProps = {
 	purchase: Purchase
-	existingPurchase: {
-		id: string
-		product: { id: string; name: string }
-	}
-	session: any
-	setPersonalPurchase: (props: any) => void
+	bulkCoupon?: any | null
 }
 
 export const ClaimedTeamSeats: React.FC<
 	React.PropsWithChildren<ClaimedTeamSeatsProps>
-> = async ({ purchase, existingPurchase, session, setPersonalPurchase }) => {
+> = ({ purchase, bulkCoupon }) => {
 	if (!purchase.bulkCouponId) return null
-
-	const bulkCoupon = await db.query.coupon.findFirst({
-		where: eq(coupon.id, purchase.bulkCouponId),
-		with: {
-			bulkCouponPurchases: {
-				with: {
-					user: true,
-				},
-			},
-		},
-	})
-
 	const claims = bulkCoupon?.bulkCouponPurchases || []
 
 	return (
 		<div data-claimed-seats-team="">
 			<>
 				{!isEmpty(claims) ? (
-					claims?.map((claim) => (
+					claims?.map((claim: any) => (
 						<div data-claimed-seat="" key={claim.user?.email}>
 							{claim.user?.email}
 						</div>

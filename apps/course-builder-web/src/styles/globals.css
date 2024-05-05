@@ -5,6 +5,7 @@
 @import './commerce.css';
 @import './login.css';
 @import './redeem-dialog.css';
+@import './team.css';
 
 @layer base {
 	:root {
