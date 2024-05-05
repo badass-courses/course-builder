@@ -260,30 +260,20 @@ export function mySqlDrizzleAdapter(
 			} = options
 			const email = String(baseEmail).replace(' ', '+')
 
-			console.log('email', email)
-
 			const coupon = await adapter.getCouponWithBulkPurchases(couponId)
-
-			console.log('💀 coupon', coupon)
 
 			const productId =
 				(coupon && (coupon.restrictedToProductId as string)) ||
 				redeemingProductId
 
-			console.log('🦄 productId', productId)
-
 			if (!productId) throw new Error(`unable-to-find-any-product-id`)
 
 			const couponValidation = validateCoupon(coupon, productIds)
-
-			console.log('🦄 couponValidation', couponValidation)
 
 			if (coupon && couponValidation.isRedeemable) {
 				// if the Coupon is the Bulk Coupon of a Bulk Purchase,
 				// then a bulk coupon is being redeemed
 				const bulkCouponRedemption = Boolean(coupon.bulkPurchase?.bulkCouponId)
-
-				console.log('🦄 bulkCouponRedemption', bulkCouponRedemption)
 
 				const { user } = await adapter.findOrCreateUser(email)
 
@@ -293,11 +283,7 @@ export function mySqlDrizzleAdapter(
 					? await adapter.getUserById(currentUserId)
 					: null
 
-				console.log('👶🏻 currentUser', currentUser)
-
 				const redeemingForCurrentUser = currentUser?.id === user.id
-
-				console.log('👶🏻 redeemingForCurrentUser', redeemingForCurrentUser)
 
 				// To prevent double-purchasing, check if this user already has a
 				// Purchase record for this product that is valid and wasn't a bulk
@@ -307,8 +293,6 @@ export function mySqlDrizzleAdapter(
 						userId: user.id,
 						productId,
 					})
-
-				console.log('🌽 existingPurchases', existingPurchases)
 
 				if (existingPurchases.length > 0)
 					throw new Error(`already-purchased-${email}`)
@@ -328,8 +312,6 @@ export function mySqlDrizzleAdapter(
 				})
 
 				const newPurchase = await adapter.getPurchase(purchaseId)
-
-				console.log('🌽 newPurchase', newPurchase)
 
 				await adapter.incrementCouponUsedCount(coupon.id)
 
@@ -638,12 +620,9 @@ export function mySqlDrizzleAdapter(
 								),
 							)
 							.then((res) => {
-								console.log({ res })
 								return res[0]?.coupons ?? null
 							}),
 					)
-
-					console.log({ existingBulkCoupon })
 
 					const isBulkPurchase =
 						quantity > 1 ||
@@ -699,15 +678,11 @@ export function mySqlDrizzleAdapter(
 							merchantAccountId,
 						})
 
-					console.log({ newMerchantSession })
-
 					const merchantCouponUsed = stripeCouponId
 						? await client.query.merchantCoupon.findFirst({
 								where: eq(merchantCoupon.identifier, stripeCouponId),
 							})
 						: null
-
-					console.log({ merchantCouponUsed })
 
 					const pppMerchantCoupon = appliedPPPStripeCouponId
 						? await client.query.merchantCoupon.findFirst({
@@ -717,8 +692,6 @@ export function mySqlDrizzleAdapter(
 								),
 							})
 						: null
-
-					console.log({ pppMerchantCoupon })
 
 					const newPurchaseStatus =
 						merchantCouponUsed?.type === 'ppp' || pppMerchantCoupon
@@ -739,8 +712,6 @@ export function mySqlDrizzleAdapter(
 						couponId: usedCouponId || null,
 					})
 
-					console.log({ newPurchase })
-
 					const oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7
 
 					const newPurchaseUserTransfer = await client
@@ -754,8 +725,6 @@ export function mySqlDrizzleAdapter(
 							sourceUserId: userId,
 						})
 
-					console.log({ newPurchaseUserTransfer })
-
 					// const result = await Promise.all([
 					// 	newMerchantCharge,
 					// 	newPurchase,
@@ -766,8 +735,6 @@ export function mySqlDrizzleAdapter(
 					//
 					// console.log('result', { result })
 
-					console.log('inside', { purchaseId })
-
 					return purchaseId
 				} catch (error) {
 					console.error(error)
@@ -775,8 +742,6 @@ export function mySqlDrizzleAdapter(
 					throw error
 				}
 			})
-
-			console.log('putside', { purchaseId })
 
 			const parsedPurchase = purchaseSchema.safeParse(
 				await client.query.purchases.findFirst({
@@ -1093,7 +1058,6 @@ export function mySqlDrizzleAdapter(
 			const mCharge = await client.query.merchantCharge.findFirst({
 				where: eq(merchantCharge.id, merchantChargeId),
 			})
-			console.log('mCharge', mCharge)
 			const parsed = merchantChargeSchema.safeParse(mCharge)
 			if (!parsed.success) {
 				console.error('Error parsing merchantCharge', mCharge)
@@ -1347,8 +1311,6 @@ export function mySqlDrizzleAdapter(
 
 			const allPurchases = parsedPurchases.success ? parsedPurchases.data : []
 
-			console.log('🦦', { allPurchases })
-
 			const thePurchase = await client.query.purchases.findFirst({
 				where: and(
 					eq(purchaseTable.id, purchaseId),
@@ -1369,8 +1331,6 @@ export function mySqlDrizzleAdapter(
 					availableUpgrades: [],
 				}
 			}
-
-			console.log('🦦', { parsedPurchase: parsedPurchase.data })
 
 			const purchaseCanUpgrade = ['Valid', 'Restricted'].includes(
 				parsedPurchase.data.state || '',
@@ -1418,8 +1378,6 @@ export function mySqlDrizzleAdapter(
 						},
 					})) || null,
 				)
-
-			console.log('💀 existingPurchase', existingPurchase)
 
 			return {
 				availableUpgrades: z

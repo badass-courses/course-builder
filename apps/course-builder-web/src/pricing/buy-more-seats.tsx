@@ -1,9 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { use } from 'react'
 import { usePathname } from 'next/navigation'
-import { PricingData } from '@/lib/pricing-query'
 import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import { PriceDisplay } from '@/pricing/price-display'
 import { useDebounce } from '@/pricing/use-debounce'

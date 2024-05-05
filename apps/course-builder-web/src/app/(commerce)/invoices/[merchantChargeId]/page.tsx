@@ -25,14 +25,10 @@ async function getChargeDetails(merchantChargeId: string) {
 
 	const merchantCharge = await getMerchantCharge(merchantChargeId)
 
-	console.log('merchantCharge', merchantCharge)
-
 	if (merchantCharge && merchantCharge.identifier) {
 		const charge = await stripe.charges.retrieve(merchantCharge.identifier, {
 			expand: ['customer'],
 		})
-
-		console.log('charge', charge)
 
 		const purchase = await getPurchaseForStripeCharge(merchantCharge.identifier)
 		const bulkCoupon =
@@ -42,17 +38,12 @@ async function getChargeDetails(merchantChargeId: string) {
 				where: eq(coupon.id, purchase.bulkCouponId),
 			}))
 
-		console.log('bulkCoupon', bulkCoupon)
-		console.log('purchase', purchase)
-
 		const merchantSession = purchase?.merchantSessionId
 			? await db.query.merchantSession.findFirst({
 					where: (merchantSession, { eq }) =>
 						eq(merchantSession.id, purchase.merchantSessionId as string),
 				})
 			: null
-
-		console.log('merchantSession', merchantSession)
 
 		let quantity = 1
 		if (merchantSession?.identifier) {
@@ -99,8 +90,6 @@ const Invoice = async ({
 }) => {
 	headers()
 	const chargeDetails = await getChargeDetails(params.merchantChargeId)
-
-	console.log('chargeDetails', chargeDetails)
 
 	if (chargeDetails?.state !== 'SUCCESS') {
 		redirect('/invoices')

@@ -144,7 +144,6 @@ export type Provider = {
 
 export function getProviders(): Record<string, Provider> | null {
 	const providerKeys: (keyof Provider)[] = ['id', 'name', 'type', 'style']
-	console.log({ pro: authOptions.providers })
 	return authOptions.providers.reduce((acc, provider) => {
 		return {
 			...acc,

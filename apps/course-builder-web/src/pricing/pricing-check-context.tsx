@@ -1,13 +1,7 @@
 import * as React from 'react'
 import { Dispatch, SetStateAction } from 'react'
 
-import {
-	Coupon,
-	MerchantCoupon,
-	Price,
-	Product,
-	Purchase,
-} from '@coursebuilder/core/schemas'
+import { MerchantCoupon } from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
 type MinimalMerchantCoupon = Omit<
@@ -16,11 +10,6 @@ type MinimalMerchantCoupon = Omit<
 	},
 	'identifier'
 >
-
-type MerchantCouponWithCountry = MerchantCoupon & {
-	country?: string | undefined
-}
-type ProductWithPrices = Product & { prices?: Price[] }
 
 type PricingContextType = {
 	addPrice: (price: FormattedPrice, productId: string) => void
