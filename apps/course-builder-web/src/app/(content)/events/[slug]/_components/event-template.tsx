@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { env } from '@/env.mjs'
 import { EventDetails } from '@/pricing/event-details'
-import { PricingWidget } from '@/pricing/pricing-widget'
 import Balancer from 'react-wrap-balancer'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next'
+import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 
 import { EventPageProps } from './event-page-props'
 

@@ -22,6 +22,11 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
+		},
+		"./pricing/*": {
+			"types": "./dist/pricing/*.d.ts",
+			"import": "./dist/pricing/*.js",
+			"require": "./dist/pricing/*.cjs"
 		}
 	},
 	"private": false,

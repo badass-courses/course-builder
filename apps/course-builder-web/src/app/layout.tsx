@@ -7,12 +7,15 @@ import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
-import { CouponProvider } from '@/pricing/coupon-context'
+import { getProduct } from '@/lib/products-query'
+import { getCouponForCode } from '@/lib/props-for-commerce'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
+
+import { CouponProvider } from '@coursebuilder/commerce-next/pricing/coupon-context'
 
 const inter = Inter({
 	subsets: ['latin'],
@@ -55,7 +58,12 @@ export default function RootLayout({
 										 */
 										routerConfig={extractRouterConfig(ourFileRouter)}
 									/>
-									<CouponProvider>{children}</CouponProvider>
+									<CouponProvider
+										getCouponForCode={getCouponForCode}
+										getProduct={getProduct}
+									>
+										{children}
+									</CouponProvider>
 								</main>
 							</div>
 						</ThemeProvider>

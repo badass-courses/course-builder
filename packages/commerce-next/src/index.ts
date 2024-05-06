@@ -1,2 +1,6 @@
 export * from './pricing/pricing.js'
 export * from './pricing/pricing-check-context'
+export * from './pricing/pricing-props'
+export * from './pricing/use-coupon'
+export * from './pricing/use-debounce'
+export * from './pricing/buy-more-seats'

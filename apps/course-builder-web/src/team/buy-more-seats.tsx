@@ -1,10 +1,9 @@
 import React from 'react'
 import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
-import { PriceDisplay } from '@/pricing/price-display'
-import { api } from '@/trpc/react'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { PriceDisplay } from '@coursebuilder/commerce-next/pricing/price-display'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
 export function useDebounce<T>(value: T, delay: number): T {

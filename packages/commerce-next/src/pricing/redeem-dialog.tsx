@@ -1,19 +1,16 @@
 import * as React from 'react'
-import ImageModule from 'next/image.js'
+import Image from 'next/image.js'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation.js'
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 import { useFormik } from 'formik'
 import { useSession } from 'next-auth/react'
-import BalancerModule from 'react-wrap-balancer'
+import Balancer from 'react-wrap-balancer'
 import * as Yup from 'yup'
 
 import { Product } from '@coursebuilder/core/schemas'
 import { Button, Input, Label } from '@coursebuilder/ui'
 
 import { redeemFullPriceCoupon } from './redeem-full-price-coupon.js'
-
-const Image = ImageModule.default
-const Balancer = BalancerModule.default
 
 const validationSchema = Yup.object().shape({
 	email: Yup.string().email('Invalid email').required('Required'),

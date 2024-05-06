@@ -2,8 +2,6 @@
 
 import * as React from 'react'
 import { use } from 'react'
-import { getProduct } from '@/lib/products-query'
-import { getCouponForCode } from '@/lib/props-for-commerce'
 
 import { Product } from '@coursebuilder/core/schemas'
 
@@ -11,7 +9,35 @@ import RedeemDialog from './redeem-dialog.js'
 
 export const CouponContext = React.createContext<any>({})
 
-export const CouponProvider = ({ children }: { children: React.ReactNode }) => {
+export const CouponProvider = ({
+	children,
+	getProduct,
+	getCouponForCode,
+}: {
+	children: React.ReactNode
+	getProduct: (id: string) => Promise<Product | null>
+	getCouponForCode: (id: string | null) => Promise<
+		| undefined
+		| {
+				maxUses: number
+				bulkCouponPurchases?: any
+				expires: Date | null
+				code?: string | null | undefined
+				isValid: boolean
+				merchantCouponId?: string | null | undefined
+				createdAt: Date | null
+				bulkPurchaseId?: string | null | undefined
+				isRedeemable: boolean
+				default: boolean
+				percentageDiscount: number
+				restrictedToProductId?: string | null | undefined
+				id: string
+				fields: Record<string, any>
+				usedCount: number
+				status: number
+		  }
+	>
+}) => {
 	const [couponLoader, setCouponLoader] =
 		React.useState<ReturnType<typeof getCouponForCode>>()
 	const [productLoader, setProductLoader] = React.useState<
