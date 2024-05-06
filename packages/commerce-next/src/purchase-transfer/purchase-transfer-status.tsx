@@ -17,7 +17,7 @@ export const PurchaseTransferStatus = ({
 	initiatePurchaseTransfer: (input: {
 		email: string
 		purchaseUserTransferId: string
-	}) => Promise<any>
+	}) => Promise<void>
 	cancelPurchaseTransfer: (input: {
 		purchaseUserTransferId: string
 	}) => Promise<any>

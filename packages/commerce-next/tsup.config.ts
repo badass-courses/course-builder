@@ -4,6 +4,7 @@ export default defineConfig({
 	entry: [
 		'src/pricing/**/*',
 		'src/path-to-purchase/**/*',
+		'src/purchase-transfer/**/*',
 		'src/client.ts',
 		'src/index.ts',
 	],

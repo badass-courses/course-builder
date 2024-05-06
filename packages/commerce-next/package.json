@@ -32,6 +32,11 @@
 			"types": "./dist/path-to-purchase/*.d.ts",
 			"import": "./dist/path-to-purchase/*.js",
 			"require": "./dist/path-to-purchase/*.cjs"
+		},
+		"./purchase-transfer/*": {
+			"types": "./dist/purchase-transfer/*.d.ts",
+			"import": "./dist/purchase-transfer/*.js",
+			"require": "./dist/purchase-transfer/*.cjs"
 		}
 	},
 	"private": false,
