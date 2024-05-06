@@ -1,7 +1,7 @@
 import React from 'react'
-import { handleSelfRedeem } from '@/path-to-purchase/handle-self-redeem'
 import toast from 'react-hot-toast'
 
+import { handleSelfRedeem } from '@coursebuilder/commerce-next/path-to-purchase/handle-self-redeem'
 import { Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 

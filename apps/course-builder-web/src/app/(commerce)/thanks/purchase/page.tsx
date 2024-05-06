@@ -3,13 +3,18 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
-import { InlineTeamInvite } from '@/path-to-purchase/inline-team-invite'
-import { InvoiceCard } from '@/path-to-purchase/invoice-card'
-import { LoginLink } from '@/path-to-purchase/post-purchase-login-link'
-import { PurchaseTransfer } from '@/path-to-purchase/post-purchase-purchase-transfer'
-import { convertToSerializeForNextResponse } from '@/path-to-purchase/serialize-for-next-response'
-import { ThankYou } from '@/path-to-purchase/thank-you'
+import {
+	cancelPurchaseTransfer,
+	getPurchaseTransferForPurchaseId,
+	initiatePurchaseTransfer,
+} from '@/purchase-transfer/purchase-transfer-actions'
 
+import { InlineTeamInvite } from '@coursebuilder/commerce-next/path-to-purchase/inline-team-invite'
+import { InvoiceCard } from '@coursebuilder/commerce-next/path-to-purchase/invoice-card'
+import { LoginLink } from '@coursebuilder/commerce-next/path-to-purchase/post-purchase-login-link'
+import { PurchaseTransfer } from '@coursebuilder/commerce-next/path-to-purchase/post-purchase-purchase-transfer'
+import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/path-to-purchase/serialize-for-next-response'
+import { ThankYou } from '@coursebuilder/commerce-next/path-to-purchase/thank-you'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import {
 	EXISTING_BULK_COUPON,
@@ -216,7 +221,12 @@ const ThanksVerify: React.FC<
 							purchase={{ product: { name: stripeProductName }, ...purchase }}
 						/>
 					</div>
-					<PurchaseTransfer purchase={purchase} />
+					<PurchaseTransfer
+						cancelPurchaseTransfer={cancelPurchaseTransfer}
+						getPurchaseTransferForPurchaseId={getPurchaseTransferForPurchaseId}
+						initiatePurchaseTransfer={initiatePurchaseTransfer}
+						purchase={purchase}
+					/>
 				</main>
 			</div>
 		</>

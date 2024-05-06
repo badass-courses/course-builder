@@ -27,6 +27,11 @@
 			"types": "./dist/pricing/*.d.ts",
 			"import": "./dist/pricing/*.js",
 			"require": "./dist/pricing/*.cjs"
+		},
+		"./path-to-purchase/*": {
+			"types": "./dist/path-to-purchase/*.d.ts",
+			"import": "./dist/path-to-purchase/*.js",
+			"require": "./dist/path-to-purchase/*.cjs"
 		}
 	},
 	"private": false,
@@ -38,6 +43,7 @@
 		"@types/pluralize": "^0.0.33",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.0",
+		"@types/uuid": "9.0.8",
 		"esbuild-react18-useclient": "^1.0.7",
 		"next": "14.2.3",
 		"react": "18.3.1",
@@ -52,11 +58,14 @@
 	"dependencies": {
 		"@auth/core": "^0.30.0",
 		"@coursebuilder/core": "^0.1.5",
+		"@coursebuilder/email-templates": "^1.0.1",
 		"@coursebuilder/ui": "^1.0.10",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
 		"@radix-ui/react-alert-dialog": "^1.0.5",
 		"@radix-ui/react-switch": "^1.0.3",
+		"@react-email/components": "^0.0.16",
+		"@react-email/render": "^0.0.9",
 		"@tanstack/react-query": "^5.25.0",
 		"clsx": "^2.0.0",
 		"date-fns": "^2.30.0",
@@ -68,12 +77,14 @@
 		"next-auth": "5.0.0-beta.17",
 		"pluralize": "^8.0.0",
 		"query-string": "^9.0.0",
+		"react-countdown": "^2.3.5",
 		"react-hook-form": "^7.48.0",
 		"react-hot-toast": "^2.4.1",
 		"react-markdown": "^9.0.0",
 		"react-use": "^17.5.0",
 		"react-wrap-balancer": "^0.2.4",
 		"tailwind-merge": "^1.14.0",
+		"uuid": "^9.0.1",
 		"yup": "^0.32.11",
 		"zod": "^3.22.4"
 	}

@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
-import { InvoiceCard } from '@/path-to-purchase/invoice-card'
 import { getServerAuthSession } from '@/server/auth'
 
+import { InvoiceCard } from '@coursebuilder/commerce-next/path-to-purchase/invoice-card'
 import { Purchase } from '@coursebuilder/core/schemas'
 
 const Invoices = async () => {

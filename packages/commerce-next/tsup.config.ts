@@ -1,7 +1,12 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-	entry: ['src/pricing/**/*', 'src/client.ts', 'src/index.ts'],
+	entry: [
+		'src/pricing/**/*',
+		'src/path-to-purchase/**/*',
+		'src/client.ts',
+		'src/index.ts',
+	],
 	sourcemap: true,
 	clean: true,
 	dts: true,

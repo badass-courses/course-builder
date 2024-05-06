@@ -4,12 +4,16 @@ import { redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import { githubAccountsForCurrentUser } from '@/lib/users'
-import { convertToSerializeForNextResponse } from '@/path-to-purchase/serialize-for-next-response'
-import { WelcomePage } from '@/path-to-purchase/welcome-page'
-import { getPurchaseTransferForPurchaseId } from '@/purchase-transfer/purchase-transfer-actions'
+import {
+	cancelPurchaseTransfer,
+	getPurchaseTransferForPurchaseId,
+	initiatePurchaseTransfer,
+} from '@/purchase-transfer/purchase-transfer-actions'
 import { authOptions, getServerAuthSession } from '@/server/auth'
 import { isString } from 'lodash'
 
+import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/path-to-purchase/serialize-for-next-response'
+import { WelcomePage } from '@coursebuilder/commerce-next/path-to-purchase/welcome-page'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 
 const getServerSideProps = async (query: {
@@ -137,6 +141,8 @@ const Welcome = async ({
 	return (
 		<div>
 			<WelcomePage
+				initiatePurchaseTransfer={initiatePurchaseTransfer}
+				cancelPurchaseTransfer={cancelPurchaseTransfer}
 				product={product}
 				purchase={purchase}
 				existingPurchase={existingPurchase}

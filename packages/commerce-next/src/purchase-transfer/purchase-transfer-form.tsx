@@ -5,16 +5,19 @@ import { useForm } from 'react-hook-form'
 
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 
-import { initiatePurchaseTransfer } from './purchase-transfer-actions.js'
-
 type PurchaseTransferFormData = {
 	email: string
 }
 
 export const PurchaseTransferForm = ({
 	purchaseUserTransfer,
+	initiatePurchaseTransfer,
 }: {
 	purchaseUserTransfer?: PurchaseUserTransfer
+	initiatePurchaseTransfer: (input: {
+		email: string
+		purchaseUserTransferId: string
+	}) => Promise<any>
 }) => {
 	const {
 		register,

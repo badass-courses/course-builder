@@ -38,6 +38,8 @@ export function WelcomePage({
 	purchaseUserTransfers,
 	hasCharge,
 	userEmail,
+	initiatePurchaseTransfer,
+	cancelPurchaseTransfer,
 }: {
 	product: Product | null
 	purchase: Purchase
@@ -50,6 +52,13 @@ export function WelcomePage({
 	purchaseUserTransfers: PurchaseUserTransfer[]
 	hasCharge: boolean
 	userEmail?: string | null
+	initiatePurchaseTransfer: (input: {
+		email: string
+		purchaseUserTransferId: string
+	}) => Promise<any>
+	cancelPurchaseTransfer: (input: {
+		purchaseUserTransferId: string
+	}) => Promise<any>
 }) {
 	const router = useRouter()
 	const [personalPurchase, setPersonalPurchase] = React.useState<
@@ -109,6 +118,8 @@ export function WelcomePage({
 								Transfer this purchase to another email address
 							</h2>
 							<PurchaseTransferStatus
+								initiatePurchaseTransfer={initiatePurchaseTransfer}
+								cancelPurchaseTransfer={cancelPurchaseTransfer}
 								purchaseUserTransfers={purchaseUserTransfers}
 								refetch={async () => {
 									router.refresh()

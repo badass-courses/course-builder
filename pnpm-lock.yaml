@@ -1437,6 +1437,9 @@ importers:
       '@coursebuilder/core':
         specifier: ^0.1.5
         version: link:../core
+      '@coursebuilder/email-templates':
+        specifier: ^1.0.1
+        version: link:../email-templates
       '@coursebuilder/ui':
         specifier: ^1.0.10
         version: link:../ui
@@ -1452,6 +1455,12 @@ importers:
       '@radix-ui/react-switch':
         specifier: ^1.0.3
         version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@react-email/components':
+        specifier: ^0.0.16
+        version: 0.0.16(@types/react@18.3.1)(react@18.3.1)
+      '@react-email/render':
+        specifier: ^0.0.9
+        version: 0.0.9
       '@tanstack/react-query':
         specifier: ^5.25.0
         version: 5.31.0(react@18.3.1)
@@ -1485,6 +1494,9 @@ importers:
       query-string:
         specifier: ^9.0.0
         version: 9.0.0
+      react-countdown:
+        specifier: ^2.3.5
+        version: 2.3.5(react-dom@18.3.1)(react@18.3.1)
       react-hook-form:
         specifier: ^7.48.0
         version: 7.51.0(react@18.3.1)
@@ -1503,6 +1515,9 @@ importers:
       tailwind-merge:
         specifier: ^1.14.0
         version: 1.14.0
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
       yup:
         specifier: ^0.32.11
         version: 0.32.11
@@ -1522,6 +1537,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
+      '@types/uuid':
+        specifier: 9.0.8
+        version: 9.0.8
       esbuild-react18-useclient:
         specifier: ^1.0.7
         version: 1.0.7

@@ -6,14 +6,15 @@ import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { InvoiceCustomText } from '@/path-to-purchase/invoice-custom-text'
-import { InvoicePrintButton } from '@/path-to-purchase/invoice-print-button'
 import { getPurchaseTransferForPurchaseId } from '@/purchase-transfer/purchase-transfer-actions'
 import { PurchaseTransferStatus } from '@/purchase-transfer/purchase-transfer-status'
 import { format, fromUnixTime } from 'date-fns'
 import { eq } from 'drizzle-orm'
 import { MailIcon } from 'lucide-react'
 import Stripe from 'stripe'
+
+import { InvoiceCustomText } from '@coursebuilder/commerce-next/path-to-purchase/invoice-custom-text'
+import { InvoicePrintButton } from '@coursebuilder/commerce-next/path-to-purchase/invoice-print-button'
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
 	apiVersion: '2020-08-27',

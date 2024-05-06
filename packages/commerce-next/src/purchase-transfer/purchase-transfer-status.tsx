@@ -5,14 +5,22 @@ import Balancer from 'react-wrap-balancer'
 
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 
-import { cancelPurchaseTransfer } from './purchase-transfer-actions.js'
 import { PurchaseTransferForm } from './purchase-transfer-form.js'
 
 export const PurchaseTransferStatus = ({
 	purchaseUserTransfers,
+	initiatePurchaseTransfer,
+	cancelPurchaseTransfer,
 }: {
 	purchaseUserTransfers: PurchaseUserTransfer[]
 	refetch: () => Promise<any>
+	initiatePurchaseTransfer: (input: {
+		email: string
+		purchaseUserTransferId: string
+	}) => Promise<any>
+	cancelPurchaseTransfer: (input: {
+		purchaseUserTransferId: string
+	}) => Promise<any>
 }) => {
 	const router = useRouter()
 
@@ -47,6 +55,7 @@ export const PurchaseTransferStatus = ({
 								<PurchaseTransferForm
 									purchaseUserTransfer={purchaseUserTransfer}
 									key={purchaseUserTransfer.id}
+									initiatePurchaseTransfer={initiatePurchaseTransfer}
 								/>
 							</>
 						)}

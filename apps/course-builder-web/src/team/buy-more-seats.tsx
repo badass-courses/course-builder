@@ -1,8 +1,8 @@
 import React from 'react'
-import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/path-to-purchase/build-stripe-checkout-path'
 import { PriceDisplay } from '@coursebuilder/commerce-next/pricing/price-display'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
