@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"allowJs": true,
+		"baseUrl": ".",
+		"declaration": true,
+		"declarationMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"esModuleInterop": true,
+		"skipDefaultLibCheck": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"stripInternal": true,
+		"target": "es2020",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"outDir": ".",
+		"rootDir": "src"
+	},
+	"include": [".eslintrc.cjs", "next-env.d.ts", "src/**/*"],
+	"exclude": ["node_modules", "*.js", "*.d.ts", "dist"]
+}

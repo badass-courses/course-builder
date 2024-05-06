@@ -1,15 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname } from 'next/navigation'
-import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
-import { PriceDisplay } from '@/pricing/price-display'
-import { useDebounce } from '@/pricing/use-debounce'
-import { api } from '@/trpc/react'
+import { usePathname } from 'next/navigation.js'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import { FormattedPrice } from '@coursebuilder/core/types'
+
+import { buildStripeCheckoutPath } from '../path-to-purchase/build-stripe-checkout-path.js'
+import { PriceDisplay } from './price-display.js'
+import { useDebounce } from './use-debounce.js'
 
 const buyMoreSeatsSchema = z.object({
 	productId: z.string(),

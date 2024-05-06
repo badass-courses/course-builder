@@ -1,7 +1,7 @@
 {
-	"name": "@coursebuilder/react-rsc",
+	"name": "@coursebuilder/commerce-next",
 	"version": "0.0.2",
-	"description": "Course Builder Package",
+	"description": "Commerce Functionality for Course Builder with Next.js",
 	"scripts": {
 		"clean": "rm -rf ./dist",
 		"build": "tsup",
@@ -22,11 +22,6 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
-		},
-		"./client": {
-			"types": "./dist/client.d.ts",
-			"import": "./dist/client.js",
-			"require": "./dist/client.cjs"
 		}
 	},
 	"private": false,
@@ -34,22 +29,47 @@
 		"access": "public"
 	},
 	"devDependencies": {
+		"@types/lodash": "^4.14.200",
+		"@types/pluralize": "^0.0.33",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.0",
 		"esbuild-react18-useclient": "^1.0.7",
+		"next": "14.2.3",
 		"react": "18.3.1",
 		"react-dom": "18.3.1",
 		"tsup": "8.0.2"
 	},
 	"peerDependencies": {
+		"next": "^14",
 		"react": "^18",
 		"react-dom": "^18"
 	},
 	"dependencies": {
+		"@auth/core": "^0.30.0",
 		"@coursebuilder/core": "^0.1.5",
 		"@coursebuilder/ui": "^1.0.10",
+		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
+		"@radix-ui/react-alert-dialog": "^1.0.5",
+		"@radix-ui/react-switch": "^1.0.3",
+		"@tanstack/react-query": "^5.25.0",
+		"clsx": "^2.0.0",
+		"date-fns": "^2.30.0",
+		"date-fns-tz": "^2.0.1",
+		"formik": "2.2.9",
+		"framer-motion": "^11",
+		"lodash": "^4.17.21",
+		"lucide-react": "^0.288.0",
+		"next-auth": "5.0.0-beta.17",
+		"pluralize": "^8.0.0",
+		"query-string": "^9.0.0",
 		"react-hook-form": "^7.48.0",
+		"react-hot-toast": "^2.4.1",
+		"react-markdown": "^9.0.0",
+		"react-use": "^17.5.0",
+		"react-wrap-balancer": "^0.2.4",
+		"tailwind-merge": "^1.14.0",
+		"yup": "^0.32.11",
 		"zod": "^3.22.4"
 	}
 }

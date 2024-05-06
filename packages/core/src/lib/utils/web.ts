@@ -1,3 +1,4 @@
+import { getToken } from '@auth/core/jwt'
 import { parse as parseCookie, serialize } from 'cookie'
 
 import { CourseBuilderError } from '../../errors'
@@ -82,11 +83,15 @@ export function parseActionAndProviderId(
 } {
 	const a = pathname.match(new RegExp(`^${base}(.+)`))
 
+	console.log('a', { a, pathname, base })
+
 	if (a === null) throw new UnknownAction(`Cannot parse action at ${pathname}`)
 
 	const [_, actionAndProviderId] = a
 
 	const b = actionAndProviderId.replace(/^\//, '').split('/')
+
+	console.log('b', { b, actionAndProviderId })
 
 	if (b.length !== 1 && b.length !== 2)
 		throw new UnknownAction(`**Cannot parse action at ${pathname}`)

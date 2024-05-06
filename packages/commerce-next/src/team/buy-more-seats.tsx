@@ -1,15 +1,32 @@
-'use client'
-
-import * as React from 'react'
-import { usePathname } from 'next/navigation'
-import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
-import { PriceDisplay } from '@/pricing/price-display'
-import { useDebounce } from '@/pricing/use-debounce'
-import { api } from '@/trpc/react'
+import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import { FormattedPrice } from '@coursebuilder/core/types'
+
+import { buildStripeCheckoutPath } from '../path-to-purchase/build-stripe-checkout-path.js'
+import { PriceDisplay } from '../pricing/price-display.js'
+
+export function useDebounce<T>(value: T, delay: number): T {
+	// State and setters for debounced value
+	const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
+	React.useEffect(
+		() => {
+			// Update debounced value after delay
+			const handler = setTimeout(() => {
+				setDebouncedValue(value)
+			}, delay)
+			// Cancel the timeout if value changes (also on delay change or unmount)
+			// This is how we prevent debounced value from updating if value is changed ...
+			// .. within the delay period. Timeout gets cleared and restarted.
+			return () => {
+				clearTimeout(handler)
+			}
+		},
+		[value, delay], // Only re-call effect if value or delay changes
+	)
+	return debouncedValue
+}
 
 const buyMoreSeatsSchema = z.object({
 	productId: z.string(),
@@ -17,9 +34,9 @@ const buyMoreSeatsSchema = z.object({
 	buttonLabel: z.string().default('Buy').nullish(),
 	className: z.string().optional(),
 })
-
 type BuyMoreSeatsProps = z.infer<typeof buyMoreSeatsSchema>
-export const BuyMoreSeats = ({
+
+const BuyMoreSeats = ({
 	productId,
 	userId,
 	buttonLabel = 'Buy',
@@ -27,8 +44,6 @@ export const BuyMoreSeats = ({
 }: BuyMoreSeatsProps) => {
 	const [quantity, setQuantity] = React.useState(5)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
-	const pathname = usePathname()
-	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
 
 	const { data: formattedPrice, status } = useQuery({
 		queryKey: ['prices-formatted', productId, debouncedQuantity],
@@ -51,17 +66,18 @@ export const BuyMoreSeats = ({
 		},
 	})
 
+	const formActionPath = buildStripeCheckoutPath({
+		userId,
+		quantity: debouncedQuantity,
+		productId,
+		bulk: Boolean(formattedPrice?.bulk),
+		couponId: formattedPrice?.appliedMerchantCoupon?.id,
+	})
+
 	return (
 		<form
 			data-buy-more-seats-form=""
-			action={buildStripeCheckoutPath({
-				userId,
-				quantity: debouncedQuantity,
-				productId,
-				bulk: Boolean(formattedPrice?.bulk),
-				couponId: formattedPrice?.appliedMerchantCoupon?.id,
-				cancelUrl,
-			})}
+			action={formActionPath}
 			method="POST"
 			className={className}
 		>
@@ -103,8 +119,10 @@ export const BuyMoreSeats = ({
 				</div>
 				<div data-pricing-product="">
 					<div data-pricing-product-header="">
-						<PriceDisplay status={'success'} formattedPrice={formattedPrice} />
-						<button type="submit" disabled={status !== 'success'}>
+						{formattedPrice && (
+							<PriceDisplay status={status} formattedPrice={formattedPrice} />
+						)}
+						<button type="submit" disabled={false}>
 							{buttonLabel}
 						</button>
 					</div>
@@ -113,3 +131,5 @@ export const BuyMoreSeats = ({
 		</form>
 	)
 }
+
+export default BuyMoreSeats

@@ -4,17 +4,11 @@ import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
-import { eq } from 'drizzle-orm'
 import { find } from 'lodash'
 import { z } from 'zod'
 
 import { formatPricesForProduct } from '@coursebuilder/core'
-import {
-	Coupon,
-	Product,
-	productSchema,
-	Purchase,
-} from '@coursebuilder/core/schemas'
+import { Coupon, productSchema, Purchase } from '@coursebuilder/core/schemas'
 
 const merchantCouponSchema = z.object({
 	id: z.string(),
@@ -89,10 +83,6 @@ const CheckForAvailableCouponsSchema = PricingFormattedInputSchema.pick({
 })
 type CheckForAvailableCoupons = z.infer<typeof CheckForAvailableCouponsSchema>
 
-/**
- * @deprecated prefer `validateCoupon`
- * @param coupon
- */
 export function couponIsValid(coupon?: Coupon | null) {
 	if (coupon) {
 		const unlimitedUse = coupon.maxUses === -1
@@ -229,10 +219,7 @@ export const pricingRouter = createTRPCRouter({
 			})
 
 			const inputProduct = input.productId
-				? await db.query.products.findFirst({
-						where: (products, { eq }) =>
-							eq(products.id, input.productId as string),
-					})
+				? await courseBuilderAdapter.getProduct(input.productId)
 				: undefined
 
 			const props = await propsForCommerce({

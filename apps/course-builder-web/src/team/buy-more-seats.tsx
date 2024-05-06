@@ -2,7 +2,10 @@ import React from 'react'
 import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
 import { PriceDisplay } from '@/pricing/price-display'
 import { api } from '@/trpc/react'
+import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
+
+import { FormattedPrice } from '@coursebuilder/core/types'
 
 export function useDebounce<T>(value: T, delay: number): T {
 	// State and setters for debounced value
@@ -42,9 +45,25 @@ const BuyMoreSeats = ({
 	const [quantity, setQuantity] = React.useState(5)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
 
-	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
-		productId,
-		quantity: debouncedQuantity,
+	const { data: formattedPrice, status } = useQuery({
+		queryKey: ['prices-formatted', productId, debouncedQuantity],
+		queryFn: async () => {
+			return await fetch(
+				`${process.env.NEXT_PUBLIC_URL}/api/coursebuilder/prices-formatted`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						productId,
+						quantity: debouncedQuantity,
+					}),
+				},
+			).then(async (res) => {
+				return (await res.json()) as FormattedPrice
+			})
+		},
 	})
 
 	const formActionPath = buildStripeCheckoutPath({

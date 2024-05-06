@@ -2,17 +2,9 @@ import * as React from 'react'
 import { Suspense, use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
-import { BuyMoreSeats } from '@/pricing/buy-more-seats'
-import { formatUsd } from '@/pricing/format-usd'
-import { PriceDisplay } from '@/pricing/price-display'
-import { usePriceCheck } from '@/pricing/pricing-check-context'
-import { PricingProps } from '@/pricing/pricing-props'
-import { redirectUrlBuilder } from '@/pricing/redirect-url-builder'
-import { useDebounce } from '@/pricing/use-debounce'
-import { api } from '@/trpc/react'
+import { usePathname, useRouter } from 'next/navigation.js'
 import * as Switch from '@radix-ui/react-switch'
+import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import { find, first } from 'lodash'
 import { CheckCircleIcon } from 'lucide-react'
@@ -27,7 +19,15 @@ import {
 	FormattedPrice,
 } from '@coursebuilder/core/types'
 
-import { RegionalPricingBox } from './regional-pricing-box'
+import { buildStripeCheckoutPath } from '../path-to-purchase/build-stripe-checkout-path.js'
+import { BuyMoreSeats } from './buy-more-seats.js'
+import { formatUsd } from './format-usd.js'
+import { PriceDisplay } from './price-display.js'
+import { usePriceCheck } from './pricing-check-context.js'
+import { PricingProps } from './pricing-props.js'
+import { redirectUrlBuilder } from './redirect-url-builder.js'
+import { RegionalPricingBox } from './regional-pricing-box.js'
+import { useDebounce } from './use-debounce.js'
 
 export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	pricingDataLoader,
@@ -96,12 +96,33 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 
 	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
 
-	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
-		productId,
-		quantity: debouncedQuantity,
-		couponId,
-		merchantCoupon,
-		autoApplyPPP,
+	const { data: formattedPrice, status } = useQuery({
+		queryKey: [
+			'prices-formatted',
+			productId,
+			debouncedQuantity,
+			isBuyingForTeam,
+		],
+		queryFn: async () => {
+			return await fetch(
+				`${process.env.NEXT_PUBLIC_URL}/api/coursebuilder/prices-formatted`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						productId,
+						quantity: debouncedQuantity,
+						couponId,
+						merchantCoupon,
+						autoApplyPPP,
+					}),
+				},
+			).then(async (res) => {
+				return (await res.json()) as FormattedPrice
+			})
+		},
 	})
 
 	const defaultCoupon = formattedPrice?.defaultCoupon

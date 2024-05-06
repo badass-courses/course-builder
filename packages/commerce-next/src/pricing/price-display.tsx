@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { formatUsd } from '@/pricing/format-usd'
 import { QueryStatus } from '@tanstack/react-query'
 
-import { usePriceCheck } from '@coursebuilder/commerce-next'
 import { FormattedPrice } from '@coursebuilder/core/types'
-import { cn } from '@coursebuilder/ui/utils/cn'
+
+import { cn } from '../cn.js'
+import { formatUsd } from './format-usd.js'
+import { usePriceCheck } from './pricing-check-context.js'
 
 export type PriceDisplayProps = {
 	status: QueryStatus

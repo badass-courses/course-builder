@@ -1,11 +1,18 @@
 import * as React from 'react'
-import { useParams, usePathname, useSearchParams } from 'next/navigation'
-import { PricingData } from '@/lib/pricing-query'
-import { CommerceProps } from '@/pricing/commerce-props'
-import { useCoupon } from '@/pricing/use-coupon'
+import { useParams, usePathname, useSearchParams } from 'next/navigation.js'
 
-import { Pricing } from '@coursebuilder/commerce-next'
-import { Product } from '@coursebuilder/core/schemas'
+import { Product, Purchase } from '@coursebuilder/core/schemas'
+import type { FormattedPrice } from '@coursebuilder/core/types'
+
+import { CommerceProps } from './commerce-props.js'
+import { Pricing } from './pricing.js'
+import { useCoupon } from './use-coupon.js'
+
+export type PricingData = {
+	formattedPrice?: FormattedPrice | null
+	purchaseToUpgrade?: Purchase | null
+	quantityAvailable: number
+}
 
 export const PricingWidget: React.FC<{
 	product: Product
