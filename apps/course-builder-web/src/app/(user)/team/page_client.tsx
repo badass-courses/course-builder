@@ -3,10 +3,10 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { TeamPageData } from '@/app/(user)/team/page'
-import { BuyMoreSeats } from '@/pricing/buy-more-seats'
 import InviteTeam from '@/team'
 import { ClaimedTeamSeats } from '@/team/claimed-team-seats'
 
+import { BuyMoreSeats } from '@coursebuilder/commerce-next/post-purchase'
 import { Card } from '@coursebuilder/ui'
 
 export function TeamPageTemplate({
