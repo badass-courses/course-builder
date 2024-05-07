@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { usePathname } from 'next/navigation'
+import { EventDetails } from '@/app/(content)/events/[slug]/_components/event-details'
 import { Layout } from '@/components/app/layout'
 import { env } from '@/env.mjs'
-import { EventDetails } from '@/pricing/event-details'
 import Balancer from 'react-wrap-balancer'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'

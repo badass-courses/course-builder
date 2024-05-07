@@ -33,7 +33,6 @@
 			"import": "./dist/coupons/*.js",
 			"require": "./dist/coupons/*.cjs"
 		},
-
 		"./invoices/*": {
 			"types": "./dist/invoices/*.d.ts",
 			"import": "./dist/invoices/*.js",
