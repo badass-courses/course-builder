@@ -1,8 +1,9 @@
 import React from 'react'
-import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
-import { PriceDisplay } from '@/pricing/price-display'
 import { api } from '@/trpc/react'
 import { z } from 'zod'
+
+import { PriceDisplay } from '@coursebuilder/commerce-next/pricing'
+import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/utils'
 
 export function useDebounce<T>(value: T, delay: number): T {
 	// State and setters for debounced value

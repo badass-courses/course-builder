@@ -5,9 +5,12 @@ import { usePathname } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { env } from '@/env.mjs'
 import { EventDetails } from '@/pricing/event-details'
-import { PriceCheckProvider } from '@/pricing/pricing-check-context'
-import { PricingWidget } from '@/pricing/pricing-widget'
 import Balancer from 'react-wrap-balancer'
+
+import {
+	PriceCheckProvider,
+	PricingWidget,
+} from '@coursebuilder/commerce-next/pricing'
 
 import { EventPageProps } from './event-page-props'
 

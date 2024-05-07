@@ -1,0 +1,115 @@
+{
+	"name": "@coursebuilder/commerce-next",
+	"version": "0.0.2",
+	"description": "Commerce Functionality for Course Builder with Next.js",
+	"scripts": {
+		"clean": "rm -rf ./dist",
+		"build": "tsc",
+		"dev": "tsc --watch"
+	},
+	"keywords": [
+		"coursebuilder"
+	],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"files": [
+		"dist",
+		"src"
+	],
+	"exports": {
+		"./pricing": {
+			"types": "./dist/pricing/index.d.ts",
+			"import": "./dist/pricing/index.js",
+			"require": "./dist/pricing/index.cjs"
+		},
+		"./components": {
+			"types": "./dist/components/index.d.ts",
+			"import": "./dist/components/index.js",
+			"require": "./dist/components/index.cjs"
+		},
+		"./coupons": {
+			"types": "./dist/coupons/index.d.ts",
+			"import": "./dist/coupons/index.js",
+			"require": "./dist/coupons/index.cjs"
+		},
+		"./invoices/*": {
+			"types": "./dist/invoices/*.d.ts",
+			"import": "./dist/invoices/*.js",
+			"require": "./dist/invoices/*.cjs"
+		},
+		"./invoices": {
+			"types": "./dist/invoices/index.d.ts",
+			"import": "./dist/invoices/index.js",
+			"require": "./dist/invoices/index.cjs"
+		},
+		"./post-purchase": {
+			"types": "./dist/post-purchase/index.d.ts",
+			"import": "./dist/post-purchase/index.js",
+			"require": "./dist/post-purchase/index.cjs"
+		},
+		"./team": {
+			"types": "./dist/team/index.d.ts",
+			"import": "./dist/team/index.js",
+			"require": "./dist/team/index.cjs"
+		},
+		"./utils": {
+			"types": "./dist/utils/index.d.ts",
+			"import": "./dist/utils/index.js",
+			"require": "./dist/utils/index.cjs"
+		}
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@types/lodash": "^4.14.200",
+		"@types/pluralize": "^0.0.33",
+		"@types/react": "^18.3.1",
+		"@types/react-dom": "^18.3.0",
+		"@types/uuid": "9.0.8",
+		"esbuild-react18-useclient": "^1.0.7",
+		"next": "14.2.3",
+		"react": "18.3.1",
+		"bunchee": "^5.1.2"
+	},
+	"peerDependencies": {
+		"next": "^14",
+		"react": "^18"
+	},
+	"dependencies": {
+		"@auth/core": "^0.30.0",
+		"@coursebuilder/core": "^0.1.5",
+		"@coursebuilder/email-templates": "^1.0.1",
+		"@coursebuilder/ui": "^1.0.10",
+		"@heroicons/react": "^2.0.18",
+		"@hookform/resolvers": "^3.3.2",
+		"@radix-ui/react-alert-dialog": "^1.0.5",
+		"@radix-ui/react-switch": "^1.0.3",
+		"@react-email/components": "^0.0.16",
+		"@react-email/render": "^0.0.9",
+		"@tanstack/react-query": "^5.25.0",
+		"clsx": "^2.0.0",
+		"date-fns": "^2.30.0",
+		"date-fns-tz": "^2.0.1",
+		"formik": "2.2.9",
+		"framer-motion": "^11",
+		"lodash": "^4.17.21",
+		"lucide-react": "^0.288.0",
+		"next-auth": "5.0.0-beta.17",
+		"pluralize": "^8.0.0",
+		"query-string": "^9.0.0",
+		"react-countdown": "^2.3.5",
+		"react-hook-form": "^7.48.0",
+		"react-hot-toast": "^2.4.1",
+		"react-markdown": "^9.0.0",
+		"react-use": "^17.5.0",
+		"react-wrap-balancer": "^0.2.4",
+		"tailwindcss": "^3.3.3",
+		"tailwind-merge": "^1.14.0",
+		"uuid": "^9.0.1",
+		"yup": "^0.32.11",
+		"zod": "^3.22.4"
+	}
+}

@@ -43,6 +43,7 @@
 		"@codemirror/view": "^6.22.3",
 		"@coursebuilder/adapter-drizzle": "0.1.4",
 		"@coursebuilder/core": "0.1.5",
+		"@coursebuilder/commerce-next": "^0.0.2",
 		"@coursebuilder/email-templates": "^1.0.1",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/react-rsc": "workspace:^",

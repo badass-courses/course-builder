@@ -3,8 +3,11 @@
 import * as React from 'react'
 import { PricingData } from '@/lib/pricing-query'
 import { CommerceProps } from '@/pricing/commerce-props'
-import { PriceCheckProvider } from '@/pricing/pricing-check-context'
-import { PricingWidget } from '@/pricing/pricing-widget'
+
+import {
+	PriceCheckProvider,
+	PricingWidget,
+} from '@coursebuilder/commerce-next/pricing'
 
 export function ProductPricing({
 	product,

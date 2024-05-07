@@ -1,13 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname } from 'next/navigation'
-import { buildStripeCheckoutPath } from '@/path-to-purchase/build-stripe-checkout-path'
-import { api } from '@/trpc/react'
+import { usePathname } from 'next/navigation.js'
+import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import { PriceDisplay } from '@coursebuilder/commerce-next/pricing'
-import { useDebounce } from '@coursebuilder/commerce-next/utils'
+import { FormattedPrice } from '@coursebuilder/core/types'
+
+import { PriceDisplay } from '../pricing/price-display'
+import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
+import { useDebounce } from '../utils/use-debounce'
 
 const buyMoreSeatsSchema = z.object({
 	productId: z.string(),
@@ -28,9 +30,25 @@ export const BuyMoreSeats = ({
 	const pathname = usePathname()
 	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
 
-	const { data: formattedPrice, status } = api.pricing.formatted.useQuery({
-		productId,
-		quantity: debouncedQuantity,
+	const { data: formattedPrice, status } = useQuery({
+		queryKey: ['prices-formatted', productId, debouncedQuantity],
+		queryFn: async () => {
+			return await fetch(
+				`${process.env.NEXT_PUBLIC_URL}/api/coursebuilder/prices-formatted`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						productId,
+						quantity: debouncedQuantity,
+					}),
+				},
+			).then(async (res) => {
+				return (await res.json()) as FormattedPrice
+			})
+		},
 	})
 
 	return (
