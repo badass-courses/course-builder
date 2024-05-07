@@ -7,10 +7,8 @@ import { env } from '@/env.mjs'
 import { EventDetails } from '@/pricing/event-details'
 import Balancer from 'react-wrap-balancer'
 
-import {
-	PriceCheckProvider,
-	PricingWidget,
-} from '@coursebuilder/commerce-next/pricing'
+import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
+import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 
 import { EventPageProps } from './event-page-props'
 

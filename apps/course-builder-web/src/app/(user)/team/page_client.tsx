@@ -6,7 +6,7 @@ import { TeamPageData } from '@/app/(user)/team/page'
 import InviteTeam from '@/team'
 import { ClaimedTeamSeats } from '@/team/claimed-team-seats'
 
-import { BuyMoreSeats } from '@coursebuilder/commerce-next/post-purchase'
+import { BuyMoreSeats } from '@coursebuilder/commerce-next/post-purchase/buy-more-seats'
 import { Card } from '@coursebuilder/ui'
 
 export function TeamPageTemplate({

@@ -18,45 +18,41 @@
 		"src"
 	],
 	"exports": {
-		"./pricing": {
-			"types": "./dist/pricing/index.d.ts",
-			"import": "./dist/pricing/index.js",
-			"require": "./dist/pricing/index.cjs"
+		"./pricing/*": {
+			"types": "./dist/pricing/*.d.ts",
+			"import": "./dist/pricing/*.js",
+			"require": "./dist/pricing/*.cjs"
 		},
-		"./components": {
-			"types": "./dist/components/index.d.ts",
-			"import": "./dist/components/index.js",
-			"require": "./dist/components/index.cjs"
+		"./components/*": {
+			"types": "./dist/components/*.d.ts",
+			"import": "./dist/components/*.js",
+			"require": "./dist/components/*.cjs"
 		},
-		"./coupons": {
-			"types": "./dist/coupons/index.d.ts",
-			"import": "./dist/coupons/index.js",
-			"require": "./dist/coupons/index.cjs"
+		"./coupons/*": {
+			"types": "./dist/coupons/*.d.ts",
+			"import": "./dist/coupons/*.js",
+			"require": "./dist/coupons/*.cjs"
 		},
+
 		"./invoices/*": {
 			"types": "./dist/invoices/*.d.ts",
 			"import": "./dist/invoices/*.js",
 			"require": "./dist/invoices/*.cjs"
 		},
-		"./invoices": {
-			"types": "./dist/invoices/index.d.ts",
-			"import": "./dist/invoices/index.js",
-			"require": "./dist/invoices/index.cjs"
+		"./post-purchase/*": {
+			"types": "./dist/post-purchase/*.d.ts",
+			"import": "./dist/post-purchase/*.js",
+			"require": "./dist/post-purchase/*.cjs"
 		},
-		"./post-purchase": {
-			"types": "./dist/post-purchase/index.d.ts",
-			"import": "./dist/post-purchase/index.js",
-			"require": "./dist/post-purchase/index.cjs"
+		"./team/*": {
+			"types": "./dist/team/*.d.ts",
+			"import": "./dist/team/*.js",
+			"require": "./dist/team/*.cjs"
 		},
-		"./team": {
-			"types": "./dist/team/index.d.ts",
-			"import": "./dist/team/index.js",
-			"require": "./dist/team/index.cjs"
-		},
-		"./utils": {
-			"types": "./dist/utils/index.d.ts",
-			"import": "./dist/utils/index.js",
-			"require": "./dist/utils/index.cjs"
+		"./utils/*": {
+			"types": "./dist/utils/*.d.ts",
+			"import": "./dist/utils/*.js",
+			"require": "./dist/utils/*.cjs"
 		}
 	},
 	"private": false,

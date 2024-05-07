@@ -2,7 +2,7 @@ import { Event } from '@/lib/events'
 import { PricingData } from '@/lib/pricing-query'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
-import { CommerceProps } from '@coursebuilder/commerce-next/utils'
+import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 
 export type EventPageProps = {
