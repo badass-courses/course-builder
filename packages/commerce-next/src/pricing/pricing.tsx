@@ -159,6 +159,8 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		return find<T>(availableCoupons, (coupon) => coupon?.type === 'ppp') || null
 	}
 
+	console.log({ formattedPrice, purchaseToUpgrade, quantityAvailable })
+
 	const availablePPPCoupon = formattedPrice?.availableCoupons.find(
 		(coupon) => coupon?.type === 'ppp',
 	)

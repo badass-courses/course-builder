@@ -37,8 +37,8 @@
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.0",
 		"esbuild-react18-useclient": "^1.0.7",
-		"react": "canary",
-		"react-dom": "canary",
+		"react": "18.3.1",
+		"react-dom": "18.3.1",
 		"tsup": "8.0.2"
 	},
 	"peerDependencies": {
