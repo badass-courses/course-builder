@@ -2,7 +2,8 @@ import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
-import { LoginLink } from '@/path-to-purchase/post-purchase-login-link'
+
+import { LoginLink } from '@coursebuilder/commerce-next/post-purchase/post-purchase-login-link'
 
 const ThanksRedeem = async ({
 	searchParams,
