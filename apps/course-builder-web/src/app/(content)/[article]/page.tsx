@@ -22,13 +22,8 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	const article = await getArticle(params.article)
 
-	if (!article) {
-		return parent as Metadata
-	}
-
 	return {
-		title: article.fields.title,
-		openGraph: { images: [getOGImageUrlForResource(article)] },
+		title: article?.fields.title,
 	}
 }
 

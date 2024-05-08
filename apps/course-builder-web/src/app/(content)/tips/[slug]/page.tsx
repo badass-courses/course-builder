@@ -31,15 +31,8 @@ export async function generateMetadata(
 		return parent as Metadata
 	}
 
-	const previousImages = (await parent).openGraph?.images || []
-
-	const ogImage = getOGImageUrlForResource(tip)
-
 	return {
 		title: tip.fields?.title,
-		openGraph: {
-			images: [ogImage, ...previousImages],
-		},
 	}
 }
 
