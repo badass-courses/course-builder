@@ -15,7 +15,7 @@ import {
 
 import { Icon } from '../components'
 import { InvoiceCard } from '../invoices/invoice-card'
-import { InviteTeam } from '../team'
+import { InviteTeam } from '../team/invite-team'
 import { PurchaseTransferStatus } from './purchase-transfer-status'
 
 type PersonalPurchase = {
