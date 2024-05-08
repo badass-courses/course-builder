@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
+import Spinner from '@/components/spinner'
 import { type MuxPlayerProps } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
@@ -29,7 +30,10 @@ export function TipPlayer({
 
 	const videoResource = use(videoResourceLoader)
 
-	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
+	const playbackId =
+		videoResource?.state === 'ready'
+			? muxPlaybackId || videoResource?.muxPlaybackId
+			: null
 
 	return (
 		<>
@@ -39,7 +43,11 @@ export function TipPlayer({
 					className={cn(className)}
 					{...playerProps}
 				/>
-			) : null}
+			) : (
+				<div className="flex h-full w-full items-center justify-center bg-gray-300">
+					<Spinner />
+				</div>
+			)}
 		</>
 	)
 }

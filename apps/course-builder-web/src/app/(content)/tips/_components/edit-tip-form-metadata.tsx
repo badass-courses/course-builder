@@ -3,6 +3,7 @@ import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
+import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { TipSchema, type Tip } from '@/lib/tips'
@@ -84,6 +85,7 @@ export const TipMetadataFormFields: React.FC<{
 					}
 				>
 					<TipPlayer videoResourceLoader={videoResourceLoader} />
+
 					<div className="px-5 text-xs">video is {videoResource?.state}</div>
 				</Suspense>
 			</div>

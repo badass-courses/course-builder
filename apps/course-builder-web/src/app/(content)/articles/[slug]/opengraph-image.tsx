@@ -5,6 +5,8 @@ import { and, eq, or, sql } from 'drizzle-orm'
 
 export const revalidate = 60
 
+export const runtime = 'edge'
+
 export default async function ArticleOG({
 	params,
 }: {
