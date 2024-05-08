@@ -1,6 +1,7 @@
 import { CourseBuilderConfig } from '../index'
 import { RequestInternal, ResponseInternal } from '../types'
 import * as actions from './actions'
+import { getPricesFormatted } from './actions/prices-formatted'
 import { redeem } from './actions/redeem'
 import { init } from './init'
 import { UnknownAction } from './utils/web'
@@ -29,6 +30,8 @@ export async function CourseBuilderInternal(
 		}
 	} else {
 		switch (action) {
+			case 'prices-formatted':
+				return await getPricesFormatted(request, cookies, options)
 			case 'redeem':
 				return await redeem(request, cookies, options)
 			case 'checkout':

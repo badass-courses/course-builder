@@ -2,9 +2,10 @@
 
 import * as React from 'react'
 import { PricingData } from '@/lib/pricing-query'
-import { CommerceProps } from '@/pricing/commerce-props'
-import { PriceCheckProvider } from '@/pricing/pricing-check-context'
-import { PricingWidget } from '@/pricing/pricing-widget'
+
+import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
+import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
+import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
 
 export function ProductPricing({
 	product,
