@@ -3,7 +3,10 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { and, eq, or, sql } from 'drizzle-orm'
 
+export const runtime = 'edge'
+
 export const revalidate = 60
+export const contentType = 'image/png'
 
 export default async function ArticleOG({
 	params,
