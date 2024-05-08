@@ -7,6 +7,10 @@ export const runtime = 'edge'
 
 export const revalidate = 60
 export const contentType = 'image/png'
+export const size = {
+	width: 1200,
+	height: 630,
+}
 
 export default async function ArticleOG({
 	params,
@@ -57,8 +61,7 @@ export default async function ArticleOG({
 			</div>
 		),
 		{
-			width: 1200,
-			height: 630,
+			...size,
 		},
 	)
 }

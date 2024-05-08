@@ -7,6 +7,10 @@ export const runtime = 'edge'
 
 export const revalidate = 60
 export const contentType = 'image/png'
+export const size = {
+	width: 1200,
+	height: 630,
+}
 
 export default async function TipOG({ params }: { params: { slug: string } }) {
 	const resource = await db.query.contentResource.findFirst({
@@ -36,8 +40,7 @@ export default async function TipOG({ params }: { params: { slug: string } }) {
 			</div>
 		),
 		{
-			width: 1200,
-			height: 630,
+			...size,
 		},
 	)
 }
