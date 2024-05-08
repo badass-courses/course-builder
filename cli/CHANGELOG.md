@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.10
+
+### Patch Changes
+
+- [#170](https://github.com/badass-courses/course-builder/pull/170) [`22c290a`](https://github.com/badass-courses/course-builder/commit/22c290ad7eec68e664c0027ba9389af41c71a16a) Thanks [@joelhooks](https://github.com/joelhooks)! - enables purchase transfers end to end
+
 ## 8.0.9
 
 ### Patch Changes

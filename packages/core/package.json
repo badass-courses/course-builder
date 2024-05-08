@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/core",
-	"version": "0.1.5",
+	"version": "0.2.0",
 	"description": "Core package for Course Builder",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib",
@@ -126,7 +126,7 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
-		"@coursebuilder/email-templates": "^1.0.1",
+		"@coursebuilder/email-templates": "^1.0.2",
 		"@react-email/components": "^0.0.16",
 		"@types/cookie": "0.6.0",
 		"@types/uuid": "9.0.8",
