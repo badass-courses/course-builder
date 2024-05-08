@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/react-rsc",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Course Builder Package",
 	"scripts": {
 		"clean": "rm -rf ./dist",
@@ -46,8 +46,8 @@
 		"react-dom": "^18"
 	},
 	"dependencies": {
-		"@coursebuilder/core": "^0.1.5",
-		"@coursebuilder/ui": "^1.0.10",
+		"@coursebuilder/core": "^0.2.0",
+		"@coursebuilder/ui": "^1.0.11",
 		"@hookform/resolvers": "^3.3.2",
 		"react-hook-form": "^7.48.0",
 		"zod": "^3.22.4"

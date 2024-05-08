@@ -171,16 +171,16 @@ importers:
         specifier: ^6.22.3
         version: 6.26.0
       '@coursebuilder/adapter-drizzle':
-        specifier: 0.1.4
+        specifier: 0.2.0
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.2
+        specifier: ^0.0.3
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 0.1.5
+        specifier: 0.2.0
         version: link:../../packages/core
       '@coursebuilder/email-templates':
-        specifier: ^1.0.1
+        specifier: ^1.0.2
         version: link:../../packages/email-templates
       '@coursebuilder/next':
         specifier: workspace:^
@@ -189,7 +189,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/react-rsc
       '@coursebuilder/ui':
-        specifier: ^1.0.10
+        specifier: ^1.0.11
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -727,10 +727,10 @@ importers:
         specifier: ^6.22.3
         version: 6.26.0
       '@coursebuilder/adapter-drizzle':
-        specifier: 0.1.4
+        specifier: 0.2.0
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 0.1.5
+        specifier: 0.2.0
         version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
@@ -739,7 +739,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/react-rsc
       '@coursebuilder/ui':
-        specifier: ^1.0.10
+        specifier: ^1.0.11
         version: link:../../packages/ui
       '@designbycode/tailwindcss-text-stroke':
         specifier: ^1.2.1
@@ -1393,7 +1393,7 @@ importers:
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
       '@coursebuilder/core':
-        specifier: 0.1.5
+        specifier: 0.2.0
         version: link:../core
       '@libsql/client':
         specifier: 0.5.6
@@ -1435,13 +1435,13 @@ importers:
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
       '@coursebuilder/core':
-        specifier: ^0.1.5
+        specifier: ^0.2.0
         version: link:../core
       '@coursebuilder/email-templates':
-        specifier: ^1.0.1
+        specifier: ^1.0.2
         version: link:../email-templates
       '@coursebuilder/ui':
-        specifier: ^1.0.10
+        specifier: ^1.0.11
         version: link:../ui
       '@heroicons/react':
         specifier: ^2.0.18
@@ -1638,7 +1638,7 @@ importers:
         specifier: ^0.17.1
         version: 0.17.2(encoding@0.1.13)
       '@coursebuilder/email-templates':
-        specifier: ^1.0.1
+        specifier: ^1.0.2
         version: link:../email-templates
       '@react-email/components':
         specifier: ^0.0.16
@@ -1732,7 +1732,7 @@ importers:
   packages/next:
     dependencies:
       '@coursebuilder/core':
-        specifier: 0.1.5
+        specifier: 0.2.0
         version: link:../core
       inngest:
         specifier: ^3.16.1
@@ -1754,10 +1754,10 @@ importers:
   packages/react-rsc:
     dependencies:
       '@coursebuilder/core':
-        specifier: ^0.1.5
+        specifier: ^0.2.0
         version: link:../core
       '@coursebuilder/ui':
-        specifier: ^1.0.10
+        specifier: ^1.0.11
         version: link:../ui
       '@hookform/resolvers':
         specifier: ^3.3.2
@@ -1809,7 +1809,7 @@ importers:
         specifier: ^6.22.3
         version: 6.26.0
       '@coursebuilder/core':
-        specifier: 0.1.5
+        specifier: 0.2.0
         version: link:../core
       '@hookform/resolvers':
         specifier: ^3.3.2
