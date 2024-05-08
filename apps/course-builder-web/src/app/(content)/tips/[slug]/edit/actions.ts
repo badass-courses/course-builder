@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
@@ -37,6 +38,7 @@ export async function reprocessTranscript({
 }
 
 export const onTipSave = async (resource: ContentResource) => {
-	'use server'
+	const tip = await courseBuilderAdapter.getContentResource(resource.id)
+	revalidatePath(`/tips/${tip?.fields?.slug}`)
 	redirect(`/tips/${resource.fields?.slug}`)
 }
