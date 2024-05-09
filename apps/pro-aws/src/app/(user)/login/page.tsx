@@ -1,17 +1,16 @@
+import { headers } from 'next/headers'
 import { Login } from '@/components/login'
-import { authOptions } from '@/server/auth'
-import { Provider } from '@auth/core/providers'
+import { getProviders } from '@/server/auth'
 
-export default function LoginPage() {
-	const providers = authOptions.providers
-	return (
-		<Login
-			providers={providers.map((provider: any) => {
-				return {
-					id: provider.id,
-					name: provider.name,
-				}
-			})}
-		/>
-	)
+import { getCsrf } from './actions'
+
+export const dynamic = 'force-dynamic'
+
+export default async function LoginPage() {
+	headers()
+
+	const providers = getProviders()
+	const csrfToken = await getCsrf()
+
+	return <Login csrfToken={csrfToken} providers={providers} />
 }

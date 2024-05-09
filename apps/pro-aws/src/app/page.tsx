@@ -6,7 +6,7 @@ import Balancer from 'react-wrap-balancer'
 
 export const metadata = {
 	title: {
-		template: '%s | Pro AWS',
+		template: '%s | ProAWS',
 		default: `Navigate the AWS Maze with Confidence`,
 	},
 }
@@ -53,7 +53,7 @@ You could go back to the comfort of a simplified platform, but you're tired of f
 
 You can build anything you can imagine on AWS. You're more than capable. You just need a guide. You need an opinionated, pragmatic view of a vast platform that exists to serve an infinite number of use cases. AWS provides all of the fundamental elements needed to craft brilliant web experiences. But, how you mix them is crucial.
 
-That's where Pro AWS comes in. This isn't a typical AWS course. You won't study arcane architectural diagrams or listen to academic lectures on best practices. Every lesson is rooted in practicality and born out of real-world experience. You'll learn AWS through the lens of modern web development, because today you don't have to sacrifice developer experience to build on AWS.`}
+That's where ProAWS comes in. This isn't a typical AWS course. You won't study arcane architectural diagrams or listen to academic lectures on best practices. Every lesson is rooted in practicality and born out of real-world experience. You'll learn AWS through the lens of modern web development, because today you don't have to sacrifice developer experience to build on AWS.`}
 					</ReactMarkdown>
 				</article>
 				<PrimaryNewsletterCta className="px-6 pt-8 sm:px-0 sm:pt-20" />
@@ -82,7 +82,7 @@ That's where Pro AWS comes in. This isn't a typical AWS course. You won't study 
 							I&apos;m an AWS Hero and startup founder that&apos;s built web
 							applications used by millions of people across the world every
 							day. I&apos;ve spent the last decade building on AWS, and when I
-							started I was as lost as you are today. I created Pro AWS to give
+							started I was as lost as you are today. I created ProAWS to give
 							everyone a path through the maze to unleash our collective
 							creativity.
 						</p>
@@ -90,7 +90,7 @@ That's where Pro AWS comes in. This isn't a typical AWS course. You won't study 
 					<Image
 						className="absolute bottom-[-66px] left-[calc(50%-66px)]"
 						src={`/assets/proawsdev-badge@2x.png`}
-						alt="Pro AWS Dev"
+						alt="ProAWS Dev"
 						width={133}
 						height={133}
 						quality={100}

@@ -1,4 +1,5 @@
 import { getAbility } from '@/ability'
+import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
@@ -6,6 +7,8 @@ import { inngest } from '@/inngest/inngest.server'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
+
+import { userSchema } from '@coursebuilder/core/schemas'
 
 type Role = 'admin' | 'user'
 
@@ -104,6 +107,7 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
+		emailProvider,
 	],
 	pages: {
 		signIn: '/login',
@@ -115,11 +119,49 @@ export const authOptions: NextAuthConfig = {
 export const {
 	handlers: { GET, POST },
 	auth,
+	signIn,
 } = NextAuth(authOptions)
 
 export const getServerAuthSession = async () => {
 	const session = await auth()
+	const user = userSchema.optional().nullable().parse(session?.user)
 	const ability = getAbility({ user: session?.user })
 
-	return { session, ability }
+	return { session: { ...session, user }, ability }
+}
+
+export type Provider = {
+	id: string
+	name: string
+	type: string
+	style: {
+		logo: string
+		bg: string
+		text: string
+	}
+	signinUrl: string
+}
+
+export function getProviders(): Record<string, Provider> | null {
+	const providerKeys: (keyof Provider)[] = ['id', 'name', 'type', 'style']
+	return authOptions.providers.reduce((acc, provider) => {
+		return {
+			...acc,
+			// @ts-ignore
+			[provider.id]: {
+				...getKeyValuesFromObject<Provider>(provider, providerKeys),
+				// @ts-ignore
+				signinUrl: `/api/auth/signin/${provider.id}`,
+			},
+		}
+	}, {})
+}
+
+function getKeyValuesFromObject<T>(obj: any, keys: (keyof T)[]): T {
+	return keys.reduce((acc, key) => {
+		if (obj[key]) {
+			acc[key] = obj[key]
+		}
+		return acc
+	}, {} as T)
 }

@@ -4,7 +4,7 @@ import config from '@/config'
 export default function manifest(): MetadataRoute.Manifest {
 	return {
 		name: config.defaultTitle,
-		short_name: 'Pro AWS',
+		short_name: 'ProAWS',
 		description: config.description,
 		start_url: '/',
 		display: 'standalone',

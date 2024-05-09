@@ -21,7 +21,7 @@ export const userCreated = inngest.createFunction(
 	async ({ event, step }) => {
 		const email = {
 			body: `{{user.email}} signed up.`,
-			subject: 'Pro AWS Signup from {{user.email}}',
+			subject: 'ProAWS Signup from {{user.email}}',
 		}
 
 		const { preferenceType, preferenceChannel } = await step.run(

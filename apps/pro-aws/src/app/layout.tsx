@@ -21,7 +21,7 @@ import { Toaster } from '@coursebuilder/ui/primitives/toaster'
 
 export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_URL),
-	title: 'Pro AWS by Adam Elmore',
+	title: 'ProAWS by Adam Elmore',
 	description: config.description,
 	icons: [
 		{ rel: 'icon', sizes: 'any', url: '/favicon.ico' },
