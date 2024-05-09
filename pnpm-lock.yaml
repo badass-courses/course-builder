@@ -729,6 +729,9 @@ importers:
       '@coursebuilder/adapter-drizzle':
         specifier: 0.2.0
         version: link:../../packages/adapter-drizzle
+      '@coursebuilder/commerce-next':
+        specifier: ^0.0.3
+        version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 0.2.0
         version: link:../../packages/core

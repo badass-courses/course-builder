@@ -1,6 +1,7 @@
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { openaiProvider } from '@/coursebuilder/openai-provider'
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { transcriptProvider } from '@/coursebuilder/transcript-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
@@ -20,6 +21,7 @@ export const courseBuilderConfig: NextCourseBuilderConfig = {
 		emailListProvider,
 		openaiProvider,
 		emailProvider,
+		stripeProvider,
 	],
 	basePath: '/api/coursebuilder',
 	callbacks: {

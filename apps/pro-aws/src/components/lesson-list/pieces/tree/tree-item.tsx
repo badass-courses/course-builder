@@ -8,7 +8,6 @@ import React, {
 	useState,
 } from 'react'
 import { useRouter } from 'next/navigation'
-import { cn } from '@/utils/cn'
 import {
 	Instruction,
 	ItemMode,
@@ -42,8 +41,8 @@ function ChildIcon() {
 }
 
 function GroupIcon({ isOpen }: { isOpen: boolean }) {
-	const Icon = isOpen ? '–' : '+'
-	return <span className="">{Icon}</span>
+	const Icon = isOpen ? '⬇️' : '➡️'
+	return <span className="text-neutral-500">{Icon}</span>
 }
 
 function Icon({ item }: { item: TreeItemType }) {
@@ -54,7 +53,9 @@ function Icon({ item }: { item: TreeItemType }) {
 }
 
 function Preview({ item }: { item: TreeItemType }) {
-	return <div className="bg-background/80">Item {item.id}</div>
+	return (
+		<div className="rounded-s bg-red-300 p-[var(--grid)]">Item {item.id}</div>
+	)
 }
 
 function getParentLevelOfInstruction(instruction: Instruction): number {
@@ -316,7 +317,7 @@ const TreeItem = memo(function TreeItem({
 		<Fragment>
 			<div
 				className={
-					state === 'idle' ? `hover:bg-secondary cursor-pointer py-2` : ''
+					state === 'idle' ? `cursor-pointer rounded-s hover:bg-blue-100` : ''
 				}
 				style={{ position: 'relative' }}
 			>
@@ -330,8 +331,10 @@ const TreeItem = memo(function TreeItem({
 							: () => {
 									if (rootResource) {
 										console.log(rootResource)
+
 										router.push(
-											`/${pluralize(rootResource?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
+											// @ts-expect-error
+											`/${pluralize(Object.hasOwn(rootResource, 'type') ? rootResource?.type : rootResource.fields?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
 										)
 									}
 								}
@@ -341,22 +344,24 @@ const TreeItem = memo(function TreeItem({
 					style={{ paddingLeft: level * indentPerLevel }}
 				>
 					<span
-						className={cn(
-							'flex flex-row items-center gap-2 rounded bg-transparent px-2 text-left',
-							{
-								'opacity-40': state === 'dragging',
-								transparent: state === 'parent-of-instruction',
-							},
-						)}
+						className={`flex flex-row items-center rounded-s bg-transparent p-[var(--grid)] pr-40 ${
+							state === 'dragging'
+								? `opacity-40`
+								: state === 'parent-of-instruction'
+									? `transparent`
+									: ``
+						}`}
 					>
 						<Icon item={item} />
-						<span className="m-0">{item.label ?? item.id}</span>
-						{/* <small className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap text-left">
+						<span className="m-0 text-neutral-500">
+							{item.label ?? item.id}
+						</span>
+						<small className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap text-left">
 							{item.type ? <code>{item.type}</code> : null}
 							<code className="text- absolute bottom-0 right-[var(--grid)] text-xs">
 								({mode})
 							</code>
-						</small> */}
+						</small>
 					</span>
 					{instruction ? (
 						<span
