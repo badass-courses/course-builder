@@ -1021,8 +1021,10 @@ export function mySqlDrizzleAdapter(
 				where: eq(contentResource.id, nextResourceId as string),
 			})
 
-			const parsedNextResource =
-				ContentResourceSchema.nullable().parse(nextResource)
+			const parsedNextResource = ContentResourceSchema.nullable()
+				.optional()
+				.default(null)
+				.parse(nextResource)
 
 			const parsedProgress = z
 				.array(resourceProgressSchema)
