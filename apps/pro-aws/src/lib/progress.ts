@@ -152,7 +152,7 @@ export async function getModuleProgressForUser(
 	moduleIdOrSlug: string,
 ): Promise<ModuleProgress> {
 	const { session } = await getServerAuthSession()
-	if (session) {
+	if (session.user) {
 		const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
 			session.user.id,
 			moduleIdOrSlug,

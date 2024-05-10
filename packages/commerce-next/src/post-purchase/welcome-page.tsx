@@ -121,9 +121,6 @@ export function WelcomePage({
 								initiatePurchaseTransfer={initiatePurchaseTransfer}
 								cancelPurchaseTransfer={cancelPurchaseTransfer}
 								purchaseUserTransfers={purchaseUserTransfers}
-								refetch={async () => {
-									router.refresh()
-								}}
 							/>
 						</div>
 					)}

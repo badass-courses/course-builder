@@ -20,7 +20,7 @@ export const userSignupAdminEmail = inngest.createFunction(
 Cheers,
 
 Adam Elmore`,
-			subject: 'Welcome to Pro AWS!',
+			subject: 'Welcome to ProAWS!',
 		}
 
 		const parsedEmailBody: string = await step.run(

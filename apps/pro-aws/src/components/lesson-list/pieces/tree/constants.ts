@@ -1,1 +1,1 @@
-export const indentPerLevel = 16
+export const indentPerLevel = 32

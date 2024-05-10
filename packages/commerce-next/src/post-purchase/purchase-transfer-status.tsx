@@ -13,7 +13,7 @@ export const PurchaseTransferStatus = ({
 	cancelPurchaseTransfer,
 }: {
 	purchaseUserTransfers: PurchaseUserTransfer[]
-	refetch: () => Promise<any>
+	refetch?: () => Promise<any>
 	initiatePurchaseTransfer: (input: {
 		email: string
 		purchaseUserTransferId: string

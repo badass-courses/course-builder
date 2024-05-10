@@ -13,7 +13,7 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: 'Pro AWS Tutorials by Adam Elmore',
+	title: 'ProAWS Tutorials by Adam Elmore',
 }
 
 export default async function Tutorials() {

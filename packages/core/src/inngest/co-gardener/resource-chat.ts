@@ -60,7 +60,7 @@ export const resourceChatTrigger: CoreInngestTrigger = {
 /**
  * TODO: Cancellation conditions need to be added $$
  */
-export const resourceChat: CoreInngestHandler = async ({
+export const resourceChatHandler: CoreInngestHandler = async ({
 	event,
 	step,
 	openaiProvider,
@@ -281,4 +281,10 @@ export async function resourceChatWorkflowExecutor({
 	})
 
 	return messages
+}
+
+export const resourceChat = {
+	config: resourceChatConfig,
+	trigger: resourceChatTrigger,
+	handler: resourceChatHandler,
 }

@@ -1,4 +1,5 @@
 import { emailProvider } from '@/coursebuilder/email-provider'
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
@@ -79,6 +80,7 @@ const middleware = createInngestMiddleware({
 		apiKey: env.DEEPGRAM_API_KEY,
 		callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
 	}),
+	paymentProvider: stripeProvider,
 	emailProvider,
 	getAuthConfig: () => authOptions,
 })

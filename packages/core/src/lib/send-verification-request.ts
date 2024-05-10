@@ -100,6 +100,10 @@ export const sendVerificationRequest = async (
 		console.log(`\n************************************\n`)
 	}
 
+	console.log(process.env)
+
+	console.log('MEEEEEHHHHHH')
+
 	if (
 		isValidateEmailServerConfig(server) &&
 		process.env.SKIP_EMAIL !== 'true'

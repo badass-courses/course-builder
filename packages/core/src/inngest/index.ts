@@ -1,5 +1,6 @@
 import {
 	RESOURCE_CHAT_REQUEST_EVENT,
+	resourceChat,
 	ResourceChat,
 } from './co-gardener/resource-chat'
 import {
@@ -9,6 +10,7 @@ import {
 import { sendPostPurchaseEmail } from './commerce/send-post-purchase-email'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
+	stripeCheckoutSessionComplete,
 	StripeCheckoutSessionCompleted,
 } from './stripe/event-checkout-session-completed'
 import {
@@ -52,4 +54,6 @@ export type CourseBuilderCoreEvents = {
 export const courseBuilderCoreFunctions = [
 	...coreVideoProcessingFunctions,
 	sendPostPurchaseEmail,
+	stripeCheckoutSessionComplete,
+	resourceChat,
 ]

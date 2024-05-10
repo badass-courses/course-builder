@@ -21,6 +21,7 @@ import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/ad
 import memoizeOne from 'memoize-one'
 import invariant from 'tiny-invariant'
 
+import { Product } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 
 import {
@@ -73,7 +74,7 @@ export default function Tree({
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
-	rootResource: ContentResource
+	rootResource: ContentResource | Product
 }) {
 	const params = useParams<{ module: string }>()
 
@@ -290,22 +291,28 @@ export default function Tree({
 
 	return (
 		<TreeContext.Provider value={context}>
-			<div className="flex flex-col py-4" id="tree" ref={ref}>
-				{data.map((item, index, array) => {
-					const type: ItemMode = (() => {
-						if (item.children.length && item.isOpen) {
-							return 'expanded'
-						}
+			<div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+				<div
+					className="w-px[280] box box-border flex flex-col p-8"
+					id="tree"
+					ref={ref}
+				>
+					{data.map((item, index, array) => {
+						const type: ItemMode = (() => {
+							if (item.children.length && item.isOpen) {
+								return 'expanded'
+							}
 
-						if (index === array.length - 1) {
-							return 'last-in-group'
-						}
+							if (index === array.length - 1) {
+								return 'last-in-group'
+							}
 
-						return 'standard'
-					})()
+							return 'standard'
+						})()
 
-					return <TreeItem item={item} level={0} key={item.id} mode={type} />
-				})}
+						return <TreeItem item={item} level={0} key={item.id} mode={type} />
+					})}
+				</div>
 			</div>
 		</TreeContext.Provider>
 	)

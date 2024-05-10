@@ -1,4 +1,4 @@
-#__next {
+body {
 	[data-pricing-container] {
 		@apply mx-auto flex w-full max-w-screen-lg flex-wrap items-start justify-center gap-5 pb-24;
 		#main-pricing {

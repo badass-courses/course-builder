@@ -7,31 +7,16 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
+import { userSchema } from '@coursebuilder/core/schemas'
 import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import { ContentResource } from '@coursebuilder/core/types'
 
-export const UserSchema = z.object({
-	role: z.string().optional(),
-	id: z.string().optional(),
-	name: z.nullable(z.string().optional()),
-	email: z.string().optional().nullable(),
-	roles: z.array(
-		z.object({
-			id: z.string(),
-			name: z.string(),
-			description: z.string().nullable(),
-			active: z.boolean(),
-			createdAt: z.date().nullable(),
-			updatedAt: z.date().nullable(),
-			deletedAt: z.date().nullable(),
-		}),
-	),
-})
+export const UserSchema = userSchema
 
 export type User = z.infer<typeof UserSchema>
 
-type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage'
-type Subjects = 'Content' | 'User' | ContentResource | User | 'all'
+type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'view'
+type Subjects = 'Content' | 'User' | ContentResource | User | 'all' | 'Invoice'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -203,6 +188,8 @@ export function defineRulesForPurchases(
 		can('create', 'Content')
 		can('read', 'Content')
 	}
+
+	console.log({ rules })
 
 	return rules
 }
