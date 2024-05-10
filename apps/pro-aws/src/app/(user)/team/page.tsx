@@ -68,7 +68,5 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 export default async function TeamPage() {
 	const pageData = await teamPageDataLoader()
 
-	console.log({ pageData })
-
 	return <TeamPageTemplate {...pageData} />
 }
