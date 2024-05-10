@@ -67,7 +67,7 @@ export const env = createEnv({
 		CONVERTKIT_API_KEY: z.string(),
 		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]),
 		EMAIL_SERVER_HOST: z.string().optional(),
-		EMAIL_SERVER_PORT: z.number().optional(),
+		EMAIL_SERVER_PORT: z.string().optional(),
 		POSTMARK_KEY: z.string().optional(),
 	},
 
