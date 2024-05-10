@@ -47,6 +47,7 @@ export const PurchaseTransfer = async ({
 					cancelPurchaseTransfer={cancelPurchaseTransfer}
 					purchaseUserTransfers={purchaseUserTransfers}
 					refetch={async () => {
+						'use server'
 						if (onTransferInitiated) {
 							await onTransferInitiated()
 						}

@@ -735,6 +735,9 @@ importers:
       '@coursebuilder/core':
         specifier: 0.2.0
         version: link:../../packages/core
+      '@coursebuilder/email-templates':
+        specifier: ^1.0.2
+        version: link:../../packages/email-templates
       '@coursebuilder/next':
         specifier: workspace:^
         version: link:../../packages/next

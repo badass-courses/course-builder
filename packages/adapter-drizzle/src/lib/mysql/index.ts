@@ -986,6 +986,9 @@ export function mySqlDrizzleAdapter(
 
 			const user = await client.query.users.findFirst({
 				where: or(eq(users.id, userIdOrEmail), eq(users.email, userIdOrEmail)),
+				with: {
+					roles: true,
+				},
 			})
 
 			if (!user) {
@@ -1388,11 +1391,29 @@ export function mySqlDrizzleAdapter(
 			}
 		},
 		async getUserById(userId: string): Promise<User | null> {
-			return userSchema.nullable().parse(
-				(await client.query.users.findFirst({
+			const user = await client.query.users
+				.findFirst({
 					where: eq(users.id, userId),
-				})) || null,
-			)
+					with: {
+						roles: {
+							with: {
+								role: true,
+							},
+						},
+					},
+				})
+				.then(async (res) => {
+					if (res) {
+						return {
+							...res,
+							roles: res.roles.map((r) => r.role),
+						}
+					}
+				})
+
+			console.log({ user, roles: user?.roles })
+
+			return userSchema.nullable().parse(user ?? null)
 		},
 		async pricesOfPurchasesTowardOneBundle({
 			userId,

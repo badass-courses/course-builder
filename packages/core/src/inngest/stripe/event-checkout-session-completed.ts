@@ -6,6 +6,11 @@ import { User } from '../../schemas'
 import { CheckoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
 import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
 import {
+	sendPostPurchaseEmailConfig,
+	sendPostPurchaseEmailHandler,
+	sendPostPurchaseEmailTrigger,
+} from '../commerce/send-post-purchase-email'
+import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
 	CoreInngestTrigger,
@@ -151,3 +156,9 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 
 		return { purchase, purchaseInfo }
 	}
+
+export const stripeCheckoutSessionComplete = {
+	config: stripeCheckoutSessionCompletedConfig,
+	trigger: stripeCheckoutSessionCompletedTrigger,
+	handler: stripeCheckoutSessionCompletedHandler,
+}

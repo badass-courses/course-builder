@@ -1,7 +1,9 @@
 import { UserSchema } from '@/ability'
 import { db } from '@/db'
-import { roles, userRoles, users } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { accounts, roles, userRoles, users } from '@/db/schema'
+import { getServerAuthSession } from '@/server/auth'
+import { and, eq } from 'drizzle-orm'
+import { isEmpty } from 'lodash'
 import { z } from 'zod'
 
 export const loadUsersForRole = async (role: string) => {
@@ -18,4 +20,18 @@ export const loadUsersForRole = async (role: string) => {
 		.where(eq(roles.name, role))
 
 	return z.array(UserSchema).parse(usersByRole)
+}
+
+export async function githubAccountsForCurrentUser() {
+	const token = await getServerAuthSession()
+	if (!token.session?.user) return false
+
+	const userAccounts = await db.query.accounts.findMany({
+		where: and(
+			eq(accounts.userId, token.session.user.id),
+			eq(accounts.provider, 'github'),
+		),
+	})
+
+	return !isEmpty(userAccounts)
 }

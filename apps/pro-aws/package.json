@@ -45,6 +45,7 @@
 		"@coursebuilder/adapter-drizzle": "0.2.0",
 		"@coursebuilder/commerce-next": "^0.0.3",
 		"@coursebuilder/core": "0.2.0",
+		"@coursebuilder/email-templates": "^1.0.2",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/react-rsc": "workspace:^",
 		"@coursebuilder/ui": "^1.0.11",
