@@ -578,7 +578,6 @@ export async function setup(document: Document, backend: Backend) {
 			if (ctx.path.previous && objectManaged(ctx.path.previous)) return
 
 			const node = treehouseStore.newWorkspace(name)
-			console.log('insert', ctx.node, ctx.path, node)
 			node.parent = ctx.node.parent
 			node.siblingIndex = ctx.node.siblingIndex + 1
 			const p = ctx.path.clone()

@@ -131,8 +131,6 @@ export const addResourceToTutorial = async ({
 	if (!tutorial) {
 		throw new Error(`Tutorial with id ${tutorialId} not found`)
 	}
-	console.log('resource', resource)
-
 	await db.insert(contentResourceResource).values({
 		resourceOfId: tutorial.id,
 		resourceId: resource.id,
@@ -161,11 +159,6 @@ export const updateResourcePosition = async ({
 	resourceId: string
 	position: number
 }) => {
-	console.log('updateResourcePosition', {
-		parentResourceId,
-		resourceId,
-		position,
-	})
 	const result = await db
 		.update(contentResourceResource)
 		.set({ position, resourceOfId: parentResourceId })
@@ -176,7 +169,6 @@ export const updateResourcePosition = async ({
 			),
 		)
 
-	console.log(result)
 	return result
 }
 

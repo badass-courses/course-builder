@@ -152,8 +152,6 @@ export async function updateProduct(input: Product) {
 		throw new Error(`Product not found`)
 	}
 
-	console.log({ currentProduct })
-
 	const merchantProduct = await db.query.merchantProduct.findFirst({
 		where: (merchantProduct, { eq }) => eq(merchantProduct.productId, input.id),
 	})
@@ -161,8 +159,6 @@ export async function updateProduct(input: Product) {
 	if (!merchantProduct || !merchantProduct.identifier) {
 		throw new Error(`Merchant product not found`)
 	}
-
-	console.log({ merchantProduct })
 
 	// TODO: handle upgrades
 

@@ -24,8 +24,6 @@ export async function sendResourceChatMessage({
 		throw new Error('Unauthorized')
 	}
 
-	console.log('sendResourceChatMessage')
-
 	await inngest.send({
 		name: RESOURCE_CHAT_REQUEST_EVENT,
 		data: {
@@ -61,7 +59,7 @@ export async function getChatResource(id: string) {
       JOIN ${contentResource} as videoResources
         ON refs.resourceId = videoResources.id AND videoResources.type = 'videoResource'
     ) as videoResources
-      ON resources.id = videoResources.resourceOfId 
+      ON resources.id = videoResources.resourceOfId
     WHERE
       resources.id = ${id};
   `

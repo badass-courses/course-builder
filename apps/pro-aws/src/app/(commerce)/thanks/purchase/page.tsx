@@ -47,8 +47,6 @@ const getServerSideProps = async (session_id: string) => {
 				courseBuilderAdapter,
 			)
 
-			console.log({ purchaseInfo })
-
 			const {
 				email,
 				chargeIdentifier,
@@ -106,16 +104,6 @@ export default async function ThanksPurchasePage({
 		stripeProductName,
 	} = await getServerSideProps(session_id)
 
-	console.log({
-		purchase,
-		email,
-		seatsPurchased,
-		purchaseType,
-		bulkCouponId,
-		product,
-		stripeProductName,
-	})
-
 	return (
 		<ThanksVerify
 			email={email}
@@ -157,8 +145,6 @@ const ThanksVerify: React.FC<
 			seatsPurchased={seatsPurchased}
 		/>
 	)
-
-	console.log({ purchase })
 
 	switch (purchaseType) {
 		case NEW_INDIVIDUAL_PURCHASE:

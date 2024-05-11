@@ -80,13 +80,9 @@ export class Bus implements IBus {
 	}
 
 	make(name: string, value?: any): INode {
-		console.log(`make() called with name: ${name}, value: ${value}`)
-
 		let parent: INode | null = null
 		if (name.includes('/')) {
-			console.log(`Name includes '/', splitting into parts.`)
 			const parts = name.split('/')
-			console.log(`Parts after split: ${parts.join(', ')}`)
 
 			parent = this.find(parts[0])
 			console.log(

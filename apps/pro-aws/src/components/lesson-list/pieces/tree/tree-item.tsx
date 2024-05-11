@@ -330,8 +330,6 @@ const TreeItem = memo(function TreeItem({
 							? toggleOpen
 							: () => {
 									if (rootResource) {
-										console.log(rootResource)
-
 										router.push(
 											// @ts-expect-error
 											`/${pluralize(Object.hasOwn(rootResource, 'type') ? rootResource?.type : rootResource.fields?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
