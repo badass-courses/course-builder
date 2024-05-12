@@ -126,13 +126,24 @@ export default async function EventPage({
 	return (
 		<div>
 			{event && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+				<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
 					<div />
-					<Button asChild size="sm">
-						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-							Edit
-						</Link>
-					</Button>
+					<div className="flex items-center gap-2">
+						{product && (
+							<Button asChild size="sm">
+								<Link
+									href={`/products/${product?.fields?.slug || product?.id}/edit`}
+								>
+									Edit Product
+								</Link>
+							</Button>
+						)}
+						<Button asChild size="sm">
+							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+								Edit
+							</Link>
+						</Button>
+					</div>
 				</div>
 			) : (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
