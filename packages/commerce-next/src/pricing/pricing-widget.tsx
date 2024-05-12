@@ -27,14 +27,6 @@ export const PricingWidget: React.FC<{
 	commerceProps,
 	pricingDataLoader,
 }) => {
-	console.log({
-		product,
-		quantityAvailable,
-		commerceProps,
-		pricingDataLoader,
-		hasPurchasedCurrentProduct,
-	})
-
 	const pathname = usePathname()
 	const params = useParams()
 	const searchParams = useSearchParams()
@@ -46,7 +38,6 @@ export const PricingWidget: React.FC<{
 		(validCoupon ? couponFromCode?.id : undefined)
 	const ALLOW_PURCHASE = true
 	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
-	console.log('💰', { commerceProps, product })
 	return (
 		<div data-pricing-container="" id="buy" key={product.name}>
 			<Pricing

@@ -62,8 +62,6 @@ export const InviteTeam: React.FC<React.PropsWithChildren<InviteTeamProps>> = ({
 
 	const [canRedeem, setCanRedeem] = React.useState(Boolean(!existingPurchase))
 
-	console.log({ canRedeem, purchase, existingPurchase })
-
 	return (
 		<div data-invite-team="" className={className}>
 			<p data-title="">

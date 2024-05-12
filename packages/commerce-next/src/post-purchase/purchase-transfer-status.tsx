@@ -24,7 +24,6 @@ export const PurchaseTransferStatus = ({
 }) => {
 	const router = useRouter()
 
-	console.log({ purchaseUserTransfers })
 	return (
 		<div id="purchase-transfer">
 			{purchaseUserTransfers.map((purchaseUserTransfer) => {

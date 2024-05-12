@@ -121,8 +121,6 @@ export async function sendServerEmail({
 			adapter,
 		)
 	} catch (error: any) {
-		console.log({ location: 'sendServerEmail', error })
-
 		throw new Error('Unable to sendVerificationRequest')
 	}
 }

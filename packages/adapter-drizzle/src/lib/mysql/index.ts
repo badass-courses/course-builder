@@ -1413,8 +1413,6 @@ export function mySqlDrizzleAdapter(
 					}
 				})
 
-			console.log({ user, roles: user?.roles })
-
 			return userSchema.nullable().parse(user ?? null)
 		},
 		async pricesOfPurchasesTowardOneBundle({
