@@ -329,6 +329,10 @@ const TreeItem = memo(function TreeItem({
 						item.type === 'section'
 							? toggleOpen
 							: () => {
+									if (item.type === 'event') {
+										router.push(`/events/${item.id}/edit`)
+										return
+									}
 									if (rootResource) {
 										router.push(
 											// @ts-expect-error
