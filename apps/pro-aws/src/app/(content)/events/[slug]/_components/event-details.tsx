@@ -2,6 +2,24 @@ import * as React from 'react'
 import { Event } from '@/lib/events'
 import { formatInTimeZone } from 'date-fns-tz'
 
+const getLongGenericTimeZoneIdentifier = (timezoneIdentifier: string) => {
+	// Use Intl API to format the time zone identifier as `longGeneric`, e.g. `Pacific Time`
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+	const formatter = new Intl.DateTimeFormat('en-US', {
+		timeZone: timezoneIdentifier,
+		timeZoneName: 'longGeneric',
+	})
+
+	const now = new Date() // doesn't matter, we just need any date object
+
+	const longGenericTimeZoneIdentifier = formatter
+		.formatToParts(now)
+		.find((part) => part.type === 'timeZoneName')?.value
+
+	// fallback to the original timezone identifier if the long generic one is undefined
+	return longGenericTimeZoneIdentifier || timezoneIdentifier
+}
+
 export const EventDetails: React.FC<{
 	event: Event
 }> = ({ event }) => {
@@ -18,6 +36,8 @@ export const EventDetails: React.FC<{
 			PT,
 			'h:mm a',
 		)}`
+
+	const displayTimeZone = getLongGenericTimeZoneIdentifier(PT)
 
 	interface GroupedEvents {
 		[title: string]: {
@@ -38,7 +58,7 @@ export const EventDetails: React.FC<{
 				<div className="flex items-baseline gap-2 px-5 py-2">
 					{/*<ClockIcon className="relative h-5 w-5 flex-shrink-0 translate-y-1 text-gray-600 dark:text-blue-300" />{' '}*/}
 					<div>
-						{eventTime} (Pacific time){' '}
+						{eventTime} ({displayTimeZone}){''}
 						{timezone && (
 							<a
 								href={timezone}
