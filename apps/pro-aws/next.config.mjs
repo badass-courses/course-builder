@@ -25,6 +25,11 @@ const config = {
 		remotePatterns: [
 			{
 				protocol: 'https',
+				hostname: 'res.cloudinary.com',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'image.mux.com',
 				port: '',
 			},

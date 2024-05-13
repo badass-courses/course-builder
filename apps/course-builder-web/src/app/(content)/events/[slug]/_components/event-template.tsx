@@ -65,6 +65,18 @@ export async function EventTemplate(props: EventPageProps) {
 									product={product}
 									quantityAvailable={quantityAvailable}
 									pricingDataLoader={pricingDataLoader}
+									pricingWidgetOptions={{
+										withImage: true,
+										withGuaranteeBadge: false,
+										isLiveEvent: true,
+										teamQuantityLimit:
+											quantityAvailable >= 0 && quantityAvailable > 5
+												? 5
+												: quantityAvailable < 0
+													? 100
+													: quantityAvailable,
+										isPPPEnabled: false,
+									}}
 								/>
 							</PriceCheckProvider>
 						)}

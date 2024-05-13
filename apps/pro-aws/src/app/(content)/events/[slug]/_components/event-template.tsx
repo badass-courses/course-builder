@@ -55,7 +55,7 @@ export function EventTemplate(props: EventPageProps) {
 				<article className="invert-svg prose dark:prose-invert md:prose-xl prose-code:break-words md:prose-code:break-normal mx-auto w-full max-w-none"></article>
 			</div>
 			<aside className="relative mx-auto w-full max-w-xs">
-				<div className="shadow-soft-xl dark:bg-foreground/5 flex w-full flex-col items-center rounded-xl bg-white pb-5">
+				<div className="shadow-soft-xl dark:bg-foreground/5 flex w-full flex-col items-center rounded-xl bg-white">
 					{product && product.status === 1 && isUpcoming && (
 						<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 							<PricingWidget
@@ -63,6 +63,18 @@ export function EventTemplate(props: EventPageProps) {
 								product={product}
 								quantityAvailable={quantityAvailable}
 								pricingDataLoader={pricingDataLoader}
+								pricingWidgetOptions={{
+									withImage: true,
+									withGuaranteeBadge: false,
+									isLiveEvent: true,
+									teamQuantityLimit:
+										quantityAvailable >= 0 && quantityAvailable > 5
+											? 5
+											: quantityAvailable < 0
+												? 100
+												: quantityAvailable,
+									isPPPEnabled: false,
+								}}
 							/>
 						</PriceCheckProvider>
 					)}

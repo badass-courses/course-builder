@@ -32,6 +32,16 @@ export function ProductPricing({
 						product={product}
 						quantityAvailable={quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
+						pricingWidgetOptions={{
+							withImage: true,
+							withGuaranteeBadge: true,
+							isLiveEvent: product.type === 'live',
+							teamQuantityLimit:
+								quantityAvailable && quantityAvailable > 5
+									? 5
+									: quantityAvailable,
+							isPPPEnabled: product.type !== 'live',
+						}}
 					/>
 				</PriceCheckProvider>
 			)}
