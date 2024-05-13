@@ -264,7 +264,7 @@ export async function resourceChatWorkflowExecutor({
 		return streamingChatPromptExecutor({
 			requestId: resourceId,
 			promptMessages: messages,
-			model: prompt.model || model || 'gpt-4-turbo',
+			model: prompt.model || model || 'gpt-4o',
 			provider: openaiProvider,
 		})
 	})
