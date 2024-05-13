@@ -58,7 +58,7 @@ export const EventDetails: React.FC<{
 				<div className="flex items-baseline gap-2 px-5 py-2">
 					{/*<ClockIcon className="relative h-5 w-5 flex-shrink-0 translate-y-1 text-gray-600 dark:text-blue-300" />{' '}*/}
 					<div>
-						{eventTime} ({displayTimeZone}){''}
+						{eventTime} ({displayTimeZone}){' '}
 						{timezone && (
 							<a
 								href={timezone}
