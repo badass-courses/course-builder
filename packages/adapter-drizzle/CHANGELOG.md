@@ -1,5 +1,17 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.3.0
+
+### Minor Changes
+
+- [`25e4d69`](https://github.com/badass-courses/course-builder/commit/25e4d69928b2ec2fb61946dc327525a86902e027) Thanks [@vojtaholik](https://github.com/vojtaholik)! - next progress resource is nullable
+
+### Patch Changes
+
+- [#176](https://github.com/badass-courses/course-builder/pull/176) [`a939e2b`](https://github.com/badass-courses/course-builder/commit/a939e2baa850a54167c800f83ba32030d6b6da4b) Thanks [@joelhooks](https://github.com/joelhooks)! - commerce functionality for ProAWS
+
+- [#177](https://github.com/badass-courses/course-builder/pull/177) [`2d2be35`](https://github.com/badass-courses/course-builder/commit/2d2be35b50bdce90e111338dd788cb856c952e49) Thanks [@joelhooks](https://github.com/joelhooks)! - adding events as products to proaws
+
 ## 0.2.0
 
 ### Minor Changes

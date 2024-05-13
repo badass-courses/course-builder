@@ -1,5 +1,14 @@
 # @coursebuilder/ui
 
+## 1.0.12
+
+### Patch Changes
+
+- [#177](https://github.com/badass-courses/course-builder/pull/177) [`2d2be35`](https://github.com/badass-courses/course-builder/commit/2d2be35b50bdce90e111338dd788cb856c952e49) Thanks [@joelhooks](https://github.com/joelhooks)! - adding events as products to proaws
+
+- Updated dependencies [[`a939e2b`](https://github.com/badass-courses/course-builder/commit/a939e2baa850a54167c800f83ba32030d6b6da4b), [`2d2be35`](https://github.com/badass-courses/course-builder/commit/2d2be35b50bdce90e111338dd788cb856c952e49)]:
+  - @coursebuilder/core@0.2.1
+
 ## 1.0.11
 
 ### Patch Changes
