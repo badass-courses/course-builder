@@ -6,6 +6,4 @@ import { mysqlTableCreator } from 'drizzle-orm/mysql-core'
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const mysqlTable = mysqlTableCreator(
-	(name) => `${process.env.NEXT_PUBLIC_APP_NAME}_${name}`,
-)
+export const mysqlTable = mysqlTableCreator((name) => `vbd_${name}`)

@@ -23,8 +23,8 @@ const inter = Inter({
 })
 
 export const metadata = {
-	title: 'Course Builder POC',
-	description: 'Course building workflows in the cloud 🌦️',
+	title: 'Value-Based Design',
+	description: '',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 

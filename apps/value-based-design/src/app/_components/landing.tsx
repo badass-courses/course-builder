@@ -15,7 +15,7 @@ export const Landing = () => {
 			{status === 'unauthenticated' ? (
 				<div className="flex flex-col items-center">
 					<h2 className="mb-8 text-xl font-bold text-gray-900 dark:text-gray-100">
-						Want to Learn More About Course Builder?
+						Want to Learn More About Value-Based Design?
 					</h2>
 					<Button
 						data-button=""

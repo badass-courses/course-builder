@@ -132,7 +132,7 @@ export const emailSendBroadcast = inngest.createFunction(
 					unsubscribeLinkUrl: `${env.NEXT_PUBLIC_URL}unsubscribed?userId=${user.id}`,
 					messageType: 'broadcast',
 				},
-				Subject: 'Course Builder Test',
+				Subject: 'Value-Based Design Test',
 				To: user.email,
 				type: 'broadcast',
 				unsubscribeLinkUrl: `${env.NEXT_PUBLIC_URL}unsubscribed?userId=${user.id}`,

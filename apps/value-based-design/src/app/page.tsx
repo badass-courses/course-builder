@@ -4,9 +4,8 @@ import { Landing } from '@/app/_components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
 
 export const metadata: Metadata = {
-	title: 'Course Builder',
-	description:
-		"Course Builder is a framework for building courses. It's not a course platform. It's not a course marketplace. It's all of the pieces that you need to launch your own course platform and marketplace.",
+	title: 'Value-Based Design',
+	description: '',
 }
 
 export default async function PlaygroundPage() {

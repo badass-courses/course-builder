@@ -15,16 +15,8 @@ export const userSignupAdminEmail = inngest.createFunction(
 	},
 	async ({ event, step }) => {
 		const email = {
-			body: `Course Builder is an experimental project by [Joel Hooks](https://x.com/jhooks). 
-          
-Read more about Badass Courses at [https://badass.dev](https://badass.dev).
-
-If you have any questions or feedback, please reply to this email and let me know.
-
-Cheers,
-
-Joel`,
-			subject: 'Welcome to Course Builder!',
+			body: `Value-Based Design`,
+			subject: 'Welcome to Value-Based Design!',
 		}
 
 		const parsedEmailBody: string = await step.run(
