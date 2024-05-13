@@ -66,8 +66,6 @@ async function getChargeDetails(merchantChargeId: string) {
 			? await getProduct(purchase?.productId)
 			: null
 
-		console.log({ charge, product, bulkCoupon, purchase, merchantSession })
-
 		if (product && charge && purchase) {
 			return {
 				state: 'SUCCESS' as const,

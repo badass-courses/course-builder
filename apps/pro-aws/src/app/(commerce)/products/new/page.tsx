@@ -11,8 +11,6 @@ export const dynamic = 'force-dynamic'
 export default async function NewEventPage() {
 	const { ability } = await getServerAuthSession()
 
-	console.log({ ability })
-
 	if (!ability.can('create', 'Content')) {
 		notFound()
 	}

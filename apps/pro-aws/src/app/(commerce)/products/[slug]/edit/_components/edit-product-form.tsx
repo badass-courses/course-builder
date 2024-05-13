@@ -372,7 +372,6 @@ function EditProductFormDesktop({
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
-		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}
@@ -380,7 +379,6 @@ function EditProductFormDesktop({
 
 	const onArchive = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await archiveProduct(values)
-		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}

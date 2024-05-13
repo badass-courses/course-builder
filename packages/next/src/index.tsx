@@ -2,8 +2,6 @@ import { headers } from 'next/headers.js'
 import { NextRequest } from 'next/server.js'
 
 import { CourseBuilder } from '@coursebuilder/core'
-import { CheckoutParams } from '@coursebuilder/core/lib/pricing/stripe-checkout'
-import { ResponseInternal } from '@coursebuilder/core/types'
 
 import { reqWithEnvURL, setEnvDefaults } from './lib/env.js'
 import { initCourseBuilder, NextCourseBuilderConfig } from './lib/index.js'

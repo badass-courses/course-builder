@@ -22,7 +22,6 @@ export function ProductPricing({
 	purchasedProductIds: string[]
 	hasPurchasedCurrentProduct?: boolean
 }) {
-	console.log({ product, quantityAvailable, commerceProps, pricingDataLoader })
 	return (
 		<>
 			{product && (

@@ -84,8 +84,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		setQuantity,
 	} = usePriceCheck()
 
-	console.log({ purchased })
-
 	const [isBuyingForTeam, setIsBuyingForTeam] = React.useState(false)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
 	const { id: productId, name, resources, fields } = product
@@ -128,8 +126,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
 
-	console.log({ formattedPrice, purchaseToUpgrade, quantityAvailable })
-
 	const allowPurchaseWithSpecialCoupon = Boolean(
 		appliedMerchantCoupon &&
 			appliedMerchantCoupon.type === 'special' &&
@@ -158,8 +154,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	>(availableCoupons: T[] = []) {
 		return find<T>(availableCoupons, (coupon) => coupon?.type === 'ppp') || null
 	}
-
-	console.log({ formattedPrice, purchaseToUpgrade, quantityAvailable })
 
 	const availablePPPCoupon = formattedPrice?.availableCoupons.find(
 		(coupon) => coupon?.type === 'ppp',

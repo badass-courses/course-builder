@@ -22,7 +22,6 @@ export type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
 }
 
 function isValidateEmailServerConfig(server: any) {
-	console.log('server', server)
 	return Boolean(
 		server &&
 			server.host &&
@@ -99,10 +98,6 @@ export const sendVerificationRequest = async (
 		console.log(url)
 		console.log(`\n************************************\n`)
 	}
-
-	console.log(process.env)
-
-	console.log('MEEEEEHHHHHH')
 
 	if (
 		isValidateEmailServerConfig(server) &&

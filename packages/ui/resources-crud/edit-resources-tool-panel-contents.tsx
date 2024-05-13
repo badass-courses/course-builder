@@ -35,7 +35,6 @@ export function EditResourcesToolPanelContents({
 	user?: User | null
 	tools?: ResourceTool[]
 }) {
-	console.log({ activeToolId, tools })
 	return (
 		<>
 			{activeToolId === 'assistant' && (

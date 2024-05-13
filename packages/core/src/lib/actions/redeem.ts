@@ -10,11 +10,7 @@ export async function redeem(
 	cookies: Cookie[],
 	options: InternalOptions,
 ): Promise<ResponseInternal> {
-	console.log('💰 redeem')
-
 	if (!options.adapter) throw new Error('Adapter not found')
-
-	console.log('adapter found!')
 
 	const {
 		email: baseEmail,
@@ -32,13 +28,9 @@ export async function redeem(
 
 	if (!baseEmail) throw new Error(`invalid-email-${baseEmail}`)
 
-	console.log('basemail!')
-
 	const currentUser = options.getCurrentUser
 		? await options.getCurrentUser()
 		: null
-
-	console.log('currentUser', currentUser)
 
 	const createdPurchase = await options.adapter.redeemFullPriceCoupon({
 		email: baseEmail,
@@ -47,8 +39,6 @@ export async function redeem(
 		currentUserId: currentUser?.id,
 		redeemingProductId: productIds?.[0],
 	})
-
-	console.log('createdPurchase', createdPurchase)
 
 	if (createdPurchase) {
 		const { purchase, redeemingForCurrentUser } = createdPurchase
@@ -60,9 +50,6 @@ export async function redeem(
 			const user = await options.adapter.getUserById(purchase.userId)
 			if (!user) throw new Error(`unable-to-find-user-with-id-${purchase.id}`)
 			const emailProvider = options.providers.find((p) => p.type === 'email')
-
-			console.log('emailProvider', emailProvider)
-			console.log('options', options)
 
 			try {
 				await sendServerEmail({

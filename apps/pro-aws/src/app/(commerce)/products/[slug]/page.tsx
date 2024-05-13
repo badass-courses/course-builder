@@ -90,7 +90,6 @@ async function ProductCommerce({
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	const product = await productLoader
-	console.log({ product })
 	if (!product) return null
 	const pricingDataLoader = getPricingData(product?.id)
 	let productProps: any
@@ -143,8 +142,6 @@ async function ProductCommerce({
 		commerceProps,
 	}
 
-	console.log({ baseProps })
-
 	productProps = baseProps
 
 	if (user && purchaseForProduct) {
@@ -153,18 +150,6 @@ async function ProductCommerce({
 				purchaseForProduct.id,
 				user.id,
 			)
-
-		console.log({ purchase, existingPurchase })
-		console.log('🎈', {
-			...baseProps,
-			hasPurchasedCurrentProduct: Boolean(purchase),
-			...(Boolean(existingPurchase)
-				? {
-						purchasedProductIds: [existingPurchase?.productId, '72', 69],
-						existingPurchase: existingPurchase,
-					}
-				: {}),
-		})
 
 		productProps = {
 			...baseProps,
@@ -177,8 +162,6 @@ async function ProductCommerce({
 				: {}),
 		}
 	}
-
-	console.log({ productProps })
 
 	return (
 		<Suspense>

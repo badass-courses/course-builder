@@ -189,8 +189,6 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
-	console.log({ rules })
-
 	return rules
 }
 
