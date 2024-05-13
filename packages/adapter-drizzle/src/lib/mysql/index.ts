@@ -986,9 +986,6 @@ export function mySqlDrizzleAdapter(
 
 			const user = await client.query.users.findFirst({
 				where: or(eq(users.id, userIdOrEmail), eq(users.email, userIdOrEmail)),
-				with: {
-					roles: true,
-				},
 			})
 
 			if (!user) {
@@ -1002,11 +999,22 @@ export function mySqlDrizzleAdapter(
 				}
 			}
 
-			const parsedUser = userSchema.parse(user)
+			const parsedUser = userSchema.safeParse(user)
+
+			if (!parsedUser.success) {
+				console.error('Error parsing user', parsedUser.error)
+				return {
+					completedLessons: [],
+					nextResource: null,
+					percentCompleted: 0,
+					completedLessonsCount: 0,
+					totalLessonsCount: parsedModuleResources.data.length,
+				}
+			}
 
 			const userProgress = await client.query.resourceProgress.findMany({
 				where: and(
-					eq(resourceProgress.userId, parsedUser.id),
+					eq(resourceProgress.userId, parsedUser.data.id),
 					isNotNull(resourceProgress.completedAt),
 					inArray(
 						resourceProgress.contentResourceId,
