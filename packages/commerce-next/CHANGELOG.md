@@ -1,5 +1,19 @@
 # @coursebuilder/commerce-next
 
+## 0.0.4
+
+### Patch Changes
+
+- [#176](https://github.com/badass-courses/course-builder/pull/176) [`a939e2b`](https://github.com/badass-courses/course-builder/commit/a939e2baa850a54167c800f83ba32030d6b6da4b) Thanks [@joelhooks](https://github.com/joelhooks)! - commerce functionality for ProAWS
+
+- [`cd702ae`](https://github.com/badass-courses/course-builder/commit/cd702aee9f4ef18a7225729e2cff22cef703d4e3) Thanks [@joelhooks](https://github.com/joelhooks)! - removes the barrel files from commerce
+
+- [#177](https://github.com/badass-courses/course-builder/pull/177) [`2d2be35`](https://github.com/badass-courses/course-builder/commit/2d2be35b50bdce90e111338dd788cb856c952e49) Thanks [@joelhooks](https://github.com/joelhooks)! - adding events as products to proaws
+
+- Updated dependencies [[`a939e2b`](https://github.com/badass-courses/course-builder/commit/a939e2baa850a54167c800f83ba32030d6b6da4b), [`2d2be35`](https://github.com/badass-courses/course-builder/commit/2d2be35b50bdce90e111338dd788cb856c952e49)]:
+  - @coursebuilder/core@0.2.1
+  - @coursebuilder/ui@1.0.12
+
 ## 0.0.3
 
 ### Patch Changes
