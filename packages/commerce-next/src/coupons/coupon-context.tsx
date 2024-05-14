@@ -65,8 +65,6 @@ export const CouponProvider = ({
 	const product = productLoader ? use(productLoader) : undefined
 	const isRedeemable = validCoupon && product && coupon?.isRedeemable
 
-	console.log({ coupon, product })
-
 	return (
 		<CouponContext.Provider value={{ coupon }}>
 			<>

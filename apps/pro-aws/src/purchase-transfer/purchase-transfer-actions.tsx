@@ -226,8 +226,6 @@ export async function getPurchaseTransferForPurchaseId(input: {
 		),
 	})
 
-	console.log(transfers)
-
 	return z.array(purchaseUserTransferSchema).parse(transfers)
 }
 

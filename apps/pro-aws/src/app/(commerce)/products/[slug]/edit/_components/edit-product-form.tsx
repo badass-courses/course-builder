@@ -74,12 +74,16 @@ function ComboboxDemo({
 
 	const { data = [] } = api.contentResources.getAll.useQuery()
 
-	const filteredResources = data.filter(
-		(resource) =>
-			!currentResources
-				.map((currentResource) => currentResource.resourceId)
-				.includes(resource.id),
-	)
+	const filteredResources = data
+		.filter(
+			(resource) =>
+				!currentResources
+					.map((currentResource) => currentResource.resourceId)
+					.includes(resource.id),
+		)
+		.sort(
+			(a, b) => (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0),
+		)
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -136,6 +140,9 @@ export function EditProductForm({ product }: { product: Product }) {
 			fields: {
 				description: product.fields.description ?? '',
 				slug: product.fields.slug ?? '',
+				image: {
+					url: product.fields.image?.url ?? '',
+				},
 			},
 		},
 	})
@@ -277,6 +284,26 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<FormField
 				control={form.control}
+				name="fields.image.url"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Image</FormLabel>
+						<FormDescription>Product Image.</FormDescription>
+						{product.fields.image?.url && (
+							<img
+								src={product.fields.image?.url}
+								alt={'image preview'}
+								className="w-full rounded-md border"
+							/>
+						)}
+						<div className="flex items-center gap-1">
+							<Input {...field} value={field.value?.toString()} />
+						</div>
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
 				name="quantityAvailable"
 				render={({ field }) => {
 					return (
@@ -372,7 +399,6 @@ function EditProductFormDesktop({
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
-		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}
@@ -380,7 +406,6 @@ function EditProductFormDesktop({
 
 	const onArchive = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await archiveProduct(values)
-		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}

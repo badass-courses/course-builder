@@ -152,8 +152,6 @@ export async function updateProduct(input: Product) {
 		throw new Error(`Product not found`)
 	}
 
-	console.log({ currentProduct })
-
 	const merchantProduct = await db.query.merchantProduct.findFirst({
 		where: (merchantProduct, { eq }) => eq(merchantProduct.productId, input.id),
 	})
@@ -161,8 +159,6 @@ export async function updateProduct(input: Product) {
 	if (!merchantProduct || !merchantProduct.identifier) {
 		throw new Error(`Merchant product not found`)
 	}
-
-	console.log({ merchantProduct })
 
 	// TODO: handle upgrades
 
@@ -240,8 +236,9 @@ export async function updateProduct(input: Product) {
 	const updatedStripeProduct = await stripe.products.update(stripeProduct.id, {
 		name: input.name,
 		active: true,
+		images: input.fields.image?.url ? [input.fields.image.url] : undefined,
+		description: input.fields.description || '',
 		metadata: {
-			// TODO: Add image
 			slug: input.fields.slug,
 			lastUpdatedBy: user?.email || user.id,
 		},
@@ -252,7 +249,7 @@ export async function updateProduct(input: Product) {
 		.set({
 			name: input.name,
 			quantityAvailable: input.quantityAvailable,
-			status: input.fields.state === 'published' ? 1 : 0,
+			status: 1,
 			fields: {
 				...input.fields,
 			},

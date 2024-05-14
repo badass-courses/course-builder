@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useParams, usePathname, useSearchParams } from 'next/navigation.js'
+import { usePathname } from 'next/navigation.js'
 
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import type { FormattedPrice } from '@coursebuilder/core/types'
@@ -7,11 +7,21 @@ import type { FormattedPrice } from '@coursebuilder/core/types'
 import { useCoupon } from '../coupons/use-coupon'
 import { CommerceProps } from '../utils/commerce-props'
 import { Pricing } from './pricing'
+import { PricingWidgetOptions } from './pricing-props'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
 	purchaseToUpgrade?: Purchase | null
 	quantityAvailable: number
+}
+
+const defaultPricingWidgetOptions: PricingWidgetOptions = {
+	withImage: true,
+	withGuaranteeBadge: true,
+	isLiveEvent: false,
+	isPPPEnabled: true,
+	teamQuantityLimit: 100,
+	allowTeamPurchase: true,
 }
 
 export const PricingWidget: React.FC<{
@@ -20,33 +30,23 @@ export const PricingWidget: React.FC<{
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
 	hasPurchasedCurrentProduct?: boolean
+	pricingWidgetOptions?: PricingWidgetOptions
 }> = ({
 	hasPurchasedCurrentProduct,
 	product,
 	quantityAvailable,
 	commerceProps,
 	pricingDataLoader,
+	pricingWidgetOptions = defaultPricingWidgetOptions,
 }) => {
-	console.log({
-		product,
-		quantityAvailable,
-		commerceProps,
-		pricingDataLoader,
-		hasPurchasedCurrentProduct,
-	})
-
 	const pathname = usePathname()
-	const params = useParams()
-	const searchParams = useSearchParams()
 	const couponFromCode = commerceProps?.couponFromCode
-	const { redeemableCoupon, RedeemDialogForCoupon, validCoupon } =
-		useCoupon(couponFromCode)
+	const { validCoupon } = useCoupon(couponFromCode)
 	const couponId =
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 	const ALLOW_PURCHASE = true
 	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
-	console.log('💰', { commerceProps, product })
 	return (
 		<div data-pricing-container="" id="buy" key={product.name}>
 			<Pricing
@@ -56,16 +56,8 @@ export const PricingWidget: React.FC<{
 				userId={commerceProps?.userId}
 				product={product}
 				options={{
-					withImage: true,
-					withGuaranteeBadge: true,
-					isLiveEvent: product.type === 'live',
-					teamQuantityLimit:
-						quantityAvailable >= 0 && quantityAvailable > 5
-							? 5
-							: quantityAvailable < 0
-								? 100
-								: quantityAvailable,
-					isPPPEnabled: product.type !== 'live',
+					...defaultPricingWidgetOptions,
+					...pricingWidgetOptions,
 				}}
 				purchased={hasPurchasedCurrentProduct}
 				couponId={couponId}

@@ -20,8 +20,6 @@ export const addVideoResourceToLesson = async ({
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
-	console.log('addVideoResourceToLesson', { videoResourceId, lessonId })
-
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
@@ -36,8 +34,6 @@ export const addVideoResourceToLesson = async ({
 		},
 	})
 
-	console.log('videoResource', videoResource)
-
 	const lesson = await db.query.contentResource.findFirst({
 		where: and(
 			like(contentResource.id, `%${last(lessonId.split('-'))}%`),
@@ -47,8 +43,6 @@ export const addVideoResourceToLesson = async ({
 			resources: true,
 		},
 	})
-
-	console.log('lesson', lesson)
 
 	if (!lesson) {
 		throw new Error(`Lesson with id ${lessonId} not found`)

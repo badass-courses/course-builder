@@ -22,7 +22,6 @@ export function ProductPricing({
 	purchasedProductIds: string[]
 	hasPurchasedCurrentProduct?: boolean
 }) {
-	console.log({ product, quantityAvailable, commerceProps, pricingDataLoader })
 	return (
 		<>
 			{product && (
@@ -33,6 +32,16 @@ export function ProductPricing({
 						product={product}
 						quantityAvailable={quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
+						pricingWidgetOptions={{
+							withImage: true,
+							withGuaranteeBadge: true,
+							isLiveEvent: product.type === 'live',
+							teamQuantityLimit:
+								quantityAvailable && quantityAvailable > 5
+									? 5
+									: quantityAvailable,
+							isPPPEnabled: product.type !== 'live',
+						}}
 					/>
 				</PriceCheckProvider>
 			)}

@@ -45,8 +45,6 @@ export function CreateProductForm({
 		}
 	}
 
-	console.log(form.formState.isValid, form.formState.errors)
-
 	return (
 		<Form {...form}>
 			<form
@@ -57,7 +55,6 @@ export function CreateProductForm({
 					control={form.control}
 					name="name"
 					render={({ field, fieldState }) => {
-						console.log('name', { fieldState })
 						return (
 							<FormItem>
 								<FormLabel className="text-lg font-bold">Name</FormLabel>
@@ -77,7 +74,6 @@ export function CreateProductForm({
 					control={form.control}
 					name="quantityAvailable"
 					render={({ field, fieldState }) => {
-						console.log('quantityAvailable', { fieldState })
 						return (
 							<FormItem>
 								<FormLabel className="text-lg font-bold">
@@ -98,7 +94,6 @@ export function CreateProductForm({
 					control={form.control}
 					name="price"
 					render={({ field, fieldState }) => {
-						console.log('price', { fieldState })
 						return (
 							<FormItem>
 								<FormLabel className="text-lg font-bold">Price</FormLabel>

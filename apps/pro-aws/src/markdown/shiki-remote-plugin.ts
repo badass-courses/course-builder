@@ -104,7 +104,6 @@ export function shikiRemotePlugin(opts: ShikiRemotePluginOptions): Transformer {
 					}),
 				})
 					.then((r) => {
-						console.log('SHIKI SERVICE RESPONSE', r.status, r.statusText)
 						if (r.ok) {
 							return r
 						} else {

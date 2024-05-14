@@ -91,14 +91,12 @@ export default function Tree({
 
 	const saveTreeData = useCallback(async () => {
 		const currentData = lastStateRef.current
-		console.log('currentData', currentData)
 
 		for (const item of currentData) {
 			if (!item.itemData) continue
 			if (item.children.length > 0) {
 				for (const childItem of item.children) {
 					if (!childItem.itemData) continue
-					console.log('childItem', { item, childItem })
 					await updateResourcePosition({
 						currentParentResourceId: childItem.itemData.resourceOfId,
 						parentResourceId: item.itemData.resourceId,
@@ -122,8 +120,6 @@ export default function Tree({
 		}
 
 		saveTreeData()
-
-		console.log('lastAction', lastAction)
 
 		if (lastAction.type === 'modal-move') {
 			const parentName =

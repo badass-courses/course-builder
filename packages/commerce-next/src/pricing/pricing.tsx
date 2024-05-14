@@ -29,6 +29,16 @@ import { usePriceCheck } from './pricing-check-context'
 import { PricingProps } from './pricing-props'
 import { RegionalPricingBox } from './regional-pricing-box'
 
+const defaultPricingOptions = {
+	withImage: true,
+	isPPPEnabled: true,
+	withGuaranteeBadge: true,
+	isLiveEvent: false,
+	saleCountdownRenderer: () => null,
+	teamQuantityLimit: 100,
+	allowTeamPurchase: true,
+}
+
 export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	pricingDataLoader,
 	product,
@@ -57,15 +67,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 			</button>
 		)
 	},
-	options = {
-		withImage: true,
-		isPPPEnabled: true,
-		withGuaranteeBadge: true,
-		isLiveEvent: false,
-		saleCountdownRenderer: () => null,
-		teamQuantityLimit: 100,
-		allowTeamPurchase: true,
-	},
+	options = defaultPricingOptions,
 }) => {
 	const {
 		withImage = true,
@@ -74,7 +76,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		isLiveEvent = false,
 		teamQuantityLimit = 100,
 		allowTeamPurchase = true,
-	} = options
+	} = { ...defaultPricingOptions, ...options }
 	const {
 		addPrice,
 		isDowngrade,
@@ -83,8 +85,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		quantity,
 		setQuantity,
 	} = usePriceCheck()
-
-	console.log({ purchased })
 
 	const [isBuyingForTeam, setIsBuyingForTeam] = React.useState(false)
 	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
@@ -128,8 +128,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
 
-	console.log({ formattedPrice, purchaseToUpgrade, quantityAvailable })
-
 	const allowPurchaseWithSpecialCoupon = Boolean(
 		appliedMerchantCoupon &&
 			appliedMerchantCoupon.type === 'special' &&
@@ -158,8 +156,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	>(availableCoupons: T[] = []) {
 		return find<T>(availableCoupons, (coupon) => coupon?.type === 'ppp') || null
 	}
-
-	console.log({ formattedPrice, purchaseToUpgrade, quantityAvailable })
 
 	const availablePPPCoupon = formattedPrice?.availableCoupons.find(
 		(coupon) => coupon?.type === 'ppp',

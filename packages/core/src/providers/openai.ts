@@ -65,7 +65,7 @@ export default function OpenAIProvider(
 			const response = await openai.createChatCompletion({
 				messages: createChatOptions.messages,
 				stream: true,
-				model: createChatOptions.model || options.defaultModel || 'gpt-4-turbo',
+				model: createChatOptions.model || options.defaultModel || 'gpt-4o',
 			})
 			if (response.status >= 400) {
 				result = await response.json()
