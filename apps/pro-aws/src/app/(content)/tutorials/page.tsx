@@ -82,7 +82,7 @@ async function TutorialsList() {
 								/>
 							</Link>
 						)}
-						<div>
+						<div className="w-full">
 							<CardHeader className="p-0">
 								<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
 									<h2>
