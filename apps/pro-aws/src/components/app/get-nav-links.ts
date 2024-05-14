@@ -11,8 +11,8 @@ export function getNavLinks() {
 			label: 'Tutorials',
 		},
 		// {
-		// 	href: '/tips',
-		// 	label: 'Tips',
+		// 	href: '/events',
+		// 	label: 'Events',
 		// },
 		// {
 		// 	href: '/articles',

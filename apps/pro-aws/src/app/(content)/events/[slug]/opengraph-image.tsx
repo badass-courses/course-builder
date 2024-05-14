@@ -8,22 +8,34 @@ export const runtime = 'edge'
 export const revalidate = 60
 export const contentType = 'image/png'
 
-export default async function TutorialOG({
+export default async function EventOG({
 	params,
 }: {
-	params: { module: string }
+	params: { slug: string }
 }) {
 	const resource = await db.query.contentResource.findFirst({
 		where: and(
 			or(
 				eq(
 					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					params.module,
+					params.slug,
 				),
-				eq(contentResource.id, params.module),
+				eq(contentResource.id, params.slug),
 			),
-			eq(contentResource.type, 'tutorial'),
+			eq(contentResource.type, 'event'),
 		),
+		with: {
+			resources: true,
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
+			},
+		},
 	})
 	const rift = fetch(
 		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
@@ -53,12 +65,13 @@ export default async function TutorialOG({
 								...font('dmsans'),
 							}}
 						>
-							Free Tutorial
+							Live Event
 						</div>
 						<div
-							tw="text-[86px] text-white"
+							tw="text-[70px] text-white max-w-[650px] w-full"
 							style={{
 								...font('rift'),
+								lineHeight: '1',
 							}}
 						>
 							{resource?.fields?.title}
@@ -80,13 +93,9 @@ export default async function TutorialOG({
 							</span>
 						</div>
 					</div>
-					{resource?.fields?.coverImage?.url && (
+					{resource?.fields?.image && (
 						<div tw="flex relative mr-24">
-							<img
-								src={resource?.fields?.coverImage?.url}
-								width={480}
-								height={480}
-							/>
+							<img src={resource?.fields?.image} width={480} height={480} />
 						</div>
 					)}
 				</main>

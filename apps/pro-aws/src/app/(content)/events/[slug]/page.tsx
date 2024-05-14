@@ -1,20 +1,25 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { CldImage } from '@/app/_components/cld-image'
+import { Contributor } from '@/app/_components/contributor'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
+import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
 import { first } from 'lodash'
+import ReactMarkdown from 'react-markdown'
 
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
+import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
-import { EventTemplate } from './_components/event-template'
+import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
 
 export default async function EventPage({
 	params,
@@ -123,39 +128,69 @@ export default async function EventPage({
 		}
 	}
 
+	const { fields } = event
+	const PT = fields.timezone || 'America/Los_Angeles'
+	const eventDate =
+		fields.startsAt &&
+		`${formatInTimeZone(new Date(fields.startsAt), PT, 'MMMM d')}`
+
 	return (
-		<div>
-			{event && ability.can('update', 'Content') ? (
-				<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
-					<div />
-					<div className="flex items-center gap-2">
-						{product && (
-							<Button asChild size="sm">
-								<Link
-									href={`/products/${product?.fields?.slug || product?.id}/edit`}
-								>
-									Edit Product
-								</Link>
-							</Button>
-						)}
-						<Button asChild size="sm">
-							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-								Edit
+		<main className="container relative border-x px-0">
+			{event && ability.can('update', 'Content') && (
+				<div className="absolute right-5 top-5 flex items-center gap-2">
+					{product && (
+						<Button asChild variant="secondary">
+							<Link
+								href={`/products/${product?.fields?.slug || product?.id}/edit`}
+							>
+								Edit Product
 							</Link>
 						</Button>
-					</div>
+					)}
+					<Button asChild variant="secondary">
+						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+							Edit Event
+						</Link>
+					</Button>
 				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
 			)}
 			{eventProps.hasPurchasedCurrentProduct ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					you have a ticket to {event.fields?.title} see you on{' '}
-					{event.fields?.startsAt}
+				<div className="flex w-full items-center border-b px-5 py-5 text-left">
+					You have purchased a ticket to this event. See you on {eventDate}.{' '}
+					<span role="img" aria-label="Waving hand">
+						👋
+					</span>
 				</div>
-			) : (
-				<EventTemplate {...eventProps} />
-			)}
-		</div>
+			) : null}
+			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
+				<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+					<p className="text-primary mb-2 text-base">Live Workshop</p>
+					<h1 className="font-heading text-balance text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
+						{fields.title}
+					</h1>
+					{fields.description && (
+						<h2 className="mt-5 text-balance text-xl">{fields.description}</h2>
+					)}
+					<Contributor className="mt-5" />
+				</div>
+				{fields?.image && (
+					<CldImage width={400} height={400} src={fields.image} alt={''} />
+				)}
+			</div>
+			<div className="flex flex-col-reverse border-t md:flex-row">
+				<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
+					{event.fields.body && (
+						<ReactMarkdown>{event.fields.body}</ReactMarkdown>
+					)}
+				</article>
+				<div
+					data-event={fields.slug}
+					className="flex w-full flex-col gap-3 border-l md:max-w-sm"
+				>
+					<EventPricingWidgetContainer {...eventProps} />
+					<EventDetails event={event} />
+				</div>
+			</div>
+		</main>
 	)
 }

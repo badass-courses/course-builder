@@ -241,13 +241,13 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 				<article>
 					{(isSellingLive || allowPurchase) && !purchased ? (
 						<div data-pricing-product-header="">
-							{product.type === 'live' && quantityAvailable! <= -1 && (
+							{product.type === 'live' && quantityAvailable != -1 && (
 								<div
 									data-quantity-available={
 										isSoldOut ? 'sold-out' : quantityAvailable
 									}
 								>
-									{isSoldOut ? 'Sold out' : `${quantityAvailable} spots left.`}
+									{isSoldOut ? 'Sold out' : `${quantityAvailable} spots left`}
 								</div>
 							)}
 							<p data-name-badge="">{name}</p>
@@ -479,10 +479,8 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 										)}
 										{isLiveEvent && (
 											<span data-live-event="">
-												<Balancer>
-													Tickets to live events are non-refundable, but can be
-													transferred
-												</Balancer>
+												Tickets to live events are non-refundable, but can be
+												transferred
 											</span>
 										)}
 									</fieldset>
