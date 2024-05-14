@@ -984,9 +984,28 @@ export function mySqlDrizzleAdapter(
 				}
 			}
 
-			const user = await client.query.users.findFirst({
-				where: or(eq(users.id, userIdOrEmail), eq(users.email, userIdOrEmail)),
-			})
+			const user = await client.query.users
+				.findFirst({
+					where: or(
+						eq(users.id, userIdOrEmail),
+						eq(users.email, userIdOrEmail),
+					),
+					with: {
+						roles: {
+							with: {
+								role: true,
+							},
+						},
+					},
+				})
+				.then(async (res) => {
+					if (res) {
+						return {
+							...res,
+							roles: res.roles.map((r) => r.role),
+						}
+					}
+				})
 
 			if (!user) {
 				console.error('User not found', userIdOrEmail)
