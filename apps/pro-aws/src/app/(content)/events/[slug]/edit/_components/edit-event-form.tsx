@@ -44,6 +44,7 @@ export function EditEventForm({ event }: { event: Event }) {
 					endsAt: new Date(event.fields.endsAt).toISOString(),
 				}),
 				title: event.fields.title || '',
+				image: event.fields.image || '',
 				description: event.fields.description ?? '',
 				slug: event.fields.slug ?? '',
 				timezone: event.fields.timezone || 'America/Los_Angeles',

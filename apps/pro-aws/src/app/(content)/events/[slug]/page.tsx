@@ -1,4 +1,5 @@
 import * as React from 'react'
+import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
@@ -20,6 +21,28 @@ import { Button } from '@coursebuilder/ui'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
+
+export async function generateMetadata(
+	{
+		params,
+		searchParams,
+	}: {
+		params: { slug: string }
+		searchParams: { [key: string]: string | string[] | undefined }
+	},
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const event = await getEvent(params.slug)
+
+	if (!event) {
+		return parent as Metadata
+	}
+
+	return {
+		title: event.fields.title,
+		description: event.fields.description,
+	}
+}
 
 export default async function EventPage({
 	params,
@@ -174,7 +197,12 @@ export default async function EventPage({
 					<Contributor className="mt-5" />
 				</div>
 				{fields?.image && (
-					<CldImage width={400} height={400} src={fields.image} alt={''} />
+					<CldImage
+						width={400}
+						height={400}
+						src={fields.image}
+						alt={fields?.title}
+					/>
 				)}
 			</div>
 			<div className="flex flex-col-reverse border-t md:flex-row">

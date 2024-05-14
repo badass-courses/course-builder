@@ -100,7 +100,7 @@ async function EventsList() {
 			{events.map((event) => (
 				<li key={event.id}>
 					<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
-						{event?.fields?.coverImage?.url && (
+						{event?.fields?.image && (
 							<Link
 								className="flex-shrink-0"
 								href={`/events/${event.fields.slug || event.id}`}
@@ -109,8 +109,8 @@ async function EventsList() {
 									className="flex-shrink-0"
 									width={200}
 									height={200}
-									src={event.fields.coverImage.url}
-									alt={event.fields.coverImage?.alt || event.fields.title}
+									src={event.fields.image}
+									alt={event.fields.title}
 								/>
 							</Link>
 						)}
