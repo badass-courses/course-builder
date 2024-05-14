@@ -21,32 +21,7 @@ export const getNavigationLinks = (): {
 	href: string
 	icon: () => string
 }[] => {
-	return [
-		{
-			label: 'Articles',
-			icon: () => '',
-			href: '/articles',
-		},
-		{
-			label: 'Tips',
-			icon: () => '',
-			href: '/tips',
-		},
-		// {
-		//   label: (
-		//     <>
-		//       <span className="sm:hidden lg:inline-block">Free</span> Tutorials
-		//     </>
-		//   ),
-		//   icon: () => '',
-		//   href: '/tutorials',
-		// },
-		{
-			label: 'Tutorials',
-			icon: () => '',
-			href: '/tutorials',
-		},
-	]
+	return []
 }
 
 export function Links({ className }: { className?: string }) {
@@ -75,7 +50,7 @@ export function Links({ className }: { className?: string }) {
 						redirect('/brand')
 					}}
 				>
-					Course Builder
+					Value-Based Design
 				</Link>
 				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
 					{navigationLinks.map(({ label, href, icon }) => {
