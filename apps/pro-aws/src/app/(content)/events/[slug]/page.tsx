@@ -152,11 +152,18 @@ export default async function EventPage({
 	}
 
 	const { fields } = event
+	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
 	const eventDate =
-		fields.startsAt &&
-		`${formatInTimeZone(new Date(fields.startsAt), PT, 'MMMM d')}`
-
+		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM d')}`
+	const eventTime =
+		startsAt &&
+		endsAt &&
+		`${formatInTimeZone(new Date(startsAt), PT, 'h:mm a')} — ${formatInTimeZone(
+			new Date(endsAt),
+			PT,
+			'h:mm a',
+		)}`
 	return (
 		<main className="container relative border-x px-0">
 			{event && ability.can('update', 'Content') && (
@@ -187,7 +194,18 @@ export default async function EventPage({
 			) : null}
 			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
 				<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-					<p className="text-primary mb-2 text-base">Live Workshop</p>
+					<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
+						<Link
+							href="/events"
+							className="text-primary w-full hover:underline sm:w-auto"
+						>
+							Live Workshop
+						</Link>
+						<span className="hidden opacity-50 sm:inline-block">・</span>
+						<p>{eventDate}</p>
+						<span className="opacity-50">・</span>
+						<p>{eventTime} (PT)</p>
+					</div>
 					<h1 className="font-heading text-balance text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
 						{fields.title}
 					</h1>
