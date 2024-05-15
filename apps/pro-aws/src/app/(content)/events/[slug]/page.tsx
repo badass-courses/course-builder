@@ -17,7 +17,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
 import { first } from 'lodash'
 import ReactMarkdown from 'react-markdown'
-import { Course, Event as EventMetaSchema } from 'schema-dts'
+import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
@@ -255,7 +255,7 @@ const EventMetadata: React.FC<{ event: Event; quantityAvailable: number }> = ({
 	event,
 	quantityAvailable,
 }) => {
-	const jsonLd: EventMetaSchema = {
+	const eventJsonLd: EventMetaSchema = {
 		'@type': 'Event',
 		name: event?.fields.title,
 		startDate: event?.fields.startsAt as string,
@@ -271,10 +271,29 @@ const EventMetadata: React.FC<{ event: Event; quantityAvailable: number }> = ({
 		url: `${env.NEXT_PUBLIC_URL}/events/${event?.fields.slug}`,
 	}
 
+	const ticketJsonLd: Ticket = {
+		'@type': 'Ticket',
+		name: 'Workshop Ticket',
+		totalPrice:
+			event?.resourceProducts?.[0]?.product?.price?.unitAmount.toString(),
+		priceCurrency: 'USD',
+		url: `${env.NEXT_PUBLIC_URL}/events/${event?.fields.slug}`,
+	}
+
 	return (
-		<script
-			type="application/ld+json"
-			dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-		/>
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(eventJsonLd),
+				}}
+			/>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(ticketJsonLd),
+				}}
+			/>
+		</>
 	)
 }
