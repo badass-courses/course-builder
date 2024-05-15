@@ -18,7 +18,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({
 	email,
 }) => {
 	return (
-		<header className="mx-auto w-full">
+		<section className="mx-auto w-full border-b">
 			<div className="flex flex-col items-center gap-10 sm:flex-row">
 				{product?.fields.image && (
 					<div className="flex flex-shrink-0 items-center justify-center">
@@ -31,8 +31,8 @@ export const ThankYou: React.FC<ThankYouProps> = ({
 					</div>
 				)}
 				<div className="flex w-full flex-col items-start">
-					<h1 className="w-full text-lg font-semibold sm:text-xl lg:text-2xl">
-						<span className="text-primary block pb-4 text-sm font-semibold uppercase">
+					<h1 className="w-full text-lg sm:text-xl lg:text-2xl">
+						<span className="text-primary block pb-4 text-sm uppercase">
 							Success!
 						</span>
 						<span className="w-full text-balance">{title}</span>
@@ -42,6 +42,6 @@ export const ThankYou: React.FC<ThankYouProps> = ({
 					</p>
 				</div>
 			</div>
-		</header>
+		</section>
 	)
 }

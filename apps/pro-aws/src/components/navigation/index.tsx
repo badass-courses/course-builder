@@ -23,7 +23,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background relative z-40 flex h-[var(--nav-height)] items-center justify-between px-0',
+				'bg-background relative z-40 flex h-[var(--nav-height)] items-center justify-between px-0 print:hidden',
 				{
 					'container border-x': !isFullWidth,
 					'border-b': !isEditRoute,

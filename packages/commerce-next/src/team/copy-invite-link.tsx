@@ -1,10 +1,10 @@
 'use client'
 
 import React from 'react'
-import toast from 'react-hot-toast'
 import { useCopyToClipboard } from 'react-use'
 
 import { Button, Input } from '@coursebuilder/ui'
+import { useToast } from '@coursebuilder/ui/primitives/use-toast'
 
 const CopyInviteLink: React.FC<
 	React.PropsWithChildren<{
@@ -15,11 +15,13 @@ const CopyInviteLink: React.FC<
 > = ({ bulkCouponId, disabled = false, className = '' }) => {
 	const [_, setCopied] = useCopyToClipboard()
 	const inviteLink = `${process.env.NEXT_PUBLIC_URL}?code=${bulkCouponId}`
-
+	const { toast } = useToast()
 	return (
 		<div data-copy-invite-link="" className={className}>
-			<label htmlFor="inviteLink">Invite link</label>
-			<div>
+			<label htmlFor="inviteLink" className="inline-flex pb-1 font-medium">
+				Invite link
+			</label>
+			<div className="flex flex-col gap-2">
 				<Input
 					readOnly
 					disabled={disabled}
@@ -34,10 +36,11 @@ const CopyInviteLink: React.FC<
 					className="text-base"
 				/>
 				<Button
+					variant="secondary"
 					type="button"
 					onClick={() => {
 						setCopied(inviteLink)
-						toast.success('Copied')
+						toast({ title: 'Link copied to clipboard' })
 					}}
 					disabled={disabled}
 				>

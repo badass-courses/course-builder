@@ -9,14 +9,14 @@ import {
 	getPurchaseTransferForPurchaseId,
 	initiatePurchaseTransfer,
 } from '@/purchase-transfer/purchase-transfer-actions'
+import { FileText, Mail } from 'lucide-react'
 
-import { InvoiceCard } from '@coursebuilder/commerce-next/invoices/invoice-card'
-import { LoginLink } from '@coursebuilder/commerce-next/post-purchase/post-purchase-login-link'
+import * as InvoiceTeaser from '@coursebuilder/commerce-next/post-purchase/invoice-teaser'
+import * as LoginLink from '@coursebuilder/commerce-next/post-purchase/login-link'
 import { PurchaseTransfer } from '@coursebuilder/commerce-next/post-purchase/post-purchase-purchase-transfer'
-import { ThankYou } from '@coursebuilder/commerce-next/post-purchase/thank-you'
+import * as PurchaseSummary from '@coursebuilder/commerce-next/post-purchase/purchase-summary'
 import { InlineTeamInvite } from '@coursebuilder/commerce-next/team/inline-team-invite'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
-import { Product, Purchase } from '@coursebuilder/core/schemas'
 import {
 	EXISTING_BULK_COUPON,
 	INDIVIDUAL_TO_BULK_UPGRADE,
@@ -87,6 +87,24 @@ const getServerSideProps = async (session_id: string) => {
 	notFound()
 }
 
+const LoginLinkComp: React.FC<{ email: string }> = ({ email }) => {
+	return (
+		<LoginLink.Root email={email} className="border-b pb-5">
+			<LoginLink.Status />
+			<LoginLink.Title />
+			<LoginLink.CTA className="mt-4 inline-flex items-center gap-3">
+				<div className="bg-primary/20 text-primary flex h-10 w-10 items-center justify-center rounded-full p-3">
+					<Mail className="h-4 w-4" />
+				</div>
+				<span>
+					Login link sent to: <strong className="font-semibold">{email}</strong>
+				</span>
+			</LoginLink.CTA>
+			<LoginLink.Description className="text-sm opacity-75 sm:text-base" />
+		</LoginLink.Root>
+	)
+}
+
 export default async function ThanksPurchasePage({
 	searchParams,
 }: {
@@ -102,41 +120,9 @@ export default async function ThanksPurchasePage({
 		bulkCouponId,
 		product,
 		stripeProductName,
-	} = await getServerSideProps(session_id)
+	} = await getServerSideProps(session_id) // MOCK_DATA
 
-	return (
-		<ThanksVerify
-			email={email}
-			seatsPurchased={seatsPurchased}
-			purchaseType={purchaseType}
-			bulkCouponId={bulkCouponId}
-			product={product}
-			stripeProductName={stripeProductName}
-			purchase={purchase}
-		/>
-	)
-}
-
-const ThanksVerify: React.FC<
-	React.PropsWithChildren<{
-		email: string
-		seatsPurchased: number
-		purchaseType: PurchaseType
-		bulkCouponId: string | null
-		product: Product
-		stripeProductName: string | null
-		purchase: Purchase
-	}>
-> = ({
-	email,
-	seatsPurchased,
-	purchaseType,
-	bulkCouponId,
-	product,
-	stripeProductName,
-	purchase,
-}) => {
-	let byline = null
+	let description = null
 	let title = `Thank you for purchasing ${stripeProductName}`
 	let loginLink = null
 	let inviteTeam = (
@@ -148,23 +134,23 @@ const ThanksVerify: React.FC<
 
 	switch (purchaseType) {
 		case NEW_INDIVIDUAL_PURCHASE:
-			loginLink = LoginLink
+			loginLink = <LoginLinkComp email={email} />
 			break
 		case NEW_BULK_COUPON:
-			byline = (
+			description = (
 				<>
 					Your purchase is for <strong>{seatsPurchased}</strong> seat
 					{seatsPurchased > 1 && 's'}. You can always add more seats later when
 					your team grows.
 				</>
 			)
-			loginLink = LoginLink
+			loginLink = <LoginLinkComp email={email} />
 			break
 		case EXISTING_BULK_COUPON:
 			title = `Thank you for purchasing more seats for ${
 				product?.name || process.env.NEXT_PUBLIC_SITE_TITLE
 			}!`
-			byline = (
+			description = (
 				<>
 					Your purchase is for <strong>{seatsPurchased}</strong> additional seat
 					{seatsPurchased > 1 && 's'}. You can always add more seats later when
@@ -177,7 +163,7 @@ const ThanksVerify: React.FC<
 			title = `Thank you for purchasing more seats for ${
 				product?.name || process.env.NEXT_PUBLIC_SITE_TITLE
 			}!`
-			byline = (
+			description = (
 				<>
 					Your purchase is for <strong>{seatsPurchased}</strong> additional seat
 					{seatsPurchased > 1 && 's'}. You can always add more seats later when
@@ -189,37 +175,52 @@ const ThanksVerify: React.FC<
 	}
 
 	return (
-		<>
-			<div>
-				<main className="mx-auto flex w-full max-w-screen-md flex-col gap-8 px-5 py-24">
-					<ThankYou
-						title={title}
-						byline={byline}
-						product={product}
-						email={email}
-					/>
-					{inviteTeam && inviteTeam}
-					{loginLink && loginLink({ email })}
-					<div>
-						<h2 className="pb-2 text-sm font-semibold uppercase tracking-wide">
-							Get your invoice
-						</h2>
-						<InvoiceCard
-							purchase={{ product: { name: stripeProductName }, ...purchase }}
-						/>
+		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+				<PurchaseSummary.Root
+					title={title}
+					description={description}
+					product={product}
+					email={email}
+				>
+					<div className="flex flex-col items-center gap-10 sm:flex-row">
+						<PurchaseSummary.ProductImage />
+						<div className="flex w-full flex-col items-start">
+							<PurchaseSummary.Status />
+							<PurchaseSummary.Title />
+							<PurchaseSummary.Description />
+						</div>
 					</div>
-					<PurchaseTransfer
-						onTransferInitiated={async () => {
-							'use server'
-							revalidatePath('/thanks/purchase')
-						}}
-						cancelPurchaseTransfer={cancelPurchaseTransfer}
-						getPurchaseTransferForPurchaseId={getPurchaseTransferForPurchaseId}
-						initiatePurchaseTransfer={initiatePurchaseTransfer}
-						purchase={purchase}
-					/>
-				</main>
+				</PurchaseSummary.Root>
+				{inviteTeam && inviteTeam}
+				{loginLink && loginLink}
+				<div>
+					<h2 className="text-primary pb-4 text-sm uppercase">Invoice</h2>
+					<InvoiceTeaser.Root
+						className="flex w-full flex-row items-center justify-between sm:gap-10"
+						purchase={{ product: { name: stripeProductName }, ...purchase }}
+					>
+						<InvoiceTeaser.Link className="flex w-full flex-col justify-between sm:flex-row sm:items-center">
+							<InvoiceTeaser.Title className="inline-flex items-center gap-2">
+								<FileText className="h-4 w-4 opacity-75" />
+								<span className="underline">{stripeProductName}</span>
+							</InvoiceTeaser.Title>
+							<InvoiceTeaser.Metadata />
+						</InvoiceTeaser.Link>
+						<InvoiceTeaser.Link className="text-primary flex flex-shrink-0 hover:underline" />
+					</InvoiceTeaser.Root>
+				</div>
+				<PurchaseTransfer
+					onTransferInitiated={async () => {
+						'use server'
+						revalidatePath('/thanks/purchase')
+					}}
+					cancelPurchaseTransfer={cancelPurchaseTransfer}
+					getPurchaseTransferForPurchaseId={getPurchaseTransferForPurchaseId}
+					initiatePurchaseTransfer={initiatePurchaseTransfer}
+					purchase={purchase}
+				/>
 			</div>
-		</>
+		</main>
 	)
 }
