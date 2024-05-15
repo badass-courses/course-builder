@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { env } from '@/env.mjs'
+import type { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
@@ -14,6 +17,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
 import { first } from 'lodash'
 import ReactMarkdown from 'react-markdown'
+import { Course, Event as EventMetaSchema } from 'schema-dts'
 
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
@@ -152,6 +156,7 @@ export default async function EventPage({
 	}
 
 	const { fields } = event
+
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
 	const eventDate =
@@ -167,6 +172,10 @@ export default async function EventPage({
 
 	return (
 		<main className="container relative border-x px-0">
+			<EventMetadata
+				event={event}
+				quantityAvailable={eventProps.quantityAvailable}
+			/>
 			{event && ability.can('update', 'Content') && (
 				<div className="absolute right-5 top-5 flex items-center gap-2">
 					{product && (
@@ -239,5 +248,33 @@ export default async function EventPage({
 				</div>
 			</div>
 		</main>
+	)
+}
+
+const EventMetadata: React.FC<{ event: Event; quantityAvailable: number }> = ({
+	event,
+	quantityAvailable,
+}) => {
+	const jsonLd: EventMetaSchema = {
+		'@type': 'Event',
+		name: event?.fields.title,
+		startDate: event?.fields.startsAt as string,
+		endDate: event?.fields.endsAt as string,
+		description: event?.fields.description,
+		inLanguage: 'en-US',
+		remainingAttendeeCapacity: quantityAvailable,
+		organizer: env.NEXT_PUBLIC_SITE_TITLE,
+		actor: {
+			'@type': 'Person',
+			name: config.author,
+		},
+		url: `${env.NEXT_PUBLIC_URL}/events/${event?.fields.slug}`,
+	}
+
+	return (
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+		/>
 	)
 }

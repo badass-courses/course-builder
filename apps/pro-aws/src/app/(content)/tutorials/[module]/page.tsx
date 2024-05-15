@@ -4,10 +4,14 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import config from '@/config'
+import { env } from '@/env.mjs'
 import { getModuleProgressForUser } from '@/lib/progress'
+import type { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import ReactMarkdown from 'react-markdown'
+import { Course } from 'schema-dts'
 
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
@@ -54,6 +58,7 @@ export default async function ModulePage({ params }: Props) {
 
 	return (
 		<main className="container relative border-x px-0">
+			<TutorialMetadata tutorial={tutorial} />
 			{ability.can('update', 'Content') && (
 				<Button
 					asChild
@@ -124,5 +129,27 @@ export default async function ModulePage({ params }: Props) {
 				</div>
 			</div>
 		</main>
+	)
+}
+
+const TutorialMetadata: React.FC<{ tutorial: Tutorial }> = ({ tutorial }) => {
+	const jsonLd: Course = {
+		'@type': 'Course',
+		name: tutorial?.fields.title,
+		author: config.author,
+		creator: {
+			'@type': 'Person',
+			name: config.author,
+		},
+		description: tutorial?.fields?.description as string,
+		thumbnailUrl: tutorial?.fields?.coverImage?.url as string,
+		url: `${env.NEXT_PUBLIC_URL}/tutorials/${tutorial?.fields.slug}`,
+	}
+
+	return (
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+		/>
 	)
 }
