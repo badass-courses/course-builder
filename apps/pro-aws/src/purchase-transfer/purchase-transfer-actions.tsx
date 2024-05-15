@@ -208,19 +208,13 @@ export async function getPurchaseTransferForPurchaseId(input: {
 	id: string
 }) {
 	const { session } = await getServerAuthSession()
-	if (!session?.user && !input.sourceUserId) {
-		return []
-	}
-
 	const user = session?.user
-
-	if (!user) {
-		return []
-	}
 
 	const transfers = await db.query.purchaseUserTransfer.findMany({
 		where: and(
-			eq(purchaseUserTransferTable.sourceUserId, user.id as string),
+			user && input.sourceUserId === user?.id
+				? eq(purchaseUserTransferTable.sourceUserId, user.id as string)
+				: undefined,
 			eq(purchaseUserTransferTable.purchaseId, input.id as string),
 			gte(purchaseUserTransferTable.expiresAt, new Date()),
 		),
