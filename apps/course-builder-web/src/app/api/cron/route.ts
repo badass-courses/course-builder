@@ -1,9 +1,15 @@
+import { headers } from 'next/headers'
+
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-	await fetch(`${process.env.NEXT_PUBLIC_URL}/api/inngest`, {
-		method: 'PUT',
-	})
+	headers()
+	console.log(
+		'refreshing inngest',
+		await fetch(`${process.env.COURSEBUILDER_URL}/api/inngest`, {
+			method: 'PUT',
+		}),
+	)
 	return new Response(null, {
 		status: 200,
 	})
