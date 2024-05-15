@@ -2,6 +2,7 @@ import { relations, sql } from 'drizzle-orm'
 import {
 	boolean,
 	decimal,
+	index,
 	int,
 	json,
 	MySqlTableFn,
@@ -43,6 +44,10 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 		},
 		(table) => {
 			return {
+				couponIdCodeIndex: index('Coupon_id_code_index').on(
+					table.id,
+					table.code,
+				),
 				couponId: primaryKey({ columns: [table.id], name: 'Coupon_id' }),
 				couponBulkPurchaseIdKey: unique('Coupon_bulkPurchaseId_key').on(
 					table.bulkPurchaseId,

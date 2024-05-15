@@ -18,8 +18,10 @@ import { EventTemplate } from './_components/event-template'
 
 export default async function EventPage({
 	params,
+	searchParams,
 }: {
 	params: { slug: string }
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -44,6 +46,7 @@ export default async function EventPage({
 		const commerceProps = await propsForCommerce({
 			query: {
 				allowPurchase: 'true',
+				...searchParams,
 			},
 			userId: user?.id,
 			products: [productParsed.data],

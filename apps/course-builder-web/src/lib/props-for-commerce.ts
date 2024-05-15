@@ -94,7 +94,7 @@ export async function propsForCommerce({
 	const productIds = products.map((product) => product.id)
 
 	const couponFromCode = await getCouponForCode(
-		query.code as string,
+		(query.code || query.coupon) as string,
 		productIds,
 	)
 	const allowPurchase = true

@@ -816,15 +816,17 @@ export function mySqlDrizzleAdapter(
 			}
 		},
 		async getCoupon(couponIdOrCode: string): Promise<Coupon | null> {
-			return couponSchema.nullable().parse(
-				await client
-					.select()
-					.from(coupon)
-					.where(
-						or(eq(coupon.id, couponIdOrCode), eq(coupon.code, couponIdOrCode)),
-					)
-					.then((res) => res[0] ?? null),
-			)
+			const loadedCoupon =
+				(await client.query.coupon.findFirst({
+					where: or(
+						eq(coupon.id, couponIdOrCode),
+						eq(coupon.code, couponIdOrCode),
+					),
+				})) || null
+
+			logger.debug('loadedCoupon', { loadedCoupon })
+
+			return couponSchema.nullable().parse(loadedCoupon)
 		},
 		async getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
