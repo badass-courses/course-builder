@@ -7,10 +7,10 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
-import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { count, eq } from 'drizzle-orm'
 
+import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
@@ -94,14 +94,17 @@ async function ProductCommerce({
 	const pricingDataLoader = getPricingData(product?.id)
 	let productProps: any
 
-	let commerceProps = await propsForCommerce({
-		query: {
-			...searchParams,
-			allowPurchase: 'true',
+	let commerceProps = await propsForCommerce(
+		{
+			query: {
+				...searchParams,
+				allowPurchase: 'true',
+			},
+			userId: user?.id,
+			products: [product],
 		},
-		userId: user?.id,
-		products: [product],
-	})
+		courseBuilderAdapter,
+	)
 
 	const { count: purchaseCount } = await db
 		.select({ count: count() })

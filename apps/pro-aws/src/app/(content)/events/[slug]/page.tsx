@@ -11,7 +11,6 @@ import { env } from '@/env.mjs'
 import type { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
-import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
@@ -19,6 +18,7 @@ import { first } from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
+import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
@@ -76,14 +76,17 @@ export default async function EventPage({
 
 		const pricingDataLoader = getPricingData(product?.id)
 
-		const commerceProps = await propsForCommerce({
-			query: {
-				allowPurchase: 'true',
-				...searchParams,
+		const commerceProps = await propsForCommerce(
+			{
+				query: {
+					allowPurchase: 'true',
+					...searchParams,
+				},
+				userId: user?.id,
+				products: [productParsed.data],
 			},
-			userId: user?.id,
-			products: [productParsed.data],
-		})
+			courseBuilderAdapter,
+		)
 
 		const { count: purchaseCount } = await db
 			.select({ count: count() })

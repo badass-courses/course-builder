@@ -213,7 +213,7 @@ export async function stripeCheckout({
 			} = params
 
 			errorRedirectUrl = config.errorRedirectUrl
-			const cancelUrl = config.cancelUrl
+			const cancelUrl = params.cancelUrl || config.cancelUrl
 
 			const quantity = Number(queryQuantity)
 

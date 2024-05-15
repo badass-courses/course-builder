@@ -1,13 +1,12 @@
 import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
-import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
-import { eq } from 'drizzle-orm'
 import { find } from 'lodash'
 import { z } from 'zod'
 
+import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { formatPricesForProduct } from '@coursebuilder/core'
 import {
 	Coupon,
@@ -223,10 +222,7 @@ export const pricingRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			const token = await getServerAuthSession()
 
-			// TODO: this is a temporary fix for the product status
-			const products = await db.query.products.findMany({
-				where: (products, { eq }) => eq(products.status, 1),
-			})
+			const products = await db.query.products.findMany()
 
 			const inputProduct = input.productId
 				? await db.query.products.findFirst({
@@ -235,13 +231,16 @@ export const pricingRouter = createTRPCRouter({
 					})
 				: undefined
 
-			const props = await propsForCommerce({
-				query: input,
-				userId: token?.session?.user?.id,
-				products: z
-					.array(productSchema)
-					.parse(inputProduct ? [inputProduct] : products),
-			})
+			const props = await propsForCommerce(
+				{
+					query: input,
+					userId: token?.session?.user?.id,
+					products: z
+						.array(productSchema)
+						.parse(inputProduct ? [inputProduct] : products),
+				},
+				courseBuilderAdapter,
+			)
 			return props
 		}),
 	formatted: publicProcedure
