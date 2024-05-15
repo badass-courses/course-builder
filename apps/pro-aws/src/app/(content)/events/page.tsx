@@ -29,8 +29,8 @@ export default async function EventIndexPage() {
 
 	return (
 		<>
-			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center lg:border-x">
-				<div className=" w-full max-w-screen-md border-b py-16 md:border-dashed">
+			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
+				<div className=" w-full max-w-screen-md border-b px-5 py-16 md:border-dashed">
 					<h1 className="font-heading text-center text-5xl font-bold">
 						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 							Live
@@ -51,31 +51,6 @@ export default async function EventIndexPage() {
 					aria-hidden="true"
 				/>
 			</main>
-			{/* <div>
-			{ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button asChild className="h-7">
-						<Link href={`/events/new`}>New Event</Link>
-					</Button>
-				</div>
-			) : null}
-			<div className="flex flex-col space-y-4 p-5 sm:p-10">
-				<h2 className="text-lg font-bold">Events</h2>
-				{events.map((event) => (
-					<Card key={event.id}>
-						<CardHeader>
-							<CardTitle>
-								<Link href={`/events/${event.fields?.slug || event.id}`}>
-									{event.fields?.title}
-								</Link>
-							</CardTitle>
-						</CardHeader>
-						<CardContent></CardContent>
-					</Card>
-				))}
-			</div>
-		</div> */}
 		</>
 	)
 }
@@ -112,7 +87,7 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 md:px-8">
+		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 px-8 md:px-8">
 			{publicEvents.length === 0 && <p>There are no public events.</p>}
 			{events.map((event) => {
 				const { fields } = event

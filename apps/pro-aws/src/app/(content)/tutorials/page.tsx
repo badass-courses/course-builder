@@ -23,8 +23,8 @@ export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center lg:border-x">
-			<div className=" w-full max-w-screen-md border-b py-16 md:border-dashed">
+		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
+			<div className="w-full max-w-screen-md border-b px-5 py-16 md:border-dashed">
 				<h1 className="font-heading text-center text-5xl font-bold">
 					<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 						Free
@@ -63,7 +63,7 @@ async function TutorialsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 md:px-8">
+		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 px-8 md:px-8">
 			{publicTutorials.length === 0 && <p>There are no public tutorials.</p>}
 			{tutorials.map((tutorial) => (
 				<li key={tutorial.id}>
