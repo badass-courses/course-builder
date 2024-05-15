@@ -85,14 +85,12 @@ async function TutorialsList() {
 						<div className="w-full">
 							<CardHeader className="p-0">
 								<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
-									<h2>
-										<Link
-											href={`/tutorials/${tutorial.fields.slug || tutorial.id}`}
-											className="w-full text-balance hover:underline"
-										>
-											{tutorial.fields.title}
-										</Link>
-									</h2>
+									<Link
+										href={`/tutorials/${tutorial.fields.slug || tutorial.id}`}
+										className="w-full text-balance hover:underline"
+									>
+										{tutorial.fields.title}
+									</Link>
 								</CardTitle>
 							</CardHeader>
 							{tutorial.fields.description && (

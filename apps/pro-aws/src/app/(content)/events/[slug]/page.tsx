@@ -155,7 +155,7 @@ export default async function EventPage({
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
 	const eventDate =
-		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM d')}`
+		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 	const eventTime =
 		startsAt &&
 		endsAt &&
@@ -164,6 +164,7 @@ export default async function EventPage({
 			PT,
 			'h:mm a',
 		)}`
+
 	return (
 		<main className="container relative border-x px-0">
 			{event && ability.can('update', 'Content') && (

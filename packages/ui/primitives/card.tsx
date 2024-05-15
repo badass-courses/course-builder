@@ -37,12 +37,12 @@ const CardTitle = React.forwardRef<
 	<h3
 		ref={ref}
 		className={cn(
-			'text-lg font-semibold leading-none tracking-tight',
+			'text-balance text-lg font-semibold leading-none tracking-tight',
 			className,
 		)}
 		{...props}
 	>
-		<Balancer>{children}</Balancer>
+		{children}
 	</h3>
 ))
 CardTitle.displayName = 'CardTitle'

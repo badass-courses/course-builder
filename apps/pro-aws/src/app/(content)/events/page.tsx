@@ -5,8 +5,11 @@ import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
+import { EventSchema } from '@/lib/events'
 import { getServerAuthSession } from '@/server/auth'
+import { formatInTimeZone } from 'date-fns-tz'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 import {
 	Button,
@@ -81,8 +84,22 @@ async function EventsList() {
 	const { ability } = await getServerAuthSession()
 	const eventsModule = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'event'),
+		with: {
+			resources: true,
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
+			},
+		},
 	})
-	const events = [...eventsModule].filter((event) => {
+	const parsedEventsModule = z.array(EventSchema).parse(eventsModule)
+
+	const events = [...parsedEventsModule].filter((event) => {
 		if (ability.can('create', 'Content')) {
 			return event
 		} else {
@@ -97,66 +114,85 @@ async function EventsList() {
 	return (
 		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 md:px-8">
 			{publicEvents.length === 0 && <p>There are no public events.</p>}
-			{events.map((event) => (
-				<li key={event.id}>
-					<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
-						{event?.fields?.image && (
-							<Link
-								className="flex-shrink-0"
-								href={`/events/${event.fields.slug || event.id}`}
-							>
-								<CldImage
+			{events.map((event) => {
+				const { fields } = event
+				const { startsAt, endsAt } = fields
+				const PT = fields.timezone || 'America/Los_Angeles'
+				const eventDate =
+					startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
+				const eventTime =
+					startsAt &&
+					endsAt &&
+					`${formatInTimeZone(new Date(startsAt), PT, 'h:mm a')} — ${formatInTimeZone(
+						new Date(endsAt),
+						PT,
+						'h:mm a',
+					)}`
+
+				return (
+					<li key={event.id}>
+						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
+							{event?.fields?.image && (
+								<Link
 									className="flex-shrink-0"
-									width={200}
-									height={200}
-									src={event.fields.image}
-									alt={event.fields.title}
-								/>
-							</Link>
-						)}
-						<div className="w-full">
-							<CardHeader className="p-0">
-								<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
-									<h2>
+									href={`/events/${event.fields.slug || event.id}`}
+								>
+									<CldImage
+										className="flex-shrink-0"
+										width={200}
+										height={200}
+										src={event.fields.image}
+										alt={event.fields.title}
+									/>
+								</Link>
+							)}
+							<div className="w-full">
+								<CardHeader className="mb-2 p-0">
+									<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
 										<Link
 											href={`/events/${event?.fields?.slug || event.id}`}
 											className="w-full text-balance hover:underline"
 										>
 											{event?.fields?.title}
 										</Link>
-									</h2>
-								</CardTitle>
-							</CardHeader>
-							{event?.fields?.description && (
-								<CardContent className="px-0 py-3">
-									<p className="text-muted-foreground text-base">
-										{event?.fields?.description}
-									</p>
-								</CardContent>
-							)}
-							<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
-								<Contributor className="text-sm font-light" />
-								<div className="flex items-center gap-2">
-									{ability.can('create', 'Content') && (
-										<>
-											<span className="text-sm">
-												{event?.fields?.visibility}
-											</span>
-											<Button asChild variant="outline" size="sm">
-												<Link
-													href={`/events/${event?.fields?.slug || event.id}/edit`}
-												>
-													Edit
-												</Link>
-											</Button>
-										</>
-									)}
-								</div>
-							</CardFooter>
-						</div>
-					</Card>
-				</li>
-			))}
+									</CardTitle>
+									<div className="flex items-center gap-1 text-sm">
+										<p>{eventDate}</p>
+										<span className="opacity-50">・</span>
+										<p>{eventTime} (PT)</p>
+									</div>
+								</CardHeader>
+								{event?.fields?.description && (
+									<CardContent className="px-0 py-3">
+										<p className="text-muted-foreground text-base">
+											{event?.fields?.description}
+										</p>
+									</CardContent>
+								)}
+								<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
+									<Contributor className="text-sm font-light" />
+									<div className="flex items-center gap-2">
+										{ability.can('create', 'Content') && (
+											<>
+												<span className="text-sm">
+													{event?.fields?.visibility}
+												</span>
+												<Button asChild variant="outline" size="sm">
+													<Link
+														href={`/events/${event?.fields?.slug || event.id}/edit`}
+													>
+														Edit
+													</Link>
+												</Button>
+											</>
+										)}
+									</div>
+								</CardFooter>
+							</div>
+						</Card>
+					</li>
+				)
+			})}
 		</ul>
 	)
 }
