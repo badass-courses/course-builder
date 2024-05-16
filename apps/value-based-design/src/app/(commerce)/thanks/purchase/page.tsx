@@ -11,7 +11,7 @@ import {
 } from '@/purchase-transfer/purchase-transfer-actions'
 import { FileText, Mail } from 'lucide-react'
 
-import * as InvoiceTeaser from '@coursebuilder/commerce-next/post-purchase/invoice-teaser'
+import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-teaser'
 import * as LoginLink from '@coursebuilder/commerce-next/post-purchase/login-link'
 import * as PurchaseSummary from '@coursebuilder/commerce-next/post-purchase/purchase-summary'
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'

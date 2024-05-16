@@ -119,7 +119,7 @@ const Welcome = async ({
 	const isGithubConnected = await githubAccountsForCurrentUser()
 
 	return (
-		<div>
+		<div className="container border-x">
 			<WelcomePage
 				product={product}
 				purchase={purchase}
