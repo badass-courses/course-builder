@@ -231,15 +231,6 @@ export async function initiatePurchaseTransfer(input: {
 		await courseBuilderAdapter.getPurchaseUserTransferById({
 			id: input.purchaseUserTransferId,
 		})
-	const { session } = await getServerAuthSession()
-
-	if (
-		!session?.user ||
-		(purchaseUserTransfer?.sourceUserId &&
-			purchaseUserTransfer.sourceUserId !== session.user.id)
-	) {
-		throw new Error('No user found')
-	}
 
 	if (!purchaseUserTransfer) {
 		throw new Error('No purchaseUserTransfer found')
