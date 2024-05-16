@@ -273,6 +273,7 @@ const EventMetadata: React.FC<{ event: Event; quantityAvailable: number }> = ({
 		actor: {
 			'@type': 'Person',
 			name: config.author,
+			sameAs: [...config.sameAs],
 		},
 		url: `${env.NEXT_PUBLIC_URL}/events/${event?.fields.slug}`,
 	}

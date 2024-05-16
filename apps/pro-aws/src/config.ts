@@ -22,6 +22,11 @@ const config = {
 		cardType: 'summary_large_image',
 		handle: `@${process.env.NEXT_PUBLIC_PARTNER_TWITTER}`,
 	},
+	sameAs: [
+		`https://adam.dev`,
+		`https://twitter.com/${process.env.NEXT_PUBLIC_PARTNER_TWITTER}`,
+		`https://www.linkedin.com/in/adamdotdev/`,
+	],
 	openGraph: {
 		type: 'website',
 		site_name: process.env.NEXT_PUBLIC_SITE_TITLE,
