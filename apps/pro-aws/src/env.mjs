@@ -71,6 +71,8 @@ export const env = createEnv({
 		EMAIL_SERVER_HOST: z.string().optional(),
 		EMAIL_SERVER_PORT: z.coerce.number().optional(),
 		POSTMARK_KEY: z.string().optional(),
+		SLACK_TOKEN: z.string().optional(),
+		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
 	},
 
 	/**
@@ -145,6 +147,8 @@ export const env = createEnv({
 		POSTMARK_KEY: process.env.POSTMARK_KEY,
 		NEXT_PUBLIC_SITE_TITLE: process.env.NEXT_PUBLIC_SITE_TITLE,
 		NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+		SLACK_TOKEN: process.env.SLACK_TOKEN,
+		SLACK_DEFAULT_CHANNEL_ID: process.env.SLACK_DEFAULT_CHANNEL_ID,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -146,6 +146,20 @@ type PurchaseTransferFormData = {
 	email: string
 }
 
+const Header = ({
+	children,
+	className,
+}: {
+	children?: React.ReactNode
+	className?: string
+}) => {
+	return (
+		<h2 className={cn('text-primary pb-4 text-sm uppercase', className)}>
+			{children || 'Transfer this purchase to another email address'}
+		</h2>
+	)
+}
+
 const Form = ({
 	className,
 	children,
@@ -438,6 +452,7 @@ const Completed = ({ children }: { children?: React.ReactNode }) => {
 
 export {
 	Root,
+	Header,
 	Form,
 	Completed,
 	Initiated,

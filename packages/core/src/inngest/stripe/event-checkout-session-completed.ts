@@ -151,6 +151,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			name: NEW_PURCHASE_CREATED_EVENT,
 			data: {
 				purchaseId: purchase.id,
+				checkoutSessionId: stripeCheckoutSession.id,
 			},
 		})
 

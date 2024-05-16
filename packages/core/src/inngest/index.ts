@@ -7,6 +7,7 @@ import {
 	NEW_PURCHASE_CREATED_EVENT,
 	NewPurchaseCreated,
 } from './commerce/event-new-purchase-created'
+import { sendCreatorSlackNotification } from './commerce/send-creator-slack-notification'
 import { sendPostPurchaseEmail } from './commerce/send-post-purchase-email'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
@@ -55,5 +56,6 @@ export const courseBuilderCoreFunctions = [
 	...coreVideoProcessingFunctions,
 	sendPostPurchaseEmail,
 	stripeCheckoutSessionComplete,
+	sendCreatorSlackNotification,
 	resourceChat,
 ]

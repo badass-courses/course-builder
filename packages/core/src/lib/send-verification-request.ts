@@ -1,5 +1,4 @@
 import process from 'process'
-import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { Theme } from '@auth/core/types'
 import { render } from '@react-email/components'
 import { createTransport } from 'nodemailer'

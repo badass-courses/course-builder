@@ -216,9 +216,6 @@ export default async function ThanksPurchasePage({
 					</InvoiceTeaser.Root>
 				</div>
 				<div>
-					<h2 className="text-primary pb-4 text-sm uppercase">
-						Transfer this purchase to another email address
-					</h2>
 					<PurchaseTransfer.Root
 						onTransferInitiated={async () => {
 							'use server'
@@ -228,6 +225,7 @@ export default async function ThanksPurchasePage({
 						cancelPurchaseTransfer={cancelPurchaseTransfer}
 						initiatePurchaseTransfer={initiatePurchaseTransfer}
 					>
+						<PurchaseTransfer.Header />
 						<PurchaseTransfer.Available>
 							<PurchaseTransfer.Description />
 							<PurchaseTransfer.Form>

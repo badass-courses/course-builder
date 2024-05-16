@@ -5,6 +5,7 @@ import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
 import { PartyProviderConfig } from './partykit'
+import { NotificationProviderConfig } from './slack'
 
 export interface EmailListSubscribeOptions {
 	listId?: string | number
@@ -94,6 +95,7 @@ export type ProviderType =
 	| 'party'
 	| 'checkout'
 	| 'email'
+	| 'notification'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config
@@ -126,6 +128,7 @@ export type Provider<P = any> = (
 			| PaymentsProviderConfig
 			| EmailConfig
 			| NodemailerConfig
+			| NotificationProviderConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -138,6 +141,7 @@ export type Provider<P = any> = (
 			| PaymentsProviderConfig
 			| EmailConfig
 			| NodemailerConfig
+			| NotificationProviderConfig
 	  ) &
 			InternalProviderOptions)
 ) &

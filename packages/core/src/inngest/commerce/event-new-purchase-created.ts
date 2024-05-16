@@ -9,6 +9,7 @@ export type NewPurchaseCreated = {
 
 export const NewPurchaseCreatedEventSchema = z.object({
 	purchaseId: z.string(),
+	checkoutSessionId: z.string(),
 })
 
 export type NewPurchaseCreatedEvent = z.infer<
