@@ -18,7 +18,7 @@ import Stripe from 'stripe'
 
 import { InvoiceCustomText } from '@coursebuilder/commerce-next/invoices/invoice-custom-text'
 import { InvoicePrintButton } from '@coursebuilder/commerce-next/invoices/invoice-print-button'
-import { PurchaseTransferStatus } from '@coursebuilder/commerce-next/post-purchase/purchase-transfer-status'
+import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
 	apiVersion: '2020-08-27',
@@ -266,16 +266,34 @@ const Invoice = async ({
 				</div>
 				{!bulkCoupon && purchaseUserTransfers ? (
 					<div className="py-16 print:hidden">
-						<PurchaseTransferStatus
+						<h2 className="text-primary pb-4 text-sm uppercase">
+							Transfer this purchase to another email address
+						</h2>
+						<PurchaseTransfer.Root
+							onTransferInitiated={async () => {
+								'use server'
+								revalidatePath('/thanks/purchase')
+							}}
+							purchaseUserTransfers={purchaseUserTransfers}
 							cancelPurchaseTransfer={cancelPurchaseTransfer}
 							initiatePurchaseTransfer={initiatePurchaseTransfer}
-							purchaseUserTransfers={purchaseUserTransfers}
-							refetch={async () => {
-								'use server'
-								revalidatePath(`/invoices/${params.merchantChargeId}`)
-								redirect(`/invoices/${params.merchantChargeId}`)
-							}}
-						/>
+						>
+							<PurchaseTransfer.Available>
+								<PurchaseTransfer.Description />
+								<PurchaseTransfer.Form>
+									<PurchaseTransfer.InputLabel />
+									<PurchaseTransfer.InputEmail />
+									<PurchaseTransfer.SubmitButton />
+								</PurchaseTransfer.Form>
+							</PurchaseTransfer.Available>
+							<PurchaseTransfer.Initiated>
+								<PurchaseTransfer.Description />
+								<PurchaseTransfer.Cancel />
+							</PurchaseTransfer.Initiated>
+							<PurchaseTransfer.Completed>
+								<PurchaseTransfer.Description />
+							</PurchaseTransfer.Completed>
+						</PurchaseTransfer.Root>
 					</div>
 				) : null}
 			</main>

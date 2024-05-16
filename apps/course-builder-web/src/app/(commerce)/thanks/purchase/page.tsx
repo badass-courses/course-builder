@@ -13,8 +13,8 @@ import { FileText, Mail } from 'lucide-react'
 
 import * as InvoiceTeaser from '@coursebuilder/commerce-next/post-purchase/invoice-teaser'
 import * as LoginLink from '@coursebuilder/commerce-next/post-purchase/login-link'
-import { PurchaseTransfer } from '@coursebuilder/commerce-next/post-purchase/post-purchase-purchase-transfer'
 import * as PurchaseSummary from '@coursebuilder/commerce-next/post-purchase/purchase-summary'
+import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
 import { InlineTeamInvite } from '@coursebuilder/commerce-next/team/inline-team-invite'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import {
@@ -120,7 +120,12 @@ export default async function ThanksPurchasePage({
 		bulkCouponId,
 		product,
 		stripeProductName,
-	} = await getServerSideProps(session_id) // MOCK_DATA
+	} = await getServerSideProps(session_id)
+
+	const purchaseUserTransfers = await getPurchaseTransferForPurchaseId({
+		id: purchase.id,
+		sourceUserId: purchase.userId || undefined,
+	})
 
 	let description = null
 	let title = `Thank you for purchasing ${stripeProductName}`
@@ -194,7 +199,7 @@ export default async function ThanksPurchasePage({
 				</PurchaseSummary.Root>
 				{inviteTeam && inviteTeam}
 				{loginLink && loginLink}
-				<div>
+				<div className="border-b pb-5">
 					<h2 className="text-primary pb-4 text-sm uppercase">Invoice</h2>
 					<InvoiceTeaser.Root
 						className="flex w-full flex-row items-center justify-between sm:gap-10"
@@ -210,16 +215,36 @@ export default async function ThanksPurchasePage({
 						<InvoiceTeaser.Link className="text-primary flex flex-shrink-0 hover:underline" />
 					</InvoiceTeaser.Root>
 				</div>
-				<PurchaseTransfer
-					onTransferInitiated={async () => {
-						'use server'
-						revalidatePath('/thanks/purchase')
-					}}
-					cancelPurchaseTransfer={cancelPurchaseTransfer}
-					getPurchaseTransferForPurchaseId={getPurchaseTransferForPurchaseId}
-					initiatePurchaseTransfer={initiatePurchaseTransfer}
-					purchase={purchase}
-				/>
+				<div>
+					<h2 className="text-primary pb-4 text-sm uppercase">
+						Transfer this purchase to another email address
+					</h2>
+					<PurchaseTransfer.Root
+						onTransferInitiated={async () => {
+							'use server'
+							revalidatePath('/thanks/purchase')
+						}}
+						purchaseUserTransfers={purchaseUserTransfers}
+						cancelPurchaseTransfer={cancelPurchaseTransfer}
+						initiatePurchaseTransfer={initiatePurchaseTransfer}
+					>
+						<PurchaseTransfer.Available>
+							<PurchaseTransfer.Description />
+							<PurchaseTransfer.Form>
+								<PurchaseTransfer.InputLabel />
+								<PurchaseTransfer.InputEmail />
+								<PurchaseTransfer.SubmitButton />
+							</PurchaseTransfer.Form>
+						</PurchaseTransfer.Available>
+						<PurchaseTransfer.Initiated>
+							<PurchaseTransfer.Description />
+							<PurchaseTransfer.Cancel />
+						</PurchaseTransfer.Initiated>
+						<PurchaseTransfer.Completed>
+							<PurchaseTransfer.Description />
+						</PurchaseTransfer.Completed>
+					</PurchaseTransfer.Root>
+				</div>
 			</div>
 		</main>
 	)

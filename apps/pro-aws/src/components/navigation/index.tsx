@@ -23,7 +23,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background relative z-40 flex h-[var(--nav-height)] items-center justify-between px-0 print:hidden',
+				'bg-background relative z-40 flex h-[var(--nav-height)] items-stretch justify-between px-0 print:hidden',
 				{
 					'container border-x': !isFullWidth,
 					'border-b': !isEditRoute,
@@ -58,7 +58,7 @@ const Navigation = () => {
 					</nav>
 				)}
 			</div>
-			<div className="flex items-center gap-5 pr-3">
+			<div className="flex items-stretch gap-5 pr-3">
 				<User />
 			</div>
 		</header>

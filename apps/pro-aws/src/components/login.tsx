@@ -71,9 +71,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 		<main data-login-template="">
 			{image ? image : null}
 			<h1 data-title="">
-				<Balancer>
-					{title ? title : `Log in to ${env.NEXT_PUBLIC_SITE_TITLE}`}
-				</Balancer>
+				{title ? title : `Log in`}
 				{subtitle && <span data-subtitle="">{subtitle}</span>}
 			</h1>
 			{error === 'Verification' ? (

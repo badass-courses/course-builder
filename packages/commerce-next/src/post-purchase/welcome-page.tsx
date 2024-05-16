@@ -16,7 +16,7 @@ import {
 import { Icon } from '../components'
 import { InvoiceCard } from '../invoices/invoice-card'
 import { InviteTeam } from '../team/invite-team'
-import { PurchaseTransferStatus } from './purchase-transfer-status'
+import * as PurchaseTransfer from './purchase-transfer'
 
 type PersonalPurchase = {
 	id: string
@@ -114,14 +114,33 @@ export function WelcomePage({
 					)}
 					{isTransferAvailable && purchaseUserTransfers && (
 						<div>
-							<h2 className="pb-2 font-semibold uppercase tracking-wide">
+							<h2 className="text-primary pb-4 text-sm uppercase">
 								Transfer this purchase to another email address
 							</h2>
-							<PurchaseTransferStatus
-								initiatePurchaseTransfer={initiatePurchaseTransfer}
-								cancelPurchaseTransfer={cancelPurchaseTransfer}
+							<PurchaseTransfer.Root
+								onTransferInitiated={async () => {
+									router.refresh()
+								}}
 								purchaseUserTransfers={purchaseUserTransfers}
-							/>
+								cancelPurchaseTransfer={cancelPurchaseTransfer}
+								initiatePurchaseTransfer={initiatePurchaseTransfer}
+							>
+								<PurchaseTransfer.Available>
+									<PurchaseTransfer.Description />
+									<PurchaseTransfer.Form>
+										<PurchaseTransfer.InputLabel />
+										<PurchaseTransfer.InputEmail />
+										<PurchaseTransfer.SubmitButton />
+									</PurchaseTransfer.Form>
+								</PurchaseTransfer.Available>
+								<PurchaseTransfer.Initiated>
+									<PurchaseTransfer.Description />
+									<PurchaseTransfer.Cancel />
+								</PurchaseTransfer.Initiated>
+								<PurchaseTransfer.Completed>
+									<PurchaseTransfer.Description />
+								</PurchaseTransfer.Completed>
+							</PurchaseTransfer.Root>
 						</div>
 					)}
 				</div>
