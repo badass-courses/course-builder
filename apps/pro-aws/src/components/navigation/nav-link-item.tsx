@@ -9,6 +9,7 @@ const NavLinkItemSchema = z.object({
 	href: z.string(),
 	label: z.string(),
 	onClick: z.function().optional(),
+	className: z.string().optional(),
 })
 
 export type NavLinkItem = z.infer<typeof NavLinkItemSchema>
@@ -17,6 +18,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	href,
 	label,
 	onClick,
+	className,
 }) => {
 	const LinkOrButton = href ? Link : 'button'
 	const pathname = usePathname()
@@ -30,6 +32,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 					{
 						underline: isActive,
 					},
+					className,
 				)}
 				onClick={() => {
 					track('nav-link-clicked', { label, href })
