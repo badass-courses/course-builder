@@ -92,7 +92,6 @@ export function WelcomePage({
 						</h2>
 						<Share productName={purchase.product?.name || 'this'} />
 					</div>
-
 					{redemptionsLeft && (
 						<div>
 							<h2 className="text-primary pb-4 text-sm uppercase">
@@ -107,7 +106,7 @@ export function WelcomePage({
 						</div>
 					)}
 					{hasCharge && (
-						<div>
+						<div className="border-b pb-5">
 							<h2 className="text-primary pb-4 text-sm uppercase">
 								Get your invoice
 							</h2>
@@ -200,6 +199,7 @@ const Header = ({
 						</div>
 						<Balancer>{purchase?.product?.name || 'a Thing'}</Balancer>
 					</h1>
+
 					{personalPurchase && (
 						<div>
 							<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">

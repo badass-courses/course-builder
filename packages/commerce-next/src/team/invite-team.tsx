@@ -75,7 +75,7 @@ export const InviteTeam: React.FC<React.PropsWithChildren<InviteTeamProps>> = ({
 			</p>
 			{bulkCouponId && (
 				<>
-					<div data-copy-invite-link-container="">
+					<div data-copy-invite-link-container="" className="mt-3">
 						<CopyInviteLink
 							bulkCouponId={bulkCouponId}
 							disabled={!hasRedemptionsLeft}
