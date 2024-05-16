@@ -42,7 +42,7 @@ export const sendPostPurchaseEmailHandler: CoreInngestHandler = async ({
 		throw new NonRetriableError('User not found')
 	}
 
-	return await step.run('send email', async () => {
+	return await step.run('send customer email', async () => {
 		return await sendServerEmail({
 			email: user.email as string,
 			callbackUrl: `${siteRootUrl}/welcome?purchaseId=${purchase.id}`,

@@ -23,6 +23,10 @@ import {
 	MockPartykitProvider,
 	PartyProviderConfig,
 } from '../providers/partykit'
+import {
+	mockSlackProvider,
+	NotificationProviderConfig,
+} from '../providers/slack'
 import { MockStripeProvider } from '../providers/stripe'
 import { PaymentsProviderConfig } from '../types'
 import { CourseBuilderCoreEvents } from './index'
@@ -35,6 +39,7 @@ export interface CoreInngestContext {
 	partyProvider: PartyProviderConfig
 	paymentProvider?: PaymentsProviderConfig
 	emailProvider?: NodemailerConfig
+	notificationProvider?: NotificationProviderConfig
 	getAuthConfig: () => AuthConfig
 	mediaUploadProvider: {
 		deleteFiles: (fileKey: string) => Promise<{ success: boolean }>
@@ -88,6 +93,7 @@ export const coreInngest = new Inngest({
 			partyProvider: MockPartykitProvider,
 			paymentProvider: MockStripeProvider,
 			emailProvider: {} as NodemailerConfig,
+			notificationProvider: mockSlackProvider,
 			getAuthConfig: () => ({}) as AuthConfig,
 			mediaUploadProvider: {
 				deleteFiles: async (_) => Promise.resolve({ success: true }),
