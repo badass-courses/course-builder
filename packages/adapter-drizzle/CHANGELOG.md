@@ -1,5 +1,17 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.4.0
+
+### Minor Changes
+
+- [#178](https://github.com/badass-courses/course-builder/pull/178) [`585bbb6`](https://github.com/badass-courses/course-builder/commit/585bbb68b9768d7dbf73069c45c109ff034c27d0) Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix user getter inside module progress
+
+- [#178](https://github.com/badass-courses/course-builder/pull/178) [`a67618f`](https://github.com/badass-courses/course-builder/commit/a67618fa647a0aafec6cb29d0ef38f74a92eeb76) Thanks [@vojtaholik](https://github.com/vojtaholik)! - safely parse user in module progress getter
+
+### Patch Changes
+
+- [`4e75ba0`](https://github.com/badass-courses/course-builder/commit/4e75ba07396beb7ecf66c1d736fba1c109fa3e9f) Thanks [@joelhooks](https://github.com/joelhooks)! - tweaks for coupons
+
 ## 0.3.0
 
 ### Minor Changes

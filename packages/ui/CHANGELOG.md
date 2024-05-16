@@ -1,5 +1,13 @@
 # @coursebuilder/ui
 
+## 1.0.13
+
+### Patch Changes
+
+- [`1715989`](https://github.com/badass-courses/course-builder/commit/1715989e41a46e4de3f7576c5bded88697157edb) Thanks [@vojtaholik](https://github.com/vojtaholik)! - remove balancer from card title
+
+- [`d70f139`](https://github.com/badass-courses/course-builder/commit/d70f139ba8a77f745843b1e82ce9aa5f6e1d2607) Thanks [@vojtaholik](https://github.com/vojtaholik)! - remove balancer
+
 ## 1.0.12
 
 ### Patch Changes
