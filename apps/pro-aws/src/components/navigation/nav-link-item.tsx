@@ -7,7 +7,7 @@ import { z } from 'zod'
 
 const NavLinkItemSchema = z.object({
 	href: z.string(),
-	label: z.string(),
+	label: z.union([z.string(), z.any()]),
 	onClick: z.function().optional(),
 	className: z.string().optional(),
 })

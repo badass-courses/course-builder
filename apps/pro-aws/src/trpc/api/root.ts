@@ -1,5 +1,6 @@
 import { abilityRouter } from '@/trpc/api/routers/ability'
 import { contentResourceRouter } from '@/trpc/api/routers/contentResources'
+import { eventsRouter } from '@/trpc/api/routers/events'
 import { imageResourceRouter } from '@/trpc/api/routers/imageResource'
 import { pricingRouter } from '@/trpc/api/routers/pricing'
 import { progressRouter } from '@/trpc/api/routers/progress'
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
 	videoResources: videoResourceRouter,
 	pricing: pricingRouter,
 	contentResources: contentResourceRouter,
+	events: eventsRouter,
 })
 
 // export type definition of API
