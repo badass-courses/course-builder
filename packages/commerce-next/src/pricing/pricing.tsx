@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation.js'
 import * as Switch from '@radix-ui/react-switch'
-import { useQuery } from '@tanstack/react-query'
+import { useMachine } from '@xstate/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { find, first } from 'lodash'
 import { CheckCircleIcon } from 'lucide-react'
@@ -13,20 +13,16 @@ import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
 
 import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
-import {
-	ContentResource,
-	ContentResourceResource,
-	FormattedPrice,
-} from '@coursebuilder/core/types'
+import { FormattedPrice } from '@coursebuilder/core/types'
 
 import { BuyMoreSeats } from '../post-purchase/buy-more-seats'
 import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
 import { formatUsd } from '../utils/format-usd'
 import { redirectUrlBuilder } from '../utils/redirect-url-builder'
-import { useDebounce } from '../utils/use-debounce'
 import { PriceDisplay } from './price-display'
 import { usePriceCheck } from './pricing-check-context'
 import { PricingProps } from './pricing-props'
+import { pricingMachine } from './pricing-state-machine'
 import { RegionalPricingBox } from './regional-pricing-box'
 
 const defaultPricingOptions = {
@@ -45,9 +41,8 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	purchased = false,
 	userId,
 	index = 0,
-	bonuses,
-	couponId,
 	couponFromCode,
+	couponId,
 	allowPurchase: generallyAllowPurchase = false,
 	canViewRegionRestriction = false,
 	cancelUrl,
@@ -69,6 +64,16 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	},
 	options = defaultPricingOptions,
 }) => {
+	const [state, send] = useMachine(pricingMachine, {
+		input: {
+			product,
+			couponId,
+		},
+	})
+
+	const formattedPrice = state.context.pricingData
+	const quantity = state.context.quantity
+
 	const {
 		withImage = true,
 		isPPPEnabled = true,
@@ -77,17 +82,8 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		teamQuantityLimit = 100,
 		allowTeamPurchase = true,
 	} = { ...defaultPricingOptions, ...options }
-	const {
-		addPrice,
-		isDowngrade,
-		merchantCoupon,
-		setMerchantCoupon,
-		quantity,
-		setQuantity,
-	} = usePriceCheck()
+	const { isDowngrade, merchantCoupon, setMerchantCoupon } = usePriceCheck()
 
-	const [isBuyingForTeam, setIsBuyingForTeam] = React.useState(false)
-	const debouncedQuantity: number = useDebounce<number>(quantity, 250)
 	const { id: productId, name, resources, fields } = product
 	const { image, action } = fields
 	// const { subscriber, loadingSubscriber } = useConvertkit()
@@ -95,35 +91,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)
 
 	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
-
-	const { data: formattedPrice, status } = useQuery({
-		queryKey: [
-			'prices-formatted',
-			productId,
-			debouncedQuantity,
-			isBuyingForTeam,
-		],
-		queryFn: async () => {
-			return await fetch(
-				`${process.env.NEXT_PUBLIC_URL}/api/coursebuilder/prices-formatted`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						productId,
-						quantity: debouncedQuantity,
-						couponId,
-						merchantCoupon,
-						autoApplyPPP,
-					}),
-				},
-			).then(async (res) => {
-				return ((await res.json()) as FormattedPrice) || null
-			})
-		},
-	})
 
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
@@ -173,7 +140,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		Boolean(availablePPPCoupon || appliedPPPCoupon) &&
 		!purchased &&
 		!isDowngrade(formattedPrice) &&
-		!isBuyingForTeam &&
+		!state.context.isTeamPurchaseActive &&
 		allowPurchaseWith?.pppCoupon
 
 	const pathname = usePathname()
@@ -270,7 +237,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 							) : (
 								<>
 									<PriceDisplay
-										status={status}
+										status={
+											state.value === 'Ready To Buy' ? 'success' : 'pending'
+										}
 										formattedPrice={formattedPrice}
 									/>
 									{isRestrictedUpgrade ? (
@@ -364,7 +333,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 									action={buildStripeCheckoutPath({
 										productId: formattedPrice?.id,
 										couponId: appliedMerchantCoupon?.id,
-										bulk: isBuyingForTeam,
+										bulk: state.context.isTeamPurchaseActive,
 										quantity,
 										userId,
 										upgradeFromPurchaseId:
@@ -385,21 +354,25 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 													role="button"
 													type="button"
 													onClick={() => {
-														setIsBuyingForTeam(false)
-														setQuantity(1)
+														send({
+															type: 'TOGGLE_TEAM_PURCHASE',
+														})
 													}}
 												>
 													For myself
 												</button>
 												<Switch.Root
 													aria-label={
-														isBuyingForTeam ? 'For my team' : 'For myself'
+														state.context.isTeamPurchaseActive
+															? 'For my team'
+															: 'For myself'
 													}
 													onCheckedChange={() => {
-														setIsBuyingForTeam(!isBuyingForTeam)
-														isBuyingForTeam ? setQuantity(1) : setQuantity(5)
+														send({
+															type: 'TOGGLE_TEAM_PURCHASE',
+														})
 													}}
-													checked={isBuyingForTeam}
+													checked={state.context.isTeamPurchaseActive}
 													id="team-switch"
 												>
 													<Switch.Thumb />
@@ -408,15 +381,16 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 													role="button"
 													type="button"
 													onClick={() => {
-														setIsBuyingForTeam(true)
-														setQuantity(5)
+														send({
+															type: 'TOGGLE_TEAM_PURCHASE',
+														})
 													}}
 												>
 													For my team
 												</button>
 											</div>
 										)}
-										{isBuyingForTeam && (
+										{state.context.isTeamPurchaseActive && (
 											<div data-quantity-input="">
 												<div>
 													<label>Team Seats</label>
@@ -425,7 +399,10 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 														aria-label="decrease seat quantity by one"
 														onClick={() => {
 															if (quantity === 1) return
-															setQuantity(quantity - 1)
+															send({
+																type: 'UPDATE_QUANTITY',
+																quantity: quantity - 1,
+															})
 														}}
 													>
 														-
@@ -437,15 +414,18 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 														step={1}
 														onChange={(e) => {
 															const quantity = Number(e.target.value)
-															setMerchantCoupon(undefined)
-															setQuantity(
+															const newQuantity =
 																quantity < 1
 																	? 1
 																	: teamQuantityLimit &&
 																		  quantity > teamQuantityLimit
 																		? teamQuantityLimit
-																		: quantity,
-															)
+																		: quantity
+															setMerchantCoupon(undefined)
+															send({
+																type: 'UPDATE_QUANTITY',
+																quantity: newQuantity,
+															})
 														}}
 														onKeyDown={(e) => {
 															// don't allow decimal
@@ -464,7 +444,10 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 														aria-label="increase seat quantity by one"
 														onClick={() => {
 															if (quantity === 100) return
-															setQuantity(quantity + 1)
+															send({
+																type: 'UPDATE_QUANTITY',
+																quantity: quantity + 1,
+															})
 														}}
 													>
 														+
@@ -495,7 +478,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 								className="my-6 items-center text-base font-medium leading-tight"
 							>
 								{process.env.NEXT_PUBLIC_SITE_TITLE} is not available for
-								purchase yet! We plan to launch in mid October 2023.
+								purchase yet!
 							</div>
 							{/*{!subscriber && !loadingSubscriber && (*/}
 							{/*	<SubscribeForm*/}

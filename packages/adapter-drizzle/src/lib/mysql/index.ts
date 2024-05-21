@@ -3,6 +3,7 @@ import { addSeconds, isAfter } from 'date-fns'
 import {
 	and,
 	asc,
+	count,
 	desc,
 	eq,
 	gte,
@@ -1179,6 +1180,16 @@ export function mySqlDrizzleAdapter(
 					where: eq(products.id, productId),
 				}),
 			)
+		},
+		async getPurchaseCountForProduct(productId: string): Promise<number> {
+			return await client.query.purchases
+				.findMany({
+					where: and(
+						eq(purchaseTable.productId, productId),
+						inArray(purchaseTable.status, ['Valid', 'Restricted']),
+					),
+				})
+				.then((res) => res.length)
 		},
 		async getPurchase(purchaseId: string): Promise<Purchase | null> {
 			const purchase = await client.query.purchases.findFirst({

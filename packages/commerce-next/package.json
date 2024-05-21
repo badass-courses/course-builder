@@ -86,6 +86,7 @@
 		"@react-email/components": "^0.0.16",
 		"@react-email/render": "^0.0.9",
 		"@tanstack/react-query": "^5.25.0",
+		"@xstate/react": "^4.1.1",
 		"clsx": "^2.0.0",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
@@ -106,6 +107,7 @@
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss": "^3.3.3",
 		"uuid": "^9.0.1",
+		"xstate": "^5.13.0",
 		"yup": "^0.32.11",
 		"zod": "^3.22.4"
 	}

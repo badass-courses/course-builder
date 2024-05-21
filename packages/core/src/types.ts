@@ -239,3 +239,15 @@ export type FormattedPrice = {
 	usedCouponId?: string
 	defaultCoupon?: Coupon | null
 }
+
+export type FormatPricesForProductOptions = {
+	productId: string
+	country?: string
+	quantity?: number
+	merchantCouponId?: string
+	ctx: CourseBuilderAdapter
+	upgradeFromPurchaseId?: string
+	userId?: string
+	autoApplyPPP?: boolean
+	usedCouponId?: string
+}
