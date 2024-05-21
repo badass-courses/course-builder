@@ -56,5 +56,5 @@ export const useLiveEventToastNotifier = () => {
 				),
 			})
 		}
-	}, [availableEvents])
+	}, [availableEvents, event, params.slug, toast])
 }
