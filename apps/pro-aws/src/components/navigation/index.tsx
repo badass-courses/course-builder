@@ -8,13 +8,14 @@ import { Menu, X } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 
-import { getNavLinks } from '../app/get-nav-links'
+import { useLiveEventToastNotifier } from '../app/use-live-event-toast-notifier'
+import { useNavLinks } from '../app/use-nav-links'
 import { Logo } from '../logo'
 import { NavLinkItem } from './nav-link-item'
 import { User } from './user'
 
 const Navigation = () => {
-	const links = getNavLinks()
+	const links = useNavLinks()
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
 	const isEditRoute = pathname.includes('/edit')
@@ -24,6 +25,8 @@ const Navigation = () => {
 	const isLessonRoute = params.lesson && params.module
 	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+
+	useLiveEventToastNotifier()
 
 	React.useEffect(() => {
 		setIsMobileMenuOpen(false)
@@ -89,7 +92,7 @@ const MobileNav = ({
 	isMobileMenuOpen: boolean
 	setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
-	const links = getNavLinks()
+	const links = useNavLinks()
 
 	return (
 		<div className="flex items-stretch">
