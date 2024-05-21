@@ -25,6 +25,7 @@ import { Button } from '@coursebuilder/ui'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
+import { EventSidebar } from './_components/event-sidebar'
 
 export async function generateMetadata(
 	{
@@ -245,13 +246,10 @@ export default async function EventPage({
 						<ReactMarkdown>{event.fields.body}</ReactMarkdown>
 					)}
 				</article>
-				<div
-					data-event={fields.slug}
-					className="flex w-full flex-col gap-3 border-l md:max-w-sm"
-				>
+				<EventSidebar>
 					<EventPricingWidgetContainer {...eventProps} />
 					<EventDetails event={event} />
-				</div>
+				</EventSidebar>
 			</div>
 		</main>
 	)
