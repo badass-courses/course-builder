@@ -8,7 +8,7 @@ import { formatUsd } from '../utils/format-usd'
 import { usePriceCheck } from './pricing-check-context'
 
 export type PriceDisplayProps = {
-	status: QueryStatus
+	status: 'success' | 'pending' | 'error'
 	formattedPrice?: FormattedPrice | null
 	className?: string
 }

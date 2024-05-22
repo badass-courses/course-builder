@@ -3,29 +3,36 @@ import { and, assign, fromPromise, setup } from 'xstate'
 import { MerchantCoupon, Product } from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
+export type PricingContextType = {
+	product: Product
+	pricingData: FormattedPrice | null
+	quantity: number
+	isPPPActive: boolean
+	isTeamPurchaseActive: boolean
+	couponId: string | null | undefined
+	country: string
+	activeMerchantCoupon: MerchantCoupon | null | undefined
+	autoApplyPPP: boolean
+	isBuyingMoreSeats: boolean
+}
+
+export type PricingMachingInput = {
+	product: Product
+	quantity?: number
+	couponId?: string | null
+	country?: string
+	autoApplyPPP?: boolean
+}
+
 export const pricingMachine = setup({
 	types: {
-		context: {} as {
-			product: Product
-			pricingData: FormattedPrice | null
-			quantity: number
-			isPPPActive: boolean
-			isTeamPurchaseActive: boolean
-			couponId: string | null
-			country: string
-			activeMerchantCoupon: MerchantCoupon | null | undefined
-		},
-		input: {} as {
-			product: Product
-			quantity?: number
-			couponId?: string | null
-			country?: string
-		},
+		context: {} as PricingContextType,
+		input: {} as PricingMachingInput,
 		events: {} as
-			| { type: 'TOGGLE_PPP' }
 			| { type: 'UPDATE_QUANTITY'; quantity: number }
 			| { type: 'PRICING_DATA_LOADED' }
 			| { type: 'TOGGLE_TEAM_PURCHASE' }
+			| { type: 'TOGGLE_BUYING_MORE_SEATS' }
 			| { type: 'PURCHASE_INITIATED' }
 			| { type: 'SET_MERCHANT_COUPON'; merchantCoupon?: MerchantCoupon },
 	},
@@ -54,7 +61,7 @@ export const pricingMachine = setup({
 						quantity: input.quantity || 1,
 						couponId: input.couponId,
 						merchantCoupon: input.merchantCoupon,
-						autoApplyPPP: input.autoApplyPPP || false,
+						autoApplyPPP: input.autoApplyPPP || true,
 						country: input.country || 'US',
 					}),
 				},
@@ -93,6 +100,8 @@ export const pricingMachine = setup({
 		couponId: input.couponId || null,
 		country: input.country || 'US',
 		activeMerchantCoupon: null,
+		autoApplyPPP: input.autoApplyPPP || true,
+		isBuyingMoreSeats: false,
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
@@ -100,6 +109,7 @@ export const pricingMachine = setup({
 		'Loading Pricing Data': {
 			invoke: {
 				id: 'load-prices',
+				renter: true,
 				input: ({
 					context: {
 						product,
@@ -107,6 +117,7 @@ export const pricingMachine = setup({
 						couponId,
 						country,
 						activeMerchantCoupon,
+						autoApplyPPP,
 					},
 				}: any) => ({
 					productId: product.id,
@@ -114,11 +125,14 @@ export const pricingMachine = setup({
 					couponId,
 					country,
 					merchantCoupon: activeMerchantCoupon,
+					autoApplyPPP,
 				}),
 				src: 'loadFormattedProcess',
 				onDone: {
 					target: 'Ready To Buy',
-					actions: assign({ pricingData: ({ event }) => event.output }),
+					actions: assign({
+						pricingData: ({ event }) => event.output,
+					}),
 				},
 			},
 			on: {
@@ -163,23 +177,17 @@ export const pricingMachine = setup({
 						type: 'canToggleTeamPurchase',
 					},
 				},
-				TOGGLE_PPP: {
-					target: 'Loading Pricing Data',
+				TOGGLE_BUYING_MORE_SEATS: {
 					actions: assign({
-						isPPPActive: ({ context }) => !context.isPPPActive,
+						isBuyingMoreSeats: ({ context }) => !context.isBuyingMoreSeats,
 					}),
-					guard: {
-						type: 'isPPPAvailable',
-					},
 				},
 				SET_MERCHANT_COUPON: {
 					target: 'Loading Pricing Data',
 					actions: assign({
 						activeMerchantCoupon: ({ event }) => event.merchantCoupon,
+						autoApplyPPP: false,
 					}),
-					guard: {
-						type: 'isPPPAvailable',
-					},
 				},
 				UPDATE_QUANTITY: {
 					target: 'Debouncing Quantity',

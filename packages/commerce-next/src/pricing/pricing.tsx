@@ -3,6 +3,7 @@ import { Suspense, use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation.js'
+import { Slot } from '@radix-ui/react-slot'
 import * as Switch from '@radix-ui/react-switch'
 import { useMachine } from '@xstate/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -12,9 +13,10 @@ import pluralize from 'pluralize'
 import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
 
-import { MerchantCoupon } from '@coursebuilder/core/schemas'
+import { MerchantCoupon, Product } from '@coursebuilder/core/schemas'
 import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
 import { FormattedPrice } from '@coursebuilder/core/types'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { BuyMoreSeats } from '../post-purchase/buy-more-seats'
 import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
@@ -23,7 +25,11 @@ import { redirectUrlBuilder } from '../utils/redirect-url-builder'
 import { PriceDisplay } from './price-display'
 import { usePriceCheck } from './pricing-check-context'
 import { PricingProps } from './pricing-props'
-import { pricingMachine } from './pricing-state-machine'
+import {
+	PricingContextType,
+	pricingMachine,
+	PricingMachingInput,
+} from './pricing-state-machine'
 import { RegionalPricingBox } from './regional-pricing-box'
 
 const defaultPricingOptions = {
@@ -35,6 +41,174 @@ const defaultPricingOptions = {
 	teamQuantityLimit: 100,
 	allowTeamPurchase: true,
 }
+
+const PricingContext = React.createContext<
+	| (PricingContextType & {
+			status: 'success' | 'pending' | 'error'
+	  })
+	| undefined
+>(undefined)
+
+export const PricingProvider = ({
+	children,
+	...props
+}: PricingMachingInput & {
+	children: React.ReactNode
+}) => {
+	const [state, send] = useMachine(pricingMachine, {
+		input: props,
+	})
+	return (
+		<PricingContext.Provider
+			value={{
+				...state.context,
+				status: state.value === 'Ready To Buy' ? 'success' : 'pending',
+			}}
+		>
+			{children}
+		</PricingContext.Provider>
+	)
+}
+
+const usePricing = () => {
+	const context = React.use(PricingContext)
+	if (!context) {
+		throw new Error('usePricing must be used within a PricingProvider')
+	}
+	return context
+}
+
+type RootProps = {
+	className?: string
+	asChild?: boolean
+	product: Product
+	couponId?: string | null | undefined
+	country?: string
+}
+
+const Root = ({
+	children,
+	asChild,
+	className,
+	...props
+}: RootProps & { children: React.ReactNode }) => {
+	const Comp = asChild ? Slot : 'div'
+
+	return (
+		<PricingProvider {...props}>
+			<Comp
+				className={cn(
+					'mx-auto flex w-full max-w-screen-lg flex-wrap items-start justify-center gap-5',
+					className,
+				)}
+			>
+				{children}
+			</Comp>
+		</PricingProvider>
+	)
+}
+
+const PricingProduct = ({
+	children,
+	className,
+}: {
+	children: React.ReactNode
+	className?: string
+}) => {
+	const { product } = usePricing()
+	return <div className={cn('', className)}>{children}</div>
+}
+
+const Details = ({
+	children,
+	className,
+}: {
+	children: React.ReactNode
+	className?: string
+}) => {
+	const { product } = usePricing()
+	return (
+		<article
+			className={cn(
+				'bg-card shadow-gray-500/10; rounded-lg border pt-36 shadow-2xl',
+				className,
+			)}
+		>
+			{children}
+		</article>
+	)
+}
+
+const ProductImage = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
+	const { product } = usePricing()
+	return (
+		<div
+			className={cn(
+				'bg-background dark:border-border dark:bg-background relative mx-auto -mb-32 h-56 w-56 rounded-full border border-gray-200 drop-shadow-xl',
+				className,
+			)}
+		>
+			{children ||
+				(product.fields.image && (
+					<Image
+						className="overflow-hidden rounded-full"
+						priority
+						src={product.fields.image.url}
+						alt={product.fields.image.alt || product.name}
+						quality={100}
+						layout={'fill'}
+						objectFit="contain"
+						aria-hidden="true"
+					/>
+				))}
+		</div>
+	)
+}
+
+const Name = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
+	const { product } = usePricing()
+	return (
+		<div
+			className={cn(
+				'px-5 text-center text-xl font-black sm:text-2xl',
+				className,
+			)}
+		>
+			<Balancer>{children || product.name}</Balancer>
+		</div>
+	)
+}
+
+const Price = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
+	const { pricingData, status } = usePricing()
+	return (
+		<>
+			{children || (
+				<PriceDisplay status={status} formattedPrice={pricingData} />
+			)}
+		</>
+	)
+}
+
+export { Root, PricingProduct as Product, ProductImage, Name, Details, Price }
 
 export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	pricingDataLoader,
@@ -66,6 +240,11 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 	options = defaultPricingOptions,
 	country,
 }) => {
+	const pathname = usePathname()
+	const router = useRouter()
+	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
+	const { isDowngrade } = usePriceCheck()
+
 	const [state, send] = useMachine(pricingMachine, {
 		input: {
 			product,
@@ -74,10 +253,12 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		},
 	})
 
-	console.log({ context: state.context })
-
-	const formattedPrice = state.context.pricingData
-	const quantity = state.context.quantity
+	const {
+		pricingData: formattedPrice,
+		quantity,
+		autoApplyPPP,
+		isBuyingMoreSeats,
+	} = state.context
 
 	const {
 		withImage = true,
@@ -88,17 +269,11 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		allowTeamPurchase = true,
 	} = { ...defaultPricingOptions, ...options }
 
-	const { isDowngrade } = usePriceCheck()
-
 	const merchantCoupon = state.context.activeMerchantCoupon
 
 	const { id: productId, name, resources, fields } = product
-	const { image, action } = fields
+	const { image } = fields
 	// const { subscriber, loadingSubscriber } = useConvertkit()
-	const router = useRouter()
-	const [autoApplyPPP, setAutoApplyPPP] = React.useState<boolean>(true)
-
-	const { purchaseToUpgrade, quantityAvailable } = use(pricingDataLoader)
 
 	const defaultCoupon = formattedPrice?.defaultCoupon
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
@@ -122,16 +297,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		appliedMerchantCoupon &&
 		appliedMerchantCoupon.type !== 'ppp'
 
-	type AvailableCoupon = NonNullable<
-		typeof formattedPrice
-	>['availableCoupons'][0]
-
-	function getFirstPPPCoupon<
-		T extends { type: string | null | undefined } = any,
-	>(availableCoupons: T[] = []) {
-		return find<T>(availableCoupons, (coupon) => coupon?.type === 'ppp') || null
-	}
-
 	const availablePPPCoupon = formattedPrice?.availableCoupons.find(
 		(coupon) => coupon?.type === 'ppp',
 	)
@@ -150,8 +315,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		!isDowngrade(formattedPrice) &&
 		!state.context.isTeamPurchaseActive &&
 		allowPurchaseWith?.pppCoupon
-
-	const pathname = usePathname()
 
 	const handleOnSubscribeSuccess = (subscriber: any, email?: string) => {
 		if (subscriber) {
@@ -185,12 +348,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 
 	const fixedDiscount = formattedPrice?.fixedDiscountForUpgrade || 0
 
-	const [isBuyingMoreSeats, setIsBuyingMoreSeats] = React.useState(false)
-
 	const isSoldOut =
 		product.type === 'live' && !purchased && quantityAvailable <= 0
 
-	const isSellingLive = true
 	return (
 		<div id={id}>
 			<div data-pricing-product={index}>
@@ -222,7 +382,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 							)}
 							<p data-name-badge="">{name}</p>
 							{product.name && (
-								<h2 data-title>
+								<h2 data-title="">
 									<Balancer>{product.name}</Balancer>
 								</h2>
 							)}
@@ -301,7 +461,9 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 									<button
 										type="button"
 										onClick={() => {
-											setIsBuyingMoreSeats(!isBuyingMoreSeats)
+											send({
+												type: 'TOGGLE_BUYING_MORE_SEATS',
+											})
 										}}
 									>
 										{isBuyingMoreSeats ? '← Back' : 'Buy more seats'}
@@ -325,7 +487,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 								</div>
 							</div>
 						</Suspense>
-					) : isSellingLive || allowPurchase ? (
+					) : allowPurchase ? (
 						isDowngrade(formattedPrice) ? (
 							<div data-downgrade-container="">
 								<div data-downgrade="">Unavailable</div>
@@ -514,46 +676,40 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 					{/*		)}*/}
 					{/*	</>*/}
 					{/*)}*/}
-					{showPPPBox &&
-						!canViewRegionRestriction &&
-						(isSellingLive || allowPurchase) && (
-							<RegionalPricingBox
-								availablePPPCoupon={availablePPPCoupon}
-								appliedPPPCoupon={appliedPPPCoupon}
-								setMerchantCoupon={(merchantCoupon: MerchantCoupon) => {
-									send({
-										type: 'SET_MERCHANT_COUPON',
-										merchantCoupon,
-									})
-								}}
-								index={index}
-								setAutoApplyPPP={setAutoApplyPPP}
-								purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}
-							/>
-						)}
+					{showPPPBox && !canViewRegionRestriction && allowPurchase && (
+						<RegionalPricingBox
+							availablePPPCoupon={availablePPPCoupon}
+							appliedPPPCoupon={appliedPPPCoupon}
+							setMerchantCoupon={(merchantCoupon: MerchantCoupon) => {
+								send({
+									type: 'SET_MERCHANT_COUPON',
+									merchantCoupon,
+								})
+							}}
+							index={index}
+							setAutoApplyPPP={() => {}}
+							purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}
+						/>
+					)}
 					<div data-pricing-footer="">
-						{product.fields.description &&
-							(isSellingLive || allowPurchase) &&
-							!purchased && (
-								<div
-									data-product-description=""
-									className="prose prose-sm sm:prose-base prose-p:text-gray-900 mx-auto max-w-sm px-5"
-								>
-									<ReactMarkdown>{product.fields.description}</ReactMarkdown>
-								</div>
-							)}
-						{(isSellingLive || allowPurchase) &&
-							!purchased &&
-							withGuaranteeBadge && (
-								<div data-guarantee-image="">
-									<Image
-										src="https://res.cloudinary.com/total-typescript/image/upload/v1669928567/money-back-guarantee-badge-16137430586cd8f5ec2a096bb1b1e4cf_o5teov.svg"
-										width={130}
-										height={130}
-										alt="Money Back Guarantee"
-									/>
-								</div>
-							)}
+						{product.fields.description && allowPurchase && !purchased && (
+							<div
+								data-product-description=""
+								className="prose prose-sm sm:prose-base prose-p:text-gray-900 mx-auto max-w-sm px-5"
+							>
+								<ReactMarkdown>{product.fields.description}</ReactMarkdown>
+							</div>
+						)}
+						{allowPurchase && !purchased && withGuaranteeBadge && (
+							<div data-guarantee-image="">
+								<Image
+									src="https://res.cloudinary.com/total-typescript/image/upload/v1669928567/money-back-guarantee-badge-16137430586cd8f5ec2a096bb1b1e4cf_o5teov.svg"
+									width={130}
+									height={130}
+									alt="Money Back Guarantee"
+								/>
+							</div>
+						)}
 						{/*{modules || features ? (*/}
 						{/*	<div data-header="">*/}
 						{/*		<div>*/}

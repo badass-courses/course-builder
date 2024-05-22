@@ -219,7 +219,11 @@ export async function getPricesFormatted(
 		await options.adapter.getPurchasesForUser(userId),
 	)
 
-	const country = request.body?.country || process.env.DEFAULT_COUNTRY || 'US'
+	const country =
+		request.headers?.['x-vercel-ip-country'] ||
+		request.body?.country ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
 
 	let upgradeFromPurchaseId = await checkForAnyAvailableUpgrades({
 		upgradeFromPurchaseId: _upgradeFromPurchaseId,
