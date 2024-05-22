@@ -531,11 +531,21 @@ export function mySqlDrizzleAdapter(
 
 			if (!couponForIdOrCode) return null
 
-			return couponSchema
+			const parsedCoupon = couponSchema
 				.extend({
 					merchantCoupon: merchantCouponSchema,
 				})
-				.parse(couponForIdOrCode)
+				.safeParse(couponForIdOrCode)
+
+			if (!parsedCoupon.success) {
+				console.error(
+					'Error parsing coupon',
+					JSON.stringify(parsedCoupon.error),
+				)
+				return null
+			}
+
+			return parsedCoupon.data
 		},
 		async createMerchantChargeAndPurchase(options): Promise<Purchase> {
 			const purchaseId = await client.transaction(async (trx) => {
