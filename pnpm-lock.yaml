@@ -879,6 +879,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.31.0
         version: 5.31.0(@tanstack/react-query@5.31.0)(react@18.3.1)
+      '@tanstack/react-table':
+        specifier: ^8.17.3
+        version: 8.17.3(react-dom@18.3.1)(react@18.3.1)
       '@trpc/client':
         specifier: next
         version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
@@ -12789,6 +12792,23 @@ packages:
     dependencies:
       '@tanstack/query-core': 5.31.0
       react: 18.3.1
+    dev: false
+
+  /@tanstack/react-table@8.17.3(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-5gwg5SvPD3lNAXPuJJz1fOCEZYk9/GeBFH3w/hCgnfyszOIzwkwgp5I7Q4MJtn0WECp84b5STQUDdmvGi8m3nA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.17.3
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@tanstack/table-core@8.17.3:
+    resolution: {integrity: sha512-mPBodDGVL+fl6d90wUREepHa/7lhsghg2A3vFpakEhrhtbIlgNAZiMr7ccTgak5qbHqF14Fwy+W1yFWQt+WmYQ==}
+    engines: {node: '>=12'}
     dev: false
 
   /@trpc/client@11.0.0-rc.351(@trpc/server@11.0.0-rc.351):
