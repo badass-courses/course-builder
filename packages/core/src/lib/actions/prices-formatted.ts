@@ -81,7 +81,7 @@ async function getActiveMerchantCoupon({
 	courseBuilderAdapter,
 }: {
 	productId: string | undefined
-	siteCouponId: string | undefined
+	siteCouponId: string | null | undefined
 	code: string | undefined
 	courseBuilderAdapter: CourseBuilderAdapter
 }) {

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { QueryStatus } from '@tanstack/react-query'
 
 import { Product } from '@coursebuilder/core/schemas'
+import { FormattedPrice } from '@coursebuilder/core/types'
 
 import { CouponForCode } from '../utils/coupon-for-code'
 import { PricingData } from './pricing-widget'
@@ -34,11 +35,12 @@ export type PricingProps = {
 		expiresAt?: string
 	}[]
 	purchaseButtonRenderer?: (
-		formattedPrice: any,
+		formattedPrice: FormattedPrice | null,
 		product: Product,
 		status: QueryStatus,
 	) => React.ReactNode
 	options?: PricingWidgetOptions
 	id?: string
 	pricingDataLoader: Promise<PricingData>
+	country?: string
 }

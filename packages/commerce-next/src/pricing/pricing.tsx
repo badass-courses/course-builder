@@ -12,6 +12,7 @@ import pluralize from 'pluralize'
 import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
 
+import { MerchantCoupon } from '@coursebuilder/core/schemas'
 import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
@@ -63,13 +64,17 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		)
 	},
 	options = defaultPricingOptions,
+	country,
 }) => {
 	const [state, send] = useMachine(pricingMachine, {
 		input: {
 			product,
 			couponId,
+			country,
 		},
 	})
+
+	console.log({ context: state.context })
 
 	const formattedPrice = state.context.pricingData
 	const quantity = state.context.quantity
@@ -82,7 +87,10 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		teamQuantityLimit = 100,
 		allowTeamPurchase = true,
 	} = { ...defaultPricingOptions, ...options }
-	const { isDowngrade, merchantCoupon, setMerchantCoupon } = usePriceCheck()
+
+	const { isDowngrade } = usePriceCheck()
+
+	const merchantCoupon = state.context.activeMerchantCoupon
 
 	const { id: productId, name, resources, fields } = product
 	const { image, action } = fields
@@ -179,11 +187,6 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 
 	const [isBuyingMoreSeats, setIsBuyingMoreSeats] = React.useState(false)
 
-	const [mounted, setMounted] = React.useState(false)
-	React.useEffect(() => {
-		setMounted(true)
-	}, [])
-
 	const isSoldOut =
 		product.type === 'live' && !purchased && quantityAvailable <= 0
 
@@ -206,7 +209,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 				)}
 
 				<article>
-					{(isSellingLive || allowPurchase) && !purchased ? (
+					{allowPurchase && !purchased ? (
 						<div data-pricing-product-header="">
 							{product.type === 'live' && quantityAvailable != -1 && (
 								<div
@@ -281,7 +284,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 							<div data-pricing-product-header="">
 								<p data-name-badge="">{name}</p>
 								{product.name && (
-									<h2 data-title>
+									<h2 data-title="">
 										<Balancer>{product.name}</Balancer>
 									</h2>
 								)}
@@ -421,7 +424,10 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 																		  quantity > teamQuantityLimit
 																		? teamQuantityLimit
 																		: quantity
-															setMerchantCoupon(undefined)
+															send({
+																type: 'SET_MERCHANT_COUPON',
+																merchantCoupon: undefined,
+															})
 															send({
 																type: 'UPDATE_QUANTITY',
 																quantity: newQuantity,
@@ -456,7 +462,11 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 											</div>
 										)}
 
-										{purchaseButtonRenderer(formattedPrice, product, 'success')}
+										{purchaseButtonRenderer(
+											formattedPrice,
+											product,
+											state.value === 'Ready To Buy' ? 'success' : 'pending',
+										)}
 										{withGuaranteeBadge && (
 											<span data-guarantee="">30-Day Money-Back Guarantee</span>
 										)}
@@ -510,7 +520,12 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 							<RegionalPricingBox
 								availablePPPCoupon={availablePPPCoupon}
 								appliedPPPCoupon={appliedPPPCoupon}
-								setMerchantCoupon={setMerchantCoupon}
+								setMerchantCoupon={(merchantCoupon: MerchantCoupon) => {
+									send({
+										type: 'SET_MERCHANT_COUPON',
+										merchantCoupon,
+									})
+								}}
 								index={index}
 								setAutoApplyPPP={setAutoApplyPPP}
 								purchaseToUpgradeExists={Boolean(purchaseToUpgrade)}

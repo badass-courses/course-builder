@@ -364,8 +364,8 @@ interface SkillProductsCommerceSdk {
 		status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
 	): Promise<Purchase | undefined>
 	couponForIdOrCode(options: {
-		code?: string
-		couponId?: string
+		code?: string | null | undefined
+		couponId?: string | null | undefined
 	}): Promise<(Coupon & { merchantCoupon: MerchantCoupon }) | null>
 	availableUpgradesForProduct(
 		purchases: any,

@@ -62,6 +62,7 @@ export const PricingWidget: React.FC<{
 				purchased={hasPurchasedCurrentProduct}
 				couponId={couponId}
 				couponFromCode={couponFromCode}
+				country={commerceProps.country}
 			/>
 		</div>
 	)

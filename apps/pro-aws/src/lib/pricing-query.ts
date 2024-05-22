@@ -11,7 +11,7 @@ import {
 } from '@coursebuilder/core/types'
 
 export async function getPricingData(
-	options: FormatPricesForProductOptions,
+	options: Partial<FormatPricesForProductOptions>,
 ): Promise<PricingData> {
 	if (!options.productId)
 		return {

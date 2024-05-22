@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { pricingClassNames } from '@/styles/commerce'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import {
@@ -31,7 +32,7 @@ export function ProductPricing({
 	return (
 		<>
 			{product && (
-				<Wrapper className="flex flex-col items-center">
+				<Wrapper className={pricingClassNames('flex flex-col items-center')}>
 					{product.type === 'live' && (
 						<h1 className="font-heading mx-auto inline-flex w-full max-w-2xl items-center justify-center text-balance px-5 pb-10 text-center text-5xl font-bold leading-tight">
 							{product?.name}

@@ -74,13 +74,14 @@ export async function getCouponForCode(
 	return undefined
 }
 
-type PropsForCommerce = {
+export type PropsForCommerce = {
 	products: Product[]
 	allowPurchase: boolean
 	purchases?: Purchase[] | undefined
 	couponIdFromCoupon?: string | undefined
 	couponFromCode?: any
 	userId?: string | undefined
+	country?: string
 }
 
 export async function propsForCommerce(
@@ -88,10 +89,12 @@ export async function propsForCommerce(
 		query,
 		userId,
 		products,
+		country,
 	}: {
 		query: ParsedUrlQuery
 		userId: string | null | undefined
 		products: Product[]
+		country?: string
 	},
 	adapter: CourseBuilderAdapter,
 ): Promise<PropsForCommerce> {
@@ -131,5 +134,6 @@ export async function propsForCommerce(
 		}),
 		products,
 		allowPurchase,
+		country,
 	}
 }

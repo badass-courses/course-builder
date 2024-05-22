@@ -241,7 +241,7 @@ export type FormattedPrice = {
 }
 
 export type FormatPricesForProductOptions = {
-	productId: string
+	productId?: string
 	country?: string
 	quantity?: number
 	merchantCouponId?: string

@@ -1,10 +1,12 @@
 import { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { Suspense } from 'react'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -91,8 +93,13 @@ async function ProductCommerce({
 	const user = session?.user
 	const product = await productLoader
 	if (!product) return null
-	const pricingDataLoader = getPricingData(product?.id)
+	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
+
+	const country =
+		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
+
+	console.log(headers().get('x-vercel-ip-country'), process.env.DEFAULT_COUNTRY)
 
 	let commerceProps = await propsForCommerce(
 		{
@@ -102,6 +109,10 @@ async function ProductCommerce({
 			},
 			userId: user?.id,
 			products: [product],
+			country:
+				headers().get('x-vercel-ip-country') ||
+				process.env.DEFAULT_COUNTRY ||
+				'US',
 		},
 		courseBuilderAdapter,
 	)
@@ -165,6 +176,8 @@ async function ProductCommerce({
 				: {}),
 		}
 	}
+
+	console.log({ productProps })
 
 	return (
 		<Suspense>

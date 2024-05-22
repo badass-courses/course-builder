@@ -1,6 +1,6 @@
 import { and, assign, fromPromise, setup } from 'xstate'
 
-import { Product } from '@coursebuilder/core/schemas'
+import { MerchantCoupon, Product } from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
 export const pricingMachine = setup({
@@ -12,18 +12,22 @@ export const pricingMachine = setup({
 			isPPPActive: boolean
 			isTeamPurchaseActive: boolean
 			couponId: string | null
+			country: string
+			activeMerchantCoupon: MerchantCoupon | null | undefined
 		},
 		input: {} as {
 			product: Product
 			quantity?: number
 			couponId?: string | null
+			country?: string
 		},
 		events: {} as
 			| { type: 'TOGGLE_PPP' }
 			| { type: 'UPDATE_QUANTITY'; quantity: number }
 			| { type: 'PRICING_DATA_LOADED' }
 			| { type: 'TOGGLE_TEAM_PURCHASE' }
-			| { type: 'PURCHASE_INITIATED' },
+			| { type: 'PURCHASE_INITIATED' }
+			| { type: 'SET_MERCHANT_COUPON'; merchantCoupon?: MerchantCoupon },
 	},
 	actors: {
 		loadFormattedProcess: fromPromise<
@@ -32,8 +36,9 @@ export const pricingMachine = setup({
 				productId: string
 				quantity?: number
 				couponId?: string
-				merchantCoupon?: string
+				merchantCoupon?: MerchantCoupon
 				autoApplyPPP?: boolean
+				country?: string
 			}
 		>(async ({ input }) => {
 			if (!input) return Promise.resolve(null)
@@ -50,6 +55,7 @@ export const pricingMachine = setup({
 						couponId: input.couponId,
 						merchantCoupon: input.merchantCoupon,
 						autoApplyPPP: input.autoApplyPPP || false,
+						country: input.country || 'US',
 					}),
 				},
 			).then(async (res) => {
@@ -85,6 +91,8 @@ export const pricingMachine = setup({
 		isPPPActive: false,
 		isTeamPurchaseActive: false,
 		couponId: input.couponId || null,
+		country: input.country || 'US',
+		activeMerchantCoupon: null,
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
@@ -92,10 +100,20 @@ export const pricingMachine = setup({
 		'Loading Pricing Data': {
 			invoke: {
 				id: 'load-prices',
-				input: ({ context: { product, quantity, couponId } }: any) => ({
+				input: ({
+					context: {
+						product,
+						quantity,
+						couponId,
+						country,
+						activeMerchantCoupon,
+					},
+				}: any) => ({
 					productId: product.id,
 					quantity,
 					couponId,
+					country,
+					merchantCoupon: activeMerchantCoupon,
 				}),
 				src: 'loadFormattedProcess',
 				onDone: {
@@ -149,6 +167,15 @@ export const pricingMachine = setup({
 					target: 'Loading Pricing Data',
 					actions: assign({
 						isPPPActive: ({ context }) => !context.isPPPActive,
+					}),
+					guard: {
+						type: 'isPPPAvailable',
+					},
+				},
+				SET_MERCHANT_COUPON: {
+					target: 'Loading Pricing Data',
+					actions: assign({
+						activeMerchantCoupon: ({ event }) => event.merchantCoupon,
 					}),
 					guard: {
 						type: 'isPPPAvailable',

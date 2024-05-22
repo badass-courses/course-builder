@@ -139,6 +139,8 @@ export async function formatPricesForProduct(
 		usedCouponId,
 	} = noContextOptions
 
+	if (!productId) throw new Error('productId is required')
+
 	const { getProduct, getPriceForProduct, getPurchase, getCoupon } = ctx
 
 	const usedCoupon = usedCouponId ? await getCoupon(usedCouponId) : null
