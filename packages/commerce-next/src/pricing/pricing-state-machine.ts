@@ -127,7 +127,7 @@ export const pricingMachine = setup({
 					merchantCoupon: activeMerchantCoupon,
 					autoApplyPPP,
 				}),
-				src: 'loadFormattedProcess',
+				src: 'loadFormattedPrices',
 				onDone: {
 					target: 'Ready To Buy',
 					actions: assign({
