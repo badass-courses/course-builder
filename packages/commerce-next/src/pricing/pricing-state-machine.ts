@@ -138,7 +138,9 @@ export const pricingMachine = setup({
 			on: {
 				UPDATE_QUANTITY: {
 					target: 'Debouncing Quantity',
-					actions: assign({ quantity: ({ event }) => event.quantity }),
+					actions: assign({
+						quantity: ({ event }) => Math.max(event.quantity, 1),
+					}),
 					guard: {
 						type: 'canUpdateQuantity',
 					},
@@ -154,7 +156,9 @@ export const pricingMachine = setup({
 			on: {
 				UPDATE_QUANTITY: {
 					target: 'Debouncing Quantity',
-					actions: assign({ quantity: ({ event }) => event.quantity }),
+					actions: assign({
+						quantity: ({ event }) => Math.max(event.quantity, 1),
+					}),
 					guard: {
 						type: 'canUpdateQuantity',
 					},
@@ -187,11 +191,15 @@ export const pricingMachine = setup({
 					actions: assign({
 						activeMerchantCoupon: ({ event }) => event.merchantCoupon,
 						autoApplyPPP: false,
+						isTeamPurchaseActive: false,
+						quantity: 1,
 					}),
 				},
 				UPDATE_QUANTITY: {
 					target: 'Debouncing Quantity',
-					actions: assign({ quantity: ({ event }) => event.quantity }),
+					actions: assign({
+						quantity: ({ event }) => Math.max(event.quantity, 1),
+					}),
 					guard: {
 						type: 'canUpdateQuantity',
 					},
