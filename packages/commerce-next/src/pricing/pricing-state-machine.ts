@@ -37,7 +37,7 @@ export const pricingMachine = setup({
 			| { type: 'SET_MERCHANT_COUPON'; merchantCoupon?: MerchantCoupon },
 	},
 	actors: {
-		loadFormattedProcess: fromPromise<
+		loadFormattedPrices: fromPromise<
 			FormattedPrice | null,
 			{
 				productId: string
