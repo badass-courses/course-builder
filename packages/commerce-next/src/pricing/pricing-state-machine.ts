@@ -49,7 +49,6 @@ export const pricingMachine = setup({
 		input: {} as PricingMachineInput,
 		events: {} as
 			| { type: 'UPDATE_QUANTITY'; quantity: number }
-			| { type: 'PRICING_DATA_LOADED' }
 			| { type: 'TOGGLE_TEAM_PURCHASE' }
 			| { type: 'TOGGLE_BUYING_MORE_SEATS' }
 			| { type: 'PURCHASE_INITIATED' }

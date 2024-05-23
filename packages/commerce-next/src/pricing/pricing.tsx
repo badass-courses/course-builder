@@ -43,7 +43,6 @@ const RootInternal = ({
 }: RootProps & { children: React.ReactNode }) => {
 	const Comp = asChild ? Slot : 'div'
 	const {
-		product,
 		options: { isLiveEvent },
 	} = usePricing()
 
@@ -409,16 +408,12 @@ const TeamQuantityInput = ({
 							onChange={(e) => {
 								const quantity = Number(e.target.value)
 
-								console.log({ quantity, teamQuantityLimit })
-
 								const newQuantity =
 									quantity < 1
 										? 1
 										: teamQuantityLimit && quantity > teamQuantityLimit
 											? teamQuantityLimit
 											: quantity
-
-								console.log({ newQuantity })
 
 								setMerchantCoupon(undefined)
 								updateQuantity(newQuantity)
@@ -546,6 +541,8 @@ const PPPToggle = ({
 		allowPurchase,
 	} = usePricing()
 
+	const { isDowngrade } = usePriceCheck()
+
 	const availablePPPCoupon = formattedPrice?.availableCoupons.find(
 		(coupon) => coupon?.type === 'ppp',
 	)
@@ -578,8 +575,7 @@ const PPPToggle = ({
 		isPPPEnabled &&
 		Boolean(availablePPPCoupon || appliedPPPCoupon) &&
 		!isPreviouslyPurchased &&
-		// TODO handle downgrades
-		// !isDowngrade(formattedPrice) &&
+		!isDowngrade(formattedPrice) &&
 		!isTeamPurchaseActive &&
 		allowPurchaseWith?.pppCoupon
 

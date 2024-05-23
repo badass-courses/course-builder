@@ -35,8 +35,6 @@ export const PricingProvider = ({
 		input: props,
 	})
 
-	console.log('state', state)
-
 	const toggleBuyingMoreSeats = () => {
 		send({
 			type: 'TOGGLE_BUYING_MORE_SEATS',
