@@ -24,27 +24,21 @@ import { formatUsd } from '../utils/format-usd'
 import { redirectUrlBuilder } from '../utils/redirect-url-builder'
 import { PriceDisplay } from './price-display'
 import { usePriceCheck } from './pricing-check-context'
-import { PricingProps } from './pricing-props'
+import { PricingOptions, PricingProps } from './pricing-props'
 import {
 	PricingContextType,
 	pricingMachine,
-	PricingMachingInput,
+	PricingMachineInput,
 } from './pricing-state-machine'
 import { RegionalPricingBox } from './regional-pricing-box'
-
-const defaultPricingOptions = {
-	withImage: true,
-	isPPPEnabled: true,
-	withGuaranteeBadge: true,
-	isLiveEvent: false,
-	saleCountdownRenderer: () => null,
-	teamQuantityLimit: 100,
-	allowTeamPurchase: true,
-}
 
 const PricingContext = React.createContext<
 	| (PricingContextType & {
 			status: 'success' | 'pending' | 'error'
+			toggleBuyingMoreSeats: () => void
+			toggleTeamPurchase: () => void
+			updateQuantity: (quantity: number) => void
+			setMerchantCoupon: (merchantCoupon: MerchantCoupon | undefined) => void
 	  })
 	| undefined
 >(undefined)
@@ -52,17 +46,45 @@ const PricingContext = React.createContext<
 export const PricingProvider = ({
 	children,
 	...props
-}: PricingMachingInput & {
+}: PricingMachineInput & {
 	children: React.ReactNode
 }) => {
 	const [state, send] = useMachine(pricingMachine, {
 		input: props,
 	})
+
+	const toggleBuyingMoreSeats = () => {
+		send({
+			type: 'TOGGLE_BUYING_MORE_SEATS',
+		})
+	}
+	const toggleTeamPurchase = () => {
+		send({
+			type: 'TOGGLE_TEAM_PURCHASE',
+		})
+	}
+	const updateQuantity = (quantity: number) => {
+		send({
+			type: 'UPDATE_QUANTITY',
+			quantity,
+		})
+	}
+	const setMerchantCoupon = (merchantCoupon: MerchantCoupon | undefined) => {
+		send({
+			type: 'SET_MERCHANT_COUPON',
+			merchantCoupon,
+		})
+	}
+
 	return (
 		<PricingContext.Provider
 			value={{
 				...state.context,
 				status: state.value === 'Ready To Buy' ? 'success' : 'pending',
+				toggleBuyingMoreSeats,
+				toggleTeamPurchase,
+				updateQuantity,
+				setMerchantCoupon,
 			}}
 		>
 			{children}
@@ -84,6 +106,7 @@ type RootProps = {
 	product: Product
 	couponId?: string | null | undefined
 	country?: string
+	options?: PricingOptions
 }
 
 const Root = ({
@@ -198,11 +221,11 @@ const Price = ({
 	className?: string
 	children?: React.ReactNode
 }) => {
-	const { pricingData, status } = usePricing()
+	const { formattedPrice, status } = usePricing()
 	return (
 		<>
 			{children || (
-				<PriceDisplay status={status} formattedPrice={pricingData} />
+				<PriceDisplay status={status} formattedPrice={formattedPrice} />
 			)}
 		</>
 	)
@@ -237,8 +260,7 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 			</button>
 		)
 	},
-	options = defaultPricingOptions,
-	country,
+	options: incomingOptions,
 }) => {
 	const pathname = usePathname()
 	const router = useRouter()
@@ -249,25 +271,21 @@ export const Pricing: React.FC<React.PropsWithChildren<PricingProps>> = ({
 		input: {
 			product,
 			couponId,
-			country,
+			options: incomingOptions,
 		},
 	})
 
-	const {
-		pricingData: formattedPrice,
-		quantity,
-		autoApplyPPP,
-		isBuyingMoreSeats,
-	} = state.context
+	const { formattedPrice, quantity, autoApplyPPP, isBuyingMoreSeats, options } =
+		state.context
 
 	const {
-		withImage = true,
-		isPPPEnabled = true,
-		withGuaranteeBadge = true,
-		isLiveEvent = false,
-		teamQuantityLimit = 100,
-		allowTeamPurchase = true,
-	} = { ...defaultPricingOptions, ...options }
+		withImage,
+		isPPPEnabled,
+		withGuaranteeBadge,
+		isLiveEvent,
+		teamQuantityLimit,
+		allowTeamPurchase,
+	} = options
 
 	const merchantCoupon = state.context.activeMerchantCoupon
 

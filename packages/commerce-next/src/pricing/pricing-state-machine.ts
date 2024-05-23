@@ -3,31 +3,42 @@ import { and, assign, fromPromise, setup } from 'xstate'
 import { MerchantCoupon, Product } from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
+import { PricingOptions } from './pricing-props'
+
 export type PricingContextType = {
 	product: Product
-	pricingData: FormattedPrice | null
+	formattedPrice: FormattedPrice | null
 	quantity: number
 	isPPPActive: boolean
 	isTeamPurchaseActive: boolean
 	couponId: string | null | undefined
-	country: string
 	activeMerchantCoupon: MerchantCoupon | null | undefined
 	autoApplyPPP: boolean
 	isBuyingMoreSeats: boolean
+	options: PricingOptions
 }
 
-export type PricingMachingInput = {
+export type PricingMachineInput = {
 	product: Product
 	quantity?: number
 	couponId?: string | null
-	country?: string
 	autoApplyPPP?: boolean
+	options?: PricingOptions
+}
+
+const defaultPricingOptions = {
+	withImage: true,
+	withGuaranteeBadge: true,
+	isLiveEvent: false,
+	isPPPEnabled: true,
+	teamQuantityLimit: 100,
+	allowTeamPurchase: true,
 }
 
 export const pricingMachine = setup({
 	types: {
 		context: {} as PricingContextType,
-		input: {} as PricingMachingInput,
+		input: {} as PricingMachineInput,
 		events: {} as
 			| { type: 'UPDATE_QUANTITY'; quantity: number }
 			| { type: 'PRICING_DATA_LOADED' }
@@ -45,7 +56,6 @@ export const pricingMachine = setup({
 				couponId?: string
 				merchantCoupon?: MerchantCoupon
 				autoApplyPPP?: boolean
-				country?: string
 			}
 		>(async ({ input }) => {
 			if (!input) return Promise.resolve(null)
@@ -62,7 +72,6 @@ export const pricingMachine = setup({
 						couponId: input.couponId,
 						merchantCoupon: input.merchantCoupon,
 						autoApplyPPP: input.autoApplyPPP || true,
-						country: input.country || 'US',
 					}),
 				},
 			).then(async (res) => {
@@ -93,15 +102,17 @@ export const pricingMachine = setup({
 }).createMachine({
 	context: ({ input }) => ({
 		product: input.product,
-		pricingData: null,
+		formattedPrice: null,
 		quantity: input.quantity || 1,
 		isPPPActive: false,
 		isTeamPurchaseActive: false,
 		couponId: input.couponId || null,
-		country: input.country || 'US',
 		activeMerchantCoupon: null,
 		autoApplyPPP: input.autoApplyPPP || true,
 		isBuyingMoreSeats: false,
+		options: input.options
+			? { ...defaultPricingOptions, ...input.options }
+			: defaultPricingOptions,
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
@@ -109,7 +120,6 @@ export const pricingMachine = setup({
 		'Loading Pricing Data': {
 			invoke: {
 				id: 'load-prices',
-				renter: true,
 				input: ({
 					context: {
 						product,
@@ -131,7 +141,7 @@ export const pricingMachine = setup({
 				onDone: {
 					target: 'Ready To Buy',
 					actions: assign({
-						pricingData: ({ event }) => event.output,
+						formattedPrice: ({ event }) => event.output,
 					}),
 				},
 			},

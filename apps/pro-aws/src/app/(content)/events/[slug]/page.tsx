@@ -75,7 +75,9 @@ export default async function EventPage({
 	if (productParsed.success) {
 		product = productParsed.data
 
-		const pricingDataLoader = getPricingData(product?.id)
+		const pricingDataLoader = getPricingData({
+			productId: product.id,
+		})
 
 		const commerceProps = await propsForCommerce(
 			{

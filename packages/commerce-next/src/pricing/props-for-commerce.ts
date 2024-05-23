@@ -89,12 +89,10 @@ export async function propsForCommerce(
 		query,
 		userId,
 		products,
-		country,
 	}: {
 		query: ParsedUrlQuery
 		userId: string | null | undefined
 		products: Product[]
-		country?: string
 	},
 	adapter: CourseBuilderAdapter,
 ): Promise<PropsForCommerce> {
@@ -134,6 +132,5 @@ export async function propsForCommerce(
 		}),
 		products,
 		allowPurchase,
-		country,
 	}
 }

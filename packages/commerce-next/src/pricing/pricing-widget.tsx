@@ -8,7 +8,7 @@ import type { FormattedPrice } from '@coursebuilder/core/types'
 import { useCoupon } from '../coupons/use-coupon'
 import { CommerceProps } from '../utils/commerce-props'
 import { Pricing as PricingOld } from './pricing'
-import { PricingWidgetOptions } from './pricing-props'
+import { PricingOptions } from './pricing-props'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
@@ -16,7 +16,7 @@ export type PricingData = {
 	quantityAvailable: number
 }
 
-const defaultPricingWidgetOptions: PricingWidgetOptions = {
+const defaultPricingWidgetOptions: PricingOptions = {
 	withImage: true,
 	withGuaranteeBadge: true,
 	isLiveEvent: false,
@@ -31,7 +31,7 @@ export const PricingWidget: React.FC<{
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
 	hasPurchasedCurrentProduct?: boolean
-	pricingWidgetOptions?: PricingWidgetOptions
+	pricingWidgetOptions?: PricingOptions
 }> = ({
 	hasPurchasedCurrentProduct,
 	product,
@@ -54,7 +54,7 @@ export const PricingWidget: React.FC<{
 				className="relative w-full"
 				product={product}
 				couponId={couponId}
-				country={commerceProps.country}
+				options={pricingWidgetOptions}
 			>
 				<Pricing.Product>
 					<Pricing.ProductImage />
@@ -79,7 +79,6 @@ export const PricingWidget: React.FC<{
 					purchased={hasPurchasedCurrentProduct}
 					couponId={couponId}
 					couponFromCode={couponFromCode}
-					country={commerceProps.country}
 				/>
 			</div>
 		</div>

@@ -7,7 +7,7 @@ import { FormattedPrice } from '@coursebuilder/core/types'
 import { CouponForCode } from '../utils/coupon-for-code'
 import { PricingData } from './pricing-widget'
 
-export type PricingWidgetOptions = {
+export type PricingOptions = {
 	withImage?: boolean
 	withGuaranteeBadge?: boolean
 	isLiveEvent?: boolean
@@ -39,7 +39,7 @@ export type PricingProps = {
 		product: Product,
 		status: QueryStatus,
 	) => React.ReactNode
-	options?: PricingWidgetOptions
+	options?: PricingOptions
 	id?: string
 	pricingDataLoader: Promise<PricingData>
 	country?: string

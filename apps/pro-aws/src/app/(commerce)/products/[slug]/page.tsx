@@ -96,11 +96,6 @@ async function ProductCommerce({
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
-	const country =
-		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
-
-	console.log(headers().get('x-vercel-ip-country'), process.env.DEFAULT_COUNTRY)
-
 	let commerceProps = await propsForCommerce(
 		{
 			query: {
@@ -109,10 +104,6 @@ async function ProductCommerce({
 			},
 			userId: user?.id,
 			products: [product],
-			country:
-				headers().get('x-vercel-ip-country') ||
-				process.env.DEFAULT_COUNTRY ||
-				'US',
 		},
 		courseBuilderAdapter,
 	)
