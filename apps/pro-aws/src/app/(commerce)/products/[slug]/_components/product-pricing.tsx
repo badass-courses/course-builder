@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { usePathname } from 'next/navigation'
 import { pricingClassNames } from '@/styles/commerce'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
@@ -29,6 +30,18 @@ export function ProductPricing({
 	const Wrapper = (props: React.PropsWithChildren<{ className?: string }>) =>
 		React.createElement('div', { [dataAttr]: '', ...props })
 
+	const teamQuantityLimit =
+		product.type === 'live'
+			? quantityAvailable && quantityAvailable > 5
+				? 5
+				: quantityAvailable
+			: 100
+
+	console.log({ teamQuantityLimit })
+
+	const pathname = usePathname()
+	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
+
 	return (
 		<>
 			{product && (
@@ -49,11 +62,9 @@ export function ProductPricing({
 								withImage: product.type !== 'live',
 								withGuaranteeBadge: product.type !== 'live',
 								isLiveEvent: product.type === 'live',
-								teamQuantityLimit:
-									quantityAvailable && quantityAvailable > 5
-										? 5
-										: quantityAvailable,
+								teamQuantityLimit,
 								isPPPEnabled: product.type !== 'live',
+								cancelUrl,
 							}}
 						/>
 					</PriceCheckProvider>

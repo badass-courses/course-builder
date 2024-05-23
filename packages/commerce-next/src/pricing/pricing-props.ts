@@ -8,13 +8,15 @@ import { CouponForCode } from '../utils/coupon-for-code'
 import { PricingData } from './pricing-widget'
 
 export type PricingOptions = {
-	withImage?: boolean
-	withGuaranteeBadge?: boolean
-	isLiveEvent?: boolean
-	isPPPEnabled?: boolean
-	teamQuantityLimit?: number
+	withImage: boolean
+	withTitle: boolean
+	withGuaranteeBadge: boolean
+	isLiveEvent: boolean
+	isPPPEnabled: boolean
+	teamQuantityLimit: number
 	saleCountdownRenderer?: ({ coupon }: { coupon: any }) => React.ReactNode
-	allowTeamPurchase?: boolean
+	allowTeamPurchase: boolean
+	cancelUrl?: string
 }
 
 export type PricingProps = {
@@ -39,7 +41,7 @@ export type PricingProps = {
 		product: Product,
 		status: QueryStatus,
 	) => React.ReactNode
-	options?: PricingOptions
+	options?: Partial<PricingOptions>
 	id?: string
 	pricingDataLoader: Promise<PricingData>
 	country?: string

@@ -4,6 +4,7 @@ import { MerchantCoupon, Product } from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
 import { PricingOptions } from './pricing-props'
+import { PricingData } from './pricing-widget'
 
 export type PricingContextType = {
 	product: Product
@@ -16,6 +17,9 @@ export type PricingContextType = {
 	autoApplyPPP: boolean
 	isBuyingMoreSeats: boolean
 	options: PricingOptions
+	userId: string | undefined
+	isPreviouslyPurchased: boolean
+	allowPurchase: boolean
 }
 
 export type PricingMachineInput = {
@@ -23,11 +27,15 @@ export type PricingMachineInput = {
 	quantity?: number
 	couponId?: string | null
 	autoApplyPPP?: boolean
-	options?: PricingOptions
+	options?: Partial<PricingOptions>
+	userId?: string | undefined
+	pricingDataLoader: Promise<PricingData>
+	allowPurchase?: boolean
 }
 
-const defaultPricingOptions = {
+export const defaultPricingOptions = {
 	withImage: true,
+	withTitle: true,
 	withGuaranteeBadge: true,
 	isLiveEvent: false,
 	isPPPEnabled: true,
@@ -113,6 +121,9 @@ export const pricingMachine = setup({
 		options: input.options
 			? { ...defaultPricingOptions, ...input.options }
 			: defaultPricingOptions,
+		userId: input.userId,
+		isPreviouslyPurchased: false,
+		allowPurchase: true,
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
@@ -201,8 +212,12 @@ export const pricingMachine = setup({
 					actions: assign({
 						activeMerchantCoupon: ({ event }) => event.merchantCoupon,
 						autoApplyPPP: false,
-						isTeamPurchaseActive: false,
-						quantity: 1,
+						isTeamPurchaseActive: ({ event, context }) =>
+							event.merchantCoupon?.type === 'ppp'
+								? false
+								: context.isTeamPurchaseActive,
+						quantity: ({ context, event }) =>
+							event.merchantCoupon?.type === 'ppp' ? 1 : context.quantity,
 					}),
 				},
 				UPDATE_QUANTITY: {
