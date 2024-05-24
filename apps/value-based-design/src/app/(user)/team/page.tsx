@@ -1,5 +1,4 @@
 import { TeamPageTemplate } from '@/app/(user)/team/page_client'
-import { Layout } from '@/components/app/layout'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
@@ -71,9 +70,5 @@ export default async function TeamPage() {
 
 	console.log({ pageData })
 
-	return (
-		<Layout>
-			<TeamPageTemplate {...pageData} />
-		</Layout>
-	)
+	return <TeamPageTemplate {...pageData} />
 }

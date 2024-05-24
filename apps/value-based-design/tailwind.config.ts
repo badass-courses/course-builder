@@ -1,12 +1,13 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+const colors = require('tailwindcss/colors')
+const { fontFamily } = require('tailwindcss/defaultTheme')
+
 const { withUt } = require('uploadthing/tw')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = withUt({
 	darkMode: ['class'],
 	content: [
-		'./pages/**/*.{ts,tsx}',
-		'./components/**/*.{ts,tsx}',
-		'./app/**/*.{ts,tsx}',
 		'./src/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
@@ -14,17 +15,26 @@ module.exports = withUt({
 	theme: {
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: 0,
 			screens: {
-				'2xl': '1400px',
+				'2xl': '1280px',
 			},
 		},
 		extend: {
+			fontFamily: {
+				sans: ['var(--font-geist-sans)', ...fontFamily.sans],
+				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+				heading: ['var(--font-l)', ...fontFamily.sans],
+			},
 			colors: {
+				gray: colors.trueGray,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
+				background: {
+					DEFAULT: 'hsl(var(--background))',
+					body: 'hsl(var(--background-body))',
+				},
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
