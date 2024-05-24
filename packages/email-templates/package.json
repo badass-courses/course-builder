@@ -31,10 +31,10 @@
 	"license": "ISC",
 	"dependencies": {
 		"@react-email/components": "^0.0.16",
-		"@types/react": "^18.3.1",
+		"@types/react": "npm:types-react@rc",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
-		"react": "18.3.1",
+		"react": "19.0.0-rc-935180c7e0-20240524",
 		"react-email": "2.1.1",
 		"tsup": "8.0.2"
 	}
