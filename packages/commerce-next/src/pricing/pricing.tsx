@@ -2,6 +2,7 @@ import * as React from 'react'
 import Image from 'next/image'
 import { Slot } from '@radix-ui/react-slot'
 import * as Switch from '@radix-ui/react-switch'
+import pluralize from 'pluralize'
 import Balancer from 'react-wrap-balancer'
 
 import { Product } from '@coursebuilder/core/schemas'
@@ -115,7 +116,7 @@ const Details = ({
 	return (
 		<article
 			className={cn(
-				'px-5 py-5 pt-6',
+				'flex flex-col items-center px-5 py-5 pt-6',
 				{
 					'rounded-none border-none bg-transparent pb-8 pt-10 shadow-none ':
 						isLiveEvent,
@@ -375,8 +376,12 @@ const TeamQuantityInput = ({
 		options: { teamQuantityLimit },
 		updateQuantity,
 		setMerchantCoupon,
+		pricingData: { quantityAvailable },
 		isTeamPurchaseActive,
 	} = usePricing()
+
+	console.log({ product, quantity, teamQuantityLimit, quantityAvailable })
+
 	return isTeamPurchaseActive ? (
 		<div
 			className={cn(
@@ -539,6 +544,7 @@ const PPPToggle = ({
 		setMerchantCoupon,
 		pricingData: { purchaseToUpgrade },
 		allowPurchase,
+		activeMerchantCoupon,
 	} = usePricing()
 
 	const { isDowngrade } = usePriceCheck()
@@ -548,9 +554,7 @@ const PPPToggle = ({
 	)
 
 	const appliedPPPCoupon =
-		formattedPrice?.appliedMerchantCoupon?.type === 'ppp'
-			? formattedPrice?.appliedMerchantCoupon
-			: null
+		activeMerchantCoupon?.type === 'ppp' ? activeMerchantCoupon : null
 
 	const allowPurchaseWith: { [key: string]: boolean } = {
 		pppCoupon: true,
@@ -644,6 +648,47 @@ const PPPToggle = ({
 		: null
 }
 
+const LiveQuantity = ({
+	children,
+	className,
+}: {
+	children?: React.ReactNode
+	className?: string
+}) => {
+	const {
+		product,
+		isPreviouslyPurchased,
+		options: { isLiveEvent },
+		pricingData: { quantityAvailable },
+	} = usePricing()
+
+	const isSoldOut = Boolean(
+		product.type === 'live' &&
+			!isPreviouslyPurchased &&
+			(quantityAvailable || 0) <= 0,
+	)
+
+	return isLiveEvent
+		? children || (
+				<div
+					className={cn(
+						{
+							'bg-foreground/20 text-foreground inline-flex items-center rounded px-2.5 pb-1.5 pt-1 text-center text-sm font-medium uppercase leading-none':
+								!isSoldOut,
+							'inline-flex rounded bg-red-300/20 px-2 py-1 text-center text-sm font-medium uppercase leading-none text-red-300':
+								isSoldOut,
+						},
+						className,
+					)}
+				>
+					{isSoldOut
+						? 'Sold out'
+						: `${pluralize('spot', quantityAvailable, true)} left.`}
+				</div>
+			)
+		: null
+}
+
 export {
 	Root,
 	PricingProduct as Product,
@@ -657,4 +702,5 @@ export {
 	GuaranteeBadge,
 	LiveRefundPolicy,
 	PPPToggle,
+	LiveQuantity,
 }

@@ -32,7 +32,7 @@ export const PricingProvider = ({
 }) => {
 	const pricingData = use(props.pricingDataLoader)
 	const [state, send] = useMachine(pricingMachine, {
-		input: props,
+		input: { ...props, pricingData },
 	})
 
 	const toggleBuyingMoreSeats = () => {

@@ -20,6 +20,7 @@ export type PricingContextType = {
 	userId: string | undefined
 	isPreviouslyPurchased: boolean
 	allowPurchase: boolean
+	pricingData: PricingData
 }
 
 export type PricingMachineInput = {
@@ -31,6 +32,8 @@ export type PricingMachineInput = {
 	userId?: string | undefined
 	pricingDataLoader: Promise<PricingData>
 	allowPurchase?: boolean
+	quantityAvailable?: number
+	pricingData?: PricingData
 }
 
 export const defaultPricingOptions = {
@@ -123,6 +126,11 @@ export const pricingMachine = setup({
 		userId: input.userId,
 		isPreviouslyPurchased: false,
 		allowPurchase: true,
+		pricingData: input.pricingData || {
+			formattedPrice: null,
+			purchaseToUpgrade: null,
+			quantityAvailable: -1,
+		},
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
@@ -194,7 +202,10 @@ export const pricingMachine = setup({
 						assign({
 							isTeamPurchaseActive: ({ context }) =>
 								!context.isTeamPurchaseActive,
-							quantity: ({ context }) => (context.isTeamPurchaseActive ? 1 : 5),
+							quantity: ({ context }) =>
+								context.isTeamPurchaseActive
+									? 1
+									: Math.min(context.pricingData.quantityAvailable, 5),
 						}),
 					],
 					guard: {

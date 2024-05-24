@@ -21,7 +21,13 @@ export const PricingWidget: React.FC<{
 	pricingDataLoader: Promise<PricingData>
 	hasPurchasedCurrentProduct?: boolean
 	pricingWidgetOptions?: Partial<PricingOptions>
-}> = ({ product, commerceProps, pricingDataLoader, pricingWidgetOptions }) => {
+}> = ({
+	product,
+	commerceProps,
+	pricingDataLoader,
+	pricingWidgetOptions,
+	quantityAvailable,
+}) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
 	const couponId =
@@ -41,6 +47,7 @@ export const PricingWidget: React.FC<{
 				<Pricing.ProductImage />
 				<Pricing.Details>
 					<Pricing.Name />
+					<Pricing.LiveQuantity />
 					<Pricing.Price />
 					<Pricing.TeamToggle />
 					<Pricing.TeamQuantityInput />
