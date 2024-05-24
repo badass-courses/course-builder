@@ -15,22 +15,24 @@
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
 
+		--background-body: 0 0% 95%;
+
 		/* shadcnui */
 
 		--background: 0 0% 100%;
-		--foreground: 222.2 84% 4.9%;
+		--foreground: 0 0% 0%;
 
 		--card: 0 0% 100%;
-		--card-foreground: 222.2 84% 4.9%;
+		--card-foreground: 0 0% 0%;
 
 		--popover: 0 0% 100%;
 		--popover-foreground: 222.2 84% 4.9%;
 
-		--primary: 222.2 47.4% 11.2%;
-		--primary-foreground: 210 40% 98%;
+		--primary: 158 70% 59%;
+		--primary-foreground: 0 0% 0%;
 
-		--secondary: 210 40% 96.1%;
-		--secondary-foreground: 222.2 47.4% 11.2%;
+		--secondary: 0 0% 69%;
+		--secondary-foreground: 0 0% 0%;
 
 		--muted: 210 40% 96.1%;
 		--muted-foreground: 215.4 16.3% 46.9%;
@@ -87,7 +89,15 @@
 	}
 
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background-body text-foreground antialiased;
+	}
+
+	.container {
+		@apply bg-background;
+	}
+
+	.content-container {
+		@apply bg-background container flex-grow shadow-[0_0_120px_rgba(0,0,0,.15)] xl:mt-[calc((100vw-1280px)/3)] xl:rounded-t-[20px] 2xl:mt-[84px];
 	}
 }
 
