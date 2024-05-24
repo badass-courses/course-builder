@@ -74,13 +74,14 @@ export async function getCouponForCode(
 	return undefined
 }
 
-type PropsForCommerce = {
+export type PropsForCommerce = {
 	products: Product[]
 	allowPurchase: boolean
 	purchases?: Purchase[] | undefined
 	couponIdFromCoupon?: string | undefined
 	couponFromCode?: any
 	userId?: string | undefined
+	country?: string
 }
 
 export async function propsForCommerce(

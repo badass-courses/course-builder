@@ -9,4 +9,5 @@ export type CommerceProps = {
 	purchases?: Purchase[]
 	products?: Product[]
 	allowPurchase?: boolean
+	country?: string
 }

@@ -81,7 +81,7 @@ async function getActiveMerchantCoupon({
 	courseBuilderAdapter,
 }: {
 	productId: string | undefined
-	siteCouponId: string | undefined
+	siteCouponId: string | null | undefined
 	code: string | undefined
 	courseBuilderAdapter: CourseBuilderAdapter
 }) {
@@ -219,7 +219,11 @@ export async function getPricesFormatted(
 		await options.adapter.getPurchasesForUser(userId),
 	)
 
-	const country = request.body?.country || process.env.DEFAULT_COUNTRY || 'US'
+	const country =
+		request.headers?.['x-vercel-ip-country'] ||
+		request.body?.country ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
 
 	let upgradeFromPurchaseId = await checkForAnyAvailableUpgrades({
 		upgradeFromPurchaseId: _upgradeFromPurchaseId,

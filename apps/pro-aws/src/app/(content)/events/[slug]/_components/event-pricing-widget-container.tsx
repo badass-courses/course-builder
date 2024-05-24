@@ -44,6 +44,7 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 						quantityAvailable={quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={{
+							withTitle: false,
 							withImage: false,
 							withGuaranteeBadge: false,
 							isLiveEvent: true,

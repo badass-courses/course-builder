@@ -64,6 +64,8 @@ export const RegionalPricingBox: React.FC<
 					<img
 						src={`https://hardcore-golick-433858.netlify.app/image?code=${countryCode}`}
 						alt={`${country} flag`}
+						width={18}
+						height={14}
 					/>{' '}
 					{country}. To help facilitate global learning, we are offering
 					purchasing power parity pricing.

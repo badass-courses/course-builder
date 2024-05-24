@@ -1,10 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import { PricingData } from '@/lib/pricing-query'
+import { usePathname } from 'next/navigation'
+import { pricingClassNames } from '@/styles/commerce'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
-import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
+import {
+	PricingData,
+	PricingWidget,
+} from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
 
 export function ProductPricing({
@@ -26,10 +30,22 @@ export function ProductPricing({
 	const Wrapper = (props: React.PropsWithChildren<{ className?: string }>) =>
 		React.createElement('div', { [dataAttr]: '', ...props })
 
+	const teamQuantityLimit =
+		product.type === 'live'
+			? quantityAvailable && quantityAvailable > 5
+				? 5
+				: quantityAvailable
+			: 100
+
+	console.log({ teamQuantityLimit })
+
+	const pathname = usePathname()
+	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
+
 	return (
 		<>
 			{product && (
-				<Wrapper className="flex flex-col items-center">
+				<Wrapper className={pricingClassNames('flex flex-col items-center')}>
 					{product.type === 'live' && (
 						<h1 className="font-heading mx-auto inline-flex w-full max-w-2xl items-center justify-center text-balance px-5 pb-10 text-center text-5xl font-bold leading-tight">
 							{product?.name}
@@ -46,11 +62,9 @@ export function ProductPricing({
 								withImage: product.type !== 'live',
 								withGuaranteeBadge: product.type !== 'live',
 								isLiveEvent: product.type === 'live',
-								teamQuantityLimit:
-									quantityAvailable && quantityAvailable > 5
-										? 5
-										: quantityAvailable,
+								teamQuantityLimit,
 								isPPPEnabled: product.type !== 'live',
+								cancelUrl,
 							}}
 						/>
 					</PriceCheckProvider>

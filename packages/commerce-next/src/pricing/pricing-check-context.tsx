@@ -1,34 +1,17 @@
 import * as React from 'react'
-import { Dispatch, SetStateAction } from 'react'
 
-import { MerchantCoupon } from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
-
-type MinimalMerchantCoupon = Omit<
-	MerchantCoupon & {
-		country?: string
-	},
-	'identifier'
->
 
 type PricingContextType = {
 	addPrice: (price: FormattedPrice, productId: string) => void
 	isDowngrade: (price?: FormattedPrice | null) => boolean
 	isDiscount: (price?: FormattedPrice | null) => boolean
-	merchantCoupon?: MinimalMerchantCoupon | undefined | null
-	setMerchantCoupon: Dispatch<SetStateAction<MinimalMerchantCoupon | undefined>>
-	quantity: number
-	setQuantity: Dispatch<SetStateAction<number>>
 }
 
 const defaultPriceCheckContext: PricingContextType = {
 	addPrice: () => {},
 	isDowngrade: () => false,
 	isDiscount: () => false,
-	merchantCoupon: undefined,
-	setMerchantCoupon: () => {},
-	quantity: 1,
-	setQuantity: () => {},
 }
 
 /**
@@ -83,22 +66,12 @@ export const PriceCheckProvider: React.FC<React.PropsWithChildren<any>> = ({
 		return price.fullPrice > price.calculatedPrice
 	}, [])
 
-	const [merchantCoupon, setMerchantCoupon] = React.useState<
-		MinimalMerchantCoupon | undefined
-	>()
-
-	const [quantity, setQuantity] = React.useState(1)
-
 	return (
 		<PriceCheckContext.Provider
 			value={{
 				addPrice,
 				isDowngrade,
 				isDiscount,
-				merchantCoupon,
-				setMerchantCoupon,
-				quantity,
-				setQuantity,
 			}}
 		>
 			{children}

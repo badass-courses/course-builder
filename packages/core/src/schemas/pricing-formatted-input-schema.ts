@@ -5,7 +5,7 @@ import { merchantCouponSchema } from './merchant-coupon-schema'
 export const PricingFormattedInputSchema = z.object({
 	productId: z.string().optional(),
 	quantity: z.number().optional().default(1),
-	couponId: z.string().optional(),
+	couponId: z.string().nullable().optional(),
 	merchantCoupon: merchantCouponSchema.optional().nullable(),
 	upgradeFromPurchaseId: z.string().optional(),
 	autoApplyPPP: z.boolean().default(true),

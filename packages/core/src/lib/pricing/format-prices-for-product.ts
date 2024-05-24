@@ -2,7 +2,7 @@ import { isEmpty, sum } from 'lodash'
 
 import { CourseBuilderAdapter } from '../../adapters'
 import { Price, Product, Purchase } from '../../schemas'
-import { FormattedPrice } from '../../types'
+import { FormatPricesForProductOptions, FormattedPrice } from '../../types'
 import { determineCouponToApply } from './determine-coupon-to-apply.js'
 import { getCalculatedPrice } from './get-calculated-price.js'
 
@@ -23,18 +23,6 @@ export class PriceFormattingError extends Error {
 		this.name = 'PriceFormattingError'
 		this.options = options
 	}
-}
-
-type FormatPricesForProductOptions = {
-	productId: string
-	country?: string
-	quantity?: number
-	merchantCouponId?: string
-	ctx: CourseBuilderAdapter
-	upgradeFromPurchaseId?: string
-	userId?: string
-	autoApplyPPP?: boolean
-	usedCouponId?: string
 }
 
 async function getChainOfPurchases({
@@ -150,6 +138,8 @@ export async function formatPricesForProduct(
 		autoApplyPPP = true,
 		usedCouponId,
 	} = noContextOptions
+
+	if (!productId) throw new Error('productId is required')
 
 	const { getProduct, getPriceForProduct, getPurchase, getCoupon } = ctx
 

@@ -2,20 +2,18 @@ import { courseBuilderAdapter, db } from '@/db'
 import { purchases } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
+import { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { formatPricesForProduct } from '@coursebuilder/core'
 import { Purchase } from '@coursebuilder/core/schemas'
-import { type FormattedPrice } from '@coursebuilder/core/types'
-
-export type PricingData = {
-	formattedPrice?: FormattedPrice | null
-	purchaseToUpgrade?: Purchase | null
-	quantityAvailable: number
-}
+import {
+	type FormatPricesForProductOptions,
+	type FormattedPrice,
+} from '@coursebuilder/core/types'
 
 export async function getPricingData(
-	productId?: string | null,
+	options: Partial<FormatPricesForProductOptions>,
 ): Promise<PricingData> {
-	if (!productId)
+	if (!options.productId)
 		return {
 			formattedPrice: null,
 			purchaseToUpgrade: null,
@@ -23,13 +21,13 @@ export async function getPricingData(
 		}
 
 	const formattedPrice = await formatPricesForProduct({
-		productId,
+		...options,
 		ctx: courseBuilderAdapter,
 	})
 
-	const product = await courseBuilderAdapter.getProduct(productId)
+	const product = await courseBuilderAdapter.getProduct(options.productId)
 	const totalPurchases = await db.query.purchases.findMany({
-		where: eq(purchases.productId, productId),
+		where: eq(purchases.productId, options.productId),
 	})
 
 	const purchaseToUpgrade = formattedPrice.upgradeFromPurchaseId

@@ -2050,6 +2050,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.25.0
         version: 5.31.0(react@18.3.1)
+      '@xstate/react':
+        specifier: ^4.1.1
+        version: 4.1.1(@types/react@18.3.1)(react@18.3.1)(xstate@5.13.0)
       clsx:
         specifier: ^2.0.0
         version: 2.1.0
@@ -2110,6 +2113,9 @@ importers:
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
+      xstate:
+        specifier: ^5.13.0
+        version: 5.13.0
       yup:
         specifier: ^0.32.11
         version: 0.32.11
@@ -13952,6 +13958,23 @@ packages:
 
   /@xobotyi/scrollbar-width@1.9.5:
     resolution: {integrity: sha512-N8tkAACJx2ww8vFMneJmaAgmjAG1tnVBZJRLRcx061tmsLRZHSEZSLuGWnwPtunsSLvSqXQ2wfp7Mgqg1I+2dQ==}
+    dev: false
+
+  /@xstate/react@4.1.1(@types/react@18.3.1)(react@18.3.1)(xstate@5.13.0):
+    resolution: {integrity: sha512-pFp/Y+bnczfaZ0V8B4LOhx3d6Gd71YKAPbzerGqydC2nsYN/mp7RZu3q/w6/kvI2hwR/jeDeetM7xc3JFZH2NA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      xstate: ^5.11.0
+    peerDependenciesMeta:
+      xstate:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      use-isomorphic-layout-effect: 1.1.2(@types/react@18.3.1)(react@18.3.1)
+      use-sync-external-store: 1.2.0(react@18.3.1)
+      xstate: 5.13.0
+    transitivePeerDependencies:
+      - '@types/react'
     dev: false
 
   /@xtuc/ieee754@1.2.0:
@@ -28388,6 +28411,10 @@ packages:
   /xmlhttprequest-ssl@2.0.0:
     resolution: {integrity: sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==}
     engines: {node: '>=0.4.0'}
+    dev: false
+
+  /xstate@5.13.0:
+    resolution: {integrity: sha512-Z0om784N5u8sAzUvQJBa32jiTCIGGF/2ZsmKkerQEqeeUktAeOMK20FIHFUMywC4GcAkNksSvaeX7lwoRNXPEQ==}
     dev: false
 
   /y-codemirror.jh@0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14):
