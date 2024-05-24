@@ -205,7 +205,9 @@ export const pricingMachine = setup({
 							quantity: ({ context }) =>
 								context.isTeamPurchaseActive
 									? 1
-									: Math.min(context.pricingData.quantityAvailable, 5),
+									: context.options.isLiveEvent
+										? Math.min(context.pricingData.quantityAvailable, 5)
+										: Math.min(context.options.teamQuantityLimit, 5),
 						}),
 					],
 					guard: {

@@ -380,8 +380,6 @@ const TeamQuantityInput = ({
 		isTeamPurchaseActive,
 	} = usePricing()
 
-	console.log({ product, quantity, teamQuantityLimit, quantityAvailable })
-
 	return isTeamPurchaseActive ? (
 		<div
 			className={cn(

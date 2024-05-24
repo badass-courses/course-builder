@@ -168,8 +168,6 @@ async function ProductCommerce({
 		}
 	}
 
-	console.log({ productProps })
-
 	return (
 		<Suspense>
 			<ProductPricing {...productProps} />

@@ -37,8 +37,6 @@ export function ProductPricing({
 				: quantityAvailable
 			: 100
 
-	console.log({ teamQuantityLimit })
-
 	const pathname = usePathname()
 	const cancelUrl = process.env.NEXT_PUBLIC_URL + pathname
 
