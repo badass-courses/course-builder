@@ -142,13 +142,13 @@ export const SubscribeToConvertkitForm: React.FC<
 				)}
 			</div>
 			{submitButtonElem ? (
-				React.cloneElement(submitButtonElem, {
-					type: 'submit',
+				React.cloneElement<any>(submitButtonElem, {
+					typeof: 'submit',
 					disabled: Boolean(isSubmitting),
 					children: isSubmitting ? (
 						<Spinner className="h-5 w-5" />
 					) : (
-						submitButtonElem.props.children
+						(submitButtonElem.props as any).children
 					),
 				})
 			) : (

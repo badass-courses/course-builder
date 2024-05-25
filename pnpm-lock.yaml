@@ -1059,9 +1059,6 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-f994737d14-20240522
         version: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
-      react-gravatar:
-        specifier: ^2.6.3
-        version: 2.6.3(react@19.0.0-rc-f994737d14-20240522)
       react-hook-form:
         specifier: ^7.48.0
         version: 7.51.0(react@19.0.0-rc-f994737d14-20240522)
@@ -1192,9 +1189,6 @@ importers:
       '@types/react-dom':
         specifier: npm:types-react-dom@19.0.0-beta.1
         version: /types-react-dom@19.0.0-beta.1
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
       '@types/styled-components':
         specifier: ^5.1.29
         version: 5.1.34

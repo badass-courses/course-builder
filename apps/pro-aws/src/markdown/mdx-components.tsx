@@ -25,7 +25,8 @@ const Tweet: React.FC<TweetProps> = ({ text, url, author }) => {
 				>
 					<Image src={avatar} alt={name} width={48} height={48} />
 					<div data-name="">
-						{name} <div data-handle="">@{handle}</div>
+						{name}
+						<div data-handle="">@{handle}</div>
 					</div>
 				</a>
 				<a href={url} target="_blank" rel="noopener noreferrer">
@@ -175,7 +176,9 @@ const mdxComponents = {
 	YouTube: ({ videoId }: YouTubeProps) => {
 		return <YouTube videoId={videoId} />
 	},
-	Image: (props: ImageProps) => <Image {...props} />,
+	Image: (props: ImageProps & { children?: React.ReactNode }) => (
+		<Image {...props} />
+	),
 	ChecklistItem: ({ children }: React.PropsWithChildren<{}>) => {
 		return <li data-checklist-item="">{children}</li>
 	},

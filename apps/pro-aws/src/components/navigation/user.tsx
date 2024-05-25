@@ -11,7 +11,6 @@ import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import { cx } from 'class-variance-authority'
 import { ChevronDownIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
-import Gravatar from 'react-gravatar'
 
 import {
 	DropdownMenu,
@@ -22,6 +21,7 @@ import {
 	DropdownMenuTrigger,
 	Skeleton,
 } from '@coursebuilder/ui'
+import { Gravatar } from '@coursebuilder/ui/gravatar'
 
 import { NavLinkItem } from './nav-link-item'
 

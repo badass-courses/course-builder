@@ -21,7 +21,7 @@ export function Transcript({
 	return (
 		<ReactMarkdown
 			components={{
-				p: ({ children }) =>
+				p: ({ children }: { children?: any }) =>
 					paragraphWithTimestampButtons({
 						children,
 						canShowVideo,

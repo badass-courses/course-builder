@@ -91,27 +91,6 @@ export function MoveDialog({
 							<ModalTitle>Move</ModalTitle>
 						</ModalHeader>
 						<ModalBody>
-							<Field<{ value: string }>
-								id="parent"
-								name="parent"
-								label="Parent"
-								isRequired
-								defaultValue={defaultParent}
-							>
-								{({ fieldProps }) => (
-									<Select
-										{...fieldProps}
-										ref={parentSelectRef}
-										onChange={(option) => {
-											invariant(option !== null)
-											setParentId(option.value)
-											fieldProps.onChange(option)
-										}}
-										menuPosition="fixed"
-										options={options}
-									/>
-								)}
-							</Field>
 							<PositionSelectField
 								options={positionOptions}
 								setFieldValue={setFieldValue}
@@ -161,9 +140,7 @@ function PositionSelectField({
 			isRequired
 			defaultValue={options[0]}
 		>
-			{({ fieldProps }) => (
-				<Select {...fieldProps} menuPosition="fixed" options={options} />
-			)}
+			{({ fieldProps }) => <div />}
 		</Field>
 	)
 }
