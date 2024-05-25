@@ -12,16 +12,20 @@
 	"dependencies": {
 		"@t3-oss/env-nextjs": "^0.7.1",
 		"next": "canary",
-		"react": "canary",
-		"react-dom": "canary",
+		"react": "19.0.0-rc-f994737d14-20240522",
+		"react-dom": "19.0.0-rc-f994737d14-20240522",
 		"zod": "^3.22.4"
+	},
+	"overrides": {
+		"@types/react": "$@types/react",
+		"@types/react-dom": "$@types/react-dom"
 	},
 	"devDependencies": {
 		"@next/eslint-plugin-next": "^14.0.3",
 		"@types/eslint": "^8.44.7",
 		"@types/node": "^20.12.5",
-		"@types/react": "^18.3.1",
-		"@types/react-dom": "^18.3.0",
+		"@types/react": "npm:types-react@19.0.0-beta.1",
+		"@types/react-dom": "npm:types-react-dom@19.0.0-beta.1",
 		"@typescript-eslint/eslint-plugin": "^6.11.0",
 		"@typescript-eslint/parser": "^6.11.0",
 		"eslint": "^8.54.0",

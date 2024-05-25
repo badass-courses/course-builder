@@ -139,10 +139,10 @@
 		"pluralize": "^8.0.0",
 		"prism-react-renderer": "^2.2.0",
 		"query-string": "^9.0.0",
-		"react": "18.3.1",
+		"react": "19.0.0-rc-f994737d14-20240522",
+		"react-dom": "19.0.0-rc-f994737d14-20240522",
 		"react-aria": "^3.32.1",
 		"react-countdown": "^2.3.5",
-		"react-dom": "18.3.1",
 		"react-gravatar": "^2.6.3",
 		"react-hook-form": "^7.48.0",
 		"react-hot-toast": "^2.4.1",
@@ -176,6 +176,10 @@
 		"zod-to-json-schema": "^3.22.4",
 		"zustand": "^4.4.7"
 	},
+	"overrides": {
+		"@types/react": "$@types/react",
+		"@types/react-dom": "$@types/react-dom"
+	},
 	"devDependencies": {
 		"@mux/mux-node": "^7.3.2",
 		"@tailwindcss/typography": "^0.5.10",
@@ -185,8 +189,8 @@
 		"@types/mjml": "^4.7.4",
 		"@types/node": "^20.12.5",
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "^18.3.1",
-		"@types/react-dom": "^18.3.0",
+		"@types/react": "npm:types-react@19.0.0-beta.1",
+		"@types/react-dom": "npm:types-react-dom@19.0.0-beta.1",
 		"@types/react-gravatar": "^2.6.13",
 		"@types/styled-components": "^5.1.29",
 		"autoprefixer": "^10.4.14",
