@@ -91,21 +91,19 @@ export const pricingMachine = setup({
 	},
 	guards: {
 		canToggleTeamPurchase: function ({ context, event }) {
-			// Add your guard condition here
-			return true
+			console.log('GUARD!', context.isPPPActive)
+			return !context.isPPPActive
 		},
 		isPPPAvailable: function ({ context, event }) {
-			// Add your guard condition here
-			return true
+			return Boolean(
+				context.formattedPrice?.availableCoupons.some(
+					(coupon) => coupon?.type === 'ppp',
+				),
+			)
 		},
 		canUpdateQuantity: and([
 			({ context, event }) => {
-				// Add a guard condition here
-				return true
-			},
-			({ context, event }) => {
-				// Add another guard condition here
-				return true
+				return context.isTeamPurchaseActive && !context.isPPPActive
 			},
 		]),
 	},
@@ -198,8 +196,9 @@ export const pricingMachine = setup({
 				TOGGLE_TEAM_PURCHASE: {
 					target: 'Loading Pricing Data',
 					actions: [
-						assign({ isPPPActive: false }),
 						assign({
+							activeMerchantCoupon: undefined,
+							isPPPActive: false,
 							isTeamPurchaseActive: ({ context }) =>
 								!context.isTeamPurchaseActive,
 							quantity: ({ context }) =>
@@ -224,6 +223,7 @@ export const pricingMachine = setup({
 					actions: assign({
 						activeMerchantCoupon: ({ event }) => event.merchantCoupon,
 						autoApplyPPP: false,
+						isPPPActive: ({ event }) => event.merchantCoupon?.type === 'ppp',
 						isTeamPurchaseActive: ({ event, context }) =>
 							event.merchantCoupon?.type === 'ppp'
 								? false
