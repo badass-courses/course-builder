@@ -15,7 +15,7 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import { DateSegment } from './date-segment'
 
 function DateField(props: AriaDatePickerProps<DateValue>) {
-	const ref = useRef<HTMLDivElement | null>(null)
+	const ref = useRef<any>(null)
 
 	const { locale } = useLocale()
 	const state = useDateFieldState({
@@ -27,6 +27,7 @@ function DateField(props: AriaDatePickerProps<DateValue>) {
 
 	return (
 		<div
+			aria-label={'Date'}
 			{...fieldProps}
 			ref={ref}
 			className={cn(

@@ -41,9 +41,9 @@ const DateTimePicker = React.forwardRef<
 	HTMLDivElement,
 	DatePickerStateOptions<DateValue>
 >((props, forwardedRef) => {
-	const ref = useForwardedRef(forwardedRef)
-	const buttonRef = useRef<HTMLButtonElement | null>(null)
-	const contentRef = useRef<HTMLDivElement | null>(null)
+	const ref = useForwardedRef<any>(forwardedRef)
+	const buttonRef = useRef<any>(null)
+	const contentRef = useRef<any>(null)
 
 	const [open, setOpen] = useState(false)
 
@@ -65,6 +65,7 @@ const DateTimePicker = React.forwardRef<
 
 	return (
 		<div
+			aria-label={'Date and Time'}
 			{...groupProps}
 			ref={ref}
 			className={cn(

@@ -12,7 +12,7 @@ interface DateSegmentProps {
 }
 
 function DateSegment({ segment, state }: DateSegmentProps) {
-	const ref = useRef(null)
+	const ref = useRef<any>(null)
 
 	const {
 		segmentProps: { ...segmentProps },
