@@ -10,7 +10,6 @@ import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/solid'
 import { cx } from 'class-variance-authority'
 import { ChevronDownIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
-import Gravatar from 'react-gravatar'
 
 import {
 	DropdownMenu,
@@ -20,6 +19,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@coursebuilder/ui'
+import { Gravatar } from '@coursebuilder/ui/gravatar'
 
 export const User: React.FC<{ className?: string }> = ({ className }) => {
 	const pathname = usePathname()

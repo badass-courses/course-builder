@@ -38,6 +38,7 @@
 		"@radix-ui/react-switch": "^1.0.3",
 		"@radix-ui/react-toast": "^1.1.5",
 		"@radix-ui/react-tooltip": "^1.0.7",
+		"@types/md5": "^2.3.5",
 		"@uiw/codemirror-themes": "^4.21.24",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
@@ -45,11 +46,14 @@
 		"codemirror": "^6.0.1",
 		"framer-motion": "^11",
 		"lucide-react": "^0.288.0",
+		"md5": "^2.3.0",
 		"openai-edge": "^1.2.2",
 		"partysocket": "1.0.1",
+		"prop-types": "^15.8.1",
+		"query-string": "^9.0.0",
 		"react": "19.0.0-rc-f994737d14-20240522",
-		"react-dom": "19.0.0-rc-f994737d14-20240522",
 		"react-day-picker": "^8.9.0",
+		"react-dom": "19.0.0-rc-f994737d14-20240522",
 		"react-gravatar": "^2.6.3",
 		"react-hook-form": "^7.48.0",
 		"react-markdown": "^9.0.0",
@@ -68,6 +72,7 @@
 		"@types/react-dom": "$@types/react-dom"
 	},
 	"devDependencies": {
+		"@types/prop-types": "^15.7.12",
 		"@types/react": "npm:types-react@19.0.0-beta.1",
 		"@types/react-dom": "npm:types-react-dom@19.0.0-beta.1",
 		"@types/react-gravatar": "^2.6.13"

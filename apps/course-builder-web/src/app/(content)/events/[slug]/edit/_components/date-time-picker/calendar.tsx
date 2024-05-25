@@ -24,8 +24,8 @@ import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 function Calendar(props: CalendarProps<DateValue>) {
-	const prevButtonRef = React.useRef<HTMLButtonElement | null>(null)
-	const nextButtonRef = React.useRef<HTMLButtonElement | null>(null)
+	const prevButtonRef = React.useRef<any>(null)
+	const nextButtonRef = React.useRef<any>(null)
 
 	const { locale } = useLocale()
 	const state = useCalendarState({
@@ -131,7 +131,7 @@ interface CalendarCellProps {
 }
 
 function CalendarCell({ state, date }: CalendarCellProps) {
-	const ref = React.useRef<HTMLButtonElement | null>(null)
+	const ref = React.useRef<any>(null)
 	const {
 		cellProps,
 		buttonProps,

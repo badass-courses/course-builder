@@ -107,27 +107,32 @@ const EventMetadataFormFields = ({
 			<FormField
 				control={form.control}
 				name="fields.startsAt"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel>Starts At:</FormLabel>
-						<DateTimePicker
-							{...field}
-							value={
-								!!field.value
-									? parseAbsolute(field.value, 'America/Los_Angeles')
-									: null
-							}
-							onChange={(date) => {
-								field.onChange(
-									!!date ? date.toDate('America/Los_Angeles') : null,
-								)
-							}}
-							shouldCloseOnSelect={false}
-							granularity="minute"
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel>Starts At:</FormLabel>
+							<DateTimePicker
+								{...field}
+								value={
+									!!field.value
+										? parseAbsolute(
+												new Date(field.value).toISOString(),
+												'America/Los_Angeles',
+											)
+										: null
+								}
+								onChange={(date) => {
+									field.onChange(
+										!!date ? date.toDate('America/Los_Angeles') : null,
+									)
+								}}
+								shouldCloseOnSelect={false}
+								granularity="minute"
+							/>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
 			/>
 			<FormField
 				control={form.control}
@@ -139,7 +144,10 @@ const EventMetadataFormFields = ({
 							{...field}
 							value={
 								!!field.value
-									? parseAbsolute(field.value, 'America/Los_Angeles')
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
 									: null
 							}
 							onChange={(date) => {

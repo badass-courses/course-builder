@@ -56,13 +56,7 @@ export function Links({ className }: { className?: string }) {
 
 	const navigationLinks = getNavigationLinks()
 	return (
-		<motion.nav
-			aria-label="top"
-			className={cn(
-				'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
-				className,
-			)}
-		>
+		<motion.nav aria-label="top">
 			<div className="flex items-center gap-2">
 				<Link
 					href="/"
@@ -110,7 +104,6 @@ export function Links({ className }: { className?: string }) {
 							type: 'spring',
 							duration: 0.5,
 						}}
-						className="bg-card absolute left-0 top-0 flex w-full flex-col gap-2 border-b px-2 pb-5 pt-16 text-2xl font-medium shadow-2xl shadow-black/20 backdrop-blur-md md:hidden"
 					>
 						{navigationLinks.map(({ label, href, icon }) => {
 							return (

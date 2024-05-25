@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useRef } from 'react'
 import { User } from '@auth/core/types'
-import Gravatar from 'react-gravatar'
 import ReactMarkdown from 'react-markdown'
 
 import { useSocket } from '../hooks/use-socket'
@@ -132,13 +131,6 @@ function MessageHeader({ userData }: { userData?: User | null }) {
 		<div className="pb-1">
 			{userData ? (
 				<div className="flex items-center gap-1">
-					{userData?.email && (
-						<Gravatar
-							className="h-5 w-5 rounded-full"
-							email={userData.email}
-							default="mp"
-						/>
-					)}
 					<strong>{userData?.name?.split(' ')[0] || 'User'}</strong>
 				</div>
 			) : (

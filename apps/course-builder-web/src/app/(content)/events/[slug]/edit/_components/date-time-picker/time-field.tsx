@@ -14,7 +14,7 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import { DateSegment } from './date-segment'
 
 function TimeField(props: AriaTimeFieldProps<TimeValue>) {
-	const ref = useRef<HTMLDivElement | null>(null)
+	const ref = useRef<any>(null)
 
 	const { locale } = useLocale()
 	const state = useTimeFieldState({
@@ -28,6 +28,7 @@ function TimeField(props: AriaTimeFieldProps<TimeValue>) {
 
 	return (
 		<div
+			aria-label={'Time'}
 			{...fieldProps}
 			ref={ref}
 			className={cn(
