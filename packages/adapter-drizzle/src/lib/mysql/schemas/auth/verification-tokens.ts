@@ -7,7 +7,7 @@ import {
 
 export function getVerificationTokensSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'verificationToken',
+		'VerificationToken',
 		{
 			identifier: varchar('identifier', { length: 255 }).notNull(),
 			token: varchar('token', { length: 255 }).notNull(),

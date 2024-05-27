@@ -21,7 +21,7 @@ import { getPurchaseSchema } from './purchase.js'
 
 export function getCouponSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'coupons',
+		'Coupons',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			code: varchar('code', { length: 191 }),

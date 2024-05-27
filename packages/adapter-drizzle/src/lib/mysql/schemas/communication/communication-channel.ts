@@ -9,7 +9,7 @@ import {
 
 export function getCommunicationChannelSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'communicationChannel',
+		'CommunicationChannel',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			name: varchar('name', { length: 255 }).notNull(),

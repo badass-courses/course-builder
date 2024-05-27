@@ -12,15 +12,12 @@ import {
 import { getUsersSchema } from '../auth/users.js'
 import { getCouponSchema } from './coupon.js'
 import { getMerchantChargeSchema } from './merchant-charge.js'
-import { getMerchantCouponSchema } from './merchant-coupon.js'
-import { getMerchantCustomerSchema } from './merchant-customer.js'
-import { getMerchantProductSchema } from './merchant-product.js'
 import { getMerchantSessionSchema } from './merchant-session.js'
 import { getProductSchema } from './product.js'
 
 export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'purchases',
+		'Purchase',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			userId: varchar('userId', { length: 191 }),

@@ -13,7 +13,7 @@ import { getUsersSchema } from './users.js'
 
 export function getUserPermissionsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'userPermission',
+		'UserPermission',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
 			permissionId: varchar('permissionId', { length: 255 }).notNull(),

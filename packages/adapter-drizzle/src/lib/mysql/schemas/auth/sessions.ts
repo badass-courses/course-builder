@@ -5,7 +5,7 @@ import { getUsersSchema } from './users.js'
 
 export function getSessionsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'session',
+		'Session',
 		{
 			sessionToken: varchar('sessionToken', { length: 255 })
 				.notNull()

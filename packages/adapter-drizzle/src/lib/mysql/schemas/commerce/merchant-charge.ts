@@ -14,7 +14,7 @@ import { getMerchantProductSchema } from './merchant-product.js'
 
 export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'merchantCharges',
+		'MerchantCharge',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			status: int('status').default(0).notNull(),

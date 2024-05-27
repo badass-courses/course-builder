@@ -12,7 +12,7 @@ import { getRolePermissionsSchema } from './role-permissions.js'
 
 export function getPermissionsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'permission',
+		'Permission',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			name: varchar('name', { length: 255 }).notNull().unique(),

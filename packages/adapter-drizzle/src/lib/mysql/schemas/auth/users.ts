@@ -17,7 +17,7 @@ import { getUserRolesSchema } from './user-roles.js'
 
 export function getUsersSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'user',
+		'User',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			name: varchar('name', { length: 255 }),

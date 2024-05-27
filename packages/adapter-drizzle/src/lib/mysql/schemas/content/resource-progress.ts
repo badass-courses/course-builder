@@ -10,7 +10,7 @@ import {
 
 export function getResourceProgressSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'resourceProgresses',
+		'ResourceProgress',
 		{
 			userId: varchar('userId', { length: 191 }).notNull(),
 			contentResourceId: varchar('contentResourceId', { length: 191 }),

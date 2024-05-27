@@ -2,7 +2,7 @@ import { MySqlTableFn, primaryKey, varchar } from 'drizzle-orm/mysql-core'
 
 export function getMerchantSessionSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'merchantSessions',
+		'MerchantSession',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			identifier: varchar('identifier', { length: 191 }).notNull(),

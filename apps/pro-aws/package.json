@@ -14,6 +14,7 @@
 		"db:push": "dotenv drizzle-kit push:mysql",
 		"db:studio": "dotenv drizzle-kit studio",
 		"db:seed": "dotenv tsx ./src/db/seed.ts",
+		"db:generate": "dotenv drizzle-kit generate:mysql",
 		"lint": "next lint",
 		"start": "next start",
 		"typecheck": "tsc --noEmit"
@@ -223,5 +224,5 @@
 	"ct3aMetadata": {
 		"initVersion": "7.22.0"
 	},
-	"packageManager": "pnpm@8.0.0"
+	"packageManager": "pnpm@8.15.5"
 }

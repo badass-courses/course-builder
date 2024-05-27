@@ -8,13 +8,12 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
-import { getContentContributionsSchema } from './content-contributions.js'
 import { getContentResourceProductSchema } from './content-resource-product.js'
 import { getContentResourceResourceSchema } from './content-resource-resource.js'
 
 export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'contentResource',
+		'ContentResource',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			type: varchar('type', { length: 255 }).notNull(),
