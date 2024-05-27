@@ -1,20 +1,23 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
-  "changelog": [
-    "@changesets/changelog-github",
-    { "repo": "badass-courses/course-builder" }
-  ],
-  "commit": false,
-  "access": "public",
-  "baseBranch": "main",
-  "updateInternalDependencies": "patch",
-  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
-    "onlyUpdatePeerDependentsWhenOutOfRange": true
-  },
-  "ignore": [
-    "course-builder-docs",
-    "course-builder-web",
-    "pro-aws",
-		"value-based-design"
-  ]
+	"$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+	"changelog": [
+		"@changesets/changelog-github",
+		{
+			"repo": "badass-courses/course-builder"
+		}
+	],
+	"commit": false,
+	"access": "public",
+	"baseBranch": "main",
+	"updateInternalDependencies": "patch",
+	"___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+		"onlyUpdatePeerDependentsWhenOutOfRange": true
+	},
+	"ignore": [
+		"course-builder-docs",
+		"course-builder-web",
+		"pro-aws",
+		"value-based-design",
+		"epic-web"
+	]
 }
