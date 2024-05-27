@@ -631,7 +631,7 @@ export function mySqlDrizzleAdapter(
 								),
 							)
 							.then((res) => {
-								return res[0]?.Coupons ?? null
+								return res[0]?.Coupon ?? null
 							}),
 					)
 
