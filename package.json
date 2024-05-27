@@ -2,11 +2,6 @@
 	"name": "course-builder-turbo",
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@8.15.5",
-	"engines": {
-		"node": "=v20.12.0",
-		"pnpm": ">=8.15.5"
-	},
 	"scripts": {
 		"build:all": "turbo run build",
 		"build:cli": "turbo --filter=\"create-course-app\" build",
@@ -65,5 +60,6 @@
 		"utils": "workspace:*",
 		"vite": "5.0.12",
 		"vitest": "1.2.2"
-	}
+	},
+	"packageManager": "pnpm@9.1.2+sha256.19c17528f9ca20bd442e4ca42f00f1b9808a9cb419383cd04ba32ef19322aba7"
 }

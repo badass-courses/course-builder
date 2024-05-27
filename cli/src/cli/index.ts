@@ -178,8 +178,8 @@ export const runCli = async (): Promise<CliResults> => {
 	// Explained below why this is in a try/catch block
 	try {
 		if (process.env.TERM_PROGRAM?.toLowerCase().includes('mintty')) {
-			logger.warn(`  WARNING: It looks like you are using MinTTY, which is non-interactive. This is most likely because you are 
-  using Git Bash. If that's that case, please use Git Bash from another terminal, such as Windows Terminal. Alternatively, you 
+			logger.warn(`  WARNING: It looks like you are using MinTTY, which is non-interactive. This is most likely because you are
+  using Git Bash. If that's that case, please use Git Bash from another terminal, such as Windows Terminal. Alternatively, you
   can provide the arguments from the CLI directly: https://create.t3.gg/en/installation#experimental-usage to skip the prompts.`)
 
 			throw new IsTTYError('Non-interactive environment')
@@ -194,7 +194,7 @@ export const runCli = async (): Promise<CliResults> => {
 				...(!cliProvidedName && {
 					name: () =>
 						p.text({
-							message: 'What will your project be called?',
+							message: 'What will your course project be called?',
 							defaultValue: cliProvidedName,
 							validate: validateAppName,
 						}),
@@ -239,11 +239,10 @@ export const runCli = async (): Promise<CliResults> => {
 					return p.select({
 						message: 'What database ORM would you like to use?',
 						options: [
-							{ value: 'none', label: 'None' },
-							{ value: 'prisma', label: 'Prisma' },
 							{ value: 'drizzle', label: 'Drizzle' },
+							{ value: 'none', label: 'None' },
 						],
-						initialValue: 'none',
+						initialValue: 'drizzle',
 					})
 				},
 				...(!cliResults.flags.noGit && {

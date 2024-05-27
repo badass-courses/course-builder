@@ -12,10 +12,10 @@ export const getUserPkgManager: () => PackageManager = () => {
 		} else if (userAgent.startsWith('bun')) {
 			return 'bun'
 		} else {
-			return 'npm'
+			return 'pnpm'
 		}
 	} else {
 		// If no user agent is set, assume npm
-		return 'npm'
+		return 'pnpm'
 	}
 }
