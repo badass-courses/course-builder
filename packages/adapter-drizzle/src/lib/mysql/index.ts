@@ -631,7 +631,7 @@ export function mySqlDrizzleAdapter(
 								),
 							)
 							.then((res) => {
-								return res[0]?.coupons ?? null
+								return res[0]?.Coupons ?? null
 							}),
 					)
 
@@ -1885,7 +1885,7 @@ export function mySqlDrizzleAdapter(
 				return null
 			}
 
-			return dbAccount.user
+			return dbAccount.User
 		},
 		async deleteSession(sessionToken) {
 			const session =
