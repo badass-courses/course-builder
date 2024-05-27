@@ -13,6 +13,7 @@
 		"build": "next build",
 		"db:push": "dotenv drizzle-kit push:mysql",
 		"db:studio": "dotenv drizzle-kit studio",
+		"db:generate": "dotenv drizzle-kit generate:mysql",
 		"db:seed": "dotenv tsx ./src/db/seed.ts",
 		"lint": "next lint",
 		"start": "next start",
