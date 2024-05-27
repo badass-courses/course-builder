@@ -12,16 +12,13 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getContentResourceProductSchema } from '../content/content-resource-product.js'
 import { getMerchantCouponSchema } from './merchant-coupon.js'
-import { getMerchantProductSchema } from './merchant-product.js'
-import { getPriceSchema } from './price.js'
 import { getProductSchema } from './product.js'
 import { getPurchaseSchema } from './purchase.js'
 
 export function getCouponSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'Coupons',
+		'Coupon',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			code: varchar('code', { length: 191 }),

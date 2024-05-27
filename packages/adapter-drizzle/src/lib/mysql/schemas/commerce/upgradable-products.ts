@@ -13,7 +13,7 @@ import { getProductSchema } from './product.js'
 
 export function getUpgradableProductsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'UpgradableProducts',
+		'UpgradableProduct',
 		{
 			upgradableToId: varchar('upgradableToId', { length: 255 }).notNull(),
 			upgradableFromId: varchar('upgradableFrom', { length: 255 }).notNull(),
