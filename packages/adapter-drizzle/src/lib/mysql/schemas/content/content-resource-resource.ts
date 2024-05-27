@@ -13,7 +13,7 @@ import { getContentResourceSchema } from './content-resource.js'
 
 export function getContentResourceResourceSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'contentResourceResource',
+		'ContentResourceResource',
 		{
 			resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
 			resourceId: varchar('resourceId', { length: 255 }).notNull(),

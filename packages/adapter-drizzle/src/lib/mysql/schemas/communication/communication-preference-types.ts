@@ -9,7 +9,7 @@ import {
 export function getCommunicationPreferenceTypesSchema(
 	mysqlTable: MySqlTableFn,
 ) {
-	return mysqlTable('communicationPreferenceType', {
+	return mysqlTable('CommunicationPreferenceType', {
 		id: varchar('id', { length: 255 }).notNull().primaryKey(),
 		name: varchar('name', { length: 255 }).notNull(),
 		description: text('description'),

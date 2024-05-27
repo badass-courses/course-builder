@@ -13,7 +13,7 @@ import { getContributionTypesSchema } from './contribution-types.js'
 
 export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'contentContribution',
+		'ContentContribution',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			userId: varchar('userId', { length: 255 }).notNull(),

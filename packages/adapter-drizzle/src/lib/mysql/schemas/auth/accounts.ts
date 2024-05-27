@@ -13,7 +13,7 @@ import { getUsersSchema } from './users.js'
 
 export function getAccountsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'account',
+		'Account',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
 			type: varchar('type', { length: 255 })

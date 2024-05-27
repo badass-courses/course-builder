@@ -12,7 +12,7 @@ import { getPurchaseSchema } from './purchase.js'
 
 export function getPurchaseUserTransferSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'purchaseUserTransfers',
+		'PurchaseUserTransfer',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			transferState: mysqlEnum('transferState', [

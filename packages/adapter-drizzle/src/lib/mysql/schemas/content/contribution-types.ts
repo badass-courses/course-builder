@@ -12,7 +12,7 @@ import { getContentContributionsSchema } from './content-contributions.js'
 
 export function getContributionTypesSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'contributionType',
+		'ContributionType',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			slug: varchar('slug', { length: 255 }).notNull().unique(),

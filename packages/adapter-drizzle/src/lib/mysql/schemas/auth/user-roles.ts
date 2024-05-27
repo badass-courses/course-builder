@@ -13,7 +13,7 @@ import { getUsersSchema } from './users.js'
 
 export function getUserRolesSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'userRole',
+		'UserRole',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
 			roleId: varchar('roleId', { length: 255 }).notNull(),

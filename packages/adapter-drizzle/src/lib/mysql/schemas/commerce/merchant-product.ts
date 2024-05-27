@@ -10,7 +10,7 @@ import {
 
 export function getMerchantProductSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'merchantProducts',
+		'MerchantProduct',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			merchantAccountId: varchar('merchantAccountId', {

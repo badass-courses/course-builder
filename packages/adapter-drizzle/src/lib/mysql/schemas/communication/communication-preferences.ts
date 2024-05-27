@@ -14,7 +14,7 @@ import { getCommunicationPreferenceTypesSchema } from './communication-preferenc
 
 export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'communicationPreference',
+		'CommunicationPreference',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			userId: varchar('userId', { length: 255 }).notNull(),

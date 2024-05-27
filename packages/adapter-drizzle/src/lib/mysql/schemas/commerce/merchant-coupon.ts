@@ -9,7 +9,7 @@ import {
 
 export function getMerchantCouponSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'merchantCoupons',
+		'MerchantCoupon',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			identifier: varchar('identifier', { length: 191 }),

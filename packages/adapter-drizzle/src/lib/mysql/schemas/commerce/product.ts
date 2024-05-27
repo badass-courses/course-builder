@@ -14,7 +14,7 @@ import { getPriceSchema } from './price.js'
 
 export function getProductSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
-		'products',
+		'Product',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			name: varchar('name', { length: 191 }).notNull(),
