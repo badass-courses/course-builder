@@ -105,14 +105,14 @@ CREATE TABLE `Permission` (
 	CONSTRAINT `Permission_name_unique` UNIQUE(`name`)
 );
 --> statement-breakpoint
-CREATE TABLE `ResourceProgresses` (
+CREATE TABLE `ResourceProgress` (
 	`userId` varchar(191) NOT NULL,
 	`contentResourceId` varchar(191) NOT NULL,
 	`fields` json DEFAULT ('{}'),
 	`completedAt` datetime(3),
 	`updatedAt` datetime(3),
 	`createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-	CONSTRAINT `ResourceProgresses_userId_contentResourceId_pk` PRIMARY KEY(`userId`,`contentResourceId`)
+	CONSTRAINT `ResourceProgress_userId_contentResourceId_pk` PRIMARY KEY(`userId`,`contentResourceId`)
 );
 --> statement-breakpoint
 CREATE TABLE `RolePermission` (
@@ -135,6 +135,17 @@ CREATE TABLE `Role` (
 	`deletedAt` timestamp(3),
 	CONSTRAINT `Role_id` PRIMARY KEY(`id`),
 	CONSTRAINT `Role_name_unique` UNIQUE(`name`)
+);
+--> statement-breakpoint
+CREATE TABLE `UpgradableProduct` (
+	`upgradableToId` varchar(255) NOT NULL,
+	`upgradableFrom` varchar(255) NOT NULL,
+	`position` double NOT NULL DEFAULT 0,
+	`metadata` json DEFAULT ('{}'),
+	`createdAt` timestamp(3) DEFAULT CURRENT_TIMESTAMP(3),
+	`updatedAt` timestamp(3) DEFAULT CURRENT_TIMESTAMP(3),
+	`deletedAt` timestamp(3),
+	CONSTRAINT `UpgradableProduct_upgradableToId_upgradableFrom_pk` PRIMARY KEY(`upgradableToId`,`upgradableFrom`)
 );
 --> statement-breakpoint
 CREATE TABLE `UserPermission` (
@@ -161,23 +172,11 @@ DROP TABLE `Comment`;--> statement-breakpoint
 DROP TABLE `DeviceAccessToken`;--> statement-breakpoint
 DROP TABLE `DeviceVerification`;--> statement-breakpoint
 DROP TABLE `LessonProgress`;--> statement-breakpoint
-RENAME TABLE `Coupon` TO `Coupons`;--> statement-breakpoint
-RENAME TABLE `MerchantAccount` TO `MerchantAccounts`;--> statement-breakpoint
-RENAME TABLE `MerchantCharge` TO `MerchantCharges`;--> statement-breakpoint
-RENAME TABLE `MerchantCoupon` TO `MerchantCoupons`;--> statement-breakpoint
-RENAME TABLE `MerchantCustomer` TO `MerchantCustomers`;--> statement-breakpoint
-RENAME TABLE `MerchantPrice` TO `MerchantPrices`;--> statement-breakpoint
-RENAME TABLE `MerchantProduct` TO `MerchantProducts`;--> statement-breakpoint
-RENAME TABLE `MerchantSession` TO `MerchantSessions`;--> statement-breakpoint
-RENAME TABLE `Price` TO `Prices`;--> statement-breakpoint
-RENAME TABLE `Product` TO `Products`;--> statement-breakpoint
-RENAME TABLE `PurchaseUserTransfer` TO `PurchaseUserTransfers`;--> statement-breakpoint
-RENAME TABLE `Purchase` TO `Purchases`;--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` RENAME COLUMN `upgradableFromId` TO `upgradableFrom`;--> statement-breakpoint
-DROP INDEX `Purchase_userId_idx` ON ``.`Purchases`;--> statement-breakpoint
+DROP TABLE `UpgradableProducts`;--> statement-breakpoint
+ALTER TABLE `Product` RENAME COLUMN `productType` TO `type`;--> statement-breakpoint
+DROP INDEX `Purchase_userId_idx` ON `Purchase`;--> statement-breakpoint
 ALTER TABLE `Account` DROP PRIMARY KEY;--> statement-breakpoint
 ALTER TABLE `Session` DROP PRIMARY KEY;--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` DROP PRIMARY KEY;--> statement-breakpoint
 ALTER TABLE `VerificationToken` DROP PRIMARY KEY;--> statement-breakpoint
 ALTER TABLE `Account` MODIFY COLUMN `type` varchar(255) NOT NULL;--> statement-breakpoint
 ALTER TABLE `Account` MODIFY COLUMN `provider` varchar(255) NOT NULL;--> statement-breakpoint
@@ -192,11 +191,26 @@ ALTER TABLE `Account` MODIFY COLUMN `session_state` varchar(255);--> statement-b
 ALTER TABLE `Account` MODIFY COLUMN `oauth_token_secret` text;--> statement-breakpoint
 ALTER TABLE `Account` MODIFY COLUMN `oauth_token` text;--> statement-breakpoint
 ALTER TABLE `Account` MODIFY COLUMN `userId` varchar(255) NOT NULL;--> statement-breakpoint
+ALTER TABLE `Coupon` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `Coupon` MODIFY COLUMN `expires` timestamp(3);--> statement-breakpoint
+ALTER TABLE `Coupon` MODIFY COLUMN `default` boolean NOT NULL;--> statement-breakpoint
+ALTER TABLE `Coupon` MODIFY COLUMN `default` boolean NOT NULL DEFAULT false;--> statement-breakpoint
+ALTER TABLE `MerchantAccount` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `MerchantCharge` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `MerchantCustomer` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `MerchantPrice` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `MerchantProduct` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `Price` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `Product` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `Purchase` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `PurchaseUserTransfer` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
+ALTER TABLE `PurchaseUserTransfer` MODIFY COLUMN `expiresAt` timestamp(3);--> statement-breakpoint
+ALTER TABLE `PurchaseUserTransfer` MODIFY COLUMN `canceledAt` timestamp(3);--> statement-breakpoint
+ALTER TABLE `PurchaseUserTransfer` MODIFY COLUMN `confirmedAt` timestamp(3);--> statement-breakpoint
+ALTER TABLE `PurchaseUserTransfer` MODIFY COLUMN `completedAt` timestamp(3);--> statement-breakpoint
 ALTER TABLE `Session` MODIFY COLUMN `sessionToken` varchar(255) NOT NULL;--> statement-breakpoint
 ALTER TABLE `Session` MODIFY COLUMN `userId` varchar(255) NOT NULL;--> statement-breakpoint
 ALTER TABLE `Session` MODIFY COLUMN `expires` timestamp NOT NULL;--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` MODIFY COLUMN `upgradableToId` varchar(255) NOT NULL;--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` MODIFY COLUMN `upgradableFrom` varchar(255) NOT NULL;--> statement-breakpoint
 ALTER TABLE `User` MODIFY COLUMN `id` varchar(255) NOT NULL;--> statement-breakpoint
 ALTER TABLE `User` MODIFY COLUMN `name` varchar(255);--> statement-breakpoint
 ALTER TABLE `User` MODIFY COLUMN `email` varchar(255) NOT NULL;--> statement-breakpoint
@@ -206,43 +220,19 @@ ALTER TABLE `VerificationToken` MODIFY COLUMN `token` varchar(255) NOT NULL;--> 
 ALTER TABLE `VerificationToken` MODIFY COLUMN `identifier` varchar(255) NOT NULL;--> statement-breakpoint
 ALTER TABLE `VerificationToken` MODIFY COLUMN `expires` timestamp NOT NULL;--> statement-breakpoint
 ALTER TABLE `VerificationToken` MODIFY COLUMN `createdAt` timestamp(3) DEFAULT (now());--> statement-breakpoint
-ALTER TABLE `Coupons` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `Coupons` MODIFY COLUMN `expires` timestamp(3);--> statement-breakpoint
-ALTER TABLE `Coupons` MODIFY COLUMN `default` boolean NOT NULL;--> statement-breakpoint
-ALTER TABLE `Coupons` MODIFY COLUMN `default` boolean NOT NULL DEFAULT false;--> statement-breakpoint
-ALTER TABLE `MerchantAccounts` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `MerchantCharges` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `MerchantCustomers` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `MerchantPrices` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `MerchantProducts` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `Prices` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `Products` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `PurchaseUserTransfers` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `PurchaseUserTransfers` MODIFY COLUMN `expiresAt` timestamp(3);--> statement-breakpoint
-ALTER TABLE `PurchaseUserTransfers` MODIFY COLUMN `canceledAt` timestamp(3);--> statement-breakpoint
-ALTER TABLE `PurchaseUserTransfers` MODIFY COLUMN `confirmedAt` timestamp(3);--> statement-breakpoint
-ALTER TABLE `PurchaseUserTransfers` MODIFY COLUMN `completedAt` timestamp(3);--> statement-breakpoint
-ALTER TABLE `Purchases` MODIFY COLUMN `createdAt` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
 ALTER TABLE `Account` ADD PRIMARY KEY(`provider`,`providerAccountId`);--> statement-breakpoint
 ALTER TABLE `Session` ADD PRIMARY KEY(`sessionToken`);--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` ADD PRIMARY KEY(`upgradableToId`,`upgradableFrom`);--> statement-breakpoint
 ALTER TABLE `VerificationToken` ADD PRIMARY KEY(`identifier`,`token`);--> statement-breakpoint
 ALTER TABLE `User` ADD CONSTRAINT `User_email_unique` UNIQUE(`email`);--> statement-breakpoint
 ALTER TABLE `Account` DROP INDEX `Account_provider_providerAccountId_key`;--> statement-breakpoint
 ALTER TABLE `User` DROP INDEX `User_email_key`;--> statement-breakpoint
 ALTER TABLE `VerificationToken` DROP INDEX `VerificationToken_identifier_token_key`;--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` ADD `position` double DEFAULT 0 NOT NULL;--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` ADD `metadata` json DEFAULT ('{}');--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` ADD `createdAt` timestamp(3) DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` ADD `updatedAt` timestamp(3) DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `UpgradableProducts` ADD `deletedAt` timestamp(3);--> statement-breakpoint
+ALTER TABLE `Coupon` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
+ALTER TABLE `Price` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
+ALTER TABLE `Product` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
+ALTER TABLE `Purchase` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
 ALTER TABLE `User` ADD `role` enum('user','admin') DEFAULT 'user';--> statement-breakpoint
 ALTER TABLE `User` ADD `createdAt` timestamp(3) DEFAULT CURRENT_TIMESTAMP(3);--> statement-breakpoint
-ALTER TABLE `Coupons` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
-ALTER TABLE `Prices` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
-ALTER TABLE `Products` ADD `type` varchar(191);--> statement-breakpoint
-ALTER TABLE `Products` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
-ALTER TABLE `Purchases` ADD `fields` json DEFAULT ('{}');--> statement-breakpoint
 CREATE INDEX `name_idx` ON `CommunicationChannel` (`name`);--> statement-breakpoint
 CREATE INDEX `userId_idx` ON `CommunicationPreference` (`userId`);--> statement-breakpoint
 CREATE INDEX `preferenceTypeId_idx` ON `CommunicationPreference` (`preferenceTypeId`);--> statement-breakpoint
@@ -260,26 +250,25 @@ CREATE INDEX `resourceId_idx` ON `ContentResourceResource` (`resourceId`);--> st
 CREATE INDEX `name_idx` ON `ContributionType` (`name`);--> statement-breakpoint
 CREATE INDEX `slug_idx` ON `ContributionType` (`slug`);--> statement-breakpoint
 CREATE INDEX `name_idx` ON `Permission` (`name`);--> statement-breakpoint
-CREATE INDEX `crp_userId_contentResourceId_idx` ON `ResourceProgresses` (`userId`,`contentResourceId`);--> statement-breakpoint
-CREATE INDEX `contentResourceId_idx` ON `ResourceProgresses` (`contentResourceId`);--> statement-breakpoint
-CREATE INDEX `resourceId_idx` ON `ResourceProgresses` (`userId`);--> statement-breakpoint
+CREATE INDEX `crp_userId_contentResourceId_idx` ON `ResourceProgress` (`userId`,`contentResourceId`);--> statement-breakpoint
+CREATE INDEX `contentResourceId_idx` ON `ResourceProgress` (`contentResourceId`);--> statement-breakpoint
+CREATE INDEX `resourceId_idx` ON `ResourceProgress` (`userId`);--> statement-breakpoint
 CREATE INDEX `roleId_idx` ON `RolePermission` (`roleId`);--> statement-breakpoint
 CREATE INDEX `permissionId_idx` ON `RolePermission` (`permissionId`);--> statement-breakpoint
 CREATE INDEX `name_idx` ON `Role` (`name`);--> statement-breakpoint
+CREATE INDEX `upgradableFromId_idx` ON `UpgradableProduct` (`upgradableToId`);--> statement-breakpoint
+CREATE INDEX `upgradableToId_idx` ON `UpgradableProduct` (`upgradableFrom`);--> statement-breakpoint
 CREATE INDEX `userId_idx` ON `UserPermission` (`userId`);--> statement-breakpoint
 CREATE INDEX `permissionId_idx` ON `UserPermission` (`permissionId`);--> statement-breakpoint
 CREATE INDEX `userId_idx` ON `UserRole` (`userId`);--> statement-breakpoint
 CREATE INDEX `roleId_idx` ON `UserRole` (`roleId`);--> statement-breakpoint
 CREATE INDEX `userId_idx` ON `Account` (`userId`);--> statement-breakpoint
+CREATE INDEX `Coupon_id_code_index` ON `Coupon` (`id`,`code`);--> statement-breakpoint
 CREATE INDEX `userId_idx` ON `Session` (`userId`);--> statement-breakpoint
-CREATE INDEX `upgradableFromId_idx` ON `UpgradableProducts` (`upgradableToId`);--> statement-breakpoint
-CREATE INDEX `upgradableToId_idx` ON `UpgradableProducts` (`upgradableFrom`);--> statement-breakpoint
 CREATE INDEX `email_idx` ON `User` (`email`);--> statement-breakpoint
 CREATE INDEX `role_idx` ON `User` (`role`);--> statement-breakpoint
 CREATE INDEX `created_at_idx` ON `User` (`createdAt`);--> statement-breakpoint
-CREATE INDEX `Coupon_id_code_index` ON `Coupons` (`id`,`code`);--> statement-breakpoint
 ALTER TABLE `Account` DROP COLUMN `id`;--> statement-breakpoint
 ALTER TABLE `Session` DROP COLUMN `id`;--> statement-breakpoint
 ALTER TABLE `User` DROP COLUMN `roles`;--> statement-breakpoint
-ALTER TABLE `User` DROP COLUMN `fields`;--> statement-breakpoint
-ALTER TABLE `Products` DROP COLUMN `productType`;
+ALTER TABLE `User` DROP COLUMN `fields`;
