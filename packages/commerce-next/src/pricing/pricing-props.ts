@@ -16,7 +16,7 @@ export type PricingOptions = {
 	teamQuantityLimit: number
 	saleCountdownRenderer?: ({ coupon }: { coupon: any }) => React.ReactNode
 	allowTeamPurchase: boolean
-	cancelUrl?: string
+	cancelUrl: string
 }
 
 export type PricingProps = {

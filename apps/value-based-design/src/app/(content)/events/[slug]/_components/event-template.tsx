@@ -74,6 +74,7 @@ export async function EventTemplate(props: EventPageProps) {
 												? 100
 												: quantityAvailable,
 									isPPPEnabled: false,
+									cancelUrl: `${env.NEXT_PUBLIC_URL}/events/${event.fields?.slug || event.id}`,
 								}}
 							/>
 						</PriceCheckProvider>

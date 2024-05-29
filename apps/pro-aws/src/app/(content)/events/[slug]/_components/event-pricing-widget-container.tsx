@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { env } from '@/env.mjs'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
@@ -55,6 +56,7 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 										? 100
 										: quantityAvailable,
 							isPPPEnabled: false,
+							cancelUrl: `${env.NEXT_PUBLIC_URL}/events/${event.fields?.slug || event.id}`,
 						}}
 					/>
 				</PriceCheckProvider>

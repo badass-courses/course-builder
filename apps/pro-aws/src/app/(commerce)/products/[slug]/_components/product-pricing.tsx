@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { usePathname } from 'next/navigation'
+import { env } from '@/env.mjs'
 import { pricingClassNames } from '@/styles/commerce'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
@@ -62,7 +63,7 @@ export function ProductPricing({
 								isLiveEvent: product.type === 'live',
 								teamQuantityLimit,
 								isPPPEnabled: product.type !== 'live',
-								cancelUrl,
+								cancelUrl: `${env.NEXT_PUBLIC_URL}/products/${product.fields?.slug || product.id}`,
 							}}
 						/>
 					</PriceCheckProvider>

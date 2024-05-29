@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { env } from '@/env.mjs'
 import { PricingData } from '@/lib/pricing-query'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
@@ -42,6 +43,7 @@ export function ProductPricing({
 									? 5
 									: quantityAvailable,
 							isPPPEnabled: product.type !== 'live',
+							cancelUrl: `${env.NEXT_PUBLIC_URL}/products/${product.fields?.slug || product.id}`,
 						}}
 					/>
 				</PriceCheckProvider>
