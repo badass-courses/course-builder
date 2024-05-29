@@ -44,6 +44,7 @@ export const defaultPricingOptions = {
 	isPPPEnabled: true,
 	teamQuantityLimit: 100,
 	allowTeamPurchase: true,
+	cancelUrl: `${process.env.NEXT_PUBLIC_URL}/`,
 }
 
 export const pricingMachine = setup({

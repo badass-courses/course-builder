@@ -1,20 +1,20 @@
 {
-  "version": "5",
-  "dialect": "mysql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1716749258653,
-      "tag": "0000_lumpy_sleeper",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1716841460676,
-      "tag": "0001_smooth_joshua_kane",
-      "breakpoints": true
-    }
-  ]
+	"version": "5",
+	"dialect": "mysql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "5",
+			"when": 1716749258653,
+			"tag": "0000_lumpy_sleeper",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "5",
+			"when": 1716841460676,
+			"tag": "0001_smooth_joshua_kane",
+			"breakpoints": true
+		}
+	]
 }
