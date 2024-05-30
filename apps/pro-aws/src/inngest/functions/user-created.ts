@@ -5,6 +5,7 @@ import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { NonRetriableError } from 'inngest'
+import { Liquid } from 'liquidjs'
 import { customAlphabet } from 'nanoid'
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
@@ -72,16 +73,41 @@ export const userCreated = inngest.createFunction(
 			})
 		})
 
+		const parsedEmailBody: string = await step.run(
+			`parse email body`,
+			async () => {
+				try {
+					const engine = new Liquid()
+					return engine.parseAndRender(email.body, { user: event.user })
+				} catch (e: any) {
+					console.error(e.message)
+					return email.body
+				}
+			},
+		)
+
+		const parsedEmailSubject: string = await step.run(
+			`parse email subject`,
+			async () => {
+				try {
+					const engine = new Liquid()
+					return engine.parseAndRender(email.subject, { user: event.user })
+				} catch (e) {
+					return email.subject
+				}
+			},
+		)
+
 		const sendResponse = await step.run('send the email', async () => {
-			return await sendAnEmail({
-				Component: BasicEmail,
-				componentProps: {
-					body: email.body,
-				},
-				Subject: email.subject,
-				To: event.user.email,
-				type: 'broadcast',
-			})
+			// return await sendAnEmail({
+			// 	Component: BasicEmail,
+			// 	componentProps: {
+			// 		body: parsedEmailBody,
+			// 	},
+			// 	Subject: parsedEmailSubject,
+			// 	To: event.user.email,
+			// 	type: 'broadcast',
+			// })
 		})
 
 		return { sendResponse, email, user: event.user }
