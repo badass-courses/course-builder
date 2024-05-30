@@ -316,14 +316,12 @@ const TreeItem = memo(function TreeItem({
 	return (
 		<Fragment>
 			<div
-				className={
-					state === 'idle' ? `cursor-pointer rounded-s hover:bg-blue-100` : ''
-				}
+				className={state === 'idle' ? `hover:bg-secondary cursor-pointer` : ''}
 				style={{ position: 'relative' }}
 			>
 				<button
 					{...aria}
-					className="relative m-0 w-full cursor-pointer rounded-s border-0 bg-transparent p-0"
+					className="relative w-full cursor-pointer border-0 bg-transparent py-3"
 					id={`tree-item-${item.id}`}
 					onClick={
 						item.type === 'section'
@@ -346,7 +344,7 @@ const TreeItem = memo(function TreeItem({
 					style={{ paddingLeft: level * indentPerLevel }}
 				>
 					<span
-						className={`flex flex-row items-center rounded-s bg-transparent p-[var(--grid)] pr-40 ${
+						className={`flex flex-col gap-2 bg-transparent ${
 							state === 'dragging'
 								? `opacity-40`
 								: state === 'parent-of-instruction'
@@ -354,15 +352,15 @@ const TreeItem = memo(function TreeItem({
 									: ``
 						}`}
 					>
-						<Icon item={item} />
-						<span className="m-0 text-neutral-500">
-							{item.label ?? item.id}
-						</span>
-						<small className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap text-left">
-							{item.type ? <code>{item.type}</code> : null}
-							<code className="text- absolute bottom-0 right-[var(--grid)] text-xs">
-								({mode})
-							</code>
+						<div className="flex flex-row">
+							<Icon item={item} />
+							<span className="text-left">{item.label ?? item.id}</span>
+						</div>
+						<small className="ml-6 flex flex-grow items-center gap-3 text-ellipsis">
+							{item.type ? (
+								<span className="capitalize">{item.type}</span>
+							) : null}
+							<span className="text-xs opacity-50">({mode})</span>
 						</small>
 					</span>
 					{instruction ? (

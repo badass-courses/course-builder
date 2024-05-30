@@ -48,17 +48,7 @@ const RootInternal = ({
 	} = usePricing()
 
 	return (
-		<Comp
-			className={cn(
-				'px-5 pt-6',
-				{
-					'flex flex-col items-center px-5': isLiveEvent,
-					'mx-auto flex w-full w-full max-w-screen-lg max-w-sm flex-wrap items-start justify-center gap-5 px-5 pt-6':
-						!isLiveEvent,
-				},
-				className,
-			)}
-		>
+		<Comp className={cn('flex flex-col items-center', className)}>
 			{children}
 		</Comp>
 	)
@@ -80,7 +70,7 @@ const PricingProduct = ({
 		options: { cancelUrl },
 	} = usePricing()
 	return (
-		<div className={cn('py-5', className)}>
+		<div className={cn('', className)}>
 			<form
 				action={buildStripeCheckoutPath({
 					productId: formattedPrice?.id,
@@ -116,13 +106,7 @@ const Details = ({
 	return (
 		<article
 			className={cn(
-				'flex flex-col items-center px-5 py-5 pt-6',
-				{
-					'rounded-none border-none bg-transparent pb-8 pt-10 shadow-none ':
-						isLiveEvent,
-					'bg-card shadow-gray-500/10; rounded-lg border pt-36 shadow-2xl':
-						!isLiveEvent,
-				},
+				'flex flex-col items-center rounded-none border-none bg-transparent px-5 py-5 pb-8 pt-5 pt-6',
 				className,
 			)}
 		>
@@ -681,7 +665,7 @@ const LiveQuantity = ({
 				>
 					{isSoldOut
 						? 'Sold out'
-						: `${pluralize('spot', quantityAvailable, true)} left.`}
+						: `${pluralize('spot', quantityAvailable, true)} left`}
 				</div>
 			)
 		: null

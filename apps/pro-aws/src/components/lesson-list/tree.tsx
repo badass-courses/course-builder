@@ -287,12 +287,8 @@ export default function Tree({
 
 	return (
 		<TreeContext.Provider value={context}>
-			<div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
-				<div
-					className="w-px[280] box box-border flex flex-col p-8"
-					id="tree"
-					ref={ref}
-				>
+			<div>
+				<div className="flex flex-col" id="tree" ref={ref}>
 					{data.map((item, index, array) => {
 						const type: ItemMode = (() => {
 							if (item.children.length && item.isOpen) {

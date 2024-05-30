@@ -233,11 +233,11 @@ export default async function EventPage({
 					)}
 					<Contributor className="mt-5" />
 				</div>
-				{fields?.image && (
+				{product?.fields?.image?.url && (
 					<CldImage
 						width={400}
 						height={400}
-						src={fields.image}
+						src={product?.fields.image.url}
 						alt={fields?.title}
 					/>
 				)}
