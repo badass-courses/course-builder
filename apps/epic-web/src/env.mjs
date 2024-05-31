@@ -101,8 +101,8 @@ export const env = createEnv({
 			(str) =>
 				process.env.NEXT_PUBLIC_URL
 					? process.env.NEXT_PUBLIC_URL
-					: process.env.VERCEL_URL
-						? `https://${process.env.VERCEL_URL}`
+					: process.env.NEXT_PUBLIC_VERCEL_URL
+						? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 						: str,
 			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
 			process.env.VERCEL ? z.string() : z.string(),
