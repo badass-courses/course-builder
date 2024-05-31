@@ -51,9 +51,9 @@ export default function RootLayout({
 						<Party />
 						<ThemeProvider
 							attribute="class"
-							defaultTheme="system"
-							enableSystem
-							disableTransitionOnChange
+							enableSystem={false}
+							defaultTheme="dark"
+							disableTransitionOnChange={true}
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />

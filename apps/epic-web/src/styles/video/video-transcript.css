@@ -1,24 +1,24 @@
 [data-video-transcript] {
-  @apply mx-auto max-w-4xl p-5 py-10 opacity-75 transition hover:opacity-100 2xl:opacity-100;
-  [data-title] {
-    @apply flex items-baseline text-2xl font-semibold sm:text-3xl;
-  }
-  [data-transcript] {
-    @apply prose max-w-none pt-4 dark:prose-invert sm:prose-lg;
-    [data-timestamp] {
-      @apply inline-block underline after:inline-block after:content-['_'];
-    }
-  }
+	@apply mx-auto max-w-4xl p-5 py-10 opacity-75 transition hover:opacity-100 2xl:opacity-100;
+	[data-title] {
+		@apply flex items-baseline text-2xl font-semibold sm:text-3xl;
+	}
+	[data-transcript] {
+		@apply prose dark:prose-invert sm:prose-lg max-w-none pt-4;
+		[data-timestamp] {
+			@apply inline-block underline after:inline-block after:content-['_'];
+		}
+	}
 }
 
 #tip {
-  [data-video-transcript] {
-    @apply p-0;
-  }
+	[data-video-transcript] {
+		@apply p-0;
+	}
 }
 
 #talk {
-  [data-video-transcript] {
-    @apply p-0;
-  }
+	[data-video-transcript] {
+		@apply p-0;
+	}
 }
