@@ -1,41 +1,41 @@
 {
-  "version": "5",
-  "dialect": "mysql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1716749258653,
-      "tag": "0000_lumpy_sleeper",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1717098993099,
-      "tag": "0001_aspiring_johnny_storm",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1717099982173,
-      "tag": "0002_late_doctor_doom",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1717100533308,
-      "tag": "0003_breezy_the_executioner",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1717114588591,
-      "tag": "0004_curious_mister_sinister",
-      "breakpoints": true
-    }
-  ]
+	"version": "5",
+	"dialect": "mysql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "5",
+			"when": 1716749258653,
+			"tag": "0000_lumpy_sleeper",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "5",
+			"when": 1717098993099,
+			"tag": "0001_aspiring_johnny_storm",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "5",
+			"when": 1717099982173,
+			"tag": "0002_late_doctor_doom",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "5",
+			"when": 1717100533308,
+			"tag": "0003_breezy_the_executioner",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "5",
+			"when": 1717114588591,
+			"tag": "0004_curious_mister_sinister",
+			"breakpoints": true
+		}
+	]
 }
