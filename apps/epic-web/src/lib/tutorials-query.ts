@@ -54,9 +54,14 @@ export async function getTutorial(moduleSlugOrId: string) {
 		},
 	})
 
+	console.log(JSON.stringify(tutorial, null, 2))
+
 	const parsedTutorial = TutorialSchema.safeParse(tutorial)
 	if (!parsedTutorial.success) {
-		console.error('Error parsing tutorial', tutorial)
+		console.error(
+			'Error parsing tutorial',
+			JSON.stringify(parsedTutorial.error, null, 2),
+		)
 		throw new Error('Error parsing tutorial')
 	}
 
@@ -103,7 +108,11 @@ export async function getAllTutorials() {
 
 	const parsedTutorial = z.array(TutorialSchema).safeParse(tutorials)
 	if (!parsedTutorial.success) {
-		console.error('Error parsing tutorial', tutorials)
+		// console.error(
+		// 	'Error parsing tutorial',
+		// 	JSON.stringify(parsedTutorial.error, null, 2),
+		// )
+
 		throw new Error('Error parsing tutorial')
 	}
 

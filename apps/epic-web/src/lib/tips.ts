@@ -4,6 +4,7 @@ import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resou
 
 export const TipStateSchema = z.union([
 	z.literal('draft'),
+	z.literal('processing'),
 	z.literal('published'),
 	z.literal('archived'),
 	z.literal('deleted'),

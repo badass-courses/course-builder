@@ -1,0 +1,1 @@
+ALTER TABLE `DeviceVerification` MODIFY COLUMN `verifiedByUserId` varchar(255);

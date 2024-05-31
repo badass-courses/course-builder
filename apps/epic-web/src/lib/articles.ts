@@ -23,9 +23,15 @@ export const ArticleSchema = ContentResourceSchema.merge(
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
-			socialImage: z
+			ogImage: z
 				.object({
-					type: z.string(),
+					type: z.string().default('upload'),
+					url: z.string().url(),
+				})
+				.optional(),
+			image: z
+				.object({
+					type: z.string().default('upload'),
 					url: z.string().url(),
 				})
 				.optional(),

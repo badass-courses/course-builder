@@ -12,7 +12,14 @@ export const VideoResourceSchema = z.object({
 	transcriptWithScreenshots: z.string().optional().nullable(),
 	srt: z.string().optional().nullable(),
 	wordLevelSrt: z.string().optional().nullable(),
-	state: z.enum(['new', 'processing', 'preparing', 'ready', 'errored']),
+	state: z.enum([
+		'new',
+		'processing',
+		'preparing',
+		'ready',
+		'errored',
+		'deleted',
+	]),
 })
 
 export type VideoResource = z.infer<typeof VideoResourceSchema>

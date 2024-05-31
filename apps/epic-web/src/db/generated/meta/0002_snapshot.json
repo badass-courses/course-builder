@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "ab7bb106-5e1b-4909-be25-dc4b637f245f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "48047a49-74f2-4e11-a028-ba0c110e4002",
+  "prevId": "ab7bb106-5e1b-4909-be25-dc4b637f245f",
   "tables": {
     "Account": {
       "name": "Account",
@@ -1107,7 +1107,7 @@
           "name": "verifiedByUserId",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "deviceCode": {
@@ -2739,9 +2739,6 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {
-      "\"Product\".\"productType\"": "\"Product\".\"type\"",
-      "\"UpgradableProducts\".\"upgradableFromId\"": "\"UpgradableProducts\".\"upgradableFrom\""
-    }
+    "columns": {}
   }
 }

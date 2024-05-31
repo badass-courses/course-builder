@@ -26,7 +26,9 @@ export default async function ModulePage({
 	return (
 		<div className="hidden h-full flex-col md:flex">
 			<div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-				<h2 className="text-lg font-semibold">{tutorial.fields.title}</h2>
+				<h2 className="text-lg font-semibold">
+					{tutorial.fields.title} (tutorial)
+				</h2>
 				<p>{tutorial.fields.description}</p>
 				{ability.can('update', 'Content') && (
 					<Link href={`/tutorials/${params.module}/edit`}>edit module</Link>
@@ -34,16 +36,18 @@ export default async function ModulePage({
 			</div>
 			<div className="flex flex-col">
 				{tutorial.resources.map((tutorialResource) => {
+					console.log(tutorialResource.resource.type)
 					return (
 						<div key={tutorialResource.resourceId}>
 							{tutorialResource.resource.type === 'section' ? (
-								<h3>{tutorialResource.resource.fields.title}</h3>
+								<h3>{tutorialResource.resource.fields.title} Section</h3>
 							) : (
 								<div>
 									<Link
 										href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}`}
 									>
-										{tutorialResource.resource.fields.title}
+										{tutorialResource.resource.fields.title}{' '}
+										{tutorialResource.resource.type}
 									</Link>
 									{ability.can('create', 'Content') ? (
 										<>
@@ -59,29 +63,34 @@ export default async function ModulePage({
 							)}
 							{tutorialResource.resource.resources.length > 0 ? (
 								<ul>
-									{tutorialResource.resource.resources.map((lesson) => {
-										return (
-											<li key={lesson.resourceId}>
-												<div>
-													<Link
-														href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
-													>
-														{lesson.resource.fields.title}
-													</Link>
-													{ability.can('create', 'Content') ? (
-														<>
-															<Link
-																className="text-xs"
-																href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}/edit`}
-															>
-																edit
-															</Link>
-														</>
-													) : null}
-												</div>
-											</li>
-										)
-									})}
+									{tutorialResource.resource.resources
+										// if there is no section present this will also present videoResources
+										.filter((resource) => resource.resource.type === 'lesson')
+										.map((lesson) => {
+											console.log(lesson.resource.type)
+											return (
+												<li key={lesson.resourceId}>
+													<div>
+														<Link
+															href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
+														>
+															{lesson.resource.fields.title}{' '}
+															{lesson.resource.type}
+														</Link>
+														{ability.can('create', 'Content') ? (
+															<>
+																<Link
+																	className="text-xs"
+																	href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}/edit`}
+																>
+																	edit
+																</Link>
+															</>
+														) : null}
+													</div>
+												</li>
+											)
+										})}
 								</ul>
 							) : null}
 						</div>

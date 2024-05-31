@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "ab7bb106-5e1b-4909-be25-dc4b637f245f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "8576a37b-794b-4911-8403-db8417985adb",
+  "prevId": "48047a49-74f2-4e11-a028-ba0c110e4002",
   "tables": {
     "Account": {
       "name": "Account",
@@ -1107,7 +1107,7 @@
           "name": "verifiedByUserId",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "deviceCode": {
@@ -2515,6 +2515,83 @@
       },
       "uniqueConstraints": {}
     },
+    "UserPrefs": {
+      "name": "UserPrefs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Global'"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fields": {
+          "name": "fields",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "('{}')"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3)"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3)"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "crr_userIdId_idx": {
+          "name": "crr_userIdId_idx",
+          "columns": [
+            "userId"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "UserPrefs_id_pk": {
+          "name": "UserPrefs_id_pk",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "UserRole": {
       "name": "UserRole",
       "columns": {
@@ -2739,9 +2816,6 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {
-      "\"Product\".\"productType\"": "\"Product\".\"type\"",
-      "\"UpgradableProducts\".\"upgradableFromId\"": "\"UpgradableProducts\".\"upgradableFrom\""
-    }
+    "columns": {}
   }
 }
