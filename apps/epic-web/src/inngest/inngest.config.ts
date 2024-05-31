@@ -3,7 +3,6 @@ import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
-import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
@@ -17,7 +16,6 @@ export const inngestConfig = {
 		...courseBuilderCoreFunctions.map(({ config, trigger, handler }) =>
 			inngest.createFunction(config, trigger, handler),
 		),
-		userCreated,
 		userSignupAdminEmail,
 		postmarkWebhook,
 		imageResourceCreated,

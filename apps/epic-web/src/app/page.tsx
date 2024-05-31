@@ -2,11 +2,12 @@ import * as React from 'react'
 import { type Metadata } from 'next'
 import { Landing } from '@/app/_components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
+import { env } from '@/env.mjs'
 
 export const metadata: Metadata = {
-	title: 'Course Builder',
+	title: env.NEXT_PUBLIC_SITE_TITLE,
 	description:
-		"Course Builder is a framework for building courses. It's not a course platform. It's not a course marketplace. It's all of the pieces that you need to launch your own course platform and marketplace.",
+		'Learn full-stack web development with Kent C. Dodds and the Epic Web instructors. Learn TypeScript, React, Node.js, and more through hands-on workshops.',
 }
 
 export default async function PlaygroundPage() {
