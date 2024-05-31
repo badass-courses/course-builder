@@ -110,17 +110,19 @@ async function TutorialLessonList({
 						)}
 						{resource.resource.resources.length > 0 && (
 							<ul>
-								{resource.resource.resources.map((lesson) => {
-									return (
-										<li key={lesson.resourceId}>
-											<Link
-												href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
-											>
-												{lesson.resource.fields.title}
-											</Link>
-										</li>
-									)
-								})}
+								{resource.resource.resources
+									.filter((resource) => resource.resource.type === 'lesson')
+									.map((lesson) => {
+										return (
+											<li key={lesson.resourceId}>
+												<Link
+													href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
+												>
+													{lesson.resource.fields.title}
+												</Link>
+											</li>
+										)
+									})}
 							</ul>
 						)}
 					</div>

@@ -1,0 +1,211 @@
+#primary-newsletter-cta {
+	@apply w-full;
+	[data-sr-convertkit-subscribe-form] {
+		@apply mx-auto flex w-full max-w-screen-lg flex-col items-center justify-center gap-3 px-3 md:flex-row md:items-end;
+		[data-sr-input] {
+			@apply w-full px-4 py-3;
+		}
+		[data-sr-fieldset] {
+			@apply w-full max-w-none sm:max-w-[250px];
+		}
+		[data-sr-input-label] {
+			@apply pb-2;
+		}
+		[data-sr-button] {
+			@apply w-full font-semibold sm:w-auto;
+			svg {
+				@apply h-5 w-5;
+			}
+		}
+
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+	}
+}
+
+#video-overlay {
+	[data-sr-convertkit-subscribe-form] {
+		@apply flex w-full max-w-sm flex-col gap-4 text-left;
+		[data-sr-input] {
+			@apply w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-3 text-base focus-visible:outline focus-visible:outline-indigo-400;
+		}
+		[data-sr-input-label] {
+			@apply inline-block w-full pb-1 text-base text-gray-300;
+		}
+		[data-sr-button] {
+			@apply bg-primary hover:bg-primary/90 relative mt-2 flex items-center justify-center rounded-md px-5 py-7 text-lg font-semibold text-white shadow-2xl shadow-cyan-900/50 transition focus-visible:ring-white;
+			svg {
+				@apply h-7 w-7;
+			}
+		}
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-nospam] {
+		@apply text-sm text-gray-400;
+	}
+}
+
+#tip {
+	[data-sr-convertkit-subscribe-form] {
+		@apply flex w-full flex-col gap-2 text-left lg:flex-row;
+		[data-sr-input-wrapper] {
+			@apply w-full;
+		}
+		[data-sr-input-wrapper]:first-of-type {
+			@apply lg:w-2/3;
+		}
+		[data-sr-input] {
+			@apply w-full rounded-md border border-gray-300/75 bg-gray-100 px-3 py-2 text-base shadow-inner dark:border-gray-800 dark:bg-gray-800/50;
+		}
+
+		[data-sr-input-label] {
+			@apply sr-only;
+		}
+		[data-sr-button] {
+			@apply relative flex flex-shrink-0 items-center justify-center rounded-md border border-blue-700/30 bg-gradient-to-b from-blue-500 to-blue-600 px-5 py-2 text-base font-semibold text-white transition hover:brightness-110 focus-visible:ring-white;
+			svg {
+				@apply h-7 w-7;
+			}
+		}
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+}
+
+#talk {
+	[data-sr-convertkit-subscribe-form] {
+		@apply flex w-full flex-col gap-2 text-left lg:flex-row;
+		[data-sr-input-wrapper] {
+			@apply w-full;
+		}
+		[data-sr-input-wrapper]:first-of-type {
+			@apply lg:w-2/3;
+		}
+		[data-sr-input] {
+			@apply w-full rounded-md border border-gray-300/75 bg-gray-100 px-3 py-2 text-base shadow-inner dark:border-gray-800 dark:bg-gray-800/50;
+		}
+
+		[data-sr-input-label] {
+			@apply sr-only;
+		}
+		[data-sr-button] {
+			@apply relative flex flex-shrink-0 items-center justify-center rounded-md border border-blue-700/30 bg-gradient-to-b from-blue-500 to-blue-600 px-5 py-2 text-base font-semibold text-white transition hover:brightness-110 focus-visible:ring-white;
+			svg {
+				@apply h-7 w-7;
+			}
+		}
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+}
+
+#article {
+	[data-sr-convertkit-subscribe-form] {
+		@apply relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-2 text-left md:flex-row md:items-end;
+		[data-sr-input-wrapper] {
+			@apply w-full;
+		}
+		[data-sr-input-wrapper]:first-of-type {
+		}
+		[data-sr-input] {
+			@apply w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-3 text-lg placeholder:text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:placeholder:text-gray-400;
+		}
+
+		[data-sr-input-label] {
+			@apply sr-only block text-gray-700 dark:text-gray-300;
+		}
+		abbr {
+			@apply hidden;
+		}
+		[data-sr-button] {
+			@apply relative mt-5 flex h-full w-full flex-shrink-0 items-center justify-center rounded-md border bg-gradient-to-t from-blue-600 to-indigo-500 px-6 py-3 text-lg font-semibold text-white shadow-xl shadow-black/10 transition hover:brightness-125 focus-visible:ring-white sm:w-auto md:mt-0;
+			svg {
+				@apply h-7 w-7;
+			}
+		}
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+}
+
+#tutorials-index {
+	[data-sr-convertkit-subscribe-form] {
+		@apply flex w-full max-w-sm scale-90 flex-col gap-4 text-left;
+		[data-sr-input] {
+			@apply w-full rounded-md border px-3 py-3 text-base focus-visible:outline focus-visible:outline-indigo-400 dark:border-gray-700 dark:bg-gray-800;
+		}
+		[data-sr-input-label] {
+			@apply inline-block w-full pb-1 text-base text-gray-600 dark:text-gray-300;
+		}
+		[data-sr-button] {
+			@apply bg-primary hover:bg-primary/90 relative mt-2 flex items-center justify-center rounded-md px-5 py-4 text-lg font-semibold text-white transition focus-visible:ring-white;
+			svg {
+				@apply h-7 w-7;
+			}
+		}
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-nospam] {
+		@apply text-sm text-gray-400;
+	}
+}
+
+[data-pricing-subscribing-form] > div {
+	@apply mt-1 border-t py-4;
+}

@@ -1,6 +1,7 @@
 import { relations, sql } from 'drizzle-orm'
 import {
 	index,
+	json,
 	mysqlEnum,
 	MySqlTableFn,
 	timestamp,
@@ -8,11 +9,13 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getPurchaseSchema } from '../commerce/purchase.js'
+import { getCommentsSchema } from '../communication/comment.js'
 import { getCommunicationPreferencesSchema } from '../communication/communication-preferences.js'
 import { getContentContributionsSchema } from '../content/content-contributions.js'
 import { getContentResourceSchema } from '../content/content-resource.js'
 import { getAccountsSchema } from './accounts.js'
 import { getUserPermissionsSchema } from './user-permissions.js'
+import { getUserPrefsSchema } from './user-prefs.js'
 import { getUserRolesSchema } from './user-roles.js'
 
 export function getUsersSchema(mysqlTable: MySqlTableFn) {
@@ -23,6 +26,7 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 			name: varchar('name', { length: 255 }),
 			role: mysqlEnum('role', ['user', 'admin']).default('user'),
 			email: varchar('email', { length: 255 }).notNull().unique(),
+			fields: json('fields').$type<Record<string, any>>().default({}),
 			emailVerified: timestamp('emailVerified', {
 				mode: 'date',
 				fsp: 3,
@@ -50,6 +54,8 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentContributions = getContentContributionsSchema(mysqlTable)
 	const contentResource = getContentResourceSchema(mysqlTable)
 	const purchases = getPurchaseSchema(mysqlTable)
+	const comments = getCommentsSchema(mysqlTable)
+	const userPrefs = getUserPrefsSchema(mysqlTable)
 	return relations(users, ({ many }) => ({
 		accounts: many(accounts, {
 			relationName: 'user',
@@ -70,6 +76,12 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 			relationName: 'user',
 		}),
 		createdContent: many(contentResource, {
+			relationName: 'user',
+		}),
+		comments: many(comments, {
+			relationName: 'user',
+		}),
+		prefs: many(userPrefs, {
 			relationName: 'user',
 		}),
 	}))

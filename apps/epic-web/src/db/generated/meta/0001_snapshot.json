@@ -1,7 +1,7 @@
 {
 	"version": "5",
 	"dialect": "mysql",
-	"id": "bcd2c8e9-c030-4620-97cc-80caa8fae1c8",
+	"id": "ab7bb106-5e1b-4909-be25-dc4b637f245f",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"tables": {
 		"Account": {
@@ -118,6 +118,78 @@
 				"Account_provider_providerAccountId_pk": {
 					"name": "Account_provider_providerAccountId_pk",
 					"columns": ["provider", "providerAccountId"]
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"Comment": {
+			"name": "Comment",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"userId": {
+					"name": "userId",
+					"type": "varchar(255)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"context": {
+					"name": "context",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false,
+					"default": "('{}')"
+				},
+				"text": {
+					"name": "text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false,
+					"default": "CURRENT_TIMESTAMP(3)"
+				},
+				"updatedAt": {
+					"name": "updatedAt",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false,
+					"default": "CURRENT_TIMESTAMP(3)"
+				},
+				"deletedAt": {
+					"name": "deletedAt",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"crr_userIdId_idx": {
+					"name": "crr_userIdId_idx",
+					"columns": ["userId"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"Comment_id_pk": {
+					"name": "Comment_id_pk",
+					"columns": ["id"]
 				}
 			},
 			"uniqueConstraints": {}
@@ -911,6 +983,105 @@
 					"columns": ["code"]
 				}
 			}
+		},
+		"DeviceAccessToken": {
+			"name": "DeviceAccessToken",
+			"columns": {
+				"token": {
+					"name": "token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"userId": {
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false,
+					"default": "CURRENT_TIMESTAMP(3)"
+				}
+			},
+			"indexes": {
+				"userId_idx": {
+					"name": "userId_idx",
+					"columns": ["userId"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"DeviceAccessToken_token_pk": {
+					"name": "DeviceAccessToken_token_pk",
+					"columns": ["token"]
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"DeviceVerification": {
+			"name": "DeviceVerification",
+			"columns": {
+				"verifiedByUserId": {
+					"name": "verifiedByUserId",
+					"type": "varchar(255)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"deviceCode": {
+					"name": "deviceCode",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"userCode": {
+					"name": "userCode",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"expires": {
+					"name": "expires",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false,
+					"default": "CURRENT_TIMESTAMP(3)"
+				},
+				"verifiedAt": {
+					"name": "verifiedAt",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"DeviceVerification_deviceCode_pk": {
+					"name": "DeviceVerification_deviceCode_pk",
+					"columns": ["deviceCode"]
+				}
+			},
+			"uniqueConstraints": {}
 		},
 		"MerchantAccount": {
 			"name": "MerchantAccount",
@@ -2039,8 +2210,8 @@
 			},
 			"uniqueConstraints": {}
 		},
-		"UpgradableProduct": {
-			"name": "UpgradableProduct",
+		"UpgradableProducts": {
+			"name": "UpgradableProducts",
 			"columns": {
 				"upgradableToId": {
 					"name": "upgradableToId",
@@ -2110,8 +2281,8 @@
 			},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {
-				"UpgradableProduct_upgradableToId_upgradableFrom_pk": {
-					"name": "UpgradableProduct_upgradableToId_upgradableFrom_pk",
+				"UpgradableProducts_upgradableToId_upgradableFrom_pk": {
+					"name": "UpgradableProducts_upgradableToId_upgradableFrom_pk",
 					"columns": ["upgradableToId", "upgradableFrom"]
 				}
 			},
@@ -2392,7 +2563,8 @@
 		"schemas": {},
 		"tables": {},
 		"columns": {
-			"\"Product\".\"productType\"": "\"Product\".\"type\""
+			"\"Product\".\"productType\"": "\"Product\".\"type\"",
+			"\"UpgradableProducts\".\"upgradableFromId\"": "\"UpgradableProducts\".\"upgradableFrom\""
 		}
 	}
 }

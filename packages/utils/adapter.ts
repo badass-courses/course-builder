@@ -126,6 +126,7 @@ export async function runBasicTests(options: TestOptions) {
 		id: id(),
 		email: 'fill@murray.com',
 		image: 'https://www.fillmurray.com/460/300',
+		fields: {},
 		name: 'Fill Murray',
 		emailVerified: new Date(),
 		createdAt: new Date(),

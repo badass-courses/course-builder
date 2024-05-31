@@ -62,7 +62,7 @@
 /* Self redeem button */
 
 [data-self-redeem-button] {
-	@apply rounded-md border border-cyan-500 px-4 py-2 font-medium text-cyan-400 transition hover:bg-cyan-600/20;
+	@apply rounded-md border border-indigo-600 px-4 py-2 font-medium text-indigo-400 transition hover:bg-indigo-600/20;
 }
 [data-self-redeem-button][disabled] {
 	@apply cursor-not-allowed opacity-30;
@@ -73,14 +73,14 @@
 [data-buy-more-seats-form] {
 	@apply pt-3;
 	#team-upgrade-pricing-inline {
-		@apply flex w-full items-center justify-between;
+		@apply flex w-full items-start justify-between sm:items-center;
 		[data-seats-form] {
 			@apply inline-flex items-center gap-3;
 			label {
 				@apply opacity-80;
 			}
 			input {
-				@apply rounded-md border border-gray-800 bg-gray-900 py-2 pl-3 font-mono font-bold;
+				@apply rounded-md border border-gray-100 bg-white py-2 pl-3 font-mono font-bold dark:border-gray-800 dark:bg-gray-900;
 			}
 			button {
 				@apply flex h-full items-center justify-center rounded bg-gray-800/60 px-3 py-2 font-mono sm:hidden;
@@ -95,7 +95,7 @@
 				}
 			}
 			button[type='submit'] {
-				@apply rounded-md bg-cyan-400 px-5 py-2 font-medium text-black transition hover:bg-cyan-300;
+				@apply rounded-md bg-indigo-400 px-5 py-2 font-medium text-black transition hover:bg-indigo-300;
 			}
 		}
 	}
@@ -111,13 +111,13 @@
 		@apply flex gap-3 pt-2;
 	}
 	input {
-		@apply w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-inner selection:bg-cyan-500 selection:text-white;
+		@apply w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 text-sm font-semibold shadow-inner selection:bg-indigo-500 selection:text-white dark:border-gray-800 dark:bg-gray-900 dark:text-white;
 	}
 	input[disabled] {
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply flex flex-shrink-0 items-center gap-1 rounded-md bg-cyan-400/20 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/30;
+		@apply flex flex-shrink-0 items-center gap-1 rounded-md bg-indigo-400/20 px-5 py-2 text-sm font-semibold text-indigo-500 transition hover:bg-indigo-400/30 dark:text-indigo-300;
 	}
 	[data-sr-button][disabled] {
 		@apply cursor-not-allowed opacity-30;
@@ -128,7 +128,6 @@
 
 [data-claimed-seats-team] {
 	[data-claimed-seat] {
-		@apply text-gray-300;
 	}
 	[data-claimed-seat=''] {
 		@apply inline-flex items-center gap-1.5 before:translate-y-[2px] before:content-[url("/assets/check.svg")];
@@ -159,7 +158,6 @@
 	}
 	[data-claimed-seats-team] {
 		[data-claimed-seat] {
-			@apply text-cyan-200;
 		}
 		svg {
 			@apply w-4;

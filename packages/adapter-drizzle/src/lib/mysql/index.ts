@@ -66,6 +66,14 @@ import {
 	getAccountsSchema,
 } from './schemas/auth/accounts.js'
 import {
+	getDeviceAccessTokenRelationsSchema,
+	getDeviceAccessTokenSchema,
+} from './schemas/auth/device-access-token.js'
+import {
+	getDeviceVerificationRelationsSchema,
+	getDeviceVerificationSchema,
+} from './schemas/auth/device-verification.js'
+import {
 	getPermissionsRelationsSchema,
 	getPermissionsSchema,
 } from './schemas/auth/permissions.js'
@@ -85,6 +93,10 @@ import {
 	getUserPermissionsRelationsSchema,
 	getUserPermissionsSchema,
 } from './schemas/auth/user-permissions.js'
+import {
+	getUserPrefsRelationsSchema,
+	getUserPrefsSchema,
+} from './schemas/auth/user-prefs.js'
 import {
 	getUserRolesRelationsSchema,
 	getUserRolesSchema,
@@ -125,6 +137,10 @@ import {
 	getUpgradableProductsRelationsSchema,
 	getUpgradableProductsSchema,
 } from './schemas/commerce/upgradable-products.js'
+import {
+	getCommentRelationsSchema,
+	getCommentsSchema,
+} from './schemas/communication/comment.js'
 import { getCommunicationChannelSchema } from './schemas/communication/communication-channel.js'
 import { getCommunicationPreferenceTypesSchema } from './schemas/communication/communication-preference-types.js'
 import {
@@ -213,6 +229,15 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contentResourceProductRelations:
 			getContentResourceProductRelationsSchema(mysqlTable),
 		productRelations: getProductRelationsSchema(mysqlTable),
+		comments: getCommentsSchema(mysqlTable),
+		commentsRelations: getCommentRelationsSchema(mysqlTable),
+		deviceVerifications: getDeviceVerificationSchema(mysqlTable),
+		deviceVerificationRelations:
+			getDeviceVerificationRelationsSchema(mysqlTable),
+		deviceAccessToken: getDeviceAccessTokenSchema(mysqlTable),
+		deviceAccessTokenRelations: getDeviceAccessTokenRelationsSchema(mysqlTable),
+		userPrefs: getUserPrefsSchema(mysqlTable),
+		userPrefsRelations: getUserPrefsRelationsSchema(mysqlTable),
 	} as const
 }
 
@@ -247,6 +272,7 @@ export function mySqlDrizzleAdapter(
 		products,
 		upgradableProducts,
 		resourceProgress,
+		comments,
 	} = createTables(tableFn)
 
 	const adapter: CourseBuilderAdapter = {

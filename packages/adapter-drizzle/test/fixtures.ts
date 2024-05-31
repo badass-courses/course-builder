@@ -123,6 +123,7 @@ export const fixtures = {
 		email: 'fill@murray.com',
 		image: 'https://www.fillmurray.com/460/300',
 		name: 'Fill Murray',
+		fields: {},
 		role: 'user',
 		emailVerified,
 		createdAt,

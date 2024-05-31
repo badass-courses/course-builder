@@ -38,7 +38,7 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 				...article.fields,
 				title: article.fields.title || '',
 				description: article.fields.description ?? '',
-				socialImage: {
+				ogImage: {
 					type: 'imageUrl',
 					url: defaultSocialImage,
 				},

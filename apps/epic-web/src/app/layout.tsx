@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Suspense } from 'react'
-import { Inter } from 'next/font/google'
+import { DM_Sans, JetBrains_Mono } from 'next/font/google'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
@@ -17,14 +17,21 @@ import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
 
-const inter = Inter({
+const dmSans = DM_Sans({
 	subsets: ['latin'],
-	variable: '--font-sans',
+	variable: '--font-dmsans',
+	weight: ['400', '500', '700'],
+})
+
+const jetBransMono = JetBrains_Mono({
+	subsets: ['latin'],
+	variable: '--font-jetbrainsmono',
 })
 
 export const metadata = {
-	title: 'Course Builder POC',
-	description: 'Course building workflows in the cloud 🌦️',
+	title: 'Epic Web',
+	description:
+		'Learn full-stack web development with Kent C. Dodds and the Epic Web instructors. Learn TypeScript, React, Node.js, and more through hands-on workshops.',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 
@@ -37,14 +44,16 @@ export default function RootLayout({
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
 				<AxiomWebVitals />
-				<body className={`font-sans ${inter.variable}`}>
+				<body
+					className={`${dmSans.variable} ${jetBransMono.variable} font-sans antialiased`}
+				>
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
 							attribute="class"
-							defaultTheme="system"
-							enableSystem
-							disableTransitionOnChange
+							enableSystem={false}
+							defaultTheme="dark"
+							disableTransitionOnChange={true}
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />

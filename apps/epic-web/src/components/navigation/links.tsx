@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
 import { Login } from '@/components/navigation/login'
 import { User } from '@/components/navigation/user'
+import { env } from '@/env.mjs'
 import { cn } from '@/utils/cn'
 import { cx } from 'class-variance-authority'
 import {
@@ -75,7 +76,7 @@ export function Links({ className }: { className?: string }) {
 						redirect('/brand')
 					}}
 				>
-					Course Builder
+					{env.NEXT_PUBLIC_SITE_TITLE}
 				</Link>
 				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
 					{navigationLinks.map(({ label, href, icon }) => {
