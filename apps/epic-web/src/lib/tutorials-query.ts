@@ -108,10 +108,10 @@ export async function getAllTutorials() {
 
 	const parsedTutorial = z.array(TutorialSchema).safeParse(tutorials)
 	if (!parsedTutorial.success) {
-		// console.error(
-		// 	'Error parsing tutorial',
-		// 	JSON.stringify(parsedTutorial.error, null, 2),
-		// )
+		console.error(
+			'Error parsing tutorial',
+			JSON.stringify(parsedTutorial.error, null, 2),
+		)
 
 		throw new Error('Error parsing tutorial')
 	}

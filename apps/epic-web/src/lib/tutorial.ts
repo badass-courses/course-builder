@@ -31,7 +31,7 @@ export const TutorialSchema = z.object({
 						resourceOfId: z.string(),
 						resource: z.object({
 							id: z.string(),
-							type: z.enum(['lesson', 'videoResource']),
+							type: z.enum(['lesson', 'videoResource', 'linkResource']),
 							fields: z.object({
 								slug: z.string().optional().nullable(),
 								title: z.string().min(2).max(90),
