@@ -95,7 +95,18 @@ export const env = createEnv({
 		NEXT_PUBLIC_APP_NAME: z.string(),
 		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: z.string(),
 		NEXT_PUBLIC_PARTY_KIT_URL: z.string(),
-		NEXT_PUBLIC_URL: z.string(),
+		NEXT_PUBLIC_URL: z.preprocess(
+			// This makes Vercel deployments not fail if you don't set NEXT_PUBLIC_URL
+			// Since NextAuth.js automatically uses the VERCEL_URL if present.
+			(str) =>
+				process.env.NEXT_PUBLIC_URL
+					? process.env.NEXT_PUBLIC_URL
+					: process.env.VERCEL_URL
+						? `https://${process.env.VERCEL_URL}`
+						: str,
+			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
+			process.env.VERCEL ? z.string() : z.string(),
+		),
 		NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string(),
 		NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string(),
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
