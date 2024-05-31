@@ -39,7 +39,11 @@ export const env = createEnv({
 			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 			// Since NextAuth.js automatically uses the VERCEL_URL if present.
 			(str) =>
-				process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : str,
+				process.env.NEXTAUTH_URL
+					? process.env.NEXTAUTH_URL
+					: process.env.VERCEL_URL
+						? `https://${process.env.VERCEL_URL}`
+						: str,
 			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
 			process.env.VERCEL ? z.string() : z.string(),
 		),
@@ -54,7 +58,18 @@ export const env = createEnv({
 		UPSTASH_REDIS_REST_URL: z.string(),
 		UPSTASH_REDIS_REST_TOKEN: z.string(),
 		DEEPGRAM_API_KEY: z.string(),
-		UPLOADTHING_URL: z.string(),
+		UPLOADTHING_URL: z.preprocess(
+			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+			// Since NextAuth.js automatically uses the VERCEL_URL if present.
+			(str) =>
+				process.env.UPLOADTHING_URL
+					? process.env.UPLOADTHING_URL
+					: process.env.VERCEL_URL
+						? `https://${process.env.VERCEL_URL}`
+						: str,
+			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
+			process.env.VERCEL ? z.string() : z.string(),
+		),
 		POSTMARK_API_KEY: z.string(),
 		POSTMARK_WEBHOOK_SECRET: z.string(),
 		GITHUB_CLIENT_ID: z.string().optional(),
