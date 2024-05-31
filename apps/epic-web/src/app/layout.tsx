@@ -23,8 +23,9 @@ const inter = Inter({
 })
 
 export const metadata = {
-	title: 'Course Builder POC',
-	description: 'Course building workflows in the cloud 🌦️',
+	title: 'Epic Web',
+	description:
+		'Learn full-stack web development with Kent C. Dodds and the Epic Web instructors. Learn TypeScript, React, Node.js, and more through hands-on workshops.',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 

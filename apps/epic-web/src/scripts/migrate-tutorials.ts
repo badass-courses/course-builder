@@ -255,7 +255,7 @@ export async function migrateTutorials() {
 							title: sanityVideoResource.title,
 							transcript: sanityVideoResource.transcript?.text,
 							srt: sanityVideoResource.transcript?.srt,
-							state: sanityVideoResource.state || 'ready',
+							state: 'ready',
 							duration: sanityVideoResource.duration,
 							muxAssetId: sanityVideoResource.muxAsset.muxAssetId,
 							muxPlaybackId: sanityVideoResource.muxAsset.muxPlaybackId,
