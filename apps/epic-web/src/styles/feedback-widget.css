@@ -1,0 +1,87 @@
+[data-sr-feedback-widget-overlay] {
+  @apply fixed inset-0 z-[60] bg-black/40 backdrop-blur;
+}
+[data-sr-feedback-widget-content] {
+  @apply fixed left-1/2 top-1/2 z-[999] w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-100 bg-white p-5 shadow-2xl shadow-black/10;
+}
+[data-sr-feedback-widget-title] {
+  @apply pb-4 text-2xl font-black;
+}
+[data-sr-feedback-widget-close] {
+  @apply absolute right-2 top-2;
+}
+[data-sr-feedback-widget-close] button {
+  @apply inline-flex items-center justify-center rounded-full border border-transparent bg-gray-100 p-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 hover:bg-gray-200 hover:shadow-inner;
+}
+
+[data-sr-feedback-widget-close] button svg {
+  @apply h-5 w-5;
+}
+[data-sr-feeback-widget-form] {
+  @apply flex flex-col space-y-5;
+}
+[data-sr-feedback-widget-radio-group-container] {
+  @apply flex w-full flex-col space-y-5 md:flex-row md:space-x-10 md:space-y-0;
+}
+[data-sr-feedback-widget-feedback-field='error'] {
+  @apply rounded-md ring ring-pink-300 ring-opacity-80 ring-offset-background;
+}
+[data-sr-feedback-widget-feedback-field] #text div {
+  @apply prose prose-base block max-h-[250px] min-h-[150px] w-full overflow-y-auto rounded-md border border-gray-200 bg-gray-100 p-3 text-foreground shadow focus:ring-sky-500 prose-p:first-of-type:mt-0 dark:border-gray-700 dark:bg-gray-900;
+}
+[data-sr-feedback-widget-feedback-field] small {
+  @apply block pt-2 text-sm text-gray-400;
+}
+[data-sr-feedback-widget-feedback-field-header] {
+  @apply flex w-full items-center justify-between pb-2 pt-2;
+}
+[data-sr-feedback-widget-feedback-field-header] label {
+  @apply inline-block flex-shrink-0 font-semibold;
+}
+[data-sr-feedback-widget-feedback-field-header] label span {
+  @apply font-normal text-gray-500;
+}
+[data-sr-feedback-widget-feedback-field-header] div {
+  @apply inline-block text-xs font-medium leading-tight text-pink-500 sm:text-sm;
+}
+[data-sr-feedback-widget-submit][type='submit'] {
+  @apply rounded-md bg-primary px-5 py-4 font-semibold text-primary-foreground transition hover:brightness-125;
+}
+
+/* emotion field */
+
+[data-sr-feedback-widget-emotion-field] {
+}
+[data-sr-feedback-widget-emotion-field] label {
+  @apply inline-flex pb-1 font-semibold;
+}
+[data-sr-feedback-widget-emotion-field-buttons] {
+  @apply flex items-center gap-3;
+}
+[data-sr-feedback-widget-emotion-field-buttons] label {
+}
+[data-sr-feedback-widget-emotion-field-buttons] button {
+  @apply relative flex items-center justify-center rounded-md border border-gray-200/50 bg-gray-100 p-4 text-xl leading-none shadow-inner hover:bg-gray-200 radix-state-checked:border radix-state-checked:border-gray-100 radix-state-checked:bg-white radix-state-checked:shadow-xl radix-state-checked:shadow-gray-500/10 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 dark:radix-state-checked:bg-gray-800;
+}
+[data-sr-feedback-widget-emotion-field-buttons] button span {
+  @apply after:absolute after:left-1.5 after:top-0.5 after:text-sm after:text-gray-600 after:content-['✓'] dark:after:text-gray-400;
+}
+
+/* category field */
+
+[data-sr-feedback-widget-category-field] {
+}
+[data-sr-feedback-widget-category-field] label {
+  @apply inline-flex pb-1 font-semibold;
+}
+[data-sr-feedback-widget-category-field-buttons] {
+  @apply flex items-center gap-3;
+}
+[data-sr-feedback-widget-category-field-buttons] label {
+}
+[data-sr-feedback-widget-category-field-buttons] button {
+  @apply relative flex items-center justify-center rounded-md border border-gray-200/50 bg-gray-100 p-4 text-base leading-tight shadow-inner hover:bg-gray-200 radix-state-checked:border radix-state-checked:border-gray-100 radix-state-checked:bg-white radix-state-checked:shadow-xl radix-state-checked:shadow-gray-500/10 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 dark:radix-state-checked:bg-gray-800;
+}
+[data-sr-feedback-widget-category-field-buttons] button span {
+  @apply after:pr-1 after:text-gray-600 after:content-['✓'] dark:after:text-gray-400;
+}

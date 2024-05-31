@@ -1,40 +1,40 @@
 /* Redeem dialog */
 [data-redeem-dialog] {
-	@apply h-[400px] overflow-y-scroll;
+  @apply h-[400px] overflow-y-scroll;
 }
 [data-redeem-dialog-content] {
-	@apply bg-background dark:bg-secondary fixed left-1/2 top-1/2 z-[60] max-h-[90vh] w-full max-w-[95%] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-md shadow-xl sm:max-w-md;
-	[data-title] {
-		@apply px-8 pt-8 text-xl font-bold;
-	}
-	[data-description] {
-		@apply px-8 pb-4 pt-4 opacity-80;
-	}
-	form {
-		@apply px-8 py-4;
-		[data-email] {
-			@apply mt-2 flex flex-col;
-			label {
-				@apply pb-1;
-			}
-			input {
-				@apply dark:bg-background rounded border border-gray-300 bg-gray-200 px-4 py-2 dark:border-gray-900;
-			}
-		}
-		[data-actions] {
-			@apply flex w-full justify-end gap-3 py-8;
-			[data-cancel] {
-				@apply dark:bg-background flex rounded bg-gray-200 px-4 py-2 text-sm font-medium;
-			}
-			[data-submit] {
-				@apply bg-primary flex rounded border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm transition;
-			}
-			[data-submit]:hover {
-				@apply brightness-105;
-			}
-		}
-	}
+  @apply fixed left-1/2 top-1/2 z-[60] max-h-[90vh] w-full max-w-[95%] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-md bg-background shadow-xl dark:bg-secondary sm:max-w-md;
+  [data-title] {
+    @apply px-8 pt-8 text-xl font-bold;
+  }
+  [data-description] {
+    @apply px-8 pb-4 pt-4 opacity-80;
+  }
+  form {
+    @apply px-8 py-4;
+    [data-email] {
+      @apply mt-2 flex flex-col;
+      label {
+        @apply pb-1;
+      }
+      input {
+        @apply rounded border border-gray-300 bg-gray-200 px-4 py-2 dark:border-gray-900 dark:bg-background;
+      }
+    }
+    [data-actions] {
+      @apply flex w-full justify-end gap-3 py-8;
+      [data-cancel] {
+        @apply flex rounded bg-gray-200 px-4 py-2 text-sm font-medium dark:bg-background;
+      }
+      [data-submit] {
+        @apply flex rounded border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition;
+      }
+      [data-submit]:hover {
+        @apply brightness-105;
+      }
+    }
+  }
 }
 [data-redeem-dialog-overlay] {
-	@apply fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm;
+  @apply fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm;
 }

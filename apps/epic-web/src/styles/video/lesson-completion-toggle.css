@@ -1,0 +1,43 @@
+[data-lesson-completion-toggle] {
+  @apply mt-8 flex w-full items-center justify-center rounded bg-card px-5 shadow-xl shadow-foreground/5 dark:shadow-none;
+  form {
+    @apply inline-flex flex-col items-center justify-center gap-3 rounded-md py-10 sm:flex-row;
+    [data-title] {
+      @apply text-2xl font-semibold;
+    }
+    label {
+      @apply relative inline-flex flex-row items-center overflow-hidden rounded bg-gray-800/0 px-3 py-2 transition hover:bg-white dark:hover:bg-gray-800/40 sm:flex-row-reverse;
+      [data-label] {
+        @apply pr-2 text-base leading-none text-gray-700 transition dark:text-gray-300 sm:pl-2 lg:text-lg;
+      }
+    }
+    label:hover {
+      [data-label] {
+        @apply text-gray-900 dark:text-white;
+      }
+      button {
+        span {
+          @apply translate-x-1 bg-white radix-state-checked:translate-x-5;
+        }
+      }
+    }
+    label[data-fetching='true'] {
+      @apply hover:cursor-wait;
+    }
+    label[data-fetching='false'] {
+      @apply hover:cursor-pointer;
+    }
+    button {
+      @apply relative h-5 w-10 rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-black/5 radix-state-checked:border-indigo-400 radix-state-checked:bg-indigo-500 dark:border-gray-700/50 dark:bg-gray-800 dark:shadow-black/50 dark:radix-state-checked:bg-indigo-500;
+      span {
+        @apply block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm shadow-black/10 transition-all ease-out radix-state-checked:translate-x-5 radix-state-checked:bg-white dark:bg-gray-200 dark:shadow-black/50;
+      }
+    }
+    button[disabled] {
+      @apply animate-pulse;
+    }
+    [data-loading-indicator] {
+      @apply absolute left-0 h-full bg-white/10;
+    }
+  }
+}

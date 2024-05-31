@@ -1,0 +1,184 @@
+[data-body-video] {
+  video {
+    @apply aspect-video w-full;
+  }
+  div {
+    @apply sr-only;
+  }
+}
+
+[data-body-testimonial] {
+  @apply relative -mx-5 overflow-hidden bg-gray-800/60 py-5 pl-5 pr-5 font-medium sm:mx-0 sm:rounded-md sm:pl-8 sm:pr-6;
+  [data-content] {
+    @apply relative z-10;
+    blockquote {
+      @apply prose prose-lg my-0 max-w-none border-none pl-0 font-normal italic prose-p:text-gray-200 prose-p:first-of-type:mt-0 prose-p:last-of-type:mb-0 prose-a:text-cyan-300;
+    }
+    [data-author] {
+      @apply flex items-center gap-3 pt-5 text-gray-200;
+      [data-image] {
+        @apply flex items-center justify-center overflow-hidden rounded-full;
+        img {
+          @apply my-0;
+        }
+      }
+      [data-name] {
+        @apply font-normal text-gray-200;
+      }
+    }
+  }
+  [data-border] {
+    @apply absolute left-0 top-0 h-full w-1 bg-cyan-500;
+  }
+  [data-quote] {
+    @apply absolute bottom-0 right-5 font-serif text-5xl font-bold leading-none text-gray-500;
+  }
+}
+
+[data-body-image] {
+  @apply relative flex items-center justify-center py-4 text-center;
+  [data-image] {
+    @apply rounded-md;
+  }
+  svg {
+    @apply absolute h-5 w-5;
+  }
+  figcaption {
+  }
+}
+[data-body-image][data-status='loading'] {
+  @apply bg-slate-800;
+}
+
+[data-external-link] {
+}
+
+pre[data-codeblock] {
+  @apply relative -mx-5 rounded-none bg-gray-900 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 hover:scrollbar-thumb-gray-700 dark:bg-gray-800 dark:bg-gray-800/50 sm:mx-0 sm:rounded-lg;
+  [data-highlighted-line] {
+    @apply before:pointer-events-none before:absolute before:left-0 before:h-7 before:w-full before:bg-white/30 before:mix-blend-overlay before:content-[''];
+  }
+}
+
+[data-body-callout] {
+  [data-image] {
+    @apply hidden text-lg font-bold;
+  }
+  [data-content] {
+    @apply min-w-0 first-of-type:prose-p:mt-0 last-of-type:prose-p:mb-0;
+  }
+}
+
+[data-body-callout='highlight'] {
+  @apply mb-2 inline-flex text-lg font-medium sm:text-xl md:text-2xl md:!leading-relaxed;
+}
+[data-body-callout='tip'] {
+  @apply bg-gray-800;
+}
+[data-body-callout='big-idea'] {
+  @apply bg-gray-800;
+}
+[data-body-callout='reflection'] {
+  @apply bg-gray-800;
+}
+[data-body-callout='caution'] {
+  @apply bg-gray-800;
+}
+
+[data-body-divider] {
+  @apply flex items-center justify-center pt-10;
+}
+[data-body-divider='svg'] {
+  @apply pt-20;
+}
+[data-body-divider='img'] {
+}
+
+[data-body-code] {
+}
+
+/* Table of Contents */
+
+[data-table-of-contents] {
+  @apply mx-auto w-full max-w-screen-md text-lg font-medium marker:hidden marker:text-transparent sm:text-xl;
+  [data-marker-up] {
+    @apply hidden h-4 w-4;
+  }
+  [data-marker-down] {
+    @apply block h-4 w-4;
+  }
+  summary {
+    @apply flex items-center hover:cursor-pointer;
+  }
+  [data-marker] {
+    @apply flex h-16 items-center justify-center pr-5 text-sm opacity-60 transition before:content-['↓'];
+  }
+  [data-title] {
+    @apply py-3 text-base uppercase text-gray-300 transition group-hover:text-gray-200 sm:py-5;
+  }
+  [data-content] {
+    @apply pb-4;
+  }
+  [data-heading] {
+    @apply sm:text-lg;
+    a {
+      @apply inline-flex py-1 font-medium hover:underline sm:py-2;
+    }
+  }
+  [data-subheading] {
+    @apply py-2;
+    a {
+      @apply inline-flex border-l border-gray-800 py-1 pl-6 font-normal hover:underline sm:py-2;
+    }
+  }
+}
+
+[data-table-of-contents]:hover {
+  [data-marker] {
+    @apply opacity-100;
+  }
+}
+
+[data-table-of-contents][open] {
+  [data-marker] {
+    @apply before:content-['↑'];
+  }
+}
+
+[data-body-tweet] {
+  @apply rounded-lg border-none bg-gray-800 p-5 !not-italic text-white;
+  [data-header] {
+    @apply flex w-full items-start justify-between;
+  }
+  a {
+    @apply !no-underline;
+  }
+  a:hover {
+    @apply underline;
+  }
+  [data-author] {
+    @apply flex items-center justify-center gap-2;
+    img {
+      @apply my-0 rounded-full;
+    }
+    [data-name] {
+      @apply flex flex-col leading-tight text-white;
+    }
+    [data-handle] {
+      @apply text-sm opacity-60;
+    }
+  }
+  svg {
+    @apply text-[rgb(29,155,240)];
+  }
+  [data-body] {
+    @apply prose my-0 max-w-none border-none pl-0 font-normal not-italic leading-tight sm:prose-lg prose-p:text-gray-200 prose-p:first-of-type:mt-0 prose-p:last-of-type:mb-0 prose-a:text-cyan-300 prose-code:bg-gray-700 sm:leading-tight;
+  }
+}
+[data-body-tweet]
+  [data-body]
+  :where(blockquote p:first-of-type):not(
+    :where([class~='not-prose'] *)
+  )::before {
+  @apply hidden;
+}

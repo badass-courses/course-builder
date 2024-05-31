@@ -1,0 +1,106 @@
+/* ——— QUIZ ——— */
+[data-sr-quiz] {
+  @apply p-5 w-full flex flex-col items-center justify-center;
+}
+
+/* ——— QUESTION ——— */
+[data-sr-quiz-question] {
+  @apply w-full max-w-screen-sm mx-auto;
+
+  /* ——— HEADER ——— */
+  [data-sr-quiz-question-header] {
+    @apply prose sm:prose-lg pb-6 max-w-none w-full;
+
+    pre {
+      @apply p-0;
+    }
+  }
+
+  /* ——— BODY ——— */
+  [data-sr-quiz-question-body] {
+    @apply list-none;
+    & > li {
+      @apply list-none;
+    }
+  }
+
+  /* ——— CHOICES ——— */
+  [data-sr-quiz-question-choices] {
+    @apply flex flex-col space-y-4;
+  }
+
+  /* ——— CHOICE ——— */
+  [data-sr-quiz-question-choice] {
+    img {
+      @apply w-full;
+    }
+    label {
+      @apply flex flex-wrap items-center p-5 rounded-md border-2 border-black border-opacity-10 transition-all ease-in-out duration-100;
+    }
+    input {
+      @apply mr-2;
+    }
+    p {
+      @apply flex-grow leading-tight;
+    }
+    span {
+      @apply px-2 py-1 text-xs leading-none rounded-full;
+    }
+  }
+
+  [data-sr-quiz-question-choice=''] {
+    label {
+      @apply bg-transparent hover:bg-black hover:bg-opacity-5 cursor-pointer;
+    }
+  }
+
+  [data-sr-quiz-question-choice='correct'] {
+    label {
+      @apply border-green-500 border-opacity-40;
+    }
+    span {
+      @apply bg-green-500 text-white;
+    }
+  }
+
+  [data-sr-quiz-question-choice='incorrect'] {
+    label {
+      @apply border-red-500 border-opacity-40 cursor-default;
+    }
+    span {
+      @apply bg-red-500 text-white;
+    }
+  }
+
+  /* ——— TEXTAREA ——— */
+  [data-sr-quiz-question-input] {
+    label {
+      @apply font-medium;
+    }
+    textarea {
+      @apply w-full rounded-lg p-3 border border-gray-200;
+    }
+  }
+
+  /* ——— ANSWER ——— */
+  [data-sr-quiz-question-answer] {
+    @apply prose pt-5 max-w-none;
+    pre {
+      @apply p-0 mb-5;
+    }
+  }
+
+  /* ——— FOOTER ——— */
+  [data-sr-quiz-question-footer] {
+    @apply prose px-5 py-1 border-2 border-black border-opacity-10 max-w-none rounded-lg mt-5;
+  }
+
+  /* —— SUBMIT —— */
+  [data-sr-button] {
+    @apply mt-5 text-white inline-flex items-center px-6 py-2 leading-6 font-semibold rounded-md border-none bg-indigo-500 hover:bg-indigo-600 transition cursor-pointer;
+  }
+
+  [data-sr-button][disabled] {
+    @apply cursor-not-allowed;
+  }
+}
