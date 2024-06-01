@@ -8,8 +8,6 @@ export default {
 	dbCredentials: {
 		uri: env.DATABASE_URL,
 	},
-	tablesFilter: [
-		`${env.NEXT_PUBLIC_APP_NAME ? `${slugify(env.NEXT_PUBLIC_APP_NAME)}_` : ''}*`,
-	],
+	tablesFilter: [`*`],
 	out: './src/db/generated',
 } satisfies Config

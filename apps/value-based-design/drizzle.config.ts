@@ -7,6 +7,6 @@ export default {
 	dbCredentials: {
 		uri: env.DATABASE_URL,
 	},
-	tablesFilter: [`${env.NEXT_PUBLIC_APP_NAME}_*`],
+	tablesFilter: [`vbd_*`],
 	out: './src/db/generated',
 } satisfies Config
