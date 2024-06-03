@@ -14,17 +14,22 @@ export const contributors: Record<string, string> = {
 const contributionTypeHash: Record<string, string> = {
 	author: 'contribution_type_clt4wta5w000808l5c1qi0ud4',
 	instructor: 'contribution_type_clwty5w1i000008l1c4d9f7vr',
+	host: 'contribution_type_clwxx87i0000008mag2gl90yu',
+	presenter: 'contribution_type_clwxx8dyu000108macmbr6kke',
 }
 
-export async function recordResourceContribution({
-	contributorSlug,
-	resourceId,
-	contributionType = 'author',
-}: {
-	contributorSlug: string
-	resourceId: string
-	contributionType?: string
-}) {
+export async function recordResourceContribution(
+	{
+		contributorSlug,
+		resourceId,
+		contributionType = 'author',
+	}: {
+		contributorSlug: string
+		resourceId: string
+		contributionType?: string
+	},
+	WRITE_TO_DB: boolean = true,
+) {
 	const contributorId = contributors[contributorSlug]
 
 	if (!contributorId) {
@@ -48,12 +53,15 @@ export async function recordResourceContribution({
 		return
 	}
 
-	await db.insert(contentContributions).values({
-		id: `cc-${guid()}`,
-		userId: user.id,
-		contentId: resourceId,
-		contributionTypeId,
-	})
+	console.info(`created ${contributionType} for`, user.name)
+
+	WRITE_TO_DB &&
+		(await db.insert(contentContributions).values({
+			id: `cc-${guid()}`,
+			userId: user.id,
+			contentId: resourceId,
+			contributionTypeId,
+		}))
 
 	return user
 }

@@ -6,7 +6,7 @@ export const LessonSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			title: z.string().min(2).max(90),
-			body: z.string().optional(),
+			body: z.string().optional().nullable(),
 			slug: z.string(),
 			state: z
 				.enum(['draft', 'published', 'archived', 'deleted'])

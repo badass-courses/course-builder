@@ -34,6 +34,26 @@ const contributionTypeList = [
 		updatedAt: new Date(),
 		deletedAt: null,
 	},
+	{
+		id: 'contribution_type_clwxx87i0000008mag2gl90yu',
+		slug: 'host',
+		name: 'Host',
+		description: 'Contributor who hosted the event',
+		active: true,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		deletedAt: null,
+	},
+	{
+		id: 'contribution_type_clwxx8dyu000108macmbr6kke',
+		slug: 'presenter',
+		name: 'Presenter',
+		description: 'Contributor who presented the content',
+		active: true,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		deletedAt: null,
+	},
 ]
 
 export async function writeContributionTypes() {

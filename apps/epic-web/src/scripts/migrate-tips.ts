@@ -1,7 +1,10 @@
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { contentResource, contentResourceResource, users } from '@/db/schema'
 import { TipSchema } from '@/lib/tips'
-import { recordResourceContribution } from '@/scripts/contributors-list'
+import {
+	contributors,
+	recordResourceContribution,
+} from '@/scripts/contributors-list'
 import { sanityQuery } from '@/scripts/utils/sanity-client'
 import { guid } from '@/utils/guid'
 import { eq } from 'drizzle-orm'
@@ -56,7 +59,7 @@ const sanityTipSchema = z.object({
 
 type SanityTip = z.infer<typeof sanityTipSchema>
 
-export async function migrateTips() {
+export async function migrateTips(WRITE_TO_DB: boolean = true) {
 	const tips = z.array(sanityTipSchema).parse(
 		await sanityQuery<SanityTip[]>(`*[_type == "tip"]{
 	...,
@@ -91,11 +94,13 @@ export async function migrateTips() {
 			const newResourceId = tip._id || guid()
 
 			const incomingContributors = tip.contributors[0] as any
-
-			const user = await recordResourceContribution({
-				contributorSlug: incomingContributors.slug.current,
-				resourceId: newResourceId,
-			})
+			const contributorId = contributors[incomingContributors.slug]
+			const user =
+				(contributorId &&
+					(await db.query.users.findFirst({
+						where: eq(users.id, contributorId),
+					}))) ||
+				null
 
 			const sanityVideoResource = tip.videoResource
 
@@ -103,36 +108,43 @@ export async function migrateTips() {
 
 			console.log('creating video resource', videoResourceId)
 
-			const videoResource = VideoResourceSchema.parse({
-				id: videoResourceId,
-				createdAt: sanityVideoResource._createdAt,
-				updatedAt: sanityVideoResource._updatedAt,
-				title: sanityVideoResource.title,
-				transcript: sanityVideoResource.transcript?.text,
-				srt: sanityVideoResource.transcript?.srt,
-				state: 'ready',
-				duration: sanityVideoResource.duration,
-				muxAssetId: sanityVideoResource.muxAsset.muxAssetId,
-				muxPlaybackId: sanityVideoResource.muxAsset.muxPlaybackId,
+			const existingVideoResource = await db.query.contentResource.findFirst({
+				where: eq(contentResource.id, videoResourceId),
 			})
 
-			await db.insert(contentResource).values({
-				id: videoResource.id,
-				type: 'videoResource',
-				createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
-				createdAt: new Date(videoResource.createdAt as string),
-				updatedAt: new Date(videoResource.updatedAt as string),
-				deletedAt: null,
-				fields: {
-					title: videoResource.title,
-					state: videoResource.state,
-					duration: videoResource.duration,
-					muxAssetId: videoResource.muxAssetId,
-					muxPlaybackId: videoResource.muxPlaybackId,
-					transcript: videoResource.transcript,
-					srt: videoResource.srt,
-				},
-			})
+			if (!existingVideoResource) {
+				const videoResource = VideoResourceSchema.parse({
+					id: videoResourceId,
+					createdAt: sanityVideoResource._createdAt,
+					updatedAt: sanityVideoResource._updatedAt,
+					title: sanityVideoResource.title,
+					transcript: sanityVideoResource.transcript?.text,
+					srt: sanityVideoResource.transcript?.srt,
+					state: 'ready',
+					duration: sanityVideoResource.duration,
+					muxAssetId: sanityVideoResource.muxAsset.muxAssetId,
+					muxPlaybackId: sanityVideoResource.muxAsset.muxPlaybackId,
+				})
+
+				WRITE_TO_DB &&
+					(await db.insert(contentResource).values({
+						id: videoResource.id,
+						type: 'videoResource',
+						createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
+						createdAt: new Date(videoResource.createdAt as string),
+						updatedAt: new Date(videoResource.updatedAt as string),
+						deletedAt: null,
+						fields: {
+							title: videoResource.title,
+							state: videoResource.state,
+							duration: videoResource.duration,
+							muxAssetId: videoResource.muxAssetId,
+							muxPlaybackId: videoResource.muxPlaybackId,
+							transcript: videoResource.transcript,
+							srt: videoResource.srt,
+						},
+					}))
+			}
 
 			const transformedTip = TipSchema.parse({
 				id: newResourceId,
@@ -151,14 +163,29 @@ export async function migrateTips() {
 				},
 			})
 
-			await db.insert(contentResourceResource).values({
-				resourceOfId: newResourceId,
-				resourceId: videoResourceId,
-				position: 0,
+			const existingTip = await db.query.contentResource.findFirst({
+				where: eq(contentResource.id, newResourceId),
 			})
 
-			console.info('created tip', newResourceId)
-			await db.insert(contentResource).values(transformedTip)
+			if (!existingTip) {
+				WRITE_TO_DB &&
+					(await db.insert(contentResourceResource).values({
+						resourceOfId: newResourceId,
+						resourceId: videoResourceId,
+						position: 0,
+					}))
+
+				console.info('created tip', newResourceId)
+				await recordResourceContribution(
+					{
+						contributorSlug: incomingContributors.slug.current,
+						resourceId: newResourceId,
+						contributionType: 'author',
+					},
+					WRITE_TO_DB,
+				)
+				WRITE_TO_DB && (await db.insert(contentResource).values(transformedTip))
+			}
 		}
 	}
 }

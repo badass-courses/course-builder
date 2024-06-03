@@ -1,12 +1,11 @@
 import { env } from '@/env.mjs'
-import slugify from '@sindresorhus/slugify'
 import { type Config } from 'drizzle-kit'
 
 export default {
 	schema: ['./src/db/schema.ts'],
-	driver: 'mysql2',
+	dialect: 'mysql',
 	dbCredentials: {
-		uri: env.DATABASE_URL,
+		url: env.DATABASE_URL,
 	},
 	tablesFilter: [`*`],
 	out: './src/db/generated',

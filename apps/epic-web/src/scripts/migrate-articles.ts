@@ -41,7 +41,7 @@ const sanityArticleSchema = z.object({
 
 type SanityArticle = z.infer<typeof sanityArticleSchema>
 
-export async function migrateArticles() {
+export async function migrateArticles(WRITE_TO_DB: boolean = true) {
 	const articles = await sanityQuery<SanityArticle[]>(`*[_type == "article"]{
 	...,
 	"contributors": contributors[].contributor->{
@@ -54,18 +54,19 @@ export async function migrateArticles() {
 			where: eq(contentResource.id, article._id),
 		})
 
-		if (resource) {
-			console.log(article.contributors)
-			console.log('resource found', article._id)
-		} else {
+		if (!resource) {
 			const newResourceId = article._id || guid()
 
 			const incomingContributors = article.contributors[0] as any
 
-			const user = await recordResourceContribution({
-				contributorSlug: incomingContributors.slug.current,
-				resourceId: newResourceId,
-			})
+			const user = await recordResourceContribution(
+				{
+					contributorSlug: incomingContributors.slug.current,
+					resourceId: newResourceId,
+					contributionType: 'author',
+				},
+				WRITE_TO_DB,
+			)
 
 			const transformedArticle = ArticleSchema.parse({
 				id: newResourceId,
@@ -94,8 +95,11 @@ export async function migrateArticles() {
 					}),
 				},
 			})
-			console.info('created article', transformedArticle)
-			await db.insert(contentResource).values(transformedArticle)
+			console.info('created article', {
+				title: transformedArticle.fields?.title,
+			})
+			WRITE_TO_DB &&
+				(await db.insert(contentResource).values(transformedArticle))
 		}
 	}
 }

@@ -10,6 +10,12 @@ export const TutorialSchema = z.object({
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
 		description: z.string().optional().nullable(),
+		image: z
+			.object({
+				url: z.string(),
+			})
+			.optional()
+			.nullable(),
 	}),
 	resources: z.array(
 		z.object({

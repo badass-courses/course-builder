@@ -30,6 +30,11 @@ const config = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'cdn.sanity.io',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'neatly-diverse-goldfish.ngrok-free.app',
 				port: '',
 			},

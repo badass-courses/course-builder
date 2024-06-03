@@ -1,16 +1,16 @@
-import * as fs from 'node:fs'
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { contentResource, contentResourceResource, users } from '@/db/schema'
 import { LessonSchema } from '@/lib/lessons'
-import { recordResourceContribution } from '@/scripts/contributors-list'
+import {
+	contributors,
+	recordResourceContribution,
+} from '@/scripts/contributors-list'
 import { sanityQuery } from '@/scripts/utils/sanity-client'
 import { guid } from '@/utils/guid'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { VideoResourceSchema } from '@coursebuilder/core/schemas'
-
-const WRITE_TO_DB = true
 
 const ContributorSchema = z.object({
 	_id: z.string(),
@@ -102,7 +102,7 @@ const ModuleSchema = z.object({
 
 type SanityTutorial = z.infer<typeof ModuleSchema>
 
-export async function migrateTutorials() {
+export async function migrateTutorials(WRITE_TO_DB: boolean = true) {
 	const tutorials = await sanityQuery<
 		SanityTutorial[]
 	>(`*[_type == "module" && moduleType == 'tutorial'] | order(_createdAt desc) {
@@ -169,8 +169,6 @@ export async function migrateTutorials() {
     }
   }`)
 
-	fs.writeFileSync('test.json', JSON.stringify(tutorials, null, 2))
-
 	z.array(ModuleSchema).parse(tutorials)
 
 	for (const tutorial of tutorials) {
@@ -181,19 +179,20 @@ export async function migrateTutorials() {
 		console.log('migrating tutorial', { newTutorialId, createSections })
 
 		const incomingContributors = tutorial.instructor
-
-		const user = await recordResourceContribution({
-			contributorSlug: incomingContributors.slug,
-			resourceId: newTutorialId,
-			contributionType: 'instructor',
-		})
+		const contributorId = contributors[incomingContributors.slug]
+		const user =
+			(contributorId &&
+				(await db.query.users.findFirst({
+					where: eq(users.id, contributorId),
+				}))) ||
+			null
 
 		let sectionIndex = 0
 
 		for (const section of tutorial.sections) {
 			const sectionId = section._id || guid()
 
-			console.log('\tmigrating section', { sectionId })
+			console.log('\tmigrating section', { sectionId, title: section.title })
 
 			// at least one tutorial has a link resource
 			for (const resource of section.resources) {
@@ -240,13 +239,15 @@ export async function migrateTutorials() {
 				})
 
 				if (!lessonResource) {
-					console.log('\t\tmigrating lesson resource', { lessonId })
+					console.log('\t\tmigrating lesson resource', {
+						lessonId,
+						title: lesson.title,
+					})
 					const videoResource = await db.query.contentResource.findFirst({
 						where: eq(contentResource.id, videoResourceId),
 					})
 
 					if (!videoResource) {
-						console.log('\t\t\tmigrating video resource', { videoResourceId })
 						const sanityVideoResource = lesson.videoResource
 						const newVideoResource = VideoResourceSchema.parse({
 							id: videoResourceId,
@@ -349,22 +350,38 @@ export async function migrateTutorials() {
 				}
 			}
 		}
-		WRITE_TO_DB &&
-			(await db.insert(contentResource).values({
-				id: newTutorialId,
-				type: tutorial.moduleType,
-				createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
-				createdAt: new Date(tutorial._createdAt),
-				updatedAt: new Date(tutorial._updatedAt),
-				deletedAt: null,
-				fields: {
-					title: tutorial.title,
-					body: tutorial.body,
-					description: tutorial.description,
-					state: tutorial.state,
-					visibility: 'public',
-					slug: tutorial.slug.current,
-				},
-			}))
+
+		const existingTutorial = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, newTutorialId),
+		})
+
+		if (!existingTutorial) {
+			await recordResourceContribution({
+				contributorSlug: incomingContributors.slug,
+				resourceId: newTutorialId,
+				contributionType: 'instructor',
+			})
+
+			WRITE_TO_DB &&
+				(await db.insert(contentResource).values({
+					id: newTutorialId,
+					type: tutorial.moduleType,
+					createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
+					createdAt: new Date(tutorial._createdAt),
+					updatedAt: new Date(tutorial._updatedAt),
+					deletedAt: null,
+					fields: {
+						title: tutorial.title,
+						body: tutorial.body,
+						description: tutorial.description,
+						state: tutorial.state,
+						visibility: 'public',
+						slug: tutorial.slug.current,
+						image: {
+							url: tutorial.image,
+						},
+					},
+				}))
+		}
 	}
 }

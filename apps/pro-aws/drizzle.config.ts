@@ -3,9 +3,9 @@ import { type Config } from 'drizzle-kit'
 
 export default {
 	schema: ['./src/db/schema.ts'],
-	driver: 'mysql2',
+	dialect: 'mysql',
 	dbCredentials: {
-		uri: env.DATABASE_URL,
+		url: env.DATABASE_URL,
 	},
 	tablesFilter: [`${env.NEXT_PUBLIC_APP_NAME}_*`],
 	out: './src/db/generated',

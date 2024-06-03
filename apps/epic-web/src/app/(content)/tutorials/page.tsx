@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { env } from '@/env.mjs'
 import { getAllTutorials } from '@/lib/tutorials-query'
@@ -35,7 +36,18 @@ export default async function Tutorials() {
 				<Link href={`/tutorials/${tutorial.fields?.slug}`} key={tutorial.id}>
 					<Card>
 						<CardHeader>
-							<CardTitle>{tutorial.fields?.title}</CardTitle>
+							<div className="flex items-center gap-4">
+								{tutorial.fields?.image && (
+									<Image
+										src={tutorial.fields?.image.url}
+										alt={tutorial.fields?.title}
+										width={80}
+										height={80}
+										className="rounded-lg"
+									/>
+								)}
+								<CardTitle>{tutorial.fields?.title}</CardTitle>
+							</div>
 						</CardHeader>
 						<CardContent>{tutorial.fields?.description}</CardContent>
 					</Card>
