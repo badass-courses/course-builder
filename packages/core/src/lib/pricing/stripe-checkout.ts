@@ -1,5 +1,6 @@
 import { add } from 'date-fns'
-import { first, isEmpty } from 'lodash'
+import first from 'lodash/first'
+import isEmpty from 'lodash/isEmpty'
 import { CourseBuilderAdapter } from 'src/adapters'
 import { z } from 'zod'
 

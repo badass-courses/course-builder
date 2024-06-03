@@ -55,7 +55,7 @@ export async function addResourceToProduct({
 	await db.insert(contentResourceProduct).values({
 		resourceId: resource.id,
 		productId,
-		position: product.resources.length,
+		position: product.resources.length || 0,
 		metadata: {
 			addedBy: user.id,
 		},

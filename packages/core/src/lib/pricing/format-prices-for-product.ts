@@ -1,4 +1,4 @@
-import { isEmpty, sum } from 'lodash'
+import sum from 'lodash/sum'
 
 import { CourseBuilderAdapter } from '../../adapters'
 import { Price, Product, Purchase } from '../../schemas'
@@ -92,12 +92,13 @@ export async function getFixedDiscountForIndividualUpgrade({
 	// if Purchase To Be Upgraded is upgradeable to the Product To Be Purchased,
 	// then look up the Price of the original product
 	const { availableUpgradesForProduct, pricesOfPurchasesTowardOneBundle } = ctx
-	const upgradeIsAvailable = !isEmpty(
-		await availableUpgradesForProduct(
-			[purchaseToBeUpgraded],
-			productToBePurchased.id,
-		),
+
+	const availableUpgrades = await availableUpgradesForProduct(
+		[purchaseToBeUpgraded],
+		productToBePurchased.id,
 	)
+
+	const upgradeIsAvailable = availableUpgrades.length > 0
 
 	if (upgradeIsAvailable) {
 		const pricesToBeDiscounted = await pricesOfPurchasesTowardOneBundle({

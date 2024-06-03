@@ -1,4 +1,6 @@
-import { first, isEmpty, sortBy } from 'lodash'
+import first from 'lodash/first'
+import isEmpty from 'lodash/isEmpty'
+import sortBy from 'lodash/sortBy'
 import Stripe from 'stripe'
 
 import { CourseBuilderAdapter } from '../adapters'

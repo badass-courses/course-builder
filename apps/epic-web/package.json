@@ -91,7 +91,7 @@
 		"@trpc/next": "next",
 		"@trpc/react-query": "next",
 		"@trpc/server": "next",
-		"@types/lodash": "^4.14.200",
+		"@types/lodash": "^4.17.4",
 		"@types/mdx": "^2.0.10",
 		"@types/shortid": "^0.0.31",
 		"@types/uuid": "9.0.8",
