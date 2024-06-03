@@ -1,0 +1,34 @@
+#tip {
+	[data-sr-convertkit-subscribe-form] {
+		@apply flex w-full flex-col items-center gap-2 text-left lg:w-auto lg:flex-row;
+		[data-sr-input-wrapper] {
+			@apply w-full lg:w-auto;
+		}
+		[data-sr-input-wrapper]:first-of-type {
+		}
+		[data-sr-input] {
+			@apply w-full rounded-md border px-3 py-2 lg:w-auto;
+		}
+		[data-sr-input-label] {
+			@apply sr-only;
+		}
+		[data-sr-button] {
+			@apply bg-primary flex w-full items-center justify-center rounded-md px-4 py-2 text-white transition hover:brightness-110 lg:w-auto;
+			svg {
+				@apply h-7 w-7;
+			}
+		}
+		[data-sr-button][disabled] {
+		}
+	}
+	[data-sr-convertkit-subscribe-form='success'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+	[data-sr-convertkit-subscribe-form='error'] {
+		p {
+			@apply py-2 text-center;
+		}
+	}
+}
