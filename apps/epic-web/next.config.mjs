@@ -30,6 +30,11 @@ const config = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'res.cloudinary.com',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'cdn.sanity.io',
 				port: '',
 			},
