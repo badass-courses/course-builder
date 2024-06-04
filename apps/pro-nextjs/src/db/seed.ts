@@ -1,15 +1,11 @@
-import fs from 'fs/promises'
 import { db } from '@/db/index'
 import {
-	accounts,
 	communicationChannel,
 	communicationPreferenceTypes,
 	contributionTypes,
 	permissions,
-	resourceProgress,
 	rolePermissions,
 	roles,
-	users,
 } from '@/db/schema'
 
 const currentContributionTypes = await db.query.contributionTypes.findMany()
@@ -160,108 +156,3 @@ for (const seedChannel of seededCommunicationChannels) {
 		await db.insert(communicationChannel).values(seedChannel)
 	}
 }
-
-// ACCOUNTS
-
-// const currentAccounts = await db.query.accounts.findMany()
-
-// const seededAccounts = await fs.readFile(
-// 	'./src/db/seed-data/Account.json',
-// 	'utf-8',
-// )
-
-// for (const seedAccount of JSON.parse(seededAccounts)) {
-// 	const existingAccount = currentAccounts.find(
-// 		(acc) => acc.userId === seedAccount.userId,
-// 	)
-
-// 	if (!existingAccount) {
-// 		await db.insert(accounts).values(seedAccount)
-// 	}
-// }
-
-// RESOURCE PROGRESS
-
-// type OldProgressType = {
-// 	id: string
-// 	userId: string
-// 	lessonId: string
-// 	sectionId: string
-// 	moduleId: string
-// 	lessonSlug: string
-// 	lessonVersion: string
-// 	completedAt: string
-// 	updatedAt: string
-// 	createdAt: string
-// }
-
-// const currentResourceProgress = await db.query.resourceProgress.findMany()
-
-// const seededProgressData = await fs.readFile(
-// 	'./src/db/seed-data/LessonProgress.json',
-// 	'utf-8',
-// )
-// const seededProgress: OldProgressType[] = JSON.parse(seededProgressData)
-
-// for (const seedProgress of seededProgress) {
-// 	const existingProgress = currentResourceProgress.find(
-// 		(rp) =>
-// 			// TODO: Check if this is the right field to compare
-// 			rp.contentResourceId === seedProgress.lessonId &&
-// 			rp.userId === seedProgress.userId,
-// 	)
-
-// 	if (!existingProgress) {
-// 		await db.insert(resourceProgress).values({
-// 			userId: seedProgress.userId,
-// 			completedAt: new Date(seedProgress.completedAt),
-// 			contentResourceId: seedProgress.lessonId,
-// 			createdAt: new Date(seedProgress.createdAt),
-// 			updatedAt: new Date(seedProgress.updatedAt),
-// 			fields: {},
-// 		})
-// 	}
-// }
-
-// USERS
-
-// type OldUserType = {
-// 	id: string
-// 	name: string | null
-// 	email: string
-// 	emailVerified: string | null
-// 	image: string | null
-// 	roles: 'user' | 'ADMIN' | 'SUPERADMIN'
-// 	fields: any | {}
-// }
-
-// const seededUserData = await fs.readFile(
-// 	'./src/db/seed-data/User.json',
-// 	'utf-8',
-// )
-
-// const seededUsers: OldUserType[] = JSON.parse(seededUserData)
-
-// const currentUsers = await db.query.users.findMany()
-
-// for (const seedUser of seededUsers) {
-// 	const existingUser = currentUsers.find((user) => user.id === seedUser.id)
-
-// 	if (!existingUser) {
-// 		await db.insert(users).values({
-// 			id: seedUser.id,
-// 			email: seedUser.email,
-// 			emailVerified: seedUser.emailVerified
-// 				? new Date(seedUser.emailVerified)
-// 				: null,
-// 			image: seedUser?.image || null,
-// 			name: seedUser?.name || null,
-// 			role:
-// 				seedUser?.roles === 'ADMIN' || seedUser?.roles === 'SUPERADMIN'
-// 					? 'admin'
-// 					: seedUser?.roles || 'User',
-// 			createdAt: new Date(),
-// 			// fields: seedUser.fields || null,
-// 		})
-// 	}
-// }
