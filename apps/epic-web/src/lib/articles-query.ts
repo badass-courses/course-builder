@@ -33,12 +33,23 @@ export async function getArticles(): Promise<Article[]> {
 			),
 			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
+		with: {
+			contributions: {
+				with: {
+					user: true,
+					contributionType: true,
+				},
+			},
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
 	const articlesParsed = z.array(ArticleSchema).safeParse(articles)
 	if (!articlesParsed.success) {
-		console.error('Error parsing articles', articlesParsed)
+		console.error(
+			'Error parsing articles',
+			JSON.stringify(articlesParsed.error),
+		)
 		return []
 	}
 
