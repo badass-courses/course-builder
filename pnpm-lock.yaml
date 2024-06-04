@@ -657,6 +657,9 @@ importers:
 
   apps/epic-web:
     dependencies:
+      '@amplitude/analytics-browser':
+        specifier: ^2.6.1
+        version: 2.6.1
       '@anthropic-ai/sdk':
         specifier: ^0.17.1
         version: 0.17.2(encoding@0.1.13)
@@ -852,6 +855,9 @@ importers:
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
+      '@skillrecordings/analytics':
+        specifier: ^1.0.1
+        version: 1.0.1(next@14.2.3)(react@18.3.1)
       '@skillrecordings/next-seo':
         specifier: ^1.0.2
         version: 1.0.2(next@14.2.3)(react-dom@18.3.1)(react@18.3.1)
@@ -888,6 +894,9 @@ importers:
       '@tsparticles/slim':
         specifier: 3.4.0
         version: 3.4.0
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/lodash':
         specifier: ^4.17.4
         version: 4.17.4
@@ -966,6 +975,9 @@ importers:
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
       json-schema:
         specifier: ^0.4.0
         version: 0.4.0
@@ -1068,9 +1080,15 @@ importers:
       react-use:
         specifier: ^17.5.0
         version: 17.5.0(react-dom@18.3.1)(react@18.3.1)
+      react-use-clipboard:
+        specifier: ^1.0.9
+        version: 1.0.9(react-dom@18.3.1)(react@18.3.1)
       react-wrap-balancer:
         specifier: ^0.2.4
         version: 0.2.4(react@18.3.1)
+      reading-time:
+        specifier: ^1.5.0
+        version: 1.5.0
       rehype-raw:
         specifier: ^6.1.1
         version: 6.1.1
@@ -13908,7 +13926,6 @@ packages:
 
   /@types/js-cookie@3.0.6:
     resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
-    dev: true
 
   /@types/js-yaml@4.0.9:
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
@@ -25289,6 +25306,17 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /react-use-clipboard@1.0.9(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-OcMzc14usXhqQnAkvzmhCXAbW5WBT2LSgscVh2vKHXZfg72jFsSOsEearqdeC/nUj8YxEfLnziqe7AE7YkWFwA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+      react-dom: ^16.8.0 || ^17 || ^18
+    dependencies:
+      copy-to-clipboard: 3.3.3
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
   /react-use@17.5.0(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-PbfwSPMwp/hoL847rLnm/qkjg3sTRCvn6YhUZiHaUa3FA6/aNoFX79ul5Xt70O1rK+9GxSVqkY0eTwMdsR/bWg==}
     peerDependencies:
@@ -25406,6 +25434,10 @@ packages:
     engines: {node: '>=8.10.0'}
     dependencies:
       picomatch: 2.3.1
+
+  /reading-time@1.5.0:
+    resolution: {integrity: sha512-onYyVhBNr4CmAxFsKS7bz+uTLRakypIe4R+5A824vBSkQy/hB3fZepoVEf8OVAxzLvK+H/jm9TzpI3ETSm64Kg==}
+    dev: false
 
   /rechoir@0.6.2:
     resolution: {integrity: sha512-HFM8rkZ+i3zrV+4LQjwQ0W+ez98pApMGM3HUrN04j3CqzPOzl9nmP15Y8YXNm8QHGv/eacOVEjqhmWpkRV0NAw==}

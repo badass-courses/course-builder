@@ -134,8 +134,6 @@ export async function getArticle(slugOrId: string) {
 		},
 	})
 
-	console.log('article', article)
-
 	const articleParsed = ArticleSchema.safeParse(article)
 	if (!articleParsed.success) {
 		console.error('Error parsing article', JSON.stringify(articleParsed.error))

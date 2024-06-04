@@ -13,6 +13,7 @@ import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { AxiomWebVitals } from 'next-axiom'
+import { Toaster } from 'react-hot-toast'
 import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
@@ -41,13 +42,13 @@ export default function RootLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<Providers>
-			<html lang="en" suppressHydrationWarning={true}>
-				<AxiomWebVitals />
-				<body
-					className={`${dmSans.variable} ${jetBransMono.variable} font-sans antialiased`}
-				>
-					<TRPCReactProvider>
+		<html lang="en" suppressHydrationWarning={true}>
+			<AxiomWebVitals />
+			<body
+				className={`${dmSans.variable} ${jetBransMono.variable} font-sans antialiased`}
+			>
+				<TRPCReactProvider>
+					<Providers>
 						<Party />
 						<ThemeProvider
 							attribute="class"
@@ -57,6 +58,7 @@ export default function RootLayout({
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />
+								<Toaster position="top-center" />
 								<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
 									<NextSSRPlugin
 										/**
@@ -76,9 +78,9 @@ export default function RootLayout({
 								</main>
 							</div>
 						</ThemeProvider>
-					</TRPCReactProvider>
-				</body>
-			</html>
-		</Providers>
+					</Providers>
+				</TRPCReactProvider>
+			</body>
+		</html>
 	)
 }
