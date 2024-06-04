@@ -18,36 +18,52 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-export const Account = mysqlTable('Account', {
-	id: varchar('id', { length: 191 }).notNull(),
-	type: varchar('type', { length: 255 }).notNull(),
-	provider: varchar('provider', { length: 255 }).notNull(),
-	providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
-	refresh_token: text('refresh_token'),
-	access_token: text('access_token'),
-	expires_at: int('expires_at'),
-	token_type: varchar('token_type', { length: 255 }),
-	scope: varchar('scope', { length: 255 }),
-	id_token: text('id_token'),
-	session_state: varchar('session_state', { length: 255 }),
-	oauth_token_secret: text('oauth_token_secret'),
-	oauth_token: text('oauth_token'),
-	userId: varchar('userId', { length: 255 }).notNull(),
-	refresh_token_expires_in: int('refresh_token_expires_in'),
-})
+export const Account = mysqlTable(
+	'Account',
+	{
+		type: varchar('type', { length: 255 }).notNull(),
+		provider: varchar('provider', { length: 255 }).notNull(),
+		providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
+		refresh_token: text('refresh_token'),
+		access_token: text('access_token'),
+		expires_at: int('expires_at'),
+		token_type: varchar('token_type', { length: 255 }),
+		scope: varchar('scope', { length: 255 }),
+		id_token: text('id_token'),
+		session_state: varchar('session_state', { length: 255 }),
+		oauth_token_secret: text('oauth_token_secret'),
+		oauth_token: text('oauth_token'),
+		userId: varchar('userId', { length: 255 }).notNull(),
+		refresh_token_expires_in: int('refresh_token_expires_in'),
+	},
+	(table) => {
+		return {
+			userId_idx: index('userId_idx').on(table.userId),
+		}
+	},
+)
 
-export const Comment = mysqlTable('Comment', {
-	id: varchar('id', { length: 191 }).notNull(),
-	userId: varchar('userId', { length: 255 }).notNull(),
-	text: text('text').notNull(),
-	context: json('context').default({}),
-	updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
-	),
-	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
-	),
-})
+export const Comment = mysqlTable(
+	'Comment',
+	{
+		id: varchar('id', { length: 191 }).notNull(),
+		userId: varchar('userId', { length: 255 }).notNull(),
+		text: text('text').notNull(),
+		context: json('context').default({}),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			crr_userIdId_idx: index('crr_userIdId_idx').on(table.userId),
+		}
+	},
+)
 
 export const CommunicationChannel = mysqlTable(
 	'CommunicationChannel',
@@ -66,6 +82,7 @@ export const CommunicationChannel = mysqlTable(
 	},
 	(table) => {
 		return {
+			name_idx: index('name_idx').on(table.name),
 			CommunicationChannel_id: primaryKey({
 				columns: [table.id],
 				name: 'CommunicationChannel_id',
@@ -97,6 +114,11 @@ export const CommunicationPreference = mysqlTable(
 	},
 	(table) => {
 		return {
+			userId_idx: index('userId_idx').on(table.userId),
+			preferenceTypeId_idx: index('preferenceTypeId_idx').on(
+				table.preferenceTypeId,
+			),
+			channelId_idx: index('channelId_idx').on(table.channelId),
 			CommunicationPreference_id: primaryKey({
 				columns: [table.id],
 				name: 'CommunicationPreference_id',
@@ -148,6 +170,11 @@ export const ContentContribution = mysqlTable(
 	},
 	(table) => {
 		return {
+			userId_idx: index('userId_idx').on(table.userId),
+			contentId_idx: index('contentId_idx').on(table.contentId),
+			contributionTypeId_idx: index('contributionTypeId_idx').on(
+				table.contributionTypeId,
+			),
 			ContentContribution_id: primaryKey({
 				columns: [table.id],
 				name: 'ContentContribution_id',
@@ -173,6 +200,9 @@ export const ContentResource = mysqlTable(
 	},
 	(table) => {
 		return {
+			type_idx: index('type_idx').on(table.type),
+			createdById_idx: index('createdById_idx').on(table.createdById),
+			createdAt_idx: index('createdAt_idx').on(table.createdAt),
 			ContentResource_id: primaryKey({
 				columns: [table.id],
 				name: 'ContentResource_id',
@@ -181,33 +211,53 @@ export const ContentResource = mysqlTable(
 	},
 )
 
-export const ContentResourceProduct = mysqlTable('ContentResourceProduct', {
-	productId: varchar('productId', { length: 255 }).notNull(),
-	resourceId: varchar('resourceId', { length: 255 }).notNull(),
-	position: double('position').notNull(),
-	metadata: json('metadata').default({}),
-	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
-	),
-	updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
-	),
-	deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
-})
+export const ContentResourceProduct = mysqlTable(
+	'ContentResourceProduct',
+	{
+		productId: varchar('productId', { length: 255 }).notNull(),
+		resourceId: varchar('resourceId', { length: 255 }).notNull(),
+		position: double('position').notNull(),
+		metadata: json('metadata').default({}),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			contentResourceId_idx: index('contentResourceId_idx').on(table.productId),
+			resourceId_idx: index('resourceId_idx').on(table.resourceId),
+		}
+	},
+)
 
-export const ContentResourceResource = mysqlTable('ContentResourceResource', {
-	resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
-	resourceId: varchar('resourceId', { length: 255 }).notNull(),
-	position: double('position').notNull(),
-	metadata: json('metadata').default({}),
-	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
-	),
-	updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
-	),
-	deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
-})
+export const ContentResourceResource = mysqlTable(
+	'ContentResourceResource',
+	{
+		resourceOfId: varchar('resourceOfId', { length: 255 }).notNull(),
+		resourceId: varchar('resourceId', { length: 255 }).notNull(),
+		position: double('position').notNull(),
+		metadata: json('metadata').default({}),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			contentResourceId_idx: index('contentResourceId_idx').on(
+				table.resourceOfId,
+			),
+			resourceId_idx: index('resourceId_idx').on(table.resourceId),
+		}
+	},
+)
 
 export const ContributionType = mysqlTable(
 	'ContributionType',
@@ -227,6 +277,8 @@ export const ContributionType = mysqlTable(
 	},
 	(table) => {
 		return {
+			name_idx: index('name_idx').on(table.name),
+			slug_idx: index('slug_idx').on(table.slug),
 			ContributionType_id: primaryKey({
 				columns: [table.id],
 				name: 'ContributionType_id',
@@ -258,9 +310,11 @@ export const Coupon = mysqlTable(
 		}).notNull(),
 		restrictedToProductId: varchar('restrictedToProductId', { length: 191 }),
 		bulkPurchaseId: varchar('bulkPurchaseId', { length: 191 }),
+		fields: json('fields').default({}),
 	},
 	(table) => {
 		return {
+			id_code_idx: index().on(table.id, table.code),
 			Coupon_id: primaryKey({ columns: [table.id], name: 'Coupon_id' }),
 			Coupon_code_key: unique('Coupon_code_key').on(table.code),
 			Coupon_bulkPurchaseId_key: unique('Coupon_bulkPurchaseId_key').on(
@@ -489,6 +543,7 @@ export const Permission = mysqlTable(
 	},
 	(table) => {
 		return {
+			name_idx: index('name_idx').on(table.name),
 			Permission_id: primaryKey({ columns: [table.id], name: 'Permission_id' }),
 			Permission_name_unique: unique('Permission_name_unique').on(table.name),
 		}
@@ -506,6 +561,7 @@ export const Price = mysqlTable(
 		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' })
 			.default(sql`(CURRENT_TIMESTAMP(3))`)
 			.notNull(),
+		fields: json('fields').default({}),
 	},
 	(table) => {
 		return {
@@ -526,6 +582,7 @@ export const Product = mysqlTable(
 		status: int('status').default(0).notNull(),
 		quantityAvailable: int('quantityAvailable').default(-1).notNull(),
 		type: varchar('type', { length: 191 }),
+		fields: json('fields').default({}),
 	},
 	(table) => {
 		return {
@@ -555,6 +612,7 @@ export const Purchase = mysqlTable(
 		merchantSessionId: varchar('merchantSessionId', { length: 191 }),
 		upgradedFromId: varchar('upgradedFromId', { length: 191 }),
 		status: varchar('status', { length: 191 }).default('Valid').notNull(),
+		fields: json('fields').default({}),
 	},
 	(table) => {
 		return {
@@ -602,16 +660,30 @@ export const PurchaseUserTransfer = mysqlTable(
 	},
 )
 
-export const ResourceProgress = mysqlTable('ResourceProgress', {
-	userId: varchar('userId', { length: 191 }).notNull(),
-	contentResourceId: varchar('contentResourceId', { length: 191 }).notNull(),
-	fields: json('fields').default({}),
-	completedAt: datetime('completedAt', { mode: 'string', fsp: 3 }),
-	updatedAt: datetime('updatedAt', { mode: 'string', fsp: 3 }),
-	createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
-		.default(sql`(CURRENT_TIMESTAMP(3))`)
-		.notNull(),
-})
+export const ResourceProgress = mysqlTable(
+	'ResourceProgress',
+	{
+		userId: varchar('userId', { length: 191 }).notNull(),
+		contentResourceId: varchar('contentResourceId', { length: 191 }).notNull(),
+		fields: json('fields').default({}),
+		completedAt: datetime('completedAt', { mode: 'string', fsp: 3 }),
+		updatedAt: datetime('updatedAt', { mode: 'string', fsp: 3 }),
+		createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
+			.default(sql`(CURRENT_TIMESTAMP(3))`)
+			.notNull(),
+	},
+	(table) => {
+		return {
+			crp_userId_contentResourceId_idx: index(
+				'crp_userId_contentResourceId_idx',
+			).on(table.userId, table.contentResourceId),
+			contentResourceId_idx: index('contentResourceId_idx').on(
+				table.contentResourceId,
+			),
+			resourceId_idx: index('resourceId_idx').on(table.userId),
+		}
+	},
+)
 
 export const Role = mysqlTable(
 	'Role',
@@ -630,36 +702,77 @@ export const Role = mysqlTable(
 	},
 	(table) => {
 		return {
+			name_idx: index('name_idx').on(table.name),
 			Role_id: primaryKey({ columns: [table.id], name: 'Role_id' }),
 			Role_name_unique: unique('Role_name_unique').on(table.name),
 		}
 	},
 )
 
-export const RolePermission = mysqlTable('RolePermission', {
-	roleId: varchar('roleId', { length: 255 }).notNull(),
-	permissionId: varchar('permissionId', { length: 255 }).notNull(),
-	active: tinyint('active').default(1).notNull(),
-	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
-		sql`(now())`,
-	),
-	updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
-		sql`(now())`,
-	),
-	deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
-})
+export const RolePermission = mysqlTable(
+	'RolePermission',
+	{
+		roleId: varchar('roleId', { length: 255 }).notNull(),
+		permissionId: varchar('permissionId', { length: 255 }).notNull(),
+		active: tinyint('active').default(1).notNull(),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(now())`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(now())`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			roleId_idx: index('roleId_idx').on(table.roleId),
+			permissionId_idx: index('permissionId_idx').on(table.permissionId),
+		}
+	},
+)
 
-export const Session = mysqlTable('Session', {
-	id: varchar('id', { length: 191 }).notNull(),
-	sessionToken: varchar('sessionToken', { length: 255 }).notNull(),
-	userId: varchar('userId', { length: 255 }).notNull(),
-	expires: timestamp('expires', { mode: 'string' }).notNull(),
-})
+export const Session = mysqlTable(
+	'Session',
+	{
+		sessionToken: varchar('sessionToken', { length: 255 }).notNull(),
+		userId: varchar('userId', { length: 255 }).notNull(),
+		expires: timestamp('expires', { mode: 'string' }).notNull(),
+	},
+	(table) => {
+		return {
+			userId_idx: index('userId_idx').on(table.userId),
+			Session_sessionToken: primaryKey({
+				columns: [table.sessionToken],
+				name: 'Session_sessionToken',
+			}),
+		}
+	},
+)
 
-export const UpgradableProducts = mysqlTable('UpgradableProducts', {
-	upgradableToId: varchar('upgradableToId', { length: 255 }).notNull(),
-	upgradableFrom: varchar('upgradableFrom', { length: 255 }).notNull(),
-})
+export const UpgradableProducts = mysqlTable(
+	'UpgradableProducts',
+	{
+		upgradableToId: varchar('upgradableToId', { length: 255 }).notNull(),
+		upgradableFrom: varchar('upgradableFrom', { length: 255 }).notNull(),
+		position: double('position').notNull(),
+		metadata: json('metadata').default({}),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			upgradableFromId_idx: index('upgradableFromId_idx').on(
+				table.upgradableToId,
+			),
+			upgradableToId_idx: index('upgradableToId_idx').on(table.upgradableFrom),
+		}
+	},
+)
 
 export const User = mysqlTable(
 	'User',
@@ -670,57 +783,93 @@ export const User = mysqlTable(
 		emailVerified: timestamp('emailVerified', { fsp: 3, mode: 'string' }),
 		image: varchar('image', { length: 255 }),
 		role: varchar('role', { length: 191 }).default('User').notNull(),
-		fields: json('fields'),
+		fields: json('fields').default({}),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
 	},
 	(table) => {
 		return {
+			email_idx: index('email_idx').on(table.email),
+			role_idx: index('role_idx').on(table.role),
+			created_at_idx: index('created_at_idx').on(table.createdAt),
 			User_id: primaryKey({ columns: [table.id], name: 'User_id' }),
+			User_email_unique: unique('User_email_unique').on(table.email),
 		}
 	},
 )
 
-export const UserPermission = mysqlTable('UserPermission', {
-	userId: varchar('userId', { length: 255 }).notNull(),
-	permissionId: varchar('permissionId', { length: 255 }).notNull(),
-	active: tinyint('active').default(1).notNull(),
-	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
-		sql`(now())`,
-	),
-	updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
-		sql`(now())`,
-	),
-	deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
-})
+export const UserPermission = mysqlTable(
+	'UserPermission',
+	{
+		userId: varchar('userId', { length: 255 }).notNull(),
+		permissionId: varchar('permissionId', { length: 255 }).notNull(),
+		active: tinyint('active').default(1).notNull(),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(now())`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(now())`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			userId_idx: index('userId_idx').on(table.userId),
+			permissionId_idx: index('permissionId_idx').on(table.permissionId),
+		}
+	},
+)
 
-export const UserPrefs = mysqlTable('UserPrefs', {
-	id: varchar('id', { length: 191 }).notNull(),
-	userId: varchar('userId', { length: 191 }).notNull(),
-	type: varchar('type', { length: 191 }).default('Global').notNull(),
-	fields: json('fields'),
-	createdAt: datetime('createdAt', { mode: 'string', fsp: 3 })
-		.default(sql`(CURRENT_TIMESTAMP(3))`)
-		.notNull(),
-	updatedAt: datetime('updatedAt', { mode: 'string', fsp: 3 }),
-})
+export const UserPrefs = mysqlTable(
+	'UserPrefs',
+	{
+		id: varchar('id', { length: 191 }).notNull(),
+		userId: varchar('userId', { length: 255 }).notNull(),
+		type: varchar('type', { length: 191 }).default('Global').notNull(),
+		fields: json('fields').default({}),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(CURRENT_TIMESTAMP(3))`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			crr_userIdId_idx: index('crr_userIdId_idx').on(table.userId),
+		}
+	},
+)
 
-export const UserRole = mysqlTable('UserRole', {
-	userId: varchar('userId', { length: 255 }).notNull(),
-	roleId: varchar('roleId', { length: 255 }).notNull(),
-	active: tinyint('active').default(1).notNull(),
-	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
-		sql`(now())`,
-	),
-	updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
-		sql`(now())`,
-	),
-	deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
-})
+export const UserRole = mysqlTable(
+	'UserRole',
+	{
+		userId: varchar('userId', { length: 255 }).notNull(),
+		roleId: varchar('roleId', { length: 255 }).notNull(),
+		active: tinyint('active').default(1).notNull(),
+		createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+			sql`(now())`,
+		),
+		updatedAt: timestamp('updatedAt', { fsp: 3, mode: 'string' }).default(
+			sql`(now())`,
+		),
+		deletedAt: timestamp('deletedAt', { fsp: 3, mode: 'string' }),
+	},
+	(table) => {
+		return {
+			userId_idx: index('userId_idx').on(table.userId),
+			roleId_idx: index('roleId_idx').on(table.roleId),
+		}
+	},
+)
 
 export const VerificationToken = mysqlTable('VerificationToken', {
-	token: varchar('token', { length: 191 }).notNull(),
-	identifier: varchar('identifier', { length: 191 }).notNull(),
-	expires: datetime('expires', { mode: 'string', fsp: 3 }),
-	createdAt: datetime('createdAt', { mode: 'string', fsp: 3 }).default(
-		sql`(CURRENT_TIMESTAMP(3))`,
+	token: varchar('token', { length: 255 }).notNull(),
+	identifier: varchar('identifier', { length: 255 }).notNull(),
+	expires: timestamp('expires', { mode: 'string' }).notNull(),
+	createdAt: timestamp('createdAt', { fsp: 3, mode: 'string' }).default(
+		sql`(now())`,
 	),
 })

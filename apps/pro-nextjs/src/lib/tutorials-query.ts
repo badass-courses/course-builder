@@ -105,13 +105,15 @@ export async function getAllTutorials() {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const parsedTutorial = z.array(TutorialSchema).safeParse(tutorials)
-	if (!parsedTutorial.success) {
-		console.error('Error parsing tutorial', tutorials)
-		throw new Error('Error parsing tutorial')
-	}
+	return tutorials
 
-	return parsedTutorial.data
+	// const parsedTutorial = z.array(TutorialSchema).safeParse(tutorials)
+	// if (!parsedTutorial.success) {
+	// 	console.error('Error parsing tutorial', tutorials)
+	// 	throw new Error('Error parsing tutorial', parsedTutorial.error)
+	// }
+
+	// return parsedTutorial.data
 }
 
 export const addResourceToTutorial = async ({
