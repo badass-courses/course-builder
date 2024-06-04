@@ -1,11 +1,16 @@
 import * as React from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
+import Head from 'next/head'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { env } from '@/env.mjs'
 import { type Article } from '@/lib/articles'
 import { getArticle } from '@/lib/articles-query'
+import MDX from '@/mdx/mdx'
+import serializeMDX from '@/mdx/serialize-mdx'
 import { getServerAuthSession } from '@/server/auth'
-import ReactMarkdown from 'react-markdown'
+import { ArticleJsonLd } from 'next-seo'
+import { Article as ArticleJsonLD, WithContext } from 'schema-dts'
 
 import { Button } from '@coursebuilder/ui'
 
@@ -58,24 +63,45 @@ async function Article({
 }) {
 	const article = await articleLoader
 
-	if (!article) {
+	if (!article?.fields?.body) {
 		notFound()
 	}
 
+	const articleBodySerialized = await serializeMDX(article.fields.body, {
+		syntaxHighlighterOptions: {
+			theme: 'material-palenight',
+			showCopyButton: true,
+		},
+	})
+
+	const jsonld: WithContext<ArticleJsonLD> = {
+		'@context': 'https://schema.org',
+		'@type': 'Article',
+		name: article.fields.title,
+		author: {
+			'@type': 'Person',
+			name:
+				article.contributions.find((c) => c.contributionType.slug === 'author')
+					?.user?.name || 'unknown',
+		},
+		datePublished: article.createdAt?.toISOString() || new Date().toISOString(),
+		dateModified: article.updatedAt?.toISOString() || new Date().toISOString(),
+		description: article.fields.description,
+		image: article.fields.image?.url,
+		url: `${env.NEXT_PUBLIC_URL}/${article.fields.slug}`,
+	}
+
 	return (
-		<div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
-			<ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">
-				{article.fields?.body}
-			</ReactMarkdown>
-			{article.fields?.description && (
-				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
-					<div className="border-t pt-5">
-						<strong>Description</strong>
-						<ReactMarkdown>{article.fields?.description}</ReactMarkdown>
-					</div>
-				</aside>
-			)}
-		</div>
+		<>
+			<script async src="https://platform.twitter.com/widgets.js" />
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonld) }}
+			/>
+			<main className="invert-svg prose dark:prose-invert md:prose-xl prose-code:break-words prose-pre:bg-gray-900 prose-pre:leading-relaxed md:prose-code:break-normal mx-auto w-full max-w-3xl px-5 py-8 md:py-16">
+				<MDX contents={articleBodySerialized} />
+			</main>
+		</>
 	)
 }
 

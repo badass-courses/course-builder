@@ -124,13 +124,21 @@ export async function getArticle(slugOrId: string) {
 				eq(contentResource.id, slugOrId),
 			),
 		),
+		with: {
+			contributions: {
+				with: {
+					user: true,
+					contributionType: true,
+				},
+			},
+		},
 	})
 
 	console.log('article', article)
 
 	const articleParsed = ArticleSchema.safeParse(article)
 	if (!articleParsed.success) {
-		console.error('Error parsing article', articleParsed)
+		console.error('Error parsing article', JSON.stringify(articleParsed.error))
 		return null
 	}
 
