@@ -37,9 +37,9 @@ export default async function EventOG({
 			},
 		},
 	})
-	const rift = fetch(
-		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
-	).then((res) => res.arrayBuffer())
+	// const rift = fetch(
+	// 	new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
+	// ).then((res) => res.arrayBuffer())
 	const dmSans = fetch(
 		new URL('../../../../../public/fonts/DMSans-Medium.ttf', import.meta.url),
 	).then((res) => res.arrayBuffer())
@@ -70,7 +70,7 @@ export default async function EventOG({
 						<div
 							tw="text-[70px] text-white max-w-[650px] w-full"
 							style={{
-								...font('rift'),
+								// ...font('rift'),
 								lineHeight: '1',
 							}}
 						>
@@ -105,10 +105,10 @@ export default async function EventOG({
 			width: 1200,
 			height: 630,
 			fonts: [
-				{
-					name: 'rift',
-					data: await rift,
-				},
+				// {
+				// 	name: 'rift',
+				// 	data: await rift,
+				// },
 				{
 					name: 'dmsans',
 					data: await dmSans,

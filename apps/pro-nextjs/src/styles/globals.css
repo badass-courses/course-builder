@@ -32,29 +32,29 @@
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
 
-		--background: 0 0% 100%;
-		--foreground: 222.2 47.4% 11.2%;
+		--background: 210 40% 98%;
+		--foreground: 217 33% 17%;
 
-		--muted: 0 0% 11%;
-		--muted-foreground: 0 0% 60%;
+		--muted: 210 41% 96%;
+		--muted-foreground: 213 19% 47%;
 
 		--popover: 0 0% 100%;
 		--popover-foreground: 222.2 47.4% 11.2%;
 
 		--card: 0 0% 100%;
-		--card-foreground: 222.2 47.4% 11.2%;
+		--card-foreground: 217 33% 17%;
 
-		--border: 214.3 31.8% 91.4%;
-		--input: 214.3 31.8% 91.4%;
+		--border: 210 40% 93%;
+		--input: 210 40% 93%;
 
-		--primary: 222 47% 11%;
+		--primary: 226 70% 55%;
 		--primary-foreground: 0 0% 100%;
 
-		--secondary: 0 0% 11%;
-		--secondary-foreground: 0 0% 70%;
+		--secondary: 210 40% 96.1%;
+		--secondary-foreground: 222.2 47.4% 11.2%;
 
 		--accent: 214 32% 91%;
-		--accent-foreground: 222 47% 11%;
+		--accent-foreground: 217 91% 60%;
 
 		--destructive: 0 100% 50%;
 		--destructive-foreground: 210 40% 98%;
@@ -62,40 +62,40 @@
 		--ring: 215 20.2% 65.1%;
 
 		--radius: 0.5rem;
-		color-scheme: dark;
+		color-scheme: light;
 	}
 
 	.dark {
-		--background: 0 0% 3%;
-		--foreground: 0 0% 78%;
+		--background: 224 71% 4%;
+		--foreground: 213 31% 91%;
 
-		--muted: 0 0% 11%;
-		--muted-foreground: 0 0% 60%;
+		--muted: 223 47% 11%;
+		--muted-foreground: 213 19% 57%;
 
-		--popover: 0 0% 5%;
-		--popover-foreground: 0 0% 71%;
+		--popover: 224 71% 4%;
+		--popover-foreground: 215 20.2% 65.1%;
 
-		--card: 0 0% 5%;
-		--card-foreground: 0 0% 71%;
+		--card: 224 71% 4%;
+		--card-foreground: 213 31% 91%;
 
-		--border: 0 0% 15%;
-		--input: 0 0% 15%;
+		--border: 216 34% 17%;
+		--input: 216 34% 17%;
 
-		--primary: 21 85% 65%;
-		--primary-foreground: 0 0% 3%;
+		--primary: 227 100% 63%;
+		--primary-foreground: 0 0% 100%;
 
-		--secondary: 0 0% 11%;
-		--secondary-foreground: 0 0% 70%;
+		--secondary: 222.2 47.4% 11.2%;
+		--secondary-foreground: 210 40% 98%;
 
-		--accent: 0 0% 10%;
-		--accent-foreground: 0 0% 71%;
+		--accent: 216 34% 17%;
+		--accent-foreground: 210 40% 98%;
 
-		--destructive: 335 83% 43%;
+		--destructive: 0 63% 31%;
 		--destructive-foreground: 210 40% 98%;
 
-		--ring: 21 85% 65%;
+		--ring: 217 91% 60%;
 
-		--radius: 0.3rem;
+		--radius: 0.5rem;
 		color-scheme: dark;
 	}
 }
@@ -105,8 +105,17 @@
 		@apply border-border;
 	}
 
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply text-balance;
+	}
+
 	body {
-		@apply bg-background text-foreground font-light antialiased;
+		@apply bg-background text-foreground font-normal antialiased;
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;

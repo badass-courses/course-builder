@@ -22,16 +22,16 @@ export default async function Image({ params }: { params: { slug: string } }) {
 		),
 	})
 
-	const rift = fetch(
-		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
-	).then((res) => res.arrayBuffer())
+	// const rift = fetch(
+	// 	new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
+	// ).then((res) => res.arrayBuffer())
 
 	return new ImageResponse(
 		(
 			<div
 				tw="flex h-full w-full bg-black flex-col"
 				style={{
-					...font('rift'),
+					// ...font('rift'),
 					backgroundImage: `url("${process.env.NEXT_PUBLIC_URL}/assets/og-bg@2x.jpg")`,
 					backgroundSize: '1200px 630px',
 					width: 1200,
@@ -49,10 +49,10 @@ export default async function Image({ params }: { params: { slug: string } }) {
 			width: 1200,
 			height: 630,
 			fonts: [
-				{
-					name: 'rift',
-					data: await rift,
-				},
+				// {
+				// 	name: 'rift',
+				// 	data: await rift,
+				// },
 			],
 		},
 	)

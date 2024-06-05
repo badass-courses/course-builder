@@ -53,8 +53,7 @@ export const PrimaryNewsletterCta: React.FC<
 				children
 			) : (
 				<div className="relative flex flex-col items-center justify-center py-16">
-					<Image className="absolute -z-10" />
-					<h2 className="font-heading max-w-lg text-balance text-center text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+					<h2 className="font-heading text-center text-4xl font-bold sm:text-5xl lg:text-6xl">
 						{title}
 					</h2>
 					<h3 className="pt-4 text-center text-lg">{byline}</h3>
@@ -70,66 +69,5 @@ export const PrimaryNewsletterCta: React.FC<
 				I respect your privacy. Unsubscribe at any time.
 			</p>
 		</section>
-	)
-}
-
-const Image: React.FC<{ className?: string }> = ({ className = '' }) => {
-	return (
-		<svg
-			className={className}
-			width="284"
-			height="284"
-			viewBox="0 0 284 284"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				d="M54.6154 141.85H0L142 283.701L284 141.85H229.385L142 229.143L54.6154 141.85Z"
-				fill="url(#paint0_linear_145_1931)"
-			/>
-			<path
-				d="M54.6154 70.9252H0L142 212.776L284 70.9252H229.385L142 158.218L54.6154 70.9252Z"
-				fill="url(#paint1_linear_145_1931)"
-			/>
-			<path
-				d="M54.6154 0H0L142 141.85L284 0H229.385L142 87.2925L54.6154 0Z"
-				fill="url(#paint2_linear_145_1931)"
-			/>
-			<defs>
-				<linearGradient
-					id="paint0_linear_145_1931"
-					x1="142"
-					y1="141.85"
-					x2="142"
-					y2="283.701"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#080808" />
-					<stop offset="1" stopColor="#252525" />
-				</linearGradient>
-				<linearGradient
-					id="paint1_linear_145_1931"
-					x1="142"
-					y1="70.9252"
-					x2="142"
-					y2="212.776"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#080808" />
-					<stop offset="1" stopColor="#252525" />
-				</linearGradient>
-				<linearGradient
-					id="paint2_linear_145_1931"
-					x1="142"
-					y1="0"
-					x2="142"
-					y2="141.85"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#080808" />
-					<stop offset="1" stopColor="#252525" />
-				</linearGradient>
-			</defs>
-		</svg>
 	)
 }

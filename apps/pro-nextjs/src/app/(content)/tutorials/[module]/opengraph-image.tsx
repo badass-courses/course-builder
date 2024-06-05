@@ -25,9 +25,9 @@ export default async function TutorialOG({
 			eq(contentResource.type, 'tutorial'),
 		),
 	})
-	const rift = fetch(
-		new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
-	).then((res) => res.arrayBuffer())
+	// const rift = fetch(
+	// 	new URL('../../../../styles/fonts/rift_600_normal.woff', import.meta.url),
+	// ).then((res) => res.arrayBuffer())
 	const dmSans = fetch(
 		new URL('../../../../../public/fonts/DMSans-Medium.ttf', import.meta.url),
 	).then((res) => res.arrayBuffer())
@@ -57,9 +57,11 @@ export default async function TutorialOG({
 						</div>
 						<div
 							tw="text-[86px] text-white"
-							style={{
-								...font('rift'),
-							}}
+							style={
+								{
+									// ...font('rift'),
+								}
+							}
 						>
 							{resource?.fields?.title}
 						</div>
@@ -96,10 +98,10 @@ export default async function TutorialOG({
 			width: 1200,
 			height: 630,
 			fonts: [
-				{
-					name: 'rift',
-					data: await rift,
-				},
+				// {
+				// 	name: 'rift',
+				// 	data: await rift,
+				// },
 				{
 					name: 'dmsans',
 					data: await dmSans,

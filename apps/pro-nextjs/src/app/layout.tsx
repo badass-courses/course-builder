@@ -12,7 +12,7 @@ import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { patron, r } from '@/utils/load-fonts'
+import { maisonNeue, maisonNeueMono } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -25,7 +25,7 @@ import { Toaster } from '@coursebuilder/ui/primitives/toaster'
 
 export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_URL),
-	title: 'ProAWS by Adam Elmore',
+	title: `${config.defaultTitle} by ${config.author}`,
 	description: config.description,
 	icons: [
 		{ rel: 'icon', sizes: 'any', url: '/favicon.ico' },
@@ -54,16 +54,18 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning>
-				<HolyLoader color="#f28f5a" height="0.1rem" speed={250} />
+				<HolyLoader color="#3D63DD" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
-				<body className={`relative ${patron.variable} ${r.variable} font-sans`}>
+				<body
+					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
+				>
 					<Toaster />
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
 							attribute="class"
-							forcedTheme="dark"
-							defaultTheme="dark"
+							forcedTheme="light"
+							defaultTheme="light"
 							enableSystem={false}
 							disableTransitionOnChange
 						>

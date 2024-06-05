@@ -34,6 +34,8 @@ type ContentResourceProps = {
 	section?: ContentResource | null
 	moduleProgress: ModuleProgress
 	className?: string
+	widthFadeOut?: boolean
+	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
 }
@@ -74,7 +76,9 @@ export function TutorialLessonList(props: Props) {
 			: 'moduleProgressLoader' in props
 				? React.use(props.moduleProgressLoader)
 				: null
-
+	const wrapperClassName =
+		'wrapperClassName' in props ? props.wrapperClassName : ''
+	const widthFadeOut = 'widthFadeOut' in props ? props.widthFadeOut : true
 	const className = 'className' in props ? props.className : ''
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
@@ -144,7 +148,10 @@ export function TutorialLessonList(props: Props) {
 					<Accordion
 						type="single"
 						collapsible
-						className="flex flex-col border-t pb-16"
+						className={cn(
+							'divide-border flex flex-col divide-y border-t pb-16',
+							wrapperClassName,
+						)}
 						defaultValue={section?.id || tutorial?.resources?.[0]?.resource?.id}
 					>
 						{tutorial?.resources?.map((resource) => {
@@ -152,20 +159,21 @@ export function TutorialLessonList(props: Props) {
 								<AccordionItem
 									value={resource.resourceId}
 									key={resource.resourceId}
+									className="border-0"
 								>
 									{resource.resource.type === 'section' ? (
 										// section
-										<AccordionTrigger className="relative flex w-full items-center px-5 py-5 text-lg font-bold">
-											<h3>{resource.resource.fields.title}</h3>
+										<AccordionTrigger className="hover:bg-muted relative flex w-full items-center px-5 py-5 text-left text-lg font-semibold leading-tight">
+											<h3 className="pr-2">{resource.resource.fields.title}</h3>
 											{section?.id === resource.resourceId && (
 												<div className="bg-primary absolute right-12 h-1 w-1 rounded-full" />
 											)}
 										</AccordionTrigger>
 									) : (
 										// top-level lessons
-										<div className="flex w-full flex-row hover:bg-gray-900">
+										<div className="hover:bg-muted flex w-full flex-row">
 											<Link
-												className="w-full"
+												className="w-full font-medium"
 												href={`/tutorials/${tutorial?.fields?.slug}/${resource.resource.fields.slug}`}
 											>
 												{resource.resource.fields.title}
@@ -207,9 +215,10 @@ export function TutorialLessonList(props: Props) {
 															>
 																<Link
 																	className={cn(
-																		'hover:bg-secondary flex w-full items-baseline px-5 py-3',
+																		'hover:bg-muted flex w-full items-baseline px-5 py-3 font-medium',
 																		{
-																			'bg-secondary text-primary': isActive,
+																			'bg-muted text-primary': isActive,
+																			'hover:text-primary': !isActive,
 																		},
 																	)}
 																	href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
@@ -221,19 +230,20 @@ export function TutorialLessonList(props: Props) {
 																		>
 																			<CheckIcon
 																				aria-hidden="true"
-																				className="text-primary relative w-4 -translate-x-1 translate-y-1"
+																				className="text-accent relative w-4 -translate-x-1 translate-y-1"
 																			/>
 																		</span>
 																	) : (
 																		<span
-																			className="w-6 pr-1 text-sm opacity-60"
+																			className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
 																			aria-hidden="true"
 																		>
 																			{i + 1}
 																		</span>
 																	)}
-
-																	{lesson.resource.fields.title}
+																	<span className="text-balance">
+																		{lesson.resource.fields.title}
+																	</span>
 																</Link>
 																{ability.can('create', 'Content') ? (
 																	<Button
@@ -261,10 +271,12 @@ export function TutorialLessonList(props: Props) {
 						})}
 					</Accordion>
 				</ScrollArea>
-				<div
-					className="from-background via-background pointer-events-none absolute -bottom-10 left-0 z-50 h-32 w-full bg-gradient-to-t to-transparent"
-					aria-hidden="true"
-				/>
+				{widthFadeOut && (
+					<div
+						className="from-background via-background pointer-events-none absolute -bottom-10 left-0 z-50 h-32 w-full bg-gradient-to-t to-transparent"
+						aria-hidden="true"
+					/>
+				)}
 			</div>
 		</nav>
 	)

@@ -9,14 +9,9 @@ export const Contributor: React.FC<{ className?: string }> = ({
 	className,
 }) => {
 	return (
-		<div
-			className={cn(
-				'flex items-center gap-2 font-medium text-white',
-				className,
-			)}
-		>
+		<div className={cn('flex items-center gap-2 font-medium', className)}>
 			<Image
-				src={require('../../../public/instructor.png')}
+				src={require('../../../public/jack-herrington.jpg')}
 				alt={config.author}
 				width={40}
 				height={40}

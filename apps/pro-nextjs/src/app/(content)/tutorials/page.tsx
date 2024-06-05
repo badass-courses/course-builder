@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import config from '@/config'
 import { getAllTutorials } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -16,34 +17,27 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: 'ProAWS Tutorials by Adam Elmore',
+	title: `Pro Next.js Tutorials by ${config.author}`,
 }
 
 export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
-			<div className="w-full max-w-screen-md border-b px-5 py-16 md:border-dashed">
+		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0">
+			<div className="w-full max-w-screen-md px-5 py-16">
 				<h1 className="font-heading text-center text-5xl font-bold">
-					<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
-						Free
-					</span>{' '}
-					<span className="text-gray-100">AWS Tutorials</span>
+					Free Next.js Tutorials
 				</h1>
 			</div>
 			<TutorialsList />
 			{ability.can('update', 'Content') ? (
-				<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center border-t border-dashed py-10">
+				<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center py-10">
 					<Button asChild variant="secondary">
 						<Link href={`/tutorials/new`}>New Tutorial</Link>
 					</Button>
 				</div>
 			) : null}
-			<div
-				className="absolute top-0 -z-10 h-full w-full max-w-screen-md border-dashed md:border-x"
-				aria-hidden="true"
-			/>
 		</main>
 	)
 }
@@ -67,7 +61,7 @@ async function TutorialsList() {
 			{publicTutorials.length === 0 && <p>There are no public tutorials.</p>}
 			{tutorials.map((tutorial) => (
 				<li key={tutorial.id}>
-					<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
+					<Card className="flex flex-col items-center gap-3 p-5 md:flex-row">
 						{tutorial?.fields?.coverImage?.url && (
 							<Link
 								className="flex-shrink-0"
@@ -84,7 +78,7 @@ async function TutorialsList() {
 						)}
 						<div className="w-full">
 							<CardHeader className="p-0">
-								<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
+								<CardTitle className="text-lg font-bold sm:text-2xl">
 									<Link
 										href={`/tutorials/${tutorial.fields.slug || tutorial.id}`}
 										className="w-full text-balance hover:underline"

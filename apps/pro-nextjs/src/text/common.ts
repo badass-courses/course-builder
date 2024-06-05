@@ -2,7 +2,8 @@ import config from '@/config'
 
 export default {
 	'primary-newsletter-button-cta-label': 'Subscribe',
-	'primary-newsletter-tittle': 'Become the AWS PRO at your company',
+	'primary-newsletter-tittle':
+		'Subscribe for Free Tips, Tutorials, and Special Discounts',
 	'primary-newsletter-byline': '',
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New AWS tips delivered to your inbox:',

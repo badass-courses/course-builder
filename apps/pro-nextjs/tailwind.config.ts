@@ -16,6 +16,7 @@ module.exports = withUt({
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
+		fluidTypography: {},
 		container: {
 			center: true,
 			padding: '2rem',
@@ -28,7 +29,7 @@ module.exports = withUt({
 				'2xl': '1820px',
 			},
 			colors: {
-				gray: colors.neutral,
+				gray: colors.slate,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -69,8 +70,9 @@ module.exports = withUt({
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--font-patron)', ...fontFamily.sans],
-				heading: ['var(--font-r)', ...fontFamily.sans],
+				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
+				heading: ['var(--font-maison-neue)', ...fontFamily.sans],
+				mono: ['var(--font-maison-neue-mono)', ...fontFamily.sans],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -89,16 +91,10 @@ module.exports = withUt({
 			typography: (theme: any) => ({
 				DEFAULT: {
 					css: {
-						'p, li, blockquote': {
-							color: theme('colors.foreground'),
-						},
-						'h1, h2, h3, h4, h5, h6, strong': {
-							color: theme('colors.white'),
-						},
+						color: theme('colors.foreground'),
 						a: {
 							color: theme('colors.primary.DEFAULT'),
 						},
-
 						'code::before': {
 							content: '""',
 						},
@@ -107,7 +103,7 @@ module.exports = withUt({
 						},
 						code: {
 							backgroundColor: theme('colors.muted.DEFAULT'),
-							color: theme('colors.white'),
+							color: theme('colors.foreground'),
 							padding: '0.25rem',
 							borderRadius: '0.25rem',
 							whiteSpace: 'nowrap',
@@ -126,5 +122,6 @@ module.exports = withUt({
 		require('tailwindcss-radix'),
 		require('tailwindcss-animate'),
 		require('@designbycode/tailwindcss-text-stroke'),
+		require('tailwind-fluid-typography'),
 	],
 })

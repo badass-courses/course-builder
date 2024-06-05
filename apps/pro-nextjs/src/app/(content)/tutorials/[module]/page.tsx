@@ -57,7 +57,7 @@ export default async function ModulePage({ params }: Props) {
 	const firstLesson = tutorial.resources[0]?.resource?.resources?.[0]?.resource
 
 	return (
-		<main className="container relative border-x px-0">
+		<main className="container relative px-0">
 			<TutorialMetadata tutorial={tutorial} />
 			{ability.can('update', 'Content') && (
 				<Button
@@ -68,14 +68,14 @@ export default async function ModulePage({ params }: Props) {
 					<Link href={`/tutorials/${params.module}/edit`}>Edit</Link>
 				</Button>
 			)}
-			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
+			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row">
 				<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 					<p className="text-primary mb-2 text-base">Free Tutorial</p>
-					<h1 className="font-heading text-balance text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
+					<h1 className="font-heading fluid-4xl font-bold">
 						{tutorial.fields.title}
 					</h1>
 					{tutorial.fields.description && (
-						<h2 className="mt-5 text-balance text-xl">
+						<h2 className="fluid-lg text-muted-foreground mt-5">
 							{tutorial.fields.description}
 						</h2>
 					)}
@@ -109,14 +109,14 @@ export default async function ModulePage({ params }: Props) {
 					/>
 				)}
 			</div>
-			<div className="flex flex-col-reverse border-t md:flex-row">
+			<div className="flex flex-col-reverse px-5 pb-10 md:flex-row md:gap-10">
 				{tutorial.fields.body && (
-					<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
+					<article className="prose sm:prose-lg w-full max-w-none py-8">
 						<ReactMarkdown>{tutorial.fields.body}</ReactMarkdown>
 					</article>
 				)}
-				<div className="flex w-full flex-col gap-3 border-l pb-16 pt-5 sm:max-w-sm">
-					<strong className="font-heading px-5 pb-2 text-xl font-bold">
+				<div className="flex w-full flex-col gap-3 sm:max-w-sm">
+					<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
 						Contents
 					</strong>
 					<TutorialLessonList
@@ -125,6 +125,8 @@ export default async function ModulePage({ params }: Props) {
 						moduleProgress={moduleProgress}
 						maxHeight="h-auto"
 						withHeader={false}
+						wrapperClassName="border-x border-b bg-card overflow-hidden rounded pb-0"
+						widthFadeOut={false}
 					/>
 				</div>
 			</div>
