@@ -14,6 +14,8 @@ export default function parseProviders(params: {
 } {
 	const { providerId, options } = params
 
+	console.log('parseProviders', providerId, params.providers)
+
 	const providers = params.providers.map((p) => {
 		const provider = typeof p === 'function' ? p() : p
 		const { options: userOptions, ...defaults } = provider

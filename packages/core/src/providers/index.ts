@@ -2,6 +2,7 @@ import { AdapterUser } from '@auth/core/adapters'
 import { EmailConfig } from '@auth/core/providers'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 
+import { Subscriber } from '../schemas/subscriber-schema'
 import { PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
 import { PartyProviderConfig } from './partykit'
@@ -24,6 +25,7 @@ export interface EmailListConfig {
 	defaultListType: 'form' | 'sequence' | 'tag'
 	defaultListId?: number | string
 	subscribeToList: (options: EmailListSubscribeOptions) => Promise<any>
+	getSubscriber: (subscriberId: string | null) => Promise<Subscriber>
 }
 
 export type EmailListConsumerConfig = Omit<

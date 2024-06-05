@@ -18,6 +18,15 @@ export default function ConvertkitProvider(
 		options,
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
+		getSubscriber: async (subscriberId: string | null) => {
+			console.log('getSubscriber', subscriberId)
+			if (!subscriberId) return null
+			return await fetchSubscriber({
+				convertkitId: subscriberId,
+				convertkitApiSecret: options.apiSecret,
+				convertkitApiKey: options.apiKey,
+			})
+		},
 		subscribeToList: async (subscribeOptions: EmailListSubscribeOptions) => {
 			const { listId, user, listType, fields } = subscribeOptions
 
@@ -163,6 +172,8 @@ async function fetchSubscriber({
 }) {
 	let subscriber
 
+	console.log('fetchSubscriber', convertkitId)
+
 	if (convertkitId) {
 		const subscriberUrl = `${convertkitBaseUrl}/subscribers/${convertkitId}?api_secret=${convertkitApiSecret}`
 		subscriber = await fetch(subscriberUrl)
@@ -171,6 +182,8 @@ async function fetchSubscriber({
 				return subscriber
 			})
 	}
+
+	console.log('fetchSubscriber', subscriber)
 
 	if (isEmpty(subscriber)) return
 

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { removeQueryParamsFromRouter } from '@/convertkit/remove-query-params-from-router'
 import { Subscriber, SubscriberSchema } from '@/convertkit/subscriber'
 import { identify } from '@/utils/analytics'
@@ -26,6 +26,9 @@ export const ConvertkitProvider: React.FC<
 > = ({ children, learnerId }) => {
 	const router = useRouter()
 	const pathname = usePathname()
+	const searchParams = useSearchParams()
+
+	console.log('ck provider', pathname)
 
 	const {
 		data: subscriber,
@@ -34,18 +37,20 @@ export const ConvertkitProvider: React.FC<
 	} = useQuery({
 		queryKey: [`convertkit-subscriber`, learnerId],
 		queryFn: async () => {
-			const params = new URLSearchParams(window.location.search)
-			const ckSubscriberId = Cookies.get('ck_subscriber_id')
+			const ckSubscriberId =
+				searchParams.get('ck_subscriber_id') || Cookies.get('ck_subscriber_id')
+
+			console.log('ckSubscriberId', ckSubscriberId)
 
 			try {
-				const learner = params.get('learner') || learnerId
+				const learner = searchParams.get('learner') || learnerId
 				const subscriberLoaderParams = new URLSearchParams({
 					...(learner && { learner }),
-					...(ckSubscriberId && { ckSubscriberId }),
+					...(ckSubscriberId && { subscriberId: ckSubscriberId }),
 				})
 
 				const subscriber = await fetch(
-					`/api/skill/subscriber/convertkit?${subscriberLoaderParams}`,
+					`/api/coursebuilder/subscriber/convertkit?${subscriberLoaderParams}`,
 				)
 					.then((response) => response.json())
 					.catch(() => undefined)
@@ -55,7 +60,9 @@ export const ConvertkitProvider: React.FC<
 				if (!isEmpty(ckSubscriberId)) {
 					if (pathname.match(/confirmToast=true/))
 						confirmSubscriptionToast(subscriber.email_address)
-					removeQueryParamsFromRouter(router, ['ck_subscriber_id'])
+					removeQueryParamsFromRouter(router, pathname, searchParams, [
+						'ck_subscriber_id',
+					])
 				}
 
 				const parsedSubscriber = SubscriberSchema.safeParse(subscriber)

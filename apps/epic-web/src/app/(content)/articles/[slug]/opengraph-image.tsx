@@ -36,8 +36,6 @@ export default async function ArticleOG({
 		),
 	})
 
-	console.log({ resource })
-
 	return new ImageResponse(
 		(
 			<div

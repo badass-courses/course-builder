@@ -49,6 +49,7 @@ export default async function ArticlesIndexPage() {
 								<Link
 									href={slug}
 									passHref
+									// TODO - track links in server components
 									// onClick={() => {
 									// 	track('clicked start reading article', {
 									// 		article: slug,

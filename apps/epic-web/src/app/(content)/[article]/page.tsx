@@ -46,8 +46,6 @@ async function ArticleActionBar({
 	const { session, ability } = await getServerAuthSession()
 	const article = await articleLoader
 
-	console.log({ ability })
-
 	return (
 		<>
 			{article && ability.can('update', 'Content') ? (
@@ -158,7 +156,6 @@ const Header = ({
 		(c) => c.contributionType.slug === 'author',
 	)?.user
 
-	console.log(author)
 	return (
 		<div className="bg-[radial-gradient(ellipse_at_top,#EAEBFF_0%,transparent_65%)] dark:bg-[radial-gradient(ellipse_at_top,#1a1e2c_0%,transparent_65%)]">
 			<header className="relative mx-auto w-full max-w-screen-lg">

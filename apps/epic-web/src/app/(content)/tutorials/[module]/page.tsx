@@ -36,7 +36,6 @@ export default async function ModulePage({
 			</div>
 			<div className="flex flex-col">
 				{tutorial.resources.map((tutorialResource) => {
-					console.log(tutorialResource.resource.type)
 					return (
 						<div key={tutorialResource.resourceId}>
 							{tutorialResource.resource.type === 'section' ? (
