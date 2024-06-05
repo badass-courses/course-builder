@@ -79,7 +79,11 @@ export async function getLesson(lessonSlugOrId: string) {
 				),
 				eq(contentResource.id, lessonSlugOrId),
 			),
-			eq(contentResource.type, 'lesson'),
+			or(
+				eq(contentResource.type, 'lesson'),
+				eq(contentResource.type, 'exercise'),
+				eq(contentResource.type, 'solution'),
+			),
 		),
 		with: {
 			resources: {

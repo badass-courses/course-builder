@@ -208,58 +208,60 @@ export function TutorialLessonList(props: Props) {
 															)
 
 														return (
-															<li
-																key={lesson.resourceId}
-																className="flex w-full items-center"
-																ref={isActive ? activeResourceRef : undefined}
-															>
-																<Link
-																	className={cn(
-																		'hover:bg-muted flex w-full items-baseline px-5 py-3 font-medium',
-																		{
-																			'bg-muted text-primary': isActive,
-																			'hover:text-primary': !isActive,
-																		},
-																	)}
-																	href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
+															<>
+																<li
+																	key={lesson.resourceId}
+																	className="flex w-full items-center"
+																	ref={isActive ? activeResourceRef : undefined}
 																>
-																	{isCompleted ? (
-																		<span
-																			aria-label="Completed"
-																			className="w-6 pr-1"
-																		>
-																			<CheckIcon
-																				aria-hidden="true"
-																				className="text-accent relative w-4 -translate-x-1 translate-y-1"
-																			/>
-																		</span>
-																	) : (
-																		<span
-																			className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
-																			aria-hidden="true"
-																		>
-																			{i + 1}
-																		</span>
-																	)}
-																	<span className="text-balance">
-																		{lesson.resource.fields.title}
-																	</span>
-																</Link>
-																{ability.can('create', 'Content') ? (
-																	<Button
-																		asChild
-																		variant="outline"
-																		size="icon"
-																		className="scale-75"
+																	<Link
+																		className={cn(
+																			'hover:bg-muted flex w-full items-baseline px-5 py-3 font-medium',
+																			{
+																				'bg-muted text-primary': isActive,
+																				'hover:text-primary': !isActive,
+																			},
+																		)}
+																		href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																	>
-																		<Link
-																			href={`/tutorials/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
+																		{isCompleted ? (
+																			<span
+																				aria-label="Completed"
+																				className="w-6 pr-1"
+																			>
+																				<CheckIcon
+																					aria-hidden="true"
+																					className="text-accent relative w-4 -translate-x-1 translate-y-1"
+																				/>
+																			</span>
+																		) : (
+																			<span
+																				className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
+																				aria-hidden="true"
+																			>
+																				{i + 1}
+																			</span>
+																		)}
+																		<span className="text-balance">
+																			{lesson.resource.fields.title}
+																		</span>
+																	</Link>
+																	{ability.can('create', 'Content') ? (
+																		<Button
+																			asChild
+																			variant="outline"
+																			size="icon"
+																			className="scale-75"
 																		>
-																			<PencilIcon className="w-3" />
-																		</Link>
-																	</Button>
-																) : null}
-															</li>
+																			<Link
+																				href={`/tutorials/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
+																			>
+																				<PencilIcon className="w-3" />
+																			</Link>
+																		</Button>
+																	) : null}
+																</li>
+															</>
 														)
 													},
 												)}
