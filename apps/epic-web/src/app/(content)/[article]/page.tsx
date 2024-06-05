@@ -46,6 +46,8 @@ async function ArticleActionBar({
 	const { session, ability } = await getServerAuthSession()
 	const article = await articleLoader
 
+	console.log({ ability })
+
 	return (
 		<>
 			{article && ability.can('update', 'Content') ? (

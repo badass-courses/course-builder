@@ -15,8 +15,6 @@ export default async function ArticlesIndexPage() {
 	const { ability } = await getServerAuthSession()
 	const articles = await getArticles()
 
-	console.log({ articles })
-
 	return (
 		<div>
 			{ability.can('update', 'Content') ? (

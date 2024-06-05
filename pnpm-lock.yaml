@@ -858,9 +858,6 @@ importers:
       '@skillrecordings/analytics':
         specifier: ^1.0.1
         version: 1.0.1(next@14.2.3)(react@18.3.1)
-      '@skillrecordings/next-seo':
-        specifier: ^1.0.2
-        version: 1.0.2(next@14.2.3)(react-dom@18.3.1)(react@18.3.1)
       '@t3-oss/env-nextjs':
         specifier: ^0.7.1
         version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
@@ -1011,9 +1008,6 @@ importers:
       next-mdx-remote:
         specifier: ^4.4.1
         version: 4.4.1(react-dom@18.3.1)(react@18.3.1)
-      next-seo:
-        specifier: ^6.5.0
-        version: 6.5.0(next@14.2.3)(react-dom@18.3.1)(react@18.3.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@18.3.1)(react@18.3.1)
@@ -12486,18 +12480,6 @@ packages:
     resolution: {integrity: sha512-0a89yYp0xWDsSJr7SCo0qXc8OoY3SitR5+ePBrJuUReogv771yzsiiZEKK4oIORNwF7RWE+4IdJ2KYahYz31Qw==}
     dev: false
 
-  /@skillrecordings/next-seo@1.0.2(next@14.2.3)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-RnSLFwqRJkgww+InC6BFgC3cZ9xeZk9QIYQ4tAHqAYyTZ4X4L4S2aJiy7rcp6UsOAhMDR7YHu/8OMZUv1u7NuQ==}
-    peerDependencies:
-      next: '>= 11.1.2 < 13'
-      react: ^17.0.2 < 18.0.0
-      react-dom: ^17.0.2 < 18.0.0
-    dependencies:
-      next: 14.2.3(@babel/core@7.24.0)(react-dom@18.3.1)(react@18.3.1)
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-    dev: false
-
   /@skillrecordings/time@0.0.13:
     resolution: {integrity: sha512-6w/jPrLXNBYygMMqmf8OXNdY54n/VsfGe8X7eqjouesu6Qdk13AjLz3E2GTf5wrH2rcjgfqfzvpZWUB2oH26oQ==}
     dev: false
@@ -23235,18 +23217,6 @@ packages:
       vfile-matter: 3.0.1
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /next-seo@6.5.0(next@14.2.3)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-MfzUeWTN/x/rsKp/1n0213eojO97lIl0unxqbeCY+6pAucViHDA8GSLRRcXpgjsSmBxfCFdfpu7LXbt4ANQoNQ==}
-    peerDependencies:
-      next: ^8.1.1-canary.54 || >=9.0.0
-      react: '>=16.0.0'
-      react-dom: '>=16.0.0'
-    dependencies:
-      next: 14.2.3(@babel/core@7.24.0)(react-dom@18.3.1)(react@18.3.1)
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /next-themes@0.3.0(react-dom@18.3.1)(react@18.3.1):
