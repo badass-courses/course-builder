@@ -48,10 +48,18 @@ const SolutionSchema = z.object({
 	_key: z.string(),
 	_type: z.string(),
 	_updatedAt: z.string(),
+	_createdAt: z.string(),
 	title: z.string(),
+	body: z.string().nullable().optional(),
 	description: z.string(),
 	slug: z.string().optional().nullable(),
 	videoResource: LessonVideoResourceSchema,
+	github: z
+		.object({
+			repo: z.string(),
+		})
+		.optional()
+		.nullable(),
 })
 
 const SanityLessonSchema = z.object({
@@ -64,6 +72,18 @@ const SanityLessonSchema = z.object({
 	slug: z.string(),
 	videoResource: LessonVideoResourceSchema,
 	solution: SolutionSchema.optional().nullable(),
+	github: z
+		.object({
+			repo: z.string(),
+		})
+		.optional()
+		.nullable(),
+	gitpod: z
+		.object({
+			url: z.string(),
+		})
+		.optional()
+		.nullable(),
 })
 
 const LinkResourceSchema = z.object({
@@ -140,21 +160,32 @@ export async function migrateTutorials(WRITE_TO_DB: boolean = true) {
         description,
         body,
         "slug": slug.current,
-	"videoResource": resources[@->._type == 'videoResource'][0]->{
-		...,
-		transcript {srt, text},
-	},
+				"github": resources[@->_type == 'githubRepo'][0]{
+					repo,
+				},
+				"gitpod": resources[@->_type == 'gitpod'][0]{
+					url,
+				},
+				"videoResource": resources[@->._type == 'videoResource'][0]->{
+					...,
+					transcript {srt, text},
+				},
         "solution": resources[@._type == 'solution'][0]{
           _key,
           _type,
+					"_createdAt": ^._createdAt,
           "_updatedAt": ^._updatedAt,
           title,
           description,
           "slug": slug.current,
-	"videoResource": resources[@->._type == 'videoResource'][0]->{
-		...,
-		transcript {srt, text},
-	},
+					body,
+					"github": resources[@->_type == 'githubRepo'][0]{
+						repo,
+					},
+					"videoResource": resources[@->._type == 'videoResource'][0]->{
+						...,
+						transcript {srt, text},
+					},
         }
       },
       "resources": resources[@->._type in ['linkResource']]->
@@ -313,6 +344,103 @@ export async function migrateTutorials(WRITE_TO_DB: boolean = true) {
 							resourceId: lessonId,
 							position: lessonIndex,
 						}))
+
+					// SOLUTION
+
+					if (lesson._type === 'exercise' && lesson.solution) {
+						const solution = lesson.solution
+						const existingSolution = await db.query.contentResource.findFirst({
+							where: eq(contentResource.id, solution._key),
+						})
+
+						const solutionVideoResourceId = solution.videoResource._id || guid()
+						const solutionVideoResource =
+							await db.query.contentResource.findFirst({
+								where: eq(contentResource.id, solutionVideoResourceId),
+							})
+						if (!existingSolution) {
+							console.log('\t\tmigrating solution resource', {
+								title: lesson.solution.title,
+								id: lesson.solution._key,
+								resourceOfId: lessonId,
+							})
+							if (!solutionVideoResource) {
+								console.log('\t\tmigrating solution VIDEO resource', {
+									muxPlaybackId: solution.videoResource.muxAsset.muxPlaybackId,
+									id: solutionVideoResourceId,
+									resourceOfId: solution._key,
+								})
+								const sanityVideoResource = solution.videoResource
+								const newVideoResource = VideoResourceSchema.parse({
+									id: solutionVideoResourceId,
+									createdAt: sanityVideoResource._createdAt,
+									updatedAt: sanityVideoResource._updatedAt,
+									title: sanityVideoResource.title,
+									transcript: sanityVideoResource.transcript?.text,
+									srt: sanityVideoResource.transcript?.srt,
+									state: 'ready',
+									duration: sanityVideoResource.duration,
+									muxAssetId: sanityVideoResource.muxAsset.muxAssetId,
+									muxPlaybackId: sanityVideoResource.muxAsset.muxPlaybackId,
+								})
+
+								WRITE_TO_DB &&
+									(await db.insert(contentResource).values({
+										id: solutionVideoResourceId,
+										type: 'videoResource',
+										createdById:
+											user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
+										createdAt: new Date(newVideoResource.createdAt as string),
+										updatedAt: new Date(newVideoResource.updatedAt as string),
+										deletedAt: null,
+										fields: {
+											title: newVideoResource.title,
+											state: newVideoResource.state,
+											duration: newVideoResource.duration,
+											muxAssetId: newVideoResource.muxAssetId,
+											muxPlaybackId: newVideoResource.muxPlaybackId,
+											transcript: newVideoResource.transcript,
+											srt: newVideoResource.srt,
+										},
+									}))
+
+								WRITE_TO_DB &&
+									(await db.insert(contentResourceResource).values({
+										resourceOfId: solution._key,
+										resourceId: solutionVideoResourceId,
+										position: 0,
+									}))
+							}
+
+							const transformedSolution = LessonSchema.parse({
+								id: solution._key,
+								type: solution._type,
+								createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
+								createdAt: new Date(solution._createdAt),
+								updatedAt: new Date(solution._updatedAt),
+								deletedAt: null,
+								fields: {
+									title: solution.title,
+									body: solution.body,
+									state: 'published',
+									visibility: 'public',
+									description: solution.description,
+									slug: solution.slug,
+								},
+							})
+
+							WRITE_TO_DB &&
+								(await db.insert(contentResource).values(transformedSolution))
+
+							WRITE_TO_DB &&
+								(await db.insert(contentResourceResource).values({
+									resourceOfId: lessonId,
+									resourceId: solution._key,
+									position: 0,
+								}))
+						}
+					}
+
 					lessonIndex++
 				}
 			}
