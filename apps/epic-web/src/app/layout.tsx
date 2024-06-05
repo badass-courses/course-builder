@@ -58,7 +58,19 @@ export default function RootLayout({
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />
-								<Toaster position="top-center" />
+								<Toaster
+									position="top-center"
+									toastOptions={{
+										style: {
+											background: '#363636',
+											color: '#fff',
+										},
+										iconTheme: {
+											primary: '#fde68a',
+											secondary: '#000',
+										},
+									}}
+								/>
 								<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
 									<NextSSRPlugin
 										/**

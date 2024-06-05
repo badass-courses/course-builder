@@ -10,6 +10,7 @@ const ResourceContributor = ({
 	image = require('../../../../../public/kent-c-dodds.png'),
 	byline,
 	className,
+	as = Link,
 	disableLink = false,
 }: {
 	name?: string | null
@@ -17,9 +18,11 @@ const ResourceContributor = ({
 	image?: string | null
 	byline?: string | null
 	className?: string
-	as?: React.Component
+	as?: any
 	disableLink?: boolean
 }) => {
+	const Component = as
+
 	if (disableLink) {
 		return (
 			<div
@@ -49,7 +52,7 @@ const ResourceContributor = ({
 	}
 
 	return (
-		<Link
+		<Component
 			href={`/contributors/${slug}`}
 			className={cn(
 				'flex items-center justify-start gap-3 font-semibold text-gray-700  dark:text-gray-100',
@@ -72,7 +75,7 @@ const ResourceContributor = ({
 				{byline && <span>{byline}</span>}
 				{name}
 			</div>
-		</Link>
+		</Component>
 	)
 }
 
