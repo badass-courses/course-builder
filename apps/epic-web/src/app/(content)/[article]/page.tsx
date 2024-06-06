@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -6,7 +7,6 @@ import { notFound } from 'next/navigation'
 import { ArticleCTA } from '@/app/(content)/[article]/_components/article-cta'
 import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
 import ContributorBio from '@/components/contributor-bio'
-import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import Share from '@/components/share'
 import { env } from '@/env.mjs'
 import { type Article } from '@/lib/articles'
@@ -14,7 +14,6 @@ import { getArticle } from '@/lib/articles-query'
 import MDX from '@/mdx/mdx'
 import serializeMDX from '@/mdx/serialize-mdx'
 import { getServerAuthSession } from '@/server/auth'
-import { track } from '@/utils/analytics'
 import slugify from '@sindresorhus/slugify'
 import { format } from 'date-fns'
 import readingTime from 'reading-time'
@@ -138,7 +137,9 @@ async function Article({
 				className="sm:py-10"
 			/>
 
-			<ArticleCTA article={article} />
+			<Suspense>
+				<ArticleCTA article={article} />
+			</Suspense>
 		</>
 	)
 }

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { removeQueryParamsFromRouter } from '@/convertkit/remove-query-params-from-router'
 import { Subscriber, SubscriberSchema } from '@/convertkit/subscriber'
 import { identify } from '@/utils/analytics'
@@ -22,17 +22,16 @@ const defaultConvertKitContext: ConvertkitContextType = {
 
 export const ConvertkitContext = React.createContext(defaultConvertKitContext)
 
+function getSearchParams(): URLSearchParams {
+	const url = window.location.href
+	return new URLSearchParams(url.split('?')[1])
+}
+
 export const ConvertkitProvider: React.FC<
 	React.PropsWithChildren<{ getSubscriberApiUrl?: string; learnerId?: string }>
 > = ({ children, learnerId }) => {
 	const router = useRouter()
 	const pathname = usePathname()
-	const searchParams = useSearchParams()
-
-	console.log('ck provider', pathname)
-	console.log('cookies', Cookies)
-	console.log('cookies', Cookies.get('ck_subscriber_id'))
-	console.log('cookies', cookie.get('ck_subscriber_id'))
 
 	const {
 		data: subscriber,
@@ -41,10 +40,9 @@ export const ConvertkitProvider: React.FC<
 	} = useQuery({
 		queryKey: [`convertkit-subscriber`, learnerId, pathname],
 		queryFn: async () => {
-			console.log(document.cookie)
+			const searchParams = getSearchParams()
 			const ckSubscriberId =
-				searchParams.get('ck_subscriber_id') ||
-				cookie(document).get('ck_subscriber_id')
+				searchParams.get('ck_subscriber_id') || Cookies.get('ck_subscriber_id')
 
 			console.log('ckSubscriberId', ckSubscriberId)
 
