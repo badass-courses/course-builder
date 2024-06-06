@@ -19,7 +19,6 @@ export default function ConvertkitProvider(
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
 		getSubscriber: async (subscriberId: string | null) => {
-			console.log('getSubscriber', subscriberId)
 			if (!subscriberId) return null
 			return await fetchSubscriber({
 				convertkitId: subscriberId,
@@ -85,29 +84,34 @@ const hour = 3600000
 export const oneYear = 365 * 24 * hour
 
 export function getConvertkitSubscriberCookie(subscriber: any): Cookie[] {
-	return [
-		{
-			name: 'ck_subscriber',
-			value: JSON.stringify(subscriber),
-			options: {
-				secure: process.env.NODE_ENV === 'production',
-				httpOnly: true,
-				path: '/',
-				maxAge: oneYear,
-			},
-		},
-		{
-			name:
-				process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY || 'ck_subscriber_id',
-			value: subscriber.id,
-			options: {
-				secure: process.env.NODE_ENV === 'production',
-				httpOnly: true,
-				path: '/',
-				maxAge: 31556952,
-			},
-		},
-	]
+	return subscriber
+		? [
+				{
+					name: 'ck_subscriber',
+					value: JSON.stringify(subscriber),
+					options: {
+						secure: true,
+						httpOnly: true,
+						path: '/',
+						maxAge: oneYear,
+						sameSite: 'lax',
+					},
+				},
+				{
+					name:
+						process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY ||
+						'ck_subscriber_id',
+					value: subscriber.id,
+					options: {
+						secure: true,
+						httpOnly: true,
+						path: '/',
+						maxAge: 31556952,
+						sameSite: 'lax',
+					},
+				},
+			]
+		: []
 }
 
 type Subscriber = Record<string, any>
@@ -172,8 +176,6 @@ async function fetchSubscriber({
 }) {
 	let subscriber
 
-	console.log('fetchSubscriber', convertkitId)
-
 	if (convertkitId) {
 		const subscriberUrl = `${convertkitBaseUrl}/subscribers/${convertkitId}?api_secret=${convertkitApiSecret}`
 		subscriber = await fetch(subscriberUrl)
@@ -182,8 +184,6 @@ async function fetchSubscriber({
 				return subscriber
 			})
 	}
-
-	console.log('fetchSubscriber', subscriber)
 
 	if (isEmpty(subscriber)) return
 

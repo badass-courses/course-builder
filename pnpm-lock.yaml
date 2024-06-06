@@ -705,6 +705,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.441.0
         version: 3.535.0
+      '@boiseitguru/cookie-cutter':
+        specifier: ^0.2.3
+        version: 0.2.3
       '@casl/ability':
         specifier: ^6.5.0
         version: 6.7.0
@@ -5050,6 +5053,10 @@ packages:
 
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+    dev: false
+
+  /@boiseitguru/cookie-cutter@0.2.3:
+    resolution: {integrity: sha512-5Qc77XxPKZ3nQi+UZux31YdPZjNirrYYDTUUhmmHvvE8LqTgmwtXOdrOFCNhp4u+2O6uKFHg1s/B/AqiBQCDTA==}
     dev: false
 
   /@casl/ability@6.7.0:

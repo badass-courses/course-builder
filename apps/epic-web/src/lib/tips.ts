@@ -18,6 +18,22 @@ export const TipVisibilitySchema = z.union([
 
 export const TipSchema = ContentResourceSchema.merge(
 	z.object({
+		contributions: z.array(
+			z.object({
+				user: z.object({
+					id: z.string(),
+					name: z.string().optional().nullable(),
+					email: z.string().optional().nullable(),
+					image: z.string().optional().nullable(),
+				}),
+				contributionType: z.object({
+					id: z.string(),
+					slug: z.string(),
+					name: z.string(),
+					description: z.string().optional(),
+				}),
+			}),
+		),
 		fields: z.object({
 			title: z.string(),
 			summary: z.string().optional().nullable(),

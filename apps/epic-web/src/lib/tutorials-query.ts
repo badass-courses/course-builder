@@ -10,6 +10,34 @@ import z from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/types'
 
+function filterResources(
+	resources: any[],
+	removeType: string = 'videoResource',
+) {
+	return resources.reduce((filteredResources, resource) => {
+		if (resource.resource.type !== removeType) {
+			if (resource.resource.resources) {
+				resource.resource.resources = filterResources(
+					resource.resource.resources,
+				)
+			}
+			filteredResources.push({
+				...resource,
+				resource: {
+					...resource.resource,
+					resources: resource.resource.resources || [],
+				},
+			})
+		}
+		return filteredResources.map((r: any, i: number) => {
+			return {
+				...r,
+				position: i,
+			}
+		})
+	}, [])
+}
+
 export async function getTutorial(moduleSlugOrId: string) {
 	const { ability } = await getServerAuthSession()
 
@@ -54,7 +82,10 @@ export async function getTutorial(moduleSlugOrId: string) {
 		},
 	})
 
-	console.log(JSON.stringify(tutorial, null, 2))
+	if (tutorial) {
+		//video resources are loaded separately
+		tutorial.resources = filterResources(tutorial.resources, 'videoResource')
+	}
 
 	const parsedTutorial = TutorialSchema.safeParse(tutorial)
 	if (!parsedTutorial.success) {

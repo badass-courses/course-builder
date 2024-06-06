@@ -21,8 +21,6 @@ export async function getSubscriber(
 ): Promise<ResponseInternal<any | null>> {
 	switch (options.provider.type) {
 		case 'email-list':
-			console.log(options.url, options.url.searchParams)
-			console.log('getSubscriber', options.url.searchParams.get('subscriberId'))
 			const subscriber = await options.provider.getSubscriber(
 				options.url.searchParams.get('subscriberId'),
 			)
@@ -43,7 +41,7 @@ export async function getSubscriber(
 				status: 200,
 				body: subscriber,
 				headers: { 'Content-Type': 'application/json' },
-				cookies,
+				cookies: getConvertkitSubscriberCookie(subscriber),
 			}
 		default:
 			throw new Error('Unsupported provider')

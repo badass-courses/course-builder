@@ -3,6 +3,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { removeQueryParamsFromRouter } from '@/convertkit/remove-query-params-from-router'
 import { Subscriber, SubscriberSchema } from '@/convertkit/subscriber'
 import { identify } from '@/utils/analytics'
+import cookie from '@boiseitguru/cookie-cutter'
 import { useQuery } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import { isEmpty } from 'lodash'
@@ -29,16 +30,21 @@ export const ConvertkitProvider: React.FC<
 	const searchParams = useSearchParams()
 
 	console.log('ck provider', pathname)
+	console.log('cookies', Cookies)
+	console.log('cookies', Cookies.get('ck_subscriber_id'))
+	console.log('cookies', cookie.get('ck_subscriber_id'))
 
 	const {
 		data: subscriber,
 		status,
 		refetch,
 	} = useQuery({
-		queryKey: [`convertkit-subscriber`, learnerId],
+		queryKey: [`convertkit-subscriber`, learnerId, pathname],
 		queryFn: async () => {
+			console.log(document.cookie)
 			const ckSubscriberId =
-				searchParams.get('ck_subscriber_id') || Cookies.get('ck_subscriber_id')
+				searchParams.get('ck_subscriber_id') ||
+				cookie(document).get('ck_subscriber_id')
 
 			console.log('ckSubscriberId', ckSubscriberId)
 
