@@ -178,7 +178,7 @@ export interface CookieOption {
 }
 
 export interface CookiesOptions {
-	ck_subscriber_id: Partial<CookieOption>
+	ck_subscriber_id?: Partial<CookieOption>
 }
 
 export interface DefaultCourseBuilderSession {}
