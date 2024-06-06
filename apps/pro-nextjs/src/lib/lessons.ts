@@ -1,6 +1,9 @@
 import { z } from 'zod'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+import {
+	ContentResourceResourceSchema,
+	ContentResourceSchema,
+} from '@coursebuilder/core/schemas/content-resource-schema'
 
 export const LessonSchema = ContentResourceSchema.merge(
 	z.object({
@@ -14,6 +17,12 @@ export const LessonSchema = ContentResourceSchema.merge(
 				.default('draft'),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 		}),
+		resource: z
+			.object({
+				resources: z.array(ContentResourceResourceSchema).optional().nullable(),
+			})
+			.optional()
+			.nullable(),
 	}),
 )
 

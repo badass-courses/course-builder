@@ -1788,7 +1788,15 @@ export function mySqlDrizzleAdapter(
 								with: {
 									resources: {
 										with: {
-											resource: true,
+											resource: {
+												with: {
+													resources: {
+														with: {
+															resource: true,
+														},
+													},
+												},
+											},
 										},
 										orderBy: asc(contentResourceResource.position),
 									},

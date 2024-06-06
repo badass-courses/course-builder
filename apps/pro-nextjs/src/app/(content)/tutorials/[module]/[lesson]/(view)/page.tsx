@@ -15,7 +15,7 @@ import {
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { getLesson } from '@/lib/lessons-query'
+import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getNextResource } from '@/lib/resources/get-next-resource'
 import { Tutorial } from '@/lib/tutorial'
@@ -43,7 +43,7 @@ import {
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	{ params }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const lesson = await getLesson(params.lesson)
@@ -59,15 +59,23 @@ export async function generateMetadata(
 	}
 }
 
-type Props = {
+export type Props = {
 	params: { lesson: string; module: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	isSolution?: boolean
+	isExercise?: boolean
 }
 
-export default async function LessonPage({ params }: Props) {
+export default async function LessonPage({
+	params,
+	isSolution = false,
+	isExercise = false,
+}: Props) {
 	headers()
 	const tutorialLoader = getTutorial(params.module)
-	const lessonLoader = getLesson(params.lesson)
+	const lessonLoader = isSolution
+		? getExerciseSolution(params.lesson)
+		: getLesson(params.lesson)
+
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 
 	return (
@@ -87,6 +95,7 @@ export default async function LessonPage({ params }: Props) {
 					<div className="flex flex-col 2xl:flex-row">
 						<div>
 							<main className="">
+								{/* {isExercise ? <div>Exercise!</div> : null} */}
 								<PlayerContainer
 									params={params}
 									lessonLoader={lessonLoader}
@@ -104,7 +113,7 @@ export default async function LessonPage({ params }: Props) {
 						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:flex-shrink-0 2xl:border-l 2xl:border-t-0">
 							<Accordion type="single" collapsible className="block lg:hidden">
 								<AccordionItem value="contents">
-									<AccordionTrigger className="flex w-full items-center p-5 font-medium text-white">
+									<AccordionTrigger className="flex w-full items-center p-5 font-medium">
 										Tutorial Contents
 									</AccordionTrigger>
 									<AccordionContent>
@@ -165,7 +174,7 @@ async function TranscriptContainer({
 }) {
 	return (
 		<div className={cn('mt-10 border-t px-5 pt-8 sm:px-8', className)}>
-			<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
+			<h3 className="font-heading mb-8 text-2xl font-bold leading-none">
 				Transcript
 			</h3>
 			<Suspense fallback={<div className="p-5">Loading...</div>}>
@@ -233,8 +242,12 @@ async function PlayerContainer({
 		params.lesson,
 		params.module,
 	)
-	const resource = lesson.resources?.[0]?.resource.id
-	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const videoResourceId = lesson.resources?.find(
+		(resource) => resource.resource.type === 'videoResource',
+	)?.resource.id
+
+	const videoResourceLoader =
+		courseBuilderAdapter.getVideoResource(videoResourceId)
 	const nextResourceLoader = getNextResource(lesson.id)
 
 	return (
@@ -279,7 +292,7 @@ async function LessonBody({
 		<article>
 			<div className="flex w-full flex-col items-start justify-between gap-8 px-5 sm:flex-row sm:px-8 2xl:flex-col">
 				<div className="w-full">
-					<h1 className="font-heading w-full text-balance pb-5 text-4xl font-bold text-white sm:text-4xl lg:text-5xl">
+					<h1 className="font-heading fluid-2xl w-full pb-5 font-bold">
 						{lesson.fields?.title}
 					</h1>
 					<div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -298,7 +311,7 @@ async function LessonBody({
 				</div>
 			</div>
 			{lesson.fields?.body && (
-				<div className="prose dark:prose-invert mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
+				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote
 						source={lesson.fields.body}
 						components={{
@@ -306,7 +319,6 @@ async function LessonBody({
 								const children = props?.children.props.children
 								const language =
 									props?.children.props.className?.split('-')[1] || 'typescript'
-
 								try {
 									const html = await codeToHtml({ code: children, language })
 									return <div dangerouslySetInnerHTML={{ __html: html }} />

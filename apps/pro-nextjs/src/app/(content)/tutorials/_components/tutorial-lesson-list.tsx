@@ -2,13 +2,15 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
+import { filterResources } from '@/utils/filter-resources'
 import { getResourceSection } from '@/utils/get-resource-section'
 import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline'
+import { sub } from 'date-fns'
 
 import type {
 	ModuleProgress,
@@ -103,8 +105,17 @@ export function TutorialLessonList(props: Props) {
 		}
 	}, [])
 
+	const pathname = usePathname()
+
 	if (!tutorial) {
 		return null
+	}
+
+	const tutorialWithFilteredResources = {
+		...tutorial,
+		...(tutorial.resources && {
+			resources: filterResources(tutorial.resources, 'videoResource'),
+		}),
 	}
 
 	return (
@@ -130,14 +141,14 @@ export function TutorialLessonList(props: Props) {
 								<div className="flex items-center gap-2">
 									<Link
 										href="/tutorials"
-										className="font-heading text-primary text-lg font-medium hover:underline"
+										className="font-heading text-primary text-base font-medium hover:underline"
 									>
 										Tutorials
 									</Link>
 									<span className="opacity-50">/</span>
 								</div>
 								<Link
-									className="font-heading text-balance text-2xl font-bold hover:underline"
+									className="font-heading fluid-lg text-balance font-bold hover:underline"
 									href={`/tutorials/${tutorial?.fields?.slug}`}
 								>
 									{tutorial?.fields?.title}
@@ -154,7 +165,7 @@ export function TutorialLessonList(props: Props) {
 						)}
 						defaultValue={section?.id || tutorial?.resources?.[0]?.resource?.id}
 					>
-						{tutorial?.resources?.map((resource) => {
+						{tutorialWithFilteredResources?.resources?.map((resource) => {
 							return (
 								<AccordionItem
 									value={resource.resourceId}
@@ -198,22 +209,34 @@ export function TutorialLessonList(props: Props) {
 											<ol>
 												{resource.resource.resources.map(
 													(lesson: ContentResourceResource, i: number) => {
+														const isActiveSolution =
+															lesson.resource.fields.slug === params.lesson &&
+															pathname.endsWith('solution')
+														const isActiveExercise =
+															lesson.resource.fields.slug === params.lesson &&
+															pathname.endsWith('exercise')
 														const isActive =
-															lesson.resource.fields.slug === params.lesson
+															lesson.resource.fields.slug === params.lesson &&
+															!isActiveSolution &&
+															!isActiveExercise
 														const isCompleted =
 															moduleProgress?.completedLessons?.some(
 																(progress) =>
 																	progress.contentResourceId ===
 																		lesson.resourceId && progress.completedAt,
 															)
+														const solution = lesson.resource.resources.find(
+															(resource: ContentResourceResource) =>
+																resource.resource.type === 'solution',
+														)
 
 														return (
-															<>
-																<li
-																	key={lesson.resourceId}
-																	className="flex w-full items-center"
-																	ref={isActive ? activeResourceRef : undefined}
-																>
+															<li
+																key={lesson.resourceId}
+																className="flex w-full flex-col"
+																ref={isActive ? activeResourceRef : undefined}
+															>
+																<div className="flex w-full items-center">
 																	<Link
 																		className={cn(
 																			'hover:bg-muted flex w-full items-baseline px-5 py-3 font-medium',
@@ -242,7 +265,7 @@ export function TutorialLessonList(props: Props) {
 																				{i + 1}
 																			</span>
 																		)}
-																		<span className="text-balance">
+																		<span className="text-balance text-base">
 																			{lesson.resource.fields.title}
 																		</span>
 																	</Link>
@@ -260,8 +283,56 @@ export function TutorialLessonList(props: Props) {
 																			</Link>
 																		</Button>
 																	) : null}
-																</li>
-															</>
+																</div>
+																<div className="flex flex-col">
+																	{solution && (
+																		<>
+																			<Link
+																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
+																				className={cn(
+																					'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																					{
+																						'bg-muted text-primary border-primary before:bg-primary':
+																							isActive,
+																						'hover:text-primary before:bg-transparent':
+																							!isActive,
+																					},
+																				)}
+																			>
+																				Problem
+																			</Link>
+																			<Link
+																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
+																				className={cn(
+																					'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																					{
+																						'bg-muted text-primary border-primary before:bg-primary':
+																							isActiveExercise,
+																						'hover:text-primary before:bg-transparent':
+																							!isActiveExercise,
+																					},
+																				)}
+																			>
+																				Exercise
+																			</Link>
+																			<Link
+																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
+																				className={cn(
+																					'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																					{
+																						'bg-muted text-primary border-primary before:bg-primary':
+																							isActiveSolution,
+																						'hover:text-primary before:bg-transparent':
+																							!isActiveSolution,
+																					},
+																				)}
+																			>
+																				Solution
+																			</Link>
+																		</>
+																	)}
+																</div>
+															</li>
 														)
 													},
 												)}
