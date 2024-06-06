@@ -25,7 +25,7 @@ export const PrimaryNewsletterCta: React.FC<
 	React.useEffect(() => {
 		setMounted(true)
 	}, [])
-	const { subscriber, loadingSubscriber } = useConvertkit()
+	const { canShowCta } = useConvertkit()
 	return (
 		<section
 			id="subscribe"
@@ -62,7 +62,7 @@ export const PrimaryNewsletterCta: React.FC<
 					your inbox.
 				</Balancer>
 			</h3>
-			{!subscriber ? (
+			{canShowCta ? (
 				<div id="primary-newsletter-cta">
 					<SubscribeToConvertkitForm
 						onSuccess={(subscriber: any) => {

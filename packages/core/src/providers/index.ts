@@ -3,7 +3,7 @@ import { EmailConfig } from '@auth/core/providers'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 
 import { Subscriber } from '../schemas/subscriber-schema'
-import { PaymentsProviderConfig } from '../types'
+import { CookieOption, PaymentsProviderConfig } from '../types'
 import { LlmProviderConfig } from './openai'
 import { PartyProviderConfig } from './partykit'
 import { NotificationProviderConfig } from './slack'
@@ -25,7 +25,9 @@ export interface EmailListConfig {
 	defaultListType: 'form' | 'sequence' | 'tag'
 	defaultListId?: number | string
 	subscribeToList: (options: EmailListSubscribeOptions) => Promise<any>
-	getSubscriber: (subscriberId: string | null) => Promise<Subscriber>
+	getSubscriber: (
+		subscriberId: string | null | CookieOption,
+	) => Promise<Subscriber>
 }
 
 export type EmailListConsumerConfig = Omit<

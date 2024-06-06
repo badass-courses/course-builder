@@ -15,7 +15,8 @@ export const SubscribeForm = ({
 	tipLoader: Promise<Tip | null>
 }) => {
 	const pathname = usePathname()
-	const { subscriber } = useConvertkit()
+	const { canShowCta } = useConvertkit()
+
 	const router = useRouter()
 
 	const tip = use(tipLoader)
@@ -40,9 +41,7 @@ export const SubscribeForm = ({
 		}
 	}
 
-	console.log({ subscriber })
-
-	return !subscriber ? (
+	return canShowCta ? (
 		<div className="mx-auto flex w-full max-w-lg flex-col items-center justify-between gap-5 border-b border-gray-100 px-3 pb-5 pt-4 md:pb-3 md:pt-3 lg:max-w-none lg:flex-row 2xl:px-0 dark:border-white/5">
 			<div className="inline-flex items-center gap-2 text-lg font-semibold leading-tight md:text-base lg:flex-shrink-0 lg:text-sm">
 				<div

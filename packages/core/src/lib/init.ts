@@ -44,10 +44,12 @@ export async function init({
 		// @ts-expect-errors
 		provider,
 		cookies: merge(
+			{},
 			cookie.defaultCookies(
 				courseBuilderOptions.useSecureCookies ?? url.protocol === 'https:',
 			),
-			courseBuilderOptions.cookies,
+			courseBuilderOptions.cookies || {},
+			reqCookies,
 		),
 		providers,
 		adapter: adapterErrorHandler(courseBuilderOptions.adapter, logger),

@@ -6,10 +6,10 @@ import { SessionProvider } from 'next-auth/react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	return (
-		<ConvertkitProvider>
-			<MDXProvider>
-				<SessionProvider>{children}</SessionProvider>
-			</MDXProvider>
-		</ConvertkitProvider>
+		<SessionProvider>
+			<ConvertkitProvider>
+				<MDXProvider>{children}</MDXProvider>
+			</ConvertkitProvider>
+		</SessionProvider>
 	)
 }

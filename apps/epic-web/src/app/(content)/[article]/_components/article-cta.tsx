@@ -7,12 +7,12 @@ import { Article } from '@/lib/articles'
 import { track } from '@/utils/analytics'
 
 export const ArticleCTA: React.FC<{ article: Article }> = ({ article }) => {
-	const { subscriber } = useConvertkit()
+	const { canShowCta } = useConvertkit()
 	const {
 		fields: { slug },
 	} = article
 
-	return !subscriber ? (
+	return canShowCta ? (
 		<section className="pt-16">
 			<PrimaryNewsletterCta
 				onSubmit={() => {

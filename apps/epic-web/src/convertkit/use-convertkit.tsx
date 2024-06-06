@@ -3,20 +3,21 @@ import { usePathname, useRouter } from 'next/navigation'
 import { removeQueryParamsFromRouter } from '@/convertkit/remove-query-params-from-router'
 import { Subscriber, SubscriberSchema } from '@/convertkit/subscriber'
 import { identify } from '@/utils/analytics'
-import cookie from '@boiseitguru/cookie-cutter'
 import { useQuery } from '@tanstack/react-query'
-import Cookies from 'js-cookie'
 import { isEmpty } from 'lodash'
+import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 
 export type ConvertkitContextType = {
 	subscriber?: Subscriber | boolean
 	loadingSubscriber: boolean
+	canShowCta: boolean
 	refetch: () => Promise<any>
 }
 
 const defaultConvertKitContext: ConvertkitContextType = {
 	loadingSubscriber: true,
+	canShowCta: false,
 	refetch: async () => {},
 }
 
@@ -32,6 +33,7 @@ export const ConvertkitProvider: React.FC<
 > = ({ children, learnerId }) => {
 	const router = useRouter()
 	const pathname = usePathname()
+	const { status: sessionStatus } = useSession()
 
 	const {
 		data: subscriber,
@@ -41,8 +43,7 @@ export const ConvertkitProvider: React.FC<
 		queryKey: [`convertkit-subscriber`, learnerId, pathname],
 		queryFn: async () => {
 			const searchParams = getSearchParams()
-			const ckSubscriberId =
-				searchParams.get('ck_subscriber_id') || Cookies.get('ck_subscriber_id')
+			const ckSubscriberId = searchParams.get('ck_subscriber_id')
 
 			console.log('ckSubscriberId', ckSubscriberId)
 
@@ -84,7 +85,15 @@ export const ConvertkitProvider: React.FC<
 
 	return (
 		<ConvertkitContext.Provider
-			value={{ subscriber, loadingSubscriber: status !== 'success', refetch }}
+			value={{
+				subscriber,
+				loadingSubscriber: status !== 'success',
+				refetch,
+				canShowCta:
+					!subscriber &&
+					status === 'success' &&
+					sessionStatus === 'unauthenticated',
+			}}
 		>
 			{children}
 		</ConvertkitContext.Provider>

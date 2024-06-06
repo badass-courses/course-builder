@@ -22,21 +22,10 @@ export async function getSubscriber(
 	switch (options.provider.type) {
 		case 'email-list':
 			const subscriber = await options.provider.getSubscriber(
-				options.url.searchParams.get('subscriberId'),
+				options.url.searchParams.get('subscriberId') ||
+					options.cookies.ck_subscriber_id ||
+					null,
 			)
-			if (subscriber?.id) {
-				cookies.push({
-					name: 'ck_subscriber_id',
-					value: subscriber.id.toString(),
-					options: {
-						path: '/',
-						httpOnly: true,
-						sameSite: 'lax',
-						maxAge: 31556952,
-						secure: process.env.NODE_ENV === 'production',
-					},
-				})
-			}
 			return {
 				status: 200,
 				body: subscriber,
