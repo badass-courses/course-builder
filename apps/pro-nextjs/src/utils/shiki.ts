@@ -1,4 +1,18 @@
+import React from 'react'
 import { getHighlighter } from 'shiki'
+
+let highlighter: Awaited<ReturnType<typeof getHighlighter>> | null = null
+
+const getCachedHighlighter = React.cache(async () => {
+	if (highlighter === null) {
+		highlighter = await getHighlighter({
+			themes: ['dark-plus'],
+			langs: ['tsx'],
+		})
+	}
+
+	return highlighter
+})
 
 export const codeToHtml = async ({
 	code,
@@ -8,20 +22,16 @@ export const codeToHtml = async ({
 	language: string
 }) => {
 	try {
-		const highlighter = await getHighlighter({
-			themes: ['dark-plus'],
-			langs: ['typescript'],
-		})
-
-		await highlighter.loadLanguage('typescript')
-		await highlighter.loadLanguage('javascript')
+		const highlighter = await getCachedHighlighter()
 		await highlighter.loadLanguage('tsx')
-		await highlighter.loadLanguage('jsx')
-		await highlighter.loadLanguage('json')
-		await highlighter.loadLanguage('bash')
-		await highlighter.loadLanguage('yaml')
-		await highlighter.loadLanguage('markdown')
-		await highlighter.loadLanguage('html')
+		// await highlighter.loadLanguage('typescript')
+		// await highlighter.loadLanguage('javascript')
+		// await highlighter.loadLanguage('jsx')
+		// await highlighter.loadLanguage('json')
+		// await highlighter.loadLanguage('bash')
+		// await highlighter.loadLanguage('yaml')
+		// await highlighter.loadLanguage('markdown')
+		// await highlighter.loadLanguage('html')
 
 		return highlighter.codeToHtml(code, {
 			lang: language,
