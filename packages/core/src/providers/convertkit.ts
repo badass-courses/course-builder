@@ -1,6 +1,7 @@
 import { find, isEmpty } from 'lodash'
 
 import { Cookie } from '../lib/utils/cookie'
+import { CookieOption } from '../types'
 import {
 	EmailListConfig,
 	EmailListConsumerConfig,
@@ -18,7 +19,7 @@ export default function ConvertkitProvider(
 		options,
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
-		getSubscriber: async (subscriberId: string | null) => {
+		getSubscriber: async (subscriberId: string | null | CookieOption) => {
 			if (!subscriberId) return null
 			return await fetchSubscriber({
 				convertkitId: subscriberId,
@@ -170,7 +171,7 @@ async function fetchSubscriber({
 	convertkitApiSecret,
 	convertkitApiKey,
 }: {
-	convertkitId: string | number
+	convertkitId: string | number | CookieOption
 	convertkitApiSecret: string
 	convertkitApiKey: string
 }) {
