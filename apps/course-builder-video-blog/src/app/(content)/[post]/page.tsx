@@ -10,14 +10,13 @@ import { Post } from '@/lib/posts'
 import { getPost } from '@/lib/posts-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 type Props = {
-	params: { slug: string }
+	params: { post: string }
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 
@@ -25,7 +24,7 @@ export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const post = await getPost(params.slug)
+	const post = await getPost(params.post)
 
 	if (!post) {
 		return parent as Metadata
@@ -36,13 +35,11 @@ export async function generateMetadata(
 	}
 }
 
-export default async function PostPage({
-	params,
-}: {
-	params: { slug: string }
-}) {
+export default async function PostPage({ params }: Props) {
 	headers()
-	const postLoader = getPost(params.slug)
+
+	console.log(params)
+	const postLoader = getPost(params.post)
 	return (
 		<div>
 			<main className="mx-auto w-full" id="post">

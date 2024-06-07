@@ -23,28 +23,9 @@ export const getNavigationLinks = (): {
 }[] => {
 	return [
 		{
-			label: 'Articles',
+			label: 'Posts',
 			icon: () => '',
-			href: '/articles',
-		},
-		{
-			label: 'Tips',
-			icon: () => '',
-			href: '/tips',
-		},
-		// {
-		//   label: (
-		//     <>
-		//       <span className="sm:hidden lg:inline-block">Free</span> Tutorials
-		//     </>
-		//   ),
-		//   icon: () => '',
-		//   href: '/tutorials',
-		// },
-		{
-			label: 'Tutorials',
-			icon: () => '',
-			href: '/tutorials',
+			href: '/posts',
 		},
 	]
 }

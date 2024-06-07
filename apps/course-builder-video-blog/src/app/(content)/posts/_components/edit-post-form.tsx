@@ -67,10 +67,7 @@ export function EditPostForm({
 			getResourcePath={(slug) => `/posts/${slug}`}
 			updateResource={updatePost}
 			form={form}
-			availableWorkflows={[
-				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
-				{ value: 'zany-video-prompt-2~2jeyw', label: 'Another Prompt' },
-			]}
+			availableWorkflows={[]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}

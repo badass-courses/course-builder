@@ -21,9 +21,7 @@ import { ResourceChatResponse } from './resource-chat-response'
 
 export function ResourceChatAssistant({
 	resource,
-	availableWorkflows = [
-		{ value: 'summarize', label: 'Summarize', default: true },
-	],
+	availableWorkflows = [{ value: 'basic', label: 'Basic', default: true }],
 	user,
 	hostUrl,
 	sendResourceChatMessage,
@@ -44,7 +42,7 @@ export function ResourceChatAssistant({
 	const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>(
 		availableWorkflows.find((w) => w.default)?.value ||
 			availableWorkflows[0]?.value ||
-			'summarize',
+			'basic',
 	)
 
 	const handleSendMessage = (

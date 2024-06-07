@@ -47,6 +47,7 @@ export async function deletePost(id: string) {
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
+	console.log({ slug })
 	const post = await db.query.contentResource.findFirst({
 		where: or(
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
