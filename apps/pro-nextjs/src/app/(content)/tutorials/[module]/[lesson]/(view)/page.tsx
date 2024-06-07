@@ -15,6 +15,7 @@ import {
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
+import type { Lesson } from '@/lib/lessons'
 import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getNextResource } from '@/lib/resources/get-next-resource'
@@ -37,10 +38,13 @@ import {
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
+	Badge,
 	Button,
 	Skeleton,
 } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+
+import Exercise from './exercise/_components/exercise'
 
 export async function generateMetadata(
 	{ params }: Props,
@@ -95,15 +99,18 @@ export default async function LessonPage({
 					<div className="flex flex-col 2xl:flex-row">
 						<div>
 							<main className="">
-								{/* {isExercise ? <div>Exercise!</div> : null} */}
-								<PlayerContainer
-									params={params}
-									lessonLoader={lessonLoader}
-									moduleLoader={
-										tutorialLoader as unknown as Promise<ContentResource | null>
-									}
-									moduleProgressLoader={moduleProgressLoader}
-								/>
+								{isExercise ? (
+									<Exercise lessonLoader={lessonLoader} />
+								) : (
+									<PlayerContainer
+										params={params}
+										lessonLoader={lessonLoader}
+										moduleLoader={
+											tutorialLoader as unknown as Promise<ContentResource | null>
+										}
+										moduleProgressLoader={moduleProgressLoader}
+									/>
+								)}
 							</main>
 							<TranscriptContainer
 								className="mt-0 hidden 2xl:block"
@@ -120,12 +127,9 @@ export default async function LessonPage({
 										<Suspense
 											fallback={
 												<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
-													<Skeleton className="mb-8 h-8 w-full bg-gray-800" />
+													<Skeleton className="bg-muted mb-8 h-8 w-full" />
 													{new Array(10).fill(null).map((_, i) => (
-														<Skeleton
-															key={i}
-															className="h-8 w-full bg-gray-800"
-														/>
+														<Skeleton key={i} className="bg-muted h-8 w-full" />
 													))}
 												</div>
 											}
@@ -213,7 +217,7 @@ async function LessonActionBar({
 	)
 }
 
-function PlayerContainerSkeleton() {
+export function PlayerContainerSkeleton() {
 	return (
 		<div className="flex aspect-video h-full w-full items-center justify-center">
 			<Spinner />
@@ -276,7 +280,7 @@ async function LessonBody({
 	lessonLoader,
 	moduleProgressLoader,
 }: {
-	lessonLoader: Promise<ContentResource | null>
+	lessonLoader: Promise<Lesson | null>
 	moduleProgressLoader: Promise<ModuleProgress>
 }) {
 	const lesson = await lessonLoader
@@ -288,18 +292,72 @@ async function LessonBody({
 		notFound()
 	}
 
+	const githubUrl = lesson.fields?.github
+	const gitpodUrl = lesson.fields?.gitpod
+
 	return (
 		<article>
 			<div className="flex w-full flex-col items-start justify-between gap-8 px-5 sm:flex-row sm:px-8 2xl:flex-col">
 				<div className="w-full">
+					<Badge className="mb-2 text-xs uppercase" variant="secondary">
+						{lesson.type}
+					</Badge>
 					<h1 className="font-heading fluid-2xl w-full pb-5 font-bold">
 						{lesson.fields?.title}
 					</h1>
 					<div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-						<div className="">
+						<div className="flex items-center justify-center gap-5">
 							<Contributor />
+							{(githubUrl || gitpodUrl) && (
+								<div className="bg-border h-5 w-px" aria-hidden="true" />
+							)}
+							<div className="flex items-center justify-center gap-2">
+								{githubUrl && (
+									<Button variant="outline" asChild className="gap-1">
+										<Link href={githubUrl} target="_blank">
+											<svg
+												width={16}
+												height={16}
+												viewBox={'0 0 16 16'}
+												aria-hidden="true"
+												role={'img'}
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													fillRule="evenodd"
+													clipRule="evenodd"
+													fill="currentColor"
+													d="M8,0.2c-4.4,0-8,3.6-8,8c0,3.5,2.3,6.5,5.5,7.6 C5.9,15.9,6,15.6,6,15.4c0-0.2,0-0.7,0-1.4C3.8,14.5,3.3,13,3.3,13c-0.4-0.9-0.9-1.2-0.9-1.2c-0.7-0.5,0.1-0.5,0.1-0.5 c0.8,0.1,1.2,0.8,1.2,0.8C4.4,13.4,5.6,13,6,12.8c0.1-0.5,0.3-0.9,0.5-1.1c-1.8-0.2-3.6-0.9-3.6-4c0-0.9,0.3-1.6,0.8-2.1 c-0.1-0.2-0.4-1,0.1-2.1c0,0,0.7-0.2,2.2,0.8c0.6-0.2,1.3-0.3,2-0.3c0.7,0,1.4,0.1,2,0.3c1.5-1,2.2-0.8,2.2-0.8 c0.4,1.1,0.2,1.9,0.1,2.1c0.5,0.6,0.8,1.3,0.8,2.1c0,3.1-1.9,3.7-3.7,3.9C9.7,12,10,12.5,10,13.2c0,1.1,0,1.9,0,2.2 c0,0.2,0.1,0.5,0.6,0.4c3.2-1.1,5.5-4.1,5.5-7.6C16,3.8,12.4,0.2,8,0.2z"
+												/>
+											</svg>
+											Code
+										</Link>
+									</Button>
+								)}
+								{gitpodUrl && (
+									<Button variant="outline" asChild className="gap-1">
+										<Link href={gitpodUrl} target="_blank">
+											<svg
+												width={16}
+												height={16}
+												viewBox={'0 0 16 16'}
+												aria-hidden="true"
+												role={'img'}
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													fill="currentColor"
+													d="M9.355.797a1.591 1.591 0 0 1-.58 2.156L4.122 5.647a.401.401 0 0 0-.2.348v4.228a.4.4 0 0 0 .2.347l3.683 2.133a.39.39 0 0 0 .39 0l3.685-2.133a.4.4 0 0 0 .2-.347v-2.63L8.766 9.485a1.55 1.55 0 0 1-2.127-.6 1.592 1.592 0 0 1 .593-2.153l4.739-2.708c1.443-.824 3.228.232 3.228 1.91v4.61a3.015 3.015 0 0 1-1.497 2.612l-4.23 2.448a2.937 2.937 0 0 1-2.948 0l-4.229-2.448A3.016 3.016 0 0 1 .8 10.544v-4.87A3.016 3.016 0 0 1 2.297 3.06L7.225.208a1.55 1.55 0 0 1 2.13.589Z"
+												/>
+											</svg>
+											Gitpod
+										</Link>
+									</Button>
+								)}
+							</div>
 						</div>
-						{session?.user || ckSubscriber ? (
+						{(session?.user || ckSubscriber) &&
+						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
 							<Suspense fallback={<LessonProgressToggleSkeleton />}>
 								<LessonProgressToggle
 									lessonLoader={lessonLoader}

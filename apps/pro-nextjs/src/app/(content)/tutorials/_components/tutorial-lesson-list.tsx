@@ -9,8 +9,7 @@ import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { filterResources } from '@/utils/filter-resources'
 import { getResourceSection } from '@/utils/get-resource-section'
-import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline'
-import { sub } from 'date-fns'
+import { Check, Edit } from 'lucide-react'
 
 import type {
 	ModuleProgress,
@@ -219,6 +218,9 @@ export function TutorialLessonList(props: Props) {
 															lesson.resource.fields.slug === params.lesson &&
 															!isActiveSolution &&
 															!isActiveExercise
+														const isSubLessonListExpanded =
+															isActive || isActiveExercise || isActiveSolution
+
 														const isCompleted =
 															moduleProgress?.completedLessons?.some(
 																(progress) =>
@@ -252,9 +254,9 @@ export function TutorialLessonList(props: Props) {
 																				aria-label="Completed"
 																				className="w-6 pr-1"
 																			>
-																				<CheckIcon
+																				<Check
 																					aria-hidden="true"
-																					className="text-accent relative w-4 -translate-x-1 translate-y-1"
+																					className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
 																				/>
 																			</span>
 																		) : (
@@ -279,13 +281,13 @@ export function TutorialLessonList(props: Props) {
 																			<Link
 																				href={`/tutorials/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
 																			>
-																				<PencilIcon className="w-3" />
+																				<Edit className="w-3" />
 																			</Link>
 																		</Button>
 																	) : null}
 																</div>
 																<div className="flex flex-col">
-																	{solution && (
+																	{solution && isSubLessonListExpanded && (
 																		<>
 																			<Link
 																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
@@ -315,20 +317,36 @@ export function TutorialLessonList(props: Props) {
 																			>
 																				Exercise
 																			</Link>
-																			<Link
-																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
-																				className={cn(
-																					'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																					{
-																						'bg-muted text-primary border-primary before:bg-primary':
-																							isActiveSolution,
-																						'hover:text-primary before:bg-transparent':
-																							!isActiveSolution,
-																					},
-																				)}
-																			>
-																				Solution
-																			</Link>
+																			<div className="flex w-full items-center">
+																				<Link
+																					href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
+																					className={cn(
+																						'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																						{
+																							'bg-muted text-primary border-primary before:bg-primary':
+																								isActiveSolution,
+																							'hover:text-primary before:bg-transparent':
+																								!isActiveSolution,
+																						},
+																					)}
+																				>
+																					Solution
+																				</Link>
+																				{ability.can('create', 'Content') ? (
+																					<Button
+																						asChild
+																						variant="outline"
+																						size="icon"
+																						className="scale-75"
+																					>
+																						<Link
+																							href={`/tutorials/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+																						>
+																							<Edit className="w-3" />
+																						</Link>
+																					</Button>
+																				) : null}
+																			</div>
 																		</>
 																	)}
 																</div>

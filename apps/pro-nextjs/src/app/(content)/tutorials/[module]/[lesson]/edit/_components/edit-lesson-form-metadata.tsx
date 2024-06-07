@@ -187,6 +187,34 @@ export const LessonMetadataFormFields: React.FC<{
 			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
+			<FormField
+				control={form.control}
+				name="fields.github"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+						<FormDescription>
+							Direct link to the GitHub file associated with the lesson.
+						</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.gitpod"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
+						<FormDescription>
+							Gitpod link to start a new workspace with the lesson.
+						</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			{videoResourceId ? (
 				<div className="px-5">
 					<div className="flex items-center justify-between gap-2">

@@ -50,6 +50,8 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 				visibility: lesson.fields?.visibility || 'unlisted',
 				state: lesson.fields?.state || 'draft',
 				description: lesson.fields?.description || '',
+				github: lesson.fields?.github || '',
+				gitpod: lesson.fields?.gitpod || '',
 			},
 		},
 	})

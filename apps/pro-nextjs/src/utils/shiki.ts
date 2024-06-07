@@ -24,14 +24,14 @@ export const codeToHtml = async ({
 	try {
 		const highlighter = await getCachedHighlighter()
 		await highlighter.loadLanguage('tsx')
-		// await highlighter.loadLanguage('typescript')
-		// await highlighter.loadLanguage('javascript')
-		// await highlighter.loadLanguage('jsx')
-		// await highlighter.loadLanguage('json')
-		// await highlighter.loadLanguage('bash')
+		await highlighter.loadLanguage('typescript')
+		await highlighter.loadLanguage('javascript')
+		await highlighter.loadLanguage('jsx')
+		await highlighter.loadLanguage('json')
+		await highlighter.loadLanguage('bash')
+		await highlighter.loadLanguage('html')
 		// await highlighter.loadLanguage('yaml')
 		// await highlighter.loadLanguage('markdown')
-		// await highlighter.loadLanguage('html')
 
 		return highlighter.codeToHtml(code, {
 			lang: language,

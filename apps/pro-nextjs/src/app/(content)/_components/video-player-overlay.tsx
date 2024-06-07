@@ -303,7 +303,7 @@ const VideoPlayerOverlay: React.FC<{
 			return (
 				<div
 					aria-live="polite"
-					className="bg-background/80 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+					className="bg-background/80 text-foreground z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 				>
 					<Spinner />
 				</div>

@@ -55,22 +55,25 @@ export const TutorialSchema = z.object({
 								title: z.string().min(2).max(90),
 								body: z.string().optional().nullable(),
 							}),
-							resources: z.array(
-								z.object({
-									position: z.number(),
-									resourceId: z.string(),
-									resourceOfId: z.string(),
-									resource: z.object({
-										id: z.string(),
-										type: z.enum(['solution', 'videoResource']),
-										fields: z.object({
-											slug: z.string().optional().nullable(),
-											title: z.string().min(2).max(90),
-											body: z.string().optional().nullable(),
+							resources: z
+								.array(
+									z.object({
+										position: z.number(),
+										resourceId: z.string(),
+										resourceOfId: z.string(),
+										resource: z.object({
+											id: z.string(),
+											type: z.enum(['solution', 'videoResource']),
+											fields: z.object({
+												slug: z.string().optional().nullable(),
+												title: z.string().min(2).max(90),
+												body: z.string().optional().nullable(),
+											}),
 										}),
 									}),
-								}),
-							),
+								)
+								.optional()
+								.nullable(),
 						}),
 					}),
 				),

@@ -58,7 +58,6 @@ export default async function ModulePage({ params }: Props) {
 
 	return (
 		<main className="container relative px-0">
-			<pre>{JSON.stringify(tutorial, null, 2)}</pre>
 			<TutorialMetadata tutorial={tutorial} />
 			{ability.can('update', 'Content') && (
 				<Button

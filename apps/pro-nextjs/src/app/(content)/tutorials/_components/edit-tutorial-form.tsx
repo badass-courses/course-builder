@@ -45,6 +45,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				body: tutorial?.fields?.body || '',
 				visibility: tutorial.fields?.visibility || 'unlisted',
 				coverImage: tutorial?.fields?.coverImage || { url: '', alt: '' },
+				github: tutorial?.fields?.github || '',
 			},
 		},
 	})
@@ -180,6 +181,17 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						</FormItem>
 					)}
 					name="fields.coverImage.alt"
+				/>
+				<FormField
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel className="">GitHub</FormLabel>
+							<Input {...field} value={field.value || ''} />
+							<FormMessage />
+						</FormItem>
+					)}
+					name="fields.github"
 				/>
 				<TutorialResourcesList tutorial={tutorial} />
 			</ResourceForm>

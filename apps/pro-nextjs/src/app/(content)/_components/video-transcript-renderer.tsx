@@ -13,7 +13,10 @@ export function Transcript({
 	resourceLoader: Promise<ContentResource | null | undefined>
 }) {
 	const resource = use(resourceLoader)
-	const transcript = resource?.resources?.[0]?.resource?.fields?.transcript
+	const videoResource = resource?.resources?.find(
+		(resource) => resource.resource.type === 'videoResource',
+	)?.resource
+	const transcript = videoResource?.fields?.transcript
 	const { muxPlayerRef } = useMuxPlayer()
 
 	const canShowVideo = true // TODO: Determine if video is available
