@@ -8,29 +8,29 @@ import {
 	contentResourceResource,
 	contributionTypes,
 } from '@/db/schema'
-import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
+import { NewPost, Post, PostSchema, PostUpdate } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
-export async function deleteTip(id: string) {
+export async function deletePost(id: string) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('delete', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
-	const tip = await db.query.contentResource.findFirst({
+	const post = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, id),
 		with: {
 			resources: true,
 		},
 	})
 
-	if (!tip) {
-		throw new Error(`Tip with id ${id} not found.`)
+	if (!post) {
+		throw new Error(`Post with id ${id} not found.`)
 	}
 
 	await db
@@ -39,15 +39,15 @@ export async function deleteTip(id: string) {
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
-	revalidateTag('tips')
+	revalidateTag('posts')
 	revalidateTag(id)
-	revalidatePath('/tips')
+	revalidatePath('/posts')
 
 	return true
 }
 
-export async function getTip(slug: string): Promise<Tip | null> {
-	const tip = await db.query.contentResource.findFirst({
+export async function getPost(slug: string): Promise<Post | null> {
+	const post = await db.query.contentResource.findFirst({
 		where: or(
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
 			eq(contentResource.id, slug),
@@ -62,31 +62,31 @@ export async function getTip(slug: string): Promise<Tip | null> {
 		},
 	})
 
-	const tipParsed = TipSchema.safeParse(tip)
-	if (!tipParsed.success) {
-		console.error('Error parsing tip', tipParsed)
+	const postParsed = PostSchema.safeParse(post)
+	if (!postParsed.success) {
+		console.error('Error parsing post', postParsed)
 		return null
 	}
 
-	return tipParsed.data
+	return postParsed.data
 }
 
-export async function getTipsModule(): Promise<Tip[]> {
-	const tips = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'tip'),
+export async function getAllPosts(): Promise<Post[]> {
+	const posts = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'post'),
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const tipsParsed = z.array(TipSchema).safeParse(tips)
-	if (!tipsParsed.success) {
-		console.error('Error parsing tips', tipsParsed)
+	const postsParsed = z.array(PostSchema).safeParse(posts)
+	if (!postsParsed.success) {
+		console.error('Error parsing posts', postsParsed)
 		return []
 	}
 
-	return tipsParsed.data
+	return postsParsed.data
 }
 
-export async function createTip(input: NewTip) {
+export async function createPost(input: NewPost) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
@@ -94,7 +94,7 @@ export async function createTip(input: NewTip) {
 		throw new Error('Unauthorized')
 	}
 
-	const newTipId = `tip_${guid()}`
+	const newPostId = `post_${guid()}`
 
 	const videoResource = await courseBuilderAdapter.getVideoResource(
 		input.videoResourceId,
@@ -107,8 +107,8 @@ export async function createTip(input: NewTip) {
 	const resource = await db
 		.insert(contentResource)
 		.values({
-			id: newTipId,
-			type: 'tip',
+			id: newPostId,
+			type: 'post',
 			createdById: user.id,
 			fields: {
 				title: input.title,
@@ -118,16 +118,16 @@ export async function createTip(input: NewTip) {
 			},
 		})
 		.catch((error) => {
-			console.error('🚨 Error creating tip', error)
+			console.error('🚨 Error creating post', error)
 			throw error
 		})
 
-	const tip = await getTip(newTipId)
+	const post = await getPost(newPostId)
 
-	if (tip) {
+	if (post) {
 		await db
 			.insert(contentResourceResource)
-			.values({ resourceOfId: tip.id, resourceId: input.videoResourceId })
+			.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
 
 		const contributionType = await db.query.contributionTypes.findFirst({
 			where: eq(contributionTypes.slug, 'author'),
@@ -137,45 +137,45 @@ export async function createTip(input: NewTip) {
 			await db.insert(contentContributions).values({
 				id: `cc-${guid()}`,
 				userId: user.id,
-				contentId: tip.id,
+				contentId: post.id,
 				contributionTypeId: contributionType.id,
 			})
 		}
 
-		revalidateTag('tips')
+		revalidateTag('posts')
 
-		return tip
+		return post
 	} else {
-		throw new Error('🚨 Error creating tip: Tip not found')
+		throw new Error('🚨 Error creating post: Post not found')
 	}
 }
 
-export async function updateTip(input: TipUpdate) {
+export async function updatePost(input: PostUpdate) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentTip = await getTip(input.id)
+	const currentPost = await getPost(input.id)
 
-	if (!currentTip) {
-		throw new Error(`Tip with id ${input.id} not found.`)
+	if (!currentPost) {
+		throw new Error(`Post with id ${input.id} not found.`)
 	}
 
-	let tipSlug = currentTip.fields.slug
+	let postSlug = currentPost.fields.slug
 
-	if (input.fields.title !== currentTip.fields.title) {
-		const splitSlug = currentTip?.fields.slug.split('~') || ['', guid()]
-		tipSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	if (input.fields.title !== currentPost.fields.title) {
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
+		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
 	return courseBuilderAdapter.updateContentResourceFields({
-		id: currentTip.id,
+		id: currentPost.id,
 		fields: {
-			...currentTip.fields,
+			...currentPost.fields,
 			...input.fields,
-			slug: tipSlug,
+			slug: postSlug,
 		},
 	})
 }

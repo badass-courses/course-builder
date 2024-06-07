@@ -12,17 +12,7 @@ export const size = {
 	height: 630,
 }
 
-export default async function ArticleOG({
-	params,
-}: {
-	params: { slug: string }
-}) {
-	//   const authorPhoto = fetch(
-	//     new URL(`../../public/images/author.jpg`, import.meta.url)
-	//   ).then(res => res.arrayBuffer());
-
-	// fonts
-
+export default async function PostOG({ params }: { params: { slug: string } }) {
 	const resource = await db.query.contentResource.findFirst({
 		where: and(
 			or(
@@ -32,11 +22,9 @@ export default async function ArticleOG({
 				),
 				eq(contentResource.id, params.slug),
 			),
-			eq(contentResource.type, 'article'),
+			eq(contentResource.type, 'post'),
 		),
 	})
-
-	console.log({ resource })
 
 	return new ImageResponse(
 		(
@@ -50,13 +38,6 @@ export default async function ArticleOG({
 			>
 				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
 					<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
-					{/* eslint-disable-next-line @next/next/no-img-element */}
-					{/* <img
-                tw="rounded-full h-74"
-                alt={author.name}
-                @ts-ignore
-                src={await authorPhoto}
-              /> */}
 				</main>
 			</div>
 		),

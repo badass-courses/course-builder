@@ -1,14 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import { TipMetadataFormFields } from '@/app/(content)/tips/_components/edit-tip-form-metadata'
-import { MobileEditTipForm } from '@/app/(content)/tips/_components/edit-tip-form-mobile'
-import { onTipSave } from '@/app/(content)/tips/[slug]/edit/actions'
+import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
+import { MobileEditPostForm } from '@/app/(content)/posts/_components/edit-post-form-mobile'
+import { onPostSave } from '@/app/(content)/posts/[slug]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { TipSchema, type Tip } from '@/lib/tips'
-import { updateTip } from '@/lib/tips-query'
+import { Post, PostSchema } from '@/lib/posts'
+import { updatePost } from '@/lib/posts-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -18,69 +18,69 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
-const NewTipFormSchema = z.object({
+const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
 	body: z.string().optional().nullable(),
 })
 
-export type EditTipFormProps = {
-	tip: Tip
+export type EditPostFormProps = {
+	post: Post
 	videoResourceLoader: Promise<VideoResource | null>
-	form: UseFormReturn<z.infer<typeof TipSchema>>
+	form: UseFormReturn<z.infer<typeof PostSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
 }
 
-export function EditTipForm({
-	tip,
+export function EditPostForm({
+	post,
 	videoResourceLoader,
-}: Omit<EditTipFormProps, 'form'>) {
+}: Omit<EditPostFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
-	const form = useForm<z.infer<typeof TipSchema>>({
-		resolver: zodResolver(NewTipFormSchema),
+	const form = useForm<z.infer<typeof PostSchema>>({
+		resolver: zodResolver(NewPostFormSchema),
 		defaultValues: {
-			id: tip.id,
+			id: post.id,
 			fields: {
-				title: tip.fields?.title,
-				body: tip.fields?.body,
+				title: post.fields?.title,
+				body: post.fields?.body,
 			},
 		},
 	})
 	const isMobile = useIsMobile()
 
 	return isMobile ? (
-		<MobileEditTipForm
-			tip={tip}
+		<MobileEditPostForm
+			post={post}
 			form={form}
 			videoResourceLoader={videoResourceLoader}
 			availableWorkflows={[
-				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
 			]}
 			theme={theme}
 		/>
 	) : (
 		<EditResourcesFormDesktop
-			resource={tip}
-			resourceSchema={TipSchema}
-			getResourcePath={(slug) => `/tips/${slug}`}
-			updateResource={updateTip}
+			resource={post}
+			resourceSchema={PostSchema}
+			getResourcePath={(slug) => `/posts/${slug}`}
+			updateResource={updatePost}
 			form={form}
 			availableWorkflows={[
-				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
 				{ value: 'zany-video-prompt-2~2jeyw', label: 'Another Prompt' },
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
-			onSave={onTipSave}
+			onSave={onPostSave}
 			theme={theme}
 		>
-			<TipMetadataFormFields
+			<PostMetadataFormFields
 				form={form}
 				videoResourceLoader={videoResourceLoader}
-				tip={tip}
+				post={post}
 			/>
 		</EditResourcesFormDesktop>
 	)

@@ -1,8 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { TipUploader } from '@/app/(content)/tips/_components/tip-uploader'
-import { createTip } from '@/lib/tips-query'
+import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import pluralize from 'pluralize'
 
@@ -10,7 +10,7 @@ import { ContentResource } from '@coursebuilder/core/types'
 import { NewResourceWithVideoForm } from '@coursebuilder/react-rsc/client'
 import { Card, CardContent, CardFooter, CardHeader } from '@coursebuilder/ui'
 
-export function CreateTip() {
+export function CreatePost() {
 	const router = useRouter()
 	return (
 		<Card>
@@ -21,11 +21,13 @@ export function CreateTip() {
 							`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
 						)
 					}}
-					createResource={createTip}
+					createResource={createPost}
 					getVideoResource={getVideoResource}
 				>
 					{(handleSetVideoResourceId: (id: string) => void) => {
-						return <TipUploader setVideoResourceId={handleSetVideoResourceId} />
+						return (
+							<PostUploader setVideoResourceId={handleSetVideoResourceId} />
+						)
 					}}
 				</NewResourceWithVideoForm>
 			</CardContent>

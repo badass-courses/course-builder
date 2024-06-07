@@ -2,12 +2,12 @@ import * as React from 'react'
 import { use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { EditTipFormProps } from '@/app/(content)/tips/_components/edit-tip-form'
-import { TipMetadataFormFields } from '@/app/(content)/tips/_components/edit-tip-form-metadata'
+import { EditPostFormProps } from '@/app/(content)/posts/_components/edit-post-form'
+import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { TipUpdate } from '@/lib/tips'
-import { updateTip } from '@/lib/tips-query'
+import { PostUpdate } from '@/lib/posts'
+import { updatePost } from '@/lib/posts-query'
 import { useSession } from 'next-auth/react'
 
 import { Button, Form } from '@coursebuilder/ui'
@@ -15,8 +15,8 @@ import { ResourceChatAssistant } from '@coursebuilder/ui/chat-assistant/resource
 import { CodemirrorEditor } from '@coursebuilder/ui/codemirror/editor'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
-export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
-	tip,
+export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
+	post,
 	form,
 	videoResourceLoader,
 	availableWorkflows,
@@ -24,7 +24,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 }) => {
 	const session = useSession()
 	const videoResource = use(videoResourceLoader)
-	const [updateTipStatus, setUpdateTipStatus] = React.useState<
+	const [updatePostStatus, setUpdatePostStatus] = React.useState<
 		'idle' | 'loading' | 'success' | 'error'
 	>('idle')
 	const [transcript, setTranscript] = React.useState<string | null>(
@@ -32,7 +32,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 	)
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(tip.resources?.[0]?.resource.id)
+	>(post.resources?.[0]?.resource.id)
 	const router = useRouter()
 
 	useSocket({
@@ -65,16 +65,16 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 		},
 	})
 
-	const onSubmit = async (values: TipUpdate) => {
-		const updatedTip = await updateTip({ ...values, id: tip.id })
-		setUpdateTipStatus('success')
+	const onSubmit = async (values: PostUpdate) => {
+		const updatedPost = await updatePost({ ...values, id: post.id })
+		setUpdatePostStatus('success')
 
-		if (!updatedTip) {
+		if (!updatedPost) {
 			// handle edge case, e.g. toast an error message
 		} else {
-			const { fields: slug } = updatedTip
+			const { fields: slug } = updatedPost
 
-			router.push(`/tips/${slug}`)
+			router.push(`/${slug}`)
 		}
 	}
 
@@ -85,26 +85,29 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 			<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
 				<div className="flex items-center gap-2">
 					<Button className="px-0" asChild variant="link">
-						<Link href={`/tips/${tip?.fields.slug}`} className="aspect-square">
+						<Link
+							href={`/posts/${post?.fields.slug}`}
+							className="aspect-square"
+						>
 							←
 						</Link>
 					</Button>
 					<span className="font-medium">
-						Tip{' '}
+						Post{' '}
 						<span className="hidden font-mono text-xs font-normal md:inline-block">
-							({tip.id})
+							({post.id})
 						</span>
 					</span>
 				</div>
 				<Button
 					onClick={(e) => {
-						setUpdateTipStatus('loading')
+						setUpdatePostStatus('loading')
 						onSubmit(form.getValues())
 					}}
 					type="button"
 					size="sm"
 					className="disabled:cursor-wait"
-					disabled={updateTipStatus === 'loading'}
+					disabled={updatePostStatus === 'loading'}
 				>
 					Save
 				</Button>
@@ -118,10 +121,10 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 						})}
 					>
 						<div className="flex flex-col gap-8">
-							<TipMetadataFormFields
+							<PostMetadataFormFields
 								form={form}
 								videoResourceLoader={videoResourceLoader}
-								tip={tip}
+								post={post}
 							/>
 						</div>
 					</form>
@@ -130,8 +133,8 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 					<label className="px-5 text-lg font-bold">Content</label>
 					<CodemirrorEditor
 						partykitUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-						roomName={`${tip.id}`}
-						value={tip.fields.body || ''}
+						roomName={`${post.id}`}
+						value={post.fields.body || ''}
 						onChange={(data) => {
 							form.setValue('fields.body', data)
 						}}
@@ -139,7 +142,7 @@ export const MobileEditTipForm: React.FC<EditTipFormProps> = ({
 				</div>
 				<div className="pt-5">
 					<ResourceChatAssistant
-						resource={tip}
+						resource={post}
 						availableWorkflows={availableWorkflows}
 						user={session?.data?.user}
 						hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}

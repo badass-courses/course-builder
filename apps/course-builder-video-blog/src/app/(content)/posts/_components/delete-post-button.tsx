@@ -1,18 +1,18 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { deleteTip } from '@/lib/tips-query'
+import { deletePost } from '@/lib/posts-query'
 
 import { Button } from '@coursebuilder/ui'
 
-export function DeleteTipButton({ id }: { id: string }) {
+export function DeletePostButton({ id }: { id: string }) {
 	const router = useRouter()
 	return (
 		<Button
 			size="sm"
 			onClick={async () => {
-				if (confirm('Are you sure you want to delete this tip?')) {
-					await deleteTip(id)
+				if (confirm('Are you sure you want to delete this post?')) {
+					await deletePost(id)
 					router.refresh()
 				}
 			}}

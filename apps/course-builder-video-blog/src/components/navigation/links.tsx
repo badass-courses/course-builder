@@ -75,7 +75,7 @@ export function Links({ className }: { className?: string }) {
 						redirect('/brand')
 					}}
 				>
-					Course Builder
+					Video Blog
 				</Link>
 				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
 					{navigationLinks.map(({ label, href, icon }) => {

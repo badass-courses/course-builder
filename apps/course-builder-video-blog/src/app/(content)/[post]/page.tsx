@@ -4,10 +4,10 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { courseBuilderAdapter } from '@/db'
-import { type Tip } from '@/lib/tips'
-import { getTip } from '@/lib/tips-query'
+import { Post } from '@/lib/posts'
+import { getPost } from '@/lib/posts-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -25,41 +25,41 @@ export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const tip = await getTip(params.slug)
+	const post = await getPost(params.slug)
 
-	if (!tip) {
+	if (!post) {
 		return parent as Metadata
 	}
 
 	return {
-		title: tip.fields?.title,
+		title: post.fields?.title,
 	}
 }
 
-export default async function TipPage({
+export default async function PostPage({
 	params,
 }: {
 	params: { slug: string }
 }) {
 	headers()
-	const tipLoader = getTip(params.slug)
+	const postLoader = getPost(params.slug)
 	return (
 		<div>
-			<main className="mx-auto w-full" id="tip">
+			<main className="mx-auto w-full" id="post">
 				<Suspense
 					fallback={
 						<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
 					}
 				>
-					<TipActionBar tipLoader={tipLoader} />
+					<PostActionBar postLoader={postLoader} />
 				</Suspense>
 
-				<PlayerContainer tipLoader={tipLoader} />
+				<PlayerContainer postLoader={postLoader} />
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
 					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
 							<div className="flex flex-col lg:col-span-8">
-								<TipBody tipLoader={tipLoader} />
+								<PostBody postLoader={postLoader} />
 							</div>
 						</div>
 					</div>
@@ -69,17 +69,23 @@ export default async function TipPage({
 	)
 }
 
-async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
+async function PostActionBar({
+	postLoader,
+}: {
+	postLoader: Promise<Post | null>
+}) {
 	const { ability } = await getServerAuthSession()
-	const tip = await tipLoader
+	const post = await postLoader
 
 	return (
 		<>
-			{tip && ability.can('update', 'Content') ? (
+			{post && ability.can('update', 'Content') ? (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button size="sm" asChild>
-						<Link href={`/tips/${tip.fields.slug || tip.id}/edit`}>Edit</Link>
+						<Link href={`/posts/${post.fields.slug || post.id}/edit`}>
+							Edit
+						</Link>
 					</Button>
 				</div>
 			) : (
@@ -104,18 +110,18 @@ function PlayerContainerSkeleton() {
 }
 
 async function PlayerContainer({
-	tipLoader,
+	postLoader,
 }: {
-	tipLoader: Promise<Tip | null>
+	postLoader: Promise<Post | null>
 }) {
-	const tip = await tipLoader
+	const post = await postLoader
 	const displayOverlay = false
 
-	if (!tip) {
+	if (!post) {
 		notFound()
 	}
 
-	const resource = tip.resources?.[0]?.resource.id
+	const resource = post.resources?.[0]?.resource.id
 
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 
@@ -132,7 +138,7 @@ async function PlayerContainer({
 								},
 							)}
 						>
-							<TipPlayer videoResourceLoader={videoResourceLoader} />
+							<PostPlayer videoResourceLoader={videoResourceLoader} />
 						</div>
 					</div>
 				</div>
@@ -141,27 +147,27 @@ async function PlayerContainer({
 	)
 }
 
-async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
-	const tip = await tipLoader
+async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
+	const post = await postLoader
 
-	if (!tip) {
+	if (!post) {
 		notFound()
 	}
 
-	const resource = tip.resources?.[0]?.resource.id
+	const resource = post.resources?.[0]?.resource.id
 
 	const transcript = await getTranscript(resource)
 
 	return (
 		<>
 			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
-				{tip.fields.title}
+				{post.fields.title}
 			</h1>
 
-			{tip.fields.body && (
+			{post.fields.body && (
 				<>
 					<ReactMarkdown className="prose dark:prose-invert">
-						{tip.fields.body}
+						{post.fields.body}
 					</ReactMarkdown>
 				</>
 			)}

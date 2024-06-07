@@ -12,7 +12,7 @@ export function SuggestionResults({
 	useSocket({
 		onMessage: async (messageEvent) => {
 			const data = JSON.parse(messageEvent.data)
-			const invalidateOn = ['ai.tip.draft.completed']
+			const invalidateOn = ['ai.post.draft.completed']
 
 			if (
 				invalidateOn.includes(data.name) &&

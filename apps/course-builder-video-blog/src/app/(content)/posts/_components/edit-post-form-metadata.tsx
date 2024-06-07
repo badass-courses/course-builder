@@ -1,12 +1,11 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
-import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
-import Spinner from '@/components/spinner'
+import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
+import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
-import { TipSchema, type Tip } from '@/lib/tips'
+import { Post, PostSchema } from '@/lib/posts'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -28,17 +27,17 @@ import {
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
-export const TipMetadataFormFields: React.FC<{
-	form: UseFormReturn<z.infer<typeof TipSchema>>
+export const PostMetadataFormFields: React.FC<{
+	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResourceLoader: Promise<VideoResource | null>
-	tip: Tip
-}> = ({ form, videoResourceLoader, tip }) => {
+	post: Post
+}> = ({ form, videoResourceLoader, post }) => {
 	const router = useRouter()
 	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(tip.resources?.[0]?.resource.id)
+	>(post.resources?.[0]?.resource.id)
 	const [transcript, setTranscript] = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
@@ -84,7 +83,7 @@ export const TipMetadataFormFields: React.FC<{
 						</>
 					}
 				>
-					<TipPlayer videoResourceLoader={videoResourceLoader} />
+					<PostPlayer videoResourceLoader={videoResourceLoader} />
 
 					<div className="px-5 text-xs">video is {videoResource?.state}</div>
 				</Suspense>
@@ -101,7 +100,7 @@ export const TipMetadataFormFields: React.FC<{
 					<FormItem className="px-5">
 						<FormLabel className="text-lg font-bold">Title</FormLabel>
 						<FormDescription>
-							A title should summarize the tip and explain what it is about
+							A title should summarize the post and explain what it is about
 							clearly.
 						</FormDescription>
 						<Input {...field} />

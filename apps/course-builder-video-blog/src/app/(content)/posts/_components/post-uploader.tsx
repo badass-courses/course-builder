@@ -2,7 +2,7 @@ import * as React from 'react'
 import { getUniqueFilename } from '@/utils/get-unique-filename'
 import { UploadDropzone } from '@/utils/uploadthing'
 
-export function TipUploader({
+export function PostUploader({
 	setVideoResourceId,
 	parentResourceId,
 }: {

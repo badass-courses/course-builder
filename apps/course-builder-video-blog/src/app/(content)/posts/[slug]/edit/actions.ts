@@ -37,8 +37,8 @@ export async function reprocessTranscript({
 	}
 }
 
-export const onTipSave = async (resource: ContentResource) => {
-	const tip = await courseBuilderAdapter.getContentResource(resource.id)
-	revalidatePath(`/tips/${tip?.fields?.slug}`)
-	redirect(`/tips/${resource.fields?.slug}`)
+export const onPostSave = async (resource: ContentResource) => {
+	const post = await courseBuilderAdapter.getContentResource(resource.id)
+	revalidatePath(`/${post?.fields?.slug}`)
+	redirect(`/${resource.fields?.slug}`)
 }

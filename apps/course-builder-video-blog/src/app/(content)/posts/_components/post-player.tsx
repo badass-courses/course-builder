@@ -9,7 +9,7 @@ import MuxPlayer from '@mux/mux-player-react/lazy'
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-export function TipPlayer({
+export function PostPlayer({
 	muxPlaybackId,
 	className,
 	videoResourceLoader,

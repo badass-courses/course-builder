@@ -21,7 +21,7 @@ export const userCreated = inngest.createFunction(
 	async ({ event, step }) => {
 		const email = {
 			body: `{{user.email}} signed up.`,
-			subject: 'Course Builder Signup from {{user.email}}',
+			subject: 'Course Builder Video Blog Signup from {{user.email}}',
 		}
 
 		const { preferenceType, preferenceChannel } = await step.run(
