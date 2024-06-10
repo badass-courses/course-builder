@@ -1,12 +1,10 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { notFound } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { TutorialSchema, type Tutorial } from '@/lib/tutorial'
 import { getServerAuthSession } from '@/server/auth'
-import { filterResources } from '@/utils/filter-resources'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'

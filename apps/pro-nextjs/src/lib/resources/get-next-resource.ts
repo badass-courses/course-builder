@@ -2,92 +2,90 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { and, asc, eq, gt } from 'drizzle-orm'
+import { and, asc, eq, gt, not, or, sql } from 'drizzle-orm'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type {
+	ContentResource,
+	ContentResourceResource,
+} from '@coursebuilder/core/types'
+
+const ALLOWED_MODULE_RESOURCE_TYPES = ['lesson', 'exercise', 'solution']
+
+function flattenResources(
+	resources: ContentResourceResource[],
+): ContentResource[] {
+	const result: ContentResource[] = []
+
+	function recurse(resources: ContentResourceResource[]) {
+		for (const nestedResource of resources) {
+			const resource = nestedResource.resource
+			result.push(resource)
+			if (resource.resources) {
+				recurse(resource.resources)
+			}
+		}
+	}
+
+	recurse(resources)
+	return result
+}
 
 export async function getNextResource(
 	currentResourceId: string,
-): Promise<ContentResource | null | undefined> {
-	// First, get the current resource relation to identify its position and the parent resource
-	const currentResourceRelation =
-		await db.query.contentResourceResource.findFirst({
-			where: eq(contentResourceResource.resourceId, currentResourceId),
-			columns: {
-				position: true,
-				resourceOfId: true,
-			},
-		})
-
-	if (!currentResourceRelation) {
-		console.error('Current resource relation not found')
-		return null
-	}
-
-	// Attempt to find the next resource within the same collection by position
-	let nextResourceRelation = await db.query.contentResourceResource.findFirst({
-		where: and(
+	moduleSlugOrId: string,
+) {
+	const module = await db.query.contentResource.findFirst({
+		where: or(
 			eq(
-				contentResourceResource.resourceOfId,
-				currentResourceRelation.resourceOfId,
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+				moduleSlugOrId,
 			),
-			gt(contentResourceResource.position, currentResourceRelation.position),
+			eq(contentResource.id, moduleSlugOrId),
 		),
-		orderBy: asc(contentResourceResource.position),
-	})
-
-	if (!nextResourceRelation) {
-		// Check for resources outside of sections
-		const nextResourceOutsideSection = await db.query.contentResource.findFirst(
-			{
-				where: and(
-					gt(contentResource.id, currentResourceRelation.resourceOfId),
-					eq(contentResource.type, 'resource'),
-				),
-				orderBy: asc(contentResource.id),
-				with: {
-					resources: true,
-				},
-			},
-		)
-
-		if (nextResourceOutsideSection) {
-			return nextResourceOutsideSection
-		}
-
-		// Fetch the ID of the next section
-		const nextSection = await db.query.contentResource.findFirst({
-			where: and(
-				gt(contentResource.id, currentResourceRelation.resourceOfId),
-				eq(contentResource.type, 'section'),
-			),
-			orderBy: asc(contentResource.id),
-		})
-
-		if (!nextSection) {
-			console.error('No subsequent section found')
-			return null
-		}
-
-		// Retrieve the first resource of the next section
-		nextResourceRelation = await db.query.contentResourceResource.findFirst({
-			where: eq(contentResourceResource.resourceOfId, nextSection.id),
-			orderBy: asc(contentResourceResource.position),
-		})
-	}
-
-	if (!nextResourceRelation) {
-		console.error('No resource found in the next section')
-		return null
-	}
-
-	// Retrieve the full details of the next resource
-	const nextResource = await db.query.contentResource.findFirst({
-		where: eq(contentResource.id, nextResourceRelation.resourceId),
 		with: {
-			resources: true,
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: {
+										with: {
+											resources: {
+												with: {
+													resource: true,
+												},
+											},
+										},
+									},
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
 		},
 	})
+
+	const allResources = module?.resources && flattenResources(module.resources)
+	const filteredResources = allResources?.filter((resource) => {
+		return ALLOWED_MODULE_RESOURCE_TYPES.includes(resource.type)
+	})
+	const currentIndex = filteredResources?.findIndex(
+		(resource) => resource.id === currentResourceId,
+	)
+
+	if (currentIndex === -1) {
+		throw new Error('Current resource not found')
+	}
+
+	const nextResource =
+		(filteredResources &&
+			currentIndex &&
+			filteredResources[currentIndex + 1]) ||
+		null
 
 	return nextResource
 }

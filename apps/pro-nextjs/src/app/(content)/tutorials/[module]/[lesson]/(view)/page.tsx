@@ -79,6 +79,7 @@ export default async function LessonPage({
 	const lessonLoader = isSolution
 		? getExerciseSolution(params.lesson)
 		: getLesson(params.lesson)
+	const exerciseLoader = isSolution ? getLesson(params.lesson) : null
 
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 
@@ -100,11 +101,19 @@ export default async function LessonPage({
 						<div>
 							<main className="">
 								{isExercise ? (
-									<Exercise lessonLoader={lessonLoader} />
+									<Suspense fallback={<PlayerContainerSkeleton />}>
+										<Exercise
+											moduleLoader={
+												tutorialLoader as unknown as Promise<ContentResource | null>
+											}
+											resourceLoader={lessonLoader}
+										/>
+									</Suspense>
 								) : (
 									<PlayerContainer
 										params={params}
 										lessonLoader={lessonLoader}
+										exerciseLoader={exerciseLoader}
 										moduleLoader={
 											tutorialLoader as unknown as Promise<ContentResource | null>
 										}
@@ -153,6 +162,7 @@ export default async function LessonPage({
 								<Suspense fallback={<div className="p-5">Loading...</div>}>
 									<LessonBody
 										lessonLoader={lessonLoader}
+										exerciseLoader={exerciseLoader}
 										moduleProgressLoader={moduleProgressLoader}
 									/>
 								</Suspense>
@@ -227,11 +237,13 @@ export function PlayerContainerSkeleton() {
 
 async function PlayerContainer({
 	lessonLoader,
+	exerciseLoader,
 	moduleLoader,
 	moduleProgressLoader,
 	params,
 }: {
 	lessonLoader: Promise<ContentResource | null>
+	exerciseLoader: Promise<ContentResource | null> | null
 	moduleLoader: Promise<ContentResource | null>
 	moduleProgressLoader: Promise<ModuleProgress>
 	params: Props['params']
@@ -252,7 +264,7 @@ async function PlayerContainer({
 
 	const videoResourceLoader =
 		courseBuilderAdapter.getVideoResource(videoResourceId)
-	const nextResourceLoader = getNextResource(lesson.id)
+	const nextResourceLoader = getNextResource(lesson.id, params.module)
 
 	return (
 		<VideoPlayerOverlayProvider>
@@ -262,12 +274,14 @@ async function PlayerContainer({
 						nextResourceLoader={nextResourceLoader}
 						moduleLoader={moduleLoader}
 						lessonLoader={lessonLoader}
+						exerciseLoader={exerciseLoader}
 						canViewLoader={canViewLoader}
 						moduleProgressLoader={moduleProgressLoader}
 					/>
 					<AuthedVideoPlayer
 						className="aspect-video overflow-hidden"
 						videoResourceLoader={videoResourceLoader}
+						resource={lesson}
 						canViewLoader={canViewLoader}
 					/>
 				</Suspense>
@@ -278,9 +292,11 @@ async function PlayerContainer({
 
 async function LessonBody({
 	lessonLoader,
+	exerciseLoader,
 	moduleProgressLoader,
 }: {
 	lessonLoader: Promise<Lesson | null>
+	exerciseLoader: Promise<Lesson | null> | null
 	moduleProgressLoader: Promise<ModuleProgress>
 }) {
 	const lesson = await lessonLoader
@@ -291,6 +307,8 @@ async function LessonBody({
 	if (!lesson) {
 		notFound()
 	}
+
+	const exercise = await exerciseLoader
 
 	const githubUrl = lesson.fields?.github
 	const gitpodUrl = lesson.fields?.gitpod
@@ -360,7 +378,8 @@ async function LessonBody({
 						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
 							<Suspense fallback={<LessonProgressToggleSkeleton />}>
 								<LessonProgressToggle
-									lessonLoader={lessonLoader}
+									// if we are on solution, pass in exercise as lesson
+									lesson={exercise || lesson}
 									moduleProgressLoader={moduleProgressLoader}
 								/>
 							</Suspense>
@@ -372,20 +391,20 @@ async function LessonBody({
 				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote
 						source={lesson.fields.body}
-						components={{
-							pre: async (props: any) => {
-								const children = props?.children.props.children
-								const language =
-									props?.children.props.className?.split('-')[1] || 'typescript'
-								try {
-									const html = await codeToHtml({ code: children, language })
-									return <div dangerouslySetInnerHTML={{ __html: html }} />
-								} catch (error) {
-									console.error(error)
-									return <pre {...props} />
-								}
-							},
-						}}
+						// components={{
+						// 	pre: async (props: any) => {
+						// 		const children = props?.children.props.children
+						// 		const language =
+						// 			props?.children.props.className?.split('-')[1] || 'typescript'
+						// 		try {
+						// 			const html = await codeToHtml({ code: children, language })
+						// 			return <div dangerouslySetInnerHTML={{ __html: html }} />
+						// 		} catch (error) {
+						// 			console.error(error)
+						// 			return <pre {...props} />
+						// 		}
+						// 	},
+						// }}
 					/>
 				</div>
 			)}

@@ -10,16 +10,17 @@ import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
+import pluralize from 'pluralize'
 import { useFormStatus } from 'react-dom'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
-import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+import type { LessonCompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export const CompletedLessonOverlay: React.FC<{
-	action: CompletedAction
+	action: LessonCompletedAction
 	resource: ContentResource | null
 	moduleResource: ContentResource | null
 	moduleProgress: ModuleProgress
@@ -48,8 +49,8 @@ export const CompletedLessonOverlay: React.FC<{
 			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 		>
 			<div className="flex flex-col items-center text-center">
-				<strong className="pb-2 opacity-75">Next Up:</strong>
-				<p className="font-heading text-4xl font-bold text-white lg:text-5xl">
+				<p className="text-muted-foreground pb-2">Next Up:</p>
+				<p className="font-heading fluid-2xl font-bold">
 					{nextLesson?.fields?.title}
 				</p>
 				<div className="mt-8 flex items-center gap-3 text-sm">
@@ -82,7 +83,14 @@ export const CompletedLessonOverlay: React.FC<{
 									})
 								}
 								if (nextLesson && moduleResource) {
-									return router.push(nextLesson?.fields?.slug)
+									if (nextLesson.type === 'solution') {
+										return router.push(
+											`/${pluralize(moduleResource.type)}/${moduleResource?.fields?.slug}/${resource?.fields?.slug}/solution`,
+										)
+									}
+									return router.push(
+										`/${pluralize(moduleResource.type)}/${moduleResource?.fields?.slug}/${nextLesson?.fields?.slug}`,
+									)
 								}
 							}}
 						>
@@ -114,7 +122,7 @@ export const CompletedLessonOverlay: React.FC<{
 }
 
 export const CompletedModuleOverlay: React.FC<{
-	action: CompletedAction
+	action: LessonCompletedAction
 	resource: ContentResource | null
 	moduleResource: ContentResource | null
 }> = ({ action, resource, moduleResource }) => {
@@ -245,12 +253,14 @@ export const SoftBlockOverlay: React.FC<{
 const VideoPlayerOverlay: React.FC<{
 	moduleLoader: Promise<ContentResource | null>
 	lessonLoader: Promise<ContentResource | null>
+	exerciseLoader: Promise<ContentResource | null> | null
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
 	moduleProgressLoader: Promise<ModuleProgress>
 }> = ({
 	moduleLoader,
 	lessonLoader,
+	exerciseLoader,
 	nextResourceLoader,
 	canViewLoader,
 	moduleProgressLoader,
@@ -258,6 +268,7 @@ const VideoPlayerOverlay: React.FC<{
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
 	const lesson = use(lessonLoader)
+	const exercise = exerciseLoader && use(exerciseLoader)
 	const moduleResource = use(moduleLoader)
 	const nextLesson = use(nextResourceLoader)
 	const moduleProgress = use(moduleProgressLoader)
@@ -279,13 +290,13 @@ const VideoPlayerOverlay: React.FC<{
 	}
 
 	switch (overlayState.action?.type) {
-		case 'COMPLETED':
+		case 'LESSON_COMPLETED':
 			if (nextLesson) {
 				return (
 					<CompletedLessonOverlay
 						nextLesson={nextLesson}
 						action={overlayState.action}
-						resource={lesson}
+						resource={exercise || lesson}
 						moduleResource={moduleResource}
 						moduleProgress={moduleProgress}
 					/>

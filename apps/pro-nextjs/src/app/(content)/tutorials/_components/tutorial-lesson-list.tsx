@@ -221,16 +221,21 @@ export function TutorialLessonList(props: Props) {
 														const isSubLessonListExpanded =
 															isActive || isActiveExercise || isActiveSolution
 
+														const solution: ContentResourceResource =
+															lesson.resource.resources.find(
+																(resource: ContentResourceResource) =>
+																	resource.resource.type === 'solution',
+															)
+
 														const isCompleted =
 															moduleProgress?.completedLessons?.some(
 																(progress) =>
-																	progress.contentResourceId ===
-																		lesson.resourceId && progress.completedAt,
+																	(progress.contentResourceId ===
+																		lesson.resourceId ||
+																		solution?.resourceId ===
+																			progress.contentResourceId) &&
+																	progress.completedAt,
 															)
-														const solution = lesson.resource.resources.find(
-															(resource: ContentResourceResource) =>
-																resource.resource.type === 'solution',
-														)
 
 														return (
 															<li

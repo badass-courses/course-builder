@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
+import type { Lesson } from '@/lib/lessons'
 import { toggleProgress } from '@/lib/progress'
 import { cn } from '@/utils/cn'
 
@@ -12,13 +13,13 @@ import { Label, Switch } from '@coursebuilder/ui'
 
 export function LessonProgressToggle({
 	moduleProgressLoader,
-	lessonLoader,
+	lesson,
 }: {
 	moduleProgressLoader: Promise<ModuleProgress>
-	lessonLoader: Promise<ContentResource | null>
+	lesson: Lesson
 }) {
 	const moduleProgress = React.use(moduleProgressLoader)
-	const lesson = React.use(lessonLoader)
+
 	const params = useParams()
 
 	const isLessonCompleted = Boolean(

@@ -53,6 +53,8 @@ import {
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
+	type ContentResource,
+	type ContentResourceResource,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
@@ -979,6 +981,9 @@ export function mySqlDrizzleAdapter(
 			userIdOrEmail: string,
 			moduleIdOrSlug: string,
 		): Promise<ModuleProgress> {
+			const ALLOWED_MODULE_RESOURCE_TYPES = ['lesson', 'exercise', 'solution']
+			const COUNTABLE_MODULE_RESOURCE_TYPES = ['lesson', 'exercise']
+
 			const module = await client.query.contentResource.findFirst({
 				where: or(
 					eq(contentResource.id, moduleIdOrSlug),
@@ -989,6 +994,26 @@ export function mySqlDrizzleAdapter(
 				),
 				with: {
 					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: {
+												with: {
+													resources: {
+														with: {
+															resource: true,
+														},
+													},
+												},
+											},
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
 						orderBy: asc(contentResourceResource.position),
 					},
 				},
@@ -996,24 +1021,37 @@ export function mySqlDrizzleAdapter(
 
 			const parsedModule = ContentResourceSchema.parse(module)
 
-			const moduleResources =
-				await client.query.contentResourceResource.findMany({
-					where: inArray(
-						contentResourceResource.resourceOfId,
-						parsedModule.resources?.map((r) => r.resourceId) ?? [],
-					),
-					orderBy: asc(contentResourceResource.position),
-				})
+			function flattenResources(
+				resources: ContentResourceResource[],
+			): ContentResource[] {
+				const result: ContentResource[] = []
 
-			const parsedModuleResources = z
-				.array(ContentResourceResourceSchema)
-				.safeParse(moduleResources)
+				function recurse(resources: ContentResourceResource[]) {
+					for (const nestedResource of resources) {
+						const resource = nestedResource.resource
+						result.push(resource)
+						if (resource.resources) {
+							recurse(resource.resources)
+						}
+					}
+				}
 
-			if (!parsedModuleResources.success) {
-				console.error(
-					'Error parsing module resources',
-					parsedModuleResources.error,
-				)
+				recurse(resources)
+				return result
+			}
+
+			const allResources =
+				parsedModule?.resources && flattenResources(parsedModule.resources)
+			const filteredResources = allResources?.filter((resource) => {
+				return ALLOWED_MODULE_RESOURCE_TYPES.includes(resource.type)
+			})
+
+			const parsedResources = z
+				.array(ContentResourceSchema)
+				.safeParse(filteredResources)
+
+			if (!parsedResources.success) {
+				console.error('Error parsing module resources', parsedResources.error)
 				return {
 					completedLessons: [],
 					nextResource: null,
@@ -1022,6 +1060,12 @@ export function mySqlDrizzleAdapter(
 					totalLessonsCount: 0,
 				}
 			}
+
+			const progressResources = parsedResources.data.filter((r) => {
+				return COUNTABLE_MODULE_RESOURCE_TYPES.includes(r.type)
+			})
+
+			const totalLessonsCount = progressResources.length
 
 			const user = await client.query.users
 				.findFirst({
@@ -1053,7 +1097,7 @@ export function mySqlDrizzleAdapter(
 					nextResource: null,
 					percentCompleted: 0,
 					completedLessonsCount: 0,
-					totalLessonsCount: parsedModuleResources.data.length,
+					totalLessonsCount,
 				}
 			}
 
@@ -1066,7 +1110,7 @@ export function mySqlDrizzleAdapter(
 					nextResource: null,
 					percentCompleted: 0,
 					completedLessonsCount: 0,
-					totalLessonsCount: parsedModuleResources.data.length,
+					totalLessonsCount,
 				}
 			}
 
@@ -1076,15 +1120,15 @@ export function mySqlDrizzleAdapter(
 					isNotNull(resourceProgress.completedAt),
 					inArray(
 						resourceProgress.contentResourceId,
-						parsedModuleResources.data.map((r) => r.resourceId),
+						progressResources.map((r) => r.id),
 					),
 				),
 				orderBy: asc(resourceProgress.completedAt),
 			})
 
-			const nextResourceId = moduleResources.find(
-				(r) => !userProgress.find((p) => p.contentResourceId === r.resourceId),
-			)?.resourceId
+			const nextResourceId = parsedResources.data.find(
+				(r) => !userProgress.find((p) => p.contentResourceId === r.id),
+			)?.id
 
 			const nextResource = await client.query.contentResource.findFirst({
 				where: eq(contentResource.id, nextResourceId as string),
@@ -1105,11 +1149,11 @@ export function mySqlDrizzleAdapter(
 					nextResource: null,
 					percentCompleted: 0,
 					completedLessonsCount: 0,
-					totalLessonsCount: parsedModuleResources.data.length,
+					totalLessonsCount,
 				}
 			}
 			const percentCompleted = Math.round(
-				(parsedProgress.data.length / parsedModuleResources.data.length) * 100,
+				(parsedProgress.data.length / parsedResources.data.length) * 100,
 			)
 
 			return {
@@ -1117,7 +1161,7 @@ export function mySqlDrizzleAdapter(
 				nextResource: parsedNextResource,
 				percentCompleted,
 				completedLessonsCount: parsedProgress.data.length,
-				totalLessonsCount: parsedModuleResources.data.length,
+				totalLessonsCount,
 			}
 		},
 		getLessonProgresses(): Promise<ResourceProgress[]> {

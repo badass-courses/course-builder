@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
+import { useRouter } from 'next/navigation'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
 	handleTextTrackChange,
@@ -14,6 +15,7 @@ import MuxPlayer, {
 } from '@mux/mux-player-react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
+import type { ContentResource } from '@coursebuilder/core/types'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -22,12 +24,14 @@ export function AuthedVideoPlayer({
 	className,
 	videoResourceLoader,
 	canViewLoader,
+	resource,
 	...props
 }: {
 	muxPlaybackId?: string
 	videoResourceLoader: Promise<VideoResource | null>
 	className?: string
 	canViewLoader?: Promise<boolean>
+	resource?: ContentResource
 } & MuxPlayerProps) {
 	const canView = canViewLoader ? use(canViewLoader) : true
 	const videoResource = canView ? use(videoResourceLoader) : null
@@ -35,6 +39,7 @@ export function AuthedVideoPlayer({
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { playbackRate, volume, setPlayerPrefs } = useMuxPlayerPrefs()
 	const { setMuxPlayerRef } = useMuxPlayer()
+	const router = useRouter()
 
 	const playerProps = {
 		defaultHiddenCaptions: true,
@@ -63,10 +68,14 @@ export function AuthedVideoPlayer({
 			setMuxPlayerRef(playerRef)
 		},
 		onEnded: () => {
-			dispatchVideoPlayerOverlay({
-				type: 'COMPLETED',
-				playerRef,
-			})
+			if (resource?.type === 'exercise') {
+				router.push(`${resource?.fields?.slug}/exercise`)
+			} else {
+				dispatchVideoPlayerOverlay({
+					type: 'LESSON_COMPLETED',
+					playerRef,
+				})
+			}
 		},
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
