@@ -1,18 +1,19 @@
-import type {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/schemas/content-resource-schema'
+import type { ContentResourceResource } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export function filterResources(
 	resources: ContentResourceResource[],
-	removeType: string = 'videoResource',
+	removeTypes: string[] | string = 'videoResource',
 ) {
 	return resources.reduce(
 		(
 			filteredResources: ContentResourceResource[],
 			resource: ContentResourceResource,
 		) => {
-			if (resource.resource.type !== removeType) {
+			if (
+				removeTypes.length > 0
+					? !removeTypes.includes(resource.resource.type)
+					: removeTypes !== resource.resource.type
+			) {
 				if (resource.resource.resources) {
 					resource.resource.resources = filterResources(
 						resource.resource.resources,

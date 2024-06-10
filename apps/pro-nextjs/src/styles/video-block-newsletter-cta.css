@@ -1,7 +1,7 @@
 #video-block-newsletter-cta [data-sr-convertkit-subscribe-form] {
 	@apply mx-auto flex w-full max-w-[420px] flex-col;
 	input {
-		@apply bg-input h-16 border-white/10 px-5 text-base text-white placeholder:text-white/50 !important;
+		@apply bg-input border-foreground/5 h-16 border px-5 text-base !important;
 	}
 	[data-sr-fieldset] {
 		@apply w-full !important;

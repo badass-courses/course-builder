@@ -113,7 +113,10 @@ export function TutorialLessonList(props: Props) {
 	const tutorialWithFilteredResources = {
 		...tutorial,
 		...(tutorial.resources && {
-			resources: filterResources(tutorial.resources, 'videoResource'),
+			resources: filterResources(tutorial.resources, [
+				'videoResource',
+				'linkResource',
+			]),
 		}),
 	}
 
@@ -155,217 +158,343 @@ export function TutorialLessonList(props: Props) {
 							</div>
 						</div>
 					)}
-					<Accordion
-						type="single"
-						collapsible
-						className={cn(
-							'divide-border flex flex-col divide-y border-t pb-16',
-							wrapperClassName,
-						)}
-						defaultValue={section?.id || tutorial?.resources?.[0]?.resource?.id}
-					>
-						{tutorialWithFilteredResources?.resources?.map((resource) => {
-							return (
-								<AccordionItem
-									value={resource.resourceId}
-									key={resource.resourceId}
-									className="border-0"
-								>
-									{resource.resource.type === 'section' ? (
-										// section
-										<AccordionTrigger className="hover:bg-muted relative flex w-full items-center px-5 py-5 text-left text-lg font-semibold leading-tight">
-											<h3 className="pr-2">{resource.resource.fields.title}</h3>
-											{section?.id === resource.resourceId && (
-												<div className="bg-primary absolute right-12 h-1 w-1 rounded-full" />
-											)}
-										</AccordionTrigger>
-									) : (
-										// top-level lessons
-										<div className="hover:bg-muted flex w-full flex-row">
-											<Link
-												className="w-full font-medium"
-												href={`/tutorials/${tutorial?.fields?.slug}/${resource.resource.fields.slug}`}
-											>
-												{resource.resource.fields.title}
-											</Link>
-											{ability.can('create', 'Content') ? (
-												<div className="w-full justify-end">
-													<Button asChild size="sm">
-														<Link
-															className="text-xs"
-															href={`/tutorials/${tutorial?.fields?.slug}/${resource.resource.fields.slug}/edit`}
-														>
-															edit
-														</Link>
-													</Button>
-												</div>
-											) : null}
-										</div>
-									)}
-									{resource.resource.resources.length > 0 && (
-										// section lessons
-										<AccordionContent>
-											<ol>
-												{resource.resource.resources.map(
-													(lesson: ContentResourceResource, i: number) => {
-														const isActiveSolution =
-															lesson.resource.fields.slug === params.lesson &&
-															pathname.endsWith('solution')
-														const isActiveExercise =
-															lesson.resource.fields.slug === params.lesson &&
-															pathname.endsWith('exercise')
-														const isActive =
-															lesson.resource.fields.slug === params.lesson &&
-															!isActiveSolution &&
-															!isActiveExercise
-														const isSubLessonListExpanded =
-															isActive || isActiveExercise || isActiveSolution
+					<ol>
+						<Accordion
+							type="single"
+							collapsible
+							className={cn(
+								'divide-border flex flex-col divide-y border-t pb-16',
+								wrapperClassName,
+							)}
+							defaultValue={
+								section?.id || tutorial?.resources?.[0]?.resource?.id
+							}
+						>
+							{tutorialWithFilteredResources?.resources?.map((resource, i) => {
+								const isActiveSolution =
+									resource.resource.fields.slug === params.lesson &&
+									pathname.endsWith('solution')
+								const isActiveExercise =
+									resource.resource.fields.slug === params.lesson &&
+									pathname.endsWith('exercise')
+								const isActive =
+									resource.resource.fields.slug === params.lesson &&
+									!isActiveSolution &&
+									!isActiveExercise
+								const isSubLessonListExpanded =
+									isActive || isActiveExercise || isActiveSolution
 
-														const solution: ContentResourceResource =
-															lesson.resource.resources.find(
-																(resource: ContentResourceResource) =>
-																	resource.resource.type === 'solution',
-															)
+								const solution: ContentResourceResource =
+									resource.resource.resources.find(
+										(resource: ContentResourceResource) =>
+											resource.resource.type === 'solution',
+									)
 
-														const isCompleted =
-															moduleProgress?.completedLessons?.some(
-																(progress) =>
-																	(progress.contentResourceId ===
-																		lesson.resourceId ||
-																		solution?.resourceId ===
-																			progress.contentResourceId) &&
-																	progress.completedAt,
-															)
+								const isCompleted = moduleProgress?.completedLessons?.some(
+									(progress) =>
+										(progress.contentResourceId === resource.resourceId ||
+											solution?.resourceId === progress.contentResourceId) &&
+										progress.completedAt,
+								)
 
-														return (
-															<li
-																key={lesson.resourceId}
-																className="flex w-full flex-col"
-																ref={isActive ? activeResourceRef : undefined}
-															>
-																<div className="flex w-full items-center">
-																	<Link
-																		className={cn(
-																			'hover:bg-muted flex w-full items-baseline px-5 py-3 font-medium',
-																			{
-																				'bg-muted text-primary': isActive,
-																				'hover:text-primary': !isActive,
-																			},
-																		)}
-																		href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
-																	>
-																		{isCompleted ? (
-																			<span
-																				aria-label="Completed"
-																				className="w-6 pr-1"
-																			>
-																				<Check
-																					aria-hidden="true"
-																					className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
-																				/>
-																			</span>
-																		) : (
-																			<span
-																				className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
-																				aria-hidden="true"
-																			>
-																				{i + 1}
-																			</span>
-																		)}
-																		<span className="text-balance text-base">
-																			{lesson.resource.fields.title}
-																		</span>
-																	</Link>
-																	{ability.can('create', 'Content') ? (
-																		<Button
-																			asChild
-																			variant="outline"
-																			size="icon"
-																			className="scale-75"
+								return resource.resource.type === 'section' ? (
+									<AccordionItem
+										value={resource.resourceId}
+										key={resource.resourceId}
+										className="border-0"
+									>
+										<li>
+											<AccordionTrigger className="hover:bg-muted relative flex w-full items-center px-5 py-5 text-left text-lg font-semibold leading-tight">
+												<h3 className="pr-2">
+													{resource.resource.fields.title}
+												</h3>
+												{section?.id === resource.resourceId && (
+													<div className="bg-primary absolute right-12 h-1 w-1 rounded-full" />
+												)}
+											</AccordionTrigger>
+										</li>
+										{resource.resource.resources.length > 0 && (
+											// section lessons
+											<AccordionContent>
+												<ol>
+													{resource.resource.resources.map(
+														(lesson: ContentResourceResource, i: number) => {
+															const isActiveSolution =
+																lesson.resource.fields.slug === params.lesson &&
+																pathname.endsWith('solution')
+															const isActiveExercise =
+																lesson.resource.fields.slug === params.lesson &&
+																pathname.endsWith('exercise')
+															const isActive =
+																lesson.resource.fields.slug === params.lesson &&
+																!isActiveSolution &&
+																!isActiveExercise
+															const isSubLessonListExpanded =
+																isActive || isActiveExercise || isActiveSolution
+
+															const solution: ContentResourceResource =
+																lesson.resource.resources.find(
+																	(resource: ContentResourceResource) =>
+																		resource.resource.type === 'solution',
+																)
+
+															const isCompleted =
+																moduleProgress?.completedLessons?.some(
+																	(progress) =>
+																		(progress.contentResourceId ===
+																			lesson.resourceId ||
+																			solution?.resourceId ===
+																				progress.contentResourceId) &&
+																		progress.completedAt,
+																)
+
+															return (
+																<li
+																	key={lesson.resourceId}
+																	className="flex w-full flex-col"
+																	ref={isActive ? activeResourceRef : undefined}
+																>
+																	<div className="flex w-full items-center">
+																		<Link
+																			className={cn(
+																				'hover:bg-muted flex w-full items-baseline py-3 pl-3 pr-5 font-medium',
+																				{
+																					'bg-muted text-primary': isActive,
+																					'hover:text-primary': !isActive,
+																				},
+																			)}
+																			href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																		>
-																			<Link
-																				href={`/tutorials/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
+																			{isCompleted ? (
+																				<span
+																					aria-label="Completed"
+																					className="w-6 pr-1"
+																				>
+																					<Check
+																						aria-hidden="true"
+																						className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
+																					/>
+																				</span>
+																			) : (
+																				<span
+																					className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
+																					aria-hidden="true"
+																				>
+																					{i + 1}
+																				</span>
+																			)}
+																			<span className="w-full text-balance text-base">
+																				{lesson.resource.fields.title}
+																			</span>
+																		</Link>
+																		{ability.can('create', 'Content') ? (
+																			<Button
+																				asChild
+																				variant="outline"
+																				size="icon"
+																				className="scale-75"
 																			>
-																				<Edit className="w-3" />
-																			</Link>
-																		</Button>
-																	) : null}
-																</div>
-																<div className="flex flex-col">
-																	{solution && isSubLessonListExpanded && (
-																		<>
-																			<Link
-																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
-																				className={cn(
-																					'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																					{
-																						'bg-muted text-primary border-primary before:bg-primary':
-																							isActive,
-																						'hover:text-primary before:bg-transparent':
-																							!isActive,
-																					},
-																				)}
-																			>
-																				Problem
-																			</Link>
-																			<Link
-																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
-																				className={cn(
-																					'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																					{
-																						'bg-muted text-primary border-primary before:bg-primary':
-																							isActiveExercise,
-																						'hover:text-primary before:bg-transparent':
-																							!isActiveExercise,
-																					},
-																				)}
-																			>
-																				Exercise
-																			</Link>
-																			<div className="flex w-full items-center">
 																				<Link
-																					href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
+																					href={`/tutorials/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
+																				>
+																					<Edit className="w-3" />
+																				</Link>
+																			</Button>
+																		) : null}
+																	</div>
+																	<div className="flex flex-col">
+																		{solution && isSubLessonListExpanded && (
+																			<>
+																				<Link
+																					href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																					className={cn(
 																						'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																						{
 																							'bg-muted text-primary border-primary before:bg-primary':
-																								isActiveSolution,
+																								isActive,
 																							'hover:text-primary before:bg-transparent':
-																								!isActiveSolution,
+																								!isActive,
 																						},
 																					)}
 																				>
-																					Solution
+																					Problem
 																				</Link>
-																				{ability.can('create', 'Content') ? (
-																					<Button
-																						asChild
-																						variant="outline"
-																						size="icon"
-																						className="scale-75"
+																				<Link
+																					href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
+																					className={cn(
+																						'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																						{
+																							'bg-muted text-primary border-primary before:bg-primary':
+																								isActiveExercise,
+																							'hover:text-primary before:bg-transparent':
+																								!isActiveExercise,
+																						},
+																					)}
+																				>
+																					Exercise
+																				</Link>
+																				<div className="flex w-full items-center">
+																					<Link
+																						href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
+																						className={cn(
+																							'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																							{
+																								'bg-muted text-primary border-primary before:bg-primary':
+																									isActiveSolution,
+																								'hover:text-primary before:bg-transparent':
+																									!isActiveSolution,
+																							},
+																						)}
 																					>
-																						<Link
-																							href={`/tutorials/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+																						Solution
+																					</Link>
+																					{ability.can('create', 'Content') ? (
+																						<Button
+																							asChild
+																							variant="outline"
+																							size="icon"
+																							className="scale-75"
 																						>
-																							<Edit className="w-3" />
-																						</Link>
-																					</Button>
-																				) : null}
-																			</div>
-																		</>
-																	)}
-																</div>
-															</li>
-														)
+																							<Link
+																								href={`/tutorials/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+																							>
+																								<Edit className="w-3" />
+																							</Link>
+																						</Button>
+																					) : null}
+																				</div>
+																			</>
+																		)}
+																	</div>
+																</li>
+															)
+														},
+													)}
+												</ol>
+											</AccordionContent>
+										)}
+									</AccordionItem>
+								) : (
+									// top-level lessons
+									<li
+										key={resource.resource.resourceId}
+										className="flex w-full flex-col"
+										ref={isActive ? activeResourceRef : undefined}
+									>
+										<div className="flex w-full items-center">
+											<Link
+												className={cn(
+													'hover:bg-muted flex w-full items-baseline py-3 pl-3 pr-5 font-medium',
+													{
+														'bg-muted text-primary': isActive,
+														'hover:text-primary': !isActive,
 													},
 												)}
-											</ol>
-										</AccordionContent>
-									)}
-								</AccordionItem>
-							)
-						})}
-					</Accordion>
+												href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
+											>
+												{isCompleted ? (
+													<span aria-label="Completed" className="w-6 pr-1">
+														<Check
+															aria-hidden="true"
+															className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
+														/>
+													</span>
+												) : (
+													<span
+														className="w-6 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
+														aria-hidden="true"
+													>
+														{i + 1}
+													</span>
+												)}
+												<span className="w-full text-balance text-base">
+													{resource.resource.fields.title}
+												</span>
+											</Link>
+											{ability.can('create', 'Content') ? (
+												<Button
+													asChild
+													variant="outline"
+													size="icon"
+													className="scale-75"
+												>
+													<Link
+														href={`/tutorials/${tutorial?.fields?.slug}/${resource.resource.fields.slug}/edit`}
+													>
+														<Edit className="w-3" />
+													</Link>
+												</Button>
+											) : null}
+										</div>
+										<div className="flex flex-col">
+											{solution && isSubLessonListExpanded && (
+												<>
+													<Link
+														href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
+														className={cn(
+															'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+															{
+																'bg-muted text-primary border-primary before:bg-primary':
+																	isActive,
+																'hover:text-primary before:bg-transparent':
+																	!isActive,
+															},
+														)}
+													>
+														Problem
+													</Link>
+													<Link
+														href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}/exercise`}
+														className={cn(
+															'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+															{
+																'bg-muted text-primary border-primary before:bg-primary':
+																	isActiveExercise,
+																'hover:text-primary before:bg-transparent':
+																	!isActiveExercise,
+															},
+														)}
+													>
+														Exercise
+													</Link>
+													<div className="flex w-full items-center">
+														<Link
+															href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}/solution`}
+															className={cn(
+																'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+																{
+																	'bg-muted text-primary border-primary before:bg-primary':
+																		isActiveSolution,
+																	'hover:text-primary before:bg-transparent':
+																		!isActiveSolution,
+																},
+															)}
+														>
+															Solution
+														</Link>
+														{ability.can('create', 'Content') ? (
+															<Button
+																asChild
+																variant="outline"
+																size="icon"
+																className="scale-75"
+															>
+																<Link
+																	href={`/tutorials/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+																>
+																	<Edit className="w-3" />
+																</Link>
+															</Button>
+														) : null}
+													</div>
+												</>
+											)}
+										</div>
+									</li>
+								)
+							})}
+						</Accordion>
+					</ol>
 				</ScrollArea>
 				{widthFadeOut && (
 					<div

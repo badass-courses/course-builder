@@ -273,7 +273,7 @@ async function PlayerContainer({
 					<VideoPlayerOverlay
 						nextResourceLoader={nextResourceLoader}
 						moduleLoader={moduleLoader}
-						lessonLoader={lessonLoader}
+						resource={lesson}
 						exerciseLoader={exerciseLoader}
 						canViewLoader={canViewLoader}
 						moduleProgressLoader={moduleProgressLoader}
@@ -324,7 +324,7 @@ async function LessonBody({
 						{lesson.fields?.title}
 					</h1>
 					<div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-						<div className="flex items-center justify-center gap-5">
+						<div className="flex items-center gap-5 sm:justify-center">
 							<Contributor />
 							{(githubUrl || gitpodUrl) && (
 								<div className="bg-border h-5 w-px" aria-hidden="true" />

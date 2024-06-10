@@ -25,11 +25,11 @@ export default function Exercise({
 	const gitpodUrl = resource.fields?.gitpod
 
 	return (
-		<div className="text-foreground bg-muted flex aspect-video h-full w-full flex-col items-center justify-center text-center">
+		<div className="text-foreground bg-muted flex h-full w-full flex-col items-center justify-center py-8 text-center sm:aspect-video">
 			<h2 className="fluid-xl font-bold">
 				Now it&#8217;s your turn! Try solving this exercise.
 			</h2>
-			<div className="mt-8 flex gap-2">
+			<div className="mt-8 flex flex-col gap-5 md:flex-row md:gap-2">
 				{githubUrl && (
 					<div className="flex flex-col items-center gap-3">
 						<h3 className="font-semibold">Run locally (recommended)</h3>

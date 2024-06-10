@@ -69,10 +69,24 @@ export async function getNextResource(
 		},
 	})
 
+	if (!module) {
+		throw new Error('Module not found')
+	}
+
 	const allResources = module?.resources && flattenResources(module.resources)
+
+	if (!allResources) {
+		throw new Error('No resources found')
+	}
+
 	const filteredResources = allResources?.filter((resource) => {
 		return ALLOWED_MODULE_RESOURCE_TYPES.includes(resource.type)
 	})
+
+	if (!filteredResources) {
+		throw new Error('No allowed resources found')
+	}
+
 	const currentIndex = filteredResources?.findIndex(
 		(resource) => resource.id === currentResourceId,
 	)
@@ -82,8 +96,8 @@ export async function getNextResource(
 	}
 
 	const nextResource =
-		(filteredResources &&
-			currentIndex &&
+		(filteredResources !== undefined &&
+			currentIndex !== undefined &&
 			filteredResources[currentIndex + 1]) ||
 		null
 

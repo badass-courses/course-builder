@@ -17,10 +17,10 @@ import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
-import type { LessonCompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export const CompletedLessonOverlay: React.FC<{
-	action: LessonCompletedAction
+	action: CompletedAction
 	resource: ContentResource | null
 	moduleResource: ContentResource | null
 	moduleProgress: ModuleProgress
@@ -122,7 +122,7 @@ export const CompletedLessonOverlay: React.FC<{
 }
 
 export const CompletedModuleOverlay: React.FC<{
-	action: LessonCompletedAction
+	action: CompletedAction
 	resource: ContentResource | null
 	moduleResource: ContentResource | null
 }> = ({ action, resource, moduleResource }) => {
@@ -146,10 +146,10 @@ export const CompletedModuleOverlay: React.FC<{
 			aria-live="polite"
 			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 		>
-			<p className="font-heading pb-3 text-center text-4xl font-bold">
+			<p className="font-heading fluid-xl pb-3 text-center font-bold">
 				Great job!
 			</p>
-			<p className="text-center text-2xl">
+			<p className="fluid-base text-center">
 				You&apos;ve completed the {moduleResource?.fields?.title}{' '}
 				{moduleResource?.type}.
 			</p>
@@ -219,7 +219,7 @@ export const SoftBlockOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden bg-gray-900/90 p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
+			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleResource?.fields?.title}
@@ -252,14 +252,14 @@ export const SoftBlockOverlay: React.FC<{
 
 const VideoPlayerOverlay: React.FC<{
 	moduleLoader: Promise<ContentResource | null>
-	lessonLoader: Promise<ContentResource | null>
+	resource: ContentResource
 	exerciseLoader: Promise<ContentResource | null> | null
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
 	moduleProgressLoader: Promise<ModuleProgress>
 }> = ({
 	moduleLoader,
-	lessonLoader,
+	resource,
 	exerciseLoader,
 	nextResourceLoader,
 	canViewLoader,
@@ -267,7 +267,6 @@ const VideoPlayerOverlay: React.FC<{
 }) => {
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
-	const lesson = use(lessonLoader)
 	const exercise = exerciseLoader && use(exerciseLoader)
 	const moduleResource = use(moduleLoader)
 	const nextLesson = use(nextResourceLoader)
@@ -276,7 +275,7 @@ const VideoPlayerOverlay: React.FC<{
 	if (!canView) {
 		if (moduleResource?.type === 'tutorial') {
 			return (
-				<SoftBlockOverlay moduleResource={moduleResource} resource={lesson} />
+				<SoftBlockOverlay moduleResource={moduleResource} resource={resource} />
 			)
 		}
 		return (
@@ -290,13 +289,13 @@ const VideoPlayerOverlay: React.FC<{
 	}
 
 	switch (overlayState.action?.type) {
-		case 'LESSON_COMPLETED':
+		case 'COMPLETED':
 			if (nextLesson) {
 				return (
 					<CompletedLessonOverlay
 						nextLesson={nextLesson}
 						action={overlayState.action}
-						resource={exercise || lesson}
+						resource={exercise || resource}
 						moduleResource={moduleResource}
 						moduleProgress={moduleProgress}
 					/>
@@ -305,7 +304,7 @@ const VideoPlayerOverlay: React.FC<{
 				return (
 					<CompletedModuleOverlay
 						action={overlayState.action}
-						resource={lesson}
+						resource={resource}
 						moduleResource={moduleResource}
 					/>
 				)

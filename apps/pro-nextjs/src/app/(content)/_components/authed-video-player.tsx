@@ -72,7 +72,7 @@ export function AuthedVideoPlayer({
 				router.push(`${resource?.fields?.slug}/exercise`)
 			} else {
 				dispatchVideoPlayerOverlay({
-					type: 'LESSON_COMPLETED',
+					type: 'COMPLETED',
 					playerRef,
 				})
 			}
