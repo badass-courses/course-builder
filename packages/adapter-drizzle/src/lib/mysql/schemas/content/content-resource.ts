@@ -8,6 +8,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getContentContributionsSchema } from './content-contributions.js'
 import { getContentResourceProductSchema } from './content-resource-product.js'
 import { getContentResourceResourceSchema } from './content-resource-resource.js'
 
@@ -45,16 +46,20 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 	const users = getUsersSchema(mysqlTable)
 	const contentResourceResource = getContentResourceResourceSchema(mysqlTable)
 	const contentResourceProduct = getContentResourceProductSchema(mysqlTable)
+	const contentContributions = getContentContributionsSchema(mysqlTable)
 	return relations(contentResource, ({ one, many }) => ({
 		createdBy: one(users, {
 			fields: [contentResource.createdById],
 			references: [users.id],
-			relationName: 'user',
+			relationName: 'creator',
 		}),
 		resources: many(contentResourceResource, { relationName: 'resourceOf' }),
 		resourceOf: many(contentResourceResource, { relationName: 'resource' }),
 		resourceProducts: many(contentResourceProduct, {
 			relationName: 'resource',
+		}),
+		contributions: many(contentContributions, {
+			relationName: 'contributions',
 		}),
 	}))
 }

@@ -16,6 +16,22 @@ export type NewArticle = z.infer<typeof NewArticleSchema>
 
 export const ArticleSchema = ContentResourceSchema.merge(
 	z.object({
+		contributions: z.array(
+			z.object({
+				user: z.object({
+					id: z.string(),
+					name: z.string().optional().nullable(),
+					email: z.string().optional().nullable(),
+					image: z.string().optional().nullable(),
+				}),
+				contributionType: z.object({
+					id: z.string(),
+					slug: z.string(),
+					name: z.string(),
+					description: z.string().optional(),
+				}),
+			}),
+		),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),

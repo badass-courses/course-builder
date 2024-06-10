@@ -124,20 +124,6 @@ const Welcome = async ({
 
 	const isGithubConnected = await githubAccountsForCurrentUser()
 
-	console.log({
-		isGithubConnected,
-		product,
-		purchase,
-		existingPurchase,
-		upgrade,
-		providers,
-		hasCharge,
-		redemptionsLeft,
-		isTransferAvailable,
-		purchaseUserTransfers,
-		userEmail: session?.user?.email,
-	})
-
 	return (
 		<div>
 			<WelcomePage

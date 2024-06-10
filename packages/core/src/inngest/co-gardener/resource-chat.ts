@@ -162,9 +162,68 @@ export async function resourceChatWorkflowExecutor({
 	user: User
 	model?: string
 }) {
-	const prompt = await step.run('Load Prompt', async () => {
-		return db.getContentResource(workflowTrigger)
-	})
+	const basicPrompt = {
+		id: 'basic',
+		name: 'Basic',
+		type: 'prompt',
+		fields: {
+			body: `# Instructions
+Pause. Take a deep breath and think. This is important. Think step by step.
+
+You are serving as a writing assistant for a content creator that is publishing a {% if transcript %}video based{% endif %} post for software developers. The content creator will ask questions and expect concise answers that aren't corny or generic.
+
+Keep responses scoped to the post and it's direct contents. Do not include additional information.
+Do not include information that is not directly related to the post or the {% if transcript %}video{% endif %}.
+
+Use simple language.
+
+Use only most popular 2000 english words {% if transcript %}and words used in the transcript{% endif %}.
+Simple is better.
+Flourish is bad.
+**People will hate you if you try to sound clever.**
+
+{% if wordLevelSrt %} add screenshots from the video when they are relevant and would be useful to
+the reader using the following template replacing {{timestampInSeconds}} with the time noted in the transcript:
+
+![{{descriptiveAltTextForVisuallyImpaired}}](https://image.mux.com/{{muxPlaybackId}}/thumbnail.png?time={{timestampInSeconds}})
+be precise with the timestamps! {% if wordLevelSrt %} use this word level SRT to get the exact timestamp:
+
+word level srt start
+{{wordLevelSrt}} {% endif %}
+
+word level srt end
+{% endif %}
+
+Get it right and there's $200 cash gratuity in it for you ;)
+
+{% if transcript %}The goal is to build a really good written version of the existing video, not edit the video itself. The video is done.
+
+The post transcript is the final representation of the video. The post transcript is the source of truth.{% endif %}
+
+Keep the language simple and don't use words not in the post {% if transcript %}transcript{% endif %}.
+
+{% if transcript %}Do not make direct references to the video.
+Do not make direct references to the transcript.{% endif %}
+Do not make direct references to the content creator.
+Do not make direct references to 'the post'.
+Jump right to the point.
+
+Post Title: {{title}}
+
+{% if transcript %}Post Transcript: {{transcript}}{% endif %}
+
+Post Body: {{body}}
+
+Reply in a markdown code fence.`,
+		},
+	}
+
+	const prompt =
+		workflowTrigger === 'basic'
+			? basicPrompt
+			: await step.run('Load Prompt', async () => {
+					return db.getContentResource(workflowTrigger)
+				})
 
 	if (!prompt) {
 		throw new NonRetriableError(`Prompt not found for id (${workflowTrigger})`)
@@ -264,7 +323,7 @@ export async function resourceChatWorkflowExecutor({
 		return streamingChatPromptExecutor({
 			requestId: resourceId,
 			promptMessages: messages,
-			model: prompt.model || model || 'gpt-4o',
+			model: prompt.fields.model || model || 'gpt-4-turbo',
 			provider: openaiProvider,
 		})
 	})

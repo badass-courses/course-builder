@@ -1,6 +1,7 @@
 import { find, isEmpty } from 'lodash'
 
 import { Cookie } from '../lib/utils/cookie'
+import { CookieOption } from '../types'
 import {
 	EmailListConfig,
 	EmailListConsumerConfig,
@@ -18,6 +19,14 @@ export default function ConvertkitProvider(
 		options,
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
+		getSubscriber: async (subscriberId: string | null | CookieOption) => {
+			if (!subscriberId) return null
+			return await fetchSubscriber({
+				convertkitId: subscriberId,
+				convertkitApiSecret: options.apiSecret,
+				convertkitApiKey: options.apiKey,
+			})
+		},
 		subscribeToList: async (subscribeOptions: EmailListSubscribeOptions) => {
 			const { listId, user, listType, fields } = subscribeOptions
 
@@ -76,29 +85,34 @@ const hour = 3600000
 export const oneYear = 365 * 24 * hour
 
 export function getConvertkitSubscriberCookie(subscriber: any): Cookie[] {
-	return [
-		{
-			name: 'ck_subscriber',
-			value: JSON.stringify(subscriber),
-			options: {
-				secure: process.env.NODE_ENV === 'production',
-				httpOnly: true,
-				path: '/',
-				maxAge: oneYear,
-			},
-		},
-		{
-			name:
-				process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY || 'ck_subscriber_id',
-			value: subscriber.id,
-			options: {
-				secure: process.env.NODE_ENV === 'production',
-				httpOnly: true,
-				path: '/',
-				maxAge: 31556952,
-			},
-		},
-	]
+	return subscriber
+		? [
+				{
+					name: 'ck_subscriber',
+					value: JSON.stringify(subscriber),
+					options: {
+						secure: true,
+						httpOnly: true,
+						path: '/',
+						maxAge: oneYear,
+						sameSite: 'lax',
+					},
+				},
+				{
+					name:
+						process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY ||
+						'ck_subscriber_id',
+					value: subscriber.id,
+					options: {
+						secure: true,
+						httpOnly: true,
+						path: '/',
+						maxAge: 31556952,
+						sameSite: 'lax',
+					},
+				},
+			]
+		: []
 }
 
 type Subscriber = Record<string, any>
@@ -157,7 +171,7 @@ async function fetchSubscriber({
 	convertkitApiSecret,
 	convertkitApiKey,
 }: {
-	convertkitId: string | number
+	convertkitId: string | number | CookieOption
 	convertkitApiSecret: string
 	convertkitApiKey: string
 }) {

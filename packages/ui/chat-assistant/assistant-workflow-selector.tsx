@@ -10,8 +10,8 @@ import {
 
 export function AssistantWorkflowSelector({
 	onValueChange,
-	initialValue = 'summarize',
-	availableWorkflows = [{ value: 'summarize', label: 'Summarize' }],
+	initialValue = 'basic',
+	availableWorkflows = [{ value: 'basic', label: 'Basic' }],
 }: {
 	onValueChange: (value?: string) => void
 	initialValue?: string

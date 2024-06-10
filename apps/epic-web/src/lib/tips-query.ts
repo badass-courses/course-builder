@@ -53,6 +53,12 @@ export async function getTip(slug: string): Promise<Tip | null> {
 			eq(contentResource.id, slug),
 		),
 		with: {
+			contributions: {
+				with: {
+					user: true,
+					contributionType: true,
+				},
+			},
 			resources: {
 				with: {
 					resource: true,

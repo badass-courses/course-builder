@@ -1,16 +1,22 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import { SubscribeForm } from '@/app/(content)/tips/_components/tip-subscribe-form'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
+import MDX from '@/mdx/mdx'
+import serializeMDX from '@/mdx/serialize-mdx'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import slugify from '@sindresorhus/slugify'
+import { CheckIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -42,30 +48,151 @@ export default async function TipPage({
 	params: { slug: string }
 }) {
 	headers()
+	console.log('🤡', cookies().get('ck_subscriber_id'))
 	const tipLoader = getTip(params.slug)
-	return (
-		<div>
-			<main className="mx-auto w-full" id="tip">
-				<Suspense
-					fallback={
-						<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-					}
-				>
-					<TipActionBar tipLoader={tipLoader} />
-				</Suspense>
 
-				<PlayerContainer tipLoader={tipLoader} />
+	return (
+		<>
+			<Suspense
+				fallback={
+					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+				}
+			>
+				<TipActionBar tipLoader={tipLoader} />
+			</Suspense>
+			<main className="mx-auto w-full" id="tip">
+				<div className="relative z-10 flex items-center justify-center">
+					<div className="flex w-full max-w-screen-lg flex-col">
+						<PlayerContainer tipLoader={tipLoader} />
+						<Suspense
+							fallback={
+								<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+							}
+						>
+							<SubscribeForm tipLoader={tipLoader} />
+						</Suspense>
+					</div>
+				</div>
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
 					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
 							<div className="flex flex-col lg:col-span-8">
+								<TipTitle tipLoader={tipLoader} />
+								<TipAuthor
+									tipLoader={tipLoader}
+									className="inline-flex py-2 text-base font-semibold text-gray-700 lg:hidden dark:text-gray-300 [&_span]:font-bold"
+								/>
 								<TipBody tipLoader={tipLoader} />
+								<TipTranscript tipLoader={tipLoader} />
+							</div>
+							<div className="col-span-3">
+								<TipAuthor
+									tipLoader={tipLoader}
+									className="mx-0 hidden py-2 text-base font-semibold text-gray-700 lg:flex dark:text-gray-300 [&_span]:font-bold"
+								/>
+								{/*<RelatedTips currentTip={tip} tips={tips}/>*/}
+								{/* {tweet && <ReplyOnTwitter tweet={tweet} />} */}
 							</div>
 						</div>
 					</div>
 				</article>
 			</main>
+			{/*<main className="mx-auto w-full" id="tip">*/}
+
+			{/*	<PlayerContainer tipLoader={tipLoader}/>*/}
+			{/*	<article*/}
+			{/*		className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">*/}
+			{/*		<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">*/}
+			{/*			<div*/}
+			{/*				className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">*/}
+			{/*				<div className="flex flex-col lg:col-span-8">*/}
+			{/*					<TipBody tipLoader={tipLoader}/>*/}
+			{/*				</div>*/}
+			{/*			</div>*/}
+			{/*		</div>*/}
+			{/*	</article>*/}
+			{/*</main>*/}
+		</>
+	)
+}
+
+async function TipTranscript({
+	tipLoader,
+}: {
+	tipLoader: Promise<Tip | null>
+}) {
+	const tip = await tipLoader
+	if (!tip) return null
+	const resource = tip?.resources?.[0]?.resource.id
+	const transcript = await getTranscript(resource)
+	return transcript ? (
+		<div className="w-full max-w-2xl pt-5">
+			{/*<VideoTranscript transcript={tip.transcript} />*/}
 		</div>
+	) : null
+}
+
+async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
+	const tip = await tipLoader
+	if (!tip) return null
+
+	console.log('tip', tip)
+	const tipBodySerialized = await serializeMDX(tip.fields.body || '', {
+		syntaxHighlighterOptions: {
+			theme: 'material-palenight',
+			showCopyButton: true,
+		},
+	})
+	return tip.fields.body ? (
+		<>
+			<div className="prose dark:prose-invert lg:prose-lg w-full max-w-none pb-5 pt-5">
+				<MDX contents={tipBodySerialized} />
+			</div>
+		</>
+	) : null
+}
+
+async function TipAuthor({
+	tipLoader,
+	className,
+}: {
+	tipLoader: Promise<Tip | null>
+	className?: string
+}) {
+	const tip = await tipLoader
+
+	if (!tip) return null
+
+	const author = tip.contributions.find(
+		(c) => c.contributionType.slug === 'author',
+	)?.user
+	return (
+		<ResourceContributor
+			name={author?.name || 'unknown'}
+			slug={slugify(author?.name || 'unknown')}
+			image={author?.image}
+			className={className}
+		/>
+	)
+}
+
+async function TipTitle({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
+	const tip = await tipLoader
+	if (!tip) return null
+	const resourceCompleted = false
+	return (
+		<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
+			{tip.fields.title}
+			{resourceCompleted && (
+				<>
+					<span className="sr-only">(watched)</span>
+					<CheckIcon
+						aria-hidden="true"
+						className="absolute -left-4 top-2 w-4 opacity-50 lg:-left-8 lg:w-6"
+					/>
+				</>
+			)}
+		</h1>
 	)
 }
 
@@ -138,41 +265,5 @@ async function PlayerContainer({
 				</div>
 			</div>
 		</Suspense>
-	)
-}
-
-async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
-	const tip = await tipLoader
-
-	if (!tip) {
-		notFound()
-	}
-
-	const resource = tip.resources?.[0]?.resource.id
-
-	const transcript = await getTranscript(resource)
-
-	return (
-		<>
-			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
-				{tip.fields.title}
-			</h1>
-
-			{tip.fields.body && (
-				<>
-					<ReactMarkdown className="prose dark:prose-invert">
-						{tip.fields.body}
-					</ReactMarkdown>
-				</>
-			)}
-			{transcript && (
-				<div className="w-full max-w-2xl pt-5">
-					<h3 className="font-bold">Transcript</h3>
-					<ReactMarkdown className="prose dark:prose-invert">
-						{transcript}
-					</ReactMarkdown>
-				</div>
-			)}
-		</>
 	)
 }

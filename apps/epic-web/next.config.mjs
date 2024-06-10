@@ -30,6 +30,11 @@ const config = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'res.cloudinary.com',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'cdn.sanity.io',
 				port: '',
 			},
@@ -41,7 +46,7 @@ const config = {
 		],
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
-	transpilePackages: ['@coursebuilder/ui'],
+	transpilePackages: ['@coursebuilder/ui', 'next-mdx-remote'],
 	// @ts-expect-error
 	async redirects() {
 		return [

@@ -1,0 +1,5 @@
+{
+	"name": "cb-video-blog",
+	"main": "party/index.ts",
+	"compatibilityDate": "2023-10-20"
+}

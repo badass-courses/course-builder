@@ -101,7 +101,6 @@ const ArticleMetadataFormFields = ({
 	article: ContentResource & { fields?: { slug: string } }
 }) => {
 	const currentSocialImage = getOGImageUrlForResource(article)
-	console.log({ currentSocialImage })
 	return (
 		<EditResourcesMetadataFields form={form}>
 			<MetadataFieldSocialImage

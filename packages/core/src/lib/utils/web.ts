@@ -106,6 +106,7 @@ export function parseActionAndProviderId(
 			'subscribe-to-list',
 			'checkout',
 			'redeem',
+			'subscriber',
 		].includes(action)
 	)
 		throw new UnknownAction(

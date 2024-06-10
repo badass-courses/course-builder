@@ -59,6 +59,7 @@ export type CourseBuilderAction =
 	| 'checkout'
 	| 'redeem'
 	| 'prices-formatted'
+	| 'subscriber'
 
 export interface RequestInternal {
 	url: URL
@@ -176,7 +177,9 @@ export interface CookieOption {
 	options: CookieSerializeOptions
 }
 
-export interface CookiesOptions {}
+export interface CookiesOptions {
+	ck_subscriber_id?: Partial<CookieOption>
+}
 
 export interface DefaultCourseBuilderSession {}
 

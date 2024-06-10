@@ -15,6 +15,28 @@ import { processStripeWebhook } from '../pricing/process-stripe-webhook'
 import { CheckoutParamsSchema } from '../pricing/stripe-checkout'
 import { Cookie } from '../utils/cookie'
 
+export async function getSubscriber(
+	options: InternalOptions<'email-list'>,
+	cookies: Cookie[],
+): Promise<ResponseInternal<any | null>> {
+	switch (options.provider.type) {
+		case 'email-list':
+			const subscriber = await options.provider.getSubscriber(
+				options.url.searchParams.get('subscriberId') ||
+					options.cookies.ck_subscriber_id ||
+					null,
+			)
+			return {
+				status: 200,
+				body: subscriber,
+				headers: { 'Content-Type': 'application/json' },
+				cookies: getConvertkitSubscriberCookie(subscriber),
+			}
+		default:
+			throw new Error('Unsupported provider')
+	}
+}
+
 export async function subscribeToList(
 	request: RequestInternal,
 	cookies: Cookie[],

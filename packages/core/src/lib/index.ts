@@ -27,6 +27,8 @@ export async function CourseBuilderInternal(
 				return await actions.srt(request, cookies, options)
 			case 'session':
 				return await actions.session(options, cookies)
+			case 'subscriber':
+				return await actions.getSubscriber(options, cookies)
 		}
 	} else {
 		switch (action) {
