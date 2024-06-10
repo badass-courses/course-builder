@@ -391,20 +391,20 @@ async function LessonBody({
 				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote
 						source={lesson.fields.body}
-						// components={{
-						// 	pre: async (props: any) => {
-						// 		const children = props?.children.props.children
-						// 		const language =
-						// 			props?.children.props.className?.split('-')[1] || 'typescript'
-						// 		try {
-						// 			const html = await codeToHtml({ code: children, language })
-						// 			return <div dangerouslySetInnerHTML={{ __html: html }} />
-						// 		} catch (error) {
-						// 			console.error(error)
-						// 			return <pre {...props} />
-						// 		}
-						// 	},
-						// }}
+						components={{
+							pre: async (props: any) => {
+								const children = props?.children.props.children
+								const language =
+									props?.children.props.className?.split('-')[1] || 'typescript'
+								try {
+									const html = await codeToHtml({ code: children, language })
+									return <div dangerouslySetInnerHTML={{ __html: html }} />
+								} catch (error) {
+									console.error(error)
+									return <pre {...props} />
+								}
+							},
+						}}
 					/>
 				</div>
 			)}

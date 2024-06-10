@@ -1,14 +1,17 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
+import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { type Article } from '@/lib/articles'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
@@ -111,24 +114,30 @@ export default async function ArticlePage({
 	params: { article: string }
 }) {
 	const articleLoader = getArticle(params.article)
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
+
 	return (
-		<main className="container max-w-4xl pb-16 pt-10">
-			<div className="flex w-full items-center justify-between">
-				<Link
-					href="/articles"
-					className="text-primary mb-3 inline-flex text-sm hover:underline sm:text-base"
-				>
-					← Articles
-				</Link>
-				<Suspense fallback={null}>
-					<ArticleActionBar articleLoader={articleLoader} />
-				</Suspense>
+		<main>
+			<div className="container max-w-4xl pb-24 pt-10">
+				<div className="flex w-full items-center justify-between">
+					<Link
+						href="/articles"
+						className="text-primary mb-3 inline-flex text-sm hover:underline sm:text-base"
+					>
+						← Articles
+					</Link>
+					<Suspense fallback={null}>
+						<ArticleActionBar articleLoader={articleLoader} />
+					</Suspense>
+				</div>
+				<article>
+					<ArticleTitle articleLoader={articleLoader} />
+					<Contributor />
+					<Article articleLoader={articleLoader} />
+				</article>
 			</div>
-			<article>
-				<ArticleTitle articleLoader={articleLoader} />
-				<Contributor />
-				<Article articleLoader={articleLoader} />
-			</article>
+			{!ckSubscriber && <PrimaryNewsletterCta />}
 		</main>
 	)
 }

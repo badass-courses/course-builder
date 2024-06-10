@@ -4,7 +4,7 @@ export default {
 	'primary-newsletter-button-cta-label': 'Subscribe',
 	'primary-newsletter-tittle':
 		'Subscribe for Free Tips, Tutorials, and Special Discounts',
-	'primary-newsletter-byline': '',
+	'primary-newsletter-byline': `We're in this together!`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New NextJS tips delivered to your inbox:',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',

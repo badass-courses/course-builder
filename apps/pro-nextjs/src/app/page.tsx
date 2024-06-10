@@ -36,12 +36,12 @@ const Home = () => {
 					</div>
 				</div>
 			</header>
-			<main className="mx-auto w-full max-w-screen-xl pt-5 sm:pt-24">
+			<main className="mx-auto w-full pt-5 sm:pt-24">
 				<article className="prose sm:prose-lg mx-auto w-full max-w-[45rem] px-6 sm:px-3">
 					<LandingCopy />
 				</article>
-				<PrimaryNewsletterCta className="px-6 pt-8 sm:px-0 sm:pt-20" />
-				<section className="relative mt-16 flex flex-col items-center gap-10 sm:mt-32 sm:flex-row sm:gap-20">
+				<PrimaryNewsletterCta className="my-16" />
+				<section className="relative mx-auto mt-16 flex w-full max-w-screen-lg flex-col items-center gap-10 sm:mt-32 sm:flex-row sm:gap-20">
 					<div className="relative">
 						<Image
 							src={require('../../public/jack-herrington.jpg')}
@@ -49,6 +49,7 @@ const Home = () => {
 							width={478}
 							height={582}
 							quality={100}
+							className="rounded"
 						/>
 					</div>
 					<div className="max-w-lg px-6 pb-32 sm:px-0 sm:pb-5">

@@ -1,16 +1,16 @@
 #primary-newsletter-cta > [data-sr-convertkit-subscribe-form] {
 	@apply mx-auto flex w-full max-w-[420px] flex-col;
 	[data-sr-input] {
-		@apply px-5 py-5 text-base;
+		@apply focus-visible:ring-foreground px-5 py-5 text-base;
 	}
 	[data-sr-input-label] {
-		@apply mt-3 inline-block pb-1 text-base font-normal;
+		@apply mt-3 inline-block pb-1 text-base font-normal text-white;
 	}
 	[data-sr-input-asterisk] {
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply mt-4 py-8 text-base font-medium;
+		@apply bg-foreground mt-4 py-8 text-base font-medium;
 	}
 }
 
