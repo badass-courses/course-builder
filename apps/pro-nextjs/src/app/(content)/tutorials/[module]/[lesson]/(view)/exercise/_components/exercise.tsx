@@ -15,9 +15,9 @@ export default function Exercise({
 	moduleLoader: Promise<ContentResource | null>
 }) {
 	const resource = use(resourceLoader)
-	const module = use(moduleLoader)
+	const moduleResource = use(moduleLoader)
 
-	if (!resource || !module) {
+	if (!resource || !moduleResource) {
 		return null
 	}
 
@@ -89,7 +89,7 @@ export default function Exercise({
 			/>
 			<Button asChild variant="secondary" className="mt-10">
 				<Link
-					href={`/${pluralize(module.type)}/${module.fields?.slug}/${resource?.fields?.slug}/solution`}
+					href={`/${pluralize(moduleResource.type)}/${moduleResource.fields?.slug}/${resource?.fields?.slug}/solution`}
 				>
 					Continue
 				</Link>
