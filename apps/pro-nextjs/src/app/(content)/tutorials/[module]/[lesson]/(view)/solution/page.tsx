@@ -1,5 +1,12 @@
-import Page, { type Props } from '../page'
+import Page from '../page'
 
-export default async function LessonPage({ params }: Props) {
+export default async function LessonPage({
+	params,
+}: {
+	params: {
+		module: string
+		lesson: string
+	}
+}) {
 	return <Page params={params} isSolution={true} />
 }
