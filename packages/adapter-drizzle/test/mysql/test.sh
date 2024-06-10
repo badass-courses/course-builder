@@ -25,10 +25,10 @@ if [[ "$MODE" == "run" || "$MODE" == "watch" ]]; then
   echo "Database is ready."
 
   echo "Generating MySQL schema..."
-  NODE_OPTIONS='--import tsx' drizzle-kit generate:mysql --config=./test/mysql/drizzle.config.ts
+  NODE_OPTIONS='--import tsx' drizzle-kit generate mysql --config=./test/mysql/drizzle.config.ts
 
   echo "Pushing MySQL schema..."
-  NODE_OPTIONS='--import tsx' drizzle-kit push:mysql --config=./test/mysql/drizzle.config.ts
+  NODE_OPTIONS='--import tsx' drizzle-kit push mysql --config=./test/mysql/drizzle.config.ts
 
   if [[ "$MODE" == "run" ]]; then
     echo "Running tests..."
