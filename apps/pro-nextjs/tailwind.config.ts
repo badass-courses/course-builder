@@ -72,7 +72,7 @@ module.exports = withUt({
 			fontFamily: {
 				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
 				heading: ['var(--font-maison-neue)', ...fontFamily.sans],
-				mono: ['var(--font-maison-neue-mono)', ...fontFamily.sans],
+				// mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
 			},
 			keyframes: {
 				'accordion-down': {

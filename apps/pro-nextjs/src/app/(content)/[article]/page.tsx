@@ -3,11 +3,13 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Contributor } from '@/app/_components/contributor'
 import { type Article } from '@/lib/articles'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import ReactMarkdown from 'react-markdown'
+import { codeToHtml } from '@/utils/shiki'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
 
@@ -28,7 +30,7 @@ export async function generateMetadata(
 
 	return {
 		title: article.fields.title,
-		openGraph: { images: [getOGImageUrlForResource(article)] },
+		// openGraph: { images: [getOGImageUrlForResource(article)] },
 	}
 }
 
@@ -43,17 +45,12 @@ async function ArticleActionBar({
 	return (
 		<>
 			{article && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button asChild size="sm">
-						<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
-							Edit
-						</Link>
-					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+				<Button asChild size="sm">
+					<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
+						Edit
+					</Link>
+				</Button>
+			) : null}
 		</>
 	)
 }
@@ -70,19 +67,27 @@ async function Article({
 	}
 
 	return (
-		<div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
-			<ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">
-				{article.fields?.body}
-			</ReactMarkdown>
-			{article.fields?.description && (
-				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
-					<div className="border-t pt-5">
-						<strong>Description</strong>
-						<ReactMarkdown>{article.fields?.description}</ReactMarkdown>
-					</div>
-				</aside>
+		<article className="prose sm:prose-lg mt-10 max-w-none border-t pt-10">
+			{article.fields.body && (
+				<MDXRemote
+					source={article.fields.body}
+					components={{
+						pre: async (props: any) => {
+							const children = props?.children.props.children
+							const language =
+								props?.children.props.className?.split('-')[1] || 'typescript'
+							try {
+								const html = await codeToHtml({ code: children, language })
+								return <div dangerouslySetInnerHTML={{ __html: html }} />
+							} catch (error) {
+								console.error(error)
+								return <pre {...props} />
+							}
+						},
+					}}
+				/>
 			)}
-		</div>
+		</article>
 	)
 }
 
@@ -94,7 +99,9 @@ async function ArticleTitle({
 	const article = await articleLoader
 
 	return (
-		<h1 className="text-3xl font-bold sm:text-4xl">{article?.fields?.title}</h1>
+		<h1 className="fluid-3xl mb-4 inline-flex font-bold">
+			{article?.fields?.title}
+		</h1>
 	)
 }
 
@@ -105,18 +112,23 @@ export default async function ArticlePage({
 }) {
 	const articleLoader = getArticle(params.article)
 	return (
-		<div>
-			<Suspense
-				fallback={
-					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-				}
-			>
-				<ArticleActionBar articleLoader={articleLoader} />
-			</Suspense>
-			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
+		<main className="container max-w-4xl pb-16 pt-10">
+			<div className="flex w-full items-center justify-between">
+				<Link
+					href="/articles"
+					className="text-primary mb-3 inline-flex text-sm hover:underline sm:text-base"
+				>
+					← Articles
+				</Link>
+				<Suspense fallback={null}>
+					<ArticleActionBar articleLoader={articleLoader} />
+				</Suspense>
+			</div>
+			<article>
 				<ArticleTitle articleLoader={articleLoader} />
+				<Contributor />
 				<Article articleLoader={articleLoader} />
 			</article>
-		</div>
+		</main>
 	)
 }

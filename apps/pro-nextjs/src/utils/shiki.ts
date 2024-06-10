@@ -6,7 +6,7 @@ let highlighter: Awaited<ReturnType<typeof getHighlighter>> | null = null
 const getCachedHighlighter = React.cache(async () => {
 	if (highlighter === null) {
 		highlighter = await getHighlighter({
-			themes: ['dark-plus'],
+			themes: ['github-light'],
 			langs: ['tsx'],
 		})
 	}
@@ -35,7 +35,7 @@ export const codeToHtml = async ({
 
 		return highlighter.codeToHtml(code, {
 			lang: language,
-			theme: 'dark-plus',
+			theme: 'github-light',
 		})
 	} catch (error) {
 		console.error(error)

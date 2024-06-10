@@ -27,7 +27,7 @@ export default async function Image({
 	})
 
 	const dmSans = fetch(
-		new URL('../../../../../public/fonts/DMSans-Medium.ttf', import.meta.url),
+		new URL('../../../../public/fonts/DMSans-Medium.ttf', import.meta.url),
 	).then((res) => res.arrayBuffer())
 
 	return new ImageResponse(
