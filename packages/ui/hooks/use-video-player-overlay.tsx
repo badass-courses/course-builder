@@ -7,13 +7,13 @@ type VideoPlayerOverlayState = {
 	action: VideoPlayerOverlayAction | null
 }
 
-export type LessonCompletedAction = {
+export type CompletedAction = {
 	type: 'COMPLETED'
 	playerRef: React.RefObject<MuxPlayerRefAttributes>
 }
 
 type VideoPlayerOverlayAction =
-	| LessonCompletedAction
+	| CompletedAction
 	| { type: 'BLOCKED' }
 	| { type: 'HIDDEN' }
 	| { type: 'LOADING' }
