@@ -169,6 +169,7 @@ import {
 	getContributionTypesRelationsSchema,
 	getContributionTypesSchema,
 } from './schemas/content/contribution-types.js'
+import { getLessonProgressSchema } from './schemas/content/lesson-progress.js'
 import { getResourceProgressSchema } from './schemas/content/resource-progress.js'
 
 export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
@@ -192,6 +193,7 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		verificationTokens: getVerificationTokensSchema(mysqlTable),
 		coupon: getCouponSchema(mysqlTable),
 		couponRelations: getCouponRelationsSchema(mysqlTable),
+		lessonProgress: getLessonProgressSchema(mysqlTable),
 		merchantAccount: getMerchantAccountSchema(mysqlTable),
 		merchantCharge: getMerchantChargeSchema(mysqlTable),
 		merchantChargeRelations: getMerchantChargeRelationsSchema(mysqlTable),
@@ -490,7 +492,7 @@ export function mySqlDrizzleAdapter(
 			let lessonProgress = await client.query.resourceProgress.findFirst({
 				where: and(
 					eq(resourceProgress.userId, options.userId),
-					eq(resourceProgress.contentResourceId, options.lessonId),
+					eq(resourceProgress.resourceId, options.lessonId),
 				),
 			})
 
@@ -504,12 +506,12 @@ export function mySqlDrizzleAdapter(
 							completedAt: now,
 							updatedAt: now,
 						})
-						.where(eq(resourceProgress.contentResourceId, options.lessonId))
+						.where(eq(resourceProgress.resourceId, options.lessonId))
 				}
 			} else {
 				await client.insert(resourceProgress).values({
 					userId: options.userId,
-					contentResourceId: options.lessonId,
+					resourceId: options.lessonId,
 					completedAt: now,
 					updatedAt: now,
 				})
@@ -517,7 +519,7 @@ export function mySqlDrizzleAdapter(
 			lessonProgress = await client.query.resourceProgress.findFirst({
 				where: and(
 					eq(resourceProgress.userId, options.userId),
-					eq(resourceProgress.contentResourceId, options.lessonId),
+					eq(resourceProgress.resourceId, options.lessonId),
 				),
 			})
 			const parsedLessonProgress =
@@ -1119,7 +1121,7 @@ export function mySqlDrizzleAdapter(
 					eq(resourceProgress.userId, parsedUser.data.id),
 					isNotNull(resourceProgress.completedAt),
 					inArray(
-						resourceProgress.contentResourceId,
+						resourceProgress.resourceId,
 						progressResources.map((r) => r.id),
 					),
 				),
@@ -1127,7 +1129,7 @@ export function mySqlDrizzleAdapter(
 			})
 
 			const nextResourceId = parsedResources.data.find(
-				(r) => !userProgress.find((p) => p.contentResourceId === r.id),
+				(r) => !userProgress.find((p) => p.resourceId === r.id),
 			)?.id
 
 			const nextResource = await client.query.contentResource.findFirst({
@@ -1588,7 +1590,7 @@ export function mySqlDrizzleAdapter(
 			let lessonProgress = await client.query.resourceProgress.findFirst({
 				where: and(
 					eq(resourceProgress.userId, options.userId),
-					eq(resourceProgress.contentResourceId, options.lessonId),
+					eq(resourceProgress.resourceId, options.lessonId),
 				),
 			})
 
@@ -1601,11 +1603,11 @@ export function mySqlDrizzleAdapter(
 						completedAt: lessonProgress.completedAt ? null : now,
 						updatedAt: now,
 					})
-					.where(eq(resourceProgress.contentResourceId, options.lessonId))
+					.where(eq(resourceProgress.resourceId, options.lessonId))
 			} else {
 				await client.insert(resourceProgress).values({
 					userId: options.userId,
-					contentResourceId: options.lessonId,
+					resourceId: options.lessonId,
 					completedAt: now,
 					updatedAt: now,
 				})
@@ -1614,7 +1616,7 @@ export function mySqlDrizzleAdapter(
 			lessonProgress = await client.query.resourceProgress.findFirst({
 				where: and(
 					eq(resourceProgress.userId, options.userId),
-					eq(resourceProgress.contentResourceId, options.lessonId),
+					eq(resourceProgress.resourceId, options.lessonId),
 				),
 			})
 

@@ -24,7 +24,7 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			name: varchar('name', { length: 255 }),
-			role: mysqlEnum('role', ['user', 'admin']).default('user'),
+			role: varchar('role', { length: 191 }).notNull().default('user'),
 			email: varchar('email', { length: 255 }).notNull().unique(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
 			emailVerified: timestamp('emailVerified', {
