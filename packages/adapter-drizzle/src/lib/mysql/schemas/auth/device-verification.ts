@@ -14,7 +14,7 @@ export function getDeviceVerificationSchema(mysqlTable: MySqlTableFn) {
 		'DeviceVerification',
 		{
 			verifiedByUserId: varchar('verifiedByUserId', { length: 255 }),
-			deviceCode: text('deviceCode').notNull(),
+			deviceCode: varchar('deviceCode', { length: 191 }).notNull(),
 			userCode: text('userCode').notNull(),
 			expires: timestamp('expires', {
 				mode: 'date',

@@ -62,4 +62,5 @@ export const {
 	deviceAccessTokenRelations,
 	userPrefs,
 	userPrefsRelations,
+	lessonProgress,
 } = getCourseBuilderSchema(mysqlTable)
