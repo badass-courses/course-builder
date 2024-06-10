@@ -195,8 +195,8 @@ export function TutorialLessonList(props: Props) {
 														const isCompleted =
 															moduleProgress?.completedLessons?.some(
 																(progress) =>
-																	progress.contentResourceId ===
-																		lesson.resourceId && progress.completedAt,
+																	progress.resourceId === lesson.resourceId &&
+																	progress.completedAt,
 															)
 
 														return (

@@ -10,7 +10,7 @@ import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
 import { userSchema } from '@coursebuilder/core/schemas'
 
-type Role = 'admin' | 'user'
+type Role = 'admin' | 'user' | string
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

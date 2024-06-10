@@ -1085,7 +1085,7 @@ export function mySqlDrizzleAdapter(
 			})
 
 			const nextResourceId = moduleResources.find(
-				(r) => !userProgress.find((p) => p.contentResourceId === r.resourceId),
+				(r) => !userProgress.find((p) => p.resourceId === r.resourceId),
 			)?.resourceId
 
 			const nextResource = await client.query.contentResource.findFirst({

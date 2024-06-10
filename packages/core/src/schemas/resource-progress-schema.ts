@@ -4,7 +4,7 @@ import { ContentResourceSchema } from './content-resource-schema'
 
 export const resourceProgressSchema = z.object({
 	userId: z.string().max(191),
-	contentResourceId: z.string().max(191).optional().nullable(),
+	resourceId: z.string().max(191).optional().nullable(),
 	fields: z.record(z.any()).default({}),
 	completedAt: z.date().nullable(),
 	updatedAt: z.date().nullable(),

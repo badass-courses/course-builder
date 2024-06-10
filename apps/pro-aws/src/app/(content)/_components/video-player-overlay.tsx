@@ -38,7 +38,7 @@ export const CompletedLessonOverlay: React.FC<{
 	)
 	const isCurrentLessonCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(
-			(p) => p.contentResourceId === resource?.id && p.completedAt,
+			(p) => p.resourceId === resource?.id && p.completedAt,
 		),
 	)
 
