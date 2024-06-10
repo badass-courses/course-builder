@@ -34,7 +34,7 @@ export async function getNextResource(
 	currentResourceId: string,
 	moduleSlugOrId: string,
 ) {
-	const module = await db.query.contentResource.findFirst({
+	const moduleResource = await db.query.contentResource.findFirst({
 		where: or(
 			eq(
 				sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
@@ -69,11 +69,12 @@ export async function getNextResource(
 		},
 	})
 
-	if (!module) {
+	if (!moduleResource) {
 		throw new Error('Module not found')
 	}
 
-	const allResources = module?.resources && flattenResources(module.resources)
+	const allResources =
+		moduleResource?.resources && flattenResources(moduleResource.resources)
 
 	if (!allResources) {
 		throw new Error('No resources found')
