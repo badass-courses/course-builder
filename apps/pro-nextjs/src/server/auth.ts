@@ -65,14 +65,14 @@ export const authOptions: NextAuthConfig = {
 				},
 			})
 
-			const role: Role = dbUser?.role || 'user'
+			const role = dbUser?.role || 'user'
 
 			return {
 				...session,
 				user: {
 					...session.user,
 					id: user.id,
-					role,
+					role: role as Role,
 					roles: userRoles.map((userRole) => userRole.role),
 				},
 			}
