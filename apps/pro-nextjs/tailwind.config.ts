@@ -13,7 +13,7 @@ module.exports = withUt({
 		'./app/**/*.{ts,tsx}',
 		'./src/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
-		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
+		// './node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
 		fluidTypography: {},
@@ -29,7 +29,7 @@ module.exports = withUt({
 				'2xl': '1820px',
 			},
 			colors: {
-				gray: colors.slate,
+				gray: colors.neutral,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -110,6 +110,9 @@ module.exports = withUt({
 						},
 						'pre code': {
 							whiteSpace: 'pre-wrap',
+						},
+						pre: {
+							border: `1px solid ${theme('colors.border')}`,
 						},
 					},
 				},

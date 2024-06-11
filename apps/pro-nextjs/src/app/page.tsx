@@ -14,14 +14,14 @@ export const metadata = {
 const Home = () => {
 	return (
 		<div className="from-primary/5 to-background bg-gradient-to-b">
-			<header className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-center py-[15vh]">
-				<h1 className="leading-0 font-heading w-full text-balance text-center text-5xl font-bold sm:text-7xl lg:text-8xl">
+			<header className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-center px-5 py-[15vh]">
+				<h1 className="leading-0 font-heading w-full text-balance text-center text-4xl font-bold sm:text-7xl lg:text-8xl">
 					The No-BS Solution for Enterprise-Ready Next.js Applications
 				</h1>
 				<h2 className="text-primary font-heading mt-5 inline-flex text-base font-medium sm:pt-5 sm:text-xl lg:text-2xl">
 					Professional Next.js Training
 				</h2>
-				<div className="mt-8 flex items-center gap-2">
+				<div className="mt-16 flex items-center gap-2">
 					<Image
 						src={require('../../public/jack-herrington.jpg')}
 						alt={config.author}
@@ -41,8 +41,8 @@ const Home = () => {
 					<LandingCopy />
 				</article>
 				<PrimaryNewsletterCta className="my-16" />
-				<section className="relative mx-auto mt-16 flex w-full max-w-screen-lg flex-col items-center gap-10 sm:mt-32 sm:flex-row sm:gap-20">
-					<div className="relative">
+				<section className="relative mx-auto mt-5 flex w-full max-w-screen-lg flex-col items-center gap-10 px-5 sm:mt-24 sm:flex-row sm:gap-16">
+					<div className="relative w-48 sm:w-auto">
 						<Image
 							src={require('../../public/jack-herrington.jpg')}
 							alt={config.author}

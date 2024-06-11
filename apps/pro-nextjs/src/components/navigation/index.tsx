@@ -10,7 +10,7 @@ import { Button } from '@coursebuilder/ui'
 
 import { useLiveEventToastNotifier } from '../app/use-live-event-toast-notifier'
 import { useNavLinks } from '../app/use-nav-links'
-import { Logo } from '../logo'
+import { Logo, LogoMark } from '../logo'
 import { NavLinkItem } from './nav-link-item'
 import { User } from './user'
 
@@ -52,9 +52,10 @@ const Navigation = () => {
 					<Link
 						tabIndex={isRoot ? -1 : 0}
 						href="/"
-						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full flex-col items-center justify-center px-4 text-lg font-semibold leading-none transition"
+						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-4 text-lg font-semibold leading-none transition"
 					>
-						<Logo className="w-24" />
+						<LogoMark className="w-8" />
+						<span className="text-sm font-medium">ProNextJS</span>
 					</Link>
 				</span>
 				{links.length > 0 && (

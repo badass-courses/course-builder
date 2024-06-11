@@ -1,32 +1,11 @@
 import { ImageResponse } from 'next/og'
-import { Logo } from '@/components/logo'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
-import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 
 export const revalidate = 60
 export const contentType = 'image/png'
 
-export default async function Image({
-	params,
-}: {
-	params: { article: string }
-}) {
-	const article = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					params.article,
-				),
-				eq(contentResource.id, params.article),
-			),
-			eq(contentResource.type, 'article'),
-		),
-	})
-
+export default async function Image() {
 	const maison = fetch(
 		new URL(
 			'../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
@@ -61,7 +40,7 @@ export default async function Image({
 				</div>
 				<main tw="flex p-26 pb-32 flex-colw-full gap-5 h-full flex-grow items-end justify-start">
 					<div tw="text-[50px] text-[#262C30] leading-tight">
-						{article?.fields?.title}
+						Free Next.js Tutorials
 					</div>
 				</main>
 			</div>

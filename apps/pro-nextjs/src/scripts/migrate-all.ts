@@ -10,7 +10,7 @@ import { migrateWorkshops } from '@/scripts/migrate-workshops'
 
 import { migrateLessonProgress } from './migrate-progress'
 
-const WRITE_TO_DB = false
+const WRITE_TO_DB = true
 
 // await writeContributionTypes()
 await migrateLessonProgress(WRITE_TO_DB)

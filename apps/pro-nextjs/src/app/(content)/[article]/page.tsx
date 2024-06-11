@@ -123,7 +123,7 @@ export default async function ArticlePage({
 				<div className="flex w-full items-center justify-between">
 					<Link
 						href="/articles"
-						className="text-primary mb-3 inline-flex text-sm hover:underline sm:text-base"
+						className="text-primary mb-3 inline-flex text-sm hover:underline"
 					>
 						← Articles
 					</Link>

@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { Logo } from '@/components/logo'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { and, eq, or, sql } from 'drizzle-orm'
@@ -12,24 +11,24 @@ export const contentType = 'image/png'
 export default async function Image({
 	params,
 }: {
-	params: { article: string }
+	params: { lesson: string }
 }) {
-	const article = await db.query.contentResource.findFirst({
+	const lesson = await db.query.contentResource.findFirst({
 		where: and(
 			or(
 				eq(
 					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					params.article,
+					params.lesson,
 				),
-				eq(contentResource.id, params.article),
+				eq(contentResource.id, params.lesson),
 			),
-			eq(contentResource.type, 'article'),
+			// eq(contentResource.type, 'tutorial'),
 		),
 	})
 
 	const maison = fetch(
 		new URL(
-			'../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
+			'../../../../../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
 			import.meta.url,
 		),
 	).then((res) => res.arrayBuffer())
@@ -61,7 +60,7 @@ export default async function Image({
 				</div>
 				<main tw="flex p-26 pb-32 flex-colw-full gap-5 h-full flex-grow items-end justify-start">
 					<div tw="text-[50px] text-[#262C30] leading-tight">
-						{article?.fields?.title}
+						{lesson?.fields?.title}
 					</div>
 				</main>
 			</div>

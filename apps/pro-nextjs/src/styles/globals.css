@@ -32,11 +32,11 @@
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
 
-		--background: 210 40% 98%;
-		--foreground: 217 33% 17%;
+		--background: 0 0% 100%;
+		--foreground: 204 12% 17%;
 
-		--muted: 210 41% 96%;
-		--muted-foreground: 213 19% 47%;
+		--muted: 240 14% 97%;
+		--muted-foreground: 237 8% 50%;
 
 		--popover: 0 0% 100%;
 		--popover-foreground: 222.2 47.4% 11.2%;
@@ -44,8 +44,8 @@
 		--card: 0 0% 100%;
 		--card-foreground: 217 33% 17%;
 
-		--border: 210 40% 93%;
-		--input: 210 40% 93%;
+		--border: 0 0% 95%;
+		--input: 0 0% 95%;
 
 		--primary: 226 70% 55%;
 		--primary-foreground: 0 0% 100%;
@@ -61,7 +61,7 @@
 
 		--ring: 215 20.2% 65.1%;
 
-		--radius: 0.5rem;
+		--radius: 0.35rem;
 		color-scheme: light;
 	}
 
