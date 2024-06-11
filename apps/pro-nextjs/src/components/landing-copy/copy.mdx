@@ -1,4 +1,5 @@
 import {motion} from 'framer-motion'
+import {Zap, Wrench, BarChart} from 'lucide-react'
 
 You know how to build React apps. Your Next.js app is humming along. You are productive and confident.
 
@@ -8,7 +9,7 @@ Or are you?
 
 Just when you thought you had it all figured out with React apps and Next.js, **the React landscape has shifted completely**.
 
-{<p className="text-center text-3xl font-medium drop-shadow-sm sm:text-4xl sm:py-10 py-6 max-w-lg mx-auto text-gray-800 text-balance">React Server Components and the App router are here, and they're not going anywhere.</p>}
+{<p className="text-center fluid-xl font-medium sm:py-10 py-6 text-balance">React Server Components and the App router are here, and they're not going anywhere.</p>}
 
 This isn't just a minor update - it's a seismic shift that's shaking the foundations of your Next.js apps. The component lifecycle, data loading, data movement from server to client, even the basics of structuring your component tree - everything is in flux.
 
@@ -16,267 +17,40 @@ But what if you could turn this upheaval into an opportunity? What if you could 
 
 Pro NextJS is your guide through this new terrain.
 
-{<h2 className="text-center text-3xl font-medium drop-shadow-sm sm:text-4xl sm:pt-10 pt-2 text-gray-800">With Pro NextJS, you'll:</h2>}
+{<h2 className="text-center font-medium fluid-xl sm:pt-10 pt-2">With Pro NextJS, you'll:</h2>}
 
-{
-
-<motion.div
-  initial={{opacity: 0}}
-  transition={{
-    duration: 0.5,
-    ease: [0.48, 0.15, 0.25, 0.96],
-  }}
-  whileInView={{
-    opacity: 1,
-  }}
-  className="not-prose rounded border bg-card p-8"
->
-  <p className="inline-flex items-center gap-3 font-semibold">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="56"
-      height="56"
-      fill="none"
-      viewBox="0 0 56 56"
-    >
-      <circle cx="28" cy="28" r="28" fill="url(#paint0_radial_99_850)"></circle>
-      <circle
-        cx="28"
-        cy="28"
-        r="28"
-        fill="url(#paint1_radial_99_850)"
-        fillOpacity="0.2"
-      ></circle>
-      <circle
-        cx="28"
-        cy="28"
-        r="26"
-        stroke="#fff"
-        style={{mixBlendMode: 'soft-light'}}
-        strokeWidth="2"
-      ></circle>
-      <path
-        stroke="#D47947"
-        strokeLinecap="square"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-        d="M29.222 19L17 32.444h11L26.778 41 39 27.556H28L29.222 19z"
-      ></path>
-      <path
-        stroke="#fff"
-        strokeLinecap="square"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-        d="M29.222 17L17 30.444h11L26.778 39 39 25.556H28L29.222 17z"
-      ></path>
-      <defs>
-        <radialGradient
-          id="paint0_radial_99_850"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientTransform="matrix(-28.8322 47.60012 -83.93677 -50.84192 42.454 8.4)"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#F4C553"></stop>
-          <stop offset="0.604" stopColor="#E8A145"></stop>
-        </radialGradient>
-        <radialGradient
-          id="paint1_radial_99_850"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientTransform="matrix(0 28 -28 0 28 28)"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#fff"></stop>
-          <stop offset="1" stopOpacity="0"></stop>
-        </radialGradient>
-      </defs>
-    </svg>
+<div className="border flex flex-col divide-y divide-border">
+<div className="not-prose p-8">
+  <p className="inline-flex fluid-lg items-center gap-3 font-medium">
+    <Zap className="w-5 h-5" />
     Embrace the Shift
   </p>
-  <p className="pt-4 text-gray-600">
+  <p className="pt-4 opacity-80">
     Understand the radical changes to the component lifecycle and the new
     paradigms for loading data and moving it from server to client.
   </p>
-</motion.div>
-
-}
-
-{
-
-<motion.div
-  initial={{opacity: 0}}
-  transition={{
-    duration: 0.5,
-    ease: [0.48, 0.15, 0.25, 0.96],
-  }}
-  whileInView={{
-    opacity: 1,
-  }}
-  className="not-prose mt-3 rounded border bg-card p-8"
->
-  <p className="inline-flex items-center gap-3 font-semibold">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="56"
-      height="56"
-      fill="none"
-      viewBox="0 0 56 56"
-    >
-      <circle cx="28" cy="28" r="28" fill="url(#paint0_radial_99_864)"></circle>
-      <circle
-        cx="28"
-        cy="28"
-        r="28"
-        fill="url(#paint1_radial_99_864)"
-        fillOpacity="0.2"
-      ></circle>
-      <circle
-        cx="28"
-        cy="28"
-        r="26"
-        stroke="#fff"
-        style={{mixBlendMode: 'soft-light'}}
-        strokeWidth="2"
-      ></circle>
-      <path
-        stroke="#3C28F5"
-        strokeLinecap="square"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-        d="M29.834 22.584h8.25m-20.167 0h2.75m0 0a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0zm16.5 7.333h.917m-20.167 0H28m0 0a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0zm1.834 7.333h8.25m-20.167 0h2.75m0 0a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0z"
-      ></path>
-      <path
-        stroke="#fff"
-        strokeLinecap="square"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-        d="M29.834 20.75h8.25m-20.167 0h2.75m0 0a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0zm16.5 7.333h.917m-20.167 0H28m0 0a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0zm1.834 7.334h8.25m-20.167 0h2.75m0 0a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0z"
-      ></path>
-      <defs>
-        <radialGradient
-          id="paint0_radial_99_864"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientTransform="matrix(-28.8322 47.60012 -83.93677 -50.84192 42.454 8.4)"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#7C3AED"></stop>
-          <stop offset="1" stopColor="#2563EB"></stop>
-        </radialGradient>
-        <radialGradient
-          id="paint1_radial_99_864"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientTransform="matrix(0 28 -28 0 28 28)"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#fff"></stop>
-          <stop offset="1" stopOpacity="0"></stop>
-        </radialGradient>
-      </defs>
-    </svg>
+</div>
+<div className="not-prose p-8">
+  <p className="inline-flex fluid-lg items-center gap-3 font-medium">
+    <Wrench className="w-5 h-5" />
     Master New Tools
   </p>
-  <p className="pt-4 text-gray-600">
-    Learn everything you need to know about React Server Components, Server Actions,
-    API Routes, streaming responses and Suspense, Nested Layouts and all the features
-    that the App Router supports.
+  <p className="pt-4 opacity-80">
+    Learn everything you need to know about React Server Components, Server Actions, API Routes, streaming responses and Suspense, Nested Layouts and all the features that the App Router supports.
   </p>
-</motion.div>
-}
-
-{
-
-<motion.div
-  initial={{opacity: 0}}
-  transition={{
-    duration: 0.5,
-    ease: [0.48, 0.15, 0.25, 0.96],
-  }}
-  whileInView={{
-    opacity: 1,
-  }}
-  className="not-prose mt-3 rounded border bg-card p-8"
->
-  <p className="inline-flex items-center gap-3 font-semibold">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="56"
-      height="56"
-      fill="none"
-      viewBox="0 0 56 56"
-    >
-      <circle cx="28" cy="28" r="28" fill="url(#paint0_radial_99_865)"></circle>
-      <circle
-        cx="28"
-        cy="28"
-        r="28"
-        fill="url(#paint1_radial_99_865)"
-        fillOpacity="0.2"
-      ></circle>
-      <path
-        stroke="#1A9B96"
-        strokeLinecap="square"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-        d="M17 30h5l3-8 6 16 3-8h5"
-      ></path>
-      <path
-        stroke="#fff"
-        strokeLinecap="square"
-        strokeMiterlimit="10"
-        strokeWidth="2"
-        d="M17 28h5l3-8 6 15.5 3-7.5h5"
-      ></path>
-      <circle
-        cx="28"
-        cy="28"
-        r="26"
-        stroke="#fff"
-        style={{mixBlendMode: 'soft-light'}}
-        strokeWidth="2"
-      ></circle>
-      <defs>
-        <radialGradient
-          id="paint0_radial_99_865"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientTransform="matrix(-28.8322 47.60012 -83.93677 -50.84192 42.454 8.4)"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#87E1C1"></stop>
-          <stop offset="0.672" stopColor="#26B592"></stop>
-        </radialGradient>
-        <radialGradient
-          id="paint1_radial_99_865"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientTransform="matrix(0 28 -28 0 28 28)"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#fff"></stop>
-          <stop offset="1" stopOpacity="0"></stop>
-        </radialGradient>
-      </defs>
-    </svg>
+</div>
+<div className="not-prose p-8">
+  <p className="inline-flex fluid-lg items-center gap-3 font-medium">
+    <BarChart className="w-5 h-5" />
     Stay Ahead of the Curve
   </p>
-  <p className="pt-4 text-gray-600">
-    Client state management, querying new data, and mutating data on the server
-    have all evolved. Stay ahead of these changes and ensure you and your team
-    are riding the wave of React Server Components into the future.
+  <p className="pt-4 opacity-80">
+    Client state management, querying new data, and mutating data on the server have all evolved. Stay ahead of these changes and ensure you and your team are riding the wave of React Server Components into the future.
   </p>
-</motion.div>
-}
+</div>
+</div>
 
-{<h2 className="text-center text-3xl font-medium drop-shadow-sm sm:text-4xl text-balance pb-6 pt-2 text-gray-800 max-w-xl">Pro NextJS isn’t just a guide - it's your trusted ally, your secret weapon.</h2>}
+{<h2 className="text-center font-medium fluid-xl pb-10 pt-2">Pro NextJS isn’t just a guide - it's your trusted ally, your secret weapon.</h2>}
 
 We've done the heavy lifting, sifting through the muck to figure out the patterns, practices, tools, and techniques that work. With Pro NextJS, you won't just survive these changes - you'll thrive.
 

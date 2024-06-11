@@ -25,22 +25,26 @@ export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-5 pb-5">
-			<div className="w-full max-w-screen-md px-5 pb-16 pt-24">
-				<h1 className="font-heading fluid-3xl text-center font-medium">
-					Free Next.js Tutorials
-				</h1>
-			</div>
-			<TutorialsList />
-			{ability.can('update', 'Content') ? (
-				<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center py-10">
-					<Button asChild variant="secondary" className="gap-1">
-						<Link href={`/tutorials/new`}>
-							<FilePlus2 className="h-4 w-4" /> New Tutorial
-						</Link>
-					</Button>
+		<main className="container min-h-[calc(100vh-var(--nav-height))] px-5">
+			<div className="mx-auto flex h-full w-full max-w-screen-lg flex-col items-center border-x">
+				<div className="w-full px-5 pb-16 pt-24">
+					<h1 className="font-heading fluid-3xl text-center font-medium">
+						Free Next.js Tutorials
+					</h1>
 				</div>
-			) : null}
+				<div className="relative w-full">
+					<TutorialsList />
+					{ability.can('update', 'Content') ? (
+						<div className="mx-auto flex w-full items-center justify-center py-16">
+							<Button asChild variant="secondary" className="gap-1">
+								<Link href={`/tutorials/new`}>
+									<FilePlus2 className="h-4 w-4" /> New Tutorial
+								</Link>
+							</Button>
+						</div>
+					) : null}
+				</div>
+			</div>
 		</main>
 	)
 }
@@ -60,11 +64,11 @@ async function TutorialsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-8 flex w-full max-w-screen-lg flex-col">
+		<ul className="mx-auto mt-8 flex w-full flex-col">
 			{publicTutorials.length === 0 && <p>There are no public tutorials.</p>}
 			{tutorials.map((tutorial) => (
 				<li key={tutorial.id} className="flex">
-					<Card className="divide-border iftems-center -mt-px flex flex-col divide-y rounded-none shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
+					<Card className="divide-border bg-background -mt-px flex flex-col items-center divide-y rounded-none border-x-0 shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
 						{tutorial?.fields?.coverImage?.url && (
 							<Link
 								className="flex flex-shrink-0 items-center justify-center p-5 md:aspect-square"
@@ -82,7 +86,7 @@ async function TutorialsList() {
 						<div className="flex h-full w-full flex-col justify-between p-5 md:pl-8">
 							<div className="flex h-full flex-col pt-2 md:pt-5">
 								<CardHeader className="p-0">
-									<CardTitle className="fluid-lg font-semibold">
+									<CardTitle className="fluid-xl font-semibold">
 										<Link
 											href={`/tutorials/${tutorial.fields.slug || tutorial.id}`}
 											className="hover:text-primary w-full text-balance"

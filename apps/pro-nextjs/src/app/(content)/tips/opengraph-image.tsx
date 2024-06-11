@@ -1,30 +1,14 @@
 import { ImageResponse } from 'next/og'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
-import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 
 export const revalidate = 60
 export const contentType = 'image/png'
 
-export default async function Image({ params }: { params: { slug: string } }) {
-	const tip = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					params.slug,
-				),
-				eq(contentResource.id, params.slug),
-			),
-			eq(contentResource.type, 'tip'),
-		),
-	})
-
+export default async function Image() {
 	const maison = fetch(
 		new URL(
-			'../../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
+			'../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
 			import.meta.url,
 		),
 	).then((res) => res.arrayBuffer())
@@ -55,9 +39,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
 					</svg>
 				</div>
 				<main tw="flex p-26 pb-32 flex-colw-full gap-5 h-full flex-grow items-end justify-start">
-					<div tw="text-[50px] text-[#262C30] leading-tight">
-						{tip?.fields?.title}
-					</div>
+					<div tw="text-[50px] text-[#262C30] leading-tight">Next.js Tips</div>
 				</main>
 			</div>
 		),

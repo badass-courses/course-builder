@@ -13,7 +13,7 @@ module.exports = withUt({
 		'./app/**/*.{ts,tsx}',
 		'./src/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
-		// './node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
+		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
 		fluidTypography: {},

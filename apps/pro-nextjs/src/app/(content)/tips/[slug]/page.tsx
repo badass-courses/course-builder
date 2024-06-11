@@ -88,20 +88,20 @@ export default async function TipPage({
 						<Suspense
 							fallback={
 								<div className="px-5 sm:px-8">
-									<Skeleton className="h-16 w-full bg-gray-900" />
+									<Skeleton className="h-16 w-full bg-gray-100" />
 								</div>
 							}
 						>
 							<TipBody tipLoader={tipLoader} />
 						</Suspense>
 						<div className="mt-10 border-t px-5 pt-8 sm:px-8">
-							<h3 className="font-heading mb-8 text-2xl font-bold leading-none text-white">
+							<h3 className="font-heading mb-8 text-2xl font-bold leading-none ">
 								Transcript
 							</h3>
 							<Suspense
 								fallback={
 									<div className="p-5">
-										<Skeleton className="h-5 w-full bg-gray-900" />
+										<Skeleton className="h-5 w-full bg-gray-100" />
 									</div>
 								}
 							>
@@ -191,14 +191,14 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 
 	return (
 		<article>
-			<h1 className="font-heading w-full text-balance px-5 pb-5 text-3xl font-bold text-white sm:px-8 sm:text-4xl lg:text-5xl">
+			<h1 className="font-heading fluid-2xl w-full px-5 pb-5 font-semibold sm:px-8">
 				{tip.fields?.title}
 			</h1>
 			<div className="px-5 sm:px-8">
 				<Contributor />
 			</div>
 			{tip.fields?.body && (
-				<div className="prose dark:prose-invert mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
+				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote
 						source={tip.fields.body}
 						components={{

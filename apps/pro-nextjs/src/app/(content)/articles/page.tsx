@@ -1,6 +1,8 @@
 import * as React from 'react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
+import config from '@/config'
 import type { Article } from '@/lib/articles'
 import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -17,6 +19,10 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+export const metadata: Metadata = {
+	title: `Next.js Articles by ${config.author}`,
+}
+
 export default async function ArticlesIndexPage() {
 	const { ability } = await getServerAuthSession()
 	const articles = await getArticles()
@@ -24,49 +30,47 @@ export default async function ArticlesIndexPage() {
 
 	return (
 		<main className="container px-5">
-			<div className="flex gap-10">
-				<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row sm:pr-8">
-					{/* <aside className="px-5 py-5 sm:px-8 sm:py-16"> */}
-					{/* <SearchBar /> */}
-					{/* </aside> */}
-					<div className="flex flex-col items-center border-x">
-						{firstArticle && (
-							<div className="relative flex w-full">
-								<ArticleTeaser
-									article={firstArticle}
-									className="[&_[data-card='']]:text-background aspect-[16/7] h-full w-full [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE]  [&_[data-card='']]:to-purple-500 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
-								/>
-								{ability.can('update', 'Content') ? (
-									<Button
-										asChild
-										className="text-primary absolute bottom-3 right-3 scale-75 gap-1 bg-white shadow hover:bg-gray-50 sm:bottom-8 sm:right-8 sm:scale-100"
-									>
-										<Link href={`/articles/new`}>
-											<FilePlus2 className="h-4 w-4" />
-											New Article
-										</Link>
-									</Button>
-								) : null}
-							</div>
-						)}
-						<ul className="divide-border relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2">
-							{/* X borders */}
-							{/* <div
+			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
+				{/* <aside className="px-5 py-5 sm:px-8 sm:py-16"> */}
+				{/* <SearchBar /> */}
+				{/* </aside> */}
+				<div className="flex flex-col items-center border-x">
+					{firstArticle && (
+						<div className="relative flex w-full">
+							<ArticleTeaser
+								article={firstArticle}
+								className="[&_[data-card='']]:text-background aspect-[16/7] h-full w-full [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE]  [&_[data-card='']]:to-purple-500 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
+							/>
+							{ability.can('update', 'Content') ? (
+								<Button
+									asChild
+									className="text-primary absolute bottom-3 right-3 scale-75 gap-1 bg-white shadow hover:bg-gray-50 sm:bottom-8 sm:right-8 sm:scale-100"
+								>
+									<Link href={`/articles/new`}>
+										<FilePlus2 className="h-4 w-4" />
+										New Article
+									</Link>
+								</Button>
+							) : null}
+						</div>
+					)}
+					<ul className="divide-border relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2">
+						{/* X borders */}
+						{/* <div
 								className="before:border-border pointer-events-none absolute left-0 top-0 hidden h-full w-full border-r before:absolute before:left-0 before:top-0 before:h-full before:w-1/2 before:border-r before:content-[''] sm:block"
 								aria-hidden
 							/> */}
-							{articles.slice(1, articles.length).map((article, i) => {
-								return (
-									<ArticleTeaser
-										i={i}
-										article={article}
-										key={article.id}
-										className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
-									/>
-								)
-							})}
-						</ul>
-					</div>
+						{articles.slice(1, articles.length).map((article, i) => {
+							return (
+								<ArticleTeaser
+									i={i}
+									article={article}
+									key={article.id}
+									className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
+								/>
+							)
+						})}
+					</ul>
 				</div>
 			</div>
 		</main>

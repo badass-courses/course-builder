@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import { CreateTip } from '@/app/(content)/tips/_components/create-tip'
 import { DeleteTipButton } from '@/app/(content)/tips/_components/delete-tip-button'
+import config from '@/config'
 import { getTipsModule } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -16,15 +18,16 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+export const metadata: Metadata = {
+	title: `Pro Next.js Tips by ${config.author}`,
+}
+
 export default async function TipsListPage() {
 	return (
 		<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
 			<div className="w-full max-w-screen-md border-b py-16">
-				<h1 className="font-heading text-center text-5xl font-bold">
-					<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
-						Pro
-					</span>{' '}
-					<span className="text-gray-100">AWS Tips</span>
+				<h1 className="font-heading fluid-3xl text-center font-medium">
+					Pro Next.js Tips
 				</h1>
 			</div>
 			<TipList />
@@ -60,9 +63,9 @@ async function TipList() {
 				<li key={tip.id}>
 					<Card className="bg-background rounded-none border-none p-0">
 						<CardHeader className="p-0">
-							<CardTitle className="text-xl font-normal text-gray-100 sm:text-2xl">
+							<CardTitle className="fluid-xl font-semibold sm:text-2xl">
 								<Link
-									className="w-full text-balance hover:underline"
+									className="hover:text-primary w-full"
 									href={`/tips/${tip.fields.slug || tip.id}`}
 								>
 									{tip.fields.title}
