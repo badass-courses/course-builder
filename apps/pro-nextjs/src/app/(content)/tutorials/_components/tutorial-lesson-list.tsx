@@ -192,8 +192,8 @@ export function TutorialLessonList(props: Props) {
 
 								const isCompleted = moduleProgress?.completedLessons?.some(
 									(progress) =>
-										(progress.contentResourceId === resource.resourceId ||
-											solution?.resourceId === progress.contentResourceId) &&
+										(progress.resourceId === resource.resourceId ||
+											solution?.resourceId === progress.resourceId) &&
 										progress.completedAt,
 								)
 
@@ -241,10 +241,10 @@ export function TutorialLessonList(props: Props) {
 															const isCompleted =
 																moduleProgress?.completedLessons?.some(
 																	(progress) =>
-																		(progress.contentResourceId ===
+																		(progress.resourceId ===
 																			lesson.resourceId ||
 																			solution?.resourceId ===
-																				progress.contentResourceId) &&
+																				progress.resourceId) &&
 																		progress.completedAt,
 																)
 

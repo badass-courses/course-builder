@@ -378,8 +378,10 @@ async function LessonBody({
 						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
 							<Suspense fallback={<LessonProgressToggleSkeleton />}>
 								<LessonProgressToggle
-									// if we are on solution, pass in exercise as lesson
-									lesson={exercise || lesson}
+									// if we are on solution, pass in exercise as lesson for completing
+									lesson={
+										lesson.type === 'solution' && exercise ? exercise : lesson
+									}
 									moduleProgressLoader={moduleProgressLoader}
 								/>
 							</Suspense>

@@ -58,4 +58,5 @@ export const {
 	commentsRelations,
 	userPrefs,
 	userPrefsRelations,
+	lessonProgress,
 } = getCourseBuilderSchema(mysqlTable)

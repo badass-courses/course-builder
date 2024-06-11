@@ -1128,9 +1128,11 @@ export function mySqlDrizzleAdapter(
 				orderBy: asc(resourceProgress.completedAt),
 			})
 
-			const nextResourceId = parsedResources.data.find(
-				(r) => !userProgress.find((p) => p.resourceId === r.id),
-			)?.id
+			const nextResourceId = parsedResources.data
+				.filter((r) => {
+					return COUNTABLE_MODULE_RESOURCE_TYPES.includes(r.type)
+				})
+				.find((r) => !userProgress.find((p) => p.resourceId === r.id))?.id
 
 			const nextResource = await client.query.contentResource.findFirst({
 				where: eq(contentResource.id, nextResourceId as string),
