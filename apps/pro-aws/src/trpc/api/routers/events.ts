@@ -2,15 +2,16 @@ import { db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
-import { count, desc, eq } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 
 export const eventsRouter = createTRPCRouter({
 	get: publicProcedure.query(async ({ ctx }) => {
 		const { session, ability } = await getServerAuthSession()
 		const user = session?.user
+		const now = new Date()
 
 		const liveProducts = await db.query.products.findMany({
-			where: (products, { eq, and, gt, sql }) =>
+			where: (products, { eq, and, gt }) =>
 				and(
 					eq(products.type, 'live'),
 					eq(products.status, 1),
@@ -81,11 +82,13 @@ export const eventsRouter = createTRPCRouter({
 		)
 
 		return liveProductsWithQuantity
-			.filter(
-				(product) =>
+			.filter((product) => {
+				return (
 					product.quantityAvailable > 0 &&
-					product.contentResource?.fields?.visibility === 'public',
-			)
+					product.contentResource?.fields?.visibility === 'public' &&
+					new Date(product.contentResource.fields.startsAt) > now
+				)
+			})
 			.sort((a, b) => {
 				const dateA = new Date(a.contentResource?.fields?.startsAt || 0)
 				const dateB = new Date(b.contentResource?.fields?.startsAt || 0)
