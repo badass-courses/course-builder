@@ -13,27 +13,34 @@ export const metadata = {
 
 const Home = () => {
 	return (
-		<div className="from-primary/5 to-background bg-gradient-to-b">
-			<header className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-center px-5 py-[15vh]">
-				<h1 className="leading-0 font-heading w-full text-balance text-center text-4xl font-bold sm:text-7xl lg:text-8xl">
-					The No-BS Solution for Enterprise-Ready Next.js Applications
-				</h1>
-				<h2 className="text-primary font-heading mt-5 inline-flex text-base font-medium sm:pt-5 sm:text-xl lg:text-2xl">
-					Professional Next.js Training
-				</h2>
-				<div className="mt-16 flex items-center gap-2">
-					<Image
-						src={require('../../public/jack-herrington.jpg')}
-						alt={config.author}
-						priority
-						className="w-12 rounded-full lg:w-auto"
-						width={64}
-						height={64}
-					/>
-					<div className="flex flex-col">
-						<span className="text-base">{config.author}</span>
-						<span className="text-sm opacity-60">Author & Instructor</span>
+		<div className="">
+			<header className="relative mx-auto flex w-full flex-col items-center justify-center py-[15vh]">
+				<Image
+					src={require('../../public/assets/bg.svg')}
+					alt=""
+					aria-hidden="true"
+					fill
+					className="object-cover object-bottom"
+				/>
+				<div className="relative z-10 flex flex-col items-center justify-center px-5">
+					<div className="bg-background mb-5 flex items-center justify-center gap-2 rounded-full border p-1 pr-2.5 text-sm shadow">
+						<Image
+							src={require('../../public/jack-herrington.jpg')}
+							alt={config.author}
+							priority
+							className="rounded-full"
+							width={32}
+							quality={100}
+							height={32}
+						/>
+						<span>{config.author}</span>
 					</div>
+					<h1 className="leading-0 font-heading fluid-3xl w-full max-w-4xl text-center font-bold">
+						The No-BS Solution for Enterprise-Ready Next.js Applications
+					</h1>
+					<h2 className="font-heading fluid-base text-muted-foreground mt-5 inline-flex font-normal">
+						Professional Next.js Training
+					</h2>
 				</div>
 			</header>
 			<main className="mx-auto w-full pt-5 sm:pt-24">
