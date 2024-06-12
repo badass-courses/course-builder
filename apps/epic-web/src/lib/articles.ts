@@ -18,18 +18,24 @@ export const ArticleSchema = ContentResourceSchema.merge(
 	z.object({
 		contributions: z.array(
 			z.object({
-				user: z.object({
-					id: z.string(),
-					name: z.string().optional().nullable(),
-					email: z.string().optional().nullable(),
-					image: z.string().optional().nullable(),
-				}),
-				contributionType: z.object({
-					id: z.string(),
-					slug: z.string(),
-					name: z.string(),
-					description: z.string().optional(),
-				}),
+				user: z
+					.object({
+						id: z.string(),
+						name: z.string().optional().nullable(),
+						email: z.string().optional().nullable(),
+						image: z.string().optional().nullable(),
+					})
+					.optional()
+					.nullable(),
+				contributionType: z
+					.object({
+						id: z.string(),
+						slug: z.string(),
+						name: z.string(),
+						description: z.string().optional(),
+					})
+					.optional()
+					.nullable(),
 			}),
 		),
 		fields: z.object({
