@@ -80,12 +80,20 @@ export async function getTip(slug: string): Promise<Tip | null> {
 export async function getTipsModule(): Promise<Tip[]> {
 	const tips = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'tip'),
+		with: {
+			contributions: {
+				with: {
+					user: true,
+					contributionType: true,
+				},
+			},
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
 	const tipsParsed = z.array(TipSchema).safeParse(tips)
 	if (!tipsParsed.success) {
-		console.error('Error parsing tips', tipsParsed)
+		console.error('Error parsing tips', JSON.stringify(tipsParsed, null, 2))
 		return []
 	}
 
