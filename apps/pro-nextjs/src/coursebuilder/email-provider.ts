@@ -5,7 +5,7 @@ import EmailProvider from 'next-auth/providers/nodemailer'
 import { sendVerificationRequest } from '@coursebuilder/core/lib/send-verification-request'
 
 export const emailProvider = EmailProvider({
-	from: 'team@proaws.dev',
+	from: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 	sendVerificationRequest: (params) => {
 		return sendVerificationRequest(params, courseBuilderAdapter)
 	},
