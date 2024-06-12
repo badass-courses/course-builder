@@ -99,7 +99,6 @@ const ArticleMetadataFormFields = ({
 	form: UseFormReturn<z.infer<typeof ArticleSchema>>
 	article: ContentResource & { fields?: { slug: string } }
 }) => {
-	console.log({ currentSocialImage })
 	return (
 		<EditResourcesMetadataFields form={form}>
 			{/*<MetadataFieldSocialImage*/}
