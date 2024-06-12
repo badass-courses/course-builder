@@ -101,7 +101,7 @@
 		"@tsparticles/react": "3.0.0",
 		"@tsparticles/slim": "3.4.0",
 		"@types/js-cookie": "^3.0.6",
-		"@types/lodash": "^4.17.4",
+		"@types/lodash": "^4.14.200",
 		"@types/mdx": "^2.0.10",
 		"@types/shortid": "^0.0.31",
 		"@types/uuid": "9.0.8",

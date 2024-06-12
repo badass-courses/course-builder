@@ -1154,7 +1154,7 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@types/lodash':
-        specifier: ^4.17.4
+        specifier: ^4.14.200
         version: 4.17.4
       '@types/mdx':
         specifier: ^2.0.10
@@ -3755,7 +3755,7 @@ importers:
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
       '@types/lodash':
-        specifier: ^4.17.4
+        specifier: ^4.14.200
         version: 4.17.4
       '@types/mjml':
         specifier: ^4.7.4
