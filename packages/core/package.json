@@ -147,7 +147,7 @@
 	},
 	"devDependencies": {
 		"@auth/core": "^0.30.0",
-		"@types/lodash": "^4.17.4",
+		"@types/lodash": "^4.14.200",
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pluralize": "^0.0.33",
