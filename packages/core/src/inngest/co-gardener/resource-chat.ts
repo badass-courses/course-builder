@@ -208,6 +208,8 @@ Do not make direct references to the content creator.
 Do not make direct references to 'the post'.
 Jump right to the point.
 
+Post Type: {{type}}
+
 Post Title: {{title}}
 
 {% if transcript %}Post Transcript: {{transcript}}{% endif %}
@@ -218,7 +220,7 @@ Reply in a markdown code fence.`,
 		},
 	}
 
-	const prompt =
+	let prompt =
 		workflowTrigger === 'basic'
 			? basicPrompt
 			: await step.run('Load Prompt', async () => {
@@ -226,7 +228,7 @@ Reply in a markdown code fence.`,
 				})
 
 	if (!prompt) {
-		throw new NonRetriableError(`Prompt not found for id (${workflowTrigger})`)
+		prompt = basicPrompt
 	}
 
 	let systemPrompt: ChatCompletionRequestMessage = {
