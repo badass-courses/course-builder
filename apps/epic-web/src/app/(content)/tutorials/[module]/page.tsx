@@ -4,8 +4,6 @@ import { notFound, redirect } from 'next/navigation'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { Button } from '@coursebuilder/ui'
-
 export default async function ModulePage({
 	params,
 }: {
@@ -23,6 +21,13 @@ export default async function ModulePage({
 		notFound()
 	}
 
+	const lessons = tutorial.resources.filter(
+		(resource) => resource.resource.type === 'lesson',
+	)
+	const sections = tutorial.resources.filter(
+		(resource) => resource.resource.type === 'section',
+	)
+
 	return (
 		<div className="hidden h-full flex-col md:flex">
 			<div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
@@ -35,34 +40,15 @@ export default async function ModulePage({
 				)}
 			</div>
 			<div className="flex flex-col">
-				{tutorial.resources.map((tutorialResource) => {
+				{sections.map((resource) => {
 					return (
-						<div key={tutorialResource.resourceId}>
-							{tutorialResource.resource.type === 'section' ? (
-								<h3>{tutorialResource.resource.fields.title} Section</h3>
-							) : (
-								<div>
-									<Link
-										href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}`}
-									>
-										{tutorialResource.resource.fields.title}{' '}
-										{tutorialResource.resource.type}
-									</Link>
-									{ability.can('create', 'Content') ? (
-										<>
-											<Link
-												className="text-xs"
-												href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}/edit`}
-											>
-												edit
-											</Link>
-										</>
-									) : null}
-								</div>
-							)}
-							{tutorialResource.resource.resources.length > 0 ? (
+						<div key={resource.resourceId}>
+							<h3 className="font-bold">
+								{resource.resource.fields.title} Section
+							</h3>
+							{resource.resource.resources.length > 0 && (
 								<ul>
-									{tutorialResource.resource.resources
+									{resource.resource.resources
 										// if there is no section present this will also present videoResources
 										.filter((resource) => resource.resource.type === 'lesson')
 										.map((lesson) => {
@@ -80,7 +66,7 @@ export default async function ModulePage({
 															<>
 																<Link
 																	className="text-xs"
-																	href={`/tutorials/${params.module}/${tutorialResource.resource.fields.slug}/edit`}
+																	href={`/tutorials/${params.module}/${resource.resource.fields.slug}/edit`}
 																>
 																	edit
 																</Link>
@@ -91,10 +77,37 @@ export default async function ModulePage({
 											)
 										})}
 								</ul>
-							) : null}
+							)}
 						</div>
 					)
 				})}
+				{lessons.length > 0 && (
+					<ul>
+						{lessons.map((lesson) => {
+							return (
+								<li key={lesson.resourceId}>
+									<div>
+										<Link
+											href={`/tutorials/${params.module}/${lesson.resource.fields.slug}`}
+										>
+											{lesson.resource.fields.title} {lesson.resource.type}
+										</Link>
+										{ability.can('create', 'Content') ? (
+											<>
+												<Link
+													className="text-xs"
+													href={`/tutorials/${params.module}/${lesson.resource.fields.slug}/edit`}
+												>
+													edit
+												</Link>
+											</>
+										) : null}
+									</div>
+								</li>
+							)
+						})}
+					</ul>
+				)}
 			</div>
 		</div>
 	)
