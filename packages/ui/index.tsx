@@ -19,6 +19,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from './primitives/alert-dialog'
+import { Badge } from './primitives/badge'
 import { Button } from './primitives/button'
 import { Calendar } from './primitives/calendar'
 import {
@@ -123,6 +124,7 @@ import { useToast } from './primitives/use-toast'
 
 export {
 	Button,
+	Badge,
 	Input,
 	Label,
 	Textarea,
