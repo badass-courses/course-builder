@@ -68,10 +68,18 @@ const Home = () => {
 							orchestrated the rollout of React/NextJS at Walmart Labs and Nike.
 							He is also the "Blue Collar Coder" on YouTube where he posts
 							weekly videos on advanced use of React and NextJS as well as other
-							frontend technologies trends. His YouTube channel hosts an entire
-							free courses on React and TypeScript. He has written seven books
-							including most recently No-BS TypeScript which is a companion book
-							to the YouTube course.
+							frontend technologies trends. His{' '}
+							<a
+								href="https://www.youtube.com/@jherr"
+								target="_blank"
+								rel="noreferrer noopener"
+								className="text-primary"
+							>
+								YouTube channel
+							</a>{' '}
+							hosts an entire free courses on React and TypeScript. He has
+							written seven books including most recently No-BS TypeScript which
+							is a companion book to the YouTube course.
 						</p>
 					</div>
 				</section>
