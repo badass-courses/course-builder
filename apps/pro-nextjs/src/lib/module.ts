@@ -1,9 +1,7 @@
 import z from 'zod'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
-
 export const ModuleSchema = z.object({
-	type: z.literal('tutorial'),
+	type: z.enum(['tutorial', 'workshop']),
 	id: z.string(),
 	fields: z.object({
 		slug: z.string(),
