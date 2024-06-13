@@ -6,8 +6,20 @@ import { useMuxPlayer } from '@/hooks/use-mux-player'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import ReactMarkdown from 'react-markdown'
 
-export function Transcript() {
-	const { lesson } = use(LessonContext)
+import { ContentResource } from '@coursebuilder/core/types'
+
+export function Transcript({
+	resourceLoader,
+}: {
+	resourceLoader?: Promise<ContentResource | null>
+}) {
+	let lesson
+	if (resourceLoader) {
+		lesson = use(resourceLoader)
+	} else {
+		const lessonContext = use(LessonContext)
+		lesson = lessonContext?.lesson
+	}
 	const videoResource = lesson?.resources?.find(
 		(resource) => resource.resource.type === 'videoResource',
 	)?.resource
