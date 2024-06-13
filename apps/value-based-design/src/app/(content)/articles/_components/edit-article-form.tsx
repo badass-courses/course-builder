@@ -20,7 +20,6 @@ import { ContentResource } from '@coursebuilder/core/types'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
-import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 type EditArticleFormProps = {
 	article: Article
@@ -100,14 +99,12 @@ const ArticleMetadataFormFields = ({
 	form: UseFormReturn<z.infer<typeof ArticleSchema>>
 	article: ContentResource & { fields?: { slug: string } }
 }) => {
-	const currentSocialImage = getOGImageUrlForResource(article)
-	console.log({ currentSocialImage })
 	return (
 		<EditResourcesMetadataFields form={form}>
-			<MetadataFieldSocialImage
-				form={form}
-				currentSocialImage={getOGImageUrlForResource(article)}
-			/>
+			{/*<MetadataFieldSocialImage*/}
+			{/*	form={form}*/}
+			{/*	currentSocialImage={getOGImageUrlForResource(article)}*/}
+			{/*/>*/}
 		</EditResourcesMetadataFields>
 	)
 }

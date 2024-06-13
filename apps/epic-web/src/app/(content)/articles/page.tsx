@@ -21,6 +21,8 @@ export default async function ArticlesIndexPage() {
 	const title = 'Epic Web Dev Articles'
 	const pageDescription = 'Articles about Web Development'
 
+	console.log({ articles })
+
 	return (
 		<>
 			{ability.can('update', 'Content') ? (

@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import {
+	index,
 	int,
 	MySqlTableFn,
 	primaryKey,
@@ -32,6 +33,7 @@ export function getMerchantCustomerSchema(mysqlTable: MySqlTableFn) {
 				merchantCustomerIdentifierKey: unique(
 					'MerchantCustomer_identifier_key',
 				).on(table.identifier),
+				userIdIdx: index('idx_MerchantCustomer_on_userId').on(table.userId),
 			}
 		},
 	)

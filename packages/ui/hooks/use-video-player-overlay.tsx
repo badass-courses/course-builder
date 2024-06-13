@@ -40,11 +40,6 @@ const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
 				...state,
 				action,
 			}
-		case 'COMPLETED':
-			return {
-				...state,
-				action,
-			}
 		case 'HIDDEN': {
 			return {
 				...state,

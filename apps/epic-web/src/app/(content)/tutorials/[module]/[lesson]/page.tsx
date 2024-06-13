@@ -93,21 +93,26 @@ async function TutorialLessonList({
 		return null
 	}
 
+	const lessons = tutorial.resources.filter(
+		(resource) => resource.resource.type === 'lesson',
+	)
+	const sections = tutorial.resources.filter(
+		(resource) => resource.resource.type === 'section',
+	)
+
+	//
+
 	return (
 		<>
-			<h3>
+			<h3 className="text-lg font-bold">
 				<Link href={`/tutorials/${tutorial.fields.slug}`}>
 					{tutorial.fields.title}
 				</Link>
 			</h3>
-			{tutorial.resources.map((resource) => {
+			{sections.map((resource) => {
 				return (
 					<div key={resource.resourceId}>
-						{resource.resource.type === 'section' ? (
-							<h4>{resource.resource.fields.title}</h4>
-						) : (
-							<h4>{resource.resource.fields.title}</h4>
-						)}
+						<h4 className="font-bold">{resource.resource.fields.title}</h4>
 						{resource.resource.resources.length > 0 && (
 							<ul>
 								{resource.resource.resources
@@ -128,6 +133,21 @@ async function TutorialLessonList({
 					</div>
 				)
 			})}
+			{lessons.length > 0 && (
+				<ul>
+					{lessons.map((lesson) => {
+						return (
+							<li key={lesson.resourceId}>
+								<Link
+									href={`/tutorials/${tutorial.fields.slug}/${lesson.resource.fields.slug}`}
+								>
+									{lesson.resource.fields.title}
+								</Link>
+							</li>
+						)
+					})}
+				</ul>
+			)}
 		</>
 	)
 }

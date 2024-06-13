@@ -1,6 +1,7 @@
 import { relations, sql } from 'drizzle-orm'
 import {
 	decimal,
+	index,
 	json,
 	MySqlTableFn,
 	primaryKey,
@@ -45,6 +46,9 @@ export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 		(table) => {
 			return {
 				purchaseId: primaryKey({ columns: [table.id], name: 'Purchase_id' }),
+				merchantChargeIdIdx: index('idx_Purchase_on_merchantChargeId').on(
+					table.merchantChargeId,
+				),
 				purchaseUpgradedFromIdKey: unique('Purchase_upgradedFromId_key').on(
 					table.upgradedFromId,
 				),
