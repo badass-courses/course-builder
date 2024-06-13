@@ -2,6 +2,7 @@ import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
+import StickyBlock from '@/components/sticky-block'
 import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import slugify from '@sindresorhus/slugify'
@@ -26,12 +27,13 @@ export default async function ArticlesIndexPage() {
 	return (
 		<>
 			{ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button asChild className="h-7">
-						<Link href={`/articles/new`}>New Article</Link>
-					</Button>
-				</div>
+				<StickyBlock>
+					<div className="flex w-full items-center justify-end space-x-2 px-4">
+						<Button asChild className="h-7">
+							<Link href={`/articles/new`}>New Article</Link>
+						</Button>
+					</div>
+				</StickyBlock>
 			) : null}
 			<header className="mx-auto w-full max-w-screen-lg px-5 pb-3 pt-5 sm:pb-5 sm:pt-8">
 				<h1 className="text-lg font-semibold">{title}</h1>
