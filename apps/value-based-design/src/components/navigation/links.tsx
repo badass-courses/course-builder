@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
 import { Login } from '@/components/navigation/login'
 import { User } from '@/components/navigation/user'
+import config from '@/config'
+import { env } from '@/env.mjs'
 import { cn } from '@/utils/cn'
 import { cx } from 'class-variance-authority'
 import {
@@ -34,7 +36,7 @@ export function Links({ className }: { className?: string }) {
 		<motion.nav
 			aria-label="top"
 			className={cn(
-				'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
+				'relative mx-auto flex w-full items-center justify-between px-4 text-sm sm:px-7',
 				className,
 			)}
 		>
@@ -44,13 +46,13 @@ export function Links({ className }: { className?: string }) {
 					aria-current={isRoot}
 					tabIndex={isRoot ? -1 : 0}
 					passHref
-					className="relative z-10 text-lg font-bold tracking-tight"
+					className="font-heading relative z-10 text-lg font-bold"
 					onContextMenu={(event) => {
 						event.preventDefault()
 						redirect('/brand')
 					}}
 				>
-					Value-Based Design
+					{config.defaultTitle}
 				</Link>
 				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
 					{navigationLinks.map(({ label, href, icon }) => {
@@ -70,10 +72,10 @@ export function Links({ className }: { className?: string }) {
 				</div>
 			</div>
 			<div className="flex items-center justify-end gap-2">
-				<Login className="hidden md:flex" />
+				{/* <Login className="hidden md:flex" /> */}
 				<User className="hidden md:flex" />
-				<ThemeToggle />
-				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} />
+				{/* <ThemeToggle /> */}
+				{/* <NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
 			</div>
 			<AnimatePresence>
 				{menuOpen && (

@@ -1,11 +1,9 @@
 import '@/styles/globals.css'
 
 import * as React from 'react'
-import { Suspense } from 'react'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import { Layout } from '@/components/layout'
-import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import { getProduct } from '@/lib/products-query'
 import { getCouponForCode } from '@/lib/props-for-commerce'
@@ -19,7 +17,6 @@ import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
-import { cn } from '@coursebuilder/ui/utils/cn'
 
 export const metadata = {
 	title: 'Value-Based Design',
@@ -49,7 +46,6 @@ export default function RootLayout({
 							disableTransitionOnChange
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
-								{/* <Navigation /> */}
 								<Layout>
 									<NextSSRPlugin
 										/**

@@ -2719,6 +2719,9 @@ importers:
 
   apps/value-based-design:
     dependencies:
+      '@amplitude/analytics-browser':
+        specifier: ^2.6.1
+        version: 2.6.1
       '@anthropic-ai/sdk':
         specifier: ^0.17.1
         version: 0.17.2(encoding@0.1.13)
@@ -2908,6 +2911,12 @@ importers:
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
+      '@skillrecordings/analytics':
+        specifier: ^1.0.1
+        version: 1.0.1(next@14.2.3)(react@18.3.1)
+      '@skillrecordings/config':
+        specifier: ^0.0.3
+        version: 0.0.3
       '@t3-oss/env-nextjs':
         specifier: ^0.7.1
         version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
