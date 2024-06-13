@@ -37,5 +37,5 @@ export default async function LessonPage({
 		lesson: string
 	}
 }) {
-	return <Page params={params} isSolution={true} />
+	return <Page params={params} lessonPageType="solution" />
 }
