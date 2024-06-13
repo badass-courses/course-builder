@@ -7,8 +7,8 @@ import { notFound } from 'next/navigation'
 import { ArticleCTA } from '@/app/(content)/[article]/_components/article-cta'
 import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
 import ContributorBio from '@/components/contributor-bio'
+import FloatingActionsBar from '@/components/floating-actions-bar'
 import Share from '@/components/share'
-import StickyBlock from '@/components/sticky-block'
 import { env } from '@/env.mjs'
 import { type Article } from '@/lib/articles'
 import { getArticle } from '@/lib/articles-query'
@@ -47,15 +47,13 @@ async function ArticleActionBar({
 	const article = await articleLoader
 
 	return article && ability.can('update', 'Content') ? (
-		<StickyBlock>
-			<div className="flex w-full items-center justify-end space-x-2 px-4">
-				<Button asChild size="sm">
-					<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
-						Edit
-					</Link>
-				</Button>
-			</div>
-		</StickyBlock>
+		<FloatingActionsBar>
+			<Button asChild size="sm">
+				<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
+					Edit
+				</Link>
+			</Button>
+		</FloatingActionsBar>
 	) : null
 }
 
