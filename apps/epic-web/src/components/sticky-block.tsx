@@ -28,11 +28,7 @@ const StickyBlock: React.FC<{
 	const { ref, isSticky } = useSticky()
 
 	React.useEffect(() => {
-		if (isSticky) {
-			controls.start('sticked')
-		} else {
-			controls.start('default')
-		}
+		controls.start(isSticky ? 'sticked' : 'default')
 	}, [isSticky, controls])
 
 	return (
