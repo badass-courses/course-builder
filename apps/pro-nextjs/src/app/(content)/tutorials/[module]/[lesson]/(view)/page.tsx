@@ -24,6 +24,7 @@ import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -56,10 +57,11 @@ export async function generateMetadata(
 		return parent as Metadata
 	}
 
-	const previousImages = (await parent).openGraph?.images || []
-
 	return {
 		title: lesson.fields?.title,
+		openGraph: {
+			images: [getOGImageUrlForResource(lesson)],
+		},
 	}
 }
 

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
+import { env } from '@/env.mjs'
 import type { Article } from '@/lib/articles'
 import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -21,6 +22,13 @@ import {
 
 export const metadata: Metadata = {
 	title: `Next.js Articles by ${config.author}`,
+	openGraph: {
+		images: [
+			{
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Next.js Articles by ${config.author}`)}`,
+			},
+		],
+	},
 }
 
 export default async function ArticlesIndexPage() {

@@ -6,6 +6,7 @@ import { Contributor } from '@/app/_components/contributor'
 import { CreateTip } from '@/app/(content)/tips/_components/create-tip'
 import { DeleteTipButton } from '@/app/(content)/tips/_components/delete-tip-button'
 import config from '@/config'
+import { env } from '@/env.mjs'
 import { getTipsModule } from '@/lib/tips-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -19,7 +20,14 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: `Pro Next.js Tips by ${config.author}`,
+	title: `Next.js Tips by ${config.author}`,
+	openGraph: {
+		images: [
+			{
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Next.js Tips by ${config.author}`)}`,
+			},
+		],
+	},
 }
 
 export default async function TipsListPage() {

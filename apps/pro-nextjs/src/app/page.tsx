@@ -1,13 +1,22 @@
 import * as React from 'react'
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import LandingCopy from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
+import { env } from '@/env.mjs'
 
-export const metadata = {
+export const metadata: Metadata = {
 	title: {
 		template: '%s | ProNext.js',
 		default: `The No-BS Solution for Enterprise-Ready Next.js Applications`,
+	},
+	openGraph: {
+		images: [
+			{
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('The No-BS Solution for Enterprise-Ready Next.js Applications')}`,
+			},
+		],
 	},
 }
 

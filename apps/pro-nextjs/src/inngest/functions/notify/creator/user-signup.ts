@@ -1,4 +1,5 @@
 import BasicEmail from '@/emails/basic-email'
+import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -20,7 +21,7 @@ export const userSignupAdminEmail = inngest.createFunction(
 Cheers,
 
 Adam Elmore`,
-			subject: 'Welcome to ProAWS!',
+			subject: `Welcome to ${env.NEXT_PUBLIC_SITE_TITLE}!`,
 		}
 
 		const parsedEmailBody: string = await step.run(

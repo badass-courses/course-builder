@@ -21,6 +21,7 @@
 		"coupons": "dotenv tsx src/scripts/bootstrap-basic-coupons.ts"
 	},
 	"dependencies": {
+		"@amplitude/analytics-browser": "^2.6.1",
 		"@anthropic-ai/sdk": "^0.17.1",
 		"@atlaskit/button": "^17.7.2",
 		"@atlaskit/form": "^9.1.0",
@@ -84,6 +85,8 @@
 		"@react-email/render": "^0.0.9",
 		"@sanity/icons": "^2.6.0",
 		"@sindresorhus/slugify": "^2.2.1",
+		"@skillrecordings/analytics": "^1.0.1",
+		"@skillrecordings/config": "^0.0.3",
 		"@t3-oss/env-nextjs": "^0.7.1",
 		"@tanstack/react-query": "^5.25.0",
 		"@tanstack/react-query-devtools": "^5.31.0",

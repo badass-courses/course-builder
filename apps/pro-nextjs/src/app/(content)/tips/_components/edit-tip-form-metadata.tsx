@@ -6,6 +6,7 @@ import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { TipSchema, type Tip } from '@/lib/tips'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -27,6 +28,7 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
@@ -130,6 +132,10 @@ export const TipMetadataFormFields: React.FC<{
 			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={getOGImageUrlForResource(form.getValues())}
+			/>
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">
 					<label className="text-lg font-bold">Transcript</label>
