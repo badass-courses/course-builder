@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import Image from 'next/image'
 import { Links } from '@/components/navigation/links'
@@ -9,7 +11,7 @@ type NavigationProps = {
 	size?: 'sm' | 'md' | 'lg'
 }
 
-const Navigation: React.FC<NavigationProps> = async ({
+const Navigation: React.FC<NavigationProps> = ({
 	className,
 	size = 'md',
 	navigationContainerClassName,
@@ -18,7 +20,7 @@ const Navigation: React.FC<NavigationProps> = async ({
 		<>
 			<div
 				className={cn(
-					`container relative z-50 flex h-[calc(var(--nav-height)-1px)] w-full flex-col items-center justify-center bg-transparent px-0 print:hidden`,
+					`container relative z-50 flex h-[calc(var(--nav-height))] w-full flex-col items-center justify-center bg-transparent px-0 print:hidden`,
 					navigationContainerClassName,
 				)}
 			>
@@ -73,19 +75,5 @@ export const CrossIcon = () => {
 				clipRule="evenodd"
 			/>
 		</svg>
-	)
-}
-
-export const Logo: React.FC<{ className?: string }> = ({ className }) => {
-	return (
-		<div className="flex items-center gap-1">
-			<Image
-				src={require('../../public/favicon.ico')}
-				alt=""
-				width={24}
-				height={24}
-			/>{' '}
-			{process.env.NEXT_PUBLIC_SITE_TITLE}
-		</div>
 	)
 }

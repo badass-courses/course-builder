@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { type Metadata } from 'next'
 import Image from 'next/image'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import config from '@/config'
 
 import { Button, Input, Label } from '@coursebuilder/ui'
 
@@ -14,9 +16,19 @@ export const metadata: Metadata = {
 export default async function Home() {
 	return (
 		<div className="flex flex-col">
-			<section className="flex flex-col px-16 pb-32 pt-64">
-				<h1 className="font-heading text-center text-5xl font-semibold sm:text-6xl lg:text-7xl xl:text-8xl">
-					Value-Based Design
+			<section className="flex flex-col items-center px-8 pb-32 pt-28 sm:px-16">
+				<div className="bg-background mb-5 flex items-center gap-1.5 rounded-full border p-1 pr-2.5">
+					<Image
+						src={require('../../public/nickd-square.jpg')}
+						alt="Nick Disabato"
+						width={36}
+						height={36}
+						className="rounded-full"
+					/>
+					<span className="text-sm">{config.author}</span>
+				</div>
+				<h1 className="font-heading text-balance text-center text-4xl font-semibold sm:text-5xl lg:text-6xl xl:text-7xl">
+					Drive Business Success with Value-Based Design
 				</h1>
 			</section>
 			<section
@@ -24,7 +36,7 @@ export default async function Home() {
 				className="from-background  bg-gradient-to-b to-gray-200 pb-32"
 			>
 				<article className="prose sm:prose-xl mx-auto w-full max-w-3xl px-6">
-					<h2 className="font-heading text-center text-3xl font-semibold sm:text-4xl lg:text-5xl xl:text-6xl">
+					<h2 className="not-prose mb-5 text-xl font-semibold">
 						Undervalued. Overlooked. Dispensable. Discarded.
 					</h2>
 
@@ -169,7 +181,7 @@ export default async function Home() {
 					</ul>
 				</article>
 			</section>
-			<section
+			{/* <section
 				aria-label="Sign Up"
 				className="bg-primary flex flex-col items-center px-6 py-32"
 			>
@@ -203,7 +215,8 @@ export default async function Home() {
 						Sign Up
 					</Button>
 				</div>
-			</section>
+			</section> */}
+			<PrimaryNewsletterCta />
 			<section
 				aria-label="Your Instructor"
 				className="text-background bg-black py-32"
