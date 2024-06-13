@@ -6,6 +6,7 @@ import { CldImage } from '@/app/_components/cld-image'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
+import { Module } from '@/lib/module'
 import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { XMarkIcon } from '@heroicons/react/24/outline'
@@ -22,7 +23,7 @@ import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-o
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	moduleResource: ContentResource | null
+	moduleResource: Module | null
 	moduleProgress: ModuleProgress
 	nextLesson: ContentResource | null | undefined
 }> = ({ action, resource, moduleResource, nextLesson, moduleProgress }) => {
@@ -124,7 +125,7 @@ export const CompletedLessonOverlay: React.FC<{
 export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	moduleResource: ContentResource | null
+	moduleResource: Module | null
 }> = ({ action, resource, moduleResource }) => {
 	const { playerRef } = action
 	const session = useSession()
@@ -210,7 +211,7 @@ const ContinueButton: React.FC<{
 }
 
 export const SoftBlockOverlay: React.FC<{
-	moduleResource: ContentResource | null
+	moduleResource: Module | null
 	resource: ContentResource | null
 }> = ({ moduleResource, resource }) => {
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
@@ -240,7 +241,7 @@ export const SoftBlockOverlay: React.FC<{
 					<CldImage
 						// className="flex sm:hidden"
 						src={moduleResource?.fields?.coverImage?.url}
-						alt={moduleResource?.fields?.coverImage?.alt}
+						alt={moduleResource?.fields?.coverImage?.alt || ''}
 						width={150}
 						height={150}
 					/>
@@ -251,7 +252,7 @@ export const SoftBlockOverlay: React.FC<{
 }
 
 const VideoPlayerOverlay: React.FC<{
-	moduleLoader: Promise<ContentResource | null>
+	moduleLoader: Promise<Module | null>
 	resource: ContentResource
 	exerciseLoader: Promise<ContentResource | null> | null
 	nextResourceLoader: Promise<ContentResource | null | undefined>

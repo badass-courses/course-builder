@@ -6,8 +6,8 @@ import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
 import { env } from '@/env.mjs'
+import type { Module } from '@/lib/module'
 import { getModuleProgressForUser } from '@/lib/progress'
-import type { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -144,7 +144,7 @@ export default async function ModulePage({ params }: Props) {
 	)
 }
 
-const TutorialMetadata: React.FC<{ tutorial: Tutorial }> = ({ tutorial }) => {
+const TutorialMetadata: React.FC<{ tutorial: Module }> = ({ tutorial }) => {
 	const jsonLd: Course = {
 		'@type': 'Course',
 		name: tutorial?.fields.title,

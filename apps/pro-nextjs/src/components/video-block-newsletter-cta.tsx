@@ -25,7 +25,7 @@ type VideoBlockNewsletterCtaProps = {
 		event?: string
 		params?: Record<string, string>
 	}
-	moduleTitle: string
+	moduleTitle?: string
 }
 
 export const VideoBlockNewsletterCta: React.FC<
@@ -34,7 +34,7 @@ export const VideoBlockNewsletterCta: React.FC<
 	children,
 	className,
 	id = 'video-block-newsletter-cta',
-	moduleTitle,
+	moduleTitle = 'No Title',
 
 	actionLabel = common['video-block-newsletter-button-cta-label'],
 	trackProps = { event: 'subscribed', params: {} },

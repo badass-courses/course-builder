@@ -2,17 +2,18 @@
 
 import React, { use } from 'react'
 import Link from 'next/link'
+import { Lesson } from '@/lib/lessons'
+import { Module } from '@/lib/module'
 import pluralize from 'pluralize'
 
-import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 export default function Exercise({
 	resourceLoader,
 	moduleLoader,
 }: {
-	resourceLoader: Promise<ContentResource | null>
-	moduleLoader: Promise<ContentResource | null>
+	resourceLoader: Promise<Lesson | null>
+	moduleLoader: Promise<Module | null>
 }) {
 	const resource = use(resourceLoader)
 	const moduleResource = use(moduleLoader)

@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { WorkshopSchema, type Workshop } from '@/lib/workshop'
+import { Module, ModuleSchema } from '@/lib/module'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -65,7 +65,7 @@ export async function getWorkshop(moduleSlugOrId: string) {
 		},
 	})
 
-	const parsedWorkshop = WorkshopSchema.safeParse(workshop)
+	const parsedWorkshop = ModuleSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
 		console.error('Error parsing tutorial', workshop, parsedWorkshop.error)
 		return null
@@ -112,7 +112,7 @@ export async function getAllWorkshops() {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const parsedWorkshops = z.array(WorkshopSchema).safeParse(workshops)
+	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
 	if (!parsedWorkshops.success) {
 		console.error('Error parsing tutorial', workshops, parsedWorkshops.error)
 		throw new Error('Error parsing tutorial')
@@ -179,7 +179,7 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-export async function updateWorkshop(input: Workshop) {
+export async function updateWorkshop(input: Module) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {

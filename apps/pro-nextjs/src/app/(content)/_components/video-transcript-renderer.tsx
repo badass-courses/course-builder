@@ -1,19 +1,14 @@
 'use client'
 
 import React, { use } from 'react'
+import { LessonContext } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import ReactMarkdown from 'react-markdown'
 
-import type { ContentResource } from '@coursebuilder/core/types'
-
-export function Transcript({
-	resourceLoader,
-}: {
-	resourceLoader: Promise<ContentResource | null | undefined>
-}) {
-	const resource = use(resourceLoader)
-	const videoResource = resource?.resources?.find(
+export function Transcript() {
+	const { lesson } = use(LessonContext)
+	const videoResource = lesson?.resources?.find(
 		(resource) => resource.resource.type === 'videoResource',
 	)?.resource
 	const transcript = videoResource?.fields?.transcript

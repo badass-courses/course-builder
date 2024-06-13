@@ -13,15 +13,16 @@ import {
 	LessonProgressToggleSkeleton,
 } from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
+import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
+import { ModuleProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/module-context'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { Lesson } from '@/lib/lessons'
 import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
+import { Module } from '@/lib/module'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getNextResource } from '@/lib/resources/get-next-resource'
-import { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
-import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
@@ -70,24 +71,47 @@ export async function generateMetadata(
 
 export type Props = {
 	params: { lesson: string; module: string }
-	isSolution?: boolean
-	isExercise?: boolean
+	lessonPageType?: 'exercise' | 'solution' | 'default'
 }
 
-export default async function LessonPage({
+export default async function LessonPageWrapper({
 	params,
-	isSolution = false,
-	isExercise = false,
+	lessonPageType = 'default',
 }: Props) {
-	headers()
-	const workshopLoader = getWorkshop(params.module)
-	const lessonLoader = isSolution
-		? getExerciseSolution(params.lesson)
-		: getLesson(params.lesson)
-	const exerciseLoader = isSolution ? getLesson(params.lesson) : null
-
+	const tutorialModuleLoader = getTutorial(params.module)
+	const lessonLoader =
+		lessonPageType === 'solution'
+			? getExerciseSolution(params.lesson)
+			: getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
+	const exerciseLoader =
+		lessonPageType === 'exercise' ? getLesson(params.lesson) : null
 
+	return (
+		<ModuleProvider moduleLoader={tutorialModuleLoader}>
+			<LessonProvider lessonLoader={lessonLoader}>
+				<LessonPage
+					lessonLoader={lessonLoader}
+					exerciseLoader={exerciseLoader}
+					moduleLoader={tutorialModuleLoader}
+					moduleProgressLoader={moduleProgressLoader}
+				/>
+			</LessonProvider>
+		</ModuleProvider>
+	)
+}
+
+async function LessonPage({
+	moduleLoader,
+	exerciseLoader,
+	lessonLoader,
+	moduleProgressLoader,
+}: {
+	moduleLoader: Promise<Module | null>
+	exerciseLoader: Promise<Lesson | null> | null
+	lessonLoader: Promise<Lesson | null>
+	moduleProgressLoader: Promise<ModuleProgress>
+}) {
 	return (
 		<div>
 			<div className="mx-auto w-full" id="lesson">
@@ -105,23 +129,18 @@ export default async function LessonPage({
 					<div className="flex flex-col 2xl:flex-row">
 						<div>
 							<main className="">
-								{isExercise ? (
+								{exerciseLoader ? (
 									<Suspense fallback={<PlayerContainerSkeleton />}>
 										<Exercise
-											moduleLoader={
-												workshopLoader as unknown as Promise<ContentResource | null>
-											}
+											moduleLoader={moduleLoader}
 											resourceLoader={lessonLoader}
 										/>
 									</Suspense>
 								) : (
 									<PlayerContainer
-										params={params}
 										lessonLoader={lessonLoader}
 										exerciseLoader={exerciseLoader}
-										moduleLoader={
-											workshopLoader as unknown as Promise<ContentResource | null>
-										}
+										moduleLoader={moduleLoader}
 										moduleProgressLoader={moduleProgressLoader}
 									/>
 								)}
@@ -152,12 +171,8 @@ export default async function LessonPage({
 												maxHeight="h-[600px]"
 												className="max-w-none border-l-0 border-t"
 												moduleProgressLoader={moduleProgressLoader}
-												tutorialLoader={
-													workshopLoader as unknown as Promise<ContentResource | null>
-												}
-												lessonLoader={
-													lessonLoader as unknown as Promise<ContentResource | null>
-												}
+												tutorialLoader={moduleLoader}
+												lessonLoader={lessonLoader}
 											/>
 										</Suspense>
 									</AccordionContent>
@@ -197,7 +212,7 @@ async function TranscriptContainer({
 				Transcript
 			</h3>
 			<Suspense fallback={<div className="p-5">Loading...</div>}>
-				<Transcript resourceLoader={lessonLoader} />
+				<Transcript />
 			</Suspense>
 		</div>
 	)
@@ -208,7 +223,7 @@ async function LessonActionBar({
 	tutorialLoader,
 }: {
 	lessonLoader: Promise<ContentResource | null | undefined>
-	tutorialLoader: Promise<Tutorial | null | undefined>
+	tutorialLoader: Promise<Module | null | undefined>
 }) {
 	const { ability } = await getServerAuthSession()
 	const lesson = await lessonLoader
@@ -245,31 +260,35 @@ async function PlayerContainer({
 	exerciseLoader,
 	moduleLoader,
 	moduleProgressLoader,
-	params,
 }: {
-	lessonLoader: Promise<ContentResource | null>
-	exerciseLoader: Promise<ContentResource | null> | null
-	moduleLoader: Promise<ContentResource | null>
+	lessonLoader: Promise<Lesson | null>
+	exerciseLoader: Promise<Lesson | null> | null
+	moduleLoader: Promise<Module | null>
 	moduleProgressLoader: Promise<ModuleProgress>
-	params: Props['params']
 }) {
 	const lesson = await lessonLoader
+	const moduleResource = await moduleLoader
 
-	if (!lesson) {
+	if (!lesson || !moduleResource) {
 		notFound()
 	}
 
 	const canViewLoader = getViewingAbilityForResource(
-		params.lesson,
-		params.module,
+		lesson.fields.slug,
+		moduleResource.fields.slug,
 	)
+
 	const videoResourceId = lesson.resources?.find(
 		(resource) => resource.resource.type === 'videoResource',
 	)?.resource.id
 
 	const videoResourceLoader =
 		courseBuilderAdapter.getVideoResource(videoResourceId)
-	const nextResourceLoader = getNextResource(lesson.id, params.module)
+
+	const nextResourceLoader = getNextResource(
+		lesson.id,
+		moduleResource.fields.slug,
+	)
 
 	return (
 		<VideoPlayerOverlayProvider>

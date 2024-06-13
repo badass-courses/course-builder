@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { TutorialSchema, type Tutorial } from '@/lib/tutorial'
+import { ModuleSchema, type Module } from '@/lib/module'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -65,7 +65,7 @@ export async function getTutorial(moduleSlugOrId: string) {
 		},
 	})
 
-	const parsedTutorial = TutorialSchema.safeParse(tutorial)
+	const parsedTutorial = ModuleSchema.safeParse(tutorial)
 	if (!parsedTutorial.success) {
 		console.error('Error parsing tutorial', tutorial, parsedTutorial.error)
 		return null
@@ -114,7 +114,7 @@ export async function getAllTutorials() {
 
 	// return tutorials
 
-	const parsedTutorial = z.array(TutorialSchema).safeParse(tutorials)
+	const parsedTutorial = z.array(ModuleSchema).safeParse(tutorials)
 	if (!parsedTutorial.success) {
 		console.error('Error parsing tutorial', tutorials, parsedTutorial.error)
 		throw new Error('Error parsing tutorial')
@@ -181,7 +181,7 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-export async function updateTutorial(input: Tutorial) {
+export async function updateTutorial(input: Module) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {

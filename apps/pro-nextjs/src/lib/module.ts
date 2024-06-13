@@ -2,8 +2,8 @@ import z from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
-export const WorkshopSchema = z.object({
-	type: z.literal('workshop'),
+export const ModuleSchema = z.object({
+	type: z.literal('tutorial'),
 	id: z.string(),
 	fields: z.object({
 		slug: z.string(),
@@ -82,4 +82,4 @@ export const WorkshopSchema = z.object({
 	),
 })
 
-export type Workshop = z.infer<typeof WorkshopSchema>
+export type Module = z.infer<typeof ModuleSchema>

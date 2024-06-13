@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
+import { Lesson } from '@/lib/lessons'
+import { Module } from '@/lib/module'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { filterResources } from '@/utils/filter-resources'
@@ -42,8 +44,8 @@ type ContentResourceProps = {
 }
 
 type ContentResourceLoaderProps = {
-	tutorialLoader: Promise<ContentResource | null>
-	lessonLoader: Promise<ContentResource | null>
+	tutorialLoader: Promise<Module | null>
+	lessonLoader: Promise<Lesson | null>
 	moduleProgressLoader: Promise<ModuleProgress>
 	className?: string
 	maxHeight?: string
