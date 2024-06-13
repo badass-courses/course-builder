@@ -23,6 +23,7 @@ import { Module } from '@/lib/module'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getNextResource } from '@/lib/resources/get-next-resource'
 import { getTutorial } from '@/lib/tutorials-query'
+import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
@@ -78,7 +79,7 @@ export default async function LessonPageWrapper({
 	params,
 	lessonPageType = 'default',
 }: Props) {
-	const tutorialModuleLoader = getTutorial(params.module)
+	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader =
 		lessonPageType === 'solution'
 			? getExerciseSolution(params.lesson)
@@ -88,12 +89,12 @@ export default async function LessonPageWrapper({
 		lessonPageType === 'exercise' ? getLesson(params.lesson) : null
 
 	return (
-		<ModuleProvider moduleLoader={tutorialModuleLoader}>
+		<ModuleProvider moduleLoader={moduleLoader}>
 			<LessonProvider lessonLoader={lessonLoader}>
 				<LessonPage
 					lessonLoader={lessonLoader}
 					exerciseLoader={exerciseLoader}
-					moduleLoader={tutorialModuleLoader}
+					moduleLoader={moduleLoader}
 					moduleProgressLoader={moduleProgressLoader}
 				/>
 			</LessonProvider>

@@ -20,7 +20,7 @@ export const userSignupAdminEmail = inngest.createFunction(
 
 Cheers,
 
-Adam Elmore`,
+${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME} ${process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}`,
 			subject: `Welcome to ${env.NEXT_PUBLIC_SITE_TITLE}!`,
 		}
 
@@ -57,6 +57,7 @@ Adam Elmore`,
 				},
 				Subject: parsedEmailSubject,
 				To: event.user.email,
+				From: `${env.NEXT_PUBLIC_SITE_TITLE} <${env.NEXT_PUBLIC_SUPPORT_EMAIL}>`,
 			})
 		})
 

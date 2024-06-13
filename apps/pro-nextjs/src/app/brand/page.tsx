@@ -4,8 +4,8 @@ import { Logo, LogoMark } from '@/components/logo'
 import { LogoAsset } from './_components/assets'
 
 export const metadata: Metadata = {
-	title: 'ProAWS Brand',
-	description: 'ProAWS logo and additional branding materials',
+	title: `${process.env.NEXT_PUBLIC_SITE_TITLE} Brand`,
+	description: `${process.env.NEXT_PUBLIC_SITE_TITLE} Logo and Additional Branding Assets`,
 }
 
 export default async function BrandRoute() {
