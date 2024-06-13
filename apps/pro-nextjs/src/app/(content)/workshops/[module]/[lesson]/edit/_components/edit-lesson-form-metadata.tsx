@@ -30,6 +30,7 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
@@ -214,6 +215,10 @@ export const LessonMetadataFormFields: React.FC<{
 						<FormMessage />
 					</FormItem>
 				)}
+			/>
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={getOGImageUrlForResource(form.getValues())}
 			/>
 			{videoResourceId ? (
 				<div className="px-5">

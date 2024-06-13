@@ -13,6 +13,7 @@ import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -43,6 +44,7 @@ export async function generateMetadata(
 	return {
 		title: tip.fields?.title,
 		description: tip.fields?.description,
+		openGraph: { images: [getOGImageUrlForResource(tip)] },
 	}
 }
 

@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { TutorialSchema } from '@/lib/tutorial'
 import { updateTutorial } from '@/lib/tutorials-query'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -28,6 +29,7 @@ import {
 } from '@coursebuilder/ui'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
@@ -143,6 +145,17 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 					)}
 					name="fields.description"
 				/>
+				<FormField
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+							<Input {...field} value={field.value || ''} />
+							<FormMessage />
+						</FormItem>
+					)}
+					name="fields.github"
+				/>
 				<div className="px-5">
 					<FormLabel className="text-lg font-bold">Cover Image</FormLabel>
 					{form.watch('fields.coverImage.url') && (
@@ -153,7 +166,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 					control={form.control}
 					render={({ field }) => (
 						<FormItem className="px-5">
-							<FormLabel className="">Image URL</FormLabel>
+							<FormLabel className="">Cover Image URL</FormLabel>
 							<Input
 								{...field}
 								onDrop={(e) => {
@@ -175,23 +188,20 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 					control={form.control}
 					render={({ field }) => (
 						<FormItem className="px-5">
-							<FormLabel className="">Image alt</FormLabel>
+							<FormLabel className="">Cover Image alt</FormLabel>
 							<Input {...field} value={field.value || ''} />
 							<FormMessage />
 						</FormItem>
 					)}
 					name="fields.coverImage.alt"
 				/>
-				<FormField
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="px-5">
-							<FormLabel className="">GitHub</FormLabel>
-							<Input {...field} value={field.value || ''} />
-							<FormMessage />
-						</FormItem>
+				<MetadataFieldSocialImage
+					form={form}
+					currentSocialImage={getOGImageUrlForResource(
+						form.getValues() as unknown as ContentResource & {
+							fields?: { slug: string }
+						},
 					)}
-					name="fields.github"
 				/>
 				<TutorialResourcesList tutorial={tutorial} />
 			</ResourceForm>

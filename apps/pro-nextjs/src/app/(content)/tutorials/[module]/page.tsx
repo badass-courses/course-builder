@@ -10,6 +10,7 @@ import { getModuleProgressForUser } from '@/lib/progress'
 import type { Tutorial } from '@/lib/tutorial'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
@@ -36,6 +37,15 @@ export async function generateMetadata(
 	return {
 		title: tutorial.fields.title,
 		description: tutorial.fields.description,
+		openGraph: {
+			images: [
+				getOGImageUrlForResource(
+					tutorial as unknown as ContentResource & {
+						fields?: { slug: string }
+					},
+				),
+			],
+		},
 	}
 }
 

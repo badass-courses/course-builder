@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
+import { env } from '@/env.mjs'
 import { getAllTutorials } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { FilePlus2 } from 'lucide-react'
@@ -18,7 +19,14 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: `Pro Next.js Tutorials by ${config.author}`,
+	title: `Free Next.js Tutorials by ${config.author}`,
+	openGraph: {
+		images: [
+			{
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Free Next.js Tutorials by ${config.author}`)}`,
+			},
+		],
+	},
 }
 
 export default async function Tutorials() {

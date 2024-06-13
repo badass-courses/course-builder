@@ -12,6 +12,7 @@ import { getTutorial } from '@/lib/tutorials-query'
 import type { Workshop } from '@/lib/workshop'
 import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
@@ -38,6 +39,15 @@ export async function generateMetadata(
 	return {
 		title: workshop.fields.title,
 		description: workshop.fields.description,
+		openGraph: {
+			images: [
+				getOGImageUrlForResource(
+					workshop as unknown as ContentResource & {
+						fields?: { slug: string }
+					},
+				),
+			],
+		},
 	}
 }
 
