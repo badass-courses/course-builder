@@ -5,7 +5,14 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import Page, { type Props } from '../page'
 
 export async function generateMetadata(
-	{ params }: Props,
+	{
+		params,
+	}: {
+		params: {
+			module: string
+			lesson: string
+		}
+	},
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const lesson = await getLesson(params.lesson)

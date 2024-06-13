@@ -9,7 +9,7 @@ import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 export const revalidate = 60
-export const contentType = 'image/png'
+// export const contentType = 'image/png'
 
 export async function GET(request: Request) {
 	try {
