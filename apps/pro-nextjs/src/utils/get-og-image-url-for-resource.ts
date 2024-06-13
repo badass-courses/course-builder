@@ -1,11 +1,9 @@
 import { env } from '@/env.mjs'
-import pluralize from 'pluralize'
 
 import { ContentResource } from '@coursebuilder/core/types'
 
 export const getOGImageUrlForResource = (
 	resource: ContentResource & { fields?: { slug: string } },
-	path?: string,
 ) => {
-	return `${env.NEXT_PUBLIC_URL}/${path || pluralize(resource.type)}/${resource.fields?.slug}/opengraph-image?updatedAt=${resource.updatedAt && encodeURI(resource.updatedAt.toISOString())}`
+	return `${env.NEXT_PUBLIC_URL}/api/og?resource=${resource?.fields?.slug || resource.id}${resource.updatedAt ? `&updatedAt=${encodeURI(resource.updatedAt.toISOString())}` : ''}`
 }

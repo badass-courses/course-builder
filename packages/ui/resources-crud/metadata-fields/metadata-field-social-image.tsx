@@ -22,7 +22,7 @@ export function MetadataFieldSocialImage({
 			name="fields.socialImage"
 			render={({ field }) => (
 				<FormItem className="px-5">
-					<FormLabel>Social Image</FormLabel>
+					<FormLabel className="text-lg font-bold">Social Image</FormLabel>
 					<FormDescription>
 						Used as a preview image on Twitter cards etc.
 					</FormDescription>
