@@ -6,7 +6,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	componentProps,
 	Subject,
 	To,
-	From = `joel <joel@coursebuilder.dev>`,
+	From = `${env.NEXT_PUBLIC_SITE_TITLE} <${env.NEXT_PUBLIC_SUPPORT_EMAIL}>`,
 	type = 'transactional',
 }: {
 	Component: (props: ComponentPropsType) => React.JSX.Element
