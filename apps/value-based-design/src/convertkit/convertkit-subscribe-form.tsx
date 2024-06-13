@@ -2,7 +2,6 @@ import React from 'react'
 import Spinner from '@/components/spinner'
 import { useConvertkitForm } from '@/hooks/use-convertkit-form'
 import { type Subscriber } from '@/schemas/subscriber'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import queryString from 'query-string'
 import * as Yup from 'yup'
 
@@ -194,7 +193,7 @@ export const redirectUrlBuilder = (
 	const url = queryString.stringifyUrl({
 		url: path,
 		query: {
-			[CK_SUBSCRIBER_KEY]: subscriber.id,
+			['ck_subscriber_id']: subscriber.id,
 			email: subscriber.email_address,
 			...queryParams,
 		},
