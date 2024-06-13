@@ -6,7 +6,7 @@ import WorkshopResourcesList from '@/components/workshop-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { WorkshopSchema } from '@/lib/workshop'
+import { ModuleSchema } from '@/lib/module'
 import { updateWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -80,7 +80,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						}),
 					}),
 				).parse(workshop)}
-				resourceSchema={WorkshopSchema}
+				resourceSchema={ModuleSchema}
 				getResourcePath={(slug) => `/workshops/${slug}`}
 				updateResource={updateWorkshop}
 				form={form}

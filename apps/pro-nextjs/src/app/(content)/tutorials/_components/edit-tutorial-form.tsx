@@ -6,7 +6,7 @@ import TutorialResourcesList from '@/components/tutorial-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { TutorialSchema } from '@/lib/tutorial'
+import { ModuleSchema } from '@/lib/module'
 import { updateTutorial } from '@/lib/tutorials-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -80,7 +80,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						}),
 					}),
 				).parse(tutorial)}
-				resourceSchema={TutorialSchema}
+				resourceSchema={ModuleSchema}
 				getResourcePath={(slug) => `/tutorials/${slug}`}
 				updateResource={updateTutorial}
 				form={form}

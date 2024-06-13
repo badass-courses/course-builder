@@ -2,6 +2,7 @@
 
 import React, { use } from 'react'
 import Link from 'next/link'
+import { Module } from '@/lib/module'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/types'
@@ -12,7 +13,7 @@ export default function Exercise({
 	moduleLoader,
 }: {
 	resourceLoader: Promise<ContentResource | null>
-	moduleLoader: Promise<ContentResource | null>
+	moduleLoader: Promise<Module | null>
 }) {
 	const resource = use(resourceLoader)
 	const moduleResource = use(moduleLoader)
