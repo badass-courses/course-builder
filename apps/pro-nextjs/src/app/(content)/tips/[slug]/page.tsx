@@ -87,28 +87,12 @@ export default async function TipPage({
 				)}
 				<div className="container flex flex-col-reverse border-t px-0 lg:flex-row lg:border-x">
 					<div className="flex flex-col py-8">
-						<Suspense
-							fallback={
-								<div className="px-5 sm:px-8">
-									<Skeleton className="h-16 w-full bg-gray-100" />
-								</div>
-							}
-						>
-							<TipBody tipLoader={tipLoader} />
-						</Suspense>
+						<TipBody tipLoader={tipLoader} />
 						<div className="mt-10 border-t px-5 pt-8 sm:px-8">
 							<h3 className="font-heading mb-8 text-2xl font-bold leading-none ">
 								Transcript
 							</h3>
-							<Suspense
-								fallback={
-									<div className="p-5">
-										<Skeleton className="h-5 w-full bg-gray-100" />
-									</div>
-								}
-							>
-								<Transcript resourceLoader={tipLoader} />
-							</Suspense>
+							<Transcript resourceLoader={tipLoader} />
 						</div>
 					</div>
 					{/* <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
