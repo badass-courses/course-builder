@@ -16,8 +16,12 @@ export default async function ConfirmSubscriptionPage() {
 				</h1>
 				<div className="prose sm:prose prose-sm prose-p:text-balance mx-auto">
 					<p>
-						We sent an email to <Email /> with a confirmation link. Click the
-						link to finish your subscription.
+						We sent an email to{' '}
+						<Suspense>
+							<Email />
+						</Suspense>{' '}
+						with a confirmation link. Click the link to finish your
+						subscription.
 					</p>
 					<p>
 						Didn&apos;t get an email? Check your spam folder or other filters

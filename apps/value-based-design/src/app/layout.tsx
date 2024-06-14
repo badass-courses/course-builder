@@ -1,10 +1,12 @@
 import '@/styles/globals.css'
 
 import * as React from 'react'
+import type { Metadata } from 'next'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import { Layout } from '@/components/layout'
 import { ThemeProvider } from '@/components/theme-provider'
+import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { getCouponForCode } from '@/lib/props-for-commerce'
 import { TRPCReactProvider } from '@/trpc/react'
@@ -18,10 +20,17 @@ import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
 
-export const metadata = {
+export const metadata: Metadata = {
 	title: 'Value-Based Design',
 	description: '',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
+	openGraph: {
+		images: [
+			{
+				url: env.NEXT_PUBLIC_URL + '/card@2x.jpg',
+			},
+		],
+	},
 }
 
 export default function RootLayout({
