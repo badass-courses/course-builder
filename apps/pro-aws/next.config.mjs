@@ -61,6 +61,11 @@ const config = {
 				destination: `https://www.coursebuilder.dev/${subdomain}/:path*`,
 				permanent: false,
 			})),
+			{
+				source: '/discord',
+				destination: 'https://discord.gg/H4QPR7y7tW',
+				permanent: false,
+			},
 		]
 	},
 }
