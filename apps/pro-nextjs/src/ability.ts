@@ -224,7 +224,7 @@ const isFreelyVisible = ({
 	}
 
 	const lessons = z
-		.array(ContentResourceResourceSchema)
+		.array(z.object({ resourceId: z.string() }))
 		.parse(section ? section.resources : module?.resources || [])
 
 	const isFirstLesson =
