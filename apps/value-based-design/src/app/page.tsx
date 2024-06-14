@@ -7,7 +7,8 @@ import LandingCopy from './_components/landing-copy'
 
 export const metadata: Metadata = {
 	title: 'Value-Based Design',
-	description: '',
+	description:
+		'Drive business success with impactful design decisions. New self-paced workshop by nickd.',
 }
 
 export default async function Home() {
