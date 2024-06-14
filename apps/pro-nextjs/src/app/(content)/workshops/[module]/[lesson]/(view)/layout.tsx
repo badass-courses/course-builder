@@ -1,6 +1,8 @@
 import React from 'react'
 import { courseBuilderAdapter } from '@/db'
+import { getLesson } from '@/lib/lessons-query'
 import { getModuleProgressForUser } from '@/lib/progress'
+import { getWorkshop } from '@/lib/workshops-query'
 import { getResourceSection } from '@/utils/get-resource-section'
 
 import { Skeleton } from '@coursebuilder/ui'
@@ -15,10 +17,8 @@ const LessonLayout: React.FC<
 		}
 	}>
 > = async ({ children, params }) => {
-	const workshop = await courseBuilderAdapter.getContentResource(params.module)
-	const currentLesson = await courseBuilderAdapter.getContentResource(
-		params.lesson,
-	)
+	const workshop = await getWorkshop(params.module)
+	const currentLesson = await getLesson(params.lesson)
 	const currentSection =
 		currentLesson && (await getResourceSection(currentLesson.id, workshop))
 	const moduleProgress = await getModuleProgressForUser(params.module)
