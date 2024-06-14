@@ -2,6 +2,8 @@ import { headers } from 'next/headers'
 import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
+import { Module } from '@/lib/module'
+import { getModule } from '@/lib/modules-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 
@@ -27,9 +29,7 @@ export async function getCurrentAbilityRules({
 	const { session } = await getServerAuthSession()
 
 	const lessonResource = lessonId && (await getLesson(lessonId))
-	const moduleResource = moduleId
-		? await courseBuilderAdapter.getContentResource(moduleId)
-		: null
+	const moduleResource = moduleId ? await getModule(moduleId) : null
 
 	const sectionResource =
 		lessonResource &&

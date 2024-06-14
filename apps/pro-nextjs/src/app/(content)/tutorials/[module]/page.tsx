@@ -131,7 +131,7 @@ export default async function ModulePage({ params }: Props) {
 					</strong>
 					<TutorialLessonList
 						className="w-full max-w-none border-r-0"
-						tutorial={tutorial as unknown as ContentResource}
+						tutorial={tutorial}
 						moduleProgress={moduleProgress}
 						maxHeight="h-auto"
 						withHeader={false}

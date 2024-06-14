@@ -1,7 +1,7 @@
 import type { ContentResourceResource } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export function filterResources(
-	resources: ContentResourceResource[],
+	resources: any[],
 	removeTypes: string[] | string = 'videoResource',
 ) {
 	return resources.reduce(

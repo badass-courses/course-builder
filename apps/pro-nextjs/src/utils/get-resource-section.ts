@@ -1,8 +1,10 @@
+import { Module } from '@/lib/module'
+
 import type { ContentResource } from '@coursebuilder/core/types'
 
 export async function getResourceSection(
 	resourceId: string,
-	moduleResource?: ContentResource | null,
+	moduleResource?: Module | null,
 ): Promise<ContentResource | null> {
 	if (!moduleResource?.resources) return null
 	let sectionData = null
