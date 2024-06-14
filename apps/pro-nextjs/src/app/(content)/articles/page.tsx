@@ -9,7 +9,7 @@ import { getArticles } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
-import { FilePlus2 } from 'lucide-react'
+import { FilePlus2, Pencil } from 'lucide-react'
 
 import {
 	Button,
@@ -33,54 +33,53 @@ export const metadata: Metadata = {
 
 export default async function ArticlesIndexPage() {
 	const { ability } = await getServerAuthSession()
-	const articles = await getArticles()
-	const firstArticle = articles[0]
+	const allArticles = await getArticles()
+	const publishedPublicArticles = allArticles.filter(
+		(article) =>
+			article.fields.visibility === 'public' &&
+			article.fields.state === 'published',
+	)
+	const unpublishedArticles = allArticles.filter((article) => {
+		return !publishedPublicArticles.includes(article)
+	})
+
+	const latestArticle = publishedPublicArticles[0]
 
 	return (
-		<main className="container px-5">
+		<main className="container flex flex-col-reverse px-5 lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
-				{/* <aside className="px-5 py-5 sm:px-8 sm:py-16"> */}
-				{/* <SearchBar /> */}
-				{/* </aside> */}
 				<div className="flex flex-col items-center border-x">
-					{firstArticle && (
+					{latestArticle && (
 						<div className="relative flex w-full">
 							<ArticleTeaser
-								article={firstArticle}
-								className="[&_[data-card='']]:text-background aspect-[16/7] h-full w-full [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE]  [&_[data-card='']]:to-purple-500 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
+								article={latestArticle}
+								className="[&_[data-card='']]:text-background h-full w-full md:aspect-[16/7] [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE]  [&_[data-card='']]:to-purple-500 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
 							/>
-							{ability.can('update', 'Content') ? (
-								<Button
-									asChild
-									className="text-primary absolute bottom-3 right-3 scale-75 gap-1 bg-white shadow hover:bg-gray-50 sm:bottom-8 sm:right-8 sm:scale-100"
-								>
-									<Link href={`/articles/new`}>
-										<FilePlus2 className="h-4 w-4" />
-										New Article
-									</Link>
-								</Button>
-							) : null}
 						</div>
 					)}
 					<ul className="divide-border relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2">
-						{/* X borders */}
-						{/* <div
-								className="before:border-border pointer-events-none absolute left-0 top-0 hidden h-full w-full border-r before:absolute before:left-0 before:top-0 before:h-full before:w-1/2 before:border-r before:content-[''] sm:block"
-								aria-hidden
-							/> */}
-						{articles.slice(1, articles.length).map((article, i) => {
-							return (
-								<ArticleTeaser
-									i={i}
-									article={article}
-									key={article.id}
-									className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
-								/>
-							)
-						})}
+						{publishedPublicArticles
+							.slice(1, publishedPublicArticles.length)
+							.map((article, i) => {
+								return (
+									<ArticleTeaser
+										i={i}
+										article={article}
+										key={article.id}
+										className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
+									/>
+								)
+							})}
 					</ul>
 				</div>
 			</div>
+			<React.Suspense
+				fallback={
+					<aside className="hidden w-full max-w-xs border-r lg:block" />
+				}
+			>
+				<ArticleListActions articles={unpublishedArticles} />
+			</React.Suspense>
 		</main>
 	)
 }
@@ -137,5 +136,58 @@ const ArticleTeaser: React.FC<{
 				</Card>
 			</Link>
 		</li>
+	)
+}
+
+async function ArticleListActions({ articles }: { articles?: Article[] }) {
+	const { ability, session } = await getServerAuthSession()
+	return ability.can('create', 'Content') ? (
+		<aside className="w-full border-x lg:max-w-xs lg:border-l-0 lg:border-r">
+			<div className="border-b p-5">
+				<p className="font-semibold">
+					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
+				</p>
+				<p>
+					You have <strong className="font-semibold">{articles?.length}</strong>{' '}
+					unpublished articles.
+				</p>
+			</div>
+			{articles ? (
+				<ul className="flex flex-col px-5 pt-5">
+					{articles.map((article) => {
+						return (
+							<li key={article.id}>
+								<Link
+									className="group flex flex-col py-2"
+									href={`/articles/${article.fields.slug}/edit`}
+								>
+									<strong className="group-hover:text-primary inline-flex items-baseline gap-1 font-semibold leading-tight transition">
+										<Pencil className="text-muted-foreground h-3 w-3 flex-shrink-0" />
+										<span>{article.fields.title}</span>
+									</strong>
+									<div className="text-muted-foreground pl-4 text-sm">
+										{article.fields.state}
+										{article.fields.state === 'published' &&
+											` - ${article.fields.visibility}`}
+									</div>
+								</Link>
+							</li>
+						)
+					})}
+				</ul>
+			) : null}
+			{ability.can('update', 'Content') ? (
+				<div className="p-5">
+					<Button variant="outline" asChild className="w-full gap-1">
+						<Link href={`/articles/new`}>
+							<FilePlus2 className="h-4 w-4" />
+							New Article
+						</Link>
+					</Button>
+				</div>
+			) : null}
+		</aside>
+	) : (
+		<aside className="hidden w-full max-w-xs border-r lg:block" />
 	)
 }
