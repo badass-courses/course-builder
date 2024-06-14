@@ -11,9 +11,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
 
 	return (
 		<main
-			className={cn('flex min-h-[calc(100vh-var(--nav-height))] flex-col', {
-				'content-container': !isEditRoute,
-			})}
+			className={cn('flex min-h-[calc(100vh-var(--nav-height))] flex-col', {})}
 		>
 			<Navigation />
 			{children}

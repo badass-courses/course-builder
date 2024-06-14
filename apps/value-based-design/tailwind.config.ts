@@ -4,6 +4,14 @@ const { fontFamily } = require('tailwindcss/defaultTheme')
 
 const { withUt } = require('uploadthing/tw')
 
+const round = (num: number) =>
+	num
+		.toFixed(7)
+		.replace(/(\.[0-9]+?)0+$/, '$1')
+		.replace(/\.0$/, '')
+const rem = (px: number) => `${round(px / 16)}rem`
+const em = (px: number, base: number) => `${round(px / base)}em`
+
 /** @type {import('tailwindcss').Config} */
 module.exports = withUt({
 	darkMode: ['class'],
@@ -24,7 +32,7 @@ module.exports = withUt({
 			fontFamily: {
 				sans: ['var(--font-geist-sans)', ...fontFamily.sans],
 				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
-				heading: ['var(--font-l)', ...fontFamily.sans],
+				serif: ['var(--font-yrsa)', ...fontFamily.serif],
 			},
 			colors: {
 				gray: colors.trueGray,
@@ -33,7 +41,6 @@ module.exports = withUt({
 				ring: 'hsl(var(--ring))',
 				background: {
 					DEFAULT: 'hsl(var(--background))',
-					body: 'hsl(var(--background-body))',
 				},
 				foreground: 'hsl(var(--foreground))',
 				primary: {
@@ -85,6 +92,111 @@ module.exports = withUt({
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				spin: 'spin 2s linear infinite',
 			},
+			typography: (theme: any) => ({
+				sm: {
+					css: {
+						fontSize: rem(22),
+						lineHeight: round(24 / 22),
+						'p, li, blockquote': {
+							color: theme('colors.foreground'),
+						},
+						'h1, h2, h3, h4, h5, h6, strong': {
+							color: theme('colors.foreground'),
+						},
+						'li::marker': {
+							color: theme('colors.foreground'),
+						},
+						h1: {
+							fontSize: em(32, 16),
+							marginTop: '0',
+							marginBottom: em(28, 36),
+							lineHeight: round(32 / 36),
+						},
+						h2: {
+							fontSize: em(22, 16),
+							marginTop: em(32, 24),
+							marginBottom: em(16, 24),
+							lineHeight: round(26 / 24),
+						},
+						h3: {
+							fontSize: em(18, 16),
+							marginTop: em(28, 20),
+							marginBottom: em(10, 20),
+							lineHeight: round(28 / 20),
+						},
+						h4: {
+							marginTop: em(16, 16),
+							marginBottom: em(8, 16),
+							lineHeight: round(24 / 16),
+						},
+						p: {
+							marginTop: em(16, 18),
+							marginBottom: em(16, 18),
+						},
+					},
+				},
+				DEFAULT: {
+					css: {
+						fontSize: rem(23),
+						lineHeight: round(30 / 23),
+						'p, li, blockquote': {
+							color: theme('colors.foreground'),
+						},
+						'h1, h2, h3, h4, h5, h6, strong': {
+							color: theme('colors.foreground'),
+						},
+						'li::marker': {
+							color: theme('colors.foreground'),
+						},
+						h1: {
+							fontSize: em(36, 16),
+							marginTop: '0',
+							marginBottom: em(28, 36),
+							lineHeight: round(32 / 36),
+						},
+						h2: {
+							fontSize: em(24, 16),
+							marginTop: em(32, 24),
+							marginBottom: em(16, 24),
+							lineHeight: round(26 / 24),
+						},
+						h3: {
+							fontSize: em(20, 16),
+							marginTop: em(28, 20),
+							marginBottom: em(10, 20),
+							lineHeight: round(28 / 20),
+						},
+						h4: {
+							marginTop: em(24, 16),
+							marginBottom: em(8, 16),
+							lineHeight: round(24 / 16),
+						},
+						a: {
+							color: theme('colors.primary.DEFAULT'),
+						},
+						'code::before': {
+							content: '""',
+						},
+						'code::after': {
+							content: '""',
+						},
+						p: {
+							marginTop: em(18, 23),
+							marginBottom: em(18, 23),
+						},
+						code: {
+							backgroundColor: theme('colors.muted.DEFAULT'),
+							color: theme('colors.foreground'),
+							padding: '0.25rem',
+							borderRadius: '0.25rem',
+							whiteSpace: 'nowrap',
+						},
+						'pre code': {
+							whiteSpace: 'pre-wrap',
+						},
+					},
+				},
+			}),
 		},
 	},
 	plugins: [
@@ -92,5 +204,6 @@ module.exports = withUt({
 		require('tailwind-scrollbar'),
 		require('tailwindcss-radix'),
 		require('tailwindcss-animate'),
+		require('tailwind-fluid-typography'),
 	],
 })

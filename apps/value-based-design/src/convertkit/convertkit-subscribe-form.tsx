@@ -102,6 +102,7 @@ export const SubscribeToConvertkitForm: React.FC<
 		>
 			<div data-sr-fieldset="" className="w-full">
 				<Label
+					className="text-lg"
 					data-sr-input-label=""
 					htmlFor={id ? `first_name_${id}` : 'first_name'}
 				>
@@ -111,7 +112,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					data-input-with-error={Boolean(
 						touched.first_name && errors.first_name,
 					)}
-					className="h-auto"
+					className="text-lg"
 					name="first_name"
 					id={id ? `first_name_${id}` : 'first_name'}
 					onChange={handleChange}
@@ -123,12 +124,16 @@ export const SubscribeToConvertkitForm: React.FC<
 				)}
 			</div>
 			<div data-sr-fieldset="" className="w-full">
-				<Label data-sr-input-label="" htmlFor={id ? `email_${id}` : 'email'}>
+				<Label
+					className="text-lg"
+					data-sr-input-label=""
+					htmlFor={id ? `email_${id}` : 'email'}
+				>
 					Email*
 				</Label>
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
-					className="h-auto"
+					className="text-lg"
 					name="email"
 					id={id ? `email_${id}` : 'email'}
 					onChange={handleChange}
@@ -140,6 +145,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					<p data-input-error-message>{errors.email}</p>
 				)}
 			</div>
+
 			{submitButtonElem ? (
 				React.cloneElement(submitButtonElem, {
 					type: 'submit',
@@ -153,7 +159,7 @@ export const SubscribeToConvertkitForm: React.FC<
 			) : (
 				<Button
 					variant="default"
-					size="lg"
+					className="text-lg"
 					disabled={
 						(touched.first_name && errors.first_name) ||
 						(touched.email && errors.email) ||

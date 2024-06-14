@@ -9,7 +9,7 @@ import { getProduct } from '@/lib/products-query'
 import { getCouponForCode } from '@/lib/props-for-commerce'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { l } from '@/utils/load-fonts'
+import { yrsa } from '@/utils/load-fonts'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
@@ -34,7 +34,7 @@ export default function RootLayout({
 			<html lang="en" suppressHydrationWarning={true}>
 				<AxiomWebVitals />
 				<body
-					className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${l.variable}`}
+					className={`font-serif ${GeistSans.variable} ${GeistMono.variable} ${yrsa.variable}`}
 				>
 					<TRPCReactProvider>
 						<Party />

@@ -36,23 +36,23 @@ export function Links({ className }: { className?: string }) {
 		<motion.nav
 			aria-label="top"
 			className={cn(
-				'relative mx-auto flex w-full items-center justify-between px-4 text-sm sm:px-7',
+				'relative mx-auto flex w-full items-center justify-center px-5 text-sm',
 				className,
 			)}
 		>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center">
 				<Link
 					href="/"
 					aria-current={isRoot}
 					tabIndex={isRoot ? -1 : 0}
 					passHref
-					className="font-heading relative z-10 text-lg font-bold"
+					className="border-foreground relative z-10 inline-flex items-center justify-center gap-1 border-2 px-2 py-1 font-sans text-sm font-bold"
 					onContextMenu={(event) => {
 						event.preventDefault()
 						redirect('/brand')
 					}}
 				>
-					{config.defaultTitle}
+					<span className="text-lg leading-none">⬖</span> {config.defaultTitle}
 				</Link>
 				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
 					{navigationLinks.map(({ label, href, icon }) => {

@@ -20,7 +20,7 @@ const Navigation: React.FC<NavigationProps> = ({
 		<>
 			<div
 				className={cn(
-					`container relative z-50 flex h-[calc(var(--nav-height))] w-full flex-col items-center justify-center bg-transparent px-0 print:hidden`,
+					`relative z-50 flex h-[calc(var(--nav-height))] w-full flex-col items-center justify-center px-0 print:hidden`,
 					navigationContainerClassName,
 				)}
 			>
