@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import { ArticleCTA } from '@/app/(content)/[article]/_components/article-cta'
 import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
 import ContributorBio from '@/components/contributor-bio'
+import FloatingActionsBar from '@/components/floating-actions-bar'
 import Share from '@/components/share'
 import { env } from '@/env.mjs'
 import { type Article } from '@/lib/articles'
@@ -45,22 +46,15 @@ async function ArticleActionBar({
 	const { session, ability } = await getServerAuthSession()
 	const article = await articleLoader
 
-	return (
-		<>
-			{article && ability.can('update', 'Content') ? (
-				<div className="bg-muted absolute flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button asChild size="sm">
-						<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
-							Edit
-						</Link>
-					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
-		</>
-	)
+	return article && ability.can('update', 'Content') ? (
+		<FloatingActionsBar>
+			<Button asChild size="sm">
+				<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
+					Edit
+				</Link>
+			</Button>
+		</FloatingActionsBar>
+	) : null
 }
 
 async function Article({
