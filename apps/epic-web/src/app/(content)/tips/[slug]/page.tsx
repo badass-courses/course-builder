@@ -54,13 +54,7 @@ export default async function TipPage({
 
 	return (
 		<>
-			<Suspense
-				fallback={
-					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-				}
-			>
-				<TipActionBar tipLoader={tipLoader} />
-			</Suspense>
+			<TipActionBar tipLoader={tipLoader} />
 			<main className="mx-auto w-full" id="tip">
 				<div className="relative z-10 flex items-center justify-center">
 					<div className="flex w-full max-w-screen-lg flex-col">
