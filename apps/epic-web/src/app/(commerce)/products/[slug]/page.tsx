@@ -3,6 +3,7 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
+import FloatingActionsBar from '@/components/floating-actions-bar'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
@@ -26,17 +27,14 @@ async function ProductActionBar({
 	return (
 		<>
 			{product && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
+				<FloatingActionsBar>
 					<Button asChild size="sm">
 						<Link href={`/products/${product.fields?.slug || product.id}/edit`}>
 							Edit
 						</Link>
 					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+				</FloatingActionsBar>
+			) : null}
 		</>
 	)
 }

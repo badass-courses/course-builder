@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
 import { SubscribeForm } from '@/app/(content)/tips/_components/tip-subscribe-form'
+import FloatingActionsBar from '@/components/floating-actions-bar'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
@@ -203,15 +204,12 @@ async function TipActionBar({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	return (
 		<>
 			{tip && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
+				<FloatingActionsBar>
 					<Button size="sm" asChild>
 						<Link href={`/tips/${tip.fields.slug || tip.id}/edit`}>Edit</Link>
 					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+				</FloatingActionsBar>
+			) : null}
 		</>
 	)
 }
