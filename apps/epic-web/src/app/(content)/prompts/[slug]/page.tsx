@@ -121,13 +121,7 @@ export default async function PromptPage({
 
 	return (
 		<div>
-			<Suspense
-				fallback={
-					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-				}
-			>
-				<PromptActionBar promptLoader={promptLoader} />
-			</Suspense>
+			<PromptActionBar promptLoader={promptLoader} />
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
 				<PromptTitle promptLoader={promptLoader} />
 				<Prompt promptLoader={promptLoader} />
