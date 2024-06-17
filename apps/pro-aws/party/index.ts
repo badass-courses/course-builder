@@ -57,7 +57,7 @@ export default class Server implements Party.Server {
 				console.log('tip', tip)
 
 				const doc = new Y.Doc()
-				if (tip?.fields?.body) {
+				if (tip?.fields?.body && doc.getText('codemirror').length === 0) {
 					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
 				return doc
