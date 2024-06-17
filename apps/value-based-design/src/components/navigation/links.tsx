@@ -16,6 +16,7 @@ import {
 	type AnimationControls,
 } from 'framer-motion'
 
+import { HamburgerMenuIcon } from '../navigation'
 import { ThemeToggle } from './theme-toggle'
 
 export const getNavigationLinks = (): {
@@ -23,7 +24,28 @@ export const getNavigationLinks = (): {
 	href: string
 	icon: () => string
 }[] => {
-	return []
+	return [
+		// {
+		// 	label: 'Tutorials',
+		// 	href: '/tutorials',
+		// 	icon: () => '📚',
+		// },
+		// {
+		// 	label: 'Courses',
+		// 	href: '/courses',
+		// 	icon: () => '🎓',
+		// },
+		// {
+		// 	label: 'Brands',
+		// 	href: '/brands',
+		// 	icon: () => '🏷️',
+		// },
+		// {
+		// 	label: 'About',
+		// 	href: '/about',
+		// 	icon: () => '📝',
+		// },
+	]
 }
 
 export function Links({ className }: { className?: string }) {
@@ -36,17 +58,23 @@ export function Links({ className }: { className?: string }) {
 		<motion.nav
 			aria-label="top"
 			className={cn(
-				'relative mx-auto flex w-full items-center justify-center px-5 text-sm',
+				'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
+
 				className,
 			)}
 		>
-			<div className="flex items-center">
+			<div className={cn('flex w-full items-center justify-center gap-8')}>
 				<Link
 					href="/"
 					aria-current={isRoot}
 					tabIndex={isRoot ? -1 : 0}
 					passHref
-					className="border-foreground relative z-10 inline-flex items-center justify-center gap-1 border-2 px-2 py-1 font-sans text-sm font-bold"
+					className={cn(
+						'border-foreground z-10 inline-flex items-baseline justify-center gap-1 border-2 px-2 py-1 font-sans text-sm font-bold',
+						{
+							'absolute left-2': navigationLinks.length > 0,
+						},
+					)}
 					onContextMenu={(event) => {
 						event.preventDefault()
 						redirect('/brand')
@@ -54,28 +82,27 @@ export function Links({ className }: { className?: string }) {
 				>
 					<span className="text-lg leading-none">⬖</span> {config.defaultTitle}
 				</Link>
-				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
-					{navigationLinks.map(({ label, href, icon }) => {
-						return (
-							<Link
-								key={href}
-								href={href}
-								className={cx(
-									'group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5',
-								)}
-								passHref
-							>
-								{icon()} {label}
-							</Link>
-						)
-					})}
-				</div>
+				<nav className="absolute hidden md:flex">
+					<ul className="flex items-center gap-5 text-lg font-semibold">
+						{navigationLinks.map(({ label, href, icon }) => {
+							return (
+								<li key={href}>
+									<Link href={href} className={cx('')} passHref>
+										{icon()} {label}
+									</Link>
+								</li>
+							)
+						})}
+					</ul>
+				</nav>
 			</div>
-			<div className="flex items-center justify-end gap-2">
+			<div className="absolute right-2 flex items-center justify-end gap-2">
 				{/* <Login className="hidden md:flex" /> */}
 				<User className="hidden md:flex" />
 				{/* <ThemeToggle /> */}
-				{/* <NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
+				{navigationLinks.length > 0 && (
+					<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} />
+				)}
 			</div>
 			<AnimatePresence>
 				{menuOpen && (
@@ -117,74 +144,20 @@ export function Links({ className }: { className?: string }) {
 type NavToggleProps = {
 	isMenuOpened: boolean
 	setMenuOpened: (value: boolean) => void
-	menuControls?: AnimationControls
 }
 
 const NavToggle: React.FC<NavToggleProps> = ({
 	isMenuOpened,
 	setMenuOpened,
-	menuControls,
 }) => {
-	const path01Variants = {
-		open: { d: 'M3.06061 2.99999L21.0606 21' },
-		closed: { d: 'M0 9.5L24 9.5' },
-	}
-	const path02Variants = {
-		open: { d: 'M3.00006 21.0607L21 3.06064' },
-		moving: { d: 'M0 14.5L24 14.5' },
-		closed: { d: 'M0 14.5L15 14.5' },
-	}
-	const path01Controls = useAnimationControls()
-	const path02Controls = useAnimationControls()
-
-	const [shouldAnimate, setShouldAnimate] = React.useState(false)
-	React.useEffect(() => {
-		if (!shouldAnimate) {
-			return
-		}
-
-		async function animateMenu() {
-			if (!isMenuOpened) {
-				await path02Controls.start(path02Variants.moving)
-				path01Controls.start(path01Variants.open)
-				path02Controls.start(path02Variants.open)
-			} else {
-				path01Controls.start(path01Variants.closed)
-				await path02Controls.start(path02Variants.moving)
-				path02Controls.start(path02Variants.closed)
-			}
-
-			setShouldAnimate(false)
-		}
-
-		animateMenu()
-	}, [shouldAnimate, isMenuOpened])
-
 	return (
 		<button
 			className="z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
 			onClick={async () => {
-				// menuControls.start(isMenuOpened ? 'close' : 'open')
 				setMenuOpened(!isMenuOpened)
-				setShouldAnimate(true)
 			}}
 		>
-			<svg width="24" height="24" viewBox="0 0 24 24">
-				<motion.path
-					{...path01Variants.closed}
-					animate={path01Controls}
-					transition={{ duration: 0.2 }}
-					stroke="currentColor"
-					strokeWidth={1.5}
-				/>
-				<motion.path
-					{...path02Variants.closed}
-					animate={path02Controls}
-					transition={{ duration: 0.2 }}
-					stroke="currentColor"
-					strokeWidth={1.5}
-				/>
-			</svg>
+			<HamburgerMenuIcon />
 		</button>
 	)
 }

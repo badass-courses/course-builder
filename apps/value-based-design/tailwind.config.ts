@@ -25,17 +25,17 @@ module.exports = withUt({
 			center: true,
 			padding: 0,
 			screens: {
-				'2xl': '1280px',
+				'2xl': '770px',
 			},
 		},
 		extend: {
 			fontFamily: {
 				sans: ['var(--font-geist-sans)', ...fontFamily.sans],
 				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
-				serif: ['var(--font-yrsa)', ...fontFamily.serif],
+				serif: ['var(--font-fsBrabo)', ...fontFamily.serif],
 			},
 			colors: {
-				gray: colors.trueGray,
+				gray: colors.stone,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -95,8 +95,8 @@ module.exports = withUt({
 			typography: (theme: any) => ({
 				sm: {
 					css: {
-						fontSize: rem(22),
-						lineHeight: round(24 / 22),
+						fontSize: rem(18),
+						lineHeight: round(24 / 18),
 						'p, li, blockquote': {
 							color: theme('colors.foreground'),
 						},
@@ -137,8 +137,8 @@ module.exports = withUt({
 				},
 				DEFAULT: {
 					css: {
-						fontSize: rem(23),
-						lineHeight: round(30 / 23),
+						fontSize: rem(22),
+						lineHeight: round(32 / 22),
 						'p, li, blockquote': {
 							color: theme('colors.foreground'),
 						},
@@ -152,7 +152,7 @@ module.exports = withUt({
 							fontSize: em(36, 16),
 							marginTop: '0',
 							marginBottom: em(28, 36),
-							lineHeight: round(32 / 36),
+							lineHeight: round(34 / 36),
 						},
 						h2: {
 							fontSize: em(24, 16),
@@ -181,8 +181,8 @@ module.exports = withUt({
 							content: '""',
 						},
 						p: {
-							marginTop: em(18, 23),
-							marginBottom: em(18, 23),
+							marginTop: em(20, 22),
+							marginBottom: em(20, 22),
 						},
 						code: {
 							backgroundColor: theme('colors.muted.DEFAULT'),

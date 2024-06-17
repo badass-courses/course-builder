@@ -13,21 +13,22 @@ export const metadata: Metadata = {
 
 export default async function Home() {
 	return (
-		<div className="flex flex-col pt-5">
+		<div className="flex flex-col">
 			<section aria-label="About Value-Based Design Workshop">
-				<article className="prose sm:prose prose-sm mx-auto w-full max-w-2xl px-6 pb-16 sm:pb-24">
+				<article className="prose sm:prose prose-sm bg-background mx-auto w-full max-w-3xl px-6 py-10 sm:py-16 sm:pb-24 lg:px-16">
 					<LandingCopy />
 					<PrimaryNewsletterCta withTitle={false} />
 				</article>
 			</section>
 			<section
 				aria-label="Your Instructor"
-				className="text-background bg-black py-10 sm:py-24"
+				id="dark"
+				className="text-background bg-black py-10 sm:py-16 lg:py-24"
 			>
-				<div className="mx-auto flex w-full max-w-4xl flex-col-reverse items-center justify-between gap-10 px-6 sm:gap-24 lg:flex-row">
+				<div className="mx-auto flex w-full max-w-3xl flex-col-reverse items-center justify-between gap-10 px-6 sm:gap-20 md:flex-row">
 					<div>
 						<h2 className="flex flex-col items-center gap-3 sm:items-start">
-							<span className="font-heading text-primary text-base uppercase tracking-widest sm:text-lg">
+							<span className="font-heading dark:text-primary text-sm uppercase tracking-widest">
 								Your Instructor
 							</span>{' '}
 							<span className="font-heading text-4xl font-semibold sm:text-5xl">
@@ -76,10 +77,12 @@ export default async function Home() {
 						</div>
 					</div>
 					<Image
-						src={require('../../public/nickd.jpg')}
+						src={require('../../public/nickd.jpeg')}
 						alt="Nick Disabato"
 						loading="eager"
-						className="flex-shrink-0"
+						className="flex-shrink-0 rounded"
+						width={728 / 2.5}
+						height={1086 / 2.5}
 					/>
 				</div>
 			</section>

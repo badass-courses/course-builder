@@ -18,14 +18,14 @@ const Navigation: React.FC<NavigationProps> = ({
 }) => {
 	return (
 		<>
-			<div
+			<header
 				className={cn(
-					`relative z-50 flex h-[calc(var(--nav-height))] w-full flex-col items-center justify-center px-0 print:hidden`,
+					`bg-background z-50 flex h-[calc(var(--nav-height))] w-full flex-col items-center justify-center border-b print:hidden`,
 					navigationContainerClassName,
 				)}
 			>
 				<Links />
-			</div>
+			</header>
 		</>
 	)
 }
