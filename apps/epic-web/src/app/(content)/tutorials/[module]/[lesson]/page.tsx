@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
+import FloatingActionsBar from '@/components/floating-actions-bar'
 import { courseBuilderAdapter } from '@/db'
 import { Lesson } from '@/lib/lessons'
 import { getLesson } from '@/lib/lessons-query'
@@ -166,8 +167,7 @@ async function LessonActionBar({
 	return (
 		<>
 			{lesson && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
+				<FloatingActionsBar>
 					<Button size="sm" asChild>
 						<Link
 							href={`/tutorials/${tutorial?.fields.slug}/${lesson.fields?.slug || lesson.id}/edit`}
@@ -175,10 +175,8 @@ async function LessonActionBar({
 							Edit
 						</Link>
 					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+				</FloatingActionsBar>
+			) : null}
 		</>
 	)
 }

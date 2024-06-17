@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import FloatingActionsBar from '@/components/floating-actions-bar'
 import { type Prompt } from '@/lib/prompts'
 import { getPrompt } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -49,17 +50,14 @@ async function PromptActionBar({
 	return (
 		<>
 			{prompt && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
+				<FloatingActionsBar>
 					<Button asChild size="sm">
 						<Link href={`/prompts/${prompt.fields?.slug || prompt.id}/edit`}>
 							Edit
 						</Link>
 					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+				</FloatingActionsBar>
+			) : null}
 		</>
 	)
 }
