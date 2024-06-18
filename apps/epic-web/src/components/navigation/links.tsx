@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { redirect, usePathname, useRouter } from 'next/navigation'
+import { redirect, usePathname } from 'next/navigation'
 import { Login } from '@/components/navigation/login'
 import {
 	ArticlesIcon,
@@ -228,7 +228,6 @@ const NavToggle: React.FC<NavToggleProps> = ({
 		<button
 			className="absolute z-10 flex h-12 w-12 items-center justify-center p-1 md:hidden"
 			onClick={async () => {
-				// menuControls.start(isMenuOpened ? 'close' : 'open')
 				setMenuOpened(!isMenuOpened)
 				if (!isMenuOpened) {
 					await path02Controls.start(path02Variants.moving)
