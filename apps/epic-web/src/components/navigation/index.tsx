@@ -75,17 +75,3 @@ export const CrossIcon = () => {
 		</svg>
 	)
 }
-
-export const Logo: React.FC<{ className?: string }> = ({ className }) => {
-	return (
-		<div className="flex items-center gap-1">
-			<Image
-				src={require('../../public/favicon.ico')}
-				alt=""
-				width={24}
-				height={24}
-			/>{' '}
-			{process.env.NEXT_PUBLIC_SITE_TITLE}
-		</div>
-	)
-}
