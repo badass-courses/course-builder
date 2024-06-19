@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Links } from '@/components/navigation/links'
+import { Links } from '@/components/app/navigation/links'
 import { cn } from '@/utils/cn'
 import { motion } from 'framer-motion'
 

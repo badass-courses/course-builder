@@ -5,7 +5,8 @@ import { Suspense } from 'react'
 import { DM_Sans, JetBrains_Mono } from 'next/font/google'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
-import Navigation from '@/components/navigation'
+import Footer from '@/components/app/footer'
+import Navigation from '@/components/app/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import { getProduct } from '@/lib/products-query'
 import { getCouponForCode } from '@/lib/props-for-commerce'
@@ -88,6 +89,7 @@ export default function RootLayout({
 										{children}
 									</CouponProvider>
 								</main>
+								<Footer />
 							</div>
 						</ThemeProvider>
 					</Providers>
