@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
-import { Login } from '@/components/navigation/login'
+import { Login } from '@/components/app/navigation/login'
 import {
 	ArticlesIcon,
 	EventsIcon,
@@ -11,8 +11,8 @@ import {
 	TipsIcon,
 	TutorialsIcon,
 	WorkshopsIcon,
-} from '@/components/navigation/navigation-icons'
-import { User } from '@/components/navigation/user'
+} from '@/components/app/navigation/navigation-icons'
+import { User } from '@/components/app/navigation/user'
 import { track } from '@/utils/analytics'
 import {
 	AnimatePresence,
