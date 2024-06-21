@@ -87,6 +87,20 @@ export async function getTipsModule(): Promise<Tip[]> {
 					contributionType: true,
 				},
 			},
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
 		},
 		orderBy: desc(contentResource.createdAt),
 	})
