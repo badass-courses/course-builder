@@ -53,10 +53,12 @@ export default async function LessonPage({ params }: Props) {
 	return (
 		<div>
 			<main className="mx-auto w-full" id="lesson">
-				<LessonActionBar
-					lessonLoader={lessonLoader}
-					tutorialLoader={tutorialLoader}
-				/>
+				<Suspense fallback={<div />}>
+					<LessonActionBar
+						lessonLoader={lessonLoader}
+						tutorialLoader={tutorialLoader}
+					/>
+				</Suspense>
 				<PlayerContainer lessonLoader={lessonLoader} />
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
 					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">

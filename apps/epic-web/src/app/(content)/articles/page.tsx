@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
@@ -16,23 +17,28 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
-export default async function ArticlesIndexPage() {
+const ArticlesActionsBar = async () => {
 	const { ability } = await getServerAuthSession()
+
+	return ability.can('update', 'Content') ? (
+		<FloatingActionsBar>
+			<Button asChild className="h-7">
+				<Link href={`/articles/new`}>New Article</Link>
+			</Button>
+		</FloatingActionsBar>
+	) : null
+}
+
+export default async function ArticlesIndexPage() {
 	const articles = await getArticles()
 	const title = 'Epic Web Dev Articles'
 	const pageDescription = 'Articles about Web Development'
 
-	console.log({ articles })
-
 	return (
 		<>
-			{ability.can('update', 'Content') ? (
-				<FloatingActionsBar>
-					<Button asChild className="h-7">
-						<Link href={`/articles/new`}>New Article</Link>
-					</Button>
-				</FloatingActionsBar>
-			) : null}
+			<Suspense fallback={<div />}>
+				<ArticlesActionsBar />
+			</Suspense>
 			<header className="mx-auto w-full max-w-screen-lg px-5 pb-3 pt-5 sm:pb-5 sm:pt-8">
 				<h1 className="text-lg font-semibold">{title}</h1>
 			</header>
