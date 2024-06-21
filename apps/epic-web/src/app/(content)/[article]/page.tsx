@@ -43,7 +43,7 @@ async function ArticleActionBar({
 }: {
 	articleLoader: Promise<Article | null>
 }) {
-	const { session, ability } = await getServerAuthSession()
+	const { ability } = await getServerAuthSession()
 	const article = await articleLoader
 
 	return article && ability.can('update', 'Content') ? (
@@ -213,7 +213,9 @@ export default async function ArticlePage({
 	const articleLoader = getArticle(params.article)
 	return (
 		<div>
-			<ArticleActionBar articleLoader={articleLoader} />
+			<Suspense fallback={<div />}>
+				<ArticleActionBar articleLoader={articleLoader} />
+			</Suspense>
 			<Article articleLoader={articleLoader} />
 		</div>
 	)

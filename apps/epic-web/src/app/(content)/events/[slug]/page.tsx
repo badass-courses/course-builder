@@ -1,9 +1,11 @@
 import * as React from 'react'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import FloatingActionsBar from '@/components/floating-actions-bar'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
@@ -17,6 +19,20 @@ import { Button } from '@coursebuilder/ui'
 import { EventPageProps } from './_components/event-page-props'
 import { EventTemplate } from './_components/event-template'
 
+const EventActionsBar = async ({ event }: { event: Event }) => {
+	const { ability } = await getServerAuthSession()
+
+	return event && ability.can('update', 'Content') ? (
+		<FloatingActionsBar>
+			<Button asChild size="sm">
+				<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+					Edit
+				</Link>
+			</Button>
+		</FloatingActionsBar>
+	) : null
+}
+
 export default async function EventPage({
 	params,
 	searchParams,
@@ -24,7 +40,7 @@ export default async function EventPage({
 	params: { slug: string }
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
-	const { session, ability } = await getServerAuthSession()
+	const { session } = await getServerAuthSession()
 	const user = session?.user
 
 	const event = await getEvent(params.slug)
@@ -128,15 +144,9 @@ export default async function EventPage({
 
 	return (
 		<div>
-			{event && ability.can('update', 'Content') ? (
-				<FloatingActionsBar>
-					<Button asChild size="sm">
-						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-							Edit
-						</Link>
-					</Button>
-				</FloatingActionsBar>
-			) : null}
+			<Suspense fallback={<div />}>
+				<EventActionsBar event={event} />
+			</Suspense>
 			{eventProps.hasPurchasedCurrentProduct ? (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					you have a ticket to {event.fields?.title} see you on{' '}

@@ -21,7 +21,6 @@ async function ProductActionBar({
 	productLoader: Promise<Product | null>
 }) {
 	const { ability } = await getServerAuthSession()
-
 	const product = await productLoader
 
 	return (
@@ -61,7 +60,9 @@ export default async function ProductPage({
 
 	return (
 		<div>
-			<ProductActionBar productLoader={productLoader} />
+			<Suspense fallback={<div />}>
+				<ProductActionBar productLoader={productLoader} />
+			</Suspense>
 			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
 				<ProductCommerce
 					productLoader={productLoader}
@@ -79,7 +80,7 @@ async function ProductCommerce({
 	productLoader: Promise<Product | null>
 	searchParams: ParsedUrlQuery
 }) {
-	const { session, ability } = await getServerAuthSession()
+	const { session } = await getServerAuthSession()
 	const user = session?.user
 	const product = await productLoader
 	console.log({ product })
