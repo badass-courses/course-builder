@@ -72,7 +72,7 @@ export default function RootLayout({
 										},
 									}}
 								/>
-								<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
+								<div className="flex grow flex-col">
 									<NextSSRPlugin
 										/**
 										 * The `extractRouterConfig` will extract **only** the route configs from the
@@ -88,7 +88,7 @@ export default function RootLayout({
 									>
 										{children}
 									</CouponProvider>
-								</main>
+								</div>
 								<Footer />
 							</div>
 						</ThemeProvider>
