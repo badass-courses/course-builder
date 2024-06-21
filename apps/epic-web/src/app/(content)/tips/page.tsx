@@ -51,7 +51,7 @@ async function TipList() {
 	const tipsModule = await getTipsModule()
 	const { ability } = await getServerAuthSession()
 	// TODO: implement resource completion functionality
-	const resourceCompleted = true
+	const resourceCompleted = false
 	return (
 		<>
 			{tipsModule.map((tip, i) => {
