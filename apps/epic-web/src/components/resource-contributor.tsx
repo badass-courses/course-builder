@@ -7,7 +7,7 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 const ResourceContributor = ({
 	name = 'Kent C. Dodds',
 	slug = 'kent-c-dodds',
-	image = require('../../../../../public/kent-c-dodds.png'),
+	image = require('../../public/kent-c-dodds.png'),
 	byline,
 	className,
 	as = Link,
