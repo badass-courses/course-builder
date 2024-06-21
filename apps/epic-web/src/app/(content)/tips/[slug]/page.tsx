@@ -4,10 +4,10 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { cookies, headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import ResourceContributor from '@/app/(content)/[article]/_components/resource-contributor'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
 import { SubscribeForm } from '@/app/(content)/tips/_components/tip-subscribe-form'
 import FloatingActionsBar from '@/components/floating-actions-bar'
+import ResourceContributor from '@/components/resource-contributor'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
@@ -51,6 +51,7 @@ export default async function TipPage({
 	headers()
 	console.log('🤡', cookies().get('ck_subscriber_id'))
 	const tipLoader = getTip(params.slug)
+	console.log(tipLoader)
 
 	return (
 		<>
