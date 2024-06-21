@@ -42,6 +42,17 @@ export const TipSchema = ContentResourceSchema.merge(
 			visibility: TipVisibilitySchema.default('unlisted'),
 			slug: z.string(),
 		}),
+		resources: z.array(
+			z.object({
+				resourceId: z.string(),
+				resource: z.object({
+					id: z.string(),
+					fields: z.object({
+						muxPlaybackId: z.string(),
+					}),
+				}),
+			}),
+		),
 	}),
 )
 
