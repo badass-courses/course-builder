@@ -107,7 +107,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					data-input-with-error={Boolean(
 						touched.first_name && errors.first_name,
 					)}
-					className="h-auto"
+					className="h-auto text-base"
 					name="first_name"
 					id={id ? `first_name_${id}` : 'first_name'}
 					onChange={handleChange}
@@ -124,7 +124,7 @@ export const SubscribeToConvertkitForm: React.FC<
 				</Label>
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
-					className="h-auto"
+					className="h-auto text-base"
 					name="email"
 					id={id ? `email_${id}` : 'email'}
 					onChange={handleChange}
@@ -150,6 +150,7 @@ export const SubscribeToConvertkitForm: React.FC<
 				<Button
 					variant="default"
 					size="lg"
+					className="h-auto"
 					disabled={
 						(touched.first_name && errors.first_name) ||
 						(touched.email && errors.email) ||
