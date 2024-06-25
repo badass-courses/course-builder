@@ -42,17 +42,6 @@ export default async function TipOG({ params }: { params: { slug: string } }) {
 
 	return new ImageResponse(
 		(
-			// <div
-			// 	tw="flex p-10 h-full w-full bg-white flex-col"
-			// 	style={{
-			// 		...font('sans'),
-			// 		backgroundImage,
-			// 	}}
-			// >
-			// 	<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
-			// 		<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
-			// 	</main>
-			// </div>
 			<div
 				tw="flex w-full relative justify-center text-white items-center h-full"
 				style={{
