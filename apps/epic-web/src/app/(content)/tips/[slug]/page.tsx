@@ -21,7 +21,11 @@ import { CheckIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
+import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
+
+import { AuthedVideoPlayer } from '../../_components/authed-video-player'
+import { Transcript } from '../../_components/video-transcript-renderer'
 
 type Props = {
 	params: { slug: string }
@@ -51,7 +55,6 @@ export default async function TipPage({
 	headers()
 	console.log('🤡', cookies().get('ck_subscriber_id'))
 	const tipLoader = getTip(params.slug)
-	console.log(tipLoader)
 
 	return (
 		<>
@@ -95,21 +98,6 @@ export default async function TipPage({
 					</div>
 				</article>
 			</main>
-			{/*<main className="mx-auto w-full" id="tip">*/}
-
-			{/*	<PlayerContainer tipLoader={tipLoader}/>*/}
-			{/*	<article*/}
-			{/*		className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">*/}
-			{/*		<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">*/}
-			{/*			<div*/}
-			{/*				className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">*/}
-			{/*				<div className="flex flex-col lg:col-span-8">*/}
-			{/*					<TipBody tipLoader={tipLoader}/>*/}
-			{/*				</div>*/}
-			{/*			</div>*/}
-			{/*		</div>*/}
-			{/*	</article>*/}
-			{/*</main>*/}
 		</>
 	)
 }
@@ -125,7 +113,7 @@ async function TipTranscript({
 	const transcript = await getTranscript(resource)
 	return transcript ? (
 		<div className="w-full max-w-2xl pt-5">
-			{/*<VideoTranscript transcript={tip.transcript} />*/}
+			<Transcript resourceLoader={tipLoader} />
 		</div>
 	) : null
 }
@@ -134,7 +122,6 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	const tip = await tipLoader
 	if (!tip) return null
 
-	console.log('tip', tip)
 	const tipBodySerialized = await serializeMDX(tip.fields.body || '', {
 		syntaxHighlighterOptions: {
 			theme: 'material-palenight',
@@ -242,23 +229,25 @@ async function PlayerContainer({
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 
 	return (
-		<Suspense fallback={<PlayerContainerSkeleton />}>
-			<div className="relative z-10 flex items-center justify-center">
-				<div className="flex w-full max-w-screen-lg flex-col">
-					<div className="relative aspect-[16/9]">
-						<div
-							className={cn(
-								'flex items-center justify-center  overflow-hidden',
-								{
-									hidden: displayOverlay,
-								},
-							)}
-						>
-							<TipPlayer videoResourceLoader={videoResourceLoader} />
+		<VideoPlayerOverlayProvider>
+			<Suspense fallback={<PlayerContainerSkeleton />}>
+				<div className="relative z-10 flex items-center justify-center">
+					<div className="flex w-full max-w-screen-lg flex-col">
+						<div className="relative aspect-[16/9]">
+							<div
+								className={cn(
+									'flex items-center justify-center  overflow-hidden',
+									{
+										hidden: displayOverlay,
+									},
+								)}
+							>
+								<AuthedVideoPlayer videoResourceLoader={videoResourceLoader} />
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</Suspense>
+			</Suspense>
+		</VideoPlayerOverlayProvider>
 	)
 }
