@@ -1,5 +1,15 @@
 # @coursebuilder/commerce-next
 
+## 0.0.6
+
+### Patch Changes
+
+- [#183](https://github.com/badass-courses/course-builder/pull/183) [`9421c4f`](https://github.com/badass-courses/course-builder/commit/9421c4f1db7eb84728abca79bf68acb0b5ee2671) Thanks [@joelhooks](https://github.com/joelhooks)! - adds a state machine to pricing component
+
+- Updated dependencies [[`9421c4f`](https://github.com/badass-courses/course-builder/commit/9421c4f1db7eb84728abca79bf68acb0b5ee2671), [`2e87fdd`](https://github.com/badass-courses/course-builder/commit/2e87fdd4397848939dbcc8cb7b0fae53267fdc62), [`1dd4a5b`](https://github.com/badass-courses/course-builder/commit/1dd4a5bbd2b737ab45431256139134d56c0686ec)]:
+  - @coursebuilder/core@0.2.2
+  - @coursebuilder/ui@1.0.14
+
 ## 0.0.5
 
 ### Patch Changes
