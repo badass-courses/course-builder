@@ -110,14 +110,14 @@ async function TipList() {
 									<span className="sr-only">(watched)</span>
 								)}
 							</h2>
-							<ResourceContributor
-								// TODO: extend tip data with instructor data
-								// name={tip?.instructor?.name}
-								// slug={tip?.instructor?.slug}
-								// image={tip?.instructor?.picture?.url}
-								as="div"
-								className="mt-3 gap-2 text-sm font-normal opacity-75 [&_img]:w-8"
-							/>
+							{tip?.contributions?.[0]?.user && (
+								<ResourceContributor
+									name={tip.contributions[0].user.name}
+									image={tip.contributions?.[0].user.image}
+									as="div"
+									className="mt-3 gap-2 text-sm font-normal opacity-75 [&_img]:w-8"
+								/>
+							)}
 						</CardContent>
 						{ability.can('delete', 'Content') && (
 							<CardFooter>
