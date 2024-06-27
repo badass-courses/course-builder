@@ -55,7 +55,8 @@ async function TipList() {
 	return (
 		<>
 			{tipsModule.map((tip, i) => {
-				const muxPlaybackId = tip.resources?.[0]?.resource.fields?.muxPlaybackId
+				const muxPlaybackId =
+					tip.resources?.[0]?.resource?.fields?.muxPlaybackId
 				const thumbnail = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?width=720&height=405&fit_mode=preserve`
 				return (
 					<Link
