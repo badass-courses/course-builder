@@ -1,5 +1,21 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.5.0
+
+### Minor Changes
+
+- [#186](https://github.com/badass-courses/course-builder/pull/186) [`080337e`](https://github.com/badass-courses/course-builder/commit/080337ef60c1e62e762673266b2478b7cd141b33) Thanks [@joelhooks](https://github.com/joelhooks)! - database schema alignment with Skill Stack so that porting those apps will be easier
+
+### Patch Changes
+
+- [#188](https://github.com/badass-courses/course-builder/pull/188) [`5f45e26`](https://github.com/badass-courses/course-builder/commit/5f45e2637c3742e88f7f26127356710edac5b763) Thanks [@vojtaholik](https://github.com/vojtaholik)! - make getModuleProgressForUser support exercise solutions
+
+- [#183](https://github.com/badass-courses/course-builder/pull/183) [`9421c4f`](https://github.com/badass-courses/course-builder/commit/9421c4f1db7eb84728abca79bf68acb0b5ee2671) Thanks [@joelhooks](https://github.com/joelhooks)! - adds a state machine to pricing component
+
+- [#188](https://github.com/badass-courses/course-builder/pull/188) [`2e87fdd`](https://github.com/badass-courses/course-builder/commit/2e87fdd4397848939dbcc8cb7b0fae53267fdc62) Thanks [@vojtaholik](https://github.com/vojtaholik)! - pull nested resources for getContentResource
+
+- [#188](https://github.com/badass-courses/course-builder/pull/188) [`de432b7`](https://github.com/badass-courses/course-builder/commit/de432b78352899adbb830dec8872e82af8823e20) Thanks [@vojtaholik](https://github.com/vojtaholik)! - update(getModuleProgressForUser): filter out solution from nextResource data
+
 ## 0.4.0
 
 ### Minor Changes
