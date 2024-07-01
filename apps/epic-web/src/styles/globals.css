@@ -34,6 +34,12 @@
 	}
 }
 
+/* Shiki highlighter */
+/* TODO: figure out how to override the color inside codeToHtml */
+.shiki.material-theme-palenight {
+	background-color: #111827 !important;
+}
+
 /* code-hike code blocks */
 .prose .ch-code {
 	@apply bg-gray-900 dark:bg-gray-900 !important;

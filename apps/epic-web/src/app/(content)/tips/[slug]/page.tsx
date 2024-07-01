@@ -12,11 +12,11 @@ import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
-import MDX from '@/mdx/mdx'
-import serializeMDX from '@/mdx/serialize-mdx'
 import { getServerAuthSession } from '@/server/auth'
+import { codeToHtml } from '@/utils/shiki'
 import slugify from '@sindresorhus/slugify'
 import { CheckIcon } from 'lucide-react'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -118,20 +118,32 @@ async function TipTranscript({
 
 async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 	const tip = await tipLoader
-	if (!tip) return null
 
-	const tipBodySerialized = await serializeMDX(tip.fields.body || '', {
-		syntaxHighlighterOptions: {
-			theme: 'material-palenight',
-			showCopyButton: true,
-		},
-	})
+	if (!tip) {
+		notFound()
+	}
+
 	return tip.fields.body ? (
-		<>
-			<div className="prose dark:prose-invert lg:prose-lg w-full max-w-none pb-5 pt-5">
-				<MDX contents={tipBodySerialized} />
-			</div>
-		</>
+		<div className="prose dark:prose-invert lg:prose-lg w-full max-w-none pb-5 pt-5">
+			<MDXRemote
+				source={tip.fields.body}
+				components={{
+					pre: async (props: any) => {
+						const children = props?.children.props.children
+						const language =
+							props?.children.props.className?.split('-')[1] || 'typescript'
+
+						try {
+							const html = await codeToHtml({ code: children, language })
+							return <div dangerouslySetInnerHTML={{ __html: html }} />
+						} catch (error) {
+							console.error(error)
+							return <pre {...props} />
+						}
+					},
+				}}
+			/>
+		</div>
 	) : null
 }
 
