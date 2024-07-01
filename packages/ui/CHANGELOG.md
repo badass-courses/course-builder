@@ -1,5 +1,14 @@
 # @coursebuilder/ui
 
+## 1.0.14
+
+### Patch Changes
+
+- [#188](https://github.com/badass-courses/course-builder/pull/188) [`2e87fdd`](https://github.com/badass-courses/course-builder/commit/2e87fdd4397848939dbcc8cb7b0fae53267fdc62) Thanks [@vojtaholik](https://github.com/vojtaholik)! - add badge primitive component
+
+- Updated dependencies [[`9421c4f`](https://github.com/badass-courses/course-builder/commit/9421c4f1db7eb84728abca79bf68acb0b5ee2671), [`1dd4a5b`](https://github.com/badass-courses/course-builder/commit/1dd4a5bbd2b737ab45431256139134d56c0686ec)]:
+  - @coursebuilder/core@0.2.2
+
 ## 1.0.13
 
 ### Patch Changes

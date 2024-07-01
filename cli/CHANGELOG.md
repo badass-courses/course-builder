@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.1.0
+
+### Minor Changes
+
+- [#186](https://github.com/badass-courses/course-builder/pull/186) [`080337e`](https://github.com/badass-courses/course-builder/commit/080337ef60c1e62e762673266b2478b7cd141b33) Thanks [@joelhooks](https://github.com/joelhooks)! - database schema alignment with Skill Stack so that porting those apps will be easier
+
 ## 8.0.10
 
 ### Patch Changes

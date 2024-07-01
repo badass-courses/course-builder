@@ -1,5 +1,13 @@
 # @coursebuilder/core
 
+## 0.2.2
+
+### Patch Changes
+
+- [#183](https://github.com/badass-courses/course-builder/pull/183) [`9421c4f`](https://github.com/badass-courses/course-builder/commit/9421c4f1db7eb84728abca79bf68acb0b5ee2671) Thanks [@joelhooks](https://github.com/joelhooks)! - adds a state machine to pricing component
+
+- [`1dd4a5b`](https://github.com/badass-courses/course-builder/commit/1dd4a5bbd2b737ab45431256139134d56c0686ec) Thanks [@joelhooks](https://github.com/joelhooks)! - fixes some cookie issues that we need for email list support
+
 ## 0.2.1
 
 ### Patch Changes

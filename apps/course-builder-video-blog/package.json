@@ -1,6 +1,6 @@
 {
 	"name": "cb-video-blog",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -23,11 +23,11 @@
 	"dependencies": {
 		"@auth/core": "^0.30.0",
 		"@casl/ability": "^6.5.0",
-		"@coursebuilder/adapter-drizzle": "0.4.0",
-		"@coursebuilder/core": "0.2.1",
+		"@coursebuilder/adapter-drizzle": "0.5.0",
+		"@coursebuilder/core": "0.2.2",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/react-rsc": "workspace:^",
-		"@coursebuilder/ui": "^1.0.13",
+		"@coursebuilder/ui": "^1.0.14",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
 		"@mdx-js/loader": "^3.0.0",
