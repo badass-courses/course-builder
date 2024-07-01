@@ -89,15 +89,7 @@ export async function getTipsModule(): Promise<Tip[]> {
 			},
 			resources: {
 				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: true,
-								},
-							},
-						},
-					},
+					resource: true,
 				},
 				orderBy: asc(contentResourceResource.position),
 			},
