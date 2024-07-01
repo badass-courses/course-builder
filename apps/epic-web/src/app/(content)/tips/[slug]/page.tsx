@@ -2,15 +2,16 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { cookies, headers } from 'next/headers'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-// import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
 import { SubscribeForm } from '@/app/(content)/tips/_components/tip-subscribe-form'
 import FloatingActionsBar from '@/components/floating-actions-bar'
+import { Icon } from '@/components/icons'
 import ResourceContributor from '@/components/resource-contributor'
 import { courseBuilderAdapter } from '@/db'
 import { type Tip } from '@/lib/tips'
-import { getTip } from '@/lib/tips-query'
+import { getTip, getTipsModule } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import { codeToHtml } from '@/utils/shiki'
@@ -89,8 +90,13 @@ export default async function TipPage({
 									tipLoader={tipLoader}
 									className="mx-0 hidden py-2 text-base font-semibold text-gray-700 lg:flex dark:text-gray-300 [&_span]:font-bold"
 								/>
-								{/*<RelatedTips currentTip={tip} tips={tips}/>*/}
-								{/* {tweet && <ReplyOnTwitter tweet={tweet} />} */}
+								<Suspense
+									fallback={
+										<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+									}
+								>
+									<RelatedTips currentTip={params.slug} />
+								</Suspense>
 							</div>
 						</div>
 					</div>
@@ -259,5 +265,88 @@ async function PlayerContainer({
 				</div>
 			</Suspense>
 		</VideoPlayerOverlayProvider>
+	)
+}
+
+async function RelatedTips({ currentTip }: { currentTip: string }) {
+	const tipsModule = await getTipsModule()
+	const tipsToWatch = tipsModule
+		.filter((tip) => tip.fields.slug !== currentTip)
+		.slice(0, 6)
+	return (
+		<section className="mx-auto mt-8 h-full w-full border-t pt-8 md:pl-3">
+			<Link href="/tips" className="font-heading pt-2 text-2xl font-black">
+				More Tips
+			</Link>
+			<ul className="flex flex-col pt-4">
+				{tipsToWatch.map((tip) => {
+					// TODO implement resourceCompleted check
+					const resourceCompleted = false
+					const muxPlaybackId =
+						tip?.resources?.[0]?.resource?.fields?.muxPlaybackId
+					const thumbnail =
+						`https://image.mux.com/${muxPlaybackId}/thumbnail.png?width=720&height=405&fit_mode=preserve` ||
+						'https://res.cloudinary.com/badass-courses/image/upload/v1700690096/course-builder-og-image-template_qfarun.png'
+					return (
+						<li key={tip.id} className="flex w-full flex-col pb-5">
+							<Link
+								href={{
+									pathname: `/tips/${tip.fields.slug}`,
+								}}
+								className="group"
+							>
+								<div className="relative flex items-center justify-center overflow-hidden rounded border">
+									<span className="sr-only">
+										Play {tip.fields.title}{' '}
+										{resourceCompleted && (
+											<span className="sr-only">(completed)</span>
+										)}
+									</span>
+									<div className="flex w-full items-center justify-center">
+										<Image
+											src={thumbnail}
+											alt=""
+											width={480}
+											height={270}
+											aria-hidden="true"
+											className="brightness-90 transition duration-300 ease-in-out group-hover:brightness-100 dark:brightness-75 "
+										/>
+									</div>
+									<div
+										className="bg-background text-foreground absolute flex scale-50 items-center justify-center rounded-full p-4 opacity-100 transition"
+										aria-hidden="true"
+									>
+										{resourceCompleted ? (
+											<>
+												<Icon
+													name="Checkmark"
+													className="absolute h-10 w-10 text-white transition group-hover:opacity-0"
+													aria-hidden="true"
+												/>
+												<Icon
+													name="Playmark"
+													className="absolute h-8 w-8 text-white opacity-0 transition group-hover:opacity-100"
+												/>
+											</>
+										) : (
+											<Icon
+												name="Playmark"
+												className="relative h-6 w-6 translate-x-0.5"
+											/>
+										)}
+									</div>
+								</div>
+								<h3 className="w-full pt-1 font-semibold leading-tight">
+									<div className="text-balance">{tip.fields.title}</div>
+									{resourceCompleted && (
+										<span className="sr-only">(watched)</span>
+									)}
+								</h3>
+							</Link>
+						</li>
+					)
+				})}
+			</ul>
+		</section>
 	)
 }
