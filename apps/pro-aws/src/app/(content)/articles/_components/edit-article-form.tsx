@@ -20,6 +20,7 @@ import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 type EditArticleFormProps = {
 	article: Article
@@ -103,10 +104,10 @@ const ArticleMetadataFormFields = ({
 	const currentSocialImage = form.watch('fields.socialImage.url')
 	return (
 		<EditResourcesMetadataFields form={form}>
-			{/*<MetadataFieldSocialImage*/}
-			{/*	form={form}*/}
-			{/*	currentSocialImage={currentSocialImage}*/}
-			{/*/>*/}
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={currentSocialImage}
+			/>
 		</EditResourcesMetadataFields>
 	)
 }
