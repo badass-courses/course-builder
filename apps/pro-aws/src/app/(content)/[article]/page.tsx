@@ -1,13 +1,18 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
+import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Contributor } from '@/app/_components/contributor'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { type Article } from '@/lib/articles'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import ReactMarkdown from 'react-markdown'
+import { codeToHtml } from '@/utils/shiki'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
 
@@ -43,17 +48,12 @@ async function ArticleActionBar({
 	return (
 		<>
 			{article && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button asChild size="sm">
-						<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
-							Edit
-						</Link>
-					</Button>
-				</div>
-			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-			)}
+				<Button asChild size="sm">
+					<Link href={`/articles/${article.fields?.slug || article.id}/edit`}>
+						Edit
+					</Link>
+				</Button>
+			) : null}
 		</>
 	)
 }
@@ -70,19 +70,27 @@ async function Article({
 	}
 
 	return (
-		<div className="flex flex-col gap-10 pt-10 md:flex-row md:gap-16 md:pt-16">
-			<ReactMarkdown className="prose dark:prose-invert sm:prose-lg max-w-none">
-				{article.fields?.body}
-			</ReactMarkdown>
-			{article.fields?.description && (
-				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
-					<div className="border-t pt-5">
-						<strong>Description</strong>
-						<ReactMarkdown>{article.fields?.description}</ReactMarkdown>
-					</div>
-				</aside>
+		<article className="prose sm:prose-lg mt-5 max-w-none pt-10">
+			{article.fields.body && (
+				<MDXRemote
+					source={article.fields.body}
+					components={{
+						pre: async (props: any) => {
+							const children = props?.children.props.children
+							const language =
+								props?.children.props.className?.split('-')[1] || 'typescript'
+							try {
+								const html = await codeToHtml({ code: children, language })
+								return <div dangerouslySetInnerHTML={{ __html: html }} />
+							} catch (error) {
+								console.error(error)
+								return <pre {...props} />
+							}
+						},
+					}}
+				/>
 			)}
-		</div>
+		</article>
 	)
 }
 
@@ -94,7 +102,9 @@ async function ArticleTitle({
 	const article = await articleLoader
 
 	return (
-		<h1 className="text-3xl font-bold sm:text-4xl">{article?.fields?.title}</h1>
+		<h1 className="mb-4 inline-flex text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
+			{article?.fields?.title}
+		</h1>
 	)
 }
 
@@ -104,19 +114,30 @@ export default async function ArticlePage({
 	params: { article: string }
 }) {
 	const articleLoader = getArticle(params.article)
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
+
 	return (
-		<div>
-			<Suspense
-				fallback={
-					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-				}
-			>
-				<ArticleActionBar articleLoader={articleLoader} />
-			</Suspense>
-			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
-				<ArticleTitle articleLoader={articleLoader} />
-				<Article articleLoader={articleLoader} />
-			</article>
-		</div>
+		<main>
+			<div className="container border-x-0 pb-24 pt-10 xl:border-x">
+				<div className="flex w-full items-center justify-between">
+					<Link
+						href="/articles"
+						className="text-primary mb-3 inline-flex text-sm hover:underline"
+					>
+						← Articles
+					</Link>
+					<Suspense fallback={null}>
+						<ArticleActionBar articleLoader={articleLoader} />
+					</Suspense>
+				</div>
+				<article className="mx-auto w-full max-w-screen-md pb-10">
+					<ArticleTitle articleLoader={articleLoader} />
+					<Contributor />
+					<Article articleLoader={articleLoader} />
+				</article>
+				{!ckSubscriber && <PrimaryNewsletterCta />}
+			</div>
+		</main>
 	)
 }

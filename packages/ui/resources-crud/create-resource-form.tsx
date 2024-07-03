@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -57,19 +59,16 @@ export function CreateResourceForm({
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(internalOnSubmit)}
-				className="bg-muted rounded p-3"
-			>
+			<form onSubmit={form.handleSubmit(internalOnSubmit)}>
 				<FormField
 					control={form.control}
 					name="fields.title"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel className="text-lg font-bold">Title</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								A title should summarize the {resourceType.toUpperCase()} and
-								explain what it is about clearly.
+							<FormLabel>Title</FormLabel>
+							<FormDescription>
+								A title should summarize the {resourceType} and explain what it
+								is about clearly.
 							</FormDescription>
 							<FormControl>
 								<Input {...field} />
@@ -80,14 +79,14 @@ export function CreateResourceForm({
 				/>
 				<Button
 					type="submit"
-					className="mt-2"
+					className="mt-4 capitalize"
 					variant="default"
 					disabled={
 						(form.formState.isDirty && !form.formState.isValid) ||
 						form.formState.isSubmitting
 					}
 				>
-					Create Draft {resourceType.toUpperCase()}
+					Create Draft {resourceType}
 				</Button>
 			</form>
 		</Form>

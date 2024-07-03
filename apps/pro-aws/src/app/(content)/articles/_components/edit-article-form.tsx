@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { onArticleSave } from '@/app/(content)/articles/[slug]/edit/actions'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -9,6 +10,7 @@ import { ArticleSchema, type Article } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -24,7 +26,24 @@ type EditArticleFormProps = {
 	tools?: ResourceTool[]
 }
 
-export function EditArticleForm({ article, tools = [] }: EditArticleFormProps) {
+export function EditArticleForm({
+	article,
+	tools = [
+		{
+			id: 'media',
+			icon: () => (
+				<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: (
+				<ImageResourceUploader
+					key={'image-uploader'}
+					belongsToResourceId={article.id}
+					uploadDirectory={`articles`}
+				/>
+			),
+		},
+	],
+}: EditArticleFormProps) {
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(article)
 	const { forcedTheme: theme } = useTheme()
