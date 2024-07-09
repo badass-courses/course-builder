@@ -69,7 +69,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						fields: z.object({
 							title: z.string().nullable().optional(),
 							slug: z.string(),
-							description: z.string(),
+							description: z.string().nullable().optional(),
 							state: z
 								.enum(['draft', 'published', 'archived', 'deleted'])
 								.default('draft'),

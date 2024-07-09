@@ -37,7 +37,7 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 	const { module: moduleSlug } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(
 		null,
-		`/tutorials/${moduleSlug}/`,
+		`/workshops/${moduleSlug}/`,
 	)
 	const session = useSession()
 	const form = useForm<z.infer<typeof LessonSchema>>({
@@ -65,7 +65,7 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 		<EditResourcesFormDesktop
 			resource={lesson}
 			resourceSchema={LessonSchema}
-			getResourcePath={(slug?: string) => `/tutorials/${moduleSlug}/${slug}`}
+			getResourcePath={(slug?: string) => `/workshops/${moduleSlug}/${slug}`}
 			updateResource={updateLesson}
 			form={form}
 			availableWorkflows={[

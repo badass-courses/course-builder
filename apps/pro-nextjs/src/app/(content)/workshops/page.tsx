@@ -46,8 +46,8 @@ export default async function Workshops() {
 					{ability.can('update', 'Content') ? (
 						<div className="mx-auto flex w-full items-center justify-center py-16">
 							<Button asChild variant="secondary" className="gap-1">
-								<Link href={`/tutorials/new`}>
-									<FilePlus2 className="h-4 w-4" /> New Tutorial
+								<Link href={`/workshops/new`}>
+									<FilePlus2 className="h-4 w-4" /> New Workshop
 								</Link>
 							</Button>
 						</div>
@@ -97,7 +97,7 @@ async function WorkshopsList() {
 								<CardHeader className="p-0">
 									<CardTitle className="fluid-xl font-semibold">
 										<Link
-											href={`/tutorials/${workshop.fields.slug || workshop.id}`}
+											href={`/workshops/${workshop.fields.slug || workshop.id}`}
 											className="hover:text-primary w-full text-balance"
 										>
 											{workshop.fields.title}
