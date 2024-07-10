@@ -30,12 +30,11 @@ export async function GET(request: Request) {
 						),
 						eq(contentResource.id, resourceSlugOrID),
 					),
-					// eq(contentResource.type, 'article'),
 				),
 			})
 			title = resource?.fields?.title
 
-			if (resourceTypesWithImages.includes(resource?.type)) {
+			if (resource && resourceTypesWithImages.includes(resource.type)) {
 				image = resource?.fields?.coverImage?.url
 			}
 		} else {
