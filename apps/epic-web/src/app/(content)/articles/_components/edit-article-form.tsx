@@ -71,6 +71,7 @@ export function EditArticleForm({ article }: EditArticleFormProps) {
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
 			tools={[
+				{ id: 'assistant' },
 				{
 					id: 'media',
 					icon: () => (

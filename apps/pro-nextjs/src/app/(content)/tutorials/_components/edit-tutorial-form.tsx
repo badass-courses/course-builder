@@ -10,7 +10,7 @@ import { ModuleSchema } from '@/lib/module'
 import { updateTutorial } from '@/lib/tutorials-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
+import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm } from 'react-hook-form'
@@ -97,6 +97,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				onSave={onTutorialSave}
 				theme={theme}
 				tools={[
+					{ id: 'assistant' },
 					{
 						id: 'media',
 						icon: () => (
@@ -113,6 +114,22 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 								belongsToResourceId={tutorial.id}
 								uploadDirectory={`tutorials`}
 							/>
+						),
+					},
+					{
+						id: 'resources',
+						icon: () => (
+							<ListOrderedIcon
+								strokeWidth={1.5}
+								size={24}
+								width={18}
+								height={18}
+							/>
+						),
+						toolComponent: (
+							<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
+								<TutorialResourcesList tutorial={tutorial} />
+							</div>
 						),
 					},
 				]}

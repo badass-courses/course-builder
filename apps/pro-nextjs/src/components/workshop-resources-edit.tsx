@@ -84,8 +84,8 @@ export default function WorkshopResourcesEdit({
 	}
 
 	return (
-		<div className="px-5">
-			<span className="text-lg font-bold">Resources</span>
+		<>
+			<span className="px-5 text-lg font-bold">Resources</span>
 			<Tree
 				rootResource={workshop as ContentResource}
 				rootResourceId={workshop.id}
@@ -107,7 +107,7 @@ export default function WorkshopResourcesEdit({
 						createResource={createResource}
 					/>
 				)}
-				<div className="flex gap-1">
+				<div className="flex gap-1 px-5">
 					<Button
 						onClick={() => setIsAddingLesson(true)}
 						className="mt-2"
@@ -124,6 +124,6 @@ export default function WorkshopResourcesEdit({
 					</Button>
 				</div>
 			</div>
-		</div>
+		</>
 	)
 }

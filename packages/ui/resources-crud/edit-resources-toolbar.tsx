@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ZapIcon } from 'lucide-react'
 
 import { Button } from '../primitives/button'
 import {
@@ -8,17 +9,13 @@ import {
 	TooltipTrigger,
 } from '../primitives/tooltip'
 import { cn } from '../utils/cn'
-
-type ResourceTool = {
-	id: string
-	icon: () => React.JSX.Element
-}
+import type { ResourceTool } from './edit-resources-tool-panel'
 
 export function EditResourcesToolbar({
 	tools,
 	onToolChange,
 }: {
-	tools: Set<ResourceTool>
+	tools: ResourceTool[]
 	onToolChange: (tool: ResourceTool) => void
 }) {
 	const [activeTool, setActiveTool] = React.useState<ResourceTool>(
@@ -47,7 +44,16 @@ export function EditResourcesToolbar({
 										onToolChange(tool)
 									}}
 								>
-									{tool.icon()}
+									{tool.icon ? (
+										tool.icon()
+									) : (
+										<ZapIcon
+											strokeWidth={1.5}
+											size={24}
+											width={18}
+											height={18}
+										/>
+									)}
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent side="left" className="capitalize">
