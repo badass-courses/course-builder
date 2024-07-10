@@ -116,16 +116,16 @@ async function LessonPage({
 	return (
 		<div>
 			<div className="mx-auto w-full" id="lesson">
-				{/* <Suspense
+				<Suspense
 					fallback={
 						<div className="bg-background flex h-9 w-full items-center justify-between" />
 					}
 				>
 					<LessonActionBar
 						lessonLoader={lessonLoader}
-						tutorialLoader={tutorialLoader}
+						tutorialLoader={moduleLoader}
 					/>
-				</Suspense> */}
+				</Suspense>
 				<div className="flex">
 					<div className="flex flex-col 2xl:flex-row">
 						<div>
@@ -226,13 +226,14 @@ async function LessonActionBar({
 	lessonLoader: Promise<ContentResource | null | undefined>
 	tutorialLoader: Promise<Module | null | undefined>
 }) {
-	const { ability } = await getServerAuthSession()
+	const { ability, session } = await getServerAuthSession()
 	const lesson = await lessonLoader
 	const tutorial = await tutorialLoader
 
+	console.log(ability.can('create', 'Content'), { session, lesson })
 	return (
 		<>
-			{lesson && ability.can('update', 'Content') ? (
+			{lesson && ability.can('create', 'Content') ? (
 				<div className="container flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button size="sm" asChild>
