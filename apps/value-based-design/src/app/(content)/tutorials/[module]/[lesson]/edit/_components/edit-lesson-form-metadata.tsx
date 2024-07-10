@@ -8,6 +8,7 @@ import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -22,12 +23,14 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
@@ -37,7 +40,10 @@ export const LessonMetadataFormFields: React.FC<{
 	lesson: Lesson
 }> = ({ form, initialVideoResourceId, lesson }) => {
 	const router = useRouter()
-	const { module } = useParams<{ module: string }>()
+	const { module } = useParams<{
+		module: string
+		lesson: string
+	}>()
 	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
 		'loading' | 'finalizing upload'
 	>('loading')
@@ -99,6 +105,7 @@ export const LessonMetadataFormFields: React.FC<{
 			}
 		},
 	})
+
 	return (
 		<>
 			<div>
@@ -140,7 +147,6 @@ export const LessonMetadataFormFields: React.FC<{
 					)}
 				</Suspense>
 			</div>
-
 			<FormField
 				control={form.control}
 				name="id"
@@ -161,8 +167,59 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<FormDescription>
+							A short snippet that summarizes the lesson.
+						</FormDescription>
+						<Textarea {...field} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
+			<FormField
+				control={form.control}
+				name="fields.github"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+						<FormDescription>
+							Direct link to the GitHub file associated with the lesson.
+						</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.gitpod"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
+						<FormDescription>
+							Gitpod link to start a new workspace with the lesson.
+						</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={getOGImageUrlForResource(form.getValues())}
+			/>
 			{videoResourceId ? (
 				<div className="px-5">
 					<div className="flex items-center justify-between gap-2">
