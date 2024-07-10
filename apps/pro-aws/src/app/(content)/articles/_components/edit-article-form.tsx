@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { onArticleSave } from '@/app/(content)/articles/[slug]/edit/actions'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -9,6 +10,7 @@ import { ArticleSchema, type Article } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -18,13 +20,31 @@ import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 type EditArticleFormProps = {
 	article: Article
 	tools?: ResourceTool[]
 }
 
-export function EditArticleForm({ article, tools = [] }: EditArticleFormProps) {
+export function EditArticleForm({
+	article,
+	tools = [
+		{
+			id: 'media',
+			icon: () => (
+				<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: (
+				<ImageResourceUploader
+					key={'image-uploader'}
+					belongsToResourceId={article.id}
+					uploadDirectory={`articles`}
+				/>
+			),
+		},
+	],
+}: EditArticleFormProps) {
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(article)
 	const { forcedTheme: theme } = useTheme()
@@ -84,10 +104,10 @@ const ArticleMetadataFormFields = ({
 	const currentSocialImage = form.watch('fields.socialImage.url')
 	return (
 		<EditResourcesMetadataFields form={form}>
-			{/*<MetadataFieldSocialImage*/}
-			{/*	form={form}*/}
-			{/*	currentSocialImage={currentSocialImage}*/}
-			{/*/>*/}
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={currentSocialImage}
+			/>
 		</EditResourcesMetadataFields>
 	)
 }

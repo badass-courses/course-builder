@@ -144,16 +144,16 @@ export function TutorialLessonList(props: Props) {
 							<div className="flex flex-col">
 								<div className="flex items-center gap-2">
 									<Link
-										href="/tutorials"
+										href="/workshops"
 										className="font-heading text-primary text-base font-medium hover:underline"
 									>
-										Tutorials
+										Workshops
 									</Link>
 									<span className="opacity-50">/</span>
 								</div>
 								<Link
 									className="font-heading fluid-lg text-balance font-bold hover:underline"
-									href={`/tutorials/${tutorial?.fields?.slug}`}
+									href={`/workshops/${tutorial?.fields?.slug}`}
 								>
 									{tutorial?.fields?.title}
 								</Link>
@@ -273,7 +273,7 @@ export function TutorialLessonList(props: Props) {
 																						'hover:text-primary': !isActive,
 																					},
 																				)}
-																				href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
+																				href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																			>
 																				{isCompleted ? (
 																					<span
@@ -305,7 +305,7 @@ export function TutorialLessonList(props: Props) {
 																					className="scale-75"
 																				>
 																					<Link
-																						href={`/tutorials/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
+																						href={`/workshops/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
 																					>
 																						<Edit className="w-3" />
 																					</Link>
@@ -316,7 +316,7 @@ export function TutorialLessonList(props: Props) {
 																			{solution && isSubLessonListExpanded && (
 																				<>
 																					<Link
-																						href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
+																						href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
 																						className={cn(
 																							'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																							{
@@ -330,7 +330,7 @@ export function TutorialLessonList(props: Props) {
 																						Problem
 																					</Link>
 																					<Link
-																						href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
+																						href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
 																						className={cn(
 																							'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																							{
@@ -345,7 +345,7 @@ export function TutorialLessonList(props: Props) {
 																					</Link>
 																					<div className="flex w-full items-center">
 																						<Link
-																							href={`/tutorials/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
+																							href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
 																							className={cn(
 																								'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																								{
@@ -369,7 +369,7 @@ export function TutorialLessonList(props: Props) {
 																								className="scale-75"
 																							>
 																								<Link
-																									href={`/tutorials/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+																									href={`/workshops/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
 																								>
 																									<Edit className="w-3" />
 																								</Link>
@@ -403,7 +403,7 @@ export function TutorialLessonList(props: Props) {
 															'hover:text-primary': !isActive,
 														},
 													)}
-													href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
+													href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
 												>
 													{isCompleted ? (
 														<span aria-label="Completed" className="w-6 pr-1">
@@ -432,7 +432,7 @@ export function TutorialLessonList(props: Props) {
 														className="scale-75"
 													>
 														<Link
-															href={`/tutorials/${tutorial?.fields?.slug}/${resource.resource.fields.slug}/edit`}
+															href={`/workshops/${tutorial?.fields?.slug}/${resource.resource.fields.slug}/edit`}
 														>
 															<Edit className="w-3" />
 														</Link>
@@ -443,7 +443,7 @@ export function TutorialLessonList(props: Props) {
 												{solution && isSubLessonListExpanded && (
 													<>
 														<Link
-															href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
+															href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
 															className={cn(
 																'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																{
@@ -457,7 +457,7 @@ export function TutorialLessonList(props: Props) {
 															Problem
 														</Link>
 														<Link
-															href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}/exercise`}
+															href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}/exercise`}
 															className={cn(
 																'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																{
@@ -472,7 +472,7 @@ export function TutorialLessonList(props: Props) {
 														</Link>
 														<div className="flex w-full items-center">
 															<Link
-																href={`/tutorials/${tutorial.fields?.slug}/${resource.resource.fields.slug}/solution`}
+																href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}/solution`}
 																className={cn(
 																	'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
 																	{
@@ -493,7 +493,7 @@ export function TutorialLessonList(props: Props) {
 																	className="scale-75"
 																>
 																	<Link
-																		href={`/tutorials/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+																		href={`/workshops/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
 																	>
 																		<Edit className="w-3" />
 																	</Link>

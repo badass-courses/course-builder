@@ -46,8 +46,8 @@ export default async function Workshops() {
 					{ability.can('update', 'Content') ? (
 						<div className="mx-auto flex w-full items-center justify-center py-16">
 							<Button asChild variant="secondary" className="gap-1">
-								<Link href={`/tutorials/new`}>
-									<FilePlus2 className="h-4 w-4" /> New Tutorial
+								<Link href={`/workshops/new`}>
+									<FilePlus2 className="h-4 w-4" /> New Workshop
 								</Link>
 							</Button>
 						</div>
@@ -74,10 +74,12 @@ async function WorkshopsList() {
 
 	return (
 		<ul className="mx-auto mt-8 flex w-full flex-col">
-			{publicWorkshops.length === 0 && <p>There are no public workshops.</p>}
+			{publicWorkshops.length === 0 && (
+				<p className="p-5">There are no public workshops.</p>
+			)}
 			{workshops.map((workshop) => (
 				<li key={workshop.id} className="flex">
-					<Card className="divide-border bg-background -mt-px flex flex-col items-center divide-y rounded-none border-x-0 shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
+					<Card className="divide-border bg-background -mt-px flex w-full flex-col items-center divide-y rounded-none border-x-0 shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
 						{workshop?.fields?.coverImage?.url && (
 							<Link
 								className="flex flex-shrink-0 items-center justify-center p-5 md:aspect-square"
@@ -97,7 +99,7 @@ async function WorkshopsList() {
 								<CardHeader className="p-0">
 									<CardTitle className="fluid-xl font-semibold">
 										<Link
-											href={`/tutorials/${workshop.fields.slug || workshop.id}`}
+											href={`/workshops/${workshop.fields.slug || workshop.id}`}
 											className="hover:text-primary w-full text-balance"
 										>
 											{workshop.fields.title}

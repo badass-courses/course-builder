@@ -155,7 +155,7 @@ async function LessonPage({
 							<Accordion type="single" collapsible className="block lg:hidden">
 								<AccordionItem value="contents">
 									<AccordionTrigger className="flex w-full items-center p-5 font-medium">
-										Tutorial Contents
+										Workshop Contents
 									</AccordionTrigger>
 									<AccordionContent>
 										<Suspense
@@ -237,7 +237,7 @@ async function LessonActionBar({
 					<div />
 					<Button size="sm" asChild>
 						<Link
-							href={`/tutorials/${tutorial?.fields.slug}/${lesson.fields?.slug || lesson.id}/edit`}
+							href={`/workshops/${tutorial?.fields.slug}/${lesson.fields?.slug || lesson.id}/edit`}
 						>
 							Edit Lesson
 						</Link>

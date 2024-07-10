@@ -8,6 +8,7 @@ import React, {
 	useState,
 } from 'react'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/utils/cn'
 import {
 	Instruction,
 	ItemMode,
@@ -22,6 +23,7 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
@@ -41,13 +43,17 @@ function ChildIcon() {
 }
 
 function GroupIcon({ isOpen }: { isOpen: boolean }) {
-	const Icon = isOpen ? '⬇️' : '➡️'
-	return <span className="text-neutral-500">{Icon}</span>
+	const Icon = isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+	return (
+		<span className="mr-2 flex items-center justify-center text-neutral-500">
+			{Icon}
+		</span>
+	)
 }
 
 function Icon({ item }: { item: TreeItemType }) {
 	if (!item.children.length) {
-		return <ChildIcon />
+		return null // <ChildIcon />
 	}
 	return <GroupIcon isOpen={item.isOpen ?? false} />
 }
@@ -316,12 +322,17 @@ const TreeItem = memo(function TreeItem({
 	return (
 		<Fragment>
 			<div
-				className={state === 'idle' ? `hover:bg-secondary cursor-pointer` : ''}
+				className={state === 'idle' ? `hover:bg-muted cursor-pointer` : ''}
 				style={{ position: 'relative' }}
 			>
 				<button
 					{...aria}
-					className="relative w-full cursor-pointer border-0 bg-transparent py-3"
+					className={cn(
+						'relative w-full cursor-pointer border-0 bg-transparent py-3',
+						{
+							'border-primary border': instruction?.type === 'make-child',
+						},
+					)}
 					id={`tree-item-${item.id}`}
 					onClick={
 						item.type === 'section'
@@ -344,26 +355,41 @@ const TreeItem = memo(function TreeItem({
 					style={{ paddingLeft: level * indentPerLevel }}
 				>
 					<span
-						className={`flex flex-col gap-2 bg-transparent ${
-							state === 'dragging'
-								? `opacity-40`
-								: state === 'parent-of-instruction'
-									? `transparent`
-									: ``
-						}`}
+						className={cn(
+							'flex flex-col items-center justify-between gap-3 bg-transparent px-3  sm:flex-row',
+							{
+								'opacity-40': state === 'dragging',
+								transparent: state === 'parent-of-instruction',
+							},
+						)}
 					>
-						<div className="flex flex-row">
+						<div className="flex w-full flex-row">
 							<Icon item={item} />
-							<span className="text-left">{item.label ?? item.id}</span>
+							<span
+								className={cn('text-left', {
+									'font-semibold': item.type === 'section',
+								})}
+							>
+								{item.label ?? item.id}
+							</span>
 						</div>
-						<small className="ml-6 flex flex-grow items-center gap-3 text-ellipsis">
+						<small className="text-ellipsis opacity-50">
 							{item.type ? (
 								<span className="capitalize">{item.type}</span>
 							) : null}
-							<span className="text-xs opacity-50">({mode})</span>
+							{/* <span className="text-xs opacity-50">({mode})</span> */}
 						</small>
 					</span>
 					{instruction ? (
+						<div
+							className={cn('bg-primary absolute left-0 h-px w-full', {
+								'top-0': instruction.type === 'reorder-above',
+								'bottom-0': instruction.type === 'reorder-below',
+								'opacity-0': instruction.type === 'instruction-blocked',
+							})}
+						/>
+					) : null}
+					{/* {instruction ? (
 						<span
 							style={{
 								position: 'absolute',
@@ -375,7 +401,7 @@ const TreeItem = memo(function TreeItem({
 						>
 							◎ {instruction.type}
 						</span>
-					) : null}
+					) : null} */}
 				</button>
 			</div>
 			{item.children.length && item.isOpen ? (

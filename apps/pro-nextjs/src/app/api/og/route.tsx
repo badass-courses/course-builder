@@ -14,11 +14,12 @@ export const revalidate = 60
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
+		const resourceTypesWithImages = ['workshop', 'tutorial']
 		const hasResource = searchParams.has('resource')
 		const resourceSlugOrID = hasResource ? searchParams.get('resource') : null
 		const hasTitle = searchParams.has('title')
-
 		let title
+		let image
 		if (resourceSlugOrID && !hasTitle) {
 			const resource = await db.query.contentResource.findFirst({
 				where: and(
@@ -29,10 +30,13 @@ export async function GET(request: Request) {
 						),
 						eq(contentResource.id, resourceSlugOrID),
 					),
-					// eq(contentResource.type, 'article'),
 				),
 			})
 			title = resource?.fields?.title
+
+			if (resource && resourceTypesWithImages.includes(resource.type)) {
+				image = resource?.fields?.coverImage?.url
+			}
 		} else {
 			if (hasTitle) {
 				title = searchParams.get('title')?.slice(0, 100)
@@ -73,8 +77,13 @@ export async function GET(request: Request) {
 							/>
 						</svg>
 					</div>
-					<main tw="flex p-26 pb-32 flex-colw-full gap-5 h-full flex-grow items-end justify-start">
+					<main tw="flex p-26 pb-32 flex-row w-full gap-5 h-full flex-grow items-end justify-between">
 						<div tw="text-[50px] text-[#262C30] leading-tight">{title}</div>
+						{image && (
+							<div tw="flex -mb-10 -mr-5">
+								<img src={image} width={450} height={450} />
+							</div>
+						)}
 					</main>
 				</div>
 			),

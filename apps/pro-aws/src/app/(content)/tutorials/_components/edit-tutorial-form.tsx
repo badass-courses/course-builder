@@ -94,6 +94,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				onSave={onTutorialSave}
 				theme={theme}
 				tools={[
+					{ id: 'assistant' },
 					{
 						id: 'media',
 						icon: () => (

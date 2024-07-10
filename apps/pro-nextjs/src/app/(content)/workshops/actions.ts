@@ -6,5 +6,5 @@ export async function revalidateTutorialLesson(
 	moduleSlug: string,
 	lessonSlug: string,
 ) {
-	return revalidatePath(`/tutorials/${moduleSlug}/${lessonSlug}`)
+	return revalidatePath(`/workshops/${moduleSlug}/${lessonSlug}`)
 }

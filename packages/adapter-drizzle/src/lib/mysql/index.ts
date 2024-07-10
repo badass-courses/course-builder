@@ -1120,10 +1120,14 @@ export function mySqlDrizzleAdapter(
 				where: and(
 					eq(resourceProgress.userId, parsedUser.data.id),
 					isNotNull(resourceProgress.completedAt),
-					inArray(
-						resourceProgress.resourceId,
-						progressResources.map((r) => r.id),
-					),
+					...(progressResources.length > 0
+						? [
+								inArray(
+									resourceProgress.resourceId,
+									progressResources.map((r) => r.id),
+								),
+							]
+						: []),
 				),
 				orderBy: asc(resourceProgress.completedAt),
 			})

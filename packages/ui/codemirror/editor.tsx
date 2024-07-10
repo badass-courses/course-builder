@@ -50,16 +50,12 @@ export const CodemirrorEditor = ({
 		user,
 	})
 
-	return (
-		<div className="h-full flex-shrink-0">
-			<div ref={codemirrorElementRef}></div>
-		</div>
-	)
+	return <div className="h-full flex-shrink-0" ref={codemirrorElementRef} />
 }
 
 const CourseBuilderEditorStyles = {
 	'.cm-content, .cm-gutter': {
-		minHeight: '100%',
+		minHeight: 'var(--pane-layout-height)',
 		height: '100%',
 	},
 	'.cm-content': {
