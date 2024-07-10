@@ -11,25 +11,12 @@ import { EditResourcesToolbar } from './edit-resources-toolbar'
 
 export type ResourceTool = {
 	id: string
-	icon: () => React.JSX.Element
+	icon?: () => React.JSX.Element
 	label?: string
 	tooltip?: string
 	description?: string
 	toolComponent?: React.ReactNode
 }
-
-const WIDGETS = new Set([
-	{
-		id: 'assistant',
-		icon: () => <ZapIcon strokeWidth={1.5} size={24} width={18} height={18} />,
-	},
-	{
-		id: 'media',
-		icon: () => (
-			<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
-		),
-	},
-])
 
 export function EditResourcesToolPanel({
 	resource,
@@ -65,7 +52,7 @@ export function EditResourcesToolPanel({
 	tools?: ResourceTool[]
 }) {
 	const [activeToolId, setActiveToolId] = React.useState<string>(
-		WIDGETS.values().next().value.id,
+		tools?.[0]?.id || 'assistant',
 	)
 	return (
 		<>
@@ -89,7 +76,7 @@ export function EditResourcesToolPanel({
 				/>
 			</ResizablePanel>
 			<EditResourcesToolbar
-				tools={WIDGETS}
+				tools={tools}
 				onToolChange={(tool) => setActiveToolId(tool.id)}
 			/>
 		</>

@@ -213,6 +213,7 @@ export function EditProductForm({ product }: { product: Product }) {
 			hostUrl={env.NEXT_PUBLIC_URL}
 			user={session?.user}
 			tools={[
+				{ id: 'assistant' },
 				{
 					id: 'media',
 					icon: () => (

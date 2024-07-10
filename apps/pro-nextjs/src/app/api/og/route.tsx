@@ -17,8 +17,8 @@ export async function GET(request: Request) {
 		const hasResource = searchParams.has('resource')
 		const resourceSlugOrID = hasResource ? searchParams.get('resource') : null
 		const hasTitle = searchParams.has('title')
-
 		let title
+		let image
 		if (resourceSlugOrID && !hasTitle) {
 			const resource = await db.query.contentResource.findFirst({
 				where: and(
@@ -33,6 +33,9 @@ export async function GET(request: Request) {
 				),
 			})
 			title = resource?.fields?.title
+			if (resource?.type === 'workshop') {
+				image = resource?.fields?.coverImage?.url
+			}
 		} else {
 			if (hasTitle) {
 				title = searchParams.get('title')?.slice(0, 100)
@@ -75,6 +78,11 @@ export async function GET(request: Request) {
 					</div>
 					<main tw="flex p-26 pb-32 flex-colw-full gap-5 h-full flex-grow items-end justify-start">
 						<div tw="text-[50px] text-[#262C30] leading-tight">{title}</div>
+						{image && (
+							<div tw="flex">
+								<img src={image} width={300} height={300} />
+							</div>
+						)}
 					</main>
 				</div>
 			),

@@ -78,6 +78,7 @@ export function EditEventForm({ event }: { event: Event }) {
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
 			tools={[
+				{ id: 'assistant' },
 				{
 					id: 'media',
 					icon: () => (

@@ -10,7 +10,7 @@ import { ModuleSchema } from '@/lib/module'
 import { updateWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
+import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm } from 'react-hook-form'
@@ -80,7 +80,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						}),
 					}),
 				).parse(workshop)}
-				resourceSchema={ModuleSchema}
+				resourceSchema={ContentResourceSchema}
 				getResourcePath={(slug) => `/workshops/${slug}`}
 				updateResource={updateWorkshop}
 				form={form}
@@ -97,6 +97,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 				onSave={onWorkshopSave}
 				theme={theme}
 				tools={[
+					{ id: 'assistant' },
 					{
 						id: 'media',
 						icon: () => (
@@ -113,6 +114,22 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 								belongsToResourceId={workshop.id}
 								uploadDirectory={`workshops`}
 							/>
+						),
+					},
+					{
+						id: 'resources',
+						icon: () => (
+							<ListOrderedIcon
+								strokeWidth={1.5}
+								size={24}
+								width={18}
+								height={18}
+							/>
+						),
+						toolComponent: (
+							<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
+								<WorkshopResourcesList workshop={workshop} />
+							</div>
 						),
 					},
 				]}
