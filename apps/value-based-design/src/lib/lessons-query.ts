@@ -10,6 +10,8 @@ import slugify from '@sindresorhus/slugify'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
+import { ContentResourceResource } from '@coursebuilder/core/types'
+
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
 	lessonId,
