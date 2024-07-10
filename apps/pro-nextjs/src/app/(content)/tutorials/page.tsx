@@ -76,7 +76,7 @@ async function TutorialsList() {
 			{publicTutorials.length === 0 && <p>There are no public tutorials.</p>}
 			{tutorials.map((tutorial) => (
 				<li key={tutorial.id} className="flex">
-					<Card className="divide-border bg-background -mt-px flex flex-col items-center divide-y rounded-none border-x-0 shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
+					<Card className="divide-border bg-background -mt-px flex w-full flex-col items-center divide-y rounded-none border-x-0 shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
 						{tutorial?.fields?.coverImage?.url && (
 							<Link
 								className="flex flex-shrink-0 items-center justify-center p-5 md:aspect-square"

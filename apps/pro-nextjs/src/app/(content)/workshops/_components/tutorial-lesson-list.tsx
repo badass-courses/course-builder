@@ -147,7 +147,7 @@ export function TutorialLessonList(props: Props) {
 										href="/workshops"
 										className="font-heading text-primary text-base font-medium hover:underline"
 									>
-										Tutorials
+										Workshops
 									</Link>
 									<span className="opacity-50">/</span>
 								</div>

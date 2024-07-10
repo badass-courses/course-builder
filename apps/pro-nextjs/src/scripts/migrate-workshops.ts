@@ -91,13 +91,13 @@ const ModuleSchema = z.object({
 	title: z.string(),
 	body: z.string().nullable().optional(),
 	slug: z.object({ current: z.string() }),
-	image: z.string(),
+	image: z.string().nullable(),
 	_updatedAt: z.string(),
 	_createdAt: z.string(),
 	description: z.string().nullable().optional(),
 	moduleType: z.string(),
 	state: z.string(),
-	instructor: ContributorSchema,
+	// instructor: ContributorSchema,
 	sections: z.array(SectionSchema),
 })
 
@@ -170,7 +170,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
     }
   }`)
 
-	fs.writeFileSync('test.json', JSON.stringify(workshops, null, 2))
+	fs.writeFileSync('workshops.json', JSON.stringify(workshops, null, 2))
 
 	z.array(ModuleSchema).parse(workshops)
 
@@ -181,15 +181,18 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 
 		console.log('migrating workshop', {
 			title: workshop.title,
+			slug: workshop.slug.current,
 			newWorkshopId,
 			createSections,
 		})
 
-		const incomingContributors = workshop.instructor
+		const incomingContributors = {
+			slug: 'jack-herrington',
+		} // workshop.instructor
 		const contributorId = contributors[incomingContributors.slug]
 		const user =
 			(contributorId &&
-				(await db.query.users.findFirst({
+				(await db.query.users?.findFirst({
 					where: eq(users.id, contributorId),
 				}))) ||
 			null
@@ -203,7 +206,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 
 			// at least one workshop has a link resource
 			for (const resource of section.resources) {
-				const linkResource = await db.query.contentResource.findFirst({
+				const linkResource = await db.query.contentResource?.findFirst({
 					where: eq(contentResource.id, resource._id),
 				})
 
@@ -241,7 +244,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 				const lessonId = lesson._id || guid()
 				const videoResourceId = lesson.videoResource._id || guid()
 
-				const lessonResource = await db.query.contentResource.findFirst({
+				const lessonResource = await db.query.contentResource?.findFirst({
 					where: eq(contentResource.id, lessonId),
 				})
 
@@ -250,7 +253,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 						lessonId,
 						title: lesson.title,
 					})
-					const videoResource = await db.query.contentResource.findFirst({
+					const videoResource = await db.query.contentResource?.findFirst({
 						where: eq(contentResource.id, videoResourceId),
 					})
 
@@ -268,7 +271,10 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 							muxAssetId: sanityVideoResource.muxAsset.muxAssetId,
 							muxPlaybackId: sanityVideoResource.muxAsset.muxPlaybackId,
 						})
-
+						console.log('\t\tmigrating video resource', {
+							resourceId: newVideoResource.id,
+							muxPlaybackId: newVideoResource.muxPlaybackId,
+						})
 						WRITE_TO_DB &&
 							(await db.insert(contentResource).values({
 								id: videoResourceId,
@@ -327,7 +333,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 			}
 
 			if (createSections) {
-				const sectionResource = await db.query.contentResource.findFirst({
+				const sectionResource = await db.query.contentResource?.findFirst({
 					where: eq(contentResource.id, sectionId),
 				})
 
@@ -336,7 +342,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 						(await db.insert(contentResource).values({
 							id: sectionId,
 							type: section._type,
-							createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
+							createdById: user?.id ?? '4ab75994-3310-4589-a0b8-1557c4a21829',
 							createdAt: new Date(section._updatedAt),
 							updatedAt: new Date(section._updatedAt),
 							deletedAt: null,
@@ -358,7 +364,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 			}
 		}
 
-		const existingWorkshop = await db.query.contentResource.findFirst({
+		const existingWorkshop = await db.query.contentResource?.findFirst({
 			where: eq(contentResource.id, newWorkshopId),
 		})
 
@@ -375,7 +381,7 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 				(await db.insert(contentResource).values({
 					id: newWorkshopId,
 					type: workshop.moduleType,
-					createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
+					createdById: user?.id ?? '4ab75994-3310-4589-a0b8-1557c4a21829',
 					createdAt: new Date(workshop._createdAt),
 					updatedAt: new Date(workshop._updatedAt),
 					deletedAt: null,

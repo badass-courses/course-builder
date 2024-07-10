@@ -38,7 +38,7 @@ export async function recordResourceContribution(
 		return
 	}
 
-	const user = await db.query.users.findFirst({
+	const user = await db.query.users?.findFirst({
 		where: eq(users.id, contributorId),
 	})
 
