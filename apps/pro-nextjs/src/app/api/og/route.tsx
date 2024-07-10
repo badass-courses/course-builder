@@ -14,6 +14,7 @@ export const revalidate = 60
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
+		const resourceTypesWithImages = ['workshop', 'tutorial']
 		const hasResource = searchParams.has('resource')
 		const resourceSlugOrID = hasResource ? searchParams.get('resource') : null
 		const hasTitle = searchParams.has('title')
@@ -33,7 +34,8 @@ export async function GET(request: Request) {
 				),
 			})
 			title = resource?.fields?.title
-			if (resource?.type === 'workshop') {
+
+			if (resourceTypesWithImages.includes(resource?.type)) {
 				image = resource?.fields?.coverImage?.url
 			}
 		} else {
@@ -76,11 +78,11 @@ export async function GET(request: Request) {
 							/>
 						</svg>
 					</div>
-					<main tw="flex p-26 pb-32 flex-colw-full gap-5 h-full flex-grow items-end justify-start">
+					<main tw="flex p-26 pb-32 flex-row w-full gap-5 h-full flex-grow items-end justify-between">
 						<div tw="text-[50px] text-[#262C30] leading-tight">{title}</div>
 						{image && (
-							<div tw="flex">
-								<img src={image} width={300} height={300} />
+							<div tw="flex -mb-10 -mr-5">
+								<img src={image} width={450} height={450} />
 							</div>
 						)}
 					</main>
