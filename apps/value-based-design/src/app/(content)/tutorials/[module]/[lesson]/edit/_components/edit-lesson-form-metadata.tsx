@@ -6,8 +6,7 @@ import { LessonPlayer } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_
 import { NewLessonVideoForm } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
-import { Lesson } from '@/lib/lessons'
-import { TipSchema } from '@/lib/tips'
+import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 import { RefreshCcw } from 'lucide-react'
@@ -33,7 +32,7 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 export const LessonMetadataFormFields: React.FC<{
-	form: UseFormReturn<z.infer<typeof TipSchema>>
+	form: UseFormReturn<z.infer<typeof LessonSchema>>
 	initialVideoResourceId: string | null | undefined
 	lesson: Lesson
 }> = ({ form, initialVideoResourceId, lesson }) => {
