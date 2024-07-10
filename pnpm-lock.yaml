@@ -3019,6 +3019,9 @@ importers:
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
       json-schema:
         specifier: ^0.4.0
         version: 0.4.0
@@ -3212,6 +3215,9 @@ importers:
       '@types/eslint':
         specifier: ^8.44.2
         version: 8.56.5
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/json-schema':
         specifier: ^7.0.14
         version: 7.0.15
@@ -3272,6 +3278,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.5.12
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
+      shiki:
+        specifier: 1.1.7
+        version: 1.1.7
       stripe:
         specifier: ^8.186.1
         version: 8.222.0
