@@ -3130,6 +3130,9 @@ importers:
       satori:
         specifier: ^0.10.9
         version: 0.10.13
+      schema-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(typescript@5.4.5)
       serverless-mysql:
         specifier: ^1.5.5
         version: 1.5.5

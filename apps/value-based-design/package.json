@@ -158,6 +158,7 @@
 		"react-wrap-balancer": "^0.2.4",
 		"resend": "^3.2.0",
 		"satori": "^0.10.9",
+		"schema-dts": "^1.1.2",
 		"serverless-mysql": "^1.5.5",
 		"shortid": "^2.2.16",
 		"srt-parser-2": "^1.2.3",
