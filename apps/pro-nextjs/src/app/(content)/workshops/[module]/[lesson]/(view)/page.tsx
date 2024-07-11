@@ -81,12 +81,12 @@ export default async function LessonPageWrapper({
 }: Props) {
 	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader =
-		params.lessonPageType === 'solution'
+		lessonPageType === 'solution'
 			? getExerciseSolution(params.lesson)
 			: getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 	const exerciseLoader =
-		params.lessonPageType === 'exercise' ? getLesson(params.lesson) : null
+		lessonPageType === 'exercise' ? getLesson(params.lesson) : null
 
 	return (
 		<ModuleProvider moduleLoader={moduleLoader}>
