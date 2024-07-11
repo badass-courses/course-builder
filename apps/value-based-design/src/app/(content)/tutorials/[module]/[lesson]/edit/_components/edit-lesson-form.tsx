@@ -7,7 +7,7 @@ import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/a
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { Lesson } from '@/lib/lessons'
+import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
 import { TipSchema } from '@/lib/tips'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,7 +27,7 @@ const NewLessonFormSchema = z.object({
 
 export type EditLessonFormProps = {
 	lesson: Lesson
-	form: UseFormReturn<z.infer<typeof TipSchema>>
+	form: UseFormReturn<z.infer<typeof LessonSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }
@@ -41,7 +41,7 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 		`/tutorials/${moduleSlug}/`,
 	)
 	const session = useSession()
-	const form = useForm<z.infer<typeof TipSchema>>({
+	const form = useForm<z.infer<typeof LessonSchema>>({
 		resolver: zodResolver(NewLessonFormSchema),
 		defaultValues: {
 			id: lesson.id,
