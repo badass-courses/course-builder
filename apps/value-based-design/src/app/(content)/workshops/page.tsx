@@ -60,9 +60,8 @@ export default async function Workshops() {
 
 async function WorkshopsList() {
 	const workshopsModule = await getAllWorkshops()
-	const { ability, session } = await getServerAuthSession()
+	const { ability } = await getServerAuthSession()
 
-	console.log({ session })
 	const workshops = [...workshopsModule].filter((tutorial) => {
 		if (ability.can('create', 'Content')) {
 			return tutorial
