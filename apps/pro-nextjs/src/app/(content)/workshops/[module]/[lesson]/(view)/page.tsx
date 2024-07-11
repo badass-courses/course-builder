@@ -71,14 +71,14 @@ export async function generateMetadata(
 }
 
 export type Props = {
-	params: {
-		lesson: string
-		module: string
-		lessonPageType?: 'exercise' | 'solution' | 'default'
-	}
+	params: { lesson: string; module: string }
+	lessonPageType?: 'exercise' | 'solution' | 'default'
 }
 
-export default async function LessonPageWrapper({ params }: Props) {
+export default async function LessonPageWrapper({
+	params,
+	lessonPageType = 'default',
+}: Props) {
 	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader =
 		params.lessonPageType === 'solution'
