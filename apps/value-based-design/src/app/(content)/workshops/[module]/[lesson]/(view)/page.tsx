@@ -71,22 +71,22 @@ export async function generateMetadata(
 }
 
 export type Props = {
-	params: { lesson: string; module: string }
-	lessonPageType?: 'exercise' | 'solution' | 'default'
+	params: {
+		lesson: string
+		module: string
+		lessonPageType?: 'exercise' | 'solution' | 'default'
+	}
 }
 
-export default async function LessonPageWrapper({
-	params,
-	lessonPageType = 'default',
-}: Props) {
+export default async function LessonPageWrapper({ params }: Props) {
 	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader =
-		lessonPageType === 'solution'
+		params.lessonPageType === 'solution'
 			? getExerciseSolution(params.lesson)
 			: getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 	const exerciseLoader =
-		lessonPageType === 'exercise' ? getLesson(params.lesson) : null
+		params.lessonPageType === 'exercise' ? getLesson(params.lesson) : null
 
 	return (
 		<ModuleProvider moduleLoader={moduleLoader}>
@@ -249,7 +249,7 @@ async function LessonActionBar({
 	)
 }
 
-export function PlayerContainerSkeleton() {
+function PlayerContainerSkeleton() {
 	return (
 		<div className="flex aspect-video h-full w-full items-center justify-center">
 			<Spinner />
