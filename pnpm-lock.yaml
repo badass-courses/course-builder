@@ -15,8 +15,8 @@ importers:
         specifier: ^2.27.1
         version: 2.27.1
       '@coursebuilder/eslint-config':
-        specifier: 0.0.4
-        version: 0.0.4(eslint@8.57.0)(typescript@5.4.5)
+        specifier: ^0.1.0
+        version: link:packages/config/eslint-config
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(prettier@3.2.5)
@@ -6565,39 +6565,6 @@ packages:
     dependencies:
       csstype: 3.1.3
       react: 18.3.1
-    dev: false
-
-  /@coursebuilder/eslint-config@0.0.4(eslint@8.57.0)(typescript@5.4.5):
-    resolution: {integrity: sha512-x6JP+9PYHw5gInYHFvl4VXfKaBqyyYSa5bRHo+tq6G4n+w5ug7u9o97HNJyqEOQYhMdWWUi+aUX0VAZo6D1g0w==}
-    dependencies:
-      '@coursebuilder/eslint-plugin': 0.0.4(eslint@8.57.0)(typescript@5.4.5)
-      '@next/eslint-plugin-next': 14.1.3
-      '@types/eslint': 8.56.5
-      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.57.0)(typescript@5.4.5)
-      '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
-      eslint-config-prettier: 9.1.0(eslint@8.57.0)
-      eslint-config-turbo: 1.12.5(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
-      eslint-plugin-react: 7.34.1(eslint@8.57.0)
-      eslint-plugin-react-hooks: 4.6.0(eslint@8.57.0)
-      modern-module-resolution: link:@rushstack/eslint-patch/modern-module-resolution
-    transitivePeerDependencies:
-      - eslint
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - supports-color
-      - typescript
-    dev: false
-
-  /@coursebuilder/eslint-plugin@0.0.4(eslint@8.57.0)(typescript@5.4.5):
-    resolution: {integrity: sha512-hTes/Gn+7AXL1EZWwcUngf+q8jCE25PygkkutT+P8/K+or/VpgrDzSm76h+j6DYakvvZZS5DMXHE/1ho9D2npg==}
-    dependencies:
-      '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
-      '@typescript-eslint/utils': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
-      - typescript
     dev: false
 
   /@cspotcode/source-map-support@0.8.1:
