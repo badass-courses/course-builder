@@ -20,11 +20,11 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: `Pro Next.js Workshops by ${config.author}`,
+	title: `Value-Based Design Workshops by ${config.author}`,
 	openGraph: {
 		images: [
 			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Pro Next.js Workshops by ${config.author}`)}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Value-Based Design Workshops by ${config.author}`)}`,
 			},
 		],
 	},
