@@ -81,9 +81,7 @@ export default async function ModulePage({ params }: Props) {
 			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row">
 				<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 					<p className="text-primary mb-2 text-base">Pro Workshop</p>
-					<h1 className="font-heading fluid-4xl font-bold">
-						{workshop.fields.title}
-					</h1>
+					<h1 className="fluid-4xl">{workshop.fields.title}</h1>
 					{workshop.fields.description && (
 						<h2 className="fluid-lg text-muted-foreground mt-5">
 							{workshop.fields.description}
@@ -121,7 +119,7 @@ export default async function ModulePage({ params }: Props) {
 			</div>
 			<div className="flex flex-col-reverse px-5 pb-10 md:flex-row md:gap-10">
 				{workshop.fields.body && (
-					<article className="prose sm:prose-lg w-full max-w-none py-8">
+					<article className="prose sm:prose prose-sm w-full max-w-none py-8">
 						<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
 					</article>
 				)}

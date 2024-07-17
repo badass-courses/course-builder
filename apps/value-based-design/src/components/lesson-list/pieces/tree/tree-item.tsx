@@ -7,7 +7,8 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { cn } from '@/utils/cn'
 import {
 	Instruction,
 	ItemMode,
@@ -22,10 +23,14 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
+import { ChevronDown, ChevronUp, Trash } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
 
+import { Button } from '@coursebuilder/ui'
+
+import { removeSection } from '../../../../app/(content)/workshops/actions'
 import { TreeItem as TreeItemType } from '../../data/tree'
 import { indentPerLevel } from './constants'
 import { DependencyContext, TreeContext } from './tree-context'
@@ -41,13 +46,17 @@ function ChildIcon() {
 }
 
 function GroupIcon({ isOpen }: { isOpen: boolean }) {
-	const Icon = isOpen ? '⬇️' : '➡️'
-	return <span className="text-neutral-500">{Icon}</span>
+	const Icon = isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+	return (
+		<span className="mr-2 flex items-center justify-center text-neutral-500">
+			{Icon}
+		</span>
+	)
 }
 
 function Icon({ item }: { item: TreeItemType }) {
-	if (!item.children.length) {
-		return <ChildIcon />
+	if (item.type !== 'section') {
+		return null // <ChildIcon />
 	}
 	return <GroupIcon isOpen={item.isOpen ?? false} />
 }
@@ -312,26 +321,30 @@ const TreeItem = memo(function TreeItem({
 	})()
 
 	const router = useRouter()
+	const pathname = usePathname()
 
 	return (
 		<Fragment>
-			<div
-				className={
-					state === 'idle' ? `cursor-pointer rounded-s hover:bg-blue-100` : ''
-				}
-				style={{ position: 'relative' }}
-			>
+			<div className="relative flex items-center">
 				<button
 					{...aria}
-					className="relative m-0 w-full cursor-pointer rounded-s border-0 bg-transparent p-0"
+					className={cn(
+						'relative w-full cursor-pointer border-0 bg-transparent py-3',
+						{
+							'border-primary border': instruction?.type === 'make-child',
+							'hover:bg-muted cursor-pointer': state === 'idle',
+						},
+					)}
 					id={`tree-item-${item.id}`}
 					onClick={
 						item.type === 'section'
 							? toggleOpen
 							: () => {
+									if (item.type === 'event') {
+										router.push(`/events/${item.id}/edit`)
+										return
+									}
 									if (rootResource) {
-										console.log(rootResource)
-
 										router.push(
 											// @ts-expect-error
 											`/${pluralize(Object.hasOwn(rootResource, 'type') ? rootResource?.type : rootResource.fields?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
@@ -344,26 +357,43 @@ const TreeItem = memo(function TreeItem({
 					style={{ paddingLeft: level * indentPerLevel }}
 				>
 					<span
-						className={`flex flex-row items-center rounded-s bg-transparent p-[var(--grid)] pr-40 ${
-							state === 'dragging'
-								? `opacity-40`
-								: state === 'parent-of-instruction'
-									? `transparent`
-									: ``
-						}`}
+						className={cn(
+							'flex flex-col items-center justify-between gap-3 bg-transparent px-3  sm:flex-row',
+							{
+								'opacity-40': state === 'dragging',
+								transparent: state === 'parent-of-instruction',
+							},
+						)}
 					>
-						<Icon item={item} />
-						<span className="m-0 text-neutral-500">
-							{item.label ?? item.id}
-						</span>
-						<small className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap text-left">
-							{item.type ? <code>{item.type}</code> : null}
-							<code className="text- absolute bottom-0 right-[var(--grid)] text-xs">
-								({mode})
-							</code>
+						<div className="flex w-full flex-row">
+							<Icon item={item} />
+							<span
+								className={cn('text-left', {
+									'font-semibold': item.type === 'section',
+								})}
+							>
+								{item.label ?? item.id}
+							</span>
+						</div>
+						<small className="flex items-center gap-1">
+							{item.type ? (
+								<span className="text-ellipsis capitalize opacity-50">
+									{item.type}
+								</span>
+							) : null}
+							{/* <span className="text-xs opacity-50">({mode})</span> */}
 						</small>
 					</span>
 					{instruction ? (
+						<div
+							className={cn('bg-primary absolute left-0 h-px w-full', {
+								'top-0': instruction.type === 'reorder-above',
+								'bottom-0': instruction.type === 'reorder-below',
+								'opacity-0': instruction.type === 'instruction-blocked',
+							})}
+						/>
+					) : null}
+					{/* {instruction ? (
 						<span
 							style={{
 								position: 'absolute',
@@ -375,8 +405,20 @@ const TreeItem = memo(function TreeItem({
 						>
 							◎ {instruction.type}
 						</span>
-					) : null}
+					) : null} */}
 				</button>
+				{item.type === 'section' && item.children.length === 0 && (
+					<Button
+						size="icon"
+						variant="destructive"
+						onClick={async () => {
+							await removeSection(item.id, pathname)
+							return dispatch({ type: 'remove-item', itemId: item.id })
+						}}
+					>
+						<Trash size={12} />
+					</Button>
+				)}
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>

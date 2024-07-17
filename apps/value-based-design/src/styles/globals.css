@@ -69,11 +69,15 @@
 	h2,
 	h3,
 	h4 {
-		@apply text-balance;
+		@apply text-balance font-serif font-bold;
 	}
 
 	body {
 		@apply bg-background text-foreground antialiased;
+	}
+
+	.not-prose {
+		@apply font-sans;
 	}
 }
 

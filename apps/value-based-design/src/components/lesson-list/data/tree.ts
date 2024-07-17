@@ -102,6 +102,7 @@ export type TreeAction =
 			itemId: string
 	  }
 	| { type: 'modal-move'; itemId: string; targetId: string; index: number }
+	| { type: 'remove-item'; itemId: string }
 
 export const tree = {
 	remove(data: TreeItem[], id: string): TreeItem[] {
@@ -314,6 +315,10 @@ const dataReducer = (data: TreeItem[], action: TreeAction) => {
 			return data.map(toggle)
 		}
 		return data
+	}
+
+	if (action.type === 'remove-item') {
+		return tree.remove(data, action.itemId)
 	}
 
 	if (action.type === 'modal-move') {

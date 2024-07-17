@@ -58,19 +58,19 @@ export function Links({ className }: { className?: string }) {
 		<motion.nav
 			aria-label="top"
 			className={cn(
-				'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
+				'relative mx-auto flex w-full items-center justify-between px-2.5 text-sm',
 
 				className,
 			)}
 		>
-			<div className={cn('flex w-full items-center justify-center gap-8')}>
+			<div className={cn('flex w-full items-center justify-between gap-8')}>
 				<Link
 					href="/"
 					aria-current={isRoot}
 					tabIndex={isRoot ? -1 : 0}
 					passHref
 					className={cn(
-						'border-foreground z-10 inline-flex items-baseline justify-center gap-1 border-2 px-2 py-1 font-sans text-sm font-bold',
+						'z-10 inline-flex items-baseline justify-center gap-1 bg-black px-2.5 py-1.5 font-sans text-sm font-bold text-white',
 						{
 							'absolute left-2': navigationLinks.length > 0,
 						},
@@ -80,7 +80,8 @@ export function Links({ className }: { className?: string }) {
 						redirect('/brand')
 					}}
 				>
-					<span className="text-lg leading-none">⬖</span> {config.defaultTitle}
+					{/* <span className="text-lg leading-none">⬖</span> */}
+					{config.defaultTitle}
 				</Link>
 				<nav className="absolute hidden md:flex">
 					<ul className="flex items-center gap-5 text-lg font-semibold">
@@ -97,7 +98,7 @@ export function Links({ className }: { className?: string }) {
 				</nav>
 			</div>
 			<div className="absolute right-2 flex items-center justify-end gap-2">
-				{/* <Login className="hidden md:flex" /> */}
+				<Login className="hidden md:flex" />
 				<User className="hidden md:flex" />
 				{/* <ThemeToggle /> */}
 				{navigationLinks.length > 0 && (
