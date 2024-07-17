@@ -31,7 +31,7 @@ export function TipUploader({
 				className="[&_label]:text-primary [&_label]:hover:text-primary border-border"
 				onUploadError={(error: Error) => {
 					// Do something with the error.
-					alert(`ERROR! ${error.message}`)
+					console.log(`ERROR! ${error.message}`)
 				}}
 			/>
 		</div>
