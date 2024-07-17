@@ -17,6 +17,8 @@ export const ourFileRouter = {
 		.middleware(async ({ req, input }) => {
 			const { session, ability } = await getServerAuthSession()
 
+			console.log({ input })
+
 			if (!session.user || !ability.can('create', 'Content')) {
 				throw new Error('Unauthorized')
 			}
@@ -43,6 +45,9 @@ export const ourFileRouter = {
 				},
 				user: opts.metadata.user,
 			})
+			return {
+				uploadedByUserId: opts.metadata.userId,
+			}
 		}),
 } satisfies FileRouter
 

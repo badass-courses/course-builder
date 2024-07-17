@@ -201,7 +201,7 @@ export function transcriptAsParagraphsWithTimestamps(
 				const text = paragraph.sentences.map((x) => x.text).join(' ')
 
 				return `${acc}[${startTime}] ${text}
-		
+
 `
 			},
 			``,
