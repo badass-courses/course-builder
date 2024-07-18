@@ -29,6 +29,9 @@ module.exports = withUt({
 			},
 		},
 		extend: {
+			screens: {
+				'2xl': '1820px',
+			},
 			fontFamily: {
 				sans: ['var(--font-geist-sans)', ...fontFamily.sans],
 				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
