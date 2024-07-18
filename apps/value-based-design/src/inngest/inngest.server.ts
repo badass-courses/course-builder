@@ -37,6 +37,10 @@ import {
 	type ConceptTagsRequested,
 	type RequestConceptSelection,
 } from './events/concepts'
+import {
+	LESSON_COMPLETED_EVENT,
+	LessonCompleted,
+} from './events/lesson-completed'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
 import {
 	REQUEST_VIDEO_SPLIT_POINTS,
@@ -55,6 +59,7 @@ export type Events = {
 	[REQUEST_CONCEPT_SELECTION]: RequestConceptSelection
 	[CONCEPT_SELECTED]: ConceptSelected
 	[REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
+	[LESSON_COMPLETED_EVENT]: LessonCompleted
 }
 
 const callbackBase =

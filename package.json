@@ -4,7 +4,7 @@
 	"type": "module",
 	"packageManager": "pnpm@8.15.5",
 	"engines": {
-		"node": "=v20.12.0",
+		"node": "20",
 		"pnpm": ">=8.15.5"
 	},
 	"scripts": {
@@ -35,7 +35,7 @@
 	"dependencies": {
 		"@changesets/changelog-github": "^0.5.0",
 		"@changesets/cli": "^2.27.1",
-		"@coursebuilder/eslint-config": "0.0.4",
+		"@coursebuilder/eslint-config": "^0.1.0",
 		"@ianvs/prettier-plugin-sort-imports": "^4.2.1",
 		"@manypkg/cli": "^0.21.3",
 		"@types/eslint": "^8.44.2",

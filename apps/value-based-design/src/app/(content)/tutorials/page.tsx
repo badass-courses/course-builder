@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { env } from '@/env.mjs'
 import { getAllTutorials } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -13,7 +14,7 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: 'ProAWS Tutorials by Adam Elmore',
+	title: `Value-Based Design Tutorials by Nick Disabato`,
 }
 
 export default async function Tutorials() {

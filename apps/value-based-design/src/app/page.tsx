@@ -17,7 +17,7 @@ export default async function Home() {
 			<section aria-label="About Value-Based Design Workshop">
 				<article className="prose sm:prose prose-sm bg-background mx-auto w-full max-w-3xl px-6 py-10 sm:py-16 sm:pb-24 lg:px-16">
 					<LandingCopy />
-					<PrimaryNewsletterCta withTitle={false} />
+					<PrimaryNewsletterCta className="not-prose" withTitle={false} />
 				</article>
 			</section>
 			<section
@@ -35,7 +35,7 @@ export default async function Home() {
 								Nick Disabato
 							</span>
 						</h2>
-						<div className="pt-10 text-center text-lg leading-relaxed opacity-80 sm:text-left sm:text-xl">
+						<div className="pt-10 text-center font-serif text-lg leading-relaxed opacity-80 sm:text-left sm:text-xl">
 							<p className="mb-5">
 								I&#8217;m{' '}
 								<a

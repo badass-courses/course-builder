@@ -32,9 +32,6 @@
 		".yarnrc.yml",
 		"package.json"
 	],
-	"engines": {
-		"node": ">=18.17.0"
-	},
 	"scripts": {
 		"typecheck": "tsc",
 		"build": "tsup",

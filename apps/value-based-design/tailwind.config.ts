@@ -23,9 +23,9 @@ module.exports = withUt({
 	theme: {
 		container: {
 			center: true,
-			padding: 0,
+			padding: '2rem',
 			screens: {
-				'2xl': '770px',
+				'2xl': '1280px',
 			},
 		},
 		extend: {
@@ -137,6 +137,7 @@ module.exports = withUt({
 				},
 				DEFAULT: {
 					css: {
+						fontFamily: theme('fontFamily.serif').join(', '),
 						fontSize: rem(22),
 						lineHeight: round(32 / 22),
 						'p, li, blockquote': {

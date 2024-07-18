@@ -10,6 +10,8 @@ import slugify from '@sindresorhus/slugify'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
+import { ContentResourceResource } from '@coursebuilder/core/types'
+
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
 	lessonId,
@@ -134,4 +136,57 @@ export async function updateLesson(input: TipUpdate) {
 			slug: lessonSlug,
 		},
 	})
+}
+
+export async function getExerciseSolution(lessonSlugOrId: string) {
+	const lesson = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					lessonSlugOrId,
+				),
+				eq(contentResource.id, lessonSlugOrId),
+			),
+			or(
+				eq(contentResource.type, 'lesson'),
+				eq(contentResource.type, 'exercise'),
+				eq(contentResource.type, 'solution'),
+			),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
+
+	const parsedLesson = LessonSchema.safeParse(lesson)
+	if (!parsedLesson.success) {
+		console.error('Error parsing lesson', lesson)
+		return null
+	}
+
+	const solution = parsedLesson.data?.resources?.find(
+		(resource: ContentResourceResource) =>
+			resource.resource.type === 'solution',
+	)?.resource
+
+	const parsedSolution = LessonSchema.safeParse(solution)
+	if (!parsedSolution.success) {
+		console.error('Error parsing solution', solution)
+		return null
+	}
+	return parsedSolution.data
 }
