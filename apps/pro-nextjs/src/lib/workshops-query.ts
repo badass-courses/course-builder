@@ -199,16 +199,22 @@ export async function updateWorkshop(input: Module) {
 		workshopSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
+	const updatedWorkshop =
+		await courseBuilderAdapter.updateContentResourceFields({
+			id: currentWorkshop.id,
+			fields: {
+				...currentWorkshop.fields,
+				...input.fields,
+				slug: workshopSlug,
+			},
+		})
+
 	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
 	revalidatePath('/workshops')
 
-	return courseBuilderAdapter.updateContentResourceFields({
-		id: currentWorkshop.id,
-		fields: {
-			...currentWorkshop.fields,
-			...input.fields,
-			slug: workshopSlug,
-		},
-	})
+	return {
+		...updatedWorkshop,
+		resources: {},
+	}
 }
