@@ -48,7 +48,7 @@ export function EditResourcesFormDesktop({
 	tools = [],
 	theme = 'light',
 }: {
-	onSave: (resource: ContentResource) => Promise<void>
+	onSave: (resourceSlug: string) => Promise<void>
 	resource: ContentResource & {
 		fields: {
 			body?: string | null
