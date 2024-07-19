@@ -73,10 +73,8 @@ export function EditResourcesFormDesktop({
 	theme?: string
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
-		const updatedResource = await updateResource(values)
-		if (updatedResource) {
-			onSave(updatedResource)
-		}
+		await updateResource(values)
+		return await onSave(values.fields.slug)
 	}
 
 	return (

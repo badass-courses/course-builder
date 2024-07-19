@@ -97,7 +97,7 @@ export default function Tree({
 			if (item.children.length > 0) {
 				for (const childItem of item.children) {
 					if (!childItem.itemData) continue
-					return await updateResourcePosition({
+					await updateResourcePosition({
 						currentParentResourceId: childItem.itemData.resourceOfId,
 						parentResourceId: item.itemData.resourceId,
 						resourceId: childItem.itemData.resourceId,
@@ -105,7 +105,7 @@ export default function Tree({
 					})
 				}
 			}
-			return await updateResourcePosition({
+			await updateResourcePosition({
 				currentParentResourceId: item.itemData.resourceOfId,
 				parentResourceId: rootResourceId,
 				resourceId: item.itemData.resourceId,
