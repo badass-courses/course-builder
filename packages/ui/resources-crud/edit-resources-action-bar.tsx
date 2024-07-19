@@ -25,6 +25,9 @@ export function EditResourcesActionBar({
 	onArchive: () => void
 	resourcePath: string
 }) {
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
+	const isDisabled = isSubmitting
+
 	return (
 		<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
 			<div className="flex items-center gap-2">
@@ -40,7 +43,7 @@ export function EditResourcesActionBar({
 					</span>
 				</span>
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-1">
 				{resource.fields?.state === 'draft' && (
 					<Button
 						onClick={(e) => {
@@ -60,8 +63,9 @@ export function EditResourcesActionBar({
 							onArchive()
 						}}
 						type="button"
-						variant="default"
+						variant="ghost"
 						size="sm"
+						disabled={isDisabled}
 						className="h-7 disabled:cursor-wait"
 					>
 						Archive
@@ -73,8 +77,9 @@ export function EditResourcesActionBar({
 							onUnPublish()
 						}}
 						type="button"
-						variant="default"
+						variant="outline"
 						size="sm"
+						disabled={isDisabled}
 						className="h-7 disabled:cursor-wait"
 					>
 						Return to Draft
@@ -82,14 +87,16 @@ export function EditResourcesActionBar({
 				)}
 				<Button
 					onClick={(e) => {
+						setIsSubmitting(true)
 						onSubmit()
 					}}
 					type="button"
 					variant="default"
 					size="sm"
+					disabled={isDisabled}
 					className="h-7 disabled:cursor-wait"
 				>
-					Save
+					{isSubmitting ? 'Saving' : 'Save'}
 				</Button>
 			</div>
 		</div>
