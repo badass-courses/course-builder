@@ -157,6 +157,55 @@ export const addResourceToTutorial = async ({
 	})
 }
 
+type positionInputIten = {
+	currentParentResourceId: string
+	parentResourceId: string
+	resourceId: string
+	position: number
+	children?: positionInputIten[]
+}
+
+export const updateResourcePositions = async (input: positionInputIten[]) => {
+	const result = await db.transaction(async (trx) => {
+		for (const {
+			currentParentResourceId,
+			parentResourceId,
+			resourceId,
+			position,
+			children,
+		} of input) {
+			await trx
+				.update(contentResourceResource)
+				.set({ position, resourceOfId: parentResourceId })
+				.where(
+					and(
+						eq(contentResourceResource.resourceOfId, currentParentResourceId),
+						eq(contentResourceResource.resourceId, resourceId),
+					),
+				)
+			for (const child of children || []) {
+				await trx
+					.update(contentResourceResource)
+					.set({
+						position: child.position,
+						resourceOfId: child.parentResourceId,
+					})
+					.where(
+						and(
+							eq(
+								contentResourceResource.resourceOfId,
+								child.currentParentResourceId,
+							),
+							eq(contentResourceResource.resourceId, child.resourceId),
+						),
+					)
+			}
+		}
+	})
+
+	return result
+}
+
 export const updateResourcePosition = async ({
 	currentParentResourceId,
 	parentResourceId,
