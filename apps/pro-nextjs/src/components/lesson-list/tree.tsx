@@ -97,7 +97,7 @@ export default function Tree({
 			if (item.children.length > 0) {
 				for (const childItem of item.children) {
 					if (!childItem.itemData) continue
-					await updateResourcePosition({
+					return await updateResourcePosition({
 						currentParentResourceId: childItem.itemData.resourceOfId,
 						parentResourceId: item.itemData.resourceId,
 						resourceId: childItem.itemData.resourceId,
@@ -105,7 +105,7 @@ export default function Tree({
 					})
 				}
 			}
-			await updateResourcePosition({
+			return await updateResourcePosition({
 				currentParentResourceId: item.itemData.resourceOfId,
 				parentResourceId: rootResourceId,
 				resourceId: item.itemData.resourceId,
@@ -116,6 +116,10 @@ export default function Tree({
 
 	useEffect(() => {
 		if (lastAction === null) {
+			return
+		}
+
+		if (lastAction.type === 'toggle') {
 			return
 		}
 
