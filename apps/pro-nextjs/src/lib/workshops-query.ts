@@ -67,7 +67,7 @@ export async function getWorkshop(moduleSlugOrId: string) {
 
 	const parsedWorkshop = ModuleSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
-		console.error('Error parsing tutorial', workshop, parsedWorkshop.error)
+		console.error('Error parsing workshop', workshop, parsedWorkshop.error)
 		return null
 	}
 
@@ -114,8 +114,8 @@ export async function getAllWorkshops() {
 
 	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
 	if (!parsedWorkshops.success) {
-		console.error('Error parsing tutorial', workshops, parsedWorkshops.error)
-		throw new Error('Error parsing tutorial')
+		console.error('Error parsing workshop', workshops, parsedWorkshops.error)
+		throw new Error('Error parsing workshop')
 	}
 
 	return parsedWorkshops.data
@@ -199,9 +199,9 @@ export async function updateWorkshop(input: Module) {
 		workshopSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	revalidateTag('tutorials')
+	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
-	revalidatePath('/tutorials')
+	revalidatePath('/workshops')
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentWorkshop.id,

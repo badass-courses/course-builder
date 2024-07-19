@@ -8,6 +8,10 @@ export const ModuleSchema = z.object({
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
 		description: z.string().optional().nullable(),
+		github: z.string().optional().nullable(),
+		state: z
+			.enum(['draft', 'published', 'archived', 'deleted'])
+			.default('draft'),
 		visibility: z.union([
 			z.literal('public'),
 			z.literal('private'),
@@ -15,8 +19,8 @@ export const ModuleSchema = z.object({
 		]),
 		coverImage: z
 			.object({
-				url: z.string().optional().nullable(),
-				alt: z.string().optional().nullable(),
+				url: z.string().optional(),
+				alt: z.string().optional(),
 			})
 			.optional()
 			.nullable(),
@@ -64,7 +68,7 @@ export const ModuleSchema = z.object({
 											type: z.enum(['solution', 'videoResource']),
 											fields: z.object({
 												slug: z.string().optional().nullable(),
-												title: z.string().min(2).max(90),
+												title: z.string().min(2).max(90).optional().nullable(),
 												body: z.string().optional().nullable(),
 											}),
 										}),

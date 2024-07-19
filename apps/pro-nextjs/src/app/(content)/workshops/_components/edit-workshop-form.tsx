@@ -36,8 +36,8 @@ import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metada
 import { onWorkshopSave } from '../[module]/edit/actions'
 
 export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
-	const form = useForm<z.infer<typeof ContentResourceSchema>>({
-		resolver: zodResolver(ContentResourceSchema),
+	const form = useForm<z.infer<typeof ModuleSchema>>({
+		resolver: zodResolver(ModuleSchema),
 		defaultValues: {
 			id: workshop.id,
 			fields: {
@@ -220,7 +220,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						},
 					)}
 				/>
-				<WorkshopResourcesList workshop={workshop} />
+				{/* <WorkshopResourcesList workshop={workshop} /> */}
 			</ResourceForm>
 		</>
 	)
