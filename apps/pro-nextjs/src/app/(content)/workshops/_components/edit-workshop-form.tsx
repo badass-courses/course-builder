@@ -43,6 +43,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 			fields: {
 				title: workshop?.fields?.title || '',
 				description: workshop?.fields?.description || '',
+				slug: workshop?.fields?.slug,
 				state: workshop.fields?.state || 'draft',
 				body: workshop?.fields?.body || '',
 				visibility: workshop.fields?.visibility || 'unlisted',
