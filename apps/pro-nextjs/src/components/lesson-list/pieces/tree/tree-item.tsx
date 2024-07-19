@@ -7,7 +7,8 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { removeSection } from '@/app/(content)/workshops/actions'
 import { cn } from '@/utils/cn'
 import {
 	Instruction,
@@ -23,10 +24,12 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Trash } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
+
+import { Button } from '@coursebuilder/ui'
 
 import { TreeItem as TreeItemType } from '../../data/tree'
 import { indentPerLevel } from './constants'
@@ -52,7 +55,7 @@ function GroupIcon({ isOpen }: { isOpen: boolean }) {
 }
 
 function Icon({ item }: { item: TreeItemType }) {
-	if (!item.children.length) {
+	if (item.type !== 'section') {
 		return null // <ChildIcon />
 	}
 	return <GroupIcon isOpen={item.isOpen ?? false} />
@@ -318,19 +321,18 @@ const TreeItem = memo(function TreeItem({
 	})()
 
 	const router = useRouter()
+	const pathname = usePathname()
 
 	return (
 		<Fragment>
-			<div
-				className={state === 'idle' ? `hover:bg-muted cursor-pointer` : ''}
-				style={{ position: 'relative' }}
-			>
+			<div className="relative flex items-center">
 				<button
 					{...aria}
 					className={cn(
 						'relative w-full cursor-pointer border-0 bg-transparent py-3',
 						{
 							'border-primary border': instruction?.type === 'make-child',
+							'hover:bg-muted cursor-pointer': state === 'idle',
 						},
 					)}
 					id={`tree-item-${item.id}`}
@@ -373,9 +375,11 @@ const TreeItem = memo(function TreeItem({
 								{item.label ?? item.id}
 							</span>
 						</div>
-						<small className="text-ellipsis opacity-50">
+						<small className="flex items-center gap-1">
 							{item.type ? (
-								<span className="capitalize">{item.type}</span>
+								<span className="text-ellipsis capitalize opacity-50">
+									{item.type}
+								</span>
 							) : null}
 							{/* <span className="text-xs opacity-50">({mode})</span> */}
 						</small>
@@ -403,6 +407,18 @@ const TreeItem = memo(function TreeItem({
 						</span>
 					) : null} */}
 				</button>
+				{item.type === 'section' && item.children.length === 0 && (
+					<Button
+						size="icon"
+						variant="destructive"
+						onClick={async () => {
+							await removeSection(item.id, pathname)
+							return dispatch({ type: 'remove-item', itemId: item.id })
+						}}
+					>
+						<Trash size={12} />
+					</Button>
+				)}
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>

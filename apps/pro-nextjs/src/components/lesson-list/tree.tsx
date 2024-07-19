@@ -128,6 +128,10 @@ export default function Tree({
 			return
 		}
 
+		if (lastAction.type === 'toggle') {
+			return
+		}
+
 		saveTreeData()
 
 		if (lastAction.type === 'modal-move') {
