@@ -9,7 +9,10 @@ import {
 } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
-import { updateResourcePosition } from '@/lib/tutorials-query'
+import {
+	updateResourcePosition,
+	updateResourcePositions,
+} from '@/lib/tutorials-query'
 import { triggerPostMoveFlash } from '@atlaskit/pragmatic-drag-and-drop-flourish/trigger-post-move-flash'
 import {
 	Instruction,
@@ -92,26 +95,32 @@ export default function Tree({
 	const saveTreeData = useCallback(async () => {
 		const currentData = lastStateRef.current
 
-		for (const item of currentData) {
-			if (!item.itemData) continue
-			if (item.children.length > 0) {
-				for (const childItem of item.children) {
-					if (!childItem.itemData) continue
-					await updateResourcePosition({
-						currentParentResourceId: childItem.itemData.resourceOfId,
-						parentResourceId: item.itemData.resourceId,
-						resourceId: childItem.itemData.resourceId,
-						position: item.children.indexOf(childItem),
-					})
+		const resourcePositions = currentData.flatMap((item, index) => {
+			if (!item.itemData) return []
+
+			const children = item.children.flatMap((childItem, childIndex) => {
+				if (!childItem.itemData) return []
+
+				return {
+					currentParentResourceId: childItem.itemData.resourceOfId,
+					parentResourceId: item.itemData?.resourceId as string,
+					resourceId: childItem.itemData.resourceId,
+					position: childIndex,
 				}
-			}
-			await updateResourcePosition({
-				currentParentResourceId: item.itemData.resourceOfId,
-				parentResourceId: rootResourceId,
-				resourceId: item.itemData.resourceId,
-				position: currentData.indexOf(item),
 			})
-		}
+
+			return [
+				{
+					currentParentResourceId: item.itemData.resourceOfId,
+					parentResourceId: rootResourceId,
+					resourceId: item.itemData.resourceId,
+					position: index,
+					children,
+				},
+			]
+		})
+
+		await updateResourcePositions(resourcePositions)
 	}, [rootResourceId])
 
 	useEffect(() => {
