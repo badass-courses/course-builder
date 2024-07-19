@@ -48,7 +48,7 @@ export function EditResourcesFormDesktop({
 	tools = [],
 	theme = 'light',
 }: {
-	onSave: (resourceSlug: string) => Promise<void>
+	onSave: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
 		fields: {
 			body?: string | null
@@ -74,7 +74,7 @@ export function EditResourcesFormDesktop({
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		await updateResource(values)
-		return await onSave(values.fields.slug)
+		return await onSave(values)
 	}
 
 	return (
