@@ -1,5 +1,15 @@
 # @coursebuilder/ui
 
+## 1.0.15
+
+### Patch Changes
+
+- [#201](https://github.com/badass-courses/course-builder/pull/201) [`216138b`](https://github.com/badass-courses/course-builder/commit/216138bc5099b35eb32b6e7a32754de16ff41fd6) Thanks [@vojtaholik](https://github.com/vojtaholik)! - improved tree styles
+
+- [`2201ddd`](https://github.com/badass-courses/course-builder/commit/2201ddd0690d305c719e85ab75c0945d2262ac32) Thanks [@vojtaholik](https://github.com/vojtaholik)! - update react
+
+- [`173bcd5`](https://github.com/badass-courses/course-builder/commit/173bcd5e4855ea6519803b01ee282ed24d5eed75) Thanks [@vojtaholik](https://github.com/vojtaholik)! - modify new resource form structure
+
 ## 1.0.14
 
 ### Patch Changes
