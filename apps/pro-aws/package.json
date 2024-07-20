@@ -49,7 +49,7 @@
 		"@coursebuilder/email-templates": "^1.0.2",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/react-rsc": "workspace:^",
-		"@coursebuilder/ui": "^1.0.14",
+		"@coursebuilder/ui": "^1.0.15",
 		"@designbycode/tailwindcss-text-stroke": "^1.2.1",
 		"@fontsource/inter": "^5.0.16",
 		"@heroicons/react": "^2.0.18",

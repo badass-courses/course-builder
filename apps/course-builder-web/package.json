@@ -48,7 +48,7 @@
 		"@coursebuilder/email-templates": "^1.0.2",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/react-rsc": "workspace:^",
-		"@coursebuilder/ui": "^1.0.14",
+		"@coursebuilder/ui": "^1.0.15",
 		"@fontsource/inter": "^5.0.16",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
