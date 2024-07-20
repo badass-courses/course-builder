@@ -129,7 +129,7 @@ const ProductImage = ({
 	return withImage ? (
 		<div
 			className={cn(
-				'bg-background dark:border-border dark:bg-background relative mx-auto -mb-32 h-56 w-56 rounded-full border border-gray-200 drop-shadow-xl',
+				'bg-background dark:border-border dark:bg-background relative mx-auto  h-56 w-56 rounded-full border border-gray-200 drop-shadow-xl',
 				className,
 			)}
 		>

@@ -74,7 +74,9 @@ function ComboboxDemo({
 }) {
 	const [open, setOpen] = React.useState(false)
 
-	const { data = [] } = api.contentResources.getAll.useQuery()
+	const { data = [] } = api.contentResources.getAll.useQuery({
+		contentTypes: ['event', 'workshop'],
+	})
 
 	const filteredResources = data
 		.filter(
@@ -159,22 +161,12 @@ export function EditProductForm({ product }: { product: Product }) {
 						throw new Error('resourceItem.resource is required')
 					}
 					const resources = resourceItem.resource.resources ?? []
+					console.log({ resources })
 					return {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
-							}
-							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
-								children: [],
-								itemData: resourceItem as any,
-							}
-						}),
+						children: [],
 						itemData: resourceItem as any,
 					}
 				})
@@ -217,7 +209,7 @@ export function EditProductForm({ product }: { product: Product }) {
 			product={product}
 			form={form}
 			resourceSchema={productSchema}
-			getResourcePath={(slug?: string) => `/events/${slug}`}
+			getResourcePath={(slug?: string) => `/products/${slug}`}
 			updateResource={updateProduct}
 			onSave={onProductSave}
 			availableWorkflows={[]}
@@ -235,7 +227,7 @@ export function EditProductForm({ product }: { product: Product }) {
 						<ImageResourceUploader
 							key={'image-uploader'}
 							belongsToResourceId={product.id}
-							uploadDirectory={`events`}
+							uploadDirectory={`products`}
 						/>
 					),
 				},

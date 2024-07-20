@@ -244,6 +244,8 @@ export async function updateProduct(input: Product) {
 		},
 	})
 
+	const { image, ...fieldsNoImage } = input.fields
+
 	await db
 		.update(products)
 		.set({
@@ -251,7 +253,8 @@ export async function updateProduct(input: Product) {
 			quantityAvailable: input.quantityAvailable,
 			status: 1,
 			fields: {
-				...input.fields,
+				...fieldsNoImage,
+				...(image?.url && { image }),
 			},
 		})
 		.where(eq(products.id, currentProduct.id))
@@ -291,7 +294,11 @@ export async function getProduct(productSlugOrId: string) {
 
 	const parsedProduct = productSchema.safeParse(productData)
 	if (!parsedProduct.success) {
-		console.error('Error parsing product', productData)
+		console.error(
+			'Error parsing product',
+			JSON.stringify(parsedProduct.error),
+			JSON.stringify(productData),
+		)
 		return null
 	}
 	return parsedProduct.data

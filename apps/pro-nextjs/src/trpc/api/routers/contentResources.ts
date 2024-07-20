@@ -12,9 +12,9 @@ export const contentResourceRouter = createTRPCRouter({
 				.object({
 					contentTypes: z
 						.array(z.string())
-						.default(['event', 'lesson', 'tutorial']),
+						.default(['event', 'lesson', 'tutorial', 'workshop']),
 				})
-				.default({ contentTypes: ['event', 'lesson', 'tutorial'] }),
+				.default({ contentTypes: ['event', 'lesson', 'tutorial', 'workshop'] }),
 		)
 		.query(async ({ input }) => {
 			const { session, ability } = await getServerAuthSession()
