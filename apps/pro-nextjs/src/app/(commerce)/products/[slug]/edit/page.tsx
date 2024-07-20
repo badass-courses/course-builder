@@ -20,7 +20,5 @@ export default async function PromptEditPage({
 		notFound()
 	}
 
-	console.log({ product })
-
 	return <EditProductForm key={product.fields?.slug} product={product} />
 }

@@ -161,7 +161,6 @@ export function EditProductForm({ product }: { product: Product }) {
 						throw new Error('resourceItem.resource is required')
 					}
 					const resources = resourceItem.resource.resources ?? []
-					console.log({ resources })
 					return {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
