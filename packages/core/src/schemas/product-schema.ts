@@ -17,7 +17,7 @@ export const productSchema = z.object({
 		slug: z.string(),
 		image: z
 			.object({
-				url: z.string().url(),
+				url: z.string(),
 				alt: z.string().optional().nullable(),
 				width: z.number().optional().nullable(),
 				height: z.number().optional().nullable(),
