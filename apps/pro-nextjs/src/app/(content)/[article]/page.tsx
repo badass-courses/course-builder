@@ -33,7 +33,15 @@ export async function generateMetadata(
 
 	return {
 		title: article.fields.title,
-		openGraph: { images: [getOGImageUrlForResource(article)] },
+		openGraph: {
+			images: [
+				getOGImageUrlForResource({
+					fields: { slug: article.fields.slug },
+					id: article.id,
+					updatedAt: article.updatedAt,
+				}),
+			],
+		},
 	}
 }
 

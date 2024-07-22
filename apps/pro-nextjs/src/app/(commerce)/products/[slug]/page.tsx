@@ -35,11 +35,7 @@ export async function generateMetadata(
 	return {
 		title: product.name,
 		openGraph: {
-			images: [
-				getOGImageUrlForResource(
-					product as unknown as ContentResource & { fields?: { slug: string } },
-				),
-			],
+			images: [getOGImageUrlForResource(product)],
 		},
 	}
 }
