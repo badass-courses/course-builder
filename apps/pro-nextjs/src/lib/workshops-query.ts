@@ -62,6 +62,15 @@ export async function getWorkshop(moduleSlugOrId: string) {
 				},
 				orderBy: asc(contentResourceResource.position),
 			},
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
+			},
 		},
 	})
 
