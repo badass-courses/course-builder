@@ -4,12 +4,14 @@ import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { LessonMetadataFormFields } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/edit-lesson-form-metadata'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -70,6 +72,22 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 			form={form}
 			availableWorkflows={[
 				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
+			]}
+			tools={[
+				{ id: 'assistant' },
+				{
+					id: 'media',
+					icon: () => (
+						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<ImageResourceUploader
+							key={'image-uploader'}
+							belongsToResourceId={lesson.id}
+							uploadDirectory="lessons"
+						/>
+					),
+				},
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
