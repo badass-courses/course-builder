@@ -104,37 +104,12 @@ export default async function ModulePage({ params, searchParams }: Props) {
 			courseBuilderAdapter,
 		)
 
-		const { count: purchaseCount } = await db
-			.select({ count: count() })
-			.from(purchases)
-			.where(eq(purchases.productId, product.id))
-			.then((res) => res[0] ?? { count: 0 })
-
-		const productWithQuantityAvailable = await db
-			.select({ quantityAvailable: products.quantityAvailable })
-			.from(products)
-			.where(eq(products.id, product.id))
-			.then((res) => res[0])
-
-		let quantityAvailable = -1
-
-		if (productWithQuantityAvailable) {
-			quantityAvailable =
-				productWithQuantityAvailable.quantityAvailable - purchaseCount
-		}
-
-		if (quantityAvailable < 0) {
-			quantityAvailable = -1
-		}
-
 		const baseProps = {
 			workshop,
 			availableBonuses: [],
-			purchaseCount,
-			quantityAvailable,
-			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
 			product,
 			pricingDataLoader,
+			quantityAvailable: product.quantityAvailable,
 			...commerceProps,
 		}
 
@@ -161,6 +136,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 					...baseProps,
 					hasPurchasedCurrentProduct: Boolean(purchase),
 					existingPurchase,
+					quantityAvailable: product.quantityAvailable,
 					purchasedProductIds,
 				}
 			}
