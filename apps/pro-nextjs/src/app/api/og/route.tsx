@@ -32,10 +32,9 @@ export async function GET(request: Request) {
 					),
 				),
 			})
-
-			const product =
-				!resource &&
-				(await db.query.products.findFirst({
+			let product
+			if (!resource) {
+				product = await db.query.products.findFirst({
 					where: and(
 						or(
 							eq(
@@ -45,17 +44,13 @@ export async function GET(request: Request) {
 							eq(products.id, resourceSlugOrID),
 						),
 					),
-				}))
-
-			if (product) {
-				resource = product
+				})
 			}
 
-			title = resource?.fields?.title || resource?.name
+			title = resource?.fields?.title || product?.name
 
 			if (resource && resourceTypesWithImages.includes(resource.type)) {
-				image =
-					resource?.fields?.coverImage?.url || resource?.fields?.image?.url
+				image = resource?.fields?.coverImage?.url || product?.fields?.image?.url
 			}
 		} else {
 			if (hasTitle) {

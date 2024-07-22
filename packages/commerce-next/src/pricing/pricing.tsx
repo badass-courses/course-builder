@@ -127,16 +127,10 @@ const ProductImage = ({
 		options: { withImage },
 	} = usePricing()
 	return withImage ? (
-		<div
-			className={cn(
-				'bg-background dark:border-border dark:bg-background relative mx-auto  h-56 w-56 rounded-full border border-gray-200 drop-shadow-xl',
-				className,
-			)}
-		>
+		<div className={cn('relative mx-auto size-56', className)}>
 			{children ||
 				(product.fields.image && (
 					<Image
-						className="overflow-hidden rounded-full"
 						priority
 						src={product.fields.image.url}
 						alt={product.fields.image.alt || product.name}
