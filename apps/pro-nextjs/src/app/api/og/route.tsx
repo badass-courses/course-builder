@@ -4,7 +4,7 @@
 
 import { ImageResponse } from 'next/og'
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, products } from '@/db/schema'
 import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
@@ -14,14 +14,14 @@ export const revalidate = 60
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
-		const resourceTypesWithImages = ['workshop', 'tutorial']
+		const resourceTypesWithImages = ['workshop', 'tutorial', 'self-paced']
 		const hasResource = searchParams.has('resource')
 		const resourceSlugOrID = hasResource ? searchParams.get('resource') : null
 		const hasTitle = searchParams.has('title')
 		let title
 		let image
 		if (resourceSlugOrID && !hasTitle) {
-			const resource = await db.query.contentResource.findFirst({
+			let resource = await db.query.contentResource.findFirst({
 				where: and(
 					or(
 						eq(
@@ -32,10 +32,30 @@ export async function GET(request: Request) {
 					),
 				),
 			})
-			title = resource?.fields?.title
+
+			const product =
+				!resource &&
+				(await db.query.products.findFirst({
+					where: and(
+						or(
+							eq(
+								sql`JSON_EXTRACT (${products.fields}, "$.slug")`,
+								resourceSlugOrID,
+							),
+							eq(products.id, resourceSlugOrID),
+						),
+					),
+				}))
+
+			if (product) {
+				resource = product
+			}
+
+			title = resource?.fields?.title || resource?.name
 
 			if (resource && resourceTypesWithImages.includes(resource.type)) {
-				image = resource?.fields?.coverImage?.url
+				image =
+					resource?.fields?.coverImage?.url || resource?.fields?.image?.url
 			}
 		} else {
 			if (hasTitle) {
@@ -63,7 +83,7 @@ export async function GET(request: Request) {
 						height: 630,
 					}}
 				>
-					<div tw="flex items-center gap-2 justify-center absolute left-26 top-26">
+					<div tw="flex items-center justify-center absolute left-26 top-26">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width={30 * 2.6}
@@ -77,8 +97,10 @@ export async function GET(request: Request) {
 							/>
 						</svg>
 					</div>
-					<main tw="flex p-26 pb-32 flex-row w-full gap-5 h-full flex-grow items-end justify-between">
-						<div tw="text-[50px] text-[#262C30] leading-tight">{title}</div>
+					<main tw="flex p-26 pb-32 flex-row w-full h-full flex-grow items-end justify-between">
+						<div tw="text-[50px] text-[#262C30] leading-tight pr-10">
+							{title}
+						</div>
 						{image && (
 							<div tw="flex -mb-10 -mr-5">
 								<img src={image} width={450} height={450} />

@@ -10,11 +10,28 @@ import { env } from '@/env.mjs'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
 
 import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
+
+export async function generateMetadata(
+	{ params, searchParams }: Props,
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const product = await getProduct(params.slug)
+
+	if (!product) {
+		return parent as Metadata
+	}
+
+	return {
+		title: product.fields.title,
+		openGraph: { images: [getOGImageUrlForResource(product)] },
+	}
+}
 
 async function ProductActionBar({
 	productLoader,
