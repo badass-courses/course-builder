@@ -163,18 +163,7 @@ export function EditProductForm({ product }: { product: Product }) {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
-							}
-							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
-								children: [],
-								itemData: resourceItem as any,
-							}
-						}),
+						children: [],
 						itemData: resourceItem as any,
 					}
 				})
