@@ -8,8 +8,8 @@ import {
 	treeStateReducer,
 } from '@/components/lesson-list/data/tree'
 import Tree from '@/components/lesson-list/tree'
+import { addResourceToModule } from '@/lib/modules-query'
 import { createResource } from '@/lib/resources/create-resources'
-import { addResourceToTutorial } from '@/lib/tutorials-query'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
@@ -54,9 +54,9 @@ export default function Component({ tutorial }: { tutorial: ContentResource }) {
 	const router = useRouter()
 
 	const handleResourceCreated = async (resource: ContentResource) => {
-		const resourceItem = await addResourceToTutorial({
+		const resourceItem = await addResourceToModule({
 			resource,
-			tutorialId: tutorial.id,
+			moduleId: tutorial.id,
 		})
 
 		if (resourceItem) {
