@@ -15,6 +15,7 @@ import {
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
 import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
 import { ModuleProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/module-context'
+import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { Lesson } from '@/lib/lessons'
@@ -245,14 +246,6 @@ async function LessonActionBar({
 				</div>
 			) : null}
 		</>
-	)
-}
-
-export function PlayerContainerSkeleton() {
-	return (
-		<div className="flex aspect-video h-full w-full items-center justify-center">
-			<Spinner />
-		</div>
 	)
 }
 
