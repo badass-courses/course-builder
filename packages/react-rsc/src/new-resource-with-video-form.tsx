@@ -27,11 +27,16 @@ import {
 
 const NewResourceWithVideoSchema = z.object({
 	title: z.string().min(2).max(90),
-	videoResourceId: z.string().min(4, 'Please upload a video').optional(),
-	type: z.string().optional(),
+	videoResourceId: z.string().min(4, 'Please upload a video'),
 })
 
 type NewResourceWithVideo = z.infer<typeof NewResourceWithVideoSchema>
+
+const NewResourceWithVideoFormShema = NewResourceWithVideoSchema.extend({
+	type: z.string().optional(),
+})
+
+type NewResourceWithVideoForm = z.infer<typeof NewResourceWithVideoFormShema>
 
 export function NewResourceWithVideoForm({
 	getVideoResource,
@@ -43,7 +48,7 @@ export function NewResourceWithVideoForm({
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
-	availableResourceTypes?: string[]
+	availableResourceTypes?: string[] | undefined
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
 	) => React.ReactNode
@@ -56,8 +61,8 @@ export function NewResourceWithVideoForm({
 	const [isValidatingVideoResource, setIsValidatingVideoResource] =
 		React.useState<boolean>(false)
 
-	const form = useForm<NewResourceWithVideo>({
-		resolver: zodResolver(NewResourceWithVideoSchema),
+	const form = useForm<NewResourceWithVideoForm>({
+		resolver: zodResolver(NewResourceWithVideoFormShema),
 		defaultValues: {
 			title: '',
 			videoResourceId: undefined,
