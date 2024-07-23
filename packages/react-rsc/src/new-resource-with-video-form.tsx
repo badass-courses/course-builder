@@ -47,7 +47,7 @@ export function NewResourceWithVideoForm({
 	children,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
-	createResource: (values: FormValues) => Promise<ContentResource>
+	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
 	availableResourceTypes?: string[] | undefined
 	children: (
@@ -101,7 +101,7 @@ export function NewResourceWithVideoForm({
 			if (values.videoResourceId) {
 				await pollVideoResource(values.videoResourceId).next()
 			}
-			const resource = await createResource(values)
+			const resource = await createResource(values as any)
 			console.log({ resource })
 			if (!resource) {
 				// Handle edge case, e.g., toast an error message
