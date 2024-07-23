@@ -32,11 +32,12 @@ const NewResourceWithVideoSchema = z.object({
 
 type NewResourceWithVideo = z.infer<typeof NewResourceWithVideoSchema>
 
-const NewResourceWithVideoFormShema = NewResourceWithVideoSchema.extend({
+const FormValuesSchema = NewResourceWithVideoSchema.extend({
 	type: z.string().optional(),
+	videoResourceId: z.string().optional(),
 })
 
-type NewResourceWithVideoForm = z.infer<typeof NewResourceWithVideoFormShema>
+type FormValues = z.infer<typeof FormValuesSchema>
 
 export function NewResourceWithVideoForm({
 	getVideoResource,
@@ -46,7 +47,7 @@ export function NewResourceWithVideoForm({
 	children,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
-	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
+	createResource: (values: FormValues) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
 	availableResourceTypes?: string[] | undefined
 	children: (
@@ -61,8 +62,8 @@ export function NewResourceWithVideoForm({
 	const [isValidatingVideoResource, setIsValidatingVideoResource] =
 		React.useState<boolean>(false)
 
-	const form = useForm<NewResourceWithVideoForm>({
-		resolver: zodResolver(NewResourceWithVideoFormShema),
+	const form = useForm<FormValues>({
+		resolver: zodResolver(FormValuesSchema),
 		defaultValues: {
 			title: '',
 			videoResourceId: undefined,
@@ -94,7 +95,7 @@ export function NewResourceWithVideoForm({
 
 	const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-	const onSubmit = async (values: NewResourceWithVideo) => {
+	const onSubmit = async (values: FormValues) => {
 		try {
 			setIsSubmitting(true)
 			if (values.videoResourceId) {
