@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
-import ModuleEdit from '@/app/(content)/tutorials/[module]/edit/_components/module-edit'
+import { EditTutorialForm } from '@/app/(content)/tutorials/_components/edit-tutorial-form'
 import { courseBuilderAdapter } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -23,9 +23,5 @@ export default async function EditTutorialPage({
 		notFound()
 	}
 
-	return (
-		<>
-			<ModuleEdit tutorial={tutorial} />
-		</>
-	)
+	return <EditTutorialForm tutorial={tutorial} />
 }
