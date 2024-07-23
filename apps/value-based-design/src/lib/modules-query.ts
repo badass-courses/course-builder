@@ -76,14 +76,14 @@ export const addResourceToModule = async ({
 	resource: ContentResource
 	moduleId: string
 }) => {
-	const module = await db.query.contentResource.findFirst({
+	const moduleData = await db.query.contentResource.findFirst({
 		where: like(contentResource.id, `%${last(moduleId.split('-'))}%`),
 		with: {
 			resources: true,
 		},
 	})
 
-	if (!module) {
+	if (!moduleData) {
 		throw new Error(`Module with id ${moduleId} not found`)
 	}
 	console.log('resource', resource)
@@ -91,7 +91,7 @@ export const addResourceToModule = async ({
 	await db.insert(contentResourceResource).values({
 		resourceOfId: module.id,
 		resourceId: resource.id,
-		position: module.resources.length,
+		position: moduleData.resources.length,
 	})
 
 	return db.query.contentResourceResource.findFirst({
