@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
-import WorkshopResourcesList from '@/components/workshop-resources-edit'
+import ModuleResourcesEdit from '@/components/module-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -128,7 +128,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						),
 						toolComponent: (
 							<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
-								<WorkshopResourcesList workshop={workshop} />
+								<ModuleResourcesEdit module={workshop} />
 							</div>
 						),
 					},
@@ -220,7 +220,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						},
 					)}
 				/>
-				<WorkshopResourcesList workshop={workshop} />
+				<ModuleResourcesEdit module={workshop} />
 			</ResourceForm>
 		</>
 	)

@@ -4,7 +4,10 @@ import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { ModuleSchema } from '@/lib/module'
 import { getServerAuthSession } from '@/server/auth'
-import { and, asc, eq, inArray, or, sql } from 'drizzle-orm'
+import { and, asc, eq, inArray, like, or, sql } from 'drizzle-orm'
+import { last } from 'lodash'
+
+import type { ContentResource } from '@coursebuilder/core/types'
 
 export async function getModule(moduleSlugOrId: string) {
 	const { ability } = await getServerAuthSession()
@@ -64,4 +67,89 @@ export async function getModule(moduleSlugOrId: string) {
 	}
 
 	return parsedModule.data
+}
+
+export const addResourceToModule = async ({
+	resource,
+	moduleId,
+}: {
+	resource: ContentResource
+	moduleId: string
+}) => {
+	const module = await db.query.contentResource.findFirst({
+		where: like(contentResource.id, `%${last(moduleId.split('-'))}%`),
+		with: {
+			resources: true,
+		},
+	})
+
+	if (!module) {
+		throw new Error(`Module with id ${moduleId} not found`)
+	}
+	console.log('resource', resource)
+
+	await db.insert(contentResourceResource).values({
+		resourceOfId: module.id,
+		resourceId: resource.id,
+		position: module.resources.length,
+	})
+
+	return db.query.contentResourceResource.findFirst({
+		where: and(
+			eq(contentResourceResource.resourceOfId, module.id),
+			eq(contentResourceResource.resourceId, resource.id),
+		),
+		with: {
+			resource: true,
+		},
+	})
+}
+
+type positionInputIten = {
+	currentParentResourceId: string
+	parentResourceId: string
+	resourceId: string
+	position: number
+	children?: positionInputIten[]
+}
+
+export const updateResourcePositions = async (input: positionInputIten[]) => {
+	const result = await db.transaction(async (trx) => {
+		for (const {
+			currentParentResourceId,
+			parentResourceId,
+			resourceId,
+			position,
+			children,
+		} of input) {
+			await trx
+				.update(contentResourceResource)
+				.set({ position, resourceOfId: parentResourceId })
+				.where(
+					and(
+						eq(contentResourceResource.resourceOfId, currentParentResourceId),
+						eq(contentResourceResource.resourceId, resourceId),
+					),
+				)
+			for (const child of children || []) {
+				await trx
+					.update(contentResourceResource)
+					.set({
+						position: child.position,
+						resourceOfId: child.parentResourceId,
+					})
+					.where(
+						and(
+							eq(
+								contentResourceResource.resourceOfId,
+								child.currentParentResourceId,
+							),
+							eq(contentResourceResource.resourceId, child.resourceId),
+						),
+					)
+			}
+		}
+	})
+
+	return result
 }

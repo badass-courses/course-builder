@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { FileVideo } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -17,11 +18,17 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '@coursebuilder/ui'
 
 const NewResourceWithVideoSchema = z.object({
 	title: z.string().min(2).max(90),
-	videoResourceId: z.string().min(4, 'Please upload a video'),
+	videoResourceId: z.string().min(4, 'Please upload a video').optional(),
+	type: z.string().optional(),
 })
 
 type NewResourceWithVideo = z.infer<typeof NewResourceWithVideoSchema>
@@ -30,11 +37,13 @@ export function NewResourceWithVideoForm({
 	getVideoResource,
 	createResource,
 	onResourceCreated,
+	availableResourceTypes,
 	children,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
-	onResourceCreated: (resource: ContentResource) => Promise<void>
+	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
+	availableResourceTypes?: string[]
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
 	) => React.ReactNode
@@ -51,7 +60,8 @@ export function NewResourceWithVideoForm({
 		resolver: zodResolver(NewResourceWithVideoSchema),
 		defaultValues: {
 			title: '',
-			videoResourceId: '',
+			videoResourceId: undefined,
+			type: availableResourceTypes?.[0] || undefined,
 		},
 	})
 
@@ -77,37 +87,49 @@ export function NewResourceWithVideoForm({
 		throw new Error('Video resource not found after maximum attempts')
 	}
 
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
+
 	const onSubmit = async (values: NewResourceWithVideo) => {
 		try {
-			await pollVideoResource(values.videoResourceId).next()
-			const tip = await createResource(values)
-			if (!tip) {
+			setIsSubmitting(true)
+			if (values.videoResourceId) {
+				await pollVideoResource(values.videoResourceId).next()
+			}
+			const resource = await createResource(values)
+			console.log({ resource })
+			if (!resource) {
 				// Handle edge case, e.g., toast an error message
+				console.log('no resource in onSubmit')
 				return
 			}
-			onResourceCreated(tip)
+
+			onResourceCreated(resource, form.watch('title'))
 		} catch (error) {
 			console.error('Error polling video resource:', error)
 			// handle error, e.g. toast an error message
 		} finally {
 			form.reset()
-			setVideoResourceId(undefined)
+			setVideoResourceId(videoResourceId)
 			form.setValue('videoResourceId', '')
+			setIsSubmitting(false)
 		}
 	}
 
 	async function handleSetVideoResourceId(videoResourceId: string) {
 		try {
+			console.log('inside handleSetVideoResourceId')
 			setVideoResourceId(videoResourceId)
 			setIsValidatingVideoResource(true)
 			form.setValue('videoResourceId', videoResourceId)
-
+			console.log('setValue videoResourceId: ', videoResourceId)
 			await pollVideoResource(videoResourceId).next()
 
 			setVideoResourceValid(true)
+			console.log('setting video resource valid')
 			setIsValidatingVideoResource(false)
 		} catch (error) {
 			setVideoResourceValid(false)
+			console.log('setting video resource INVALID')
 			form.setError('videoResourceId', { message: 'Video resource not found' })
 			setVideoResourceId('')
 			form.setValue('videoResourceId', '')
@@ -117,45 +139,93 @@ export function NewResourceWithVideoForm({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className="flex flex-col gap-5"
+			>
 				<FormField
 					control={form.control}
 					name="title"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel className="text-lg font-bold">Title</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								A title should summarize the tip and explain what it is about
-								clearly.
+							<FormLabel>Title</FormLabel>
+							<FormDescription>
+								A title should summarize the resource and explain what it is
+								about clearly.
 							</FormDescription>
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
-
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
+				{availableResourceTypes && (
+					<FormField
+						control={form.control}
+						name="type"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Type</FormLabel>
+								<FormDescription>
+									Select the type of resource you are creating.
+								</FormDescription>
+								<FormControl>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
+										<SelectTrigger className="capitalize">
+											<SelectValue placeholder="Select Type..." />
+										</SelectTrigger>
+										<SelectContent>
+											{availableResourceTypes.map((type) => {
+												return (
+													<SelectItem
+														className="capitalize"
+														value={type}
+														key={type}
+													>
+														{type}
+													</SelectItem>
+												)
+											})}
+										</SelectContent>
+									</Select>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				)}
 				<FormField
 					control={form.control}
 					name="videoResourceId"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel className="text-lg font-bold">
-								Upload a Tip Video*
+							<FormLabel>
+								{videoResourceId ? 'Video' : 'Upload a Video*'}
 							</FormLabel>
-							<FormDescription className="mt-2 text-sm">
+							<FormDescription>
 								Your video will be uploaded and then transcribed automatically.
 							</FormDescription>
 							<FormControl>
 								<Input type="hidden" {...field} />
 							</FormControl>
 							{!videoResourceId ? (
-								<>{children(handleSetVideoResourceId)}</>
+								children(handleSetVideoResourceId)
 							) : (
-								<div>
-									{videoResourceId}{' '}
+								<div className="mt-5 flex w-full justify-between border-t pt-5">
+									<div className="flex flex-col divide-y">
+										<span className="text-primary flex items-center gap-2 py-1 text-sm">
+											<FileVideo className="h-4 w-4" />
+											<span>asdds{videoResourceId}</span>
+										</span>
+									</div>
 									<Button
+										type="button"
+										variant="outline"
+										size="sm"
 										onClick={() => {
 											setVideoResourceId('')
 											form.setValue('videoResourceId', '')
@@ -173,14 +243,14 @@ export function NewResourceWithVideoForm({
 						</FormItem>
 					)}
 				/>
-
 				<Button
 					type="submit"
-					className="mt-2"
 					variant="default"
-					disabled={!videoResourceValid}
+					disabled={
+						(videoResourceId ? !videoResourceValid : false) || isSubmitting
+					}
 				>
-					Create Draft Tip
+					{isSubmitting ? 'Creating...' : 'Create Draft Resource'}
 				</Button>
 			</form>
 		</Form>
