@@ -76,10 +76,8 @@ type Props = {
 	lessonPageType?: 'exercise' | 'solution' | 'default'
 }
 
-export default async function LessonPageWrapper({
-	params,
-	lessonPageType = 'default',
-}: Props) {
+export default async function LessonPageWrapper(props: Props) {
+	const { params, lessonPageType = 'default' } = props
 	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader =
 		lessonPageType === 'solution'
