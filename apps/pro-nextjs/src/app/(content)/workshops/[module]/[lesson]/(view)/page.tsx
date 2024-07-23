@@ -71,7 +71,7 @@ export async function generateMetadata(
 	}
 }
 
-export type Props = {
+type Props = {
 	params: { lesson: string; module: string }
 	lessonPageType?: 'exercise' | 'solution' | 'default'
 }

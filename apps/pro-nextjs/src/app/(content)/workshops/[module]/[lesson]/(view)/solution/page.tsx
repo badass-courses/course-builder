@@ -2,7 +2,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { getLesson } from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
-import Page, { type Props } from '../page'
+import Page from '../page'
 
 export async function generateMetadata(
 	{
