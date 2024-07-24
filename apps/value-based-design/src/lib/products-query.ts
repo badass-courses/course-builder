@@ -152,8 +152,6 @@ export async function updateProduct(input: Product) {
 		throw new Error(`Product not found`)
 	}
 
-	console.log({ currentProduct })
-
 	const merchantProduct = await db.query.merchantProduct.findFirst({
 		where: (merchantProduct, { eq }) => eq(merchantProduct.productId, input.id),
 	})
@@ -161,8 +159,6 @@ export async function updateProduct(input: Product) {
 	if (!merchantProduct || !merchantProduct.identifier) {
 		throw new Error(`Merchant product not found`)
 	}
-
-	console.log({ merchantProduct })
 
 	// TODO: handle upgrades
 
@@ -240,21 +236,25 @@ export async function updateProduct(input: Product) {
 	const updatedStripeProduct = await stripe.products.update(stripeProduct.id, {
 		name: input.name,
 		active: true,
+		images: input.fields.image?.url ? [input.fields.image.url] : undefined,
+		description: input.fields.description || '',
 		metadata: {
-			// TODO: Add image
 			slug: input.fields.slug,
 			lastUpdatedBy: user?.email || user.id,
 		},
 	})
+
+	const { image, ...fieldsNoImage } = input.fields
 
 	await db
 		.update(products)
 		.set({
 			name: input.name,
 			quantityAvailable: input.quantityAvailable,
-			status: input.fields.state === 'published' ? 1 : 0,
+			status: 1,
 			fields: {
-				...input.fields,
+				...fieldsNoImage,
+				...(image?.url && { image }),
 			},
 		})
 		.where(eq(products.id, currentProduct.id))
@@ -294,7 +294,11 @@ export async function getProduct(productSlugOrId: string) {
 
 	const parsedProduct = productSchema.safeParse(productData)
 	if (!parsedProduct.success) {
-		console.error('Error parsing product', productData)
+		console.error(
+			'Error parsing product',
+			JSON.stringify(parsedProduct.error),
+			JSON.stringify(productData),
+		)
 		return null
 	}
 	return parsedProduct.data
@@ -322,6 +326,7 @@ export async function createProduct(input: NewProduct) {
 		id: newProductId,
 		name: input.name,
 		status: 1,
+		type: 'self-paced',
 		fields: {
 			state: 'draft',
 			visibility: 'unlisted',
@@ -389,7 +394,11 @@ export async function createProduct(input: NewProduct) {
 
 	const parsedProduct = productSchema.safeParse(product)
 	if (!parsedProduct.success) {
-		console.error('Error parsing resource', product)
+		console.error(
+			'Error parsing resource',
+			product,
+			parsedProduct.error.message,
+		)
 		throw new Error('Error parsing resource')
 	}
 	return parsedProduct.data

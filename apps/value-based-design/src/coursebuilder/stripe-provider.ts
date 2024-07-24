@@ -4,8 +4,8 @@ import { env } from '@/env.mjs'
 import StripeProvider from '@coursebuilder/core/providers/stripe'
 
 export const stripeProvider = StripeProvider({
-	errorRedirectUrl: `${env.COURSEBUILDER_URL}/checkout-error`,
+	errorRedirectUrl: `${env.COURSEBUILDER_URL}`,
 	baseSuccessUrl: `${env.COURSEBUILDER_URL}`,
-	cancelUrl: `${env.COURSEBUILDER_URL}/checkout-cancel`,
+	cancelUrl: `${env.COURSEBUILDER_URL}`,
 	paymentsAdapter: new StripePaymentAdapter(),
 })

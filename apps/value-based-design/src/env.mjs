@@ -72,6 +72,8 @@ export const env = createEnv({
 		CONVERTKIT_API_SECRET: z.string(),
 		CONVERTKIT_API_KEY: z.string(),
 		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]),
+		SLACK_TOKEN: z.string().optional(),
+		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
 	},
 
 	/**
@@ -141,6 +143,8 @@ export const env = createEnv({
 		CONVERTKIT_API_SECRET: process.env.CONVERTKIT_API_SECRET,
 		CONVERTKIT_API_KEY: process.env.CONVERTKIT_API_KEY,
 		CONVERTKIT_SIGNUP_FORM: process.env.CONVERTKIT_SIGNUP_FORM,
+		SLACK_TOKEN: process.env.SLACK_TOKEN,
+		SLACK_DEFAULT_CHANNEL_ID: process.env.SLACK_DEFAULT_CHANNEL_ID,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

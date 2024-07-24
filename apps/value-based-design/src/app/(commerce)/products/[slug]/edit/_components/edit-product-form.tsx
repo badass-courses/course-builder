@@ -59,6 +59,8 @@ import {
 	EditResourcesToolPanel,
 	ResourceTool,
 } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 import { EditResourcePanelGroup } from '@coursebuilder/ui/resources-crud/panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from '@coursebuilder/ui/resources-crud/panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from '@coursebuilder/ui/resources-crud/panels/edit-resources-metadata-panel'
@@ -72,14 +74,20 @@ function ComboboxDemo({
 }) {
 	const [open, setOpen] = React.useState(false)
 
-	const { data = [] } = api.contentResources.getAll.useQuery()
+	const { data = [] } = api.contentResources.getAll.useQuery({
+		contentTypes: ['event', 'workshop'],
+	})
 
-	const filteredResources = data.filter(
-		(resource) =>
-			!currentResources
-				.map((currentResource) => currentResource.resourceId)
-				.includes(resource.id),
-	)
+	const filteredResources = data
+		.filter(
+			(resource) =>
+				!currentResources
+					.map((currentResource) => currentResource.resourceId)
+					.includes(resource.id),
+		)
+		.sort(
+			(a, b) => (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0),
+		)
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -88,7 +96,7 @@ function ComboboxDemo({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="w-[200px] justify-between"
+					className="w-full justify-between"
 				>
 					Select resource...
 					<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -134,8 +142,14 @@ export function EditProductForm({ product }: { product: Product }) {
 		defaultValues: {
 			...product,
 			fields: {
+				...product.fields,
 				description: product.fields.description ?? '',
 				slug: product.fields.slug ?? '',
+				image: {
+					url: product.fields.image?.url ?? '',
+				},
+				visibility: product.fields.visibility || 'unlisted',
+				state: product.fields.state || 'draft',
 			},
 		},
 	})
@@ -151,18 +165,7 @@ export function EditProductForm({ product }: { product: Product }) {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
-							}
-							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
-								children: [],
-								itemData: resourceItem as any,
-							}
-						}),
+						children: [],
 						itemData: resourceItem as any,
 					}
 				})
@@ -205,7 +208,7 @@ export function EditProductForm({ product }: { product: Product }) {
 			product={product}
 			form={form}
 			resourceSchema={productSchema}
-			getResourcePath={(slug?: string) => `/events/${slug}`}
+			getResourcePath={(slug?: string) => `/products/${slug}`}
 			updateResource={updateProduct}
 			onSave={onProductSave}
 			availableWorkflows={[]}
@@ -223,7 +226,7 @@ export function EditProductForm({ product }: { product: Product }) {
 						<ImageResourceUploader
 							key={'image-uploader'}
 							belongsToResourceId={product.id}
-							uploadDirectory={`events`}
+							uploadDirectory={`products`}
 						/>
 					),
 				},
@@ -259,11 +262,10 @@ export function EditProductForm({ product }: { product: Product }) {
 							<FormDescription className="mt-2 text-sm">
 								What type of product is this? Live or self-paced?
 							</FormDescription>
-
 							<Select onValueChange={field.onChange} defaultValue={field.value}>
 								<FormControl>
-									<SelectTrigger className="w-[180px]">
-										<SelectValue placeholder="Theme" />
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Select product type..." />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
@@ -276,6 +278,39 @@ export function EditProductForm({ product }: { product: Product }) {
 					)
 				}}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.image.url"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Image</FormLabel>
+						<FormDescription>Preview</FormDescription>
+						{form.watch('fields.image.url') && (
+							<img
+								src={form.watch('fields.image.url')}
+								alt={'image preview'}
+								className="w-full rounded-md border"
+							/>
+						)}
+						<div className="flex items-center gap-1">
+							<Input
+								{...field}
+								onDrop={(e) => {
+									console.log(e)
+									const result = e.dataTransfer.getData('text/plain')
+									const parsedResult = result.match(/\(([^)]+)\)/)
+									if (parsedResult) {
+										field.onChange(parsedResult[1])
+									}
+								}}
+								value={field.value?.toString()}
+							/>
+						</div>
+					</FormItem>
+				)}
+			/>
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
 			<FormField
 				control={form.control}
 				name="quantityAvailable"
@@ -314,7 +349,8 @@ export function EditProductForm({ product }: { product: Product }) {
 					)
 				}}
 			/>
-			<div className="flex flex-col gap-5">
+			<div className="flex flex-col gap-3 px-5">
+				<div className="text-lg font-bold">Product Resources</div>
 				<ComboboxDemo
 					onSelect={(value) => {
 						handleResourceAdded(value)
@@ -322,7 +358,6 @@ export function EditProductForm({ product }: { product: Product }) {
 					currentResources={product.resources || []}
 				/>
 			</div>
-
 			<Tree
 				rootResource={product}
 				rootResourceId={product.id}
@@ -373,7 +408,6 @@ function EditProductFormDesktop({
 }) {
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
-		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}
@@ -381,7 +415,6 @@ function EditProductFormDesktop({
 
 	const onArchive = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await archiveProduct(values)
-		console.log({ updatedResource })
 		if (updatedResource) {
 			onSave(updatedResource)
 		}

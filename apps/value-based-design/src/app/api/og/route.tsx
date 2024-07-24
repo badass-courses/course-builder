@@ -4,7 +4,7 @@
 
 import { ImageResponse } from 'next/og'
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, products } from '@/db/schema'
 import { and, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
@@ -32,10 +32,26 @@ export async function GET(request: Request) {
 					),
 				),
 			})
-			title = resource?.fields?.title
+
+			let product
+			if (!resource) {
+				product = await db.query.products.findFirst({
+					where: and(
+						or(
+							eq(
+								sql`JSON_EXTRACT (${products.fields}, "$.slug")`,
+								resourceSlugOrID,
+							),
+							eq(products.id, resourceSlugOrID),
+						),
+					),
+				})
+			}
+
+			title = resource?.fields?.title || product?.name
 
 			if (resource && resourceTypesWithImages.includes(resource.type)) {
-				image = resource?.fields?.coverImage?.url
+				image = resource?.fields?.coverImage?.url || product?.fields?.image?.url
 			}
 		} else {
 			if (hasTitle) {
