@@ -26,7 +26,7 @@ export function PostUploader({
 					)
 				}}
 				onClientUploadComplete={async (response: any) => {
-					if (response[0].fileName) setVideoResourceId(response[0].fileName)
+					if (response[0].name) setVideoResourceId(response[0].name)
 				}}
 				onUploadError={(error: Error) => {
 					// Do something with the error.

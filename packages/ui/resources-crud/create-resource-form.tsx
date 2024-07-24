@@ -86,7 +86,9 @@ export function CreateResourceForm({
 						form.formState.isSubmitting
 					}
 				>
-					Create Draft {resourceType}
+					{form.formState.isSubmitting
+						? 'Creating...'
+						: `Create Draft ${resourceType}`}
 				</Button>
 			</form>
 		</Form>
