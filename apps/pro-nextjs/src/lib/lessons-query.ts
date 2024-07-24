@@ -2,15 +2,19 @@
 
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { LessonSchema } from '@/lib/lessons'
 import type { TipUpdate } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
+import { Redis } from '@upstash/redis'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
 import type { ContentResourceResource } from '@coursebuilder/core/types'
+
+const redis = Redis.fromEnv()
 
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
@@ -72,36 +76,54 @@ export const addVideoResourceToLesson = async ({
 }
 
 export async function getLesson(lessonSlugOrId: string) {
-	const lesson = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					lessonSlugOrId,
+	const start = new Date().getTime()
+
+	const cachedLesson = await redis.get(
+		`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
+	)
+
+	const lesson = cachedLesson
+		? cachedLesson
+		: await db.query.contentResource.findFirst({
+				where: and(
+					or(
+						eq(
+							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+							lessonSlugOrId,
+						),
+						eq(contentResource.id, lessonSlugOrId),
+					),
+					or(
+						eq(contentResource.type, 'lesson'),
+						eq(contentResource.type, 'exercise'),
+						eq(contentResource.type, 'solution'),
+					),
 				),
-				eq(contentResource.id, lessonSlugOrId),
-			),
-			or(
-				eq(contentResource.type, 'lesson'),
-				eq(contentResource.type, 'exercise'),
-				eq(contentResource.type, 'solution'),
-			),
-		),
-		with: {
-			resources: {
 				with: {
-					resource: true,
+					resources: {
+						with: {
+							resource: true,
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
 				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-	})
+			})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)
 	if (!parsedLesson.success) {
-		console.error('Error parsing lesson', lesson)
+		console.error('Error parsing lesson', lesson, parsedLesson.error)
 		return null
 	}
+
+	if (!cachedLesson) {
+		await redis.set(
+			`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
+			lesson,
+			{ ex: 10 },
+		)
+	}
+
+	console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
 
 	return parsedLesson.data
 }

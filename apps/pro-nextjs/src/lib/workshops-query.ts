@@ -3,17 +3,22 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { Module, ModuleSchema } from '@/lib/module'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
+import { Redis } from '@upstash/redis'
 import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import z from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/types'
 
+const redis = Redis.fromEnv()
+
 export async function getWorkshop(moduleSlugOrId: string) {
+	const start = new Date().getTime()
 	const { ability } = await getServerAuthSession()
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
@@ -23,53 +28,68 @@ export async function getWorkshop(moduleSlugOrId: string) {
 		? ['public', 'private', 'unlisted']
 		: ['public', 'unlisted']
 
-	const workshop = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					moduleSlugOrId,
+	const cachedWorkshop = await redis.get(
+		`module:${visibility.join(':')}:${env.NEXT_PUBLIC_APP_NAME}:${moduleSlugOrId}`,
+	)
+
+	const workshop = cachedWorkshop
+		? cachedWorkshop
+		: await db.query.contentResource.findFirst({
+				where: and(
+					or(
+						eq(
+							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+							moduleSlugOrId,
+						),
+						eq(contentResource.id, moduleSlugOrId),
+					),
+					eq(contentResource.type, 'workshop'),
+					inArray(
+						sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+						visibility,
+					),
 				),
-				eq(contentResource.id, moduleSlugOrId),
-			),
-			eq(contentResource.type, 'workshop'),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
-		),
-		with: {
-			resources: {
 				with: {
-					resource: {
+					resources: {
+						// sections and stand-alone top level resource join
 						with: {
-							resources: {
+							resource: {
+								// section or resource
 								with: {
-									resource: {
+									resources: {
+										// lessons in section join
 										with: {
-											resources: {
-												with: {
-													resource: true,
-												},
-											},
+											resource: true, //lesson, no need for more (videos etc)
 										},
+										orderBy: asc(contentResourceResource.position),
 									},
 								},
-								orderBy: asc(contentResourceResource.position),
 							},
 						},
+						orderBy: asc(contentResourceResource.position),
 					},
 				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-	})
+			})
 
 	const parsedWorkshop = ModuleSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
 		console.error('Error parsing workshop', workshop, parsedWorkshop.error)
 		return null
 	}
+
+	if (!cachedWorkshop) {
+		await redis.set(
+			`module:${visibility.join(':')}:${env.NEXT_PUBLIC_APP_NAME}:${moduleSlugOrId}`,
+			workshop,
+			{ ex: 25 },
+		)
+	}
+
+	console.log(
+		'getWorkshop end',
+		{ moduleSlugOrId },
+		new Date().getTime() - start,
+	)
 
 	return parsedWorkshop.data
 }

@@ -7,9 +7,9 @@ export const ContentResourceResourceSchema = z.object({
 	resourceOfId: z.string(),
 	position: z.number().default(0),
 	metadata: z.record(z.string(), z.any()).default({}).nullable(),
-	createdAt: z.date().nullable(),
-	updatedAt: z.date().nullable(),
-	deletedAt: z.date().nullable(),
+	createdAt: z.coerce.date().nullable(),
+	updatedAt: z.coerce.date().nullable(),
+	deletedAt: z.coerce.date().nullable(),
 	resource: z.any(),
 })
 
@@ -18,9 +18,9 @@ export const ContentResourceSchema = z.object({
 	type: z.string(),
 	createdById: z.string(),
 	fields: z.record(z.string(), z.any()).default({}).nullable().optional(),
-	createdAt: z.date().nullable(),
-	updatedAt: z.date().nullable(),
-	deletedAt: z.date().nullable(),
+	createdAt: z.coerce.date().nullable(),
+	updatedAt: z.coerce.date().nullable(),
+	deletedAt: z.coerce.date().nullable(),
 	resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 })
 
@@ -29,9 +29,9 @@ export const ContentResourceProductSchema = z.object({
 	productId: z.string(),
 	position: z.number().default(0),
 	metadata: z.record(z.string(), z.any()).default({}).nullable(),
-	createdAt: z.date().nullable(),
-	updatedAt: z.date().nullable(),
-	deletedAt: z.date().nullable(),
+	createdAt: z.coerce.date().nullable(),
+	updatedAt: z.coerce.date().nullable(),
+	deletedAt: z.coerce.date().nullable(),
 	resource: z.any(),
 	product: z.any(),
 })
