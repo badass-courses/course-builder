@@ -26,7 +26,7 @@ export function TipUploader({
 					)
 				}}
 				onClientUploadComplete={async (response: any) => {
-					if (response[0].fileName) setVideoResourceId(response[0].fileName)
+					if (response[0].name) setVideoResourceId(response[0].name)
 				}}
 				className="[&_label]:text-primary [&_label]:hover:text-primary border-border"
 				onUploadError={(error: Error) => {

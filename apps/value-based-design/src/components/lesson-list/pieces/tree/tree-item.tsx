@@ -8,6 +8,7 @@ import React, {
 	useState,
 } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { removeResource } from '@/lib/resources/create-resources'
 import { cn } from '@/utils/cn'
 import {
 	Instruction,
@@ -55,6 +56,12 @@ function GroupIcon({ isOpen }: { isOpen: boolean }) {
 }
 
 function Icon({ item }: { item: TreeItemType }) {
+	if (
+		item.children.length > 0 &&
+		item.children?.[0]?.type !== 'videoResource'
+	) {
+		return <GroupIcon isOpen={item.isOpen ?? false} />
+	}
 	if (item.type !== 'section') {
 		return null // <ChildIcon />
 	}
@@ -223,7 +230,7 @@ const TreeItem = memo(function TreeItem({
 						block:
 							(source.data.item as any).type === 'section' ||
 							item.type !== 'section'
-								? ['make-child']
+								? [] // OR to only allow nesting in sections use: ['make-child']
 								: [],
 					})
 				},
@@ -322,6 +329,9 @@ const TreeItem = memo(function TreeItem({
 
 	const router = useRouter()
 	const pathname = usePathname()
+	const isExpandable =
+		item.type === 'section' ||
+		item.children.filter((child) => child.type !== 'videoResource').length > 0
 
 	return (
 		<Fragment>
@@ -337,7 +347,7 @@ const TreeItem = memo(function TreeItem({
 					)}
 					id={`tree-item-${item.id}`}
 					onClick={
-						item.type === 'section'
+						isExpandable
 							? toggleOpen
 							: () => {
 									if (item.type === 'event') {
@@ -407,42 +417,44 @@ const TreeItem = memo(function TreeItem({
 						</span>
 					) : null} */}
 				</button>
-				{item.type === 'section' && item.children.length === 0 && (
-					<Button
-						size="icon"
-						variant="destructive"
-						onClick={async () => {
-							await removeSection(item.id, pathname)
-							return dispatch({ type: 'remove-item', itemId: item.id })
-						}}
-					>
-						<Trash size={12} />
-					</Button>
-				)}
+
+				<Button
+					size="icon"
+					className="scale-75"
+					variant="outline"
+					onClick={async () => {
+						await removeResource(item.id, pathname)
+						return dispatch({ type: 'remove-item', itemId: item.id })
+					}}
+				>
+					<Trash size={12} />
+				</Button>
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>
-					{item.children.map((child, index, array) => {
-						const childType: ItemMode = (() => {
-							if (child.children.length && child.isOpen) {
-								return 'expanded'
-							}
+					{item.children
+						.filter((child) => child.type !== 'videoResource')
+						.map((child, index, array) => {
+							const childType: ItemMode = (() => {
+								if (child.children.length && child.isOpen) {
+									return 'expanded'
+								}
 
-							if (index === array.length - 1) {
-								return 'last-in-group'
-							}
+								if (index === array.length - 1) {
+									return 'last-in-group'
+								}
 
-							return 'standard'
-						})()
-						return (
-							<TreeItem
-								item={child}
-								key={child.id}
-								level={level + 1}
-								mode={childType}
-							/>
-						)
-					})}
+								return 'standard'
+							})()
+							return (
+								<TreeItem
+									item={child}
+									key={child.id}
+									level={level + 1}
+									mode={childType}
+								/>
+							)
+						})}
 				</div>
 			) : null}
 		</Fragment>
