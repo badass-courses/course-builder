@@ -2,6 +2,7 @@ import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { createResource } from '@/lib/resources/create-resources'
 import { getServerAuthSession } from '@/server/auth'
+import pluralize from 'pluralize'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import { CreateResourceCard } from '@coursebuilder/ui/resources-crud/create-resource-card'
@@ -25,7 +26,7 @@ export default async function CreateResourcePage({
 				resourceType={resourceType}
 				onCreate={async (resource: ContentResource) => {
 					'use server'
-					redirect(`/${resource.fields?.slug}`)
+					redirect(`/${pluralize(resourceType)}/${resource.fields?.slug}`)
 				}}
 				createResource={createResource}
 			/>

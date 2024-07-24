@@ -121,64 +121,6 @@ export async function getAllWorkshops() {
 	return parsedWorkshops.data
 }
 
-export const addResourceToWorkshop = async ({
-	resource,
-	workshopId,
-}: {
-	resource: ContentResource
-	workshopId: string
-}) => {
-	const workshop = await db.query.contentResource.findFirst({
-		where: like(contentResource.id, `%${last(workshopId.split('-'))}%`),
-		with: {
-			resources: true,
-		},
-	})
-
-	if (!workshop) {
-		throw new Error(`Workshop with id ${workshopId} not found`)
-	}
-	await db.insert(contentResourceResource).values({
-		resourceOfId: workshop.id,
-		resourceId: resource.id,
-		position: workshop.resources.length,
-	})
-
-	return db.query.contentResourceResource.findFirst({
-		where: and(
-			eq(contentResourceResource.resourceOfId, workshop.id),
-			eq(contentResourceResource.resourceId, resource.id),
-		),
-		with: {
-			resource: true,
-		},
-	})
-}
-
-export const updateResourcePosition = async ({
-	currentParentResourceId,
-	parentResourceId,
-	resourceId,
-	position,
-}: {
-	currentParentResourceId: string
-	parentResourceId: string
-	resourceId: string
-	position: number
-}) => {
-	const result = await db
-		.update(contentResourceResource)
-		.set({ position, resourceOfId: parentResourceId })
-		.where(
-			and(
-				eq(contentResourceResource.resourceOfId, currentParentResourceId),
-				eq(contentResourceResource.resourceId, resourceId),
-			),
-		)
-
-	return result
-}
-
 export async function updateWorkshop(input: Module) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user

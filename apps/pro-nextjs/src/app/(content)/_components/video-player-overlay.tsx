@@ -254,7 +254,7 @@ export const SoftBlockOverlay: React.FC<{
 const VideoPlayerOverlay: React.FC<{
 	moduleLoader: Promise<Module | null>
 	resource: ContentResource
-	exerciseLoader: Promise<ContentResource | null> | null
+	exerciseLoader?: Promise<ContentResource | null> | null
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
 	moduleProgressLoader: Promise<ModuleProgress>
