@@ -115,7 +115,7 @@ async function ProductCommerce({
 	const product = await productLoader
 	console.log({ product })
 	if (!product) return null
-	const pricingDataLoader = getPricingData(product?.id)
+	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
 	let commerceProps = await propsForCommerce({
