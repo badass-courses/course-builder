@@ -18,6 +18,7 @@ import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 import { TutorialLessonList } from '../_components/tutorial-lesson-list'
+import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
 type Props = {
 	params: { module: string }
@@ -49,8 +50,8 @@ export async function generateMetadata(
 	}
 }
 
-export default async function ModulePage({ params }: Props) {
-	const { ability } = await getServerAuthSession()
+export default async function ModulePage({ params, searchParams }: Props) {
+	const { ability, session } = await getServerAuthSession()
 
 	if (!ability.can('read', 'Content')) {
 		redirect('/login')
@@ -124,6 +125,11 @@ export default async function ModulePage({ params }: Props) {
 					</article>
 				)}
 				<div className="flex w-full flex-col gap-3 sm:max-w-sm">
+					<WorkshopPricing
+						user={session?.user}
+						workshop={workshop}
+						searchParams={searchParams}
+					/>
 					<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
 						Contents
 					</strong>
