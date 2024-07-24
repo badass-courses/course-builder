@@ -1,13 +1,29 @@
 import z from 'zod'
 
+import { productSchema } from '@coursebuilder/core/schemas'
+
 export const ModuleSchema = z.object({
 	type: z.enum(['tutorial', 'workshop']),
 	id: z.string(),
+	resourceProducts: z
+		.array(
+			z.object({
+				resourceId: z.string(),
+				productId: z.string(),
+				product: productSchema,
+			}),
+		)
+		.optional()
+		.nullable(),
 	fields: z.object({
 		slug: z.string(),
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
 		description: z.string().optional().nullable(),
+		github: z.string().optional().nullable(),
+		state: z
+			.enum(['draft', 'published', 'archived', 'deleted'])
+			.default('draft'),
 		visibility: z.union([
 			z.literal('public'),
 			z.literal('private'),
