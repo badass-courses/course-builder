@@ -30,6 +30,11 @@ const config = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'res.cloudinary.com',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'neatly-diverse-goldfish.ngrok-free.app',
 				port: '',
 			},

@@ -1,6 +1,7 @@
 import { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { Suspense } from 'react'
+import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
@@ -9,10 +10,32 @@ import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
 
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
+
+export async function generateMetadata(
+	{
+		params,
+		searchParams,
+	}: { params: { slug: string }; searchParams: ParsedUrlQuery },
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const product = await getProduct(params.slug)
+
+	if (!product) {
+		return parent as Metadata
+	}
+
+	return {
+		title: product.name,
+		openGraph: {
+			images: [getOGImageUrlForResource(product)],
+		},
+	}
+}
 
 async function ProductActionBar({
 	productLoader,
