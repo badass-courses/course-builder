@@ -28,9 +28,13 @@ export async function generateMetadata(
 
 type Props = {
 	params: { lesson: string; module: string }
+	searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function LessonPageWrapper({ params }: Props) {
+export default async function LessonPageWrapper({
+	params,
+	searchParams,
+}: Props) {
 	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader = getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
@@ -42,6 +46,7 @@ export default async function LessonPageWrapper({ params }: Props) {
 					lessonLoader={lessonLoader}
 					moduleLoader={moduleLoader}
 					moduleProgressLoader={moduleProgressLoader}
+					searchParams={searchParams}
 				/>
 			</LessonProvider>
 		</ModuleProvider>

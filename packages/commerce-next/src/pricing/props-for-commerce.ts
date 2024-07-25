@@ -1,6 +1,7 @@
 'use server'
 
 import { ParsedUrlQuery } from 'querystring'
+import { headers } from 'next/headers'
 import { isBefore } from 'date-fns'
 
 import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
@@ -110,6 +111,12 @@ export async function propsForCommerce(
 	const couponIdFromCoupon =
 		(query.coupon as string) || (couponFromCode?.isValid && couponFromCode.id)
 
+	const headerStore = headers()
+	const country =
+		headerStore.get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
+
 	return {
 		...(userId ? { userId } : {}),
 		...(couponFromCode && {
@@ -132,5 +139,6 @@ export async function propsForCommerce(
 		}),
 		products,
 		allowPurchase,
+		country,
 	}
 }
