@@ -31,7 +31,7 @@ export async function WorkshopPricing({
 		first(workshop.resourceProducts)?.product,
 	)
 
-	let workshopProps: WorkshopPageProps
+	let workshopProps
 	let product: Product | null = null
 
 	if (productParsed.success) {
