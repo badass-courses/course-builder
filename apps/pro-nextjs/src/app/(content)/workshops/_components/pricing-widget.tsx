@@ -38,9 +38,11 @@ export const PricingWidget: React.FC<{
 			className="relative w-full"
 			product={product}
 			couponId={couponId}
+			country={commerceProps.country}
 			options={pricingWidgetOptions}
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
+			{...commerceProps}
 		>
 			<Pricing.Product className="w-full">
 				{/* <Pricing.ProductImage /> */}

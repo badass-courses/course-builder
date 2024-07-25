@@ -41,6 +41,7 @@ export function WorkshopPricing({
 					isPPPEnabled: true,
 					cancelUrl: cancelUrl,
 				}}
+				{...commerceProps}
 			/>
 		</PriceCheckProvider>
 	) : null
