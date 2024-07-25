@@ -37,11 +37,13 @@ export async function generateMetadata(
 
 export default async function LessonExercisePage({
 	params,
+	searchParams,
 }: {
 	params: {
 		module: string
 		lesson: string
 	}
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	const moduleLoader = getWorkshop(params.module)
 	const lessonLoader = getLesson(params.lesson)
@@ -51,6 +53,7 @@ export default async function LessonExercisePage({
 		<ModuleProvider moduleLoader={moduleLoader}>
 			<LessonProvider lessonLoader={lessonLoader}>
 				<LessonPage
+					searchParams={searchParams}
 					lessonLoader={lessonLoader}
 					exerciseLoader={lessonLoader}
 					moduleLoader={moduleLoader}
