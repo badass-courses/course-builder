@@ -87,9 +87,11 @@ export function TutorialLessonList(props: Props) {
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
-	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery({
-		moduleId: tutorial?.id,
-	})
+	const { data: abilityRules, status: abilityStatus } =
+		api.ability.getCurrentAbilityRules.useQuery({
+			moduleId: tutorial?.id,
+		})
+
 	const ability = createAppAbility(abilityRules || [])
 	const params = useParams()
 
@@ -175,7 +177,7 @@ export function TutorialLessonList(props: Props) {
 							}
 						>
 							{tutorialWithFilteredResources?.resources?.map(
-								(resource: any, i: number) => {
+								(resource: ContentResourceResource, i: number) => {
 									const isActiveSolution =
 										resource.resource.fields.slug === params.lesson &&
 										pathname.endsWith('solution')
@@ -226,6 +228,7 @@ export function TutorialLessonList(props: Props) {
 															(lesson: ContentResourceResource, i: number) => {
 																return (
 																	<LessonResource
+																		abilityStatus={abilityStatus}
 																		ability={ability}
 																		key={lesson.resource.resourceId}
 																		tutorial={tutorial}
@@ -244,6 +247,7 @@ export function TutorialLessonList(props: Props) {
 									) : (
 										// top-level lessons
 										<LessonResource
+											abilityStatus={abilityStatus}
 											ability={ability}
 											key={resource.resource.resourceId}
 											tutorial={tutorial}
@@ -276,6 +280,7 @@ const LessonResource = ({
 	moduleProgress,
 	index,
 	ability,
+	abilityStatus,
 }: {
 	lesson: ContentResourceResource
 	tutorial: Module
@@ -283,6 +288,7 @@ const LessonResource = ({
 	moduleProgress: ModuleProgress | null
 	index: number
 	ability: AppAbility
+	abilityStatus: 'error' | 'success' | 'pending'
 }) => {
 	const params = useParams()
 	const pathname = usePathname()
@@ -321,7 +327,7 @@ const LessonResource = ({
 			<div className="flex w-full items-center">
 				<Link
 					className={cn(
-						'hover:bg-muted flex w-full items-baseline py-3 pl-3 pr-5 font-medium',
+						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
 						{
 							'bg-muted text-primary': isActive,
 							'hover:text-primary': !isActive,
@@ -348,17 +354,26 @@ const LessonResource = ({
 						{lesson.resource.fields.title}
 					</span>
 				</Link>
-				{ability.can('create', 'Content') ? (
-					<Button asChild variant="outline" size="icon" className="scale-75">
-						<Link
-							href={`/workshops/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
-						>
-							<Edit className="w-3" />
-						</Link>
-					</Button>
-				) : null}
-				{ability.can('read', 'Content') || index === 0 ? null : (
-					<Lock className="mr-5 w-3" />
+				{abilityStatus === 'success' && (
+					<>
+						{ability.can('create', 'Content') ? (
+							<Button
+								asChild
+								variant="outline"
+								size="icon"
+								className="scale-75"
+							>
+								<Link
+									href={`/workshops/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
+								>
+									<Edit className="w-3" />
+								</Link>
+							</Button>
+						) : null}
+						{ability.can('read', 'Content') || index === 0 ? null : (
+							<Lock className="absolute right-2 w-3 text-gray-500" />
+						)}
+					</>
 				)}
 			</div>
 			<div className="flex flex-col">

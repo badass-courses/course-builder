@@ -8,16 +8,38 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
-import { userSchema } from '@coursebuilder/core/schemas'
+import { userSchema, type Purchase } from '@coursebuilder/core/schemas'
 import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import { ContentResource } from '@coursebuilder/core/types'
+
+import {
+	hasAvailableSeats,
+	hasBulkPurchase,
+	hasChargesForPurchases,
+} from './purchase-validators'
 
 export const UserSchema = userSchema
 
 export type User = z.infer<typeof UserSchema>
 
-type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'view'
-type Subjects = 'Content' | 'User' | ContentResource | User | 'all' | 'Invoice'
+type Actions =
+	| 'create'
+	| 'read'
+	| 'update'
+	| 'delete'
+	| 'manage'
+	| 'view'
+	| 'invite'
+
+type Subjects =
+	| 'Content'
+	| 'User'
+	| ContentResource
+	| User
+	| 'all'
+	| 'Invoice'
+	| 'RegionRestriction'
+	| 'Team'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -77,17 +99,14 @@ type ViewerAbilityInput = {
 	section?: ContentResource
 	isSolution?: boolean
 	country?: string
-	purchasedModules?: {
-		productId: string
-		modules: { _id: string; slug: string }[]
-	}[]
+	purchases?: Purchase[]
 }
 
 export function defineRulesForPurchases(
 	viewerAbilityInput: ViewerAbilityInput,
 ) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
-	const { user, country, purchasedModules = [], module } = viewerAbilityInput
+	const { user, country, purchases = [], module } = viewerAbilityInput
 
 	if (user) {
 		can('update', 'User', {
@@ -108,65 +127,59 @@ export function defineRulesForPurchases(
 		can(['read', 'update'], 'User', { id: user.id })
 	}
 
-	// if (user && module && purchasedModules) {
-	// 	const modulePurchase = purchasedModules
-	// 		.filter((purchasedModule) =>
-	// 			purchasedModule.modules.some((m) => m._id === module?._id),
-	// 		)
-	// 		.flatMap((purchasedModule) => {
-	// 			return user?.purchases?.filter(
-	// 				(purchase) => purchase.productId === purchasedModule.productId,
-	// 			)
-	// 		})
-	//
-	// 	const userHasPurchaseWithAccess = modulePurchase.map((purchase) => {
-	// 		if (purchase?.bulkCouponId !== null) {
-	// 			return {valid: false, reason: 'bulk_purchase'}
-	// 		}
-	//
-	// 		if (purchase.status === 'Restricted' && purchase.country !== country) {
-	// 			return {valid: false, reason: 'region_restricted'}
-	// 		}
-	//
-	// 		if (purchase.status === 'Restricted' && module.moduleType === 'bonus') {
-	// 			return {valid: false, reason: 'region_restricted'}
-	// 		}
-	//
-	// 		if (
-	// 			purchase.status === 'Valid' ||
-	// 			(purchase.status === 'Restricted' &&
-	// 				purchase.country === country &&
-	// 				module.moduleType !== 'bonus')
-	// 		) {
-	// 			return {valid: true}
-	// 		}
-	// 		return {valid: false, reason: 'unknown'}
-	// 	})
-	//
-	// 	if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-	// 		can('view', 'Content')
-	// 	}
-	//
-	// 	if (
-	// 		userHasPurchaseWithAccess.some(
-	// 			(purchase) => purchase.reason === 'region_restricted',
-	// 		)
-	// 	) {
-	// 		can('view', 'RegionRestriction')
-	// 	}
-	// }
+	if (user && module?.resourceProducts && purchases) {
+		const modulePurchases = purchases.filter((purchase) =>
+			module?.resourceProducts?.some(
+				(product) => product.productId === purchase.productId,
+			),
+		)
 
-	// if (hasChargesForPurchases(user?.purchases)) {
-	// 	can('view', 'Invoice')
-	// }
-	//
-	// if (hasBulkPurchase(user?.purchases)) {
-	// 	can('view', 'Team')
-	// }
-	//
-	// if (hasAvailableSeats(user?.purchases)) {
-	// 	can('invite', 'Team')
-	// }
+		const userHasPurchaseWithAccess = modulePurchases.map((purchase) => {
+			if (purchase?.bulkCouponId !== null) {
+				return { valid: false, reason: 'bulk_purchase' }
+			}
+
+			if (purchase.status === 'Restricted' && purchase.country !== country) {
+				return { valid: false, reason: 'region_restricted' }
+			}
+
+			// if (purchase.status === 'Restricted' && module.type === 'bonus') {
+			// 	return { valid: false, reason: 'region_restricted' }
+			// }
+
+			if (
+				purchase.status === 'Valid' ||
+				(purchase.status === 'Restricted' && purchase.country === country) // && module.type !== 'bonus'
+			) {
+				return { valid: true }
+			}
+			return { valid: false, reason: 'unknown' }
+		})
+
+		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+			can('read', 'Content')
+		}
+
+		if (
+			userHasPurchaseWithAccess.some(
+				(purchase) => purchase.reason === 'region_restricted',
+			)
+		) {
+			can('read', 'RegionRestriction')
+		}
+	}
+
+	if (hasChargesForPurchases(purchases)) {
+		can('read', 'Invoice')
+	}
+
+	if (hasBulkPurchase(purchases)) {
+		can('read', 'Team')
+	}
+
+	if (hasAvailableSeats(purchases)) {
+		can('invite', 'Team')
+	}
 
 	if (isFreelyVisible(viewerAbilityInput)) {
 		can('read', 'Content')
