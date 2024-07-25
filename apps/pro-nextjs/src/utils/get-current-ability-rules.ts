@@ -7,8 +7,6 @@ import { getModule } from '@/lib/modules-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 
-import type { ContentResource } from '@coursebuilder/core/types'
-
 import { getResourceSection } from './get-resource-section'
 
 export async function getCurrentAbilityRules({
@@ -36,17 +34,21 @@ export async function getCurrentAbilityRules({
 		module &&
 		(await getResourceSection(lessonResource.id, moduleResource))
 
+	const purchases = await courseBuilderAdapter.getPurchasesForUser(
+		session?.user?.id,
+	)
+
 	return defineRulesForPurchases({
 		user: session?.user,
+		country,
+		isSolution: false,
 		...(convertkitSubscriber && {
 			subscriber: convertkitSubscriber,
 		}),
-		country,
 		...(lessonResource && { lesson: lessonResource }),
 		...(moduleResource && { module: moduleResource }),
 		...(sectionResource ? { section: sectionResource } : {}),
-		isSolution: false,
-		purchasedModules: [],
+		...(purchases && { purchases: purchases }),
 	})
 }
 

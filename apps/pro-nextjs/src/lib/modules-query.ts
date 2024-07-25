@@ -32,20 +32,15 @@ export async function getModule(moduleSlugOrId: string) {
 		),
 		with: {
 			resources: {
+				// sections and stand-alone top level resource join
 				with: {
 					resource: {
+						// section or resource
 						with: {
 							resources: {
+								// lessons in section join
 								with: {
-									resource: {
-										with: {
-											resources: {
-												with: {
-													resource: true,
-												},
-											},
-										},
-									},
+									resource: true, //lesson, no need for more (videos etc)
 								},
 								orderBy: asc(contentResourceResource.position),
 							},
@@ -53,6 +48,15 @@ export async function getModule(moduleSlugOrId: string) {
 					},
 				},
 				orderBy: asc(contentResourceResource.position),
+			},
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
 			},
 		},
 	})
