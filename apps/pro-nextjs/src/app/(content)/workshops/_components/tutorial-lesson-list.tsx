@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, type AppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
 import { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
@@ -226,6 +226,7 @@ export function TutorialLessonList(props: Props) {
 															(lesson: ContentResourceResource, i: number) => {
 																return (
 																	<LessonResource
+																		ability={ability}
 																		key={lesson.resource.resourceId}
 																		tutorial={tutorial}
 																		lesson={lesson}
@@ -243,6 +244,7 @@ export function TutorialLessonList(props: Props) {
 									) : (
 										// top-level lessons
 										<LessonResource
+											ability={ability}
 											key={resource.resource.resourceId}
 											tutorial={tutorial}
 											lesson={resource.resource}
@@ -273,21 +275,17 @@ const LessonResource = ({
 	activeResourceRef,
 	moduleProgress,
 	index,
+	ability,
 }: {
 	lesson: ContentResourceResource
 	tutorial: Module
 	activeResourceRef: any
 	moduleProgress: ModuleProgress | null
 	index: number
+	ability: AppAbility
 }) => {
 	const params = useParams()
 	const pathname = usePathname()
-	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery({
-		moduleId: tutorial?.id,
-		lessonId: lesson.resourceId,
-	})
-
-	const ability = createAppAbility(abilityRules || [])
 
 	const isActiveSolution =
 		lesson.resource.fields.slug === params.lesson &&
@@ -359,7 +357,9 @@ const LessonResource = ({
 						</Link>
 					</Button>
 				) : null}
-				{ability.can('read', 'Content') ? null : <Lock className="mr-5 w-3" />}
+				{ability.can('read', 'Content') || index === 0 ? null : (
+					<Lock className="mr-5 w-3" />
+				)}
 			</div>
 			<div className="flex flex-col">
 				{solution && isSubLessonListExpanded && (
