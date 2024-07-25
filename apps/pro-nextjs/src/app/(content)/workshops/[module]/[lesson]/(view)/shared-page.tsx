@@ -234,7 +234,7 @@ async function PlayerContainer({
 						workshop={moduleResource}
 						searchParams={searchParams}
 					>
-						{(workshopPricing) => {
+						{(pricingProps) => {
 							return (
 								<VideoPlayerOverlay
 									nextResourceLoader={nextResourceLoader}
@@ -243,7 +243,7 @@ async function PlayerContainer({
 									exerciseLoader={exerciseLoader}
 									canViewLoader={canViewLoader}
 									moduleProgressLoader={moduleProgressLoader}
-									{...workshopPricing}
+									pricingProps={pricingProps}
 								/>
 							)
 						}}

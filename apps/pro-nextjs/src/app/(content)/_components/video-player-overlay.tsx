@@ -254,23 +254,24 @@ export const SoftBlockOverlay: React.FC<{
 	)
 }
 
-const VideoPlayerOverlay: React.FC<
-	{
-		moduleLoader: Promise<Module | null>
-		resource: ContentResource
-		exerciseLoader?: Promise<ContentResource | null> | null
-		nextResourceLoader: Promise<ContentResource | null | undefined>
-		canViewLoader: Promise<boolean>
-		moduleProgressLoader: Promise<ModuleProgress>
-	} & WorkshopPageProps
-> = ({
+type VideoPlayerOverlayProps = {
+	moduleLoader: Promise<Module | null>
+	resource: ContentResource
+	exerciseLoader?: Promise<ContentResource | null> | null
+	nextResourceLoader: Promise<ContentResource | null | undefined>
+	canViewLoader: Promise<boolean>
+	moduleProgressLoader: Promise<ModuleProgress>
+	pricingProps?: WorkshopPageProps
+}
+
+const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	moduleLoader,
 	resource,
 	exerciseLoader,
 	nextResourceLoader,
 	canViewLoader,
 	moduleProgressLoader,
-	...pricingProps
+	pricingProps,
 }) => {
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
@@ -291,7 +292,7 @@ const VideoPlayerOverlay: React.FC<
 				className="bg-background/80 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 			>
 				<div>
-					<VideoOverlayWorkshopPricing {...pricingProps} />
+					{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 				</div>
 			</div>
 		)
