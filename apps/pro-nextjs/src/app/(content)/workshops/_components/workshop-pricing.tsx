@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { usePathname } from 'next/navigation'
 import { env } from '@/env.mjs'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
@@ -20,10 +21,8 @@ export function WorkshopPricing({
 	...commerceProps
 }: WorkshopPageProps) {
 	const teamQuantityLimit = 100
-
-	const cancelUrl = product
-		? `${env.NEXT_PUBLIC_URL}/workshops/${product.fields?.slug || product.id}`
-		: ''
+	const pathname = usePathname()
+	const cancelUrl = product ? `${env.NEXT_PUBLIC_URL}${pathname}` : ''
 
 	return product ? (
 		<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
