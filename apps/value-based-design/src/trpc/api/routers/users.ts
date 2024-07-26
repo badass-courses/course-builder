@@ -45,7 +45,11 @@ export const usersRouter = createTRPCRouter({
 		)
 		.mutation(async ({ ctx, input }) => {
 			const token = await getServerAuthSession()
-			if (!token.session?.user) throw new Error('Not authenticated')
+			if (!token.session?.user)
+				throw new TRPCError({
+					message: 'Not authenticated',
+					code: 'UNAUTHORIZED',
+				})
 
 			try {
 				await db
