@@ -1744,6 +1744,35 @@ export function mySqlDrizzleAdapter(
 
 			return parsedResourceJoin.data
 		},
+		async removeResourceFromResource(options) {
+			const { childResourceId, parentResourceId } = options
+
+			const resourceJoin = await client.query.contentResourceResource.findFirst(
+				{
+					where: and(
+						eq(contentResourceResource.resourceOfId, parentResourceId),
+						eq(contentResourceResource.resourceId, childResourceId),
+					),
+				},
+			)
+
+			const parsedResourceJoin =
+				ContentResourceResourceSchema.safeParse(resourceJoin)
+			if (!parsedResourceJoin.success) {
+				return null
+			}
+
+			await client
+				.delete(contentResourceResource)
+				.where(
+					and(
+						eq(contentResourceResource.resourceOfId, parentResourceId),
+						eq(contentResourceResource.resourceId, childResourceId),
+					),
+				)
+
+			return parsedResourceJoin.data.resource
+		},
 		async updateContentResourceFields(options) {
 			if (!options.id) {
 				throw new Error('No content resource id.')
