@@ -9,6 +9,7 @@ import { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
 import {
 	NavigationLesson,
+	NavigationResource,
 	NavigationSection,
 	WorkshopNavigation,
 } from '@/lib/workshops'
@@ -85,6 +86,8 @@ export function WorkshopResourceList(props: Props) {
 		return null
 	}
 
+	console.log(props.workshopNavigation)
+
 	return (
 		<nav
 			className={cn(
@@ -131,20 +134,17 @@ export function WorkshopResourceList(props: Props) {
 								'divide-border flex flex-col divide-y border-t pb-16',
 								wrapperClassName,
 							)}
-							defaultValue={props.workshopNavigation.sections[0]?.id}
+							defaultValue={props.workshopNavigation.resources[0]?.id}
 						>
-							{props.workshopNavigation.sections.map(
-								(section: NavigationSection, i: number) => {
+							{props.workshopNavigation.resources.map(
+								(resource: NavigationResource, i: number) => {
 									return (
-										<div key={section.id}>
-											{section.title}
-											<div>
-												{section.lessons.map(
-													(lesson: NavigationLesson, i: number) => {
-														return <div key={lesson.id}>{lesson.title}</div>
-													},
-												)}
-											</div>
+										<div key={resource.id}>
+											{resource.title}
+											{resource.type === 'section' &&
+												resource.lessons.map((lesson) => (
+													<div key={lesson.id}>{lesson.title}</div>
+												))}
 										</div>
 									)
 								},
