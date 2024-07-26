@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import {
@@ -9,6 +9,7 @@ import {
 	getPurchaseTransferForPurchaseId,
 	initiatePurchaseTransfer,
 } from '@/purchase-transfer/purchase-transfer-actions'
+import { getServerAuthSession } from '@/server/auth'
 import { FileText, Mail } from 'lucide-react'
 
 import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-teaser'
@@ -111,6 +112,8 @@ export default async function ThanksPurchasePage({
 	searchParams: { session_id: string; provider: string }
 }) {
 	headers()
+	const token = await getServerAuthSession()
+
 	const { session_id } = searchParams
 	const {
 		purchase,
@@ -121,6 +124,10 @@ export default async function ThanksPurchasePage({
 		product,
 		stripeProductName,
 	} = await getServerSideProps(session_id)
+
+	if (email === token?.session?.user?.email) {
+		return redirect('/welcome?purchaseId=' + purchase.id)
+	}
 
 	const purchaseUserTransfers = await getPurchaseTransferForPurchaseId({
 		id: purchase.id,

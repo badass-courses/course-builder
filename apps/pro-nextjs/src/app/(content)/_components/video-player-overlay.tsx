@@ -20,6 +20,9 @@ import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
+import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
@@ -47,17 +50,17 @@ export const CompletedLessonOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<div className="flex flex-col items-center text-center">
-				<p className="text-muted-foreground pb-2">Next Up:</p>
+				<p className="pb-2 opacity-80">Next Up:</p>
 				<p className="font-heading fluid-2xl font-bold">
 					{nextLesson?.fields?.title}
 				</p>
 				<div className="mt-8 flex items-center gap-3 text-sm">
 					<Progress
 						value={percentCompleted}
-						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
+						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
 					/>
 					{completedLessonsCount}/{totalLessonsCount} completed
 				</div>
@@ -108,15 +111,15 @@ export const CompletedLessonOverlay: React.FC<{
 			</div>
 			<Button
 				type="button"
-				className="absolute right-5 top-5"
-				variant="outline"
+				className="absolute right-5 top-5 bg-white/10"
+				variant="ghost"
 				size="icon"
 				onClick={() => {
 					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 				}}
 			>
 				<span className="sr-only">Dismiss</span>
-				<XMarkIcon aria-hidden="true" className="h-4 w-4" />
+				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
 			</Button>
 		</div>
 	)
@@ -145,7 +148,7 @@ export const CompletedModuleOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<p className="font-heading fluid-xl pb-3 text-center font-bold">
 				Great job!
@@ -251,20 +254,24 @@ export const SoftBlockOverlay: React.FC<{
 	)
 }
 
-const VideoPlayerOverlay: React.FC<{
+type VideoPlayerOverlayProps = {
 	moduleLoader: Promise<Module | null>
 	resource: ContentResource
 	exerciseLoader?: Promise<ContentResource | null> | null
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
 	moduleProgressLoader: Promise<ModuleProgress>
-}> = ({
+	pricingProps?: WorkshopPageProps
+}
+
+const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	moduleLoader,
 	resource,
 	exerciseLoader,
 	nextResourceLoader,
 	canViewLoader,
 	moduleProgressLoader,
+	pricingProps,
 }) => {
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
@@ -273,7 +280,7 @@ const VideoPlayerOverlay: React.FC<{
 	const nextLesson = use(nextResourceLoader)
 	const moduleProgress = use(moduleProgressLoader)
 
-	if (!canView) {
+	if (!canView && moduleResource) {
 		if (moduleResource?.type === 'tutorial') {
 			return (
 				<SoftBlockOverlay moduleResource={moduleResource} resource={resource} />
@@ -284,7 +291,9 @@ const VideoPlayerOverlay: React.FC<{
 				aria-live="polite"
 				className="bg-background/80 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 			>
-				{'// TODO: [PRICING WIDGET]'}
+				<div>
+					{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
+				</div>
 			</div>
 		)
 	}
