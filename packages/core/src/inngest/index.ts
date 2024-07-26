@@ -7,6 +7,11 @@ import {
 	NEW_PURCHASE_CREATED_EVENT,
 	NewPurchaseCreated,
 } from './commerce/event-new-purchase-created'
+import {
+	PURCHASE_STATUS_UPDATED_EVENT,
+	PurchaseStatusUpdated,
+	updatePurchaseStatus,
+} from './commerce/event-purchase-status-updated'
 import { sendCreatorSlackNotification } from './commerce/send-creator-slack-notification'
 import { sendPostPurchaseEmail } from './commerce/send-post-purchase-email'
 import {
@@ -49,6 +54,7 @@ export type CourseBuilderCoreEvents = {
 	[MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
+	[PURCHASE_STATUS_UPDATED_EVENT]: PurchaseStatusUpdated
 	[NEW_PURCHASE_CREATED_EVENT]: NewPurchaseCreated
 }
 
@@ -58,4 +64,5 @@ export const courseBuilderCoreFunctions = [
 	stripeCheckoutSessionComplete,
 	sendCreatorSlackNotification,
 	resourceChat,
+	updatePurchaseStatus,
 ]

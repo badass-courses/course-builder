@@ -1642,11 +1642,45 @@ export function mySqlDrizzleAdapter(
 		}): Promise<unknown> {
 			throw new Error('Method not implemented.')
 		},
-		updatePurchaseStatusForCharge(
+		async updatePurchaseStatusForCharge(
 			chargeId: string,
 			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
 		): Promise<Purchase | undefined> {
-			throw new Error('updatePurchaseStatusForCharge Method not implemented.')
+			const merchantChargeForPurchase =
+				await client.query.merchantCharge.findFirst({
+					where: eq(merchantCharge.identifier, chargeId),
+				})
+
+			const parsedMerchantChargeForPurchase = merchantChargeSchema.parse(
+				merchantChargeForPurchase,
+			)
+
+			if (!parsedMerchantChargeForPurchase)
+				throw new Error(`no-charge-found-for-purchase ${chargeId}`)
+
+			const purchase = await client.query.purchases.findFirst({
+				where: eq(
+					purchaseTable.merchantChargeId,
+					parsedMerchantChargeForPurchase.id,
+				),
+			})
+
+			const parsedPurchase = purchaseSchema.nullable().parse(purchase)
+
+			if (parsedPurchase) {
+				await client
+					.update(purchaseTable)
+					.set({ status: status })
+					.where(eq(purchaseTable.id, parsedPurchase.id))
+
+				const newPurchase = await client.query.purchases.findFirst({
+					where: eq(purchaseTable.id, parsedPurchase.id),
+				})
+
+				return purchaseSchema.optional().parse(newPurchase)
+			} else {
+				throw new Error(`no-purchase-found-for-charge ${chargeId}`)
+			}
 		},
 		async updatePurchaseUserTransferTransferState(options: {
 			id: string

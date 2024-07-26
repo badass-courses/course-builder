@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 
+import { PURCHASE_STATUS_UPDATED_EVENT } from '../../inngest/commerce/event-purchase-status-updated'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '../../inngest/stripe/event-checkout-session-completed'
 import { checkoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
 import {
@@ -114,6 +115,96 @@ const exampleEvent = {
 	type: 'checkout.session.completed',
 }
 
+const exampleRefundEvent = {
+	id: 'evt_3PfrkvCsSasMEpCd0eCwd9JH',
+	object: 'event',
+	api_version: '2023-10-16',
+	created: 1721927689,
+	data: {
+		object: {
+			id: 'ch_3PfrkvCsSasMEpCd0DEIwaHw',
+			object: 'charge',
+			amount: 29900,
+			amount_captured: 29900,
+			amount_refunded: 29900,
+			application: null,
+			application_fee: null,
+			application_fee_amount: null,
+			balance_transaction: 'txn_3PfrkvCsSasMEpCd0VwSyQPW',
+			billing_details: {
+				address: [Object],
+				email: 'zac+stripe2@egghead.io',
+				name: 'zac jones',
+				phone: null,
+			},
+			calculated_statement_descriptor: 'SKILL RECORDINGS INC',
+			captured: true,
+			created: 1721775892,
+			currency: 'usd',
+			customer: 'cus_QWvcHlEQa9CjmY',
+			description: null,
+			destination: null,
+			dispute: null,
+			disputed: false,
+			failure_balance_transaction: null,
+			failure_code: null,
+			failure_message: null,
+			fraud_details: {},
+			invoice: null,
+			livemode: false,
+			metadata: {
+				country: 'US',
+				productId: 'product-saubh',
+				product: 'vbd fundamentals',
+				siteName: 'Value-Based Design',
+				bulk: 'true',
+			},
+			on_behalf_of: null,
+			order: null,
+			outcome: {
+				network_status: 'approved_by_network',
+				reason: null,
+				risk_level: 'normal',
+				risk_score: 29,
+				seller_message: 'Payment complete.',
+				type: 'authorized',
+			},
+			paid: true,
+			payment_intent: 'pi_3PfrkvCsSasMEpCd0buMpotO',
+			payment_method: 'pm_1PfrlGCsSasMEpCdrHqXiEVO',
+			payment_method_details: { card: [Object], type: 'card' },
+			radar_options: {},
+			receipt_email: null,
+			receipt_number: null,
+			receipt_url:
+				'https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xT2dhTGFDc1Nhc01FcENkKIqQirUGMgZ4E9zYBrY6LBZoJZBxV0YFWe5U0wev7bhGuBYwfxLBkQZaUtL_4sibYtrnmm2flohfONHw',
+			refunded: true,
+			review: null,
+			shipping: null,
+			source: null,
+			source_transfer: null,
+			statement_descriptor: null,
+			statement_descriptor_suffix: null,
+			status: 'succeeded',
+			transfer_data: null,
+			transfer_group: null,
+		},
+		previous_attributes: {
+			amount_refunded: 0,
+			receipt_url:
+				'https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xT2dhTGFDc1Nhc01FcENkKImQirUGMgb8mlBO7cE6LBZs87Bl3MFsTMt5bJxyGQfjUoymQKrjL7F82uaMhXFXmH-kJWwRds68F046',
+			refunded: false,
+		},
+	},
+	livemode: false,
+	pending_webhooks: 2,
+	request: {
+		id: 'req_QHie5TSZsMRlfA',
+		idempotency_key: 'eb0244bf-48f2-4f9c-b481-a671a19df1d9',
+	},
+	type: 'charge.refunded',
+}
+
 export async function processStripeWebhook(
 	event: any,
 	options: InternalOptions<'payment'>,
@@ -133,10 +224,22 @@ export async function processStripeWebhook(
 
 			break
 		case 'charge.refunded':
-			console.log('charge.refunded', { event })
+			await options.inngest.send({
+				name: PURCHASE_STATUS_UPDATED_EVENT,
+				data: {
+					stripeChargeId: event.data.object.id,
+					status: 'Refunded',
+				},
+			})
 			break
 		case 'charge.dispute.created':
-			console.log('payment_intent.failed', { event })
+			await options.inngest.send({
+				name: PURCHASE_STATUS_UPDATED_EVENT,
+				data: {
+					stripeChargeId: event.data.object.id,
+					status: 'Disputed',
+				},
+			})
 			break
 	}
 }
