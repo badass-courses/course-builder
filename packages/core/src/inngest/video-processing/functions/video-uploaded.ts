@@ -69,6 +69,22 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 	}
 
 	if (videoResource && videoResource.id) {
+		const parentResource = await step.run('get parent resource', async () => {
+			return db.getContentResource(event.data.parentResourceId)
+		})
+
+		// we are only allowing 1 single video resource per lesson
+		for (const resource of parentResource?.resources || []) {
+			if (resource.resource.type === 'videoResource') {
+				await step.run('detach existing video resource', async () => {
+					await db.removeResourceFromResource({
+						childResourceId: resource.resource.id,
+						parentResourceId: event.data.parentResourceId,
+					})
+				})
+			}
+		}
+
 		if (event.data.parentResourceId) {
 			await step.run('attach video to parent resource', async () => {
 				await db.addResourceToResource({

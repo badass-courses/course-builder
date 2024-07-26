@@ -48,6 +48,10 @@ export interface CourseBuilderAdapter<
 		childResourceId: string
 		parentResourceId: string
 	}): Awaitable<ContentResourceResource | null>
+	removeResourceFromResource(options: {
+		childResourceId: string
+		parentResourceId: string
+	}): Promise<ContentResource | null>
 	createContentResource(resource: {
 		id: string
 		type: string
@@ -317,6 +321,9 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	addResourceToResource: async (options) => {
 		return {} as ContentResourceResource
+	},
+	removeResourceFromResource: async (options) => {
+		return null
 	},
 	createContentResource: async (resource) => {
 		return resource as ContentResource
