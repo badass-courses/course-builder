@@ -1,38 +1,27 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import config from '@/config'
-import { courseBuilderAdapter, db } from '@/db'
-import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import type { Module } from '@/lib/module'
-import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getWorkshop, getWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { count, eq } from 'drizzle-orm'
-import { first } from 'lodash'
 import { Construction } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
-import {
-	productSchema,
-	type Product,
-	type Purchase,
-} from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 import { TutorialLessonList } from '../_components/tutorial-lesson-list'
-import type { WorkshopPageProps } from '../_components/workshop-page-props'
-import { WorkshopPricing } from '../_components/workshop-pricing'
+import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
+import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
 type Props = {
 	params: { module: string }
@@ -67,10 +56,6 @@ export async function generateMetadata(
 export default async function ModulePage({ params, searchParams }: Props) {
 	const { ability, session } = await getServerAuthSession()
 
-	if (!ability.can('read', 'Content')) {
-		redirect('/login')
-	}
-
 	const workshop = await getWorkshop(params.module)
 	const workshopNavData = await getWorkshopNavigation(params.module)
 
@@ -78,88 +63,9 @@ export default async function ModulePage({ params, searchParams }: Props) {
 		notFound()
 	}
 
-	const user = session?.user
-
-	const productParsed = productSchema.safeParse(
-		first(workshop.resourceProducts)?.product,
-	)
-
-	let workshopProps: WorkshopPageProps
-	let product: Product | null = null
-
-	if (productParsed.success) {
-		product = productParsed.data
-
-		const pricingDataLoader = getPricingData({
-			productId: product.id,
-		})
-
-		const commerceProps = await propsForCommerce(
-			{
-				query: {
-					allowPurchase: 'true',
-					...searchParams,
-				},
-				userId: user?.id,
-				products: [productParsed.data],
-			},
-			courseBuilderAdapter,
-		)
-
-		const baseProps = {
-			workshop,
-			availableBonuses: [],
-			product,
-			pricingDataLoader,
-			quantityAvailable: product.quantityAvailable,
-			...commerceProps,
-		}
-
-		if (!user) {
-			workshopProps = baseProps
-		} else {
-			const purchaseForProduct = commerceProps.purchases?.find(
-				(purchase: Purchase) => {
-					return purchase.productId === productSchema.parse(product).id
-				},
-			)
-
-			if (!purchaseForProduct) {
-				workshopProps = baseProps
-			} else {
-				const { purchase, existingPurchase } =
-					await courseBuilderAdapter.getPurchaseDetails(
-						purchaseForProduct.id,
-						user.id,
-					)
-				const purchasedProductIds =
-					commerceProps?.purchases?.map((purchase) => purchase.productId) || []
-				workshopProps = {
-					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(purchase),
-					existingPurchase,
-					quantityAvailable: product.quantityAvailable,
-					purchasedProductIds,
-				}
-			}
-		}
-	} else {
-		workshopProps = {
-			workshop,
-			availableBonuses: [],
-			quantityAvailable: -1,
-			pricingDataLoader: Promise.resolve({
-				formattedPrice: null,
-				purchaseToUpgrade: null,
-				quantityAvailable: -1,
-			}),
-		}
-	}
-
 	const moduleProgress = await getModuleProgressForUser(workshop.id)
 
 	const firstLesson = workshop.resources[0]?.resource?.resources?.[0]?.resource
-	const canView = workshopProps.hasPurchasedCurrentProduct
 
 	return (
 		<>
@@ -232,7 +138,13 @@ export default async function ModulePage({ params, searchParams }: Props) {
 						)}
 					</article>
 					<div className="flex w-full flex-col gap-3 sm:max-w-sm">
-						{!canView && <WorkshopPricing {...workshopProps} />}
+						<WorkshopPricing searchParams={searchParams} workshop={workshop}>
+							{(pricingProps) => {
+								return pricingProps.hasPurchasedCurrentProduct ? null : (
+									<WorkshopPricingClient {...pricingProps} />
+								)
+							}}
+						</WorkshopPricing>
 						<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
 							Contents
 						</strong>

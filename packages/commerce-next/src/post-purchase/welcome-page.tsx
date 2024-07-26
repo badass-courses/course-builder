@@ -4,8 +4,10 @@ import * as React from 'react'
 import Image from 'next/image.js'
 import Link from 'next/link.js'
 import { useRouter } from 'next/navigation.js'
+import { first } from 'lodash'
 import { FileText } from 'lucide-react'
 import { signIn } from 'next-auth/react'
+import pluralize from 'pluralize'
 import Balancer from 'react-wrap-balancer'
 
 import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-teaser'
@@ -14,6 +16,7 @@ import {
 	Purchase,
 	PurchaseUserTransfer,
 } from '@coursebuilder/core/schemas'
+import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 import { Icon } from '../components'
@@ -30,6 +33,7 @@ type PersonalPurchase = {
 
 export function WelcomePage({
 	product,
+	productResources,
 	purchase,
 	existingPurchase,
 	upgrade,
@@ -44,6 +48,7 @@ export function WelcomePage({
 	cancelPurchaseTransfer,
 }: {
 	product: Product | null
+	productResources?: ContentResource[] | null
 	purchase: Purchase
 	existingPurchase?: Purchase | null
 	providers: any
@@ -74,6 +79,7 @@ export function WelcomePage({
 			<div className="flex w-full max-w-screen-md flex-col gap-3">
 				<Header
 					product={product}
+					productResources={productResources}
 					upgrade={upgrade}
 					purchase={purchase}
 					personalPurchase={personalPurchase}
@@ -81,15 +87,8 @@ export function WelcomePage({
 					isGithubConnected={isGithubConnected}
 				/>
 				<div className="flex flex-col gap-10">
-					{/* <div>
-						<h2 className="pb-2 font-semibold uppercase tracking-wide">
-							Introduction
-						</h2>
-					</div> */}
 					<div>
-						<h2 className="text-primary pb-4 text-sm uppercase">
-							Share {process.env.NEXT_PUBLIC_SITE_TITLE}
-						</h2>
+						<h2 className="text-primary pb-4 text-sm uppercase">Share</h2>
 						<Share productName={purchase.product?.name || 'this'} />
 					</div>
 					{redemptionsLeft && (
@@ -166,6 +165,7 @@ const Header = ({
 	upgrade,
 	purchase,
 	product,
+	productResources,
 	personalPurchase,
 	providers = {},
 	isGithubConnected,
@@ -174,10 +174,12 @@ const Header = ({
 	purchase: Purchase | null
 	personalPurchase?: PersonalPurchase | Purchase
 	product?: Product | null
+	productResources?: ContentResource[] | null
 	providers?: any
 	isGithubConnected: boolean
 }) => {
 	const githubProvider = providers.github
+	const firstResource = first(productResources)
 
 	return (
 		<header>
@@ -203,9 +205,9 @@ const Header = ({
 					{personalPurchase && (
 						<div>
 							<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">
-								{product?.type === 'self-paced' && (
+								{product?.type === 'self-paced' && firstResource && (
 									<Link
-										href={`/workshops/${product?.resources?.[0]?.resource.fields?.slug}`}
+										href={`/${pluralize(firstResource.type)}/${firstResource?.fields?.slug}`}
 										className="bg-primary text-primary-foreground w-full rounded px-5 py-3 text-lg font-semibold text-gray-900 shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
 									>
 										Start Learning
