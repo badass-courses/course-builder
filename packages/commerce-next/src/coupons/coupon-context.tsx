@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
+import { SessionProvider } from 'next-auth/react'
 
 import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import { Product } from '@coursebuilder/core/schemas'
@@ -67,17 +68,19 @@ export const CouponProvider = ({
 	const isRedeemable = validCoupon && product && coupon?.isRedeemable
 
 	return (
-		<CouponContext.Provider value={{ coupon }}>
-			<>
-				{isRedeemable && (
-					<RedeemDialog
-						open={validCoupon}
-						couponId={coupon?.id}
-						product={product}
-					/>
-				)}
-				{children}
-			</>
-		</CouponContext.Provider>
+		<SessionProvider>
+			<CouponContext.Provider value={{ coupon }}>
+				<>
+					{isRedeemable && (
+						<RedeemDialog
+							open={validCoupon}
+							couponId={coupon?.id}
+							product={product}
+						/>
+					)}
+					{children}
+				</>
+			</CouponContext.Provider>
+		</SessionProvider>
 	)
 }

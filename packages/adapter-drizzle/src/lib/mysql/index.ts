@@ -328,8 +328,18 @@ export function mySqlDrizzleAdapter(
 						productId,
 					})
 
-				if (existingPurchases.length > 0)
-					throw new Error(`already-purchased-${email}`)
+				if (existingPurchases.length > 0) {
+					const errorMessage = `already-purchased-${email}`
+					console.error(errorMessage)
+					return {
+						purchase: {
+							error: true,
+							message: errorMessage,
+						},
+						redeemingForCurrentUser,
+					}
+					throw new Error(errorMessage)
+				}
 
 				const purchaseId = `purchase-${v4()}`
 
