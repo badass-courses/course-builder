@@ -4,7 +4,9 @@ import { env } from '@/env.mjs'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
+import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
 import { isEmpty } from 'lodash'
+import { z } from 'zod'
 
 const convertkitBaseUrl =
 	process.env.CONVERTKIT_BASE_URL || 'https://api.convertkit.com/v3/'
@@ -60,10 +62,19 @@ export async function getSubscriberFromCookie() {
 }
 
 export const abilityRouter = createTRPCRouter({
-	getCurrentAbilityRules: publicProcedure.query(async () => {
-		// const { session } = await getServerAuthSession()
-		// return getAbilityRules({ user: session?.user })
-
-		return getAbilityRules({})
-	}),
+	getCurrentAbilityRules: publicProcedure
+		.input(
+			z
+				.object({
+					lessonId: z.string().optional(),
+					moduleId: z.string().optional(),
+				})
+				.optional(),
+		)
+		.query(async ({ ctx, input }) => {
+			return getCurrentAbilityRules({
+				lessonId: input?.lessonId,
+				moduleId: input?.moduleId,
+			})
+		}),
 })
