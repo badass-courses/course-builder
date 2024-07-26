@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
@@ -11,7 +12,7 @@ import { env } from '@/env.mjs'
 import type { Module } from '@/lib/module'
 import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
-import { getWorkshop } from '@/lib/workshops-query'
+import { getWorkshop, getWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
@@ -71,6 +72,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 	}
 
 	const workshop = await getWorkshop(params.module)
+	const workshopNavData = await getWorkshopNavigation(params.module)
 
 	if (!workshop) {
 		notFound()
@@ -234,6 +236,8 @@ export default async function ModulePage({ params, searchParams }: Props) {
 						<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
 							Contents
 						</strong>
+						<WorkshopResourceList workshopNavigation={workshopNavData} />
+						---
 						<TutorialLessonList
 							className="w-full max-w-none border-r-0"
 							tutorial={workshop}
