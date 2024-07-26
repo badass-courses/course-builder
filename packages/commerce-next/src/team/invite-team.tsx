@@ -213,7 +213,7 @@ const SelfRedeemButton: React.FC<
 								} else {
 									setIsLoading(false)
 									// TODO: report to sentry or support?
-									console.log(params.error)
+									console.debug(params.error)
 									if (params.error.startsWith('already-purchased-')) {
 										const message =
 											'You have already redeemed a seat for yourself. Please contact support if you are having trouble accessing it.'

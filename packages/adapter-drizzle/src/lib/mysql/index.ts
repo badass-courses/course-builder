@@ -332,11 +332,11 @@ export function mySqlDrizzleAdapter(
 					const errorMessage = `already-purchased-${email}`
 					console.error(errorMessage)
 					return {
-						purchase: {
-							error: true,
+						error: {
 							message: errorMessage,
 						},
 						redeemingForCurrentUser,
+						purchase: null,
 					}
 					throw new Error(errorMessage)
 				}

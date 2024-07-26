@@ -59,15 +59,14 @@ const RedeemDialog = ({
 		validationSchema,
 		onSubmit: async ({ email }) => {
 			setLoading(true)
-			const { purchase, redeemingForCurrentUser } = await redeemFullPriceCoupon(
-				{
+			const { purchase, redeemingForCurrentUser, error } =
+				await redeemFullPriceCoupon({
 					email,
 					couponId,
 					productIds,
-				},
-			)
+				})
 
-			if (purchase && !purchase.error) {
+			if (purchase && !error) {
 				if (redeemingForCurrentUser) {
 					await fetch('/api/auth/session?update')
 					router.push(`/welcome?purchaseId=${purchase?.id}`)
@@ -76,7 +75,7 @@ const RedeemDialog = ({
 				}
 				return setOpen(false)
 			} else {
-				if (purchase.message.startsWith('already-purchased-')) {
+				if (error.message.startsWith('already-purchased-')) {
 					const message = {
 						title: `We were unable to redeem a seat for ${email}.`,
 						description:
