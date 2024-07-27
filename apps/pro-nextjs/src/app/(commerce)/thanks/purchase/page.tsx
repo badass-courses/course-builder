@@ -16,7 +16,7 @@ import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-te
 import * as LoginLink from '@coursebuilder/commerce-next/post-purchase/login-link'
 import * as PurchaseSummary from '@coursebuilder/commerce-next/post-purchase/purchase-summary'
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
-import { InlineTeamInvite } from '@coursebuilder/commerce-next/team/inline-team-invite'
+import * as InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import {
 	EXISTING_BULK_COUPON,
@@ -69,10 +69,15 @@ const getServerSideProps = async (session_id: string) => {
 
 			const product = await courseBuilderAdapter.getProduct(purchase.productId)
 
+			const redemptionsLeft =
+				purchase.bulkCoupon &&
+				purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
+
 			return {
 				purchase: convertToSerializeForNextResponse(purchase),
 				email,
 				seatsPurchased,
+				redemptionsLeft,
 				purchaseType,
 				bulkCouponId: purchase.bulkCoupon?.id || null,
 				product: convertToSerializeForNextResponse(product) || null,
@@ -123,6 +128,7 @@ export default async function ThanksPurchasePage({
 		bulkCouponId,
 		product,
 		stripeProductName,
+		redemptionsLeft,
 	} = await getServerSideProps(session_id)
 
 	if (email === token?.session?.user?.email) {
@@ -138,10 +144,19 @@ export default async function ThanksPurchasePage({
 	let title = `Thank you for purchasing ${stripeProductName}`
 	let loginLink = null
 	let inviteTeam = (
-		<InlineTeamInvite
-			bulkCouponId={bulkCouponId}
-			seatsPurchased={seatsPurchased}
-		/>
+		<InviteTeam.Root
+			disabled={!redemptionsLeft}
+			purchase={purchase}
+			className="flex flex-col gap-y-2"
+		>
+			<InviteTeam.SeatsAvailable className="[&_span]:font-semibold" />
+			<p>Send the following invite link to your colleagues to get started:</p>
+			<div className="flex items-center gap-2">
+				<InviteTeam.InviteLink />
+				<InviteTeam.CopyInviteLinkButton />
+			</div>
+			<p>You'll be able to claim a seat for yourself once you sign in.</p>
+		</InviteTeam.Root>
 	)
 
 	switch (purchaseType) {
@@ -204,7 +219,12 @@ export default async function ThanksPurchasePage({
 						</div>
 					</div>
 				</PurchaseSummary.Root>
-				{inviteTeam && inviteTeam}
+				{inviteTeam && (
+					<div className="border-b pb-5">
+						<h2 className="text-primary pb-4 text-sm uppercase">Invite Team</h2>
+						{inviteTeam}
+					</div>
+				)}
 				{loginLink && loginLink}
 				<div className="border-b pb-5">
 					<h2 className="text-primary pb-4 text-sm uppercase">Invoice</h2>

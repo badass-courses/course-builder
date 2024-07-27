@@ -1,14 +1,28 @@
 import * as React from 'react'
 import Image from 'next/image.js'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation.js'
-import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useFormik } from 'formik'
 import { useSession } from 'next-auth/react'
 import Balancer from 'react-wrap-balancer'
 import * as Yup from 'yup'
 
 import { Product } from '@coursebuilder/core/schemas'
-import { Button, Input, Label } from '@coursebuilder/ui'
+import {
+	Alert,
+	AlertDescription,
+	AlertTitle,
+	Button,
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogOverlay,
+	DialogTitle,
+	Input,
+	Label,
+	useToast,
+} from '@coursebuilder/ui'
 
 import { redeemFullPriceCoupon } from '../coupons/redeem-full-price-coupon'
 
@@ -28,9 +42,14 @@ const RedeemDialog = ({
 	product,
 }: RedeemDialogProps) => {
 	const [open, setOpen] = React.useState(initialOpen)
+	const [isLoading, setLoading] = React.useState(false)
+	const [errorMessage, setErrorMessage] = React.useState<{
+		title: string
+		description: string
+	} | null>(null)
 	const { data: session } = useSession()
 	const router = useRouter()
-
+	const { toast } = useToast()
 	const productIds: string[] = product?.id ? [product.id] : []
 
 	const formik = useFormik({
@@ -39,24 +58,44 @@ const RedeemDialog = ({
 		},
 		validationSchema,
 		onSubmit: async ({ email }) => {
-			const { purchase, redeemingForCurrentUser } = await redeemFullPriceCoupon(
-				{
+			setLoading(true)
+			const { purchase, redeemingForCurrentUser, error } =
+				await redeemFullPriceCoupon({
 					email,
 					couponId,
 					productIds,
-				},
-			)
+				})
 
-			if (purchase.error) {
-				console.error(purchase.message)
-			} else {
+			if (purchase && !error) {
 				if (redeemingForCurrentUser) {
 					await fetch('/api/auth/session?update')
 					router.push(`/welcome?purchaseId=${purchase?.id}`)
 				} else {
 					router.push(`/thanks/redeem?purchaseId=${purchase?.id}`)
 				}
-				setOpen(false)
+				return setOpen(false)
+			} else {
+				if (error.message.startsWith('already-purchased-')) {
+					const message = {
+						title: `We were unable to redeem a seat for ${email}.`,
+						description:
+							'This email address already has access to this product.',
+					}
+
+					setErrorMessage(message)
+					toast(message)
+				} else {
+					const message = {
+						title: `We were unable to redeem a seat for ${email}.`,
+						description:
+							'We were unable to redeem a seat for this account. If the issue persists, please reach out to support.',
+					}
+
+					setErrorMessage(message)
+					toast(message)
+				}
+
+				return setLoading(false)
 			}
 		},
 	})
@@ -67,9 +106,19 @@ const RedeemDialog = ({
 	const query = useSearchParams()
 	const pathName = usePathname()
 
+	function dismissDialog() {
+		const code = query.get('code')
+		let pathname = pathName.replace(`?code=${code}`, '')
+		const coupon = query.get('coupon')
+		pathname = pathname.replace(`?coupon=${coupon}`, '')
+		router.push(pathname)
+		setOpen(false)
+	}
+
 	return (
-		<AlertDialogPrimitive.Root data-redeem-dialog="" open={open}>
-			<Content>
+		<Dialog data-redeem-dialog="" onOpenChange={dismissDialog} open={open}>
+			<DialogOverlay />
+			<DialogContent>
 				{image && title && (
 					<div className="flex w-full flex-col items-center justify-center border-b border-gray-200 px-5 pb-5 pt-8 text-center dark:border-gray-700">
 						{image && (
@@ -93,15 +142,15 @@ const RedeemDialog = ({
 						) : null}
 					</div>
 				)}
-				<AlertDialogPrimitive.Title data-title="">
+				<DialogTitle data-title="">
 					Do you want to redeem this coupon?
-				</AlertDialogPrimitive.Title>
-				<AlertDialogPrimitive.Description data-description="">
+				</DialogTitle>
+				<DialogDescription data-description="">
 					Enter the email address you wish to be associated with your license.
 					We recommend using an email address you will have access to for years
 					to come. Please triple check the address!
-				</AlertDialogPrimitive.Description>
-				<form onSubmit={formik.handleSubmit}>
+				</DialogDescription>
+				<form className="flex flex-col gap-3" onSubmit={formik.handleSubmit}>
 					<div data-email="">
 						<Label htmlFor="email">Email address</Label>
 						<Input
@@ -113,46 +162,26 @@ const RedeemDialog = ({
 							placeholder="you@example.com"
 						/>
 					</div>
-					<div data-actions="">
-						<AlertDialogPrimitive.Cancel asChild>
-							<Button
-								onClick={(e) => {
-									const code = query.get('code')
-									let pathname = pathName.replace(`?code=${code}`, '')
-									const coupon = query.get('coupon')
-									pathname = pathname.replace(`?coupon=${coupon}`, '')
-									router.push(pathname)
-									setOpen(false)
-								}}
-								data-cancel=""
-							>
+					<DialogFooter data-actions="" className="gap-y-2">
+						<DialogClose asChild>
+							<Button variant="outline" onClick={dismissDialog} data-cancel="">
 								Cancel
 							</Button>
-						</AlertDialogPrimitive.Cancel>
-						<AlertDialogPrimitive.Action asChild>
-							<Button data-submit="" type="submit">
-								Yes, Claim License
-							</Button>
-						</AlertDialogPrimitive.Action>
-					</div>
+						</DialogClose>
+						<Button data-submit="" type="submit" disabled={isLoading}>
+							{isLoading ? 'Claiming...' : 'Yes, Claim License'}
+						</Button>
+					</DialogFooter>
+					{errorMessage && (
+						<Alert variant={'destructive'}>
+							<AlertTitle>{errorMessage.description}</AlertTitle>
+							<AlertDescription>{errorMessage.title}</AlertDescription>
+						</Alert>
+					)}
 				</form>
-			</Content>
-		</AlertDialogPrimitive.Root>
+			</DialogContent>
+		</Dialog>
 	)
 }
 
 export default RedeemDialog
-
-const Content: React.FC<React.PropsWithChildren<unknown>> = ({
-	children,
-	...props
-}) => {
-	return (
-		<>
-			<AlertDialogPrimitive.Overlay data-redeem-dialog-overlay="" />
-			<AlertDialogPrimitive.Content data-redeem-dialog-content="" {...props}>
-				{children}
-			</AlertDialogPrimitive.Content>
-		</>
-	)
-}

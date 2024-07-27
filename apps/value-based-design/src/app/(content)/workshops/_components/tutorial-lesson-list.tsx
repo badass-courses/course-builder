@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, type AppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
 import { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
@@ -11,7 +11,7 @@ import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { filterResources } from '@/utils/filter-resources'
 import { getResourceSection } from '@/utils/get-resource-section'
-import { Check, Edit } from 'lucide-react'
+import { Check, Edit, Lock } from 'lucide-react'
 
 import type {
 	ModuleProgress,
@@ -87,7 +87,11 @@ export function TutorialLessonList(props: Props) {
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
-	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
+	const { data: abilityRules, status: abilityStatus } =
+		api.ability.getCurrentAbilityRules.useQuery({
+			moduleId: tutorial?.id,
+		})
+
 	const ability = createAppAbility(abilityRules || [])
 	const params = useParams()
 
@@ -173,7 +177,7 @@ export function TutorialLessonList(props: Props) {
 							}
 						>
 							{tutorialWithFilteredResources?.resources?.map(
-								(resource: any, i: number) => {
+								(resource: ContentResourceResource, i: number) => {
 									const isActiveSolution =
 										resource.resource.fields.slug === params.lesson &&
 										pathname.endsWith('solution')
@@ -222,164 +226,17 @@ export function TutorialLessonList(props: Props) {
 													<ol>
 														{resource.resource.resources.map(
 															(lesson: ContentResourceResource, i: number) => {
-																const isActiveSolution =
-																	lesson.resource.fields.slug ===
-																		params.lesson &&
-																	pathname.endsWith('solution')
-																const isActiveExercise =
-																	lesson.resource.fields.slug ===
-																		params.lesson &&
-																	pathname.endsWith('exercise')
-																const isActive =
-																	lesson.resource.fields.slug ===
-																		params.lesson &&
-																	!isActiveSolution &&
-																	!isActiveExercise
-																const isSubLessonListExpanded =
-																	isActive ||
-																	isActiveExercise ||
-																	isActiveSolution
-
-																const solution: ContentResourceResource =
-																	lesson.resource.resources.find(
-																		(resource: ContentResourceResource) =>
-																			resource.resource.type === 'solution',
-																	)
-
-																const isCompleted =
-																	moduleProgress?.completedLessons?.some(
-																		(progress) =>
-																			(progress.resourceId ===
-																				lesson.resourceId ||
-																				solution?.resourceId ===
-																					progress.resourceId) &&
-																			progress.completedAt,
-																	)
-
 																return (
-																	<li
-																		key={lesson.resourceId}
-																		className="flex w-full flex-col"
-																		ref={
-																			isActive ? activeResourceRef : undefined
-																		}
-																	>
-																		<div className="flex w-full items-center">
-																			<Link
-																				className={cn(
-																					'hover:bg-muted flex w-full items-baseline py-3 pl-3 pr-5 font-medium',
-																					{
-																						'bg-muted text-primary': isActive,
-																						'hover:text-primary': !isActive,
-																					},
-																				)}
-																				href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
-																			>
-																				{isCompleted ? (
-																					<span
-																						aria-label="Completed"
-																						className="w-6 pr-1"
-																					>
-																						<Check
-																							aria-hidden="true"
-																							className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
-																						/>
-																					</span>
-																				) : (
-																					<span
-																						className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
-																						aria-hidden="true"
-																					>
-																						{i + 1}
-																					</span>
-																				)}
-																				<span className="w-full text-balance text-base">
-																					{lesson.resource.fields.title}
-																				</span>
-																			</Link>
-																			{ability.can('create', 'Content') ? (
-																				<Button
-																					asChild
-																					variant="outline"
-																					size="icon"
-																					className="scale-75"
-																				>
-																					<Link
-																						href={`/workshops/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
-																					>
-																						<Edit className="w-3" />
-																					</Link>
-																				</Button>
-																			) : null}
-																		</div>
-																		<div className="flex flex-col">
-																			{solution && isSubLessonListExpanded && (
-																				<>
-																					<Link
-																						href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
-																						className={cn(
-																							'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																							{
-																								'bg-muted text-primary border-primary before:bg-primary':
-																									isActive,
-																								'hover:text-primary before:bg-transparent':
-																									!isActive,
-																							},
-																						)}
-																					>
-																						Problem
-																					</Link>
-																					<Link
-																						href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
-																						className={cn(
-																							'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																							{
-																								'bg-muted text-primary border-primary before:bg-primary':
-																									isActiveExercise,
-																								'hover:text-primary before:bg-transparent':
-																									!isActiveExercise,
-																							},
-																						)}
-																					>
-																						Exercise
-																					</Link>
-																					<div className="flex w-full items-center">
-																						<Link
-																							href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
-																							className={cn(
-																								'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																								{
-																									'bg-muted text-primary border-primary before:bg-primary':
-																										isActiveSolution,
-																									'hover:text-primary before:bg-transparent':
-																										!isActiveSolution,
-																								},
-																							)}
-																						>
-																							Solution
-																						</Link>
-																						{ability.can(
-																							'create',
-																							'Content',
-																						) ? (
-																							<Button
-																								asChild
-																								variant="outline"
-																								size="icon"
-																								className="scale-75"
-																							>
-																								<Link
-																									href={`/workshops/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
-																								>
-																									<Edit className="w-3" />
-																								</Link>
-																							</Button>
-																						) : null}
-																					</div>
-																				</>
-																			)}
-																		</div>
-																	</li>
+																	<LessonResource
+																		abilityStatus={abilityStatus}
+																		ability={ability}
+																		key={lesson.resource.resourceId}
+																		tutorial={tutorial}
+																		lesson={lesson}
+																		activeResourceRef={activeResourceRef}
+																		moduleProgress={moduleProgress}
+																		index={i}
+																	/>
 																)
 															},
 														)}
@@ -389,121 +246,16 @@ export function TutorialLessonList(props: Props) {
 										</AccordionItem>
 									) : (
 										// top-level lessons
-										<li
-											key={resource.resource.resourceId}
-											className="flex w-full flex-col"
-											ref={isActive ? activeResourceRef : undefined}
-										>
-											<div className="flex w-full items-center">
-												<Link
-													className={cn(
-														'hover:bg-muted flex w-full items-baseline py-3 pl-3 pr-5 font-medium',
-														{
-															'bg-muted text-primary': isActive,
-															'hover:text-primary': !isActive,
-														},
-													)}
-													href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
-												>
-													{isCompleted ? (
-														<span aria-label="Completed" className="w-6 pr-1">
-															<Check
-																aria-hidden="true"
-																className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
-															/>
-														</span>
-													) : (
-														<span
-															className="w-6 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
-															aria-hidden="true"
-														>
-															{i + 1}
-														</span>
-													)}
-													<span className="w-full text-balance text-base">
-														{resource.resource.fields.title}
-													</span>
-												</Link>
-												{ability.can('create', 'Content') ? (
-													<Button
-														asChild
-														variant="outline"
-														size="icon"
-														className="scale-75"
-													>
-														<Link
-															href={`/workshops/${tutorial?.fields?.slug}/${resource.resource.fields.slug}/edit`}
-														>
-															<Edit className="w-3" />
-														</Link>
-													</Button>
-												) : null}
-											</div>
-											<div className="flex flex-col">
-												{solution && isSubLessonListExpanded && (
-													<>
-														<Link
-															href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}`}
-															className={cn(
-																'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																{
-																	'bg-muted text-primary border-primary before:bg-primary':
-																		isActive,
-																	'hover:text-primary before:bg-transparent':
-																		!isActive,
-																},
-															)}
-														>
-															Problem
-														</Link>
-														<Link
-															href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}/exercise`}
-															className={cn(
-																'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																{
-																	'bg-muted text-primary border-primary before:bg-primary':
-																		isActiveExercise,
-																	'hover:text-primary before:bg-transparent':
-																		!isActiveExercise,
-																},
-															)}
-														>
-															Exercise
-														</Link>
-														<div className="flex w-full items-center">
-															<Link
-																href={`/workshops/${tutorial.fields?.slug}/${resource.resource.fields.slug}/solution`}
-																className={cn(
-																	'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-																	{
-																		'bg-muted text-primary border-primary before:bg-primary':
-																			isActiveSolution,
-																		'hover:text-primary before:bg-transparent':
-																			!isActiveSolution,
-																	},
-																)}
-															>
-																Solution
-															</Link>
-															{ability.can('create', 'Content') ? (
-																<Button
-																	asChild
-																	variant="outline"
-																	size="icon"
-																	className="scale-75"
-																>
-																	<Link
-																		href={`/workshops/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
-																	>
-																		<Edit className="w-3" />
-																	</Link>
-																</Button>
-															) : null}
-														</div>
-													</>
-												)}
-											</div>
-										</li>
+										<LessonResource
+											abilityStatus={abilityStatus}
+											ability={ability}
+											key={resource.resourceId}
+											tutorial={tutorial}
+											lesson={resource}
+											activeResourceRef={activeResourceRef}
+											moduleProgress={moduleProgress}
+											index={i}
+										/>
 									)
 								},
 							)}
@@ -518,5 +270,174 @@ export function TutorialLessonList(props: Props) {
 				)}
 			</div>
 		</nav>
+	)
+}
+
+const LessonResource = ({
+	lesson,
+	tutorial,
+	activeResourceRef,
+	moduleProgress,
+	index,
+	ability,
+	abilityStatus,
+}: {
+	lesson: ContentResourceResource
+	tutorial: Module
+	activeResourceRef: any
+	moduleProgress: ModuleProgress | null
+	index: number
+	ability: AppAbility
+	abilityStatus: 'error' | 'success' | 'pending'
+}) => {
+	const params = useParams()
+	const pathname = usePathname()
+
+	const isActiveSolution =
+		lesson.resource?.fields?.slug === params.lesson &&
+		pathname.endsWith('solution')
+	const isActiveExercise =
+		lesson.resource?.fields?.slug === params.lesson &&
+		pathname.endsWith('exercise')
+	const isActive =
+		lesson.resource?.fields?.slug === params.lesson &&
+		!isActiveSolution &&
+		!isActiveExercise
+	const isSubLessonListExpanded =
+		isActive || isActiveExercise || isActiveSolution
+
+	const solution: ContentResourceResource = lesson.resource?.resources?.find(
+		(resource: ContentResourceResource) =>
+			resource.resource?.type === 'solution',
+	)
+
+	const isCompleted = moduleProgress?.completedLessons?.some(
+		(progress) =>
+			(progress.resourceId === lesson.resourceId ||
+				solution?.resourceId === progress.resourceId) &&
+			progress.completedAt,
+	)
+
+	return (
+		<li
+			key={lesson.resourceId}
+			className="flex w-full flex-col"
+			ref={isActive ? activeResourceRef : undefined}
+		>
+			<div className="flex w-full items-center">
+				<Link
+					className={cn(
+						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
+						{
+							'bg-muted text-primary': isActive,
+							'hover:text-primary': !isActive,
+						},
+					)}
+					href={`/workshops/${tutorial.fields?.slug}/${lesson.resource?.fields.slug}`}
+				>
+					{isCompleted ? (
+						<span aria-label="Completed" className="w-6 pr-1">
+							<Check
+								aria-hidden="true"
+								className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
+							/>
+						</span>
+					) : (
+						<span
+							className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
+							aria-hidden="true"
+						>
+							{index + 1}
+						</span>
+					)}
+					<span className="w-full text-balance text-base">
+						{lesson.resource?.fields.title}
+					</span>
+				</Link>
+				{abilityStatus === 'success' && (
+					<>
+						{ability.can('create', 'Content') ? (
+							<Button
+								asChild
+								variant="outline"
+								size="icon"
+								className="scale-75"
+							>
+								<Link
+									href={`/workshops/${tutorial?.fields?.slug}/${lesson.resource?.fields?.slug}/edit`}
+								>
+									<Edit className="w-3" />
+								</Link>
+							</Button>
+						) : null}
+						{ability.can('read', 'Content') || index === 0 ? null : (
+							<Lock className="absolute right-2 w-3 text-gray-500" />
+						)}
+					</>
+				)}
+			</div>
+			<div className="flex flex-col">
+				{solution && isSubLessonListExpanded && (
+					<>
+						<Link
+							href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
+							className={cn(
+								'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+								{
+									'bg-muted text-primary border-primary before:bg-primary':
+										isActive,
+									'hover:text-primary before:bg-transparent': !isActive,
+								},
+							)}
+						>
+							Problem
+						</Link>
+						<Link
+							href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
+							className={cn(
+								'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+								{
+									'bg-muted text-primary border-primary before:bg-primary':
+										isActiveExercise,
+									'hover:text-primary before:bg-transparent': !isActiveExercise,
+								},
+							)}
+						>
+							Exercise
+						</Link>
+						<div className="flex w-full items-center">
+							<Link
+								href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
+								className={cn(
+									'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
+									{
+										'bg-muted text-primary border-primary before:bg-primary':
+											isActiveSolution,
+										'hover:text-primary before:bg-transparent':
+											!isActiveSolution,
+									},
+								)}
+							>
+								Solution
+							</Link>
+							{ability.can('create', 'Content') ? (
+								<Button
+									asChild
+									variant="outline"
+									size="icon"
+									className="scale-75"
+								>
+									<Link
+										href={`/workshops/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
+									>
+										<Edit className="w-3" />
+									</Link>
+								</Button>
+							) : null}
+						</div>
+					</>
+				)}
+			</div>
+		</li>
 	)
 }

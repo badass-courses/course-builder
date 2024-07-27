@@ -11,6 +11,8 @@ import pluralize from 'pluralize'
 import Balancer from 'react-wrap-balancer'
 
 import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-teaser'
+import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
+import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import {
 	Product,
 	Purchase,
@@ -20,16 +22,6 @@ import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 import { Icon } from '../components'
-import { InviteTeam } from '../team/invite-team'
-import * as PurchaseTransfer from './purchase-transfer'
-
-type PersonalPurchase = {
-	id: string
-	product: {
-		id: string
-		name: string
-	}
-}
 
 export function WelcomePage({
 	product,
@@ -68,9 +60,6 @@ export function WelcomePage({
 	}) => Promise<any>
 }) {
 	const router = useRouter()
-	const [personalPurchase, setPersonalPurchase] = React.useState<
-		PersonalPurchase | Purchase
-	>(purchase?.bulkCoupon && existingPurchase ? existingPurchase : purchase)
 	return (
 		<main
 			className="mx-auto flex w-full flex-grow flex-col items-center justify-center py-16"
@@ -82,7 +71,7 @@ export function WelcomePage({
 					productResources={productResources}
 					upgrade={upgrade}
 					purchase={purchase}
-					personalPurchase={personalPurchase}
+					personalPurchase={purchase?.bulkCoupon && existingPurchase}
 					providers={providers}
 					isGithubConnected={isGithubConnected}
 				/>
@@ -96,11 +85,12 @@ export function WelcomePage({
 							<h2 className="text-primary pb-4 text-sm uppercase">
 								Invite your team
 							</h2>
-							<Invite
-								setPersonalPurchase={setPersonalPurchase}
-								userEmail={userEmail}
+							<InviteTeam
+								disabled={!redemptionsLeft}
 								purchase={purchase}
 								existingPurchase={existingPurchase}
+								userEmail={userEmail}
+								className="flex flex-col items-start gap-y-2"
 							/>
 						</div>
 					)}
@@ -172,7 +162,7 @@ const Header = ({
 }: {
 	upgrade: boolean
 	purchase: Purchase | null
-	personalPurchase?: PersonalPurchase | Purchase
+	personalPurchase?: Purchase | null
 	product?: Product | null
 	productResources?: ContentResource[] | null
 	providers?: any
@@ -227,27 +217,7 @@ const Header = ({
 					)}
 				</div>
 			</div>
-			{/* {purchase.bulkCoupon
-        ? `${purchase.product?.name} team license!`
-        : `${purchase.product?.name} license!`} */}
 		</header>
-	)
-}
-
-const Invite: React.FC<React.PropsWithChildren<any>> = ({
-	setPersonalPurchase,
-	session,
-	purchase,
-	existingPurchase,
-	userEmail,
-}) => {
-	return (
-		<InviteTeam
-			setPersonalPurchase={setPersonalPurchase}
-			userEmail={userEmail}
-			purchase={purchase}
-			existingPurchase={existingPurchase}
-		/>
 	)
 }
 
