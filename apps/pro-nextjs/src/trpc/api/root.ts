@@ -21,6 +21,7 @@ export const appRouter = createTRPCRouter({
 	pricing: pricingRouter,
 	contentResources: contentResourceRouter,
 	events: eventsRouter,
+	progress: progressRouter,
 })
 
 // export type definition of API

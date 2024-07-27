@@ -148,17 +148,14 @@ export default async function ModulePage({ params, searchParams }: Props) {
 						<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
 							Contents
 						</strong>
-						<WorkshopResourceList workshopNavigation={workshopNavData} />
-						{/*---*/}
-						{/*<TutorialLessonList*/}
-						{/*	className="w-full max-w-none border-r-0"*/}
-						{/*	tutorial={workshop}*/}
-						{/*	moduleProgress={moduleProgress}*/}
-						{/*	maxHeight="h-auto"*/}
-						{/*	withHeader={false}*/}
-						{/*	wrapperClassName="border-x border-b bg-card overflow-hidden rounded pb-0"*/}
-						{/*	widthFadeOut={false}*/}
-						{/*/>*/}
+						<WorkshopResourceList
+							className="w-full max-w-none border-r-0"
+							withHeader={false}
+							maxHeight="h-auto"
+							workshopNavigation={workshopNavData}
+							wrapperClassName="border-x border-b bg-card overflow-hidden rounded pb-0"
+							widthFadeOut={false}
+						/>
 					</div>
 				</div>
 			</main>

@@ -43,6 +43,7 @@ export default async function LessonPageWrapper({
 		<ModuleProvider moduleLoader={moduleLoader}>
 			<LessonProvider lessonLoader={lessonLoader}>
 				<LessonPage
+					params={params}
 					lessonLoader={lessonLoader}
 					moduleLoader={moduleLoader}
 					moduleProgressLoader={moduleProgressLoader}

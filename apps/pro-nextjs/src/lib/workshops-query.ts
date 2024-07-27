@@ -67,14 +67,11 @@ ORDER BY
 		result.rows,
 	)
 
-	console.log(workshopNavigationResult)
 	if (workshopNavigationResult.length === 0) {
 		return null
 	}
 
 	const workshop = NavigationResultSchema.parse(workshopNavigationResult[0])
-
-	console.log({ workshop })
 
 	const sectionsMap = new Map<string, NavigationSection>()
 	const resources: NavigationResource[] = []
@@ -110,8 +107,6 @@ ORDER BY
 			}
 		}
 	})
-
-	console.log({ resources: JSON.stringify(resources, null, 2) })
 
 	// Sort resources and lessons within sections
 	resources.sort((a, b) => a.position - b.position)

@@ -11,13 +11,14 @@ import {
 	LessonProgressToggle,
 	LessonProgressToggleSkeleton,
 } from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
-import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
+import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { courseBuilderAdapter } from '@/db'
 import type { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
 import { getNextResource } from '@/lib/resources/get-next-resource'
+import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
@@ -46,13 +47,16 @@ export async function LessonPage({
 	lessonLoader,
 	moduleProgressLoader,
 	searchParams,
+	params,
 }: {
+	params: { module: string }
 	moduleLoader: Promise<Module | null>
 	exerciseLoader?: Promise<Lesson | null> | null | undefined
 	lessonLoader: Promise<Lesson | null>
 	moduleProgressLoader: Promise<ModuleProgress>
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
+	const workshopNavData = await getWorkshopNavigation(params.module)
 	return (
 		<div>
 			<div className="mx-auto w-full" id="lesson">
@@ -109,12 +113,10 @@ export async function LessonPage({
 												</div>
 											}
 										>
-											<TutorialLessonList
+											<WorkshopResourceList
+												workshopNavigation={workshopNavData}
 												maxHeight="h-[600px]"
 												className="max-w-none border-l-0 border-t"
-												moduleProgressLoader={moduleProgressLoader}
-												tutorialLoader={moduleLoader}
-												lessonLoader={lessonLoader}
 											/>
 										</Suspense>
 									</AccordionContent>
