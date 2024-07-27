@@ -9,6 +9,10 @@ import Spinner from '@/components/spinner'
 import { TipNewsletterCta } from '@/components/tip-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
+import {
+	getLessonMuxPlaybackId,
+	getLessonVideoTranscript,
+} from '@/lib/lessons-query'
 import { type Tip } from '@/lib/tips'
 import { getTip } from '@/lib/tips-query'
 import { getTranscript } from '@/lib/transcript-query'
@@ -58,6 +62,8 @@ export default async function TipPage({
 	const cookieStore = cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
+	const transcriptLoader = getLessonVideoTranscript(params.slug)
+
 	return (
 		<div>
 			<div className="mx-auto w-full" id="tip">
@@ -92,7 +98,7 @@ export default async function TipPage({
 							<h3 className="font-heading mb-8 text-2xl font-bold leading-none ">
 								Transcript
 							</h3>
-							<Transcript resourceLoader={tipLoader} />
+							<Transcript transcriptLoader={transcriptLoader} />
 						</div>
 					</div>
 					{/* <div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
@@ -146,9 +152,7 @@ async function PlayerContainer({
 		notFound()
 	}
 
-	const resource = tip.resources?.[0]?.resource.id
-
-	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const playbackIdLoader = getLessonMuxPlaybackId(tip.id)
 
 	return (
 		<VideoPlayerOverlayProvider>
@@ -157,7 +161,9 @@ async function PlayerContainer({
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<AuthedVideoPlayer
 						className="overflow-hidden border-x"
-						videoResourceLoader={videoResourceLoader}
+						playbackIdLoader={playbackIdLoader}
+						resource={lesson}
+						canViewLoader={canViewLoader}
 					/>
 				</Suspense>
 			</div>

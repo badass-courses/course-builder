@@ -35,7 +35,6 @@ type ContentResourceProps = {
 	tutorial: Module | null
 	lesson?: Lesson | null
 	section?: ContentResource | null
-	moduleProgress: ModuleProgress
 	className?: string
 	widthFadeOut?: boolean
 	wrapperClassName?: string
@@ -45,8 +44,7 @@ type ContentResourceProps = {
 
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<Module | null>
-	lessonLoader: Promise<Lesson | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	lesson: Lesson | null
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -61,24 +59,14 @@ export function TutorialLessonList(props: Props) {
 			: 'tutorialLoader' in props
 				? React.use(props.tutorialLoader)
 				: null
-	const lesson =
-		'lesson' in props
-			? props.lesson
-			: 'lessonLoader' in props
-				? React.use(props.lessonLoader)
-				: null
+	const lesson = 'lesson' in props ? props.lesson : null
 	const section =
 		'section' in props
 			? props.section
 			: lesson
 				? React.use(getResourceSection(lesson.id, tutorial))
 				: null
-	const moduleProgress =
-		'moduleProgress' in props
-			? props.moduleProgress
-			: 'moduleProgressLoader' in props
-				? React.use(props.moduleProgressLoader)
-				: null
+
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
 	const widthFadeOut = 'widthFadeOut' in props ? props.widthFadeOut : true
@@ -88,7 +76,14 @@ export function TutorialLessonList(props: Props) {
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
+
 	const ability = createAppAbility(abilityRules || [])
+
+	const { data: moduleProgress } =
+		api.progress.getModuleProgressForUser.useQuery({
+			moduleId: tutorial?.id,
+		})
+
 	const params = useParams()
 
 	const activeResourceRef = React.useRef<HTMLLIElement>(null)
