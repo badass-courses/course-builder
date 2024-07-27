@@ -15,7 +15,7 @@ export function LessonProgressToggle({ lesson }: { lesson: Lesson }) {
 
 	const { data: moduleProgress } =
 		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: params.module,
+			moduleId: params.module as string,
 		})
 
 	const isLessonCompleted = Boolean(
