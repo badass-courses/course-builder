@@ -1,11 +1,12 @@
 import { db } from '@/db'
-import { accounts } from '@/db/schema'
+import { accounts, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import {
 	createTRPCRouter,
 	protectedProcedure,
 	publicProcedure,
 } from '@/trpc/api/trpc'
+import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
@@ -36,4 +37,32 @@ export const usersRouter = createTRPCRouter({
 
 		return !isEmpty(userAccounts)
 	}),
+	updateName: publicProcedure
+		.input(
+			z.object({
+				name: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const token = await getServerAuthSession()
+			if (!token.session?.user)
+				throw new TRPCError({
+					message: 'Not authenticated',
+					code: 'UNAUTHORIZED',
+				})
+
+			try {
+				await db
+					.update(users)
+					.set({ name: input.name })
+					.where(eq(users.id, token.session.user.id))
+			} catch (e) {
+				throw new TRPCError({
+					message: 'Failed to update name',
+					code: 'INTERNAL_SERVER_ERROR',
+				})
+			}
+
+			return { name: input.name }
+		}),
 })
