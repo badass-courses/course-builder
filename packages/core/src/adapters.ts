@@ -349,6 +349,9 @@ interface SkillProductsCommerceSdk {
 	}): Promise<{
 		purchase: Purchase | null
 		redeemingForCurrentUser: boolean
+		error?: {
+			message: string
+		}
 	} | null>
 	createPurchaseTransfer(options: {
 		sourceUserId: string

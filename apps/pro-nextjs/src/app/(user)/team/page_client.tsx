@@ -6,7 +6,7 @@ import { TeamPageData } from '@/app/(user)/team/page'
 
 import { BuyMoreSeats } from '@coursebuilder/commerce-next/post-purchase/buy-more-seats'
 import { ClaimedTeamSeats } from '@coursebuilder/commerce-next/team/claimed-team-seats'
-import { InviteTeam } from '@coursebuilder/commerce-next/team/invite-team'
+import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { Card } from '@coursebuilder/ui'
 
 export function TeamPageTemplate({
@@ -22,27 +22,30 @@ export function TeamPageTemplate({
 
 	const canInviteTeam = Boolean(purchase && user)
 
+	const redemptionsLeft =
+		purchase?.bulkCoupon &&
+		purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
+
 	return (
 		<main
 			data-team-page=""
 			className="mx-auto flex w-full max-w-xl flex-grow flex-col items-center justify-center gap-3 p-5 pb-16 pt-28 "
 		>
-			{user && canInviteTeam && (
-				<div
-					key={bulkPurchase.purchase?.id}
-					data-team-card=""
-					className="w-full rounded-lg border border-gray-700/30 p-5 shadow-xl shadow-black/10"
-				>
-					{bulkPurchase.purchase?.product?.name} {bulkPurchase.purchase?.id}
-					<InviteTeam
-						purchase={purchase}
-						existingPurchase={existingPurchase}
-						userEmail={user.email}
-						setPersonalPurchase={() => {
-							router.refresh()
-						}}
-					/>
-				</div>
+			{user && canInviteTeam && purchase && (
+				<>
+					<div>
+						<h2 className="text-primary pb-4 text-sm uppercase">
+							Invite your team to {bulkPurchase.purchase?.product?.name}
+						</h2>
+						<InviteTeam
+							disabled={!redemptionsLeft}
+							purchase={purchase}
+							existingPurchase={existingPurchase}
+							userEmail={user.email}
+							className="flex flex-col items-start gap-y-2"
+						/>
+					</div>
+				</>
 			)}
 			{user && purchase?.product?.id && (
 				<Card>
