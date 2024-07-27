@@ -5,28 +5,14 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { createAppAbility, type AppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
-import { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
-import {
-	NavigationLesson,
-	NavigationResource,
-	NavigationSection,
-	WorkshopNavigation,
-} from '@/lib/workshops'
+import { NavigationResource, WorkshopNavigation } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { filterResources } from '@/utils/filter-resources'
-import { getResourceSection } from '@/utils/get-resource-section'
 import { Check, Edit, Lock } from 'lucide-react'
 
-import type {
-	ModuleProgress,
-	ResourceProgress,
-} from '@coursebuilder/core/schemas'
-import type {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/types'
+import type { ModuleProgress } from '@coursebuilder/core/schemas'
+import type { ContentResourceResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,
@@ -34,7 +20,6 @@ import {
 	AccordionTrigger,
 	Button,
 	ScrollArea,
-	Skeleton,
 } from '@coursebuilder/ui'
 
 type Props = {

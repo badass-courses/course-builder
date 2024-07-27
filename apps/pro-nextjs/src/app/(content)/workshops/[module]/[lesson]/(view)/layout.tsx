@@ -1,14 +1,8 @@
 import React from 'react'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
-import { courseBuilderAdapter } from '@/db'
-import { getLesson } from '@/lib/lessons-query'
-import { getModuleProgressForUser } from '@/lib/progress'
-import { getWorkshop, getWorkshopNavigation } from '@/lib/workshops-query'
-import { getResourceSection } from '@/utils/get-resource-section'
+import { getWorkshopNavigation } from '@/lib/workshops-query'
 
 import { Skeleton } from '@coursebuilder/ui'
-
-import { TutorialLessonList } from '../../../_components/tutorial-lesson-list'
 
 const LessonLayout: React.FC<
 	React.PropsWithChildren<{
