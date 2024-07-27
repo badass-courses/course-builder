@@ -66,11 +66,12 @@ const getServerSideProps = async (session_id: string) => {
 			if (!purchase || !email) {
 				throw new Error('Purchase or email not found')
 			}
+
+			const product = await courseBuilderAdapter.getProduct(purchase.productId)
+
 			const redemptionsLeft =
 				purchase.bulkCoupon &&
 				purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
-
-			const product = await courseBuilderAdapter.getProduct(purchase.productId)
 
 			return {
 				purchase: convertToSerializeForNextResponse(purchase),
