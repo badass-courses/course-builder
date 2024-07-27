@@ -1,19 +1,6 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/db'
-import { env } from '@/env.mjs'
 import { sql } from 'drizzle-orm'
-import { z } from 'zod'
-
-const SitemapItemSchema = z.object({
-	id: z.string(),
-	type: z.string(),
-	slug: z.string(),
-	updatedAt: z.date().or(z.string()).optional(),
-	parent_type: z.string().nullable(),
-	parent_slug: z.string().nullable(),
-})
-
-type SitemapItem = z.infer<typeof SitemapItemSchema>
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const workshopItems = await db.execute(sql`
@@ -65,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		if (!workshopsAndTutorials.has(item.workshop_id)) {
 			workshopsAndTutorials.add(item.workshop_id)
 			sitemapEntries.push({
-				url: `${process.env.COURSEBUILDER_URL}/${item.workshop_type}s/${item.workshop_slug}`,
+				url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}`,
 				lastModified: new Date(),
 				changeFrequency: 'monthly',
 				priority: 0.9,
@@ -79,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			const slug = item.lesson_slug || item.section_or_lesson_slug
 			if (slug) {
 				sitemapEntries.push({
-					url: `${process.env.COURSEBUILDER_URL}/${item.workshop_type}s/${item.workshop_slug}/${slug}`,
+					url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}/${slug}`,
 					lastModified: new Date(),
 					changeFrequency: 'monthly',
 					priority: 0.7,
@@ -118,12 +105,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 		switch (item.type) {
 			case 'article':
-				url = `${process.env.COURSEBUILDER_URL}/${item.slug}`
+				url = `${process.env.COURSEBUILDER_URL}${item.slug}`
 				priority = 0.8
 				changeFrequency = 'monthly'
 				break
 			case 'tip':
-				url = `${process.env.COURSEBUILDER_URL}/tips/${item.slug}`
+				url = `${process.env.COURSEBUILDER_URL}tips/${item.slug}`
 				priority = 0.6
 				changeFrequency = 'weekly'
 				break
