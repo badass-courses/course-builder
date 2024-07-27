@@ -17,15 +17,16 @@ import type { ContentResourceResource } from '@coursebuilder/core/types'
 
 const redis = Redis.fromEnv()
 
-export const getLessonVideoTranscript = async (lessonId?: string | null) => {
-	console.log({ lessonId })
-	if (!lessonId) return null
+export const getLessonVideoTranscript = async (
+	lessonIdOrSlug?: string | null,
+) => {
+	if (!lessonIdOrSlug) return null
 	const query = sql`SELECT cr_video.fields->>'$.transcript' AS transcript
 		FROM ContentResource cr_lesson
 		JOIN ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
 		JOIN ContentResource cr_video ON crr.resourceId = cr_video.id
-		WHERE cr_lesson.id = ${lessonId}
-			AND cr_lesson.type = 'lesson'
+
+		WHERE (cr_lesson.id = ${lessonIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonIdOrSlug})
 			AND cr_video.type = 'videoResource'
 		LIMIT 1;`
 	const result = await db.execute(query)
@@ -43,13 +44,12 @@ export const getLessonVideoTranscript = async (lessonId?: string | null) => {
 	return parsedResult.data[0]?.transcript
 }
 
-export const getLessonMuxPlaybackId = async (lessonId: string) => {
+export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 	const query = sql`SELECT cr_video.fields->>'$.muxPlaybackId' AS muxPlaybackId
 		FROM ContentResource cr_lesson
 		JOIN ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
 		JOIN ContentResource cr_video ON crr.resourceId = cr_video.id
-		WHERE cr_lesson.id = ${lessonId}
-			AND cr_lesson.type = 'lesson'
+		WHERE (cr_lesson.id = ${lessonIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonIdOrSlug})
 			AND cr_video.type = 'videoResource'
 		LIMIT 1;`
 	const result = await db.execute(query)

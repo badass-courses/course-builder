@@ -3,7 +3,6 @@
 import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
-import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import type { Lesson } from '@/lib/lessons'
 import { toggleProgress } from '@/lib/progress'
 import { api } from '@/trpc/react'
@@ -12,13 +11,12 @@ import { cn } from '@/utils/cn'
 import { Label, Switch } from '@coursebuilder/ui'
 
 export function LessonProgressToggle({ lesson }: { lesson: Lesson }) {
-	const workshopNavData = useWorkshopNavigation()
+	const params = useParams()
+
 	const { data: moduleProgress } =
 		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: workshopNavData.id,
+			moduleId: params.module,
 		})
-
-	const params = useParams()
 
 	const isLessonCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(

@@ -10,12 +10,11 @@ export const LessonContext = React.createContext<{
 
 export const LessonProvider = ({
 	children,
-	lessonLoader,
+	lesson,
 }: {
 	children: React.ReactNode
-	lessonLoader: Promise<Lesson | null>
+	lesson: Lesson | null
 }) => {
-	const lesson = React.use(lessonLoader)
 	return (
 		<LessonContext.Provider value={{ lesson }}>
 			{children}
