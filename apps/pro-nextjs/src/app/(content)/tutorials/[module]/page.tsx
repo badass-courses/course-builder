@@ -8,6 +8,7 @@ import config from '@/config'
 import { env } from '@/env.mjs'
 import type { Module } from '@/lib/module'
 import { getModuleProgressForUser } from '@/lib/progress'
+import { getNextResource } from '@/lib/resources/get-next-resource'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -62,9 +63,9 @@ export default async function ModulePage({ params }: Props) {
 		notFound()
 	}
 
-	const moduleProgress = await getModuleProgressForUser(tutorial.id)
-
 	const firstLesson = tutorial.resources[0]?.resource?.resources?.[0]?.resource
+
+	const moduleProgress = await getModuleProgressForUser(params.module)
 
 	return (
 		<main className="container relative px-0">
@@ -132,7 +133,6 @@ export default async function ModulePage({ params }: Props) {
 					<TutorialLessonList
 						className="w-full max-w-none border-r-0"
 						tutorial={tutorial}
-						moduleProgress={moduleProgress}
 						maxHeight="h-auto"
 						withHeader={false}
 						wrapperClassName="border-x border-b bg-card overflow-hidden rounded pb-0"
