@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
 import { addProgress, sendInngestProgressEvent } from '@/lib/progress'
+import { getNextResource } from '@/lib/resources/get-next-resource'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
@@ -89,6 +90,25 @@ export const progressRouter = createTRPCRouter({
 				if (error instanceof Error) message = error.message
 				return { error: message }
 			}
+		}),
+	getNextResource: publicProcedure
+		.input(
+			z.object({
+				lessonId: z.string(),
+				moduleSlug: z.string().optional().nullable(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const { moduleSlug, lessonId } = input
+			if (!lessonId || !moduleSlug) {
+				return null
+			}
+			const { session, ability } = await getServerAuthSession()
+			const user = session?.user
+			if (user && input.moduleSlug) {
+				return getNextResource(lessonId, moduleSlug)
+			}
+			return null
 		}),
 	getModuleProgressForUser: publicProcedure
 		.input(

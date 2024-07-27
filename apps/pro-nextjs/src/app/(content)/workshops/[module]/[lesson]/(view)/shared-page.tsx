@@ -7,17 +7,16 @@ import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
-import {
-	LessonProgressToggle,
-	LessonProgressToggleSkeleton,
-} from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
+import { LessonProgressToggle } from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
-import { courseBuilderAdapter } from '@/db'
 import type { Lesson } from '@/lib/lessons'
+import {
+	getLessonMuxPlaybackId,
+	getLessonVideoTranscript,
+} from '@/lib/lessons-query'
 import { Module } from '@/lib/module'
-import { getNextResource } from '@/lib/resources/get-next-resource'
 import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
@@ -42,58 +41,46 @@ import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-pl
 import { WorkshopPricing } from '../../../_components/workshop-pricing-server'
 
 export async function LessonPage({
-	moduleLoader,
-	exerciseLoader,
-	lessonLoader,
-	moduleProgressLoader,
+	lesson,
 	searchParams,
 	params,
+	lessonType = 'lesson',
 }: {
-	params: { module: string }
-	moduleLoader: Promise<Module | null>
+	params: { module: string; lesson: string }
 	exerciseLoader?: Promise<Lesson | null> | null | undefined
-	lessonLoader: Promise<Lesson | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	lesson: Lesson | null
 	searchParams: { [key: string]: string | string[] | undefined }
+	lessonType?: 'lesson' | 'exercise' | 'solution'
 }) {
 	const workshopNavData = await getWorkshopNavigation(params.module)
+
 	return (
 		<div>
 			<div className="mx-auto w-full" id="lesson">
-				{/* <Suspense
-					fallback={
-						<div className="bg-background flex h-9 w-full items-center justify-between" />
-					}
-				>
-					<LessonActionBar
-						lessonLoader={lessonLoader}
-						tutorialLoader={tutorialLoader}
-					/>
-				</Suspense> */}
 				<div className="flex">
 					<div className="flex flex-col 2xl:flex-row">
 						<div>
 							<main className="">
-								{exerciseLoader ? (
+								{lessonType === 'exercise' ? (
 									<Suspense fallback={<PlayerContainerSkeleton />}>
 										<Exercise
-											moduleLoader={moduleLoader}
-											resourceLoader={lessonLoader}
+											moduleType="workshop"
+											moduleSlug={params.module}
+											lesson={lesson}
 										/>
 									</Suspense>
 								) : (
 									<PlayerContainer
-										lessonLoader={lessonLoader}
-										exerciseLoader={exerciseLoader}
-										moduleLoader={moduleLoader}
-										moduleProgressLoader={moduleProgressLoader}
+										lesson={lesson}
 										searchParams={searchParams}
+										params={params}
+										lessonType={lessonType}
 									/>
 								)}
 							</main>
 							<TranscriptContainer
 								className="mt-0 hidden 2xl:block"
-								lessonLoader={lessonLoader}
+								lessonId={lesson?.id}
 							/>
 						</div>
 						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:flex-shrink-0 2xl:border-l 2xl:border-t-0">
@@ -115,6 +102,7 @@ export async function LessonPage({
 										>
 											<WorkshopResourceList
 												workshopNavigation={workshopNavData}
+												currentLessonSlug={params.lesson}
 												maxHeight="h-[600px]"
 												className="max-w-none border-l-0 border-t"
 											/>
@@ -123,16 +111,10 @@ export async function LessonPage({
 								</AccordionItem>
 							</Accordion>
 							<div className="flex flex-col py-5 sm:py-8">
-								<Suspense fallback={<div className="p-5">Loading...</div>}>
-									<LessonBody
-										lessonLoader={lessonLoader}
-										exerciseLoader={exerciseLoader}
-										moduleProgressLoader={moduleProgressLoader}
-									/>
-								</Suspense>
+								<LessonBody lesson={lesson} />
 								<TranscriptContainer
 									className="block 2xl:hidden"
-									lessonLoader={lessonLoader}
+									lessonId={lesson?.id}
 								/>
 							</div>
 						</div>
@@ -144,19 +126,20 @@ export async function LessonPage({
 }
 
 async function TranscriptContainer({
-	lessonLoader,
+	lessonId,
 	className,
 }: {
-	lessonLoader: Promise<ContentResource | null | undefined>
+	lessonId: string | null | undefined
 	className?: string
 }) {
+	const transcriptLoader = getLessonVideoTranscript(lessonId)
 	return (
 		<div className={cn('mt-10 border-t px-5 pt-8 sm:px-8', className)}>
 			<h3 className="font-heading mb-8 text-2xl font-bold leading-none">
 				Transcript
 			</h3>
-			<Suspense fallback={<div className="p-5">Loading...</div>}>
-				<Transcript />
+			<Suspense fallback={<div className="p-5"></div>}>
+				<Transcript transcriptLoader={transcriptLoader} />
 			</Suspense>
 		</div>
 	)
@@ -192,67 +175,49 @@ async function LessonActionBar({
 }
 
 async function PlayerContainer({
-	lessonLoader,
-	exerciseLoader,
-	moduleLoader,
-	moduleProgressLoader,
+	lesson,
+	lessonType = 'lesson',
 	searchParams,
+	params,
 }: {
-	lessonLoader: Promise<Lesson | null>
-	exerciseLoader?: Promise<Lesson | null> | null
-	moduleLoader: Promise<Module | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	lesson: Lesson | null
+	lessonType?: 'lesson' | 'exercise' | 'solution'
 	searchParams: { [key: string]: string | string[] | undefined }
+	params: { module: string; lesson: string }
 }) {
-	const lesson = await lessonLoader
-	const moduleResource = await moduleLoader
-
-	if (!lesson || !moduleResource) {
+	if (!lesson) {
 		notFound()
 	}
 
 	const canViewLoader = getViewingAbilityForResource(
-		lesson.fields.slug,
-		moduleResource.fields.slug,
+		params.lesson,
+		params.module,
 	)
-
-	const videoResourceId = lesson.resources?.find(
-		(resource) => resource.resource.type === 'videoResource',
-	)?.resource.id
-
-	const videoResourceLoader =
-		courseBuilderAdapter.getVideoResource(videoResourceId)
-
-	const nextResourceLoader = getNextResource(
-		lesson.id,
-		moduleResource.fields.slug,
-	)
+	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 
 	return (
 		<VideoPlayerOverlayProvider>
 			<div className="relative flex w-full items-center justify-center">
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<WorkshopPricing
-						workshop={moduleResource}
+						moduleSlug={params.module}
 						searchParams={searchParams}
 					>
 						{(pricingProps) => {
 							return (
 								<VideoPlayerOverlay
-									nextResourceLoader={nextResourceLoader}
-									moduleLoader={moduleLoader}
 									resource={lesson}
-									exerciseLoader={exerciseLoader}
 									canViewLoader={canViewLoader}
-									moduleProgressLoader={moduleProgressLoader}
 									pricingProps={pricingProps}
+									moduleType="workshop"
+									moduleSlug={params.module}
 								/>
 							)
 						}}
 					</WorkshopPricing>
 					<AuthedVideoPlayer
 						className="aspect-video overflow-hidden"
-						videoResourceLoader={videoResourceLoader}
+						playbackIdLoader={playbackIdLoader}
 						resource={lesson}
 						canViewLoader={canViewLoader}
 					/>
@@ -262,16 +227,7 @@ async function PlayerContainer({
 	)
 }
 
-async function LessonBody({
-	lessonLoader,
-	exerciseLoader,
-	moduleProgressLoader,
-}: {
-	lessonLoader: Promise<Lesson | null>
-	exerciseLoader?: Promise<Lesson | null> | null
-	moduleProgressLoader: Promise<ModuleProgress>
-}) {
-	const lesson = await lessonLoader
+async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 	const { session } = await getServerAuthSession()
 	const cookieStore = cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
@@ -279,8 +235,6 @@ async function LessonBody({
 	if (!lesson) {
 		notFound()
 	}
-
-	const exercise = await exerciseLoader
 
 	const githubUrl = lesson.fields?.github
 	const gitpodUrl = lesson.fields?.gitpod
@@ -348,15 +302,10 @@ async function LessonBody({
 						</div>
 						{(session?.user || ckSubscriber) &&
 						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
-							<Suspense fallback={<LessonProgressToggleSkeleton />}>
-								<LessonProgressToggle
-									// if we are on solution, pass in exercise as lesson for completing
-									lesson={
-										lesson.type === 'solution' && exercise ? exercise : lesson
-									}
-									moduleProgressLoader={moduleProgressLoader}
-								/>
-							</Suspense>
+							<LessonProgressToggle
+								// if we are on solution, pass in exercise as lesson for completing
+								lesson={lesson}
+							/>
 						) : null}
 					</div>
 				</div>

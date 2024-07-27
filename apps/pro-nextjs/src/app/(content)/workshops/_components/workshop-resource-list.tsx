@@ -6,7 +6,11 @@ import { useParams, usePathname } from 'next/navigation'
 import { createAppAbility, type AppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
 import { Module } from '@/lib/module'
-import { NavigationResource, WorkshopNavigation } from '@/lib/workshops'
+import {
+	findSectionIdForLessonSlug,
+	NavigationResource,
+	WorkshopNavigation,
+} from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Check, Edit, Lock } from 'lucide-react'
@@ -52,7 +56,10 @@ export function WorkshopResourceList(props: Props) {
 			moduleId: props.workshopNavigation?.id,
 		})
 
-	console.log({ moduleProgress })
+	const sectionId = findSectionIdForLessonSlug(
+		props.workshopNavigation,
+		props.currentLessonSlug,
+	)
 
 	const ability = createAppAbility(abilityRules || [])
 	const params = useParams()
@@ -126,10 +133,9 @@ export function WorkshopResourceList(props: Props) {
 								'divide-border flex flex-col divide-y border-t pb-16',
 								wrapperClassName,
 							)}
-							defaultValue={resources[0]?.id}
+							defaultValue={sectionId || resources[0]?.id}
 						>
 							{resources.map((resource: NavigationResource, i: number) => {
-								console.log({ resource })
 								return resource.type === 'section' ? (
 									<>
 										<AccordionItem

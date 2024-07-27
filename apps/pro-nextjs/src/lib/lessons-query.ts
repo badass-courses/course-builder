@@ -11,10 +11,60 @@ import slugify from '@sindresorhus/slugify'
 import { Redis } from '@upstash/redis'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
+import { z } from 'zod'
 
 import type { ContentResourceResource } from '@coursebuilder/core/types'
 
 const redis = Redis.fromEnv()
+
+export const getLessonVideoTranscript = async (lessonId?: string | null) => {
+	console.log({ lessonId })
+	if (!lessonId) return null
+	const query = sql`SELECT cr_video.fields->>'$.transcript' AS transcript
+		FROM ContentResource cr_lesson
+		JOIN ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
+		JOIN ContentResource cr_video ON crr.resourceId = cr_video.id
+		WHERE cr_lesson.id = ${lessonId}
+			AND cr_lesson.type = 'lesson'
+			AND cr_video.type = 'videoResource'
+		LIMIT 1;`
+	const result = await db.execute(query)
+
+	const parsedResult = z
+		.array(z.object({ transcript: z.string() }))
+		.safeParse(result.rows)
+
+	if (!parsedResult.success) {
+		console.error('Error parsing transcript', parsedResult.error)
+		return null
+	}
+
+	console.log({ parsedResult })
+	return parsedResult.data[0]?.transcript
+}
+
+export const getLessonMuxPlaybackId = async (lessonId: string) => {
+	const query = sql`SELECT cr_video.fields->>'$.muxPlaybackId' AS muxPlaybackId
+		FROM ContentResource cr_lesson
+		JOIN ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
+		JOIN ContentResource cr_video ON crr.resourceId = cr_video.id
+		WHERE cr_lesson.id = ${lessonId}
+			AND cr_lesson.type = 'lesson'
+			AND cr_video.type = 'videoResource'
+		LIMIT 1;`
+	const result = await db.execute(query)
+
+	const parsedResult = z
+		.array(z.object({ muxPlaybackId: z.string() }))
+		.safeParse(result.rows)
+
+	if (!parsedResult.success) {
+		console.error('Error parsing muxPlaybackId', parsedResult.error)
+		return null
+	}
+
+	return parsedResult.data[0]?.muxPlaybackId
+}
 
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
@@ -43,7 +93,11 @@ export const addVideoResourceToLesson = async ({
 	const lesson = await db.query.contentResource.findFirst({
 		where: and(
 			like(contentResource.id, `%${last(lessonId.split('-'))}%`),
-			eq(contentResource.type, 'lesson'),
+			or(
+				eq(contentResource.type, 'lesson'),
+				eq(contentResource.type, 'exercise'),
+				eq(contentResource.type, 'solution'),
+			),
 		),
 		with: {
 			resources: true,
@@ -92,6 +146,7 @@ export async function getLesson(lessonSlugOrId: string) {
 							lessonSlugOrId,
 						),
 						eq(contentResource.id, lessonSlugOrId),
+						like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
 					),
 					or(
 						eq(contentResource.type, 'lesson'),
@@ -99,14 +154,6 @@ export async function getLesson(lessonSlugOrId: string) {
 						eq(contentResource.type, 'solution'),
 					),
 				),
-				with: {
-					resources: {
-						with: {
-							resource: true,
-						},
-						orderBy: asc(contentResourceResource.position),
-					},
-				},
 			})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)

@@ -22,19 +22,19 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 export function AuthedVideoPlayer({
 	muxPlaybackId,
 	className,
-	videoResourceLoader,
+	playbackIdLoader,
 	canViewLoader,
 	resource,
 	...props
 }: {
 	muxPlaybackId?: string
-	videoResourceLoader: Promise<VideoResource | null>
+	playbackIdLoader: Promise<string | null | undefined>
 	className?: string
 	canViewLoader?: Promise<boolean>
 	resource?: ContentResource
 } & MuxPlayerProps) {
 	const canView = canViewLoader ? use(canViewLoader) : true
-	const videoResource = canView ? use(videoResourceLoader) : null
+	const playbackId = canView ? use(playbackIdLoader) : muxPlaybackId
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { playbackRate, volume, setPlayerPrefs } = useMuxPlayerPrefs()
@@ -81,8 +81,6 @@ export function AuthedVideoPlayer({
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 		},
 	} as MuxPlayerProps
-
-	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId
 
 	return playbackId ? (
 		<MuxPlayer

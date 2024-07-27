@@ -4,11 +4,13 @@ import React, { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import { Module } from '@/lib/module'
 import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
+import { api } from '@/trpc/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
@@ -26,14 +28,20 @@ import type { WorkshopPageProps } from '../workshops/_components/workshop-page-p
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	moduleResource: Module | null
-	moduleProgress: ModuleProgress
 	nextLesson: ContentResource | null | undefined
-}> = ({ action, resource, moduleResource, nextLesson, moduleProgress }) => {
+	moduleType?: 'workshop' | 'tutorial'
+}> = ({ action, resource, nextLesson, moduleType = 'tutorial' }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const router = useRouter()
+	const moduleNavigation = useWorkshopNavigation()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+
+	const { data: moduleProgress } =
+		api.progress.getModuleProgressForUser.useQuery({
+			moduleId: moduleNavigation.id,
+		})
+
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
 		moduleProgress?.completedLessonsCount || 0,
 	)
@@ -86,14 +94,14 @@ export const CompletedLessonOverlay: React.FC<{
 										resourceId: resource.id,
 									})
 								}
-								if (nextLesson && moduleResource) {
+								if (nextLesson && moduleNavigation) {
 									if (nextLesson.type === 'solution') {
 										return router.push(
-											`/${pluralize(moduleResource.type)}/${moduleResource?.fields?.slug}/${resource?.fields?.slug}/solution`,
+											`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
 										)
 									}
 									return router.push(
-										`/${pluralize(moduleResource.type)}/${moduleResource?.fields?.slug}/${nextLesson?.fields?.slug}`,
+										`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextLesson?.fields?.slug}`,
 									)
 								}
 							}}
@@ -128,11 +136,12 @@ export const CompletedLessonOverlay: React.FC<{
 export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	moduleResource: Module | null
-}> = ({ action, resource, moduleResource }) => {
+	moduleType?: 'workshop' | 'tutorial'
+}> = ({ action, resource, moduleType = 'tutorial' }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+	const moduleNavigation = useWorkshopNavigation()
 
 	React.useEffect(() => {
 		if (resource) {
@@ -154,8 +163,7 @@ export const CompletedModuleOverlay: React.FC<{
 				Great job!
 			</p>
 			<p className="fluid-base text-center">
-				You&apos;ve completed the {moduleResource?.fields?.title}{' '}
-				{moduleResource?.type}.
+				You&apos;ve completed the {moduleNavigation.title} {moduleType}.
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
@@ -214,11 +222,12 @@ const ContinueButton: React.FC<{
 }
 
 export const SoftBlockOverlay: React.FC<{
-	moduleResource: Module | null
 	resource: ContentResource | null
-}> = ({ moduleResource, resource }) => {
+}> = ({ resource }) => {
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { toast } = useToast()
+
+	const moduleNavigation = useWorkshopNavigation()
 
 	return (
 		<div
@@ -226,11 +235,11 @@ export const SoftBlockOverlay: React.FC<{
 			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleResource?.fields?.title}
+				moduleTitle={moduleNavigation.title}
 				onSuccess={async (subscriber?: Subscriber) => {
-					if (subscriber && moduleResource && resource) {
+					if (subscriber && moduleNavigation && resource) {
 						await revalidateTutorialLesson(
-							moduleResource?.fields?.slug,
+							moduleNavigation.slug,
 							resource?.fields?.slug,
 						)
 						dispatchVideoPlayerOverlay({ type: 'LOADING' })
@@ -240,11 +249,11 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleResource?.fields?.coverImage?.url && (
+				{moduleNavigation.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
-						src={moduleResource?.fields?.coverImage?.url}
-						alt={moduleResource?.fields?.coverImage?.alt || ''}
+						src={moduleNavigation.coverImage}
+						alt={moduleNavigation.title}
 						width={150}
 						height={150}
 					/>
@@ -255,36 +264,31 @@ export const SoftBlockOverlay: React.FC<{
 }
 
 type VideoPlayerOverlayProps = {
-	moduleLoader: Promise<Module | null>
 	resource: ContentResource
-	exerciseLoader?: Promise<ContentResource | null> | null
-	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
-	moduleProgressLoader: Promise<ModuleProgress>
 	pricingProps?: WorkshopPageProps
+	moduleType?: 'workshop' | 'tutorial'
+	moduleSlug?: string
 }
 
 const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
-	moduleLoader,
 	resource,
-	exerciseLoader,
-	nextResourceLoader,
 	canViewLoader,
-	moduleProgressLoader,
 	pricingProps,
+	moduleType = 'tutorial',
+	moduleSlug,
 }) => {
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
-	const exercise = exerciseLoader && use(exerciseLoader)
-	const moduleResource = use(moduleLoader)
-	const nextLesson = use(nextResourceLoader)
-	const moduleProgress = use(moduleProgressLoader)
 
-	if (!canView && moduleResource) {
-		if (moduleResource?.type === 'tutorial') {
-			return (
-				<SoftBlockOverlay moduleResource={moduleResource} resource={resource} />
-			)
+	const { data: nextResource } = api.progress.getNextResource.useQuery({
+		lessonId: resource.id,
+		moduleSlug: moduleSlug,
+	})
+
+	if (!canView && moduleSlug) {
+		if (moduleType === 'tutorial') {
+			return <SoftBlockOverlay resource={resource} />
 		}
 		return (
 			<div
@@ -300,14 +304,13 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 
 	switch (overlayState.action?.type) {
 		case 'COMPLETED':
-			if (nextLesson) {
+			if (nextResource) {
 				return (
 					<CompletedLessonOverlay
-						nextLesson={nextLesson}
+						nextLesson={nextResource}
 						action={overlayState.action}
-						resource={exercise || resource}
-						moduleResource={moduleResource}
-						moduleProgress={moduleProgress}
+						resource={resource}
+						moduleType={moduleType}
 					/>
 				)
 			} else {
@@ -315,7 +318,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 					<CompletedModuleOverlay
 						action={overlayState.action}
 						resource={resource}
-						moduleResource={moduleResource}
+						moduleType={moduleType}
 					/>
 				)
 			}

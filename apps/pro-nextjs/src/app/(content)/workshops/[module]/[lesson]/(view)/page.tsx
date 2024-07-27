@@ -1,11 +1,7 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
-import { ModuleProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/module-context'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
 import { getLesson } from '@/lib/lessons-query'
-import { getModuleProgressForUser } from '@/lib/progress'
-import { getWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
 export async function generateMetadata(
@@ -35,21 +31,9 @@ export default async function LessonPageWrapper({
 	params,
 	searchParams,
 }: Props) {
-	const moduleLoader = getWorkshop(params.module)
-	const lessonLoader = getLesson(params.lesson)
-	const moduleProgressLoader = getModuleProgressForUser(params.module)
+	const lesson = await getLesson(params.lesson)
 
 	return (
-		<ModuleProvider moduleLoader={moduleLoader}>
-			<LessonProvider lessonLoader={lessonLoader}>
-				<LessonPage
-					params={params}
-					lessonLoader={lessonLoader}
-					moduleLoader={moduleLoader}
-					moduleProgressLoader={moduleProgressLoader}
-					searchParams={searchParams}
-				/>
-			</LessonProvider>
-		</ModuleProvider>
+		<LessonPage params={params} lesson={lesson} searchParams={searchParams} />
 	)
 }
