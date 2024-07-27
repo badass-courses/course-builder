@@ -6,7 +6,6 @@ import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 
 export type WorkshopPageProps = {
-	workshop: Module
 	quantityAvailable: number
 	product?: Product
 	mdx?: MDXRemoteSerializeResult

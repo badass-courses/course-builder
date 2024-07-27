@@ -3,27 +3,25 @@
 import React, { use } from 'react'
 import Link from 'next/link'
 import { Lesson } from '@/lib/lessons'
-import { Module } from '@/lib/module'
 import pluralize from 'pluralize'
 
 import { Button } from '@coursebuilder/ui'
 
 export default function Exercise({
-	resourceLoader,
-	moduleLoader,
+	lesson,
+	moduleType = 'workshop',
+	moduleSlug,
 }: {
-	resourceLoader: Promise<Lesson | null>
-	moduleLoader: Promise<Module | null>
+	lesson: Lesson | null
+	moduleType?: string
+	moduleSlug: string
 }) {
-	const resource = use(resourceLoader)
-	const moduleResource = use(moduleLoader)
-
-	if (!resource || !moduleResource) {
+	if (!lesson) {
 		return null
 	}
 
-	const githubUrl = resource.fields?.github
-	const gitpodUrl = resource.fields?.gitpod
+	const githubUrl = lesson.fields?.github
+	const gitpodUrl = lesson.fields?.gitpod
 
 	return (
 		<div className="text-foreground bg-muted flex h-full w-full flex-col items-center justify-center py-8 text-center sm:aspect-video">
@@ -90,7 +88,7 @@ export default function Exercise({
 			/>
 			<Button asChild variant="secondary" className="mt-10">
 				<Link
-					href={`/${pluralize(moduleResource.type)}/${moduleResource.fields?.slug}/${resource?.fields?.slug}/solution`}
+					href={`/${pluralize(moduleType)}/${moduleSlug}/${lesson?.fields?.slug}/solution`}
 				>
 					Continue
 				</Link>

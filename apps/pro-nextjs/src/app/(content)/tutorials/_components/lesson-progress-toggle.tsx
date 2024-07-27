@@ -3,22 +3,20 @@
 import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import type { Lesson } from '@/lib/lessons'
 import { toggleProgress } from '@/lib/progress'
+import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 
-import type { ModuleProgress } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/types'
 import { Label, Switch } from '@coursebuilder/ui'
 
-export function LessonProgressToggle({
-	moduleProgressLoader,
-	lesson,
-}: {
-	moduleProgressLoader: Promise<ModuleProgress>
-	lesson: Lesson
-}) {
-	const moduleProgress = React.use(moduleProgressLoader)
+export function LessonProgressToggle({ lesson }: { lesson: Lesson }) {
+	const workshopNavData = useWorkshopNavigation()
+	const { data: moduleProgress } =
+		api.progress.getModuleProgressForUser.useQuery({
+			moduleId: workshopNavData.id,
+		})
 
 	const params = useParams()
 

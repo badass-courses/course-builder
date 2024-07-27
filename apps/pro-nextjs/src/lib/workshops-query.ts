@@ -20,6 +20,7 @@ import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import z from 'zod'
 
+import { productSchema } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 
 export async function getWorkshopNavigation(
@@ -123,6 +124,27 @@ ORDER BY
 		coverImage: workshop.workshop_image,
 		resources,
 	})
+}
+
+export async function getWorkshopProduct(workshopIdOrSlug: string) {
+	const query = sql`
+		SELECT p.*
+		FROM ContentResource cr
+		LEFT JOIN ContentResourceProduct crp ON cr.id = crp.resourceId
+		LEFT JOIN Product p ON crp.productId = p.id
+		WHERE cr.type = 'workshop'
+			AND (cr.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug})
+		LIMIT 1;`
+	const results = await db.execute(query)
+
+	const parsedProduct = productSchema.safeParse(results.rows[0])
+
+	if (!parsedProduct.success) {
+		console.error('Error parsing product', parsedProduct.error)
+		return null
+	}
+
+	return parsedProduct.data
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {

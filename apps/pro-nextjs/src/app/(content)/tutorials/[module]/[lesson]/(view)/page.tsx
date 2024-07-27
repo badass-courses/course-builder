@@ -13,11 +13,14 @@ import {
 	LessonProgressToggleSkeleton,
 } from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
-import { ModuleProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/module-context'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { Lesson } from '@/lib/lessons'
-import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
+import {
+	getExerciseSolution,
+	getLesson,
+	getLessonVideoTranscript,
+} from '@/lib/lessons-query'
 import { Module } from '@/lib/module'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getNextResource } from '@/lib/resources/get-next-resource'
@@ -86,16 +89,14 @@ export default async function LessonPageWrapper({
 		lessonPageType === 'exercise' ? getLesson(params.lesson) : null
 
 	return (
-		<ModuleProvider moduleLoader={tutorialModuleLoader}>
-			<LessonProvider lessonLoader={lessonLoader}>
-				<LessonPage
-					lessonLoader={lessonLoader}
-					exerciseLoader={exerciseLoader}
-					moduleLoader={tutorialModuleLoader}
-					moduleProgressLoader={moduleProgressLoader}
-				/>
-			</LessonProvider>
-		</ModuleProvider>
+		<LessonProvider lessonLoader={lessonLoader}>
+			<LessonPage
+				lessonLoader={lessonLoader}
+				exerciseLoader={exerciseLoader}
+				moduleLoader={tutorialModuleLoader}
+				moduleProgressLoader={moduleProgressLoader}
+			/>
+		</LessonProvider>
 	)
 }
 
@@ -192,6 +193,7 @@ async function LessonPage({
 }
 
 async function TranscriptContainer({ className }: { className?: string }) {
+	const transcriptLoader = getLessonVideoTranscript
 	return (
 		<div className={cn('mt-10 border-t px-5 pt-8 sm:px-8', className)}>
 			<h3 className="font-heading mb-8 text-2xl font-bold leading-none">
@@ -199,35 +201,6 @@ async function TranscriptContainer({ className }: { className?: string }) {
 			</h3>
 			<Transcript />
 		</div>
-	)
-}
-
-async function LessonActionBar({
-	lessonLoader,
-	tutorialLoader,
-}: {
-	lessonLoader: Promise<ContentResource | null | undefined>
-	tutorialLoader: Promise<Module | null | undefined>
-}) {
-	const { ability } = await getServerAuthSession()
-	const lesson = await lessonLoader
-	const tutorial = await tutorialLoader
-
-	return (
-		<>
-			{lesson && ability.can('update', 'Content') ? (
-				<div className="container flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button size="sm" asChild>
-						<Link
-							href={`/tutorials/${tutorial?.fields.slug}/${lesson.fields?.slug || lesson.id}/edit`}
-						>
-							Edit Lesson
-						</Link>
-					</Button>
-				</div>
-			) : null}
-		</>
 	)
 }
 

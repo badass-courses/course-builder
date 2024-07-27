@@ -2,6 +2,7 @@ import * as React from 'react'
 import { courseBuilderAdapter } from '@/db'
 import { Module } from '@/lib/module'
 import { getPricingData } from '@/lib/pricing-query'
+import { getWorkshopProduct } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import first from 'lodash/first'
 
@@ -18,25 +19,21 @@ import { WorkshopPricing as WorkshopPricingClient } from './workshop-pricing'
 
 export async function WorkshopPricing({
 	searchParams,
-	workshop,
+	moduleSlug,
 	children,
 }: {
 	searchParams: { [key: string]: string | string[] | undefined }
-	workshop: Module
+	moduleSlug: string
 	children: (props: WorkshopPageProps) => React.ReactNode
 }) {
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
-	const productParsed = productSchema.safeParse(
-		first(workshop.resourceProducts)?.product,
-	)
+
+	const product = await getWorkshopProduct(moduleSlug)
 
 	let workshopProps
-	let product: Product | null = null
 
-	if (productParsed.success) {
-		product = productParsed.data
-
+	if (product) {
 		const pricingDataLoader = getPricingData({
 			productId: product.id,
 		})
@@ -48,13 +45,12 @@ export async function WorkshopPricing({
 					...searchParams,
 				},
 				userId: user?.id,
-				products: [productParsed.data],
+				products: [product],
 			},
 			courseBuilderAdapter,
 		)
 
 		const baseProps = {
-			workshop,
 			availableBonuses: [],
 			product,
 			pricingDataLoader,
@@ -92,7 +88,6 @@ export async function WorkshopPricing({
 		}
 	} else {
 		workshopProps = {
-			workshop,
 			availableBonuses: [],
 			quantityAvailable: -1,
 			pricingDataLoader: Promise.resolve({
