@@ -1,10 +1,6 @@
 import React from 'react'
-import { WorkshopNavigationProvider } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
-import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
-import { getModuleProgressForUser } from '@/lib/progress'
 import { getTutorial } from '@/lib/tutorials-query'
-import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getResourceSection } from '@/utils/get-resource-section'
 
 import { Skeleton } from '@coursebuilder/ui'
@@ -23,36 +19,32 @@ const LessonLayout: React.FC<
 	const currentLesson = await getLesson(params.lesson)
 	const currentSection =
 		currentLesson && (await getResourceSection(currentLesson.id, tutorial))
-	const moduleProgress = await getModuleProgressForUser(params.module)
-	const workshopNavData = await getWorkshopNavigation(params.module)
 
 	return (
-		<WorkshopNavigationProvider workshopNavigation={workshopNavData}>
-			<div className="flex">
-				<React.Suspense
-					fallback={
-						<div className="flex w-full max-w-sm flex-shrink-0 flex-col gap-2 border-l p-5">
-							<Skeleton className="mb-8 h-8 w-full bg-gray-800" />
-							{new Array(10).fill(null).map((_, i) => (
-								<Skeleton key={i} className="h-8 w-full bg-gray-800" />
-							))}
-						</div>
-					}
-				>
-					{tutorial && (
-						<TutorialLessonList
-							className="hidden lg:block"
-							key={tutorial?.id}
-							section={currentSection}
-							lesson={currentLesson}
-							tutorial={tutorial}
-						/>
-					)}
-				</React.Suspense>
+		<div className="flex">
+			<React.Suspense
+				fallback={
+					<div className="flex w-full max-w-sm flex-shrink-0 flex-col gap-2 border-l p-5">
+						<Skeleton className="mb-8 h-8 w-full bg-gray-800" />
+						{new Array(10).fill(null).map((_, i) => (
+							<Skeleton key={i} className="h-8 w-full bg-gray-800" />
+						))}
+					</div>
+				}
+			>
+				{tutorial && (
+					<TutorialLessonList
+						className="hidden lg:block"
+						key={tutorial?.id}
+						section={currentSection}
+						lesson={currentLesson}
+						tutorial={tutorial}
+					/>
+				)}
+			</React.Suspense>
 
-				{children}
-			</div>
-		</WorkshopNavigationProvider>
+			{children}
+		</div>
 	)
 }
 
