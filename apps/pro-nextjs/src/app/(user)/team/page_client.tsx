@@ -6,7 +6,7 @@ import { TeamPageData } from '@/app/(user)/team/page'
 
 import { BuyMoreSeats } from '@coursebuilder/commerce-next/post-purchase/buy-more-seats'
 import { ClaimedTeamSeats } from '@coursebuilder/commerce-next/team/claimed-team-seats'
-import * as InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
+import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { Card } from '@coursebuilder/ui'
 
 export function TeamPageTemplate({
@@ -37,24 +37,13 @@ export function TeamPageTemplate({
 						<h2 className="text-primary pb-4 text-sm uppercase">
 							Invite your team to {bulkPurchase.purchase?.product?.name}
 						</h2>
-						<InviteTeam.Root
+						<InviteTeam
 							disabled={!redemptionsLeft}
 							purchase={purchase}
 							existingPurchase={existingPurchase}
 							userEmail={user.email}
 							className="flex flex-col items-start gap-y-2"
-						>
-							<InviteTeam.SeatsAvailable className="[&_span]:font-semibold" />
-							<p>
-								Send the following invite link to your colleagues to get
-								started:
-							</p>
-							<div className="flex w-full items-center gap-2">
-								<InviteTeam.InviteLink />
-								<InviteTeam.CopyInviteLinkButton />
-							</div>
-							<InviteTeam.SelfRedeemButton className="" />
-						</InviteTeam.Root>
+						/>
 					</div>
 				</>
 			)}
