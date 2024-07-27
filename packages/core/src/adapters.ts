@@ -48,6 +48,10 @@ export interface CourseBuilderAdapter<
 		childResourceId: string
 		parentResourceId: string
 	}): Awaitable<ContentResourceResource | null>
+	removeResourceFromResource(options: {
+		childResourceId: string
+		parentResourceId: string
+	}): Promise<ContentResource | null>
 	createContentResource(resource: {
 		id: string
 		type: string
@@ -238,6 +242,9 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	getProduct(productId: string): Promise<Product | null> {
 		return Promise.resolve(null)
 	},
+	getProductResources(productId: string): Promise<ContentResource[] | null> {
+		return Promise.resolve(null)
+	},
 	getPurchaseCountForProduct(productId: string): Promise<number> {
 		return Promise.resolve(0)
 	},
@@ -314,6 +321,9 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	addResourceToResource: async (options) => {
 		return {} as ContentResourceResource
+	},
+	removeResourceFromResource: async (options) => {
+		return null
 	},
 	createContentResource: async (resource) => {
 		return resource as ContentResource
@@ -453,6 +463,7 @@ interface SkillProductsCommerceSdk {
 	): Promise<{ user: User; isNewUser: boolean }>
 	getUserById(userId: string): Promise<User | null>
 	getProduct(productId: string): Promise<Product | null>
+	getProductResources(productId: string): Promise<ContentResource[] | null>
 	getPrice(productId: string): Promise<Price | null>
 	getMerchantCoupon(merchantCouponId: string): Promise<MerchantCoupon | null>
 	getMerchantCouponForTypeAndPercent(params: {

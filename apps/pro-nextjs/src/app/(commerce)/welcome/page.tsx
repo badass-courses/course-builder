@@ -61,9 +61,13 @@ const getServerSideProps = async (query: {
 
 		if (purchase) {
 			const product = await courseBuilderAdapter.getProduct(purchase.productId)
+			const productResources = await courseBuilderAdapter.getProductResources(
+				purchase.productId,
+			)
 
 			return {
 				product,
+				productResources,
 				purchase: convertToSerializeForNextResponse(purchase),
 				existingPurchase,
 				availableUpgrades,
@@ -92,6 +96,7 @@ const Welcome = async ({
 		existingPurchase,
 		product,
 		providers = {},
+		productResources,
 	} = await getServerSideProps(searchParams)
 
 	const redemptionsLeft =
@@ -122,6 +127,7 @@ const Welcome = async ({
 		<div className="container border-x">
 			<WelcomePage
 				product={product}
+				productResources={productResources}
 				purchase={purchase}
 				existingPurchase={existingPurchase}
 				upgrade={upgrade}

@@ -51,9 +51,11 @@ import {
 	userSchema,
 } from '@coursebuilder/core/schemas'
 import {
+	ContentResourceProductSchema,
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
 	type ContentResource,
+	type ContentResourceProduct,
 	type ContentResourceResource,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
@@ -262,6 +264,7 @@ export function mySqlDrizzleAdapter(
 		verificationTokens,
 		contentResource,
 		contentResourceResource,
+		contentResourceProduct,
 		purchases: purchaseTable,
 		purchaseUserTransfer,
 		coupon,
@@ -1269,6 +1272,32 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
+		async getProductResources(
+			productId: string,
+		): Promise<ContentResource[] | null> {
+			const contentResourceProductsForProduct = z
+				.array(ContentResourceProductSchema)
+				.nullable()
+				.parse(
+					await client.query.contentResourceProduct.findMany({
+						where: eq(contentResourceProduct.productId, productId),
+					}),
+				)
+
+			if (!contentResourceProductsForProduct) {
+				return null
+			} else {
+				const contentResources = z.array(ContentResourceSchema).parse(
+					await client.query.contentResource.findMany({
+						where: inArray(
+							contentResource.id,
+							contentResourceProductsForProduct.map((crp) => crp.resourceId),
+						),
+					}),
+				)
+				return contentResources
+			}
+		},
 		async getPurchaseCountForProduct(productId: string): Promise<number> {
 			return await client.query.purchases
 				.findMany({
@@ -1743,6 +1772,35 @@ export function mySqlDrizzleAdapter(
 			}
 
 			return parsedResourceJoin.data
+		},
+		async removeResourceFromResource(options) {
+			const { childResourceId, parentResourceId } = options
+
+			const resourceJoin = await client.query.contentResourceResource.findFirst(
+				{
+					where: and(
+						eq(contentResourceResource.resourceOfId, parentResourceId),
+						eq(contentResourceResource.resourceId, childResourceId),
+					),
+				},
+			)
+
+			const parsedResourceJoin =
+				ContentResourceResourceSchema.safeParse(resourceJoin)
+			if (!parsedResourceJoin.success) {
+				return null
+			}
+
+			await client
+				.delete(contentResourceResource)
+				.where(
+					and(
+						eq(contentResourceResource.resourceOfId, parentResourceId),
+						eq(contentResourceResource.resourceId, childResourceId),
+					),
+				)
+
+			return parsedResourceJoin.data.resource
 		},
 		async updateContentResourceFields(options) {
 			if (!options.id) {
