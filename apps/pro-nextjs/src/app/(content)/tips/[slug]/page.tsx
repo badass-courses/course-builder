@@ -162,7 +162,7 @@ async function PlayerContainer({
 					<AuthedVideoPlayer
 						className="overflow-hidden border-x"
 						playbackIdLoader={playbackIdLoader}
-						resource={lesson}
+						resource={tip}
 						canViewLoader={canViewLoader}
 					/>
 				</Suspense>
