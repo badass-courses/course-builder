@@ -15,6 +15,20 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { handleSelfRedeem } from '../utils/handle-self-redeem'
 
+export default function InviteTeam(props: RootProps) {
+	return (
+		<Root {...props}>
+			<SeatsAvailable className="[&_span]:font-semibold" />
+			<p>Send the following invite link to your colleagues to get started:</p>
+			<div className="flex w-full items-center gap-2">
+				<InviteLink />
+				<CopyInviteLinkButton />
+			</div>
+			<SelfRedeemButton />
+		</Root>
+	)
+}
+
 type InviteTeamContextType = {
 	purchase: Purchase
 	existingPurchase?: Purchase | null
