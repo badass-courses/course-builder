@@ -44,7 +44,6 @@ const LessonLayout: React.FC<
 							className="hidden lg:block"
 							key={tutorial?.id}
 							section={currentSection}
-							moduleProgress={moduleProgress}
 							lesson={currentLesson}
 							tutorial={tutorial}
 						/>
