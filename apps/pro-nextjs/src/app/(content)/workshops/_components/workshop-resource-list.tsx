@@ -227,7 +227,53 @@ export function WorkshopResourceList(props: Props) {
 										</AccordionItem>
 									</>
 								) : (
-									<div />
+									<div className="flex w-full items-center">
+										<Link
+											className={cn(
+												'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
+												{
+													'bg-muted text-primary':
+														params.lesson === resource.slug,
+													'hover:text-primary': params.lesson !== resource.slug,
+												},
+											)}
+											href={`/workshops/${params.module}/${resource.slug}`}
+										>
+											{moduleProgress?.completedLessons?.some(
+												(progress) =>
+													progress.resourceId === resource.id &&
+													progress.completedAt,
+											) && (
+												<span aria-label="Completed" className="w-6 pr-1">
+													<Check
+														aria-hidden="true"
+														className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
+													/>
+												</span>
+											)}
+											<span className="w-full text-balance text-base">
+												{resource.title}
+											</span>
+										</Link>
+										{abilityStatus === 'success' && (
+											<>
+												{ability.can('create', 'Content') ? (
+													<Button
+														asChild
+														variant="outline"
+														size="icon"
+														className="scale-75"
+													>
+														<Link
+															href={`/workshops/${params.module}/${resource.slug}/edit`}
+														>
+															<Edit className="w-3" />
+														</Link>
+													</Button>
+												) : null}
+											</>
+										)}
+									</div>
 								)
 							})}
 						</Accordion>

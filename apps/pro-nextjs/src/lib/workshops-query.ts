@@ -132,8 +132,8 @@ export async function getWorkshopProduct(workshopIdOrSlug: string) {
 		FROM ContentResource cr
 		LEFT JOIN ContentResourceProduct crp ON cr.id = crp.resourceId
 		LEFT JOIN Product p ON crp.productId = p.id
-		WHERE cr.type = 'workshop'
-			AND (cr.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug})
+		WHERE cr.id = ${workshopIdOrSlug}
+			OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug}
 		LIMIT 1;`
 	const results = await db.execute(query)
 

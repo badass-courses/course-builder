@@ -49,10 +49,10 @@ export const WorkshopNavigationSchema = z.object({
 })
 
 export function findSectionIdForLessonSlug(
-	navigation: WorkshopNavigation,
-	lessonSlug: string,
+	navigation: WorkshopNavigation | null,
+	lessonSlug?: string | null,
 ): string | null {
-	for (const resource of navigation.resources) {
+	for (const resource of navigation?.resources || []) {
 		if (resource.type === 'section') {
 			const lesson = resource.lessons.find(
 				(lesson) => lesson.slug === lessonSlug,
@@ -60,12 +60,12 @@ export function findSectionIdForLessonSlug(
 			if (lesson) {
 				return resource.id
 			}
-		} else if (resource.type === 'lesson' && resource.slug === lessonSlug) {
+		} else if (resource.slug === lessonSlug) {
 			// If it's a top-level lesson, return null or a special identifier
 			return null // or return 'top-level' if you prefer
 		}
 	}
-	return null // Lesson not found
+	return navigation?.resources[0]?.id || null // Lesson not found
 }
 
 export type NavigationLesson = z.infer<typeof NavigationLessonSchema>
