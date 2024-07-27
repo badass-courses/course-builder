@@ -157,13 +157,11 @@ async function PlayerContainer({
 	return (
 		<VideoPlayerOverlayProvider>
 			<div className="relative flex aspect-video h-auto w-full items-center justify-center">
-				{/* <VideoPlayerOverlay /> */}
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<AuthedVideoPlayer
 						className="overflow-hidden border-x"
 						playbackIdLoader={playbackIdLoader}
 						resource={tip}
-						canViewLoader={canViewLoader}
 					/>
 				</Suspense>
 			</div>
