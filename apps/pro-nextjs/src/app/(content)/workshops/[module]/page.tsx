@@ -138,7 +138,10 @@ export default async function ModulePage({ params, searchParams }: Props) {
 						)}
 					</article>
 					<div className="flex w-full flex-col gap-3 sm:max-w-sm">
-						<WorkshopPricing searchParams={searchParams} workshop={workshop}>
+						<WorkshopPricing
+							searchParams={searchParams}
+							moduleSlug={workshop.fields.slug}
+						>
 							{(pricingProps) => {
 								return pricingProps.hasPurchasedCurrentProduct ? null : (
 									<WorkshopPricingClient {...pricingProps} />

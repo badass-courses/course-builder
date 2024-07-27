@@ -30,7 +30,7 @@ export const productSchema = z.object({
 			.default('draft'),
 		visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 	}),
-	createdAt: z.date().nullable(),
+	createdAt: z.coerce.date().nullable(),
 	status: z.number().int().default(0),
 	quantityAvailable: z.number().int().default(-1),
 	price: priceSchema.nullable().optional(),
