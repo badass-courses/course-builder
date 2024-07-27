@@ -1,8 +1,9 @@
 import React from 'react'
+import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import { courseBuilderAdapter } from '@/db'
 import { getLesson } from '@/lib/lessons-query'
 import { getModuleProgressForUser } from '@/lib/progress'
-import { getWorkshop } from '@/lib/workshops-query'
+import { getWorkshop, getWorkshopNavigation } from '@/lib/workshops-query'
 import { getResourceSection } from '@/utils/get-resource-section'
 
 import { Skeleton } from '@coursebuilder/ui'
@@ -17,11 +18,7 @@ const LessonLayout: React.FC<
 		}
 	}>
 > = async ({ children, params }) => {
-	const workshop = await getWorkshop(params.module)
-	const currentLesson = await getLesson(params.lesson)
-	const currentSection =
-		currentLesson && (await getResourceSection(currentLesson.id, workshop))
-	const moduleProgress = await getModuleProgressForUser(params.module)
+	const workshopNavData = await getWorkshopNavigation(params.module)
 
 	return (
 		<div className="flex">
@@ -35,14 +32,11 @@ const LessonLayout: React.FC<
 					</div>
 				}
 			>
-				{workshop && (
-					<TutorialLessonList
+				{workshopNavData && (
+					<WorkshopResourceList
+						workshopNavigation={workshopNavData}
 						className="hidden lg:block"
-						key={workshop?.id}
-						section={currentSection}
-						moduleProgress={moduleProgress}
-						lesson={currentLesson}
-						tutorial={workshop}
+						key={workshopNavData.id}
 					/>
 				)}
 			</React.Suspense>

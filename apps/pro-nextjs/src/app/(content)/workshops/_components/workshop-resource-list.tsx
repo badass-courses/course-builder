@@ -62,6 +62,13 @@ export function WorkshopResourceList(props: Props) {
 			moduleId: props.workshopNavigation?.id,
 		})
 
+	const { data: moduleProgress } =
+		api.progress.getModuleProgressForUser.useQuery({
+			moduleId: props.workshopNavigation?.id,
+		})
+
+	console.log({ moduleProgress })
+
 	const ability = createAppAbility(abilityRules || [])
 	const params = useParams()
 
@@ -86,7 +93,7 @@ export function WorkshopResourceList(props: Props) {
 		return null
 	}
 
-	console.log(props.workshopNavigation)
+	const { resources } = props.workshopNavigation
 
 	return (
 		<nav
@@ -134,21 +141,104 @@ export function WorkshopResourceList(props: Props) {
 								'divide-border flex flex-col divide-y border-t pb-16',
 								wrapperClassName,
 							)}
-							defaultValue={props.workshopNavigation.resources[0]?.id}
+							defaultValue={resources[0]?.id}
 						>
-							{props.workshopNavigation.resources.map(
-								(resource: NavigationResource, i: number) => {
-									return (
-										<div key={resource.id}>
-											{resource.title}
-											{resource.type === 'section' &&
-												resource.lessons.map((lesson) => (
-													<div key={lesson.id}>{lesson.title}</div>
-												))}
-										</div>
-									)
-								},
-							)}
+							{resources.map((resource: NavigationResource, i: number) => {
+								console.log({ resource })
+								return resource.type === 'section' ? (
+									<>
+										<AccordionItem
+											value={resource.id}
+											key={resource.id}
+											className="border-0"
+										>
+											<li>
+												<AccordionTrigger className="hover:bg-muted relative flex w-full items-center px-5 py-5 text-left text-lg font-semibold leading-tight">
+													<h3 className="pr-2">{resource.title}</h3>
+												</AccordionTrigger>
+											</li>
+											{resource.lessons.length > 0 && (
+												// section lessons
+												<AccordionContent>
+													<ol>
+														{resource.lessons.map((lesson, index: number) => {
+															const isActive = lesson.slug === params.lesson
+															const isCompleted =
+																moduleProgress?.completedLessons?.some(
+																	(progress) =>
+																		progress.resourceId === lesson.id &&
+																		progress.completedAt,
+																)
+															return (
+																<li key={lesson.id}>
+																	<div className="flex w-full items-center">
+																		<Link
+																			className={cn(
+																				'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
+																				{
+																					'bg-muted text-primary': isActive,
+																					'hover:text-primary': !isActive,
+																				},
+																			)}
+																			href={`/workshops/${params.module}/${lesson.slug}`}
+																		>
+																			{isCompleted ? (
+																				<span
+																					aria-label="Completed"
+																					className="w-6 pr-1"
+																				>
+																					<Check
+																						aria-hidden="true"
+																						className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
+																					/>
+																				</span>
+																			) : (
+																				<span
+																					className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
+																					aria-hidden="true"
+																				>
+																					{index + 1}
+																				</span>
+																			)}
+																			<span className="w-full text-balance text-base">
+																				{lesson.title}
+																			</span>
+																		</Link>
+																		{abilityStatus === 'success' && (
+																			<>
+																				{ability.can('create', 'Content') ? (
+																					<Button
+																						asChild
+																						variant="outline"
+																						size="icon"
+																						className="scale-75"
+																					>
+																						<Link
+																							href={`/workshops/${params.module}/${lesson.slug}/edit`}
+																						>
+																							<Edit className="w-3" />
+																						</Link>
+																					</Button>
+																				) : null}
+																				{ability.can('read', 'Content') ||
+																				index === 0 ? null : (
+																					<Lock className="absolute right-2 w-3 text-gray-500" />
+																				)}
+																			</>
+																		)}
+																	</div>
+																</li>
+															)
+														})}
+													</ol>
+												</AccordionContent>
+											)}
+										</AccordionItem>
+									</>
+								) : (
+									<div />
+								)
+							})}
 						</Accordion>
 					</ol>
 				</ScrollArea>

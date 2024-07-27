@@ -90,6 +90,33 @@ export const progressRouter = createTRPCRouter({
 				return { error: message }
 			}
 		}),
+	getModuleProgressForUser: publicProcedure
+		.input(
+			z.object({
+				moduleId: z.string().optional().nullable(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const { session, ability } = await getServerAuthSession()
+			const user = session?.user
+			if (user && input.moduleId) {
+				try {
+					const moduleProgress =
+						await courseBuilderAdapter.getModuleProgressForUser(
+							user.id as string,
+							input.moduleId,
+						)
+					return moduleProgress || []
+				} catch (error) {
+					console.error(error)
+					let message = 'Unknown Error'
+					if (error instanceof Error) message = error.message
+					return null
+				}
+			} else {
+				return null
+			}
+		}),
 	get: publicProcedure.query(async ({ ctx }) => {
 		const { session, ability } = await getServerAuthSession()
 		const user = session?.user
