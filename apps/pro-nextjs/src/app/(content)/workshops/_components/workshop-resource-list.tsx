@@ -2,10 +2,9 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { createAppAbility, type AppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
-import { Module } from '@/lib/module'
 import {
 	findSectionIdForLessonSlug,
 	NavigationResource,
@@ -13,10 +12,9 @@ import {
 } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { Check, Edit, Lock } from 'lucide-react'
+import { Check, Lock, Pen } from 'lucide-react'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
-import type { ContentResourceResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,
@@ -31,7 +29,6 @@ type Props = {
 	currentLessonSlug?: string | null
 	currentSectionSlug?: string | null
 	className?: string
-	widthFadeOut?: boolean
 	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -40,7 +37,6 @@ type Props = {
 export function WorkshopResourceList(props: Props) {
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
-	const widthFadeOut = 'widthFadeOut' in props ? props.widthFadeOut : true
 	const className = 'className' in props ? props.className : ''
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
@@ -64,22 +60,23 @@ export function WorkshopResourceList(props: Props) {
 	const ability = createAppAbility(abilityRules || [])
 	const params = useParams()
 
-	const activeResourceRef = React.useRef<HTMLLIElement>(null)
 	const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
 	React.useEffect(() => {
-		// Scroll to the active resource on initial render
-		if (activeResourceRef.current && scrollAreaRef.current) {
-			const scrollAreaTop = scrollAreaRef.current.getBoundingClientRect().top
+		// scroll to active resource on mount
+		const resourceToScrollToRef = document.querySelector(
+			'li[data-active="true"]',
+		)
+		const scrollArea = scrollAreaRef.current
+		if (resourceToScrollToRef && scrollArea) {
+			const scrollAreaTop = scrollArea.getBoundingClientRect().top
 			const activeResourceTop =
-				activeResourceRef.current.getBoundingClientRect().top
+				resourceToScrollToRef.getBoundingClientRect().top
 			const scrollPosition = activeResourceTop - scrollAreaTop
 
-			scrollAreaRef.current.scrollTop = scrollPosition
+			scrollArea.scrollTop += scrollPosition
 		}
-	}, [])
-
-	const pathname = usePathname()
+	}, [scrollAreaRef])
 
 	if (!props.workshopNavigation) {
 		return null
@@ -94,197 +91,94 @@ export function WorkshopResourceList(props: Props) {
 				className,
 			)}
 		>
-			<div className="sticky top-0 h-auto">
-				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
-					{withHeader && (
-						<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
-							{props.workshopNavigation.coverImage && (
-								<CldImage
-									width={80}
-									height={80}
-									src={props.workshopNavigation.coverImage}
-									alt={props.workshopNavigation.title}
-								/>
-							)}
-							<div className="flex flex-col">
-								<div className="flex items-center gap-2">
-									<Link
-										href="/workshops"
-										className="font-heading text-primary text-base font-medium hover:underline"
-									>
-										Workshops
-									</Link>
-									<span className="opacity-50">/</span>
-								</div>
+			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
+				{withHeader && (
+					<div className="relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]">
+						{props.workshopNavigation.coverImage && (
+							<CldImage
+								width={48}
+								height={48}
+								src={props.workshopNavigation.coverImage}
+								alt={props.workshopNavigation.title}
+							/>
+						)}
+						<div className="flex flex-col leading-tight">
+							<div className="flex items-center gap-0.5">
 								<Link
-									className="font-heading fluid-lg text-balance font-bold hover:underline"
-									href={`/workshops/${props.workshopNavigation.slug}`}
+									href="/workshops"
+									className="font-heading text-primary text-sm font-medium hover:underline"
 								>
-									{props.workshopNavigation.title}
+									Workshops
 								</Link>
+								<span className="opacity-50">/</span>
 							</div>
+							<Link
+								className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
+								href={`/workshops/${props.workshopNavigation.slug}`}
+							>
+								{props.workshopNavigation.title}
+							</Link>
 						</div>
-					)}
-					<ol>
-						<Accordion
-							type="single"
-							collapsible
-							className={cn(
-								'divide-border flex flex-col divide-y border-t pb-16',
-								wrapperClassName,
-							)}
-							defaultValue={sectionId || resources[0]?.id}
-						>
+					</div>
+				)}
+				<ScrollArea
+					className={cn('h-full min-h-max', maxHeight)}
+					viewportRef={scrollAreaRef}
+				>
+					<Accordion
+						type="single"
+						collapsible
+						className={cn(
+							'divide-border flex flex-col divide-y pb-16',
+							wrapperClassName,
+						)}
+						defaultValue={sectionId || resources[0]?.id}
+					>
+						<ol className="divide-border divide-y">
 							{resources.map((resource: NavigationResource, i: number) => {
 								return resource.type === 'section' ? (
-									<>
-										<AccordionItem
-											value={resource.id}
-											key={resource.id}
-											className="border-0"
-										>
-											<li>
-												<AccordionTrigger className="hover:bg-muted relative flex w-full items-center px-5 py-5 text-left text-lg font-semibold leading-tight">
-													<h3 className="pr-2">{resource.title}</h3>
-												</AccordionTrigger>
-											</li>
+									// sections
+									<li key={`${resource.id}-accordion`}>
+										<AccordionItem value={resource.id} className="border-0">
+											<AccordionTrigger className="hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight">
+												<h3 className="pr-2">{resource.title}</h3>
+											</AccordionTrigger>
 											{resource.lessons.length > 0 && (
 												// section lessons
 												<AccordionContent>
-													<ol>
+													<ol className="divide-border divide-y bg-gray-50">
 														{resource.lessons.map((lesson, index: number) => {
-															const isActive = lesson.slug === params.lesson
-															const isCompleted =
-																moduleProgress?.completedLessons?.some(
-																	(progress) =>
-																		progress.resourceId === lesson.id &&
-																		progress.completedAt,
-																)
 															return (
-																<li key={lesson.id}>
-																	<div className="flex w-full items-center">
-																		<Link
-																			className={cn(
-																				'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
-																				{
-																					'bg-muted text-primary': isActive,
-																					'hover:text-primary': !isActive,
-																				},
-																			)}
-																			href={`/workshops/${params.module}/${lesson.slug}`}
-																		>
-																			{isCompleted ? (
-																				<span
-																					aria-label="Completed"
-																					className="w-6 pr-1"
-																				>
-																					<Check
-																						aria-hidden="true"
-																						className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
-																					/>
-																				</span>
-																			) : (
-																				<span
-																					className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
-																					aria-hidden="true"
-																				>
-																					{index + 1}
-																				</span>
-																			)}
-																			<span className="w-full text-balance text-base">
-																				{lesson.title}
-																			</span>
-																		</Link>
-																		{abilityStatus === 'success' && (
-																			<>
-																				{ability.can('create', 'Content') ? (
-																					<Button
-																						asChild
-																						variant="outline"
-																						size="icon"
-																						className="scale-75"
-																					>
-																						<Link
-																							href={`/workshops/${params.module}/${lesson.slug}/edit`}
-																						>
-																							<Edit className="w-3" />
-																						</Link>
-																					</Button>
-																				) : null}
-																				{ability.can('read', 'Content') ||
-																				index === 0 ? null : (
-																					<Lock className="absolute right-2 w-3 text-gray-500" />
-																				)}
-																			</>
-																		)}
-																	</div>
-																</li>
+																<LessonResource
+																	lesson={lesson}
+																	index={index}
+																	moduleProgress={moduleProgress}
+																	ability={ability}
+																	abilityStatus={abilityStatus}
+																	key={lesson.id}
+																/>
 															)
 														})}
 													</ol>
 												</AccordionContent>
 											)}
 										</AccordionItem>
-									</>
+									</li>
 								) : (
-									<div className="flex w-full items-center">
-										<Link
-											className={cn(
-												'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
-												{
-													'bg-muted text-primary':
-														params.lesson === resource.slug,
-													'hover:text-primary': params.lesson !== resource.slug,
-												},
-											)}
-											href={`/workshops/${params.module}/${resource.slug}`}
-										>
-											{moduleProgress?.completedLessons?.some(
-												(progress) =>
-													progress.resourceId === resource.id &&
-													progress.completedAt,
-											) && (
-												<span aria-label="Completed" className="w-6 pr-1">
-													<Check
-														aria-hidden="true"
-														className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
-													/>
-												</span>
-											)}
-											<span className="w-full text-balance text-base">
-												{resource.title}
-											</span>
-										</Link>
-										{abilityStatus === 'success' && (
-											<>
-												{ability.can('create', 'Content') ? (
-													<Button
-														asChild
-														variant="outline"
-														size="icon"
-														className="scale-75"
-													>
-														<Link
-															href={`/workshops/${params.module}/${resource.slug}/edit`}
-														>
-															<Edit className="w-3" />
-														</Link>
-													</Button>
-												) : null}
-											</>
-										)}
-									</div>
+									// top-level lessons
+									<LessonResource
+										lesson={resource}
+										index={i}
+										moduleProgress={moduleProgress}
+										ability={ability}
+										abilityStatus={abilityStatus}
+										key={resource.id}
+									/>
 								)
 							})}
-						</Accordion>
-					</ol>
+						</ol>
+					</Accordion>
 				</ScrollArea>
-				{widthFadeOut && (
-					<div
-						className="from-background via-background pointer-events-none absolute -bottom-10 left-0 z-50 h-32 w-full bg-gradient-to-t to-transparent"
-						aria-hidden="true"
-					/>
-				)}
 			</div>
 		</nav>
 	)
@@ -292,87 +186,66 @@ export function WorkshopResourceList(props: Props) {
 
 const LessonResource = ({
 	lesson,
-	tutorial,
-	activeResourceRef,
 	moduleProgress,
 	index,
 	ability,
 	abilityStatus,
 }: {
-	lesson: ContentResourceResource
-	tutorial: Module
-	activeResourceRef: any
-	moduleProgress: ModuleProgress | null
+	lesson: NavigationResource
+	moduleProgress?: ModuleProgress | null
 	index: number
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
 }) => {
 	const params = useParams()
-	const pathname = usePathname()
 
-	const isActiveSolution =
-		lesson.resource.fields.slug === params.lesson &&
-		pathname.endsWith('solution')
-	const isActiveExercise =
-		lesson.resource.fields.slug === params.lesson &&
-		pathname.endsWith('exercise')
-	const isActive =
-		lesson.resource.fields.slug === params.lesson &&
-		!isActiveSolution &&
-		!isActiveExercise
-	const isSubLessonListExpanded =
-		isActive || isActiveExercise || isActiveSolution
-
-	const solution: ContentResourceResource = lesson.resource.resources.find(
-		(resource: ContentResourceResource) =>
-			resource.resource.type === 'solution',
-	)
+	const isActive = lesson.slug === params.lesson
 
 	const isCompleted = moduleProgress?.completedLessons?.some(
-		(progress) =>
-			(progress.resourceId === lesson.resourceId ||
-				solution?.resourceId === progress.resourceId) &&
-			progress.completedAt,
+		(progress) => progress.resourceId === lesson.id && progress.completedAt,
 	)
 
 	return (
-		<li
-			key={lesson.resourceId}
-			className="flex w-full flex-col"
-			ref={isActive ? activeResourceRef : undefined}
-		>
-			<div className="flex w-full items-center">
+		<li key={lesson.id} data-active={isActive ? 'true' : 'false'}>
+			<div className="relative flex w-full items-center">
 				<Link
 					className={cn(
-						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
+						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
 						{
-							'bg-muted text-primary': isActive,
+							'bg-muted text-primary border-gray-200': isActive,
 							'hover:text-primary': !isActive,
 						},
 					)}
-					href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
+					href={`/workshops/${params.module}/${lesson.slug}`}
 				>
 					{isCompleted ? (
-						<span aria-label="Completed" className="w-6 pr-1">
+						<div
+							aria-label="Completed"
+							className="flex w-6 flex-shrink-0 items-center justify-center pr-1"
+						>
 							<Check
 								aria-hidden="true"
-								className="text-primary relative h-4 w-4 -translate-x-1 translate-y-1"
+								className="text-primary relative h-4 w-4 translate-y-1"
 							/>
-						</span>
+						</div>
 					) : (
 						<span
-							className="w-5 flex-shrink-0 pr-1 font-mono text-xs font-light text-gray-400"
+							className="relative w-6 flex-shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
 							aria-hidden="true"
 						>
 							{index + 1}
 						</span>
 					)}
-					<span className="w-full text-balance text-base">
-						{lesson.resource.fields.title}
-					</span>
+					<span className="w-full text-balance text-base">{lesson.title}</span>
+					{ability.can('read', 'Content') || index === 0 ? null : (
+						<Lock
+							className="absolute right-5 w-3 text-gray-500"
+							aria-label="locked"
+						/>
+					)}
 				</Link>
 				{abilityStatus === 'success' && (
-					<>
+					<div className="absolute right-2 flex w-10 items-center justify-center">
 						{ability.can('create', 'Content') ? (
 							<Button
 								asChild
@@ -380,79 +253,12 @@ const LessonResource = ({
 								size="icon"
 								className="scale-75"
 							>
-								<Link
-									href={`/workshops/${tutorial?.fields?.slug}/${lesson.resource.fields.slug}/edit`}
-								>
-									<Edit className="w-3" />
+								<Link href={`/workshops/${params.module}/${lesson.slug}/edit`}>
+									<Pen className="w-3" />
 								</Link>
 							</Button>
 						) : null}
-						{ability.can('read', 'Content') || index === 0 ? null : (
-							<Lock className="absolute right-2 w-3 text-gray-500" />
-						)}
-					</>
-				)}
-			</div>
-			<div className="flex flex-col">
-				{solution && isSubLessonListExpanded && (
-					<>
-						<Link
-							href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}`}
-							className={cn(
-								'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-								{
-									'bg-muted text-primary border-primary before:bg-primary':
-										isActive,
-									'hover:text-primary before:bg-transparent': !isActive,
-								},
-							)}
-						>
-							Problem
-						</Link>
-						<Link
-							href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/exercise`}
-							className={cn(
-								'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-								{
-									'bg-muted text-primary border-primary before:bg-primary':
-										isActiveExercise,
-									'hover:text-primary before:bg-transparent': !isActiveExercise,
-								},
-							)}
-						>
-							Exercise
-						</Link>
-						<div className="flex w-full items-center">
-							<Link
-								href={`/workshops/${tutorial.fields?.slug}/${lesson.resource.fields.slug}/solution`}
-								className={cn(
-									'hover:bg-muted relative flex w-full items-baseline px-10 py-2 font-medium before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:content-[""]',
-									{
-										'bg-muted text-primary border-primary before:bg-primary':
-											isActiveSolution,
-										'hover:text-primary before:bg-transparent':
-											!isActiveSolution,
-									},
-								)}
-							>
-								Solution
-							</Link>
-							{ability.can('create', 'Content') ? (
-								<Button
-									asChild
-									variant="outline"
-									size="icon"
-									className="scale-75"
-								>
-									<Link
-										href={`/workshops/${tutorial?.fields?.slug}/${solution.resource.fields.slug}/edit`}
-									>
-										<Edit className="w-3" />
-									</Link>
-								</Button>
-							) : null}
-						</div>
-					</>
+					</div>
 				)}
 			</div>
 		</li>

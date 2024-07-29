@@ -7,11 +7,7 @@ import { env } from '@/env.mjs'
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
-import { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
-import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
-import type { Product } from '@coursebuilder/core/schemas'
 
-import { PricingWidget } from './pricing-widget'
 import type { WorkshopPageProps } from './workshop-page-props'
 
 export function VideoOverlayWorkshopPricing({
@@ -37,7 +33,7 @@ export function VideoOverlayWorkshopPricing({
 	return product ? (
 		<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 			<Pricing.Root
-				className="relative w-full"
+				className="mx-auto w-full max-w-md"
 				product={product}
 				couponId={couponId}
 				country={country}

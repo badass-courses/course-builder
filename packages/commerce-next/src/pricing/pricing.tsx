@@ -6,6 +6,7 @@ import pluralize from 'pluralize'
 import Balancer from 'react-wrap-balancer'
 
 import { Product } from '@coursebuilder/core/schemas'
+import { Checkbox } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
@@ -70,26 +71,22 @@ const PricingProduct = ({
 		options: { cancelUrl },
 	} = usePricing()
 	return (
-		<div className={cn('', className)}>
-			<form
-				action={buildStripeCheckoutPath({
-					productId: formattedPrice?.id,
-					couponId: formattedPrice?.appliedMerchantCoupon?.id,
-					bulk: isTeamPurchaseActive,
-					quantity,
-					userId,
-					upgradeFromPurchaseId: formattedPrice?.upgradeFromPurchaseId,
-					cancelUrl,
-					usedCouponId: formattedPrice?.usedCouponId,
-				})}
-				method="POST"
-			>
-				<fieldset>
-					<legend className="sr-only">{product.name}</legend>
-					{children}
-				</fieldset>
-			</form>
-		</div>
+		<form
+			className={cn('', className)}
+			action={buildStripeCheckoutPath({
+				productId: formattedPrice?.id,
+				couponId: formattedPrice?.appliedMerchantCoupon?.id,
+				bulk: isTeamPurchaseActive,
+				quantity,
+				userId,
+				upgradeFromPurchaseId: formattedPrice?.upgradeFromPurchaseId,
+				cancelUrl,
+				usedCouponId: formattedPrice?.usedCouponId,
+			})}
+			method="POST"
+		>
+			{children}
+		</form>
 	)
 }
 
@@ -264,12 +261,12 @@ const Price = ({
 									<>
 										<div
 											aria-hidden="true"
-											className="mt-1.5 flex flex-col items-center pl-3 font-sans text-lg !font-light"
+											className="mt-1.5 flex flex-col items-center pl-3 font-normal"
 										>
-											<div className="before:bg-background relative flex text-xl leading-none  text-gray-500 before:absolute before:left-0 before:top-1/2 before:h-0.5 before:w-full dark:text-gray-400">
+											<div className="text-foreground relative flex text-2xl leading-none line-through">
 												{'$' + fullPrice}
 											</div>
-											<div className="text-sm text-teal-300">
+											<div className="text-primary text-base">
 												Save {percentOff}%
 											</div>
 										</div>
@@ -603,10 +600,9 @@ const PPPToggle = ({
 					</div>
 					{!hideCheckbox && (
 						<label className="mt-5 flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 bg-white p-3 transition hover:bg-gray-100 dark:border-transparent dark:bg-gray-800 dark:hover:bg-gray-700/80">
-							<input
-								type="checkbox"
+							<Checkbox
 								checked={Boolean(appliedPPPCoupon)}
-								onChange={() => {
+								onCheckedChange={() => {
 									if (appliedPPPCoupon) {
 										setMerchantCoupon(undefined)
 									} else {

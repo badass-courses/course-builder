@@ -36,7 +36,6 @@ type ContentResourceProps = {
 	lesson?: Lesson | null
 	section?: ContentResource | null
 	className?: string
-	widthFadeOut?: boolean
 	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -69,7 +68,6 @@ export function TutorialLessonList(props: Props) {
 
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
-	const widthFadeOut = 'widthFadeOut' in props ? props.widthFadeOut : true
 	const className = 'className' in props ? props.className : ''
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
@@ -250,6 +248,8 @@ export function TutorialLessonList(props: Props) {
 																					progress.resourceId) &&
 																			progress.completedAt,
 																	)
+
+																console.log({ solution })
 
 																return (
 																	<li
@@ -505,12 +505,6 @@ export function TutorialLessonList(props: Props) {
 						</Accordion>
 					</ol>
 				</ScrollArea>
-				{widthFadeOut && (
-					<div
-						className="from-background via-background pointer-events-none absolute -bottom-10 left-0 z-50 h-32 w-full bg-gradient-to-t to-transparent"
-						aria-hidden="true"
-					/>
-				)}
 			</div>
 		</nav>
 	)
