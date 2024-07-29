@@ -31,11 +31,18 @@ export async function generateMetadata(
 
 export default async function LessonPage({
 	params,
+	searchParams,
 }: {
 	params: {
 		module: string
 		lesson: string
 	}
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
-	return <Page params={{ ...params, lessonPageType: 'solution' }} />
+	return (
+		<Page
+			params={{ ...params, lessonPageType: 'solution' }}
+			searchParams={searchParams}
+		/>
+	)
 }

@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { courseBuilderAdapter } from '@/db'
-import { env } from '@/env.mjs'
-import { Module, ModuleSchema } from '@/lib/module'
+import { Module } from '@/lib/module'
 import { getPricingData } from '@/lib/pricing-query'
+import { getWorkshopProduct } from '@/lib/workshops-query'
+import { getServerAuthSession } from '@/server/auth'
 import first from 'lodash/first'
 
 import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
@@ -14,27 +15,24 @@ import {
 } from '@coursebuilder/core/schemas'
 
 import { type WorkshopPageProps } from './workshop-page-props'
-import { WorkshopPricing as WorkshopPricingClient } from './workshop-pricing'
 
 export async function WorkshopPricing({
-	user,
 	searchParams,
-	workshop,
+	moduleSlug,
+	children,
 }: {
-	user?: User | null
 	searchParams: { [key: string]: string | string[] | undefined }
-	workshop: Module
+	moduleSlug: string
+	children: (props: WorkshopPageProps) => React.ReactNode
 }) {
-	const productParsed = productSchema.safeParse(
-		first(workshop.resourceProducts)?.product,
-	)
+	const token = await getServerAuthSession()
+	const user = token?.session?.user
 
-	let workshopProps: WorkshopPageProps
-	let product: Product | null = null
+	const product = await getWorkshopProduct(moduleSlug)
 
-	if (productParsed.success) {
-		product = productParsed.data
+	let workshopProps
 
+	if (product) {
 		const pricingDataLoader = getPricingData({
 			productId: product.id,
 		})
@@ -42,17 +40,16 @@ export async function WorkshopPricing({
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
-					allowPurchase: 'true',
+					// allowPurchase: 'true',
 					...searchParams,
 				},
 				userId: user?.id,
-				products: [productParsed.data],
+				products: [product],
 			},
 			courseBuilderAdapter,
 		)
 
 		const baseProps = {
-			workshop,
 			availableBonuses: [],
 			product,
 			pricingDataLoader,
@@ -92,7 +89,6 @@ export async function WorkshopPricing({
 		}
 	} else {
 		workshopProps = {
-			workshop,
 			availableBonuses: [],
 			quantityAvailable: -1,
 			pricingDataLoader: Promise.resolve({
@@ -103,7 +99,5 @@ export async function WorkshopPricing({
 		}
 	}
 
-	const canView = workshopProps.hasPurchasedCurrentProduct
-
-	return !canView ? <WorkshopPricingClient {...workshopProps} /> : null
+	return <>{children(workshopProps)}</>
 }
