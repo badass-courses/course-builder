@@ -30,6 +30,7 @@ export async function getWorkshopNavigation(
     workshop.id AS workshop_id,
     workshop.fields->>'$.slug' AS workshop_slug,
     workshop.fields->>'$.title' AS workshop_title,
+    workshop.fields->>'$.coverImage.url' AS workshop_image,
     COALESCE(sections.id, top_level_lessons.id) AS section_or_lesson_id,
     COALESCE(sections.fields->>'$.slug', top_level_lessons.fields->>'$.slug') AS section_or_lesson_slug,
     COALESCE(sections.fields->>'$.title', top_level_lessons.fields->>'$.title') AS section_or_lesson_title,

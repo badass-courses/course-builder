@@ -45,7 +45,15 @@ export async function getTutorial(moduleSlugOrId: string) {
 						with: {
 							resources: {
 								with: {
-									resource: true,
+									resource: {
+										with: {
+											resources: {
+												with: {
+													resource: true,
+												},
+											},
+										},
+									},
 								},
 								orderBy: asc(contentResourceResource.position),
 							},

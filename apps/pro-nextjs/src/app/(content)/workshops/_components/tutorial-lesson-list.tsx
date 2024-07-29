@@ -37,7 +37,6 @@ type ContentResourceProps = {
 	section?: ContentResource | null
 	moduleProgress: ModuleProgress
 	className?: string
-	widthFadeOut?: boolean
 	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -81,7 +80,7 @@ export function TutorialLessonList(props: Props) {
 				: null
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
-	const widthFadeOut = 'widthFadeOut' in props ? props.widthFadeOut : true
+
 	const className = 'className' in props ? props.className : ''
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
@@ -134,42 +133,42 @@ export function TutorialLessonList(props: Props) {
 			)}
 		>
 			<div className="sticky top-0 h-auto">
-				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
-					{withHeader && (
-						<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
-							{tutorial?.fields?.coverImage?.url && (
-								<CldImage
-									width={80}
-									height={80}
-									src={tutorial.fields.coverImage.url}
-									alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
-								/>
-							)}
-							<div className="flex flex-col">
-								<div className="flex items-center gap-2">
-									<Link
-										href="/workshops"
-										className="font-heading text-primary text-base font-medium hover:underline"
-									>
-										Workshops
-									</Link>
-									<span className="opacity-50">/</span>
-								</div>
+				{withHeader && (
+					<div className="flex w-full flex-row items-center gap-2 border-b p-5 pl-2">
+						{tutorial?.fields?.coverImage?.url && (
+							<CldImage
+								width={80}
+								height={80}
+								src={tutorial.fields.coverImage.url}
+								alt={tutorial.fields.coverImage?.alt || tutorial.fields.title}
+							/>
+						)}
+						<div className="flex flex-col">
+							<div className="flex items-center gap-2">
 								<Link
-									className="font-heading fluid-lg text-balance font-bold hover:underline"
-									href={`/workshops/${tutorial?.fields?.slug}`}
+									href="/workshops"
+									className="font-heading text-primary text-base font-medium hover:underline"
 								>
-									{tutorial?.fields?.title}
+									Workshops
 								</Link>
+								<span className="opacity-50">/</span>
 							</div>
+							<Link
+								className="font-heading fluid-lg text-balance font-bold hover:underline"
+								href={`/workshops/${tutorial?.fields?.slug}`}
+							>
+								{tutorial?.fields?.title}
+							</Link>
 						</div>
-					)}
+					</div>
+				)}
+				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
 					<ol>
 						<Accordion
 							type="single"
 							collapsible
 							className={cn(
-								'divide-border flex flex-col divide-y border-t pb-16',
+								'divide-border flex flex-col divide-y pb-16',
 								wrapperClassName,
 							)}
 							defaultValue={
@@ -262,12 +261,6 @@ export function TutorialLessonList(props: Props) {
 						</Accordion>
 					</ol>
 				</ScrollArea>
-				{widthFadeOut && (
-					<div
-						className="from-background via-background pointer-events-none absolute -bottom-10 left-0 z-50 h-32 w-full bg-gradient-to-t to-transparent"
-						aria-hidden="true"
-					/>
-				)}
 			</div>
 		</nav>
 	)
@@ -324,10 +317,10 @@ const LessonResource = ({
 			className="flex w-full flex-col"
 			ref={isActive ? activeResourceRef : undefined}
 		>
-			<div className="flex w-full items-center">
+			<div className="relative flex w-full items-center">
 				<Link
 					className={cn(
-						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-6 font-medium',
+						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
 						{
 							'bg-muted text-primary': isActive,
 							'hover:text-primary': !isActive,
@@ -353,9 +346,15 @@ const LessonResource = ({
 					<span className="w-full text-balance text-base">
 						{lesson.resource.fields.title}
 					</span>
+					{ability.can('read', 'Content') || index === 0 ? null : (
+						<Lock
+							className="absolute right-5 w-3 text-gray-500"
+							aria-label="locked"
+						/>
+					)}
 				</Link>
 				{abilityStatus === 'success' && (
-					<>
+					<div className="absolute right-0 flex w-10 items-center justify-center">
 						{ability.can('create', 'Content') ? (
 							<Button
 								asChild
@@ -370,10 +369,7 @@ const LessonResource = ({
 								</Link>
 							</Button>
 						) : null}
-						{ability.can('read', 'Content') || index === 0 ? null : (
-							<Lock className="absolute right-2 w-3 text-gray-500" />
-						)}
-					</>
+					</div>
 				)}
 			</div>
 			<div className="flex flex-col">

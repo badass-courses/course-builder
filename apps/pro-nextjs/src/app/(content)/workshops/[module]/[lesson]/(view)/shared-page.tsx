@@ -93,9 +93,12 @@ export async function LessonPage({
 										<Suspense
 											fallback={
 												<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
-													<Skeleton className="bg-muted mb-8 h-8 w-full" />
+													<Skeleton className="h-24 w-full bg-gray-100" />
 													{new Array(10).fill(null).map((_, i) => (
-														<Skeleton key={i} className="bg-muted h-8 w-full" />
+														<Skeleton
+															key={i}
+															className="h-8 w-full bg-gray-100"
+														/>
 													))}
 												</div>
 											}

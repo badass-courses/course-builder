@@ -135,8 +135,7 @@ export default async function ModulePage({ params }: Props) {
 						tutorial={tutorial}
 						maxHeight="h-auto"
 						withHeader={false}
-						wrapperClassName="border-x border-b bg-card overflow-hidden rounded pb-0"
-						widthFadeOut={false}
+						wrapperClassName="border bg-card overflow-hidden rounded pb-0"
 					/>
 				</div>
 			</div>
