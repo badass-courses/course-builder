@@ -1,8 +1,8 @@
 {
-  "name": "js-visualized",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
+	"name": "js-visualized",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
 		"dev:next": "next dev",
