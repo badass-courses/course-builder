@@ -27,7 +27,7 @@ export default function RootLayout({
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
 				<AxiomWebVitals />
-				<body className={GeistSans.className}>
+				<body className={`${GeistSans.className} antialiased`}>
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
