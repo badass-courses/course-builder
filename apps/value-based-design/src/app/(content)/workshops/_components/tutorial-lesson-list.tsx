@@ -35,7 +35,7 @@ type ContentResourceProps = {
 	tutorial: Module | null
 	lesson?: Lesson | null
 	section?: ContentResource | null
-	moduleProgress: ModuleProgress
+	moduleProgress: ModuleProgress | null
 	className?: string
 	widthFadeOut?: boolean
 	wrapperClassName?: string
@@ -46,7 +46,7 @@ type ContentResourceProps = {
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<Module | null>
 	lessonLoader: Promise<Lesson | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean

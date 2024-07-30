@@ -220,7 +220,7 @@ async function PlayerContainer({
 }: {
 	lessonLoader: Promise<ContentResource | null>
 	moduleLoader: Promise<ContentResource | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	params: Props['params']
 }) {
 	const lesson = await lessonLoader
@@ -264,7 +264,7 @@ async function LessonBody({
 	moduleProgressLoader,
 }: {
 	lessonLoader: Promise<ContentResource | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 }) {
 	const lesson = await lessonLoader
 	const { session } = await getServerAuthSession()

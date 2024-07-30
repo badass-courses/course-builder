@@ -27,7 +27,7 @@ export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
 	moduleResource: Module | null
-	moduleProgress: ModuleProgress
+	moduleProgress: ModuleProgress | null
 	nextLesson: ContentResource | null | undefined
 }> = ({ action, resource, moduleResource, nextLesson, moduleProgress }) => {
 	const { playerRef } = action
@@ -260,7 +260,7 @@ const VideoPlayerOverlay: React.FC<{
 	exerciseLoader: Promise<ContentResource | null> | null
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	pricingProps?: WorkshopPageProps
 }> = ({
 	moduleLoader,
