@@ -237,11 +237,15 @@ const LessonResource = ({
 						</span>
 					)}
 					<span className="w-full text-balance text-base">{lesson.title}</span>
-					{ability.can('read', 'Content') || index === 0 ? null : (
-						<Lock
-							className="absolute right-5 w-3 text-gray-500"
-							aria-label="locked"
-						/>
+					{abilityStatus === 'success' && (
+						<>
+							{ability.can('read', 'Content') || index === 0 ? null : (
+								<Lock
+									className="absolute right-5 w-3 text-gray-500"
+									aria-label="locked"
+								/>
+							)}
+						</>
 					)}
 				</Link>
 				{abilityStatus === 'success' && (
