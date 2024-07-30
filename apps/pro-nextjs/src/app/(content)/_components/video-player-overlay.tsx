@@ -7,7 +7,6 @@ import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
-import { Module } from '@/lib/module'
 import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
@@ -16,7 +15,7 @@ import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
 import { useFormStatus } from 'react-dom'
 
-import type { ModuleProgress } from '@coursebuilder/core/schemas'
+import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import type { ContentResource } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -266,6 +265,7 @@ export const SoftBlockOverlay: React.FC<{
 type VideoPlayerOverlayProps = {
 	resource: ContentResource
 	canViewLoader: Promise<boolean>
+	canInviteTeamLoader?: Promise<boolean>
 	pricingProps?: WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
@@ -274,18 +274,56 @@ type VideoPlayerOverlayProps = {
 const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	resource,
 	canViewLoader,
+	canInviteTeamLoader,
 	pricingProps,
 	moduleType = 'tutorial',
 	moduleSlug,
 }) => {
 	const canView = use(canViewLoader)
+	const canInviteTeam = canInviteTeamLoader && use(canInviteTeamLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
-
+	const { data: session } = useSession()
 	const { data: nextResource } = api.progress.getNextResource.useQuery({
 		lessonId: resource.id,
 		moduleSlug: moduleSlug,
 	})
+	const purchaseForProduct = pricingProps?.purchases?.find(
+		(purchase) => purchase.productId === pricingProps?.product?.id,
+	)
 
+	if (!canView && canInviteTeam && purchaseForProduct?.bulkCoupon) {
+		const redemptionsLeft =
+			purchaseForProduct.bulkCoupon.maxUses >
+			purchaseForProduct.bulkCoupon.usedCount
+
+		return (
+			<div
+				aria-live="polite"
+				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg sm:aspect-video"
+			>
+				<div className="mx-auto flex w-full max-w-lg flex-col gap-5">
+					<p className="w-full border-b border-gray-300 pb-5 font-semibold">
+						You've purchased a team license. Invite your team or claim a seat
+						for yourself.
+					</p>
+					<InviteTeam
+						className="flex flex-col items-start gap-2"
+						purchase={purchaseForProduct}
+						disabled={!redemptionsLeft}
+						userEmail={session?.user.email}
+					/>
+				</div>
+			</div>
+		)
+	}
+	// if (!canView && isRegionRestricted) {
+	// 	<div
+	// 			aria-live="polite"
+	// 			className="relative z-40 flex h-full w-full flex-col aspect-video items-center justify-center bg-gray-100 p-5 text-lg"
+	// 		>
+	// 			region restricted!
+	// 		</div>
+	// }
 	if (!canView && moduleSlug) {
 		if (moduleType === 'tutorial') {
 			return <SoftBlockOverlay resource={resource} />
@@ -293,7 +331,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-50 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg"
+				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
@@ -324,7 +362,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			return (
 				<div
 					aria-live="polite"
-					className="bg-background/80 text-foreground z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+					className="bg-background/80 text-foreground z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 				>
 					<Spinner />
 				</div>
