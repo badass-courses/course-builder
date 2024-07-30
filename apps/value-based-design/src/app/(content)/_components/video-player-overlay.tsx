@@ -20,6 +20,9 @@ import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
+import { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
@@ -258,6 +261,7 @@ const VideoPlayerOverlay: React.FC<{
 	nextResourceLoader: Promise<ContentResource | null | undefined>
 	canViewLoader: Promise<boolean>
 	moduleProgressLoader: Promise<ModuleProgress>
+	pricingProps?: WorkshopPageProps
 }> = ({
 	moduleLoader,
 	resource,
@@ -265,6 +269,7 @@ const VideoPlayerOverlay: React.FC<{
 	nextResourceLoader,
 	canViewLoader,
 	moduleProgressLoader,
+	pricingProps,
 }) => {
 	const canView = use(canViewLoader)
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
@@ -284,7 +289,7 @@ const VideoPlayerOverlay: React.FC<{
 				aria-live="polite"
 				className="bg-background/80 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
 			>
-				{'// TODO: [PRICING WIDGET]'}
+				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
 		)
 	}

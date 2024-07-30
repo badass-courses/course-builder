@@ -48,6 +48,7 @@ import {
 } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import { WorkshopPricing } from '../../../_components/workshop-pricing-server'
 import Exercise from './exercise/_components/exercise'
 
 export async function generateMetadata(
@@ -76,9 +77,13 @@ export type Props = {
 		module: string
 		lessonPageType?: 'exercise' | 'solution' | 'default'
 	}
+	searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function LessonPageWrapper({ params }: Props) {
+export default async function LessonPageWrapper({
+	params,
+	searchParams,
+}: Props) {
 	const { lessonPageType = 'default', module, lesson } = params
 	const moduleLoader = getWorkshop(module)
 	const lessonLoader =
@@ -97,6 +102,7 @@ export default async function LessonPageWrapper({ params }: Props) {
 					exerciseLoader={exerciseLoader}
 					moduleLoader={moduleLoader}
 					moduleProgressLoader={moduleProgressLoader}
+					searchParams={searchParams}
 				/>
 			</LessonProvider>
 		</ModuleProvider>
@@ -108,11 +114,13 @@ async function LessonPage({
 	exerciseLoader,
 	lessonLoader,
 	moduleProgressLoader,
+	searchParams,
 }: {
 	moduleLoader: Promise<Module | null>
 	exerciseLoader: Promise<Lesson | null> | null
 	lessonLoader: Promise<Lesson | null>
 	moduleProgressLoader: Promise<ModuleProgress>
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	return (
 		<div>
@@ -144,6 +152,7 @@ async function LessonPage({
 										exerciseLoader={exerciseLoader}
 										moduleLoader={moduleLoader}
 										moduleProgressLoader={moduleProgressLoader}
+										searchParams={searchParams}
 									/>
 								)}
 							</main>
@@ -231,7 +240,6 @@ async function LessonActionBar({
 	const lesson = await lessonLoader
 	const tutorial = await tutorialLoader
 
-	console.log(ability.can('create', 'Content'), { session, lesson })
 	return (
 		<>
 			{lesson && ability.can('create', 'Content') ? (
@@ -263,11 +271,13 @@ async function PlayerContainer({
 	exerciseLoader,
 	moduleLoader,
 	moduleProgressLoader,
+	searchParams,
 }: {
 	lessonLoader: Promise<Lesson | null>
 	exerciseLoader: Promise<Lesson | null> | null
 	moduleLoader: Promise<Module | null>
 	moduleProgressLoader: Promise<ModuleProgress>
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	const lesson = await lessonLoader
 	const moduleResource = await moduleLoader
@@ -297,14 +307,24 @@ async function PlayerContainer({
 		<VideoPlayerOverlayProvider>
 			<div className="relative flex w-full items-center justify-center">
 				<Suspense fallback={<PlayerContainerSkeleton />}>
-					<VideoPlayerOverlay
-						nextResourceLoader={nextResourceLoader}
-						moduleLoader={moduleLoader}
-						resource={lesson}
-						exerciseLoader={exerciseLoader}
-						canViewLoader={canViewLoader}
-						moduleProgressLoader={moduleProgressLoader}
-					/>
+					<WorkshopPricing
+						moduleSlug={moduleResource.fields.slug}
+						searchParams={searchParams}
+					>
+						{(pricingProps) => {
+							return (
+								<VideoPlayerOverlay
+									nextResourceLoader={nextResourceLoader}
+									moduleLoader={moduleLoader}
+									resource={lesson}
+									exerciseLoader={exerciseLoader}
+									canViewLoader={canViewLoader}
+									moduleProgressLoader={moduleProgressLoader}
+									pricingProps={pricingProps}
+								/>
+							)
+						}}
+					</WorkshopPricing>
 					<AuthedVideoPlayer
 						className="aspect-video overflow-hidden"
 						videoResourceLoader={videoResourceLoader}

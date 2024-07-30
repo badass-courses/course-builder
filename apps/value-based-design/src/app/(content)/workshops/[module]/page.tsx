@@ -18,6 +18,7 @@ import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 import { TutorialLessonList } from '../_components/tutorial-lesson-list'
+import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
 type Props = {
@@ -126,10 +127,15 @@ export default async function ModulePage({ params, searchParams }: Props) {
 				)}
 				<div className="flex w-full flex-col gap-3 sm:max-w-sm">
 					<WorkshopPricing
-						user={session?.user}
-						workshop={workshop}
 						searchParams={searchParams}
-					/>
+						moduleSlug={workshop.fields.slug}
+					>
+						{(pricingProps) => {
+							return pricingProps.hasPurchasedCurrentProduct ? null : (
+								<WorkshopPricingClient {...pricingProps} />
+							)
+						}}
+					</WorkshopPricing>
 					<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
 						Contents
 					</strong>

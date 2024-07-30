@@ -370,7 +370,7 @@ const LessonResource = ({
 								</Link>
 							</Button>
 						) : null}
-						{ability.can('read', 'Content') || index === 0 ? null : (
+						{ability.can('read', 'Content') ? null : (
 							<Lock className="absolute right-2 w-3 text-gray-500" />
 						)}
 					</>
