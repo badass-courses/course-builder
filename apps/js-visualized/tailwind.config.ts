@@ -11,7 +11,13 @@ module.exports = withUt({
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
-	safelist: ['bg-gradient-orange-to-pink'],
+	safelist: [
+		'bg-gradient-orange-to-pink',
+		'max-w-2xl',
+		'text-center',
+		'text-balance',
+		'whitespace-nowrap',
+	],
 	theme: {
 		container: {
 			center: true,
@@ -19,6 +25,13 @@ module.exports = withUt({
 			screens: {
 				'2xl': '1320px',
 			},
+		},
+		screens: {
+			sm: '640px',
+			md: '768px',
+			lg: '1024px',
+			xl: '1280px',
+			'2xl': '1440px', // Changed from 1536px to 1440px
 		},
 		extend: {
 			fontFamily: {
