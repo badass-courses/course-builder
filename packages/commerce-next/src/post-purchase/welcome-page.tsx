@@ -71,7 +71,7 @@ export function WelcomePage({
 					productResources={productResources}
 					upgrade={upgrade}
 					purchase={purchase}
-					personalPurchase={purchase?.bulkCoupon && existingPurchase}
+					personalPurchase={purchase?.bulkCoupon ? existingPurchase : purchase}
 					providers={providers}
 					isGithubConnected={isGithubConnected}
 				/>
@@ -192,29 +192,32 @@ const Header = ({
 						<Balancer>{purchase?.product?.name || 'a Thing'}</Balancer>
 					</h1>
 
-					{personalPurchase && (
-						<div>
-							<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">
-								{product?.type === 'self-paced' && firstResource && (
-									<Link
-										href={`/${pluralize(firstResource.type)}/${firstResource?.fields?.slug}`}
-										className="bg-primary text-primary-foreground w-full rounded px-5 py-3 text-lg font-semibold text-gray-900 shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
-									>
-										Start Learning
-									</Link>
-								)}
-								{githubProvider && !isGithubConnected ? (
-									<button
-										onClick={() => signIn(githubProvider.id)}
-										className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-3 text-lg font-semibold text-white shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
-									>
-										<Icon name="Github" size="20" />
-										Connect {githubProvider.name}
-									</button>
-								) : null}
-							</div>
+					<div>
+						<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">
+							{personalPurchase && (
+								<>
+									{product?.type === 'self-paced' && firstResource && (
+										<Button asChild>
+											<Link
+												href={`/${pluralize(firstResource.type)}/${firstResource?.fields?.slug}`}
+											>
+												Start Learning
+											</Link>
+										</Button>
+									)}
+								</>
+							)}
+							{githubProvider && !isGithubConnected ? (
+								<button
+									onClick={() => signIn(githubProvider.id)}
+									className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-3 text-lg font-semibold text-white shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
+								>
+									<Icon name="Github" size="20" />
+									Connect {githubProvider.name}
+								</button>
+							) : null}
 						</div>
-					)}
+					</div>
 				</div>
 			</div>
 		</header>

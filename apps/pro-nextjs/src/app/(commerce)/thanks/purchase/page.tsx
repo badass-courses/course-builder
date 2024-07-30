@@ -143,7 +143,7 @@ export default async function ThanksPurchasePage({
 	let description = null
 	let title = `Thank you for purchasing ${stripeProductName}`
 	let loginLink = null
-	let inviteTeam = (
+	let inviteTeam: React.ReactElement | null = (
 		<InviteTeam.Root
 			disabled={!redemptionsLeft}
 			purchase={purchase}
@@ -162,6 +162,7 @@ export default async function ThanksPurchasePage({
 	switch (purchaseType) {
 		case NEW_INDIVIDUAL_PURCHASE:
 			loginLink = <LoginLinkComp email={email} />
+			inviteTeam = null
 			break
 		case NEW_BULK_COUPON:
 			description = (

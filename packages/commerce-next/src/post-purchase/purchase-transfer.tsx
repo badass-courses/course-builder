@@ -3,7 +3,12 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { Slot } from '@radix-ui/react-slot'
-import { FieldErrors, useForm, type UseFormRegister } from 'react-hook-form'
+import {
+	FieldErrors,
+	useForm,
+	type UseFormRegister,
+	type UseFormWatch,
+} from 'react-hook-form'
 
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 import { Button, Input } from '@coursebuilder/ui'
@@ -116,6 +121,7 @@ type PurchaseTransferFormContextType = {
 	handleSubmit: ReturnType<typeof useForm>['handleSubmit']
 	onSubmit: (data: PurchaseTransferFormData) => void
 	errors: FieldErrors<PurchaseTransferFormData>
+	watch: UseFormWatch<PurchaseTransferFormData>
 }
 
 const PurchaseTransferFormContext = React.createContext<
@@ -195,6 +201,7 @@ const Form = ({
 			handleSubmit={handleSubmit}
 			onSubmit={onSubmit}
 			errors={errors}
+			watch={watch}
 		>
 			<form
 				className={cn(
@@ -249,14 +256,14 @@ const InputEmail = ({ className }: { className?: string }) => {
 
 const SubmitButton = ({ className, ...props }: { className?: string }) => {
 	const { purchaseUserTransfer } = usePurchaseTransferStatus()
-	const { errors } = usePurchaseTransferForm()
+	const { errors, watch } = usePurchaseTransferForm()
 	return (
 		<>
 			<Button
 				className={cn('', className)}
 				type="submit"
 				variant="secondary"
-				disabled={!purchaseUserTransfer}
+				disabled={!purchaseUserTransfer || watch('email') === ''}
 				{...props}
 			>
 				Transfer
