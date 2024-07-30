@@ -412,7 +412,7 @@ interface SkillProductsCommerceSdk {
 	getModuleProgressForUser(
 		userId: string,
 		moduleId: string,
-	): Promise<ModuleProgress>
+	): Promise<ModuleProgress | null>
 	getLessonProgresses(): Promise<ResourceProgress[]>
 	getLessonProgressCountsByDate(): Promise<
 		{
