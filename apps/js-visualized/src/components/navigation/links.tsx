@@ -20,7 +20,7 @@ const Logo = () => {
 	return (
 		<>
 			<span>JavaScript</span>{' '}
-			<span className="bg-[linear-gradient(134deg,#3BF686_40.75%,#4CA9FF_90.52%)] bg-clip-text font-black text-transparent">
+			<span className="bg-[linear-gradient(134deg,hsla(144,91%,60%,1)_40.75%,hsla(209,100%,65%,1)_90.52%)] bg-clip-text font-black text-transparent">
 				Visualized
 			</span>
 		</>
@@ -91,7 +91,7 @@ export function Links({ className }: { className?: string }) {
 				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
 					<a
 						href="#waitlist"
-						className="bg-radial-highlight group flex h-12 items-center items-center overflow-hidden rounded-full bg-[#2E3235] bg-[radial-gradient(at_center_top,hsla(157,70%,56%,1)_0%,hsla(157,70%,56%,0)_100%)] p-px text-sm font-medium"
+						className="bg-radial-highlight group flex h-12 items-center items-center overflow-hidden rounded-full bg-[#2E3235] bg-[radial-gradient(at_center_top,rgba(63,221,161,1)_0%,rgba(63,221,161,0)_100%)] p-px text-sm font-medium"
 					>
 						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-10">
 							<span className="opacity-[0.75] duration-100 group-hover:opacity-100">
