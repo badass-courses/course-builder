@@ -1,11 +1,10 @@
-import { Hero, QuestionAndAnswer } from '@/components/landing'
+import { Hero, QuestionAndAnswer, WhatYouWillLearn } from '@/components/landing'
 import { HomeLayout } from '@/layouts/home-layout'
 
 export default HomeLayout
 
 <Hero />
 
-<div className='space-y-4'>
 <QuestionAndAnswer>
 ### So you know what will happen, but do you know <span className="font-bold text-transparent bg-clip-text bg-gradient-orange-to-pink">why?</span>
 
@@ -34,7 +33,7 @@ limited in your ability to contribute to your work and the community at large.
 
 </QuestionAndAnswer>
 
-<QuestionAndAnswer>
+<QuestionAndAnswer className="mt-4">
 ### Why settle for good, when you can be <span className="font-bold text-transparent bg-clip-text bg-gradient-green-to-blue">great?</span>
 
 You could be the developer that others turn to for help, the one who can explain
@@ -49,4 +48,27 @@ analyze and optimize your code.
 **That's where JavaScript Visualized comes in.**
 
 </QuestionAndAnswer>
+
+<WhatYouWillLearn />
+
+<div className="mx-auto max-w-2xl text-balance text-center">
+	JavaScript Visualized is not a course that holds your hand through building an
+	app or using a library. Increase your confidence by equipping yourself with
+	the knowledge of how JavaScript's{' '}
+	<span className="whitespace-nowrap">**behind-the-scenes processes**</span>
+	impact the code you write every day.
 </div>
+
+<QuestionAndAnswer>
+### So, what about<br />the <span className="font-bold text-transparent bg-clip-text bg-gradient-green-to-blue">code snippet?</span>
+
+If you're still wondering why `Start`, `End`, and `Callback` are printed in that
+order even though `logCallback()` is called first, the answer lies in how
+`setTimeout` interacts with the task queue and the event loop. In short, when
+the callback function is pushed to the Web API, the `setTimeout` function
+without the callback is popped off the call stack. This allows `logStart()` and
+`logEnd()` to be executed. Once the call stack is empty, the callback function
+is pushed to the task queue, where it waits for the event loop to pick it up and
+execute it before popping it off the call stack.
+
+</QuestionAndAnswer>
