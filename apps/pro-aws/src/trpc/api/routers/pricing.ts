@@ -26,7 +26,7 @@ const PricingFormattedInputSchema = z.object({
 	couponId: z.string().optional(),
 	merchantCoupon: merchantCouponSchema.optional().nullable(),
 	upgradeFromPurchaseId: z.string().optional(),
-	autoApplyPPP: z.boolean().default(true),
+	autoApplyPPP: z.boolean().default(false),
 })
 
 export const getValidPurchases = (purchases: any[]): Purchase[] => {

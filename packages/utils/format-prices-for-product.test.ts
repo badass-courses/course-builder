@@ -250,6 +250,7 @@ export async function runFormatPricingTests(options: TestOptions) {
 			upgradeFromPurchaseId: originalPurchaseId,
 			country: 'CZ',
 			quantity: 1,
+			autoApplyPPP: false,
 			ctx,
 		})
 
@@ -702,6 +703,11 @@ export async function runFormatPricingTests(options: TestOptions) {
 				resources: [],
 			},
 			priceForProduct,
+		)
+
+		await options.db.createUpgradableProduct?.(
+			options.fixtures?.product?.id,
+			productId,
 		)
 
 		return {
