@@ -20,10 +20,7 @@ import { Module } from '@/lib/module'
 import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import {
-	getTeamInviteAbilityForResource,
-	getViewingAbilityForResource,
-} from '@/utils/get-current-ability-rules'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -194,15 +191,7 @@ async function PlayerContainer({
 		notFound()
 	}
 
-	const canViewLoader = getViewingAbilityForResource(
-		params.lesson,
-		params.module,
-	)
-	const canInviteTeamLoader = getTeamInviteAbilityForResource(
-		params.lesson,
-		params.module,
-	)
-
+	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 
 	return (
@@ -217,8 +206,7 @@ async function PlayerContainer({
 							return (
 								<VideoPlayerOverlay
 									resource={lesson}
-									canViewLoader={canViewLoader}
-									canInviteTeamLoader={canInviteTeamLoader}
+									abilityLoader={abilityLoader}
 									pricingProps={pricingProps}
 									moduleType="workshop"
 									moduleSlug={params.module}
@@ -230,7 +218,7 @@ async function PlayerContainer({
 						className="aspect-video overflow-hidden"
 						playbackIdLoader={playbackIdLoader}
 						resource={lesson}
-						canViewLoader={canViewLoader}
+						abilityLoader={abilityLoader}
 					/>
 				</Suspense>
 			</div>

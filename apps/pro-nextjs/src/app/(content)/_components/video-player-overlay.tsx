@@ -1,7 +1,7 @@
 'use client'
 
 import React, { use } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
@@ -10,13 +10,17 @@ import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta
 import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
+import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import type { QueryStatus } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
 import { useFormStatus } from 'react-dom'
 
 import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
-import type { ContentResource } from '@coursebuilder/core/types'
+import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/utils/build-stripe-checkout-path'
+import type { Product, Purchase } from '@coursebuilder/core/schemas'
+import type { ContentResource, FormattedPrice } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -264,8 +268,10 @@ export const SoftBlockOverlay: React.FC<{
 
 type VideoPlayerOverlayProps = {
 	resource: ContentResource
-	canViewLoader: Promise<boolean>
-	canInviteTeamLoader?: Promise<boolean>
+	abilityLoader: Promise<AbilityForResource>
+	// canViewLoader: Promise<boolean>
+	// canInviteTeamLoader?: Promise<boolean>
+	// isRegionRestrictedLoader?: Promise<boolean>
 	pricingProps?: WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
@@ -273,14 +279,16 @@ type VideoPlayerOverlayProps = {
 
 const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	resource,
-	canViewLoader,
-	canInviteTeamLoader,
+	abilityLoader,
 	pricingProps,
 	moduleType = 'tutorial',
 	moduleSlug,
 }) => {
-	const canView = use(canViewLoader)
-	const canInviteTeam = canInviteTeamLoader && use(canInviteTeamLoader)
+	const ability = use(abilityLoader)
+	const canView = ability.canView
+	const canInviteTeam = ability.canInviteTeam
+	const isRegionRestricted = ability.isRegionRestricted
+
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
 	const { data: session } = useSession()
 	const { data: nextResource } = api.progress.getNextResource.useQuery({
@@ -291,10 +299,56 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		(purchase) => purchase.productId === pricingProps?.product?.id,
 	)
 
-	if (!canView && canInviteTeam && purchaseForProduct?.bulkCoupon) {
+	const showRegionRestrictedBlock =
+		isRegionRestricted && !canView && purchaseForProduct
+
+	const showTeamInvite =
+		canInviteTeam && !canView && purchaseForProduct?.bulkCoupon
+
+	const { data: formattedPrice, status: formattedPriceStatus } =
+		api.pricing.formatted.useQuery(
+			{
+				productId: pricingProps?.product?.id,
+				quantity: 1,
+				upgradeFromPurchaseId: purchaseForProduct?.id,
+			},
+			{
+				enabled: Boolean(showRegionRestrictedBlock),
+			},
+		)
+
+	if (showRegionRestrictedBlock) {
+		const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+		const countryCode = purchaseForProduct.country
+		const country = countryCode
+			? regionNames.of(countryCode)
+			: 'a specific region'
+
+		return (
+			<div
+				aria-live="polite"
+				className="relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-5 bg-gray-100 p-5 text-lg"
+			>
+				<p className="max-w-md text-balance text-center">
+					Your've purchased a regional license restricted to {country} for lower
+					price. You can upgrade to get full access from anywhere in the world.
+				</p>
+				<Upgrade
+					formattedPrice={formattedPrice}
+					formattedPriceStatus={formattedPriceStatus}
+					product={pricingProps?.product}
+					purchase={purchaseForProduct}
+					purchaseToUpgrade={formattedPrice?.upgradeFromPurchaseId}
+					userId={session?.user?.id}
+				/>
+			</div>
+		)
+	}
+	if (showTeamInvite) {
 		const redemptionsLeft =
+			purchaseForProduct?.bulkCoupon &&
 			purchaseForProduct.bulkCoupon.maxUses >
-			purchaseForProduct.bulkCoupon.usedCount
+				purchaseForProduct.bulkCoupon.usedCount
 
 		return (
 			<div
@@ -316,14 +370,6 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			</div>
 		)
 	}
-	// if (!canView && isRegionRestricted) {
-	// 	<div
-	// 			aria-live="polite"
-	// 			className="relative z-40 flex h-full w-full flex-col aspect-video items-center justify-center bg-gray-100 p-5 text-lg"
-	// 		>
-	// 			region restricted!
-	// 		</div>
-	// }
 	if (!canView && moduleSlug) {
 		if (moduleType === 'tutorial') {
 			return <SoftBlockOverlay resource={resource} />
@@ -375,3 +421,37 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 }
 
 export default VideoPlayerOverlay
+
+const Upgrade: React.FC<{
+	formattedPrice?: FormattedPrice
+	formattedPriceStatus: QueryStatus
+	purchase: Purchase
+	product?: Product
+	userId: string | undefined
+	purchaseToUpgrade: any
+}> = ({ formattedPrice, formattedPriceStatus, userId }) => {
+	const pathname = usePathname()
+	const formActionPath = buildStripeCheckoutPath({
+		userId,
+		quantity: formattedPrice?.quantity,
+		productId: formattedPrice?.id,
+		bulk: Boolean(formattedPrice?.bulk),
+		upgradeFromPurchaseId: formattedPrice?.upgradeFromPurchaseId,
+		cancelUrl: `${process.env.NEXT_PUBLIC_URL}${pathname}`,
+	})
+
+	return (
+		<form action={formActionPath} method="POST">
+			{formattedPriceStatus !== 'success'
+				? 'Loading price...'
+				: formattedPrice?.calculatedPrice}
+			{/* TODO: Price Formatting */}
+			{/* <PriceDisplay
+          className="flex [&_[data-full-price]]:line-through [&_[data-percent-off]]:text-primary dark:[&_[data-percent-off]]:text-blue-300 [&_[data-price-discounted]]:flex [&_[data-price-discounted]]:items-center [&_[data-price-discounted]]:gap-2 [&_[data-price-discounted]]:pl-3 [&_[data-price-discounted]]:text-base [&_[data-price-discounted]]:font-medium [&_[data-price]]:flex [&_[data-price]]:text-2xl [&_[data-price]]:font-bold [&_sup]:top-2.5 [&_sup]:pr-1 [&_sup]:opacity-75"
+          formattedPrice={formattedPrice}
+          status={formattedPriceStatus}
+        /> */}
+			<Button type="submit">Upgrade to full license</Button>
+		</form>
+	)
+}

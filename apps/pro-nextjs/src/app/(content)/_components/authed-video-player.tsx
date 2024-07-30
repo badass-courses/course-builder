@@ -9,6 +9,7 @@ import {
 	setPreferredTextTrack,
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
+import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
@@ -23,17 +24,18 @@ export function AuthedVideoPlayer({
 	muxPlaybackId,
 	className,
 	playbackIdLoader,
-	canViewLoader,
+	abilityLoader,
 	resource,
 	...props
 }: {
 	muxPlaybackId?: string
 	playbackIdLoader: Promise<string | null | undefined>
 	className?: string
-	canViewLoader?: Promise<boolean>
+	abilityLoader?: Promise<AbilityForResource>
 	resource?: ContentResource
 } & MuxPlayerProps) {
-	const canView = canViewLoader ? use(canViewLoader) : true
+	const ability = abilityLoader ? use(abilityLoader) : null
+	const canView = ability?.canView
 	const playbackId = canView ? use(playbackIdLoader) : muxPlaybackId
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
