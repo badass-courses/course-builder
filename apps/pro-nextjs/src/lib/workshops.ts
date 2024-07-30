@@ -68,6 +68,17 @@ export function findSectionIdForLessonSlug(
 	return navigation?.resources[0]?.id || null // Lesson not found
 }
 
+export function getFirstLessonSlug(navigation: WorkshopNavigation | null) {
+	if (!navigation) return null
+	return navigation?.resources.flatMap((resource) => {
+		if (resource.type === 'section') {
+			return resource.lessons.map((lesson) => lesson.slug)
+		} else {
+			return resource.slug
+		}
+	})[0]
+}
+
 export type NavigationLesson = z.infer<typeof NavigationLessonSchema>
 export type NavigationSection = z.infer<typeof NavigationSectionSchema>
 export type NavigationResource = z.infer<typeof NavigationResourceSchema>

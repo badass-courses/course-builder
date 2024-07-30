@@ -148,6 +148,25 @@ export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	return parsedProduct.data
 }
 
+export function getMinimalWorkshop(moduleSlugOrId: string) {
+	return db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					moduleSlugOrId,
+				),
+				eq(contentResource.id, moduleSlugOrId),
+			),
+			eq(contentResource.type, 'workshop'),
+		),
+		columns: {
+			type: true,
+			fields: true,
+		},
+	})
+}
+
 export async function getWorkshop(moduleSlugOrId: string) {
 	const { ability } = await getServerAuthSession()
 
