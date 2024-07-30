@@ -61,3 +61,13 @@ export async function getViewingAbilityForResource(
 	const canView = ability.can('read', 'Content')
 	return canView
 }
+
+export async function getTeamInviteAbilityForResource(
+	lessonId: string,
+	moduleId: string,
+) {
+	const abilityRules = await getCurrentAbilityRules({ lessonId, moduleId })
+	const ability = createAppAbility(abilityRules || [])
+	const canInvite = ability.can('read', 'Team')
+	return canInvite
+}
