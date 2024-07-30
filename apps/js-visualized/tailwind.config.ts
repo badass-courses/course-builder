@@ -11,6 +11,7 @@ module.exports = withUt({
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
+	safelist: ['bg-gradient-orange-to-pink'],
 	theme: {
 		container: {
 			center: true,
@@ -79,6 +80,21 @@ module.exports = withUt({
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				spin: 'spin 2s linear infinite',
 			},
+			backgroundImage: {
+				'gradient-green-to-blue':
+					'linear-gradient(134deg, hsla(144,91%,60%,1) 40.75%, hsla(209,100%,65%,1) 90.52%)',
+				'gradient-orange-to-pink':
+					'linear-gradient(134deg, hsla(25,100%,71%,1) 5%, hsla(338,100%,64%,1) 90.52%)',
+			},
+			typography: () => ({
+				invert: {
+					css: {
+						'--tw-prose-headings': 'hsla(0, 0%, 100%, 0.9)',
+						'--tw-prose-body': 'hsla(0, 0%, 100%, 0.75)',
+						lineHeight: '1.6',
+					},
+				},
+			}),
 		},
 	},
 	plugins: [
