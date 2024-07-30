@@ -6,7 +6,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 5.25rem;
+		--nav-height: 5rem;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
@@ -48,10 +48,10 @@
 	}
 
 	.dark {
-		--background: 222.2 84% 4.9%;
+		--background: 0 0% 3.5%;
 		--foreground: 210 40% 98%;
 
-		--card: 222.2 84% 4.9%;
+		--card: 210 4.8% 8.2%;
 		--card-foreground: 210 40% 98%;
 
 		--popover: 222.2 84% 4.9%;
