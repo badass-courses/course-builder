@@ -148,7 +148,7 @@ export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	return parsedProduct.data
 }
 
-export function getMinimalWorkshop(moduleSlugOrId: string) {
+export async function getMinimalWorkshop(moduleSlugOrId: string) {
 	return db.query.contentResource.findFirst({
 		where: and(
 			or(
