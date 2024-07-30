@@ -16,17 +16,28 @@ import {
 
 import { ThemeToggle } from './theme-toggle'
 
+const Logo = () => {
+	return (
+		<>
+			<span>JavaScript</span>{' '}
+			<span className="bg-[linear-gradient(134deg,#3BF686_40.75%,#4CA9FF_90.52%)] bg-clip-text font-black text-transparent">
+				Visualized
+			</span>
+		</>
+	)
+}
+
 export const getNavigationLinks = (): {
 	label: string | React.JSX.Element
 	href: string
 	icon: () => string
 }[] => {
 	return [
-		{
-			label: 'Posts',
-			icon: () => '',
-			href: '/posts',
-		},
+		// {
+		// 	label: 'Posts',
+		// 	icon: () => '',
+		// 	href: '/posts',
+		// },
 	]
 }
 
@@ -39,81 +50,90 @@ export function Links({ className }: { className?: string }) {
 	return (
 		<motion.nav
 			aria-label="top"
-			className={cn(
-				'relative mx-auto flex w-full items-center justify-between px-3 text-sm',
-				className,
-			)}
+			className={cn('relative w-full text-sm', className)}
 		>
-			<div className="flex items-center gap-2">
-				<Link
-					href="/"
-					aria-current={isRoot}
-					tabIndex={isRoot ? -1 : 0}
-					passHref
-					className="relative z-10 text-lg font-bold tracking-tight"
-					onContextMenu={(event) => {
-						event.preventDefault()
-						redirect('/brand')
-					}}
-				>
-					JS Visualized
-				</Link>
-				<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
-					{navigationLinks.map(({ label, href, icon }) => {
-						return (
-							<Link
-								key={href}
-								href={href}
-								className={cx(
-									'group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5',
-								)}
-								passHref
-							>
-								{icon()} {label}
-							</Link>
-						)
-					})}
-				</div>
-			</div>
-			<div className="flex items-center justify-end gap-2">
-				<Login className="hidden md:flex" />
-				<User className="hidden md:flex" />
-				<ThemeToggle />
-				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} />
-			</div>
-			<AnimatePresence>
-				{menuOpen && (
-					<motion.div
-						initial={{ y: -30, opacity: 0, scale: 0.9 }}
-						animate={{ y: 0, opacity: 1, scale: 1 }}
-						exit={{ y: -30, opacity: 0, scale: 0.9 }}
-						transition={{
-							type: 'spring',
-							duration: 0.5,
+			<div className="container flex items-center justify-between">
+				<div className="flex items-center gap-2">
+					<Link
+						href="/"
+						aria-current={isRoot}
+						tabIndex={isRoot ? -1 : 0}
+						passHref
+						className="relative z-10 text-sm"
+						onContextMenu={(event) => {
+							event.preventDefault()
+							redirect('/brand')
 						}}
-						className="bg-card absolute left-0 top-0 flex w-full flex-col gap-2 border-b px-2 pb-5 pt-16 text-2xl font-medium shadow-2xl shadow-black/20 backdrop-blur-md md:hidden"
 					>
+						<Logo />
+					</Link>
+					<div className="hidden items-center justify-start gap-2 font-medium md:flex lg:pl-2">
 						{navigationLinks.map(({ label, href, icon }) => {
 							return (
 								<Link
 									key={href}
 									href={href}
-									className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
+									className={cx(
+										'group flex items-center gap-1 rounded-md px-1.5 py-1 transition lg:px-2.5',
+									)}
 									passHref
-									onClick={() => setMenuOpen(false)}
 								>
-									{label}
+									{icon()} {label}
 								</Link>
 							)
 						})}
+					</div>
+				</div>
+				<div className="flex items-center justify-end gap-2">
+					{/* <Login className="hidden md:flex" />
+				<User className="hidden md:flex" />
+				<ThemeToggle />
+				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
+					<a
+						href="#waitlist"
+						className="bg-radial-highlight group flex h-12 items-center items-center overflow-hidden rounded-full bg-[#2E3235] bg-[radial-gradient(at_center_top,hsla(157,70%,56%,1)_0%,hsla(157,70%,56%,0)_100%)] p-px text-sm font-medium"
+					>
+						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-10">
+							<span className="opacity-[0.75] duration-100 group-hover:opacity-100">
+								join the waitlist
+							</span>
+						</span>
+					</a>
+				</div>
+				<AnimatePresence>
+					{menuOpen && (
+						<motion.div
+							initial={{ y: -30, opacity: 0, scale: 0.9 }}
+							animate={{ y: 0, opacity: 1, scale: 1 }}
+							exit={{ y: -30, opacity: 0, scale: 0.9 }}
+							transition={{
+								type: 'spring',
+								duration: 0.5,
+							}}
+							className="bg-card absolute left-0 top-0 flex w-full flex-col gap-2 border-b px-2 pb-5 pt-16 text-2xl font-medium shadow-2xl shadow-black/20 backdrop-blur-md md:hidden"
+						>
+							{navigationLinks.map(({ label, href, icon }) => {
+								return (
+									<Link
+										key={href}
+										href={href}
+										className="flex items-center gap-4 rounded-md px-3 py-2 transition hover:bg-indigo-300/10"
+										passHref
+										onClick={() => setMenuOpen(false)}
+									>
+										{label}
+									</Link>
+								)
+							})}
 
-						<div className="flex w-full items-center justify-between px-3 pt-5 text-lg">
-							<Login />
-							<User />
-						</div>
-					</motion.div>
-				)}
-			</AnimatePresence>
+							<div className="flex w-full items-center justify-between px-3 pt-5 text-lg">
+								<Login />
+								<User />
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
 		</motion.nav>
 	)
 }
