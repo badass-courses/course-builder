@@ -1,7 +1,74 @@
+import { Hero, QuestionAndAnswer, WhatYouWillLearn } from '@/components/landing'
 import { HomeLayout } from '@/layouts/home-layout'
 
 export default HomeLayout
 
-# JS Visualized
+<Hero />
 
-Welcome to JS Visualized
+<QuestionAndAnswer>
+### So you know what will happen, but do you know <span className="font-bold text-transparent bg-clip-text bg-gradient-orange-to-pink">why?</span>
+
+Most resources would give you a high-level explanation, perhaps involving a
+metaphor about a restaurant kitchen or a rollercoaster. But that doesn't really
+help you understand the nitty-gritty details of the Event Loop, the Web API, and
+the task queue, does it?
+
+This illustrates one of the biggest pain points in the JavaScript ecosystem: the
+lack of resources that strike the perfect balance between depth and clarity.
+
+On one end of the spectrum, you have tutorials and articles that barely skim the
+surface, leaving you with more questions than answers. On the other end, are
+explanations that are so dry and boring that they suck the joy out of learning.
+
+Because of this, many developers barely scratch the surface of a language,
+relying more on pattern recognition and memorization rather than building a deep
+understanding of what's going on behind the scenes.
+
+While you can certainly build a successful career without understanding the
+inner workings of JavaScript, **you'll hit a ceiling at some point.**
+
+You'll struggle with debugging, optimization, and grasping advanced concepts.
+You'll find it hard to keep up with why trends and tools change, and you'll be
+limited in your ability to contribute to your work and the community at large.
+
+</QuestionAndAnswer>
+
+<QuestionAndAnswer className="mt-4">
+### Why settle for good, when you can be <span className="font-bold text-transparent bg-clip-text bg-gradient-green-to-blue">great?</span>
+
+You could be the developer that others turn to for help, the one who can explain
+complex concepts in a way that makes sense to everyone without relying on
+oversimplified metaphors.
+
+You could understand the root cause behind bugs and performance issues, write
+more efficient code, and contribute to open-source projects with confidence. You
+could build your own libraries and frameworks, and even create your own tools to
+analyze and optimize your code.
+
+**That's where JavaScript Visualized comes in.**
+
+</QuestionAndAnswer>
+
+<WhatYouWillLearn />
+
+<div className="mx-auto max-w-2xl text-balance text-center">
+	JavaScript Visualized is not a course that holds your hand through building an
+	app or using a library. Increase your confidence by equipping yourself with
+	the knowledge of how JavaScript's{' '}
+	<span className="whitespace-nowrap">**behind-the-scenes processes**</span>
+	impact the code you write every day.
+</div>
+
+<QuestionAndAnswer>
+### So, what about<br />the <span className="font-bold text-transparent bg-clip-text bg-gradient-green-to-blue">code snippet?</span>
+
+If you're still wondering why `Start`, `End`, and `Callback` are printed in that
+order even though `logCallback()` is called first, the answer lies in how
+`setTimeout` interacts with the task queue and the event loop. In short, when
+the callback function is pushed to the Web API, the `setTimeout` function
+without the callback is popped off the call stack. This allows `logStart()` and
+`logEnd()` to be executed. Once the call stack is empty, the callback function
+is pushed to the task queue, where it waits for the event loop to pick it up and
+execute it before popping it off the call stack.
+
+</QuestionAndAnswer>

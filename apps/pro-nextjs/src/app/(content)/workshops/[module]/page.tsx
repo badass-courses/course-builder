@@ -4,14 +4,24 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
+import { NextLessonButton } from '@/app/(content)/workshops/_components/next-lesson-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import config from '@/config'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import type { Module } from '@/lib/module'
 import { getModuleProgressForUser } from '@/lib/progress'
-import { getWorkshop, getWorkshopNavigation } from '@/lib/workshops-query'
+import { getFirstLessonSlug } from '@/lib/workshops'
+import {
+	getMinimalWorkshop,
+	getWorkshop,
+	getWorkshopNavigation,
+} from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { and, asc, eq, or, sql } from 'drizzle-orm'
 import { Construction } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
@@ -53,73 +63,52 @@ export async function generateMetadata(
 }
 
 export default async function ModulePage({ params, searchParams }: Props) {
-	const { ability, session } = await getServerAuthSession()
-
-	const workshop = await getWorkshop(params.module)
-	const workshopNavData = await getWorkshopNavigation(params.module)
+	const workshop = await getMinimalWorkshop(params.module)
 
 	if (!workshop) {
 		notFound()
 	}
 
-	const moduleProgress = await getModuleProgressForUser(workshop.id)
-
-	const firstLesson = workshop.resources[0]?.resource?.resources?.[0]?.resource
+	const workshopNavData = await getWorkshopNavigation(params.module)
+	const firstLessonSlug = getFirstLessonSlug(workshopNavData)
 
 	return (
 		<>
-			{workshop.fields.visibility !== 'public' && (
+			{workshop.fields?.visibility !== 'public' && (
 				<div className="bg-muted flex w-full items-center justify-center gap-2 p-3 text-center">
 					<Construction className="h-4 w-4" />{' '}
 					<p className="text-sm font-medium capitalize">
-						{workshop.fields.visibility} {workshop.type}
+						{workshop.fields?.visibility} {workshop.type}
 					</p>
 				</div>
 			)}
 			<main className="container relative px-0">
-				<WorkshopMetadata workshop={workshop} />
-				{ability.can('update', 'Content') && (
-					<Button
-						asChild
-						variant="secondary"
-						className="absolute right-5 top-5 gap-1"
-					>
-						<Link href={`/workshops/${params.module}/edit`}>Edit</Link>
-					</Button>
-				)}
+				<WorkshopMetadata
+					title={workshop.fields?.title}
+					description={workshop.fields?.description || ''}
+					imageUrl={workshop.fields?.coverImage?.url}
+					slug={params.module}
+				/>
+				<EditWorkshopButton moduleType="workshop" moduleSlug={params.module} />
 				<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row">
 					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 						<p className="text-primary mb-2 text-base">Pro Workshop</p>
 						<h1 className="font-heading fluid-4xl font-bold">
-							{workshop.fields.title}
+							{workshop.fields?.title}
 						</h1>
-						{workshop.fields.description && (
+						{workshop.fields?.description && (
 							<h2 className="fluid-lg text-muted-foreground mt-5">
-								{workshop.fields.description}
+								{workshop.fields?.description}
 							</h2>
 						)}
 						<Contributor className="mt-5" />
-						{moduleProgress?.nextResource?.fields?.slug ? (
-							<Button asChild size="lg" className="mt-10 w-full md:w-auto">
-								<Link
-									href={`${params.module}/${moduleProgress?.nextResource?.fields.slug}`}
-								>
-									Continue Watching
-								</Link>
-							</Button>
-						) : (
-							<>
-								{firstLesson?.fields.slug && (
-									<Button asChild size="lg" className="mt-10 w-full md:w-auto">
-										<Link href={`${params.module}/${firstLesson?.fields.slug}`}>
-											Start Watching
-										</Link>
-									</Button>
-								)}
-							</>
-						)}
+						<NextLessonButton
+							moduleType="workshop"
+							moduleSlug={params.module}
+							firstLessonSlug={firstLessonSlug}
+						/>
 					</div>
-					{workshop.fields.coverImage?.url && (
+					{workshop.fields?.coverImage?.url && (
 						<CldImage
 							width={400}
 							height={400}
@@ -130,7 +119,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 				</div>
 				<div className="flex flex-col-reverse px-5 pb-10 md:flex-row md:gap-10">
 					<article className="prose sm:prose-lg w-full max-w-none py-8">
-						{workshop.fields.body ? (
+						{workshop.fields?.body ? (
 							<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
 						) : (
 							<p>No description found.</p>
@@ -139,7 +128,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 					<div className="flex w-full flex-col gap-3 sm:max-w-sm">
 						<WorkshopPricing
 							searchParams={searchParams}
-							moduleSlug={workshop.fields.slug}
+							moduleSlug={params.module}
 						>
 							{(pricingProps) => {
 								return pricingProps.hasPurchasedCurrentProduct ? null : (
@@ -164,18 +153,28 @@ export default async function ModulePage({ params, searchParams }: Props) {
 	)
 }
 
-const WorkshopMetadata: React.FC<{ workshop: Module }> = ({ workshop }) => {
+const WorkshopMetadata = ({
+	title,
+	description,
+	imageUrl,
+	slug,
+}: {
+	title: string
+	description: string
+	imageUrl?: string
+	slug: string
+}) => {
 	const jsonLd: Course = {
 		'@type': 'Course',
-		name: workshop?.fields.title,
+		name: title,
 		author: config.author,
 		creator: {
 			'@type': 'Person',
 			name: config.author,
 		},
-		description: workshop?.fields?.description as string,
-		thumbnailUrl: workshop?.fields?.coverImage?.url as string,
-		url: `${env.NEXT_PUBLIC_URL}/workshops/${workshop?.fields.slug}`,
+		description: description,
+		...(imageUrl && { thumbnailUrl: imageUrl }),
+		url: `${env.NEXT_PUBLIC_URL}/workshops/${slug}`,
 	}
 
 	return (

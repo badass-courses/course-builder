@@ -11,15 +11,33 @@ module.exports = withUt({
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
+	safelist: [
+		'bg-gradient-orange-to-pink',
+		'max-w-2xl',
+		'text-center',
+		'text-balance',
+		'whitespace-nowrap',
+	],
 	theme: {
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: '1.25rem',
 			screens: {
-				'2xl': '1400px',
+				'2xl': '1320px',
 			},
 		},
+		screens: {
+			sm: '640px',
+			md: '768px',
+			lg: '1024px',
+			xl: '1280px',
+			'2xl': '1440px', // Changed from 1536px to 1440px
+		},
 		extend: {
+			fontFamily: {
+				sans: ['var(--font-geist-sans)'],
+				// mono: ['var(--font-geist-mono)'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -75,6 +93,21 @@ module.exports = withUt({
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				spin: 'spin 2s linear infinite',
 			},
+			backgroundImage: {
+				'gradient-green-to-blue':
+					'linear-gradient(134deg, hsla(144,91%,60%,1) 40.75%, hsla(209,100%,65%,1) 90.52%)',
+				'gradient-orange-to-pink':
+					'linear-gradient(134deg, hsla(25,100%,71%,1) 5%, hsla(338,100%,64%,1) 90.52%)',
+			},
+			typography: () => ({
+				invert: {
+					css: {
+						'--tw-prose-headings': 'hsla(0, 0%, 100%, 0.9)',
+						'--tw-prose-body': 'hsla(0, 0%, 100%, 0.75)',
+						lineHeight: '1.6',
+					},
+				},
+			}),
 		},
 	},
 	plugins: [

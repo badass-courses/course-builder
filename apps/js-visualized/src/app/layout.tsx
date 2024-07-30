@@ -1,7 +1,6 @@
 import '@/styles/globals.css'
 
 import * as React from 'react'
-import { Inter } from 'next/font/google'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
@@ -9,13 +8,9 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
+import { GeistSans } from 'geist/font/sans'
 import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
-
-const inter = Inter({
-	subsets: ['latin'],
-	variable: '--font-sans',
-})
 
 export const metadata = {
 	title: 'JS Visualized',
@@ -32,7 +27,7 @@ export default function RootLayout({
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
 				<AxiomWebVitals />
-				<body className={`font-sans ${inter.variable}`}>
+				<body className={`${GeistSans.className} antialiased`}>
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
