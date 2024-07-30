@@ -20,7 +20,7 @@ const Logo = () => {
 	return (
 		<>
 			<span>JavaScript</span>{' '}
-			<span className="bg-[linear-gradient(134deg,hsla(144,91%,60%,1)_40.75%,hsla(209,100%,65%,1)_90.52%)] bg-clip-text font-black text-transparent">
+			<span className="bg-gradient-green-to-blue bg-clip-text font-black text-transparent">
 				Visualized
 			</span>
 		</>
