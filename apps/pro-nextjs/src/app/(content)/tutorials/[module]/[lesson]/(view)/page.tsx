@@ -28,7 +28,7 @@ import { getNextResource } from '@/lib/resources/get-next-resource'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { getViewingAbilityForResource } from '@/utils/get-current-ability-rules'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
@@ -134,8 +134,7 @@ async function LessonPage({
 									<PlayerContainer
 										lesson={lesson}
 										exercise={lesson}
-										moduleSlug={params.module}
-										moduleType="tutorial"
+										params={params}
 									/>
 								)}
 							</main>
@@ -217,22 +216,18 @@ export function PlayerContainerSkeleton() {
 async function PlayerContainer({
 	lesson,
 	exercise,
-	moduleType = 'tutorial',
-	moduleSlug,
+	params,
 }: {
 	lesson: Lesson | null
 	exercise: Lesson | null
-	moduleType?: string
-	moduleSlug: string
+
+	params: { module: string; lesson: string }
 }) {
-	if (!lesson || !moduleSlug) {
+	if (!lesson) {
 		notFound()
 	}
 
-	const canViewLoader = getViewingAbilityForResource(
-		lesson.fields.slug,
-		moduleSlug,
-	)
+	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 
@@ -242,15 +237,15 @@ async function PlayerContainer({
 				<Suspense fallback={<PlayerContainerSkeleton />}>
 					<VideoPlayerOverlay
 						resource={lesson}
-						canViewLoader={canViewLoader}
+						abilityLoader={abilityLoader}
 						moduleType="workshop"
-						moduleSlug={moduleSlug}
+						moduleSlug={params.module}
 					/>
 					<AuthedVideoPlayer
 						className="aspect-video overflow-hidden"
 						playbackIdLoader={playbackIdLoader}
 						resource={lesson}
-						canViewLoader={canViewLoader}
+						abilityLoader={abilityLoader}
 					/>
 				</Suspense>
 			</div>
