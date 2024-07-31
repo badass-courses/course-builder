@@ -14,10 +14,6 @@ import { getResourceSection } from '@/utils/get-resource-section'
 import { Check, Edit } from 'lucide-react'
 
 import type {
-	ModuleProgress,
-	ResourceProgress,
-} from '@coursebuilder/core/schemas'
-import type {
 	ContentResource,
 	ContentResourceResource,
 } from '@coursebuilder/core/types'
@@ -28,7 +24,6 @@ import {
 	AccordionTrigger,
 	Button,
 	ScrollArea,
-	Skeleton,
 } from '@coursebuilder/ui'
 
 type ContentResourceProps = {

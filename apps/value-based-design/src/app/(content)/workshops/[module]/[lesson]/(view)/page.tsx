@@ -119,7 +119,7 @@ async function LessonPage({
 	moduleLoader: Promise<Module | null>
 	exerciseLoader: Promise<Lesson | null> | null
 	lessonLoader: Promise<Lesson | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	return (
@@ -276,7 +276,7 @@ async function PlayerContainer({
 	lessonLoader: Promise<Lesson | null>
 	exerciseLoader: Promise<Lesson | null> | null
 	moduleLoader: Promise<Module | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	const lesson = await lessonLoader
@@ -344,7 +344,7 @@ async function LessonBody({
 }: {
 	lessonLoader: Promise<Lesson | null>
 	exerciseLoader: Promise<Lesson | null> | null
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 }) {
 	const lesson = await lessonLoader
 	const { session } = await getServerAuthSession()

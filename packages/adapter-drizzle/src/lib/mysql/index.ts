@@ -995,176 +995,71 @@ export function mySqlDrizzleAdapter(
 		async getModuleProgressForUser(
 			userIdOrEmail: string,
 			moduleIdOrSlug: string,
-		): Promise<ModuleProgress> {
-			const ALLOWED_MODULE_RESOURCE_TYPES = ['lesson', 'exercise', 'solution']
-			const COUNTABLE_MODULE_RESOURCE_TYPES = ['lesson', 'exercise']
-
-			const module = await client.query.contentResource.findFirst({
-				where: or(
-					eq(contentResource.id, moduleIdOrSlug),
-					eq(
-						sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-						moduleIdOrSlug,
-					),
-				),
-				with: {
-					resources: {
-						with: {
-							resource: {
-								with: {
-									resources: {
-										with: {
-											resource: {
-												with: {
-													resources: {
-														with: {
-															resource: true,
-														},
-													},
-												},
-											},
-										},
-										orderBy: asc(contentResourceResource.position),
-									},
-								},
-							},
-						},
-						orderBy: asc(contentResourceResource.position),
-					},
+		): Promise<ModuleProgress | null> {
+			// First, get the user ID
+			const user = await client.query.users.findFirst({
+				where: or(eq(users.id, userIdOrEmail), eq(users.email, userIdOrEmail)),
+				columns: {
+					id: true,
 				},
 			})
 
-			const parsedModule = ContentResourceSchema.parse(module)
-
-			function flattenResources(
-				resources: ContentResourceResource[],
-			): ContentResource[] {
-				const result: ContentResource[] = []
-
-				function recurse(resources: ContentResourceResource[]) {
-					for (const nestedResource of resources) {
-						const resource = nestedResource.resource
-						result.push(resource)
-						if (resource.resources) {
-							recurse(resource.resources)
-						}
-					}
-				}
-
-				recurse(resources)
-				return result
-			}
-
-			const allResources =
-				parsedModule?.resources && flattenResources(parsedModule.resources)
-			const filteredResources = allResources?.filter((resource) => {
-				return ALLOWED_MODULE_RESOURCE_TYPES.includes(resource.type)
-			})
-
-			const parsedResources = z
-				.array(ContentResourceSchema)
-				.safeParse(filteredResources)
-
-			if (!parsedResources.success) {
-				console.error('Error parsing module resources', parsedResources.error)
-				return {
-					completedLessons: [],
-					nextResource: null,
-					percentCompleted: 0,
-					completedLessonsCount: 0,
-					totalLessonsCount: 0,
-				}
-			}
-
-			const progressResources = parsedResources.data.filter((r) => {
-				return COUNTABLE_MODULE_RESOURCE_TYPES.includes(r.type)
-			})
-
-			const totalLessonsCount = progressResources.length
-
-			const user = await client.query.users
-				.findFirst({
-					where: or(
-						eq(users.id, userIdOrEmail),
-						eq(users.email, userIdOrEmail),
-					),
-					with: {
-						roles: {
-							with: {
-								role: true,
-							},
-						},
-					},
-				})
-				.then(async (res) => {
-					if (res) {
-						return {
-							...res,
-							roles: res.roles.map((r) => r.role),
-						}
-					}
-				})
-
 			if (!user) {
-				console.error('User not found', userIdOrEmail)
-				return {
-					completedLessons: [],
-					nextResource: null,
-					percentCompleted: 0,
-					completedLessonsCount: 0,
-					totalLessonsCount,
-				}
+				return null
 			}
 
-			const parsedUser = userSchema.safeParse(user)
-
-			if (!parsedUser.success) {
-				console.error('Error parsing user', parsedUser.error)
-				return {
-					completedLessons: [],
-					nextResource: null,
-					percentCompleted: 0,
-					completedLessonsCount: 0,
-					totalLessonsCount,
-				}
-			}
-
-			const userProgress = await client.query.resourceProgress.findMany({
-				where: and(
-					eq(resourceProgress.userId, parsedUser.data.id),
-					isNotNull(resourceProgress.completedAt),
-					...(progressResources.length > 0
-						? [
-								inArray(
-									resourceProgress.resourceId,
-									progressResources.map((r) => r.id),
-								),
-							]
-						: []),
-				),
-				orderBy: asc(resourceProgress.completedAt),
+			const ResultRowSchema = z.object({
+				resource_id: z.string(),
+				resource_type: z.enum(['lesson', 'exercise']),
+				resource_slug: z.string().nullable(),
+				completed_at: z
+					.string()
+					.nullable()
+					.transform((val) => (val ? new Date(val) : null)),
 			})
 
-			const nextResourceId = parsedResources.data
-				.filter((r) => {
-					return COUNTABLE_MODULE_RESOURCE_TYPES.includes(r.type)
-				})
-				.find((r) => !userProgress.find((p) => p.resourceId === r.id))?.id
+			// Execute the optimized query
+			const results: any = await client.execute(sql`
+        SELECT
+            cr.id AS resource_id,
+            cr.type AS resource_type,
+            cr.fields->>'$.slug' AS resource_slug,
+            rp.completedAt AS completed_at
+        FROM
+            ContentResource workshop
+        LEFT JOIN
+            ContentResourceResource crr1 ON workshop.id = crr1.resourceOfId
+        LEFT JOIN
+            ContentResource cr1 ON cr1.id = crr1.resourceId
+        LEFT JOIN
+            ContentResourceResource crr2 ON cr1.id = crr2.resourceOfId
+        LEFT JOIN
+            ContentResource cr2 ON cr2.id = crr2.resourceId
+        LEFT JOIN
+            ResourceProgress rp ON rp.resourceId = COALESCE(cr2.id, cr1.id) AND rp.userId = ${user.id}
+        CROSS JOIN
+            ContentResource cr
+        WHERE
+            (workshop.id = ${moduleIdOrSlug} OR workshop.fields->>'$.slug' = ${moduleIdOrSlug})
+            AND (
+                (cr.id = cr1.id AND cr1.type IN ('lesson', 'exercise'))
+                OR (cr.id = cr2.id AND cr2.type IN ('lesson', 'exercise'))
+            )
+        ORDER BY
+            COALESCE(crr1.position, 0),
+            COALESCE(crr2.position, 0);
+    `)
 
-			const nextResource = await client.query.contentResource.findFirst({
-				where: eq(contentResource.id, nextResourceId as string),
-			})
+			// Process the results
+			const completedLessons: ResourceProgress[] = []
+			let nextResource: Partial<ContentResource> | null = null
+			let completedLessonsCount = 0
+			let totalLessonsCount = results.rows.length
 
-			const parsedNextResource = ContentResourceSchema.nullable()
-				.optional()
-				.default(null)
-				.parse(nextResource)
+			const parsedRows = z.array(ResultRowSchema).safeParse(results.rows)
 
-			const parsedProgress = z
-				.array(resourceProgressSchema)
-				.safeParse(userProgress)
-			if (!parsedProgress.success) {
-				console.error('Error parsing user progress', parsedProgress.error)
+			if (!parsedRows.success) {
+				console.error('Error parsing rows', parsedRows.error)
 				return {
 					completedLessons: [],
 					nextResource: null,
@@ -1173,15 +1068,38 @@ export function mySqlDrizzleAdapter(
 					totalLessonsCount,
 				}
 			}
-			const percentCompleted = Math.round(
-				(parsedProgress.data.length / parsedResources.data.length) * 100,
-			)
+
+			for (const row of parsedRows.data) {
+				totalLessonsCount++
+				if (row.completed_at) {
+					completedLessonsCount++
+					completedLessons.push({
+						userId: user.id as string,
+						resourceId: row.resource_id,
+						completedAt: new Date(row.completed_at),
+						// Add other fields as needed
+					})
+				} else if (!nextResource) {
+					nextResource = {
+						id: row.resource_id,
+						type: row.resource_type,
+						fields: {
+							slug: row.resource_slug,
+						},
+					}
+				}
+			}
+
+			const percentCompleted =
+				totalLessonsCount > 0
+					? Math.ceil((completedLessonsCount / totalLessonsCount) * 100)
+					: 0
 
 			return {
-				completedLessons: parsedProgress.data,
-				nextResource: parsedNextResource,
+				completedLessons,
+				nextResource,
 				percentCompleted,
-				completedLessonsCount: parsedProgress.data.length,
+				completedLessonsCount,
 				totalLessonsCount,
 			}
 		},

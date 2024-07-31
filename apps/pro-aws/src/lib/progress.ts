@@ -150,7 +150,7 @@ export async function sendInngestProgressEvent({
 
 export async function getModuleProgressForUser(
 	moduleIdOrSlug: string,
-): Promise<ModuleProgress> {
+): Promise<ModuleProgress | null> {
 	const { session } = await getServerAuthSession()
 	if (session.user) {
 		const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(

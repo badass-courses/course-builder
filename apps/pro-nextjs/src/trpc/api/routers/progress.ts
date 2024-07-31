@@ -8,6 +8,8 @@ import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
 
+import { ModuleProgress } from '@coursebuilder/core/schemas'
+
 export const progressRouter = createTRPCRouter({
 	add: publicProcedure
 		.input(
@@ -116,7 +118,7 @@ export const progressRouter = createTRPCRouter({
 				moduleId: z.string().optional().nullable(),
 			}),
 		)
-		.query(async ({ ctx, input }) => {
+		.query(async ({ ctx, input }): Promise<ModuleProgress | null> => {
 			const { session, ability } = await getServerAuthSession()
 			const user = session?.user
 			if (user && input.moduleId) {
@@ -126,7 +128,7 @@ export const progressRouter = createTRPCRouter({
 							user.id as string,
 							input.moduleId,
 						)
-					return moduleProgress || []
+					return moduleProgress
 				} catch (error) {
 					console.error(error)
 					let message = 'Unknown Error'

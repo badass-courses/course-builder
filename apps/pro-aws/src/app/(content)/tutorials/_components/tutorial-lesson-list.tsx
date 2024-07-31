@@ -32,7 +32,7 @@ type ContentResourceProps = {
 	tutorial: ContentResource | null
 	lesson?: ContentResource | null
 	section?: ContentResource | null
-	moduleProgress: ModuleProgress
+	moduleProgress: ModuleProgress | null
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -41,7 +41,7 @@ type ContentResourceProps = {
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<ContentResource | null>
 	lessonLoader: Promise<ContentResource | null>
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean

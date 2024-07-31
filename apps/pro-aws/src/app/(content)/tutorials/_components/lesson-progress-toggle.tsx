@@ -14,7 +14,7 @@ export function LessonProgressToggle({
 	moduleProgressLoader,
 	lessonLoader,
 }: {
-	moduleProgressLoader: Promise<ModuleProgress>
+	moduleProgressLoader: Promise<ModuleProgress | null>
 	lessonLoader: Promise<ContentResource | null>
 }) {
 	const moduleProgress = React.use(moduleProgressLoader)
