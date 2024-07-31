@@ -16,6 +16,7 @@ import slugify from '@sindresorhus/slugify'
 import { and, eq, or, sql } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { v4 } from 'uuid'
+import { z } from 'zod'
 
 import { Product, productSchema } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
@@ -302,6 +303,35 @@ export async function getProduct(productSlugOrId: string) {
 		return null
 	}
 	return parsedProduct.data
+}
+
+export async function getProducts() {
+	const productsData = await db.query.products.findMany({
+		where: eq(products.status, 1),
+		with: {
+			price: true,
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: true,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	const parsedProducts = z.array(productSchema).safeParse(productsData)
+	if (!parsedProducts.success) {
+		console.error(
+			'Error parsing products',
+			JSON.stringify(parsedProducts.error),
+			JSON.stringify(productsData),
+		)
+		return []
+	}
+	return parsedProducts.data
 }
 
 export async function createProduct(input: NewProduct) {

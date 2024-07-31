@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { Check } from 'lucide-react'
 
@@ -19,14 +21,15 @@ export const PricingWidget: React.FC<{
 	quantityAvailable: number
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
-	hasPurchasedCurrentProduct?: boolean
 	pricingWidgetOptions?: Partial<PricingOptions>
+	hasPurchasedCurrentProduct?: boolean
 }> = ({
 	product,
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
 	quantityAvailable,
+	hasPurchasedCurrentProduct,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -36,7 +39,7 @@ export const PricingWidget: React.FC<{
 
 	return (
 		<Pricing.Root
-			className="relative mb-5 w-full border-b pb-5"
+			className="relative w-full"
 			product={product}
 			couponId={couponId}
 			country={commerceProps.country}
@@ -46,44 +49,49 @@ export const PricingWidget: React.FC<{
 			{...commerceProps}
 		>
 			<Pricing.Product className="w-full">
-				{/* <Pricing.ProductImage /> */}
+				<Pricing.ProductImage />
+				{hasPurchasedCurrentProduct && (
+					<div className="bg-primary text-primary-foreground my-3 rounded p-5 text-center">
+						Purchased
+					</div>
+				)}
 				<Pricing.Details className="px-0">
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
-					<Pricing.TeamToggle />
+					<Pricing.TeamToggle className="mt-3" />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton />
+					<Pricing.BuyButton className="via-primary bg-gradient-to-b from-blue-500 to-blue-700 shadow" />
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
-					<Pricing.PPPToggle />
+					<Pricing.PPPToggle className="mt-5" />
 				</Pricing.Details>
+				<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
+					Includes
+				</strong>
+				<ul className="flex flex-col gap-2">
+					<li className="flex items-center gap-2">
+						<Check className="h-4 w-4" />
+						Over 90 Lessons
+					</li>
+					<li className="flex items-center gap-2">
+						<Check className="h-4 w-4" />
+						Lifetime Access
+					</li>
+					<li className="flex items-center gap-2">
+						<Check className="h-4 w-4" />
+						Customizable invoice
+					</li>
+					<li className="flex items-center gap-2">
+						<Check className="h-4 w-4" />
+						English Transcripts & Subtitles
+					</li>
+					<li className="flex items-center gap-2">
+						<Check className="h-4 w-4" />
+						Progress Tracking
+					</li>
+				</ul>
 			</Pricing.Product>
-			<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
-				Includes
-			</strong>
-			<ul className="flex w-full flex-col gap-2">
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Over 90 Lessons
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Lifetime Access
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Customizable invoice
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					English Transcripts & Subtitles
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Progress Tracking
-				</li>
-			</ul>
 		</Pricing.Root>
 	)
 }

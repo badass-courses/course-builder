@@ -19,6 +19,7 @@ export function CreateTip() {
 				Create New Tip
 			</strong>
 			<NewResourceWithVideoForm
+				availableResourceTypes={['tip']}
 				onResourceCreated={async (resource: ContentResource) => {
 					router.push(
 						`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
