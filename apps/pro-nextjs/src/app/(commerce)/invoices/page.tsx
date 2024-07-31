@@ -10,24 +10,27 @@ const Invoices = async () => {
 	const purchases =
 		(await courseBuilderAdapter.getPurchasesForUser(session?.user?.id)) || []
 	return (
-		<div>
-			<main className="mx-auto flex h-full w-full max-w-2xl flex-grow flex-col px-5 py-24 sm:py-32">
-				<h1 className="font-heading pb-4 text-3xl font-black">
+		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5">
+			<div className="mx-auto flex h-full w-full max-w-screen-md flex-grow flex-col items-center border-x py-16">
+				<h1 className="font-heading mb-16 text-3xl font-black">
 					{purchases.length > 0 ? 'Your Invoices' : 'No invoices'}
 				</h1>
-				<ul className="flex flex-col gap-2">
+				<ul className="divide-border flex w-full flex-col divide-y border-t">
 					{purchases
 						.filter((purchase: Purchase) => purchase.merchantChargeId)
 						.map((purchase: Purchase | any) => {
 							return (
 								<li key={purchase.merchantChargeId}>
-									<InvoiceCard purchase={purchase} />
+									<InvoiceCard
+										className="rounded-none border-0"
+										purchase={purchase}
+									/>
 								</li>
 							)
 						})}
 				</ul>
-			</main>
-		</div>
+			</div>
+		</main>
 	)
 }
 

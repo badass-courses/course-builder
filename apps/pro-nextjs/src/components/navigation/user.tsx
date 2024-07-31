@@ -36,6 +36,7 @@ export const User: React.FC<{
 	const isLoadingUserInfo = sessionStatus === 'loading'
 
 	const canCreateContent = ability.can('create', 'Content')
+	const canViewInvoce = ability.can('read', 'Invoice')
 
 	return (
 		<>
@@ -87,6 +88,21 @@ export const User: React.FC<{
 									{sessionData?.user?.email || 'Account'}
 								</DropdownMenuLabel>
 								<DropdownMenuSeparator />
+								{canViewInvoce && (
+									<DropdownMenuItem
+										className="flex items-center justify-between"
+										asChild
+									>
+										<Link
+											href="/invoices"
+											className={cx({
+												underline: pathname.includes('/invoices'),
+											})}
+										>
+											Invoices
+										</Link>
+									</DropdownMenuItem>
+								)}
 								<DropdownMenuItem
 									className="flex items-center justify-between"
 									asChild

@@ -14,7 +14,7 @@ export function InvoiceCustomText() {
 		<>
 			<Textarea
 				aria-label="Invoice notes"
-				className="mt-4 h-full w-full print:hidden print:border-none print:bg-transparent print:p-0"
+				className="border-primary mt-4 h-full w-full border-2 p-3 print:hidden print:border-none print:bg-transparent print:p-0"
 				value={invoiceMetadata}
 				onChange={(e) => setInvoiceMetadata(e.target.value)}
 				placeholder="Enter additional info here (optional)"

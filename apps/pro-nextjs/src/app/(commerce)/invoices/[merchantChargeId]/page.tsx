@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/logo'
 import { courseBuilderAdapter, db } from '@/db'
@@ -14,13 +15,13 @@ import {
 } from '@/purchase-transfer/purchase-transfer-actions'
 import { format, fromUnixTime } from 'date-fns'
 import { eq } from 'drizzle-orm'
-import { MailIcon } from 'lucide-react'
+import { ChevronLeft, MailIcon } from 'lucide-react'
 import Stripe from 'stripe'
 
 import { InvoiceCustomText } from '@coursebuilder/commerce-next/invoices/invoice-custom-text'
 import { InvoicePrintButton } from '@coursebuilder/commerce-next/invoices/invoice-print-button'
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
-import { Button } from '@coursebuilder/ui'
+import { Button, Input } from '@coursebuilder/ui'
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
 	apiVersion: '2020-08-27',
@@ -129,7 +130,13 @@ const Invoice = async ({
 	return (
 		<div className="container border-x px-5">
 			<main className="mx-auto w-full max-w-screen-md">
-				<div className="flex flex-col justify-between pb-5 pt-12 print:hidden">
+				<div className="flex flex-col justify-between pb-5 pt-10 print:hidden">
+					<Link
+						href="/invoices"
+						className="mb-5 inline-flex items-center gap-1 text-sm opacity-75 transition hover:opacity-100"
+					>
+						<ChevronLeft className="h-3 w-3" /> Invoices
+					</Link>
 					<h1 className="font-text text-center text-lg font-medium leading-tight sm:text-left sm:text-xl">
 						Your Invoice for {product.name}
 					</h1>
@@ -147,7 +154,7 @@ const Invoice = async ({
 						)}
 					</div>
 				</div>
-				<div className="rounded-t-md bg-white pr-12 text-gray-900 shadow-xl print:shadow-none">
+				<div className="rounded-t-md border bg-white pr-12 text-gray-900 print:border-none print:shadow-none">
 					<div className="px-10 py-16">
 						<div className="flex w-full grid-cols-3 flex-col items-start justify-between gap-8 sm:grid sm:gap-0">
 							<div className="col-span-2 flex items-center">
@@ -191,6 +198,10 @@ const Invoice = async ({
 									Invoice For
 								</h2>
 								<div>
+									{/* <Input
+										className="border-primary mb-1 h-8 border-2 p-2 text-base leading-none print:hidden"
+										defaultValue={customer.name as string}
+									/> */}
 									{customer.name}
 									<br />
 									{customer.email}
@@ -263,7 +274,7 @@ const Invoice = async ({
 						</div>
 					</div>
 				</div>
-				{!bulkCoupon && purchaseUserTransfers ? (
+				{!bulkCoupon && purchaseUserTransfers.length > 0 ? (
 					<div className="py-16 print:hidden">
 						<div>
 							<h2 className="text-primary pb-4 text-sm uppercase">
@@ -272,7 +283,7 @@ const Invoice = async ({
 							<PurchaseTransfer.Root
 								onTransferInitiated={async () => {
 									'use server'
-									revalidatePath('/thanks/purchase')
+									revalidatePath(`/invoices/${params.merchantChargeId}`)
 								}}
 								purchaseUserTransfers={purchaseUserTransfers}
 								cancelPurchaseTransfer={cancelPurchaseTransfer}
