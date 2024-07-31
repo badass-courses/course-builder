@@ -44,7 +44,8 @@
 		"test": {
 			"outputs": ["coverage/**"],
 			"inputs": ["src/**/", "test/**/"],
-			"outputMode": "new-only"
+			"outputMode": "new-only",
+			"cache": false
 		},
 		"test:e2e": {
 			"outputs": [

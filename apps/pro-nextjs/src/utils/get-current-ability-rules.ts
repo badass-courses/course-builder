@@ -62,12 +62,25 @@ export async function getViewingAbilityForResource(
 	return canView
 }
 
-export async function getTeamInviteAbilityForResource(
+export type AbilityForResource = {
+	canView: boolean
+	canInviteTeam: boolean
+	isRegionRestricted: boolean
+}
+
+export async function getAbilityForResource(
 	lessonId: string,
 	moduleId: string,
 ) {
 	const abilityRules = await getCurrentAbilityRules({ lessonId, moduleId })
 	const ability = createAppAbility(abilityRules || [])
-	const canInvite = ability.can('read', 'Team')
-	return canInvite
+	const canView = ability.can('read', 'Content')
+	const canInviteTeam = ability.can('read', 'Team')
+	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+
+	return {
+		canView,
+		canInviteTeam,
+		isRegionRestricted,
+	}
 }

@@ -82,7 +82,7 @@ export const pricingMachine = setup({
 						quantity: input.quantity || 1,
 						couponId: input.couponId,
 						merchantCoupon: input.merchantCoupon,
-						autoApplyPPP: input.autoApplyPPP || true,
+						autoApplyPPP: input.autoApplyPPP || false,
 					}),
 				},
 			).then(async (res) => {
@@ -117,7 +117,7 @@ export const pricingMachine = setup({
 		isTeamPurchaseActive: false,
 		couponId: input.couponId || null,
 		activeMerchantCoupon: null,
-		autoApplyPPP: input.autoApplyPPP || true,
+		autoApplyPPP: input.autoApplyPPP || false,
 		isBuyingMoreSeats: false,
 		options: input.options
 			? { ...defaultPricingOptions, ...input.options }

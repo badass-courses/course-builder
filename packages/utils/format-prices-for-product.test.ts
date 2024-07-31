@@ -241,6 +241,24 @@ export async function runFormatPricingTests(options: TestOptions) {
 		expect(expectedPrice).toBe(calculatedPrice)
 	})
 
+	test('upgrade PPP purchase to unrestricted from country other than US', async () => {
+		const { upgradedProductId, originalPurchaseId, priceForProduct } =
+			await mockPPPPurchaAndUpgradeToUnrestricted()
+
+		const product = await formatPricesForProduct({
+			productId: upgradedProductId,
+			upgradeFromPurchaseId: originalPurchaseId,
+			country: 'CZ',
+			quantity: 1,
+			autoApplyPPP: false,
+			ctx,
+		})
+
+		const expectedPrice = priceForProduct.unitAmount - 25
+
+		expect(product.calculatedPrice).toBe(expectedPrice)
+	})
+
 	test('upgrade PPP Purchase to Bundle w/ Unrestricted Access', async () => {
 		const originalPurchasePrice = 25
 
@@ -642,6 +660,63 @@ export async function runFormatPricingTests(options: TestOptions) {
 
 		expect(fixedDiscount).toBe(expectedFixedDiscount)
 	})
+
+	const mockPPPPurchaAndUpgradeToUnrestricted = async () => {
+		const ORIGINAL_PPP_PURCHASE_ID = v4()
+		const originalPurchasePrice = 25
+		const newUser = v4()
+
+		// mock the purchase to be upgraded, which was PPP restricted
+		await options.db.createPurchase?.({
+			id: ORIGINAL_PPP_PURCHASE_ID,
+			productId: options.fixtures?.product?.id,
+			userId: newUser,
+			createdAt: new Date(),
+			status: 'Restricted',
+			totalAmount: originalPurchasePrice,
+		})
+
+		// create the product to upgrade to
+		const productId = v4()
+		const priceForProduct = {
+			createdAt: new Date(),
+			status: 1,
+			productId: productId,
+			nickname: 'fancy',
+			unitAmount: 200,
+		}
+		await options.db.createProduct?.(
+			{
+				id: productId,
+				name: 'the product',
+				createdAt: new Date(),
+				key: options.fixtures?.product?.key,
+				status: 1,
+				quantityAvailable: -1,
+				fields: {
+					slug: 'the-product',
+					state: 'published',
+					visibility: 'public',
+					action: 'Buy Now',
+				},
+				type: 'self-paced',
+				resources: [],
+			},
+			priceForProduct,
+		)
+
+		await options.db.createUpgradableProduct?.(
+			options.fixtures?.product?.id,
+			productId,
+		)
+
+		return {
+			upgradedProductId: productId,
+			originalPurchaseId: ORIGINAL_PPP_PURCHASE_ID,
+			priceForProduct,
+			originalPurchasePrice,
+		}
+	}
 
 	const mockPPPPurchaseAndUpgradeProduct = async () => {
 		const ORIGINAL_PPP_PURCHASE_ID = v4()
