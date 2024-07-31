@@ -38,39 +38,30 @@ type Props = {
 }
 
 const Home = async ({ searchParams }: Props) => {
-	let props: {
-		commerceProps?: CommerceProps
-		product?: Product
-		pricingDataLoader?: Promise<PricingData>
-	} = {}
 	const products = await getProducts()
 	const product = products[0]
+
+	const token = await getServerAuthSession()
+	const user = token?.session?.user
+	const commerceProps = await propsForCommerce(
+		{
+			query: {
+				...searchParams,
+			},
+			products: products as any,
+			userId: user?.id,
+		},
+		courseBuilderAdapter,
+	)
+	const pricingDataLoader = getPricingData({
+		productId: product?.id,
+	})
+
 	const allowPurchase =
 		searchParams.allowPurchase === 'true' ||
 		product?.fields.visibility === 'public'
 
-	if (allowPurchase) {
-		const token = await getServerAuthSession()
-		const user = token?.session?.user
-		const commerceProps = await propsForCommerce(
-			{
-				query: {
-					...searchParams,
-				},
-				products: products as any,
-				userId: user?.id,
-			},
-			courseBuilderAdapter,
-		)
-		const pricingDataLoader = getPricingData({
-			productId: product?.id,
-		})
-		props = { commerceProps, product, pricingDataLoader }
-	}
-
 	// TODO: Has purchased current product state, upgrades, buy more seats, etc
-
-	const { commerceProps, pricingDataLoader } = props
 
 	return (
 		<div className="">
