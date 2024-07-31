@@ -19,6 +19,7 @@ import { useFormStatus } from 'react-dom'
 
 import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/utils/build-stripe-checkout-path'
+import { formatUsd } from '@coursebuilder/commerce-next/utils/format-usd'
 import type { Product, Purchase } from '@coursebuilder/core/schemas'
 import type { ContentResource, FormattedPrice } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
@@ -311,6 +312,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 				productId: pricingProps?.product?.id,
 				quantity: 1,
 				upgradeFromPurchaseId: purchaseForProduct?.id,
+				autoApplyPPP: false,
 			},
 			{
 				enabled: Boolean(showRegionRestrictedBlock),
@@ -327,7 +329,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-5 bg-gray-100 p-5 text-lg"
+				className="relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-5 bg-gray-100 p-5 sm:text-lg"
 			>
 				<p className="max-w-md text-balance text-center">
 					Your've purchased a regional license restricted to {country} for lower
@@ -353,7 +355,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg sm:aspect-video"
+				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 sm:aspect-video sm:text-lg"
 			>
 				<div className="mx-auto flex w-full max-w-lg flex-col gap-5">
 					<p className="w-full border-b border-gray-300 pb-5 font-semibold">
@@ -441,17 +443,25 @@ const Upgrade: React.FC<{
 	})
 
 	return (
-		<form action={formActionPath} method="POST">
-			{formattedPriceStatus !== 'success'
-				? 'Loading price...'
-				: formattedPrice?.calculatedPrice}
-			{/* TODO: Price Formatting */}
-			{/* <PriceDisplay
-          className="flex [&_[data-full-price]]:line-through [&_[data-percent-off]]:text-primary dark:[&_[data-percent-off]]:text-blue-300 [&_[data-price-discounted]]:flex [&_[data-price-discounted]]:items-center [&_[data-price-discounted]]:gap-2 [&_[data-price-discounted]]:pl-3 [&_[data-price-discounted]]:text-base [&_[data-price-discounted]]:font-medium [&_[data-price]]:flex [&_[data-price]]:text-2xl [&_[data-price]]:font-bold [&_sup]:top-2.5 [&_sup]:pr-1 [&_sup]:opacity-75"
-          formattedPrice={formattedPrice}
-          status={formattedPriceStatus}
-        /> */}
-			<Button type="submit">Upgrade to full license</Button>
+		<form
+			action={formActionPath}
+			method="POST"
+			className="flex flex-col items-center gap-4"
+		>
+			{formattedPriceStatus !== 'success' ? (
+				'Loading price...'
+			) : (
+				<div className="text-xl">
+					<sup>US</sup>
+					<span className="text-3xl font-bold">
+						{formatUsd(formattedPrice?.calculatedPrice).dollars}
+					</span>
+					<sup>{formatUsd(formattedPrice?.calculatedPrice).cents}</sup>
+				</div>
+			)}
+			<Button disabled={formattedPriceStatus !== 'success'} type="submit">
+				Upgrade to full license
+			</Button>
 		</form>
 	)
 }
