@@ -1,4 +1,5 @@
 import Hero from './hero'
+import Introducing from './introducing'
 import QuestionAndAnswer from './question-and-answer'
 import QuestionOrAnswerCard from './question-or-answer-card'
 import SnippetWithGlow from './snippet-with-glow'
@@ -10,4 +11,5 @@ export {
 	WhatYouWillLearn,
 	SnippetWithGlow,
 	QuestionOrAnswerCard,
+	Introducing,
 }
