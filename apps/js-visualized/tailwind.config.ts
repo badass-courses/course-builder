@@ -4,19 +4,12 @@ const { withUt } = require('uploadthing/tw')
 module.exports = withUt({
 	darkMode: ['class'],
 	content: [
-		'./pages/**/*.{ts,tsx}',
+		'./pages/**/*.{ts,tsx,}',
 		'./components/**/*.{ts,tsx}',
 		'./app/**/*.{ts,tsx}',
-		'./src/**/*.{ts,tsx}',
+		'./src/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/**/*.{ts,tsx}',
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
-	],
-	safelist: [
-		'bg-gradient-orange-to-pink',
-		'max-w-2xl',
-		'text-center',
-		'text-balance',
-		'whitespace-nowrap',
 	],
 	theme: {
 		container: {
