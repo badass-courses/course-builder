@@ -88,9 +88,11 @@ module.exports = withUt({
 			},
 			backgroundImage: {
 				'gradient-green-to-blue':
-					'linear-gradient(134deg, hsla(144,91%,60%,1) 40.75%, hsla(209,100%,65%,1) 90.52%)',
+					'linear-gradient(134deg, hsl(144,91%,60%) 40.75%, hsl(209,100%,65%) 90.52%)',
 				'gradient-orange-to-pink':
-					'linear-gradient(134deg, hsla(25,100%,71%,1) 5%, hsla(338,100%,64%,1) 90.52%)',
+					'linear-gradient(134deg, hsl(25,100%,71%) 5%, hsl(338,100%,64%) 90.52%)',
+				'gradient-purple-to-pink':
+					'linear-gradient(134deg, hsl(234,100%,61%) 5%, hsl(342,91%,60%) 90.52%)',
 			},
 			typography: () => ({
 				invert: {

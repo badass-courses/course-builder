@@ -1,9 +1,33 @@
-import { Hero, QuestionAndAnswer, WhatYouWillLearn } from '@/components/landing'
+import CurvedLineIntersection from '@/components/curved-line-intersection'
+import {
+	Hero,
+	QuestionAndAnswer,
+	QuestionOrAnswerCard,
+	SnippetWithGlow,
+	WhatYouWillLearn,
+} from '@/components/landing'
 import { HomeLayout } from '@/layouts/home-layout'
 
 export default HomeLayout
 
 <Hero />
+
+<SnippetWithGlow className="mt-28" />
+
+<CurvedLineIntersection className="left-[calc((50%-8px)/2)] right-[calc(50%)]" />
+
+<div className="grid gap-4 md:grid-cols-2">
+	<QuestionOrAnswerCard type="q">
+		What will be printed to the console when you run this code in the browser
+		console?
+	</QuestionOrAnswerCard>
+	<QuestionOrAnswerCard type="a">
+		The first thing printed will be `Start`, then `End`, then finally
+		`Callback`. Easy, right?
+	</QuestionOrAnswerCard>
+</div>
+
+<CurvedLineIntersection className="left-36 right-[calc((50%-8px)/2)]" />
 
 <QuestionAndAnswer>
 ### So you know what will happen, but do you know <span className="font-bold text-transparent bg-clip-text bg-gradient-orange-to-pink">why?</span>
