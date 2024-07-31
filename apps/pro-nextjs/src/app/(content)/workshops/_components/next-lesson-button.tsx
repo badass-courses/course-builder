@@ -26,7 +26,8 @@ export function NextLessonButton({
 		<>
 			{status === 'success' && (
 				<>
-					{moduleProgress?.nextResource?.fields?.slug ? (
+					{moduleProgress?.nextResource?.fields?.slug &&
+					moduleProgress?.completedLessons?.length > 0 ? (
 						moduleProgress?.nextResource?.fields?.slug && (
 							<Button
 								asChild
@@ -60,8 +61,8 @@ export function NextLessonButton({
 				</>
 			)}
 			{status === 'pending' && (
-				<Button size="lg" className="mt-10 w-full min-w-48 md:w-auto">
-					<Spinner />
+				<Button size="lg" disabled className="mt-10 w-full min-w-48 md:w-auto">
+					<Spinner className="h-4 w-4" />
 				</Button>
 			)}
 		</>
