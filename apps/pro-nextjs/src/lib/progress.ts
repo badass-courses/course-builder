@@ -83,8 +83,8 @@ export async function toggleProgress({ resourceId }: { resourceId: string }) {
 					lessonId: resourceId,
 				})
 			}
-			const parsedProgress = resourceProgressSchema.parse(progress)
-			return progress
+
+			return resourceProgressSchema.parse(progress)
 		} else {
 			const subscriberCookie = cookies().get('ck_subscriber')
 
@@ -118,8 +118,7 @@ export async function toggleProgress({ resourceId }: { resourceId: string }) {
 					lessonId: resourceId,
 				})
 			}
-			const parsedProgress = resourceProgressSchema.parse(progress)
-			return progress
+			return resourceProgressSchema.parse(progress)
 		}
 	} catch (error) {
 		console.error(error)

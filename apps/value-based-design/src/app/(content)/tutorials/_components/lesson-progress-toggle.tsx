@@ -8,7 +8,6 @@ import { toggleProgress } from '@/lib/progress'
 import { cn } from '@/utils/cn'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/types'
 import { Label, Switch } from '@coursebuilder/ui'
 
 export function LessonProgressToggle({
