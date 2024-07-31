@@ -316,6 +316,7 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 							<LessonProgressToggle
 								// if we are on solution, pass in exercise as lesson for completing
 								lesson={lesson}
+								moduleType="workshop"
 							/>
 						) : null}
 					</div>

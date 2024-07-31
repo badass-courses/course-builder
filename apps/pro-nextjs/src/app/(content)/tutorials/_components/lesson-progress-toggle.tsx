@@ -10,22 +10,28 @@ import { cn } from '@/utils/cn'
 
 import { Label, Switch } from '@coursebuilder/ui'
 
-export function LessonProgressToggle({ lesson }: { lesson: Lesson }) {
+export function LessonProgressToggle({
+	lesson,
+	moduleType = 'tutorial',
+}: {
+	lesson: Lesson
+	moduleType?: string
+}) {
 	const params = useParams()
+	const { invalidate } = api.useUtils()
+	const [] = React.useState(false)
 
-	const { data: moduleProgress } =
+	const { data: moduleProgress, refetch } =
 		api.progress.getModuleProgressForUser.useQuery({
 			moduleId: params.module as string,
 		})
 
-	const isLessonCompleted = Boolean(
-		moduleProgress?.completedLessons?.some(
-			(p) => p.resourceId === lesson?.id && p.completedAt,
+	const [isCompleted, setIsCompleted] = React.useOptimistic(
+		Boolean(
+			moduleProgress?.completedLessons?.some(
+				(p) => p.resourceId === lesson?.id && p.completedAt,
+			),
 		),
-	)
-
-	const [optimisticState, addOptimistic] = React.useOptimistic(
-		isLessonCompleted,
 		(currentStatus: boolean, optimisticValue: boolean) => {
 			return optimisticValue
 		},
@@ -43,12 +49,12 @@ export function LessonProgressToggle({ lesson }: { lesson: Lesson }) {
 				className={cn('', {
 					'cursor-wait disabled:cursor-wait disabled:opacity-100': isPending,
 				})}
-				aria-label={`Mark lesson as ${optimisticState ? 'incomplete' : 'completed'}`}
+				aria-label={`Mark lesson as ${isCompleted ? 'incomplete' : 'completed'}`}
 				id="lesson-progress-toggle"
-				checked={optimisticState}
+				checked={isCompleted}
 				onCheckedChange={async (checked) => {
 					startTransition(() => {
-						addOptimistic(checked)
+						setIsCompleted(checked)
 					})
 					const lessonProgress = await toggleProgress({ resourceId: lesson.id })
 
@@ -56,11 +62,12 @@ export function LessonProgressToggle({ lesson }: { lesson: Lesson }) {
 						await revalidateTutorialLesson(
 							params.module as string,
 							params.lesson as string,
+							moduleType,
 						)
 
-						startTransition(() => {
-							addOptimistic(Boolean(lessonProgress?.completedAt))
-						})
+						await invalidate()
+
+						refetch()
 					}
 				}}
 			/>
