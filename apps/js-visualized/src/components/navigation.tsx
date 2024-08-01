@@ -16,14 +16,14 @@ const Navigation: React.FC<NavigationProps> = async ({
 }) => {
 	return (
 		<>
-			<div
+			<header
 				className={cn(
-					`bg-background relative z-50 flex h-[--nav-height] w-full flex-col items-center justify-center print:hidden`,
+					'bg-background fixed top-0 z-50 flex h-[--nav-height] w-full flex-col items-center justify-center print:hidden',
 					navigationContainerClassName,
 				)}
 			>
 				<Links />
-			</div>
+			</header>
 		</>
 	)
 }

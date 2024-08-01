@@ -38,7 +38,7 @@ export default function RootLayout({
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />
-								<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
+								<main className="flex min-h-screen flex-col pt-[--nav-height]">
 									<NextSSRPlugin
 										/**
 										 * The `extractRouterConfig` will extract **only** the route configs from the
