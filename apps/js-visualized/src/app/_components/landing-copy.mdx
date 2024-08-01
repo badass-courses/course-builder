@@ -1,12 +1,14 @@
 import CurvedLineIntersection from '@/components/curved-line-intersection'
 import {
 	Hero,
+	IntroduceAuthor,
 	Introducing,
 	QuestionAndAnswer,
 	QuestionOrAnswerCard,
 	SnippetWithGlow,
 	WhatYouWillLearn,
 } from '@/components/landing'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { HomeLayout } from '@/layouts/home-layout'
 
 export default HomeLayout
@@ -76,6 +78,17 @@ analyze and optimize your code.
 
 <Introducing className="mt-28" />
 
+<IntroduceAuthor className="mt-24">
+### Hi, I'm Lydia Hallie
+
+I'm a software engineering consultant, educator, and creator of JavaScript
+Visualized. I love the challenge of creating in-depth technical explanations
+that go to the lowest level possible while still being enjoyable and easy to
+understand. JavaScript Visualized is the resource I wish I had when I was
+learning JavaScript's internals, and I'm excited to share it with you!
+
+</IntroduceAuthor>
+
 <WhatYouWillLearn className="mt-20" />
 
 <div className="mx-auto mt-48 max-w-2xl text-balance text-center">
@@ -86,7 +99,9 @@ analyze and optimize your code.
 	impact the code you write every day.
 </div>
 
-<QuestionAndAnswer>
+<PrimaryNewsletterCta className="mt-64" />
+
+<QuestionAndAnswer className='mt-6'>
 ### So, what about<br />the <span className="font-bold text-transparent bg-clip-text bg-gradient-green-to-blue">code snippet?</span>
 
 If you're still wondering why `Start`, `End`, and `Callback` are printed in that
