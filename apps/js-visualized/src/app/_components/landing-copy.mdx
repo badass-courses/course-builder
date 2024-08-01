@@ -3,6 +3,7 @@ import {
 	Hero,
 	IntroduceAuthor,
 	Introducing,
+	MoreClearAsVisualization,
 	QuestionAndAnswer,
 	QuestionOrAnswerCard,
 	SnippetWithGlow,
@@ -19,7 +20,7 @@ export default HomeLayout
 
 <CurvedLineIntersection className="left-[calc((50%-8px)/2)] right-[calc(50%)]" />
 
-<div className="grid gap-4 md:grid-cols-2">
+<div className="grid gap-4 lg:grid-cols-2">
 	<QuestionOrAnswerCard type="q">
 		What will be printed to the console when you run this code in the browser
 		console?
@@ -120,3 +121,5 @@ execute it before popping it off the call stack.
 	startColor="hsla(343, 100%, 67%, 0.5)"
 	endColor="hsla(204, 10%, 39%, 0.5)"
 />
+
+<MoreClearAsVisualization className="pt-6" />
