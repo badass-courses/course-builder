@@ -7,33 +7,38 @@ const urlBase = '/images/logos/'
 
 const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 	return (
-		<SectionWrapper className={cn('not-prose', className)}>
-			<ul className="list-none">
-				{copy.map((copy) => {
-					return (
-						<li
-							key={copy.title}
-							className="border-border flex items-center gap-14 border-t py-[74px]"
-						>
-							<div className="w-[200px] shrink-0">
-								<Image
-									src={`${urlBase}${copy.image}`}
-									alt={copy.title}
-									width={200}
-									height={200}
-								/>
-							</div>
-							<div className="space-y-4">
-								<h3 className="text-2xl font-bold leading-tight text-white">
-									{copy.title}
-								</h3>
-								<p>{copy.body}</p>
-							</div>
-						</li>
-					)
-				})}
-			</ul>
-		</SectionWrapper>
+		<div className={cn('not-prose', className)}>
+			<h3 className="text-balance text-center text-2xl font-bold text-white">
+				Here's a closer look at what you'll learn:
+			</h3>
+			<SectionWrapper className="mt-20">
+				<ul className="list-none">
+					{copy.map((copy) => {
+						return (
+							<li
+								key={copy.title}
+								className="border-border flex items-center gap-14 border-t py-[74px] first:border-none first:pt-0"
+							>
+								<div className="w-[200px] shrink-0">
+									<Image
+										src={`${urlBase}${copy.image}`}
+										alt={copy.title}
+										width={200}
+										height={200}
+									/>
+								</div>
+								<div className="space-y-4">
+									<h3 className="text-2xl font-bold leading-tight text-white">
+										{copy.title}
+									</h3>
+									<p>{copy.body}</p>
+								</div>
+							</li>
+						)
+					})}
+				</ul>
+			</SectionWrapper>
+		</div>
 	)
 }
 
