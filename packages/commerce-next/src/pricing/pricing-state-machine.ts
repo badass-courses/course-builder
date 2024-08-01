@@ -94,7 +94,7 @@ export const pricingMachine = setup({
 				return ((await res.json()) as FormattedPrice) || null
 			})
 		}),
-		checkPurchases: fromPromise<
+		loadPurchases: fromPromise<
 			{
 				isPreviouslyPurchased: boolean
 				purchases?: Purchase[]
@@ -189,8 +189,8 @@ export const pricingMachine = setup({
 		'Loading Pricing Data': {
 			invoke: [
 				{
-					id: 'check-purchases',
-					src: 'checkPurchases',
+					id: 'load-purchases',
+					src: 'loadPurchases',
 					input: ({ context }: any) => ({
 						userId: context.userId,
 						productId: context.product.id,
