@@ -15,6 +15,34 @@ import { processStripeWebhook } from '../pricing/process-stripe-webhook'
 import { CheckoutParamsSchema } from '../pricing/stripe-checkout'
 import { Cookie } from '../utils/cookie'
 
+export async function getUserPurchases(
+	request: RequestInternal,
+	cookies: Cookie[],
+	options: InternalOptions,
+): Promise<ResponseInternal> {
+	const client = options.adapter
+
+	if (!request.query?.userId) throw new Error('userId is required')
+
+	const purchases = await client?.getPurchasesForUser(request.query.userId)
+
+	if (!purchases) {
+		return {
+			status: 200,
+			body: null,
+			headers: { 'Content-Type': 'application/json' },
+			cookies,
+		}
+	} else {
+		return {
+			status: 200,
+			body: purchases,
+			headers: { 'Content-Type': 'application/json' },
+			cookies,
+		}
+	}
+}
+
 export async function getSubscriber(
 	options: InternalOptions<'email-list'>,
 	cookies: Cookie[],

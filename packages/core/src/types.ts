@@ -60,6 +60,7 @@ export type CourseBuilderAction =
 	| 'redeem'
 	| 'prices-formatted'
 	| 'subscriber'
+	| 'purchases'
 
 export interface RequestInternal {
 	url: URL

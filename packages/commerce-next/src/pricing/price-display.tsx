@@ -41,7 +41,7 @@ export const PriceDisplay = ({
 			{status === 'pending' ? (
 				<div data-loading-price="">
 					<span className="sr-only">Loading price</span>
-					<Spinner aria-hidden="true" className="h-8 w-8" />
+					<Spinner aria-hidden="true" className="text-foreground h-8 w-8" />
 				</div>
 			) : (
 				<>

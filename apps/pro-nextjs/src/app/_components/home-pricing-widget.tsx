@@ -22,14 +22,12 @@ export const PricingWidget: React.FC<{
 	commerceProps: CommerceProps
 	pricingDataLoader: Promise<PricingData>
 	pricingWidgetOptions?: Partial<PricingOptions>
-	hasPurchasedCurrentProduct?: boolean
 }> = ({
 	product,
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
 	quantityAvailable,
-	hasPurchasedCurrentProduct,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -48,13 +46,14 @@ export const PricingWidget: React.FC<{
 			pricingDataLoader={pricingDataLoader}
 			{...commerceProps}
 		>
+			<Pricing.Purchased className="gap-5">
+				<Pricing.ProductImage />
+				<p className="text-lg font-semibold">Already Purchased</p>
+				<Pricing.BuyMoreSeatsToggle />
+				<Pricing.BuyMoreSeats />
+			</Pricing.Purchased>
 			<Pricing.Product className="w-full">
 				<Pricing.ProductImage />
-				{hasPurchasedCurrentProduct && (
-					<div className="bg-primary text-primary-foreground my-3 rounded p-5 text-center">
-						Purchased
-					</div>
-				)}
 				<Pricing.Details className="px-0">
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
@@ -65,32 +64,34 @@ export const PricingWidget: React.FC<{
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.PPPToggle className="mt-5" />
+					<div className="mt-5 w-full">
+						<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
+							Includes
+						</strong>
+						<ul className="flex flex-col gap-2">
+							<li className="flex items-center gap-2">
+								<Check className="h-4 w-4" />
+								Over 90 Lessons
+							</li>
+							<li className="flex items-center gap-2">
+								<Check className="h-4 w-4" />
+								Lifetime Access
+							</li>
+							<li className="flex items-center gap-2">
+								<Check className="h-4 w-4" />
+								Customizable invoice
+							</li>
+							<li className="flex items-center gap-2">
+								<Check className="h-4 w-4" />
+								English Transcripts & Subtitles
+							</li>
+							<li className="flex items-center gap-2">
+								<Check className="h-4 w-4" />
+								Progress Tracking
+							</li>
+						</ul>
+					</div>
 				</Pricing.Details>
-				<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
-					Includes
-				</strong>
-				<ul className="flex flex-col gap-2">
-					<li className="flex items-center gap-2">
-						<Check className="h-4 w-4" />
-						Over 90 Lessons
-					</li>
-					<li className="flex items-center gap-2">
-						<Check className="h-4 w-4" />
-						Lifetime Access
-					</li>
-					<li className="flex items-center gap-2">
-						<Check className="h-4 w-4" />
-						Customizable invoice
-					</li>
-					<li className="flex items-center gap-2">
-						<Check className="h-4 w-4" />
-						English Transcripts & Subtitles
-					</li>
-					<li className="flex items-center gap-2">
-						<Check className="h-4 w-4" />
-						Progress Tracking
-					</li>
-				</ul>
 			</Pricing.Product>
 		</Pricing.Root>
 	)

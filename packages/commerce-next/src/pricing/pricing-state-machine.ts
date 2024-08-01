@@ -1,6 +1,10 @@
 import { and, assign, fromPromise, setup } from 'xstate'
 
-import { MerchantCoupon, Product } from '@coursebuilder/core/schemas'
+import {
+	MerchantCoupon,
+	Product,
+	type Purchase,
+} from '@coursebuilder/core/schemas'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
 import { PricingOptions } from './pricing-props'
@@ -19,6 +23,7 @@ export type PricingContextType = {
 	options: PricingOptions
 	userId: string | undefined
 	isPreviouslyPurchased: boolean
+	purchases?: Purchase[] | null
 	allowPurchase: boolean
 	pricingData: PricingData
 }
@@ -89,6 +94,52 @@ export const pricingMachine = setup({
 				return ((await res.json()) as FormattedPrice) || null
 			})
 		}),
+		checkPurchases: fromPromise<
+			{
+				isPreviouslyPurchased: boolean
+				purchases?: Purchase[]
+			},
+			{ userId: string; productId: string }
+		>(async ({ input }) => {
+			if (!input)
+				return Promise.resolve({
+					isPreviouslyPurchased: false,
+				})
+			return await fetch(
+				`${process.env.NEXT_PUBLIC_URL}/api/coursebuilder/purchases?userId=${input.userId}`,
+			)
+				.then(async (res) => {
+					const userPurchases = (await res.json()) as Purchase[] | null
+
+					if (userPurchases?.length === 0)
+						return {
+							isPreviouslyPurchased: false,
+						}
+
+					const purchasesForProduct = userPurchases?.filter(
+						(purchase) =>
+							purchase?.product?.id === input.productId &&
+							purchase?.status === 'Valid',
+					)
+
+					if (purchasesForProduct && purchasesForProduct.length > 0) {
+						return {
+							isPreviouslyPurchased: true,
+							purchases: purchasesForProduct,
+						}
+					} else {
+						return {
+							isPreviouslyPurchased: false,
+						}
+					}
+				})
+				.catch((e) => {
+					console.error('Error checking purchases', e)
+					return {
+						isPreviouslyPurchased: false,
+					}
+				})
+		}),
 	},
 	guards: {
 		canToggleTeamPurchase: function ({ context, event }) {
@@ -130,38 +181,56 @@ export const pricingMachine = setup({
 			purchaseToUpgrade: null,
 			quantityAvailable: -1,
 		},
+		purchases: null,
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
 	states: {
 		'Loading Pricing Data': {
-			invoke: {
-				id: 'load-prices',
-				input: ({
-					context: {
-						product,
+			invoke: [
+				{
+					id: 'check-purchases',
+					src: 'checkPurchases',
+					input: ({ context }: any) => ({
+						userId: context.userId,
+						productId: context.product.id,
+					}),
+					onDone: {
+						actions: assign({
+							isPreviouslyPurchased: ({ event }) =>
+								event.output.isPreviouslyPurchased,
+							purchases: ({ event }) => event.output.purchases,
+						}),
+					},
+				},
+				{
+					id: 'load-prices',
+					input: ({
+						context: {
+							product,
+							quantity,
+							couponId,
+							country,
+							activeMerchantCoupon,
+							autoApplyPPP,
+						},
+					}: any) => ({
+						productId: product.id,
 						quantity,
 						couponId,
 						country,
-						activeMerchantCoupon,
+						merchantCoupon: activeMerchantCoupon,
 						autoApplyPPP,
-					},
-				}: any) => ({
-					productId: product.id,
-					quantity,
-					couponId,
-					country,
-					merchantCoupon: activeMerchantCoupon,
-					autoApplyPPP,
-				}),
-				src: 'loadFormattedPrices',
-				onDone: {
-					target: 'Ready To Buy',
-					actions: assign({
-						formattedPrice: ({ event }) => event.output,
 					}),
+					src: 'loadFormattedPrices',
+					onDone: {
+						target: 'Ready To Buy',
+						actions: assign({
+							formattedPrice: ({ event }) => event.output,
+						}),
+					},
 				},
-			},
+			],
 			on: {
 				UPDATE_QUANTITY: {
 					target: 'Debouncing Quantity',
