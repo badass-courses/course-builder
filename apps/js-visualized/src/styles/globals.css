@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import './login.css';
+@import './subscribe-form.css';
 
 @layer base {
 	:root {

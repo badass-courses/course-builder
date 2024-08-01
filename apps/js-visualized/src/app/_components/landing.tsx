@@ -12,7 +12,7 @@ export const Landing = () => {
 	return (
 		<>
 			<LandingCopy />
-			{status === 'unauthenticated' ? (
+			{/* {status === 'unauthenticated' ? (
 				<div className="flex flex-col items-center">
 					<h2 className="mb-8 text-xl font-bold text-gray-900 dark:text-gray-100">
 						Want to Learn More About JS Visualized?
@@ -34,7 +34,7 @@ export const Landing = () => {
 						Signup with Github for Updates
 					</Button>
 				</div>
-			) : null}
+			) : null} */}
 		</>
 	)
 }
