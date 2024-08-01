@@ -93,6 +93,8 @@ module.exports = withUt({
 					'linear-gradient(134deg, hsl(25,100%,71%) 5%, hsl(338,100%,64%) 90.52%)',
 				'gradient-purple-to-pink':
 					'linear-gradient(134deg, hsl(234,100%,61%) 5%, hsl(342,91%,60%) 90.52%)',
+				'gradient-pink-to-orange':
+					'linear-gradient(134deg, hsla(338, 100%, 64%, 1), hsla(357, 100%, 73%, 1), hsla(25, 100%, 71%, 1))',
 			},
 			typography: () => ({
 				invert: {

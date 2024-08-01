@@ -48,7 +48,7 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'not-prose relative flex flex-col items-center gap-8 bg-[linear-gradient(280deg,rgba(155,55,255,1)_15.97%,rgba(246,59,115,1)_45.03%,rgba(246,115,59,1)_84.46%)] md:flex-row md:items-start',
+				'not-prose relative flex flex-col items-center gap-8 bg-[linear-gradient(280deg,rgba(155,55,255,1)_15.97%,rgba(246,59,115,1)_45.03%,rgba(246,115,59,1)_84.46%)] p-8 md:p-24 lg:flex-row lg:items-start',
 				className,
 			)}
 		>
