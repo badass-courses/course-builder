@@ -68,6 +68,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.BuyButton className="via-primary bg-gradient-to-b from-blue-500 to-blue-700 shadow" />
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
+					<Pricing.SaleCountdown className="mt-6 w-full rounded border p-5" />
 					<Pricing.PPPToggle className="mt-5" />
 					<div className="mt-5 w-full">
 						<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
