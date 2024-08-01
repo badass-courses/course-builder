@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Slot } from '@radix-ui/react-slot'
 import * as Switch from '@radix-ui/react-switch'
 import pluralize from 'pluralize'
+import Countdown, { type CountdownRenderProps } from 'react-countdown'
 import Balancer from 'react-wrap-balancer'
 
 import { Product } from '@coursebuilder/core/schemas'
@@ -683,7 +684,6 @@ const Purchased = ({
 	const {
 		options: { isLiveEvent },
 		isPreviouslyPurchased,
-		purchases,
 	} = usePricing()
 
 	return isPreviouslyPurchased ? (
@@ -709,7 +709,6 @@ const BuyMoreSeatsToggle = ({
 		options: { isLiveEvent },
 		toggleBuyingMoreSeats,
 		isBuyingMoreSeats,
-		purchases,
 	} = usePricing()
 
 	return isLiveEvent ? null : (
@@ -749,6 +748,111 @@ const BuyMoreSeats = ({ asChild, className, children }: BuyMoreSeatsProps) => {
 	) : null
 }
 
+const SaleCountdown = ({
+	className,
+	countdownRenderer = (props) => <CountdownRenderer {...props} />,
+}: {
+	className?: string
+	countdownRenderer?: (
+		props: CountdownRenderProps & { className?: string },
+	) => React.ReactElement
+}) => {
+	const { formattedPrice } = usePricing()
+
+	return formattedPrice?.defaultCoupon?.expires ? (
+		<Countdown
+			className={cn('', className)}
+			date={formattedPrice?.defaultCoupon?.expires}
+			renderer={(props) => countdownRenderer({ className, ...props })}
+		/>
+	) : null
+}
+
+const CountdownRenderer: React.FC<
+	React.PropsWithChildren<CountdownRenderProps & { className?: string }>
+> = ({ days, hours, minutes, seconds, completed, className, ...rest }) => {
+	const [screenReaderValues] = React.useState({
+		days,
+		hours,
+		minutes,
+		seconds,
+	})
+	const forScreenReader = `${screenReaderValues.days} days, ${screenReaderValues.hours} hours, ${screenReaderValues.minutes} minutes, and ${screenReaderValues.seconds} seconds`
+
+	return completed ? null : (
+		<>
+			<div className={cn('w-full', className)}>
+				<div className="w-full text-center">
+					<p className="pb-5 font-medium">Hurry! Price goes up in:</p>
+					<div
+						aria-hidden="true"
+						data-grid=""
+						className="mx-auto grid max-w-[300px] grid-cols-4 items-center justify-center gap-2 tabular-nums tracking-tight"
+					>
+						<div className="flex flex-col">
+							<span
+								data-number="days"
+								className="text-3xl font-medium leading-none"
+							>
+								{days}
+							</span>
+							<span
+								data-label="days"
+								className="pt-1 text-xs font-medium uppercase tracking-wide text-gray-500"
+							>
+								days
+							</span>
+						</div>
+						<div className="flex flex-col">
+							<span
+								data-number="hours"
+								className="text-3xl font-medium leading-none"
+							>
+								{hours}
+							</span>
+							<span
+								data-label="hours"
+								className="pt-1 text-xs font-medium uppercase tracking-wide text-gray-500"
+							>
+								hours
+							</span>
+						</div>
+						<div className="flex flex-col">
+							<span
+								data-number="minutes"
+								className="text-3xl font-medium leading-none"
+							>
+								{minutes}
+							</span>
+							<span
+								data-label="minutes"
+								className="pt-1 text-xs font-medium uppercase tracking-wide text-gray-500"
+							>
+								minutes
+							</span>
+						</div>
+						<div className="flex flex-col">
+							<span
+								data-number="seconds"
+								className="text-3xl font-medium leading-none"
+							>
+								{seconds}
+							</span>
+							<span
+								data-label="seconds"
+								className="pt-1 text-xs font-medium uppercase tracking-wide text-gray-500"
+							>
+								seconds
+							</span>
+						</div>
+					</div>
+					<div className="sr-only">{forScreenReader}</div>
+				</div>
+			</div>
+		</>
+	)
+}
+
 export {
 	Root,
 	PricingProduct as Product,
@@ -766,4 +870,5 @@ export {
 	Purchased,
 	BuyMoreSeatsToggle,
 	BuyMoreSeats,
+	SaleCountdown,
 }
