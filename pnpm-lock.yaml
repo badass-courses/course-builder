@@ -1520,6 +1520,9 @@ importers:
 
   apps/js-visualized:
     dependencies:
+      '@amplitude/analytics-browser':
+        specifier: ^2.6.1
+        version: 2.6.1
       '@auth/core':
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
@@ -1574,6 +1577,12 @@ importers:
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
+      '@skillrecordings/analytics':
+        specifier: ^1.0.1
+        version: 1.0.1(next@14.2.5)(react@18.3.1)
+      '@skillrecordings/config':
+        specifier: ^0.0.3
+        version: 0.0.3
       '@t3-oss/env-nextjs':
         specifier: ^0.7.1
         version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
@@ -1616,6 +1625,9 @@ importers:
       ai:
         specifier: 3.0.19
         version: 3.0.19(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(vue@3.4.32)(zod@3.22.4)
+      axios:
+        specifier: ^1.5.1
+        version: 1.6.8
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1625,6 +1637,9 @@ importers:
       drizzle-orm:
         specifier: 0.31.0
         version: 0.31.0(@planetscale/database@1.14.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1)
+      formik:
+        specifier: 2.2.9
+        version: 2.2.9(react@18.3.1)
       framer-motion:
         specifier: ^11
         version: 11.1.7(react-dom@18.3.1)(react@18.3.1)
@@ -1670,6 +1685,9 @@ importers:
       prism-react-renderer:
         specifier: ^2.2.0
         version: 2.3.1(react@18.3.1)
+      query-string:
+        specifier: ^9.0.0
+        version: 9.0.0
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1724,6 +1742,9 @@ importers:
       yjs:
         specifier: ^13.6.10
         version: 13.6.14
+      yup:
+        specifier: ^0.32.11
+        version: 0.32.11
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -4378,7 +4399,7 @@ packages:
       '@amplitude/analytics-connector': 1.5.0
       '@amplitude/analytics-core': 2.2.3
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@amplitude/analytics-connector@1.5.0:
@@ -4389,7 +4410,7 @@ packages:
     resolution: {integrity: sha512-rtA7TSqie6Jgcvax3tEHaZUzOJM5Hdd5/+JYFIJK2gPgHsWZj3jDF75fL8BSn4uBiA2zcZ0vbCHORMVqXg5pRw==}
     dependencies:
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@amplitude/analytics-types@2.5.0:
@@ -4401,7 +4422,7 @@ packages:
     dependencies:
       '@amplitude/analytics-client-common': 2.1.2
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@amplitude/plugin-web-attribution-browser@2.1.6:
@@ -4410,7 +4431,7 @@ packages:
       '@amplitude/analytics-client-common': 2.1.2
       '@amplitude/analytics-core': 2.2.3
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@ampproject/remapping@2.3.0:
@@ -13726,7 +13747,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.1(ts-node@10.9.2)
+      tailwindcss: 3.4.1
     dev: true
 
   /@tanstack/query-core@5.31.0:
@@ -16511,7 +16532,7 @@ packages:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /char-regex@1.0.2:
@@ -21956,7 +21977,7 @@ packages:
   /lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /lowercase-keys@3.0.0:
@@ -22117,7 +22138,7 @@ packages:
     dependencies:
       marked: 7.0.4
       react: 18.3.1
-      react-email: 2.1.1(@babel/core@7.24.9)(eslint@8.57.0)(ts-node@10.9.2)
+      react-email: 2.1.1(@babel/core@7.24.9)(eslint@8.57.0)
     dev: false
 
   /md-to-react-email@5.0.2(react@18.2.0):
@@ -25015,7 +25036,7 @@ packages:
       yaml: 2.4.1
     dev: false
 
-  /postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2):
+  /postcss-load-config@4.0.2(postcss@8.4.38):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -25029,7 +25050,6 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.38
-      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       yaml: 2.4.1
 
   /postcss-load-config@4.0.2(postcss@8.4.39)(ts-node@10.9.2):
@@ -25659,7 +25679,7 @@ packages:
       - webpack-cli
     dev: false
 
-  /react-email@2.1.1(@babel/core@7.24.9)(eslint@8.57.0)(ts-node@10.9.2):
+  /react-email@2.1.1(@babel/core@7.24.9)(eslint@8.57.0):
     resolution: {integrity: sha512-09oMVl/jN0/Re0bT0sEqYjyyFSCN/Tg0YmzjC9wfYpnMx02Apk40XXitySDfUBMR9EgTdr6T4lYknACqiLK3mg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -27794,14 +27814,14 @@ packages:
     peerDependencies:
       tailwindcss: 3.x
     dependencies:
-      tailwindcss: 3.4.1(ts-node@10.9.2)
+      tailwindcss: 3.4.1
 
   /tailwindcss-animate@1.0.7(tailwindcss@3.4.1):
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.4.1(ts-node@10.9.2)
+      tailwindcss: 3.4.1
     dev: false
 
   /tailwindcss-radix@2.9.0:
@@ -27861,7 +27881,7 @@ packages:
       postcss: 8.4.38
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.38)
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
@@ -28086,7 +28106,7 @@ packages:
   /title-case@3.0.3:
     resolution: {integrity: sha512-e1zGYRvbffpcHIrnuqT0Dh+gEJtDaxDSoG4JAIpq4oDFyooziLBIiYQv0GBT4FUAnUop5uZ1hiIAj7oAF6sOCA==}
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /tlds@1.208.0:
@@ -28262,7 +28282,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.39)(ts-node@10.9.2)
       resolve-from: 5.0.0
       rollup: 4.13.0
       source-map: 0.8.0-beta.0
@@ -28342,7 +28362,7 @@ packages:
       globby: 11.1.0
       joycon: 3.1.1
       postcss: 8.4.38
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.38)
       resolve-from: 5.0.0
       rollup: 4.13.0
       source-map: 0.8.0-beta.0
@@ -28863,7 +28883,7 @@ packages:
       effect: 3.4.5
       next: 14.2.5(@babel/core@7.24.9)(react-dom@18.3.1)(react@18.3.1)
       std-env: 3.7.0
-      tailwindcss: 3.4.1(ts-node@10.9.2)
+      tailwindcss: 3.4.1
     dev: false
 
   /upper-case-first@2.0.2:
@@ -28879,7 +28899,7 @@ packages:
   /upper-case@2.0.2:
     resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /uri-js@4.4.1:
