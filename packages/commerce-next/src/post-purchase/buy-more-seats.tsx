@@ -51,15 +51,6 @@ export const BuyMoreSeats = ({
 		},
 	})
 
-	const checkoutPath = buildStripeCheckoutPath({
-		userId,
-		quantity: debouncedQuantity,
-		productId,
-		bulk: Boolean(formattedPrice?.bulk),
-		couponId: formattedPrice?.appliedMerchantCoupon?.id,
-		cancelUrl,
-	})
-
 	return (
 		<form
 			data-buy-more-seats-form=""
