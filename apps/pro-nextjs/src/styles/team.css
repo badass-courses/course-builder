@@ -73,29 +73,61 @@
 [data-buy-more-seats-form] {
 	@apply pt-3;
 	#team-upgrade-pricing-inline {
-		@apply flex w-full items-center justify-between;
+		@apply flex w-full flex-col items-center justify-center;
 		[data-seats-form] {
 			@apply inline-flex items-center gap-3;
 			label {
 				@apply opacity-80;
 			}
 			input {
-				@apply rounded-md border border-gray-800 bg-gray-900 py-2 pl-3 font-mono font-bold;
+				@apply bg-input rounded-md border py-2 pl-3 font-mono font-bold;
 			}
 			button {
-				@apply flex h-full items-center justify-center rounded bg-gray-800/60 px-3 py-2 font-mono sm:hidden;
+				@apply bg-secondary text-secondary-foreground flex h-full items-center justify-center rounded px-3 py-2 font-mono sm:hidden;
 			}
 		}
 		[data-pricing-product] {
 			@apply flex items-center justify-center gap-5;
 			[data-pricing-product-header] {
-				@apply flex items-center gap-5;
+				@apply flex flex-col items-center;
+				[data-price-container='pending'] {
+					@apply flex h-[76px] items-center;
+					sup {
+						@apply hidden;
+					}
+				}
 				[data-price-container] {
-					@apply h-auto !important;
+					@apply mt-2 flex h-[76px] items-center justify-center gap-0.5;
+					sup {
+						@apply font-heading text-base font-semibold opacity-60;
+					}
+					[data-price] {
+						@apply text-foreground font-heading flex text-4xl font-bold;
+					}
+					span {
+						@apply font-heading mt-1 pl-0.5 align-sub text-base opacity-60;
+					}
+					[data-loading-price] {
+						@apply flex h-12 items-center justify-center py-6;
+					}
+					[data-price-discounted] {
+						@apply mt-1.5 flex flex-col items-center pl-3 font-sans text-lg !font-light;
+
+						[data-full-price] {
+							@apply relative flex text-xl leading-none text-gray-500 line-through;
+
+							span {
+								@apply text-xs leading-none text-gray-500 dark:text-gray-300;
+							}
+						}
+						[data-percent-off] {
+							@apply text-primary text-sm;
+						}
+					}
 				}
 			}
 			button[type='submit'] {
-				@apply rounded-md bg-cyan-400 px-5 py-2 font-medium text-black transition hover:bg-cyan-300;
+				@apply bg-primary text-primary-foreground rounded px-5 py-2 font-medium;
 			}
 		}
 	}

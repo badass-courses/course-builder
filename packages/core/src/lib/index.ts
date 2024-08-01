@@ -29,6 +29,8 @@ export async function CourseBuilderInternal(
 				return await actions.session(options, cookies)
 			case 'subscriber':
 				return await actions.getSubscriber(options, cookies)
+			case 'purchases':
+				return await actions.getUserPurchases(request, cookies, options)
 		}
 	} else {
 		switch (action) {

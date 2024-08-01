@@ -9,6 +9,7 @@ const actions: CourseBuilderAction[] = [
 	'redeem',
 	'prices-formatted',
 	'subscriber',
+	'purchases',
 ]
 
 export function isCourseBuilderAction(

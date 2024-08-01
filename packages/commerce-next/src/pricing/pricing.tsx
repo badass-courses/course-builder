@@ -6,9 +6,10 @@ import pluralize from 'pluralize'
 import Balancer from 'react-wrap-balancer'
 
 import { Product } from '@coursebuilder/core/schemas'
-import { Checkbox } from '@coursebuilder/ui'
+import { Button, Checkbox } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { BuyMoreSeats as BuyMoreSeatsComp } from '../post-purchase/buy-more-seats'
 import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
 import { formatUsd } from '../utils/format-usd'
 import { usePriceCheck } from './pricing-check-context'
@@ -68,9 +69,10 @@ const PricingProduct = ({
 		quantity,
 		formattedPrice,
 		userId,
+		isPreviouslyPurchased,
 		options: { cancelUrl },
 	} = usePricing()
-	return (
+	return isPreviouslyPurchased ? null : (
 		<form
 			className={cn('', className)}
 			action={buildStripeCheckoutPath({
@@ -100,6 +102,7 @@ const Details = ({
 	const {
 		options: { isLiveEvent },
 	} = usePricing()
+
 	return (
 		<article
 			className={cn(
@@ -661,6 +664,79 @@ const LiveQuantity = ({
 		: null
 }
 
+type PurchasedProps = {
+	asChild?: boolean
+	className?: string
+}
+
+const Purchased = ({
+	children,
+	asChild,
+	className,
+}: PurchasedProps & { children: React.ReactNode }) => {
+	const Comp = asChild ? Slot : 'div'
+	const {
+		options: { isLiveEvent },
+		isPreviouslyPurchased,
+		purchases,
+	} = usePricing()
+
+	return isPreviouslyPurchased ? (
+		<Comp className={cn('flex flex-col items-center', className)}>
+			{children}
+		</Comp>
+	) : null
+}
+
+type BuyMoreSeatsToggleProps = {
+	asChild?: boolean
+	className?: string
+	children?: React.ReactNode
+}
+
+const BuyMoreSeatsToggle = ({
+	asChild,
+	className,
+	children,
+}: BuyMoreSeatsToggleProps) => {
+	const Comp = asChild ? Slot : Button
+	const {
+		options: { isLiveEvent },
+		toggleBuyingMoreSeats,
+		isBuyingMoreSeats,
+		purchases,
+	} = usePricing()
+
+	return isLiveEvent ? null : (
+		<Comp
+			onClick={toggleBuyingMoreSeats}
+			variant="outline"
+			type="button"
+			className={cn('flex flex-col items-center', className)}
+		>
+			{children || 'Buy more seats'}
+		</Comp>
+	)
+}
+
+type BuyMoreSeatsProps = {
+	asChild?: boolean
+	className?: string
+}
+
+const BuyMoreSeats = ({ asChild, className }: BuyMoreSeatsProps) => {
+	const Comp = asChild ? Slot : BuyMoreSeatsComp
+	const { isBuyingMoreSeats, product, userId } = usePricing()
+
+	return isBuyingMoreSeats ? (
+		<Comp
+			className={cn('flex flex-col items-center', className)}
+			productId={product.id}
+			userId={userId as string}
+		/>
+	) : null
+}
+
 export {
 	Root,
 	PricingProduct as Product,
@@ -675,4 +751,7 @@ export {
 	LiveRefundPolicy,
 	PPPToggle,
 	LiveQuantity,
+	Purchased,
+	BuyMoreSeatsToggle,
+	BuyMoreSeats,
 }

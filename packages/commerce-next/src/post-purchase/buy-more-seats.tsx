@@ -51,6 +51,15 @@ export const BuyMoreSeats = ({
 		},
 	})
 
+	const checkoutPath = buildStripeCheckoutPath({
+		userId,
+		quantity: debouncedQuantity,
+		productId,
+		bulk: Boolean(formattedPrice?.bulk),
+		couponId: formattedPrice?.appliedMerchantCoupon?.id,
+		cancelUrl,
+	})
+
 	return (
 		<form
 			data-buy-more-seats-form=""
@@ -103,7 +112,7 @@ export const BuyMoreSeats = ({
 				</div>
 				<div data-pricing-product="">
 					<div data-pricing-product-header="">
-						<PriceDisplay status={'success'} formattedPrice={formattedPrice} />
+						<PriceDisplay status={status} formattedPrice={formattedPrice} />
 						<button type="submit" disabled={status !== 'success'}>
 							{buttonLabel}
 						</button>
