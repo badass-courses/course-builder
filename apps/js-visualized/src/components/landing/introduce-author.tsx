@@ -12,7 +12,7 @@ const IntroduceAuthor: React.FC<
 	return (
 		<MDXProvider components={mdxComponents}>
 			<div className={cn('flex flex-col gap-4 md:flex-row', className)}>
-				<SectionWrapper className="relative flex grow items-center gap-8 overflow-hidden p-10">
+				<SectionWrapper className="relative flex grow flex-col items-center gap-8 overflow-hidden p-10 md:flex-row">
 					<div className="absolute left-0 size-[642px] flex-shrink-0 -translate-x-1/4 rounded-full bg-[rgba(228,59,123,0.4)] opacity-30 blur-[80px]" />
 					<div className="not-prose relative shrink-0">
 						<Image
@@ -26,10 +26,10 @@ const IntroduceAuthor: React.FC<
 						{children}
 					</div>
 				</SectionWrapper>
-				<SectionWrapper className="not-prose relative w-[308px] shrink-0 overflow-hidden">
-					<div className="absolute bottom-full left-0 size-[805px] translate-y-1/2">
+				<SectionWrapper className="not-prose relative hidden w-[308px] shrink-0 overflow-hidden lg:block">
+					<div className="absolute bottom-full left-0 size-[805px] translate-y-1/2 opacity-40">
 						<Image
-							src="/images/pattern.svg"
+							src="/images/shape-decor.svg"
 							alt="pattern"
 							width={805}
 							height={805}

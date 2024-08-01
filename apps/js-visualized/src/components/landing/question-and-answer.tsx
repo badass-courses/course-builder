@@ -13,7 +13,9 @@ const QuestionAndAnswer: React.FC<
 
 	return (
 		<MDXProvider components={mdxComponents}>
-			<SectionWrapper className={cn('grid grid-cols-2 gap-5', className)}>
+			<SectionWrapper
+				className={cn('grid gap-5 p-8 md:p-24 lg:grid-cols-2', className)}
+			>
 				<div className="prose-headings:mt-0 prose-headings:font-normal prose-headings:text-[2.5rem] prose-headings:leading-[1.2] text-[2.5rem]">
 					{title}
 				</div>

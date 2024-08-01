@@ -13,7 +13,7 @@ const SnippetWithGlow: React.FC<
 				any trouble reading this code snippet.
 			</h3>
 			<div className="relative mt-20 flex justify-center">
-				<div className="absolute top-0 h-[170px] w-[400px] flex-shrink-0 rounded-[400px] bg-[linear-gradient(270deg,#FF007F_-8.36%,#771FFF_102.7%)] blur-[134px]" />
+				<div className="absolute top-0 h-[100px] w-[250px] flex-shrink-0 rounded-[250px] bg-[linear-gradient(270deg,#FF007F_-8.36%,#771FFF_102.7%)] blur-[100px] md:h-[170px] md:w-[400px] md:rounded-[400px] md:blur-[134px]" />
 				<Image
 					src="/images/trouble-reading-this-code-snippet.png"
 					alt="You probably won't have any trouble reading this code snippet."
