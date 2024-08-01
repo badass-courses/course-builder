@@ -20,12 +20,14 @@ const Hero = () => {
 						</span>
 					</h1>
 					<div className="mt-7 flex items-center gap-3">
-						<Image
-							src="/images/lydia-avatar.png"
-							alt="Lydia Hallie"
-							width={40}
-							height={40}
-						/>
+						<div className="overflow-hidden rounded-full">
+							<Image
+								src="/images/lydia-hallie-avatar.png"
+								alt="Lydia Hallie"
+								width={40}
+								height={40}
+							/>
+						</div>
 						<div className="text-sm font-medium uppercase tracking-widest">
 							by Lydia Hallie
 						</div>

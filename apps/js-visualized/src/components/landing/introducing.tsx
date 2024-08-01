@@ -44,12 +44,6 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 				</ul>
 			</div>
 		</div>
-		// <div className="flex flex-col space-y-1">
-		// 	<Icon name="ClosingTag" size="32" viewBox="0 0 32 32" />
-		// 	<Icon name="Js" size="32" viewBox="0 0 32 32" />
-		// 	<Icon name="Rocket" size="32" viewBox="0 0 32 32" />
-		// 	<Icon name="Puzzle" size="32" viewBox="0 0 32 32" />
-		// </div>
 	)
 }
 
