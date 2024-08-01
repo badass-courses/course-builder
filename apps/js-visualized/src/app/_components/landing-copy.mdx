@@ -1,9 +1,34 @@
-import { Hero, QuestionAndAnswer, WhatYouWillLearn } from '@/components/landing'
+import CurvedLineIntersection from '@/components/curved-line-intersection'
+import {
+	Hero,
+	Introducing,
+	QuestionAndAnswer,
+	QuestionOrAnswerCard,
+	SnippetWithGlow,
+	WhatYouWillLearn,
+} from '@/components/landing'
 import { HomeLayout } from '@/layouts/home-layout'
 
 export default HomeLayout
 
 <Hero />
+
+<SnippetWithGlow className="mt-28" />
+
+<CurvedLineIntersection className="left-[calc((50%-8px)/2)] right-[calc(50%)]" />
+
+<div className="grid gap-4 md:grid-cols-2">
+	<QuestionOrAnswerCard type="q">
+		What will be printed to the console when you run this code in the browser
+		console?
+	</QuestionOrAnswerCard>
+	<QuestionOrAnswerCard type="a">
+		The first thing printed will be `Start`, then `End`, then finally
+		`Callback`. Easy, right?
+	</QuestionOrAnswerCard>
+</div>
+
+<CurvedLineIntersection className="left-36 right-[calc((50%-8px)/2)]" />
 
 <QuestionAndAnswer>
 ### So you know what will happen, but do you know <span className="font-bold text-transparent bg-clip-text bg-gradient-orange-to-pink">why?</span>
@@ -49,9 +74,11 @@ analyze and optimize your code.
 
 </QuestionAndAnswer>
 
-<WhatYouWillLearn />
+<Introducing className="mt-28" />
 
-<div className="mx-auto max-w-2xl text-balance text-center">
+<WhatYouWillLearn className="mt-20" />
+
+<div className="mx-auto mt-48 max-w-2xl text-balance text-center">
 	JavaScript Visualized is not a course that holds your hand through building an
 	app or using a library. Increase your confidence by equipping yourself with
 	the knowledge of how JavaScript's{' '}
@@ -72,3 +99,9 @@ is pushed to the task queue, where it waits for the event loop to pick it up and
 execute it before popping it off the call stack.
 
 </QuestionAndAnswer>
+
+<CurvedLineIntersection
+	className="left-1/4 right-1/4"
+	startColor="hsla(343, 100%, 67%, 0.5)"
+	endColor="hsla(204, 10%, 39%, 0.5)"
+/>

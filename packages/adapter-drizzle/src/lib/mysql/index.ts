@@ -1026,19 +1026,19 @@ export function mySqlDrizzleAdapter(
             cr.fields->>'$.slug' AS resource_slug,
             rp.completedAt AS completed_at
         FROM
-            ContentResource workshop
+            ${contentResource} workshop
         LEFT JOIN
-            ContentResourceResource crr1 ON workshop.id = crr1.resourceOfId
+            ${contentResourceResource} crr1 ON workshop.id = crr1.resourceOfId
         LEFT JOIN
-            ContentResource cr1 ON cr1.id = crr1.resourceId
+            ${contentResource} cr1 ON cr1.id = crr1.resourceId
         LEFT JOIN
-            ContentResourceResource crr2 ON cr1.id = crr2.resourceOfId
+            ${contentResourceResource} crr2 ON cr1.id = crr2.resourceOfId
         LEFT JOIN
-            ContentResource cr2 ON cr2.id = crr2.resourceId
+            ${contentResource} cr2 ON cr2.id = crr2.resourceId
         LEFT JOIN
-            ResourceProgress rp ON rp.resourceId = COALESCE(cr2.id, cr1.id) AND rp.userId = ${user.id}
+            ${resourceProgress} rp ON rp.resourceId = COALESCE(cr2.id, cr1.id) AND rp.userId = ${user.id}
         CROSS JOIN
-            ContentResource cr
+            ${contentResource} cr
         WHERE
             (workshop.id = ${moduleIdOrSlug} OR workshop.fields->>'$.slug' = ${moduleIdOrSlug})
             AND (

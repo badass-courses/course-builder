@@ -43,7 +43,7 @@ export const PricingWidget: React.FC<{
 			pricingDataLoader={pricingDataLoader}
 		>
 			<Pricing.Product className="w-full">
-				<Pricing.ProductImage />
+				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="px-0">
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
