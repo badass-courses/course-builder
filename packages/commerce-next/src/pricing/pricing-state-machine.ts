@@ -155,7 +155,10 @@ export const pricingMachine = setup({
 		},
 		canUpdateQuantity: and([
 			({ context, event }) => {
-				return context.isTeamPurchaseActive && !context.isPPPActive
+				return (
+					(context.isTeamPurchaseActive && !context.isPPPActive) ||
+					context.isBuyingMoreSeats
+				)
 			},
 		]),
 	},
@@ -286,6 +289,7 @@ export const pricingMachine = setup({
 				TOGGLE_BUYING_MORE_SEATS: {
 					actions: assign({
 						isBuyingMoreSeats: ({ context }) => !context.isBuyingMoreSeats,
+						isTeamPurchaseActive: () => true,
 					}),
 				},
 				SET_MERCHANT_COUPON: {

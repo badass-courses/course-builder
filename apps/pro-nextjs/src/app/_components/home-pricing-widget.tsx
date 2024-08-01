@@ -46,16 +46,21 @@ export const PricingWidget: React.FC<{
 			pricingDataLoader={pricingDataLoader}
 			{...commerceProps}
 		>
-			<Pricing.Purchased className="gap-5">
-				<Pricing.ProductImage />
-				<p className="text-lg font-semibold">Already Purchased</p>
-				<Pricing.BuyMoreSeatsToggle />
-				<Pricing.BuyMoreSeats />
-			</Pricing.Purchased>
 			<Pricing.Product className="w-full">
 				<Pricing.ProductImage />
+				<Pricing.Name />
+				<Pricing.Purchased className="gap-5 pt-2">
+					<p className="text-lg font-semibold">Already Purchased</p>
+					<Pricing.BuyMoreSeatsToggle />
+					<Pricing.BuyMoreSeats>
+						<Pricing.TeamQuantityInput className="mb-0" label="Quantity" />
+						<Pricing.Price className="scale-75" />
+						<Pricing.BuyButton className="via-primary mt-3 bg-gradient-to-b from-blue-500 to-blue-700 shadow">
+							Buy Additional Seats
+						</Pricing.BuyButton>
+					</Pricing.BuyMoreSeats>
+				</Pricing.Purchased>
 				<Pricing.Details className="px-0">
-					<Pricing.Name />
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
 					<Pricing.TeamToggle className="mt-3" />

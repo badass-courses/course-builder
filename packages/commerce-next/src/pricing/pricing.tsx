@@ -9,7 +9,6 @@ import { Product } from '@coursebuilder/core/schemas'
 import { Button, Checkbox } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { BuyMoreSeats as BuyMoreSeatsComp } from '../post-purchase/buy-more-seats'
 import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
 import { formatUsd } from '../utils/format-usd'
 import { usePriceCheck } from './pricing-check-context'
@@ -69,10 +68,10 @@ const PricingProduct = ({
 		quantity,
 		formattedPrice,
 		userId,
-		isPreviouslyPurchased,
+
 		options: { cancelUrl },
 	} = usePricing()
-	return isPreviouslyPurchased ? null : (
+	return (
 		<form
 			className={cn('', className)}
 			action={buildStripeCheckoutPath({
@@ -101,9 +100,10 @@ const Details = ({
 }) => {
 	const {
 		options: { isLiveEvent },
+		isPreviouslyPurchased,
 	} = usePricing()
 
-	return (
+	return isPreviouslyPurchased ? null : (
 		<article
 			className={cn(
 				'flex flex-col items-center rounded-none border-none bg-transparent px-5 py-5 pb-8 pt-5 pt-6',
@@ -158,7 +158,7 @@ const Name = ({
 	return withTitle ? (
 		<div
 			className={cn(
-				'px-5 text-center text-xl font-black sm:text-2xl',
+				'mt-3 px-5 text-center text-xl font-bold sm:text-2xl',
 				className,
 			)}
 		>
@@ -344,9 +344,11 @@ const TeamToggle = ({
 const TeamQuantityInput = ({
 	className,
 	children,
+	label = 'Team Seats',
 }: {
 	className?: string
 	children?: React.ReactNode
+	label?: string
 }) => {
 	const {
 		product,
@@ -356,9 +358,10 @@ const TeamQuantityInput = ({
 		setMerchantCoupon,
 		pricingData: { quantityAvailable },
 		isTeamPurchaseActive,
+		isBuyingMoreSeats,
 	} = usePricing()
 
-	return isTeamPurchaseActive ? (
+	return isTeamPurchaseActive || isBuyingMoreSeats ? (
 		<div
 			className={cn(
 				'mb-5 flex w-full flex-col items-center justify-center px-5 xl:px-12',
@@ -368,7 +371,7 @@ const TeamQuantityInput = ({
 			{children || (
 				<>
 					<div className="flex items-center gap-1 text-sm font-medium">
-						<label className="mr-3 opacity-80">Team Seats</label>
+						<label className="mr-3 opacity-80">{label}</label>
 						<button
 							type="button"
 							className="flex h-full items-center justify-center rounded bg-gray-200/60 px-3 py-2 font-mono sm:hidden"
@@ -432,28 +435,30 @@ const TeamQuantityInput = ({
 const BuyButton = ({
 	className,
 	children,
+	asChild,
 }: {
 	className?: string
 	children?: React.ReactNode
+	asChild?: boolean
 }) => {
+	const Comp = asChild ? Slot : Button
 	const { formattedPrice, product, status } = usePricing()
 	return (
-		children || (
-			<button
-				className={cn(
-					'bg-primary text-primary-foreground flex w-full items-center justify-center rounded px-4 py-4 text-center font-medium ring-offset-1 transition ease-in-out disabled:cursor-wait',
-					className,
-				)}
-				type="submit"
-				disabled={status === 'pending' || status === 'error'}
-			>
-				<span className="relative z-10">
-					{formattedPrice?.upgradeFromPurchaseId
-						? `Upgrade Now`
-						: product?.fields.action || `Buy Now`}
-				</span>
-			</button>
-		)
+		<Comp
+			className={cn(
+				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-wait',
+				className,
+			)}
+			type="submit"
+			size="lg"
+			disabled={status === 'pending' || status === 'error'}
+		>
+			{children
+				? children
+				: formattedPrice?.upgradeFromPurchaseId
+					? `Upgrade Now`
+					: product?.fields.action || `Buy Now`}
+		</Comp>
 	)
 }
 
@@ -714,7 +719,9 @@ const BuyMoreSeatsToggle = ({
 			type="button"
 			className={cn('flex flex-col items-center', className)}
 		>
-			{children || 'Buy more seats'}
+			{children || isBuyingMoreSeats
+				? 'Cancel Buying More Seats'
+				: 'Buy More Seats'}
 		</Comp>
 	)
 }
@@ -722,18 +729,23 @@ const BuyMoreSeatsToggle = ({
 type BuyMoreSeatsProps = {
 	asChild?: boolean
 	className?: string
+	children?: React.ReactNode
 }
 
-const BuyMoreSeats = ({ asChild, className }: BuyMoreSeatsProps) => {
-	const Comp = asChild ? Slot : BuyMoreSeatsComp
-	const { isBuyingMoreSeats, product, userId } = usePricing()
+const BuyMoreSeats = ({ asChild, className, children }: BuyMoreSeatsProps) => {
+	const Comp = asChild ? Slot : 'div'
+	const { isBuyingMoreSeats } = usePricing()
 
 	return isBuyingMoreSeats ? (
-		<Comp
-			className={cn('flex flex-col items-center', className)}
-			productId={product.id}
-			userId={userId as string}
-		/>
+		<Comp className={cn('flex w-full flex-col items-center', className)}>
+			{children || (
+				<>
+					<TeamQuantityInput label="Quantity" />
+					<Price />
+					<BuyButton>Buy Additional Seats</BuyButton>
+				</>
+			)}
+		</Comp>
 	) : null
 }
 
