@@ -39,6 +39,10 @@ export const PricingProvider = ({
 		send({
 			type: 'TOGGLE_BUYING_MORE_SEATS',
 		})
+		send({
+			type: 'UPDATE_QUANTITY',
+			quantity: 5,
+		})
 	}
 	const toggleTeamPurchase = () => {
 		send({
