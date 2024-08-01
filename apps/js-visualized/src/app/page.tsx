@@ -11,12 +11,10 @@ export const metadata: Metadata = {
 export default async function PlaygroundPage() {
 	const cb = await coursebuilder()
 	return (
-		<main>
-			<div className="container">
-				<article className="prose sm:prose-xl dark:prose-invert max-w-none">
-					<Landing />
-				</article>
-			</div>
-		</main>
+		<div className="container pb-28">
+			<article className="prose sm:prose-xl dark:prose-invert prose-code:font-bold prose-code:font-sans max-w-none">
+				<Landing />
+			</article>
+		</div>
 	)
 }
