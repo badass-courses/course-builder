@@ -11,15 +11,15 @@ const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 			<h3 className="text-balance text-center text-2xl font-bold text-white">
 				Here's a closer look at what you'll learn:
 			</h3>
-			<SectionWrapper className="mt-20">
+			<SectionWrapper className="mt-20 p-8 md:p-24">
 				<ul className="list-none">
 					{copy.map((copy) => {
 						return (
 							<li
 								key={copy.title}
-								className="border-border flex items-center gap-14 border-t py-[74px] first:border-none first:pt-0"
+								className="border-border flex flex-col items-center gap-14 border-t py-[74px] first:border-none first:pt-0 md:flex-row"
 							>
-								<div className="w-[200px] shrink-0">
+								<div className="w-[80px] shrink-0 md:w-[200px]">
 									<Image
 										src={`${urlBase}${copy.image}`}
 										alt={copy.title}

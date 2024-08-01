@@ -1,6 +1,7 @@
 import Hero from './hero'
 import IntroduceAuthor from './introduce-author'
 import Introducing from './introducing'
+import MoreClearAsVisualization from './more-clear-as-visualization'
 import QuestionAndAnswer from './question-and-answer'
 import QuestionOrAnswerCard from './question-or-answer-card'
 import SnippetWithGlow from './snippet-with-glow'
@@ -14,4 +15,5 @@ export {
 	QuestionOrAnswerCard,
 	Introducing,
 	IntroduceAuthor,
+	MoreClearAsVisualization,
 }
