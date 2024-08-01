@@ -51,19 +51,19 @@ export default Introducing
 
 const copy = [
 	{
-		icon: <Icon name="ClosingTag" size="32" viewBox="0 0 32 32" />,
+		icon: <Icon name="ClosingTag" size="48" viewBox="0 0 48 48" />,
 		text: 'Gain the expertise to develop your own libraries and frameworks, understanding the foundational principles behind libraries and tools like React and Node.js',
 	},
 	{
-		icon: <Icon name="Js" size="32" viewBox="0 0 32 32" />,
+		icon: <Icon name="Js" size="48" viewBox="0 0 48 48" />,
 		text: 'Establish yourself as an indispensable JavaScript expert, armed with the knowledge to resolve complex issues and debug challenging code',
 	},
 	{
-		icon: <Icon name="Rocket" size="32" viewBox="0 0 32 32" />,
+		icon: <Icon name="Rocket" size="48" viewBox="0 0 48 48" />,
 		text: 'Write faster, more efficient code while minimizing errors, by leveraging JavaScript&apos;s built-in features for peak performance',
 	},
 	{
-		icon: <Icon name="Puzzle" size="32" viewBox="0 0 32 32" />,
+		icon: <Icon name="Puzzle" size="48" viewBox="0 0 48 48" />,
 		text: 'Experience indescribable satisfaction as concepts click into place, reminding you why you fell in love with code in the first place',
 	},
 ]
