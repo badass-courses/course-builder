@@ -3,8 +3,11 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
+import { createAppAbility } from '@/ability'
+import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, X } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
 
@@ -32,10 +35,14 @@ const Navigation = () => {
 		setIsMobileMenuOpen(false)
 	}, [pathname])
 
+	const { data: abilityRules, status: abilityStatus } =
+		api.ability.getCurrentAbilityRules.useQuery()
+	const ability = createAppAbility(abilityRules)
+
 	return (
 		<header
 			className={cn(
-				'relative z-50 flex h-[var(--nav-height)] items-stretch justify-between border-b px-0 print:hidden',
+				'bg-background relative z-40 flex h-[var(--nav-height)] items-stretch justify-between border-b px-0 print:hidden',
 				{
 					// 'container border-x': !isFullWidth,
 					// 'border-b': !isEditRoute,
@@ -71,8 +78,17 @@ const Navigation = () => {
 					</nav>
 				)}
 			</div>
-			<div className="hidden items-stretch gap-5 pr-3 sm:flex">
-				<User />
+			<div className="flex items-stretch">
+				{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
+					<div className="flex items-center pr-5">
+						<Button asChild size="sm" className="h-8">
+							<Link href="/#buy">Get Access</Link>
+						</Button>
+					</div>
+				)} */}
+				<div className="hidden items-stretch gap-5 pr-3 sm:flex">
+					<User />
+				</div>
 			</div>
 			<div className="flex items-stretch sm:hidden">
 				<MobileNav

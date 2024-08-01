@@ -20,6 +20,7 @@ import {
 	getWorkshopNavigation,
 } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, asc, eq, or, sql } from 'drizzle-orm'
 import { Construction } from 'lucide-react'
@@ -89,65 +90,85 @@ export default async function ModulePage({ params, searchParams }: Props) {
 					imageUrl={workshop.fields?.coverImage?.url}
 					slug={params.module}
 				/>
-				<EditWorkshopButton moduleType="workshop" moduleSlug={params.module} />
-				<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row">
-					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-						<p className="text-primary mb-2 text-base">Pro Workshop</p>
-						<h1 className="font-heading fluid-4xl font-bold">
-							{workshop.fields?.title}
-						</h1>
-						{workshop.fields?.description && (
-							<h2 className="fluid-lg text-muted-foreground mt-5">
-								{workshop.fields?.description}
-							</h2>
-						)}
-						<Contributor className="mt-5" />
-						<NextLessonButton
-							moduleType="workshop"
-							moduleSlug={params.module}
-							firstLessonSlug={firstLessonSlug}
-						/>
-					</div>
-					{workshop.fields?.coverImage?.url && (
-						<CldImage
-							width={400}
-							height={400}
-							src={workshop.fields.coverImage.url}
-							alt={workshop.fields.coverImage?.alt || ''}
-						/>
-					)}
-				</div>
-				<div className="flex flex-col-reverse px-5 pb-10 md:flex-row md:gap-10">
-					<article className="prose sm:prose-lg w-full max-w-none py-8">
-						{workshop.fields?.body ? (
-							<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-						) : (
-							<p>No description found.</p>
-						)}
-					</article>
-					<div className="flex w-full flex-col gap-3 sm:max-w-sm">
-						<WorkshopPricing
-							searchParams={searchParams}
-							moduleSlug={params.module}
-						>
-							{(pricingProps) => {
-								return pricingProps.hasPurchasedCurrentProduct ? null : (
-									<WorkshopPricingClient {...pricingProps} />
-								)
-							}}
-						</WorkshopPricing>
-						<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
-							Contents
-						</strong>
-						<WorkshopResourceList
-							className="w-full max-w-none border-r-0"
-							withHeader={false}
-							maxHeight="h-auto"
-							workshopNavigation={workshopNavData}
-							wrapperClassName="border bg-card overflow-hidden rounded pb-0"
-						/>
-					</div>
-				</div>
+				<WorkshopPricing searchParams={searchParams} moduleSlug={params.module}>
+					{(pricingProps) => {
+						return (
+							<>
+								<EditWorkshopButton
+									moduleType="workshop"
+									moduleSlug={params.module}
+								/>
+								<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 sm:px-10 md:flex-row">
+									<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+										<p className="text-primary mb-2 text-base">Pro Workshop</p>
+										<h1 className="font-heading fluid-4xl font-bold">
+											{workshop.fields?.title}
+										</h1>
+										{workshop.fields?.description && (
+											<h2 className="fluid-lg text-muted-foreground mt-5">
+												{workshop.fields?.description}
+											</h2>
+										)}
+										<Contributor className="mt-5" />
+										{pricingProps.hasPurchasedCurrentProduct ? (
+											<NextLessonButton
+												moduleType="workshop"
+												moduleSlug={params.module}
+												firstLessonSlug={firstLessonSlug}
+											/>
+										) : (
+											<Button
+												asChild
+												variant="outline"
+												size="lg"
+												className="mt-10 w-full min-w-48 md:w-auto"
+											>
+												<Link
+													href={`/workshops/${params.module}/${firstLessonSlug}`}
+												>
+													Preview Workshop
+												</Link>
+											</Button>
+										)}
+									</div>
+									{workshop.fields?.coverImage?.url && (
+										<CldImage
+											width={400}
+											height={400}
+											src={workshop.fields.coverImage.url}
+											alt={workshop.fields.coverImage?.alt || ''}
+										/>
+									)}
+								</div>
+								<div className="flex flex-col px-5 pb-10 sm:px-10 md:flex-row md:gap-10">
+									<article className="prose sm:prose-lg w-full max-w-none py-8">
+										{workshop.fields?.body ? (
+											<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
+										) : (
+											<p>No description found.</p>
+										)}
+									</article>
+									<div className="flex w-full flex-col gap-3 sm:max-w-sm">
+										{pricingProps.hasPurchasedCurrentProduct ? null : (
+											<WorkshopPricingClient {...pricingProps} />
+										)}
+
+										<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
+											Contents
+										</strong>
+										<WorkshopResourceList
+											className="w-full max-w-none border-r-0"
+											withHeader={false}
+											maxHeight="h-auto"
+											workshopNavigation={workshopNavData}
+											wrapperClassName="border bg-card overflow-hidden rounded pb-0"
+										/>
+									</div>
+								</div>
+							</>
+						)
+					}}
+				</WorkshopPricing>
 			</main>
 		</>
 	)
