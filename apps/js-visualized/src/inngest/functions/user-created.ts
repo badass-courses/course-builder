@@ -1,6 +1,8 @@
 import { db } from '@/db'
 import { communicationPreferences, userRoles } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
+import NewMemberEmail from '@/emails/new-member'
+import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -19,11 +21,6 @@ export const userCreated = inngest.createFunction(
 		event: USER_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		const email = {
-			body: `{{user.email}} signed up.`,
-			subject: 'JS Visualized Signup from {{user.email}}',
-		}
-
 		const { preferenceType, preferenceChannel } = await step.run(
 			'load the preference type and channel',
 			async () => {
@@ -72,11 +69,17 @@ export const userCreated = inngest.createFunction(
 			})
 		})
 
+		const email = {
+			subject: 'Welcome to JS Visualized',
+		}
+
 		const sendResponse = await step.run('send the email', async () => {
 			return await sendAnEmail({
-				Component: BasicEmail,
+				Component: NewMemberEmail,
 				componentProps: {
-					body: email.body,
+					userId: event.user.id,
+					courseBuilderUrl: env.COURSEBUILDER_URL,
+					supportPhysicalAddress: env.NEXT_PUBLIC_SUPPORT_PHYSICAL_ADDRESS,
 				},
 				Subject: email.subject,
 				To: event.user.email,

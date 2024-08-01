@@ -140,10 +140,13 @@ export async function subscribeToEndpoint({
 	params,
 	convertkitApiKey,
 }: {
-	endPoint: string
+	endPoint?: string
 	params: Record<string, any>
 	convertkitApiKey: string
 }) {
+	if (!endPoint) {
+		throw new Error('No endPoint provided')
+	}
 	return await fetch(`${convertkitBaseUrl}${endPoint}`, {
 		method: 'POST',
 		headers: {

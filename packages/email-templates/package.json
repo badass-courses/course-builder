@@ -31,6 +31,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@react-email/components": "^0.0.16",
+		"@react-email/markdown": "^0.0.11",
 		"@types/react": "^18.3.1",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",

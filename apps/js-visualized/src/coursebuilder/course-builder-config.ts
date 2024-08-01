@@ -1,3 +1,4 @@
+import { emailListProvider } from '@/coursebuilder/email-list-provider'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { openaiProvider } from '@/coursebuilder/openai-provider'
 import { transcriptProvider } from '@/coursebuilder/transcript-provider'
@@ -15,7 +16,12 @@ export const courseBuilderConfig: NextCourseBuilderConfig = {
 	baseUrl: env.COURSEBUILDER_URL,
 	adapter: courseBuilderAdapter,
 	inngest,
-	providers: [transcriptProvider, openaiProvider, emailProvider],
+	providers: [
+		transcriptProvider,
+		openaiProvider,
+		emailProvider,
+		emailListProvider,
+	],
 	basePath: '/api/coursebuilder',
 	getCurrentUser: async () => {
 		const { session } = await getServerAuthSession()
