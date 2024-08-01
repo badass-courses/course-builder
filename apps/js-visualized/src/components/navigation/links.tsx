@@ -91,12 +91,10 @@ export function Links({ className }: { className?: string }) {
 				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
 					<a
 						href="#waitlist"
-						className="bg-radial-highlight group flex h-12 items-center items-center overflow-hidden rounded-full bg-[#2E3235] bg-[radial-gradient(at_center_top,hsla(157,70%,56%,1)_0%,hsla(206,7%,19%,1)_100%)] p-px text-sm font-medium"
+						className="group flex h-12 items-center items-center overflow-hidden rounded-full border border-transparent bg-[linear-gradient(90deg,hsla(206,7%,19%,1)_0%,hsla(157,70%,56%,1)_50%,hsla(206,7%,19%,1)_100%)] text-sm font-medium duration-300 hover:border-[hsla(157,70%,56%,1)]"
 					>
-						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-10">
-							<span className="opacity-[0.75] duration-100 group-hover:opacity-100">
-								join the waitlist
-							</span>
+						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-10 text-white/75 duration-300 group-hover:bg-[linear-gradient(90deg,#292B2C_0%,#000_50.3%,#292B2C_100%)] group-hover:text-white">
+							join the waitlist
 						</span>
 					</a>
 				</div>
