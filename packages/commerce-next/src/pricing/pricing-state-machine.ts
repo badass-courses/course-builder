@@ -134,7 +134,7 @@ export const pricingMachine = setup({
 					}
 				})
 				.catch((e) => {
-					console.error('Error checking purchases', e)
+					console.error('Error loading purchases', e)
 					return {
 						isPreviouslyPurchased: false,
 					}
