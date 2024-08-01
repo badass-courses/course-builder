@@ -1,4 +1,5 @@
 import Hero from './hero'
+import IntroduceAuthor from './introduce-author'
 import Introducing from './introducing'
 import QuestionAndAnswer from './question-and-answer'
 import QuestionOrAnswerCard from './question-or-answer-card'
@@ -12,4 +13,5 @@ export {
 	SnippetWithGlow,
 	QuestionOrAnswerCard,
 	Introducing,
+	IntroduceAuthor,
 }

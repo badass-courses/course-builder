@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import SectionWrapper from '@/components/section-wrapper'
 import { cn } from '@/utils/cn'
 import { MDXProvider, useMDXComponents } from '@mdx-js/react'
