@@ -101,6 +101,8 @@ export async function sendServerEmail({
 			baseUrl,
 		})
 
+		console.log('verificationDetails', verificationDetails)
+
 		if (!verificationDetails) return
 
 		const { url, token, expires } = verificationDetails
@@ -121,6 +123,7 @@ export async function sendServerEmail({
 			adapter,
 		)
 	} catch (error: any) {
+		console.error(error)
 		throw new Error('Unable to sendVerificationRequest')
 	}
 }

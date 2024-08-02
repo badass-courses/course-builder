@@ -1,7 +1,7 @@
 import z, { record } from 'zod'
 
 export const SubscriberSchema = z.object({
-	id: z.number(),
+	id: z.coerce.string(),
 	first_name: z.string().nullish(),
 	email_address: z.string().optional(),
 	state: z.string().optional(),

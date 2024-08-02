@@ -3,6 +3,7 @@ import { Theme } from '@auth/core/types'
 import { render } from '@react-email/components'
 import { createTransport } from 'nodemailer'
 
+import { NewMemberEmail } from '@coursebuilder/email-templates/emails/new-member'
 import { PostPurchaseLoginEmail } from '@coursebuilder/email-templates/emails/post-purchase-login'
 
 import { CourseBuilderAdapter } from '../adapters'
@@ -52,12 +53,14 @@ export const sendVerificationRequest = async (
 		identifier: email,
 		url,
 		provider,
-		text = defaultText,
-		html = defaultHtml,
 		theme,
 		expires,
 		merchantChargeId,
 	} = params
+
+	let text = params.text || defaultText
+	let html = params.html || defaultHtml
+
 	const { host } = new URL(url)
 
 	const { server, from } = provider.options ? provider.options : provider
@@ -78,6 +81,14 @@ export const sendVerificationRequest = async (
 				process.env.NEXT_PUBLIC_PRODUCT_NAME ||
 				process.env.NEXT_PUBLIC_SITE_TITLE
 			} (${host})`
+			break
+		case 'signup':
+			subject = `Welcome to ${
+				process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+				process.env.NEXT_PUBLIC_SITE_TITLE
+			} (${host})`
+			html = signUpHtml
+			text = signUpText
 			break
 		default:
 			subject = `Log in to ${
@@ -173,6 +184,38 @@ function defaultText(
 			},
 			theme,
 		),
+		{
+			plainText: true,
+		},
+	)
+}
+
+function signUpHtml({ url, host, email }: HTMLEmailParams, theme?: Theme) {
+	return render(
+		NewMemberEmail({
+			url,
+			host,
+			email,
+			siteName:
+				process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+				process.env.NEXT_PUBLIC_SITE_TITLE ||
+				'',
+		}),
+	)
+}
+
+// Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
+function signUpText({ url, host, email }: HTMLEmailParams, theme?: Theme) {
+	return render(
+		NewMemberEmail({
+			url,
+			host,
+			email,
+			siteName:
+				process.env.NEXT_PUBLIC_PRODUCT_NAME ||
+				process.env.NEXT_PUBLIC_SITE_TITLE ||
+				'',
+		}),
 		{
 			plainText: true,
 		},

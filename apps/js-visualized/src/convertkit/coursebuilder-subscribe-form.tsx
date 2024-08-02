@@ -1,6 +1,6 @@
 import React from 'react'
 import Spinner from '@/components/spinner'
-import { useConvertkitForm } from '@/hooks/use-convertkit-form'
+import { useCoursebuilderSubscribeForm } from '@/convertkit/useCoursebuilderSubscribeForm'
 import { type Subscriber } from '@/schemas/subscriber'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import queryString from 'query-string'
@@ -65,7 +65,7 @@ export type SubscribeFormProps = {
  * @param rest anything else!
  * @constructor
  */
-export const SubscribeToConvertkitForm: React.FC<
+export const SubscribeToCoursebuilderForm: React.FC<
 	React.PropsWithChildren<SubscribeFormProps>
 > = ({
 	formId,
@@ -84,7 +84,7 @@ export const SubscribeToConvertkitForm: React.FC<
 	...rest
 }) => {
 	const { isSubmitting, status, handleChange, handleSubmit, errors, touched } =
-		useConvertkitForm({
+		useCoursebuilderSubscribeForm({
 			formId,
 			onSuccess,
 			onError,
@@ -182,7 +182,7 @@ export const SubscribeToConvertkitForm: React.FC<
 	)
 }
 
-export default SubscribeToConvertkitForm
+export default SubscribeToCoursebuilderForm
 
 export const redirectUrlBuilder = (
 	subscriber: Subscriber,

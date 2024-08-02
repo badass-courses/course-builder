@@ -1,6 +1,8 @@
+import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { z } from 'zod'
 
 import { VIDEO_SRT_READY_EVENT } from '../../inngest/video-processing/events/event-video-srt-ready-to-asset'
+import { EmailListConfig, TranscriptionConfig } from '../../providers'
 import {
 	filterNullFields,
 	getConvertkitSubscriberCookie,
@@ -10,9 +12,16 @@ import {
 	transcriptAsParagraphsWithTimestamps,
 	wordLevelSrtFromTranscriptResult,
 } from '../../providers/deepgram'
-import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
+import {
+	InternalOptions,
+	PaymentsProviderConfig,
+	RequestInternal,
+	ResponseInternal,
+} from '../../types'
 import { processStripeWebhook } from '../pricing/process-stripe-webhook'
 import { CheckoutParamsSchema } from '../pricing/stripe-checkout'
+import { sendServerEmail } from '../send-server-email'
+import { sendVerificationRequest } from '../send-verification-request'
 import { Cookie } from '../utils/cookie'
 
 export async function getUserPurchases(
@@ -81,7 +90,7 @@ export async function subscribeToList(
 			const subscribeOptions = z
 				.object({
 					listId: z.union([z.number(), z.string()]).optional(),
-					listType: z.enum(['sequence', 'tag', 'form']).optional(),
+					listType: z.string().optional(),
 					fields: z.record(z.string(), z.any()).optional().nullable(),
 					email: z.string(),
 					name: z.string().optional().nullable(),
@@ -113,6 +122,28 @@ export async function subscribeToList(
 			response.cookies = getConvertkitSubscriberCookie(
 				filterNullFields(response.body),
 			)
+
+			if (!user.emailVerified) {
+				const emailProvider = options.providers.find(
+					(p) => p.type === 'email',
+				) as NodemailerConfig
+
+				if (
+					emailProvider &&
+					options.adapter &&
+					options.provider.id === 'coursebuilder'
+				) {
+					await sendServerEmail({
+						email: user.email,
+						type: 'signup',
+						callbackUrl: `${options.baseUrl}/confirmed`,
+						emailProvider,
+						authOptions: options.authConfig,
+						adapter: options.adapter,
+						baseUrl: options.baseUrl,
+					})
+				}
+			}
 	}
 
 	return response

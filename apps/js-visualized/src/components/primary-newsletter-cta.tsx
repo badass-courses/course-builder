@@ -3,7 +3,10 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import SectionWrapper from '@/components/section-wrapper'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import {
+	redirectUrlBuilder,
+	SubscribeToCoursebuilderForm,
+} from '@/convertkit/coursebuilder-subscribe-form'
 import { Subscriber } from '@/schemas/subscriber'
 import common from '@/text/common'
 import { track } from '@/utils/analytics'
@@ -70,7 +73,7 @@ export const PrimaryNewsletterCta: React.FC<
 				)}
 			</div>
 			<div className="w-full max-w-[415px] shrink-0">
-				<SubscribeToConvertkitForm
+				<SubscribeToCoursebuilderForm
 					onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 					actionLabel={actionLabel}
 					className="relative z-10 [&_input]:h-16"

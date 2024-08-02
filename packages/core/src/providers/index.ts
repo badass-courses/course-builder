@@ -12,7 +12,7 @@ export interface EmailListSubscribeOptions {
 	listId?: string | number
 	user: AdapterUser
 	fields: Record<string, string>
-	listType: 'form' | 'sequence' | 'tag'
+	listType: string
 }
 
 export interface EmailListConfig {
@@ -22,12 +22,12 @@ export interface EmailListConfig {
 	options: EmailListConsumerConfig
 	apiKey: string
 	apiSecret: string
-	defaultListType: 'form' | 'sequence' | 'tag'
+	defaultListType: string
 	defaultListId?: number | string
 	subscribeToList: (options: EmailListSubscribeOptions) => Promise<any>
 	getSubscriber: (
 		subscriberId: string | null | CookieOption,
-	) => Promise<Subscriber>
+	) => Promise<Subscriber | null>
 }
 
 export type EmailListConsumerConfig = Omit<

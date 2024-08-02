@@ -4,6 +4,10 @@ import {
 	IMAGE_RESOURCE_CREATED_EVENT,
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
+import {
+	POSTMARK_WEBHOOK_EVENT,
+	PostmarkWebhook,
+} from '@/inngest/events/postmark-webhook'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
 import { authOptions } from '@/server/auth'
 import { EventSchemas, Inngest } from 'inngest'
@@ -24,6 +28,7 @@ export type Events = {
 	[IMAGE_RESOURCE_CREATED_EVENT]: ImageResourceCreated
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 	[USER_CREATED_EVENT]: UserCreated
+	[POSTMARK_WEBHOOK_EVENT]: PostmarkWebhook
 }
 
 const callbackBase =

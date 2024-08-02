@@ -127,7 +127,7 @@
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
 		"@coursebuilder/email-templates": "^1.0.2",
-		"@react-email/components": "^0.0.16",
+		"@react-email/components": "^0.0.22",
 		"@slack/web-api": "^7.0.4",
 		"@types/cookie": "0.6.0",
 		"@types/uuid": "9.0.8",

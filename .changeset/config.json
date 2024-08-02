@@ -16,6 +16,7 @@
 	"ignore": [
 		"course-builder-docs",
 		"course-builder-web",
+		"cb-video-blog",
 		"pro-aws",
 		"value-based-design",
 		"epic-web",
