@@ -39,7 +39,6 @@
 		"@react-email/components": "^0.0.22",
 		"@react-email/markdown": "^0.0.11",
 		"@react-email/render": "^0.0.17",
-		"@react-email/tailwind": "^0.0.19",
 		"@sindresorhus/slugify": "^2.2.1",
 		"@skillrecordings/analytics": "^1.0.1",
 		"@skillrecordings/config": "^0.0.3",
