@@ -21,7 +21,7 @@ const config: Config = {
 				md: '1.25rem',
 				lg: '1.25rem',
 				xl: '1.5rem',
-				'2xl': '2rem',
+				'2xl': '1.5rem',
 			},
 		},
 		extend: {
@@ -116,7 +116,7 @@ const config: Config = {
 				'.container': {
 					maxWidth: '100%',
 					'@screen 2xl': {
-						maxWidth: '1320px',
+						maxWidth: '1328px',
 					},
 				},
 			})
