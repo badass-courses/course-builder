@@ -29,7 +29,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 					bulkPurchases.map((purchase) => {
 						const { bulkPurchase, pricingDataLoader } = purchase
 						if (!bulkPurchase?.purchase)
-							return <div>No bulk purchase found</div>
+							return <div key={purchase.bulkCoupon}>No bulk purchase found</div>
 
 						const existingPurchase = bulkPurchase?.existingPurchase
 						const bulkCoupon = purchase?.bulkCoupon
