@@ -40,7 +40,10 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 							purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
 
 						return (
-							<div className="bg-card flex w-full flex-col gap-5 rounded border p-5">
+							<div
+								key={bulkPurchase.purchase.id}
+								className="bg-card flex w-full flex-col gap-5 rounded border p-5"
+							>
 								<div className="flex flex-col gap-5">
 									<div className="flex flex-col items-center gap-4 sm:flex-row">
 										{bulkPurchase?.purchase?.product?.fields.image?.url && (
