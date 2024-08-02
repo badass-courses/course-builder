@@ -88,22 +88,23 @@ const config: Config = {
 			},
 			backgroundImage: {
 				'gradient-green-to-blue':
-					'linear-gradient(134deg, hsl(144,91%,60%) 40.75%, hsl(209,100%,65%) 90.52%)',
+					'linear-gradient(134deg, var(--jsv-green) 40.75%, var(--jsv-blue) 90.52%)',
 				'gradient-orange-to-pink':
-					'linear-gradient(134deg, hsl(25,100%,71%) 5%, hsl(338,100%,64%) 90.52%)',
+					'linear-gradient(134deg, var(--jsv-orange) 5%, var(--jsv-pink) 90.52%)',
 				'gradient-purple-to-pink':
-					'linear-gradient(134deg, hsl(234,100%,61%) 5%, hsl(342,91%,60%) 90.52%)',
+					'linear-gradient(134deg, var(--jsv-purple) 5%, var(--jsv-pink) 90.52%)',
 				'gradient-pink-to-orange':
-					'linear-gradient(134deg, hsla(338, 100%, 64%, 1), hsla(357, 100%, 73%, 1), hsla(25, 100%, 71%, 1))',
+					'linear-gradient(134deg, var(--jsv-pink), var(--jsv-orange))',
 			},
 			typography: ({ theme }: { theme: any }) => ({
 				invert: {
 					css: {
-						'--tw-prose-headings': 'hsla(0, 0%, 100%, 0.9)',
-						'--tw-prose-body': 'hsla(0, 0%, 100%, 0.75)',
+						'--tw-prose-headings': 'var(--jsv-gray)',
+						'--tw-prose-body': 'var(--jsv-zinc)',
 						lineHeight: '1.6',
 						strong: {
 							fontWeight: '700',
+							color: 'white',
 						},
 					},
 				},
