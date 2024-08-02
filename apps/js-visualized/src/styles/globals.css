@@ -13,8 +13,20 @@
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
 
-		/* shadcnui */
+		/* JSV colors */
+		--jsv-gray: rgba(255, 255, 255, 0.9);
+		--jsv-zinc: rgba(255, 255, 255, 0.75);
+		--jsv-green: rgba(59, 246, 134, 1);
+		--jsv-blue: rgba(76, 169, 255, 1);
+		--jsv-purple: rgba(77, 77, 255, 1);
+		--jsv-red: rgba(230, 26, 77, 1);
+		--jsv-pink: rgba(255, 77, 128, 1);
+		--jsv-orange: rgba(255, 179, 128, 1);
 
+		--jsv-green-dark: rgba(26, 230, 122, 1);
+		--jsv-blue-dark: rgba(77, 196, 255, 1);
+
+		/* shadcnui */
 		--background: 0 0% 100%;
 		--foreground: 222.2 84% 4.9%;
 
@@ -49,10 +61,10 @@
 	}
 
 	.dark {
-		--background: 0 0% 3.5%;
-		--foreground: 0, 0%, 100%, 0.9;
+		--background: 222.2 84% 4.9%;
+		--foreground: 210 40% 98%;
 
-		--card: 210 4.8% 8.2%;
+		--card: 222.2 84% 4.9%;
 		--card-foreground: 210 40% 98%;
 
 		--popover: 222.2 84% 4.9%;
@@ -73,7 +85,7 @@
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 210 40% 98%;
 
-		--border: 204, 10%, 39%, 0.5;
+		--border: 217.2 32.6% 17.5%;
 		--input: 217.2 32.6% 17.5%;
 		--ring: 212.7 26.8% 83.9%;
 	}
