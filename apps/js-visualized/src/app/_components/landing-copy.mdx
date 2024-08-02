@@ -16,24 +16,30 @@ export default HomeLayout
 
 <Hero />
 
-<SnippetWithGlow className="mt-28" />
+<SnippetWithGlow className="mt-14 md:mt-28" />
 
-<CurvedLineIntersection className="left-[calc((50%-8px)/2)] right-[calc(50%)]" />
+<CurvedLineIntersection
+	positionClassName="left-[calc((50%-8px)/2)] right-[calc(50%)]"
+	className=" hidden md:block"
+/>
 
-<div className="grid gap-4 lg:grid-cols-2">
+<div className="mt-[70px] grid gap-6 sm:gap-4 md:mt-0 lg:grid-cols-2">
 	<QuestionOrAnswerCard type="q">
 		What will be printed to the console when you run this code in the browser
 		console?
 	</QuestionOrAnswerCard>
 	<QuestionOrAnswerCard type="a">
 		The first thing printed will be `Start`, then `End`, then finally
-		`Callback`. Easy, right?
+		`Callback`. **Easy, right?**
 	</QuestionOrAnswerCard>
 </div>
 
-<CurvedLineIntersection className="left-36 right-[calc((50%-8px)/2)]" />
+<CurvedLineIntersection
+	positionClassName="left-36 right-[calc((50%-8px)/2)] hidden md:block"
+	className=" hidden md:block"
+/>
 
-<QuestionAndAnswer>
+<QuestionAndAnswer className='mt-14 sm:mt-0'>
 ### So you know what will happen, but do you know <span className="font-bold text-transparent bg-clip-text bg-gradient-orange-to-pink">why?</span>
 
 Most resources would give you a high-level explanation, perhaps involving a
@@ -61,7 +67,7 @@ limited in your ability to contribute to your work and the community at large.
 
 </QuestionAndAnswer>
 
-<QuestionAndAnswer className="mt-4">
+<QuestionAndAnswer className="mt-14 sm:mt-4">
 ### Why settle for good, when you can be <span className="font-bold text-transparent bg-clip-text bg-gradient-green-to-blue">great?</span>
 
 You could be the developer that others turn to for help, the one who can explain
@@ -77,7 +83,7 @@ analyze and optimize your code.
 
 </QuestionAndAnswer>
 
-<Introducing className="mt-28" />
+<Introducing className="mt-[70px] sm:mt-28" />
 
 <IntroduceAuthor className="mt-24">
 ### Hi, I'm Lydia Hallie
@@ -92,7 +98,7 @@ learning JavaScript's internals, and I'm excited to share it with you!
 
 <WhatYouWillLearn className="mt-20" />
 
-<div className="mx-auto mt-48 max-w-2xl text-balance text-center">
+<div className="prose-p:text-body-text mx-auto mt-48 max-w-2xl text-balance text-center">
 	JavaScript Visualized is not a course that holds your hand through building an
 	app or using a library. Increase your confidence by equipping yourself with
 	the knowledge of how JavaScript's{' '}
@@ -117,9 +123,10 @@ execute it before popping it off the call stack.
 </QuestionAndAnswer>
 
 <CurvedLineIntersection
-	className="left-1/4 right-1/4"
-	startColor="hsla(343, 100%, 67%, 0.5)"
-	endColor="hsla(204, 10%, 39%, 0.5)"
+	className=" hidden md:block"
+	positionClassName="left-1/4 right-1/4 hidden md:block"
+	startColor="rgba(255, 87, 134, 0.5)"
+	endColor="rgba(90, 102, 110, 0.5)"
 />
 
 <MoreClearAsVisualization className="pt-6" />

@@ -32,6 +32,21 @@ const config: Config = {
 				sans: ['var(--font-geist-sans)'],
 			},
 			colors: {
+				'body-text': 'var(--jsv-misty-white)',
+				'body-text-alt': 'var(--jsv-ghostly-white)',
+				'jsv-misty-white': 'var(--jsv-misty-white)',
+				'jsv-ghostly-white': 'var(--jsv-ghostly-white)',
+				'jsv-green': 'var(--jsv-green)',
+				'jsv-blue': 'var(--jsv-blue)',
+				'jsv-blue-electric': 'var(--jsv-blue-electric)',
+				'jsv-purple': 'var(--jsv-purple)',
+				'jsv-red': 'var(--jsv-red)',
+				'jsv-pink': 'var(--jsv-pink)',
+				'jsv-pink-hot': 'var(--jsv-pink-hot)',
+				'jsv-orange': 'var(--jsv-orange)',
+				'jsv-hazy-charcoal': 'var(--jsv-hazy-charcoal)',
+				'jsv-charcoal': 'var(--jsv-charcoal)',
+				'jsv-charcoal-black': 'var(--jsv-charcoal-black)',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -91,16 +106,16 @@ const config: Config = {
 					'linear-gradient(134deg, var(--jsv-green) 40.75%, var(--jsv-blue) 90.52%)',
 				'gradient-orange-to-pink':
 					'linear-gradient(134deg, var(--jsv-orange) 5%, var(--jsv-pink) 90.52%)',
-				'gradient-purple-to-pink':
-					'linear-gradient(134deg, var(--jsv-purple) 5%, var(--jsv-pink) 90.52%)',
+				'gradient-blue-to-pink':
+					'linear-gradient(134deg, var(--jsv-blue-electric) 5%, var(--jsv-pink) 90.52%)',
 				'gradient-pink-to-orange':
 					'linear-gradient(134deg, var(--jsv-pink), var(--jsv-orange))',
 			},
 			typography: ({ theme }: { theme: any }) => ({
 				invert: {
 					css: {
-						'--tw-prose-headings': 'var(--jsv-gray)',
-						'--tw-prose-body': 'var(--jsv-zinc)',
+						'--tw-prose-headings': 'var(--jsv-misty-white)',
+						'--tw-prose-body': 'var(--jsv-ghostly-white)',
 						lineHeight: '1.6',
 						strong: {
 							fontWeight: '700',

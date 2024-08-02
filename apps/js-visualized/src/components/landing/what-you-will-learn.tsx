@@ -17,7 +17,7 @@ const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 						return (
 							<li
 								key={copy.title}
-								className="border-border flex flex-col items-center gap-14 border-t py-[74px] first:border-none first:pt-0 md:flex-row"
+								className="border-jsv-hazy-charcoal flex flex-col items-center gap-14 border-t py-[74px] first:border-none first:pt-0 md:flex-row"
 							>
 								<div className="w-[80px] shrink-0 md:w-[200px]">
 									<Image
@@ -27,11 +27,11 @@ const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 										height={200}
 									/>
 								</div>
-								<div className="space-y-4">
+								<div className="max-w-[660px] space-y-4">
 									<h3 className="text-2xl font-bold leading-tight text-white">
 										{copy.title}
 									</h3>
-									<p>{copy.body}</p>
+									<p className="text-lg leading-[1.75]">{copy.body}</p>
 								</div>
 							</li>
 						)
@@ -47,12 +47,12 @@ export default WhatYouWillLearn
 const copy = [
 	{
 		title: 'Parsing and Lexing',
-		body: 'Dive deep into the world of code interpretation and uncover how JavaScript breaks down and understands your scripts. By learning about tokens and syntax errors, you&apos;ll lay a strong foundation for writing cleaner, error-free code.',
+		body: "Dive deep into the world of code interpretation and uncover how JavaScript breaks down and understands your scripts. By learning about tokens and syntax errors, you'll lay a strong foundation for writing cleaner, error-free code.",
 		image: 'logo-parsing-and-lexing.svg',
 	},
 	{
 		title: 'Abstract Syntax Trees (ASTs)',
-		body: 'Explore the hierarchical structure that represents your code&apos;s relationships and components. ASTs can even be used to create your own code analysis tools.',
+		body: "Explore the hierarchical structure that represents your code's relationships and components. ASTs can even be used to create your own code analysis tools.",
 		image: 'logo-asts.svg',
 	},
 	{
@@ -62,12 +62,12 @@ const copy = [
 	},
 	{
 		title: 'Execution Context and Environments',
-		body: 'Demystify variable scope, hoisting, and the execution stack by learning how JavaScript manages context and environments. Predict and control your code&apos;s behavior with confidence.',
+		body: "Demystify variable scope, hoisting, and the execution stack by learning how JavaScript manages context and environments. Predict and control your code's behavior with confidence.",
 		image: 'logo-execution-context.svg',
 	},
 	{
 		title: 'Closures and Scopes',
-		body: 'Learn how closures reference the lexical environments in your code, and understand that hoisting isn&apos;t just moving variables to the top of your file.',
+		body: "Learn how closures reference the lexical environments in your code, and understand that hoisting isn't just moving variables to the top of your file.",
 		image: 'logo-closures-and-scopes.svg',
 	},
 	{

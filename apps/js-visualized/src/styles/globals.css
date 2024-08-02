@@ -14,17 +14,19 @@
 		);
 
 		/* JSV colors */
-		--jsv-gray: rgba(255, 255, 255, 0.9);
-		--jsv-zinc: rgba(255, 255, 255, 0.75);
+		--jsv-misty-white: rgba(255, 255, 255, 0.9);
+		--jsv-ghostly-white: rgba(255, 255, 255, 0.75);
 		--jsv-green: rgba(59, 246, 134, 1);
 		--jsv-blue: rgba(76, 169, 255, 1);
-		--jsv-purple: rgba(77, 77, 255, 1);
+		--jsv-blue-electric: rgba(77, 77, 255, 1);
+		--jsv-purple: rgba(119, 31, 255, 1);
 		--jsv-red: rgba(230, 26, 77, 1);
 		--jsv-pink: rgba(255, 77, 128, 1);
-		--jsv-orange: rgba(255, 179, 128, 1);
-
-		--jsv-green-dark: rgba(26, 230, 122, 1);
-		--jsv-blue-dark: rgba(77, 196, 255, 1);
+		--jsv-pink-hot: rgba(255, 0, 127, 1);
+		--jsv-orange: rgba(246, 115, 59, 1);
+		--jsv-hazy-charcoal: rgba(90, 102, 110, 0.5);
+		--jsv-charcoal: rgba(36, 40, 42, 0.4);
+		--jsv-charcoal-black: rgba(9, 9, 9, 1);
 
 		/* shadcnui */
 		--background: 0 0% 100%;
@@ -97,7 +99,7 @@
 	}
 
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-jsv-charcoal-black text-body-text;
 	}
 }
 
