@@ -26,7 +26,7 @@ const config: Config = {
 		},
 		extend: {
 			screens: {
-				'2xl': '1440px', // New '2xl' breakpoint
+				'2xl': '1440px',
 			},
 			fontFamily: {
 				sans: ['var(--font-geist-sans)'],
