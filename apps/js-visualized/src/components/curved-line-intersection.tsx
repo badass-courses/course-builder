@@ -7,17 +7,19 @@ const commonStyles =
 const CurvedLineIntersection: React.FC<
 	React.PropsWithChildren<{
 		className?: string
+		positionClassName?: string
 		startColor?: string
 		endColor?: string
 	}>
 > = ({
 	className,
-	startColor = 'hsl(var(--border))',
-	endColor = 'hsl(var(--border))',
+	positionClassName,
+	startColor = 'var(--jsv-hazy-charcoal)',
+	endColor = 'var(--jsv-hazy-charcoal)',
 }) => {
 	return (
 		<div
-			className="relative h-[141px] w-full"
+			className={cn('relative h-[141px] w-full', className)}
 			style={
 				{
 					'--start-color': startColor,
@@ -28,7 +30,7 @@ const CurvedLineIntersection: React.FC<
 			<div
 				className={cn(
 					'absolute inset-0 before:absolute before:inset-x-0 before:top-[70px] before:h-px before:bg-gradient-to-r before:from-[var(--start-color)] before:to-[var(--end-color)] before:content-[""]',
-					className,
+					positionClassName,
 				)}
 			>
 				<div

@@ -19,7 +19,7 @@ import { ThemeToggle } from './theme-toggle'
 const Logo = () => {
 	return (
 		<>
-			<span>JavaScript</span>{' '}
+			<span className="text-body-text">JavaScript</span>{' '}
 			<span className="bg-gradient-green-to-blue bg-clip-text font-black text-transparent">
 				Visualized
 			</span>
@@ -91,7 +91,7 @@ export function Links({ className }: { className?: string }) {
 				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
 					<a
 						href="#waitlist"
-						className="group flex h-12 items-center items-center overflow-hidden rounded-full border border-transparent bg-[linear-gradient(90deg,hsla(206,7%,19%,1)_0%,hsla(157,70%,56%,1)_50%,hsla(206,7%,19%,1)_100%)] text-sm font-medium duration-300 hover:border-[hsla(157,70%,56%,1)]"
+						className="hover:border-jsv-green group flex h-12 items-center items-center overflow-hidden rounded-full border border-transparent bg-[linear-gradient(90deg,var(--jsv-hazy-charcoal)_0%,var(--jsv-green)_50%,var(--jsv-hazy-charcoal)_100%)] text-sm font-medium duration-300"
 					>
 						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-10 text-white/75 duration-300 group-hover:bg-[linear-gradient(90deg,#292B2C_0%,#000_50.3%,#292B2C_100%)] group-hover:text-white">
 							join the waitlist

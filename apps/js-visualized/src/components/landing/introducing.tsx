@@ -15,13 +15,13 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 			<h3 className="text-sm font-medium uppercase tracking-widest">
 				Introducing
 			</h3>
-			<h2 className="mt-4 text-5xl">
-				JavaScript{' '}
+			<h2 className="text-body-text mt-4 flex flex-col text-[2rem] leading-tight sm:flex-row sm:text-5xl">
+				<span>JavaScript</span>{' '}
 				<span className="bg-gradient-green-to-blue bg-clip-text font-black text-transparent">
 					Visualized
 				</span>
 			</h2>
-			<p className="text-foreground mt-8 text-center">
+			<p className="text-body-text-alt mt-8 text-center text-lg leading-relaxed sm:text-xl sm:leading-relaxed">
 				JavaScript Visualized is designed to provide you with a deep,
 				comprehensive understanding of JavaScript's internals, without relying
 				on oversimplified metaphors or getting bogged down by boredom.
@@ -34,10 +34,12 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 					{copy.map((item, i) => {
 						return (
 							<li key={i} className="flex items-center gap-6">
-								<div className="flex size-20 shrink-0 items-center justify-center rounded-[2rem] bg-[hsla(200,8%,15%,0.4)]">
+								<div className="bg-jsv-charcoal flex size-20 shrink-0 items-center justify-center rounded-[2rem]">
 									{item.icon}
 								</div>
-								<div className="text-lg leading-[1.777]">{item.text}</div>
+								<div className="text-body-text text-lg leading-[1.777]">
+									{item.text}
+								</div>
 							</li>
 						)
 					})}

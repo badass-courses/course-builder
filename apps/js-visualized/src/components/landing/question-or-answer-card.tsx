@@ -4,7 +4,7 @@ import { cn } from '@/utils/cn'
 import { MDXProvider, useMDXComponents } from '@mdx-js/react'
 
 const glowCommonStyles =
-	'absolute left-0 size-96 flex-shrink-0 -translate-x-1/2 rounded-full opacity-30 blur-[134px]'
+	'absolute left-0 top-0 -translate-y-1/2 size-60 sm:size-96 flex-shrink-0 -translate-x-1/2 rounded-full opacity-30 blur-[80px] sm:blur-[134px]'
 
 const QuestionOrAnswerCard: React.FC<
 	React.PropsWithChildren<{ className?: string; type: 'q' | 'a' }>
@@ -12,25 +12,38 @@ const QuestionOrAnswerCard: React.FC<
 	const mdxComponents = useMDXComponents()
 	return (
 		<MDXProvider components={mdxComponents}>
-			<SectionWrapper className="relative flex items-center overflow-hidden p-14">
+			<SectionWrapper
+				className={cn(
+					'bg-jsv-charcoal relative flex flex-col overflow-hidden rounded-[2.5rem] px-6 pb-8 pt-5 sm:flex-row sm:items-center sm:p-14',
+					className,
+				)}
+			>
+				<div
+					className="absolute right-4 top-4 flex size-10
+items-center justify-center rounded-full border border-[#7B8992] text-2xl text-[#7B8992]"
+				>
+					{type === 'q' ? '?' : '!'}
+				</div>
 				<div
 					className={cn(glowCommonStyles, {
-						'bg-[#43E68B]': type === 'q',
-						'bg-[#E43B7B]': type === 'a',
+						'bg-[var(--jsv-green)]': type === 'q',
+						'bg-[var(--jsv-pink)]': type === 'a',
 					})}
 				/>
 				<div
 					className={cn(
-						'bg-gradient-green-to-blue bg-clip-text text-[120px] font-black font-extrabold uppercase leading-none text-transparent',
+						'self-start bg-clip-text text-[80px] font-black font-extrabold uppercase leading-none text-transparent sm:self-center md:text-[120px]',
 						{
 							'bg-gradient-green-to-blue': type === 'q',
-							'bg-gradient-purple-to-pink': type === 'a',
+							'bg-gradient-blue-to-pink': type === 'a',
 						},
 					)}
 				>
 					{type}
 				</div>
-				<div className="pl-16">{children}</div>
+				<div className="prose-p:m-0 prose-p:text-lg mt-5 leading-snug text-white md:mt-0 md:pl-16">
+					{children}
+				</div>
 			</SectionWrapper>
 		</MDXProvider>
 	)

@@ -22,7 +22,7 @@ const IntroduceAuthor: React.FC<
 							height={272}
 						/>
 					</div>
-					<div className="prose sm:prose-lg dark:prose-invert prose-p:first-of-type:mt-0 prose-p:text-foreground prose-headings:font-bold prose-headings:text-lg relative">
+					<div className="prose sm:prose-lg dark:prose-invert prose-p:first-of-type:mt-0 prose-p:text-body-text prose-headings:font-bold prose-headings:text-lg relative">
 						{children}
 					</div>
 				</SectionWrapper>

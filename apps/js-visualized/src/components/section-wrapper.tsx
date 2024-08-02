@@ -10,7 +10,10 @@ const SectionWrapper: React.FC<
 	React.PropsWithChildren<SectionWrapperProps>
 > = ({ children, className, ...rest }) => {
 	return (
-		<div className={cn('bg-card rounded-[2.5rem] p-24', className)} {...rest}>
+		<div
+			className={cn('bg-jsv-charcoal rounded-[2.5rem] p-24', className)}
+			{...rest}
+		>
 			{children}
 		</div>
 	)

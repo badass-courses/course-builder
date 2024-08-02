@@ -1,5 +1,4 @@
 import * as React from 'react'
-import Image from 'next/image'
 import SectionWrapper from '@/components/section-wrapper'
 import { cn } from '@/utils/cn'
 

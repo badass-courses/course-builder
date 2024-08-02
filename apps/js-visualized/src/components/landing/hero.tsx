@@ -1,19 +1,29 @@
 import * as React from 'react'
 import Image from 'next/image'
+import SectionWrapper from '@/components/section-wrapper'
 
 const Hero = () => {
 	return (
-		<div className="not-prose relative 2xl:-mx-10">
+		<SectionWrapper className="not-prose relative p-0 2xl:-mx-10">
 			<Image
 				src="/images/bg-landing-hero.png"
 				alt="hero section"
 				width={1360}
 				height={760}
 				priority
+				className="hidden sm:block"
 			/>
-			<div className="absolute inset-0 z-10 flex items-center py-10 pl-28">
-				<div className="max-w-[536px]">
-					<h1 className="text-[2.5rem] font-normal leading-[1.3] tracking-tight">
+			<Image
+				src="/images/bg-landing-hero-mobile.png"
+				alt="hero section"
+				width={716}
+				height={1280}
+				priority
+				className="sm:hidden"
+			/>
+			<div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-10 sm:flex-row sm:justify-start sm:pl-28">
+				<div className="flex max-w-[336px] flex-col items-center sm:max-w-[536px] sm:items-start">
+					<h1 className="text-center text-[1.75rem] font-normal leading-[1.3] tracking-tight text-white sm:text-left sm:text-[2.5rem]">
 						Deep Comprehensive Understanding of JavaScript{' '}
 						<span className="bg-gradient-green-to-blue bg-clip-text font-black text-transparent">
 							Visualized
@@ -34,7 +44,7 @@ const Hero = () => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</SectionWrapper>
 	)
 }
 
