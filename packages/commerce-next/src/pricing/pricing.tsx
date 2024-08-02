@@ -718,9 +718,7 @@ const BuyMoreSeatsToggle = ({
 			type="button"
 			className={cn('flex flex-col items-center', className)}
 		>
-			{children || isBuyingMoreSeats
-				? 'Cancel Buying More Seats'
-				: 'Buy More Seats'}
+			{children || isBuyingMoreSeats ? 'Cancel' : 'Buy More Seats'}
 		</Comp>
 	)
 }
