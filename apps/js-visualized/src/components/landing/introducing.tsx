@@ -8,7 +8,7 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 	return (
 		<div
 			className={cn(
-				'not-prose mx-auto flex max-w-[850px] flex-col items-center',
+				'not-prose mx-auto flex max-w-[850px] flex-col items-center text-center sm:text-left',
 				className,
 			)}
 		>
@@ -17,7 +17,7 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 			</h3>
 			<h2 className="text-body-text mt-4 flex flex-col text-[2rem] leading-tight sm:flex-row sm:text-5xl">
 				<span>JavaScript</span>{' '}
-				<span className="bg-gradient-green-to-blue bg-clip-text font-black text-transparent">
+				<span className="bg-gradient-green-to-blue bg-clip-text font-bold text-transparent sm:font-black">
 					Visualized
 				</span>
 			</h2>
@@ -26,18 +26,21 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 				comprehensive understanding of JavaScript's internals, without relying
 				on oversimplified metaphors or getting bogged down by boredom.
 			</p>
-			<div className="mt-24 w-full">
-				<h3 className="text-xl font-bold text-white">
+			<div className="mt-6 w-full sm:mt-24">
+				<h3 className="text-lg font-bold text-white sm:text-xl">
 					With JavaScript Visualized, you will:
 				</h3>
-				<ul className="mt-16 space-y-10">
+				<ul className="mt-10 space-y-8 sm:mt-16 sm:space-y-10">
 					{copy.map((item, i) => {
 						return (
-							<li key={i} className="flex items-center gap-6">
+							<li
+								key={i}
+								className="flex flex-col items-center gap-6 sm:flex-row"
+							>
 								<div className="bg-jsv-charcoal flex size-20 shrink-0 items-center justify-center rounded-[2rem]">
 									{item.icon}
 								</div>
-								<div className="text-body-text text-lg leading-[1.777]">
+								<div className="text-body-text text-lg leading-normal sm:leading-[1.777]">
 									{item.text}
 								</div>
 							</li>

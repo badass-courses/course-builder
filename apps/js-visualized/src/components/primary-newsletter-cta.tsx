@@ -51,7 +51,7 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'not-prose relative flex flex-col items-center gap-8 bg-[linear-gradient(280deg,var(--jsv-purple)_15.97%,var(--jsv-pink)_45.03%,var(--jsv-orange)_84.46%)] p-8 md:p-24 lg:flex-row lg:items-start',
+				'not-prose relative flex flex-col items-center gap-8 bg-[linear-gradient(2deg,var(--jsv-purple)_25.45%,var(--jsv-pink)_44.96%,var(--jsv-orange)_71.42%)] px-6 py-12 sm:bg-[linear-gradient(280deg,var(--jsv-purple)_15.97%,var(--jsv-pink)_45.03%,var(--jsv-orange)_84.46%)] md:p-24 lg:flex-row lg:items-start',
 				className,
 			)}
 		>
@@ -61,26 +61,26 @@ export const PrimaryNewsletterCta: React.FC<
 					children
 				) : (
 					<div className="text-white">
-						<h2 className="capita text-5xl leading-[1.08] tracking-tight">
-							<span className="opacity-80">Deeper</span>
-							<br />
-							<span className="font-bold">Understanding</span>
-							<br />
+						<h2 className="text-[1.75rem] leading-[1.4] tracking-tight sm:max-w-[400px] sm:text-5xl sm:leading-tight">
+							<span className="opacity-80">Deeper</span>{' '}
+							<span className="font-bold">Understanding</span>{' '}
 							<span className="opacity-80">Awaits</span>
 						</h2>
-						<p className="mt-6 max-w-[544px] leading-relaxed">{byline}</p>
+						<p className="mt-6 max-w-[544px] text-lg leading-relaxed sm:text-xl">
+							{byline}
+						</p>
 					</div>
 				)}
 			</div>
-			<div className="w-full max-w-[415px] shrink-0">
+			<div className="flex w-full max-w-[415px] shrink-0 flex-col items-center">
 				<SubscribeToCoursebuilderForm
 					onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 					actionLabel={actionLabel}
-					className="relative z-10 [&_input]:h-16"
+					className="relative z-10 w-full [&_input]:h-16"
 				/>
 				<p
 					data-nospam=""
-					className="pt-8 text-center text-sm text-white opacity-75"
+					className="max-w-64 pt-8 text-center text-sm text-white opacity-75 sm:max-w-none"
 				>
 					I respect your privacy. Unsubscribe at any time.
 				</p>

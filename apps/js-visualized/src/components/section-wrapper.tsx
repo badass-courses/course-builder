@@ -11,7 +11,10 @@ const SectionWrapper: React.FC<
 > = ({ children, className, ...rest }) => {
 	return (
 		<div
-			className={cn('bg-jsv-charcoal rounded-[2.5rem] p-24', className)}
+			className={cn(
+				'bg-jsv-charcoal overflow-hidden rounded-[2.5rem] p-24',
+				className,
+			)}
 			{...rest}
 		>
 			{children}
