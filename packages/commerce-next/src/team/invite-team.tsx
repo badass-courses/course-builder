@@ -205,7 +205,8 @@ const SelfRedeemButton: React.FC<
 	return canRedeem ? (
 		<>
 			<Comp
-				variant="secondary"
+				variant="outline"
+				className={cn('text-primary w-full', className)}
 				type="button"
 				disabled={isLoading || disabled || !userEmail || !canRedeem}
 				onClick={() => {

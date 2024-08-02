@@ -23,7 +23,6 @@
 @import './ui/button.css';
 @import './login.css';
 @import './commerce.css';
-@import './team.css';
 
 @layer base {
 	:root {

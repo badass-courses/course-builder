@@ -1,30 +1,37 @@
 import React from 'react'
 import { isEmpty } from 'lodash'
 
-import { Purchase } from '@coursebuilder/core/schemas'
+import { Purchase, type Coupon } from '@coursebuilder/core/schemas'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 type ClaimedTeamSeatsProps = {
 	purchase: Purchase
-	bulkCoupon?: any | null
+	bulkCoupon?: Coupon | null
+	className?: string
 }
 
 export const ClaimedTeamSeats: React.FC<
 	React.PropsWithChildren<ClaimedTeamSeatsProps>
-> = ({ purchase, bulkCoupon }) => {
+> = ({ purchase, bulkCoupon, className }) => {
 	if (!purchase.bulkCouponId) return null
 	const claims = bulkCoupon?.bulkCouponPurchases || []
 
 	return (
-		<div data-claimed-seats-team="">
+		<div data-claimed-seats-team="" className={cn('', className)}>
 			<>
+				{!isEmpty(claims) && (
+					<div className="font-semibold">Claimed team seats:</div>
+				)}
 				{!isEmpty(claims) ? (
 					claims?.map((claim: any) => (
-						<div data-claimed-seat="" key={claim.user?.email}>
+						<div data-claimed-seat="" className="p-5" key={claim.user?.email}>
 							{claim.user?.email}
 						</div>
 					))
 				) : (
-					<div data-claimed-seat="empty">No one has claimed a seat yet.</div>
+					<div data-claimed-seat="empty">
+						No one from your team has claimed a seat yet.
+					</div>
 				)}
 			</>
 		</div>

@@ -37,6 +37,7 @@ export const User: React.FC<{
 
 	const canCreateContent = ability.can('create', 'Content')
 	const canViewInvoce = ability.can('read', 'Invoice')
+	const canViewTeam = ability.can('invite', 'Team')
 
 	return (
 		<>
@@ -48,6 +49,13 @@ export const User: React.FC<{
 				</div>
 			) : (
 				<>
+					{canViewTeam && (
+						<NavLinkItem
+							className={loginClassName}
+							label="Invite Team"
+							href="/team"
+						/>
+					)}
 					{!sessionData?.user?.email ? (
 						<NavLinkItem
 							className={loginClassName}
@@ -57,7 +65,10 @@ export const User: React.FC<{
 					) : (
 						<DropdownMenu>
 							<DropdownMenuTrigger
-								className={cn('mr-3 flex items-center space-x-1', className)}
+								className={cn(
+									'hover:bg-muted -mr-3 flex items-center space-x-1 px-4',
+									className,
+								)}
 							>
 								{sessionData?.user?.image ? (
 									<Image
@@ -75,9 +86,9 @@ export const User: React.FC<{
 									/>
 								)}
 								<div className="flex flex-col pl-0.5">
-									<span className="inline-flex items-center gap-0.5 text-sm font-bold leading-tight">
+									<span className="inline-flex items-center gap-0.5 text-sm leading-tight">
 										<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
-											{sessionData?.user?.name?.split(' ')[0]}
+											{sessionData?.user?.name?.split(' ')[0] || 'Account'}
 										</span>{' '}
 										<ChevronDownIcon className="w-2" />
 									</span>

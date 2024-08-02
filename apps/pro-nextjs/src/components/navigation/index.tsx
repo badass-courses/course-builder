@@ -42,9 +42,9 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background relative z-40 flex h-[var(--nav-height)] items-stretch justify-between border-b px-0 print:hidden',
+				'bg-background/95 relative z-40 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 backdrop-blur-md print:hidden',
 				{
-					// 'container border-x': !isFullWidth,
+					'sticky top-0': !params.lesson,
 					// 'border-b': !isEditRoute,
 				},
 			)}
@@ -86,7 +86,7 @@ const Navigation = () => {
 						</Button>
 					</div>
 				)} */}
-				<div className="hidden items-stretch gap-5 pr-3 sm:flex">
+				<div className="hidden items-stretch pr-3 sm:flex">
 					<User />
 				</div>
 			</div>
