@@ -1,7 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { Check } from 'lucide-react'
+import Link from 'next/link'
+import { Check, CheckCircle2Icon } from 'lucide-react'
+import pluralize from 'pluralize'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -47,20 +49,30 @@ export const PricingWidget: React.FC<{
 			{...commerceProps}
 		>
 			<Pricing.Product className="w-full">
-				<Pricing.ProductImage />
-				<Pricing.Name />
-				<Pricing.Purchased className="gap-5 pt-2">
-					<p className="text-lg font-semibold">Already Purchased</p>
-					<Pricing.BuyMoreSeatsToggle />
-					<Pricing.BuyMoreSeats>
+				<Pricing.Purchased className="gap-1">
+					<Link
+						className="hover:underline"
+						href={`/${pluralize(product?.resources?.[0]?.resource?.type)}/${product?.resources?.[0]?.resource?.fields?.slug}`}
+					>
+						<Pricing.ProductImage />
+						<Pricing.Name>{product.name}</Pricing.Name>
+					</Link>
+					<div className="bg-muted text-primary mt-3 flex h-12 w-full items-center justify-center gap-2 rounded px-5 text-base font-medium">
+						<CheckCircle2Icon className="h-4 w-4 " />
+						Purchased
+					</div>
+					<Pricing.BuyMoreSeats className="pt-5">
 						<Pricing.TeamQuantityInput className="mb-0" label="Quantity" />
 						<Pricing.Price className="scale-75" />
 						<Pricing.BuyButton className="via-primary mt-3 bg-gradient-to-b from-blue-500 to-blue-700 shadow">
 							Buy Additional Seats
 						</Pricing.BuyButton>
 					</Pricing.BuyMoreSeats>
+					<Pricing.BuyMoreSeatsToggle className="h-12 w-full px-5 py-3 text-base" />
 				</Pricing.Purchased>
-				<Pricing.Details className="px-0">
+				<Pricing.Details className="px-0 pt-0">
+					<Pricing.ProductImage />
+					<Pricing.Name />
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
 					<Pricing.TeamToggle className="mt-3" />

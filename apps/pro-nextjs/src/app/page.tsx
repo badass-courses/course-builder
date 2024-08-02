@@ -71,8 +71,8 @@ const Home = async ({ searchParams }: Props) => {
 					alt=""
 					aria-hidden="true"
 					priority
-					width={1271 / 3}
-					height={1200 / 3}
+					width={1297 / 3}
+					height={1195 / 3}
 					quality={100}
 					className="pointer-events-none relative z-20 select-none lg:z-50 lg:-mt-16"
 				/>
