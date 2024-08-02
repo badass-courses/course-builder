@@ -1,10 +1,11 @@
-const { withUt } = require('uploadthing/tw')
+import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
+import { withUt } from 'uploadthing/tw'
 
-/** @type {import('tailwindcss').Config} */
-module.exports = withUt({
+const config: Config = {
 	darkMode: ['class'],
 	content: [
-		'./pages/**/*.{ts,tsx,}',
+		'./pages/**/*.{ts,tsx}',
 		'./components/**/*.{ts,tsx}',
 		'./app/**/*.{ts,tsx}',
 		'./src/**/*.{ts,tsx,mdx}',
@@ -14,22 +15,21 @@ module.exports = withUt({
 	theme: {
 		container: {
 			center: true,
-			padding: '1.25rem',
-			screens: {
-				'2xl': '1320px',
+			padding: {
+				DEFAULT: '1rem',
+				sm: '1rem',
+				md: '1.25rem',
+				lg: '1.25rem',
+				xl: '1.5rem',
+				'2xl': '2rem',
 			},
 		},
-		screens: {
-			sm: '640px',
-			md: '768px',
-			lg: '1024px',
-			xl: '1280px',
-			'2xl': '1440px', // Changed from 1536px to 1440px
-		},
 		extend: {
+			screens: {
+				'2xl': '1440px', // New '2xl' breakpoint
+			},
 			fontFamily: {
 				sans: ['var(--font-geist-sans)'],
-				// mono: ['var(--font-geist-mono)'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -73,12 +73,12 @@ module.exports = withUt({
 			},
 			keyframes: {
 				'accordion-down': {
-					from: { height: 0 },
+					from: { height: '0' },
 					to: { height: 'var(--radix-accordion-content-height)' },
 				},
 				'accordion-up': {
 					from: { height: 'var(--radix-accordion-content-height)' },
-					to: { height: 0 },
+					to: { height: '0' },
 				},
 			},
 			animation: {
@@ -96,21 +96,36 @@ module.exports = withUt({
 				'gradient-pink-to-orange':
 					'linear-gradient(134deg, hsla(338, 100%, 64%, 1), hsla(357, 100%, 73%, 1), hsla(25, 100%, 71%, 1))',
 			},
-			typography: () => ({
+			typography: ({ theme }: { theme: any }) => ({
 				invert: {
 					css: {
 						'--tw-prose-headings': 'hsla(0, 0%, 100%, 0.9)',
 						'--tw-prose-body': 'hsla(0, 0%, 100%, 0.75)',
 						lineHeight: '1.6',
+						strong: {
+							fontWeight: '700',
+						},
 					},
 				},
 			}),
 		},
 	},
 	plugins: [
+		plugin(({ addComponents }) => {
+			addComponents({
+				'.container': {
+					maxWidth: '100%',
+					'@screen 2xl': {
+						maxWidth: '1320px',
+					},
+				},
+			})
+		}),
 		require('@tailwindcss/typography'),
 		require('tailwind-scrollbar'),
 		require('tailwindcss-radix'),
 		require('tailwindcss-animate'),
 	],
-})
+}
+
+export default withUt(config)
