@@ -16,17 +16,17 @@
 		/* JSV colors */
 		--jsv-misty-white: rgba(255, 255, 255, 0.9);
 		--jsv-ghostly-white: rgba(255, 255, 255, 0.75);
-		--jsv-green: rgba(59, 246, 134, 1);
-		--jsv-blue: rgba(76, 169, 255, 1);
-		--jsv-blue-electric: rgba(77, 77, 255, 1);
-		--jsv-purple: rgba(119, 31, 255, 1);
-		--jsv-red: rgba(230, 26, 77, 1);
-		--jsv-pink: rgba(255, 77, 128, 1);
-		--jsv-pink-hot: rgba(255, 0, 127, 1);
-		--jsv-orange: rgba(246, 115, 59, 1);
+		--jsv-green: rgb(59, 246, 134);
+		--jsv-blue: rgb(76, 169, 255);
+		--jsv-blue-electric: rgb(77, 77, 255);
+		--jsv-purple: rgb(119, 31, 255);
+		--jsv-red: rgb(230, 26, 77);
+		--jsv-pink: #ff4d80;
+		--jsv-pink-hot: rgb(255, 0, 127);
+		--jsv-orange: rgb(246, 115, 59);
 		--jsv-hazy-charcoal: rgba(90, 102, 110, 0.5);
 		--jsv-charcoal: rgba(36, 40, 42, 0.4);
-		--jsv-charcoal-black: rgba(9, 9, 9, 1);
+		--jsv-charcoal-black: rgb(9, 9, 9);
 
 		/* shadcnui */
 		--background: 0 0% 100%;

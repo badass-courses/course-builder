@@ -8,18 +8,18 @@ const urlBase = '/images/logos/'
 const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 	return (
 		<div className={cn('not-prose', className)}>
-			<h3 className="text-balance text-center text-2xl font-bold text-white">
+			<h3 className="max-w-[350px] text-center text-lg font-bold text-white sm:max-w-none sm:text-2xl">
 				Here's a closer look at what you'll learn:
 			</h3>
-			<SectionWrapper className="mt-20 p-8 md:p-24">
-				<ul className="list-none">
+			<SectionWrapper className="sm:bg-jsv-charcoal mt-9 rounded-none bg-transparent p-0 sm:mt-20 sm:rounded-[2.5rem] sm:p-24">
+				<ul className="border-jsv-hazy-charcoal list-none border-b sm:border-none">
 					{copy.map((copy) => {
 						return (
 							<li
 								key={copy.title}
-								className="border-jsv-hazy-charcoal flex flex-col items-center gap-14 border-t py-[74px] first:border-none first:pt-0 md:flex-row"
+								className="border-jsv-hazy-charcoal flex flex-col items-center gap-5 text-balance border-t py-10 text-center first:border-none first:pt-0 sm:gap-14 sm:py-[74px] sm:text-left md:flex-row"
 							>
-								<div className="w-[80px] shrink-0 md:w-[200px]">
+								<div className="w-[100px] shrink-0 md:w-[200px]">
 									<Image
 										src={`${urlBase}${copy.image}`}
 										alt={copy.title}
@@ -28,10 +28,12 @@ const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 									/>
 								</div>
 								<div className="max-w-[660px] space-y-4">
-									<h3 className="text-2xl font-bold leading-tight text-white">
+									<h3 className="text-lg font-bold leading-tight text-white sm:text-2xl">
 										{copy.title}
 									</h3>
-									<p className="text-lg leading-[1.75]">{copy.body}</p>
+									<p className="text-body-text-alt text-lg leading-normal sm:leading-[1.75]">
+										{copy.body}
+									</p>
 								</div>
 							</li>
 						)

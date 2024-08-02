@@ -7,7 +7,7 @@ const MoreClearAsVisualization: React.FC<{ className?: string }> = ({
 }) => {
 	return (
 		<div className={cn('not-prose', className)}>
-			<h3 className="ml-28 max-w-[530px] text-[2.5rem] leading-[1.2] tracking-tight text-white">
+			<h3 className="max-w-[530px] text-[1.75rem] leading-[1.2] tracking-tight text-white sm:ml-28 sm:text-[2.5rem]">
 				Wouldn't this be more clear
 				<br />
 				as a{' '}
