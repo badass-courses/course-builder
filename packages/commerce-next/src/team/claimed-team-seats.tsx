@@ -14,7 +14,7 @@ export const ClaimedTeamSeats: React.FC<
 	React.PropsWithChildren<ClaimedTeamSeatsProps>
 > = ({ purchase, bulkCoupon, className }) => {
 	if (!purchase.bulkCouponId) return null
-	const claims = bulkCoupon?.bulkCouponPurchases || []
+	const claims = bulkCoupon?.redeemedBulkCouponPurchases || []
 
 	return (
 		<div data-claimed-seats-team="" className={cn('', className)}>

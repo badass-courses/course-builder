@@ -50,7 +50,7 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 		? await db.query.coupon.findFirst({
 				where: eq(coupon.id, bulkPurchase.purchase.bulkCouponId),
 				with: {
-					bulkCouponPurchases: {
+					redeemedBulkCouponPurchases: {
 						with: {
 							user: true,
 						},

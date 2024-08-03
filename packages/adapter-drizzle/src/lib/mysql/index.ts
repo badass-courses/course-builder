@@ -885,7 +885,7 @@ export function mySqlDrizzleAdapter(
 		async getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
 					bulkPurchases?: Purchase[] | null
-					bulkCouponPurchases: { bulkCouponId?: string | null }[]
+					redeemedBulkCouponPurchases: { bulkCouponId?: string | null }[]
 			  })
 			| null
 		> {
@@ -897,7 +897,7 @@ export function mySqlDrizzleAdapter(
 						where: eq(coupon.id, couponId),
 						with: {
 							bulkPurchases: true,
-							bulkCouponPurchases: true,
+							redeemedBulkCouponPurchases: true,
 						},
 					})) || null
 			} catch (e) {
@@ -916,7 +916,7 @@ export function mySqlDrizzleAdapter(
 			const parsedCoupon = couponSchema
 				.merge(
 					z.object({
-						bulkCouponPurchases: z.array(purchaseSchema),
+						redeemedBulkCouponPurchases: z.array(purchaseSchema),
 						bulkPurchases: z.array(purchaseSchema),
 					}),
 				)
