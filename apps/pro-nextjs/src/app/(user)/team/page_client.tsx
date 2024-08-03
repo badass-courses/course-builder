@@ -32,12 +32,10 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 							return <div key={purchase.bulkCoupon}>No bulk purchase found</div>
 
 						const existingPurchase = bulkPurchase?.existingPurchase
-						const bulkCoupon = purchase?.bulkCoupon
-						const canInviteTeam = Boolean(purchase && user)
+						const bulkCoupon = bulkPurchase?.purchase?.bulkCoupon
 
 						const redemptionsLeft =
-							purchase?.bulkCoupon &&
-							purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
+							bulkCoupon && bulkCoupon.maxUses > bulkCoupon.usedCount
 
 						return (
 							<div

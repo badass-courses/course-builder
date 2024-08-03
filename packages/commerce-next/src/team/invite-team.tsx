@@ -98,9 +98,8 @@ const SeatsAvailable: React.FC<
 		<Comp className={cn('', className)}>
 			You have{' '}
 			<span>
-				{Number(purchase?.bulkCoupon?.maxUses) -
-					Number(purchase?.bulkCoupon?.usedCount)}{' '}
-				team {pluralize('seat', numberOfRedemptionsLeft)} available.
+				{numberOfRedemptionsLeft} team{' '}
+				{pluralize('seat', numberOfRedemptionsLeft)} available.
 			</span>
 		</Comp>
 	)
