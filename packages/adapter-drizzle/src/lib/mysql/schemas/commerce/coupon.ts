@@ -37,7 +37,6 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 				scale: 2,
 			}).notNull(),
 			restrictedToProductId: varchar('restrictedToProductId', { length: 191 }),
-			bulkPurchaseId: varchar('bulkPurchaseId', { length: 191 }),
 		},
 		(table) => {
 			return {
@@ -46,9 +45,6 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 					table.code,
 				),
 				couponId: primaryKey({ columns: [table.id], name: 'Coupon_id' }),
-				couponBulkPurchaseIdKey: unique('Coupon_bulkPurchaseId_key').on(
-					table.bulkPurchaseId,
-				),
 				couponCodeKey: unique('Coupon_code_key').on(table.code),
 			}
 		},
@@ -60,7 +56,7 @@ export function getCouponRelationsSchema(mysqlTable: MySqlTableFn) {
 	const coupon = getCouponSchema(mysqlTable)
 	const merchantCoupon = getMerchantCouponSchema(mysqlTable)
 	return relations(coupon, ({ many, one }) => ({
-		bulkCouponPurchases: many(purchase, {
+		redeemedBulkCouponPurchases: many(purchase, {
 			relationName: 'redeemedBulkCoupon',
 		}),
 		merchantCoupon: one(merchantCoupon, {

@@ -173,7 +173,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	getCouponWithBulkPurchases(couponId: string): Promise<
 		| (Coupon & {
-				bulkCouponPurchases: Purchase[]
+				redeemedBulkCouponPurchases: Purchase[]
 				bulkPurchase?: Purchase | null
 		  })
 		| null
@@ -425,7 +425,7 @@ interface SkillProductsCommerceSdk {
 	): Promise<(Purchase & { user: User }) | null>
 	getCouponWithBulkPurchases(couponId?: string): Promise<
 		| (Coupon & {
-				bulkCouponPurchases?: Purchase[] | null
+				redeemedBulkCouponPurchases?: Purchase[] | null
 				bulkPurchase?: Purchase | null
 		  })
 		| null

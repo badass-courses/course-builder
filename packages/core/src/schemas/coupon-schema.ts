@@ -17,7 +17,7 @@ export const couponSchema = z.object({
 	}),
 	restrictedToProductId: z.string().max(191).optional().nullable(),
 	bulkPurchases: z.array(z.any()).default([]),
-	bulkCouponPurchases: z.array(z.any()).default([]),
+	redeemedBulkCouponPurchases: z.array(z.any()).default([]),
 	bulkPurchaseId: z.string().max(191).optional().nullable(), // TODO: remove
 })
 

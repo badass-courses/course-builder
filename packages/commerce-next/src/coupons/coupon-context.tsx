@@ -22,7 +22,7 @@ export const CouponProvider = ({
 		| undefined
 		| {
 				maxUses: number
-				bulkCouponPurchases?: any
+				redeemedBulkCouponPurchases?: any
 				expires: Date | null
 				code?: string | null | undefined
 				isValid: boolean
