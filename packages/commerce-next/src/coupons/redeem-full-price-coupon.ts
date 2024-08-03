@@ -27,8 +27,13 @@ export async function redeemFullPriceCoupon({
 				'Content-Type': 'application/json',
 			},
 		},
-	).then((response) => {
-		revalidatePath('/')
-		return response.json()
-	})
+	)
+		.then((response) => {
+			revalidatePath('/')
+			return response.json()
+		})
+		.catch((e) => {
+			console.error('Error redeeming full price coupon', e)
+			throw e
+		})
 }

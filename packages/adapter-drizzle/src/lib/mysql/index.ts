@@ -307,7 +307,7 @@ export function mySqlDrizzleAdapter(
 			if (coupon && couponValidation.isRedeemable) {
 				// if the Coupon is the Bulk Coupon of a Bulk Purchase,
 				// then a bulk coupon is being redeemed
-				const bulkCouponRedemption = Boolean(coupon.bulkPurchase?.bulkCouponId)
+				const bulkCouponRedemption = Boolean(coupon.maxUses > 1)
 
 				const { user } = await adapter.findOrCreateUser(email)
 
@@ -884,7 +884,7 @@ export function mySqlDrizzleAdapter(
 		},
 		async getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
-					bulkPurchase?: Purchase | null
+					bulkPurchases?: Purchase[] | null
 					bulkCouponPurchases: { bulkCouponId?: string | null }[]
 			  })
 			| null
@@ -896,7 +896,7 @@ export function mySqlDrizzleAdapter(
 					(await client.query.coupon.findFirst({
 						where: eq(coupon.id, couponId),
 						with: {
-							bulkPurchase: true,
+							bulkPurchases: true,
 							bulkCouponPurchases: true,
 						},
 					})) || null
@@ -917,14 +917,18 @@ export function mySqlDrizzleAdapter(
 				.merge(
 					z.object({
 						bulkCouponPurchases: z.array(purchaseSchema),
-						bulkPurchase: purchaseSchema.nullable().optional(),
+						bulkPurchases: z.array(purchaseSchema),
 					}),
 				)
 				.nullable()
 				.safeParse(couponData)
 
 			if (!parsedCoupon.success) {
-				console.error('Error parsing coupon', couponData)
+				console.error(
+					'Error parsing coupon',
+					JSON.stringify(parsedCoupon.error),
+					couponData,
+				)
 				return null
 			}
 			return parsedCoupon.data
