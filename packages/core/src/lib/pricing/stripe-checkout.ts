@@ -450,6 +450,7 @@ export async function stripeCheckout({
 				)
 			}
 		} catch (err: any) {
+			console.error('err', err)
 			if (errorRedirectUrl) {
 				return {
 					redirect: errorRedirectUrl,

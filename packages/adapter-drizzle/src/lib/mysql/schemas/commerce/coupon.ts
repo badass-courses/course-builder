@@ -73,10 +73,8 @@ export function getCouponRelationsSchema(mysqlTable: MySqlTableFn) {
 			references: [getProductSchema(mysqlTable).id],
 			relationName: 'product',
 		}),
-		bulkPurchase: one(purchase, {
-			fields: [coupon.bulkPurchaseId],
-			references: [purchase.id],
-			relationName: 'bulkPurchase',
+		bulkPurchases: many(purchase, {
+			relationName: 'bulkCoupon',
 		}),
 	}))
 }
