@@ -1,34 +1,21 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { NextLessonButton } from '@/app/(content)/workshops/_components/next-lesson-button'
+import { PreviewWorkshopButton } from '@/app/(content)/workshops/_components/preview-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import config from '@/config'
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import type { Module } from '@/lib/module'
-import { getModuleProgressForUser } from '@/lib/progress'
-import { getFirstLessonSlug } from '@/lib/workshops'
-import {
-	getMinimalWorkshop,
-	getWorkshop,
-	getWorkshopNavigation,
-} from '@/lib/workshops-query'
-import { getServerAuthSession } from '@/server/auth'
-import { getAbilityForResource } from '@/utils/get-current-ability-rules'
+import { getMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
 import { Construction } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
 import type { ContentResource } from '@coursebuilder/core/types'
-import { Button } from '@coursebuilder/ui'
 
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
@@ -69,9 +56,6 @@ export default async function ModulePage({ params, searchParams }: Props) {
 	if (!workshop) {
 		notFound()
 	}
-
-	const workshopNavData = await getWorkshopNavigation(params.module)
-	const firstLessonSlug = getFirstLessonSlug(workshopNavData)
 
 	return (
 		<>
@@ -114,21 +98,9 @@ export default async function ModulePage({ params, searchParams }: Props) {
 											<NextLessonButton
 												moduleType="workshop"
 												moduleSlug={params.module}
-												firstLessonSlug={firstLessonSlug}
 											/>
 										) : (
-											<Button
-												asChild
-												variant="outline"
-												size="lg"
-												className="mt-10 w-full min-w-48 md:w-auto"
-											>
-												<Link
-													href={`/workshops/${params.module}/${firstLessonSlug}`}
-												>
-													Preview Workshop
-												</Link>
-											</Button>
+											<PreviewWorkshopButton moduleSlug={params.module} />
 										)}
 									</div>
 									{workshop.fields?.coverImage?.url && (
@@ -160,7 +132,6 @@ export default async function ModulePage({ params, searchParams }: Props) {
 											className="w-full max-w-none border-r-0"
 											withHeader={false}
 											maxHeight="h-auto"
-											workshopNavigation={workshopNavData}
 											wrapperClassName="border bg-card overflow-hidden rounded pb-0"
 										/>
 									</div>

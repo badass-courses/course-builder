@@ -4,13 +4,13 @@ import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import type { Lesson } from '@/lib/lessons'
-import { toggleProgress } from '@/lib/progress'
+import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 
 import { Label, Switch } from '@coursebuilder/ui'
 
-export function LessonProgressToggle({
+export function TutorialLessonProgressToggle({
 	lesson,
 	moduleType = 'tutorial',
 }: {
@@ -18,8 +18,9 @@ export function LessonProgressToggle({
 	moduleType?: string
 }) {
 	const params = useParams()
-	const { invalidate } = api.useUtils()
 	const [] = React.useState(false)
+
+	const utils = api.useUtils()
 
 	const { data: moduleProgress, refetch } =
 		api.progress.getModuleProgressForUser.useQuery({
@@ -54,21 +55,25 @@ export function LessonProgressToggle({
 				checked={isCompleted}
 				onCheckedChange={async (checked) => {
 					startTransition(() => {
+						console.log('startTransition')
 						setIsCompleted(checked)
 					})
-					const lessonProgress = await toggleProgress({ resourceId: lesson.id })
+					console.log('setProgressForResource')
+					const lessonProgress = await setProgressForResource({
+						resourceId: lesson.id,
+						isCompleted: checked,
+					})
 
-					if (lessonProgress) {
-						await revalidateTutorialLesson(
-							params.module as string,
-							params.lesson as string,
-							moduleType,
-						)
+					console.log('lessonProgress', lessonProgress)
 
-						await invalidate()
+					console.log('invalidate')
+					await utils.progress.invalidate()
 
-						refetch()
-					}
+					// await revalidateTutorialLesson(
+					// 	params.module as string,
+					// 	params.lesson as string,
+					// 	moduleType,
+					// )
 				}}
 			/>
 		</div>

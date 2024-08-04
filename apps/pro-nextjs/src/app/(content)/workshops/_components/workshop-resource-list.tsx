@@ -5,11 +5,9 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { createAppAbility, type AppAbility } from '@/ability'
 import { CldImage } from '@/app/_components/cld-image'
-import {
-	findSectionIdForLessonSlug,
-	NavigationResource,
-	WorkshopNavigation,
-} from '@/lib/workshops'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
+import { useModuleProgress } from '@/app/(content)/workshops/_components/workshop-progress-provider'
+import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Check, Lock, Pen } from 'lucide-react'
@@ -25,7 +23,6 @@ import {
 } from '@coursebuilder/ui'
 
 type Props = {
-	workshopNavigation: WorkshopNavigation | null
 	currentLessonSlug?: string | null
 	currentSectionSlug?: string | null
 	className?: string
@@ -42,23 +39,20 @@ export function WorkshopResourceList(props: Props) {
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
+	const workshopNavigation = useWorkshopNavigation()
+	const moduleProgress = useModuleProgress()
+
 	const { data: abilityRules, status: abilityStatus } =
 		api.ability.getCurrentAbilityRules.useQuery({
-			moduleId: props.workshopNavigation?.id,
-		})
-
-	const { data: moduleProgress } =
-		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: props.workshopNavigation?.id,
+			moduleId: workshopNavigation?.id,
 		})
 
 	const sectionId = findSectionIdForLessonSlug(
-		props.workshopNavigation,
+		workshopNavigation,
 		props.currentLessonSlug,
 	)
 
 	const ability = createAppAbility(abilityRules || [])
-	const params = useParams()
 
 	const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
@@ -78,11 +72,11 @@ export function WorkshopResourceList(props: Props) {
 		}
 	}, [scrollAreaRef])
 
-	if (!props.workshopNavigation) {
+	if (!workshopNavigation) {
 		return null
 	}
 
-	const { resources } = props.workshopNavigation
+	const { resources } = workshopNavigation
 
 	return (
 		<nav
@@ -94,12 +88,12 @@ export function WorkshopResourceList(props: Props) {
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
 				{withHeader && (
 					<div className="relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]">
-						{props.workshopNavigation.coverImage && (
+						{workshopNavigation.coverImage && (
 							<CldImage
 								width={48}
 								height={48}
-								src={props.workshopNavigation.coverImage}
-								alt={props.workshopNavigation.title}
+								src={workshopNavigation.coverImage}
+								alt={workshopNavigation.title}
 							/>
 						)}
 						<div className="flex flex-col leading-tight">
@@ -114,9 +108,9 @@ export function WorkshopResourceList(props: Props) {
 							</div>
 							<Link
 								className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
-								href={`/workshops/${props.workshopNavigation.slug}`}
+								href={`/workshops/${workshopNavigation.slug}`}
 							>
-								{props.workshopNavigation.title}
+								{workshopNavigation.title}
 							</Link>
 						</div>
 					</div>

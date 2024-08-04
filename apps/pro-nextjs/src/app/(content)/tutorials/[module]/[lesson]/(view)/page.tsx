@@ -8,11 +8,11 @@ import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
-import {
-	LessonProgressToggle,
-	LessonProgressToggleSkeleton,
-} from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
+import {
+	LessonProgressToggleSkeleton,
+	TutorialLessonProgressToggle,
+} from '@/app/(content)/tutorials/_components/tutorial-lesson-progress-toggle'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { Lesson } from '@/lib/lessons'
@@ -335,7 +335,7 @@ async function LessonBody({
 						{(session?.user || ckSubscriber) &&
 						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
 							<Suspense fallback={<LessonProgressToggleSkeleton />}>
-								<LessonProgressToggle
+								<TutorialLessonProgressToggle
 									// if we are on solution, pass in exercise as lesson for completing
 									lesson={
 										lesson.type === 'solution' && exercise ? exercise : lesson
