@@ -96,9 +96,6 @@ export function Links({ className }: { className?: string }) {
 						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] bg-[linear-gradient(to_right,#292B2C,#000,#292B2C,#292B2C,#000,#292B2C)] bg-[length:300%_100%] px-6 text-white/75 duration-300 group-hover:bg-[position:100%_0] group-hover:text-white sm:px-10">
 							join the waitlist
 						</span>
-						{/* <span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-6 text-white/75 duration-300 group-hover:bg-[linear-gradient(90deg,#292B2C_0%,#000_50.3%,#292B2C_100%)] group-hover:text-white sm:px-10">
-							join the waitlist
-						</span> */}
 					</a>
 				</div>
 				<AnimatePresence>
