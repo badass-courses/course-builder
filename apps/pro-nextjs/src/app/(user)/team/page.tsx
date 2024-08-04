@@ -59,23 +59,10 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 			const pricingDataLoader = getPricingData({
 				productId: bulkPurchase?.product?.id,
 			})
-			// TODO: This should return redeemedBulkCouponPurchases
+
 			const bulkCoupon = await courseBuilderAdapter.getCouponWithBulkPurchases(
 				purchaseDetails?.purchase?.bulkCouponId as string,
 			)
-
-			// const bulkCoupon = purchaseDetails.purchase?.bulkCouponId
-			// 	? await db.query.coupon.findFirst({
-			// 			where: eq(coupon.id, purchaseDetails.purchase.bulkCouponId),
-			// 			with: {
-			// 				redeemedBulkCouponPurchases: {
-			// 					with: {
-			// 						user: true,
-			// 					},
-			// 				},
-			// 			},
-			// 		})
-			// 	: null
 
 			return {
 				bulkPurchase: purchaseDetails,

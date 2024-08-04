@@ -32,7 +32,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 							return <div key={purchase.bulkCoupon}>No bulk purchase found</div>
 
 						const existingPurchase = bulkPurchase?.existingPurchase
-						const bulkCoupon = bulkPurchase?.purchase?.bulkCoupon
+						const bulkCoupon = purchase.bulkCoupon
 
 						const redemptionsLeft =
 							bulkCoupon && bulkCoupon.maxUses > bulkCoupon.usedCount
@@ -65,13 +65,12 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 										className="flex flex-col items-start gap-y-2"
 									/>
 								</div>
-								{/* TODO: Fix this */}
-								{/* {purchase && (
+								{purchase && (
 									<ClaimedTeamSeats
 										purchase={bulkPurchase.purchase}
 										bulkCoupon={bulkCoupon}
 									/>
-								)} */}
+								)}
 								{user && bulkPurchase?.purchase?.product?.id && (
 									<Pricing.Root
 										className="relative w-full"

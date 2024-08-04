@@ -891,6 +891,7 @@ export function mySqlDrizzleAdapter(
 		> {
 			logger.debug('getCouponWithBulkPurchases', { couponId })
 			let couponData
+			let bulkCouponPurchases
 			try {
 				couponData =
 					(await client.query.coupon.findFirst({
@@ -905,6 +906,19 @@ export function mySqlDrizzleAdapter(
 				logger.error(e as Error)
 			}
 
+			try {
+				bulkCouponPurchases = await client.query.purchases.findMany({
+					where: eq(purchaseTable.redeemedBulkCouponId, couponId),
+					with: {
+						user: true,
+					},
+				})
+				console.log('purchases with redeemedBulkCouponId', bulkCouponPurchases)
+			} catch (e) {
+				console.log('getCouponWithBulkPurchases')
+				logger.error(e as Error)
+			}
+
 			if (!couponData) {
 				logger.debug('getCouponWithBulkPurchases', {
 					couponId,
@@ -913,15 +927,19 @@ export function mySqlDrizzleAdapter(
 				return null
 			}
 
+			const couponWithBulkPurchases = {
+				...couponData,
+				redeemedBulkCouponPurchases: bulkCouponPurchases || [],
+			}
+
 			const parsedCoupon = couponSchema
 				.merge(
 					z.object({
 						redeemedBulkCouponPurchases: z.array(purchaseSchema),
-						bulkPurchases: z.array(purchaseSchema),
 					}),
 				)
 				.nullable()
-				.safeParse(couponData)
+				.safeParse(couponWithBulkPurchases)
 
 			if (!parsedCoupon.success) {
 				console.error(
@@ -931,6 +949,7 @@ export function mySqlDrizzleAdapter(
 				)
 				return null
 			}
+
 			return parsedCoupon.data
 		},
 		async getDefaultCoupon(productIds?: string[]): Promise<{
