@@ -2,29 +2,28 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
-import { api } from '@/trpc/react'
+import { getFirstLessonSlug } from '@/lib/workshops'
 import pluralize from 'pluralize'
 
 import { Button } from '@coursebuilder/ui'
 
+import { useModuleProgress } from './workshop-progress-provider'
+
 export function NextLessonButton({
 	moduleType,
 	moduleSlug,
-	firstLessonSlug,
 }: {
 	moduleType: string
 	moduleSlug: string
-	firstLessonSlug?: string | null
 }) {
-	const { data: moduleProgress, status } =
-		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: moduleSlug,
-		})
-
+	const workshopNavigation = useWorkshopNavigation()
+	const firstLessonSlug = getFirstLessonSlug(workshopNavigation)
+	const moduleProgress = useModuleProgress()
 	return (
 		<>
-			{status === 'success' && (
+			{moduleProgress && (
 				<>
 					{moduleProgress?.nextResource?.fields?.slug &&
 					moduleProgress?.completedLessons?.length > 0 ? (
@@ -60,7 +59,7 @@ export function NextLessonButton({
 					)}
 				</>
 			)}
-			{status === 'pending' && (
+			{!moduleProgress && (
 				<Button size="lg" disabled className="mt-10 w-full min-w-48 md:w-auto">
 					<Spinner className="h-4 w-4" />
 				</Button>

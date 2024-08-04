@@ -7,7 +7,7 @@ import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
-import { LessonProgressToggle } from '@/app/(content)/tutorials/_components/lesson-progress-toggle'
+import { ModuleLessonProgressToggle } from '@/app/(content)/workshops/_components/module-lesson-progress-toggle'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
@@ -16,8 +16,6 @@ import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
-import { Module } from '@/lib/module'
-import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
@@ -25,7 +23,6 @@ import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,
@@ -51,8 +48,6 @@ export async function LessonPage({
 	searchParams: { [key: string]: string | string[] | undefined }
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 }) {
-	const workshopNavData = await getWorkshopNavigation(params.module)
-
 	return (
 		<div>
 			<div className="mx-auto w-full" id="lesson">
@@ -103,7 +98,6 @@ export async function LessonPage({
 											}
 										>
 											<WorkshopResourceList
-												workshopNavigation={workshopNavData}
 												currentLessonSlug={params.lesson}
 												maxHeight="h-[600px]"
 												className="max-w-none border-l-0 border-t"
@@ -144,35 +138,6 @@ async function TranscriptContainer({
 				<Transcript transcriptLoader={transcriptLoader} />
 			</Suspense>
 		</div>
-	)
-}
-
-async function LessonActionBar({
-	lessonLoader,
-	tutorialLoader,
-}: {
-	lessonLoader: Promise<ContentResource | null | undefined>
-	tutorialLoader: Promise<Module | null | undefined>
-}) {
-	const { ability } = await getServerAuthSession()
-	const lesson = await lessonLoader
-	const tutorial = await tutorialLoader
-
-	return (
-		<>
-			{lesson && ability.can('update', 'Content') ? (
-				<div className="container flex h-9 w-full items-center justify-between px-1">
-					<div />
-					<Button size="sm" asChild>
-						<Link
-							href={`/workshops/${tutorial?.fields.slug}/${lesson.fields?.slug || lesson.id}/edit`}
-						>
-							Edit Lesson
-						</Link>
-					</Button>
-				</div>
-			) : null}
-		</>
 	)
 }
 
@@ -301,7 +266,7 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 						</div>
 						{(session?.user || ckSubscriber) &&
 						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
-							<LessonProgressToggle
+							<ModuleLessonProgressToggle
 								// if we are on solution, pass in exercise as lesson for completing
 								lesson={lesson}
 								moduleType="workshop"

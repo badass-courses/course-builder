@@ -1044,33 +1044,37 @@ export function mySqlDrizzleAdapter(
 			// Execute the optimized query
 			const results: any = await client.execute(sql`
         SELECT
-            cr.id AS resource_id,
-            cr.type AS resource_type,
-            cr.fields->>'$.slug' AS resource_slug,
-            rp.completedAt AS completed_at
-        FROM
-            ${contentResource} workshop
-        LEFT JOIN
-            ${contentResourceResource} crr1 ON workshop.id = crr1.resourceOfId
-        LEFT JOIN
-            ${contentResource} cr1 ON cr1.id = crr1.resourceId
-        LEFT JOIN
-            ${contentResourceResource} crr2 ON cr1.id = crr2.resourceOfId
-        LEFT JOIN
-            ${contentResource} cr2 ON cr2.id = crr2.resourceId
-        LEFT JOIN
-            ${resourceProgress} rp ON rp.resourceId = COALESCE(cr2.id, cr1.id) AND rp.userId = ${user.id}
-        CROSS JOIN
-            ${contentResource} cr
-        WHERE
-            (workshop.id = ${moduleIdOrSlug} OR workshop.fields->>'$.slug' = ${moduleIdOrSlug})
-            AND (
-                (cr.id = cr1.id AND cr1.type IN ('lesson', 'exercise'))
-                OR (cr.id = cr2.id AND cr2.type IN ('lesson', 'exercise'))
-            )
-        ORDER BY
-            COALESCE(crr1.position, 0),
-            COALESCE(crr2.position, 0);
+						cr.id AS resource_id,
+						cr.type AS resource_type,
+						cr.fields->>'$.slug' AS resource_slug,
+						rp.completedAt AS completed_at
+				FROM
+						(SELECT id, fields->>'$.slug' AS slug
+						 FROM ${contentResource}
+						 WHERE id = ${moduleIdOrSlug}
+								OR fields->>'$.slug' = ${moduleIdOrSlug}) AS w
+				LEFT JOIN
+						(SELECT
+								crr.resourceOfId AS workshop_id,
+								crr.resourceId,
+								crr.position
+						 FROM ${contentResourceResource} crr) AS tlr ON w.id = tlr.workshop_id
+				LEFT JOIN ${contentResource} sections ON sections.id = tlr.resourceId AND sections.type = 'section'
+				LEFT JOIN
+						(SELECT
+								crr.resourceOfId AS section_id,
+								crr.resourceId AS resource_id,
+								crr.position AS position_in_section,
+								section_crr.position AS section_position
+						 FROM ${contentResourceResource} crr
+						 JOIN ${contentResourceResource} section_crr ON crr.resourceOfId = section_crr.resourceId) AS sr
+				ON sr.section_id = sections.id
+				JOIN ${contentResource} cr ON cr.id = COALESCE(sr.resource_id, tlr.resourceId)
+				LEFT JOIN ResourceProgress rp ON rp.resourceId = cr.id
+						AND rp.userId = ${user.id}
+				WHERE
+						cr.type IN ('lesson', 'exercise')
+
     `)
 
 			// Process the results
