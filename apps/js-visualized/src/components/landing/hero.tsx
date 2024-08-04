@@ -21,9 +21,9 @@ const Hero = () => {
 				priority
 				className="sm:hidden"
 			/>
-			<div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-10 sm:flex-row sm:justify-start sm:pl-28">
-				<div className="flex max-w-[336px] flex-col items-center sm:max-w-[536px] sm:items-start">
-					<h1 className="text-center text-[1.75rem] font-normal leading-[1.3] tracking-tight text-white sm:text-left sm:text-[2.5rem]">
+			<div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-10 sm:flex-row sm:justify-start sm:pl-7 md:pl-10 lg:pl-16 xl:pl-28">
+				<div className="flex max-w-[336px] flex-col items-center sm:max-w-[300px] sm:items-start md:max-w-[400px] lg:max-w-[436px] xl:max-w-[536px]">
+					<h1 className="text-center text-[1.75rem] font-normal leading-[1.3] tracking-tight text-white sm:text-left sm:text-[1.6rem] md:text-[2rem] lg:text-[2.5rem] xl:text-[2.5rem]">
 						Deep Comprehensive Understanding of JavaScript{' '}
 						<span className="bg-gradient-green-to-blue bg-clip-text font-black text-transparent">
 							Visualized
