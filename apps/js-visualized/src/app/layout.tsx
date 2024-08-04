@@ -1,7 +1,7 @@
 import '@/styles/globals.css'
 
 import * as React from 'react'
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
@@ -33,6 +33,13 @@ export const metadata: Metadata = {
 			},
 		],
 	},
+}
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
 }
 
 export default function RootLayout({
