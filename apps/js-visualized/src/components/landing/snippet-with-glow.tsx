@@ -11,7 +11,7 @@ const SnippetWithGlow: React.FC<
 				You probably won't have any trouble reading this code snippet.
 			</h3>
 			<div className="relative mt-8 flex justify-center sm:mt-10 sm:max-w-md md:mt-16 md:max-w-none lg:mt-20">
-				<div className="absolute top-0 h-[158px] w-[247px] flex-shrink-0 rounded-[247px] bg-[linear-gradient(270deg,var(--jsv-purple)_-8.36%,var(--jsv-pink-hot)_102.7%)] blur-[82px] md:h-[170px] md:w-[400px] md:rounded-[400px] md:blur-[134px]" />
+				<div className="absolute top-0 h-[100px] w-[230px] flex-shrink-0 rounded-[230px] bg-[linear-gradient(270deg,var(--jsv-purple)_-8.36%,var(--jsv-pink-hot)_102.7%)] blur-[82px] sm:h-[158px] sm:w-[247px] sm:rounded-[247px] md:h-[170px] md:w-[400px] md:rounded-[400px] md:blur-[134px]" />
 				<Image
 					src="/images/trouble-reading-this-code-snippet.png"
 					alt="You probably won't have any trouble reading this code snippet."

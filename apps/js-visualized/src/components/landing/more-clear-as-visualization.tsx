@@ -15,11 +15,6 @@ const MoreClearAsVisualization: React.FC<{ className?: string }> = ({
 					visualization?
 				</span>
 			</h3>
-			<SectionWrapper className="mt-20">
-				<div className="bg-red flex w-full justify-center">
-					ANIMATED VISUALIZATION
-				</div>
-			</SectionWrapper>
 		</div>
 	)
 }
