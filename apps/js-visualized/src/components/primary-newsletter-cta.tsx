@@ -51,9 +51,10 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'not-prose relative mx-auto flex flex-col items-center gap-8 bg-[linear-gradient(2deg,var(--jsv-purple)_25.45%,var(--jsv-pink)_44.96%,var(--jsv-orange)_71.42%)] px-6 py-12 sm:max-w-lg sm:bg-[linear-gradient(280deg,var(--jsv-purple)_15.97%,var(--jsv-pink)_45.03%,var(--jsv-orange)_84.46%)] sm:p-12 md:max-w-lg md:p-16 lg:max-w-none lg:flex-row lg:items-start lg:p-24',
+				'not-prose relative mx-auto flex snap-start scroll-mt-[200px] flex-col items-center gap-8 bg-[linear-gradient(2deg,var(--jsv-purple)_25.45%,var(--jsv-pink)_44.96%,var(--jsv-orange)_71.42%)] px-6 py-12 sm:max-w-lg sm:bg-[linear-gradient(280deg,var(--jsv-purple)_15.97%,var(--jsv-pink)_45.03%,var(--jsv-orange)_84.46%)] sm:p-12 md:max-w-lg md:p-16 lg:max-w-none lg:flex-row lg:items-start lg:p-24',
 				className,
 			)}
+			style={{ overflowAnchor: 'none' }}
 		>
 			<div className="absolute right-32 top-0 h-[310px] w-[192px] bg-[radial-gradient(circle,_rgba(255,255,255,0.1)_1px,_transparent_1px)] bg-[length:24px_24px]" />
 			<div className="grow">
