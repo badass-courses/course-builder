@@ -111,6 +111,8 @@ const config: Config = {
 					'linear-gradient(134deg, var(--jsv-blue-electric) 5%, var(--jsv-pink) 90.52%)',
 				'gradient-pink-to-orange':
 					'linear-gradient(134deg, var(--jsv-pink), var(--jsv-orange))',
+				'gradient-button-hover':
+					'linear-gradient(to right, #292B2C,#000,#292B2C,#292B2C,#000,#292B2C)',
 			},
 			typography: ({ theme }: { theme: any }) => ({
 				invert: {
