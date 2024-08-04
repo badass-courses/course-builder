@@ -10,6 +10,6 @@
 		@apply rounded-xl border-none bg-white/75 px-6 placeholder:text-[hsla(320,12%,49%,0.7)];
 	}
 	[data-sr-button] {
-		@apply bg-jsv-charcoal-black w-full rounded-full py-8 font-extrabold text-white;
+		@apply bg-jsv-charcoal-black w-full rounded-full bg-[linear-gradient(to_right,#292B2C,#000,#292B2C,#292B2C,#000,#292B2C)] bg-[length:300%_100%] bg-[position:0%_0] py-8 font-extrabold text-white transition-[background-position] duration-500 ease-in-out hover:bg-[position:100%_0];
 	}
 }
