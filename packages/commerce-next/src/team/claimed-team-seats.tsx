@@ -24,7 +24,11 @@ export const ClaimedTeamSeats: React.FC<
 				)}
 				{!isEmpty(claims) ? (
 					claims?.map((claim: any) => (
-						<div data-claimed-seat="" className="p-5" key={claim.user?.email}>
+						<div
+							data-claimed-seat=""
+							className="pb-1.5"
+							key={claim.user?.email}
+						>
 							{claim.user?.email}
 						</div>
 					))
