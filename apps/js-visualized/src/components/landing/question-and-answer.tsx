@@ -14,12 +14,15 @@ const QuestionAndAnswer: React.FC<
 	return (
 		<MDXProvider components={mdxComponents}>
 			<SectionWrapper
-				className={cn('grid gap-3 sm:gap-5 lg:grid-cols-2', className)}
+				className={cn(
+					'sm:bg-jsv-charcoal grid gap-3 rounded-none bg-transparent p-0 sm:rounded-[2.5rem] sm:p-14 md:gap-5 md:p-16 lg:grid-cols-2 lg:p-20 xl:p-24',
+					className,
+				)}
 			>
-				<div className="prose-headings:my-0 prose-headings:font-normal prose-headings:text-[1.75rem] sm:prose-headings:text-[2.5rem] prose-headings:leading-[1.4] sm:prose-headings:leading-[1.2] text-[2.5rem]">
+				<div className="prose-headings:my-0 prose-headings:font-normal prose-headings:text-[1.75rem] sm:prose-headings:text-3xl md:prose-headings:text-[2.5rem] prose-headings:leading-[1.4] sm:prose-headings:leading-[1.2]">
 					{title}
 				</div>
-				<div className="prose prose-lg sm:prose-xl dark:prose-invert prose-p:first-of-type:mt-0">
+				<div className="prose prose-lg md:prose-xl dark:prose-invert prose-p:first-of-type:mt-0 prose-p:last-of-type:mb-0">
 					{content}
 				</div>
 			</SectionWrapper>
