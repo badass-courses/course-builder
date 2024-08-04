@@ -15,8 +15,8 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 			<h3 className="text-sm font-medium uppercase tracking-widest">
 				Introducing
 			</h3>
-			<h2 className="text-body-text mt-4 flex flex-col text-[2rem] leading-tight sm:flex-row sm:text-5xl">
-				<span>JavaScript</span>{' '}
+			<h2 className="text-body-text mt-4 max-w-xs text-center text-[2rem] leading-tight md:max-w-none md:text-4xl md:leading-tight lg:text-5xl lg:leading-tight">
+				JavaScript{' '}
 				<span className="bg-gradient-green-to-blue bg-clip-text font-bold text-transparent sm:font-black">
 					Visualized
 				</span>
@@ -26,11 +26,11 @@ const Introducing: React.FC<{ className?: string }> = ({ className }) => {
 				comprehensive understanding of JavaScript's internals, without relying
 				on oversimplified metaphors or getting bogged down by boredom.
 			</p>
-			<div className="mt-6 w-full sm:mt-24">
-				<h3 className="text-lg font-bold text-white sm:text-xl">
+			<div className="mt-6 w-full sm:mt-12 md:mt-24">
+				<h3 className="text-center text-lg font-bold text-white sm:text-xl md:text-left">
 					With JavaScript Visualized, you will:
 				</h3>
-				<ul className="mt-10 space-y-8 sm:mt-16 sm:space-y-10">
+				<ul className="mt-10 space-y-8 sm:space-y-10 md:mt-16">
 					{copy.map((item, i) => {
 						return (
 							<li
