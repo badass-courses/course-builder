@@ -58,7 +58,6 @@ export function ModuleLessonProgressToggle({
 						resourceId: lesson.id,
 						isCompleted: checked,
 					})
-
 					await revalidateTutorialLesson(
 						params.module as string,
 						params.lesson as string,
