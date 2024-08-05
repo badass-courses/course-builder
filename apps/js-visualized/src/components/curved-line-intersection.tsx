@@ -2,7 +2,7 @@ import React from 'react'
 import { cn } from '@/utils/cn'
 
 const commonStyles =
-	'bg-background absolute size-[calc(var(--curvature-height-sm)/2+1px)] md:size-[calc(var(--curvature-height-md)/2+1px)] lg:size-[calc(var(--curvature-height-lg)/2+1px)] xl:size-[calc(var(--curvature-height-xl)/2+1px)] before:absolute before:inset-0'
+	'bg-[#090909] absolute size-[calc(var(--curvature-height-sm)/2+1px)] md:size-[calc(var(--curvature-height-md)/2+1px)] lg:size-[calc(var(--curvature-height-lg)/2+1px)] xl:size-[calc(var(--curvature-height-xl)/2+1px)] before:absolute before:inset-0'
 
 const CurvedLineIntersection: React.FC<
 	React.PropsWithChildren<{
