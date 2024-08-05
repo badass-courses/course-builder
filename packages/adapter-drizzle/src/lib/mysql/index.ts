@@ -1070,7 +1070,7 @@ export function mySqlDrizzleAdapter(
 						 JOIN ${contentResourceResource} section_crr ON crr.resourceOfId = section_crr.resourceId) AS sr
 				ON sr.section_id = sections.id
 				JOIN ${contentResource} cr ON cr.id = COALESCE(sr.resource_id, tlr.resourceId)
-				LEFT JOIN ResourceProgress rp ON rp.resourceId = cr.id
+				LEFT JOIN ${resourceProgress} rp ON rp.resourceId = cr.id
 						AND rp.userId = ${user.id}
 				WHERE
 						cr.type IN ('lesson', 'exercise')
