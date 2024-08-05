@@ -163,7 +163,7 @@ export async function getModuleProgressForUser(
 	const subscriberCookie = cookies().get('ck_subscriber')
 
 	if (!subscriberCookie) {
-		console.error('no subscriber cookie')
+		console.debug('no subscriber cookie')
 		return {
 			completedLessons: [],
 			nextResource: null,
@@ -176,7 +176,7 @@ export async function getModuleProgressForUser(
 	const subscriber = SubscriberSchema.parse(JSON.parse(subscriberCookie.value))
 
 	if (!subscriber?.email_address) {
-		console.error('no subscriber cookie')
+		console.debug('no subscriber cookie')
 		return {
 			completedLessons: [],
 			nextResource: null,

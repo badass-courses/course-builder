@@ -54,10 +54,6 @@ export async function createCoupon(input: CouponInput) {
 					})
 				: null
 
-		if (!merchantCoupon) {
-			throw new Error('No coupon found')
-		}
-
 		await db.insert(coupon).values({
 			...input,
 			merchantCouponId: merchantCoupon?.id,

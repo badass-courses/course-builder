@@ -9,10 +9,18 @@ import { CreateResourceCard } from '@coursebuilder/ui/resources-crud/create-reso
 
 export const dynamic = 'force-dynamic'
 
+/**
+ * Creates a new resource page for the given resource type.
+ * @param resourceType The type of resource to create.
+ * @param pathPrefix The path prefix to use for the resource. Defaults to an empty string. Optional.
+ * @returns A React component that renders the CreateResourceCard component.
+ */
 export default async function CreateResourcePage({
 	resourceType,
+	pathPrefix = '',
 }: {
 	resourceType: string
+	pathPrefix?: string
 }) {
 	const { ability } = await getServerAuthSession()
 
@@ -26,7 +34,9 @@ export default async function CreateResourcePage({
 				resourceType={resourceType}
 				onCreate={async (resource: ContentResource) => {
 					'use server'
-					redirect(`/${pluralize(resourceType)}/${resource.fields?.slug}/edit`)
+					redirect(
+						`${pathPrefix}/${pluralize(resourceType)}/${resource.fields?.slug}/edit`,
+					)
 				}}
 				createResource={createResource}
 			/>
