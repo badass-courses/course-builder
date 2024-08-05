@@ -10,9 +10,12 @@ import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
+import { getPage } from '@/lib/pages-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProducts } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
+import { BarChart, Wrench, Zap } from 'lucide-react'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import type { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
@@ -40,6 +43,7 @@ type Props = {
 const Home = async ({ searchParams }: Props) => {
 	const products = await getProducts()
 	const product = products[0]
+	const page = await getPage('page-16xsv')
 
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
@@ -105,7 +109,14 @@ const Home = async ({ searchParams }: Props) => {
 
 			<main className="mx-auto w-full pt-5 sm:pt-16">
 				<article className="prose sm:prose-lg prose-p:mx-auto prose-headings:mx-auto prose-ul:mx-auto prose-img:mx-auto prose-h2:text-center prose-p:max-w-[45rem] prose-headings:max-w-[45rem] prose-ul:max-w-[45rem] mx-auto w-full max-w-none px-6 sm:px-10">
-					{allowPurchase ? <WorkshopCopy /> : <LandingCopy />}
+					{allowPurchase ? (
+						<WorkshopCopy />
+					) : (
+						<MDXRemote
+							source={page?.fields.body || ''}
+							components={{ Zap, Wrench, BarChart }}
+						/>
+					)}
 				</article>
 				{product && allowPurchase && pricingDataLoader ? (
 					<>
