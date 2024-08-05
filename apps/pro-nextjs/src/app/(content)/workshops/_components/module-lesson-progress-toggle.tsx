@@ -52,18 +52,12 @@ export function ModuleLessonProgressToggle({
 				checked={isCompleted}
 				onCheckedChange={async (checked) => {
 					startTransition(() => {
-						console.log('startTransition')
 						setIsCompleted(checked)
 					})
-					console.log('setProgressForResource')
-					const lessonProgress = await setProgressForResource({
+					await setProgressForResource({
 						resourceId: lesson.id,
 						isCompleted: checked,
 					})
-
-					console.log('lessonProgress', lessonProgress)
-
-					console.log('revalidate')
 					await revalidateTutorialLesson(
 						params.module as string,
 						params.lesson as string,

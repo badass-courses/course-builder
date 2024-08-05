@@ -25,7 +25,7 @@ export const useModuleProgress = () => {
 	const context = React.use(ModuleProgressContext)
 	if (!context) {
 		throw new Error(
-			'useWorkshopNavigation must be used within a WorkshopNavigationProvider',
+			'useModuleProgress must be used within a ModuleProgressProvider',
 		)
 	}
 	return context
