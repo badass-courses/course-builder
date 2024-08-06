@@ -25,9 +25,7 @@ import z from 'zod'
 import { productSchema } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 
-export async function getWorkshopNavigation(
-	moduleSlugOrId: string,
-): Promise<WorkshopNavigation | null> {
+async function getAllWorkshopLessonsWithSectionInfo(moduleSlugOrId: string) {
 	const result = await db.execute(sql`SELECT
     workshop.id AS workshop_id,
     workshop.fields->>'$.slug' AS workshop_slug,
@@ -134,9 +132,14 @@ ORDER BY
     combined.position,
     combined.lesson_position`)
 
-	const workshopNavigationResult = NavigationResultSchemaArraySchema.parse(
-		result.rows,
-	)
+	return NavigationResultSchemaArraySchema.parse(result.rows)
+}
+
+export async function getWorkshopNavigation(
+	moduleSlugOrId: string,
+): Promise<WorkshopNavigation | null> {
+	const workshopNavigationResult =
+		await getAllWorkshopLessonsWithSectionInfo(moduleSlugOrId)
 
 	if (workshopNavigationResult.length === 0) {
 		return null
