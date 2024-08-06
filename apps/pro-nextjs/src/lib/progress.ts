@@ -67,8 +67,16 @@ async function getUser() {
 		return null
 	}
 
-	const subscriber = SubscriberSchema.parse(JSON.parse(subscriberCookie.value))
+	const parseResult = SubscriberSchema.safeParse(
+		JSON.parse(subscriberCookie.value),
+	)
 
+	if (!parseResult.success) {
+		console.error('Error parsing subscriber', parseResult.error)
+		return null
+	}
+
+	const subscriber = parseResult.data
 	if (!subscriber?.email_address) {
 		console.debug('no subscriber cookie')
 		return null
@@ -158,7 +166,22 @@ export async function getModuleProgressForUser(
 		}
 	}
 
-	const subscriber = SubscriberSchema.parse(JSON.parse(subscriberCookie.value))
+	const parsedSubscriber = SubscriberSchema.safeParse(
+		JSON.parse(subscriberCookie.value),
+	)
+
+	if (!parsedSubscriber.success) {
+		console.error('Error parsing subscriber', parsedSubscriber.error)
+		return {
+			completedLessons: [],
+			nextResource: null,
+			percentCompleted: 0,
+			completedLessonsCount: 0,
+			totalLessonsCount: 0,
+		}
+	}
+
+	const subscriber = parsedSubscriber.data
 
 	if (!subscriber?.email_address) {
 		console.debug('no subscriber cookie')
