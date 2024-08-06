@@ -30,8 +30,12 @@ import { logger } from '@coursebuilder/core/utils/logger'
 const getServerSideProps = async (session_id: string) => {
 	const paymentProvider = stripeProvider
 
-	if (!session_id || !paymentProvider) {
-		notFound()
+	if (!paymentProvider) {
+		throw new Error('No payment provider found')
+	}
+
+	if (!session_id) {
+		throw new Error(`No session_id found: ${session_id}`)
 	}
 
 	const maxRetries = 5
