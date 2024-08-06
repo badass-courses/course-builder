@@ -14,13 +14,13 @@ const QuestionOrAnswerCard: React.FC<
 		<MDXProvider components={mdxComponents}>
 			<SectionWrapper
 				className={cn(
-					'bg-jsv-charcoal relative flex flex-col overflow-hidden rounded-[2.5rem] px-6 pb-8 pt-5 sm:flex-row sm:items-center sm:p-14',
+					'bg-jsv-charcoal relative flex flex-col overflow-hidden rounded-[2.5rem] px-6 pb-8 pt-5 sm:flex-row sm:items-center sm:p-10 md:p-12 xl:p-14',
 					className,
 				)}
 			>
 				<div
-					className="absolute right-4 top-4 flex size-10
-items-center justify-center rounded-full border border-[#7B8992] text-2xl text-[#7B8992]"
+					className="absolute right-4 top-4 flex size-10 items-center justify-center
+rounded-full border border-[#7B8992] text-2xl text-[#7B8992]"
 				>
 					{type === 'q' ? '?' : '!'}
 				</div>
@@ -32,7 +32,7 @@ items-center justify-center rounded-full border border-[#7B8992] text-2xl text-[
 				/>
 				<div
 					className={cn(
-						'self-start bg-clip-text text-[80px] font-black font-extrabold uppercase leading-none text-transparent sm:self-center md:text-[120px]',
+						'self-start bg-clip-text text-[80px] font-black font-extrabold uppercase leading-none text-transparent sm:self-center md:text-[100px] lg:text-[120px]',
 						{
 							'bg-gradient-green-to-blue': type === 'q',
 							'bg-gradient-blue-to-pink': type === 'a',
@@ -41,7 +41,7 @@ items-center justify-center rounded-full border border-[#7B8992] text-2xl text-[
 				>
 					{type}
 				</div>
-				<div className="prose-p:m-0 prose-p:text-lg mt-5 leading-snug text-white md:mt-0 md:pl-16">
+				<div className="prose-p:m-0 prose-p:text-lg mt-5 leading-snug text-white sm:ml-10 sm:mt-0 sm:max-w-[304px] md:ml-16 lg:ml-12 xl:ml-16">
 					{children}
 				</div>
 			</SectionWrapper>
