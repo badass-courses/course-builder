@@ -58,15 +58,11 @@ export function TutorialLessonProgressToggle({
 						console.log('startTransition')
 						setIsCompleted(checked)
 					})
-					console.log('setProgressForResource')
 					const lessonProgress = await setProgressForResource({
 						resourceId: lesson.id,
 						isCompleted: checked,
 					})
 
-					console.log('lessonProgress', lessonProgress)
-
-					console.log('invalidate')
 					await utils.progress.invalidate()
 
 					// await revalidateTutorialLesson(
