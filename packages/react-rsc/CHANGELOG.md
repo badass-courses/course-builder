@@ -1,5 +1,15 @@
 # @coursebuilder/react-rsc
 
+## 0.0.4
+
+### Patch Changes
+
+- [#210](https://github.com/badass-courses/course-builder/pull/210) [`9382a6f`](https://github.com/badass-courses/course-builder/commit/9382a6f62fd5c4a3e848979595091b7e00d9cd1b) Thanks [@vojtaholik](https://github.com/vojtaholik)! - improved resource creation flows
+
+- Updated dependencies [[`764437e`](https://github.com/badass-courses/course-builder/commit/764437e71a1aebec3db81acf2d67d28fbfee8146), [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea), [`bccc308`](https://github.com/badass-courses/course-builder/commit/bccc3084077ab2bf24f1ac9361c3c13936749c6a), [`e32549a`](https://github.com/badass-courses/course-builder/commit/e32549ab4f0e903a467120a35ab27ef44892b115), [`9382a6f`](https://github.com/badass-courses/course-builder/commit/9382a6f62fd5c4a3e848979595091b7e00d9cd1b), [`b138ba5`](https://github.com/badass-courses/course-builder/commit/b138ba58a22623ca9bdbe9529e054d10d6014881), [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1)]:
+  - @coursebuilder/core@0.2.3
+  - @coursebuilder/ui@1.0.16
+
 ## 0.0.3
 
 ### Patch Changes

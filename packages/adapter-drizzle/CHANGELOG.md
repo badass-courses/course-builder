@@ -1,5 +1,17 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.5.1
+
+### Patch Changes
+
+- [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea) Thanks [@vojtaholik](https://github.com/vojtaholik)! - implement getProductResources handler
+
+- [#235](https://github.com/badass-courses/course-builder/pull/235) [`bccc308`](https://github.com/badass-courses/course-builder/commit/bccc3084077ab2bf24f1ac9361c3c13936749c6a) Thanks [@joelhooks](https://github.com/joelhooks)! - improved progress loading for module
+
+- [#219](https://github.com/badass-courses/course-builder/pull/219) [`e32549a`](https://github.com/badass-courses/course-builder/commit/e32549ab4f0e903a467120a35ab27ef44892b115) Thanks [@joelhooks](https://github.com/joelhooks)! - removeResourceResource so content resources can be detached from parent
+
+- [#221](https://github.com/badass-courses/course-builder/pull/221) [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1) Thanks [@vojtaholik](https://github.com/vojtaholik)! - update redeemFullPriceCoupon method to return useful error message when trying to redeem existing purchase
+
 ## 0.5.0
 
 ### Minor Changes

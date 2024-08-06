@@ -1,5 +1,27 @@
 # @coursebuilder/commerce-next
 
+## 0.0.7
+
+### Patch Changes
+
+- [#225](https://github.com/badass-courses/course-builder/pull/225) [`b017d39`](https://github.com/badass-courses/course-builder/commit/b017d39fd161c9b88eb1de61c029f9a82033699e) Thanks [@vojtaholik](https://github.com/vojtaholik)! - use shared Checkbox component for PPP toggle
+
+- [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea) Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix "Start Learning" on Welcome page; redirect logged in users with email matching the purchase from Thanks to Welcome page
+
+- [#216](https://github.com/badass-courses/course-builder/pull/216) [`c456113`](https://github.com/badass-courses/course-builder/commit/c456113d1bfcffa63fc710e71177708a8e7652ee) Thanks [@vojtaholik](https://github.com/vojtaholik)! - get country in propsForCommerce
+
+- [#221](https://github.com/badass-courses/course-builder/pull/221) [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1) Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix and refactor redeem dialog; improved team invite comps
+
+- [#206](https://github.com/badass-courses/course-builder/pull/206) [`b138ba5`](https://github.com/badass-courses/course-builder/commit/b138ba58a22623ca9bdbe9529e054d10d6014881) Thanks [@joelhooks](https://github.com/joelhooks)! - tweaks for commerce
+
+- [#240](https://github.com/badass-courses/course-builder/pull/240) [`764437e`](https://github.com/badass-courses/course-builder/commit/764437e71a1aebec3db81acf2d67d28fbfee8146) Thanks [@vojtaholik](https://github.com/vojtaholik)! - create Purchased wrapper component and BuyMoreSeats components
+
+- [`2a9943a`](https://github.com/badass-courses/course-builder/commit/2a9943a3f7936c7248749c4dd010932c893bde99) Thanks [@vojtaholik](https://github.com/vojtaholik)! - improved purchase transfer ux, fix logic for displaying "start learning" button
+
+- Updated dependencies [[`764437e`](https://github.com/badass-courses/course-builder/commit/764437e71a1aebec3db81acf2d67d28fbfee8146), [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea), [`bccc308`](https://github.com/badass-courses/course-builder/commit/bccc3084077ab2bf24f1ac9361c3c13936749c6a), [`e32549a`](https://github.com/badass-courses/course-builder/commit/e32549ab4f0e903a467120a35ab27ef44892b115), [`9382a6f`](https://github.com/badass-courses/course-builder/commit/9382a6f62fd5c4a3e848979595091b7e00d9cd1b), [`b138ba5`](https://github.com/badass-courses/course-builder/commit/b138ba58a22623ca9bdbe9529e054d10d6014881), [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1)]:
+  - @coursebuilder/core@0.2.3
+  - @coursebuilder/ui@1.0.16
+
 ## 0.0.6
 
 ### Patch Changes
