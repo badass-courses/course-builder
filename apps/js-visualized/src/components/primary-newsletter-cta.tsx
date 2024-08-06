@@ -51,9 +51,10 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'not-prose relative flex flex-col items-center gap-8 bg-[linear-gradient(2deg,var(--jsv-purple)_25.45%,var(--jsv-pink)_44.96%,var(--jsv-orange)_71.42%)] px-6 py-12 sm:bg-[linear-gradient(280deg,var(--jsv-purple)_15.97%,var(--jsv-pink)_45.03%,var(--jsv-orange)_84.46%)] md:p-24 lg:flex-row lg:items-start',
+				'not-prose relative mx-auto flex snap-start scroll-mt-[200px] flex-col items-center gap-8 bg-[linear-gradient(2deg,var(--jsv-purple)_25.45%,var(--jsv-pink)_44.96%,var(--jsv-orange)_71.42%)] px-6 py-12 sm:max-w-lg sm:bg-[linear-gradient(280deg,var(--jsv-purple)_15.97%,var(--jsv-pink)_45.03%,var(--jsv-orange)_84.46%)] sm:p-12 md:max-w-lg md:p-16 lg:max-w-none lg:flex-row lg:items-start lg:p-24',
 				className,
 			)}
+			style={{ overflowAnchor: 'none' }}
 		>
 			<div className="absolute right-32 top-0 h-[310px] w-[192px] bg-[radial-gradient(circle,_rgba(255,255,255,0.1)_1px,_transparent_1px)] bg-[length:24px_24px]" />
 			<div className="grow">
@@ -61,7 +62,7 @@ export const PrimaryNewsletterCta: React.FC<
 					children
 				) : (
 					<div className="text-white">
-						<h2 className="text-[1.75rem] leading-[1.4] tracking-tight sm:max-w-[400px] sm:text-5xl sm:leading-tight">
+						<h2 className="text-[1.75rem] leading-[1.4] tracking-tight sm:max-w-[400px] sm:text-3xl sm:leading-tight md:max-w-[400px] md:text-4xl md:leading-tight lg:text-5xl">
 							<span className="opacity-80">Deeper</span>{' '}
 							<span className="font-bold">Understanding</span>{' '}
 							<span className="opacity-80">Awaits</span>
@@ -72,11 +73,11 @@ export const PrimaryNewsletterCta: React.FC<
 					</div>
 				)}
 			</div>
-			<div className="flex w-full max-w-[415px] shrink-0 flex-col items-center">
+			<div className="flex w-full shrink-0 flex-col items-center lg:max-w-[340px] xl:max-w-[415px]">
 				<SubscribeToCoursebuilderForm
 					onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 					actionLabel={actionLabel}
-					className="relative z-10 w-full [&_input]:h-16"
+					className="text-jsv-charcoal-black relative z-10 w-full [&_input]:h-16"
 				/>
 				<p
 					data-nospam=""

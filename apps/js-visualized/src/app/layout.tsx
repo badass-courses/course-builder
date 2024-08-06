@@ -1,7 +1,7 @@
 import '@/styles/globals.css'
 
 import * as React from 'react'
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
@@ -35,6 +35,13 @@ export const metadata: Metadata = {
 	},
 }
 
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
+}
+
 export default function RootLayout({
 	children,
 }: {
@@ -55,7 +62,7 @@ export default function RootLayout({
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />
-								<main className="flex min-h-screen flex-col pt-[--nav-height]">
+								<main className="flex min-h-screen flex-col pt-[--nav-height-mobile] sm:pt-[--nav-height]">
 									<NextSSRPlugin
 										/**
 										 * The `extractRouterConfig` will extract **only** the route configs from the

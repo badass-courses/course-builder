@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
 import { Login } from '@/components/navigation/login'
 import { User } from '@/components/navigation/user'
+import useSmoothScroll from '@/hooks/use-smooth-scroll'
 import { cn } from '@/utils/cn'
 import { cx } from 'class-variance-authority'
 import {
@@ -13,8 +14,6 @@ import {
 	useAnimationControls,
 	type AnimationControls,
 } from 'framer-motion'
-
-import { ThemeToggle } from './theme-toggle'
 
 const Logo = () => {
 	return (
@@ -45,6 +44,7 @@ export function Links({ className }: { className?: string }) {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
 	const [menuOpen, setMenuOpen] = React.useState(false)
+	const scrollToElement = useSmoothScroll()
 
 	const navigationLinks = getNavigationLinks()
 	return (
@@ -89,14 +89,15 @@ export function Links({ className }: { className?: string }) {
 				<User className="hidden md:flex" />
 				<ThemeToggle />
 				<NavToggle isMenuOpened={menuOpen} setMenuOpened={setMenuOpen} /> */}
-					<a
-						href="#waitlist"
-						className="hover:border-jsv-green group flex h-12 items-center items-center overflow-hidden rounded-full border border-transparent bg-[linear-gradient(90deg,var(--jsv-hazy-charcoal)_0%,var(--jsv-green)_50%,var(--jsv-hazy-charcoal)_100%)] text-sm font-medium duration-300"
+					<button
+						type="button"
+						className="hover:border-jsv-green group flex h-10 items-center items-center overflow-hidden rounded-full border border-transparent bg-[linear-gradient(90deg,var(--jsv-hazy-charcoal)_0%,var(--jsv-green)_50%,var(--jsv-hazy-charcoal)_100%)] text-sm font-medium duration-500 sm:h-12"
+						onClick={() => scrollToElement('primary-newsletter-cta', 1500, 100)}
 					>
-						<span className="flex grow items-center self-stretch rounded-full bg-[#151617] px-10 text-white/75 duration-300 group-hover:bg-[linear-gradient(90deg,#292B2C_0%,#000_50.3%,#292B2C_100%)] group-hover:text-white">
+						<span className="bg-gradient-button-hover flex grow items-center self-stretch rounded-full bg-[#151617] bg-[length:300%_100%] px-6 text-white/75 duration-300 group-hover:bg-[position:100%_0] group-hover:text-white sm:px-10">
 							join the waitlist
 						</span>
-					</a>
+					</button>
 				</div>
 				<AnimatePresence>
 					{menuOpen && (

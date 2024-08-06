@@ -11,15 +11,15 @@ const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 			<h3 className="max-w-[350px] text-center text-lg font-bold text-white sm:max-w-none sm:text-2xl">
 				Here's a closer look at what you'll learn:
 			</h3>
-			<SectionWrapper className="sm:bg-jsv-charcoal mt-9 rounded-none bg-transparent p-0 sm:mt-20 sm:rounded-[2.5rem] sm:p-24">
+			<SectionWrapper className="sm:bg-jsv-charcoal mt-9 rounded-none bg-transparent p-0 sm:mt-20 sm:rounded-[2.5rem] sm:p-8 md:p-10 lg:p-24">
 				<ul className="border-jsv-hazy-charcoal list-none border-b sm:border-none">
 					{copy.map((copy) => {
 						return (
 							<li
 								key={copy.title}
-								className="border-jsv-hazy-charcoal flex flex-col items-center gap-5 text-balance border-t py-10 text-center first:border-none first:pt-0 sm:gap-14 sm:py-[74px] sm:text-left md:flex-row"
+								className="border-jsv-hazy-charcoal ms:gap-14 flex flex-col items-center gap-5 text-balance border-t py-10 text-center first:border-none first:pt-0 sm:gap-6 md:flex-row md:gap-10 md:py-12 md:text-left lg:gap-12 lg:py-[74px]"
 							>
-								<div className="w-[100px] shrink-0 md:w-[200px]">
+								<div className="w-24 shrink-0 sm:w-28 md:w-40 lg:w-48">
 									<Image
 										src={`${urlBase}${copy.image}`}
 										alt={copy.title}
@@ -28,7 +28,7 @@ const WhatYouWillLearn: React.FC<{ className?: string }> = ({ className }) => {
 									/>
 								</div>
 								<div className="max-w-[660px] space-y-4">
-									<h3 className="text-lg font-bold leading-tight text-white sm:text-2xl">
+									<h3 className="text-lg font-bold leading-tight text-white sm:text-xl md:text-2xl">
 										{copy.title}
 									</h3>
 									<p className="text-body-text-alt text-lg leading-normal sm:leading-[1.75]">
