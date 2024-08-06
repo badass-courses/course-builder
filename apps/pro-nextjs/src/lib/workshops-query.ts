@@ -6,10 +6,12 @@ import { contentResource, contentResourceResource } from '@/db/schema'
 import { Module, ModuleSchema } from '@/lib/module'
 import {
 	NavigationLesson,
+	NavigationLessonSchema,
 	NavigationResource,
 	NavigationResultSchema,
 	NavigationResultSchemaArraySchema,
 	NavigationSection,
+	NavigationSectionSchema,
 	WorkshopNavigation,
 	WorkshopNavigationSchema,
 } from '@/lib/workshops'
@@ -147,37 +149,37 @@ ORDER BY
 
 	workshopNavigationResult.forEach((item) => {
 		if (item.item_type === 'lesson' && item.lesson_id) {
-			const newLesson: NavigationLesson = {
+			const newLesson: NavigationLesson = NavigationLessonSchema.parse({
 				id: item.lesson_id,
 				slug: item.lesson_slug,
 				title: item.lesson_title,
 				position: item.lesson_position,
 				type: 'lesson',
-			}
+			})
 
 			resources.push(newLesson)
 		} else if (item.section_id) {
 			if (!sectionsMap.has(item.section_id)) {
-				const newSection: NavigationSection = {
+				const newSection: NavigationSection = NavigationSectionSchema.parse({
 					id: item.section_id,
 					slug: item.section_slug,
-					title: item.section_title!,
+					title: item.section_title,
 					position: item.section_position,
 					type: 'section',
 					lessons: [],
-				}
+				})
 				sectionsMap.set(item.section_id, newSection)
 				resources.push(newSection)
 			}
 			if (item.lesson_id) {
-				const newLesson: NavigationLesson = {
+				const newLesson: NavigationLesson = NavigationLessonSchema.parse({
 					id: item.lesson_id,
 					slug: item.lesson_slug,
 					title: item.lesson_title,
 					position: item.lesson_position,
 					type: 'lesson',
-				}
-				sectionsMap.get(item.section_id)!.lessons.push(newLesson)
+				})
+				sectionsMap.get(item.section_id)?.lessons.push(newLesson)
 			}
 		}
 	})
