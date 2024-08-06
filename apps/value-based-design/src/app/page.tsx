@@ -2,6 +2,9 @@ import * as React from 'react'
 import { type Metadata } from 'next'
 import Image from 'next/image'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import { getPage } from '@/lib/pages-query'
+import { BarChart, Wrench, Zap } from 'lucide-react'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import LandingCopy from './_components/landing-copy'
 
@@ -12,11 +15,20 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
+	const page = await getPage('page-1dywz')
+
 	return (
 		<div className="flex flex-col">
 			<section aria-label="About Value-Based Design Workshop">
 				<article className="prose sm:prose prose-sm bg-background mx-auto w-full max-w-3xl px-6 py-10 sm:py-16 sm:pb-24 lg:px-16">
-					<LandingCopy />
+					{page?.fields?.body ? (
+						<MDXRemote
+							source={page?.fields.body || ''}
+							components={{ Zap, Wrench, BarChart }}
+						/>
+					) : (
+						<LandingCopy />
+					)}
 					<PrimaryNewsletterCta className="not-prose" withTitle={false} />
 				</article>
 			</section>
