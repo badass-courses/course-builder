@@ -31,60 +31,72 @@ export async function getWorkshopNavigation(
     workshop.fields->>'$.slug' AS workshop_slug,
     workshop.fields->>'$.title' AS workshop_title,
     workshop.fields->>'$.coverImage.url' AS workshop_image,
-    combined.section_or_lesson_id,
-    combined.section_or_lesson_slug,
-    combined.section_or_lesson_title,
-    combined.section_or_lesson_position,
+    CASE
+        WHEN combined.item_type = 'section' THEN combined.section_id
+        ELSE NULL
+    END AS section_id,
+    CASE
+        WHEN combined.item_type = 'section' THEN combined.section_slug
+        ELSE NULL
+    END AS section_slug,
+    CASE
+        WHEN combined.item_type = 'section' THEN combined.section_title
+        ELSE NULL
+    END AS section_title,
+    combined.position AS section_position,
     combined.item_type,
     combined.lesson_id,
     combined.lesson_slug,
     combined.lesson_title,
     combined.lesson_position
 FROM
-    ContentResource AS workshop
+    ${contentResource} AS workshop
+# all of the lessons in the workshop with section information
 LEFT JOIN (
+		# all the top-level lessons, not in a section
     SELECT
         workshop_id,
-        lesson_id AS section_or_lesson_id,
-        lesson_slug AS section_or_lesson_slug,
-        lesson_title AS section_or_lesson_title,
-        lesson_position AS section_or_lesson_position,
-        'lesson' AS item_type,
+        NULL AS section_id,
+        NULL AS section_slug,
+        NULL AS section_title,
         lesson_id,
         lesson_slug,
         lesson_title,
-        lesson_position
+        position,
+        'lesson' AS item_type,
+        position AS lesson_position
     FROM (
         SELECT
             workshop.id AS workshop_id,
             top_level_lessons.id AS lesson_id,
             top_level_lessons.fields->>'$.slug' AS lesson_slug,
             top_level_lessons.fields->>'$.title' AS lesson_title,
-            top_level_lesson_relations.position AS lesson_position
+            top_level_lesson_relations.position
         FROM
-            ContentResource AS workshop
-        LEFT JOIN ContentResourceResource AS top_level_lesson_relations
+            ${contentResource} AS workshop
+        JOIN ${contentResourceResource} AS top_level_lesson_relations
             ON workshop.id = top_level_lesson_relations.resourceOfId
-        LEFT JOIN ContentResource AS top_level_lessons
+        JOIN ${contentResource} AS top_level_lessons
             ON top_level_lessons.id = top_level_lesson_relations.resourceId
             AND top_level_lessons.type = 'lesson'
         WHERE
             workshop.type = 'workshop'
-            AND workshop.fields->>'$.slug' = ${moduleSlugOrId}
+            AND workshop.fields->>'$.slug' = 'next-js-foundations-for-professional-web-development~lxb18'
     ) AS workshop_lessons
 
     UNION ALL
 
+		# all the lessons that are in a section
     SELECT
         workshop_id,
-        section_id AS section_or_lesson_id,
-        section_slug AS section_or_lesson_slug,
-        section_title AS section_or_lesson_title,
-        section_position AS section_or_lesson_position,
-        'section' AS item_type,
+        section_id,
+        section_slug,
+        section_title,
         lesson_id,
         lesson_slug,
         lesson_title,
+        section_position AS position,
+        'section' AS item_type,
         lesson_position
     FROM (
         SELECT
@@ -98,14 +110,14 @@ LEFT JOIN (
             sections.fields->>'$.title' AS section_title,
             section_relations.position AS section_position
         FROM
-            ContentResource AS workshop
-        JOIN ContentResourceResource AS section_relations
+            ${contentResource} AS workshop
+        JOIN ${contentResourceResource} AS section_relations
             ON workshop.id = section_relations.resourceOfId
-        JOIN ContentResource AS sections
+        JOIN ${contentResource} AS sections
             ON sections.id = section_relations.resourceId AND sections.type = 'section'
-        LEFT JOIN ContentResourceResource AS lesson_relations
+        LEFT JOIN ${contentResourceResource}  AS lesson_relations
             ON sections.id = lesson_relations.resourceOfId
-        LEFT JOIN ContentResource AS lessons
+        LEFT JOIN ${contentResource} AS lessons
             ON lessons.id = lesson_relations.resourceId AND lessons.type = 'lesson'
         WHERE
             workshop.type = 'workshop'
@@ -117,7 +129,7 @@ WHERE
     workshop.type = 'workshop'
     AND workshop.fields->>'$.slug' = ${moduleSlugOrId}
 ORDER BY
-    combined.section_or_lesson_position,
+    combined.position,
     combined.lesson_position`)
 
 	const workshopNavigationResult = NavigationResultSchemaArraySchema.parse(
@@ -136,36 +148,37 @@ ORDER BY
 	workshopNavigationResult.forEach((item) => {
 		if (item.item_type === 'lesson' && item.lesson_id) {
 			const newLesson: NavigationLesson = {
-				id: item.lesson_id || item.section_or_lesson_id!,
-				slug: item.lesson_slug || item.section_or_lesson_slug!,
-				title: item.lesson_title || item.section_or_lesson_title!,
-				position: item.lesson_position || item.section_or_lesson_position!,
+				id: item.lesson_id,
+				slug: item.lesson_slug,
+				title: item.lesson_title,
+				position: item.lesson_position,
 				type: 'lesson',
 			}
 
 			resources.push(newLesson)
-		} else if (item.item_type === 'section' && item.section_or_lesson_id) {
-			const newLesson: NavigationLesson = {
-				id: item.lesson_id || item.section_or_lesson_id!,
-				slug: item.lesson_slug || item.section_or_lesson_slug!,
-				title: item.lesson_title || item.section_or_lesson_title!,
-				position: item.lesson_position || item.section_or_lesson_position!,
-				type: 'lesson',
-			}
-
-			if (!sectionsMap.has(item.section_or_lesson_id)) {
+		} else if (item.section_id) {
+			if (!sectionsMap.has(item.section_id)) {
 				const newSection: NavigationSection = {
-					id: item.section_or_lesson_id,
-					slug: item.section_or_lesson_slug!,
-					title: item.section_or_lesson_title!,
-					position: item.section_or_lesson_position!,
+					id: item.section_id,
+					slug: item.section_slug,
+					title: item.section_title!,
+					position: item.section_position,
 					type: 'section',
 					lessons: [],
 				}
-				sectionsMap.set(item.section_or_lesson_id, newSection)
+				sectionsMap.set(item.section_id, newSection)
 				resources.push(newSection)
 			}
-			sectionsMap.get(item.section_or_lesson_id)!.lessons.push(newLesson)
+			if (item.lesson_id) {
+				const newLesson: NavigationLesson = {
+					id: item.lesson_id,
+					slug: item.lesson_slug,
+					title: item.lesson_title,
+					position: item.lesson_position,
+					type: 'lesson',
+				}
+				sectionsMap.get(item.section_id)!.lessons.push(newLesson)
+			}
 		}
 	})
 
