@@ -83,7 +83,7 @@ LEFT JOIN (
             AND top_level_lessons.type = 'lesson'
         WHERE
             workshop.type = 'workshop'
-            AND workshop.fields->>'$.slug' = 'next-js-foundations-for-professional-web-development~lxb18'
+            AND workshop.fields->>'$.slug' = ${moduleSlugOrId}
     ) AS workshop_lessons
 
     UNION ALL

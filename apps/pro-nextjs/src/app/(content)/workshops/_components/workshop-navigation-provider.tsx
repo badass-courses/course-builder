@@ -13,7 +13,6 @@ export const WorkshopNavigationProvider = ({
 	children: React.ReactNode
 	workshopNavigation: WorkshopNavigation | null
 }) => {
-	console.log({ workshopNavigation })
 	return (
 		<WorkshopNavigationContext.Provider value={workshopNavigation}>
 			{children}
