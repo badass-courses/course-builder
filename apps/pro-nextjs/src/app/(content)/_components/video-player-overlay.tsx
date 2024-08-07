@@ -43,7 +43,7 @@ export const CompletedLessonOverlay: React.FC<{
 
 	const { data: moduleProgress } =
 		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: moduleNavigation.id,
+			moduleId: moduleNavigation?.id,
 		})
 
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
@@ -167,7 +167,7 @@ export const CompletedModuleOverlay: React.FC<{
 				Great job!
 			</p>
 			<p className="fluid-base text-center">
-				You&apos;ve completed the {moduleNavigation.title} {moduleType}.
+				You&apos;ve completed the {moduleNavigation?.title} {moduleType}.
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
@@ -239,7 +239,7 @@ export const SoftBlockOverlay: React.FC<{
 			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleNavigation.title}
+				moduleTitle={moduleNavigation?.title}
 				onSuccess={async (subscriber?: Subscriber) => {
 					if (subscriber && moduleNavigation && resource) {
 						await revalidateTutorialLesson(
@@ -253,7 +253,7 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleNavigation.coverImage && (
+				{moduleNavigation?.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
 						src={moduleNavigation.coverImage}

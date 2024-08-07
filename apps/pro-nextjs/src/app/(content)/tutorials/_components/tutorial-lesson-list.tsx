@@ -380,7 +380,7 @@ export function TutorialLessonList(props: Props) {
 									) : (
 										// top-level lessons
 										<li
-											key={resource.resource.resourceId}
+											key={resource.resource.fields.slug}
 											className="flex w-full flex-col"
 											ref={isActive ? activeResourceRef : undefined}
 										>
