@@ -25,7 +25,10 @@ import z from 'zod'
 import { productSchema } from '@coursebuilder/core/schemas'
 import { ContentResource } from '@coursebuilder/core/types'
 
-async function getAllWorkshopLessonsWithSectionInfo(moduleSlugOrId: string) {
+async function getAllWorkshopLessonsWithSectionInfo(
+	moduleSlugOrId: string,
+	moduleType: 'tutorial' | 'workshop',
+) {
 	const result = await db.execute(sql`SELECT
     workshop.id AS workshop_id,
     workshop.fields->>'$.slug' AS workshop_slug,
@@ -80,7 +83,7 @@ LEFT JOIN (
             ON top_level_lessons.id = top_level_lesson_relations.resourceId
             AND top_level_lessons.type = 'lesson'
         WHERE
-            workshop.type = 'workshop'
+            workshop.type = ${moduleType}
             AND workshop.fields->>'$.slug' = ${moduleSlugOrId}
     ) AS workshop_lessons
 
@@ -120,13 +123,13 @@ LEFT JOIN (
         LEFT JOIN ${contentResource} AS lessons
             ON lessons.id = lesson_relations.resourceId AND lessons.type = 'lesson'
         WHERE
-            workshop.type = 'workshop'
+            workshop.type = ${moduleType}
             AND workshop.fields->>'$.slug' = ${moduleSlugOrId}
     ) AS section_lessons
 ) AS combined
 ON workshop.id = combined.workshop_id
 WHERE
-    workshop.type = 'workshop'
+    workshop.type = ${moduleType}
     AND workshop.fields->>'$.slug' = ${moduleSlugOrId}
 ORDER BY
     combined.position,
@@ -137,9 +140,14 @@ ORDER BY
 
 export async function getWorkshopNavigation(
 	moduleSlugOrId: string,
+	moduleType: 'tutorial' | 'workshop' = 'workshop',
 ): Promise<WorkshopNavigation | null> {
-	const workshopNavigationResult =
-		await getAllWorkshopLessonsWithSectionInfo(moduleSlugOrId)
+	const workshopNavigationResult = await getAllWorkshopLessonsWithSectionInfo(
+		moduleSlugOrId,
+		moduleType,
+	)
+
+	console.log('workshopNavigationResult', workshopNavigationResult)
 
 	if (workshopNavigationResult.length === 0) {
 		return null

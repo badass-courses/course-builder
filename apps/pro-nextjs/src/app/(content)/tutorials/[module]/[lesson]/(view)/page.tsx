@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { cookies, headers } from 'next/headers'
+import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
@@ -23,8 +23,6 @@ import {
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
 import { Module } from '@/lib/module'
-import { getModuleProgressForUser } from '@/lib/progress'
-import { getNextResource } from '@/lib/resources/get-next-resource'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
@@ -34,11 +32,6 @@ import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import type {
-	ModuleProgress,
-	ResourceProgress,
-} from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,
@@ -238,7 +231,7 @@ async function PlayerContainer({
 					<VideoPlayerOverlay
 						resource={lesson}
 						abilityLoader={abilityLoader}
-						moduleType="workshop"
+						moduleType="tutorial"
 						moduleSlug={params.module}
 					/>
 					<AuthedVideoPlayer
