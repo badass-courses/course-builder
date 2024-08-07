@@ -136,7 +136,7 @@
 		"date-fns": "^2.30.0",
 		"drizzle-zod": "^0.5.1",
 		"inngest": "^3.16.1",
-		"liquidjs": "^10.9.4",
+		"liquidjs": "^10.16.1",
 		"lodash": "^4.17.21",
 		"nodemailer": "^6.7.2",
 		"openai-edge": "^1.2.2",
