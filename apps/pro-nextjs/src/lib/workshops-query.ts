@@ -147,8 +147,6 @@ export async function getWorkshopNavigation(
 		moduleType,
 	)
 
-	console.log('workshopNavigationResult', workshopNavigationResult)
-
 	if (workshopNavigationResult.length === 0) {
 		return null
 	}
