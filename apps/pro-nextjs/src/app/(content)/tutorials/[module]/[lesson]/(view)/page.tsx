@@ -235,6 +235,8 @@ async function PlayerContainer({
 						moduleSlug={params.module}
 					/>
 					<AuthedVideoPlayer
+						moduleSlug={params.module}
+						moduleType="tutorial"
 						className="aspect-video overflow-hidden"
 						playbackIdLoader={playbackIdLoader}
 						resource={lesson}
