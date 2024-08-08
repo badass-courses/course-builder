@@ -41,8 +41,8 @@ export function AuthedVideoPlayer({
 	className?: string
 	abilityLoader?: Promise<AbilityForResource>
 	resource: ContentResource
-	moduleSlug: string
-	moduleType: 'workshop' | 'tutorial'
+	moduleSlug?: string
+	moduleType?: 'workshop' | 'tutorial'
 } & MuxPlayerProps) {
 	const ability = abilityLoader ? use(abilityLoader) : null
 	const canView = ability?.canView
@@ -60,10 +60,15 @@ export function AuthedVideoPlayer({
 	const [currentResource, setCurrentResource] =
 		React.useState<ContentResource>(resource)
 
-	const { data: nextResource } = api.progress.getNextResource.useQuery({
-		lessonId: currentResource.id,
-		moduleSlug: moduleSlug,
-	})
+	const { data: nextResource } = api.progress.getNextResource.useQuery(
+		{
+			lessonId: currentResource.id,
+			moduleSlug: moduleSlug,
+		},
+		{
+			enabled: Boolean(moduleSlug),
+		},
+	)
 
 	const { data: nextLessonPlaybackId } =
 		api.lessons.getLessonMuxPlaybackId.useQuery(
@@ -83,11 +88,13 @@ export function AuthedVideoPlayer({
 			resourceId: currentResource.id,
 			isCompleted: true,
 		})
-		await revalidateTutorialLesson(
-			moduleSlug as string,
-			currentResource?.fields?.slug as string,
-			moduleType as string,
-		)
+		if (moduleSlug && moduleType && currentResource?.fields?.slug) {
+			await revalidateTutorialLesson(
+				moduleSlug,
+				currentResource?.fields?.slug,
+				moduleType,
+			)
+		}
 	}
 
 	const playerProps = {
@@ -140,7 +147,7 @@ export function AuthedVideoPlayer({
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 					await handleSetLessonComplete()
 					router.push(
-						`/${pluralize(moduleType)}/${moduleSlug}/${nextResource?.fields?.slug}`,
+						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
 					)
 				} else {
 					dispatchVideoPlayerOverlay({
@@ -162,7 +169,7 @@ export function AuthedVideoPlayer({
 			console.log('setting fullscreen', !fullscreen)
 			if (fullscreen && currentResource) {
 				router.push(
-					`/${pluralize(moduleType)}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
+					`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
 				)
 			}
 			return !fullscreen
