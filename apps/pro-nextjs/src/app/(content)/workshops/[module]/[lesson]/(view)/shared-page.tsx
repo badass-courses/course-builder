@@ -7,7 +7,9 @@ import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
+import { BingeModeToggle } from '@/app/(content)/workshops/_components/binge-mode-toggle'
 import { ModuleLessonProgressToggle } from '@/app/(content)/workshops/_components/module-lesson-progress-toggle'
+import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
@@ -16,6 +18,8 @@ import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
+import type { Module } from '@/lib/module'
+import { getNextResource } from '@/lib/resources/get-next-resource'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
@@ -33,8 +37,6 @@ import {
 	Skeleton,
 } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
-
-import { WorkshopPricing } from '../../../_components/workshop-pricing-server'
 
 export async function LessonPage({
 	lesson,
@@ -157,6 +159,7 @@ async function PlayerContainer({
 	}
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
+
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 
 	return (
@@ -184,6 +187,8 @@ async function PlayerContainer({
 						playbackIdLoader={playbackIdLoader}
 						resource={lesson}
 						abilityLoader={abilityLoader}
+						moduleSlug={params.module}
+						moduleType="workshop"
 					/>
 				</Suspense>
 			</div>
@@ -264,14 +269,17 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 								)}
 							</div>
 						</div>
-						{(session?.user || ckSubscriber) &&
-						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
-							<ModuleLessonProgressToggle
-								// if we are on solution, pass in exercise as lesson for completing
-								lesson={lesson}
-								moduleType="workshop"
-							/>
-						) : null}
+						<div className="flex flex-wrap items-center gap-3">
+							<BingeModeToggle />
+							{(session?.user || ckSubscriber) &&
+							(lesson.type === 'lesson' || lesson.type === 'solution') ? (
+								<ModuleLessonProgressToggle
+									// if we are on solution, pass in exercise as lesson for completing
+									lesson={lesson}
+									moduleType="workshop"
+								/>
+							) : null}
+						</div>
 					</div>
 				</div>
 			</div>

@@ -35,6 +35,11 @@ const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
 				...state,
 				action,
 			}
+		case 'LOADING':
+			return {
+				...state,
+				action,
+			}
 		case 'BLOCKED':
 			return {
 				...state,
