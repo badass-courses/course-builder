@@ -10,12 +10,7 @@ import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
-import {
-	LessonProgressToggleSkeleton,
-	TutorialLessonProgressToggle,
-} from '@/app/(content)/tutorials/_components/tutorial-lesson-progress-toggle'
-import Spinner from '@/components/spinner'
-import { courseBuilderAdapter } from '@/db'
+import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import type { Lesson } from '@/lib/lessons'
 import {
 	getExerciseSolution,
@@ -202,14 +197,6 @@ async function TranscriptContainer({
 				Transcript
 			</h3>
 			<Transcript transcriptLoader={transcriptLoader} />
-		</div>
-	)
-}
-
-export function PlayerContainerSkeleton() {
-	return (
-		<div className="flex aspect-video h-full w-full items-center justify-center">
-			<Spinner />
 		</div>
 	)
 }
