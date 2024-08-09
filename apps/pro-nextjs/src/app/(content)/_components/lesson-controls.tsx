@@ -12,10 +12,12 @@ import { ModuleLessonProgressToggle } from './module-lesson-progress-toggle'
 
 export const LessonControls = async ({
 	lesson,
+	exercise,
 	className,
 	moduleType = 'workshop',
 }: {
 	lesson: Lesson | null
+	exercise?: Lesson | null
 	className?: string
 	moduleType?: 'tutorial' | 'workshop'
 }) => {
@@ -39,8 +41,11 @@ export const LessonControls = async ({
 			(lesson.type === 'lesson' || lesson.type === 'solution') ? (
 				<ModuleLessonProgressToggle
 					// if we are on solution, pass in exercise as lesson for completing
-					lesson={lesson}
+					lesson={lesson.type === 'solution' && exercise ? exercise : lesson}
 					moduleType={moduleType}
+					lessonType={
+						lesson.type === 'solution' && exercise ? 'solution' : lesson.type
+					}
 				/>
 			) : null}
 		</div>

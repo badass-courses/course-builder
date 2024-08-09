@@ -28,6 +28,7 @@ import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+import type { ContentResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,
@@ -65,9 +66,16 @@ export type Props = {
 	lessonPageType?: 'exercise' | 'solution' | 'default'
 }
 
-export default async function LessonPageWrapper({
+export default async function Page({
 	params,
-	// @ts-ignore
+}: {
+	params: { lesson: string; module: string }
+}) {
+	return <LessonPageWrapper params={params} />
+}
+
+export async function LessonPageWrapper({
+	params,
 	lessonPageType = 'default',
 }: Props) {
 	const lesson =
@@ -75,13 +83,15 @@ export default async function LessonPageWrapper({
 			? await getExerciseSolution(params.lesson)
 			: await getLesson(params.lesson)
 
-	const exercise = lessonPageType === 'exercise' ? lesson : null
+	const exercise =
+		lessonPageType === 'exercise' ? lesson : await getLesson(params.lesson)
 
 	const moduleLoader = getTutorial(params.module)
 
 	return (
 		<LessonProvider lesson={lesson}>
 			<LessonPage
+				lessonPageType={lessonPageType}
 				lesson={lesson}
 				exercise={exercise}
 				params={params}
@@ -96,11 +106,13 @@ async function LessonPage({
 	lesson,
 	params,
 	moduleLoader,
+	lessonPageType,
 }: {
 	exercise: Lesson | null
 	lesson: Lesson | null
 	params: { module: string; lesson: string }
 	moduleLoader: Promise<Module | null>
+	lessonPageType: 'exercise' | 'solution' | 'default'
 }) {
 	if (!lesson) {
 		notFound()
@@ -112,7 +124,7 @@ async function LessonPage({
 					<div className="flex flex-col 2xl:flex-row">
 						<div>
 							<main className="">
-								{exercise ? (
+								{lessonPageType === 'exercise' && exercise ? (
 									<Suspense fallback={<PlayerContainerSkeleton />}>
 										<Exercise
 											exercise={exercise}
@@ -131,6 +143,7 @@ async function LessonPage({
 							<div className="relative">
 								<LessonControls
 									moduleType="tutorial"
+									exercise={exercise}
 									lesson={lesson}
 									className="absolute right-8 top-8 hidden justify-end 2xl:flex"
 								/>
@@ -271,6 +284,7 @@ async function LessonBody({
 							{lesson.type}
 						</Badge>
 						<LessonControls
+							exercise={exercise}
 							moduleType="tutorial"
 							lesson={lesson}
 							className="hidden sm:flex 2xl:hidden"
@@ -334,6 +348,7 @@ async function LessonBody({
 				</div>
 			</div>
 			<LessonControls
+				exercise={exercise}
 				moduleType="tutorial"
 				lesson={lesson}
 				className="mt-5 flex justify-end border-t px-5 pt-5 sm:hidden"

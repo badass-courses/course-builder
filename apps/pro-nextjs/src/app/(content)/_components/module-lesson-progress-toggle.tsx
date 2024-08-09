@@ -6,6 +6,7 @@ import { useModuleProgress } from '@/app/(content)/_components/module-progress-p
 import type { Lesson } from '@/lib/lessons'
 import { setProgressForResource } from '@/lib/progress'
 import { cn } from '@/utils/cn'
+import pluralize from 'pluralize'
 
 import { Label, Switch } from '@coursebuilder/ui'
 
@@ -14,9 +15,11 @@ import { revalidateModuleLesson } from '../actions'
 export function ModuleLessonProgressToggle({
 	lesson,
 	moduleType = 'tutorial',
+	lessonType,
 }: {
 	lesson: Lesson
 	moduleType?: string
+	lessonType?: 'lesson' | 'exercise' | 'solution'
 }) {
 	const params = useParams()
 	const [] = React.useState(false)
@@ -59,6 +62,7 @@ export function ModuleLessonProgressToggle({
 						params.module as string,
 						params.lesson as string,
 						moduleType,
+						lessonType,
 					)
 				}}
 			/>
