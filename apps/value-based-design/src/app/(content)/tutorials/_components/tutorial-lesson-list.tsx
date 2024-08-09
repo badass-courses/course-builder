@@ -14,10 +14,6 @@ import { getResourceSection } from '@/utils/get-resource-section'
 import { Check, Edit } from 'lucide-react'
 
 import type {
-	ModuleProgress,
-	ResourceProgress,
-} from '@coursebuilder/core/schemas'
-import type {
 	ContentResource,
 	ContentResourceResource,
 } from '@coursebuilder/core/types'
@@ -28,15 +24,15 @@ import {
 	AccordionTrigger,
 	Button,
 	ScrollArea,
-	Skeleton,
 } from '@coursebuilder/ui'
+
+import { useModuleProgress } from '../../_components/module-progress-provider'
 
 type ContentResourceProps = {
 	tutorial: Module | null
 	lesson?: Lesson | null
 	section?: ContentResource | null
-	moduleProgress: ModuleProgress | null
-	widthFadeOut?: boolean
+	className?: string
 	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -44,8 +40,7 @@ type ContentResourceProps = {
 
 type ContentResourceLoaderProps = {
 	tutorialLoader: Promise<Module | null>
-	lessonLoader: Promise<Lesson | null>
-	moduleProgressLoader: Promise<ModuleProgress | null>
+	lesson: Lesson | null
 	className?: string
 	maxHeight?: string
 	withHeader?: boolean
@@ -60,34 +55,27 @@ export function TutorialLessonList(props: Props) {
 			: 'tutorialLoader' in props
 				? React.use(props.tutorialLoader)
 				: null
-	const lesson =
-		'lesson' in props
-			? props.lesson
-			: 'lessonLoader' in props
-				? React.use(props.lessonLoader)
-				: null
+	const lesson = 'lesson' in props ? props.lesson : null
 	const section =
 		'section' in props
 			? props.section
 			: lesson
 				? React.use(getResourceSection(lesson.id, tutorial))
 				: null
-	const moduleProgress =
-		'moduleProgress' in props
-			? props.moduleProgress
-			: 'moduleProgressLoader' in props
-				? React.use(props.moduleProgressLoader)
-				: null
+
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
-	const widthFadeOut = 'widthFadeOut' in props ? props.widthFadeOut : true
 	const className = 'className' in props ? props.className : ''
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
+
 	const ability = createAppAbility(abilityRules || [])
+
+	const moduleProgress = useModuleProgress()
+
 	const params = useParams()
 
 	const activeResourceRef = React.useRef<HTMLLIElement>(null)
@@ -389,7 +377,7 @@ export function TutorialLessonList(props: Props) {
 									) : (
 										// top-level lessons
 										<li
-											key={resource.resource.resourceId}
+											key={resource.resource.fields.slug}
 											className="flex w-full flex-col"
 											ref={isActive ? activeResourceRef : undefined}
 										>
@@ -509,12 +497,6 @@ export function TutorialLessonList(props: Props) {
 						</Accordion>
 					</ol>
 				</ScrollArea>
-				{widthFadeOut && (
-					<div
-						className="from-background via-background pointer-events-none absolute -bottom-10 left-0 z-50 h-32 w-full bg-gradient-to-t to-transparent"
-						aria-hidden="true"
-					/>
-				)}
 			</div>
 		</nav>
 	)

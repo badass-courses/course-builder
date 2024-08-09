@@ -1,13 +1,7 @@
 import React from 'react'
-import { courseBuilderAdapter } from '@/db'
-import { getLesson } from '@/lib/lessons-query'
-import { getModuleProgressForUser } from '@/lib/progress'
-import { getWorkshop } from '@/lib/workshops-query'
-import { getResourceSection } from '@/utils/get-resource-section'
+import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 
 import { Skeleton } from '@coursebuilder/ui'
-
-import { TutorialLessonList } from '../../../_components/tutorial-lesson-list'
 
 const LessonLayout: React.FC<
 	React.PropsWithChildren<{
@@ -17,12 +11,6 @@ const LessonLayout: React.FC<
 		}
 	}>
 > = async ({ children, params }) => {
-	const workshop = await getWorkshop(params.module)
-	const currentLesson = await getLesson(params.lesson)
-	const currentSection =
-		currentLesson && (await getResourceSection(currentLesson.id, workshop))
-	const moduleProgress = await getModuleProgressForUser(params.module)
-
 	return (
 		<div className="flex">
 			<React.Suspense
@@ -35,16 +23,10 @@ const LessonLayout: React.FC<
 					</div>
 				}
 			>
-				{workshop && (
-					<TutorialLessonList
-						className="hidden lg:block"
-						key={workshop?.id}
-						section={currentSection}
-						moduleProgress={moduleProgress}
-						lesson={currentLesson}
-						tutorial={workshop}
-					/>
-				)}
+				<WorkshopResourceList
+					currentLessonSlug={params.lesson}
+					className="hidden lg:block"
+				/>
 			</React.Suspense>
 
 			{children}

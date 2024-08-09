@@ -6,9 +6,9 @@ import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import { Layout } from '@/components/layout'
 import { ThemeProvider } from '@/components/theme-provider'
+import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
-import { getCouponForCode } from '@/lib/props-for-commerce'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { fsBraboWeb } from '@/utils/load-fonts'
@@ -19,6 +19,7 @@ import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
+import { getCouponForCode } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 
 export const metadata: Metadata = {
 	title: 'Value-Based Design',
@@ -41,6 +42,7 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
+				{/* <HolyLoader color="#3333" height="0.1rem" speed={250} /> */}
 				<AxiomWebVitals />
 				<body
 					className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${fsBraboWeb.variable}`}
@@ -66,7 +68,14 @@ export default function RootLayout({
 										routerConfig={extractRouterConfig(ourFileRouter)}
 									/>
 									<CouponProvider
-										getCouponForCode={getCouponForCode}
+										getCouponForCode={async (couponCodeOrId: string | null) => {
+											'use server'
+											return getCouponForCode(
+												couponCodeOrId,
+												[],
+												courseBuilderAdapter,
+											)
+										}}
 										getProduct={getProduct}
 									>
 										{children}

@@ -1,8 +1,6 @@
 'use server'
 
 import { courseBuilderAdapter } from '@/db'
-import { Article } from '@/lib/articles'
-import { createArticle, getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -15,27 +13,30 @@ export async function updateResource(input: {
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
+
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentArticle = await getArticle(input.id)
+	const currentResource = await courseBuilderAdapter.getContentResource(
+		input.id,
+	)
 
-	if (!currentArticle) {
+	if (!currentResource) {
 		return courseBuilderAdapter.createContentResource(input)
 	}
 
 	let resourceSlug = input.fields.slug
 
-	if (input.fields.title !== currentArticle?.fields.title) {
-		const splitSlug = currentArticle?.fields.slug.split('~') || ['', guid()]
+	if (input.fields.title !== currentResource?.fields?.title) {
+		const splitSlug = currentResource?.fields?.slug.split('~') || ['', guid()]
 		resourceSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
 	return courseBuilderAdapter.updateContentResourceFields({
-		id: currentArticle.id,
+		id: currentResource.id,
 		fields: {
-			...currentArticle.fields,
+			...currentResource.fields,
 			...input.fields,
 			slug: resourceSlug,
 		},

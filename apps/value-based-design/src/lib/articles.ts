@@ -1,10 +1,6 @@
 import { z } from 'zod'
 
-import {
-	ContentResourceSchema,
-	ResourceStateSchema,
-	ResourceVisibilitySchema,
-} from '@coursebuilder/core/schemas/content-resource-schema'
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export const NewArticleSchema = z.object({
 	fields: z.object({
@@ -14,6 +10,19 @@ export const NewArticleSchema = z.object({
 })
 export type NewArticle = z.infer<typeof NewArticleSchema>
 
+export const ArticleStateSchema = z.union([
+	z.literal('draft'),
+	z.literal('published'),
+	z.literal('archived'),
+	z.literal('deleted'),
+])
+
+export const ResourceVisibilitySchema = z.union([
+	z.literal('public'),
+	z.literal('private'),
+	z.literal('unlisted'),
+])
+
 export const ArticleSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
@@ -21,7 +30,7 @@ export const ArticleSchema = ContentResourceSchema.merge(
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
 			slug: z.string(),
-			state: ResourceStateSchema.default('draft'),
+			state: ArticleStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
 			socialImage: z
 				.object({

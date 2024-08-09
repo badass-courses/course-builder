@@ -1,22 +1,29 @@
 import { TeamPageTemplate } from '@/app/(user)/team/page_client'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon } from '@/db/schema'
+import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { eq } from 'drizzle-orm'
 
+import type { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import {
+	type Coupon,
 	type Purchase,
 	type UpgradableProduct,
 	type User,
 } from '@coursebuilder/core/schemas'
 
 export type TeamPageData = {
-	bulkCoupon?: any | null
-	bulkPurchase: {
-		purchase?: Purchase
-		existingPurchase?: Purchase | null
-		availableUpgrades: UpgradableProduct[]
-	} | null
+	bulkPurchases: {
+		bulkCoupon?: any | null
+		pricingDataLoader: Promise<PricingData>
+		bulkPurchase: {
+			purchase?: Purchase
+			existingPurchase?: Purchase | null
+			availableUpgrades: UpgradableProduct[]
+		} | null
+	}[]
+
 	user?: User | null
 }
 
@@ -26,49 +33,53 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 
-	if (!user)
+	if (!user) {
 		return {
-			bulkPurchase: null,
-			user,
-		}
-
-	const purchases = await getPurchasesForUser(user.id)
-
-	const bulkPurchaseData = purchases.find((purchase) => purchase.bulkCouponId)
-
-	if (!bulkPurchaseData) {
-		return {
-			bulkPurchase: null,
+			bulkPurchases: [],
 			user,
 		}
 	}
 
-	const bulkPurchase = await getPurchaseDetails(bulkPurchaseData.id, user.id)
+	const purchases = await getPurchasesForUser(user.id)
 
-	const bulkCoupon = bulkPurchase.purchase?.bulkCouponId
-		? await db.query.coupon.findFirst({
-				where: eq(coupon.id, bulkPurchase.purchase.bulkCouponId),
-				with: {
-					redeemedBulkCouponPurchases: {
-						with: {
-							user: true,
-						},
-					},
-				},
+	const bulkPurchasesData = purchases.filter(
+		(purchase) => purchase.bulkCouponId,
+	)
+
+	if (!bulkPurchasesData.length) {
+		return {
+			bulkPurchases: [],
+			user,
+		}
+	}
+
+	const bulkPurchases = await Promise.all(
+		bulkPurchasesData.map(async (bulkPurchase) => {
+			const purchaseDetails = await getPurchaseDetails(bulkPurchase.id, user.id)
+			const pricingDataLoader = getPricingData({
+				productId: bulkPurchase?.product?.id,
 			})
-		: null
+
+			const bulkCoupon = await courseBuilderAdapter.getCouponWithBulkPurchases(
+				purchaseDetails?.purchase?.bulkCouponId as string,
+			)
+
+			return {
+				bulkPurchase: purchaseDetails,
+				pricingDataLoader,
+				...(bulkCoupon && { bulkCoupon }),
+			}
+		}),
+	)
 
 	return {
-		bulkCoupon,
-		bulkPurchase,
+		bulkPurchases,
 		user,
 	}
 }
 
 export default async function TeamPage() {
 	const pageData = await teamPageDataLoader()
-
-	console.log({ pageData })
 
 	return <TeamPageTemplate {...pageData} />
 }

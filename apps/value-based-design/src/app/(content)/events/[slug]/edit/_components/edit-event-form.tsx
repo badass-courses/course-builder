@@ -44,6 +44,8 @@ export function EditEventForm({ event }: { event: Event }) {
 					endsAt: new Date(event.fields.endsAt).toISOString(),
 				}),
 				title: event.fields.title || '',
+				visibility: event.fields.visibility || 'unlisted',
+				image: event.fields.image || '',
 				description: event.fields.description ?? '',
 				slug: event.fields.slug ?? '',
 				timezone: event.fields.timezone || 'America/Los_Angeles',
@@ -68,7 +70,7 @@ export function EditEventForm({ event }: { event: Event }) {
 			availableWorkflows={[
 				{
 					value: 'article-chat-default-5aj1o',
-					label: 'Article Chat',
+					label: 'Article Chatzz',
 					default: true,
 				},
 			]}
@@ -105,6 +107,33 @@ const EventMetadataFormFields = ({
 }) => {
 	return (
 		<EditResourcesMetadataFields form={form}>
+			<div className="px-5">
+				<FormLabel>Cover Image</FormLabel>
+				{form.watch('fields.image') && <img src={form.watch('fields.image')} />}
+			</div>
+			<FormField
+				control={form.control}
+				name="fields.image"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Image URL</FormLabel>
+						<Input
+							{...field}
+							onDrop={(e) => {
+								console.log(e)
+								const result = e.dataTransfer.getData('text/plain')
+								const parsedResult = result.match(/\(([^)]+)\)/)
+								if (parsedResult) {
+									field.onChange(parsedResult[1])
+								}
+							}}
+							value={field.value || ''}
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
 			<FormField
 				control={form.control}
 				name="fields.startsAt"
@@ -115,7 +144,10 @@ const EventMetadataFormFields = ({
 							{...field}
 							value={
 								!!field.value
-									? parseAbsolute(field.value, 'America/Los_Angeles')
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
 									: null
 							}
 							onChange={(date) => {
@@ -130,6 +162,7 @@ const EventMetadataFormFields = ({
 					</FormItem>
 				)}
 			/>
+
 			<FormField
 				control={form.control}
 				name="fields.endsAt"
@@ -140,7 +173,10 @@ const EventMetadataFormFields = ({
 							{...field}
 							value={
 								!!field.value
-									? parseAbsolute(field.value, 'America/Los_Angeles')
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
 									: null
 							}
 							onChange={(date) => {

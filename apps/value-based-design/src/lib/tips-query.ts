@@ -12,7 +12,7 @@ import { Tip, TipSchema, type NewTip, type TipUpdate } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { asc, desc, eq, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function deleteTip(id: string) {
@@ -48,9 +48,12 @@ export async function deleteTip(id: string) {
 
 export async function getTip(slug: string): Promise<Tip | null> {
 	const tip = await db.query.contentResource.findFirst({
-		where: or(
-			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
-			eq(contentResource.id, slug),
+		where: and(
+			or(
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
+				eq(contentResource.id, slug),
+			),
+			eq(contentResource.type, 'tip'),
 		),
 		with: {
 			resources: {
@@ -104,9 +107,8 @@ export async function createTip(input: NewTip) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
-	const resource = await db
-		.insert(contentResource)
-		.values({
+	const tip = TipSchema.parse(
+		await courseBuilderAdapter.createContentResource({
 			id: newTipId,
 			type: 'tip',
 			createdById: user.id,
@@ -116,13 +118,8 @@ export async function createTip(input: NewTip) {
 				visibility: 'unlisted',
 				slug: slugify(`${input.title}~${guid()}`),
 			},
-		})
-		.catch((error) => {
-			console.error('🚨 Error creating tip', error)
-			throw error
-		})
-
-	const tip = await getTip(newTipId)
+		}),
+	)
 
 	if (tip) {
 		await db
@@ -134,15 +131,16 @@ export async function createTip(input: NewTip) {
 		})
 
 		if (contributionType) {
-			await db.insert(contentContributions).values({
+			const contentContributionValues = {
 				id: `cc-${guid()}`,
 				userId: user.id,
 				contentId: tip.id,
 				contributionTypeId: contributionType.id,
-			})
+			}
+			await db.insert(contentContributions).values(contentContributionValues)
 		}
 
-		revalidateTag('tips')
+		revalidatePath('/tips')
 
 		return tip
 	} else {

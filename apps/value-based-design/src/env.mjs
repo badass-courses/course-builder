@@ -13,13 +13,11 @@ export const env = createEnv({
 			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 			// Since NextAuth.js automatically uses the VERCEL_URL if present.
 			(str) =>
-				process.env.COURSEBUILDER_URL
-					? process.env.COURSEBUILDER_URL
-					: process.env.VERCEL_URL
-						? `https://${process.env.VERCEL_URL}`
-						: str,
+				process.env.VERCEL_PROJECT_PRODUCTION_URL
+					? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+					: str,
 			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
-			process.env.VERCEL ? z.string() : z.string(),
+			process.env.VERCEL_PROJECT_PRODUCTION_URL ? z.string() : z.string(),
 		),
 		DATABASE_URL: z
 			.string()
@@ -48,15 +46,15 @@ export const env = createEnv({
 		ANTHROPIC_API_KEY: z.string().optional(),
 		INNGEST_EVENT_KEY: z.string(),
 		INNGEST_SIGNING_KEY: z.string(),
-		MUX_SECRET_KEY: z.string().optional(),
-		MUX_ACCESS_TOKEN_ID: z.string().optional(),
+		MUX_SECRET_KEY: z.string(),
+		MUX_ACCESS_TOKEN_ID: z.string(),
 		OPENAI_MODEL_ID: z.string(),
 		UPSTASH_REDIS_REST_URL: z.string(),
 		UPSTASH_REDIS_REST_TOKEN: z.string(),
 		DEEPGRAM_API_KEY: z.string(),
 		UPLOADTHING_URL: z.string(),
 		POSTMARK_API_KEY: z.string(),
-		POSTMARK_WEBHOOK_SECRET: z.string().optional(),
+		POSTMARK_WEBHOOK_SECRET: z.string(),
 		GITHUB_CLIENT_ID: z.string().optional(),
 		GITHUB_CLIENT_SECRET: z.string().optional(),
 		TWITTER_CLIENT_ID: z.string().optional(),
@@ -66,12 +64,12 @@ export const env = createEnv({
 		AWS_ACCESS_KEY_ID: z.string().optional(),
 		AWS_SECRET_ACCESS_KEY: z.string().optional(),
 		AWS_BUCKET_NAME: z.string().optional(),
-		EMAIL_SERVER_HOST: z.string().optional(),
-		EMAIL_SERVER_PORT: z.string().optional(),
-		POSTMARK_KEY: z.string().optional(),
 		CONVERTKIT_API_SECRET: z.string(),
 		CONVERTKIT_API_KEY: z.string(),
 		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]),
+		EMAIL_SERVER_HOST: z.string().optional(),
+		EMAIL_SERVER_PORT: z.coerce.number().optional(),
+		POSTMARK_KEY: z.string().optional(),
 		SLACK_TOKEN: z.string().optional(),
 		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
 	},
@@ -83,11 +81,13 @@ export const env = createEnv({
 	 */
 	client: {
 		NEXT_PUBLIC_APP_NAME: z.string(),
+		NEXT_PUBLIC_GOOGLE_ANALYTICS: z.string().optional(),
 		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: z.string(),
 		NEXT_PUBLIC_PARTY_KIT_URL: z.string(),
 		NEXT_PUBLIC_URL: z.string(),
 		NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string(),
 		NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string(),
+		NEXT_PUBLIC_AMPLITUDE_API_KEY: z.string().optional(),
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 	},
@@ -113,7 +113,6 @@ export const env = createEnv({
 		INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
 		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: process.env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
 		NEXT_PUBLIC_PARTY_KIT_URL: process.env.NEXT_PUBLIC_PARTY_KIT_URL,
-		NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
 		MUX_ACCESS_TOKEN_ID: process.env.MUX_ACCESS_TOKEN_ID,
 		MUX_SECRET_KEY: process.env.MUX_SECRET_KEY,
 		GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
@@ -136,13 +135,16 @@ export const env = createEnv({
 		AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
 		AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
 		AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+		CONVERTKIT_API_SECRET: process.env.CONVERTKIT_API_SECRET,
+		CONVERTKIT_API_KEY: process.env.CONVERTKIT_API_KEY,
+		CONVERTKIT_SIGNUP_FORM: process.env.CONVERTKIT_SIGNUP_FORM,
+		NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
+		NEXT_PUBLIC_AMPLITUDE_API_KEY: process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY,
 		EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
 		EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT,
 		POSTMARK_KEY: process.env.POSTMARK_KEY,
 		NEXT_PUBLIC_SITE_TITLE: process.env.NEXT_PUBLIC_SITE_TITLE,
-		CONVERTKIT_API_SECRET: process.env.CONVERTKIT_API_SECRET,
-		CONVERTKIT_API_KEY: process.env.CONVERTKIT_API_KEY,
-		CONVERTKIT_SIGNUP_FORM: process.env.CONVERTKIT_SIGNUP_FORM,
+		NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
 		SLACK_TOKEN: process.env.SLACK_TOKEN,
 		SLACK_DEFAULT_CHANNEL_ID: process.env.SLACK_DEFAULT_CHANNEL_ID,
 	},

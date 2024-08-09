@@ -5,7 +5,6 @@ import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
 import { env } from '@/env.mjs'
-import { getAllTutorials } from '@/lib/tutorials-query'
 import { getAllWorkshops } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { FilePlus2 } from 'lucide-react'
@@ -61,7 +60,6 @@ export default async function Workshops() {
 async function WorkshopsList() {
 	const workshopsModule = await getAllWorkshops()
 	const { ability } = await getServerAuthSession()
-
 	const workshops = [...workshopsModule].filter((tutorial) => {
 		if (ability.can('create', 'Content')) {
 			return tutorial

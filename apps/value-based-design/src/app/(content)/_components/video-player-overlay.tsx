@@ -1,39 +1,51 @@
 'use client'
 
 import React, { use } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
-import { Module } from '@/lib/module'
 import { addProgress } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
+import { api } from '@/trpc/react'
+import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import type { QueryStatus } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
 import { useFormStatus } from 'react-dom'
 
-import type { ModuleProgress } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/types'
+import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
+import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/utils/build-stripe-checkout-path'
+import { formatUsd } from '@coursebuilder/commerce-next/utils/format-usd'
+import type { Product, Purchase } from '@coursebuilder/core/schemas'
+import type { ContentResource, FormattedPrice } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
-import { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
 
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	moduleResource: Module | null
-	moduleProgress: ModuleProgress | null
 	nextLesson: ContentResource | null | undefined
-}> = ({ action, resource, moduleResource, nextLesson, moduleProgress }) => {
+	moduleType?: 'workshop' | 'tutorial'
+}> = ({ action, resource, nextLesson, moduleType = 'tutorial' }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const router = useRouter()
+	const moduleNavigation = useWorkshopNavigation()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+
+	const { data: moduleProgress } =
+		api.progress.getModuleProgressForUser.useQuery({
+			moduleId: moduleNavigation?.id,
+		})
+
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
 		moduleProgress?.completedLessonsCount || 0,
 	)
@@ -50,17 +62,17 @@ export const CompletedLessonOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<div className="flex flex-col items-center text-center">
-				<p className="text-muted-foreground pb-2">Next Up:</p>
+				<p className="pb-2 opacity-80">Next Up:</p>
 				<p className="font-heading fluid-2xl font-bold">
 					{nextLesson?.fields?.title}
 				</p>
 				<div className="mt-8 flex items-center gap-3 text-sm">
 					<Progress
 						value={percentCompleted}
-						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
+						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
 					/>
 					{completedLessonsCount}/{totalLessonsCount} completed
 				</div>
@@ -86,14 +98,14 @@ export const CompletedLessonOverlay: React.FC<{
 										resourceId: resource.id,
 									})
 								}
-								if (nextLesson && moduleResource) {
+								if (nextLesson && moduleNavigation) {
 									if (nextLesson.type === 'solution') {
 										return router.push(
-											`/${pluralize(moduleResource.type)}/${moduleResource?.fields?.slug}/${resource?.fields?.slug}/solution`,
+											`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
 										)
 									}
 									return router.push(
-										`/${pluralize(moduleResource.type)}/${moduleResource?.fields?.slug}/${nextLesson?.fields?.slug}`,
+										`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextLesson?.fields?.slug}`,
 									)
 								}
 							}}
@@ -111,15 +123,15 @@ export const CompletedLessonOverlay: React.FC<{
 			</div>
 			<Button
 				type="button"
-				className="absolute right-5 top-5"
-				variant="outline"
+				className="absolute right-5 top-5 bg-white/10"
+				variant="ghost"
 				size="icon"
 				onClick={() => {
 					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 				}}
 			>
 				<span className="sr-only">Dismiss</span>
-				<XMarkIcon aria-hidden="true" className="h-4 w-4" />
+				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
 			</Button>
 		</div>
 	)
@@ -128,11 +140,12 @@ export const CompletedLessonOverlay: React.FC<{
 export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	moduleResource: Module | null
-}> = ({ action, resource, moduleResource }) => {
+	moduleType?: 'workshop' | 'tutorial'
+}> = ({ action, resource, moduleType = 'tutorial' }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+	const moduleNavigation = useWorkshopNavigation()
 
 	React.useEffect(() => {
 		if (resource) {
@@ -148,18 +161,17 @@ export const CompletedModuleOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/80 absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<p className="font-heading fluid-xl pb-3 text-center font-bold">
 				Great job!
 			</p>
 			<p className="fluid-base text-center">
-				You&apos;ve completed the {moduleResource?.fields?.title}{' '}
-				{moduleResource?.type}.
+				You&apos;ve completed the {moduleNavigation?.title} {moduleType}.
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
-					variant="secondary"
+					variant="default"
 					type="button"
 					onClick={() => {
 						if (playerRef.current) {
@@ -172,7 +184,7 @@ export const CompletedModuleOverlay: React.FC<{
 			</div>
 			<Button
 				type="button"
-				className="absolute right-5 top-5"
+				className="text-foreground absolute right-5 top-5"
 				variant="outline"
 				size="icon"
 				onClick={() => {
@@ -214,11 +226,12 @@ const ContinueButton: React.FC<{
 }
 
 export const SoftBlockOverlay: React.FC<{
-	moduleResource: Module | null
 	resource: ContentResource | null
-}> = ({ moduleResource, resource }) => {
+}> = ({ resource }) => {
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { toast } = useToast()
+
+	const moduleNavigation = useWorkshopNavigation()
 
 	return (
 		<div
@@ -226,11 +239,11 @@ export const SoftBlockOverlay: React.FC<{
 			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleResource?.fields?.title}
+				moduleTitle={moduleNavigation?.title}
 				onSuccess={async (subscriber?: Subscriber) => {
-					if (subscriber && moduleResource && resource) {
+					if (subscriber && moduleNavigation && resource) {
 						await revalidateTutorialLesson(
-							moduleResource?.fields?.slug,
+							moduleNavigation.slug,
 							resource?.fields?.slug,
 						)
 						dispatchVideoPlayerOverlay({ type: 'LOADING' })
@@ -240,11 +253,11 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleResource?.fields?.coverImage?.url && (
+				{moduleNavigation?.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
-						src={moduleResource?.fields?.coverImage?.url}
-						alt={moduleResource?.fields?.coverImage?.alt || ''}
+						src={moduleNavigation.coverImage}
+						alt={moduleNavigation.title}
 						width={150}
 						height={150}
 					/>
@@ -254,40 +267,116 @@ export const SoftBlockOverlay: React.FC<{
 	)
 }
 
-const VideoPlayerOverlay: React.FC<{
-	moduleLoader: Promise<Module | null>
+type VideoPlayerOverlayProps = {
 	resource: ContentResource
-	exerciseLoader: Promise<ContentResource | null> | null
-	nextResourceLoader: Promise<ContentResource | null | undefined>
-	canViewLoader: Promise<boolean>
-	moduleProgressLoader: Promise<ModuleProgress | null>
+	abilityLoader: Promise<AbilityForResource>
 	pricingProps?: WorkshopPageProps
-}> = ({
-	moduleLoader,
-	resource,
-	exerciseLoader,
-	nextResourceLoader,
-	canViewLoader,
-	moduleProgressLoader,
-	pricingProps,
-}) => {
-	const canView = use(canViewLoader)
-	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
-	const exercise = exerciseLoader && use(exerciseLoader)
-	const moduleResource = use(moduleLoader)
-	const nextLesson = use(nextResourceLoader)
-	const moduleProgress = use(moduleProgressLoader)
+	moduleType?: 'workshop' | 'tutorial'
+	moduleSlug?: string
+}
 
-	if (!canView) {
-		if (moduleResource?.type === 'tutorial') {
-			return (
-				<SoftBlockOverlay moduleResource={moduleResource} resource={resource} />
-			)
+const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
+	resource,
+	abilityLoader,
+	pricingProps,
+	moduleType = 'tutorial',
+	moduleSlug,
+}) => {
+	const ability = use(abilityLoader)
+	const canView = ability.canView
+	const canInviteTeam = ability.canInviteTeam
+	const isRegionRestricted = ability.isRegionRestricted
+
+	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
+	const { data: session } = useSession()
+	const { data: nextResource } = api.progress.getNextResource.useQuery({
+		lessonId: resource.id,
+		moduleSlug: moduleSlug,
+	})
+	const purchaseForProduct = pricingProps?.purchases?.find(
+		(purchase) => purchase.productId === pricingProps?.product?.id,
+	)
+
+	const showRegionRestrictedBlock =
+		isRegionRestricted && !canView && purchaseForProduct
+
+	const showTeamInvite =
+		canInviteTeam && !canView && purchaseForProduct?.bulkCoupon
+
+	const { data: formattedPrice, status: formattedPriceStatus } =
+		api.pricing.formatted.useQuery(
+			{
+				productId: pricingProps?.product?.id,
+				quantity: 1,
+				upgradeFromPurchaseId: purchaseForProduct?.id,
+				autoApplyPPP: false,
+			},
+			{
+				enabled: Boolean(showRegionRestrictedBlock),
+			},
+		)
+
+	if (showRegionRestrictedBlock) {
+		const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+		const countryCode = purchaseForProduct.country
+		const country = countryCode
+			? regionNames.of(countryCode)
+			: 'a specific region'
+
+		return (
+			<div
+				aria-live="polite"
+				className="relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-5 bg-gray-100 p-5 sm:text-lg"
+			>
+				<p className="max-w-md text-balance text-center">
+					Your've purchased a regional license restricted to {country} for lower
+					price. You can upgrade to get full access from anywhere in the world.
+				</p>
+				<Upgrade
+					formattedPrice={formattedPrice}
+					formattedPriceStatus={formattedPriceStatus}
+					product={pricingProps?.product}
+					purchase={purchaseForProduct}
+					purchaseToUpgrade={formattedPrice?.upgradeFromPurchaseId}
+					userId={session?.user?.id}
+				/>
+			</div>
+		)
+	}
+	if (showTeamInvite) {
+		const redemptionsLeft =
+			purchaseForProduct?.bulkCoupon &&
+			purchaseForProduct.bulkCoupon.maxUses >
+				purchaseForProduct.bulkCoupon.usedCount
+
+		return (
+			<div
+				aria-live="polite"
+				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 sm:aspect-video sm:text-lg"
+			>
+				<div className="mx-auto flex w-full max-w-lg flex-col gap-5">
+					<p className="w-full border-b border-gray-300 pb-5 font-semibold">
+						You've purchased a team license. Invite your team or claim a seat
+						for yourself.
+					</p>
+					<InviteTeam
+						className="flex flex-col items-start gap-2"
+						purchase={purchaseForProduct}
+						disabled={!redemptionsLeft}
+						userEmail={session?.user.email}
+					/>
+				</div>
+			</div>
+		)
+	}
+	if (!canView && moduleSlug) {
+		if (moduleType === 'tutorial') {
+			return <SoftBlockOverlay resource={resource} />
 		}
 		return (
 			<div
 				aria-live="polite"
-				className="bg-background/80 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
@@ -296,14 +385,13 @@ const VideoPlayerOverlay: React.FC<{
 
 	switch (overlayState.action?.type) {
 		case 'COMPLETED':
-			if (nextLesson) {
+			if (nextResource) {
 				return (
 					<CompletedLessonOverlay
-						nextLesson={nextLesson}
+						nextLesson={nextResource}
 						action={overlayState.action}
-						resource={exercise || resource}
-						moduleResource={moduleResource}
-						moduleProgress={moduleProgress}
+						resource={resource}
+						moduleType={moduleType}
 					/>
 				)
 			} else {
@@ -311,7 +399,7 @@ const VideoPlayerOverlay: React.FC<{
 					<CompletedModuleOverlay
 						action={overlayState.action}
 						resource={resource}
-						moduleResource={moduleResource}
+						moduleType={moduleType}
 					/>
 				)
 			}
@@ -319,9 +407,9 @@ const VideoPlayerOverlay: React.FC<{
 			return (
 				<div
 					aria-live="polite"
-					className="bg-background/80 text-foreground z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
 				>
-					<Spinner />
+					<Spinner className="text-white" />
 				</div>
 			)
 		case 'HIDDEN':
@@ -332,3 +420,45 @@ const VideoPlayerOverlay: React.FC<{
 }
 
 export default VideoPlayerOverlay
+
+const Upgrade: React.FC<{
+	formattedPrice?: FormattedPrice
+	formattedPriceStatus: QueryStatus
+	purchase: Purchase
+	product?: Product
+	userId: string | undefined
+	purchaseToUpgrade: any
+}> = ({ formattedPrice, formattedPriceStatus, userId }) => {
+	const pathname = usePathname()
+	const formActionPath = buildStripeCheckoutPath({
+		userId,
+		quantity: formattedPrice?.quantity,
+		productId: formattedPrice?.id,
+		bulk: Boolean(formattedPrice?.bulk),
+		upgradeFromPurchaseId: formattedPrice?.upgradeFromPurchaseId,
+		cancelUrl: `${process.env.NEXT_PUBLIC_URL}${pathname}`,
+	})
+
+	return (
+		<form
+			action={formActionPath}
+			method="POST"
+			className="flex flex-col items-center gap-4"
+		>
+			{formattedPriceStatus !== 'success' ? (
+				'Loading price...'
+			) : (
+				<div className="text-xl">
+					<sup>US</sup>
+					<span className="text-3xl font-bold">
+						{formatUsd(formattedPrice?.calculatedPrice).dollars}
+					</span>
+					<sup>{formatUsd(formattedPrice?.calculatedPrice).cents}</sup>
+				</div>
+			)}
+			<Button disabled={formattedPriceStatus !== 'success'} type="submit">
+				Upgrade to full license
+			</Button>
+		</form>
+	)
+}

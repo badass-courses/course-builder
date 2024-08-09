@@ -3,10 +3,10 @@ import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { TipPlayer } from '@/app/(content)/tips/_components/tip-player'
 import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
-import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { TipSchema, type Tip } from '@/lib/tips'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -21,12 +21,16 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 export const TipMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof TipSchema>>
@@ -85,7 +89,6 @@ export const TipMetadataFormFields: React.FC<{
 					}
 				>
 					<TipPlayer videoResourceLoader={videoResourceLoader} />
-
 					<div className="px-5 text-xs">video is {videoResource?.state}</div>
 				</Suspense>
 			</div>
@@ -108,6 +111,30 @@ export const TipMetadataFormFields: React.FC<{
 						<FormMessage />
 					</FormItem>
 				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<FormDescription>
+							A short snippet that summarizes the tip.
+						</FormDescription>
+						<Textarea {...field} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
+					</FormItem>
+				)}
+			/>
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={getOGImageUrlForResource(form.getValues())}
 			/>
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">

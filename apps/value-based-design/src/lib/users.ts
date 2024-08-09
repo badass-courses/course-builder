@@ -1,11 +1,10 @@
+import { UserSchema } from '@/ability'
 import { db } from '@/db'
 import { accounts, roles, userRoles, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
-
-import { userSchema } from '@coursebuilder/core/schemas'
 
 export const loadUsersForRole = async (role: string) => {
 	const usersByRole = await db
@@ -20,7 +19,7 @@ export const loadUsersForRole = async (role: string) => {
 		.leftJoin(roles, eq(userRoles.roleId, roles.id))
 		.where(eq(roles.name, role))
 
-	return z.array(userSchema).parse(usersByRole)
+	return z.array(UserSchema).parse(usersByRole)
 }
 
 export async function githubAccountsForCurrentUser() {

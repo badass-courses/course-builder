@@ -19,7 +19,7 @@ export const TipSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			title: z.string(),
-			summary: z.string().optional().nullable(),
+			description: z.string().optional(),
 			body: z.string().nullable().optional(),
 			state: TipStateSchema.default('draft'),
 			visibility: TipVisibilitySchema.default('unlisted'),
@@ -42,6 +42,7 @@ export const TipUpdateSchema = z.object({
 	fields: z.object({
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
+		state: TipStateSchema.default('draft'),
 	}),
 })
 

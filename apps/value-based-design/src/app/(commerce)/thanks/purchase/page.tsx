@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import {
@@ -9,6 +9,7 @@ import {
 	getPurchaseTransferForPurchaseId,
 	initiatePurchaseTransfer,
 } from '@/purchase-transfer/purchase-transfer-actions'
+import { getServerAuthSession } from '@/server/auth'
 import { FileText, Mail } from 'lucide-react'
 
 import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-teaser'
@@ -29,8 +30,12 @@ import { logger } from '@coursebuilder/core/utils/logger'
 const getServerSideProps = async (session_id: string) => {
 	const paymentProvider = stripeProvider
 
-	if (!session_id || !paymentProvider) {
-		notFound()
+	if (!paymentProvider) {
+		throw new Error('No payment provider found')
+	}
+
+	if (!session_id) {
+		throw new Error(`No session_id found: ${session_id}`)
 	}
 
 	const maxRetries = 5
@@ -116,6 +121,8 @@ export default async function ThanksPurchasePage({
 	searchParams: { session_id: string; provider: string }
 }) {
 	headers()
+	const token = await getServerAuthSession()
+
 	const { session_id } = searchParams
 	const {
 		purchase,
@@ -128,6 +135,10 @@ export default async function ThanksPurchasePage({
 		redemptionsLeft,
 	} = await getServerSideProps(session_id)
 
+	if (email === token?.session?.user?.email) {
+		return redirect('/welcome?purchaseId=' + purchase.id)
+	}
+
 	const purchaseUserTransfers = await getPurchaseTransferForPurchaseId({
 		id: purchase.id,
 		sourceUserId: purchase.userId || undefined,
@@ -136,7 +147,7 @@ export default async function ThanksPurchasePage({
 	let description = null
 	let title = `Thank you for purchasing ${stripeProductName}`
 	let loginLink = null
-	let inviteTeam = (
+	let inviteTeam: React.ReactElement | null = (
 		<InviteTeam.Root
 			disabled={!redemptionsLeft}
 			purchase={purchase}
@@ -155,6 +166,7 @@ export default async function ThanksPurchasePage({
 	switch (purchaseType) {
 		case NEW_INDIVIDUAL_PURCHASE:
 			loginLink = <LoginLinkComp email={email} />
+			inviteTeam = null
 			break
 		case NEW_BULK_COUPON:
 			description = (
@@ -212,7 +224,12 @@ export default async function ThanksPurchasePage({
 						</div>
 					</div>
 				</PurchaseSummary.Root>
-				{inviteTeam && inviteTeam}
+				{inviteTeam && (
+					<div className="border-b pb-5">
+						<h2 className="text-primary pb-4 text-sm uppercase">Invite Team</h2>
+						{inviteTeam}
+					</div>
+				)}
 				{loginLink && loginLink}
 				<div className="border-b pb-5">
 					<h2 className="text-primary pb-4 text-sm uppercase">Invoice</h2>

@@ -33,8 +33,6 @@ const getServerSideProps = async (query: {
 		}
 	})
 
-	console.log({ providers })
-
 	let purchaseId = query.purchaseId
 
 	const session_id = query.session_id
@@ -57,19 +55,19 @@ const getServerSideProps = async (query: {
 		}
 	}
 
-	console.log({ user, purchaseId })
-
 	if (user && isString(purchaseId) && isString(user?.id)) {
 		const { purchase, existingPurchase, availableUpgrades } =
 			await courseBuilderAdapter.getPurchaseDetails(purchaseId, user?.id)
 
-		console.log({ purchase, existingPurchase, availableUpgrades })
-
 		if (purchase) {
 			const product = await courseBuilderAdapter.getProduct(purchase.productId)
+			const productResources = await courseBuilderAdapter.getProductResources(
+				purchase.productId,
+			)
 
 			return {
 				product,
+				productResources,
 				purchase: convertToSerializeForNextResponse(purchase),
 				existingPurchase,
 				availableUpgrades,
@@ -98,6 +96,7 @@ const Welcome = async ({
 		existingPurchase,
 		product,
 		providers = {},
+		productResources,
 	} = await getServerSideProps(searchParams)
 
 	const redemptionsLeft =
@@ -124,24 +123,11 @@ const Welcome = async ({
 
 	const isGithubConnected = await githubAccountsForCurrentUser()
 
-	console.log({
-		isGithubConnected,
-		product,
-		purchase,
-		existingPurchase,
-		upgrade,
-		providers,
-		hasCharge,
-		redemptionsLeft,
-		isTransferAvailable,
-		purchaseUserTransfers,
-		userEmail: session?.user?.email,
-	})
-
 	return (
-		<div>
+		<div className="container border-x">
 			<WelcomePage
 				product={product}
+				productResources={productResources}
 				purchase={purchase}
 				existingPurchase={existingPurchase}
 				upgrade={upgrade}

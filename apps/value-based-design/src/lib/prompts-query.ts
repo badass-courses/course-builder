@@ -7,7 +7,7 @@ import { NewPrompt, Prompt, PromptSchema } from '@/lib/prompts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { and, eq, or, sql } from 'drizzle-orm'
+import { eq, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -18,7 +18,7 @@ export async function getPrompts(): Promise<Prompt[]> {
 
 	const promptsParsed = z.array(PromptSchema).safeParse(prompts)
 	if (!promptsParsed.success) {
-		console.error('Error parsing prompts', JSON.stringify(promptsParsed))
+		console.error('Error parsing prompts', promptsParsed)
 		return []
 	}
 
@@ -69,7 +69,7 @@ export async function updatePrompt(input: Prompt) {
 	let promptSlug = input.fields.slug
 
 	if (input.fields.title !== currentPrompt?.fields.title) {
-		const splitSlug = currentPrompt?.fields.slug.split('~') || ['', guid()]
+		const splitSlug = currentPrompt?.fields.slug.split('-') || ['', guid()]
 		promptSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
@@ -85,15 +85,9 @@ export async function updatePrompt(input: Prompt) {
 
 export async function getPrompt(slugOrId: string): Promise<Prompt | null> {
 	const prompt = await db.query.contentResource.findFirst({
-		where: and(
-			eq(contentResource.type, 'prompt'),
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					`${slugOrId}`,
-				),
-				eq(contentResource.id, slugOrId),
-			),
+		where: or(
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+			eq(contentResource.id, slugOrId),
 		),
 	})
 

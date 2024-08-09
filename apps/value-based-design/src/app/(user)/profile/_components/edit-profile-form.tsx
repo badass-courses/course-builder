@@ -2,12 +2,10 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Icon } from '@/components/icons'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn, useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { z } from 'zod'
 
 import {
@@ -20,6 +18,7 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	useToast,
 } from '@coursebuilder/ui'
 
 const formSchema = z.object({
@@ -30,7 +29,7 @@ const formSchema = z.object({
 const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 	const { update: updateSession } = useSession()
 	const { mutateAsync: updateName } = api.users.updateName.useMutation()
-
+	const { toast } = useToast()
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -49,7 +48,6 @@ const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 			{ name: values.name },
 			{
 				onSuccess: async (data) => {
-					form.setValue('name', data.name as string)
 					await updateSession(() => {
 						return {
 							user: {
@@ -57,7 +55,9 @@ const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 							},
 						}
 					})
-					toast.success('Profile updated successfully!')
+					form.reset()
+					form.setValue('name', values.name as string)
+					toast({ title: 'Profile updated successfully!' })
 				},
 			},
 		)
@@ -101,13 +101,13 @@ const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 									</FormControl>
 									<FormDescription>
 										You can not change your email address, but you can transfer
-										your product licenses to a different email address on{' '}
+										your product licenses to a different email address from{' '}
 										<Link
-											href="/products?s=purchased"
-											className="underline"
+											href="/invoices"
+											className="text-primary underline"
 											target="_blank"
 										>
-											Product page
+											Invoices
 										</Link>
 										.
 									</FormDescription>
