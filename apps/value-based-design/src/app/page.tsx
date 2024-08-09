@@ -22,9 +22,7 @@ export default async function Home() {
 			<section aria-label="About Value-Based Design Workshop">
 				<article className="prose sm:prose prose-sm bg-background mx-auto w-full max-w-3xl px-6 py-10 sm:py-16 sm:pb-24 lg:px-16">
 					{page?.fields?.body ? (
-						<MDXRemote
-							source={page?.fields.body || ''}
-						/>
+						<MDXRemote source={page.fields.body} />
 					) : (
 						<LandingCopy />
 					)}
