@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
-import type { Metadata, ResolvingMetadata } from 'next'
+import type { Metadata, NextPage, ResolvingMetadata } from 'next'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -67,6 +67,7 @@ export type Props = {
 
 export default async function LessonPageWrapper({
 	params,
+	// @ts-ignore
 	lessonPageType = 'default',
 }: Props) {
 	const lesson =
