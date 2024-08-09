@@ -12,7 +12,7 @@ export type CompletedAction = {
 	playerRef: React.RefObject<MuxPlayerRefAttributes>
 }
 
-type VideoPlayerOverlayAction =
+export type VideoPlayerOverlayAction =
 	| CompletedAction
 	| { type: 'BLOCKED' }
 	| { type: 'HIDDEN' }

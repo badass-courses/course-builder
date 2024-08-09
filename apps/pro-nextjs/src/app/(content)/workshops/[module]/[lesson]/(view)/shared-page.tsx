@@ -1,14 +1,12 @@
 import { Suspense } from 'react'
 import * as React from 'react'
-import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
+import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
-import { BingeModeToggle } from '@/app/(content)/workshops/_components/binge-mode-toggle'
-import { ModuleLessonProgressToggle } from '@/app/(content)/workshops/_components/module-lesson-progress-toggle'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
@@ -18,13 +16,9 @@ import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
-import type { Module } from '@/lib/module'
-import { getNextResource } from '@/lib/resources/get-next-resource'
-import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import {
@@ -74,10 +68,16 @@ export async function LessonPage({
 									/>
 								)}
 							</main>
-							<TranscriptContainer
-								className="mt-0 hidden 2xl:block"
-								lessonId={lesson?.id}
-							/>
+							<div className="relative">
+								<LessonControls
+									lesson={lesson}
+									className="absolute right-8 top-8 hidden justify-end 2xl:flex"
+								/>
+								<TranscriptContainer
+									className="mt-0 hidden 2xl:block"
+									lessonId={lesson?.id}
+								/>
+							</div>
 						</div>
 						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:flex-shrink-0 2xl:border-l 2xl:border-t-0">
 							<Accordion type="single" collapsible className="block lg:hidden">
@@ -197,10 +197,6 @@ async function PlayerContainer({
 }
 
 async function LessonBody({ lesson }: { lesson: Lesson | null }) {
-	const { session } = await getServerAuthSession()
-	const cookieStore = cookies()
-	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
-
 	if (!lesson) {
 		notFound()
 	}
@@ -212,9 +208,15 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 		<article>
 			<div className="flex w-full flex-col items-start justify-between gap-8 px-5 sm:flex-row sm:px-8 2xl:flex-col">
 				<div className="w-full">
-					<Badge className="mb-2 text-xs uppercase" variant="secondary">
-						{lesson.type}
-					</Badge>
+					<div className="mb-2 flex w-full items-center justify-between">
+						<Badge className="text-xs uppercase" variant="outline">
+							{lesson.type}
+						</Badge>
+						<LessonControls
+							lesson={lesson}
+							className="hidden sm:flex 2xl:hidden"
+						/>
+					</div>
 					<h1 className="font-heading fluid-2xl w-full pb-5 font-bold">
 						{lesson.fields?.title}
 					</h1>
@@ -269,20 +271,13 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 								)}
 							</div>
 						</div>
-						<div className="flex flex-wrap items-center gap-3">
-							<BingeModeToggle />
-							{(session?.user || ckSubscriber) &&
-							(lesson.type === 'lesson' || lesson.type === 'solution') ? (
-								<ModuleLessonProgressToggle
-									// if we are on solution, pass in exercise as lesson for completing
-									lesson={lesson}
-									moduleType="workshop"
-								/>
-							) : null}
-						</div>
 					</div>
 				</div>
 			</div>
+			<LessonControls
+				lesson={lesson}
+				className="mt-5 flex justify-end border-t px-5 pt-5 sm:hidden"
+			/>
 			{lesson.fields?.body && (
 				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote

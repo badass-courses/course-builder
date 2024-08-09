@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
+import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import { TutorialLessonList } from '@/app/(content)/tutorials/_components/tutorial-lesson-list'
@@ -131,10 +132,17 @@ async function LessonPage({
 									/>
 								)}
 							</main>
-							<TranscriptContainer
-								lessonId={lesson.id}
-								className="mt-0 hidden 2xl:block"
-							/>
+							<div className="relative">
+								<LessonControls
+									moduleType="tutorial"
+									lesson={lesson}
+									className="absolute right-8 top-8 hidden justify-end 2xl:flex"
+								/>
+								<TranscriptContainer
+									lessonId={lesson.id}
+									className="mt-0 hidden 2xl:block"
+								/>
+							</div>
 						</div>
 						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:flex-shrink-0 2xl:border-l 2xl:border-t-0">
 							<Accordion type="single" collapsible className="block lg:hidden">
@@ -270,9 +278,16 @@ async function LessonBody({
 		<article>
 			<div className="flex w-full flex-col items-start justify-between gap-8 px-5 sm:flex-row sm:px-8 2xl:flex-col">
 				<div className="w-full">
-					<Badge className="mb-2 text-xs uppercase" variant="secondary">
-						{lesson.type}
-					</Badge>
+					<div className="mb-2 flex w-full items-center justify-between">
+						<Badge className="text-xs uppercase" variant="outline">
+							{lesson.type}
+						</Badge>
+						<LessonControls
+							moduleType="tutorial"
+							lesson={lesson}
+							className="hidden sm:flex 2xl:hidden"
+						/>
+					</div>
 					<h1 className="font-heading fluid-2xl w-full pb-5 font-bold">
 						{lesson.fields?.title}
 					</h1>
@@ -327,20 +342,14 @@ async function LessonBody({
 								)}
 							</div>
 						</div>
-						{(session?.user || ckSubscriber) &&
-						(lesson.type === 'lesson' || lesson.type === 'solution') ? (
-							<Suspense fallback={<LessonProgressToggleSkeleton />}>
-								<TutorialLessonProgressToggle
-									// if we are on solution, pass in exercise as lesson for completing
-									lesson={
-										lesson.type === 'solution' && exercise ? exercise : lesson
-									}
-								/>
-							</Suspense>
-						) : null}
 					</div>
 				</div>
 			</div>
+			<LessonControls
+				moduleType="tutorial"
+				lesson={lesson}
+				className="mt-5 flex justify-end border-t px-5 pt-5 sm:hidden"
+			/>
 			{lesson.fields?.body && (
 				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote

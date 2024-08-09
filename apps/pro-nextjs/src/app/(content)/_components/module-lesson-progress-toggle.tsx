@@ -2,15 +2,14 @@
 
 import * as React from 'react'
 import { useParams } from 'next/navigation'
-import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
+import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import type { Lesson } from '@/lib/lessons'
 import { setProgressForResource } from '@/lib/progress'
-import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 
 import { Label, Switch } from '@coursebuilder/ui'
 
-import { useModuleProgress } from './workshop-progress-provider'
+import { revalidateModuleLesson } from '../actions'
 
 export function ModuleLessonProgressToggle({
 	lesson,
@@ -39,9 +38,7 @@ export function ModuleLessonProgressToggle({
 
 	return lesson ? (
 		<div className="flex items-center gap-2">
-			<Label htmlFor="lesson-progress-toggle" className="font-light">
-				Mark as complete
-			</Label>
+			<Label htmlFor="lesson-progress-toggle">Mark as complete</Label>
 			<Switch
 				disabled={isPending}
 				className={cn('', {
@@ -58,7 +55,7 @@ export function ModuleLessonProgressToggle({
 						resourceId: lesson.id,
 						isCompleted: checked,
 					})
-					await revalidateTutorialLesson(
+					await revalidateModuleLesson(
 						params.module as string,
 						params.lesson as string,
 						moduleType,

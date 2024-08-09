@@ -107,7 +107,7 @@ export const progressRouter = createTRPCRouter({
 			}
 			const { session, ability } = await getServerAuthSession()
 			const user = session?.user
-			if (user && input.moduleSlug) {
+			if (input.moduleSlug) {
 				return getNextResource(lessonId, moduleSlug)
 			}
 			return null

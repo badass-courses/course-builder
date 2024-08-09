@@ -171,7 +171,7 @@ export const CompletedModuleOverlay: React.FC<{
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
-					variant="secondary"
+					variant="default"
 					type="button"
 					onClick={() => {
 						if (playerRef.current) {
@@ -184,7 +184,7 @@ export const CompletedModuleOverlay: React.FC<{
 			</div>
 			<Button
 				type="button"
-				className="absolute right-5 top-5"
+				className="text-foreground absolute right-5 top-5"
 				variant="outline"
 				size="icon"
 				onClick={() => {
@@ -270,9 +270,6 @@ export const SoftBlockOverlay: React.FC<{
 type VideoPlayerOverlayProps = {
 	resource: ContentResource
 	abilityLoader: Promise<AbilityForResource>
-	// canViewLoader: Promise<boolean>
-	// canInviteTeamLoader?: Promise<boolean>
-	// isRegionRestrictedLoader?: Promise<boolean>
 	pricingProps?: WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
@@ -410,9 +407,9 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			return (
 				<div
 					aria-live="polite"
-					className="bg-background/80 text-foreground absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
 				>
-					<Spinner />
+					<Spinner className="text-white" />
 				</div>
 			)
 		case 'HIDDEN':

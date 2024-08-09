@@ -2,14 +2,13 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { getFirstLessonSlug } from '@/lib/workshops'
 import pluralize from 'pluralize'
 
 import { Button } from '@coursebuilder/ui'
-
-import { useModuleProgress } from './workshop-progress-provider'
 
 export function NextLessonButton({
 	moduleType,
