@@ -24,7 +24,6 @@ export default async function Home() {
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields.body || ''}
-							components={{ Zap, Wrench, BarChart }}
 						/>
 					) : (
 						<LandingCopy />
