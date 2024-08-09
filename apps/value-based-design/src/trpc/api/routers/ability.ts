@@ -1,8 +1,6 @@
 import { cookies } from 'next/headers'
-import { getAbilityRules } from '@/ability'
 import { env } from '@/env.mjs'
 import { SubscriberSchema } from '@/schemas/subscriber'
-import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
 import { isEmpty } from 'lodash'

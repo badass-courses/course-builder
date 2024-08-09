@@ -1,7 +1,6 @@
 'use client'
 
 import React, { use } from 'react'
-import { LessonContext } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import ReactMarkdown from 'react-markdown'
@@ -9,21 +8,12 @@ import ReactMarkdown from 'react-markdown'
 import { ContentResource } from '@coursebuilder/core/types'
 
 export function Transcript({
-	resourceLoader,
+	transcriptLoader,
 }: {
-	resourceLoader?: Promise<ContentResource | null>
+	transcriptLoader: Promise<string | null | undefined>
 }) {
-	let lesson
-	if (resourceLoader) {
-		lesson = use(resourceLoader)
-	} else {
-		const lessonContext = use(LessonContext)
-		lesson = lessonContext?.lesson
-	}
-	const videoResource = lesson?.resources?.find(
-		(resource) => resource.resource.type === 'videoResource',
-	)?.resource
-	const transcript = videoResource?.fields?.transcript
+	let transcript = use(transcriptLoader)
+
 	const { muxPlayerRef } = useMuxPlayer()
 
 	const canShowVideo = true // TODO: Determine if video is available

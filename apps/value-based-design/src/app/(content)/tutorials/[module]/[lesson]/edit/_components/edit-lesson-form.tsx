@@ -9,7 +9,6 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
-import { TipSchema } from '@/lib/tips'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -50,6 +49,9 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 				body: lesson.fields?.body || '',
 				visibility: lesson.fields?.visibility || 'unlisted',
 				state: lesson.fields?.state || 'draft',
+				description: lesson.fields?.description || '',
+				github: lesson.fields?.github || '',
+				gitpod: lesson.fields?.gitpod || '',
 			},
 		},
 	})
@@ -62,7 +64,7 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 	return (
 		<EditResourcesFormDesktop
 			resource={lesson}
-			resourceSchema={TipSchema}
+			resourceSchema={LessonSchema}
 			getResourcePath={(slug?: string) => `/tutorials/${moduleSlug}/${slug}`}
 			updateResource={updateLesson}
 			form={form}

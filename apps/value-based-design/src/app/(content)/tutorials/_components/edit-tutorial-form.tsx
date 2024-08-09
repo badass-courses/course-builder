@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
-import ModuleResourcesEdit from '@/components/module-resources-edit'
+import TutorialResourcesList from '@/components/tutorial-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -69,7 +69,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						fields: z.object({
 							title: z.string().nullable().optional(),
 							slug: z.string(),
-							description: z.string().nullable().optional(),
+							description: z.string(),
 							state: z
 								.enum(['draft', 'published', 'archived', 'deleted'])
 								.default('draft'),
@@ -97,22 +97,6 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 				onSave={onTutorialSave}
 				theme={theme}
 				tools={[
-					{
-						id: 'resources',
-						icon: () => (
-							<ListOrderedIcon
-								strokeWidth={1.5}
-								size={24}
-								width={18}
-								height={18}
-							/>
-						),
-						toolComponent: (
-							<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
-								<ModuleResourcesEdit module={tutorial} />
-							</div>
-						),
-					},
 					{ id: 'assistant' },
 					{
 						id: 'media',
@@ -130,6 +114,22 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 								belongsToResourceId={tutorial.id}
 								uploadDirectory={`tutorials`}
 							/>
+						),
+					},
+					{
+						id: 'resources',
+						icon: () => (
+							<ListOrderedIcon
+								strokeWidth={1.5}
+								size={24}
+								width={18}
+								height={18}
+							/>
+						),
+						toolComponent: (
+							<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
+								<TutorialResourcesList tutorial={tutorial} />
+							</div>
 						),
 					},
 				]}
@@ -220,7 +220,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						},
 					)}
 				/>
-				<ModuleResourcesEdit module={tutorial} />
+				<TutorialResourcesList tutorial={tutorial} />
 			</ResourceForm>
 		</>
 	)

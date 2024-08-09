@@ -2,18 +2,21 @@ import { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
-import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
 
+import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
+import type { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 
 export async function generateMetadata(
@@ -113,19 +116,21 @@ async function ProductCommerce({
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	const product = await productLoader
-	console.log({ product })
 	if (!product) return null
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
-	let commerceProps = await propsForCommerce({
-		query: {
-			...searchParams,
-			allowPurchase: 'true',
+	let commerceProps = await propsForCommerce(
+		{
+			query: {
+				...searchParams,
+				allowPurchase: 'true',
+			},
+			userId: user?.id,
+			products: [product],
 		},
-		userId: user?.id,
-		products: [product],
-	})
+		courseBuilderAdapter,
+	)
 
 	const { count: purchaseCount } = await db
 		.select({ count: count() })
@@ -166,8 +171,6 @@ async function ProductCommerce({
 		commerceProps,
 	}
 
-	console.log({ baseProps })
-
 	productProps = baseProps
 
 	if (user && purchaseForProduct) {
@@ -176,18 +179,6 @@ async function ProductCommerce({
 				purchaseForProduct.id,
 				user.id,
 			)
-
-		console.log({ purchase, existingPurchase })
-		console.log('🎈', {
-			...baseProps,
-			hasPurchasedCurrentProduct: Boolean(purchase),
-			...(Boolean(existingPurchase)
-				? {
-						purchasedProductIds: [existingPurchase?.productId, '72', 69],
-						existingPurchase: existingPurchase,
-					}
-				: {}),
-		})
 
 		productProps = {
 			...baseProps,
@@ -200,8 +191,6 @@ async function ProductCommerce({
 				: {}),
 		}
 	}
-
-	console.log({ productProps })
 
 	return (
 		<Suspense>

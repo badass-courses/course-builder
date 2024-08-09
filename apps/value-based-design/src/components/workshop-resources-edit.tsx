@@ -8,19 +8,24 @@ import {
 	treeStateReducer,
 } from '@/components/lesson-list/data/tree'
 import Tree from '@/components/lesson-list/tree'
-import { addResourceToModule } from '@/lib/modules-query'
 import { createResource } from '@/lib/resources/create-resources'
+import { addResourceToWorkshop } from '@/lib/workshops-query'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import { Button } from '@coursebuilder/ui'
 import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
 
-export default function Component({ tutorial }: { tutorial: ContentResource }) {
+export default function WorkshopResourcesEdit({
+	workshop,
+}: {
+	workshop: ContentResource
+}) {
 	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
 	const [isAddingSection, setIsAddingSection] = React.useState(false)
+
 	const initialData = [
-		...(tutorial.resources
-			? tutorial.resources.map((resourceItem) => {
+		...(workshop.resources
+			? workshop.resources.map((resourceItem) => {
 					if (!resourceItem.resource) {
 						throw new Error('resourceItem.resource is required')
 					}
@@ -54,9 +59,9 @@ export default function Component({ tutorial }: { tutorial: ContentResource }) {
 	const router = useRouter()
 
 	const handleResourceCreated = async (resource: ContentResource) => {
-		const resourceItem = await addResourceToModule({
+		const resourceItem = await addResourceToWorkshop({
 			resource,
-			moduleId: tutorial.id,
+			workshopId: workshop.id,
 		})
 
 		if (resourceItem) {
@@ -72,32 +77,37 @@ export default function Component({ tutorial }: { tutorial: ContentResource }) {
 				},
 			})
 		}
+
 		setIsAddingSection(false)
 		setIsAddingLesson(false)
 		router.refresh()
 	}
+
 	return (
-		<div key="1" className="grid grid-cols-8 gap-4 p-4">
-			<div className="col-span-2">
-				<h1 className="text-2xl font-bold">{tutorial.fields?.title}</h1>
-				{tutorial.fields?.description && (
-					<p className="my-2 text-sm">{tutorial.fields?.description}</p>
+		<>
+			<span className="px-5 text-lg font-bold">Resources</span>
+			<Tree
+				rootResource={workshop as ContentResource}
+				rootResourceId={workshop.id}
+				state={state}
+				updateState={updateState}
+			/>
+			<div className="flex flex-col gap-1">
+				{isAddingLesson && (
+					<CreateResourceForm
+						resourceType={'lesson'}
+						onCreate={handleResourceCreated}
+						createResource={createResource}
+					/>
 				)}
-				<div className="space-y-2">
-					{isAddingLesson && (
-						<CreateResourceForm
-							resourceType={'lesson'}
-							onCreate={handleResourceCreated}
-							createResource={createResource}
-						/>
-					)}
-					{isAddingSection && (
-						<CreateResourceForm
-							resourceType={'section'}
-							onCreate={handleResourceCreated}
-							createResource={createResource}
-						/>
-					)}
+				{isAddingSection && (
+					<CreateResourceForm
+						resourceType={'section'}
+						onCreate={handleResourceCreated}
+						createResource={createResource}
+					/>
+				)}
+				<div className="flex gap-1 px-5">
 					<Button
 						onClick={() => setIsAddingLesson(true)}
 						className="mt-2"
@@ -113,15 +123,7 @@ export default function Component({ tutorial }: { tutorial: ContentResource }) {
 						+ add section
 					</Button>
 				</div>
-				<div className="flex flex-col">
-					<Tree
-						rootResource={tutorial}
-						rootResourceId={tutorial.id}
-						state={state}
-						updateState={updateState}
-					/>
-				</div>
 			</div>
-		</div>
+		</>
 	)
 }

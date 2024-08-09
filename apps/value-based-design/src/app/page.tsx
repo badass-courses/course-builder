@@ -3,7 +3,6 @@ import { type Metadata } from 'next'
 import Image from 'next/image'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { getPage } from '@/lib/pages-query'
-import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import LandingCopy from './_components/landing-copy'

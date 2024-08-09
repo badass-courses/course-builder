@@ -1,5 +1,10 @@
 import * as React from 'react'
 import { Event } from '@/lib/events'
+import {
+	CalendarIcon,
+	ClockIcon,
+	MapPinIcon,
+} from '@heroicons/react/24/outline'
 import { formatInTimeZone } from 'date-fns-tz'
 
 export const EventDetails: React.FC<{
@@ -27,19 +32,23 @@ export const EventDetails: React.FC<{
 	}
 
 	return (
-		<div className="mt-5 flex flex-col border-t pt-5">
-			<h2 className="px-5 pb-4 text-xl font-semibold">Event Details</h2>
-
-			<div className="flex flex-col text-base font-semibold opacity-90">
-				<div className="flex items-center gap-2 px-5 py-2">
-					{/*<CalendarIcon className="h-5 w-5 flex-shrink-0 text-gray-600 dark:text-blue-300" />{' '}*/}
+		<div className="flex flex-col border-t px-5 pt-5">
+			<h3 className="font-heading pb-4 text-2xl font-bold">Event Details</h3>
+			<div className="flex flex-col gap-2.5 text-base font-normal">
+				<div className="flex flex-col">
+					<span className="inline-flex items-center gap-1 font-light opacity-90">
+						<CalendarIcon className="h-5 w-5 flex-shrink-0 opacity-50" /> Date
+					</span>{' '}
 					{eventDate}
 				</div>
-				<div className="flex items-baseline gap-2 px-5 py-2">
-					{/*<ClockIcon className="relative h-5 w-5 flex-shrink-0 translate-y-1 text-gray-600 dark:text-blue-300" />{' '}*/}
+				<div className="flex flex-col">
+					<span className="inline-flex items-center gap-1 font-light opacity-90">
+						<ClockIcon className="relative h-5 w-5 flex-shrink-0 opacity-50" />{' '}
+						Time
+					</span>
 					<div>
 						{eventTime} (Pacific time){' '}
-						{timezone && (
+						{/* {timezone && (
 							<a
 								href={timezone}
 								rel="noopener noreferrer"
@@ -48,11 +57,13 @@ export const EventDetails: React.FC<{
 							>
 								timezones
 							</a>
-						)}
+						)} */}
 					</div>
 				</div>
-				<div className="flex items-center gap-2 px-5 py-2">
-					{/*<LocationMarkerIcon className="h-5 w-5 text-gray-600 dark:text-blue-300" />{' '}*/}
+				<div className="flex flex-col">
+					<span className="inline-flex items-center gap-1 font-light opacity-90">
+						<MapPinIcon className="h-5 w-5 opacity-50" /> Location
+					</span>{' '}
 					Zoom (online remote)
 				</div>
 			</div>

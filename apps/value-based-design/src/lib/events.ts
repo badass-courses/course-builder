@@ -26,7 +26,7 @@ export const EventSchema = ContentResourceSchema.merge(
 			startsAt: z.string().datetime().nullable().optional(),
 			endsAt: z.string().datetime().nullable().optional(),
 			timezone: z.string().default('America/Los_Angeles'),
-			image: z.string().url().optional().nullable(),
+			image: z.string().url().optional(),
 			socialImage: z
 				.object({
 					type: z.string(),

@@ -4,31 +4,35 @@ import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import type { Lesson } from '@/lib/lessons'
-import { toggleProgress } from '@/lib/progress'
+import { setProgressForResource } from '@/lib/progress'
+import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 
-import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import { Label, Switch } from '@coursebuilder/ui'
 
-export function LessonProgressToggle({
-	moduleProgressLoader,
+export function TutorialLessonProgressToggle({
 	lesson,
+	moduleType = 'tutorial',
 }: {
-	moduleProgressLoader: Promise<ModuleProgress | null>
 	lesson: Lesson
+	moduleType?: string
 }) {
-	const moduleProgress = React.use(moduleProgressLoader)
-
 	const params = useParams()
+	const [] = React.useState(false)
 
-	const isLessonCompleted = Boolean(
-		moduleProgress?.completedLessons?.some(
-			(p) => p.resourceId === lesson?.id && p.completedAt,
+	const utils = api.useUtils()
+
+	const { data: moduleProgress, refetch } =
+		api.progress.getModuleProgressForUser.useQuery({
+			moduleId: params.module as string,
+		})
+
+	const [isCompleted, setIsCompleted] = React.useOptimistic(
+		Boolean(
+			moduleProgress?.completedLessons?.some(
+				(p) => p.resourceId === lesson?.id && p.completedAt,
+			),
 		),
-	)
-
-	const [optimisticState, addOptimistic] = React.useOptimistic(
-		isLessonCompleted,
 		(currentStatus: boolean, optimisticValue: boolean) => {
 			return optimisticValue
 		},
@@ -46,25 +50,26 @@ export function LessonProgressToggle({
 				className={cn('', {
 					'cursor-wait disabled:cursor-wait disabled:opacity-100': isPending,
 				})}
-				aria-label={`Mark lesson as ${optimisticState ? 'incomplete' : 'completed'}`}
+				aria-label={`Mark lesson as ${isCompleted ? 'incomplete' : 'completed'}`}
 				id="lesson-progress-toggle"
-				checked={optimisticState}
+				checked={isCompleted}
 				onCheckedChange={async (checked) => {
 					startTransition(() => {
-						addOptimistic(checked)
+						console.log('startTransition')
+						setIsCompleted(checked)
 					})
-					const lessonProgress = await toggleProgress({ resourceId: lesson.id })
+					const lessonProgress = await setProgressForResource({
+						resourceId: lesson.id,
+						isCompleted: checked,
+					})
 
-					if (lessonProgress) {
-						await revalidateTutorialLesson(
-							params.module as string,
-							params.lesson as string,
-						)
+					await utils.progress.invalidate()
 
-						startTransition(() => {
-							addOptimistic(Boolean(lessonProgress?.completedAt))
-						})
-					}
+					// await revalidateTutorialLesson(
+					// 	params.module as string,
+					// 	params.lesson as string,
+					// 	moduleType,
+					// )
 				}}
 			/>
 		</div>

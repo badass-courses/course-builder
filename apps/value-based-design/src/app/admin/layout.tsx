@@ -1,5 +1,7 @@
-import * as React from 'react'
+import React from 'react'
 import Link from 'next/link'
+
+import { Badge } from '@coursebuilder/ui'
 
 const AdminLayout: React.FC<
 	React.PropsWithChildren<{

@@ -1,8 +1,9 @@
+import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
+import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
 import { getLesson } from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-
-import Page, { type Props } from '../page'
 
 export async function generateMetadata(
 	{
@@ -29,7 +30,7 @@ export async function generateMetadata(
 	}
 }
 
-export default async function LessonPage({
+export default async function LessonExercisePage({
 	params,
 	searchParams,
 }: {
@@ -39,10 +40,11 @@ export default async function LessonPage({
 	}
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
+	const lesson = await getLesson(params.lesson)
+
 	return (
-		<Page
-			params={{ ...params, lessonPageType: 'exercise' }}
-			searchParams={searchParams}
-		/>
+		<LessonProvider lesson={lesson}>
+			<LessonPage searchParams={searchParams} lesson={lesson} params={params} />
+		</LessonProvider>
 	)
 }

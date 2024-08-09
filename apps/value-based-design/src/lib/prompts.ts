@@ -1,4 +1,3 @@
-import { env } from '@/env.mjs'
 import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
@@ -32,9 +31,8 @@ export const PromptSchema = ContentResourceSchema.merge(
 			slug: z.string(),
 			state: PromptStateSchema.default('draft'),
 			visibility: PromptVisibilitySchema.default('unlisted'),
-			model: z.string().default(env.OPENAI_MODEL_ID),
+			model: z.string().default('gpt-4o'),
 			provider: z.string().default('openai'),
-			forResourceType: z.string().optional().default('any'),
 		}),
 	}),
 )

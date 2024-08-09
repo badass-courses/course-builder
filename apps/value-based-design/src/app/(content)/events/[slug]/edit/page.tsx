@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { courseBuilderAdapter } from '@/db'
-import { EventSchema } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 

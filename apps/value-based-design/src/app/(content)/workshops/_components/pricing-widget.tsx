@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Check } from 'lucide-react'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -35,17 +36,19 @@ export const PricingWidget: React.FC<{
 
 	return (
 		<Pricing.Root
-			className="relative w-full"
+			className="relative mb-5 w-full border-b pb-5"
 			product={product}
 			couponId={couponId}
+			country={commerceProps.country}
 			options={pricingWidgetOptions}
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
+			{...commerceProps}
 		>
 			<Pricing.Product className="w-full">
 				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="px-0">
-					<Pricing.Name />
+					{/* <Pricing.Name /> */}
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
 					<Pricing.TeamToggle />
@@ -56,6 +59,27 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
+			<strong className="mb-3 inline-flex w-full text-left text-base font-semibold">
+				Includes
+			</strong>
+			<ul className="flex w-full flex-col gap-2">
+				<li className="flex items-center gap-2">
+					<Check className="h-4 w-4" />
+					Lifetime Access
+				</li>
+				<li className="flex items-center gap-2">
+					<Check className="h-4 w-4" />
+					Customizable invoice
+				</li>
+				<li className="flex items-center gap-2">
+					<Check className="h-4 w-4" />
+					English Transcripts & Subtitles
+				</li>
+				<li className="flex items-center gap-2">
+					<Check className="h-4 w-4" />
+					Progress Tracking
+				</li>
+			</ul>
 		</Pricing.Root>
 	)
 }

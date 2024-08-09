@@ -12,7 +12,7 @@ import ReactMarkdown from 'react-markdown'
 import { Button } from '@coursebuilder/ui'
 
 type Props = {
-	params: { prompt: string }
+	params: { slug: string }
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 
@@ -20,7 +20,7 @@ export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const prompt = await getPrompt(params.prompt)
+	const prompt = await getPrompt(params.slug)
 
 	if (!prompt) {
 		return parent as Metadata

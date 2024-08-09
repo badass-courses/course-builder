@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
+import { usePathname } from 'next/navigation'
 import { env } from '@/env.mjs'
-import { PricingData } from '@/lib/pricing-query'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
-import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
+import { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
+
+import { PricingWidget } from './pricing-widget'
 
 export function ProductPricing({
 	product,
@@ -23,31 +25,32 @@ export function ProductPricing({
 	purchasedProductIds: string[]
 	hasPurchasedCurrentProduct?: boolean
 }) {
-	console.log({ product, quantityAvailable, commerceProps, pricingDataLoader })
-	return (
-		<>
-			{product && (
-				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-					<PricingWidget
-						commerceProps={{ ...commerceProps, products: [product] }}
-						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
-						product={product}
-						quantityAvailable={quantityAvailable}
-						pricingDataLoader={pricingDataLoader}
-						pricingWidgetOptions={{
-							withImage: true,
-							withGuaranteeBadge: true,
-							isLiveEvent: product.type === 'live',
-							teamQuantityLimit:
-								quantityAvailable && quantityAvailable > 5
-									? 5
-									: quantityAvailable,
-							isPPPEnabled: product.type !== 'live',
-							cancelUrl: `${env.NEXT_PUBLIC_URL}/products/${product.fields?.slug || product.id}`,
-						}}
-					/>
-				</PriceCheckProvider>
-			)}
-		</>
-	)
+	const teamQuantityLimit =
+		product.type === 'live'
+			? quantityAvailable && quantityAvailable > 5
+				? 5
+				: quantityAvailable
+			: 100
+
+	const cancelUrl = `${env.NEXT_PUBLIC_URL}/products/${product.fields?.slug || product.id}`
+
+	return product ? (
+		<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
+			<PricingWidget
+				commerceProps={{ ...commerceProps, products: [product] }}
+				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
+				product={product}
+				quantityAvailable={quantityAvailable}
+				pricingDataLoader={pricingDataLoader}
+				pricingWidgetOptions={{
+					withImage: product.type !== 'live',
+					withGuaranteeBadge: product.type !== 'live',
+					isLiveEvent: product.type === 'live',
+					teamQuantityLimit,
+					isPPPEnabled: product.type !== 'live',
+					cancelUrl: cancelUrl,
+				}}
+			/>
+		</PriceCheckProvider>
+	) : null
 }

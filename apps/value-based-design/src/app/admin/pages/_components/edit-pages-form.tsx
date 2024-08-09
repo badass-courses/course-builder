@@ -1,16 +1,19 @@
 'use client'
 
 import * as React from 'react'
+import { onArticleSave } from '@/app/(content)/articles/[slug]/edit/actions'
 import { onPageSave } from '@/app/admin/pages/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
+import { ArticleSchema, type Article } from '@/lib/articles'
+import { updateArticle } from '@/lib/articles-query'
 import { Page, PageSchema } from '@/lib/pages'
 import { updatePage } from '@/lib/pages-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
+import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -49,8 +52,8 @@ export function EditPagesForm({
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(page)
 	const { forcedTheme: theme } = useTheme()
-	const form = useForm<z.infer<typeof PageSchema>>({
-		resolver: zodResolver(PageSchema),
+	const form = useForm<z.infer<typeof ArticleSchema>>({
+		resolver: zodResolver(ArticleSchema),
 		defaultValues: {
 			...page,
 			fields: {
@@ -75,7 +78,7 @@ export function EditPagesForm({
 		<ResourceForm
 			resource={page}
 			form={form}
-			resourceSchema={PageSchema}
+			resourceSchema={ArticleSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updatePage}
 			availableWorkflows={[

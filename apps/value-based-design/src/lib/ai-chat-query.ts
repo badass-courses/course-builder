@@ -2,7 +2,6 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { ChatResourceSchema } from '@/lib/ai-chat'
 import { getServerAuthSession } from '@/server/auth'
@@ -25,15 +24,12 @@ export async function sendResourceChatMessage({
 		throw new Error('Unauthorized')
 	}
 
-	console.log('sendResourceChatMessage', messages, selectedWorkflow)
-
 	await inngest.send({
 		name: RESOURCE_CHAT_REQUEST_EVENT,
 		data: {
 			resourceId,
 			messages,
 			selectedWorkflow: selectedWorkflow || 'article/chat-event',
-			model: env.OPENAI_MODEL_ID,
 		},
 		user,
 	})

@@ -15,6 +15,7 @@ import {
 } from '@coursebuilder/core/schemas'
 
 import { type WorkshopPageProps } from './workshop-page-props'
+import { WorkshopPricing as WorkshopPricingClient } from './workshop-pricing'
 
 export async function WorkshopPricing({
 	searchParams,
@@ -78,9 +79,7 @@ export async function WorkshopPricing({
 					commerceProps?.purchases?.map((purchase) => purchase.productId) || []
 				workshopProps = {
 					...baseProps,
-					hasPurchasedCurrentProduct:
-						purchase &&
-						(purchase.status === 'Valid' || purchase?.status === 'Restricted'),
+					hasPurchasedCurrentProduct: Boolean(purchase),
 					existingPurchase,
 					quantityAvailable: product.quantityAvailable,
 					purchasedProductIds,

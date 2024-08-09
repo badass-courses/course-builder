@@ -2,7 +2,9 @@
 
 import { redirect } from 'next/navigation'
 
-export const onPageSave = async () => {
+import { ContentResource } from '@coursebuilder/core/types'
+
+export const onPageSave = async (resource: ContentResource) => {
 	'use server'
 	redirect(`/admin/pages`)
 }

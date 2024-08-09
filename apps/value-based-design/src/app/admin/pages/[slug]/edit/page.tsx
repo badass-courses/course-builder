@@ -1,8 +1,11 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import { getArticle } from '@/lib/articles-query'
 import { getPage } from '@/lib/pages-query'
 import { getServerAuthSession } from '@/server/auth'
+import { ImagePlusIcon } from 'lucide-react'
 
 import { EditPagesForm } from '../../_components/edit-pages-form'
 
