@@ -1,6 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./**/*.{tsx,mdx,ts,js,jsx}'],
+  content: [
+	'./chat-assistant/**/*.{ts,tsx,mdx}',
+	'./codemirror/**/*.{ts,tsx,mdx}',
+	'./hooks/**/*.{ts,tsx,mdx}',
+	'./primitives/**/*.{ts,tsx,mdx}',
+	'./resources-crud/**/*.{ts,tsx,mdx}',
+	'./utils/**/*.{ts,tsx,mdx}',
+	'./index.tsx',
+	],
   theme: {
     container: {
       center: true,
