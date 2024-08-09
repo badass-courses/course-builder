@@ -2,7 +2,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { getLesson } from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
-import { LessonPageWrapper } from '../page'
+import { LessonPageWrapper } from '../shared-page'
 
 export async function generateMetadata(
 	{
