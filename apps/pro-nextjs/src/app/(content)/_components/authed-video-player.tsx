@@ -269,6 +269,7 @@ async function handleSetLessonComplete({
 			moduleSlug,
 			currentResource?.fields?.slug,
 			moduleType,
+			currentResource.type as 'lesson' | 'exercise' | 'solution',
 		)
 	}
 }

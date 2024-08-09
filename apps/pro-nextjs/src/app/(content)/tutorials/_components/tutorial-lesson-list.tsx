@@ -243,8 +243,6 @@ export function TutorialLessonList(props: Props) {
 																			progress.completedAt,
 																	)
 
-																console.log({ solution })
-
 																return (
 																	<li
 																		key={lesson.resourceId}
