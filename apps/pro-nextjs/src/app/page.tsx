@@ -17,10 +17,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import type { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
-import type { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
-import type { Product } from '@coursebuilder/core/schemas'
 
 export const metadata: Metadata = {
 	title: {

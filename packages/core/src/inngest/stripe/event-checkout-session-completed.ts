@@ -1,15 +1,7 @@
-import { NodemailerConfig } from '@auth/core/providers/nodemailer'
-
-import { sendServerEmail } from '../../lib/send-server-email'
 import { parseCheckoutSession } from '../../providers/stripe'
 import { User } from '../../schemas'
 import { CheckoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
 import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
-import {
-	sendPostPurchaseEmailConfig,
-	sendPostPurchaseEmailHandler,
-	sendPostPurchaseEmailTrigger,
-} from '../commerce/send-post-purchase-email'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
