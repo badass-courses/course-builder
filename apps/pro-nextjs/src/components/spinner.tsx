@@ -1,11 +1,13 @@
+'use client'
+
 import * as React from 'react'
 import { cn } from '@/utils/cn'
 
 const Spinner: React.FunctionComponent<{
 	className?: string
-}> = ({ className = 'w-8 h-8', ...rest }) => (
+}> = ({ className, ...rest }) => (
 	<svg
-		className={cn('animate-spin', className)}
+		className={cn('h-8 w-8 animate-spin', className)}
 		xmlns="http://www.w3.org/2000/svg"
 		fill="none"
 		viewBox="0 0 24 24"

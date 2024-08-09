@@ -124,7 +124,7 @@ async function submitUserMessage(content: string) {
 	)
 
 	const completion = runOpenAICompletion(openai, {
-		model: 'gpt-3.5-turbo',
+		model: 'gpt-4o-2024-08-06',
 		stream: true,
 		messages: [
 			{

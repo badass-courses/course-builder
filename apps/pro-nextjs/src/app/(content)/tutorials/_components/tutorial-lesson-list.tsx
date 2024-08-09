@@ -26,6 +26,8 @@ import {
 	ScrollArea,
 } from '@coursebuilder/ui'
 
+import { useModuleProgress } from '../../_components/module-progress-provider'
+
 type ContentResourceProps = {
 	tutorial: Module | null
 	lesson?: Lesson | null
@@ -72,10 +74,7 @@ export function TutorialLessonList(props: Props) {
 
 	const ability = createAppAbility(abilityRules || [])
 
-	const { data: moduleProgress } =
-		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: tutorial?.id,
-		})
+	const moduleProgress = useModuleProgress()
 
 	const params = useParams()
 
@@ -380,7 +379,7 @@ export function TutorialLessonList(props: Props) {
 									) : (
 										// top-level lessons
 										<li
-											key={resource.resource.resourceId}
+											key={resource.resource.fields.slug}
 											className="flex w-full flex-col"
 											ref={isActive ? activeResourceRef : undefined}
 										>

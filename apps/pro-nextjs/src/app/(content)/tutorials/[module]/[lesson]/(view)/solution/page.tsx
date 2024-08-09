@@ -2,7 +2,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { getLesson } from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
-import Page, { type Props } from '../page'
+import { LessonPageWrapper } from '../shared-page'
 
 export async function generateMetadata(
 	{
@@ -37,5 +37,5 @@ export default async function LessonPage({
 		lesson: string
 	}
 }) {
-	return <Page params={params} lessonPageType="solution" />
+	return <LessonPageWrapper params={params} lessonPageType="solution" />
 }

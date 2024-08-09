@@ -11,7 +11,7 @@ const ModuleLayout: React.FC<
 		}
 	}>
 > = async ({ children, params }) => {
-	const workshopNavData = await getWorkshopNavigation(params.module)
+	const workshopNavData = await getWorkshopNavigation(params.module, 'tutorial')
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 	return (
 		<WorkshopNavigationProvider workshopNavigation={workshopNavData}>

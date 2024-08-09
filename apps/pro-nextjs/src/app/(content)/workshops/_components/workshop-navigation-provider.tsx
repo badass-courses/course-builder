@@ -23,9 +23,7 @@ export const WorkshopNavigationProvider = ({
 export const useWorkshopNavigation = () => {
 	const context = React.useContext(WorkshopNavigationContext)
 	if (!context) {
-		throw new Error(
-			'useWorkshopNavigation must be used within a WorkshopNavigationProvider',
-		)
+		console.error('no workshop navigation data')
 	}
 	return context
 }

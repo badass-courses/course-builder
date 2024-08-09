@@ -43,7 +43,7 @@ export const CompletedLessonOverlay: React.FC<{
 
 	const { data: moduleProgress } =
 		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: moduleNavigation.id,
+			moduleId: moduleNavigation?.id,
 		})
 
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
@@ -167,11 +167,11 @@ export const CompletedModuleOverlay: React.FC<{
 				Great job!
 			</p>
 			<p className="fluid-base text-center">
-				You&apos;ve completed the {moduleNavigation.title} {moduleType}.
+				You&apos;ve completed the {moduleNavigation?.title} {moduleType}.
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
-					variant="secondary"
+					variant="default"
 					type="button"
 					onClick={() => {
 						if (playerRef.current) {
@@ -184,7 +184,7 @@ export const CompletedModuleOverlay: React.FC<{
 			</div>
 			<Button
 				type="button"
-				className="absolute right-5 top-5"
+				className="text-foreground absolute right-5 top-5"
 				variant="outline"
 				size="icon"
 				onClick={() => {
@@ -239,7 +239,7 @@ export const SoftBlockOverlay: React.FC<{
 			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleNavigation.title}
+				moduleTitle={moduleNavigation?.title}
 				onSuccess={async (subscriber?: Subscriber) => {
 					if (subscriber && moduleNavigation && resource) {
 						await revalidateTutorialLesson(
@@ -253,7 +253,7 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleNavigation.coverImage && (
+				{moduleNavigation?.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
 						src={moduleNavigation.coverImage}
@@ -270,9 +270,6 @@ export const SoftBlockOverlay: React.FC<{
 type VideoPlayerOverlayProps = {
 	resource: ContentResource
 	abilityLoader: Promise<AbilityForResource>
-	// canViewLoader: Promise<boolean>
-	// canInviteTeamLoader?: Promise<boolean>
-	// isRegionRestrictedLoader?: Promise<boolean>
 	pricingProps?: WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
@@ -410,9 +407,9 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			return (
 				<div
 					aria-live="polite"
-					className="bg-background/80 text-foreground z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
 				>
-					<Spinner />
+					<Spinner className="text-white" />
 				</div>
 			)
 		case 'HIDDEN':
