@@ -69,7 +69,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 						fields: z.object({
 							title: z.string().nullable().optional(),
 							slug: z.string(),
-							description: z.string(),
+							description: z.string().optional().nullable(),
 							state: z
 								.enum(['draft', 'published', 'archived', 'deleted'])
 								.default('draft'),
