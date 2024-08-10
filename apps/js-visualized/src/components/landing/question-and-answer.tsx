@@ -22,7 +22,7 @@ const QuestionAndAnswer: React.FC<
 				<div className="prose-headings:my-0 prose-headings:font-normal prose-headings:text-[1.75rem] sm:prose-headings:text-3xl md:prose-headings:text-[2.5rem] prose-headings:leading-[1.4] sm:prose-headings:leading-[1.2]">
 					{title}
 				</div>
-				<div className="prose prose-lg md:prose-xl dark:prose-invert prose-p:first-of-type:mt-0 prose-p:last-of-type:mb-0">
+				<div className="prose prose-lg md:prose-xl prose-p:first-of-type:mt-0 prose-p:last-of-type:mb-0">
 					{content}
 				</div>
 			</SectionWrapper>

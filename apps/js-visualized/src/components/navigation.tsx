@@ -30,11 +30,6 @@ const Navigation: React.FC<NavigationProps> = async ({
 
 export default Navigation
 
-type IconProps = {
-	isHovered: boolean
-	theme: 'light' | 'dark'
-}
-
 export const HamburgerMenuIcon = () => {
 	return (
 		<svg

@@ -12,7 +12,7 @@ export default async function PlaygroundPage() {
 	const cb = await coursebuilder()
 	return (
 		<div className="container pb-28">
-			<article className="prose sm:prose-xl dark:prose-invert prose-code:font-bold prose-code:font-sans max-w-none">
+			<article className="prose sm:prose-xl prose-code:font-bold prose-code:text-lg md:prose-code:text-xl prose-code:font-sans max-w-none">
 				<Landing />
 			</article>
 		</div>
