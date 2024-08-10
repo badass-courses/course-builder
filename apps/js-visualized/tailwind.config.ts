@@ -115,13 +115,16 @@ const config: Config = {
 					'linear-gradient(to right, #292B2C,#000,#292B2C,#292B2C,#000,#292B2C)',
 			},
 			typography: ({ theme }: { theme: any }) => ({
-				invert: {
+				DEFAULT: {
 					css: {
 						'--tw-prose-headings': 'var(--jsv-misty-white)',
 						'--tw-prose-body': 'var(--jsv-ghostly-white)',
 						lineHeight: '1.6',
 						strong: {
 							fontWeight: '700',
+							color: 'white',
+						},
+						code: {
 							color: 'white',
 						},
 					},

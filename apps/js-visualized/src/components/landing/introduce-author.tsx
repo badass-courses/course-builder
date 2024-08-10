@@ -30,7 +30,7 @@ const IntroduceAuthor: React.FC<
 							className="lg:hidden"
 						/>
 					</div>
-					<div className="prose prose-lg dark:prose-invert prose-p:first-of-type:mt-0 prose-p:text-body-text prose-headings:font-bold prose-headings:mt-0 prose-headings:text-lg sm:prose-p:leading-[1.77] prose-p:leading-normal prose-p:mb-0 relative grow sm:text-balance">
+					<div className="prose prose-lg prose-p:first-of-type:mt-0 prose-p:text-body-text prose-headings:font-bold prose-headings:mt-0 prose-headings:text-lg sm:prose-p:leading-[1.77] prose-p:leading-normal prose-p:mb-0 relative grow sm:text-balance">
 						{children}
 					</div>
 				</SectionWrapper>
