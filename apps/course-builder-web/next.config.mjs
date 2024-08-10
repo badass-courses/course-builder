@@ -30,7 +30,7 @@ const config = {
 			},
 			{
 				protocol: 'https',
-				hostname: 'neatly-diverse-goldfish.ngrok-free.app',
+				hostname: 'joel-x42.coursebuilder.dev',
 				port: '',
 			},
 		],

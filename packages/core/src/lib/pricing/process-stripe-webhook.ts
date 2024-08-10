@@ -25,8 +25,7 @@ const exampleEvent = {
 			amount_total: 1000,
 			automatic_tax: { enabled: false, liability: null, status: null },
 			billing_address_collection: null,
-			cancel_url:
-				'https://neatly-diverse-goldfish.ngrok-free.app/checkout-cancel',
+			cancel_url: 'https://joel-x42.coursebuilder.dev/checkout-cancel',
 			client_reference_id: null,
 			client_secret: null,
 			consent: null,
@@ -103,7 +102,7 @@ const exampleEvent = {
 			submit_type: null,
 			subscription: null,
 			success_url:
-				'https://neatly-diverse-goldfish.ngrok-free.app/checkout-success/thanks/purchase?session_id={CHECKOUT_SESSION_ID}&provider=stripe',
+				'https://joel-x42.coursebuilder.dev/checkout-success/thanks/purchase?session_id={CHECKOUT_SESSION_ID}&provider=stripe',
 			total_details: { amount_discount: 0, amount_shipping: 0, amount_tax: 0 },
 			ui_mode: 'hosted',
 			url: null,

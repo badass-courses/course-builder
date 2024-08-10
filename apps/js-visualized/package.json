@@ -8,7 +8,7 @@
 		"dev:next": "next dev",
 		"dev:inngest": "pnpx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest",
 		"dev:party": "pnpx partykit dev",
-		"tunnel": "ngrok http --domain=neatly-diverse-goldfish.ngrok-free.app 3000",
+		"tunnel": "ngrok http --domain=joel-x42.coursebuilder.dev 3000",
 		"email:preview": "email dev --dir './src/emails'",
 		"build": "next build",
 		"db:push": "dotenv drizzle-kit push mysql",
