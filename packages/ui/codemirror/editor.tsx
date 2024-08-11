@@ -36,7 +36,7 @@ export const CodemirrorEditor = ({
 }: {
 	roomName: string
 	value: string
-	onChange: (data: any) => void
+	onChange: (data: any, yDoc: any) => void
 	user?: User | null
 	theme?: string
 	partykitUrl: string
@@ -114,7 +114,7 @@ const useCodemirror = ({
 }: {
 	roomName: string
 	value: string
-	onChange: (data: any) => void
+	onChange: (data: any, yDoc: any) => void
 	partykitUrl?: string
 	user?: User | null
 	theme?: string
@@ -153,6 +153,10 @@ const useCodemirror = ({
 			return
 		}
 
+		// Y.encodeStateAsUpdate(doc);
+
+		// Buffer.from(Y.encodeStateAsUpdate(provider.doc)).toString("base64"),
+
 		const ytext =
 			provider?.doc.getText('codemirror') || new Y.Doc().getText('codemirror')
 
@@ -165,7 +169,12 @@ const useCodemirror = ({
 					const docText = update.state.doc.toString()
 					const hash = await generateHash(docText)
 					if (hash !== currentText) {
-						onChange(docText)
+						onChange(
+							docText,
+							Buffer.from(Y.encodeStateAsUpdate(provider!.doc)).toString(
+								'base64',
+							),
+						)
 						setCurrentText(hash)
 					}
 				}

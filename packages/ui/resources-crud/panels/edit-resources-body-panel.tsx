@@ -38,7 +38,8 @@ export function EditResourcesBodyPanel({
 					partykitUrl={partykitUrl}
 					roomName={`${resource.id}`}
 					value={resource.fields.body || ''}
-					onChange={async (data) => {
+					onChange={async (data, yDoc) => {
+						form.setValue('fields.yDoc', yDoc)
 						form.setValue('fields.body', data)
 					}}
 					theme={theme}

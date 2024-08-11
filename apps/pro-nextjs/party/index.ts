@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import * as schema from '@/db/schema'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -30,7 +31,9 @@ const CORS = {
 
 export default class Server implements Party.Server {
 	constructor(readonly party: Party.Party) {}
-
+	async onAlarm() {
+		console.log('ALARM')
+	}
 	async onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
 		// A websocket just connected!
 		console.log(
@@ -54,12 +57,17 @@ export default class Server implements Party.Server {
 					),
 				})
 
-				console.log('tip', tip)
-
 				const doc = new Y.Doc()
-				if (tip?.fields?.body) {
+
+				if (tip?.fields?.yDoc) {
+					Y.applyUpdate(
+						doc,
+						new Uint8Array(Buffer.from(tip?.fields?.yDoc, 'base64')),
+					)
+				} else if (tip?.fields?.body) {
 					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
+
 				return doc
 			},
 			callback: {

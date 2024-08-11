@@ -27,6 +27,7 @@ export const ArticleSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			body: z.string().nullable().optional(),
+			yDoc: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
 			slug: z.string(),
