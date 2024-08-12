@@ -350,7 +350,6 @@ export async function getAllWorkshops() {
 				orderBy: asc(contentResourceResource.position),
 			},
 		},
-		orderBy: desc(contentResource.createdAt),
 	})
 
 	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
