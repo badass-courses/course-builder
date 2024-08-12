@@ -145,16 +145,15 @@ const useCodemirror = ({
 			provide: (f) => EditorView.decorations.from(f),
 		})
 
-		let provider = partykitUrl
-			? new YPartyKitProvider(partykitUrl, roomName)
-			: null
+		let provider = null //partykitUrl
+		// ? new YPartyKitProvider(partykitUrl, roomName)
+		// : null
 
 		if (!element) {
 			return
 		}
 
-		const ytext =
-			provider?.doc.getText('codemirror') || new Y.Doc().getText('codemirror')
+		const ytext = new Y.Doc().getText('codemirror')
 
 		const undoManager = new Y.UndoManager(ytext)
 		setYUndoManager(undoManager)
@@ -172,18 +171,18 @@ const useCodemirror = ({
 			},
 		)
 
-		const awareness = provider?.awareness
-
-		if (user && awareness) {
-			awareness.setLocalStateField('user', {
-				...user,
-				color: '#ffb61e', // should be a hex color
-			})
-		}
+		// const awareness = provider?.awareness
+		//
+		// if (user && awareness) {
+		// 	awareness.setLocalStateField('user', {
+		// 		...user,
+		// 		color: '#ffb61e', // should be a hex color
+		// 	})
+		// }
 
 		// Set up CodeMirror and extensions
 		const state = EditorState.create({
-			doc: ytext.toString(),
+			doc: value,
 			extensions: [
 				basicSetup,
 				highlight_extension,
@@ -194,9 +193,7 @@ const useCodemirror = ({
 				markdown({
 					codeLanguages: languages,
 				}),
-				...(provider
-					? [yCollab(ytext, provider.awareness, { undoManager })]
-					: []),
+				...(provider ? [] : []),
 				...styles,
 			],
 		})
@@ -210,8 +207,8 @@ const useCodemirror = ({
 		// Set up awareness
 
 		return () => {
-			provider?.doc?.destroy()
-			provider?.destroy()
+			// provider?.doc?.destroy()
+			// provider?.destroy()
 			view?.destroy()
 		}
 	}, [element, roomName, value, user, theme])
