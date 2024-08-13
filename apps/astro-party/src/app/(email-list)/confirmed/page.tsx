@@ -1,8 +1,9 @@
+import { Layout } from '@/components/layout'
 import config from '@/config'
 
 export default async function ConfirmedSubscriptionPage() {
 	return (
-		<main className="container flex min-h-[var(--pane-layout-height)] flex-grow flex-col items-center justify-center border-x px-5">
+		<Layout className="bg-brand-green container flex min-h-screen flex-col-reverse items-center justify-center border-x-0 px-3 sm:px-5 lg:flex-row">
 			<div className="max-w-lg text-center font-light">
 				<h1 className="font-heading py-8 text-4xl font-bold lg:text-5xl">
 					You&apos;re Confirmed!
@@ -13,6 +14,6 @@ export default async function ConfirmedSubscriptionPage() {
 				</p>
 				{/* <Signature /> */}
 			</div>
-		</main>
+		</Layout>
 	)
 }

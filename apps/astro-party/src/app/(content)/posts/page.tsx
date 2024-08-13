@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
+import { Layout } from '@/components/layout'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import type { Article } from '@/lib/articles'
@@ -35,6 +36,12 @@ export const metadata: Metadata = {
 export default async function ArticlesIndexPage() {
 	const { ability } = await getServerAuthSession()
 	const allArticles = await getArticles()
+	// const publishedPublicArticles = [
+	// 	allArticles[0],
+	// 	allArticles[0],
+	// 	allArticles[0],
+	// 	allArticles[0],
+	// ]
 	const publishedPublicArticles = allArticles.filter(
 		(article) =>
 			article.fields.visibility === 'public' &&
@@ -47,18 +54,18 @@ export default async function ArticlesIndexPage() {
 	const latestArticle = publishedPublicArticles[0]
 
 	return (
-		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col-reverse px-5 lg:flex-row">
+		<Layout className="bg-brand-green container flex min-h-max flex-col-reverse border-x-0 px-3 pt-[var(--nav-height)] sm:px-5 lg:min-h-screen lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
-				<div className="flex flex-col items-center border-x">
+				<div className="flex flex-col items-center border-x-2">
 					{latestArticle && (
 						<div className="relative flex w-full">
 							<ArticleTeaser
 								article={latestArticle}
-								className="[&_[data-card='']]:text-background [&_[data-card='']]:from-brand-green [&_[data-card='']]:to-brand-green-light h-full w-full md:aspect-[16/7] [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
+								className="[&_[data-card='']]:text-foreground [&_[data-card='']]:bg-background h-full w-full md:aspect-[16/7] [&_[data-card='']]:border-b-2 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
 							/>
 						</div>
 					)}
-					<ul className="divide-border relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2">
+					<ul className="divide-border-2 relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2 sm:divide-y-0">
 						{publishedPublicArticles
 							.slice(1, publishedPublicArticles.length)
 							.map((article, i) => {
@@ -67,7 +74,7 @@ export default async function ArticlesIndexPage() {
 										i={i}
 										article={article}
 										key={article.id}
-										className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
+										className="[&_[data-card]]:bg-background [&_[data-card]]:pl-8 [&_[data-title='']]:transition"
 									/>
 								)
 							})}
@@ -76,12 +83,12 @@ export default async function ArticlesIndexPage() {
 			</div>
 			<React.Suspense
 				fallback={
-					<aside className="hidden w-full max-w-xs border-r lg:block" />
+					<aside className="hidden w-full max-w-xs border-r-2 lg:block" />
 				}
 			>
 				<ArticleListActions articles={unpublishedArticles} />
 			</React.Suspense>
-		</main>
+		</Layout>
 	)
 }
 
@@ -102,7 +109,8 @@ const ArticleTeaser: React.FC<{
 					className={cn(
 						'mx-auto flex h-full w-full flex-col justify-between rounded-none border-0 bg-transparent p-8 shadow-none',
 						{
-							'sm:border-r': (i && i % 2 === 0) || i === 0,
+							'sm:border-r-2': (i && i % 2 === 0) || i === 0,
+							'sm:border-b-2': true,
 						},
 					)}
 				>
@@ -141,8 +149,8 @@ const ArticleTeaser: React.FC<{
 async function ArticleListActions({ articles }: { articles?: Article[] }) {
 	const { ability, session } = await getServerAuthSession()
 	return ability.can('create', 'Content') ? (
-		<aside className="w-full border-x lg:max-w-xs lg:border-l-0 lg:border-r">
-			<div className="border-b p-5">
+		<aside className="w-full border-x-2 border-b-2 lg:max-w-xs lg:border-b-0 lg:border-l-0 lg:border-r-2">
+			<div className="border-b-2 p-5">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>
@@ -177,7 +185,11 @@ async function ArticleListActions({ articles }: { articles?: Article[] }) {
 			) : null}
 			{ability.can('update', 'Content') ? (
 				<div className="p-5">
-					<Button variant="outline" asChild className="w-full gap-1">
+					<Button
+						variant="outline"
+						asChild
+						className="w-full gap-1 border-2 border-black"
+					>
 						<Link href={`/posts/new`}>
 							<FilePlus2 className="h-4 w-4" />
 							New Post
@@ -187,6 +199,6 @@ async function ArticleListActions({ articles }: { articles?: Article[] }) {
 			) : null}
 		</aside>
 	) : (
-		<aside className="hidden w-full max-w-xs border-r lg:block" />
+		<aside className="hidden w-full max-w-xs border-r-2 lg:block" />
 	)
 }

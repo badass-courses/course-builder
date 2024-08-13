@@ -401,6 +401,9 @@ importers:
       groq:
         specifier: ^3.18.1
         version: 3.34.0
+      holy-loader:
+        specifier: ^2.2.10
+        version: 2.2.10(react@18.3.1)
       i:
         specifier: ^0.3.7
         version: 0.3.7
@@ -6501,7 +6504,7 @@ packages:
       '@babel/helpers': 7.24.0
       '@babel/parser': 7.24.0
       '@babel/template': 7.24.0
-      '@babel/traverse': 7.24.0(supports-color@5.5.0)
+      '@babel/traverse': 7.24.0
       '@babel/types': 7.24.0
       convert-source-map: 2.0.0
       debug: 4.3.4
@@ -6716,7 +6719,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/template': 7.24.0
-      '@babel/traverse': 7.24.0(supports-color@5.5.0)
+      '@babel/traverse': 7.24.0
       '@babel/types': 7.24.0
     transitivePeerDependencies:
       - supports-color
@@ -6944,7 +6947,7 @@ packages:
       '@babel/helper-module-imports': 7.24.7(supports-color@5.5.0)
       '@babel/helper-plugin-utils': 7.24.0
       '@babel/plugin-syntax-jsx': 7.23.3(@babel/core@7.24.9)
-      '@babel/types': 7.24.0
+      '@babel/types': 7.24.9
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6971,7 +6974,7 @@ packages:
       '@babel/parser': 7.24.8
       '@babel/types': 7.24.9
 
-  /@babel/traverse@7.24.0(supports-color@5.5.0):
+  /@babel/traverse@7.24.0:
     resolution: {integrity: sha512-HfuJlI8qq3dEDmNU5ChzzpZRWq+oxCZQyMzIMEqLho+AQnhMnKQUzH6ydo3RBl/YjPCuk68Y6s0Gx0AeyULiWw==}
     engines: {node: '>=6.9.0'}
     dependencies:
@@ -8934,7 +8937,7 @@ packages:
       '@babel/core': 7.24.0
       '@babel/generator': 7.23.6
       '@babel/parser': 7.24.0
-      '@babel/traverse': 7.24.0(supports-color@5.5.0)
+      '@babel/traverse': 7.24.0
       '@babel/types': 7.24.0
       prettier: 3.2.5
       semver: 7.6.0
@@ -16538,7 +16541,7 @@ packages:
       '@babel/generator': 7.23.6
       '@babel/parser': 7.24.0
       '@babel/plugin-transform-react-jsx': 7.23.4(@babel/core@7.24.0)
-      '@babel/traverse': 7.24.0(supports-color@5.5.0)
+      '@babel/traverse': 7.24.0
       '@babel/types': 7.24.0
       '@types/babel__core': 7.20.5
       acorn: 8.11.3

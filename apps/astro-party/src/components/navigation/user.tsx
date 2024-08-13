@@ -59,7 +59,7 @@ export const User: React.FC<{
 					{!sessionData?.user?.email ? (
 						<NavLinkItem
 							className={loginClassName}
-							label="Login"
+							label="Log In"
 							href="/login"
 						/>
 					) : (

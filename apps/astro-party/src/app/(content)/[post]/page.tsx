@@ -19,6 +19,7 @@ import rehypeExpressiveCode from 'rehype-expressive-code'
 
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { AuthedVideoPlayer } from '../_components/authed-video-player'
 import { MDXBody } from '../_components/mdx-body'
@@ -78,7 +79,7 @@ async function Post({ post }: { post: Article }) {
 	})
 
 	return (
-		<article className="prose sm:prose-lg mt-10 max-w-none border-t pt-10">
+		<article className="prose sm:prose-lg mt-10 max-w-none">
 			<MDXBody source={mdxSerialized} />
 		</article>
 	)
@@ -103,14 +104,14 @@ async function PostVideo({
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
 
 	if (!videoResource?.muxPlaybackId) {
-		return <div aria-hidden="true" className="py-5" />
+		return null
 	}
 
 	return (
-		<div className="flex max-h-[calc(100vh-300px)] items-center justify-center bg-black">
+		<div className="flex items-center justify-center border-b-2 bg-black">
 			<AuthedVideoPlayer
 				autoPlay={false}
-				className="aspect-video h-full max-h-[calc(100vh-300px)] w-full"
+				className="aspect-video h-full w-full"
 				muxPlaybackId={videoResource.muxPlaybackId}
 				resource={post}
 			/>
@@ -136,36 +137,51 @@ export default async function PostPage({
 	})?.resource.id
 
 	return (
-		<main>
-			<VideoPlayerOverlayProvider>
-				<PostVideo videoResourceId={videoResourceId} post={post} />
-			</VideoPlayerOverlayProvider>
-			<div className="container max-w-screen-lg pb-24 pt-5">
-				<div className="flex w-full items-center justify-between">
-					<Link
-						href="/posts"
-						className="text-primary mb-3 inline-flex text-sm hover:underline"
+		<div className="w-full pt-[var(--nav-height)]">
+			<div className="container px-2 sm:px-5">
+				<div className="bg-background container flex w-full flex-col border-x-2 px-0">
+					<VideoPlayerOverlayProvider>
+						<PostVideo videoResourceId={videoResourceId} post={post} />
+					</VideoPlayerOverlayProvider>
+					<div
+						className={cn('mx-auto w-full pb-24 pt-10', {
+							// 'pt-[var(--nav-height)]': !videoResourceId,
+							// 'pt-8': videoResourceId,
+						})}
 					>
-						← Posts
-					</Link>
-					<Suspense fallback={null}>
-						<PostActionBar post={post} />
-					</Suspense>
+						<article className="">
+							<div className="flex w-full flex-col items-center justify-center border-b-2 px-5 pb-10">
+								<div className="mx-auto w-full max-w-4xl">
+									<div className="flex w-full items-center justify-between">
+										<Link
+											href="/posts"
+											className="text-primary font-rounded mb-3 inline-flex text-base font-semibold hover:underline"
+										>
+											← Posts
+										</Link>
+										<Suspense fallback={null}>
+											<PostActionBar post={post} />
+										</Suspense>
+									</div>
+									<PostTitle post={post} />
+									<Contributor />
+								</div>
+							</div>
+							<div className="mx-auto flex w-full max-w-4xl flex-col px-5 py-5">
+								<Post post={post} />
+							</div>
+						</article>
+					</div>
+					{!ckSubscriber && (
+						<section
+							aria-label="Newsletter"
+							className="jusfify-center bg-brand-green flex w-full items-center border-t-2 px-2 py-5 sm:py-10"
+						>
+							<PrimaryNewsletterCta className="mx-auto w-full max-w-3xl" />
+						</section>
+					)}
 				</div>
-				<article>
-					<PostTitle post={post} />
-					<Contributor />
-					<Post post={post} />
-				</article>
 			</div>
-			{!ckSubscriber && (
-				<section
-					aria-label="Newsletter"
-					className="bg-brand-green jusfify-center flex w-full items-center py-10"
-				>
-					<PrimaryNewsletterCta className="mx-auto w-full max-w-3xl" />
-				</section>
-			)}
-		</main>
+		</div>
 	)
 }

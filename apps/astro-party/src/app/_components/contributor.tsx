@@ -15,7 +15,7 @@ export const Contributor: React.FC<{ className?: string }> = ({
 				alt={config.author}
 				width={40}
 				height={40}
-				className="bg-background rounded-full"
+				className="bg-primary rounded-full"
 			/>
 			<span>{config.author}</span>
 		</div>

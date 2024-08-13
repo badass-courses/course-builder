@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { type Metadata } from 'next'
 import Image from 'next/image'
+import { Layout } from '@/components/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { getPage } from '@/lib/pages-query'
@@ -18,10 +19,10 @@ export default async function Home() {
 	const page = await getPage('page-l9gb0')
 
 	return (
-		<div className="bg-brand-green flex flex-col overflow-x-hidden">
+		<Layout className="overflow-x-hidden border-x-0 bg-transparent">
 			<section
 				aria-label="Title"
-				className="relative z-10 mx-auto flex w-full flex-grow flex-col items-center justify-center rounded-lg px-5 py-16 text-white sm:py-24 lg:py-32"
+				className="relative z-10 mx-auto flex w-full flex-grow flex-col items-center justify-center rounded-lg py-10 text-white sm:py-24 lg:py-32"
 			>
 				<h1 className="font-heading max-w-3xl text-balance text-center text-4xl font-black sm:text-5xl lg:text-6xl">
 					<span className="font-rounded text-brand-yellow block pb-4 text-xl font-bold uppercase tracking-wide sm:text-2xl lg:text-3xl">
@@ -40,8 +41,8 @@ export default async function Home() {
 					className="pointer-events-none mt-24 scale-150 select-none sm:mt-0 sm:scale-100"
 				/>
 			</section>
-			<main className="-mt-64 flex flex-col items-center px-5 sm:-mt-96">
-				<div className="prose-ul:pl-4 prose-li:marker:text-brand-primary relative flex w-full max-w-4xl flex-col items-center rounded-full border-4 border-black bg-white px-8 pb-96 pt-40 sm:mx-auto sm:px-24">
+			<main className="-mt-64 flex flex-col items-center sm:-mt-96">
+				<div className="prose-ul:pl-4 prose-li:marker:text-brand-primary relative flex w-full max-w-4xl flex-col items-center rounded-full border-2 border-black bg-white px-5 pb-96 pt-40 sm:mx-auto sm:border-4 sm:px-24">
 					<div className="font-rounded relative z-20 flex items-center gap-3 pb-16 text-2xl font-semibold leading-none">
 						<Image
 							className="rounded-full border-[3px] border-black"
@@ -98,6 +99,6 @@ export default async function Home() {
 					</h2>
 				</PrimaryNewsletterCta>
 			</main>
-		</div>
+		</Layout>
 	)
 }

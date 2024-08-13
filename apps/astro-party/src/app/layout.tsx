@@ -5,7 +5,9 @@ import type { Metadata } from 'next'
 import { Fredoka } from 'next/font/google'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
+import { Body } from '@/components/app/body'
 import { Layout } from '@/components/layout'
+import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
@@ -17,6 +19,7 @@ import { cooperFont, cooperGoodtimeFont } from '@/utils/load-fonts'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
+import HolyLoader from 'holy-loader'
 import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
 
@@ -49,9 +52,9 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
-				{/* <HolyLoader color="#3333" height="0.1rem" speed={250} /> */}
+				<HolyLoader color="#009A52" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
-				<body
+				<Body
 					className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${cooperFont.variable} ${cooperGoodtimeFont.variable} ${fredokaFont.variable}`}
 				>
 					<TRPCReactProvider>
@@ -64,34 +67,33 @@ export default function RootLayout({
 							disableTransitionOnChange
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
-								<Layout>
-									<NextSSRPlugin
-										/**
-										 * The `extractRouterConfig` will extract **only** the route configs from the
-										 * router to prevent additional information from being leaked to the client. The
-										 * data passed to the client is the same as if you were to fetch
-										 * `/api/uploadthing` directly.
-										 */
-										routerConfig={extractRouterConfig(ourFileRouter)}
-									/>
-									<CouponProvider
-										getCouponForCode={async (couponCodeOrId: string | null) => {
-											'use server'
-											return getCouponForCode(
-												couponCodeOrId,
-												[],
-												courseBuilderAdapter,
-											)
-										}}
-										getProduct={getProduct}
-									>
-										{children}
-									</CouponProvider>
-								</Layout>
+								<Navigation />
+								<NextSSRPlugin
+									/**
+									 * The `extractRouterConfig` will extract **only** the route configs from the
+									 * router to prevent additional information from being leaked to the client. The
+									 * data passed to the client is the same as if you were to fetch
+									 * `/api/uploadthing` directly.
+									 */
+									routerConfig={extractRouterConfig(ourFileRouter)}
+								/>
+								<CouponProvider
+									getCouponForCode={async (couponCodeOrId: string | null) => {
+										'use server'
+										return getCouponForCode(
+											couponCodeOrId,
+											[],
+											courseBuilderAdapter,
+										)
+									}}
+									getProduct={getProduct}
+								>
+									{children}
+								</CouponProvider>
 							</div>
 						</ThemeProvider>
 					</TRPCReactProvider>
-				</body>
+				</Body>
 			</html>
 		</Providers>
 	)
