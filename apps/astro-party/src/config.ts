@@ -36,7 +36,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `card@2x.jpg`,
+				url: `card@2x.png`,
 				width: 1200,
 				height: 630,
 			},
