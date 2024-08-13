@@ -90,13 +90,18 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 				</p>
 			) : null}
 			{emailProvider ? (
-				<form data-form="" method="POST" action={emailProvider.signinUrl}>
+				<form
+					data-form=""
+					method="POST"
+					className="w-full"
+					action={emailProvider.signinUrl}
+				>
 					<Label data-label="" htmlFor="email">
 						Email address
 					</Label>
 					<input name="callbackUrl" type="hidden" defaultValue={callbackUrl} />
 					<input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-					<div data-input-container="">
+					<div data-input-container="" className="w-full">
 						<div data-icon="">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -109,6 +114,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 							</svg>
 						</div>
 						<Input
+							className="h-12 rounded-full border-2 border-black"
 							data-input=""
 							id="email"
 							type="email"
@@ -117,14 +123,22 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 							{...register('email', { required: true })}
 						/>
 					</div>
-					<Button data-button="">Email me a login link</Button>
+					<Button
+						data-button=""
+						className="rounded-full border-2 bg-black hover:bg-black"
+						size="lg"
+					>
+						Email me a login link
+					</Button>
 				</form>
 			) : null}
 			{(githubProvider || discordProvider) && <div data-separator="">or</div>}
 			<div data-providers-container="">
 				{githubProvider ? (
 					<Button
+						className="rounded-full border-2 border-black bg-transparent text-black"
 						data-button=""
+						size="lg"
 						variant="outline"
 						onClick={() =>
 							signIn(githubProvider.id, {

@@ -45,6 +45,6 @@
 		@apply text-center text-3xl font-extrabold leading-9 sm:text-3xl lg:text-4xl;
 	}
 	[data-message] {
-		@apply max-w-sm text-gray-600;
+		@apply max-w-sm;
 	}
 }
