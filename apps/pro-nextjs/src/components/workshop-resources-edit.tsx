@@ -19,7 +19,7 @@ import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-reso
 export default function WorkshopResourcesEdit({
 	workshop,
 }: {
-	workshop: Module
+	workshop: ContentResource
 }) {
 	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
 	const [isAddingSection, setIsAddingSection] = React.useState(false)

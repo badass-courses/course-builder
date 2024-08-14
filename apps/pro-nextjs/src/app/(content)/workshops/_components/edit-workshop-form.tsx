@@ -42,7 +42,7 @@ import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metada
 
 import { onWorkshopSave } from '../[module]/edit/actions'
 
-export function EditWorkshopForm({ workshop }: { workshop: Module }) {
+export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 	const form = useForm<z.infer<typeof ModuleSchema>>({
 		resolver: zodResolver(ModuleSchema),
 		defaultValues: {
