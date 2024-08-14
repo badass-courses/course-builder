@@ -268,7 +268,10 @@ export async function updateProduct(input: Product) {
 	})
 }
 
-export async function getProduct(productSlugOrId: string) {
+export async function getProduct(productSlugOrId?: string) {
+	if (!productSlugOrId) {
+		return null
+	}
 	const productData = await db.query.products.findFirst({
 		where: and(
 			or(
