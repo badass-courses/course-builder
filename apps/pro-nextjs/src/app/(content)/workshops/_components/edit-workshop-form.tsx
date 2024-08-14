@@ -6,7 +6,7 @@ import WorkshopResourcesList from '@/components/workshop-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { ModuleSchema } from '@/lib/module'
+import { ModuleSchema, type Module } from '@/lib/module'
 import { updateWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,12 +19,19 @@ import { z } from 'zod'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import type { ContentResource } from '@coursebuilder/core/types'
 import {
+	FormControl,
 	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+	Switch,
 	Textarea,
 } from '@coursebuilder/ui'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
@@ -35,7 +42,7 @@ import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metada
 
 import { onWorkshopSave } from '../[module]/edit/actions'
 
-export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
+export function EditWorkshopForm({ workshop }: { workshop: Module }) {
 	const form = useForm<z.infer<typeof ModuleSchema>>({
 		resolver: zodResolver(ModuleSchema),
 		defaultValues: {
@@ -49,6 +56,8 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 				visibility: workshop.fields?.visibility || 'unlisted',
 				coverImage: workshop?.fields?.coverImage || { url: '', alt: '' },
 				github: workshop?.fields?.github || '',
+				autoPlay: workshop?.fields?.autoPlay || 'available',
+				autoComplete: workshop?.fields?.autoComplete || false,
 			},
 		},
 	})
@@ -219,6 +228,46 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 						form.getValues() as unknown as ContentResource & {
 							fields?: { slug: string }
 						},
+					)}
+				/>
+				<FormField
+					name="fields.autoPlay"
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Autoplay</FormLabel>
+							<Select onValueChange={field.onChange} defaultValue={field.value}>
+								<FormControl>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Select..." />
+									</SelectTrigger>
+								</FormControl>
+								<SelectContent>
+									<SelectItem value="available">
+										Available (user controlled)
+									</SelectItem>
+									<SelectItem value="on">On</SelectItem>
+									<SelectItem value="off">Off</SelectItem>
+								</SelectContent>
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					name="fields.autoComplete"
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="flex w-full items-center justify-between px-5">
+							<FormLabel className="text-lg font-bold">Auto Complete</FormLabel>
+							<FormControl>
+								<Switch
+									checked={field.value}
+									onCheckedChange={field.onChange}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
 					)}
 				/>
 				{/* <WorkshopResourcesList workshop={workshop} /> */}

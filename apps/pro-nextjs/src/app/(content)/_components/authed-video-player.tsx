@@ -26,6 +26,8 @@ import {
 } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { useWorkshopNavigation } from '../workshops/_components/workshop-navigation-provider'
+
 export function AuthedVideoPlayer({
 	muxPlaybackId,
 	className,
@@ -53,7 +55,7 @@ export function AuthedVideoPlayer({
 		playbackRate,
 		volume,
 		setPlayerPrefs,
-		autoplay: bingeMode,
+		autoplay: autoPlayCookiePref,
 	} = useMuxPlayerPrefs()
 	const { setMuxPlayerRef } = useMuxPlayer()
 	const router = useRouter()
@@ -79,6 +81,10 @@ export function AuthedVideoPlayer({
 				enabled: canView && Boolean(nextResource),
 			},
 		)
+
+	const workshopNavigation = useWorkshopNavigation()
+	const autoPlayModulePref = workshopNavigation?.autoPlay || 'available'
+	const autoCompleteModulePref = workshopNavigation?.autoComplete || false
 
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
@@ -110,7 +116,14 @@ export function AuthedVideoPlayer({
 			setPreferredTextTrack(playerRef)
 			setMuxPlayerRef(playerRef)
 
-			if (bingeMode) {
+			if (autoPlayModulePref === 'off') {
+				setPlayerPrefs({ autoplay: false })
+			}
+			if (autoPlayModulePref === 'on') {
+				setPlayerPrefs({ autoplay: true })
+			}
+
+			if (autoPlayCookiePref) {
 				playerRef?.current?.play()
 			}
 		},
@@ -126,7 +139,9 @@ export function AuthedVideoPlayer({
 				dispatchVideoPlayerOverlay,
 				setCurrentResource,
 				handleSetLessonComplete,
-				bingeMode,
+				autoPlayCookiePref,
+				autoPlayModulePref,
+				autoCompleteModulePref,
 				moduleSlug,
 				moduleType,
 				router,
@@ -184,7 +199,9 @@ async function handleOnVideoEnded({
 	dispatchVideoPlayerOverlay,
 	setCurrentResource,
 	handleSetLessonComplete,
-	bingeMode,
+	autoPlayCookiePref,
+	autoPlayModulePref,
+	autoCompleteModulePref,
 	moduleSlug,
 	moduleType,
 	nextResource,
@@ -203,7 +220,9 @@ async function handleOnVideoEnded({
 	handleSetLessonComplete: (
 		props: handleSetLessonCompleteProps,
 	) => Promise<void>
-	bingeMode: boolean
+	autoPlayCookiePref: boolean
+	autoPlayModulePref: 'available' | 'on' | 'off'
+	autoCompleteModulePref: boolean
 	moduleSlug?: string
 	moduleType?: 'tutorial' | 'workshop'
 	nextResource?: ContentResource | null
@@ -215,7 +234,7 @@ async function handleOnVideoEnded({
 	} else {
 		if (
 			isFullscreen &&
-			bingeMode &&
+			autoPlayCookiePref &&
 			nextLessonPlaybackId &&
 			nextResource &&
 			playerRef?.current
@@ -224,8 +243,7 @@ async function handleOnVideoEnded({
 			playerRef.current.playbackId = nextLessonPlaybackId
 			await handleSetLessonComplete({ currentResource, moduleSlug, moduleType })
 			setCurrentResource(nextResource)
-		} else if (bingeMode) {
-			console.log({ nextResource })
+		} else if (autoPlayCookiePref) {
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			}
@@ -240,6 +258,12 @@ async function handleOnVideoEnded({
 					playerRef,
 				})
 			}
+		} else if (autoCompleteModulePref) {
+			await handleSetLessonComplete({ currentResource, moduleSlug, moduleType })
+			dispatchVideoPlayerOverlay({
+				type: 'COMPLETED',
+				playerRef,
+			})
 		} else {
 			dispatchVideoPlayerOverlay({
 				type: 'COMPLETED',

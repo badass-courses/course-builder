@@ -34,6 +34,8 @@ async function getAllWorkshopLessonsWithSectionInfo(
     workshop.fields->>'$.slug' AS workshop_slug,
     workshop.fields->>'$.title' AS workshop_title,
     workshop.fields->>'$.coverImage.url' AS workshop_image,
+		workshop.fields->>'$.autoPlay' AS workshop_autoPlay,
+		workshop.fields->>'$.autoComplete' AS workshop_autoComplete,
     CASE
         WHEN combined.item_type = 'section' THEN combined.section_id
         ELSE NULL
@@ -206,6 +208,8 @@ export async function getWorkshopNavigation(
 		slug: workshop.workshop_slug,
 		title: workshop.workshop_title,
 		coverImage: workshop.workshop_image,
+		autoPlay: workshop.workshop_autoPlay,
+		autoComplete: Boolean(workshop.workshop_autoComplete === 'true'),
 		resources,
 	})
 }

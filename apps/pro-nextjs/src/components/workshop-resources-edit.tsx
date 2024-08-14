@@ -8,6 +8,7 @@ import {
 	treeStateReducer,
 } from '@/components/lesson-list/data/tree'
 import Tree from '@/components/lesson-list/tree'
+import type { Module } from '@/lib/module'
 import { createResource } from '@/lib/resources/create-resources'
 import { addResourceToWorkshop } from '@/lib/workshops-query'
 
@@ -18,7 +19,7 @@ import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-reso
 export default function WorkshopResourcesEdit({
 	workshop,
 }: {
-	workshop: ContentResource
+	workshop: Module
 }) {
 	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
 	const [isAddingSection, setIsAddingSection] = React.useState(false)
@@ -87,7 +88,7 @@ export default function WorkshopResourcesEdit({
 		<>
 			<span className="px-5 text-lg font-bold">Resources</span>
 			<Tree
-				rootResource={workshop as ContentResource}
+				rootResource={workshop}
 				rootResourceId={workshop.id}
 				state={state}
 				updateState={updateState}

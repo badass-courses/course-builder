@@ -1,12 +1,15 @@
 'use client'
 
 import * as React from 'react'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { useMuxPlayerPrefs } from '@/hooks/use-mux-player-prefs'
 
 import { Label, Switch } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function AutoPlayToggle({ className }: { className?: string }) {
+	const workshopNavigation = useWorkshopNavigation()
+	const isAutoPlayAvailable = workshopNavigation?.autoPlay === 'available'
 	const { getPlayerPrefs, setPlayerPrefs } = useMuxPlayerPrefs()
 	const playerPrefs = getPlayerPrefs()
 	const bingeMode = playerPrefs.autoplay
@@ -15,7 +18,7 @@ export function AutoPlayToggle({ className }: { className?: string }) {
 		setMounted(true)
 	}, [])
 
-	return mounted ? (
+	return mounted && isAutoPlayAvailable ? (
 		<div className={cn('flex items-center gap-2', className)}>
 			<Label htmlFor="binge-mode-toggle">Autoplay</Label>
 			<Switch

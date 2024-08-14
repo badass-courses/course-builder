@@ -28,6 +28,7 @@ import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-o
 
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+import { useModuleProgress } from './module-progress-provider'
 
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
@@ -41,10 +42,7 @@ export const CompletedLessonOverlay: React.FC<{
 	const moduleNavigation = useWorkshopNavigation()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
-	const { data: moduleProgress } =
-		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: moduleNavigation?.id,
-		})
+	const moduleProgress = useModuleProgress()
 
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
 		moduleProgress?.completedLessonsCount || 0,

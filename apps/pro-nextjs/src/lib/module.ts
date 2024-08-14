@@ -21,6 +21,8 @@ export const ModuleSchema = z.object({
 		body: z.string().optional().nullable(),
 		description: z.string().optional().nullable(),
 		github: z.string().optional().nullable(),
+		autoPlay: z.enum(['available', 'on', 'off']).default('available'),
+		autoComplete: z.boolean().default(false),
 		state: z
 			.enum(['draft', 'published', 'archived', 'deleted'])
 			.default('draft'),

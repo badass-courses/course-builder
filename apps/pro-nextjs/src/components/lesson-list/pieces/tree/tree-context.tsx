@@ -1,4 +1,5 @@
 import React, { createContext } from 'react'
+import type { Module } from '@/lib/module'
 import {
 	attachInstruction,
 	extractInstruction,
@@ -16,7 +17,7 @@ export type TreeContextValue = {
 	getMoveTargets: ({ itemId }: { itemId: string }) => TreeItem[]
 	getChildrenOfItem: (itemId: string) => TreeItem[]
 	rootResourceId: string | null
-	rootResource: ContentResource | Product | null
+	rootResource: ContentResource | Product | Module | null
 	registerTreeItem: (args: {
 		itemId: string
 		element: HTMLElement

@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
+import type { Module } from '@/lib/module'
 import {
 	updateResourcePosition,
 	updateResourcePositions,
@@ -77,7 +78,7 @@ export default function Tree({
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
-	rootResource: ContentResource | Product
+	rootResource: ContentResource | Module | Product
 }) {
 	const params = useParams<{ module: string }>()
 

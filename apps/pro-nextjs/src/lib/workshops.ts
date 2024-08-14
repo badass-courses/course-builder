@@ -5,6 +5,8 @@ export const NavigationResultSchema = z.object({
 	workshop_slug: z.string(),
 	workshop_title: z.string(),
 	workshop_image: z.string().optional().nullable(),
+	workshop_autoPlay: z.enum(['available', 'on', 'off']).default('available'),
+	workshop_autoComplete: z.string().default('false'),
 	section_id: z.string().nullable(),
 	section_slug: z.string().nullable(),
 	section_title: z.string().nullable(),
@@ -46,6 +48,8 @@ export const WorkshopNavigationSchema = z.object({
 	title: z.string(),
 	coverImage: z.string().optional().nullable(),
 	resources: z.array(NavigationResourceSchema),
+	autoPlay: z.enum(['available', 'on', 'off']).default('available'),
+	autoComplete: z.boolean().default(false),
 })
 
 export function findSectionIdForLessonSlug(
