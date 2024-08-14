@@ -7,7 +7,7 @@ import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { BingeModeToggle } from './binge-mode-toggle'
+import { AutoPlayToggle } from './autoplay-toggle'
 import { ModuleLessonProgressToggle } from './module-lesson-progress-toggle'
 
 export const LessonControls = async ({
@@ -36,7 +36,7 @@ export const LessonControls = async ({
 				className,
 			)}
 		>
-			<BingeModeToggle />
+			<AutoPlayToggle />
 			{(session?.user || ckSubscriber) &&
 			(lesson.type === 'lesson' || lesson.type === 'solution') ? (
 				<ModuleLessonProgressToggle
