@@ -1,7 +1,7 @@
 [data-login-template] {
-	@apply relative mx-auto flex w-full max-w-sm flex-grow flex-col items-center justify-start pb-16 pt-24 sm:p-5 sm:pt-32;
+	@apply relative mx-auto flex w-full max-w-sm flex-grow flex-col items-center justify-start;
 	[data-title] {
-		@apply pt-3 text-center text-4xl font-extrabold leading-9 sm:pt-8 sm:text-4xl;
+		@apply pt-3 text-center text-4xl font-extrabold leading-9 sm:pt-8 sm:text-5xl;
 	}
 	[data-verification-error] {
 		@apply max-w-sm pt-4 text-center sm:mx-auto sm:w-full sm:pt-8;
@@ -26,7 +26,7 @@
 		}
 	}
 	[data-separator] {
-		@apply py-5 text-center text-sm opacity-60;
+		@apply py-5 text-center text-sm;
 	}
 	[data-providers-container] {
 		@apply w-full space-y-2;

@@ -59,14 +59,14 @@ export const User: React.FC<{
 					{!sessionData?.user?.email ? (
 						<NavLinkItem
 							className={loginClassName}
-							label="Log In"
+							label="Log in"
 							href="/login"
 						/>
 					) : (
 						<DropdownMenu>
 							<DropdownMenuTrigger
 								className={cn(
-									'hover:bg-muted -mr-3 flex items-center space-x-1 px-4',
+									'hover:bg-muted flex items-center space-x-1 rounded-br-[calc(var(--radius)-3px)] px-4',
 									className,
 								)}
 							>
@@ -86,15 +86,15 @@ export const User: React.FC<{
 									/>
 								)}
 								<div className="flex flex-col pl-0.5">
-									<span className="inline-flex items-center gap-0.5 text-sm leading-tight">
-										<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
+									<span className="inline-flex items-center gap-0.5 text-base leading-tight">
+										<span className="font-rounded truncate font-medium sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
 											{sessionData?.user?.name?.split(' ')[0] || 'Account'}
 										</span>{' '}
 										<ChevronDownIcon className="w-2" />
 									</span>
 								</div>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent>
+							<DropdownMenuContent className="border-2">
 								<DropdownMenuLabel>
 									{sessionData?.user?.email || 'Account'}
 								</DropdownMenuLabel>

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Layout } from '@/components/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
+import { env } from '@/env.mjs'
 import { getPage } from '@/lib/pages-query'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -22,7 +23,7 @@ export default async function Home() {
 		<Layout className="overflow-x-hidden border-x-0 bg-transparent">
 			<section
 				aria-label="Title"
-				className="relative z-10 mx-auto flex w-full flex-grow flex-col items-center justify-center rounded-lg py-10 text-white sm:py-24 lg:py-32"
+				className="relative z-10 mx-auto flex w-full flex-grow flex-col items-center justify-center rounded-lg py-10 text-white sm:py-24 lg:py-24"
 			>
 				<h1 className="font-heading max-w-3xl text-balance text-center text-4xl font-black sm:text-5xl lg:text-6xl">
 					<span className="font-rounded text-brand-yellow block pb-4 text-xl font-bold uppercase tracking-wide sm:text-2xl lg:text-3xl">

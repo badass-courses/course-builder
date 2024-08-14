@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next/types'
 import { Email } from '@/app/(email-list)/_components/email'
 import { Signature } from '@/app/(email-list)/_components/signature'
+import { Layout } from '@/components/layout'
 
 export const metadata: Metadata = {
 	title: 'Confirm your subscription',
@@ -9,8 +10,8 @@ export const metadata: Metadata = {
 
 export default async function ConfirmSubscriptionPage() {
 	return (
-		<main className="bg-brand-green-light flex min-h-[calc(100vh-var(--nav-height))] w-full flex-grow flex-col items-center justify-center px-5 py-5">
-			<div className="flex max-w-xl flex-col items-center justify-center text-center font-light">
+		<Layout withBackground={false} withBorder={false}>
+			<div className="mx-auto flex max-w-xl flex-col items-center justify-center py-24 text-center font-light">
 				<Image />
 				<h1 className="font-text font-heading mx-auto w-full max-w-lg py-8 text-3xl font-bold sm:text-4xl">
 					Check Your Email
@@ -35,7 +36,7 @@ export default async function ConfirmSubscriptionPage() {
 					</p>
 				</div>
 			</div>
-		</main>
+		</Layout>
 	)
 }
 

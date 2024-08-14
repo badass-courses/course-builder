@@ -6,6 +6,7 @@ import pluralize from 'pluralize'
 
 import { ContentResource } from '@coursebuilder/core/types'
 import { CreateResourceCard } from '@coursebuilder/ui/resources-crud/create-resource-card'
+import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,8 +30,11 @@ export default async function CreateResourcePage({
 	}
 
 	return (
-		<div className="flex flex-col">
-			<CreateResourceCard
+		<div className="mx-auto flex w-full max-w-md flex-col pt-16">
+			<h1 className="font-rounded fluid-2xl mb-5 w-full text-center font-semibold">
+				Create new {resourceType}
+			</h1>
+			<CreateResourceForm
 				resourceType={resourceType}
 				onCreate={async (resource: ContentResource) => {
 					'use server'
