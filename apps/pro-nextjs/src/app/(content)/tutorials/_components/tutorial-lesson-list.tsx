@@ -74,7 +74,7 @@ export function TutorialLessonList(props: Props) {
 
 	const ability = createAppAbility(abilityRules || [])
 
-	const moduleProgress = useModuleProgress()
+	const { moduleProgress } = useModuleProgress()
 
 	const params = useParams()
 
