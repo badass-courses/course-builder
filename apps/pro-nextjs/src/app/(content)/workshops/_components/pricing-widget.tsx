@@ -64,6 +64,9 @@ export const PricingWidget: React.FC<{
 			</strong>
 			<ul className="flex w-full flex-col gap-2">
 				<li className="flex items-center gap-2">
+					<Check className="h-4 w-4" />4 Complete Workshops
+				</li>
+				<li className="flex items-center gap-2">
 					<Check className="h-4 w-4" />
 					Over 90 Lessons
 				</li>
