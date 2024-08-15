@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { coupon, merchantCoupon as merchantCouponTable } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { and, eq } from 'drizzle-orm'
@@ -54,12 +55,23 @@ export async function createCoupon(input: CouponInput) {
 					})
 				: null
 
-		await db.insert(coupon).values({
-			...input,
-			merchantCouponId: merchantCoupon?.id,
-			id: `coupon_${guid()}`,
+		const codesArray: string[] = []
+		await db.transaction(async (trx) => {
+			// insert coupon for CouponInput quantity
+			for (let i = 0; i < Number(input.quantity); i++) {
+				const id = `coupon_${guid()}`
+				await trx.insert(coupon).values({
+					...input,
+					merchantCouponId: merchantCoupon?.id,
+					id,
+				})
+				codesArray.push(`${env.COURSEBUILDER_URL}/?coupon=${id}`)
+			}
 		})
 
 		revalidatePath('/admin/coupons')
+		return codesArray
 	}
+
+	return []
 }
