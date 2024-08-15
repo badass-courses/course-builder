@@ -31,7 +31,7 @@ export const EventSidebar = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<div
 			data-event=""
-			className="relative flex w-full flex-col gap-3 border-l md:max-w-sm"
+			className="relative flex w-full flex-col gap-3 md:max-w-sm md:border-l-2"
 		>
 			<div
 				ref={sidebarRef}

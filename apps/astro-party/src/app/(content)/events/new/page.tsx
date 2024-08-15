@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
+import { Layout } from '@/components/layout'
+import CreateResourcePage from '@/components/resources-crud/create-resource-page'
 import { createResource } from '@/lib/resources/create-resources'
 import { getServerAuthSession } from '@/server/auth'
 import pluralize from 'pluralize'
@@ -17,15 +19,8 @@ export default async function NewEventPage() {
 	}
 
 	return (
-		<div className="flex flex-col">
-			<CreateResourceCard
-				resourceType={'event'}
-				onCreate={async (resource: ContentResource) => {
-					'use server'
-					redirect(`/${pluralize(resource.type)}/${resource.fields?.slug}/edit`)
-				}}
-				createResource={createResource}
-			/>
-		</div>
+		<Layout>
+			<CreateResourcePage resourceType={'event'} />
+		</Layout>
 	)
 }

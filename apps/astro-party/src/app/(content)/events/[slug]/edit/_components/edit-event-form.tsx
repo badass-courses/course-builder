@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
 import { updateResource } from '@/lib/resources-query'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
 import { ImagePlusIcon } from 'lucide-react'
@@ -27,9 +28,11 @@ import {
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 export function EditEventForm({ event }: { event: Event }) {
 	const { data: session } = useSession()
+	const defaultSocialImage = getOGImageUrlForResource(event)
 	const { theme } = useTheme()
 	const form = useForm<z.infer<typeof EventSchema>>({
 		resolver: zodResolver(EventSchema),
@@ -49,6 +52,10 @@ export function EditEventForm({ event }: { event: Event }) {
 				description: event.fields.description ?? '',
 				slug: event.fields.slug ?? '',
 				timezone: event.fields.timezone || 'America/Los_Angeles',
+				socialImage: {
+					type: 'imageUrl',
+					url: defaultSocialImage,
+				},
 			},
 		},
 	})
@@ -109,7 +116,9 @@ const EventMetadataFormFields = ({
 		<EditResourcesMetadataFields form={form}>
 			<div className="px-5">
 				<FormLabel>Cover Image</FormLabel>
-				{form.watch('fields.image') && <img src={form.watch('fields.image')} />}
+				{form.watch('fields.image') && (
+					<img src={form.watch('fields.image') || ''} />
+				)}
 			</div>
 			<FormField
 				control={form.control}
@@ -201,6 +210,10 @@ const EventMetadataFormFields = ({
 						<FormMessage />
 					</FormItem>
 				)}
+			/>
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={getOGImageUrlForResource(form.getValues())}
 			/>
 		</EditResourcesMetadataFields>
 	)

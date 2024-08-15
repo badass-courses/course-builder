@@ -7,6 +7,7 @@ import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing
 import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 
 import type { EventPageProps } from './event-page-props'
+import { EventPricingWidget } from './event-pricing-widget'
 
 export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 	props,
@@ -32,31 +33,27 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 		? new Date(startsAt) > new Date()
 		: startsAt
 			? new Date(startsAt) > new Date()
-			: false
+			: true
+
+	const cancelUrl = `${env.NEXT_PUBLIC_URL}/events/${fields?.slug}`
 
 	return (
 		<>
 			{product && product.status === 1 && isUpcoming && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-					<PricingWidget
+					<EventPricingWidget
+						commerceProps={{ ...commerceProps, products: [product] }}
 						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
-						commerceProps={{ ...commerceProps, products }}
 						product={product}
 						quantityAvailable={quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={{
-							withTitle: false,
-							withImage: false,
-							withGuaranteeBadge: false,
-							isLiveEvent: true,
-							teamQuantityLimit:
-								quantityAvailable >= 0 && quantityAvailable > 5
-									? 5
-									: quantityAvailable < 0
-										? 100
-										: quantityAvailable,
-							isPPPEnabled: false,
-							cancelUrl: `${env.NEXT_PUBLIC_URL}/events/${event.fields?.slug || event.id}`,
+							withImage: product.type !== 'live',
+							withGuaranteeBadge: product.type !== 'live',
+							isLiveEvent: product.type === 'live',
+							teamQuantityLimit: 2,
+							isPPPEnabled: product.type !== 'live',
+							cancelUrl: cancelUrl,
 						}}
 					/>
 				</PriceCheckProvider>

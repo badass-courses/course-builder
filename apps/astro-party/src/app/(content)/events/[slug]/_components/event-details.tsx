@@ -7,6 +7,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { formatInTimeZone } from 'date-fns-tz'
 
+import { cn } from '@coursebuilder/ui/utils/cn'
+
 export const EventDetails: React.FC<{
 	event: Event
 }> = ({ event }) => {
@@ -32,7 +34,11 @@ export const EventDetails: React.FC<{
 	}
 
 	return (
-		<div className="flex flex-col border-t px-5 pt-5">
+		<div
+			className={cn('flex flex-col px-5 pt-5', {
+				'border-t-2': event.resourceProducts.length > 0,
+			})}
+		>
 			<h3 className="font-heading pb-4 text-2xl font-bold">Event Details</h3>
 			<div className="flex flex-col gap-2.5 text-base font-normal">
 				<div className="flex flex-col">
