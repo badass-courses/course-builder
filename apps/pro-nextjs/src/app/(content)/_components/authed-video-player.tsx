@@ -245,7 +245,7 @@ async function handleOnVideoEnded({
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			}
-			handleSetLessonComplete({
+			await handleSetLessonComplete({
 				currentResource,
 				moduleProgress,
 				addLessonProgress,
@@ -289,7 +289,7 @@ async function handleSetLessonComplete({
 	)
 	if (!isCurrentLessonCompleted) {
 		addLessonProgress(currentResource.id)
-		setProgressForResource({
+		await setProgressForResource({
 			resourceId: currentResource.id,
 			isCompleted: true,
 		})
