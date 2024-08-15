@@ -8,9 +8,12 @@ import { NextLessonButton } from '@/app/(content)/workshops/_components/next-les
 import { PreviewWorkshopButton } from '@/app/(content)/workshops/_components/preview-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import config from '@/config'
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm'
 import { Construction } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
@@ -23,6 +26,18 @@ import { WorkshopPricing } from '../_components/workshop-pricing-server'
 type Props = {
 	params: { module: string }
 	searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateStaticParams() {
+	const workshops = await db.query.contentResource.findMany({
+		where: and(eq(contentResource.type, 'workshop')),
+	})
+
+	return workshops
+		.filter((workshop) => Boolean(workshop.fields?.slug))
+		.map((workshop) => ({
+			module: workshop.fields?.slug,
+		}))
 }
 
 export async function generateMetadata(
