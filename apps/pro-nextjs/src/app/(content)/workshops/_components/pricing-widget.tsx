@@ -46,7 +46,7 @@ export const PricingWidget: React.FC<{
 			{...commerceProps}
 		>
 			<Pricing.Product className="w-full">
-				{/* <Pricing.ProductImage /> */}
+				<Pricing.ProductImage />
 				<Pricing.Details className="px-0">
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
@@ -63,6 +63,9 @@ export const PricingWidget: React.FC<{
 				Includes
 			</strong>
 			<ul className="flex w-full flex-col gap-2">
+				<li className="flex items-center gap-2">
+					<Check className="h-4 w-4" />4 Complete Workshops
+				</li>
 				<li className="flex items-center gap-2">
 					<Check className="h-4 w-4" />
 					Over 90 Lessons

@@ -4,10 +4,13 @@ import Link from 'next/link'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
+import { db } from '@/db'
+import { contentResourceProduct } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { getAllWorkshops } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { asc } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
+import { z } from 'zod'
 
 import {
 	Button,
@@ -58,17 +61,33 @@ export default async function Workshops() {
 }
 
 async function WorkshopsList() {
-	const workshopsModule = await getAllWorkshops()
+	const productResources = await db.query.contentResourceProduct.findMany({
+		with: {
+			resource: true,
+			product: true,
+		},
+		orderBy: asc(contentResourceProduct.position),
+	})
+
+	const workshopsModule = z
+		.array(z.object({ fields: z.record(z.any()), id: z.string() }))
+		.parse(
+			productResources.map((productResource) => {
+				return productResource.resource
+			}),
+		)
+
 	const { ability } = await getServerAuthSession()
+
 	const workshops = [...workshopsModule].filter((tutorial) => {
 		if (ability.can('create', 'Content')) {
 			return tutorial
 		} else {
-			return tutorial.fields.visibility === 'public'
+			return tutorial.fields?.visibility === 'public'
 		}
 	})
 	const publicWorkshops = [...workshopsModule].filter(
-		(tutorial) => tutorial.fields.visibility === 'public',
+		(tutorial) => tutorial.fields?.visibility === 'public',
 	)
 
 	return (

@@ -1,21 +1,14 @@
 import * as React from 'react'
 import { courseBuilderAdapter } from '@/db'
-import { Module } from '@/lib/module'
 import { getPricingData } from '@/lib/pricing-query'
+import { getProduct } from '@/lib/products-query'
 import { getWorkshopProduct } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
-import first from 'lodash/first'
 
 import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
-import {
-	productSchema,
-	type Product,
-	type Purchase,
-	type User,
-} from '@coursebuilder/core/schemas'
+import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
 
 import { type WorkshopPageProps } from './workshop-page-props'
-import { WorkshopPricing as WorkshopPricingClient } from './workshop-pricing'
 
 export async function WorkshopPricing({
 	searchParams,
@@ -29,7 +22,8 @@ export async function WorkshopPricing({
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
 
-	const product = await getWorkshopProduct(moduleSlug)
+	const workshopProduct = await getWorkshopProduct(moduleSlug)
+	const product = await getProduct(workshopProduct?.id)
 
 	let workshopProps
 
