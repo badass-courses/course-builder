@@ -19,12 +19,15 @@ import MuxPlayer, {
 } from '@mux/mux-player-react'
 import pluralize from 'pluralize'
 
+import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/types'
 import {
 	useVideoPlayerOverlay,
 	type VideoPlayerOverlayAction,
 } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
+
+import { useModuleProgress } from './module-progress-provider'
 
 export function AuthedVideoPlayer({
 	muxPlaybackId,
@@ -82,6 +85,7 @@ export function AuthedVideoPlayer({
 
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
+	const { moduleProgress, addLessonProgress } = useModuleProgress()
 
 	const playerProps = {
 		defaultHiddenCaptions: true,
@@ -130,6 +134,8 @@ export function AuthedVideoPlayer({
 				moduleSlug,
 				moduleType,
 				router,
+				moduleProgress,
+				addLessonProgress,
 			})
 		},
 		onPlay: () => {
@@ -184,6 +190,8 @@ async function handleOnVideoEnded({
 	dispatchVideoPlayerOverlay,
 	setCurrentResource,
 	handleSetLessonComplete,
+	moduleProgress,
+	addLessonProgress,
 	bingeMode,
 	moduleSlug,
 	moduleType,
@@ -209,6 +217,8 @@ async function handleOnVideoEnded({
 	nextResource?: ContentResource | null
 	nextLessonPlaybackId?: string | null
 	router: ReturnType<typeof useRouter>
+	moduleProgress: ModuleProgress | null
+	addLessonProgress: (lessonId: string) => void
 }) {
 	if (resource?.type === 'exercise') {
 		router.push(`${resource?.fields?.slug}/exercise`)
@@ -222,14 +232,22 @@ async function handleOnVideoEnded({
 		) {
 			dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			playerRef.current.playbackId = nextLessonPlaybackId
-			await handleSetLessonComplete({ currentResource, moduleSlug, moduleType })
+			await handleSetLessonComplete({
+				currentResource,
+				moduleProgress,
+				addLessonProgress,
+			})
 			setCurrentResource(nextResource)
 		} else if (bingeMode) {
 			console.log({ nextResource })
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			}
-			await handleSetLessonComplete({ currentResource, moduleSlug, moduleType })
+			await handleSetLessonComplete({
+				currentResource,
+				moduleProgress,
+				addLessonProgress,
+			})
 			if (nextResource) {
 				router.push(
 					`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
@@ -251,25 +269,25 @@ async function handleOnVideoEnded({
 
 type handleSetLessonCompleteProps = {
 	currentResource: ContentResource
-	moduleSlug?: string
-	moduleType?: 'tutorial' | 'workshop'
+	moduleProgress: ModuleProgress | null
+	addLessonProgress: (lessonId: string) => void
 }
 
 async function handleSetLessonComplete({
 	currentResource,
-	moduleSlug,
-	moduleType,
+	moduleProgress,
+	addLessonProgress,
 }: handleSetLessonCompleteProps) {
-	await setProgressForResource({
-		resourceId: currentResource.id,
-		isCompleted: true,
-	})
-	if (moduleSlug && moduleType && currentResource?.fields?.slug) {
-		await revalidateModuleLesson(
-			moduleSlug,
-			currentResource?.fields?.slug,
-			moduleType,
-			currentResource.type as 'lesson' | 'exercise' | 'solution',
-		)
+	const isCurrentLessonCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) => p.resourceId === currentResource.id && p.completedAt,
+		),
+	)
+	if (!isCurrentLessonCompleted) {
+		addLessonProgress(currentResource.id)
+		await setProgressForResource({
+			resourceId: currentResource.id,
+			isCompleted: true,
+		})
 	}
 }

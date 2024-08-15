@@ -7,7 +7,7 @@ import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
-import { addProgress } from '@/lib/progress'
+import { addProgress, setProgressForResource } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
@@ -28,6 +28,7 @@ import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-o
 
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+import { useModuleProgress } from './module-progress-provider'
 
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
@@ -36,27 +37,16 @@ export const CompletedLessonOverlay: React.FC<{
 	moduleType?: 'workshop' | 'tutorial'
 }> = ({ action, resource, nextLesson, moduleType = 'tutorial' }) => {
 	const { playerRef } = action
-	const session = useSession()
-	const router = useRouter()
-	const moduleNavigation = useWorkshopNavigation()
+
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
-
-	const { data: moduleProgress } =
-		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: moduleNavigation?.id,
-		})
-
+	const { moduleProgress, addLessonProgress, removeLessonProgress } =
+		useModuleProgress()
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
 		moduleProgress?.completedLessonsCount || 0,
 	)
 	const totalLessonsCount = moduleProgress?.totalLessonsCount || 0
 	const percentCompleted = Math.round(
 		(completedLessonsCount / totalLessonsCount) * 100,
-	)
-	const isCurrentLessonCompleted = Boolean(
-		moduleProgress?.completedLessons?.some(
-			(p) => p.resourceId === resource?.id && p.completedAt,
-		),
 	)
 
 	return (
@@ -90,35 +80,12 @@ export const CompletedLessonOverlay: React.FC<{
 					Replay
 				</Button>
 				{resource && (
-					<>
-						<form
-							action={async () => {
-								if (!isCurrentLessonCompleted) {
-									await addProgress({
-										resourceId: resource.id,
-									})
-								}
-								if (nextLesson && moduleNavigation) {
-									if (nextLesson.type === 'solution') {
-										return router.push(
-											`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
-										)
-									}
-									return router.push(
-										`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextLesson?.fields?.slug}`,
-									)
-								}
-							}}
-						>
-							<ContinueButton
-								setCompletedLessonsCount={
-									isCurrentLessonCompleted
-										? undefined
-										: setCompletedLessonsCount
-								}
-							/>
-						</form>
-					</>
+					<ContinueButton
+						moduleType={moduleType}
+						resource={resource}
+						nextResource={nextLesson}
+						setCompletedLessonsCount={setCompletedLessonsCount}
+					/>
 				)}
 			</div>
 			<Button
@@ -199,28 +166,60 @@ export const CompletedModuleOverlay: React.FC<{
 }
 
 const ContinueButton: React.FC<{
-	setCompletedLessonsCount?: React.Dispatch<React.SetStateAction<number>>
-}> = ({ setCompletedLessonsCount }) => {
+	setCompletedLessonsCount: React.Dispatch<React.SetStateAction<number>>
+	resource: ContentResource
+	moduleType: 'workshop' | 'tutorial'
+	nextResource?: ContentResource | null
+}> = ({ setCompletedLessonsCount, resource, nextResource, moduleType }) => {
 	const session = useSession()
-	const { pending } = useFormStatus()
-	const isCompleted = !Boolean(setCompletedLessonsCount)
+	const router = useRouter()
+	const [isPending, setIsPending] = React.useState(false)
 
+	const { moduleProgress, addLessonProgress, removeLessonProgress } =
+		useModuleProgress()
+	const moduleNavigation = useWorkshopNavigation()
+	const isCurrentLessonCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) => p.resourceId === resource.id && p.completedAt,
+		),
+	)
 	return (
 		<Button
 			onMouseOver={() => {
-				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev + 1)
+				!isCurrentLessonCompleted &&
+					setCompletedLessonsCount((prev) => prev + 1)
 			}}
 			onMouseOut={() => {
-				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev - 1)
+				!isCurrentLessonCompleted &&
+					setCompletedLessonsCount((prev) => prev - 1)
 			}}
-			onClick={() => {
-				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev + 1)
+			onClick={async () => {
+				if (!isCurrentLessonCompleted) {
+					setIsPending(true)
+					addLessonProgress(resource.id)
+					await setProgressForResource({
+						resourceId: resource.id,
+						isCompleted: true,
+					})
+				}
+				if (nextResource && moduleNavigation) {
+					if (nextResource.type === 'solution') {
+						return router.push(
+							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
+						)
+					}
+					return router.push(
+						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
+					)
+				}
 			}}
 			type="submit"
-			disabled={pending}
+			disabled={isPending}
 		>
-			{isCompleted ? 'Continue' : 'Complete & Continue'}
-			{pending && <Spinner className="ml-2 h-4 w-4" />}
+			{isCurrentLessonCompleted && !isPending
+				? 'Continue'
+				: 'Complete & Continue'}
+			{isPending && <Spinner className="ml-2 h-4 w-4" />}
 		</Button>
 	)
 }

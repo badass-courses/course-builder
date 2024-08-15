@@ -5,8 +5,6 @@ import { useParams } from 'next/navigation'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import type { Lesson } from '@/lib/lessons'
 import { setProgressForResource } from '@/lib/progress'
-import { cn } from '@/utils/cn'
-import pluralize from 'pluralize'
 
 import { Label, Switch } from '@coursebuilder/ui'
 
