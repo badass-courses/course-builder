@@ -3,7 +3,6 @@
 import * as React from 'react'
 import { use } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { revalidateModuleLesson } from '@/app/(content)/actions'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
 	handleTextTrackChange,
@@ -86,6 +85,7 @@ export function AuthedVideoPlayer({
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
 	const { moduleProgress, addLessonProgress } = useModuleProgress()
+	const [isPending, startTransition] = React.useTransition()
 
 	const playerProps = {
 		defaultHiddenCaptions: true,
@@ -118,24 +118,26 @@ export function AuthedVideoPlayer({
 				playerRef?.current?.play()
 			}
 		},
-		onEnded: async () => {
-			await handleOnVideoEnded({
-				canView,
-				resource,
-				nextResource,
-				nextLessonPlaybackId,
-				isFullscreen,
-				playerRef,
-				currentResource,
-				dispatchVideoPlayerOverlay,
-				setCurrentResource,
-				handleSetLessonComplete,
-				bingeMode,
-				moduleSlug,
-				moduleType,
-				router,
-				moduleProgress,
-				addLessonProgress,
+		onEnded: () => {
+			startTransition(async () => {
+				await handleOnVideoEnded({
+					canView,
+					resource,
+					nextResource,
+					nextLessonPlaybackId,
+					isFullscreen,
+					playerRef,
+					currentResource,
+					dispatchVideoPlayerOverlay,
+					setCurrentResource,
+					handleSetLessonComplete,
+					bingeMode,
+					moduleSlug,
+					moduleType,
+					router,
+					moduleProgress,
+					addLessonProgress,
+				})
 			})
 		},
 		onPlay: () => {
@@ -147,11 +149,13 @@ export function AuthedVideoPlayer({
 
 	const handleFullscreenChange = React.useCallback(() => {
 		setIsFullscreen((fullscreen) => {
-			console.log('setting fullscreen', !fullscreen)
 			if (fullscreen && currentResource) {
-				router.push(
-					`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
-				)
+				dispatchVideoPlayerOverlay({ type: 'LOADING' })
+				setTimeout(() => {
+					router.push(
+						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
+					)
+				}, 250)
 			}
 			return !fullscreen
 		})
@@ -237,21 +241,21 @@ async function handleOnVideoEnded({
 				moduleProgress,
 				addLessonProgress,
 			})
-			setCurrentResource(nextResource)
 		} else if (bingeMode) {
-			console.log({ nextResource })
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			}
-			await handleSetLessonComplete({
+			handleSetLessonComplete({
 				currentResource,
 				moduleProgress,
 				addLessonProgress,
 			})
 			if (nextResource) {
-				router.push(
-					`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
-				)
+				setTimeout(() => {
+					router.push(
+						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
+					)
+				}, 250)
 			} else {
 				dispatchVideoPlayerOverlay({
 					type: 'COMPLETED',
@@ -285,7 +289,7 @@ async function handleSetLessonComplete({
 	)
 	if (!isCurrentLessonCompleted) {
 		addLessonProgress(currentResource.id)
-		await setProgressForResource({
+		setProgressForResource({
 			resourceId: currentResource.id,
 			isCompleted: true,
 		})

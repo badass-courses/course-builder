@@ -36,6 +36,7 @@ const reducer: Reducer<VideoPlayerOverlayState, VideoPlayerOverlayAction> = (
 				action,
 			}
 		case 'LOADING':
+			console.log('loading')
 			return {
 				...state,
 				action,
@@ -66,8 +67,10 @@ export const VideoPlayerOverlayProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
 	const [state, dispatch] = useReducer(reducer, initialState)
 
+	const value = React.useMemo(() => ({ state, dispatch }), [state, dispatch])
+
 	return (
-		<VideoPlayerOverlayContext.Provider value={{ state, dispatch }}>
+		<VideoPlayerOverlayContext.Provider value={value}>
 			{children}
 		</VideoPlayerOverlayContext.Provider>
 	)

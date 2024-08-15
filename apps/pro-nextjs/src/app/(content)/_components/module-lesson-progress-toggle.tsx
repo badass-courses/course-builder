@@ -30,18 +30,25 @@ export function ModuleLessonProgressToggle({
 		),
 	)
 
+	const [isPending, startTransition] = React.useTransition()
+
 	return lesson ? (
 		<div className="flex items-center gap-2">
 			<Label htmlFor="lesson-progress-toggle">Mark as complete</Label>
 			<Switch
+				disabled={isPending}
 				aria-label={`Mark lesson as ${isCompleted ? 'incomplete' : 'completed'}`}
 				id="lesson-progress-toggle"
 				checked={isCompleted}
 				onCheckedChange={async (checked) => {
 					if (checked) {
-						addLessonProgress(lesson.id)
+						startTransition(() => {
+							addLessonProgress(lesson.id)
+						})
 					} else {
-						removeLessonProgress(lesson.id)
+						startTransition(() => {
+							removeLessonProgress(lesson.id)
+						})
 					}
 					await setProgressForResource({
 						resourceId: lesson.id,

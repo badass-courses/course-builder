@@ -39,8 +39,7 @@ export const CompletedLessonOverlay: React.FC<{
 	const { playerRef } = action
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
-	const { moduleProgress, addLessonProgress, removeLessonProgress } =
-		useModuleProgress()
+	const { moduleProgress } = useModuleProgress()
 	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
 		moduleProgress?.completedLessonsCount || 0,
 	)
@@ -171,18 +170,18 @@ const ContinueButton: React.FC<{
 	moduleType: 'workshop' | 'tutorial'
 	nextResource?: ContentResource | null
 }> = ({ setCompletedLessonsCount, resource, nextResource, moduleType }) => {
-	const session = useSession()
 	const router = useRouter()
-	const [isPending, setIsPending] = React.useState(false)
+	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
-	const { moduleProgress, addLessonProgress, removeLessonProgress } =
-		useModuleProgress()
+	const { moduleProgress, addLessonProgress } = useModuleProgress()
 	const moduleNavigation = useWorkshopNavigation()
 	const isCurrentLessonCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(
 			(p) => p.resourceId === resource.id && p.completedAt,
 		),
 	)
+
+	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
 			onMouseOver={() => {
@@ -195,12 +194,14 @@ const ContinueButton: React.FC<{
 			}}
 			onClick={async () => {
 				if (!isCurrentLessonCompleted) {
-					setIsPending(true)
-					addLessonProgress(resource.id)
-					await setProgressForResource({
-						resourceId: resource.id,
-						isCompleted: true,
+					startTransition(async () => {
+						addLessonProgress(resource.id)
+						await setProgressForResource({
+							resourceId: resource.id,
+							isCompleted: true,
+						})
 					})
+					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}
 				if (nextResource && moduleNavigation) {
 					if (nextResource.type === 'solution') {
