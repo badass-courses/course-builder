@@ -5,8 +5,6 @@ import { getServerAuthSession } from '@/server/auth'
 
 import { EditLessonForm } from './_components/edit-lesson-form'
 
-export const dynamic = 'force-dynamic'
-
 export default async function LessonEditPage({
 	params,
 }: {

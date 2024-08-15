@@ -68,13 +68,14 @@ const CouponGeneratorForm = ({
 	const expiresAtDateTime = form.watch('expires')?.setHours(23, 59, 0, 0)
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		form.reset()
-		await createCoupon({
+		const codes = await createCoupon({
 			quantity: values.quantity,
 			maxUses: Number(values.maxUses),
 			expires: values.expires,
 			restrictedToProductId: values.restrictedToProductId,
 			percentageDiscount: (Number(values.percentOff) / 100).toString(),
 		})
+		setCodes(codes)
 		router.refresh()
 	}
 

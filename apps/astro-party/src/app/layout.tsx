@@ -33,12 +33,12 @@ const fredokaFont = Fredoka({
 
 export const metadata: Metadata = {
 	title: config.defaultTitle,
-	description: '',
+	description: config.description,
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 	openGraph: {
 		images: [
 			{
-				url: env.NEXT_PUBLIC_URL + '/card@2x.jpg',
+				url: env.NEXT_PUBLIC_URL + '/card@2x.png',
 			},
 		],
 	},
@@ -52,7 +52,7 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
-				<HolyLoader color="#009A52" height="0.1rem" speed={250} />
+				<HolyLoader color="#000" height="0.2rem" speed={250} />
 				<AxiomWebVitals />
 				<Body
 					className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${cooperFont.variable} ${cooperGoodtimeFont.variable} ${fredokaFont.variable}`}

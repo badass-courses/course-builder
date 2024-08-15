@@ -59,9 +59,6 @@ export const PrimaryNewsletterCta: React.FC<
 							<h2 className="font-heading fluid-2xl text-balance text-center font-bold">
 								{title}
 							</h2>
-							<h3 className="fluid-lg font-rounded mt-5 max-w-2xl text-balance text-center text-base font-medium">
-								{subtitle}
-							</h3>
 						</div>
 					)}
 				</>

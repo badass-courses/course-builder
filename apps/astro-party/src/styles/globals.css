@@ -76,6 +76,10 @@
 		@apply font-rounded text-balance font-semibold;
 	}
 
+	[data-sr-button] {
+		@apply font-rounded font-medium;
+	}
+
 	body {
 		@apply text-foreground antialiased;
 	}

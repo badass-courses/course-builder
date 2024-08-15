@@ -40,7 +40,7 @@ export function WorkshopResourceList(props: Props) {
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
 	const workshopNavigation = useWorkshopNavigation()
-	const moduleProgress = useModuleProgress()
+	const { moduleProgress } = useModuleProgress()
 
 	const { data: abilityRules, status: abilityStatus } =
 		api.ability.getCurrentAbilityRules.useQuery({

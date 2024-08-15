@@ -43,7 +43,7 @@ const Navigation = ({ className }: { className?: string }) => {
 	return (
 		<div
 			className={cn('z-40 h-[var(--nav-height)] w-full print:hidden', {
-				'fixed top-1 px-1': !isLessonRoute && !isEditRoute,
+				'fixed top-0 px-1': !isLessonRoute && !isEditRoute,
 				className,
 			})}
 		>
@@ -51,7 +51,8 @@ const Navigation = ({ className }: { className?: string }) => {
 				className={cn(
 					'bg-background relative flex h-full w-full items-stretch justify-between px-0',
 					{
-						'container rounded border-2': !isLessonRoute && !isEditRoute,
+						'container rounded border-2 before:absolute before:-bottom-1 before:-z-10 before:h-full before:w-full before:scale-[0.995] before:rounded before:bg-black before:content-[""] sm:rounded sm:rounded-t-none sm:border-t-0':
+							!isLessonRoute && !isEditRoute,
 						'border-b-2': isEditRoute,
 					},
 				)}
@@ -67,7 +68,7 @@ const Navigation = ({ className }: { className?: string }) => {
 						<Link
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
-							className="font-heading bg-primary text-primary-foreground flex h-full w-[76px] items-center justify-center rounded-l-[calc(var(--radius)-3px)] border-r-2 text-lg font-semibold leading-none transition"
+							className="font-heading bg-primary text-primary-foreground flex h-full w-[76px] items-center justify-center rounded-l-[calc(var(--radius)-3px)] border-r-2 text-lg font-semibold leading-none transition sm:rounded-tl-none"
 						>
 							{/* <LogoMark className="w-8" /> */}
 							<span className="font-rounded text-center text-lg font-semibold uppercase leading-none">
@@ -77,7 +78,9 @@ const Navigation = ({ className }: { className?: string }) => {
 					</span>
 					{links.length > 0 && (
 						<nav
-							className="hidden items-stretch sm:flex"
+							className="flex items-stretch"
+							// TODO: Replace with following once there are more than 3 links
+							// className="hidden items-stretch sm:flex"
 							aria-label={`Navigation header with ${links.length} links`}
 						>
 							<ul className="flex items-stretch">
@@ -96,8 +99,8 @@ const Navigation = ({ className }: { className?: string }) => {
 						</Button>
 					</div>
 				)} */}
-					<div className="hidden items-stretch pr-3 sm:flex">
-						<User />
+					<div className="hidden items-stretch sm:flex">
+						<User loginClassName="rounded-br-[calc(var(--radius)-3px)]" />
 					</div>
 				</div>
 				<div className="flex items-stretch sm:hidden">
@@ -139,7 +142,7 @@ const MobileNav = ({
 				)}
 			</Button>
 			{isMobileMenuOpen && (
-				<nav className="bg-background absolute left-0 top-[var(--nav-height)] z-10 w-full rounded border-2 px-2 py-3">
+				<nav className="bg-background absolute left-0 top-[calc(var(--nav-height)-2px)] z-10 w-full rounded border-2 px-2 py-3">
 					{links.length > 0 &&
 						links.map((link) => {
 							return (

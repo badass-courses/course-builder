@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
+import { Layout } from '@/components/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { type Article } from '@/lib/articles'
@@ -87,7 +88,7 @@ async function Post({ post }: { post: Article }) {
 
 async function PostTitle({ post }: { post: Article }) {
 	return (
-		<h1 className="fluid-2xl font-rounded mb-4 inline-flex w-full text-balance font-semibold">
+		<h1 className="fluid-3xl font-heading mb-8 inline-flex w-full text-balance font-bold">
 			{post?.fields?.title}
 		</h1>
 	)
@@ -137,51 +138,51 @@ export default async function PostPage({
 	})?.resource.id
 
 	return (
-		<div className="w-full pt-[var(--nav-height)]">
-			<div className="container px-2 sm:px-5">
-				<div className="bg-background container flex w-full flex-col border-x-2 px-0">
-					<VideoPlayerOverlayProvider>
-						<PostVideo videoResourceId={videoResourceId} post={post} />
-					</VideoPlayerOverlayProvider>
-					<div
-						className={cn('mx-auto w-full pb-24 pt-10', {
-							// 'pt-[var(--nav-height)]': !videoResourceId,
-							// 'pt-8': videoResourceId,
-						})}
-					>
-						<article className="">
-							<div className="flex w-full flex-col items-center justify-center border-b-2 px-5 pb-10">
-								<div className="mx-auto w-full max-w-4xl">
-									<div className="flex w-full items-center justify-between">
-										<Link
-											href="/posts"
-											className="text-primary font-rounded mb-3 inline-flex text-base font-semibold hover:underline"
-										>
-											← Posts
-										</Link>
-										<Suspense fallback={null}>
-											<PostActionBar post={post} />
-										</Suspense>
-									</div>
-									<PostTitle post={post} />
-									<Contributor />
+		<Layout>
+			{/* <div className="container px-2 sm:px-5"> */}
+			<div className="flex w-full flex-col">
+				<VideoPlayerOverlayProvider>
+					<PostVideo videoResourceId={videoResourceId} post={post} />
+				</VideoPlayerOverlayProvider>
+				<div
+					className={cn('mx-auto w-full pb-24 pt-10', {
+						// 'pt-[var(--nav-height)]': !videoResourceId,
+						// 'pt-8': videoResourceId,
+					})}
+				>
+					<article className="">
+						<div className="flex w-full flex-col items-center justify-center border-b-2 px-5 pb-10">
+							<div className="mx-auto w-full max-w-4xl">
+								<div className="flex w-full items-center justify-between">
+									<Link
+										href="/posts"
+										className="text-primary font-rounded mb-3 inline-flex text-base font-semibold hover:underline"
+									>
+										← Posts
+									</Link>
+									<Suspense fallback={null}>
+										<PostActionBar post={post} />
+									</Suspense>
 								</div>
+								<PostTitle post={post} />
+								<Contributor />
 							</div>
-							<div className="mx-auto flex w-full max-w-4xl flex-col px-5 py-5">
-								<Post post={post} />
-							</div>
-						</article>
-					</div>
-					{!ckSubscriber && (
-						<section
-							aria-label="Newsletter"
-							className="jusfify-center bg-brand-green flex w-full items-center border-t-2 px-2 py-5 sm:py-10"
-						>
-							<PrimaryNewsletterCta className="mx-auto w-full max-w-3xl" />
-						</section>
-					)}
+						</div>
+						<div className="mx-auto flex w-full max-w-4xl flex-col px-5 py-5">
+							<Post post={post} />
+						</div>
+					</article>
 				</div>
+				{!ckSubscriber && (
+					<section
+						aria-label="Newsletter"
+						className="jusfify-center bg-brand-green flex w-full items-center border-t-2 px-2 py-5 sm:py-10"
+					>
+						<PrimaryNewsletterCta className="mx-auto w-full max-w-3xl" />
+					</section>
+				)}
 			</div>
-		</div>
+			{/* </div> */}
+		</Layout>
 	)
 }

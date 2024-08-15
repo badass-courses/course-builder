@@ -104,13 +104,16 @@ module.exports = withUt({
 			typography: (theme: any) => ({
 				DEFAULT: {
 					css: {
+						color: theme('colors.foreground'),
+						li: { color: theme('colors.foreground') },
+						a: { color: theme('colors.brand.red') },
+						strong: { color: theme('colors.foreground') },
 						'h2, h3, h4': {
 							fontWeight: 600,
 						},
 						img: {
 							borderRadius: theme('borderRadius.lg'),
 						},
-						color: theme('colors.foreground'),
 						code: {
 							backgroundColor: theme('colors.muted.DEFAULT'),
 							color: theme('colors.foreground'),

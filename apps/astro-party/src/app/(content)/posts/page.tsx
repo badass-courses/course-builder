@@ -36,12 +36,7 @@ export const metadata: Metadata = {
 export default async function ArticlesIndexPage() {
 	const { ability } = await getServerAuthSession()
 	const allArticles = await getArticles()
-	// const publishedPublicArticles = [
-	// 	allArticles[0],
-	// 	allArticles[0],
-	// 	allArticles[0],
-	// 	allArticles[0],
-	// ]
+
 	const publishedPublicArticles = allArticles.filter(
 		(article) =>
 			article.fields.visibility === 'public' &&
@@ -54,7 +49,11 @@ export default async function ArticlesIndexPage() {
 	const latestArticle = publishedPublicArticles[0]
 
 	return (
-		<Layout className="bg-brand-green container flex min-h-max flex-col-reverse border-x-0 px-3 pt-[var(--nav-height)] sm:px-5 lg:min-h-screen lg:flex-row">
+		<Layout
+			withBackground={false}
+			withBorder={false}
+			className="flex min-h-max flex-col-reverse lg:min-h-screen lg:flex-row"
+		>
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
 				<div className="flex flex-col items-center border-x-2">
 					{latestArticle && (
@@ -149,7 +148,7 @@ const ArticleTeaser: React.FC<{
 async function ArticleListActions({ articles }: { articles?: Article[] }) {
 	const { ability, session } = await getServerAuthSession()
 	return ability.can('create', 'Content') ? (
-		<aside className="w-full border-x-2 border-b-2 lg:max-w-xs lg:border-b-0 lg:border-l-0 lg:border-r-2">
+		<aside className="w-full border-x-2 border-b-2 text-white lg:max-w-xs lg:border-b-0 lg:border-l-0 lg:border-r-2">
 			<div className="border-b-2 p-5">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
@@ -168,11 +167,11 @@ async function ArticleListActions({ articles }: { articles?: Article[] }) {
 									className="group flex flex-col py-2"
 									href={`/posts/${article.fields.slug}/edit`}
 								>
-									<strong className="group-hover:text-primary inline-flex items-baseline gap-1 font-semibold leading-tight transition">
+									<strong className="inline-flex items-baseline gap-1 font-semibold leading-tight transition">
 										<Pencil className="text-muted-foreground h-3 w-3 flex-shrink-0" />
 										<span>{article.fields.title}</span>
 									</strong>
-									<div className="text-muted-foreground pl-4 text-sm">
+									<div className="pl-4 text-sm">
 										{article.fields.state}
 										{article.fields.state === 'published' &&
 											` - ${article.fields.visibility}`}
@@ -188,7 +187,7 @@ async function ArticleListActions({ articles }: { articles?: Article[] }) {
 					<Button
 						variant="outline"
 						asChild
-						className="w-full gap-1 border-2 border-black"
+						className="w-full gap-1 border-2 border-black text-black"
 					>
 						<Link href={`/posts/new`}>
 							<FilePlus2 className="h-4 w-4" />

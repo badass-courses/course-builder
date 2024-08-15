@@ -1,16 +1,22 @@
 'use client'
 
 import { useParams, usePathname } from 'next/navigation'
-import Navigation from '@/components/navigation'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export const Layout = ({
 	children,
+	withBackground = true,
+	withBorder = true,
+	withPadding = true,
 	className,
+	...props
 }: {
 	children?: React.ReactNode
 	className?: string
+	withBackground?: boolean
+	withBorder?: boolean
+	withPadding?: boolean
 }) => {
 	const pathname = usePathname()
 	const params = useParams()
@@ -19,12 +25,23 @@ export const Layout = ({
 
 	return (
 		<main
-			className={cn(
-				'bg-background container flex min-h-[calc(100vh)] flex-col border-x-2 px-2 pt-[var(--nav-height)] sm:px-5',
-				className,
-			)}
+			className={cn('container', {
+				'px-2 sm:px-5': withPadding,
+			})}
+			{...props}
 		>
-			{children}
+			<div
+				className={cn(
+					'min-h-[calc(100vh)] w-full pt-[var(--nav-height)]',
+					{
+						'border-x-2': withBorder,
+						'bg-background': withBackground,
+					},
+					className,
+				)}
+			>
+				{children}
+			</div>
 		</main>
 	)
 }

@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { Layout } from '@/components/layout'
+import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { EventSchema } from '@/lib/events'
@@ -21,7 +23,7 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: 'Live Events & Workshops hosted by Adam Elmore',
+	title: `Live Events & Workshops hosted by ${config.author}`,
 }
 
 export default async function EventIndexPage() {
@@ -29,28 +31,25 @@ export default async function EventIndexPage() {
 
 	return (
 		<>
-			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
-				<div className=" w-full max-w-screen-md border-b px-5 py-16 md:border-dashed">
-					<h1 className="font-heading text-center text-5xl font-bold">
-						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
-							Live
-						</span>{' '}
-						<span className="text-gray-100">Events & Workshops</span>
+			<Layout>
+				<div className=" mx-auto w-full max-w-screen-md pb-10 pt-16">
+					<h1 className="font-heading fluid-3xl text-center font-bold">
+						Astro Live Events & Workshops
 					</h1>
 				</div>
 				<EventsList />
 				{ability.can('update', 'Content') ? (
-					<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center border-t border-dashed py-10">
+					<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center py-10">
 						<Button asChild variant="secondary">
 							<Link href={`/events/new`}>New Event</Link>
 						</Button>
 					</div>
 				) : null}
 				<div
-					className="absolute top-0 -z-10 h-full w-full max-w-screen-md border-dashed md:border-x"
+					className="absolute top-0 -z-10 h-full w-full max-w-screen-md"
 					aria-hidden="true"
 				/>
-			</main>
+			</Layout>
 		</>
 	)
 }
@@ -87,8 +86,10 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 px-8 md:px-8">
-			{publicEvents.length === 0 && <p>There are no public events.</p>}
+		<ul className="mx-auto mt-10 flex w-full max-w-screen-md flex-col gap-5">
+			{publicEvents.length === 0 && (
+				<p className="mb-10 text-center">There are no public events.</p>
+			)}
 			{events.map((event) => {
 				const { fields } = event
 				const { startsAt, endsAt } = fields
@@ -106,7 +107,7 @@ async function EventsList() {
 
 				return (
 					<li key={event.id}>
-						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
+						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 shadow-none md:flex-row">
 							{event?.fields?.image && (
 								<Link
 									className="flex-shrink-0"
@@ -123,7 +124,7 @@ async function EventsList() {
 							)}
 							<div className="w-full">
 								<CardHeader className="mb-2 p-0">
-									<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
+									<CardTitle className="fluid-xl font-rounded font-semibold">
 										<Link
 											href={`/events/${event?.fields?.slug || event.id}`}
 											className="w-full text-balance hover:underline"
@@ -131,10 +132,17 @@ async function EventsList() {
 											{event?.fields?.title}
 										</Link>
 									</CardTitle>
+
 									<div className="flex items-center gap-1 text-sm">
-										<p>{eventDate}</p>
-										<span className="opacity-50">・</span>
-										<p>{eventTime} (PT)</p>
+										{eventDate ? (
+											<>
+												<p>{eventDate}</p>
+												<span className="opacity-50">・</span>
+												<p>{eventTime} (PT)</p>
+											</>
+										) : (
+											<p>Date TBD</p>
+										)}
 									</div>
 								</CardHeader>
 								{event?.fields?.description && (
@@ -145,7 +153,7 @@ async function EventsList() {
 									</CardContent>
 								)}
 								<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
-									<Contributor className="text-sm font-light" />
+									<Contributor className="" />
 									<div className="flex items-center gap-2">
 										{ability.can('create', 'Content') && (
 											<>

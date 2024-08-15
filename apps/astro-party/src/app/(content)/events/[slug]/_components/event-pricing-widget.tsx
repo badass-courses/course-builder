@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Check } from 'lucide-react'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -14,7 +13,7 @@ export type PricingData = {
 	quantityAvailable: number
 }
 
-export const PricingWidget: React.FC<{
+export const EventPricingWidget: React.FC<{
 	product: Product
 	quantityAvailable: number
 	commerceProps: CommerceProps
@@ -36,57 +35,27 @@ export const PricingWidget: React.FC<{
 
 	return (
 		<Pricing.Root
-			className="relative mb-5 w-full border-b pb-5"
+			className="relative w-full"
 			product={product}
 			couponId={couponId}
-			country={commerceProps.country}
 			options={pricingWidgetOptions}
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
-			{...commerceProps}
 		>
-			<Pricing.Product className="w-full">
+			<Pricing.Product>
 				<Pricing.ProductImage />
-				<Pricing.Details className="px-0">
-					<Pricing.Name />
-					<Pricing.LiveQuantity />
+				<Pricing.Details>
+					{/* <Pricing.Name /> */}
+					<Pricing.LiveQuantity className="border-2 bg-transparent pt-1.5" />
 					<Pricing.Price />
 					<Pricing.TeamToggle />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton />
+					<Pricing.BuyButton className="border-2 text-white" />
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
-			<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
-				Includes
-			</strong>
-			<ul className="flex w-full flex-col gap-2">
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />4 Complete Workshops
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Over 90 Lessons
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Lifetime Access
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Customizable invoice
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					English Transcripts & Subtitles
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Progress Tracking
-				</li>
-			</ul>
 		</Pricing.Root>
 	)
 }

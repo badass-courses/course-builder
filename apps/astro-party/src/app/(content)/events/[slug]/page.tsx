@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { Layout } from '@/components/layout'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
@@ -182,13 +183,13 @@ export default async function EventPage({
 		)}`
 
 	return (
-		<main className="container relative border-x px-0">
+		<Layout className="relative flex flex-col">
 			<EventMetadata
 				event={event}
 				quantityAvailable={eventProps.quantityAvailable}
 			/>
 			{event && ability.can('update', 'Content') && (
-				<div className="absolute right-5 top-5 flex items-center gap-2">
+				<div className="absolute right-5 top-20 flex items-center gap-2">
 					{product && (
 						<Button asChild variant="secondary">
 							<Link
@@ -206,7 +207,7 @@ export default async function EventPage({
 				</div>
 			)}
 			{eventProps.hasPurchasedCurrentProduct ? (
-				<div className="flex w-full items-center border-b px-5 py-5 text-left">
+				<div className="flex w-full items-center border-b-2 px-5 py-5 text-left">
 					You have purchased a ticket to this event. See you on {eventDate}.{' '}
 					<span role="img" aria-label="Waving hand">
 						👋
@@ -223,11 +224,17 @@ export default async function EventPage({
 							Live Workshop
 						</Link>
 						<span className="hidden opacity-50 sm:inline-block">・</span>
-						<p>{eventDate}</p>
-						<span className="opacity-50">・</span>
-						<p>{eventTime} (PT)</p>
+						{eventDate ? (
+							<>
+								<p>{eventDate}</p>
+								<span className="opacity-50">・</span>
+								<p>{eventTime} (PT)</p>
+							</>
+						) : (
+							'Date TBD'
+						)}
 					</div>
-					<h1 className="font-heading text-balance text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
+					<h1 className="font-heading fluid-3xl text-balance font-bold">
 						{fields.title}
 					</h1>
 					{fields.description && (
@@ -244,7 +251,7 @@ export default async function EventPage({
 					/>
 				)}
 			</div>
-			<div className="flex flex-col-reverse border-t md:flex-row">
+			<div className="flex h-full flex-grow flex-col-reverse border-t-2 md:flex-row">
 				<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
 					{event.fields.body && (
 						<ReactMarkdown>{event.fields.body}</ReactMarkdown>
@@ -255,7 +262,7 @@ export default async function EventPage({
 					<EventDetails event={event} />
 				</EventSidebar>
 			</div>
-		</main>
+		</Layout>
 	)
 }
 
