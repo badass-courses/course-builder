@@ -33,7 +33,7 @@ export const FeedbackField: React.FC<React.PropsWithChildren<any>> = ({
 				id: 'text',
 				name: 'text',
 				class:
-					'prose min-h-[150px] max-h-[250px] overflow-y-auto shadow-md shadow-black/50 bg-gray-200 p-3 focus:ring-cyan-300 block w-full border border-gray-700 rounded-md',
+					'prose min-h-[150px] max-h-[250px] overflow-y-auto bg-background p-3 block w-full border border-border rounded',
 			},
 		},
 	})
@@ -55,12 +55,13 @@ export const FeedbackField: React.FC<React.PropsWithChildren<any>> = ({
 					className="inline-block flex-shrink-0 pb-1 font-semibold"
 					htmlFor="text"
 				>
-					{label} <span className="font-normal text-gray-500">(required)</span>
+					{label}{' '}
+					<span className="text-muted-foreground font-normal">(required)</span>
 				</label>
 				{errors.text && touched.text ? (
 					<div
 						aria-live="polite"
-						className="inline-block pb-1 text-xs font-medium leading-tight text-pink-300 sm:text-sm"
+						className="text-destructive-foreground inline-block pb-1 text-xs font-medium leading-tight sm:text-sm"
 					>
 						{errors.text}
 					</div>
@@ -107,24 +108,20 @@ export const EmotionField: React.FC<React.PropsWithChildren<any>> = (props) => {
 							key={emotion}
 							value={emotion}
 							className={({ active, checked }) =>
-								`${
-									active
-										? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-gray-900'
-										: ''
-								}
+								`${active ? 'ring-2' : ''}
               ${
 								checked
-									? 'bg-gray-600 bg-opacity-75 text-white shadow-inner hover:bg-gray-600'
-									: 'bg-gray-800 hover:bg-gray-700/80'
+									? 'bg-background text-primary border-primary shadow-inner'
+									: 'bg-muted hover:bg-primary/10 hover:border-primary/10 text-muted-foreground'
 							}
-                relative flex cursor-pointer rounded-lg border border-gray-700 px-4 py-3 transition focus:outline-none`
+                border-border relative flex cursor-pointer rounded border px-4 py-3 transition focus:outline-none`
 							}
 						>
 							{({ checked }) => (
 								<>
 									<RadioGroup.Label
 										className={`cursor-pointer text-xl font-medium ${
-											checked ? 'text-gray-300' : 'text-gray-300'
+											checked ? 'text-primary' : 'text-foreground'
 										}`}
 										role="img"
 										aria-label={getEmoji(emotion).label}
@@ -132,7 +129,7 @@ export const EmotionField: React.FC<React.PropsWithChildren<any>> = (props) => {
 										{getEmoji(emotion).image}
 									</RadioGroup.Label>
 									{checked && (
-										<CheckIcon className="absolute bottom-1 right-1 h-4 w-4 text-gray-100" />
+										<CheckIcon className="text-primary absolute bottom-1 right-1 h-4 w-4" />
 									)}
 								</>
 							)}
@@ -176,30 +173,26 @@ export const CategoryField: React.FC<
 							key={category}
 							value={category}
 							className={({ active, checked }) =>
-								`${
-									active
-										? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-gray-900'
-										: ''
-								}
+								`${active ? 'ring-2' : ''}
               ${
 								checked
-									? 'bg-gray-600 bg-opacity-75 text-white shadow-inner hover:bg-gray-600'
-									: 'bg-gray-800 hover:bg-gray-700/80'
+									? 'bg-background text-primary border-primary shadow-inner'
+									: 'bg-muted hover:bg-primary/10 hover:border-primary/10 text-muted-foreground'
 							}
-              relative flex cursor-pointer rounded-lg border border-gray-700 px-4 py-3.5 transition focus:outline-none`
+              border-border relative flex cursor-pointer rounded border px-4 py-4 transition focus:outline-none`
 							}
 						>
 							{({ checked }) => (
 								<>
 									<RadioGroup.Label
-										className={`cursor-pointer font-medium ${
-											checked ? 'text-gray-100' : 'text-gray-100'
+										className={`cursor-pointer text-sm font-medium ${
+											checked ? 'text-primary' : 'text-foreground'
 										}`}
 									>
 										{category}
 									</RadioGroup.Label>
 									{checked && (
-										<CheckIcon className="absolute bottom-1 right-1 h-4 w-4 text-gray-100" />
+										<CheckIcon className="text-primary absolute bottom-1 right-1 h-4 w-4" />
 									)}
 								</>
 							)}

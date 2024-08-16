@@ -5,6 +5,7 @@ import { Form, Formik, FormikHelpers } from 'formik'
 import { CheckIcon, XCircleIcon } from 'lucide-react'
 import * as Yup from 'yup'
 
+import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { useFeedback } from './feedback-context'
@@ -107,7 +108,7 @@ export const ErrorMessage: React.FC<React.PropsWithChildren<unknown>> = ({
 	return (
 		<div
 			aria-live="polite"
-			className="flex items-center justify-center rounded-md bg-pink-300/10 px-5 py-3 font-medium leading-tight text-pink-300"
+			className="bg-destructive text-destructive-foreground flex items-center justify-center rounded-md px-5 py-3 font-medium leading-tight"
 		>
 			<XCircleIcon className="mr-2 h-6 w-6" aria-hidden="true" /> Error:{' '}
 			{children}
@@ -126,7 +127,7 @@ export const ConfirmationMessage = ({
 	return (
 		<div
 			aria-live="polite"
-			className="flex flex-wrap items-center justify-center rounded-md bg-gray-300/20 px-5 py-4 text-center text-sm font-semibold text-gray-700"
+			className="bg-background text-foreground flex flex-wrap items-center justify-center rounded px-5 py-4 text-center text-sm font-semibold"
 		>
 			<CheckIcon className="mr-1 h-4 w-4" aria-hidden="true" />{' '}
 			<span>{message}</span>
@@ -152,19 +153,20 @@ export const SubmitButton: React.FC<
 	React.PropsWithChildren<SubmitButtonProps>
 > = ({ isSubmitting, children }) => {
 	return (
-		<button
+		<Button
 			type="submit"
+			size="lg"
 			disabled={isSubmitting}
-			className="bg-primary inline-flex justify-center rounded-lg border border-transparent px-4 py-3 text-base font-semibold text-white transition hover:shadow-lg hover:brightness-110 hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2"
+			className="bg-primary focus-visible:ring-ring text-primary-foreground inline-flex items-center justify-center gap-1 rounded-lg border border-transparent px-4 py-3 text-base font-semibold leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
 		>
 			{isSubmitting ? (
 				<>
-					<Spinner className="mr-1 w-4" aria-hidden="true" /> Sending...
+					<Spinner className="w-4" aria-hidden="true" /> Sending...
 				</>
 			) : (
 				children
 			)}
-		</button>
+		</Button>
 	)
 }
 
