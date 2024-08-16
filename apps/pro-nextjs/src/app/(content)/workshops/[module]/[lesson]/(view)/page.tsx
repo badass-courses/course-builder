@@ -4,7 +4,7 @@ import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/s
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
-import { getAllWorkshops, getWorkshopNavigation } from '@/lib/workshops-query'
+import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 
