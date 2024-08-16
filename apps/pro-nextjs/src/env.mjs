@@ -73,6 +73,9 @@ export const env = createEnv({
 		SLACK_TOKEN: z.string().optional(),
 		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
 		DISCORD_CLIENT_SECRET: z.string(),
+		DISCORD_BOT_TOKEN: z.string(),
+		DISCORD_GUILD_ID: z.string(),
+		DISCORD_MEMBER_ROLE_ID: z.string(),
 	},
 
 	/**
@@ -153,6 +156,9 @@ export const env = createEnv({
 		NEXT_PUBLIC_DISCORD_INVITE_URL: process.env.NEXT_PUBLIC_DISCORD_INVITE_URL,
 		NEXT_PUBLIC_DISCORD_CLIENT_ID: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
 		DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+		DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
+		DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
+		DISCORD_MEMBER_ROLE_ID: process.env.DISCORD_MEMBER_ROLE_ID,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
