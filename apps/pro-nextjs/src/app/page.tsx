@@ -1,11 +1,8 @@
 import * as React from 'react'
-import type { Metadata } from 'next'
+import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
-import LandingCopy, {
-	Instructor,
-	WorkshopCopy,
-} from '@/components/landing-copy'
+import { Instructor, WorkshopCopy } from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
@@ -17,24 +14,48 @@ import { getServerAuthSession } from '@/server/auth'
 import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import {
+	getCouponForCode,
+	propsForCommerce,
+} from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 
-export const metadata: Metadata = {
-	title: {
-		template: '%s | ProNext.js',
-		default: `The No-BS Solution for Enterprise-Ready Next.js Applications`,
-	},
-	openGraph: {
-		images: [
-			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('The No-BS Solution for Enterprise-Ready Next.js Applications')}`,
-			},
-		],
-	},
+export async function generateMetadata(
+	{ searchParams }: Props,
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('The No-BS Solution for Enterprise-Ready Next.js Applications')}`
+	const codeParam = searchParams?.code
+	const couponParam = searchParams?.coupon
+	const couponCodeOrId = codeParam || couponParam
+	if (couponCodeOrId) {
+		const coupon = await getCouponForCode(
+			couponCodeOrId,
+			[],
+			courseBuilderAdapter,
+		)
+		const validCoupon = Boolean(coupon && coupon.isValid)
+		if (validCoupon)
+			ogImageUrl =
+				'https://res.cloudinary.com/pro-nextjs/image/upload/v1723783882/golden-ticket_2x_qvicr9.jpg'
+	}
+
+	return {
+		title: {
+			template: '%s | ProNext.js',
+			default: `The No-BS Solution for Enterprise-Ready Next.js Applications`,
+		},
+		openGraph: {
+			images: [
+				{
+					url: ogImageUrl,
+				},
+			],
+		},
+	}
 }
 
 type Props = {
-	searchParams: { [key: string]: string | string[] | undefined }
+	searchParams: { [key: string]: string | undefined }
 }
 
 const Home = async ({ searchParams }: Props) => {
@@ -61,8 +82,6 @@ const Home = async ({ searchParams }: Props) => {
 	const allowPurchase =
 		searchParams.allowPurchase === 'true' ||
 		product?.fields.visibility === 'public'
-
-	// TODO: Has purchased current product state, upgrades, buy more seats, etc
 
 	return (
 		<div className="">
