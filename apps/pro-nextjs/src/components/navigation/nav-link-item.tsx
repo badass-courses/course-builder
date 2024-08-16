@@ -15,7 +15,7 @@ const NavLinkItemSchema = z.object({
 export type NavLinkItem = z.infer<typeof NavLinkItemSchema>
 
 export const NavLinkItem: React.FC<NavLinkItem> = ({
-	href,
+	href = '#',
 	label,
 	onClick,
 	className,
