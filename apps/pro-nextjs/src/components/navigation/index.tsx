@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
+import { useFeedback } from '@/feedback-widget/feedback-context'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, X } from 'lucide-react'
@@ -24,6 +25,7 @@ const Navigation = () => {
 	const isEditRoute = pathname.includes('/edit')
 	const params = useParams()
 	const router = useRouter()
+	const { setIsFeedbackDialogOpen } = useFeedback()
 
 	const isLessonRoute = params.lesson && params.module
 	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
@@ -37,7 +39,8 @@ const Navigation = () => {
 
 	const { data: abilityRules, status: abilityStatus } =
 		api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+
+	const { data: sessionData, status: sessionStatus } = useSession()
 
 	return (
 		<header
@@ -86,6 +89,17 @@ const Navigation = () => {
 						</Button>
 					</div>
 				)} */}
+				{sessionStatus === 'authenticated' && (
+					<div className="hidden items-stretch pr-3 sm:flex">
+						<NavLinkItem
+							label="Feedback"
+							onClick={() => {
+								console.log('feedback clicked')
+								setIsFeedbackDialogOpen(true)
+							}}
+						/>
+					</div>
+				)}
 				<div className="hidden items-stretch pr-3 sm:flex">
 					<User />
 				</div>
