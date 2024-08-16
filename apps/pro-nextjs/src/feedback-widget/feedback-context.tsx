@@ -1,6 +1,9 @@
+'use client'
+
 import React from 'react'
-// import FeedbackDialog from './feedback-dialog'
 import dynamic from 'next/dynamic'
+
+// import FeedbackDialog from './feedback-dialog'
 
 type FeedbackContextType = {
 	isFeedbackDialogOpen: boolean
@@ -10,7 +13,7 @@ type FeedbackContextType = {
 }
 
 const defaultFeedbackContext: FeedbackContextType = {
-	isFeedbackDialogOpen: false,
+	isFeedbackDialogOpen: true,
 	setIsFeedbackDialogOpen: () => {},
 	feedbackComponent: <></>,
 	location: '',
@@ -30,6 +33,7 @@ export const FeedbackProvider: React.FC<React.PropsWithChildren<any>> = ({
 	const [location, setLocation] = React.useState<string>('navigation')
 	const FeedbackDialog =
 		isFeedbackDialogOpen && dynamic(() => import('./feedback-dialog'))
+
 	return (
 		<FeedbackContext.Provider
 			value={{

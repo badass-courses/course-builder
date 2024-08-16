@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { XIcon } from '@heroicons/react/solid'
 import * as Dialog from '@radix-ui/react-dialog'
+import { XIcon } from 'lucide-react'
 
 const isBrowser = () => typeof window !== 'undefined'
 
@@ -18,10 +18,8 @@ const DialogComp: React.FC<React.PropsWithChildren<DialogProps>> = ({
 }) => {
 	const closeButtonRef = React.useRef<HTMLButtonElement>(null)
 
-	console.log('DialogComp', isOpen)
-
 	return (
-		<Dialog.Root open={isOpen}>
+		<Dialog.Root open={true}>
 			<Dialog.Portal
 				container={
 					isBrowser()
@@ -53,6 +51,7 @@ type CloseButtonProps = {
 	handleCloseDialog: () => void
 }
 
+// eslint-disable-next-line react/display-name
 const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
 	({ handleCloseDialog }, ref) => {
 		return (

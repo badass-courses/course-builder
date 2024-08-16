@@ -90,6 +90,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_AMPLITUDE_API_KEY: z.string().optional(),
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
+		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string(),
 	},
 
 	/**
@@ -147,6 +148,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
 		SLACK_TOKEN: process.env.SLACK_TOKEN,
 		SLACK_DEFAULT_CHANNEL_ID: process.env.SLACK_DEFAULT_CHANNEL_ID,
+		NEXT_PUBLIC_DISCORD_INVITE_URL: process.env.NEXT_PUBLIC_DISCORD_INVITE_URL,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
