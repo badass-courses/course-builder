@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { useFeedback } from '@/feedback-widget/feedback-context'
+import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, X } from 'lucide-react'
@@ -32,6 +33,7 @@ const Navigation = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
 	useLiveEventToastNotifier()
+	useSaleToastNotifier()
 
 	React.useEffect(() => {
 		setIsMobileMenuOpen(false)
