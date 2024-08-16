@@ -1,12 +1,12 @@
 import React from 'react'
-import { useRouter } from 'next/router'
+import { usePathname, useRouter } from 'next/navigation'
 import { sendFeedbackFromUser } from '@/feedback-widget/feedback-actions'
 import { FormikHelpers } from 'formik'
 
 import { FeedbackFormValues } from './form'
 
 export const useFeedbackForm = ({ location }: { location: string }) => {
-	const router = useRouter()
+	const pathname = usePathname()
 	const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false)
 	const [error, setError] = React.useState<string>()
 
@@ -21,6 +21,15 @@ export const useFeedbackForm = ({ location }: { location: string }) => {
 				feedbackText: values.text,
 				context: values.context,
 			})
+				.then(() => {
+					setIsSubmitted(true)
+					resetForm()
+				})
+				.catch((error) => {
+					setError(error.message)
+					setIsSubmitted(true)
+					resetForm()
+				})
 		},
 		[],
 	)
@@ -30,7 +39,7 @@ export const useFeedbackForm = ({ location }: { location: string }) => {
 		context: {
 			category: 'general',
 			emotion: ':wave:',
-			url: `${process.env.NEXT_PUBLIC_URL}${router.asPath}`,
+			url: `${process.env.NEXT_PUBLIC_URL}${pathname}`,
 			location,
 		},
 	}

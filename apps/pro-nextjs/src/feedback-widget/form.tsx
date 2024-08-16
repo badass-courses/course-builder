@@ -77,10 +77,10 @@ export const FeedbackForm: React.FC<
 						</div>
 						{isCodeQuestion ? (
 							<div className="pt-0.5 text-center">
-								If you have any TypeScript/code related question or need help
-								solving an exercise,{' '}
+								If you have any code related question or need help solving an
+								exercise,{' '}
 								<Link
-									className="font-medium text-cyan-300 hover:underline"
+									className="font-medium text-blue-500 hover:underline"
 									href="/discord"
 									target="_blank"
 								>
@@ -126,7 +126,7 @@ export const ConfirmationMessage = ({
 	return (
 		<div
 			aria-live="polite"
-			className="flex flex-wrap items-center justify-center rounded-md bg-teal-300/20 px-5 py-4 text-center text-sm font-semibold text-teal-300"
+			className="flex flex-wrap items-center justify-center rounded-md bg-gray-300/20 px-5 py-4 text-center text-sm font-semibold text-gray-700"
 		>
 			<CheckIcon className="mr-1 h-4 w-4" aria-hidden="true" />{' '}
 			<span>{message}</span>
@@ -155,7 +155,7 @@ export const SubmitButton: React.FC<
 		<button
 			type="submit"
 			disabled={isSubmitting}
-			className="bg-primary inline-flex justify-center rounded-lg border border-transparent px-4 py-3 text-base font-semibold text-black transition hover:shadow-lg hover:brightness-110 hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2"
+			className="bg-primary inline-flex justify-center rounded-lg border border-transparent px-4 py-3 text-base font-semibold text-white transition hover:shadow-lg hover:brightness-110 hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2"
 		>
 			{isSubmitting ? (
 				<>

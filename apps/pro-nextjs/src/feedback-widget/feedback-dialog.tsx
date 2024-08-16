@@ -1,3 +1,5 @@
+'use client'
+
 import FeedbackDialog from './dialog'
 import { useFeedback } from './feedback-context'
 import FeedbackForm from './form'

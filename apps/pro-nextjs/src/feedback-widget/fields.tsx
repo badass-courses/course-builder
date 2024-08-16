@@ -33,7 +33,7 @@ export const FeedbackField: React.FC<React.PropsWithChildren<any>> = ({
 				id: 'text',
 				name: 'text',
 				class:
-					'prose min-h-[150px] max-h-[250px] overflow-y-auto shadow-md shadow-black/50 bg-gray-800 p-3 focus:ring-cyan-300 block w-full border border-gray-700 rounded-md',
+					'prose min-h-[150px] max-h-[250px] overflow-y-auto shadow-md shadow-black/50 bg-gray-200 p-3 focus:ring-cyan-300 block w-full border border-gray-700 rounded-md',
 			},
 		},
 	})
@@ -55,7 +55,7 @@ export const FeedbackField: React.FC<React.PropsWithChildren<any>> = ({
 					className="inline-block flex-shrink-0 pb-1 font-semibold"
 					htmlFor="text"
 				>
-					{label} <span className="font-normal text-gray-300">(required)</span>
+					{label} <span className="font-normal text-gray-500">(required)</span>
 				</label>
 				{errors.text && touched.text ? (
 					<div
@@ -75,7 +75,7 @@ export const FeedbackField: React.FC<React.PropsWithChildren<any>> = ({
 				<EditorContent editor={editor} name="text" id="text" />
 			</div>
 			{showMarkdown && (
-				<small className="block pt-2 text-sm text-gray-400">
+				<small className="block pt-2 text-sm text-gray-600">
 					Styling with markdown is supported.
 				</small>
 			)}

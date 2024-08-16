@@ -48,6 +48,7 @@ export async function sendFeedbackFromUser({
 				body: `${sanitizeHtml(feedbackText)} <i>${
 					context?.url ? context.url : ''
 				}</i>`,
+				messageType: 'transactional',
 			},
 			Subject: `${
 				context?.emotion ? `${getEmoji(context?.emotion).image} ` : ''
