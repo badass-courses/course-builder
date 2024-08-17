@@ -29,7 +29,7 @@
 		@apply py-5 text-center text-sm opacity-60;
 	}
 	[data-providers-container] {
-		@apply w-full space-y-2 sm:mx-auto sm:max-w-md pt-8 sm:pt-10;
+		@apply w-full space-y-2 pt-8 sm:mx-auto sm:max-w-md sm:pt-10;
 		[data-button] {
 			@apply w-full;
 		}
