@@ -1,6 +1,7 @@
 import { getAbility } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
+import { accounts } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
@@ -8,6 +9,7 @@ import { inngest } from '@/inngest/inngest.server'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
+import { and, eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
 import { userSchema } from '@coursebuilder/core/schemas'
@@ -43,6 +45,49 @@ declare module 'next-auth' {
 	}
 }
 
+async function refreshDiscordToken(account: { refresh_token: string | null }) {
+	try {
+		if (!account.refresh_token) throw new Error('No refresh token')
+
+		const myHeaders = new Headers()
+		myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
+
+		const urlencoded = new URLSearchParams()
+		urlencoded.append('client_id', env.NEXT_PUBLIC_DISCORD_CLIENT_ID)
+		urlencoded.append('client_secret', env.DISCORD_CLIENT_SECRET)
+		urlencoded.append('grant_type', 'refresh_token')
+		urlencoded.append('refresh_token', account.refresh_token)
+
+		const requestOptions = {
+			method: 'POST',
+			headers: myHeaders,
+			body: urlencoded,
+		}
+
+		const response = await fetch(
+			'https://discord.com/api/oauth2/token',
+			requestOptions,
+		)
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+
+		const tokensOrError = await response.json()
+
+		if (!response.ok) throw tokensOrError
+
+		return tokensOrError as {
+			access_token: string
+			expires_in: number
+			refresh_token?: string
+		}
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -65,7 +110,41 @@ export const authOptions: NextAuthConfig = {
 		session: async ({ session, user }) => {
 			const dbUser = await db.query.users.findFirst({
 				where: (users, { eq }) => eq(users.id, user.id),
+				with: {
+					accounts: true,
+				},
 			})
+
+			const discordAccount = dbUser?.accounts.find(
+				(account) => account.provider === 'discord',
+			)
+
+			const isDiscordTokenExpired = Boolean(
+				discordAccount?.expires_at &&
+					discordAccount.expires_at * 1000 < Date.now(),
+			)
+
+			if (discordAccount && isDiscordTokenExpired) {
+				console.log('refreshing discord token')
+				const refreshedToken = await refreshDiscordToken(discordAccount)
+
+				await db
+					.update(accounts)
+					.set({
+						access_token: refreshedToken.access_token,
+						expires_at: Math.floor(
+							Date.now() / 1000 + refreshedToken.expires_in,
+						),
+						refresh_token: refreshedToken.refresh_token,
+					})
+					.where(
+						and(
+							eq(accounts.providerAccountId, discordAccount.providerAccountId),
+							eq(accounts.provider, 'discord'),
+							eq(accounts.userId, user.id),
+						),
+					)
+			}
 
 			const userRoles = await db.query.userRoles.findMany({
 				where: (ur, { eq }) => eq(ur.userId, user.id),

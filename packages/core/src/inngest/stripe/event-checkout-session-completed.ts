@@ -145,6 +145,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				purchaseId: purchase.id,
 				checkoutSessionId: stripeCheckoutSession.id,
 			},
+			user,
 		})
 
 		return { purchase, purchaseInfo }

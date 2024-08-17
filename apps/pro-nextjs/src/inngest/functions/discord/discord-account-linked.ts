@@ -3,17 +3,9 @@ import { users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { inngest } from '@/inngest/inngest.server'
+import { DiscordError, DiscordMember } from '@/lib/discord'
+import { fetchAsDiscordBot, fetchJsonAsDiscordBot } from '@/lib/discord-query'
 import { eq } from 'drizzle-orm'
-
-type DiscordUser = {
-	id: string
-	username: string
-	discriminator: string
-	avatar?: string
-}
-type DiscordMember = { user: DiscordUser; roles: Array<string> }
-
-type DiscordError = { message: string; code: number }
 
 export const discordAccountLinked = inngest.createFunction(
 	{
@@ -26,6 +18,16 @@ export const discordAccountLinked = inngest.createFunction(
 	},
 	async ({ event, step }) => {
 		const { account, profile } = event.data
+
+		const user = await step.run('get user', async () => {
+			return db.query.users.findFirst({
+				where: eq(users.id, event.user.id),
+				with: {
+					accounts: true,
+					purchases: true,
+				},
+			})
+		})
 
 		const discordUser = await step.run('get discord user', async () => {
 			const userUrl = new URL('https://discord.com/api/users/@me')
@@ -57,37 +59,27 @@ export const discordAccountLinked = inngest.createFunction(
 		})
 
 		if ('user' in discordMember) {
-			await step.run('update discord roles for user', async () => {
-				const fullUser = await db.query.users.findFirst({
-					where: (users, { eq }) => eq(users.id, event.user.id),
-				})
-
-				await db
-					.update(users)
-					.set({
-						fields: {
-							...(fullUser && fullUser.fields),
-							discordMemberId: discordMember.user.id,
+			await step.run('update basic discord roles for user', async () => {
+				const roles =
+					user?.purchases.length || 0 > 0
+						? [
+								...discordMember.roles,
+								env.DISCORD_MEMBER_ROLE_ID,
+								env.DISCORD_PURCHASER_ROLE_ID,
+							]
+						: [...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]
+				await fetchAsDiscordBot(
+					`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
+					{
+						method: 'PATCH',
+						body: JSON.stringify({
+							roles: Array.from(new Set(roles)),
+						}),
+						headers: {
+							'Content-Type': 'application/json',
 						},
-					})
-					.where(eq(users.id, event.user.id))
-
-				if (!discordMember.roles.includes(env.DISCORD_MEMBER_ROLE_ID)) {
-					await fetchAsDiscordBot(
-						`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
-						{
-							method: 'PATCH',
-							body: JSON.stringify({
-								roles: Array.from(
-									new Set([...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]),
-								),
-							}),
-							headers: {
-								'Content-Type': 'application/json',
-							},
-						},
-					)
-				}
+					},
+				)
 
 				return null
 			})
@@ -100,28 +92,3 @@ export const discordAccountLinked = inngest.createFunction(
 		}
 	},
 )
-
-async function fetchJsonAsDiscordBot<JsonType = unknown>(
-	endpoint: string,
-	config?: RequestInit,
-) {
-	const res = await fetchAsDiscordBot(endpoint, {
-		...config,
-		headers: {
-			'Content-Type': 'application/json',
-			...config?.headers,
-		},
-	})
-	return (await res.json()) as JsonType
-}
-
-async function fetchAsDiscordBot(endpoint: string, config?: RequestInit) {
-	const url = new URL(`https://discord.com/api/${endpoint}`)
-	return await fetch(url.toString(), {
-		...config,
-		headers: {
-			Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
-			...config?.headers,
-		},
-	})
-}

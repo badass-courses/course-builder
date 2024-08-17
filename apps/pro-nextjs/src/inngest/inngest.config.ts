@@ -1,3 +1,4 @@
+import { addPurchaseRoleDiscord } from '@/inngest/functions/add-purchase-role-discord'
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
@@ -27,5 +28,6 @@ export const inngestConfig = {
 		getOrCreateConcept,
 		computeVideoSplitPoints,
 		discordAccountLinked,
+		addPurchaseRoleDiscord,
 	],
 }
