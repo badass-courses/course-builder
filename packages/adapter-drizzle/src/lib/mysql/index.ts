@@ -1077,6 +1077,7 @@ export function mySqlDrizzleAdapter(
 
     `)
 
+			console.log({ results: results.rows })
 			// Process the results
 			const completedLessons: ResourceProgress[] = []
 			let nextResource: Partial<ContentResource> | null = null
@@ -1097,7 +1098,6 @@ export function mySqlDrizzleAdapter(
 			}
 
 			for (const row of parsedRows.data) {
-				totalLessonsCount++
 				if (row.completed_at) {
 					completedLessonsCount++
 					completedLessons.push({
