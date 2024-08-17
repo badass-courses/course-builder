@@ -6,7 +6,7 @@ import { cn } from '@/utils/cn'
 import { z } from 'zod'
 
 const NavLinkItemSchema = z.object({
-	href: z.string(),
+	href: z.string().optional(),
 	label: z.union([z.string(), z.any()]),
 	onClick: z.function().optional(),
 	className: z.string().optional(),
@@ -15,14 +15,14 @@ const NavLinkItemSchema = z.object({
 export type NavLinkItem = z.infer<typeof NavLinkItemSchema>
 
 export const NavLinkItem: React.FC<NavLinkItem> = ({
-	href,
+	href = '#',
 	label,
 	onClick,
 	className,
 }) => {
 	const LinkOrButton = href ? Link : 'button'
 	const pathname = usePathname()
-	const isActive = pathname === href.replace(/\/$/, '')
+	const isActive = href && pathname === href.replace(/\/$/, '')
 	return (
 		<li className="flex items-stretch">
 			<LinkOrButton

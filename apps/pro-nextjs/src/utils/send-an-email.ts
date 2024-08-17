@@ -6,6 +6,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	componentProps,
 	Subject,
 	To,
+	ReplyTo,
 	From = `${env.NEXT_PUBLIC_SITE_TITLE} <${env.NEXT_PUBLIC_SUPPORT_EMAIL}>`,
 	type = 'transactional',
 }: {
@@ -13,6 +14,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	componentProps: ComponentPropsType
 	Subject: string
 	From?: string
+	ReplyTo?: string
 	To: string
 	type?: 'transactional' | 'broadcast'
 }) {
@@ -24,6 +26,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 		From,
 		To,
 		Subject,
+		ReplyTo,
 		HtmlBody: emailHtml,
 		MessageStream,
 	}

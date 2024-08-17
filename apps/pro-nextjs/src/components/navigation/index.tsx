@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
+import { useFeedback } from '@/feedback-widget/feedback-context'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, X } from 'lucide-react'
@@ -24,6 +25,7 @@ const Navigation = () => {
 	const isEditRoute = pathname.includes('/edit')
 	const params = useParams()
 	const router = useRouter()
+	const { setIsFeedbackDialogOpen } = useFeedback()
 
 	const isLessonRoute = params.lesson && params.module
 	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
@@ -37,7 +39,8 @@ const Navigation = () => {
 
 	const { data: abilityRules, status: abilityStatus } =
 		api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+
+	const { data: sessionData, status: sessionStatus } = useSession()
 
 	return (
 		<header
@@ -86,6 +89,16 @@ const Navigation = () => {
 						</Button>
 					</div>
 				)} */}
+				{sessionStatus === 'authenticated' && (
+					<div className="hidden items-stretch sm:flex">
+						<NavLinkItem
+							label="Feedback"
+							onClick={() => {
+								setIsFeedbackDialogOpen(true)
+							}}
+						/>
+					</div>
+				)}
 				<div className="hidden items-stretch pr-3 sm:flex">
 					<User />
 				</div>
@@ -110,6 +123,8 @@ const MobileNav = ({
 	setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
 	const links = useNavLinks()
+	const { data: sessionData, status: sessionStatus } = useSession()
+	const { setIsFeedbackDialogOpen } = useFeedback()
 
 	return (
 		<div className="flex items-stretch">
@@ -122,9 +137,9 @@ const MobileNav = ({
 				}}
 			>
 				{!isMobileMenuOpen ? (
-					<Menu className="h-4 w-4" />
+					<Menu className="h-5 w-5" />
 				) : (
-					<X className="h-4 w-4" />
+					<X className="h-5 w-5" />
 				)}
 			</Button>
 			{isMobileMenuOpen && (
@@ -139,6 +154,15 @@ const MobileNav = ({
 								/>
 							)
 						})}
+					{sessionStatus === 'authenticated' && (
+						<NavLinkItem
+							className="flex w-full rounded px-2 py-2 text-base"
+							label="Send Feedback"
+							onClick={() => {
+								setIsFeedbackDialogOpen(true)
+							}}
+						/>
+					)}
 					<User
 						loginClassName="px-2 rounded py-2 text-base flex w-full"
 						className="flex w-full rounded px-2 py-2 text-base"

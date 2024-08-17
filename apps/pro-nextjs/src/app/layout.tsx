@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
+import { FeedbackInsert } from '@/feedback-widget/feedback-insert'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
@@ -57,9 +58,11 @@ export default function RootLayout({
 				<HolyLoader color="#3D63DD" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
 				<body
+					id="layout"
 					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
 				>
 					<Toaster />
+					<FeedbackInsert />
 					<TRPCReactProvider>
 						<Party />
 						<ThemeProvider
