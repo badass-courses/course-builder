@@ -5,6 +5,16 @@ import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-prov
 import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
 
+type DiscordUser = {
+	id: string
+	username: string
+	discriminator: string
+	avatar?: string
+}
+type DiscordMember = { user: DiscordUser; roles: Array<string> }
+
+type DiscordError = { message: string; code: number }
+
 export const discordAccountLinked = inngest.createFunction(
 	{
 		id: `discord-account-linked`,
