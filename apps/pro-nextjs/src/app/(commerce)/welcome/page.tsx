@@ -3,7 +3,10 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
-import { githubAccountsForCurrentUser } from '@/lib/users'
+import {
+	discordAccountsForCurrentUser,
+	githubAccountsForCurrentUser,
+} from '@/lib/users'
 import {
 	cancelPurchaseTransfer,
 	getPurchaseTransferForPurchaseId,
@@ -122,6 +125,7 @@ const Welcome = async ({
 		)
 
 	const isGithubConnected = await githubAccountsForCurrentUser()
+	const isDiscordConnected = await discordAccountsForCurrentUser()
 
 	return (
 		<div className="container border-x">
@@ -133,6 +137,7 @@ const Welcome = async ({
 				upgrade={upgrade}
 				providers={providers}
 				isGithubConnected={isGithubConnected}
+				isDiscordConnected={isDiscordConnected}
 				redemptionsLeft={redemptionsLeft}
 				isTransferAvailable={isTransferAvailable}
 				purchaseUserTransfers={purchaseUserTransfers}
