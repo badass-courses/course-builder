@@ -16,6 +16,10 @@ import {
 	LessonCompleted,
 } from '@/inngest/events/lesson-completed'
 import {
+	OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT,
+	OauthProviderAccountLinked,
+} from '@/inngest/events/oauth-provider-account-linked'
+import {
 	POSTMARK_WEBHOOK_EVENT,
 	PostmarkWebhook,
 } from '@/inngest/events/postmark-webhook'
@@ -61,6 +65,7 @@ export type Events = {
 	[CONCEPT_SELECTED]: ConceptSelected
 	[REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
 	[LESSON_COMPLETED_EVENT]: LessonCompleted
+	[OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT]: OauthProviderAccountLinked
 }
 
 const callbackBase =

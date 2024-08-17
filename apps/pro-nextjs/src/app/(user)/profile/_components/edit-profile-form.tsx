@@ -2,7 +2,9 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { env } from '@/env.mjs'
 import { api } from '@/trpc/react'
+import { getDiscordAuthorizeURL } from '@/utils/discord'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn, useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
@@ -99,18 +101,6 @@ const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 											onChange={field.onChange}
 										/>
 									</FormControl>
-									<FormDescription>
-										You can not change your email address, but you can transfer
-										your product licenses to a different email address from{' '}
-										<Link
-											href="/invoices"
-											className="text-primary underline"
-											target="_blank"
-										>
-											Invoices
-										</Link>
-										.
-									</FormDescription>
 								</FormItem>
 							)}
 						/>
@@ -122,6 +112,13 @@ const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 					)}
 				</form>
 			</Form>
+
+			<Link
+				href={getDiscordAuthorizeURL(env.NEXT_PUBLIC_URL)}
+				className="text-primary underline"
+			>
+				Connect Discord
+			</Link>
 		</div>
 	)
 }

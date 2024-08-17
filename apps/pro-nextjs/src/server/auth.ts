@@ -2,8 +2,10 @@ import { getAbility } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
+import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
@@ -50,6 +52,13 @@ export const authOptions: NextAuthConfig = {
 	events: {
 		createUser: async ({ user }) => {
 			await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
+		},
+		linkAccount: async ({ user, account, profile }) => {
+			await inngest.send({
+				name: OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT,
+				data: { account, profile },
+				user,
+			})
 		},
 	},
 	callbacks: {
@@ -104,6 +113,20 @@ export const authOptions: NextAuthConfig = {
 						clientId: env.TWITTER_CLIENT_ID,
 						clientSecret: env.TWITTER_CLIENT_SECRET,
 						allowDangerousEmailAccountLinking: true,
+					}),
+				]
+			: []),
+		...(env.NEXT_PUBLIC_DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET
+			? [
+					DiscordProvider({
+						clientId: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+						clientSecret: env.DISCORD_CLIENT_SECRET,
+						allowDangerousEmailAccountLinking: true,
+						authorization:
+							'https://discord.com/api/oauth2/authorize?scope=identify+email+guilds.join+guilds',
+						// authorization: {
+						// 	params: { scope: 'identify+guilds.join+email+guilds' },
+						// },
 					}),
 				]
 			: []),
