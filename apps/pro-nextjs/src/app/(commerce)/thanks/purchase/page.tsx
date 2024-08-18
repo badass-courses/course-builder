@@ -23,7 +23,6 @@ import {
 	INDIVIDUAL_TO_BULK_UPGRADE,
 	NEW_BULK_COUPON,
 	NEW_INDIVIDUAL_PURCHASE,
-	PurchaseType,
 } from '@coursebuilder/core/schemas/purchase-type'
 import { logger } from '@coursebuilder/core/utils/logger'
 

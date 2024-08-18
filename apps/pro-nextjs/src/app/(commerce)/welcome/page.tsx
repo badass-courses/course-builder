@@ -19,6 +19,32 @@ import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 
+async function getPurchaseForChargeId(chargeIdentifier: string) {
+	const maxRetries = 5
+	const initialDelay = 150
+	const maxDelay = 15000
+
+	let retries = 0
+	let delay = initialDelay
+
+	while (retries < maxRetries) {
+		try {
+			const purchase =
+				await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+
+			if (!purchase) {
+				throw new Error('purchase not found')
+			}
+
+			return purchase
+		} catch (error) {
+			retries++
+			await new Promise((resolve) => setTimeout(resolve, delay))
+			delay = Math.min(delay * 2, maxDelay)
+		}
+	}
+}
+
 const getServerSideProps = async (query: {
 	session_id: string
 	provider: string
@@ -48,8 +74,7 @@ const getServerSideProps = async (query: {
 			courseBuilderAdapter,
 		)
 
-		const purchase =
-			await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+		const purchase = await getPurchaseForChargeId(chargeIdentifier)
 
 		if (purchase) {
 			purchaseId = purchase.id
