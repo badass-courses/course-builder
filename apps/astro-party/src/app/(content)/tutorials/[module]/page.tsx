@@ -104,7 +104,7 @@ export default async function ModulePage({ params }: Props) {
 							{firstLesson?.fields.slug && (
 								<Button asChild size="lg" className="mt-10 w-full md:w-auto">
 									<Link href={`${params.module}/${firstLesson?.fields.slug}`}>
-										Start Watching
+										Start Learning
 									</Link>
 								</Button>
 							)}

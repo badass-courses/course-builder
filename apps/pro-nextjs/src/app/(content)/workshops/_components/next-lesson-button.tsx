@@ -50,7 +50,7 @@ export function NextLessonButton({
 									<Link
 										href={`/${pluralize(moduleType)}/${moduleSlug}/${firstLessonSlug}`}
 									>
-										Start Watching
+										Start Learning
 									</Link>
 								</Button>
 							)}

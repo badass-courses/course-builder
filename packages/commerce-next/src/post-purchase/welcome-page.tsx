@@ -174,7 +174,9 @@ const Header = ({
 	isDiscordConnected?: boolean
 }) => {
 	const githubProvider = providers.github
-	const discordProvider = providers.discord
+	const discordProvider = providers.find(
+		(p: { id: string }) => p.id === 'discord',
+	)
 	const firstResource = first(productResources)
 
 	return (
@@ -216,10 +218,10 @@ const Header = ({
 							{discordProvider && !isDiscordConnected ? (
 								<button
 									onClick={() => signIn(discordProvider.id)}
-									className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-3 text-lg font-semibold text-white shadow-xl shadow-black/10 transition hover:brightness-110 sm:w-auto"
+									className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-1 text-sm text-white transition hover:brightness-110 sm:w-auto"
 								>
 									<Icon name="Discord" size="20" />
-									Connect {discordProvider.name}
+									Join {discordProvider.name}
 								</button>
 							) : null}
 							{githubProvider && !isGithubConnected ? (
