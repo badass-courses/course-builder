@@ -38,7 +38,7 @@ const getServerSideProps = async (session_id: string) => {
 	}
 
 	const maxRetries = 5
-	const initialDelay = 150
+	const initialDelay = 1000
 	const maxDelay = 15000
 
 	let retries = 0
@@ -88,6 +88,9 @@ const getServerSideProps = async (session_id: string) => {
 			}
 		} catch (error) {
 			retries++
+			console.log(
+				`Error getting purchase info: ${error} ${retries}/${maxRetries}`,
+			)
 			await new Promise((resolve) => setTimeout(resolve, delay))
 			delay = Math.min(delay * 2, maxDelay)
 		}
