@@ -60,20 +60,24 @@ export const discordAccountLinked = inngest.createFunction(
 
 		if ('user' in discordMember) {
 			await step.run('update basic discord roles for user', async () => {
-				const roles =
-					user?.purchases.length || 0 > 0
-						? [
-								...discordMember.roles,
-								env.DISCORD_MEMBER_ROLE_ID,
-								env.DISCORD_PURCHASER_ROLE_ID,
-							]
-						: [...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]
 				await fetchAsDiscordBot(
 					`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
 					{
 						method: 'PATCH',
 						body: JSON.stringify({
-							roles: Array.from(new Set(roles)),
+							roles: Array.from(
+								new Set([
+									...discordMember.roles,
+									...(discordMember.roles.includes(env.DISCORD_MEMBER_ROLE_ID)
+										? []
+										: [env.DISCORD_MEMBER_ROLE_ID]),
+									...(discordMember.roles.includes(
+										env.DISCORD_PURCHASER_ROLE_ID,
+									)
+										? []
+										: [env.DISCORD_PURCHASER_ROLE_ID]),
+								]),
+							),
 						}),
 						headers: {
 							'Content-Type': 'application/json',

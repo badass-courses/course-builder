@@ -46,10 +46,7 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 				)
 			})
 
-			if (
-				'user' in discordMember &&
-				!discordMember.roles.includes(env.DISCORD_PURCHASER_ROLE_ID)
-			) {
+			if ('user' in discordMember) {
 				await step.run('update basic discord roles for user', async () => {
 					return await fetchAsDiscordBot(
 						`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
@@ -59,7 +56,14 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 								roles: Array.from(
 									new Set([
 										...discordMember.roles,
-										env.DISCORD_PURCHASER_ROLE_ID,
+										...(discordMember.roles.includes(env.DISCORD_MEMBER_ROLE_ID)
+											? []
+											: [env.DISCORD_MEMBER_ROLE_ID]),
+										...(discordMember.roles.includes(
+											env.DISCORD_PURCHASER_ROLE_ID,
+										)
+											? []
+											: [env.DISCORD_PURCHASER_ROLE_ID]),
 									]),
 								),
 							}),
