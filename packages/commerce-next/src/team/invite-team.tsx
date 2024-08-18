@@ -184,7 +184,7 @@ type SelfRedeemButtonProps = {
 const SelfRedeemButton: React.FC<
 	React.PropsWithChildren<SelfRedeemButtonProps>
 > = ({
-	children = 'Claim one seat for yourself',
+	children = 'Claim 1 seat for yourself',
 	asChild,
 	className,
 	...props

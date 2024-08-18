@@ -79,10 +79,6 @@ export function WelcomePage({
 					isDiscordConnected={isDiscordConnected}
 				/>
 				<div className="flex flex-col gap-10">
-					<div>
-						<h2 className="text-primary pb-4 text-sm uppercase">Share</h2>
-						<Share productName={purchase.product?.name || 'this'} />
-					</div>
 					{redemptionsLeft && (
 						<div>
 							<h2 className="text-primary pb-4 text-sm uppercase">
@@ -97,6 +93,7 @@ export function WelcomePage({
 							/>
 						</div>
 					)}
+
 					{hasCharge && (
 						<div className="border-b pb-5">
 							<h2 className="text-primary pb-4 text-sm uppercase">
@@ -148,6 +145,10 @@ export function WelcomePage({
 							</PurchaseTransfer.Root>
 						</div>
 					)}
+					<div>
+						<h2 className="text-primary pb-4 text-sm uppercase">Share</h2>
+						<Share productName={purchase.product?.name || 'this'} />
+					</div>
 				</div>
 			</div>
 		</main>
