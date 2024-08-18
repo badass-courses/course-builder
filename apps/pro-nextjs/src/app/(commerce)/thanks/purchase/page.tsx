@@ -37,13 +37,14 @@ const getServerSideProps = async (session_id: string) => {
 		throw new Error(`No session_id found: ${session_id}`)
 	}
 
-	const maxTotalDelay = 15000 // 15 seconds in milliseconds
-	const fixedDelay = 1000 // 1 second delay between retries
+	const maxRetries = 17
+	const initialDelay = 100
+	const maxDelay = 1000
 
-	let totalElapsedTime = 0
-	let startTime = Date.now()
+	let retries = 0
+	let delay = initialDelay
 
-	while (totalElapsedTime < maxTotalDelay) {
+	while (retries < maxRetries) {
 		try {
 			const purchaseInfo = await paymentProvider.getPurchaseInfo(
 				session_id,
@@ -86,18 +87,16 @@ const getServerSideProps = async (session_id: string) => {
 				stripeProductName,
 			}
 		} catch (error) {
-			totalElapsedTime = Date.now() - startTime
+			retries++
 			console.log(
-				`Error getting purchase info: ${error}. Time elapsed: ${totalElapsedTime}ms`,
+				`Error getting purchase info: ${error} ${retries}/${maxRetries}`,
 			)
-
-			if (totalElapsedTime + fixedDelay < maxTotalDelay) {
-				await new Promise((resolve) => setTimeout(resolve, fixedDelay))
-			} else {
-				break
-			}
+			await new Promise((resolve) => setTimeout(resolve, delay))
+			delay = Math.min(delay * 2, maxDelay)
 		}
 	}
+
+	notFound()
 }
 
 const LoginLinkComp: React.FC<{ email: string }> = ({ email }) => {
