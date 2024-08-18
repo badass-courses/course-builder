@@ -26,6 +26,8 @@ import {
 } from '@coursebuilder/core/schemas/purchase-type'
 import { logger } from '@coursebuilder/core/utils/logger'
 
+export const maxDuration = 60
+
 const getServerSideProps = async (session_id: string) => {
 	const paymentProvider = stripeProvider
 
@@ -37,7 +39,7 @@ const getServerSideProps = async (session_id: string) => {
 		throw new Error(`No session_id found: ${session_id}`)
 	}
 
-	const maxRetries = 17
+	const maxRetries = 30
 	const initialDelay = 100
 	const maxDelay = 1000
 
