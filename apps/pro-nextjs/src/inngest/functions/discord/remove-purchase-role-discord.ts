@@ -13,7 +13,7 @@ export const removePurchaseRoleDiscord = inngest.createFunction(
 	{ id: `remove-purchase-role-discord`, name: 'Remove Purchase Role Discord' },
 	{
 		event: PURCHASE_STATUS_UPDATED_EVENT,
-		if: 'event.data.status === "Refunded" || event.data.status === "Disputed" || event.data.status === "Banned" || event.data.status === "Restricted"',
+		if: 'event.data.status == "Refunded" || event.data.status == "Disputed" || event.data.status == "Banned"',
 	},
 	async ({ event, step, db: adapter }) => {
 		const purchase = await step.run('get purchase', async () => {
