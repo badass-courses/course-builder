@@ -53,7 +53,7 @@ async function refreshDiscordToken(account: { refresh_token: string | null }) {
 		myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
 
 		const urlencoded = new URLSearchParams()
-		urlencoded.append('client_id', env.NEXT_PUBLIC_DISCORD_CLIENT_ID)
+		urlencoded.append('client_id', env.DISCORD_CLIENT_ID)
 		urlencoded.append('client_secret', env.DISCORD_CLIENT_SECRET)
 		urlencoded.append('grant_type', 'refresh_token')
 		urlencoded.append('refresh_token', account.refresh_token)
@@ -195,10 +195,10 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
-		...(env.NEXT_PUBLIC_DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET
+		...(env.DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET
 			? [
 					DiscordProvider({
-						clientId: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+						clientId: env.DISCORD_CLIENT_ID,
 						clientSecret: env.DISCORD_CLIENT_SECRET,
 						allowDangerousEmailAccountLinking: true,
 						authorization:

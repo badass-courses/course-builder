@@ -77,6 +77,7 @@ export const env = createEnv({
 		DISCORD_GUILD_ID: z.string(),
 		DISCORD_MEMBER_ROLE_ID: z.string(),
 		DISCORD_PURCHASER_ROLE_ID: z.string(),
+		DISCORD_CLIENT_ID: z.string(),
 	},
 
 	/**
@@ -96,7 +97,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string(),
-		NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),
 	},
 
 	/**
@@ -155,7 +155,7 @@ export const env = createEnv({
 		SLACK_TOKEN: process.env.SLACK_TOKEN,
 		SLACK_DEFAULT_CHANNEL_ID: process.env.SLACK_DEFAULT_CHANNEL_ID,
 		NEXT_PUBLIC_DISCORD_INVITE_URL: process.env.NEXT_PUBLIC_DISCORD_INVITE_URL,
-		NEXT_PUBLIC_DISCORD_CLIENT_ID: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+		DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
 		DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
 		DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
 		DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,

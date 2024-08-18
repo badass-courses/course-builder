@@ -126,7 +126,7 @@ export default async function DiscordCallback({
 
 	const tokenUrl = new URL('https://discord.com/api/oauth2/token')
 	const params = new URLSearchParams({
-		client_id: env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+		client_id: env.DISCORD_CLIENT_ID,
 		client_secret: env.DISCORD_CLIENT_SECRET,
 		grant_type: 'authorization_code',
 		code,
