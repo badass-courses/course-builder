@@ -58,9 +58,9 @@ export const discordAccountLinked = inngest.createFunction(
 			)
 		})
 
-		if ('user' in discordMember) {
-			await step.run('update basic discord roles for user', async () => {
-				await fetchAsDiscordBot(
+		await step.run('update basic discord roles for user', async () => {
+			if ('user' in discordMember) {
+				return await fetchAsDiscordBot(
 					`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
 					{
 						method: 'PATCH',
@@ -84,10 +84,9 @@ export const discordAccountLinked = inngest.createFunction(
 						},
 					},
 				)
-
-				return null
-			})
-		}
+			}
+			return null
+		})
 
 		return {
 			account,
