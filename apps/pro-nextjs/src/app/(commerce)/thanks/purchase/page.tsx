@@ -1,7 +1,9 @@
 import * as React from 'react'
+import { Suspense } from 'react'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
+import Spinner from '@/components/spinner'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import {
@@ -26,7 +28,7 @@ import {
 } from '@coursebuilder/core/schemas/purchase-type'
 import { logger } from '@coursebuilder/core/utils/logger'
 
-export const maxDuration = 60
+export const maxDuration = 100
 
 const getServerSideProps = async (session_id: string) => {
 	const paymentProvider = stripeProvider
@@ -125,9 +127,38 @@ export default async function ThanksPurchasePage({
 	searchParams: { session_id: string; provider: string }
 }) {
 	headers()
-	const token = await getServerAuthSession()
 
 	const { session_id } = searchParams
+
+	return (
+		<Suspense fallback={<PageLoading />}>
+			<PurchaseThanksPageLoaded session_id={session_id} />
+		</Suspense>
+	)
+}
+
+function PageLoading() {
+	return (
+		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+				<h1 className="text-center text-lg font-medium sm:text-xl lg:text-2xl">
+					Validating Your Purchase, Hang Tight...
+				</h1>
+				<div className="mx-auto">
+					<Spinner className="text-center" />
+				</div>
+			</div>
+		</main>
+	)
+}
+
+async function PurchaseThanksPageLoaded({
+	session_id,
+}: {
+	session_id: string
+}) {
+	const token = await getServerAuthSession()
+
 	const {
 		purchase,
 		email,
@@ -147,10 +178,9 @@ export default async function ThanksPurchasePage({
 		id: purchase.id,
 		sourceUserId: purchase.userId || undefined,
 	})
-
-	let description = null
+	let description: React.ReactElement | null = null
 	let title = `Thank you for purchasing ${stripeProductName}`
-	let loginLink = null
+	let loginLink: React.ReactElement | null = null
 	let inviteTeam: React.ReactElement | null = (
 		<InviteTeam.Root
 			disabled={!redemptionsLeft}
@@ -209,7 +239,6 @@ export default async function ThanksPurchasePage({
 
 			break
 	}
-
 	return (
 		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
 			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
