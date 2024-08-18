@@ -60,7 +60,11 @@ export const discordAccountLinked = inngest.createFunction(
 
 		await step.run('update basic discord roles for user', async () => {
 			if ('user' in discordMember) {
-				const userHasPurchases = (user?.purchases?.length || 0) > 0
+				const userHasPurchases =
+					(user?.purchases?.filter(
+						(purchase) =>
+							purchase.status === 'Valid' || purchase.status === 'Restricted',
+					).length || 0) > 0
 				return await fetchAsDiscordBot(
 					`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
 					{
