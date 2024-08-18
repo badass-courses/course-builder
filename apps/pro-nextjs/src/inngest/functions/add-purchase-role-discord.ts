@@ -40,15 +40,18 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 		)
 
 		if (discordAccount) {
-			const discordMember = await step.run('get discord member', async () => {
+			let discordMember = await step.run('get discord member', async () => {
 				return await fetchJsonAsDiscordBot<DiscordMember | DiscordError>(
 					`guilds/${env.DISCORD_GUILD_ID}/members/${discordAccount.providerAccountId}`,
 				)
 			})
 
-			if ('user' in discordMember) {
+			if (
+				'user' in discordMember &&
+				!discordMember.roles.includes(env.DISCORD_PURCHASER_ROLE_ID)
+			) {
 				await step.run('update basic discord roles for user', async () => {
-					await fetchAsDiscordBot(
+					return await fetchAsDiscordBot(
 						`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
 						{
 							method: 'PATCH',
@@ -56,7 +59,6 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 								roles: Array.from(
 									new Set([
 										...discordMember.roles,
-										env.DISCORD_MEMBER_ROLE_ID,
 										env.DISCORD_PURCHASER_ROLE_ID,
 									]),
 								),
@@ -68,6 +70,12 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 					)
 				})
 			}
+
+			discordMember = await step.run('reload discord member', async () => {
+				return await fetchJsonAsDiscordBot<DiscordMember | DiscordError>(
+					`guilds/${env.DISCORD_GUILD_ID}/members/${discordAccount.providerAccountId}`,
+				)
+			})
 
 			return { discordMember }
 		}
