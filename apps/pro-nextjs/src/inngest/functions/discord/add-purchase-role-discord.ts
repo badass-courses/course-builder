@@ -49,15 +49,7 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 			await step.run('update basic discord roles for user', async () => {
 				if ('user' in discordMember) {
 					const roles = Array.from(
-						new Set([
-							...discordMember.roles,
-							...(discordMember.roles.includes(env.DISCORD_MEMBER_ROLE_ID)
-								? []
-								: [env.DISCORD_MEMBER_ROLE_ID]),
-							...(discordMember.roles.includes(env.DISCORD_PURCHASER_ROLE_ID)
-								? []
-								: [env.DISCORD_PURCHASER_ROLE_ID]),
-						]),
+						new Set([...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]),
 					)
 
 					console.info('roles', { roles })

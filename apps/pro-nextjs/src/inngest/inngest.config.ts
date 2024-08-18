@@ -1,6 +1,7 @@
-import { addPurchaseRoleDiscord } from '@/inngest/functions/add-purchase-role-discord'
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
+import { addPurchaseRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
+import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
@@ -29,5 +30,6 @@ export const inngestConfig = {
 		computeVideoSplitPoints,
 		discordAccountLinked,
 		addPurchaseRoleDiscord,
+		removePurchaseRoleDiscord,
 	],
 }

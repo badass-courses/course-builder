@@ -7,6 +7,12 @@ import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 
+export async function getDiscordAccount(userId: string) {
+	return db.query.accounts.findFirst({
+		where: and(eq(accounts.userId, userId), eq(accounts.provider, 'discord')),
+	})
+}
+
 export async function disconnectDiscord() {
 	const { session } = await getServerAuthSession()
 	if (!session.user) return false
