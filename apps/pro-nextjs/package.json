@@ -165,6 +165,7 @@
 		"query-string": "^9.0.0",
 		"react": "18.3.1",
 		"react-aria": "^3.32.1",
+		"react-countdown": "^2.3.5",
 		"react-dom": "18.3.1",
 		"react-gravatar": "^2.6.3",
 		"react-hook-form": "^7.48.0",

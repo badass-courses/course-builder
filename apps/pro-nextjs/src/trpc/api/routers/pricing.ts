@@ -338,7 +338,10 @@ export const pricingRouter = createTRPCRouter({
 			})
 
 		if (!hasPurchasedProductFromDefaultCoupon && defaultCoupon) {
-			return defaultCoupon
+			const product = products.find((product) => {
+				return product.id === defaultCoupon.restrictedToProductId
+			})
+			return { ...defaultCoupon, product }
 		}
 
 		return null
