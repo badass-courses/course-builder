@@ -2,7 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
-import { Instructor, WorkshopCopy } from '@/components/landing-copy'
+import { Instructor } from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
@@ -61,7 +61,12 @@ type Props = {
 const Home = async ({ searchParams }: Props) => {
 	const products = await getProducts()
 	const product = products[0]
-	const page = await getPage('page-16xsv')
+	const allowPurchase =
+		searchParams.allowPurchase === 'true' ||
+		product?.fields.visibility === 'public'
+	const page = await getPage(
+		allowPurchase ? 'home-selling-live~pmxxy' : 'page-16xsv',
+	)
 
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
@@ -78,10 +83,6 @@ const Home = async ({ searchParams }: Props) => {
 	const pricingDataLoader = getPricingData({
 		productId: product?.id,
 	})
-
-	const allowPurchase =
-		searchParams.allowPurchase === 'true' ||
-		product?.fields.visibility === 'public'
 
 	return (
 		<div className="">
@@ -125,14 +126,12 @@ const Home = async ({ searchParams }: Props) => {
 
 			<main className="mx-auto w-full pt-5 sm:pt-16">
 				<article className="prose sm:prose-lg prose-p:mx-auto prose-headings:mx-auto prose-ul:mx-auto prose-img:mx-auto prose-h2:text-center prose-p:max-w-[45rem] prose-headings:max-w-[45rem] prose-ul:max-w-[45rem] mx-auto w-full max-w-none px-6 sm:px-10">
-					{allowPurchase ? (
-						<WorkshopCopy />
-					) : (
+					{page?.fields?.body ? (
 						<MDXRemote
-							source={page?.fields.body || ''}
-							components={{ Zap, Wrench, BarChart }}
+							source={page?.fields?.body}
+							components={{ Instructor, Zap, Wrench, BarChart }}
 						/>
-					)}
+					) : null}
 				</article>
 				{product && allowPurchase && pricingDataLoader ? (
 					<>
