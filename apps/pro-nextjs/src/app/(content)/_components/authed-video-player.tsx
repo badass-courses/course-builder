@@ -150,8 +150,8 @@ export function AuthedVideoPlayer({
 	const handleFullscreenChange = React.useCallback(() => {
 		setIsFullscreen((fullscreen) => {
 			if (fullscreen && currentResource) {
-				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				setTimeout(() => {
+					console.log('navigate to', currentResource?.fields?.slug)
 					router.push(
 						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
 					)
@@ -241,6 +241,7 @@ async function handleOnVideoEnded({
 				moduleProgress,
 				addLessonProgress,
 			})
+			setCurrentResource(nextResource)
 		} else if (bingeMode) {
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
@@ -263,6 +264,8 @@ async function handleOnVideoEnded({
 				})
 			}
 		} else {
+			if (isFullscreen) {
+			}
 			dispatchVideoPlayerOverlay({
 				type: 'COMPLETED',
 				playerRef,
