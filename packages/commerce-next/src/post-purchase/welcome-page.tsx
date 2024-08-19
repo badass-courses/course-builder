@@ -38,6 +38,7 @@ export function WelcomePage({
 	userEmail,
 	initiatePurchaseTransfer,
 	cancelPurchaseTransfer,
+	isDiscordConnected = false,
 }: {
 	product: Product | null
 	productResources?: ContentResource[] | null
@@ -45,6 +46,7 @@ export function WelcomePage({
 	existingPurchase?: Purchase | null
 	providers: any
 	isGithubConnected: boolean
+	isDiscordConnected?: boolean
 	upgrade: boolean
 	redemptionsLeft: number
 	isTransferAvailable: boolean
@@ -74,12 +76,9 @@ export function WelcomePage({
 					personalPurchase={purchase?.bulkCoupon ? existingPurchase : purchase}
 					providers={providers}
 					isGithubConnected={isGithubConnected}
+					isDiscordConnected={isDiscordConnected}
 				/>
 				<div className="flex flex-col gap-10">
-					<div>
-						<h2 className="text-primary pb-4 text-sm uppercase">Share</h2>
-						<Share productName={purchase.product?.name || 'this'} />
-					</div>
 					{redemptionsLeft && (
 						<div>
 							<h2 className="text-primary pb-4 text-sm uppercase">
@@ -94,6 +93,7 @@ export function WelcomePage({
 							/>
 						</div>
 					)}
+
 					{hasCharge && (
 						<div className="border-b pb-5">
 							<h2 className="text-primary pb-4 text-sm uppercase">
@@ -145,6 +145,10 @@ export function WelcomePage({
 							</PurchaseTransfer.Root>
 						</div>
 					)}
+					<div>
+						<h2 className="text-primary pb-4 text-sm uppercase">Share</h2>
+						<Share productName={purchase.product?.name || 'this'} />
+					</div>
 				</div>
 			</div>
 		</main>
@@ -159,6 +163,7 @@ const Header = ({
 	personalPurchase,
 	providers = {},
 	isGithubConnected,
+	isDiscordConnected = false,
 }: {
 	upgrade: boolean
 	purchase: Purchase | null
@@ -167,8 +172,12 @@ const Header = ({
 	productResources?: ContentResource[] | null
 	providers?: any
 	isGithubConnected: boolean
+	isDiscordConnected?: boolean
 }) => {
 	const githubProvider = providers.github
+	const discordProvider = providers.find(
+		(p: { id: string }) => p.id === 'discord',
+	)
 	const firstResource = first(productResources)
 
 	return (
@@ -207,6 +216,15 @@ const Header = ({
 									)}
 								</>
 							)}
+							{discordProvider && !isDiscordConnected ? (
+								<button
+									onClick={() => signIn(discordProvider.id)}
+									className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-1 text-sm text-white transition hover:brightness-110 sm:w-auto"
+								>
+									<Icon name="Discord" size="20" />
+									Join {discordProvider.name}
+								</button>
+							) : null}
 							{githubProvider && !isGithubConnected ? (
 								<button
 									onClick={() => signIn(githubProvider.id)}

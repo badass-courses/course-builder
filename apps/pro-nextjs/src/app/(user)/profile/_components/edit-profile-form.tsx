@@ -1,8 +1,15 @@
 'use client'
 
 import React from 'react'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { Icon } from '@/components/icons'
+import { env } from '@/env.mjs'
+import { disconnectDiscord } from '@/lib/discord-query'
+import { Provider } from '@/server/auth'
 import { api } from '@/trpc/react'
+import { getDiscordAuthorizeURL } from '@/utils/discord'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn, useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
@@ -26,7 +33,11 @@ const formSchema = z.object({
 	email: z.string().email(),
 })
 
-const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
+const EditProfileForm: React.FC<{
+	user: any
+	discordConnected?: boolean
+	discordProvider?: Provider | null
+}> = ({ user, discordConnected, discordProvider }) => {
 	const { update: updateSession } = useSession()
 	const { mutateAsync: updateName } = api.users.updateName.useMutation()
 	const { toast } = useToast()
@@ -99,22 +110,52 @@ const EditProfileForm: React.FC<{ user: any }> = ({ user }) => {
 											onChange={field.onChange}
 										/>
 									</FormControl>
-									<FormDescription>
-										You can not change your email address, but you can transfer
-										your product licenses to a different email address from{' '}
-										<Link
-											href="/invoices"
-											className="text-primary underline"
-											target="_blank"
-										>
-											Invoices
-										</Link>
-										.
-									</FormDescription>
 								</FormItem>
 							)}
 						/>
 					</fieldset>
+					{discordProvider && (
+						<fieldset className="mt-5 w-full">
+							<h3 className="text-lg font-bold">Accounts</h3>
+							<ul className="divide-y border-b">
+								<li className="flex items-center justify-between py-3">
+									<h4 className="inline-flex items-center gap-2 font-medium">
+										<Icon name="Discord" className="h-5 w-5" />
+										Discord
+									</h4>
+									<div>
+										{discordConnected ? (
+											<Button
+												type="button"
+												variant="secondary"
+												size="sm"
+												onClick={async () => {
+													await disconnectDiscord()
+													window.location.reload()
+												}}
+											>
+												Disconnect
+											</Button>
+										) : discordProvider ? (
+											<Button
+												type="button"
+												size="sm"
+												onClick={() => {
+													signIn(discordProvider.id, {
+														callbackUrl: `${env.NEXT_PUBLIC_URL}/profile`,
+													})
+												}}
+											>
+												Connect
+											</Button>
+										) : (
+											<div className="text-sm font-semibold">N/A</div>
+										)}
+									</div>
+								</li>
+							</ul>
+						</fieldset>
+					)}
 					{(form.formState.dirtyFields.name || form.formState.isSubmitting) && (
 						<Button type="submit" disabled={form.formState.isSubmitting}>
 							Update profile

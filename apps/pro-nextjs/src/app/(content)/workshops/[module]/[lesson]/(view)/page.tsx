@@ -23,7 +23,6 @@ export async function generateStaticParams() {
 		)
 
 		workshopNavigation?.resources.forEach((resource) => {
-			console.log({ resource })
 			if (resource.type === 'lesson') {
 				routeParams.push({
 					module: workshop.fields?.slug,

@@ -73,7 +73,10 @@ export async function WorkshopPricing({
 					commerceProps?.purchases?.map((purchase) => purchase.productId) || []
 				workshopProps = {
 					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(purchase),
+					hasPurchasedCurrentProduct: Boolean(
+						purchase &&
+							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
+					),
 					existingPurchase,
 					quantityAvailable: product.quantityAvailable,
 					purchasedProductIds,

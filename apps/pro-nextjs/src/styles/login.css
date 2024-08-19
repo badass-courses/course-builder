@@ -7,7 +7,7 @@
 		@apply max-w-sm pt-4 text-center sm:mx-auto sm:w-full sm:pt-8;
 	}
 	[data-form] {
-		@apply w-full pt-8 sm:mx-auto sm:max-w-md sm:pt-10 sm:text-lg;
+		@apply w-full  sm:mx-auto sm:max-w-md  sm:text-lg;
 
 		[data-input-container] {
 			@apply relative mt-1 rounded-md shadow-sm;
@@ -29,7 +29,7 @@
 		@apply py-5 text-center text-sm opacity-60;
 	}
 	[data-providers-container] {
-		@apply w-full space-y-2 sm:mx-auto sm:max-w-md;
+		@apply w-full space-y-2 pt-8 sm:mx-auto sm:max-w-md sm:pt-10;
 		[data-button] {
 			@apply w-full;
 		}
