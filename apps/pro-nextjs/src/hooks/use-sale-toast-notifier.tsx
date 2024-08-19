@@ -2,7 +2,10 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import {
+	useParams,
+	// useSearchParams
+} from 'next/navigation'
 import { api } from '@/trpc/react'
 import cookieUtil from '@/utils/cookies'
 import { isBefore, subDays } from 'date-fns'
@@ -16,10 +19,8 @@ export const useSaleToastNotifier = () => {
 	const { toast } = useToast()
 	const { data: defaultCoupon, status } = api.pricing.defaultCoupon.useQuery()
 	const params = useParams()
-	const searchParams = useSearchParams()
-	const allowPurchase =
-		defaultCoupon?.product?.fields?.visibility === 'public' ||
-		searchParams.get('allowPurchase') === 'true'
+	// const searchParams = useSearchParams()
+	const allowPurchase = defaultCoupon?.product?.fields?.visibility === 'public'
 	const promoCookieName = `promo_${defaultCoupon?.id}`
 	const couponCookie = defaultCoupon && cookieUtil.get(promoCookieName)
 	const lastDismissed = couponCookie?.dismissed_on
