@@ -5,9 +5,11 @@ import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
+import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { type Article } from '@/lib/articles'
 import { getArticle } from '@/lib/articles-query'
+import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
@@ -118,12 +120,23 @@ async function ArticleTitle({
 
 export default async function ArticlePage({
 	params,
+	searchParams,
 }: {
 	params: { article: string }
+	searchParams: { [key: string]: string | undefined }
 }) {
 	const articleLoader = getArticle(params.article)
 	const cookieStore = cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
+	const { allowPurchase, pricingDataLoader, product, commerceProps } =
+		ckSubscriber
+			? await getPricingProps({ searchParams })
+			: {
+					allowPurchase: false,
+					pricingDataLoader: null,
+					product: null,
+					commerceProps: null,
+				}
 
 	return (
 		<main>
@@ -145,7 +158,25 @@ export default async function ArticlePage({
 					<Article articleLoader={articleLoader} />
 				</article>
 			</div>
-			{!ckSubscriber && <PrimaryNewsletterCta />}
+			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
+				<section id="buy">
+					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+						Get Really Good At Next.js
+					</h2>
+					<div className="flex items-center justify-center border-y">
+						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
+							<PricingWidget
+								quantityAvailable={-1}
+								pricingDataLoader={pricingDataLoader}
+								commerceProps={{ ...commerceProps }}
+								product={product}
+							/>
+						</div>
+					</div>
+				</section>
+			) : (
+				<PrimaryNewsletterCta />
+			)}
 		</main>
 	)
 }

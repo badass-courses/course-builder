@@ -140,7 +140,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 											<WorkshopPricingClient {...pricingProps} />
 										)}
 
-										<strong className="font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
+										<strong className="font-mono text-sm font-bold uppercase tracking-wide">
 											Contents
 										</strong>
 										<WorkshopResourceList

@@ -10,7 +10,7 @@
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply bg-foreground mt-4 py-8 text-base font-medium;
+		@apply bg-foreground dark:text-background mt-4 py-8 text-base font-medium;
 	}
 }
 

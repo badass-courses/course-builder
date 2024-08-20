@@ -8,6 +8,8 @@ import type { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import type { FormattedPrice } from '@coursebuilder/core/types'
 
+import { ProductPricingFeatures } from '../../../_components/product-pricing-features'
+
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
 	purchaseToUpgrade?: Purchase | null
@@ -60,34 +62,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
-			<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
-				Includes
-			</strong>
-			<ul className="flex w-full flex-col gap-2">
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />4 Complete Workshops
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Over 90 Lessons
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Lifetime Access
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Customizable invoice
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					English Transcripts & Subtitles
-				</li>
-				<li className="flex items-center gap-2">
-					<Check className="h-4 w-4" />
-					Progress Tracking
-				</li>
-			</ul>
+			<ProductPricingFeatures product={product} />
 		</Pricing.Root>
 	)
 }

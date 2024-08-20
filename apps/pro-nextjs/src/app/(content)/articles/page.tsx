@@ -53,7 +53,7 @@ export default async function ArticlesIndexPage() {
 						<div className="relative flex w-full">
 							<ArticleTeaser
 								article={latestArticle}
-								className="[&_[data-card='']]:text-background h-full w-full md:aspect-[16/7] [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE]  [&_[data-card='']]:to-purple-500 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
+								className="h-full w-full md:aspect-[16/7] [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE] [&_[data-card='']]:to-purple-500  [&_[data-card='']]:p-8 [&_[data-card='']]:text-white [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
 							/>
 						</div>
 					)}

@@ -8,16 +8,11 @@ import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { getPage } from '@/lib/pages-query'
-import { getPricingData } from '@/lib/pricing-query'
-import { getProducts } from '@/lib/products-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getPricingProps } from '@/lib/pricing-query'
 import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import {
-	getCouponForCode,
-	propsForCommerce,
-} from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { getCouponForCode } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 
 export async function generateMetadata(
 	{ searchParams }: Props,
@@ -59,30 +54,11 @@ type Props = {
 }
 
 const Home = async ({ searchParams }: Props) => {
-	const products = await getProducts()
-	const product = products[0]
-	const allowPurchase =
-		searchParams.allowPurchase === 'true' ||
-		product?.fields.visibility === 'public'
+	const { allowPurchase, pricingDataLoader, product, commerceProps } =
+		await getPricingProps({ searchParams })
 	const page = await getPage(
 		allowPurchase ? 'home-selling-live~pmxxy' : 'page-16xsv',
 	)
-
-	const token = await getServerAuthSession()
-	const user = token?.session?.user
-	const commerceProps = await propsForCommerce(
-		{
-			query: {
-				...searchParams,
-			},
-			products: products as any,
-			userId: user?.id,
-		},
-		courseBuilderAdapter,
-	)
-	const pricingDataLoader = getPricingData({
-		productId: product?.id,
-	})
 
 	return (
 		<div className="">
@@ -97,13 +73,13 @@ const Home = async ({ searchParams }: Props) => {
 					quality={100}
 					className="pointer-events-none relative z-20 select-none lg:z-50 lg:-mt-16"
 				/>
-				<Image
+				{/* <Image
 					src={require('../../public/assets/bg.svg')}
 					alt=""
 					aria-hidden="true"
 					fill
 					className="object-cover object-bottom"
-				/>
+				/> */}
 				<div className="relative z-10 -mt-10 flex flex-col items-center justify-center px-5">
 					<h1 className="leading-0 font-heading sm:fluid-3xl fluid-2xl w-full max-w-4xl text-center font-bold">
 						The No-BS Solution for Enterprise-Ready Next.js Applications

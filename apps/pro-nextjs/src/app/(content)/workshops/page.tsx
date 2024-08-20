@@ -3,10 +3,12 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResourceProduct } from '@/db/schema'
 import { env } from '@/env.mjs'
+import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { asc } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
@@ -32,8 +34,19 @@ export const metadata: Metadata = {
 	},
 }
 
-export default async function Workshops() {
+export default async function Workshops({
+	searchParams,
+}: {
+	searchParams: { [key: string]: string | undefined }
+}) {
 	const { ability } = await getServerAuthSession()
+	const {
+		allowPurchase,
+		pricingDataLoader,
+		product,
+		commerceProps,
+		hasPurchased,
+	} = await getPricingProps({ searchParams })
 
 	return (
 		<main className="container min-h-[calc(100vh-var(--nav-height))] px-5">
@@ -54,6 +67,25 @@ export default async function Workshops() {
 							</Button>
 						</div>
 					) : null}
+					{product && allowPurchase && (
+						<section id="buy" className="mt-16">
+							{!hasPurchased && (
+								<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+									Get Access Today
+								</h2>
+							)}
+							<div className="flex items-center justify-center border-y">
+								<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
+									<PricingWidget
+										quantityAvailable={-1}
+										pricingDataLoader={pricingDataLoader}
+										commerceProps={{ ...commerceProps }}
+										product={product}
+									/>
+								</div>
+							</div>
+						</section>
+					)}
 				</div>
 			</div>
 		</main>
@@ -79,15 +111,15 @@ async function WorkshopsList() {
 
 	const { ability } = await getServerAuthSession()
 
-	const workshops = [...workshopsModule].filter((tutorial) => {
+	const workshops = [...workshopsModule].filter((workshop) => {
 		if (ability.can('create', 'Content')) {
-			return tutorial
+			return workshop
 		} else {
-			return tutorial.fields?.visibility === 'public'
+			return workshop.fields?.visibility === 'public'
 		}
 	})
 	const publicWorkshops = [...workshopsModule].filter(
-		(tutorial) => tutorial.fields?.visibility === 'public',
+		(workshop) => workshop.fields?.visibility === 'public',
 	)
 
 	return (

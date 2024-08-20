@@ -95,6 +95,9 @@ module.exports = withUt({
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),
+						'li, strong, h1, h2, h3, h4, h5, h6': {
+							color: theme('colors.foreground'),
+						},
 						a: {
 							color: theme('colors.primary.DEFAULT'),
 						},

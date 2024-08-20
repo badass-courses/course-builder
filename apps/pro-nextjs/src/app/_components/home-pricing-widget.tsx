@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { Check, CheckCircle2Icon } from 'lucide-react'
+import { CheckCircle2Icon } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
@@ -11,6 +11,8 @@ import type { PricingOptions } from '@coursebuilder/commerce-next/pricing/pricin
 import type { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import type { FormattedPrice } from '@coursebuilder/core/types'
+
+import { ProductPricingFeatures } from './product-pricing-features'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
@@ -82,33 +84,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.LiveRefundPolicy />
 					<Pricing.SaleCountdown className="mt-6 w-full rounded border p-5" />
 					<Pricing.PPPToggle className="mt-5" />
-					<div className="mt-5 w-full">
-						<strong className="mb-3 inline-flex w-full text-left font-mono text-sm font-bold uppercase tracking-wide text-gray-700">
-							Includes
-						</strong>
-						<ul className="flex flex-col gap-2">
-							<li className="flex items-center gap-2">
-								<Check className="h-4 w-4" />
-								Over 90 Lessons
-							</li>
-							<li className="flex items-center gap-2">
-								<Check className="h-4 w-4" />
-								Lifetime Access
-							</li>
-							<li className="flex items-center gap-2">
-								<Check className="h-4 w-4" />
-								Customizable invoice
-							</li>
-							<li className="flex items-center gap-2">
-								<Check className="h-4 w-4" />
-								English Transcripts & Subtitles
-							</li>
-							<li className="flex items-center gap-2">
-								<Check className="h-4 w-4" />
-								Progress Tracking
-							</li>
-						</ul>
-					</div>
+					<ProductPricingFeatures product={product} />
 				</Pricing.Details>
 			</Pricing.Product>
 		</Pricing.Root>

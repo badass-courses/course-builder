@@ -107,7 +107,7 @@ const Details = ({
 	return isPreviouslyPurchased ? null : (
 		<article
 			className={cn(
-				'flex flex-col items-center rounded-none border-none bg-transparent px-5 py-5 pb-8 pt-5 pt-6',
+				'flex flex-col items-center rounded-none border-none bg-transparent pt-5',
 				className,
 			)}
 		>

@@ -140,7 +140,7 @@ export function WorkshopResourceList(props: Props) {
 											{resource.lessons.length > 0 && (
 												// section lessons
 												<AccordionContent>
-													<ol className="divide-border divide-y bg-gray-50">
+													<ol className="divide-border bg-background divide-y">
 														{resource.lessons.map((lesson, index: number) => {
 															return (
 																<LessonResource
