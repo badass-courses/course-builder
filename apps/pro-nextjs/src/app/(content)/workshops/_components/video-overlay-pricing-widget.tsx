@@ -59,6 +59,7 @@ export function VideoOverlayWorkshopPricing({
 						<Pricing.BuyButton />
 						<Pricing.GuaranteeBadge />
 						<Pricing.LiveRefundPolicy />
+						<Pricing.SaleCountdown className="py-4" />
 						<Pricing.PPPToggle />
 					</Pricing.Details>
 				</Pricing.Product>

@@ -51,7 +51,7 @@ export const CompletedLessonOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<div className="flex flex-col items-center text-center">
 				<p className="pb-2 opacity-80">Next Up:</p>
@@ -127,7 +127,7 @@ export const CompletedModuleOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<p className="font-heading fluid-xl pb-3 text-center font-bold">
 				Great job!
@@ -236,7 +236,7 @@ export const SoftBlockOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
+			className="bg-background/90 z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleNavigation?.title}
@@ -376,7 +376,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg"
+				className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
@@ -407,7 +407,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			return (
 				<div
 					aria-live="polite"
-					className="text-foreground absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
 				>
 					<Spinner className="text-white" />
 				</div>

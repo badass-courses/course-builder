@@ -24,6 +24,7 @@ import {
 } from '@coursebuilder/ui'
 
 import { NavLinkItem } from './nav-link-item'
+import { ThemeToggle } from './theme-toggle'
 
 export const User: React.FC<{
 	className?: string
@@ -56,6 +57,7 @@ export const User: React.FC<{
 							href="/team"
 						/>
 					)}
+					<ThemeToggle />
 					{!sessionData?.user?.email ? (
 						<NavLinkItem
 							className={loginClassName}

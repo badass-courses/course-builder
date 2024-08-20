@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Moon, Sun } from 'lucide-react'
+import { Check, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import {
@@ -9,31 +9,45 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from '@coursebuilder/ui'
 
 export function ThemeToggle() {
-	const { setTheme } = useTheme()
+	const { setTheme, theme } = useTheme()
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="icon" className="-mr-2">
-					<Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-					<Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+				<Button
+					variant="ghost"
+					size="icon"
+					className="flex h-full items-stretch rounded-none"
+				>
+					<div className="flex h-full w-full items-center justify-center">
+						<Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+						<Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+					</div>
 					<span className="sr-only">Toggle theme</span>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
-				<DropdownMenuItem onClick={() => setTheme('light')}>
-					Light
+				<DropdownMenuLabel>Theme</DropdownMenuLabel>
+				<DropdownMenuItem
+					onClick={() => setTheme('light')}
+					className="flex items-center justify-between gap-2"
+				>
+					Light {theme === 'light' && <Check className="h-4 w-4" />}
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme('dark')}>
-					Dark
+				<DropdownMenuItem
+					onClick={() => setTheme('dark')}
+					className="flex items-center justify-between gap-2"
+				>
+					Dark {theme === 'dark' && <Check className="h-4 w-4" />}
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme('system')}>
+				{/* <DropdownMenuItem onClick={() => setTheme('system')}>
 					System
-				</DropdownMenuItem>
+				</DropdownMenuItem> */}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)
