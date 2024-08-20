@@ -34,13 +34,13 @@ export async function createVerificationUrl({
 	authOptions: AuthConfig
 	emailProvider: NodemailerConfig
 	adapter: CourseBuilderAdapter
-	callbackUrl: string
+	callbackUrl?: string
 	baseUrl: string
 	expiresAt?: Date
 }) {
 	if (!emailProvider) return
 
-	callbackUrl = callbackUrl as string
+	callbackUrl = (callbackUrl || baseUrl) as string
 
 	const token = (await emailProvider.generateVerificationToken?.()) ?? v4()
 
@@ -100,8 +100,6 @@ export async function sendServerEmail({
 			adapter,
 			baseUrl,
 		})
-
-		console.log('verificationDetails', verificationDetails)
 
 		if (!verificationDetails) return
 

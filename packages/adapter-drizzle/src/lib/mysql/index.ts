@@ -1504,6 +1504,34 @@ export function mySqlDrizzleAdapter(
 				purchase: parsedPurchase.data,
 			}
 		},
+		async getUserWithPurchasersByEmail(email: string): Promise<any | null> {
+			const user = await client.query.users.findFirst({
+				where: eq(users.email, email.trim().toLowerCase()),
+				with: {
+					// merchantCustomer: true,
+					roles: {
+						with: {
+							role: true,
+						},
+					},
+					purchases: {
+						with: {
+							bulkCoupon: true,
+							merchantCharge: true,
+							product: {
+								columns: {
+									id: true,
+									name: true,
+									key: true,
+								},
+							},
+						},
+					},
+				},
+			})
+
+			return user
+		},
 		async getUserById(userId: string): Promise<User | null> {
 			const user = await client.query.users
 				.findFirst({

@@ -107,6 +107,12 @@ export function parseActionAndProviderId(
 			'checkout',
 			'redeem',
 			'subscriber',
+			'lookup',
+			'claimed',
+			'nameUpdate',
+			'transfer',
+			'refund',
+			'create-magic-link',
 		].includes(action)
 	)
 		throw new UnknownAction(

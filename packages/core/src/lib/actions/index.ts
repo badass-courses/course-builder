@@ -251,9 +251,72 @@ export async function webhook(
 
 			const videoResourceId = options.url.searchParams.get('videoResourceId')
 
+			if (!videoResourceId) throw new Error('No videoResourceId')
+
+			const videoResource =
+				await options.adapter?.getContentResource(videoResourceId)
+
+			if (!videoResource) throw new Error('No videoResource')
+
 			const srt = srtFromTranscriptResult(results)
 			const wordLevelSrt = wordLevelSrtFromTranscriptResult(results)
 			const transcript = transcriptAsParagraphsWithTimestamps(results)
+
+			await options.adapter?.createContentResource({
+				id: `raw-transcript-${videoResourceId}`,
+				type: 'raw-transcript',
+				fields: {
+					rawTranscript: results,
+				},
+				createdById: videoResource.createdById,
+			})
+
+			await options.adapter?.addResourceToResource({
+				childResourceId: `transcript-${videoResourceId}`,
+				parentResourceId: videoResourceId,
+			})
+
+			await options.adapter?.createContentResource({
+				id: `transcript-${videoResourceId}`,
+				type: 'transcript',
+				fields: {
+					transcript,
+				},
+				createdById: videoResource.createdById,
+			})
+
+			await options.adapter?.addResourceToResource({
+				childResourceId: `transcript-${videoResourceId}`,
+				parentResourceId: videoResourceId,
+			})
+
+			await options.adapter?.createContentResource({
+				id: `srt-${videoResourceId}`,
+				type: 'srt',
+				fields: {
+					srt,
+				},
+				createdById: videoResource.createdById,
+			})
+
+			await options.adapter?.addResourceToResource({
+				childResourceId: `srt-${videoResourceId}`,
+				parentResourceId: videoResourceId,
+			})
+
+			await options.adapter?.createContentResource({
+				id: `word-level-srt-${videoResourceId}`,
+				type: 'word-level-srt',
+				fields: {
+					wordLevelSrt,
+				},
+				createdById: videoResource.createdById,
+			})
+
+			await options.adapter?.addResourceToResource({
+				childResourceId: `word-level-srt-${videoResourceId}`,
+				parentResourceId: videoResourceId,
+			})
 
 			await options.adapter?.updateContentResourceFields({
 				id: videoResourceId as string,
