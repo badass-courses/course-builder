@@ -282,6 +282,9 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	> {
 		return Promise.resolve(null)
 	},
+	getUserWithPurchasersByEmail(email: string): Promise<any | null> {
+		return Promise.resolve(null)
+	},
 	getPurchasesForUser(userId?: string): Promise<Purchase[]> {
 		return Promise.resolve([])
 	},
@@ -465,6 +468,7 @@ interface SkillProductsCommerceSdk {
 		name?: string | null,
 	): Promise<{ user: User; isNewUser: boolean }>
 	getUserById(userId: string): Promise<User | null>
+	getUserWithPurchasersByEmail(email: string): Promise<any | null>
 	getProduct(productId: string): Promise<Product | null>
 	getProductResources(productId: string): Promise<ContentResource[] | null>
 	getPrice(productId: string): Promise<Price | null>

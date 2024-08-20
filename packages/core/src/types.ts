@@ -61,6 +61,12 @@ export type CourseBuilderAction =
 	| 'prices-formatted'
 	| 'subscriber'
 	| 'purchases'
+	| 'lookup'
+	| 'claimed'
+	| 'nameUpdate'
+	| 'transfer'
+	| 'refund'
+	| 'create-magic-link'
 
 export interface RequestInternal {
 	url: URL

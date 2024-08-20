@@ -10,6 +10,12 @@ const actions: CourseBuilderAction[] = [
 	'prices-formatted',
 	'subscriber',
 	'purchases',
+	'lookup',
+	'claimed',
+	'nameUpdate',
+	'transfer',
+	'refund',
+	'create-magic-link',
 ]
 
 export function isCourseBuilderAction(

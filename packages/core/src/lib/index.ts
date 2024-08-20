@@ -1,8 +1,10 @@
 import { CourseBuilderConfig } from '../index'
 import { RequestInternal, ResponseInternal } from '../types'
 import * as actions from './actions'
+import { createMagicLink } from './actions/create-magic-link'
 import { getPricesFormatted } from './actions/prices-formatted'
 import { redeem } from './actions/redeem'
+import { userLookup } from './actions/user-lookup'
 import { init } from './init'
 import { UnknownAction } from './utils/web'
 
@@ -44,6 +46,10 @@ export async function CourseBuilderInternal(
 				return await actions.webhook(request, cookies, options)
 			case 'subscribe-to-list':
 				return await actions.subscribeToList(request, cookies, options)
+			case 'lookup':
+				return await userLookup(request, cookies, options)
+			case 'create-magic-link':
+				return await createMagicLink(request, cookies, options)
 		}
 	}
 
