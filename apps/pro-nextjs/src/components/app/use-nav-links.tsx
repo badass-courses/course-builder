@@ -8,6 +8,10 @@ export function useNavLinks() {
 
 	return [
 		{
+			href: '/workshops',
+			label: 'Pro Workshops',
+		},
+		{
 			href: '/tutorials',
 			label: 'Tutorials',
 		},
@@ -15,10 +19,6 @@ export function useNavLinks() {
 			href: '/articles',
 			label: 'Articles',
 		},
-		// {
-		// 	href: '/tips',
-		// 	label: 'Tips',
-		// },
 		// {
 		// 	href: '/events',
 		// 	label: (
