@@ -52,13 +52,11 @@ export async function LessonPage({
 						<div>
 							<main className="">
 								{lessonType === 'exercise' ? (
-									<Suspense fallback={<PlayerContainerSkeleton />}>
-										<Exercise
-											moduleType="workshop"
-											moduleSlug={params.module}
-											lesson={lesson}
-										/>
-									</Suspense>
+									<Exercise
+										moduleType="workshop"
+										moduleSlug={params.module}
+										lesson={lesson}
+									/>
 								) : (
 									<PlayerContainer
 										lesson={lesson}

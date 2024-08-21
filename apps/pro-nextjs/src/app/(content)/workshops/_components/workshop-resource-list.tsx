@@ -219,6 +219,7 @@ const LessonResource = ({
 						},
 					)}
 					href={`/workshops/${params.module}/${lesson.slug}`}
+					prefetch={true}
 				>
 					{isCompleted ? (
 						<div

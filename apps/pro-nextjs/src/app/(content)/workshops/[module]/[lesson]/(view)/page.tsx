@@ -8,6 +8,8 @@ import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 
+const getCachedLesson = React.cache(getLesson)
+
 export async function generateStaticParams() {
 	const workshops = await db.query.contentResource.findMany({
 		where: and(eq(contentResource.type, 'workshop')),
@@ -48,7 +50,7 @@ export async function generateMetadata(
 	{ params }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const lesson = await getLesson(params.lesson)
+	const lesson = await getCachedLesson(params.lesson)
 
 	if (!lesson) {
 		return parent as Metadata
@@ -71,7 +73,7 @@ export default async function LessonPageWrapper({
 	params,
 	searchParams,
 }: Props) {
-	const lesson = await getLesson(params.lesson)
+	const lesson = await getCachedLesson(params.lesson)
 
 	return (
 		<LessonPage params={params} lesson={lesson} searchParams={searchParams} />
