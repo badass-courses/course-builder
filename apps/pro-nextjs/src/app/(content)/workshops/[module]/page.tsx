@@ -41,8 +41,8 @@ export async function generateStaticParams() {
 		}))
 }
 
-const getCachedWorkshop = unstable_cache(
-	async (slug: string) => getWorkshop(slug),
+const getCachedMinimalWorkshop = unstable_cache(
+	async (slug: string) => getMinimalWorkshop(slug),
 	['workshop'],
 	{ revalidate: 3600 },
 )
@@ -51,15 +51,15 @@ export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const workshop = await getCachedWorkshop(params.module)
+	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	if (!workshop) {
 		return parent as Metadata
 	}
 
 	return {
-		title: workshop.fields.title,
-		description: workshop.fields.description,
+		title: workshop.fields?.title,
+		description: workshop.fields?.description,
 		openGraph: {
 			images: [
 				getOGImageUrlForResource(
@@ -71,12 +71,6 @@ export async function generateMetadata(
 		},
 	}
 }
-
-const getCachedMinimalWorkshop = unstable_cache(
-	async (slug: string) => getMinimalWorkshop(slug),
-	['workshop'],
-	{ revalidate: 3600 },
-)
 
 export default async function ModulePage({ params, searchParams }: Props) {
 	const workshop = await getCachedMinimalWorkshop(params.module)
