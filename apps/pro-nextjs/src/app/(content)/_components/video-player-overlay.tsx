@@ -286,6 +286,8 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	const canView = ability.canView
 	const canInviteTeam = ability.canInviteTeam
 	const isRegionRestricted = ability.isRegionRestricted
+	const moduleNavigation = useWorkshopNavigation()
+	const router = useRouter()
 
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
 	const { data: session } = useSession()
@@ -296,6 +298,22 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	const purchaseForProduct = pricingProps?.purchases?.find(
 		(purchase) => purchase.productId === pricingProps?.product?.id,
 	)
+
+	const resourceSlug = resource?.fields?.slug
+
+	React.useEffect(() => {
+		if (moduleNavigation && nextResource) {
+			if (nextResource.type === 'solution') {
+				router.prefetch(
+					`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resourceSlug}/solution`,
+				)
+			} else {
+				router.prefetch(
+					`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
+				)
+			}
+		}
+	}, [moduleNavigation, moduleType, nextResource, resourceSlug, router])
 
 	const showRegionRestrictedBlock =
 		isRegionRestricted && !canView && purchaseForProduct
