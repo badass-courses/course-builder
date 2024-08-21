@@ -277,7 +277,7 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 				className="mt-5 flex justify-end border-t px-5 pt-5 sm:hidden"
 			/>
 			{lesson.fields?.body && (
-				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
+				<div className="prose mt-5 max-w-none border-t px-5 pb-32 pt-8 sm:px-8">
 					<MDXRemote
 						source={lesson.fields.body}
 						components={{
