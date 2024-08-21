@@ -1,8 +1,15 @@
 import React from 'react'
+import { unstable_cache } from 'next/cache'
 import { ModuleProgressProvider } from '@/app/(content)/_components/module-progress-provider'
 import { WorkshopNavigationProvider } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getWorkshopNavigation } from '@/lib/workshops-query'
+
+const getCachedWorkshopNavigation = unstable_cache(
+	async (slug: string) => getWorkshopNavigation(slug),
+	['workshop'],
+	{ revalidate: 3600 },
+)
 
 const ModuleLayout: React.FC<
 	React.PropsWithChildren<{
@@ -11,7 +18,7 @@ const ModuleLayout: React.FC<
 		}
 	}>
 > = async ({ children, params }) => {
-	const workshopNavDataLoader = getWorkshopNavigation(params.module)
+	const workshopNavDataLoader = getCachedWorkshopNavigation(params.module)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 	return (
 		<WorkshopNavigationProvider workshopNavDataLoader={workshopNavDataLoader}>

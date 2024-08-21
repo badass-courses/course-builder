@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
@@ -9,11 +10,11 @@ import { PreviewWorkshopButton } from '@/app/(content)/workshops/_components/pre
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import config from '@/config'
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { Construction } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
@@ -40,11 +41,17 @@ export async function generateStaticParams() {
 		}))
 }
 
+const getCachedWorkshop = unstable_cache(
+	async (slug: string) => getWorkshop(slug),
+	['workshop'],
+	{ revalidate: 3600 },
+)
+
 export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const workshop = await getWorkshop(params.module)
+	const workshop = await getCachedWorkshop(params.module)
 
 	if (!workshop) {
 		return parent as Metadata
@@ -65,8 +72,14 @@ export async function generateMetadata(
 	}
 }
 
+const getCachedMinimalWorkshop = unstable_cache(
+	async (slug: string) => getMinimalWorkshop(slug),
+	['workshop'],
+	{ revalidate: 3600 },
+)
+
 export default async function ModulePage({ params, searchParams }: Props) {
-	const workshop = await getMinimalWorkshop(params.module)
+	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	if (!workshop) {
 		notFound()
