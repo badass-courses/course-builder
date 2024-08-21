@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -248,7 +249,7 @@ export async function updateLesson(input: TipUpdate) {
 		lessonSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	return courseBuilderAdapter.updateContentResourceFields({
+	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
 		id: currentLesson.id,
 		fields: {
 			...currentLesson.fields,
@@ -256,4 +257,8 @@ export async function updateLesson(input: TipUpdate) {
 			slug: lessonSlug,
 		},
 	})
+
+	revalidateTag('lesson')
+
+	return updatedResource
 }

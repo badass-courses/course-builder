@@ -385,7 +385,7 @@ export const addResourceToWorkshop = async ({
 		position: workshop.resources.length,
 	})
 
-	return db.query.contentResourceResource.findFirst({
+	const resourceResource = db.query.contentResourceResource.findFirst({
 		where: and(
 			eq(contentResourceResource.resourceOfId, workshop.id),
 			eq(contentResourceResource.resourceId, resource.id),
@@ -394,6 +394,10 @@ export const addResourceToWorkshop = async ({
 			resource: true,
 		},
 	})
+
+	revalidateTag('workshop')
+
+	return resourceResource
 }
 
 export const updateResourcePosition = async ({
@@ -416,6 +420,8 @@ export const updateResourcePosition = async ({
 				eq(contentResourceResource.resourceId, resourceId),
 			),
 		)
+
+	revalidateTag('workshop')
 
 	return result
 }
@@ -450,6 +456,7 @@ export async function updateWorkshop(input: Module) {
 			},
 		})
 
+	revalidateTag('workshop')
 	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
 	revalidatePath('/workshops')
