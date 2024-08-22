@@ -11,6 +11,7 @@ import {
 } from '@/hooks/use-mux-player-prefs'
 import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
+import { track } from '@/utils/analytics'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import MuxPlayer, {
 	type MuxPlayerProps,
@@ -224,6 +225,14 @@ async function handleOnVideoEnded({
 	moduleProgress: ModuleProgress | null
 	addLessonProgress: (lessonId: string) => void
 }) {
+	await track('completed: video', {
+		resourceSlug: resource?.fields?.slug,
+		resourceType: resource?.type,
+		moduleSlug: moduleSlug,
+		moduleType: moduleType,
+		bingeMode,
+		isFullscreen,
+	})
 	if (resource?.type === 'exercise') {
 		router.push(`${resource?.fields?.slug}/exercise`)
 	} else {

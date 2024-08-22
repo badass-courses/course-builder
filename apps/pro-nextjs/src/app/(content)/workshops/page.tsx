@@ -134,6 +134,7 @@ async function WorkshopsList() {
 							<Link
 								className="flex flex-shrink-0 items-center justify-center p-5 md:aspect-square"
 								href={`/workshops/${workshop.fields.slug || workshop.id}`}
+								prefetch={true}
 							>
 								<CldImage
 									className="flex-shrink-0"
