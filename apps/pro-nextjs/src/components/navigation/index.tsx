@@ -47,7 +47,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background/95 relative z-40 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 backdrop-blur-md print:hidden',
+				'bg-background/95 relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 backdrop-blur-md print:hidden',
 				{
 					'sticky top-0': !params.lesson,
 					// 'border-b': !isEditRoute,

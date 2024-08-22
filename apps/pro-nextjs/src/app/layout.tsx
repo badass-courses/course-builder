@@ -62,7 +62,7 @@ export default function RootLayout({
 					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
 				>
 					<Toaster
-						viewportClassName="sm:top-[var(--nav-height)]"
+						viewportClassName="sm:top-[var(--nav-height)] z-50"
 						className="data-[state=open]:sm:slide-in-from-right-full"
 					/>
 					<FeedbackInsert />
