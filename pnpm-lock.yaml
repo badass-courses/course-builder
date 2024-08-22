@@ -420,8 +420,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1247,8 +1247,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1830,8 +1830,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2723,8 +2723,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -3354,8 +3354,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -3943,8 +3943,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -4668,8 +4668,8 @@ importers:
         specifier: ^3.16.1
         version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
       liquidjs:
-        specifier: ^10.16.1
-        version: 10.16.1
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -23715,8 +23715,8 @@ packages:
       - supports-color
     dev: false
 
-  /liquidjs@10.16.1:
-    resolution: {integrity: sha512-1JFL/Y7ONoajrfwav37yuz5yQHU3+Pgz1XWsg9E/2T8Fp65KalNfMF8QZ3+tNETqGUIB66waOSLOi64niYZE9A==}
+  /liquidjs@10.16.3:
+    resolution: {integrity: sha512-CbIeSH5zc7nVPFgexN1EQlAxAk2DAQDvIN8r40PHs/HxubhQyEoZS/CgKpd9ax9walAUqk+VpkSR1CfoFr4Nhw==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
