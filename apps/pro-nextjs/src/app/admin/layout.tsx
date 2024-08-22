@@ -40,6 +40,14 @@ const AdminLayout: React.FC<
 								<HomeIcon className="h-4 w-4" />
 								Pages
 							</Link>
+							<Link
+								href="/admin/emails"
+								className="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
+								prefetch={false}
+							>
+								<HomeIcon className="h-4 w-4" />
+								Emails
+							</Link>
 						</nav>
 					</div>
 				</div>
