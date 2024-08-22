@@ -197,14 +197,14 @@ export interface CallbacksOptions {
 	session: (
 		params: any,
 	) => Awaitable<CourseBuilderSession | DefaultCourseBuilderSession>
-	purchaseCompleted: (params: {
-		purchase: Purchase
-		user: User
-	}) => Awaitable<void>
-	progressMade: (params: {
-		progress: ResourceProgress
-		user: User
-	}) => Awaitable<void>
+	// purchaseCompleted: (params: {
+	// 	purchase: Purchase
+	// 	user: User
+	// }) => Awaitable<void>
+	// progressMade: (params: {
+	// 	progress: ResourceProgress
+	// 	user: User
+	// }) => Awaitable<void>
 }
 
 export type FunctionCall = {
