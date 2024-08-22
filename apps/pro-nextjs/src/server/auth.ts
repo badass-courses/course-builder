@@ -6,6 +6,7 @@ import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
@@ -96,9 +97,26 @@ async function refreshDiscordToken(account: { refresh_token: string | null }) {
 export const authOptions: NextAuthConfig = {
 	events: {
 		createUser: async ({ user }) => {
+			if (env.NEXT_PUBLIC_AMPLITUDE_API_KEY) {
+				init(env.NEXT_PUBLIC_AMPLITUDE_API_KEY)
+				const identifyObj = new Identify()
+				identify(identifyObj, {
+					user_id: user.email || user.id,
+				})
+				track('user-created', { userId: user.email })
+			}
+
 			await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
 		},
 		linkAccount: async ({ user, account, profile }) => {
+			if (env.NEXT_PUBLIC_AMPLITUDE_API_KEY) {
+				init(env.NEXT_PUBLIC_AMPLITUDE_API_KEY)
+				const identifyObj = new Identify()
+				identify(identifyObj, {
+					user_id: user.email || user.id,
+				})
+				track('account-linked', { account: account.provider })
+			}
 			await inngest.send({
 				name: OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT,
 				data: { account, profile },

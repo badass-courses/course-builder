@@ -2993,6 +2993,9 @@ importers:
       '@amplitude/analytics-browser':
         specifier: ^2.6.1
         version: 2.6.1
+      '@amplitude/analytics-node':
+        specifier: ^1.3.6
+        version: 1.3.6
       '@anthropic-ai/sdk':
         specifier: ^0.17.1
         version: 0.17.2(encoding@0.1.13)
@@ -5043,11 +5046,30 @@ packages:
     resolution: {integrity: sha512-T8mOYzB9RRxckzhL0NTHwdge9xuFxXEOplC8B1Y3UX3NHa3BLh7DlBUZlCOwQgMc2nxDfnSweDL5S3bhC+W90g==}
     dev: false
 
+  /@amplitude/analytics-core@1.2.5:
+    resolution: {integrity: sha512-V7CVlHVN+1diKiOpdp2bCPZ0mbS4CmUYF+v+eXDwVfJL3M/t3sVcT1apXnmVYGYi14cGu9hQOD11rD6qKbUOsw==}
+    dependencies:
+      '@amplitude/analytics-types': 1.3.4
+      tslib: 2.6.3
+    dev: false
+
   /@amplitude/analytics-core@2.2.3:
     resolution: {integrity: sha512-rtA7TSqie6Jgcvax3tEHaZUzOJM5Hdd5/+JYFIJK2gPgHsWZj3jDF75fL8BSn4uBiA2zcZ0vbCHORMVqXg5pRw==}
     dependencies:
       '@amplitude/analytics-types': 2.5.0
       tslib: 2.6.3
+    dev: false
+
+  /@amplitude/analytics-node@1.3.6:
+    resolution: {integrity: sha512-yZQKe2JR6UWIWAOF19OfKSGkJ/Fn9cqLOVtp5MVKMGL45T4pXdFwCQdw9L5gspmL2B4/MtergdBKq0WDRIRvCw==}
+    dependencies:
+      '@amplitude/analytics-core': 1.2.5
+      '@amplitude/analytics-types': 1.3.4
+      tslib: 2.6.3
+    dev: false
+
+  /@amplitude/analytics-types@1.3.4:
+    resolution: {integrity: sha512-tR70gzqFkEzX9QpxvWYMfLCledT7vMhgd3d4/bkp3nnGXTOORaVUOCcSgOyxyuFdSx84T61aP/eZPKIcZcaP+A==}
     dev: false
 
   /@amplitude/analytics-types@2.5.0:
