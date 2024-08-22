@@ -90,6 +90,7 @@
 		"@react-email/markdown": "^0.0.11",
 		"@react-email/render": "^0.0.17",
 		"@sanity/icons": "^2.6.0",
+		"@sentry/nextjs": "^8",
 		"@sindresorhus/slugify": "^2.2.1",
 		"@skillrecordings/analytics": "^1.0.1",
 		"@skillrecordings/config": "^0.0.3",
