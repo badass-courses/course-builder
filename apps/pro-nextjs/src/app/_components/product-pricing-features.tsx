@@ -1,4 +1,11 @@
-import { Check, FileCheck2, Infinity, ListVideo, Percent } from 'lucide-react'
+import {
+	BadgeCheck,
+	Check,
+	FileCheck2,
+	Infinity,
+	ListVideo,
+	Percent,
+} from 'lucide-react'
 
 import { Product } from '@coursebuilder/core/schemas'
 
@@ -71,6 +78,10 @@ export const ProductPricingFeatures = ({ product }: { product: Product }) => {
 				<li className="flex items-center gap-2">
 					<Percent className="h-4 w-4" />
 					Progress Tracking
+				</li>
+				<li className="flex items-center gap-2">
+					<BadgeCheck className="h-4 w-4" />
+					Completion Certificate
 				</li>
 			</ul>
 		</div>
