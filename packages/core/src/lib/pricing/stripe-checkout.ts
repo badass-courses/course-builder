@@ -20,7 +20,9 @@ export const CheckoutParamsSchema = z.object({
 	couponId: z.string().optional(),
 	userId: z.string().optional(),
 	upgradeFromPurchaseId: z.string().optional(),
-	bulk: z.coerce.boolean().transform((val) => Boolean(val) || false),
+	bulk: z.preprocess((val) => {
+		return val === 'false' ? false : Boolean(val)
+	}, z.boolean()),
 	cancelUrl: z.string(),
 	usedCouponId: z.string().optional(),
 })
@@ -410,7 +412,7 @@ export async function stripeCheckout({
 				...(appliedPPPStripeCouponId && { appliedPPPStripeCouponId }),
 				...(upgradedFromPurchaseId && { upgradedFromPurchaseId }),
 				country: params.country || process.env.DEFAULT_COUNTRY || 'US',
-				ip_address: params.ip_address || '',
+				ip_address: ip_address || '',
 				...(usedCouponId && { usedCouponId }),
 				productId: loadedProduct.id,
 				product: loadedProduct.name,

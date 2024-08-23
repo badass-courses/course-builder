@@ -35,6 +35,11 @@ const config = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'avatars.githubusercontent.com',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'neatly-diverse-goldfish.ngrok-free.app',
 				port: '',
 			},

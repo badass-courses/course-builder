@@ -16,7 +16,7 @@ const ParamsSchema = z
 	.transform((params) => {
 		return {
 			...params,
-			bulk: params.bulk.toString(),
+			bulk: Boolean(params.bulk).toString(),
 			productId: params.productId || '',
 			quantity: String(params.quantity),
 		}
