@@ -78,6 +78,8 @@ export const env = createEnv({
 		DISCORD_MEMBER_ROLE_ID: z.string(),
 		DISCORD_PURCHASER_ROLE_ID: z.string(),
 		DISCORD_CLIENT_ID: z.string(),
+		CLOUDINARY_API_KEY: z.string(),
+		CLOUDINARY_API_SECRET: z.string(),
 	},
 
 	/**
@@ -161,6 +163,8 @@ export const env = createEnv({
 		DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
 		DISCORD_MEMBER_ROLE_ID: process.env.DISCORD_MEMBER_ROLE_ID,
 		DISCORD_PURCHASER_ROLE_ID: process.env.DISCORD_PURCHASER_ROLE_ID,
+		CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

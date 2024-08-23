@@ -1,4 +1,5 @@
 import { abilityRouter } from '@/trpc/api/routers/ability'
+import { certificateRouter } from '@/trpc/api/routers/certificate'
 import { contentResourceRouter } from '@/trpc/api/routers/contentResources'
 import { eventsRouter } from '@/trpc/api/routers/events'
 import { imageResourceRouter } from '@/trpc/api/routers/imageResource'
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
 	events: eventsRouter,
 	progress: progressRouter,
 	lessons: lessonsRouter,
+	certificate: certificateRouter,
 })
 
 // export type definition of API
