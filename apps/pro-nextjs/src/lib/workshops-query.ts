@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { Module, ModuleSchema } from '@/lib/module'
@@ -137,6 +137,12 @@ ORDER BY
 
 	return NavigationResultSchemaArraySchema.parse(result.rows)
 }
+
+export const getCachedWorkshopNavigation = unstable_cache(
+	async (slug: string) => getWorkshopNavigation(slug),
+	['workshop'],
+	{ revalidate: 3600 },
+)
 
 export async function getWorkshopNavigation(
 	moduleSlugOrId: string,

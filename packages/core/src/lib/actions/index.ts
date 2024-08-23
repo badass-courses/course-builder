@@ -2,7 +2,6 @@ import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { z } from 'zod'
 
 import { VIDEO_SRT_READY_EVENT } from '../../inngest/video-processing/events/event-video-srt-ready-to-asset'
-import { EmailListConfig, TranscriptionConfig } from '../../providers'
 import {
 	filterNullFields,
 	getConvertkitSubscriberCookie,
@@ -12,16 +11,10 @@ import {
 	transcriptAsParagraphsWithTimestamps,
 	wordLevelSrtFromTranscriptResult,
 } from '../../providers/deepgram'
-import {
-	InternalOptions,
-	PaymentsProviderConfig,
-	RequestInternal,
-	ResponseInternal,
-} from '../../types'
+import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { processStripeWebhook } from '../pricing/process-stripe-webhook'
 import { CheckoutParamsSchema } from '../pricing/stripe-checkout'
 import { sendServerEmail } from '../send-server-email'
-import { sendVerificationRequest } from '../send-verification-request'
 import { Cookie } from '../utils/cookie'
 
 export async function getUserPurchases(
@@ -31,14 +24,20 @@ export async function getUserPurchases(
 ): Promise<ResponseInternal> {
 	const client = options.adapter
 
-	if (!request.query?.userId) throw new Error('userId is required')
+	if (!request.query?.userId)
+		return {
+			status: 200,
+			body: [],
+			headers: { 'Content-Type': 'application/json' },
+			cookies,
+		}
 
 	const purchases = await client?.getPurchasesForUser(request.query.userId)
 
 	if (!purchases) {
 		return {
 			status: 200,
-			body: null,
+			body: [],
 			headers: { 'Content-Type': 'application/json' },
 			cookies,
 		}

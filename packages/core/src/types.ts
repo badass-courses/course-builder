@@ -17,6 +17,7 @@ import {
 	Price,
 	Product,
 	Purchase,
+	ResourceProgress,
 	User,
 } from './schemas'
 import {

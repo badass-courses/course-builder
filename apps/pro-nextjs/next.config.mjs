@@ -3,6 +3,7 @@
  * for Docker builds.
  */
 import createMDX from '@next/mdx'
+import { withSentryConfig } from '@sentry/nextjs'
 import { withAxiom } from 'next-axiom'
 
 await import('./src/env.mjs')
