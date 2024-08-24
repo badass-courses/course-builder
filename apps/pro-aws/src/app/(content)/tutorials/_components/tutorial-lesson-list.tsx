@@ -11,13 +11,11 @@ import { getResourceSection } from '@/utils/get-resource-section'
 import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline'
 
 import type {
+	ContentResource,
+	ContentResourceResource,
 	ModuleProgress,
 	ResourceProgress,
 } from '@coursebuilder/core/schemas'
-import type {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,

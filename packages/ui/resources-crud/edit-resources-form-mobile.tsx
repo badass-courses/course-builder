@@ -3,7 +3,7 @@ import { User } from '@auth/core/types'
 import type { UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { ResourceChatAssistant } from '../chat-assistant/resource-chat-assistant'
 import { CodemirrorEditor } from '../codemirror/editor'

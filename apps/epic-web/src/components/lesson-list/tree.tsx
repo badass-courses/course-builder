@@ -22,7 +22,7 @@ import memoizeOne from 'memoize-one'
 import invariant from 'tiny-invariant'
 
 import { Product } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import {
 	getInitialTreeState,

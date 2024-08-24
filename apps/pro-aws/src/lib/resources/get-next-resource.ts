@@ -4,7 +4,7 @@ import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { and, asc, eq, gt } from 'drizzle-orm'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function getNextResource(
 	currentResourceId: string,

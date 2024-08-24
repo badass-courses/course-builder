@@ -2,19 +2,15 @@
 
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { env } from '@/env.mjs'
 import { LessonSchema, type LessonUpdate } from '@/lib/lessons'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-// import { Redis } from '@upstash/redis'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import { z } from 'zod'
 
-import type { ContentResourceResource } from '@coursebuilder/core/types'
-
-// const redis = Redis.fromEnv()
+import { ContentResourceResource } from '@coursebuilder/core/schemas'
 
 export const getLessonVideoTranscript = async (
 	lessonIdOrSlug?: string | null,

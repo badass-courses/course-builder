@@ -408,8 +408,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -808,8 +808,8 @@ importers:
         specifier: ^11
         version: 11.1.7(react-dom@18.3.1)(react@18.3.1)
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(next@14.2.5)(typescript@5.4.5)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1238,8 +1238,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1818,8 +1818,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -2239,8 +2239,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(next@14.2.5)
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(next@14.2.5)(typescript@5.4.5)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2711,8 +2711,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -3342,8 +3342,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -3931,8 +3931,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -4665,8 +4665,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1(drizzle-orm@0.31.0)(zod@3.22.4)
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(next@14.2.5)(typescript@5.4.5)
       liquidjs:
         specifier: ^10.16.3
         version: 10.16.3
@@ -4747,8 +4747,8 @@ importers:
         specifier: 0.2.2
         version: link:../core
       inngest:
-        specifier: ^3.16.1
-        version: 3.16.1(encoding@0.1.13)(typescript@5.4.5)
+        specifier: ^3.22.5
+        version: 3.22.5(next@14.2.5)(typescript@5.4.5)
     devDependencies:
       '@auth/core':
         specifier: ^0.30.0
@@ -18866,10 +18866,6 @@ packages:
   /convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  /cookie-es@1.0.0:
-    resolution: {integrity: sha512-mWYvfOLrfEc996hlKcdABeIiPHUPC6DM2QYZdGGOvhOTbA3tjm2eBwqlJpoFdjC89NI4Qt6h0Pu06Mp+1Pj5OQ==}
-    dev: false
-
   /cookie-signature@1.0.6:
     resolution: {integrity: sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==}
     dev: false
@@ -18984,15 +18980,6 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
-
-  /crossws@0.2.4:
-    resolution: {integrity: sha512-DAxroI2uSOgUKLz00NX6A8U/8EE3SZHmIND+10jkVSaypvyt57J5JEOxAQOL6lQxyzi/wZbTIwssU1uy69h5Vg==}
-    peerDependencies:
-      uWebSockets.js: '*'
-    peerDependenciesMeta:
-      uWebSockets.js:
-        optional: true
-    dev: false
 
   /crypt@0.0.2:
     resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
@@ -19298,10 +19285,6 @@ packages:
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
 
-  /defu@6.1.4:
-    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
-    dev: false
-
   /del@7.1.0:
     resolution: {integrity: sha512-v2KyNk7efxhlyHpjEvfyxaAihKKK0nWCuf6ZtqZcFFpQRG0bJ12Qsr0RpvsICMjAAZ8DOVCxrlqpxISlMHC4Kg==}
     engines: {node: '>=14.16'}
@@ -19332,10 +19315,6 @@ packages:
   /dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
-
-  /destr@2.0.3:
-    resolution: {integrity: sha512-2N3BOUU4gYMpTP24s5rF5iP7BDr7uNTCs4ozw3kf/eKfvWSIu93GEBi5m427YoyJoeOzQ5smuu4nNAPGb8idSQ==}
-    dev: false
 
   /destroy@1.2.0:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
@@ -21633,23 +21612,6 @@ packages:
     engines: {node: '>=18'}
     dev: false
 
-  /h3@1.11.1:
-    resolution: {integrity: sha512-AbaH6IDnZN6nmbnJOH72y3c5Wwh9P97soSVdGSBbcDACRdkC0FEWf25pzx4f/NuOCK6quHmW18yF2Wx+G4Zi1A==}
-    dependencies:
-      cookie-es: 1.0.0
-      crossws: 0.2.4
-      defu: 6.1.4
-      destr: 2.0.3
-      iron-webcrypto: 1.1.0
-      ohash: 1.1.3
-      radix3: 1.1.1
-      ufo: 1.5.1
-      uncrypto: 0.1.3
-      unenv: 1.9.0
-    transitivePeerDependencies:
-      - uWebSockets.js
-    dev: false
-
   /handlebars@4.7.8:
     resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
     engines: {node: '>=0.4.7'}
@@ -22370,21 +22332,51 @@ packages:
       fast-loops: 1.1.3
     dev: false
 
-  /inngest@3.16.1(encoding@0.1.13)(typescript@5.4.5):
-    resolution: {integrity: sha512-5jhrVtVzMthyscaI8La73y0rAKEoTtdFg4LpV2ksaET58MmwBBkjH1qPAdIfFMhJrWS+ITQ7HNdzj3nWk+aDBg==}
+  /inngest@3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5):
+    resolution: {integrity: sha512-GF9+XEHi0eGRCLMjba203XFdi45lwLFXCgIhzOYIaSOIkurUDVP2UNiVft3dMIUwGW9kZ5c40ebSYOg8MTg4wQ==}
     engines: {node: '>=14'}
     peerDependencies:
+      '@sveltejs/kit': '>=1.27.3'
+      '@vercel/node': '>=2.15.9'
+      aws-lambda: '>=1.0.7'
+      express: '>=4.19.2'
+      fastify: '>=4.21.0'
+      h3: '>=1.8.1'
+      hono: '>=4.2.7'
+      koa: '>=2.14.2'
+      next: '>=12.0.0'
       typescript: '>=4.7.2'
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      '@vercel/node':
+        optional: true
+      aws-lambda:
+        optional: true
+      express:
+        optional: true
+      fastify:
+        optional: true
+      h3:
+        optional: true
+      hono:
+        optional: true
+      koa:
+        optional: true
+      next:
+        optional: true
+      typescript:
+        optional: true
     dependencies:
       '@types/debug': 4.1.12
       canonicalize: 1.0.8
       chalk: 4.1.2
       cross-fetch: 4.0.0(encoding@0.1.13)
-      debug: 4.3.4
-      h3: 1.11.1
+      debug: 4.3.5(supports-color@5.5.0)
       hash.js: 1.1.7
       json-stringify-safe: 5.0.1
       ms: 2.1.3
+      next: 14.2.5(@babel/core@7.24.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1)(react@18.3.1)
       serialize-error-cjs: 0.1.3
       strip-ansi: 5.2.0
       typescript: 5.4.5
@@ -22392,7 +22384,60 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
-      - uWebSockets.js
+    dev: false
+
+  /inngest@3.22.5(next@14.2.5)(typescript@5.4.5):
+    resolution: {integrity: sha512-GF9+XEHi0eGRCLMjba203XFdi45lwLFXCgIhzOYIaSOIkurUDVP2UNiVft3dMIUwGW9kZ5c40ebSYOg8MTg4wQ==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@sveltejs/kit': '>=1.27.3'
+      '@vercel/node': '>=2.15.9'
+      aws-lambda: '>=1.0.7'
+      express: '>=4.19.2'
+      fastify: '>=4.21.0'
+      h3: '>=1.8.1'
+      hono: '>=4.2.7'
+      koa: '>=2.14.2'
+      next: '>=12.0.0'
+      typescript: '>=4.7.2'
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      '@vercel/node':
+        optional: true
+      aws-lambda:
+        optional: true
+      express:
+        optional: true
+      fastify:
+        optional: true
+      h3:
+        optional: true
+      hono:
+        optional: true
+      koa:
+        optional: true
+      next:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      '@types/debug': 4.1.12
+      canonicalize: 1.0.8
+      chalk: 4.1.2
+      cross-fetch: 4.0.0(encoding@0.1.13)
+      debug: 4.3.5(supports-color@5.5.0)
+      hash.js: 1.1.7
+      json-stringify-safe: 5.0.1
+      ms: 2.1.3
+      next: 14.2.5(@babel/core@7.24.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1)(react@18.3.1)
+      serialize-error-cjs: 0.1.3
+      strip-ansi: 5.2.0
+      typescript: 5.4.5
+      zod: 3.22.4
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
     dev: false
 
   /inquirer@9.2.16:
@@ -22462,10 +22507,6 @@ packages:
 
   /ipv6-normalize@1.0.1:
     resolution: {integrity: sha512-Bm6H79i01DjgGTCWjUuCjJ6QDo1HB96PT/xCYuyJUP9WFbVDrLSbG4EZCvOCun2rNswZb0c3e4Jt/ws795esHA==}
-    dev: false
-
-  /iron-webcrypto@1.1.0:
-    resolution: {integrity: sha512-5vgYsCakNlaQub1orZK5QmNYhwYtcllTkZBp5sfIaCqY93Cf6l+v2rtE+E4TMbcfjxDMCdrO8wmp7+ZvhDECLA==}
     dev: false
 
   /is-absolute@1.0.0:
@@ -26016,10 +26057,6 @@ packages:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
 
-  /node-fetch-native@1.6.2:
-    resolution: {integrity: sha512-69mtXOFZ6hSkYiXAVB5SqaRvrbITC/NPyqv7yuu/qw0nmgPyYbIMYYNIDhNtwPrzk0ptrimrLz/hhjvm4w5Z+w==}
-    dev: false
-
   /node-fetch@2.7.0(encoding@0.1.13):
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
     engines: {node: 4.x || >=6.0.0}
@@ -26336,10 +26373,6 @@ packages:
       call-bind: 1.0.7
       define-properties: 1.2.1
       es-abstract: 1.22.5
-
-  /ohash@1.1.3:
-    resolution: {integrity: sha512-zuHHiGTYTA1sYJ/wZN+t5HKZaH23i4yI1HMwbuXm24Nid7Dv0KcuRlKoNKS9UNfAVSBlnGLcuQrnOKWOZoEGaw==}
-    dev: false
 
   /on-finished@2.4.1:
     resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
@@ -27536,10 +27569,6 @@ packages:
   /quick-lru@5.1.1:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
-    dev: false
-
-  /radix3@1.1.1:
-    resolution: {integrity: sha512-yUUd5VTiFtcMEx0qFUxGAv5gbMc1un4RvEO1JZdP7ZUl/RHygZK6PknIKntmQRZxnMY3ZXD2ISaw1ij8GYW1yg==}
     dev: false
 
   /raf-schd@4.0.3:
@@ -30616,10 +30645,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /uncrypto@0.1.3:
-    resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
-    dev: false
-
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
@@ -30629,16 +30654,6 @@ packages:
     dependencies:
       '@fastify/busboy': 2.1.1
     dev: true
-
-  /unenv@1.9.0:
-    resolution: {integrity: sha512-QKnFNznRxmbOF1hDgzpqrlIf6NC5sbZ2OJ+5Wl3OX8uM+LUJXbj4TXvLJCtwbPTmbMHCLIz6JLKNinNsMShK9g==}
-    dependencies:
-      consola: 3.2.3
-      defu: 6.1.4
-      mime: 3.0.0
-      node-fetch-native: 1.6.2
-      pathe: 1.1.2
-    dev: false
 
   /unherit@3.0.1:
     resolution: {integrity: sha512-akOOQ/Yln8a2sgcLj4U0Jmx0R5jpIg2IUyRrWOzmEbjBtGzBdHtSeFKgoEcoH4KYIG/Pb8GQ/BwtYm0GCq1Sqg==}

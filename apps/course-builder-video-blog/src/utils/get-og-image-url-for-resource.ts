@@ -1,7 +1,7 @@
 import { env } from '@/env.mjs'
 import pluralize from 'pluralize'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export const getOGImageUrlForResource = (
 	resource: ContentResource & { fields?: { slug: string } },

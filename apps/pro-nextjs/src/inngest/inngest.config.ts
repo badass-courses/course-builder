@@ -5,7 +5,11 @@ import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-pu
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
+import { postPurchaseNoProgress } from '@/inngest/functions/post-purchase-no-progress'
+import { postPurchaseWaitForProgress } from '@/inngest/functions/post-purchase-wait-for-progress'
+import { postPurchaseWorkflow } from '@/inngest/functions/post-purchase-workflow'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
+import { progressWasMade } from '@/inngest/functions/progress-was-made'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -31,5 +35,9 @@ export const inngestConfig = {
 		discordAccountLinked,
 		addPurchaseRoleDiscord,
 		removePurchaseRoleDiscord,
+		postPurchaseWorkflow,
+		progressWasMade,
+		postPurchaseWaitForProgress,
+		postPurchaseNoProgress,
 	],
 }

@@ -6,7 +6,7 @@ import {
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { useSocket } from '../hooks/use-socket'
 import { Button } from '../primitives/button'

@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { Button } from '../primitives/button'
 

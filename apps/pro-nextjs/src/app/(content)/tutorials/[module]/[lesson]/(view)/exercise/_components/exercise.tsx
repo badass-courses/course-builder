@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Module } from '@/lib/module'
 import pluralize from 'pluralize'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
 export default function Exercise({

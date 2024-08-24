@@ -20,22 +20,9 @@ import {
 	ResourceProgress,
 	User,
 } from './schemas'
-import {
-	ContentResourceResourceSchema,
-	ContentResourceSchema,
-} from './schemas/content-resource-schema'
 import { PurchaseInfo } from './schemas/purchase-info'
 
 export type Awaitable<T> = T | PromiseLike<T>
-
-export type ContentResource = z.infer<typeof ContentResourceSchema> & {
-	resources?: ContentResourceResource[] | null
-}
-export type ContentResourceResource = z.infer<
-	typeof ContentResourceResourceSchema
-> & {
-	resource?: ContentResource | null
-}
 
 export interface ResponseInternal<
 	Body extends string | Record<string, any> | any[] | null = any,

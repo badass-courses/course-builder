@@ -18,8 +18,11 @@ import Stripe from 'stripe'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
-import { Product, productSchema } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
+import {
+	ContentResource,
+	Product,
+	productSchema,
+} from '@coursebuilder/core/schemas'
 
 if (!env.STRIPE_SECRET_TOKEN) {
 	throw new Error('Stripe secret token not found')

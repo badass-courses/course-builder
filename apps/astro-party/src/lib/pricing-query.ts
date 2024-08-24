@@ -4,11 +4,7 @@ import { eq } from 'drizzle-orm'
 
 import { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { formatPricesForProduct } from '@coursebuilder/core'
-import { Purchase } from '@coursebuilder/core/schemas'
-import {
-	type FormatPricesForProductOptions,
-	type FormattedPrice,
-} from '@coursebuilder/core/types'
+import { type FormatPricesForProductOptions } from '@coursebuilder/core/types'
 
 export async function getPricingData(
 	options: Partial<FormatPricesForProductOptions>,

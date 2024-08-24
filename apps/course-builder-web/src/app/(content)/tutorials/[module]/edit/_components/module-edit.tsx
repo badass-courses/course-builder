@@ -11,7 +11,7 @@ import Tree from '@/components/lesson-list/tree'
 import { createResource } from '@/lib/resources/create-resources'
 import { addResourceToTutorial } from '@/lib/tutorials-query'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
 

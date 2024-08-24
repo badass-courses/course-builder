@@ -7,7 +7,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { and, asc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function getModule(moduleSlugOrId: string) {
 	const { ability } = await getServerAuthSession()

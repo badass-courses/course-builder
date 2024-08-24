@@ -7,9 +7,8 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
-import { userSchema } from '@coursebuilder/core/schemas'
+import { ContentResource, userSchema } from '@coursebuilder/core/schemas'
 import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
-import { ContentResource } from '@coursebuilder/core/types'
 
 export const UserSchema = userSchema
 

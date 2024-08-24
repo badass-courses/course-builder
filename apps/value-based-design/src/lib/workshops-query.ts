@@ -22,8 +22,7 @@ import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import z from 'zod'
 
-import { productSchema } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource, productSchema } from '@coursebuilder/core/schemas'
 
 async function getAllWorkshopLessonsWithSectionInfo(
 	moduleSlugOrId: string,

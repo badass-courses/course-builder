@@ -27,8 +27,8 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
 import { Product, productSchema } from '@coursebuilder/core/schemas'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
-import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Button,
 	FormControl,

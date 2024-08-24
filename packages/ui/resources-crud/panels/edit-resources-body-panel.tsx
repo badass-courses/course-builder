@@ -2,7 +2,7 @@ import * as React from 'react'
 import { User } from '@auth/core/types'
 import type { UseFormReturn } from 'react-hook-form'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { CodemirrorEditor } from '../../codemirror/editor'
 import { ResizablePanel } from '../../primitives/resizable'

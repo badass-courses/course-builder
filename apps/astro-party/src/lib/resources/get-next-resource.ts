@@ -7,7 +7,7 @@ import { and, asc, eq, gt, not, or, sql } from 'drizzle-orm'
 import type {
 	ContentResource,
 	ContentResourceResource,
-} from '@coursebuilder/core/types'
+} from '@coursebuilder/core/schemas'
 
 const ALLOWED_MODULE_RESOURCE_TYPES = ['lesson', 'exercise', 'solution']
 

@@ -13,7 +13,7 @@ import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import { z } from 'zod'
 
-import type { ContentResourceResource } from '@coursebuilder/core/types'
+import type { ContentResourceResource } from '@coursebuilder/core/schemas'
 
 // const redis = Redis.fromEnv()
 

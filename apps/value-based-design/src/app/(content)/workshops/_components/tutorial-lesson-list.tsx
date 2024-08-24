@@ -14,13 +14,11 @@ import { getResourceSection } from '@/utils/get-resource-section'
 import { Check, Edit, Lock } from 'lucide-react'
 
 import type {
+	ContentResource,
+	ContentResourceResource,
 	ModuleProgress,
 	ResourceProgress,
 } from '@coursebuilder/core/schemas'
-import type {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,
