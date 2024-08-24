@@ -6,7 +6,7 @@ import { createTip } from '@/lib/tips-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import pluralize from 'pluralize'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { NewResourceWithVideoForm } from '@coursebuilder/react-rsc/client'
 import { Card, CardContent, CardFooter, CardHeader } from '@coursebuilder/ui'
 

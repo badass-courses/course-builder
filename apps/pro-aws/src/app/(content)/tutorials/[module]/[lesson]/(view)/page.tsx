@@ -28,10 +28,10 @@ import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import type {
+	ContentResource,
 	ModuleProgress,
 	ResourceProgress,
 } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
 import {
 	Accordion,
 	AccordionContent,

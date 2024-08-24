@@ -57,7 +57,7 @@
 		"clsx": "^2.0.0",
 		"drizzle-orm": "0.31.0",
 		"framer-motion": "^11",
-		"inngest": "^3.16.1",
+		"inngest": "^3.22.5",
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.288.0",
 		"nanoid": "^5.0.2",

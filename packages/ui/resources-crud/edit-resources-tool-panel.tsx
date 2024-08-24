@@ -2,7 +2,7 @@ import * as React from 'react'
 import { User } from '@auth/core/types'
 import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { ResizablePanel } from '../primitives/resizable'
 import { cn } from '../utils/cn'

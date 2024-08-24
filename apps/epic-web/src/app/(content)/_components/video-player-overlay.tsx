@@ -12,8 +12,10 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession } from 'next-auth/react'
 import { useFormStatus } from 'react-dom'
 
-import type { ModuleProgress } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/types'
+import type {
+	ContentResource,
+	ModuleProgress,
+} from '@coursebuilder/core/schemas'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'

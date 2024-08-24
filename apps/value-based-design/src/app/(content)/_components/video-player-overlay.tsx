@@ -20,8 +20,12 @@ import { useFormStatus } from 'react-dom'
 import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/utils/build-stripe-checkout-path'
 import { formatUsd } from '@coursebuilder/commerce-next/utils/format-usd'
-import type { Product, Purchase } from '@coursebuilder/core/schemas'
-import type { ContentResource, FormattedPrice } from '@coursebuilder/core/types'
+import type {
+	ContentResource,
+	Product,
+	Purchase,
+} from '@coursebuilder/core/schemas'
+import type { FormattedPrice } from '@coursebuilder/core/types'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'

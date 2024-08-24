@@ -19,7 +19,7 @@ import MuxPlayer, {
 } from '@mux/mux-player-react'
 import pluralize from 'pluralize'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	useVideoPlayerOverlay,
 	type VideoPlayerOverlayAction,

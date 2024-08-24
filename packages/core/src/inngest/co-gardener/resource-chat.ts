@@ -26,6 +26,7 @@ export const ChatResourceSchema = z.object({
 	body: z.string().nullable().optional(),
 	transcript: z.string().nullable().optional(),
 	wordLevelSrt: z.string().nullable().optional(),
+	resources: z.array(z.any()).optional(),
 })
 
 export type ChatResource = z.infer<typeof ChatResourceSchema>
@@ -113,9 +114,8 @@ export const resourceChatHandler: CoreInngestHandler = async ({
 		resource: {
 			...videoResource,
 			...resource,
-			// @ts-expect-error
 			...resource.fields,
-			resources: JSON.stringify(resource.resources ?? []),
+			resources: resource.resources ?? [],
 		},
 		messages: event.data.messages,
 		// @ts-expect-error

@@ -10,7 +10,7 @@ import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 const convertkitBaseUrl =
 	process.env.CONVERTKIT_BASE_URL || 'https://api.convertkit.com/v3/'

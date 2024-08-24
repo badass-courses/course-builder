@@ -11,10 +11,10 @@ export const discordAccountLinked = inngest.createFunction(
 	{
 		id: `discord-account-linked`,
 		name: 'Discord Account Linked',
-		if: 'event.data.account.provider == "discord"',
 	},
 	{
 		event: OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT,
+		if: 'event.data.account.provider == "discord"',
 	},
 	async ({ event, step }) => {
 		const { account, profile } = event.data

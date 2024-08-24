@@ -16,7 +16,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'

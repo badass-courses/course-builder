@@ -5,7 +5,7 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 
 import { Product } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import type { TreeAction, TreeItem } from '../../data/tree'
 

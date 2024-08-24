@@ -47,13 +47,13 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			async () => {
 				try {
 					const engine = new Liquid()
-					return engine.parseAndRender(emailResource.fields.body, {
+					return engine.parseAndRender(emailResource.fields?.body, {
 						user: event.user,
 						invoiceUrl: `${env.COURSEBUILDER_URL}/invoices/${purchase.merchantChargeId}`,
 					})
 				} catch (e: any) {
 					console.error(e.message)
-					return emailResource.fields.body
+					return emailResource.fields?.body
 				}
 			},
 		)

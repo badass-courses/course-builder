@@ -15,8 +15,8 @@ import { useTheme } from 'next-themes'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
-import type { ContentResource } from '@coursebuilder/core/types'
 import {
 	FormDescription,
 	FormField,

@@ -7,7 +7,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
 
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-resource'
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function reprocessTranscript({
 	videoResourceId,

@@ -16,7 +16,7 @@ import { count, eq } from 'drizzle-orm'
 
 import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
 export async function generateMetadata(

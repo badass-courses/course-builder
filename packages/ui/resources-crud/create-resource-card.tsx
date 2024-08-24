@@ -1,6 +1,6 @@
 'use client'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { Card, CardContent, CardFooter, CardHeader } from '../primitives/card'
 import { CreateResourceForm, NewResource } from './create-resource-form'

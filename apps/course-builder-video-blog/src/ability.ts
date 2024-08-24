@@ -6,7 +6,7 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export const UserSchema = z.object({
 	role: z.string().optional(),

@@ -1,6 +1,11 @@
 import { type Adapter } from '@auth/core/adapters'
 
-import { MerchantCharge, UpgradableProduct } from './schemas'
+import {
+	ContentResourceResource,
+	MerchantCharge,
+	UpgradableProduct,
+} from './schemas'
+import { type ContentResource } from './schemas/content-resource-schema'
 import { Coupon } from './schemas/coupon-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
@@ -20,12 +25,7 @@ import {
 } from './schemas/resource-progress-schema'
 import { User } from './schemas/user-schema'
 import { VideoResource } from './schemas/video-resource'
-import {
-	ContentResourceResource,
-	FormattedPrice,
-	type Awaitable,
-	type ContentResource,
-} from './types'
+import { type Awaitable } from './types'
 
 export interface CourseBuilderAdapter<
 	TDatabaseInstance extends abstract new (...args: any) => any = any,

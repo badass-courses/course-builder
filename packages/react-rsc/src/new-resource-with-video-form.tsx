@@ -6,8 +6,10 @@ import { FileVideo } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { type VideoResource } from '@coursebuilder/core/schemas'
-import { ContentResource } from '@coursebuilder/core/types'
+import {
+	type ContentResource,
+	type VideoResource,
+} from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Form,

@@ -2,9 +2,16 @@ import BasicEmail from '@/emails/basic-email'
 import { env } from '@/env.mjs'
 import { LESSON_COMPLETED_EVENT } from '@/inngest/events/lesson-completed'
 import { inngest } from '@/inngest/inngest.server'
+import { ModuleSchema } from '@/lib/module'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { Liquid } from 'liquidjs'
 import pluralize from 'pluralize'
+import { z } from 'zod'
+
+import {
+	ContentResourceSchema,
+	type ContentResource,
+} from '@coursebuilder/core/schemas/content-resource-schema'
 
 export const progressWasMade = inngest.createFunction(
 	{
@@ -36,7 +43,7 @@ export const progressWasMade = inngest.createFunction(
 					}
 				}
 
-				return modules
+				return z.array(ModuleSchema).parse(modules)
 			},
 		)
 
@@ -53,7 +60,7 @@ export const progressWasMade = inngest.createFunction(
 						progress?.completedLessons.map((p) => p.resourceId) || []
 
 					if (completedLessonIds.includes(event.data.lessonId)) {
-						return { progress, module: workshopModule }
+						return { progress, module: ModuleSchema.parse(workshopModule) }
 					}
 				}
 
@@ -63,12 +70,16 @@ export const progressWasMade = inngest.createFunction(
 
 		if (!progress || !module) return 'no progress or module found'
 
+		const nextResource = ContentResourceSchema.nullish().parse(
+			progress.nextResource,
+		)
+
 		let emailResourceId = 'email-t21sa'
 		let emailSubject = "You've made progress with ProNextJS"
 		let emailPreview = 'keep going!'
 		let emailCTA = `You got this.`
 		let nextLessonUrl = progress
-			? `${env.COURSEBUILDER_URL}/${pluralize(module.type)}/${module.fields.slug}/${progress.nextResource?.fields.slug}`
+			? `${env.COURSEBUILDER_URL}/${pluralize(module.type)}/${module.fields.slug}/${nextResource?.fields?.slug}`
 			: null
 
 		switch (true) {
@@ -80,27 +91,32 @@ export const progressWasMade = inngest.createFunction(
 				break
 		}
 
-		const emailResource = await step.run(`get email resource`, async () => {
-			return db.getContentResource(emailResourceId)
-		})
+		const emailBody: string = await step.run(
+			`get a email resource`,
+			async () => {
+				const resource = await db.getContentResource(emailResourceId)
+				return resource?.fields?.body || ''
+			},
+		)
 
-		if (!emailResource) {
+		if (!emailBody) {
 			throw new Error(`email resource not found`)
 		}
 
 		const encouragementEmailBody: string = await step.run(
 			`parse email body`,
 			async () => {
+				if (!emailBody) return ''
 				try {
 					const engine = new Liquid()
-					return engine.parseAndRender(emailResource.fields.body, {
+					return engine.parseAndRender(emailBody, {
 						user: event.user,
 						nextLessonUrl,
 						emailCTA,
 					})
 				} catch (e: any) {
 					console.error(e.message)
-					return emailResource.fields.body
+					return emailBody
 				}
 			},
 		)

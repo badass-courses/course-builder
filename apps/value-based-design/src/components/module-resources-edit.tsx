@@ -16,7 +16,7 @@ import {
 import { getVideoResource } from '@/lib/video-resource-query'
 import { Plus } from 'lucide-react'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { NewResourceWithVideoForm } from '@coursebuilder/react-rsc/client'
 import {
 	Button,

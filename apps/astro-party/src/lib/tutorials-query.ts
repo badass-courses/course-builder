@@ -11,7 +11,7 @@ import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import z from 'zod'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function getTutorial(moduleSlugOrId: string) {
 	const { ability } = await getServerAuthSession()

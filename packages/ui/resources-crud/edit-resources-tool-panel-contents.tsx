@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { User } from '@auth/core/types'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { ResourceChatAssistant } from '../chat-assistant/resource-chat-assistant'
 import { ResourceTool } from './edit-resources-tool-panel'

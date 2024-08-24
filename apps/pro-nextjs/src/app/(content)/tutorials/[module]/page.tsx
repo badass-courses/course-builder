@@ -15,7 +15,7 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
 import { TutorialLessonList } from '../_components/tutorial-lesson-list'

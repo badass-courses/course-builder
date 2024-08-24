@@ -1,7 +1,7 @@
 import type { Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item'
 import invariant from 'tiny-invariant'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export type TreeItem = {
 	id: string

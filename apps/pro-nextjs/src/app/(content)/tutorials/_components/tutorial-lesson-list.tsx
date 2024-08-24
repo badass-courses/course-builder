@@ -16,7 +16,7 @@ import { Check, Edit } from 'lucide-react'
 import type {
 	ContentResource,
 	ContentResourceResource,
-} from '@coursebuilder/core/types'
+} from '@coursebuilder/core/schemas'
 import {
 	Accordion,
 	AccordionContent,

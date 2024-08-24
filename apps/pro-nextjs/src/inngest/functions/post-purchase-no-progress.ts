@@ -69,12 +69,12 @@ export const postPurchaseNoProgress = inngest.createFunction(
 			async () => {
 				try {
 					const engine = new Liquid()
-					return engine.parseAndRender(emailResource.fields.body, {
+					return engine.parseAndRender(emailResource.fields?.body, {
 						user: event.user,
 					})
 				} catch (e: any) {
 					console.error(e.message)
-					return emailResource.fields.body
+					return emailResource.fields?.body
 				}
 			},
 		)

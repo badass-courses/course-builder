@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export const onEventSave = async (resource: ContentResource) => {
 	'use server'

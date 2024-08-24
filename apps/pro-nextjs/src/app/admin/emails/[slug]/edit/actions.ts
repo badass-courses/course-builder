@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import { ContentResource } from '@coursebuilder/core/schemas'
 
 export const onEmailSave = async (resource: ContentResource) => {
 	'use server'

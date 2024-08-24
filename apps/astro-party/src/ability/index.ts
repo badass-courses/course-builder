@@ -8,9 +8,11 @@ import {
 } from '@casl/ability'
 import z from 'zod'
 
-import { userSchema, type Purchase } from '@coursebuilder/core/schemas'
-import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
-import { ContentResource } from '@coursebuilder/core/types'
+import {
+	ContentResource,
+	userSchema,
+	type Purchase,
+} from '@coursebuilder/core/schemas'
 
 import {
 	hasAvailableSeats,

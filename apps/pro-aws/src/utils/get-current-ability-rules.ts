@@ -5,8 +5,6 @@ import { getLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 
-import type { ContentResource } from '@coursebuilder/core/types'
-
 import { getResourceSection } from './get-resource-section'
 
 export async function getCurrentAbilityRules({

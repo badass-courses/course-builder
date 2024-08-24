@@ -1,6 +1,6 @@
 import { Module } from '@/lib/module'
 
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function getResourceSection(
 	resourceId: string,

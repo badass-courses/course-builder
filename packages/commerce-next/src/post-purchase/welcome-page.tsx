@@ -18,7 +18,7 @@ import {
 	Purchase,
 	PurchaseUserTransfer,
 } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
 import { Icon } from '../components'

@@ -3,7 +3,7 @@ import { User } from '@auth/core/types'
 import { type UseFormReturn } from 'react-hook-form'
 import { Schema, z } from 'zod'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { ResizableHandle } from '../primitives/resizable'
 import { EditResourcesActionBar } from './edit-resources-action-bar'

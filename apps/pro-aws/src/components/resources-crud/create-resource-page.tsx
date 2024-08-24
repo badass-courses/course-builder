@@ -4,7 +4,7 @@ import { createResource } from '@/lib/resources/create-resources'
 import { getServerAuthSession } from '@/server/auth'
 import pluralize from 'pluralize'
 
-import { ContentResource } from '@coursebuilder/core/types'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
 
 export const dynamic = 'force-dynamic'
