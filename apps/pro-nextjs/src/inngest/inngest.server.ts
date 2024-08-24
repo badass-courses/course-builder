@@ -16,6 +16,10 @@ import {
 	LessonCompleted,
 } from '@/inngest/events/lesson-completed'
 import {
+	NO_PROGRESS_MADE_EVENT,
+	NoProgressMade,
+} from '@/inngest/events/no-progress-made-event'
+import {
 	OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT,
 	OauthProviderAccountLinked,
 } from '@/inngest/events/oauth-provider-account-linked'
@@ -66,6 +70,7 @@ export type Events = {
 	[REQUEST_VIDEO_SPLIT_POINTS]: RequestVideoSplitPoints
 	[LESSON_COMPLETED_EVENT]: LessonCompleted
 	[OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT]: OauthProviderAccountLinked
+	[NO_PROGRESS_MADE_EVENT]: NoProgressMade
 }
 
 const callbackBase =

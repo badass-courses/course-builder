@@ -1,3 +1,4 @@
+import process from 'process'
 import { env } from '@/env.mjs'
 import { render } from '@react-email/render'
 
@@ -29,6 +30,11 @@ export async function sendAnEmail<ComponentPropsType = any>({
 		ReplyTo,
 		HtmlBody: emailHtml,
 		MessageStream,
+	}
+
+	if (process.env.SKIP_EMAIL === 'true') {
+		console.log('SKIP_EMAIL is set, skipping email')
+		return options
 	}
 
 	return await fetch(`https://api.postmarkapp.com/email`, {

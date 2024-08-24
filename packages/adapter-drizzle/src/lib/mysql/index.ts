@@ -1077,7 +1077,6 @@ export function mySqlDrizzleAdapter(
 
     `)
 
-			console.log({ results: results.rows })
 			// Process the results
 			const completedLessons: ResourceProgress[] = []
 			let nextResource: Partial<ContentResource> | null = null
