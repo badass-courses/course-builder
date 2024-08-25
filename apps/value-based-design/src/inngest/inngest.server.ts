@@ -86,7 +86,7 @@ const middleware = createInngestMiddleware({
 })
 
 export const inngest = new Inngest({
-	id: 'course-builder',
+	id: 'value-based-design',
 	middleware: [middleware],
 	schemas: new EventSchemas().fromRecord<Events & CourseBuilderCoreEvents>(),
 })
