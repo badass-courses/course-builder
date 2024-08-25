@@ -192,7 +192,7 @@ export const progressWasMade = inngest.createFunction(
 					type: 'continued',
 					nextLessonUrl,
 				},
-				user,
+				user: event.user,
 			})
 		}
 	},
