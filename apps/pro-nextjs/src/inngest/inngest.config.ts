@@ -3,6 +3,7 @@ import { addPurchaseRoleDiscord } from '@/inngest/functions/discord/add-purchase
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
+import { noProgressContinued } from '@/inngest/functions/no-progress-continued'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postPurchaseNoProgress } from '@/inngest/functions/post-purchase-no-progress'
@@ -39,5 +40,6 @@ export const inngestConfig = {
 		progressWasMade,
 		postPurchaseWaitForProgress,
 		postPurchaseNoProgress,
+		noProgressContinued,
 	],
 }

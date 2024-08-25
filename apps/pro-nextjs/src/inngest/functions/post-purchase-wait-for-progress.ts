@@ -39,6 +39,7 @@ export const postPurchaseWaitForProgress = inngest.createFunction(
 				name: NO_PROGRESS_MADE_EVENT,
 				data: {
 					messageCount: 0,
+					type: 'post-purchase',
 				},
 				user,
 			})

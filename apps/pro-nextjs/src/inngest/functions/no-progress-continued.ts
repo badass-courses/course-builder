@@ -5,15 +5,15 @@ import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { Liquid } from 'liquidjs'
 
-export const postPurchaseNoProgress = inngest.createFunction(
+export const noProgressContinued = inngest.createFunction(
 	{
-		id: `post-purchase-no-progress`,
-		name: `Post-Purchase: No Progress`,
+		id: `no-progress-continued`,
+		name: `No Progress: Continued`,
 		idempotency: 'event.user.email',
 	},
 	{
 		event: NO_PROGRESS_MADE_EVENT,
-		if: 'event.data.type == "post-purchase"',
+		if: 'event.data.type == "continued"',
 	},
 	async ({ event, step, db }) => {
 		const user = await step.run(`get user`, async () => {
@@ -24,35 +24,32 @@ export const postPurchaseNoProgress = inngest.createFunction(
 			throw new Error(`user not found`)
 		}
 
-		let emailResourceId = 'email-i1a4k'
-		let emailSubject = 'Get Started with ProNextJS'
-		let emailPreview = 'get the most out of your course'
+		let emailResourceId = 'email-cirsg'
+		let emailSubject = 'Continue with ProNextJS'
+		let emailPreview = `watch a lesson or two`
 		let timeout = '3d'
 
 		switch (event.data.messageCount) {
 			case 0:
-				emailResourceId = 'email-i1a4k'
-				emailSubject = 'Get Started with ProNextJS'
-				emailPreview = 'get the most out of your course'
 				break
 			case 1:
-				emailSubject = 'Check out the first lesson in ProNextJS!'
+				emailSubject = 'Your next lesson for ProNextJS'
 				emailPreview = 'link inside'
 				timeout = '7d'
 				break
 			case 2:
-				emailSubject = 'Get started with ProNextJS in just a few minutes'
-				emailPreview = 'start the first lesson'
+				emailSubject = 'Continue with ProNextJS for just a few minutes'
+				emailPreview = 'make some progress'
 				timeout = '12d'
 				break
 			case 3:
-				emailSubject = 'Next.js is worth your time to learn in depth.'
-				emailPreview = 'start the first lesson of ProNextJS'
+				emailSubject = 'Next.js still great'
+				emailPreview = 'start the next lesson of ProNextJS'
 				timeout = '21d'
 				break
 			default:
-				emailSubject = 'Its never too late to start ProNextJS!'
-				emailPreview = 'level-up today'
+				emailSubject = 'Not too late for ProNextJS'
+				emailPreview = 'pick it back up'
 				timeout = '60d'
 				break
 		}
@@ -72,6 +69,9 @@ export const postPurchaseNoProgress = inngest.createFunction(
 					const engine = new Liquid()
 					return engine.parseAndRender(emailResource.fields?.body, {
 						user: event.user,
+						...(event.data.nextLessonUrl && {
+							nextLessonUrl: event.data.nextLessonUrl,
+						}),
 					})
 				} catch (e: any) {
 					console.error(e.message)
