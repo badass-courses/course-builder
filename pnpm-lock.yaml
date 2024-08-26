@@ -3105,13 +3105,13 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/mdx':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^3.0.1
+        version: 3.0.1
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
