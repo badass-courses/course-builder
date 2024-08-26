@@ -210,10 +210,10 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
@@ -727,10 +727,10 @@ importers:
         specifier: ^3.3.2
         version: 3.3.4(react-hook-form@7.51.0)
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@mux/mux-player-react':
         specifier: ^2.6.0
@@ -1055,10 +1055,10 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
@@ -1614,13 +1614,13 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/mdx':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^3.0.1
+        version: 3.0.1
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
@@ -2143,10 +2143,10 @@ importers:
         specifier: ^3.3.2
         version: 3.3.4(react-hook-form@7.51.0)
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@mux/mux-player-react':
         specifier: ^2.6.0
@@ -2501,13 +2501,13 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/mdx':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^3.0.1
+        version: 3.0.1
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
@@ -3736,10 +3736,10 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(webpack@5.93.0)
       '@mdx-js/react':
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
