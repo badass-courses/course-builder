@@ -71,3 +71,24 @@ export async function getAllImageResources() {
 		return parsed.success ? parsed.data : []
 	})
 }
+
+export async function getImageResourceById(input: { id: string }) {
+	const query = sql`
+      SELECT    
+        id as id,
+        JSON_EXTRACT (${contentResource.fields}, "$.url") AS url,
+        JSON_EXTRACT (${contentResource.fields}, "$.alt") AS alt
+      FROM
+        ${contentResource}
+      WHERE
+        type = 'imageResource'
+      AND
+        id = ${input.id}
+      ORDER BY
+        createdAt DESC
+    `
+	return db.execute(query).then((result) => {
+		const parsed = z.array(ImageResourceSchema).safeParse(result.rows)
+		return parsed.success ? parsed.data[0] : undefined
+	})
+}
