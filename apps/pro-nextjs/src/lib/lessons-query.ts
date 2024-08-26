@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -129,6 +129,12 @@ export const addVideoResourceToLesson = async ({
 		},
 	})
 }
+
+export const getCachedLesson = unstable_cache(
+	async (slug: string) => getLesson(slug),
+	['lesson'],
+	{ revalidate: 3600 },
+)
 
 export async function getLesson(lessonSlugOrId: string) {
 	const start = new Date().getTime()

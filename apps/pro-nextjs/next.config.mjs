@@ -9,12 +9,9 @@ import { withAxiom } from 'next-axiom'
 await import('./src/env.mjs')
 
 const withMDX = createMDX({
-	// Add markdown plugins here, as desired
-	extension: /\.mdx?$/,
 	options: {
 		remarkPlugins: [],
 		rehypePlugins: [],
-		providerImportSource: '@mdx-js/react',
 	},
 })
 

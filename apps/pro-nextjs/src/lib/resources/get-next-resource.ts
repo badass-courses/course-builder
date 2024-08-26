@@ -1,106 +1,32 @@
 'use server'
 
-import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
-import { and, asc, eq, gt, not, or, sql } from 'drizzle-orm'
-
-import type {
-	ContentResource,
-	ContentResourceResource,
-} from '@coursebuilder/core/schemas'
-
-const ALLOWED_MODULE_RESOURCE_TYPES = ['lesson', 'exercise', 'solution']
-
-function flattenResources(
-	resources: ContentResourceResource[],
-): ContentResource[] {
-	const result: ContentResource[] = []
-
-	function recurse(resources: ContentResourceResource[]) {
-		for (const nestedResource of resources) {
-			const resource = nestedResource.resource
-			result.push(resource)
-			if (resource.resources) {
-				recurse(resource.resources)
-			}
-		}
-	}
-
-	recurse(resources)
-	return result
-}
+import { getCachedLesson } from '@/lib/lessons-query'
+import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 
 export async function getNextResource(
 	currentResourceId: string,
 	moduleSlugOrId: string,
 ) {
-	const moduleResource = await db.query.contentResource.findFirst({
-		where: or(
-			eq(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-				moduleSlugOrId,
-			),
-			eq(contentResource.id, moduleSlugOrId),
-		),
-		with: {
-			resources: {
-				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: {
-										with: {
-											resources: {
-												with: {
-													resource: true,
-												},
-											},
-										},
-									},
-								},
-								orderBy: asc(contentResourceResource.position),
-							},
-						},
-					},
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-	})
+	const navigation = await getCachedWorkshopNavigation(moduleSlugOrId)
 
-	if (!moduleResource) {
-		throw new Error('Module not found')
-	}
+	const flattenedNavResources =
+		navigation?.resources.flatMap((resource) => {
+			if (resource.type === 'section') {
+				return resource.lessons
+			} else {
+				return [resource]
+			}
+		}) || []
 
-	const allResources =
-		moduleResource?.resources && flattenResources(moduleResource.resources)
+	const navIndex =
+		flattenedNavResources?.findIndex(
+			(resource) => resource.id === currentResourceId,
+		) || -1
 
-	if (!allResources) {
-		throw new Error('No resources found')
-	}
-
-	const filteredResources = allResources?.filter((resource) => {
-		return ALLOWED_MODULE_RESOURCE_TYPES.includes(resource.type)
-	})
-
-	if (!filteredResources) {
-		throw new Error('No allowed resources found')
-	}
-
-	const currentIndex = filteredResources?.findIndex(
-		(resource) => resource.id === currentResourceId,
-	)
-
-	if (currentIndex === -1) {
+	if (!navIndex || navIndex === -1) {
 		throw new Error('Current resource not found')
 	}
 
-	const nextResource =
-		(filteredResources !== undefined &&
-			currentIndex !== undefined &&
-			filteredResources[currentIndex + 1]) ||
-		null
-
-	return nextResource
+	const nextResourceId = flattenedNavResources[navIndex + 1]?.id
+	return nextResourceId ? getCachedLesson(nextResourceId) : null
 }
