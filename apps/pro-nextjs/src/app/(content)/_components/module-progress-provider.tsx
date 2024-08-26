@@ -54,7 +54,6 @@ function progressReducer(
 					},
 				],
 				completedLessonsCount: currentProgress.completedLessonsCount + 1,
-				totalLessonsCount: currentProgress.totalLessonsCount + 1,
 			}
 			break
 		case 'REMOVE_LESSON_PROGRESS':
