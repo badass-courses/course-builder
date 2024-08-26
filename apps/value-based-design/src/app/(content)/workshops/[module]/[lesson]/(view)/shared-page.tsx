@@ -7,17 +7,22 @@ import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-play
 import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
+import { AssetDownloadButton } from '@/app/(content)/workshops/_components/asset-download-button'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
+import { getImageResourceById } from '@/lib/image-resource-query'
 import type { Lesson } from '@/lib/lessons'
 import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
 import { cn } from '@/utils/cn'
-import { getAbilityForResource } from '@/utils/get-current-ability-rules'
+import {
+	getAbilityForResource,
+	type AbilityForResource,
+} from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -44,6 +49,8 @@ export async function LessonPage({
 	searchParams: { [key: string]: string | string[] | undefined }
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 }) {
+	const abilityLoader = getAbilityForResource(params.lesson, params.module)
+
 	return (
 		<div>
 			<div className="mx-auto w-full" id="lesson">
@@ -65,6 +72,7 @@ export async function LessonPage({
 										searchParams={searchParams}
 										params={params}
 										lessonType={lessonType}
+										abilityLoader={abilityLoader}
 									/>
 								)}
 							</main>
@@ -109,7 +117,7 @@ export async function LessonPage({
 								</AccordionItem>
 							</Accordion>
 							<div className="flex flex-col py-5 sm:py-8">
-								<LessonBody lesson={lesson} />
+								<LessonBody lesson={lesson} abilityLoader={abilityLoader} />
 								<TranscriptContainer
 									className="block 2xl:hidden"
 									lessonId={lesson?.id}
@@ -147,18 +155,18 @@ async function PlayerContainer({
 	lesson,
 	lessonType = 'lesson',
 	searchParams,
+	abilityLoader,
 	params,
 }: {
 	lesson: Lesson | null
 	lessonType?: 'lesson' | 'exercise' | 'solution'
+	abilityLoader: Promise<AbilityForResource>
 	searchParams: { [key: string]: string | string[] | undefined }
 	params: { module: string; lesson: string }
 }) {
 	if (!lesson) {
 		notFound()
 	}
-
-	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 
@@ -196,10 +204,21 @@ async function PlayerContainer({
 	)
 }
 
-async function LessonBody({ lesson }: { lesson: Lesson | null }) {
+async function LessonBody({
+	lesson,
+	abilityLoader,
+}: {
+	lesson: Lesson | null
+	abilityLoader: Promise<AbilityForResource>
+}) {
 	if (!lesson) {
 		notFound()
 	}
+
+	const downloadResource =
+		lesson.id === 'lesson-67cik' || lesson.id === 'lesson-9o47h'
+			? await getImageResourceById({ id: 'download-67cik-9o47h' })
+			: undefined
 
 	const githubUrl = lesson.fields?.github
 	const gitpodUrl = lesson.fields?.gitpod
@@ -268,6 +287,12 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 											Gitpod
 										</Link>
 									</Button>
+								)}
+								{downloadResource && (
+									<AssetDownloadButton
+										downloadUrl={downloadResource.url}
+										abilityLoader={abilityLoader}
+									/>
 								)}
 							</div>
 						</div>
