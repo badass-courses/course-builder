@@ -16,7 +16,6 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
-import { useFormStatus } from 'react-dom'
 
 import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/commerce-next/utils/build-stripe-checkout-path'
@@ -38,72 +37,88 @@ import { useModuleProgress } from './module-progress-provider'
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	nextLesson: ContentResource | null | undefined
 	moduleType?: 'workshop' | 'tutorial'
-}> = ({ action, resource, nextLesson, moduleType = 'tutorial' }) => {
+	moduleSlug?: string
+}> = ({ action, resource, moduleType = 'tutorial', moduleSlug }) => {
 	const { playerRef } = action
+
+	const { data: nextLesson, status: nextLessonStatus } =
+		api.progress.getNextResource.useQuery({
+			lessonId: resource?.id,
+			moduleSlug: moduleSlug,
+		})
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
-	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
-		moduleProgress?.completedLessonsCount || 0,
-	)
-	const totalLessonsCount = moduleProgress?.totalLessonsCount || 0
-	const percentCompleted = Math.round(
-		(completedLessonsCount / totalLessonsCount) * 100,
-	)
 
-	return (
+	const percentCompleted = moduleProgress?.percentCompleted || 0
+
+	return nextLessonStatus === 'success' ? (
+		nextLesson ? (
+			<div
+				aria-live="polite"
+				className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			>
+				<div className="flex flex-col items-center text-center">
+					<p className="pb-2 opacity-80">Next Up:</p>
+					<p className="font-heading fluid-2xl font-bold">
+						{nextLesson?.fields?.title}
+					</p>
+					<div className="mt-8 flex items-center gap-3 text-sm">
+						<Progress
+							value={percentCompleted}
+							className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
+						/>
+						{moduleProgress?.completedLessonsCount || 0}/
+						{moduleProgress?.totalLessonsCount || 0} completed
+					</div>
+				</div>
+				<div className="flex w-full items-center justify-center gap-3">
+					<Button
+						variant="secondary"
+						type="button"
+						onClick={() => {
+							if (playerRef.current) {
+								playerRef.current.play()
+							}
+						}}
+					>
+						Replay
+					</Button>
+					{resource && (
+						<ContinueButton
+							moduleType={moduleType}
+							resource={resource}
+							nextResource={nextLesson}
+						/>
+					)}
+				</div>
+				<Button
+					type="button"
+					className="absolute right-5 top-5 bg-white/10"
+					variant="ghost"
+					size="icon"
+					onClick={() => {
+						dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
+					}}
+				>
+					<span className="sr-only">Dismiss</span>
+					<XMarkIcon aria-hidden="true" className="h-6 w-6" />
+				</Button>
+			</div>
+		) : (
+			<CompletedModuleOverlay
+				action={action}
+				resource={resource}
+				moduleType={moduleType}
+			/>
+		)
+	) : (
 		<div
 			aria-live="polite"
 			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
-			<div className="flex flex-col items-center text-center">
-				<p className="pb-2 opacity-80">Next Up:</p>
-				<p className="font-heading fluid-2xl font-bold">
-					{nextLesson?.fields?.title}
-				</p>
-				<div className="mt-8 flex items-center gap-3 text-sm">
-					<Progress
-						value={percentCompleted}
-						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
-					/>
-					{completedLessonsCount}/{totalLessonsCount} completed
-				</div>
-			</div>
-			<div className="flex w-full items-center justify-center gap-3">
-				<Button
-					variant="secondary"
-					type="button"
-					onClick={() => {
-						if (playerRef.current) {
-							playerRef.current.play()
-						}
-					}}
-				>
-					Replay
-				</Button>
-				{resource && (
-					<ContinueButton
-						moduleType={moduleType}
-						resource={resource}
-						nextResource={nextLesson}
-						setCompletedLessonsCount={setCompletedLessonsCount}
-					/>
-				)}
-			</div>
-			<Button
-				type="button"
-				className="absolute right-5 top-5 bg-white/10"
-				variant="ghost"
-				size="icon"
-				onClick={() => {
-					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
-				}}
-			>
-				<span className="sr-only">Dismiss</span>
-				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
-			</Button>
+			<Spinner />
 		</div>
 	)
 }
@@ -170,11 +185,10 @@ export const CompletedModuleOverlay: React.FC<{
 }
 
 const ContinueButton: React.FC<{
-	setCompletedLessonsCount: React.Dispatch<React.SetStateAction<number>>
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
 	nextResource?: ContentResource | null
-}> = ({ setCompletedLessonsCount, resource, nextResource, moduleType }) => {
+}> = ({ resource, nextResource, moduleType }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
@@ -189,14 +203,6 @@ const ContinueButton: React.FC<{
 	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
-			onMouseOver={() => {
-				!isCurrentLessonCompleted &&
-					setCompletedLessonsCount((prev) => prev + 1)
-			}}
-			onMouseOut={() => {
-				!isCurrentLessonCompleted &&
-					setCompletedLessonsCount((prev) => prev - 1)
-			}}
 			onClick={async () => {
 				if (!isCurrentLessonCompleted) {
 					startTransition(async () => {
@@ -392,24 +398,14 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 
 	switch (overlayState.action?.type) {
 		case 'COMPLETED':
-			if (nextResource) {
-				return (
-					<CompletedLessonOverlay
-						nextLesson={nextResource}
-						action={overlayState.action}
-						resource={resource}
-						moduleType={moduleType}
-					/>
-				)
-			} else {
-				return (
-					<CompletedModuleOverlay
-						action={overlayState.action}
-						resource={resource}
-						moduleType={moduleType}
-					/>
-				)
-			}
+			return (
+				<CompletedLessonOverlay
+					action={overlayState.action}
+					resource={resource}
+					moduleType={moduleType}
+					moduleSlug={moduleSlug}
+				/>
+			)
 		case 'LOADING':
 			return (
 				<div

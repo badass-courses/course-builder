@@ -96,8 +96,8 @@ export const progressRouter = createTRPCRouter({
 	getNextResource: publicProcedure
 		.input(
 			z.object({
-				lessonId: z.string(),
-				moduleSlug: z.string().optional().nullable(),
+				lessonId: z.string().nullish(),
+				moduleSlug: z.string().nullish(),
 			}),
 		)
 		.query(async ({ ctx, input }) => {
