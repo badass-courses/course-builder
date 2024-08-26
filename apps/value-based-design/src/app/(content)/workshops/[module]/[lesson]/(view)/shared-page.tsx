@@ -10,7 +10,9 @@ import { Transcript } from '@/app/(content)/_components/video-transcript-rendere
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
+import { CloudinaryDownloadButton } from '@/components/image-uploader/cloudinary-download-button'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
+import { getAllImageResourcesForResource } from '@/lib/image-resource-query'
 import type { Lesson } from '@/lib/lessons'
 import {
 	getLessonMuxPlaybackId,
@@ -109,7 +111,7 @@ export async function LessonPage({
 								</AccordionItem>
 							</Accordion>
 							<div className="flex flex-col py-5 sm:py-8">
-								<LessonBody lesson={lesson} />
+								<LessonBody lesson={lesson} moduleSlug={params.module} />
 								<TranscriptContainer
 									className="block 2xl:hidden"
 									lessonId={lesson?.id}
@@ -196,11 +198,21 @@ async function PlayerContainer({
 	)
 }
 
-async function LessonBody({ lesson }: { lesson: Lesson | null }) {
+async function LessonBody({
+	lesson,
+	moduleSlug,
+}: {
+	lesson: Lesson | null
+	moduleSlug: string
+}) {
 	if (!lesson) {
 		notFound()
 	}
 
+	const downloadableAssets = await getAllImageResourcesForResource({
+		resourceId: lesson.id,
+	})
+	const abilityLoader = getAbilityForResource(lesson.fields.slug, moduleSlug)
 	const githubUrl = lesson.fields?.github
 	const gitpodUrl = lesson.fields?.gitpod
 
@@ -268,6 +280,13 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 											Gitpod
 										</Link>
 									</Button>
+								)}
+								{downloadableAssets.length > 0 && (
+									<CloudinaryDownloadButton
+										resourceId={lesson.id}
+										lessonTitle={lesson.fields?.title}
+										abilityLoader={abilityLoader}
+									/>
 								)}
 							</div>
 						</div>

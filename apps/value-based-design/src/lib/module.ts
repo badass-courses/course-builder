@@ -48,6 +48,7 @@ export const ModuleSchema = z.object({
 					'lesson',
 					'section',
 					'videoResource',
+					'imageResource',
 					'linkResource',
 					'exercise',
 					'problem',
@@ -67,6 +68,7 @@ export const ModuleSchema = z.object({
 							type: z.enum([
 								'lesson',
 								'videoResource',
+								'imageResource',
 								'exercise',
 								'solution',
 								'problem',
@@ -85,7 +87,12 @@ export const ModuleSchema = z.object({
 										resourceOfId: z.string(),
 										resource: z.object({
 											id: z.string(),
-											type: z.enum(['solution', 'videoResource', 'problem']),
+											type: z.enum([
+												'solution',
+												'videoResource',
+												'imageResource',
+												'problem',
+											]),
 											fields: z.object({
 												slug: z.string().optional().nullable(),
 												title: z.string().min(2).max(90).optional().nullable(),

@@ -4,12 +4,14 @@ import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { LessonMetadataFormFields } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/edit-lesson-form-metadata'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
+import { DownloadableImageResourceUploader } from '@/components/image-uploader/downloadable-image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { DownloadIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -76,6 +78,22 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 			user={session?.data?.user}
 			onSave={onLessonSaveWithModule}
 			theme={theme}
+			tools={[
+				{
+					id: 'downloadable-media',
+					label: 'Downloadable Media',
+					icon: () => (
+						<DownloadIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<DownloadableImageResourceUploader
+							key={'downloadable-image-uploader'}
+							belongsToResourceId={lesson.id}
+							uploadDirectory={`lessons`}
+						/>
+					),
+				},
+			]}
 		>
 			<LessonMetadataFormFields
 				initialVideoResourceId={initialVideoResourceId}

@@ -72,6 +72,8 @@ export const env = createEnv({
 		POSTMARK_KEY: z.string().optional(),
 		SLACK_TOKEN: z.string().optional(),
 		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
+		CLOUDINARY_API_SECRET: z.string().optional(),
+		CLOUDINARY_API_KEY: z.string().optional(),
 	},
 
 	/**
@@ -126,6 +128,8 @@ export const env = createEnv({
 			process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
 		NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET:
 			process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+		CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
 		TWITTER_CLIENT_ID: process.env.TWITTER_CLIENT_ID,
 		TWITTER_CLIENT_SECRET: process.env.TWITTER_CLIENT_SECRET,
 		UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,

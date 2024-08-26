@@ -8,10 +8,12 @@ import { useSession } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
 
-export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
-	dir,
-	id,
-}) => {
+export const CloudinaryUploadButton: React.FC<{
+	dir: string
+	id: string
+	is_downloadable?: boolean
+	resourceOfId?: string
+}> = ({ dir, id, is_downloadable = false, resourceOfId }) => {
 	const session = useSession()
 	const cloudinaryRef = React.useRef<any>()
 	const widgetRef = React.useRef<any>()
@@ -19,6 +21,8 @@ export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
 	React.useEffect(() => {
 		cloudinaryRef.current = (window as any).cloudinary
 	}, [])
+
+	const folder = is_downloadable ? `${dir}/${id}/downloadables` : `${dir}/${id}`
 
 	return session?.data?.user ? (
 		<div>
@@ -41,7 +45,7 @@ export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
 								cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
 								uploadPreset: env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
 								// inline_container: '#cloudinary-upload-widget-container',
-								folder: `${dir}/${id}`,
+								folder,
 							},
 							(error: any, result: any) => {
 								if (!error && result && result.event === 'success') {
@@ -49,6 +53,9 @@ export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
 									createImageResource({
 										asset_id: result.info.asset_id,
 										secure_url: result.info.url,
+										public_id: result.info.public_id,
+										is_downloadable,
+										resourceOfId: id,
 									})
 								}
 							},

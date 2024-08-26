@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { IMAGE_RESOURCE_CREATED_EVENT } from '@/inngest/events/image-resource-created'
 import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
@@ -12,11 +12,16 @@ const ImageResourceSchema = z.object({
 	id: z.string(),
 	url: z.string(),
 	alt: z.string().optional().nullable(),
+	is_downloadable: z.boolean().optional().nullable(),
+	public_id: z.string().optional().nullable(),
 })
 
 export async function createImageResource(input: {
 	asset_id: string
 	secure_url: string
+	public_id?: string
+	resourceOfId?: string
+	is_downloadable: boolean
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -25,24 +30,52 @@ export async function createImageResource(input: {
 		throw new Error('Unauthorized')
 	}
 
-	await db
-		.insert(contentResource)
-		.values({
-			id: input.asset_id,
-			type: 'imageResource',
-			fields: {
-				state: 'ready',
-				url: input.secure_url,
-			},
-			createdById: user.id,
+	if (input.is_downloadable && input.resourceOfId) {
+		await db
+			.insert(contentResource)
+			.values({
+				id: input.asset_id,
+				type: 'imageResource',
+				fields: {
+					state: 'ready',
+					url: input.secure_url,
+					public_id: input.public_id,
+					is_downloadable: input.is_downloadable,
+				},
+				createdById: user.id,
+			})
+			.then((result) => {
+				return result
+			})
+			.catch((error) => {
+				console.error(error)
+				throw error
+			})
+
+		await db.insert(contentResourceResource).values({
+			resourceOfId: input.resourceOfId,
+			resourceId: input.asset_id,
 		})
-		.then((result) => {
-			return result
-		})
-		.catch((error) => {
-			console.error(error)
-			throw error
-		})
+	} else {
+		await db
+			.insert(contentResource)
+			.values({
+				id: input.asset_id,
+				type: 'imageResource',
+				fields: {
+					state: 'ready',
+					url: input.secure_url,
+				},
+				createdById: user.id,
+			})
+			.then((result) => {
+				return result
+			})
+			.catch((error) => {
+				console.error(error)
+				throw error
+			})
+	}
 
 	await inngest.send({
 		name: IMAGE_RESOURCE_CREATED_EVENT,
@@ -65,6 +98,32 @@ export async function getAllImageResources() {
         type = 'imageResource'
       ORDER BY
         createdAt DESC
+    `
+	return db.execute(query).then((result) => {
+		const parsed = z.array(ImageResourceSchema).safeParse(result.rows)
+		return parsed.success ? parsed.data : []
+	})
+}
+
+export async function getAllImageResourcesForResource({
+	resourceId,
+}: {
+	resourceId: string
+}) {
+	const query = sql`
+      SELECT    
+        cr.id as id,
+        JSON_EXTRACT (cr.fields, "$.url") AS url,
+        JSON_EXTRACT (cr.fields, "$.alt") AS alt,
+        JSON_EXTRACT (cr.fields, "$.public_id") AS public_id
+      FROM
+        ${contentResource} as cr
+      JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
+      WHERE
+        cr.type = 'imageResource'
+        AND crr.resourceOfId = ${resourceId}
+      ORDER BY
+        cr.createdAt DESC
     `
 	return db.execute(query).then((result) => {
 		const parsed = z.array(ImageResourceSchema).safeParse(result.rows)
