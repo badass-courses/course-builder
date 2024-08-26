@@ -1,19 +1,12 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { getLesson } from '@/lib/lessons-query'
+import { getCachedLesson } from '@/lib/lessons-query'
 import { getWorkshopNavigation } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
-
-const getCachedLesson = unstable_cache(
-	async (slug: string) => getLesson(slug),
-	['lesson'],
-	{ revalidate: 3600 },
-)
 
 export async function generateStaticParams() {
 	const workshops = await db.query.contentResource.findMany({
