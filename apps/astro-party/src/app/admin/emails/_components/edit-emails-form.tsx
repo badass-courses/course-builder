@@ -1,18 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import { onPageSave } from '@/app/admin/pages/[slug]/edit/actions'
+import { onEmailSave } from '@/app/admin/emails/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { ArticleSchema, type Article } from '@/lib/articles'
-import { updateArticle } from '@/lib/articles-query'
-import { Page, PageSchema } from '@/lib/pages'
-import { updatePage } from '@/lib/pages-query'
+import { Email, EmailSchema } from '@/lib/emails'
+import { updateEmail } from '@/lib/emails-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
+import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -22,15 +20,14 @@ import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
-import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
 type EditArticleFormProps = {
-	page: Page
+	email: Email
 	tools?: ResourceTool[]
 }
 
-export function EditPagesForm({
-	page,
+export function EditEmailsForm({
+	email,
 	tools = [
 		{ id: 'assistant' },
 		{
@@ -41,7 +38,7 @@ export function EditPagesForm({
 			toolComponent: (
 				<ImageResourceUploader
 					key={'image-uploader'}
-					belongsToResourceId={page.id}
+					belongsToResourceId={email.id}
 					uploadDirectory={`workshops`}
 				/>
 			),
@@ -49,20 +46,20 @@ export function EditPagesForm({
 	],
 }: EditArticleFormProps) {
 	const session = useSession()
-	const defaultSocialImage = getOGImageUrlForResource(page)
+	const defaultSocialImage = getOGImageUrlForResource(email)
 	const { forcedTheme: theme } = useTheme()
-	const form = useForm<z.infer<typeof ArticleSchema>>({
-		resolver: zodResolver(ArticleSchema),
+	const form = useForm<z.infer<typeof EmailSchema>>({
+		resolver: zodResolver(EmailSchema),
 		defaultValues: {
-			...page,
+			...email,
 			fields: {
-				...page.fields,
-				description: page.fields?.description ?? '',
+				...email.fields,
+				description: email.fields?.description ?? '',
 				socialImage: {
 					type: 'imageUrl',
 					url: defaultSocialImage,
 				},
-				slug: page.fields?.slug ?? '',
+				slug: email.fields?.slug ?? '',
 			},
 		},
 	})
@@ -75,41 +72,34 @@ export function EditPagesForm({
 
 	return (
 		<ResourceForm
-			resource={page}
+			resource={email}
 			form={form}
-			resourceSchema={ArticleSchema}
+			resourceSchema={EmailSchema}
 			getResourcePath={(slug) => `/${slug}`}
-			updateResource={updatePage}
+			updateResource={updateEmail}
 			availableWorkflows={[
 				{
 					value: 'article-chat-default-5aj1o',
-					label: 'Page Chat',
+					label: 'Email Chat',
 					default: true,
 				},
 			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
-			onSave={onPageSave}
+			onSave={onEmailSave}
 			tools={tools}
 			theme={theme}
 		>
-			<PageMetadataFormFields form={form} />
+			<EmailMetadataFormFields form={form} />
 		</ResourceForm>
 	)
 }
 
-const PageMetadataFormFields = ({
+const EmailMetadataFormFields = ({
 	form,
 }: {
-	form: UseFormReturn<z.infer<typeof PageSchema>>
+	form: UseFormReturn<z.infer<typeof EmailSchema>>
 }) => {
-	return (
-		<EditResourcesMetadataFields form={form}>
-			<MetadataFieldSocialImage
-				form={form}
-				currentSocialImage={getOGImageUrlForResource(form.getValues())}
-			/>
-		</EditResourcesMetadataFields>
-	)
+	return <EditResourcesMetadataFields form={form}></EditResourcesMetadataFields>
 }
