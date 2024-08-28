@@ -131,8 +131,8 @@ export async function migrateTips(WRITE_TO_DB: boolean = true) {
 						id: videoResource.id,
 						type: 'videoResource',
 						createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
-						createdAt: new Date(videoResource.createdAt as string),
-						updatedAt: new Date(videoResource.updatedAt as string),
+						createdAt: videoResource.createdAt,
+						updatedAt: videoResource.updatedAt,
 						deletedAt: null,
 						fields: {
 							title: videoResource.title,

@@ -1,4 +1,6 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
+import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
+import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
@@ -9,6 +11,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
+import { addPurchaseRoleDiscord } from './functions/discord/add-purchase-role-discord'
 import { computeVideoSplitPoints } from './functions/split_video'
 
 export const inngestConfig = {
@@ -25,5 +28,8 @@ export const inngestConfig = {
 		performCodeExtraction,
 		getOrCreateConcept,
 		computeVideoSplitPoints,
+		discordAccountLinked,
+		addPurchaseRoleDiscord,
+		removePurchaseRoleDiscord,
 	],
 }

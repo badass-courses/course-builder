@@ -1,9 +1,13 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { Layout } from '@/components/layout'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
-import { githubAccountsForCurrentUser } from '@/lib/users'
+import {
+	discordAccountsForCurrentUser,
+	githubAccountsForCurrentUser,
+} from '@/lib/users'
 import {
 	cancelPurchaseTransfer,
 	getPurchaseTransferForPurchaseId,
@@ -15,6 +19,32 @@ import { isString } from 'lodash'
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
+
+async function getPurchaseForChargeId(chargeIdentifier: string) {
+	const maxRetries = 5
+	const initialDelay = 150
+	const maxDelay = 15000
+
+	let retries = 0
+	let delay = initialDelay
+
+	while (retries < maxRetries) {
+		try {
+			const purchase =
+				await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+
+			if (!purchase) {
+				throw new Error('purchase not found')
+			}
+
+			return purchase
+		} catch (error) {
+			retries++
+			await new Promise((resolve) => setTimeout(resolve, delay))
+			delay = Math.min(delay * 2, maxDelay)
+		}
+	}
+}
 
 const getServerSideProps = async (query: {
 	session_id: string
@@ -45,8 +75,7 @@ const getServerSideProps = async (query: {
 			courseBuilderAdapter,
 		)
 
-		const purchase =
-			await courseBuilderAdapter.getPurchaseForStripeCharge(chargeIdentifier)
+		const purchase = await getPurchaseForChargeId(chargeIdentifier)
 
 		if (purchase) {
 			purchaseId = purchase.id
@@ -122,26 +151,30 @@ const Welcome = async ({
 		)
 
 	const isGithubConnected = await githubAccountsForCurrentUser()
+	const isDiscordConnected = await discordAccountsForCurrentUser()
 
 	return (
-		<div className="container border-x">
-			<WelcomePage
-				product={product}
-				productResources={productResources}
-				purchase={purchase}
-				existingPurchase={existingPurchase}
-				upgrade={upgrade}
-				providers={providers}
-				isGithubConnected={isGithubConnected}
-				redemptionsLeft={redemptionsLeft}
-				isTransferAvailable={isTransferAvailable}
-				purchaseUserTransfers={purchaseUserTransfers}
-				hasCharge={hasCharge}
-				userEmail={session?.user?.email}
-				cancelPurchaseTransfer={cancelPurchaseTransfer}
-				initiatePurchaseTransfer={initiatePurchaseTransfer}
-			/>
-		</div>
+		<Layout>
+			<div className="container border-x">
+				<WelcomePage
+					product={product}
+					productResources={productResources}
+					purchase={purchase}
+					existingPurchase={existingPurchase}
+					upgrade={upgrade}
+					providers={providers}
+					isGithubConnected={isGithubConnected}
+					isDiscordConnected={isDiscordConnected}
+					redemptionsLeft={redemptionsLeft}
+					isTransferAvailable={isTransferAvailable}
+					purchaseUserTransfers={purchaseUserTransfers}
+					hasCharge={hasCharge}
+					userEmail={session?.user?.email}
+					cancelPurchaseTransfer={cancelPurchaseTransfer}
+					initiatePurchaseTransfer={initiatePurchaseTransfer}
+				/>
+			</div>
+		</Layout>
 	)
 }
 

@@ -11,8 +11,8 @@ const AdminLayout: React.FC<
 	}>
 > = async ({ children, params }) => {
 	return (
-		<div className="grid min-h-screen w-full pt-[var(--nav-height)] md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-			<div className="hidden border-r-2 pt-10 md:block">
+		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+			<div className="bg-muted/40 hidden border-r md:block">
 				<div className="flex h-full max-h-screen flex-col gap-2">
 					<div className="flex-1">
 						<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
@@ -39,6 +39,14 @@ const AdminLayout: React.FC<
 							>
 								<HomeIcon className="h-4 w-4" />
 								Pages
+							</Link>
+							<Link
+								href="/admin/emails"
+								className="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
+								prefetch={false}
+							>
+								<HomeIcon className="h-4 w-4" />
+								Emails
 							</Link>
 						</nav>
 					</div>
