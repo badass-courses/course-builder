@@ -51,6 +51,7 @@ export const EventPricingWidget: React.FC<{
 					<Pricing.TeamToggle />
 					<Pricing.TeamQuantityInput />
 					<Pricing.BuyButton className="border-2 text-white" />
+					<Pricing.SaleCountdown />
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.PPPToggle />
