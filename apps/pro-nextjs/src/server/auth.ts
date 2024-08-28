@@ -221,9 +221,6 @@ export const authOptions: NextAuthConfig = {
 						allowDangerousEmailAccountLinking: true,
 						authorization:
 							'https://discord.com/api/oauth2/authorize?scope=identify+email+guilds.join+guilds',
-						// authorization: {
-						// 	params: { scope: 'identify+guilds.join+email+guilds' },
-						// },
 					}),
 				]
 			: []),
