@@ -1,6 +1,5 @@
 import { db } from '@/db'
 import { contentResource, contentResourceResource, users } from '@/db/schema'
-import { TipSchema } from '@/lib/tips'
 import {
 	contributors,
 	recordResourceContribution,
