@@ -250,11 +250,14 @@ export async function updateProduct(input: Product) {
 
 	const { image, ...fieldsNoImage } = input.fields
 
+	console.log({ input, fieldsNoImage })
+
 	await db
 		.update(products)
 		.set({
 			name: input.name,
 			quantityAvailable: input.quantityAvailable,
+			type: input.type,
 			status: 1,
 			fields: {
 				...fieldsNoImage,

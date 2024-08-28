@@ -5,6 +5,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
+import { Layout } from '@/components/layout'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -88,7 +89,7 @@ export default async function ProductPage({
 	const productLoader = getProduct(params.slug)
 
 	return (
-		<div>
+		<Layout>
 			<Suspense
 				fallback={
 					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
@@ -102,7 +103,7 @@ export default async function ProductPage({
 					searchParams={searchParams}
 				/>
 			</article>
-		</div>
+		</Layout>
 	)
 }
 
