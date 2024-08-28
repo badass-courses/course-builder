@@ -280,8 +280,8 @@ export async function migrateWorkshops(WRITE_TO_DB: boolean = true) {
 								id: videoResourceId,
 								type: 'videoResource',
 								createdById: user?.id ?? '7ee4d72c-d4e8-11ed-afa1-0242ac120002',
-								createdAt: new Date(newVideoResource.createdAt as string),
-								updatedAt: new Date(newVideoResource.updatedAt as string),
+								createdAt: newVideoResource.createdAt,
+								updatedAt: newVideoResource.updatedAt,
 								deletedAt: null,
 								fields: {
 									title: newVideoResource.title,
