@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useParams } from 'next/navigation'
-import { LessonMetadataFormFields } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/edit-lesson-form-metadata'
+import { LessonMetadataFormFields } from '@/app/(content)/_components/edit-lesson-form-metadata'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -12,9 +12,11 @@ import { updateLesson } from '@/lib/lessons-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
+import pluralize from 'pluralize'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 const NewLessonFormSchema = z.object({
@@ -26,18 +28,24 @@ const NewLessonFormSchema = z.object({
 
 export type EditLessonFormProps = {
 	lesson: Lesson
+	videoResource: VideoResource | null
 	form: UseFormReturn<z.infer<typeof LessonSchema>>
 	children?: React.ReactNode
+	moduleType: 'tutorial' | 'workshop'
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }
 
-export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
+export function EditLessonForm({
+	lesson,
+	videoResource,
+	moduleType,
+}: Omit<EditLessonFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
 
 	const { module: moduleSlug } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(
 		null,
-		`/tutorials/${moduleSlug}/`,
+		`/${pluralize(moduleType)}/${moduleSlug}/`,
 	)
 	const session = useSession()
 	const form = useForm<z.infer<typeof LessonSchema>>({
@@ -57,15 +65,18 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 	})
 	const isMobile = useIsMobile()
 
-	const initialVideoResourceId = lesson.resources?.find((resourceJoin) => {
-		return resourceJoin.resource.type === 'videoResource'
-	})?.resource.id
+	const initialVideoResourceId =
+		lesson.resources?.find((resourceJoin) => {
+			return resourceJoin.resource.type === 'videoResource'
+		})?.resource.id || videoResource?.id
 
 	return (
 		<EditResourcesFormDesktop
 			resource={lesson}
 			resourceSchema={LessonSchema}
-			getResourcePath={(slug?: string) => `/tutorials/${moduleSlug}/${slug}`}
+			getResourcePath={(slug?: string) =>
+				`/${pluralize(moduleType)}/${moduleSlug}/${slug}`
+			}
 			updateResource={updateLesson}
 			form={form}
 			availableWorkflows={[

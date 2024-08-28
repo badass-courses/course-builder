@@ -14,7 +14,11 @@ import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import { z } from 'zod'
 
-import type { ContentResourceResource } from '@coursebuilder/core/schemas'
+import {
+	ContentResourceSchema,
+	type ContentResourceResource,
+} from '@coursebuilder/core/schemas'
+import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 const redis = Redis.fromEnv()
 
@@ -43,6 +47,29 @@ export const getLessonVideoTranscript = async (
 
 	console.log({ parsedResult })
 	return parsedResult.data[0]?.transcript
+}
+
+export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
+	const query = sql`SELECT *
+		FROM ContentResource cr_lesson
+		JOIN ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
+		JOIN ContentResource cr_video ON crr.resourceId = cr_video.id
+		WHERE (cr_lesson.id = ${lessonIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonIdOrSlug})
+			AND cr_video.type = 'videoResource'
+		LIMIT 1;`
+
+	const result = await db.execute(query)
+
+	if (!result.rows.length) return null
+
+	const videoResourceRow = ContentResourceSchema.parse(result.rows[0])
+
+	const videoResource = {
+		...videoResourceRow,
+		...videoResourceRow.fields,
+	}
+
+	return VideoResourceSchema.parse(videoResource)
 }
 
 export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {

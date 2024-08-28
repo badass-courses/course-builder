@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { LessonPlayer } from '@/app/(content)/_components/lesson-player'
+import { NewLessonVideoForm } from '@/app/(content)/_components/new-lesson-video-form'
 import { reprocessTranscript } from '@/app/(content)/tips/[slug]/edit/actions'
-import { LessonPlayer } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/lesson-player'
-import { NewLessonVideoForm } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Lesson, type LessonSchema } from '@/lib/lessons'
@@ -47,6 +47,8 @@ export const LessonMetadataFormFields: React.FC<{
 	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
 		'loading' | 'finalizing upload'
 	>('loading')
+
+	const [replacingVideo, setReplacingVideo] = React.useState(false)
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
@@ -119,19 +121,52 @@ export const LessonMetadataFormFields: React.FC<{
 					}
 				>
 					{videoResourceId ? (
-						<>
-							{videoResource && videoResource.state === 'ready' ? (
-								<LessonPlayer videoResource={videoResource} />
-							) : videoResource ? (
-								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-									video is {videoResource.state}
-								</div>
-							) : (
-								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-									video is {videoUploadStatus}
-								</div>
-							)}
-						</>
+						replacingVideo ? (
+							<div>
+								<NewLessonVideoForm
+									lessonId={lesson.id}
+									moduleSlugOrId={module}
+									onVideoUploadCompleted={(videoResourceId) => {
+										setReplacingVideo(false)
+										setVideoUploadStatus('finalizing upload')
+										setVideoResourceId(videoResourceId)
+									}}
+									onVideoResourceCreated={(videoResourceId) =>
+										setVideoResourceId(videoResourceId)
+									}
+								/>
+								<Button
+									variant="ghost"
+									type="button"
+									onClick={() => setReplacingVideo(false)}
+								>
+									Cancel Replace Video
+								</Button>
+							</div>
+						) : (
+							<>
+								{videoResource && videoResource.state === 'ready' ? (
+									<div>
+										<LessonPlayer videoResource={videoResource} />
+										<Button
+											variant="ghost"
+											type="button"
+											onClick={() => setReplacingVideo(true)}
+										>
+											Replace Video
+										</Button>
+									</div>
+								) : videoResource ? (
+									<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+										video is {videoResource.state}
+									</div>
+								) : (
+									<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+										video is {videoUploadStatus}
+									</div>
+								)}
+							</>
+						)
 					) : (
 						<NewLessonVideoForm
 							lessonId={lesson.id}

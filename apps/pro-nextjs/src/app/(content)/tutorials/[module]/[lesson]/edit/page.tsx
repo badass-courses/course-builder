@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { getLesson } from '@/lib/lessons-query'
+import { EditLessonForm } from '@/app/(content)/_components/edit-lesson-form'
+import { getLesson, getVideoResourceForLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
-
-import { EditLessonForm } from './_components/edit-lesson-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,5 +18,14 @@ export default async function LessonEditPage({
 		notFound()
 	}
 
-	return <EditLessonForm key={lesson.id} lesson={lesson} />
+	const videoResource = await getVideoResourceForLesson(params.lesson)
+
+	return (
+		<EditLessonForm
+			key={lesson.id}
+			lesson={lesson}
+			videoResource={videoResource}
+			moduleType="tutorial"
+		/>
+	)
 }
