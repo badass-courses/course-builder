@@ -1,11 +1,39 @@
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/layout'
-import { getServerAuthSession } from '@/server/auth'
+import { db } from '@/db'
+import { users } from '@/db/schema'
+import { getProviders, getServerAuthSession } from '@/server/auth'
+import { eq } from 'drizzle-orm'
 
 import EditProfileForm from './_components/edit-profile-form'
 
 export default async function ProfilePage() {
 	const { session, ability } = await getServerAuthSession()
+	const providers = getProviders()
+
+	if (!ability.can('read', 'User', session?.user?.id)) {
+		redirect('/')
+	}
+
+	if (!session.user) {
+		notFound()
+	}
+
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, session.user.id),
+		with: {
+			accounts: true,
+		},
+	})
+
+	if (!user) {
+		notFound()
+	}
+
+	const discordProvider = providers?.discord
+	const discordConnected = Boolean(
+		user.accounts.find((account: any) => account.provider === 'discord'),
+	)
 
 	if (ability.can('read', 'User', session?.user?.id)) {
 		return (
@@ -17,7 +45,11 @@ export default async function ProfilePage() {
 						</h1>
 					</header>
 					<main className="flex w-full flex-col space-y-10 md:max-w-md">
-						<EditProfileForm user={session.user} />
+						<EditProfileForm
+							user={session.user}
+							discordConnected={discordConnected}
+							discordProvider={discordProvider}
+						/>
 					</main>
 				</div>
 			</Layout>
