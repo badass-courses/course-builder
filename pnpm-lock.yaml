@@ -168,13 +168,13 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(@codemirror/view@6.28.5)
       '@codemirror/search':
-        specifier: ^6.5.5
+        specifier: ^6.5.6
         version: 6.5.6
       '@codemirror/state':
-        specifier: ^6.3.3
+        specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
+        specifier: ^6.26.0
         version: 6.28.5
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
@@ -1011,16 +1011,16 @@ importers:
         version: 6.2.4
       '@codemirror/language-data':
         specifier: ^6.4.1
-        version: 6.4.1(@codemirror/view@6.26.0)
+        version: 6.4.1(@codemirror/view@6.28.5)
       '@codemirror/search':
-        specifier: ^6.5.5
+        specifier: ^6.5.6
         version: 6.5.6
       '@codemirror/state':
-        specifier: ^6.3.3
+        specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
-        version: 6.26.0
+        specifier: ^6.26.0
+        version: 6.28.5
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
         version: link:../../packages/adapter-drizzle
@@ -1182,7 +1182,7 @@ importers:
         version: 9.0.8
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
+        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
         version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
@@ -1392,7 +1392,7 @@ importers:
         version: 9.0.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14)
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(yjs@13.6.14)
       y-partykit:
         specifier: ^0.0.28
         version: 0.0.28
@@ -1570,16 +1570,16 @@ importers:
         version: 6.2.4
       '@codemirror/language-data':
         specifier: ^6.4.1
-        version: 6.4.1(@codemirror/view@6.26.0)
+        version: 6.4.1(@codemirror/view@6.28.5)
       '@codemirror/search':
-        specifier: ^6.5.5
+        specifier: ^6.5.6
         version: 6.5.6
       '@codemirror/state':
-        specifier: ^6.3.3
+        specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
-        version: 6.26.0
+        specifier: ^6.26.0
+        version: 6.28.5
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
         version: link:../../packages/adapter-drizzle
@@ -1762,7 +1762,7 @@ importers:
         version: 9.0.8
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
+        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
         version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
@@ -1999,7 +1999,7 @@ importers:
         version: 9.0.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14)
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(yjs@13.6.14)
       y-partykit:
         specifier: ^0.0.28
         version: 0.0.28
@@ -2127,6 +2127,9 @@ importers:
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
         version: link:../../packages/adapter-drizzle
+      '@coursebuilder/commerce-next':
+        specifier: ^0.0.6
+        version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 0.2.2
         version: link:../../packages/core
@@ -2244,6 +2247,12 @@ importers:
       inngest:
         specifier: ^3.22.5
         version: 3.22.5(next@14.2.5)(typescript@5.4.5)
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
+      liquidjs:
+        specifier: ^10.16.3
+        version: 10.16.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2262,6 +2271,12 @@ importers:
       next-axiom:
         specifier: ^1.1.1
         version: 1.1.1(next@14.2.5)(react@18.3.1)
+      next-cloudinary:
+        specifier: ^6.5.1
+        version: 6.5.1(next@14.2.5)(react@18.3.1)
+      next-mdx-remote:
+        specifier: ^4.4.1
+        version: 4.4.1(react-dom@18.3.1)(react@18.3.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@18.3.1)(react@18.3.1)
@@ -2304,6 +2319,9 @@ importers:
       react-wrap-balancer:
         specifier: ^0.2.4
         version: 0.2.4(react@18.3.1)
+      rehype-expressive-code:
+        specifier: ^0.35.6
+        version: 0.35.6
       shortid:
         specifier: ^2.2.16
         version: 2.2.16
@@ -2347,6 +2365,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.10
         version: 0.5.10(tailwindcss@3.4.1)
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/node':
         specifier: ^20.12.5
         version: 20.12.5
@@ -2454,16 +2475,16 @@ importers:
         version: 6.2.4
       '@codemirror/language-data':
         specifier: ^6.4.1
-        version: 6.4.1(@codemirror/view@6.26.0)
+        version: 6.4.1(@codemirror/view@6.28.5)
       '@codemirror/search':
-        specifier: ^6.5.5
+        specifier: ^6.5.6
         version: 6.5.6
       '@codemirror/state':
-        specifier: ^6.3.3
+        specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
-        version: 6.26.0
+        specifier: ^6.26.0
+        version: 6.28.5
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
         version: link:../../packages/adapter-drizzle
@@ -2646,7 +2667,7 @@ importers:
         version: 9.0.8
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
+        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
         version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
@@ -2874,7 +2895,7 @@ importers:
         version: 9.0.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14)
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(yjs@13.6.14)
       y-partykit:
         specifier: ^0.0.28
         version: 0.0.28
@@ -3055,16 +3076,16 @@ importers:
         version: 6.2.4
       '@codemirror/language-data':
         specifier: ^6.4.1
-        version: 6.4.1(@codemirror/view@6.26.0)
+        version: 6.4.1(@codemirror/view@6.28.5)
       '@codemirror/search':
-        specifier: ^6.5.5
+        specifier: ^6.5.6
         version: 6.5.6
       '@codemirror/state':
-        specifier: ^6.3.3
+        specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
-        version: 6.26.0
+        specifier: ^6.26.0
+        version: 6.28.5
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
         version: link:../../packages/adapter-drizzle
@@ -3274,7 +3295,7 @@ importers:
         version: 9.0.8
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
+        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
         version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
@@ -3517,7 +3538,7 @@ importers:
         version: 9.0.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14)
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(yjs@13.6.14)
       y-partykit:
         specifier: ^0.0.28
         version: 0.0.28
@@ -3692,16 +3713,16 @@ importers:
         version: 6.2.4
       '@codemirror/language-data':
         specifier: ^6.4.1
-        version: 6.4.1(@codemirror/view@6.26.0)
+        version: 6.4.1(@codemirror/view@6.28.5)
       '@codemirror/search':
-        specifier: ^6.5.5
+        specifier: ^6.5.6
         version: 6.5.6
       '@codemirror/state':
-        specifier: ^6.3.3
+        specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
-        version: 6.26.0
+        specifier: ^6.26.0
+        version: 6.28.5
       '@coursebuilder/adapter-drizzle':
         specifier: 0.5.0
         version: link:../../packages/adapter-drizzle
@@ -3872,7 +3893,7 @@ importers:
         version: 9.0.8
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
+        version: 4.21.24(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
         version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
@@ -4097,7 +4118,7 @@ importers:
         version: 9.0.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(yjs@13.6.14)
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(yjs@13.6.14)
       y-partykit:
         specifier: ^0.0.28
         version: 0.0.28
@@ -4827,7 +4848,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.22.3
+        specifier: ^6.26.0
         version: 6.26.0
       '@coursebuilder/core':
         specifier: 0.2.2
@@ -4937,9 +4958,6 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
-      react-codemirror2:
-        specifier: ^8.0.0
-        version: 8.0.0(codemirror@6.0.1)(react@18.3.1)
       react-day-picker:
         specifier: ^8.9.0
         version: 8.10.0(date-fns@2.30.0)(react@18.3.1)
@@ -27976,16 +27994,6 @@ packages:
       react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@babel/runtime': 7.24.0
-      react: 18.3.1
-    dev: false
-
-  /react-codemirror2@8.0.0(codemirror@6.0.1)(react@18.3.1):
-    resolution: {integrity: sha512-JIbhXoghvX0BrasIoCQvRxBPIU78plfjF1Buz0gaMFvZXwEDjkCYBkQhucoOtudQ7ikbB1jJUnmCsutElti7yA==}
-    peerDependencies:
-      codemirror: 5.x
-      react: '>=15.5 <=18.x'
-    dependencies:
-      codemirror: 6.0.1(@lezer/common@1.2.1)
       react: 18.3.1
     dev: false
 

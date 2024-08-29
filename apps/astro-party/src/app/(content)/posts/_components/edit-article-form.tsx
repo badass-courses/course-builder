@@ -5,6 +5,8 @@ import { Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { onArticleSave } from '@/app/(content)/posts/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import { LessonPlayer } from '@/components/resources-crud/lesson-player'
+import { NewLessonVideoForm } from '@/components/resources-crud/new-lesson-video-form'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useTranscript } from '@/hooks/use-transcript'
@@ -39,8 +41,6 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 
 import { PostPlayer } from '../../_components/post-player'
 import { removeResourceFromResource, reprocessTranscript } from '../../actions'
-import { LessonPlayer } from '../../tutorials/[module]/[lesson]/edit/_components/lesson-player'
-import { NewLessonVideoForm } from '../../tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 
 // import { NewLessonVideoForm } from '../../tutorials/[module]/[lesson]/edit/_components/new-lesson-video-form'
 
