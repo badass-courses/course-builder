@@ -83,7 +83,7 @@ const middleware = createInngestMiddleware({
 })
 
 export const inngest = new Inngest({
-	id: 'course-builder',
+	id: 'js-visualized',
 	middleware: [middleware],
 	schemas: new EventSchemas().fromRecord<Events & CourseBuilderCoreEvents>(),
 })
