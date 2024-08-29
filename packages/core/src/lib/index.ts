@@ -4,6 +4,7 @@ import * as actions from './actions'
 import { checkout } from './actions/checkout'
 import { createMagicLink } from './actions/create-magic-link'
 import { getPricesFormatted } from './actions/prices-formatted'
+import { processRefund } from './actions/process-refund'
 import { redeem } from './actions/redeem'
 import { userLookup } from './actions/user-lookup'
 import { init } from './init'
@@ -41,6 +42,8 @@ export async function CourseBuilderInternal(
 				return await getPricesFormatted(request, cookies, options)
 			case 'redeem':
 				return await redeem(request, cookies, options)
+			case 'refund':
+				return await processRefund(request, cookies, options)
 			case 'checkout':
 				return await checkout(request, cookies, options)
 			case 'webhook':

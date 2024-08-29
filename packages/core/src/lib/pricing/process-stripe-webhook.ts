@@ -205,6 +205,43 @@ const exampleRefundEvent = {
 	type: 'charge.refunded',
 }
 
+export async function updatePurchaseStatus({
+	status,
+	stripeChargeId,
+	options,
+}: {
+	options: InternalOptions<'payment'>
+	stripeChargeId: string
+	status: 'Refunded' | 'Disputed' | 'Banned'
+}) {
+	await options.inngest.send({
+		name: PURCHASE_STATUS_UPDATED_EVENT,
+		data: {
+			stripeChargeId,
+			status,
+		},
+	})
+	const purchase =
+		await options.adapter?.getPurchaseForStripeCharge(stripeChargeId)
+
+	if (!purchase) throw new Error('No purchase')
+
+	if (!purchase.merchantChargeId) throw new Error('No merchant charge')
+
+	const merchantCharge = await options.adapter?.getMerchantCharge(
+		purchase.merchantChargeId,
+	)
+
+	if (!merchantCharge) throw new Error('No merchant charge')
+
+	const merchantChargeId = merchantCharge.id
+
+	return options.adapter?.updatePurchaseStatusForCharge(
+		merchantChargeId,
+		status,
+	)
+}
+
 export async function processStripeWebhook(
 	event: any,
 	options: InternalOptions<'payment'>,
@@ -224,21 +261,17 @@ export async function processStripeWebhook(
 
 			break
 		case 'charge.refunded':
-			await options.inngest.send({
-				name: PURCHASE_STATUS_UPDATED_EVENT,
-				data: {
-					stripeChargeId: event.data.object.id,
-					status: 'Refunded',
-				},
+			await updatePurchaseStatus({
+				stripeChargeId: event.data.object.id,
+				status: 'Refunded',
+				options,
 			})
 			break
 		case 'charge.dispute.created':
-			await options.inngest.send({
-				name: PURCHASE_STATUS_UPDATED_EVENT,
-				data: {
-					stripeChargeId: event.data.object.id,
-					status: 'Disputed',
-				},
+			await updatePurchaseStatus({
+				stripeChargeId: event.data.object.id,
+				status: 'Disputed',
+				options,
 			})
 			break
 	}

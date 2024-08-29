@@ -60,6 +60,9 @@ export default function StripeProvider(
 		) => {
 			return options.paymentsAdapter.updateCustomer(customerId, customer)
 		},
+		refundCharge: async (chargeId: string) => {
+			return options.paymentsAdapter.refundCharge(chargeId)
+		},
 	}
 }
 
@@ -82,6 +85,7 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 				({ id: 'mock-checkout-session-id' }) as any,
 			getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
 			updateCustomer: async () => {},
+			refundCharge: async () => ({}) as any,
 		},
 	},
 	getPurchaseInfo: async (
@@ -98,6 +102,7 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 	},
 	getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
 	updateCustomer: async () => {},
+	refundCharge: async () => ({}) as any,
 }
 
 type DeterminePurchaseTypeOptions = {

@@ -80,4 +80,10 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 			email: customer.email,
 		})
 	}
+	async refundCharge(chargeId: string) {
+		console.log('refundCharge', { chargeId })
+		return await stripe.refunds.create({
+			charge: chargeId,
+		})
+	}
 }
