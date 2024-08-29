@@ -23,6 +23,6 @@ export async function getTranscript(videoResourceId?: string | null) {
 			return (result.rows[0] as { transcript: string | null })?.transcript
 		})
 		.catch((error) => {
-			return error
+			throw error
 		})
 }

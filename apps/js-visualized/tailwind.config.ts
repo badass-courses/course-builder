@@ -117,15 +117,34 @@ const config: Config = {
 			typography: ({ theme }: { theme: any }) => ({
 				DEFAULT: {
 					css: {
+						color: theme('colors.foreground'),
+						li: { color: theme('colors.foreground') },
+						a: { color: theme('colors.brand.red') },
 						'--tw-prose-headings': 'var(--jsv-misty-white)',
 						'--tw-prose-body': 'var(--jsv-ghostly-white)',
 						lineHeight: '1.6',
-						strong: {
-							fontWeight: '700',
-							color: 'white',
+						strong: { color: theme('colors.foreground') },
+						'h2, h3, h4': {
+							fontWeight: 600,
+						},
+						img: {
+							borderRadius: theme('borderRadius.lg'),
 						},
 						code: {
-							color: 'white',
+							backgroundColor: theme('colors.muted.DEFAULT'),
+							color: theme('colors.foreground'),
+							padding: '0.25rem',
+							borderRadius: '0.25rem',
+							whiteSpace: 'nowrap',
+						},
+						'pre code': {
+							whiteSpace: 'pre-wrap',
+						},
+						'code::before': {
+							content: 'none',
+						},
+						'code::after': {
+							content: 'none',
 						},
 					},
 				},

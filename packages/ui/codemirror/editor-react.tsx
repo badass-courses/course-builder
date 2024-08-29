@@ -2,6 +2,7 @@ import React from 'react'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror'
+import { basicSetup, EditorView } from 'codemirror'
 
 import {
 	CourseBuilderEditorThemeDark,
@@ -28,7 +29,7 @@ export function ReactCodemirror({
 		<CodeMirror
 			value={value}
 			height="100%"
-			extensions={[markdown()]}
+			extensions={[markdown(), EditorView.lineWrapping, basicSetup]}
 			onChange={onViewUpdate}
 			theme={
 				theme === 'dark'

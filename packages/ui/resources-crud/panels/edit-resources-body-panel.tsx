@@ -1,16 +1,13 @@
 import * as React from 'react'
 import { User } from '@auth/core/types'
+import { EditorView } from '@codemirror/view'
 import MarkdownEditor from '@uiw/react-markdown-editor'
 import type { UseFormReturn } from 'react-hook-form'
 
-import type { ContentResource } from '@coursebuilder/core/schemas'
-
 import {
-	CodemirrorEditor,
 	CourseBuilderEditorThemeDark,
 	CourseBuilderEditorThemeLight,
 } from '../../codemirror/editor'
-import { ReactCodemirror } from '../../codemirror/editor-react'
 import { ResizablePanel } from '../../primitives/resizable'
 import { ScrollArea } from '../../primitives/scroll-area'
 
@@ -51,6 +48,10 @@ export function EditResourcesBodyPanel({
 							? CourseBuilderEditorThemeDark
 							: CourseBuilderEditorThemeLight
 					}
+					extensions={[EditorView.lineWrapping]}
+					basicSetup={{
+						syntaxHighlighting: true,
+					}}
 				/>
 			</ScrollArea>
 		</ResizablePanel>

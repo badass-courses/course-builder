@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useSearchParams } from 'next/navigation'
+import { Layout } from '@/components/layout'
 import { env } from '@/env.mjs'
 import { Provider } from '@/server/auth'
 import { signIn } from 'next-auth/react'
@@ -70,7 +71,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	const emailProvider = providers?.nodemailer
 
 	return (
-		<main data-login-template="">
+		<Layout data-login-template="">
 			{image ? image : null}
 			<h1 data-title="">
 				<Balancer>
@@ -163,6 +164,6 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 					</Button>
 				) : null}
 			</div>
-		</main>
+		</Layout>
 	)
 }

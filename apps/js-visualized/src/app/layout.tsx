@@ -62,7 +62,7 @@ export default function RootLayout({
 						>
 							<div key="1" className="flex min-h-screen w-full flex-col">
 								<Navigation />
-								<main className="flex min-h-screen flex-col pt-[--nav-height-mobile] sm:pt-[--nav-height]">
+								<div className="flex min-h-screen flex-col pt-[--nav-height-mobile] sm:pt-[--nav-height]">
 									<NextSSRPlugin
 										/**
 										 * The `extractRouterConfig` will extract **only** the route configs from the
@@ -73,7 +73,7 @@ export default function RootLayout({
 										routerConfig={extractRouterConfig(ourFileRouter)}
 									/>
 									{children}
-								</main>
+								</div>
 							</div>
 						</ThemeProvider>
 					</TRPCReactProvider>

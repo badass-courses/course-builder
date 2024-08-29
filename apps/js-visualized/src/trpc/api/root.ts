@@ -1,6 +1,8 @@
 import { abilityRouter } from '@/trpc/api/routers/ability'
 import { contentResourceRouter } from '@/trpc/api/routers/contentResources'
 import { imageResourceRouter } from '@/trpc/api/routers/imageResource'
+import { lessonsRouter } from '@/trpc/api/routers/lessons'
+import { progressRouter } from '@/trpc/api/routers/progress'
 import { usersRouter } from '@/trpc/api/routers/users'
 import { videoResourceRouter } from '@/trpc/api/routers/videoResource'
 import { createCallerFactory, createTRPCRouter } from '@/trpc/api/trpc'
@@ -16,6 +18,8 @@ export const appRouter = createTRPCRouter({
 	users: usersRouter,
 	videoResources: videoResourceRouter,
 	contentResources: contentResourceRouter,
+	progress: progressRouter,
+	lessons: lessonsRouter,
 })
 
 // export type definition of API
