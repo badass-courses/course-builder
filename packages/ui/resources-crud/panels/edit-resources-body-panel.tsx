@@ -1,10 +1,15 @@
 import * as React from 'react'
 import { User } from '@auth/core/types'
+import MarkdownEditor from '@uiw/react-markdown-editor'
 import type { UseFormReturn } from 'react-hook-form'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
-import { CodemirrorEditor } from '../../codemirror/editor'
+import {
+	CodemirrorEditor,
+	CourseBuilderEditorThemeDark,
+	CourseBuilderEditorThemeLight,
+} from '../../codemirror/editor'
 import { ReactCodemirror } from '../../codemirror/editor-react'
 import { ResizablePanel } from '../../primitives/resizable'
 import { ScrollArea } from '../../primitives/scroll-area'
@@ -38,10 +43,14 @@ export function EditResourcesBodyPanel({
 			className="min-h-[var(--pane-layout-height)] md:min-h-full"
 		>
 			<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
-				<ReactCodemirror
-					onChange={onChange}
+				<MarkdownEditor
 					value={resource.fields.body || ''}
-					theme={theme}
+					onChange={onChange}
+					theme={
+						theme === 'dark'
+							? CourseBuilderEditorThemeDark
+							: CourseBuilderEditorThemeLight
+					}
 				/>
 			</ScrollArea>
 		</ResizablePanel>

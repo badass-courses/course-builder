@@ -41,6 +41,7 @@
 		"@radix-ui/react-tooltip": "^1.0.7",
 		"@uiw/codemirror-themes": "^4.21.24",
 		"@uiw/react-codemirror": "^4.23.0",
+		"@uiw/react-markdown-editor": "^6.1.2",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
 		"cmdk": "^0.2.0",

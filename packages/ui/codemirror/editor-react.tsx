@@ -28,15 +28,17 @@ export function ReactCodemirror({
 		<CodeMirror
 			value={value}
 			height="100%"
-			extensions={[
-				markdown({ base: markdownLanguage, codeLanguages: languages }),
-			]}
+			extensions={[markdown()]}
 			onChange={onViewUpdate}
 			theme={
 				theme === 'dark'
 					? CourseBuilderEditorThemeDark
 					: CourseBuilderEditorThemeLight
 			}
+			basicSetup={{
+				syntaxHighlighting: true,
+				highlightSpecialChars: true,
+			}}
 		/>
 	)
 }
