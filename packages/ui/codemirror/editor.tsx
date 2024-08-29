@@ -148,7 +148,7 @@ const useCodemirror = ({
 
 		// Set up CodeMirror and extensions
 		const state = EditorState.create({
-			doc: currentText,
+			doc: value,
 			extensions: [
 				basicSetup,
 				updateListenerExtension,
@@ -173,9 +173,9 @@ const useCodemirror = ({
 		return () => {
 			// provider?.doc?.destroy()
 			// provider?.destroy()
-			// view?.destroy()
+			view?.destroy()
 		}
-	}, [roomName, currentText, user, theme])
+	}, [roomName, value, user, theme])
 
 	return {
 		codemirrorElementRef: useCallback((node: HTMLElement | null) => {
@@ -185,7 +185,7 @@ const useCodemirror = ({
 	}
 }
 
-const CourseBuilderEditorThemeLight = createTheme({
+export const CourseBuilderEditorThemeLight = createTheme({
 	theme: 'light',
 	settings: {
 		fontFamily: 'var(--font-sans)',
@@ -226,7 +226,7 @@ const CourseBuilderEditorThemeLight = createTheme({
 		{ tag: t.invalid, color: '#cb2431' },
 	],
 })
-const CourseBuilderEditorThemeDark = createTheme({
+export const CourseBuilderEditorThemeDark = createTheme({
 	theme: 'dark',
 	settings: {
 		fontFamily: 'var(--font-sans)',
