@@ -30,7 +30,7 @@ export function EditResourcesBodyPanel({
 		}
 	}
 	form: UseFormReturn<any>
-	theme?: 'light' | 'dark'
+	theme?: string
 	partykitUrl: string
 	user?: User | null
 }) {

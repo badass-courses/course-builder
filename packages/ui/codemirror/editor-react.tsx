@@ -15,7 +15,7 @@ export function ReactCodemirror({
 }: {
 	value: string
 	onChange: (value: string) => void
-	theme?: 'light' | 'dark'
+	theme?: string
 }) {
 	const onViewUpdate = React.useCallback(
 		(val: string, viewUpdate: ViewUpdate) => {
