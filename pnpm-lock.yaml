@@ -4811,6 +4811,9 @@ importers:
       '@auth/core':
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
+      '@codemirror/commands':
+        specifier: ^6.6.0
+        version: 6.6.0
       '@codemirror/lang-markdown':
         specifier: ^6.2.3
         version: 6.2.4
@@ -4928,6 +4931,9 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
+      react-codemirror2:
+        specifier: ^8.0.0
+        version: 8.0.0(codemirror@6.0.1)(react@18.3.1)
       react-day-picker:
         specifier: ^8.9.0
         version: 8.10.0(date-fns@2.30.0)(react@18.3.1)
@@ -7458,6 +7464,15 @@ packages:
 
   /@codemirror/commands@6.3.3:
     resolution: {integrity: sha512-dO4hcF0fGT9tu1Pj1D2PvGvxjeGkbC6RGcZw6Qs74TH+Ed1gw98jmUgd2axWvIZEqTeTuFrg1lEB1KV6cK9h1A==}
+    dependencies:
+      '@codemirror/language': 6.10.2
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.28.5
+      '@lezer/common': 1.2.1
+    dev: false
+
+  /@codemirror/commands@6.6.0:
+    resolution: {integrity: sha512-qnY+b7j1UNcTS31Eenuc/5YJB6gQOzkUoNmJQc0rznwqSRpeaWWpjkWy2C/MPTcePpsKJEM26hXrOXl1+nceXg==}
     dependencies:
       '@codemirror/language': 6.10.2
       '@codemirror/state': 6.4.1
@@ -27661,6 +27676,16 @@ packages:
       react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@babel/runtime': 7.24.0
+      react: 18.3.1
+    dev: false
+
+  /react-codemirror2@8.0.0(codemirror@6.0.1)(react@18.3.1):
+    resolution: {integrity: sha512-JIbhXoghvX0BrasIoCQvRxBPIU78plfjF1Buz0gaMFvZXwEDjkCYBkQhucoOtudQ7ikbB1jJUnmCsutElti7yA==}
+    peerDependencies:
+      codemirror: 5.x
+      react: '>=15.5 <=18.x'
+    dependencies:
+      codemirror: 6.0.1(@lezer/common@1.2.1)
       react: 18.3.1
     dev: false
 

@@ -121,33 +121,21 @@ const useCodemirror = ({
 }) => {
 	const [element, setElement] = useState<HTMLElement>()
 	const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
-	const [currentText, setCurrentText] = useState<string>('')
+	const [currentText, setCurrentText] = useState<string>(value)
+
+	let updateListenerExtension = EditorView.updateListener.of(async (update) => {
+		if (update.docChanged) {
+			const docText = update.state.doc.toString()
+			const hash = await generateHash(docText)
+			if (hash !== currentText) {
+				onChange(docText)
+				setCurrentText(hash)
+			}
+		}
+	})
 
 	useEffect(() => {
 		let view: EditorView
-
-		const highlight_effect = StateEffect.define<Range<Decoration>[]>()
-
-		const highlight_extension = StateField.define({
-			create() {
-				return Decoration.none
-			},
-			update(value, transaction) {
-				value = value.map(transaction.changes)
-
-				for (let effect of transaction.effects) {
-					if (effect.is(highlight_effect))
-						value = value.update({ add: effect.value, sort: true })
-				}
-
-				return value
-			},
-			provide: (f) => EditorView.decorations.from(f),
-		})
-
-		let provider = null //partykitUrl
-		// ? new YPartyKitProvider(partykitUrl, roomName)
-		// : null
 
 		if (!element) {
 			return
@@ -158,34 +146,11 @@ const useCodemirror = ({
 		const undoManager = new Y.UndoManager(ytext)
 		setYUndoManager(undoManager)
 
-		let updateListenerExtension = EditorView.updateListener.of(
-			async (update) => {
-				if (update.docChanged) {
-					const docText = update.state.doc.toString()
-					const hash = await generateHash(docText)
-					if (hash !== currentText) {
-						onChange(docText)
-						setCurrentText(hash)
-					}
-				}
-			},
-		)
-
-		// const awareness = provider?.awareness
-		//
-		// if (user && awareness) {
-		// 	awareness.setLocalStateField('user', {
-		// 		...user,
-		// 		color: '#ffb61e', // should be a hex color
-		// 	})
-		// }
-
 		// Set up CodeMirror and extensions
 		const state = EditorState.create({
-			doc: value,
+			doc: currentText,
 			extensions: [
 				basicSetup,
-				highlight_extension,
 				updateListenerExtension,
 				theme === 'dark'
 					? CourseBuilderEditorThemeDark
@@ -193,7 +158,6 @@ const useCodemirror = ({
 				markdown({
 					codeLanguages: languages,
 				}),
-				...(provider ? [] : []),
 				...styles,
 			],
 		})
@@ -209,9 +173,9 @@ const useCodemirror = ({
 		return () => {
 			// provider?.doc?.destroy()
 			// provider?.destroy()
-			view?.destroy()
+			// view?.destroy()
 		}
-	}, [element, roomName, value, user, theme])
+	}, [roomName, currentText, user, theme])
 
 	return {
 		codemirrorElementRef: useCallback((node: HTMLElement | null) => {
