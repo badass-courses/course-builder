@@ -81,6 +81,7 @@ export interface PaymentsProviderConfig {
 		checkoutParams: CheckoutParams,
 		adapter?: CourseBuilderAdapter,
 	) => Promise<{ redirect: string; status: number }>
+	refundCharge: (chargeId: string) => Promise<Stripe.Refund>
 	getCustomer: (customerId: string) => Promise<Stripe.Customer>
 	updateCustomer: (
 		customerId: string,
@@ -138,6 +139,7 @@ export interface PaymentsAdapter {
 		customerId: string,
 		customer: { name: string; email: string },
 	): Promise<void>
+	refundCharge(chargeId: string): Promise<Stripe.Refund>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
