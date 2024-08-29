@@ -3,7 +3,6 @@
 import React from 'react'
 import { Icon } from '@/components/icons'
 import { env } from '@/env.mjs'
-import { disconnectDiscord } from '@/lib/discord-query'
 import { Provider } from '@/server/auth'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -110,48 +109,7 @@ const EditProfileForm: React.FC<{
 							)}
 						/>
 					</fieldset>
-					{discordProvider && (
-						<fieldset className="mt-5 w-full">
-							<h3 className="text-lg font-bold">Accounts</h3>
-							<ul className="divide-y border-b">
-								<li className="flex items-center justify-between py-3">
-									<h4 className="inline-flex items-center gap-2 font-medium">
-										<Icon name="Discord" className="h-5 w-5" />
-										Discord
-									</h4>
-									<div>
-										{discordConnected ? (
-											<Button
-												type="button"
-												variant="secondary"
-												size="sm"
-												onClick={async () => {
-													await disconnectDiscord()
-													window.location.reload()
-												}}
-											>
-												Disconnect
-											</Button>
-										) : discordProvider ? (
-											<Button
-												type="button"
-												size="sm"
-												onClick={() => {
-													signIn(discordProvider.id, {
-														callbackUrl: `${env.NEXT_PUBLIC_URL}/profile`,
-													})
-												}}
-											>
-												Connect
-											</Button>
-										) : (
-											<div className="text-sm font-semibold">N/A</div>
-										)}
-									</div>
-								</li>
-							</ul>
-						</fieldset>
-					)}
+
 					{(form.formState.dirtyFields.name || form.formState.isSubmitting) && (
 						<Button type="submit" disabled={form.formState.isSubmitting}>
 							Update profile

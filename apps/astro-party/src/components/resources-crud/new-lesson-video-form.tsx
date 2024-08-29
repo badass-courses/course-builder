@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { VideoUploader } from '@/app/(content)/_components/video-uploader'
+import { VideoUploader } from '@/components/resources-crud/video-uploader'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 
 export function NewLessonVideoForm({
