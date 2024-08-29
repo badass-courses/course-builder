@@ -11,8 +11,6 @@ export async function processRefund(
 		return { status: 401, body: 'unauthorized' }
 	}
 
-	console.log('process refund', options)
-
 	try {
 		const merchantChargeId =
 			(request.query?.merchantChargeId as string) ||
