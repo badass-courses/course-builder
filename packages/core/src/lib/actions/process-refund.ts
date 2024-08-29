@@ -19,10 +19,17 @@ export async function processRefund(
 		if (!merchantChargeId) throw new Error('No merchant charge id')
 		const merchantCharge =
 			await options.adapter?.getMerchantCharge(merchantChargeId)
-		if (!merchantCharge) throw new Error('No merchant charge')
+
+		let refund
+
+		if (!merchantCharge) {
+			refund = options.provider.refundCharge(merchantChargeId)
+		} else {
+			refund = options.provider.refundCharge(merchantCharge.identifier)
+		}
 
 		// internally we handle this via stripe webhook for a refund
-		const refund = options.provider.refundCharge(merchantCharge.identifier)
+		// so no need to do anything else here
 
 		return {
 			status: 200,
