@@ -82,9 +82,17 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	}
 	async refundCharge(chargeId: string) {
 		console.log('refundCharge', { chargeId })
-		const refund = await stripe.refunds.create({
-			charge: chargeId,
-		})
+		const refund = await stripe.refunds
+			.create({
+				charge: chargeId,
+			})
+			.catch((error) => {
+				console.error(error)
+				throw error
+			})
+			.finally(() => {
+				console.log('refundCharge FINALLY', { refund })
+			})
 
 		console.log('refundCharge', { refund })
 
