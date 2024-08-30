@@ -17,6 +17,9 @@ export async function processRefund(
 			(request.body?.merchantChargeId as string)
 
 		if (!merchantChargeId) throw new Error('No merchant charge id')
+
+		console.log('refunding purchase for:', merchantChargeId)
+
 		const merchantCharge =
 			await options.adapter?.getMerchantCharge(merchantChargeId)
 

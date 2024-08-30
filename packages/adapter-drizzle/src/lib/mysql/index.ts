@@ -1140,7 +1140,7 @@ export function mySqlDrizzleAdapter(
 			})
 			const parsed = merchantChargeSchema.safeParse(mCharge)
 			if (!parsed.success) {
-				console.error('Error parsing merchantCharge', mCharge)
+				console.info('Error parsing merchantCharge', mCharge)
 				return null
 			}
 			return parsed.data
