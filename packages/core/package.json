@@ -142,7 +142,7 @@
 		"openai-edge": "^1.2.2",
 		"pluralize": "^8.0.0",
 		"srt-parser-2": "^1.2.3",
-		"stripe": "^8.186.1",
+		"stripe": "16.9.0",
 		"uuid": "^9.0.1"
 	},
 	"devDependencies": {

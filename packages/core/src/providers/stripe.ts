@@ -2,6 +2,7 @@ import first from 'lodash/first'
 import isEmpty from 'lodash/isEmpty'
 import sortBy from 'lodash/sortBy'
 import Stripe from 'stripe'
+import * as stripe from 'stripe'
 
 import { CourseBuilderAdapter } from '../adapters'
 import { CheckoutParams, stripeCheckout } from '../lib/pricing/stripe-checkout'
@@ -181,7 +182,7 @@ export async function determinePurchaseType(
 }
 
 export async function parseCheckoutSession(
-	checkoutSession: any,
+	checkoutSession: Stripe.Checkout.Session,
 	courseBuilderAdapter: CourseBuilderAdapter,
 ) {
 	const { customer, line_items, payment_intent, metadata } = checkoutSession
@@ -190,8 +191,10 @@ export async function parseCheckoutSession(
 	const stripePrice = lineItem.price
 	const quantity = lineItem.quantity || 1
 	const stripeProduct = stripePrice?.product as Stripe.Product
-	const { charges } = payment_intent as Stripe.PaymentIntent
-	const stripeCharge = first<Stripe.Charge>(charges.data)
+	const { latest_charge } = payment_intent as Stripe.PaymentIntent
+
+	let stripeCharge: Stripe.Charge = latest_charge as Stripe.Charge
+
 	const stripeChargeId = stripeCharge?.id as string
 	const stripeChargeAmount = stripeCharge?.amount || 0
 

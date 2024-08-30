@@ -55,7 +55,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 				'customer',
 				'line_items.data.price.product',
 				'line_items.data.discounts',
-				'payment_intent.charges',
+				'payment_intent.latest_charge',
 			],
 		})
 	}
