@@ -28,7 +28,36 @@
         "*.d.ts.map",
         "!.next/cache/**"
       ],
-      "outputLogs": "new-only"
+			"env": [
+				"STRIPE_SECRET_TOKEN",
+				"STRIPE_WEBHOOK_SECRET",
+				"DATABASE_URL",
+				"NEXTAUTH_SECRET",
+				"OPENAI_API_KEY",
+				"INNGEST_EVENT_KEY",
+				"INNGEST_SIGNING_KEY",
+				"MUX_SECRET_KEY",
+				"MUX_ACCESS_TOKEN_ID",
+				"OPENAI_MODEL_ID",
+				"UPSTASH_REDIS_REST_URL",
+				"UPSTASH_REDIS_REST_TOKEN",
+				"DEEPGRAM_API_KEY",
+				"UPLOADTHING_URL",
+				"POSTMARK_API_KEY",
+				"POSTMARK_WEBHOOK_SECRET",
+				"CONVERTKIT_API_SECRET",
+				"CONVERTKIT_API_KEY",
+				"CONVERTKIT_SIGNUP_FORM",
+				"DISCORD_CLIENT_SECRET",
+				"DISCORD_BOT_TOKEN",
+				"DISCORD_GUILD_ID",
+				"DISCORD_MEMBER_ROLE_ID",
+				"DISCORD_PURCHASER_ROLE_ID",
+				"DISCORD_CLIENT_ID",
+				"CLOUDINARY_API_KEY",
+				"CLOUDINARY_API_SECRET"
+			],
+			"outputLogs": "new-only"
     },
     "postbuild": {
       "dependsOn": [
