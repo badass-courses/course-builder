@@ -423,7 +423,10 @@ export function mySqlDrizzleAdapter(
 		},
 		getMerchantPriceForProductId: async (productId) => {
 			const merchantPriceData = await client.query.merchantPrice.findFirst({
-				where: eq(merchantPrice.merchantProductId, productId),
+				where: and(
+					eq(merchantPrice.merchantProductId, productId),
+					eq(merchantPrice.status, 1),
+				),
 			})
 
 			const parsedMerchantPrice =
