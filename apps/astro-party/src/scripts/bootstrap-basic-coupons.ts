@@ -103,7 +103,7 @@ const config = {
 }
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
-	apiVersion: '2020-08-27',
+	apiVersion: '2024-06-20',
 })
 
 async function createCoupons() {

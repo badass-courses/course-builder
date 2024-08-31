@@ -21,7 +21,7 @@ import { InvoicePrintButton } from '@coursebuilder/commerce-next/invoices/invoic
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
-	apiVersion: '2020-08-27',
+	apiVersion: '2024-06-20',
 })
 
 async function getChargeDetails(merchantChargeId: string) {
