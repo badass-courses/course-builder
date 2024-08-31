@@ -13,7 +13,7 @@ import { sendServerEmail } from '../send-server-email'
 const exampleEvent = {
 	id: 'evt_1P6e0gAclagrtXef9ybQkT50',
 	object: 'event',
-	api_version: '2020-08-27',
+	api_version: '2024-06-20',
 	created: 1713381550,
 	data: {
 		object: {

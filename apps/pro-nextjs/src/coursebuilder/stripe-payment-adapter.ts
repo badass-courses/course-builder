@@ -9,7 +9,7 @@ if (!env.STRIPE_SECRET_TOKEN) {
 }
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN, {
-	apiVersion: '2020-08-27',
+	apiVersion: '2024-06-20',
 })
 
 export class StripePaymentAdapter implements PaymentsAdapter {
@@ -55,7 +55,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 				'customer',
 				'line_items.data.price.product',
 				'line_items.data.discounts',
-				'payment_intent.charges',
+				'payment_intent.latest_charge',
 			],
 		})
 	}

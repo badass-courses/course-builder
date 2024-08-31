@@ -12,7 +12,7 @@ export const PurchaseMetadata = z.object({
 export const PurchaseInfoSchema = z.object({
 	customerIdentifier: z.string(),
 	email: z.string().nullable(),
-	name: z.string().nullable(),
+	name: z.string().nullish(),
 	productIdentifier: z.string(),
 	product: z.object({ name: z.string().nullable() }), // TODO: does this need to surface any other values?
 	chargeIdentifier: z.string(),
