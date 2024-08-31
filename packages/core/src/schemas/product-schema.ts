@@ -13,7 +13,7 @@ export const productSchema = z.object({
 	type: z.enum(['live', 'self-paced']).default('self-paced'),
 	fields: z.object({
 		body: z.string().nullable().optional(),
-		description: z.string().optional().nullable(),
+		description: z.string().nullish(),
 		slug: z.string(),
 		image: z
 			.object({

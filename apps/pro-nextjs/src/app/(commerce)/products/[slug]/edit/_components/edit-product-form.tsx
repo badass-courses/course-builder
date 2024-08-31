@@ -280,6 +280,27 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<FormField
 				control={form.control}
+				name="fields.description"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Description</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								The product’s description, meant to be displayable to the
+								customer. Use this field to optionally store a long form
+								explanation of the product being sold for your own rendering
+								purposes.
+							</FormDescription>
+							<FormControl>
+								<Input {...field} value={field.value || ''} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<FormField
+				control={form.control}
 				name="fields.image.url"
 				render={({ field }) => (
 					<FormItem className="px-5">
