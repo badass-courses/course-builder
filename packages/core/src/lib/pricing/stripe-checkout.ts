@@ -432,9 +432,10 @@ export async function stripeCheckout({
 				mode: 'payment',
 				success_url: successUrl,
 				cancel_url: cancelUrl,
-				...(customerId && { customer: customerId }),
+				...(customerId
+					? { customer: customerId }
+					: { customer_creation: 'always' }),
 				metadata,
-				customer_creation: 'always',
 				payment_intent_data: {
 					metadata,
 				},
