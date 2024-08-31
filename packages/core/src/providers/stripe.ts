@@ -201,8 +201,6 @@ export async function parseCheckoutSession(
 	const discount = first(lineItem.discounts)
 	const stripeCouponId = discount?.discount.coupon.id
 
-	logger.debug('parseCheckoutSession', { stripeChargeId })
-
 	const parsedMetadata = metadata ? PurchaseMetadata.parse(metadata) : undefined
 
 	const purchaseType = await determinePurchaseType({
