@@ -47,6 +47,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	Textarea,
 } from '@coursebuilder/ui'
 import {
 	Command,
@@ -292,7 +293,7 @@ export function EditProductForm({ product }: { product: Product }) {
 								purposes.
 							</FormDescription>
 							<FormControl>
-								<Input {...field} value={field.value || ''} />
+								<Textarea {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
