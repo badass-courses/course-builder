@@ -43,7 +43,9 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"@sindresorhus/slugify": "^2.2.1",
 		"date-fns": "^2.30.0",
+		"nanoid": "^5.0.2",
 		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
