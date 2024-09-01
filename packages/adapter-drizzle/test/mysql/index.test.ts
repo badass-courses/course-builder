@@ -180,7 +180,7 @@ runFormatPricingTests({
 				)
 				.then((res) => res[0]) ?? null,
 		createProduct: async (
-			product: Product,
+			product: any,
 			price = {
 				createdAt: new Date(),
 				status: 1,
