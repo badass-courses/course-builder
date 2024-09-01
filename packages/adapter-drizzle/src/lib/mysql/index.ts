@@ -1258,10 +1258,11 @@ export function mySqlDrizzleAdapter(
 				.set({ status: 0 })
 				.where(eq(merchantPrice.priceId, product.price.id))
 
-			const currentMerchantProduct =
+			const currentMerchantProduct = merchantProductSchema.nullish().parse(
 				await client.query.merchantProduct.findFirst({
 					where: eq(merchantProduct.productId, productId),
-				})
+				}),
+			)
 
 			if (!currentMerchantProduct || !currentMerchantProduct.identifier) {
 				throw new Error(`Merchant product not found for id (${productId})`)
@@ -1271,12 +1272,14 @@ export function mySqlDrizzleAdapter(
 				active: false,
 			})
 
-			const currentMerchantPrice = await client.query.merchantPrice.findFirst({
-				where: and(
-					eq(merchantPrice.priceId, product.price.id),
-					eq(merchantPrice.status, 1),
-				),
-			})
+			const currentMerchantPrice = merchantPriceSchema.nullish().parse(
+				await client.query.merchantPrice.findFirst({
+					where: and(
+						eq(merchantPrice.priceId, product.price.id),
+						eq(merchantPrice.status, 1),
+					),
+				}),
+			)
 
 			if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
 				throw new Error(`Merchant price not found for id (${productId})`)
@@ -1288,7 +1291,7 @@ export function mySqlDrizzleAdapter(
 
 			return adapter.getProduct(productId)
 		},
-		async updateProduct(product: Product) {
+		async updateProduct(input: Product) {
 			const currentProduct = await adapter.getProduct(input.id)
 			if (!currentProduct) {
 				throw new Error(`Product not found`)
@@ -1297,10 +1300,12 @@ export function mySqlDrizzleAdapter(
 				throw new Error(`Product has no price`)
 			}
 
-			const merchantProduct = await client.query.merchantProduct.findFirst({
-				where: (merchantProduct, { eq }) =>
-					eq(merchantProduct.productId, input.id),
-			})
+			const merchantProduct = merchantProductSchema.nullish().parse(
+				await client.query.merchantProduct.findFirst({
+					where: (merchantProduct, { eq }) =>
+						eq(merchantProduct.productId, input.id),
+				}),
+			)
 
 			if (!merchantProduct || !merchantProduct.identifier) {
 				throw new Error(`Merchant product not found`)
@@ -1317,11 +1322,14 @@ export function mySqlDrizzleAdapter(
 				input.price?.unitAmount.toString()
 
 			if (priceChanged) {
-				const currentMerchantPrice = await client.query.merchantPrice.findFirst(
-					{
-						where: (merchantPrice, { eq }) =>
-							eq(merchantPrice.merchantProductId, merchantProduct.id),
-					},
+				const currentMerchantPrice = merchantPriceSchema.nullish().parse(
+					await client.query.merchantPrice.findFirst({
+						where: (merchantPrice, { eq, and }) =>
+							and(
+								eq(merchantPrice.merchantProductId, merchantProduct.id),
+								eq(merchantPrice.status, 1),
+							),
+					}),
 				)
 
 				if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
@@ -1338,7 +1346,6 @@ export function mySqlDrizzleAdapter(
 					currency: 'usd',
 					metadata: {
 						slug: input.fields.slug,
-						addedBy: user?.email || user.id,
 					},
 					active: true,
 				})
@@ -1377,7 +1384,7 @@ export function mySqlDrizzleAdapter(
 					.where(eq(prices.id, currentProduct.price.id))
 
 				if (currentStripePrice) {
-					await stripeProvider.updatePrice(currentStripePrice.id, {
+					await paymentProvider.updatePrice(currentStripePrice.id, {
 						active: false,
 					})
 				}
@@ -1390,7 +1397,6 @@ export function mySqlDrizzleAdapter(
 				description: input.fields.description || '',
 				metadata: {
 					slug: input.fields.slug,
-					lastUpdatedBy: user?.email || user.id,
 				},
 			})
 
