@@ -1507,42 +1507,47 @@ export function mySqlDrizzleAdapter(
 			if (!productSlugOrId) {
 				return null
 			}
-			const productData = await client.query.products.findFirst({
-				where: and(
-					or(
-						eq(
-							sql`JSON_EXTRACT (${products.fields}, "$.slug")`,
-							`${productSlugOrId}`,
+
+			try {
+				const productData = await client.query.products.findFirst({
+					where: and(
+						or(
+							eq(
+								sql`JSON_EXTRACT (${products.fields}, "$.slug")`,
+								`${productSlugOrId}`,
+							),
+							eq(products.id, productSlugOrId),
 						),
-						eq(products.id, productSlugOrId),
 					),
-				),
-				with: {
-					price: true,
-					...(withResources && {
-						resources: {
-							with: {
-								resource: {
-									with: {
-										resources: true,
+					with: {
+						price: true,
+						...(withResources && {
+							resources: {
+								with: {
+									resource: {
+										with: {
+											resources: true,
+										},
 									},
 								},
 							},
-						},
-					}),
-				},
-			})
-
-			const parsedProduct = productSchema.safeParse(productData)
-			if (!parsedProduct.success) {
-				console.error(
-					'Error parsing product',
-					JSON.stringify(parsedProduct.error),
-					JSON.stringify(productData),
-				)
+						}),
+					},
+				})
+				const parsedProduct = productSchema.safeParse(productData)
+				if (!parsedProduct.success) {
+					console.error(
+						'Error parsing product',
+						JSON.stringify(parsedProduct.error),
+						JSON.stringify(productData),
+					)
+					return null
+				}
+				return parsedProduct.data
+			} catch (e) {
+				console.log('getProduct error', e)
 				return null
 			}
-			return parsedProduct.data
 		},
 		async getProductResources(
 			productId: string,
