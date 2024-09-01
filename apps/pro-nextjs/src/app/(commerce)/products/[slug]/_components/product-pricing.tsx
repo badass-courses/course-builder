@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname } from 'next/navigation'
 import { env } from '@/env.mjs'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'

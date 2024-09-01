@@ -87,6 +87,22 @@ export interface PaymentsProviderConfig {
 		customerId: string,
 		customer: { name: string; email: string },
 	) => Promise<void>
+	getProduct(productId: string): Promise<Stripe.Response<Stripe.Product>>
+	getPrice(priceId: string): Promise<Stripe.Response<Stripe.Price>>
+	updateProduct<TProductUpdate = Stripe.Product>(
+		productId: string,
+		productUpdate: Partial<TProductUpdate>,
+	): Promise<void>
+	updatePrice<TPriceUpdate = Stripe.Price>(
+		priceId: string,
+		priceUpdate: Partial<TPriceUpdate>,
+	): Promise<void>
+	createPrice(
+		price: Stripe.PriceCreateParams,
+	): Promise<Stripe.Response<Stripe.Price>>
+	createProduct(
+		product: Stripe.ProductCreateParams,
+	): Promise<Stripe.Response<Stripe.Product>>
 }
 
 export type PaymentsProviderConsumerConfig = Omit<
@@ -140,6 +156,22 @@ export interface PaymentsAdapter {
 		customer: { name: string; email: string },
 	): Promise<void>
 	refundCharge(chargeId: string): Promise<Stripe.Refund>
+	getProduct(productId: string): Promise<Stripe.Response<Stripe.Product>>
+	getPrice(priceId: string): Promise<Stripe.Response<Stripe.Price>>
+	updateProduct<TProductUpdate = Stripe.Product>(
+		productId: string,
+		product: Partial<TProductUpdate>,
+	): Promise<void>
+	updatePrice<TPriceUpdate = Stripe.Price>(
+		priceId: string,
+		priceUpdate: Partial<TPriceUpdate>,
+	): Promise<void>
+	createPrice(
+		price: Stripe.PriceCreateParams,
+	): Promise<Stripe.Response<Stripe.Price>>
+	createProduct(
+		product: Stripe.ProductCreateParams,
+	): Promise<Stripe.Response<Stripe.Product>>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
