@@ -207,6 +207,25 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	}
 }
 
+export const mockStripeAdapter: PaymentsAdapter = {
+	getCouponPercentOff: async () => 0,
+	createCoupon: async () => 'mock-coupon-id',
+	createPromotionCode: async () => 'mock-promotion-code-id',
+	createCheckoutSession: async () => 'mock-checkout-session-id',
+	createCustomer: async () => 'mock-customer-id',
+	verifyWebhookSignature: async () => true,
+	getCheckoutSession: async () => ({ id: 'mock-checkout-session-id' }) as any,
+	getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
+	updateCustomer: async () => {},
+	refundCharge: async () => ({}) as any,
+	updateProduct: async () => {},
+	updatePrice: async () => {},
+	getProduct: async () => ({}) as any,
+	getPrice: async () => ({}) as any,
+	createPrice: async () => ({}) as any,
+	createProduct: async () => ({}) as any,
+}
+
 export const MockStripeProvider: PaymentsProviderConfig = {
 	id: 'mock-stripe' as const,
 	name: 'Mock Stripe',
@@ -215,25 +234,7 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 		errorRedirectUrl: 'mock-error-redirect-url',
 		cancelUrl: 'mock-cancel-url',
 		baseSuccessUrl: 'mock-base-success-url',
-		paymentsAdapter: {
-			getCouponPercentOff: async () => 0,
-			createCoupon: async () => 'mock-coupon-id',
-			createPromotionCode: async () => 'mock-promotion-code-id',
-			createCheckoutSession: async () => 'mock-checkout-session-id',
-			createCustomer: async () => 'mock-customer-id',
-			verifyWebhookSignature: async () => true,
-			getCheckoutSession: async () =>
-				({ id: 'mock-checkout-session-id' }) as any,
-			getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
-			updateCustomer: async () => {},
-			refundCharge: async () => ({}) as any,
-			updateProduct: async () => {},
-			updatePrice: async () => {},
-			getProduct: async () => ({}) as any,
-			getPrice: async () => ({}) as any,
-			createPrice: async () => ({}) as any,
-			createProduct: async () => ({}) as any,
-		},
+		paymentsAdapter: mockStripeAdapter,
 	},
 	getPurchaseInfo: async (
 		checkoutSessionId: string,
