@@ -38,7 +38,7 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 	const cancelUrl = `${env.NEXT_PUBLIC_URL}/events/${fields?.slug}`
 
 	return (
-		<>
+		<div className="p-5">
 			{product && product.status === 1 && isUpcoming && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 					<EventPricingWidget
@@ -58,6 +58,6 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 					/>
 				</PriceCheckProvider>
 			)}
-		</>
+		</div>
 	)
 }

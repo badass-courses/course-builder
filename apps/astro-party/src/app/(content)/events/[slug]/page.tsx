@@ -252,7 +252,7 @@ export default async function EventPage({
 				)}
 			</div>
 			<div className="flex h-full flex-grow flex-col-reverse border-t-2 md:flex-row">
-				<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
+				<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
 					{event.fields.body && (
 						<ReactMarkdown>{event.fields.body}</ReactMarkdown>
 					)}
