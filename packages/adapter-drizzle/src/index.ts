@@ -6,7 +6,6 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
-import { MockStripeProvider } from '@coursebuilder/core/providers/stripe'
 import { PaymentsProviderConfig } from '@coursebuilder/core/types'
 
 import {
@@ -18,7 +17,7 @@ import { type SqlFlavorOptions, type TableFn } from './lib/utils.js'
 export function DrizzleAdapter<SqlFlavor extends SqlFlavorOptions>(
 	db: SqlFlavor,
 	table: TableFn<SqlFlavor>,
-	paymentProvider: PaymentsProviderConfig = MockStripeProvider,
+	paymentProvider?: PaymentsProviderConfig,
 ): CourseBuilderAdapter {
 	if (is(db, MySqlDatabase)) {
 		return mySqlDrizzleAdapter(

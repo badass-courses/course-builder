@@ -4,7 +4,6 @@ import { CookieSerializeOptions } from 'cookie'
 import { Inngest } from 'inngest'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
 import Stripe from 'stripe'
-import { z } from 'zod'
 
 import { CourseBuilderAdapter } from './adapters'
 import { CheckoutParams } from './lib/pricing/stripe-checkout'

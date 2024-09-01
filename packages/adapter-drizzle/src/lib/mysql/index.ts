@@ -260,7 +260,7 @@ export type DefaultSchema = ReturnType<typeof createTables>
 export function mySqlDrizzleAdapter(
 	client: InstanceType<typeof MySqlDatabase>,
 	tableFn = defaultMySqlTableFn,
-	paymentProvider: PaymentsProviderConfig,
+	paymentProvider?: PaymentsProviderConfig,
 ): CourseBuilderAdapter<typeof MySqlDatabase> {
 	const {
 		users,
@@ -1228,6 +1228,7 @@ export function mySqlDrizzleAdapter(
 			)
 		},
 		async archiveProduct(productId) {
+			if (!paymentProvider) throw new Error('Payment provider not found')
 			const product = await adapter.getProduct(productId)
 
 			if (!product) {
@@ -1292,6 +1293,7 @@ export function mySqlDrizzleAdapter(
 			return adapter.getProduct(productId)
 		},
 		async updateProduct(input: Product) {
+			if (!paymentProvider) throw new Error('Payment provider not found')
 			const currentProduct = await adapter.getProduct(input.id)
 			if (!currentProduct) {
 				throw new Error(`Product not found`)
@@ -1418,6 +1420,7 @@ export function mySqlDrizzleAdapter(
 			return adapter.getProduct(currentProduct.id)
 		},
 		async createProduct(input: NewProduct) {
+			if (!paymentProvider) throw new Error('Payment provider not found')
 			const merchantAccount = merchantAccountSchema.nullish().parse(
 				await client.query.merchantAccount.findFirst({
 					where: (merchantAccount, { eq }) =>
