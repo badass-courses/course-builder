@@ -2,9 +2,7 @@ import first from 'lodash/first'
 import isEmpty from 'lodash/isEmpty'
 import sortBy from 'lodash/sortBy'
 import Stripe from 'stripe'
-import * as stripe from 'stripe'
 
-import type { PaymentsAdapter } from '../../dist/types'
 import { CourseBuilderAdapter } from '../adapters'
 import { CheckoutParams, stripeCheckout } from '../lib/pricing/stripe-checkout'
 import { logger } from '../lib/utils/logger'
@@ -22,6 +20,7 @@ import {
 	PurchaseType,
 } from '../schemas/purchase-type'
 import {
+	PaymentsAdapter,
 	PaymentsProviderConfig,
 	PaymentsProviderConsumerConfig,
 } from '../types'
