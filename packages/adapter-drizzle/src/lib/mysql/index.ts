@@ -1664,40 +1664,51 @@ export function mySqlDrizzleAdapter(
 			chargeId: string,
 			status: 'Valid' | 'Refunded' | 'Disputed' | 'Banned' | 'Restricted',
 		): Promise<Purchase | undefined> {
-			const merchantChargeForPurchase =
-				await client.query.merchantCharge.findFirst({
-					where: eq(merchantCharge.identifier, chargeId),
+			try {
+				console.log('updatePurchaseStatusForCharge', { chargeId, status })
+				const merchantChargeForPurchase =
+					await client.query.merchantCharge.findFirst({
+						where: or(
+							eq(merchantCharge.identifier, chargeId),
+							eq(merchantCharge.id, chargeId),
+						),
+					})
+
+				console.log('merchantChargeForPurchase', { merchantChargeForPurchase })
+
+				const parsedMerchantChargeForPurchase = merchantChargeSchema.parse(
+					merchantChargeForPurchase,
+				)
+
+				if (!parsedMerchantChargeForPurchase)
+					throw new Error(`no-charge-found-for-purchase ${chargeId}`)
+
+				const purchase = await client.query.purchases.findFirst({
+					where: eq(
+						purchaseTable.merchantChargeId,
+						parsedMerchantChargeForPurchase.id,
+					),
 				})
 
-			const parsedMerchantChargeForPurchase = merchantChargeSchema.parse(
-				merchantChargeForPurchase,
-			)
+				const parsedPurchase = purchaseSchema.nullable().parse(purchase)
 
-			if (!parsedMerchantChargeForPurchase)
-				throw new Error(`no-charge-found-for-purchase ${chargeId}`)
+				if (parsedPurchase) {
+					await client
+						.update(purchaseTable)
+						.set({ status: status })
+						.where(eq(purchaseTable.id, parsedPurchase.id))
 
-			const purchase = await client.query.purchases.findFirst({
-				where: eq(
-					purchaseTable.merchantChargeId,
-					parsedMerchantChargeForPurchase.id,
-				),
-			})
+					const newPurchase = await client.query.purchases.findFirst({
+						where: eq(purchaseTable.id, parsedPurchase.id),
+					})
 
-			const parsedPurchase = purchaseSchema.nullable().parse(purchase)
-
-			if (parsedPurchase) {
-				await client
-					.update(purchaseTable)
-					.set({ status: status })
-					.where(eq(purchaseTable.id, parsedPurchase.id))
-
-				const newPurchase = await client.query.purchases.findFirst({
-					where: eq(purchaseTable.id, parsedPurchase.id),
-				})
-
-				return purchaseSchema.optional().parse(newPurchase)
-			} else {
-				throw new Error(`no-purchase-found-for-charge ${chargeId}`)
+					return purchaseSchema.optional().parse(newPurchase)
+				} else {
+					throw new Error(`no-purchase-found-for-charge ${chargeId}`)
+				}
+			} catch (e) {
+				console.log('error updating purchase status', e)
+				throw e
 			}
 		},
 		async updatePurchaseUserTransferTransferState(options: {
