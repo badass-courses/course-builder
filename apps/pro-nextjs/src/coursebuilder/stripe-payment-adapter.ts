@@ -91,7 +91,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 				throw error
 			})
 			.finally(() => {
-				console.log('refundCharge FINALLY', { refund })
+				console.log('refundCharge FINALLY', { chargeId })
 			})
 
 		console.log('refundCharge', { refund })
