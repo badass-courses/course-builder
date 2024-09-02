@@ -1,11 +1,12 @@
 'use server'
 
 import { ParsedUrlQuery } from 'querystring'
-import { headers } from 'next/headers'
 import { isBefore } from 'date-fns'
+import { Product } from 'src/schemas/product-schema'
+import { Purchase } from 'src/schemas/purchase-schema'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
-import { Coupon, Product, Purchase } from '@coursebuilder/core/schemas'
+import { CourseBuilderAdapter } from '../../adapters'
+import { Coupon } from '../../schemas'
 
 export const validateCoupon = async (
 	coupon: Coupon | null,
@@ -90,10 +91,12 @@ export async function propsForCommerce(
 		query,
 		userId,
 		products,
+		countryCode = 'US',
 	}: {
 		query: ParsedUrlQuery
 		userId: string | null | undefined
 		products: Product[]
+		countryCode?: string
 	},
 	adapter: CourseBuilderAdapter,
 ): Promise<PropsForCommerce> {
@@ -110,12 +113,6 @@ export async function propsForCommerce(
 
 	const couponIdFromCoupon =
 		(query.coupon as string) || (couponFromCode?.isValid && couponFromCode.id)
-
-	const headerStore = headers()
-	const country =
-		headerStore.get('x-vercel-ip-country') ||
-		process.env.DEFAULT_COUNTRY ||
-		'US'
 
 	return {
 		...(userId ? { userId } : {}),
@@ -139,6 +136,6 @@ export async function propsForCommerce(
 		}),
 		products,
 		allowPurchase,
-		country,
+		country: countryCode,
 	}
 }

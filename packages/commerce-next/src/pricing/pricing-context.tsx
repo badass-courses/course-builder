@@ -2,14 +2,13 @@ import * as React from 'react'
 import { use } from 'react'
 import { useMachine } from '@xstate/react'
 
-import { MerchantCoupon } from '@coursebuilder/core/schemas'
-
 import {
 	PricingContextType,
 	pricingMachine,
 	PricingMachineInput,
-} from './pricing-state-machine'
-import { PricingData } from './pricing-widget'
+} from '@coursebuilder/core/pricing/pricing-state-machine'
+import { MerchantCoupon } from '@coursebuilder/core/schemas'
+import { PricingData } from '@coursebuilder/core/types'
 
 const PricingContext = React.createContext<
 	| (PricingContextType & {

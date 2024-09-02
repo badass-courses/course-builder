@@ -5,13 +5,13 @@ import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { eq } from 'drizzle-orm'
 
-import type { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import {
 	type Coupon,
 	type Purchase,
 	type UpgradableProduct,
 	type User,
 } from '@coursebuilder/core/schemas'
+import type { PricingData } from '@coursebuilder/core/types'
 
 export type TeamPageData = {
 	bulkPurchases: {

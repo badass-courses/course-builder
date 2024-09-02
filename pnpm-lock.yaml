@@ -4712,6 +4712,9 @@ importers:
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
+      query-string:
+        specifier: ^9.0.0
+        version: 9.0.0
       srt-parser-2:
         specifier: ^1.2.3
         version: 1.2.3
@@ -4721,6 +4724,9 @@ importers:
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
+      xstate:
+        specifier: ^5.13.0
+        version: 5.13.0
     devDependencies:
       '@auth/core':
         specifier: ^0.30.0

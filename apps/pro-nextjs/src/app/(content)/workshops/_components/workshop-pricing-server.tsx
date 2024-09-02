@@ -1,11 +1,12 @@
 import * as React from 'react'
+import { headers } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getWorkshopProduct } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
 
 import { type WorkshopPageProps } from './workshop-page-props'
@@ -31,7 +32,10 @@ export async function WorkshopPricing({
 		const pricingDataLoader = getPricingData({
 			productId: product.id,
 		})
-
+		const countryCode =
+			headers().get('x-vercel-ip-country') ||
+			process.env.DEFAULT_COUNTRY ||
+			'US'
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
@@ -40,6 +44,7 @@ export async function WorkshopPricing({
 				},
 				userId: user?.id,
 				products: [product],
+				countryCode,
 			},
 			courseBuilderAdapter,
 		)

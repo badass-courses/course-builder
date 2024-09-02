@@ -282,3 +282,35 @@ export type FormatPricesForProductOptions = {
 	autoApplyPPP?: boolean
 	usedCouponId?: string
 }
+
+export type CommerceProps = {
+	couponIdFromCoupon?: string
+	couponFromCode?: CouponForCode
+	userId?: string
+	purchases?: Purchase[]
+	products?: Product[]
+	allowPurchase?: boolean
+	country?: string
+}
+
+export type CouponForCode = Coupon & {
+	isValid: boolean
+	isRedeemable: boolean
+}
+
+export type PricingData = {
+	formattedPrice?: FormattedPrice | null
+	purchaseToUpgrade?: Purchase | null
+	quantityAvailable: number
+}
+
+export type PricingOptions = {
+	withImage: boolean
+	withTitle: boolean
+	withGuaranteeBadge: boolean
+	isLiveEvent: boolean
+	isPPPEnabled: boolean
+	teamQuantityLimit: number
+	allowTeamPurchase: boolean
+	cancelUrl: string
+}

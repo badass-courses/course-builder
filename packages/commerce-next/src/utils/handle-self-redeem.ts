@@ -2,7 +2,7 @@
 
 import { Purchase } from '@coursebuilder/core/schemas'
 
-import { redeemFullPriceCoupon } from '../coupons/redeem-full-price-coupon'
+import { redeemFullPriceCoupon } from './redeem-full-price-coupon'
 
 type CallbackParams =
 	| { status: 'success'; redeemedPurchase: Purchase }

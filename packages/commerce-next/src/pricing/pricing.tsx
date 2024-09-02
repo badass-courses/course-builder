@@ -6,16 +6,15 @@ import pluralize from 'pluralize'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
 import Balancer from 'react-wrap-balancer'
 
+import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
 import { Product } from '@coursebuilder/core/schemas'
+import { PricingData, PricingOptions } from '@coursebuilder/core/types'
+import { formatUsd } from '@coursebuilder/core/utils/format-usd'
 import { Button, Checkbox } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
-import { formatUsd } from '../utils/format-usd'
 import { usePriceCheck } from './pricing-check-context'
 import { PricingProvider, usePricing } from './pricing-context'
-import { PricingOptions } from './pricing-props'
-import { PricingData } from './pricing-widget'
 
 type RootProps = {
 	className?: string

@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation.js'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
 import { FormattedPrice } from '@coursebuilder/core/types'
 
 import { PriceDisplay } from '../pricing/price-display'
-import { buildStripeCheckoutPath } from '../utils/build-stripe-checkout-path'
 import { useDebounce } from '../utils/use-debounce'
 
 const buyMoreSeatsSchema = z.object({

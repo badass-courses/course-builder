@@ -24,7 +24,7 @@ import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
-import { getCouponForCode } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
 const fredokaFont = Fredoka({
 	subsets: ['latin'],

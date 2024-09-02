@@ -2,6 +2,7 @@ import { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
@@ -12,7 +13,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
@@ -117,6 +118,8 @@ async function ProductCommerce({
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
+	const countryCode =
+		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
 	let commerceProps = await propsForCommerce(
 		{
 			query: {
@@ -125,6 +128,7 @@ async function ProductCommerce({
 			},
 			userId: user?.id,
 			products: [product],
+			countryCode,
 		},
 		courseBuilderAdapter,
 	)
