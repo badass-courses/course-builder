@@ -10,7 +10,7 @@ export const EventSidebar = ({ children }: { children: React.ReactNode }) => {
 	const [sidebarHeight, setSidebarHeight] = React.useState(0)
 	React.useEffect(() => {
 		if (sidebarRef.current) {
-			setSidebarHeight(sidebarRef.current.clientHeight)
+			setSidebarHeight(sidebarRef.current.clientHeight + 90)
 		}
 	}, [sidebarRef.current])
 
@@ -18,7 +18,7 @@ export const EventSidebar = ({ children }: { children: React.ReactNode }) => {
 	const [windowHeight, setWindowHeight] = React.useState(0)
 	React.useEffect(() => {
 		const handleResize = () => {
-			setWindowHeight(window.innerHeight)
+			setWindowHeight(window.innerHeight - 90)
 		}
 		handleResize()
 		window.addEventListener('resize', handleResize)
@@ -36,7 +36,7 @@ export const EventSidebar = ({ children }: { children: React.ReactNode }) => {
 			<div
 				ref={sidebarRef}
 				className={cn('', {
-					'md:sticky md:top-0': windowHeight > sidebarHeight,
+					'md:sticky md:top-14': windowHeight > sidebarHeight,
 				})}
 			>
 				{children}

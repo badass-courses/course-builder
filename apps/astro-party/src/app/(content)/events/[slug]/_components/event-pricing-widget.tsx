@@ -50,8 +50,8 @@ export const EventPricingWidget: React.FC<{
 					<Pricing.Price />
 					<Pricing.TeamToggle />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="border-2 text-white" />
-					<Pricing.SaleCountdown />
+					<Pricing.BuyButton className="border-2 text-lg font-semibold uppercase text-white" />
+					<Pricing.SaleCountdown className="py-5" />
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.PPPToggle />
