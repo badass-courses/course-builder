@@ -411,7 +411,11 @@ const TeamQuantityInput = ({
 							}}
 							inputMode="numeric"
 							pattern="[0-9]*"
-							value={quantity}
+							value={
+								teamQuantityLimit !== 0 && teamQuantityLimit < quantity
+									? teamQuantityLimit
+									: quantity
+							}
 							id={`${quantity}-${product.name}`}
 							required={true}
 						/>

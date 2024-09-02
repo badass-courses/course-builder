@@ -42,15 +42,14 @@ export const EventDetails: React.FC<{
 			<h3 className="font-heading pb-4 text-2xl font-bold">Event Details</h3>
 			<div className="flex flex-col gap-2.5 text-base font-normal">
 				<div className="flex flex-col">
-					<span className="inline-flex items-center gap-1 font-light opacity-90">
-						<CalendarIcon className="h-5 w-5 flex-shrink-0 opacity-50" /> Date
+					<span className="inline-flex items-center gap-1 font-semibold opacity-90">
+						<CalendarIcon className="h-5 w-5 flex-shrink-0" /> Date
 					</span>{' '}
 					{eventDate}
 				</div>
 				<div className="flex flex-col">
-					<span className="inline-flex items-center gap-1 font-light opacity-90">
-						<ClockIcon className="relative h-5 w-5 flex-shrink-0 opacity-50" />{' '}
-						Time
+					<span className="inline-flex items-center gap-1 font-semibold opacity-90">
+						<ClockIcon className="relative h-5 w-5 flex-shrink-0" /> Time
 					</span>
 					<div>
 						{eventTime} (Pacific time){' '}
@@ -67,8 +66,8 @@ export const EventDetails: React.FC<{
 					</div>
 				</div>
 				<div className="flex flex-col">
-					<span className="inline-flex items-center gap-1 font-light opacity-90">
-						<MapPinIcon className="h-5 w-5 opacity-50" /> Location
+					<span className="inline-flex items-center gap-1 font-semibold opacity-90">
+						<MapPinIcon className="h-5 w-5 flex-shrink-0" /> Location
 					</span>{' '}
 					Zoom (online remote)
 				</div>
