@@ -40,7 +40,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			throw new Error(`email resource not found`)
 		}
 
-		await step.sleep(`sleep for 5 minutes`, '5s')
+		await step.sleep(`sleep for 5 minutes`, '15m')
 
 		const welcomeEmailBody: string = await step.run(
 			`parse email body`,
