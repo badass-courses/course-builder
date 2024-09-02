@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { Icon } from '@/components/icons'
+import { env } from '@/env.mjs'
 import { signIn } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
@@ -15,14 +16,18 @@ export function DiscordConnectButton({
 		<Button
 			data-button=""
 			variant="outline"
-			onClick={() => signIn(discordProvider.id)}
+			onClick={() =>
+				signIn(discordProvider.id, {
+					callbackUrl: env.NEXT_PUBLIC_DISCORD_INVITE_URL,
+				})
+			}
 		>
 			<Icon
 				className="mr-2 flex items-center justify-center"
 				name="Discord"
 				size="20"
 			/>
-			Connect to {discordProvider.name}
+			Connect to Discord
 		</Button>
 	)
 }

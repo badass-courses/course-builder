@@ -88,24 +88,6 @@ async function updateDiscordRolesForUser(
 			},
 		})
 		.where(eq(users.id, user.id))
-
-	if (!discordMember.roles.includes(env.DISCORD_MEMBER_ROLE_ID)) {
-		await fetchAsDiscordBot(
-			`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({
-					roles: Array.from(
-						new Set([...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]),
-					),
-				}),
-				// note using fetchJsonAsDiscordBot because this API doesn't return JSON.
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
-	}
 }
 
 export default async function DiscordCallback({
@@ -166,5 +148,5 @@ export default async function DiscordCallback({
 	}
 
 	console.log({ discordUser, discordToken })
-	return null
+	redirect(env.NEXT_PUBLIC_DISCORD_INVITE_URL)
 }
