@@ -146,9 +146,9 @@
 		"nodemailer": "^6.7.2",
 		"openai-edge": "^1.2.2",
 		"pluralize": "^8.0.0",
+		"query-string": "^9.0.0",
 		"srt-parser-2": "^1.2.3",
 		"stripe": "16.9.0",
-		"query-string": "^9.0.0",
 		"uuid": "^9.0.1",
 		"xstate": "^5.13.0"
 	},
