@@ -1,10 +1,7 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
-import { Icon } from '@/components/icons'
+import { DiscordConnectButton } from '@/app/discord/connect/discord-connect-button'
 import { getProviders } from '@/server/auth'
-import { signIn } from 'next-auth/react'
-
-import { Button } from '@coursebuilder/ui'
 
 export default async function Discord() {
 	headers()
@@ -19,18 +16,7 @@ export default async function Discord() {
 
 			<div data-providers-container="">
 				{discordProvider ? (
-					<Button
-						data-button=""
-						variant="outline"
-						onClick={() => signIn(discordProvider.id)}
-					>
-						<Icon
-							className="mr-2 flex items-center justify-center"
-							name="Discord"
-							size="20"
-						/>
-						Connect to {discordProvider.name}
-					</Button>
+					<DiscordConnectButton discordProvider={discordProvider} />
 				) : null}
 			</div>
 		</main>

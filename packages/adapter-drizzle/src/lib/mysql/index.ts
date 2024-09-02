@@ -1296,7 +1296,11 @@ export function mySqlDrizzleAdapter(
 			)
 
 			if (!chargeForPurchase) {
-				logger.error(new Error('No charge found for purchase'))
+				logger.error(
+					new Error(
+						`No charge found for purchase: Stripe Charge ID: ${stripeChargeId}`,
+					),
+				)
 				return null
 			}
 
