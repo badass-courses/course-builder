@@ -156,7 +156,7 @@ export async function getModuleProgressForUser(
 	const subscriberCookie = cookies().get('ck_subscriber')
 
 	if (!subscriberCookie) {
-		console.error('no subscriber cookie')
+		console.debug('no subscriber cookie')
 		return {
 			completedLessons: [],
 			nextResource: null,
