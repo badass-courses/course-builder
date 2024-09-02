@@ -6,11 +6,8 @@ import { env } from '@/env.mjs'
 import { pricingClassNames } from '@/styles/commerce'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
-import {
-	PricingData,
-	PricingWidget,
-} from '@coursebuilder/commerce-next/pricing/pricing-widget'
-import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
+import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
+import { CommerceProps, PricingData } from '@coursebuilder/core/types'
 
 export function ProductPricing({
 	product,

@@ -7,10 +7,12 @@ import pluralize from 'pluralize'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
-import type { PricingOptions } from '@coursebuilder/commerce-next/pricing/pricing-props'
-import type { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
-import type { FormattedPrice } from '@coursebuilder/core/types'
+import type {
+	CommerceProps,
+	FormattedPrice,
+	PricingOptions,
+} from '@coursebuilder/core/types'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null

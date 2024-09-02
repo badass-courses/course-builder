@@ -1,18 +1,14 @@
 import * as React from 'react'
 
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
-import { Product, Purchase } from '@coursebuilder/core/schemas'
-import type { FormattedPrice } from '@coursebuilder/core/types'
+import { Product } from '@coursebuilder/core/schemas'
+import {
+	CommerceProps,
+	PricingData,
+	PricingOptions,
+} from '@coursebuilder/core/types'
 
 import { useCoupon } from '../coupons/use-coupon'
-import { CommerceProps } from '../utils/commerce-props'
-import { PricingOptions } from './pricing-props'
-
-export type PricingData = {
-	formattedPrice?: FormattedPrice | null
-	purchaseToUpgrade?: Purchase | null
-	quantityAvailable: number
-}
 
 export const PricingWidget: React.FC<{
 	product: Product

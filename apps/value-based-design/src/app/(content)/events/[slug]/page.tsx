@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
@@ -19,7 +20,7 @@ import { first } from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
@@ -81,6 +82,10 @@ export default async function EventPage({
 			productId: product.id,
 		})
 
+		const countryCode =
+			headers().get('x-vercel-ip-country') ||
+			process.env.DEFAULT_COUNTRY ||
+			'US'
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
@@ -89,6 +94,7 @@ export default async function EventPage({
 				},
 				userId: user?.id,
 				products: [productParsed.data],
+				countryCode,
 			},
 			courseBuilderAdapter,
 		)
