@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { find, isEmpty } from 'lodash'
 import { z } from 'zod'
 
@@ -29,6 +30,15 @@ export default function ConvertkitProvider(
 		}) => {
 			const subscriber = await fetchSubscriber({
 				convertkitId: subscriberId,
+				convertkitApiSecret: options.apiSecret,
+				convertkitApiKey: options.apiKey,
+			})
+		},
+		getSubscriberByEmail: async (email: string) => {
+			console.log({ email })
+			if (!email) return null
+			return await fetchSubscriber({
+				subscriberEmail: email,
 				convertkitApiSecret: options.apiSecret,
 				convertkitApiKey: options.apiKey,
 			})
@@ -88,6 +98,36 @@ export default function ConvertkitProvider(
 
 			return await fetchSubscriber({
 				convertkitId: subscriber.id.toString(),
+				convertkitApiKey: options.apiKey,
+				convertkitApiSecret: options.apiSecret,
+			})
+		},
+		async updateSubscriberFields({
+			subscriberId,
+			subscriberEmail,
+			fields,
+		}: {
+			subscriberId?: string
+			subscriberEmail?: string
+			fields: Record<string, any>
+		}) {
+			const subscriber = await fetchSubscriber({
+				convertkitId: subscriberId,
+				subscriberEmail,
+				convertkitApiKey: options.apiKey,
+				convertkitApiSecret: options.apiSecret,
+			})
+
+			await setConvertkitSubscriberFields({
+				subscriber,
+				fields,
+				convertkitApiKey: options.apiKey,
+				convertkitApiSecret: options.apiSecret,
+			})
+
+			return await fetchSubscriber({
+				convertkitId: subscriberId,
+				subscriberEmail,
 				convertkitApiKey: options.apiKey,
 				convertkitApiSecret: options.apiSecret,
 			})
@@ -259,8 +299,10 @@ async function fetchSubscriber({
 	convertkitId,
 	convertkitApiSecret,
 	convertkitApiKey,
+	subscriberEmail,
 }: {
-	convertkitId: string | number | CookieOption
+	convertkitId?: string | number | CookieOption
+	subscriberEmail?: string
 	convertkitApiSecret: string
 	convertkitApiKey: string
 }) {
@@ -272,6 +314,17 @@ async function fetchSubscriber({
 			.then((res) => res.json())
 			.then(({ subscriber }: any) => {
 				return subscriber
+			})
+	}
+
+	if (!subscriber && subscriberEmail) {
+		const tagsApiUrl = `${convertkitBaseUrl}subscribers?api_secret=${convertkitApiSecret}&email_address=${subscriberEmail.trim().toLowerCase()}`
+		console.log({ tagsApiUrl })
+		subscriber = await fetch(tagsApiUrl)
+			.then((res) => res.json())
+			.then((res: any) => {
+				const subscribers = res.subscribers
+				return subscribers[0]
 			})
 	}
 

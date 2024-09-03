@@ -5,10 +5,8 @@ import {
 	purchases as purchasesTable,
 	users as usersTable,
 } from '@/db/schema'
-import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
-import { DiscordError, DiscordMember } from '@/lib/discord'
-import { fetchAsDiscordBot, fetchJsonAsDiscordBot } from '@/lib/discord-query'
+import { format } from 'date-fns'
 import { and, eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -44,80 +42,97 @@ export const syncPurchaseTags = inngest.createFunction(
 
 			if (!user) throw new Error('No user found')
 
-			const discordAccount = await step.run(
-				'check if discord is connected',
-				async () => {
-					return db.query.accounts.findFirst({
-						where: and(
-							eq(accounts.userId, user.id),
-							eq(accounts.provider, 'discord'),
-						),
-					})
-				},
-			)
+			// const discordAccount = await step.run(
+			// 	'check if discord is connected',
+			// 	async () => {
+			// 		return db.query.accounts.findFirst({
+			// 			where: and(
+			// 				eq(accounts.userId, user.id),
+			// 				eq(accounts.provider, 'discord'),
+			// 			),
+			// 		})
+			// 	},
+			// )
+			//
+			// if (discordAccount) {
+			// 	console.log('discord account is connected')
+			// 	const DiscordMemberBasicSchema = z.object({
+			// 		user: z.object({
+			// 			id: z.string(),
+			// 		}),
+			// 		roles: z.array(z.string()),
+			// 	})
+			//
+			// 	let discordMember = await step.run('get discord member', async () => {
+			// 		return DiscordMemberBasicSchema.parse(
+			// 			await fetchJsonAsDiscordBot<DiscordMember | DiscordError>(
+			// 				`guilds/${env.DISCORD_GUILD_ID}/members/${discordAccount.providerAccountId}`,
+			// 			),
+			// 		)
+			// 	})
+			//
+			// 	console.log('discord member', discordMember.user.id)
+			//
+			// 	await step.run('update basic discord roles for user', async () => {
+			// 		console.log('updating discord roles', 'user' in discordMember)
+			//
+			// 		const roles = Array.from(
+			// 			new Set([...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]),
+			// 		)
+			//
+			// 		console.log('roles', { roles })
+			//
+			// 		return await fetchJsonAsDiscordBot(
+			// 			`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
+			// 			{
+			// 				method: 'PATCH',
+			// 				body: JSON.stringify({
+			// 					roles,
+			// 				}),
+			// 				headers: {
+			// 					'Content-Type': 'application/json',
+			// 				},
+			// 			},
+			// 		)
+			// 	})
+			//
+			// 	let relaodedMember = await step.run(
+			// 		'reload discord member',
+			// 		async () => {
+			// 			return await fetchJsonAsDiscordBot<DiscordMember | DiscordError>(
+			// 				`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
+			// 			)
+			// 		},
+			// 	)
+			//
+			//
+			//
+			// 	console.log({ relaodedMember })
+			// }
 
-			if (discordAccount) {
-				console.log('discord account is connected')
-				const DiscordMemberBasicSchema = z.object({
-					user: z.object({
-						id: z.string(),
-					}),
-					roles: z.array(z.string()),
-				})
+			const convertkitUser = await step.run('get convertkit user', async () => {
+				console.log('get ck user', { user })
+				return emailListProvider.getSubscriberByEmail(user.email)
+			})
 
-				let discordMember = await step.run('get discord member', async () => {
-					return DiscordMemberBasicSchema.parse(
-						await fetchJsonAsDiscordBot<DiscordMember | DiscordError>(
-							`guilds/${env.DISCORD_GUILD_ID}/members/${discordAccount.providerAccountId}`,
-						),
-					)
-				})
-
-				console.log('discord member', discordMember.user.id)
-
-				await step.run('update basic discord roles for user', async () => {
-					console.log('updating discord roles', 'user' in discordMember)
-
-					const roles = Array.from(
-						new Set([...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]),
-					)
-
-					console.log('roles', { roles })
-
-					return await fetchJsonAsDiscordBot(
-						`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
-						{
-							method: 'PATCH',
-							body: JSON.stringify({
-								roles,
-							}),
-							headers: {
-								'Content-Type': 'application/json',
-							},
+			if (convertkitUser && emailListProvider.updateSubscriberFields) {
+				await step.run('update convertkit user', async () => {
+					return emailListProvider.updateSubscriberFields?.({
+						subscriberId: convertkitUser.id,
+						fields: {
+							purchased_pronextjs_course_on: format(
+								new Date(purchase.createdAt),
+								'yyyy-MM-dd HH:mm:ss z',
+							),
 						},
-					)
+					})
 				})
-
-				let relaodedMember = await step.run(
-					'reload discord member',
-					async () => {
-						return await fetchJsonAsDiscordBot<DiscordMember | DiscordError>(
-							`guilds/${env.DISCORD_GUILD_ID}/members/${discordMember.user.id}`,
-						)
-					},
-				)
-
-				// const convertkitUser = await step.run(
-				// 	'get convertkit user',
-				// 	async () => {
-				// 		return emailListProvider.getSubscriber(user.email)
-				// 	},
-				// )
-
-				console.log({ relaodedMember })
+				console.log(`synced convertkit tags for ${purchase.id}`)
+			} else {
+				console.log(`no convertkit tags to sync for ${user.email}`)
 			}
 
-			console.log(`synced purchase tags for ${purchase.id}`)
+			await step.sleep('sleep for 200ms', '200ms')
 		}
 	},
 )
