@@ -1,12 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname } from 'next/navigation'
 import { env } from '@/env.mjs'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
-import { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
-import { CommerceProps } from '@coursebuilder/commerce-next/utils/commerce-props'
+import { CommerceProps, PricingData } from '@coursebuilder/core/types'
 
 import { PricingWidget } from './pricing-widget'
 

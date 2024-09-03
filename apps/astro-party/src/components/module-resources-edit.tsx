@@ -17,7 +17,6 @@ import { getVideoResource } from '@/lib/video-resource-query'
 import { Plus } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
-import { NewResourceWithVideoForm } from '@coursebuilder/react-rsc/client'
 import {
 	Button,
 	Dialog,
@@ -28,6 +27,7 @@ import {
 	DialogTrigger,
 } from '@coursebuilder/ui'
 import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
+import { NewResourceWithVideoForm } from '@coursebuilder/ui/resources-crud/new-resource-with-video-form'
 
 import { LessonUploader } from './resources-crud/lesson-uploader'
 

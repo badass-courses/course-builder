@@ -1,15 +1,15 @@
+import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
 import { purchases } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { eq } from 'drizzle-orm'
 
-import { PricingData } from '@coursebuilder/commerce-next/pricing/pricing-widget'
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { formatPricesForProduct } from '@coursebuilder/core'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { productSchema, Purchase } from '@coursebuilder/core/schemas'
 import {
+	PricingData,
 	type FormatPricesForProductOptions,
-	type FormattedPrice,
 } from '@coursebuilder/core/types'
 
 import { getProducts } from './products-query'
@@ -64,6 +64,10 @@ export async function getPricingProps({
 		const pricingDataLoader = getPricingData({
 			productId: product?.id,
 		})
+		const countryCode =
+			headers().get('x-vercel-ip-country') ||
+			process.env.DEFAULT_COUNTRY ||
+			'US'
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
@@ -71,6 +75,7 @@ export async function getPricingProps({
 				},
 				products: products as any,
 				userId: user?.id,
+				countryCode,
 			},
 			courseBuilderAdapter,
 		)

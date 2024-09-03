@@ -1,4 +1,5 @@
 import type { AdapterSession, AdapterUser } from '@auth/core/adapters'
+import slugify from '@sindresorhus/slugify'
 import { addSeconds, isAfter } from 'date-fns'
 import {
 	and,
@@ -19,6 +20,7 @@ import {
 	MySqlDatabase,
 	MySqlTableFn,
 } from 'drizzle-orm/mysql-core'
+import { customAlphabet } from 'nanoid'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -34,6 +36,7 @@ import {
 	merchantPriceSchema,
 	MerchantProduct,
 	merchantProductSchema,
+	NewProduct,
 	Price,
 	priceSchema,
 	Product,
@@ -55,13 +58,12 @@ import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
 	type ContentResource,
-	type ContentResourceProduct,
-	type ContentResourceResource,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import { type ModuleProgress } from '@coursebuilder/core/schemas/resource-progress-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import { PaymentsProviderConfig } from '@coursebuilder/core/types'
 import { logger } from '@coursebuilder/core/utils/logger'
 import { validateCoupon } from '@coursebuilder/core/utils/validate-coupon'
 
@@ -174,6 +176,8 @@ import {
 import { getLessonProgressSchema } from './schemas/content/lesson-progress.js'
 import { getResourceProgressSchema } from './schemas/content/resource-progress.js'
 
+export const guid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
+
 export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 	return {
 		accounts: getAccountsSchema(mysqlTable),
@@ -256,6 +260,7 @@ export type DefaultSchema = ReturnType<typeof createTables>
 export function mySqlDrizzleAdapter(
 	client: InstanceType<typeof MySqlDatabase>,
 	tableFn = defaultMySqlTableFn,
+	paymentProvider?: PaymentsProviderConfig,
 ): CourseBuilderAdapter<typeof MySqlDatabase> {
 	const {
 		users,
@@ -479,7 +484,7 @@ export function mySqlDrizzleAdapter(
 			)
 
 			if (previousPurchaseProductIds.length > 0) {
-				return await client.query.upgradableProducts.findMany({
+				return client.query.upgradableProducts.findMany({
 					where: and(
 						eq(upgradableProducts.upgradableToId, productId),
 						inArray(
@@ -1222,12 +1227,330 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
-		async getProduct(productId: string): Promise<Product | null> {
-			return productSchema.nullable().parse(
-				await client.query.products.findFirst({
-					where: eq(products.id, productId),
+		async archiveProduct(productId) {
+			if (!paymentProvider) throw new Error('Payment provider not found')
+			const product = await adapter.getProduct(productId)
+
+			if (!product) {
+				throw new Error(`Product not found for id (${productId})`)
+			}
+
+			if (!product.price) {
+				throw new Error(`Product has no price`)
+			}
+
+			await client
+				.update(products)
+				.set({ status: 0, name: `${product.name} (Archived)` })
+				.where(eq(products.id, productId))
+
+			await client
+				.update(prices)
+				.set({ status: 0, nickname: `${product.name} (Archived)` })
+				.where(eq(prices.productId, productId))
+
+			await client
+				.update(merchantProduct)
+				.set({ status: 0 })
+				.where(eq(merchantProduct.productId, productId))
+
+			await client
+				.update(merchantPrice)
+				.set({ status: 0 })
+				.where(eq(merchantPrice.priceId, product.price.id))
+
+			const currentMerchantProduct = merchantProductSchema.nullish().parse(
+				await client.query.merchantProduct.findFirst({
+					where: eq(merchantProduct.productId, productId),
 				}),
 			)
+
+			if (!currentMerchantProduct || !currentMerchantProduct.identifier) {
+				throw new Error(`Merchant product not found for id (${productId})`)
+			}
+
+			await paymentProvider.updateProduct(currentMerchantProduct.identifier, {
+				active: false,
+			})
+
+			const currentMerchantPrice = merchantPriceSchema.nullish().parse(
+				await client.query.merchantPrice.findFirst({
+					where: and(
+						eq(merchantPrice.priceId, product.price.id),
+						eq(merchantPrice.status, 1),
+					),
+				}),
+			)
+
+			if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
+				throw new Error(`Merchant price not found for id (${productId})`)
+			}
+
+			await paymentProvider.updatePrice(currentMerchantPrice.identifier, {
+				active: false,
+			})
+
+			return adapter.getProduct(productId)
+		},
+		async updateProduct(input: Product) {
+			if (!paymentProvider) throw new Error('Payment provider not found')
+			const currentProduct = await adapter.getProduct(input.id)
+			if (!currentProduct) {
+				throw new Error(`Product not found`)
+			}
+			if (!currentProduct.price) {
+				throw new Error(`Product has no price`)
+			}
+
+			const merchantProduct = merchantProductSchema.nullish().parse(
+				await client.query.merchantProduct.findFirst({
+					where: (merchantProduct, { eq }) =>
+						eq(merchantProduct.productId, input.id),
+				}),
+			)
+
+			if (!merchantProduct || !merchantProduct.identifier) {
+				throw new Error(`Merchant product not found`)
+			}
+
+			// TODO: handle upgrades
+
+			const stripeProduct = await paymentProvider.getProduct(
+				merchantProduct.identifier,
+			)
+
+			const priceChanged =
+				currentProduct.price.unitAmount.toString() !==
+				input.price?.unitAmount.toString()
+
+			if (priceChanged) {
+				const currentMerchantPrice = merchantPriceSchema.nullish().parse(
+					await client.query.merchantPrice.findFirst({
+						where: (merchantPrice, { eq, and }) =>
+							and(
+								eq(merchantPrice.merchantProductId, merchantProduct.id),
+								eq(merchantPrice.status, 1),
+							),
+					}),
+				)
+
+				if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
+					throw new Error(`Merchant price not found`)
+				}
+
+				const currentStripePrice = await paymentProvider.getPrice(
+					currentMerchantPrice.identifier,
+				)
+
+				const newStripePrice = await paymentProvider.createPrice({
+					product: stripeProduct.id,
+					unit_amount: Math.floor(Number(input.price?.unitAmount || 0) * 100),
+					currency: 'usd',
+					metadata: {
+						slug: input.fields.slug,
+					},
+					active: true,
+				})
+
+				await paymentProvider.updateProduct(stripeProduct.id, {
+					default_price: newStripePrice.id,
+				})
+
+				const newMerchantPriceId = `mprice_${v4()}`
+				await client.insert(merchantPrice).values({
+					id: newMerchantPriceId,
+					merchantProductId: merchantProduct.id,
+					merchantAccountId: merchantProduct.merchantAccountId,
+					priceId: currentProduct.price.id,
+					status: 1,
+					identifier: newStripePrice.id,
+				})
+
+				if (currentMerchantPrice) {
+					await client
+						.update(merchantPrice)
+						.set({
+							status: 0,
+						})
+						.where(eq(merchantPrice.id, currentMerchantPrice.id))
+				}
+
+				await client
+					.update(prices)
+					.set({
+						unitAmount: Math.floor(
+							Number(input.price?.unitAmount || 0),
+						).toString(),
+						nickname: input.name,
+					})
+					.where(eq(prices.id, currentProduct.price.id))
+
+				if (currentStripePrice) {
+					await paymentProvider.updatePrice(currentStripePrice.id, {
+						active: false,
+					})
+				}
+			}
+
+			await paymentProvider.updateProduct(stripeProduct.id, {
+				name: input.name,
+				active: true,
+				images: input.fields.image?.url ? [input.fields.image.url] : undefined,
+				description: input.fields.description || '',
+				metadata: {
+					slug: input.fields.slug,
+				},
+			})
+
+			const { image, ...fieldsNoImage } = input.fields
+
+			await client
+				.update(products)
+				.set({
+					name: input.name,
+					quantityAvailable: input.quantityAvailable,
+					status: 1,
+					fields: {
+						...fieldsNoImage,
+						...(image?.url && { image }),
+					},
+				})
+				.where(eq(products.id, currentProduct.id))
+
+			return adapter.getProduct(currentProduct.id)
+		},
+		async createProduct(input: NewProduct) {
+			if (!paymentProvider) throw new Error('Payment provider not found')
+			const merchantAccount = merchantAccountSchema.nullish().parse(
+				await client.query.merchantAccount.findFirst({
+					where: (merchantAccount, { eq }) =>
+						eq(merchantAccount.label, 'stripe'),
+				}),
+			)
+
+			if (!merchantAccount) {
+				throw new Error('Merchant account not found')
+			}
+
+			const hash = guid()
+			const newProductId = slugify(`product-${hash}`)
+
+			const newProduct = {
+				id: newProductId,
+				name: input.name,
+				status: 1,
+				type: 'self-paced',
+				quantityAvailable: input.quantityAvailable,
+				fields: {
+					state: 'draft',
+					visibility: 'unlisted',
+					slug: slugify(`${input.name}-${hash}`),
+				},
+			}
+
+			await client.insert(products).values(newProduct)
+
+			const priceHash = guid()
+			const newPriceId = `price-${priceHash}`
+
+			await client.insert(prices).values({
+				id: newPriceId,
+				productId: newProductId,
+				unitAmount: input.price.toString(),
+				status: 1,
+			})
+
+			const product = await adapter.getProduct(newProductId)
+
+			const stripeProduct = await paymentProvider.createProduct({
+				name: input.name,
+				metadata: {
+					slug: product?.fields?.slug || null,
+				},
+			})
+
+			const stripePrice = await paymentProvider.createPrice({
+				product: stripeProduct.id,
+				unit_amount: Math.floor(Number(input.price) * 100),
+				currency: 'usd',
+				nickname: input.name,
+				metadata: {
+					slug: product?.fields?.slug || null,
+				},
+			})
+
+			const newMerchantProductId = `mproduct_${v4()}`
+
+			await client.insert(merchantProduct).values({
+				id: newMerchantProductId,
+				merchantAccountId: merchantAccount.id,
+				productId: newProductId,
+				identifier: stripeProduct.id,
+				status: 1,
+			})
+
+			const newMerchantPriceId = `mprice_${v4()}`
+			await client.insert(merchantPrice).values({
+				id: newMerchantPriceId,
+				merchantAccountId: merchantAccount.id,
+				merchantProductId: newMerchantProductId,
+				priceId: newPriceId,
+				identifier: stripePrice.id,
+				status: 1,
+			})
+
+			// TODO: handle upgrades
+
+			return product
+		},
+		async getProduct(
+			productSlugOrId?: string,
+			withResources: boolean = true,
+		): Promise<Product | null> {
+			if (!productSlugOrId) {
+				return null
+			}
+
+			try {
+				const productData = await client.query.products.findFirst({
+					where: and(
+						or(
+							eq(
+								sql`JSON_EXTRACT (${products.fields}, "$.slug")`,
+								`${productSlugOrId}`,
+							),
+							eq(products.id, productSlugOrId),
+						),
+					),
+					with: {
+						price: true,
+						...(withResources && {
+							resources: {
+								with: {
+									resource: {
+										with: {
+											resources: true,
+										},
+									},
+								},
+							},
+						}),
+					},
+				})
+				const parsedProduct = productSchema.safeParse(productData)
+				if (!parsedProduct.success) {
+					console.error(
+						'Error parsing product',
+						JSON.stringify(parsedProduct.error),
+						JSON.stringify(productData),
+					)
+					return null
+				}
+				return parsedProduct.data
+			} catch (e) {
+				console.log('getProduct error', e)
+				return null
+			}
 		},
 		async getProductResources(
 			productId: string,

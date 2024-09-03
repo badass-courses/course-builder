@@ -1,8 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { db } from '@/db'
+import { getActiveSelfPacedProducts } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
-import { and } from 'drizzle-orm'
 
 import {
 	Button,
@@ -14,10 +13,7 @@ import {
 
 export default async function EventIndexPage() {
 	const { ability } = await getServerAuthSession()
-	const products = await db.query.products.findMany({
-		where: (products, { eq, and }) =>
-			and(eq(products.status, 1), eq(products.type, 'self-paced')),
-	})
+	const products = await getActiveSelfPacedProducts()
 
 	return (
 		<div>

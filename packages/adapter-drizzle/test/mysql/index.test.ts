@@ -1,9 +1,11 @@
 import { and, eq, sql } from 'drizzle-orm'
+import { mysqlTable } from 'drizzle-orm/mysql-core'
 import { runBasicTests } from 'utils/adapter.js'
 import { runFormatPricingTests } from 'utils/format-prices-for-product.test.js'
 import { v4 } from 'uuid'
 
-import { priceSchema } from '@coursebuilder/core/schemas'
+import { MockStripeProvider } from '@coursebuilder/core/providers/stripe'
+import { priceSchema, Product } from '@coursebuilder/core/schemas'
 
 import { DrizzleAdapter } from '../../src/index.js'
 import { fixtures } from '../fixtures.js'
@@ -22,7 +24,7 @@ import {
 } from './schema.js'
 
 runBasicTests({
-	adapter: DrizzleAdapter(db),
+	adapter: DrizzleAdapter(db, mysqlTable, MockStripeProvider),
 	fixtures,
 	db: {
 		connect: async () => {
@@ -102,7 +104,7 @@ runBasicTests({
 })
 
 runFormatPricingTests({
-	adapter: DrizzleAdapter(db),
+	adapter: DrizzleAdapter(db, mysqlTable, MockStripeProvider),
 	fixtures,
 	db: {
 		createStandardMerchantCoupons: async () => {
@@ -178,7 +180,7 @@ runFormatPricingTests({
 				)
 				.then((res) => res[0]) ?? null,
 		createProduct: async (
-			product,
+			product: any,
 			price = {
 				createdAt: new Date(),
 				status: 1,

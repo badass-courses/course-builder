@@ -12,7 +12,7 @@ import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 import { count, eq } from 'drizzle-orm'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
@@ -96,6 +96,8 @@ async function ProductCommerce({
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
+	const countryCode =
+		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
 	let commerceProps = await propsForCommerce(
 		{
 			query: {
@@ -104,6 +106,7 @@ async function ProductCommerce({
 			},
 			userId: user?.id,
 			products: [product],
+			countryCode,
 		},
 		courseBuilderAdapter,
 	)

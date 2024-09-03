@@ -4,7 +4,6 @@ import { CookieSerializeOptions } from 'cookie'
 import { Inngest } from 'inngest'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
 import Stripe from 'stripe'
-import { z } from 'zod'
 
 import { CourseBuilderAdapter } from './adapters'
 import { CheckoutParams } from './lib/pricing/stripe-checkout'
@@ -87,6 +86,22 @@ export interface PaymentsProviderConfig {
 		customerId: string,
 		customer: { name: string; email: string },
 	) => Promise<void>
+	getProduct(productId: string): Promise<Stripe.Response<Stripe.Product>>
+	getPrice(priceId: string): Promise<Stripe.Response<Stripe.Price>>
+	updateProduct<TProductUpdate = Stripe.Product>(
+		productId: string,
+		productUpdate: Partial<TProductUpdate>,
+	): Promise<void>
+	updatePrice<TPriceUpdate = Stripe.Price>(
+		priceId: string,
+		priceUpdate: Partial<TPriceUpdate>,
+	): Promise<void>
+	createPrice(
+		price: Stripe.PriceCreateParams,
+	): Promise<Stripe.Response<Stripe.Price>>
+	createProduct(
+		product: Stripe.ProductCreateParams,
+	): Promise<Stripe.Response<Stripe.Product>>
 }
 
 export type PaymentsProviderConsumerConfig = Omit<
@@ -140,6 +155,22 @@ export interface PaymentsAdapter {
 		customer: { name: string; email: string },
 	): Promise<void>
 	refundCharge(chargeId: string): Promise<Stripe.Refund>
+	getProduct(productId: string): Promise<Stripe.Response<Stripe.Product>>
+	getPrice(priceId: string): Promise<Stripe.Response<Stripe.Price>>
+	updateProduct<TProductUpdate = Stripe.Product>(
+		productId: string,
+		product: Partial<TProductUpdate>,
+	): Promise<void>
+	updatePrice<TPriceUpdate = Stripe.Price>(
+		priceId: string,
+		priceUpdate: Partial<TPriceUpdate>,
+	): Promise<void>
+	createPrice(
+		price: Stripe.PriceCreateParams,
+	): Promise<Stripe.Response<Stripe.Price>>
+	createProduct(
+		product: Stripe.ProductCreateParams,
+	): Promise<Stripe.Response<Stripe.Product>>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
@@ -250,4 +281,36 @@ export type FormatPricesForProductOptions = {
 	userId?: string
 	autoApplyPPP?: boolean
 	usedCouponId?: string
+}
+
+export type CommerceProps = {
+	couponIdFromCoupon?: string
+	couponFromCode?: CouponForCode
+	userId?: string
+	purchases?: Purchase[]
+	products?: Product[]
+	allowPurchase?: boolean
+	country?: string
+}
+
+export type CouponForCode = Coupon & {
+	isValid: boolean
+	isRedeemable: boolean
+}
+
+export type PricingData = {
+	formattedPrice?: FormattedPrice | null
+	purchaseToUpgrade?: Purchase | null
+	quantityAvailable: number
+}
+
+export type PricingOptions = {
+	withImage: boolean
+	withTitle: boolean
+	withGuaranteeBadge: boolean
+	isLiveEvent: boolean
+	isPPPEnabled: boolean
+	teamQuantityLimit: number
+	allowTeamPurchase: boolean
+	cancelUrl: string
 }

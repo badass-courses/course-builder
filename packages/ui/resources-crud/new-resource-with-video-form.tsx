@@ -10,6 +10,7 @@ import {
 	type ContentResource,
 	type VideoResource,
 } from '@coursebuilder/core/schemas'
+
 import {
 	Button,
 	Form,
@@ -25,7 +26,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@coursebuilder/ui'
+} from '../index'
 
 const NewResourceWithVideoSchema = z.object({
 	title: z.string().min(2).max(90),

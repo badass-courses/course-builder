@@ -6,8 +6,8 @@ import { isAfter } from 'date-fns'
 import { find } from 'lodash'
 import { z } from 'zod'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
 import { formatPricesForProduct } from '@coursebuilder/core'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import {
 	Coupon,
 	Product,
@@ -231,6 +231,10 @@ export const pricingRouter = createTRPCRouter({
 					})
 				: undefined
 
+			const countryCode =
+				headers().get('x-vercel-ip-country') ||
+				process.env.DEFAULT_COUNTRY ||
+				'US'
 			const props = await propsForCommerce(
 				{
 					query: input,
@@ -238,6 +242,7 @@ export const pricingRouter = createTRPCRouter({
 					products: z
 						.array(productSchema)
 						.parse(inputProduct ? [inputProduct] : products),
+					countryCode,
 				},
 				courseBuilderAdapter,
 			)
