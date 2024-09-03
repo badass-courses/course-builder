@@ -51,7 +51,7 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 							withImage: product.type !== 'live',
 							withGuaranteeBadge: product.type !== 'live',
 							isLiveEvent: product.type === 'live',
-							teamQuantityLimit: 2,
+							teamQuantityLimit: quantityAvailable,
 							isPPPEnabled: product.type !== 'live',
 							cancelUrl: cancelUrl,
 						}}
