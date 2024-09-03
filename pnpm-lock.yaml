@@ -4775,46 +4775,6 @@ importers:
         specifier: 18.3.1
         version: 18.3.1
 
-  packages/react-rsc:
-    dependencies:
-      '@coursebuilder/core':
-        specifier: ^0.2.0
-        version: link:../core
-      '@coursebuilder/ui':
-        specifier: ^1.0.11
-        version: link:../ui
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.3.4(react-hook-form@7.51.0)
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@18.3.1)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.51.0(react@18.3.1)
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-    devDependencies:
-      '@types/react':
-        specifier: ^18.3.1
-        version: 18.3.1
-      '@types/react-dom':
-        specifier: ^18.3.0
-        version: 18.3.0
-      esbuild-react18-useclient:
-        specifier: ^1.0.7
-        version: 1.0.7
-      react:
-        specifier: 18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
-      tsup:
-        specifier: 8.0.2
-        version: 8.0.2(@swc/core@1.7.0)(typescript@5.4.5)
-
   packages/ui:
     dependencies:
       '@auth/core':
