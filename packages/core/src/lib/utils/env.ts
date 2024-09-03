@@ -35,7 +35,7 @@ export function createActionURL(
 	if (envUrl) {
 		url = new URL(envUrl)
 		if (basePath && basePath !== '/' && url.pathname !== '/') {
-			logger.warn(
+			logger.debug(
 				url.pathname === basePath
 					? 'env-url-basepath-redundant'
 					: 'env-url-basepath-mismatch',
