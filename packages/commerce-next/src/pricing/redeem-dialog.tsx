@@ -24,7 +24,7 @@ import {
 	useToast,
 } from '@coursebuilder/ui'
 
-import { redeemFullPriceCoupon } from '../coupons/redeem-full-price-coupon'
+import { redeemFullPriceCoupon } from '../utils/redeem-full-price-coupon'
 
 const validationSchema = Yup.object().shape({
 	email: Yup.string().email('Invalid email').required('Required'),

@@ -12,7 +12,7 @@ import { getPricingProps } from '@/lib/pricing-query'
 import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import { getCouponForCode } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
 export async function generateMetadata(
 	{ searchParams }: Props,

@@ -1,14 +1,7 @@
 import { and, assign, fromPromise, setup } from 'xstate'
 
-import {
-	MerchantCoupon,
-	Product,
-	type Purchase,
-} from '@coursebuilder/core/schemas'
-import { FormattedPrice } from '@coursebuilder/core/types'
-
-import { PricingOptions } from './pricing-props'
-import { PricingData } from './pricing-widget'
+import { MerchantCoupon, Product, type Purchase } from '../../schemas'
+import { FormattedPrice, PricingData, PricingOptions } from '../../types'
 
 export type PricingContextType = {
 	product: Product

@@ -7,16 +7,14 @@ import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
-import { env } from '@/env.mjs'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
 
-import { propsForCommerce } from '@coursebuilder/commerce-next/pricing/props-for-commerce'
+import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
 export async function generateMetadata(
@@ -120,6 +118,8 @@ async function ProductCommerce({
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
+	const countryCode =
+		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
 	let commerceProps = await propsForCommerce(
 		{
 			query: {
@@ -128,6 +128,7 @@ async function ProductCommerce({
 			},
 			userId: user?.id,
 			products: [product],
+			countryCode,
 		},
 		courseBuilderAdapter,
 	)

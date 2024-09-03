@@ -69,6 +69,11 @@
 			"import": "./dist/lib/*.js",
 			"require": "./dist/lib/*.js"
 		},
+		"./pricing/*": {
+			"types": "./dist/lib/pricing/*.d.ts",
+			"import": "./dist/lib/pricing/*.js",
+			"require": "./dist/lib/pricing/*.js"
+		},
 		"./inngest": {
 			"types": "./dist/inngest/index.d.ts",
 			"import": "./dist/inngest/index.js",
@@ -141,9 +146,11 @@
 		"nodemailer": "^6.7.2",
 		"openai-edge": "^1.2.2",
 		"pluralize": "^8.0.0",
+		"query-string": "^9.0.0",
 		"srt-parser-2": "^1.2.3",
 		"stripe": "16.9.0",
-		"uuid": "^9.0.1"
+		"uuid": "^9.0.1",
+		"xstate": "^5.13.0"
 	},
 	"devDependencies": {
 		"@auth/core": "^0.30.0",

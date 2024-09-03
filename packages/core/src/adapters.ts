@@ -3,6 +3,7 @@ import { type Adapter } from '@auth/core/adapters'
 import {
 	ContentResourceResource,
 	MerchantCharge,
+	NewProduct,
 	UpgradableProduct,
 } from './schemas'
 import { type ContentResource } from './schemas/content-resource-schema'
@@ -32,6 +33,9 @@ export interface CourseBuilderAdapter<
 > extends Adapter,
 		SkillProductsCommerceSdk {
 	client: InstanceType<TDatabaseInstance>
+	archiveProduct(productId: string): Promise<Product | null>
+	createProduct(product: NewProduct): Promise<Product | null>
+	updateProduct(product: Product): Promise<Product | null>
 	createPurchase(options: {
 		id?: string
 		userId: string
@@ -84,6 +88,15 @@ export interface CourseBuilderAdapter<
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
 	redeemFullPriceCoupon: async () => {
+		return {} as any
+	},
+	archiveProduct: async (productId) => {
+		return {} as any
+	},
+	updateProduct: async (product) => {
+		return {} as any
+	},
+	createProduct: async (product) => {
 		return {} as any
 	},
 	createPurchaseTransfer: async () => {
@@ -239,7 +252,10 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	getPriceForProduct(productId: string): Promise<Price | null> {
 		return Promise.resolve(null)
 	},
-	getProduct(productId: string): Promise<Product | null> {
+	getProduct(
+		productId?: string,
+		withResources: boolean = true,
+	): Promise<Product | null> {
 		return Promise.resolve(null)
 	},
 	getProductResources(productId: string): Promise<ContentResource[] | null> {
@@ -469,7 +485,10 @@ interface SkillProductsCommerceSdk {
 	): Promise<{ user: User; isNewUser: boolean }>
 	getUserById(userId: string): Promise<User | null>
 	getUserWithPurchasersByEmail(email: string): Promise<any | null>
-	getProduct(productId: string): Promise<Product | null>
+	getProduct(
+		productId?: string,
+		withResources?: boolean,
+	): Promise<Product | null>
 	getProductResources(productId: string): Promise<ContentResource[] | null>
 	getPrice(productId: string): Promise<Price | null>
 	getMerchantCoupon(merchantCouponId: string): Promise<MerchantCoupon | null>
