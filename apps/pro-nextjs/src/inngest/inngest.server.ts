@@ -28,6 +28,10 @@ import {
 	PostmarkWebhook,
 } from '@/inngest/events/postmark-webhook'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
+import {
+	SYNC_PURCHASE_TAGS_EVENT,
+	SyncPurchaseTags,
+} from '@/inngest/functions/sync-purchase-tags'
 import { authOptions } from '@/server/auth'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
@@ -71,6 +75,7 @@ export type Events = {
 	[LESSON_COMPLETED_EVENT]: LessonCompleted
 	[OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT]: OauthProviderAccountLinked
 	[NO_PROGRESS_MADE_EVENT]: NoProgressMade
+	[SYNC_PURCHASE_TAGS_EVENT]: SyncPurchaseTags
 }
 
 const callbackBase =

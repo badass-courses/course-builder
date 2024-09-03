@@ -11,6 +11,7 @@ import { postPurchaseWaitForProgress } from '@/inngest/functions/post-purchase-w
 import { postPurchaseWorkflow } from '@/inngest/functions/post-purchase-workflow'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { progressWasMade } from '@/inngest/functions/progress-was-made'
+import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -41,5 +42,6 @@ export const inngestConfig = {
 		postPurchaseWaitForProgress,
 		postPurchaseNoProgress,
 		noProgressContinued,
+		syncPurchaseTags,
 	],
 }

@@ -46,7 +46,7 @@ export async function fetchJsonAsDiscordBot<JsonType = unknown>(
 			...config?.headers,
 		},
 	})
-	return (await res.json()) as JsonType
+	return (await res.json().catch((e) => e)) as JsonType
 }
 
 export async function fetchAsDiscordBot(
