@@ -66,7 +66,7 @@
 		"@planetscale/database": "1.14.0",
 		"@prisma/client": "^5.6.0",
 		"@t3-oss/env-nextjs": "^0.7.1",
-		"@tanstack/react-query": "^5.25.0",
+		"@tanstack/react-query": "5.54.1",
 		"@trpc/client": "next",
 		"@trpc/next": "next",
 		"@trpc/react-query": "next",

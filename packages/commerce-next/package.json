@@ -85,7 +85,7 @@
 		"@radix-ui/react-switch": "^1.0.3",
 		"@react-email/components": "^0.0.22",
 		"@react-email/render": "^0.0.17",
-		"@tanstack/react-query": "^5.25.0",
+		"@tanstack/react-query": "5.54.1",
 		"@xstate/react": "^4.1.1",
 		"clsx": "^2.0.0",
 		"date-fns": "^2.30.0",
