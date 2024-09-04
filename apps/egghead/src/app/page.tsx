@@ -4,7 +4,7 @@ import { Landing } from '@/app/_components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
 
 export const metadata: Metadata = {
-	title: 'eggheadCourse Builder',
+	title: 'egghead Course Builder',
 	description:
 		'egghead Course Builder for building egghead courses with Course Builder',
 }
