@@ -4,6 +4,7 @@ import * as React from 'react'
 import Image from 'next/image.js'
 import Link from 'next/link.js'
 import { useRouter } from 'next/navigation.js'
+import MuxPlayer from '@mux/mux-player-react'
 import { first } from 'lodash'
 import { FileText } from 'lucide-react'
 import { signIn } from 'next-auth/react'
@@ -39,6 +40,8 @@ export function WelcomePage({
 	initiatePurchaseTransfer,
 	cancelPurchaseTransfer,
 	isDiscordConnected = false,
+	welcomeVideoPlaybackId,
+	welcomeVideoPosterImageUrl,
 }: {
 	product: Product | null
 	productResources?: ContentResource[] | null
@@ -53,6 +56,8 @@ export function WelcomePage({
 	purchaseUserTransfers: PurchaseUserTransfer[]
 	hasCharge: boolean
 	userEmail?: string | null
+	welcomeVideoPlaybackId?: string
+	welcomeVideoPosterImageUrl?: string
 	initiatePurchaseTransfer: (input: {
 		email: string
 		purchaseUserTransferId: string
@@ -79,6 +84,19 @@ export function WelcomePage({
 					isDiscordConnected={isDiscordConnected}
 				/>
 				<div className="flex flex-col gap-10">
+					{welcomeVideoPlaybackId && (
+						<>
+							<h2 className="pb-2 font-semibold uppercase tracking-wide">
+								Introduction
+							</h2>
+							<MuxPlayer
+								poster={welcomeVideoPosterImageUrl}
+								className="overflow-hidden rounded-md shadow-2xl shadow-black/30"
+								playbackId={welcomeVideoPlaybackId}
+							/>
+						</>
+					)}
+
 					{redemptionsLeft && (
 						<div>
 							<h2 className="text-primary pb-4 text-sm uppercase">
