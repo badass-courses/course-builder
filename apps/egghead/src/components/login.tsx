@@ -68,6 +68,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	const githubProvider = providers?.github
 	const discordProvider = providers?.discord
 	const emailProvider = providers?.nodemailer
+	const eggheadProvider = providers?.egghead
 
 	return (
 		<main data-login-template="">
@@ -93,73 +94,24 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 					</Balancer>
 				</p>
 			) : null}
-			{emailProvider ? (
-				<form data-form="" method="POST" action={emailProvider.signinUrl}>
-					<Label data-label="" htmlFor="email">
-						Email address
-					</Label>
-					<input name="callbackUrl" type="hidden" defaultValue={callbackUrl} />
-					<input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-					<div data-input-container="">
-						<div data-icon="">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-							>
-								<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-								<path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-							</svg>
-						</div>
-						<Input
-							data-input=""
-							id="email"
-							type="email"
-							required={true}
-							placeholder="you@example.com"
-							{...register('email', { required: true })}
-						/>
-					</div>
-					<Button data-button="">Email me a login link</Button>
-				</form>
-			) : null}
-			{(githubProvider || discordProvider) && <div data-separator="">or</div>}
+
 			<div data-providers-container="">
-				{githubProvider ? (
+				{eggheadProvider ? (
 					<Button
 						data-button=""
 						variant="outline"
 						onClick={() =>
-							signIn(githubProvider.id, {
+							signIn(eggheadProvider.id, {
 								callbackUrl,
 							})
 						}
 					>
 						<Icon
 							className="mr-2 flex items-center justify-center"
-							name="Github"
-							size="20"
+							name="egghead"
+							size="32"
 						/>
-						Log in with {githubProvider.name}
-					</Button>
-				) : null}
-				{discordProvider ? (
-					<Button
-						data-button=""
-						variant="outline"
-						onClick={() =>
-							signIn(discordProvider.id, {
-								callbackUrl,
-							})
-						}
-					>
-						<Icon
-							className="mr-2 flex items-center justify-center"
-							name="Discord"
-							size="20"
-						/>
-						Log in with {discordProvider.name}
+						sign in with {eggheadProvider.name}
 					</Button>
 				) : null}
 			</div>

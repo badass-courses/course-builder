@@ -8,6 +8,7 @@ import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
+import egghead from '@coursebuilder/core/providers/egghead'
 import { userSchema } from '@coursebuilder/core/schemas'
 
 type Role = 'admin' | 'user' | string
@@ -51,6 +52,9 @@ export const authOptions: NextAuthConfig = {
 		createUser: async ({ user }) => {
 			await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
 		},
+		linkAccount: async ({ account, user, profile }) => {
+			console.log('linkAccount', { account, user, profile })
+		},
 	},
 	callbacks: {
 		session: async ({ session, user }) => {
@@ -80,6 +84,11 @@ export const authOptions: NextAuthConfig = {
 	},
 	adapter: courseBuilderAdapter,
 	providers: [
+		egghead({
+			clientId: process.env.EGGHEAD_CLIENT_ID,
+			clientSecret: process.env.EGGHEAD_CLIENT_SECRET,
+			allowDangerousEmailAccountLinking: true,
+		}),
 		/**
 		 * ...add more providers here.
 		 *
