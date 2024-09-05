@@ -72,7 +72,6 @@ export async function LessonPage({
 										searchParams={searchParams}
 										params={params}
 										lessonType={lessonType}
-										abilityLoader={abilityLoader}
 									/>
 								)}
 							</main>
@@ -155,12 +154,10 @@ async function PlayerContainer({
 	lesson,
 	lessonType = 'lesson',
 	searchParams,
-	abilityLoader,
 	params,
 }: {
 	lesson: Lesson | null
 	lessonType?: 'lesson' | 'exercise' | 'solution'
-	abilityLoader: Promise<AbilityForResource>
 	searchParams: { [key: string]: string | string[] | undefined }
 	params: { module: string; lesson: string }
 }) {
@@ -168,6 +165,7 @@ async function PlayerContainer({
 		notFound()
 	}
 
+	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 
 	return (

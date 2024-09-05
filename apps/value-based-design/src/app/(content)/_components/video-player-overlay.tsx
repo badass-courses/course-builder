@@ -30,6 +30,7 @@ import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import { revalidateModuleLesson } from '../actions'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
 import { useModuleProgress } from './module-progress-provider'
@@ -89,6 +90,7 @@ export const CompletedLessonOverlay: React.FC<{
 						<ContinueButton
 							moduleType={moduleType}
 							resource={resource}
+							moduleSlug={moduleSlug}
 							nextResource={nextLesson}
 						/>
 					)}
@@ -187,8 +189,9 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
+	moduleSlug?: string
 	nextResource?: ContentResource | null
-}> = ({ resource, nextResource, moduleType }) => {
+}> = ({ resource, nextResource, moduleType, moduleSlug }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
@@ -207,13 +210,19 @@ const ContinueButton: React.FC<{
 				if (!isCurrentLessonCompleted) {
 					startTransition(async () => {
 						addLessonProgress(resource.id)
-						await setProgressForResource({
-							resourceId: resource.id,
-							isCompleted: true,
-						})
 					})
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}
+				await setProgressForResource({
+					resourceId: resource.id,
+					isCompleted: true,
+				})
+				await revalidateModuleLesson(
+					moduleSlug as string,
+					resource?.fields?.slug as string,
+					moduleType,
+					resource.type as 'lesson' | 'exercise' | 'solution',
+				)
 				if (nextResource && moduleNavigation) {
 					if (nextResource.type === 'solution') {
 						return router.push(
