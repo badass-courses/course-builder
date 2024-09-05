@@ -83,7 +83,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       cr.fields->>'$.slug' AS slug,
       cr.updatedAt
     FROM
-      ContentResource cr
+      vbd_ContentResource cr
     WHERE
       cr.type IN ('article', 'tip')
       AND cr.deletedAt IS NULL
