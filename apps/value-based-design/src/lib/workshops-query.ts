@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { Module, ModuleSchema } from '@/lib/module'
@@ -136,6 +136,12 @@ ORDER BY
 
 	return NavigationResultSchemaArraySchema.parse(result.rows)
 }
+
+export const getCachedWorkshopNavigation = unstable_cache(
+	async (slug: string) => getWorkshopNavigation(slug),
+	['workshop'],
+	{ revalidate: 3600 },
+)
 
 export async function getWorkshopNavigation(
 	moduleSlugOrId: string,
@@ -349,6 +355,7 @@ export async function getAllWorkshops() {
 				orderBy: asc(contentResourceResource.position),
 			},
 		},
+		orderBy: desc(contentResource.createdAt),
 	})
 
 	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
@@ -383,7 +390,7 @@ export const addResourceToWorkshop = async ({
 		position: workshop.resources.length,
 	})
 
-	return db.query.contentResourceResource.findFirst({
+	const resourceResource = db.query.contentResourceResource.findFirst({
 		where: and(
 			eq(contentResourceResource.resourceOfId, workshop.id),
 			eq(contentResourceResource.resourceId, resource.id),
@@ -392,6 +399,10 @@ export const addResourceToWorkshop = async ({
 			resource: true,
 		},
 	})
+
+	revalidateTag('workshop')
+
+	return resourceResource
 }
 
 export const updateResourcePosition = async ({
@@ -414,6 +425,8 @@ export const updateResourcePosition = async ({
 				eq(contentResourceResource.resourceId, resourceId),
 			),
 		)
+
+	revalidateTag('workshop')
 
 	return result
 }
@@ -448,6 +461,7 @@ export async function updateWorkshop(input: Module) {
 			},
 		})
 
+	revalidateTag('workshop')
 	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
 	revalidatePath('/workshops')

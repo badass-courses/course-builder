@@ -3,8 +3,10 @@ import { type Metadata } from 'next'
 import Image from 'next/image'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { getPage } from '@/lib/pages-query'
+import { getPricingProps } from '@/lib/pricing-query'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+import { PricingWidget } from './_components/home-pricing-widget'
 import LandingCopy from './_components/landing-copy'
 
 export const metadata: Metadata = {
@@ -13,7 +15,13 @@ export const metadata: Metadata = {
 		'Drive business success with impactful design decisions. New self-paced workshop by nickd.',
 }
 
-export default async function Home() {
+type Props = {
+	searchParams: { [key: string]: string | undefined }
+}
+
+export default async function Home({ searchParams }: Props) {
+	const { allowPurchase, pricingDataLoader, product, commerceProps } =
+		await getPricingProps({ searchParams })
 	const page = await getPage('page-1dywz')
 
 	return (
@@ -25,9 +33,41 @@ export default async function Home() {
 					) : (
 						<LandingCopy />
 					)}
-					<PrimaryNewsletterCta className="not-prose" withTitle={false} />
+					{!allowPurchase && (
+						<>
+							<h2>Subscribe for Free Tips, Tutorials, and Special Discounts</h2>
+							<PrimaryNewsletterCta className="not-prose" withTitle={false} />
+						</>
+					)}
 				</article>
 			</section>
+			{product && allowPurchase && pricingDataLoader && (
+				<>
+					<section id="buy" className="">
+						<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+							Buy Value-Based Design
+						</h2>
+						<div className="flex items-center justify-center border-y">
+							<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
+								<PricingWidget
+									quantityAvailable={-1}
+									pricingDataLoader={pricingDataLoader}
+									commerceProps={{ ...commerceProps }}
+									product={product}
+								/>
+							</div>
+						</div>
+					</section>
+					<section className="flex items-center justify-center py-10">
+						<img
+							src={'/assets/money-back-guarantee-badge.svg'}
+							width={100}
+							height={100}
+							alt="30-day money back guarantee"
+						/>
+					</section>
+				</>
+			)}
 			<section
 				aria-label="Your Instructor"
 				id="dark"

@@ -40,7 +40,7 @@ export function WorkshopResourceList(props: Props) {
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
 
 	const workshopNavigation = useWorkshopNavigation()
-	const moduleProgress = useModuleProgress()
+	const { moduleProgress } = useModuleProgress()
 
 	const { data: abilityRules, status: abilityStatus } =
 		api.ability.getCurrentAbilityRules.useQuery({
@@ -87,7 +87,15 @@ export function WorkshopResourceList(props: Props) {
 		>
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
 				{withHeader && (
-					<div className="relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]">
+					<div
+						className={cn(
+							'relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]',
+							{
+								'pl-2': workshopNavigation.coverImage,
+								'pl-5': !workshopNavigation.coverImage,
+							},
+						)}
+					>
 						{workshopNavigation.coverImage && (
 							<CldImage
 								width={48}
@@ -140,7 +148,7 @@ export function WorkshopResourceList(props: Props) {
 											{resource.lessons.length > 0 && (
 												// section lessons
 												<AccordionContent>
-													<ol className="divide-border divide-y bg-gray-50">
+													<ol className="divide-border bg-background divide-y">
 														{resource.lessons.map((lesson, index: number) => {
 															return (
 																<LessonResource
@@ -211,6 +219,7 @@ const LessonResource = ({
 						},
 					)}
 					href={`/workshops/${params.module}/${lesson.slug}`}
+					prefetch={true}
 				>
 					{isCompleted ? (
 						<div
