@@ -63,7 +63,9 @@ const Navigation = () => {
 						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-4 text-lg font-semibold leading-none transition"
 					>
 						{/* <LogoMark className="w-8" /> */}
-						<span className="text-sm font-semibold">{config.defaultTitle}</span>
+						<span className="relative translate-y-0.5 font-serif text-base font-bold sm:text-lg">
+							{config.defaultTitle}
+						</span>
 					</Link>
 				</span>
 				{links.length > 0 && (

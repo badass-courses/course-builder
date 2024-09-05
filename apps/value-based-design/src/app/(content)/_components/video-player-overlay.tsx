@@ -7,7 +7,8 @@ import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
-import { addProgress } from '@/lib/progress'
+import { usePrefetchNextResource } from '@/hooks/use-prefetch-next-resource'
+import { addProgress, setProgressForResource } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
@@ -15,7 +16,6 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
-import { useFormStatus } from 'react-dom'
 
 import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
@@ -32,111 +32,93 @@ import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-o
 
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+import { useModuleProgress } from './module-progress-provider'
 
 export const CompletedLessonOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
-	nextLesson: ContentResource | null | undefined
 	moduleType?: 'workshop' | 'tutorial'
-}> = ({ action, resource, nextLesson, moduleType = 'tutorial' }) => {
+	moduleSlug?: string
+}> = ({ action, resource, moduleType = 'tutorial', moduleSlug }) => {
 	const { playerRef } = action
-	const session = useSession()
-	const router = useRouter()
-	const moduleNavigation = useWorkshopNavigation()
-	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
-	const { data: moduleProgress } =
-		api.progress.getModuleProgressForUser.useQuery({
-			moduleId: moduleNavigation?.id,
+	const { data: nextLesson, status: nextLessonStatus } =
+		api.progress.getNextResource.useQuery({
+			lessonId: resource?.id,
+			moduleSlug: moduleSlug,
 		})
 
-	const [completedLessonsCount, setCompletedLessonsCount] = React.useState(
-		moduleProgress?.completedLessonsCount || 0,
-	)
-	const totalLessonsCount = moduleProgress?.totalLessonsCount || 0
-	const percentCompleted = Math.round(
-		(completedLessonsCount / totalLessonsCount) * 100,
-	)
-	const isCurrentLessonCompleted = Boolean(
-		moduleProgress?.completedLessons?.some(
-			(p) => p.resourceId === resource?.id && p.completedAt,
-		),
-	)
+	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+	const { moduleProgress } = useModuleProgress()
 
-	return (
-		<div
-			aria-live="polite"
-			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
-		>
-			<div className="flex flex-col items-center text-center">
-				<p className="pb-2 opacity-80">Next Up:</p>
-				<p className="font-heading fluid-2xl font-bold">
-					{nextLesson?.fields?.title}
-				</p>
-				<div className="mt-8 flex items-center gap-3 text-sm">
-					<Progress
-						value={percentCompleted}
-						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
-					/>
-					{completedLessonsCount}/{totalLessonsCount} completed
+	const percentCompleted = moduleProgress?.percentCompleted || 0
+
+	return nextLessonStatus === 'success' ? (
+		nextLesson ? (
+			<div
+				aria-live="polite"
+				className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			>
+				<div className="flex flex-col items-center text-center">
+					<p className="pb-2 opacity-80">Next Up:</p>
+					<p className="font-heading fluid-2xl font-bold">
+						{nextLesson?.fields?.title}
+					</p>
+					<div className="mt-8 flex items-center gap-3 text-sm">
+						<Progress
+							value={percentCompleted}
+							className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
+						/>
+						{moduleProgress?.completedLessonsCount || 0}/
+						{moduleProgress?.totalLessonsCount || 0} completed
+					</div>
 				</div>
-			</div>
-			<div className="flex w-full items-center justify-center gap-3">
+				<div className="flex w-full items-center justify-center gap-3">
+					<Button
+						variant="secondary"
+						type="button"
+						onClick={() => {
+							if (playerRef.current) {
+								playerRef.current.play()
+							}
+						}}
+					>
+						Replay
+					</Button>
+					{resource && (
+						<ContinueButton
+							moduleType={moduleType}
+							resource={resource}
+							nextResource={nextLesson}
+						/>
+					)}
+				</div>
 				<Button
-					variant="secondary"
 					type="button"
+					className="absolute right-5 top-5 bg-white/10"
+					variant="ghost"
+					size="icon"
 					onClick={() => {
-						if (playerRef.current) {
-							playerRef.current.play()
-						}
+						dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 					}}
 				>
-					Replay
+					<span className="sr-only">Dismiss</span>
+					<XMarkIcon aria-hidden="true" className="h-6 w-6" />
 				</Button>
-				{resource && (
-					<>
-						<form
-							action={async () => {
-								if (!isCurrentLessonCompleted) {
-									await addProgress({
-										resourceId: resource.id,
-									})
-								}
-								if (nextLesson && moduleNavigation) {
-									if (nextLesson.type === 'solution') {
-										return router.push(
-											`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
-										)
-									}
-									return router.push(
-										`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextLesson?.fields?.slug}`,
-									)
-								}
-							}}
-						>
-							<ContinueButton
-								setCompletedLessonsCount={
-									isCurrentLessonCompleted
-										? undefined
-										: setCompletedLessonsCount
-								}
-							/>
-						</form>
-					</>
-				)}
 			</div>
-			<Button
-				type="button"
-				className="absolute right-5 top-5 bg-white/10"
-				variant="ghost"
-				size="icon"
-				onClick={() => {
-					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
-				}}
-			>
-				<span className="sr-only">Dismiss</span>
-				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
-			</Button>
+		) : (
+			<CompletedModuleOverlay
+				action={action}
+				resource={resource}
+				moduleType={moduleType}
+			/>
+		)
+	) : (
+		<div
+			aria-live="polite"
+			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+		>
+			<Spinner />
 		</div>
 	)
 }
@@ -165,7 +147,7 @@ export const CompletedModuleOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<p className="font-heading fluid-xl pb-3 text-center font-bold">
 				Great job!
@@ -203,28 +185,53 @@ export const CompletedModuleOverlay: React.FC<{
 }
 
 const ContinueButton: React.FC<{
-	setCompletedLessonsCount?: React.Dispatch<React.SetStateAction<number>>
-}> = ({ setCompletedLessonsCount }) => {
-	const session = useSession()
-	const { pending } = useFormStatus()
-	const isCompleted = !Boolean(setCompletedLessonsCount)
+	resource: ContentResource
+	moduleType: 'workshop' | 'tutorial'
+	nextResource?: ContentResource | null
+}> = ({ resource, nextResource, moduleType }) => {
+	const router = useRouter()
+	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
+	const { moduleProgress, addLessonProgress } = useModuleProgress()
+	const moduleNavigation = useWorkshopNavigation()
+	const isCurrentLessonCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) => p.resourceId === resource.id && p.completedAt,
+		),
+	)
+
+	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
-			onMouseOver={() => {
-				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev + 1)
-			}}
-			onMouseOut={() => {
-				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev - 1)
-			}}
-			onClick={() => {
-				setCompletedLessonsCount && setCompletedLessonsCount((prev) => prev + 1)
+			onClick={async () => {
+				if (!isCurrentLessonCompleted) {
+					startTransition(async () => {
+						addLessonProgress(resource.id)
+						await setProgressForResource({
+							resourceId: resource.id,
+							isCompleted: true,
+						})
+					})
+					dispatchVideoPlayerOverlay({ type: 'LOADING' })
+				}
+				if (nextResource && moduleNavigation) {
+					if (nextResource.type === 'solution') {
+						return router.push(
+							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
+						)
+					}
+					return router.push(
+						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
+					)
+				}
 			}}
 			type="submit"
-			disabled={pending}
+			disabled={isPending}
 		>
-			{isCompleted ? 'Continue' : 'Complete & Continue'}
-			{pending && <Spinner className="ml-2 h-4 w-4" />}
+			{isCurrentLessonCompleted && !isPending
+				? 'Continue'
+				: 'Complete & Continue'}
+			{isPending && <Spinner className="ml-2 h-4 w-4" />}
 		</Button>
 	)
 }
@@ -240,7 +247,7 @@ export const SoftBlockOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/90 z-50 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
+			className="bg-background/90 z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleNavigation?.title}
@@ -286,6 +293,8 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	moduleType = 'tutorial',
 	moduleSlug,
 }) => {
+	usePrefetchNextResource({ resource, moduleType, moduleSlug })
+
 	const ability = use(abilityLoader)
 	const canView = ability.canView
 	const canInviteTeam = ability.canInviteTeam
@@ -380,7 +389,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 text-lg"
+				className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
@@ -389,29 +398,19 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 
 	switch (overlayState.action?.type) {
 		case 'COMPLETED':
-			if (nextResource) {
-				return (
-					<CompletedLessonOverlay
-						nextLesson={nextResource}
-						action={overlayState.action}
-						resource={resource}
-						moduleType={moduleType}
-					/>
-				)
-			} else {
-				return (
-					<CompletedModuleOverlay
-						action={overlayState.action}
-						resource={resource}
-						moduleType={moduleType}
-					/>
-				)
-			}
+			return (
+				<CompletedLessonOverlay
+					action={overlayState.action}
+					resource={resource}
+					moduleType={moduleType}
+					moduleSlug={moduleSlug}
+				/>
+			)
 		case 'LOADING':
 			return (
 				<div
 					aria-live="polite"
-					className="text-foreground absolute left-0 top-0 z-50 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
 				>
 					<Spinner className="text-white" />
 				</div>

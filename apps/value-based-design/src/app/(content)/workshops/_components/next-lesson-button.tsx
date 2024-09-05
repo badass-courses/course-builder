@@ -19,7 +19,7 @@ export function NextLessonButton({
 }) {
 	const workshopNavigation = useWorkshopNavigation()
 	const firstLessonSlug = getFirstLessonSlug(workshopNavigation)
-	const moduleProgress = useModuleProgress()
+	const { moduleProgress } = useModuleProgress()
 	return (
 		<>
 			{moduleProgress && (

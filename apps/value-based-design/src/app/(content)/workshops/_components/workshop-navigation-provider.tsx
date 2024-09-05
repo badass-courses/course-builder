@@ -8,11 +8,12 @@ const WorkshopNavigationContext =
 
 export const WorkshopNavigationProvider = ({
 	children,
-	workshopNavigation,
+	workshopNavDataLoader,
 }: {
 	children: React.ReactNode
-	workshopNavigation: WorkshopNavigation | null
+	workshopNavDataLoader: Promise<WorkshopNavigation | null>
 }) => {
+	const workshopNavigation = React.use(workshopNavDataLoader)
 	return (
 		<WorkshopNavigationContext.Provider value={workshopNavigation}>
 			{children}
