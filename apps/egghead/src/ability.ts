@@ -28,7 +28,17 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>
 
-type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'view'
+type Actions =
+	| 'create'
+	| 'read'
+	| 'update'
+	| 'delete'
+	| 'manage'
+	| 'view'
+	| 'save'
+	| 'publish'
+	| 'archive'
+	| 'unpublish'
 type Subjects = 'Content' | 'User' | ContentResource | User | 'all' | 'Invoice'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
@@ -68,6 +78,10 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 		if (options.user.roles.map((role) => role.name).includes('contributor')) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: options.user.id } })
+			can('save', 'Content', { createdById: { $eq: options.user.id } })
+			can('publish', 'Content', { createdById: { $eq: options.user.id } })
+			can('archive', 'Content', { createdById: { $eq: options.user.id } })
+			can('unpublish', 'Content', { createdById: { $eq: options.user.id } })
 		}
 
 		can('read', 'User', { id: options.user.id })

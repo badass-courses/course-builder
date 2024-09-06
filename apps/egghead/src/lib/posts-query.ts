@@ -11,6 +11,7 @@ import {
 import { NewPost, Post, PostSchema, PostUpdate } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
+import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
@@ -162,14 +163,18 @@ export async function createPost(input: NewPost) {
 	}
 }
 
-export async function updatePost(input: PostUpdate) {
+export async function updatePost(
+	input: PostUpdate,
+	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	if (!user || !ability.can('update', 'Content')) {
-		throw new Error('Unauthorized')
-	}
 
 	const currentPost = await getPost(input.id)
+
+	if (!user || !ability.can(action, subject('Content', currentPost))) {
+		throw new Error('Unauthorized')
+	}
 
 	if (!currentPost) {
 		throw new Error(`Post with id ${input.id} not found.`)
