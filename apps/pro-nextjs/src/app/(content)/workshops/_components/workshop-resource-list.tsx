@@ -10,7 +10,7 @@ import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/wor
 import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { Check, Lock, Pen } from 'lucide-react'
+import { Check, Lock, PanelLeftClose, PanelLeftOpen, Pen } from 'lucide-react'
 import { useMeasure } from 'react-use'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
@@ -21,6 +21,10 @@ import {
 	AccordionTrigger,
 	Button,
 	ScrollArea,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@coursebuilder/ui'
 
 type Props = {
@@ -79,10 +83,16 @@ export function WorkshopResourceList(props: Props) {
 		return null
 	}
 
-	const { resources } = workshopNavigation
+	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
+		workshopNavigation
 
 	return (
-		<nav className={cn('w-full max-w-sm flex-shrink-0 border-r', className)}>
+		<nav
+			className={cn('relative w-full max-w-sm flex-shrink-0', className, {
+				'border-r': !isSidebarCollapsed,
+				'w-0': isSidebarCollapsed,
+			})}
+		>
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
 				{withHeader && (
 					<div
@@ -181,6 +191,29 @@ export function WorkshopResourceList(props: Props) {
 					</Accordion>
 				</ScrollArea>
 			</div>
+			<TooltipProvider>
+				<Tooltip delayDuration={0}>
+					<TooltipTrigger asChild>
+						<Button
+							className="bg-background text-foreground hover:bg-background fixed bottom-3 left-3 z-50 hidden h-8 w-8 border p-1 transition lg:flex"
+							size="icon"
+							type="button"
+							onClick={() => {
+								setIsSidebarCollapsed(!isSidebarCollapsed)
+							}}
+						>
+							{isSidebarCollapsed ? (
+								<PanelLeftOpen className="h-4 w-4" />
+							) : (
+								<PanelLeftClose className="h-4 w-4" />
+							)}
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent side="right">
+						{isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
 		</nav>
 	)
 }
