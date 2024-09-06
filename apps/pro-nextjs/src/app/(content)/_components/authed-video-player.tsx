@@ -29,6 +29,7 @@ import {
 } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { revalidateModuleLesson } from '../actions'
 import { useModuleProgress } from './module-progress-provider'
 
 export function AuthedVideoPlayer({
@@ -262,6 +263,12 @@ async function handleOnVideoEnded({
 				moduleProgress,
 				addLessonProgress,
 			})
+			await revalidateModuleLesson(
+				moduleSlug as string,
+				currentResource.fields?.slug as string,
+				moduleType,
+				currentResource.type as 'lesson' | 'exercise' | 'solution',
+			)
 			if (nextResource) {
 				setTimeout(() => {
 					router.push(
