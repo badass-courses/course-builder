@@ -152,6 +152,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 											Contents
 										</strong>
 										<WorkshopResourceList
+											isCollapsible={false}
 											className="w-full max-w-none border-r-0"
 											withHeader={false}
 											maxHeight="h-auto"
