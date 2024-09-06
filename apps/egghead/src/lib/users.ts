@@ -35,3 +35,32 @@ export async function githubAccountsForCurrentUser() {
 
 	return !isEmpty(userAccounts)
 }
+
+export async function addRoleToUser(userId: string, roleName: string) {
+	const contributorRole = await db.query.roles.findFirst({
+		where: (roles, { eq }) => eq(roles.name, roleName),
+	})
+	if (contributorRole) {
+		const existingUserRole = await db.query.userRoles.findFirst({
+			where: (userRoles, { and, eq }) =>
+				and(
+					eq(userRoles.userId, userId),
+					eq(userRoles.roleId, contributorRole.id),
+				),
+		})
+
+		if (!existingUserRole) {
+			await db.insert(userRoles).values({
+				userId: userId,
+				roleId: contributorRole.id,
+				active: true,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				deletedAt: null,
+			})
+			console.debug(`user ${userId} now has role ${roleName}`)
+		} else {
+			console.debug(`user already has role ${roleName}`)
+		}
+	}
+}

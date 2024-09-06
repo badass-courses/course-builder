@@ -4,9 +4,11 @@ import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import { addRoleToUser } from '@/lib/users'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
+import { z } from 'zod'
 
 import egghead from '@coursebuilder/core/providers/egghead'
 import { userSchema } from '@coursebuilder/core/schemas'
@@ -54,6 +56,17 @@ export const authOptions: NextAuthConfig = {
 		},
 		linkAccount: async ({ account, user, profile }) => {
 			console.log('linkAccount', { account, user, profile })
+		},
+		signIn: async (params) => {
+			const { user } = params
+			const profile = z
+				.object({
+					roles: z.array(z.string()),
+				})
+				.parse(params.profile)
+			if (user.id && profile.roles.includes('instructor')) {
+				await addRoleToUser(user.id, 'contributor')
+			}
 		},
 	},
 	callbacks: {
@@ -120,7 +133,7 @@ export const authOptions: NextAuthConfig = {
 	],
 	pages: {
 		signIn: '/login',
-		error: '/error',
+		error: '/login',
 		verifyRequest: '/check-your-email',
 	},
 }
