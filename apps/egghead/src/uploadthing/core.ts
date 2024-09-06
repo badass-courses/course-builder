@@ -8,7 +8,7 @@ import { VIDEO_UPLOADED_EVENT } from '@coursebuilder/core/inngest/video-processi
 const f = createUploadthing()
 
 export const ourFileRouter = {
-	videoUploader: f({ video: { maxFileSize: '2GB', maxFileCount: 5 } })
+	videoUploader: f({ video: { maxFileSize: '6GB', maxFileCount: 5 } })
 		.input(
 			z.object({
 				parentResourceId: z.string().optional(),
