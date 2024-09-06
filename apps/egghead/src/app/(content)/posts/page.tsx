@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
-import { getAllPosts } from '@/lib/posts-query'
+import { getCachedAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { Card, CardFooter, CardHeader, CardTitle } from '@coursebuilder/ui'
@@ -23,7 +23,7 @@ export default async function PostsListPage() {
 }
 
 async function PostList() {
-	const postsModule = await getAllPosts()
+	const postsModule = await getCachedAllPosts()
 	const { ability } = await getServerAuthSession()
 
 	return (

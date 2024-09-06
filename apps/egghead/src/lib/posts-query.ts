@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentContributions,
@@ -46,8 +46,13 @@ export async function deletePost(id: string) {
 	return true
 }
 
+export const getCachedPost = unstable_cache(
+	async (slug: string) => getPost(slug),
+	['posts'],
+	{ revalidate: 3600 },
+)
+
 export async function getPost(slug: string): Promise<Post | null> {
-	console.log({ slug })
 	const post = await db.query.contentResource.findFirst({
 		where: or(
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
@@ -71,6 +76,12 @@ export async function getPost(slug: string): Promise<Post | null> {
 
 	return postParsed.data
 }
+
+export const getCachedAllPosts = unstable_cache(
+	async () => getAllPosts(),
+	['posts'],
+	{ revalidate: 3600 },
+)
 
 export async function getAllPosts(): Promise<Post[]> {
 	const posts = await db.query.contentResource.findMany({
@@ -105,7 +116,7 @@ export async function createPost(input: NewPost) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
-	const resource = await db
+	await db
 		.insert(contentResource)
 		.values({
 			id: newPostId,
@@ -170,6 +181,8 @@ export async function updatePost(input: PostUpdate) {
 		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
+
+	revalidateTag('posts')
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentPost.id,

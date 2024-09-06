@@ -1,13 +1,13 @@
 import * as React from 'react'
-import { Suspense } from 'react'
+import { Suspense, use } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { TranscriptContainer } from '@/app/(content)/[post]/transcript'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { courseBuilderAdapter } from '@/db'
 import { Post } from '@/lib/posts'
-import { getPost } from '@/lib/posts-query'
+import { getCachedPost, getPost } from '@/lib/posts-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import ReactMarkdown from 'react-markdown'
@@ -24,7 +24,7 @@ export async function generateMetadata(
 	{ params, searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const post = await getPost(params.post)
+	const post = await getCachedPost(params.post)
 
 	if (!post) {
 		return parent as Metadata
@@ -36,9 +36,6 @@ export async function generateMetadata(
 }
 
 export default async function PostPage({ params }: Props) {
-	headers()
-
-	console.log(params)
 	const postLoader = getPost(params.post)
 	return (
 		<div>
@@ -152,8 +149,7 @@ async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
 	}
 
 	const resource = post.resources?.[0]?.resource.id
-
-	const transcript = await getTranscript(resource)
+	const transcriptLoader = getTranscript(resource)
 
 	return (
 		<>
@@ -168,14 +164,9 @@ async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
 					</ReactMarkdown>
 				</>
 			)}
-			{transcript && (
-				<div className="w-full max-w-2xl pt-5">
-					<h3 className="font-bold">Transcript</h3>
-					<ReactMarkdown className="prose dark:prose-invert">
-						{transcript}
-					</ReactMarkdown>
-				</div>
-			)}
+			<Suspense>
+				<TranscriptContainer transcriptLoader={transcriptLoader} />
+			</Suspense>
 		</>
 	)
 }
