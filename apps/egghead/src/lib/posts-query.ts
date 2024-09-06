@@ -2,11 +2,13 @@
 
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
+import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import {
 	contentContributions,
 	contentResource,
 	contentResourceResource,
 	contributionTypes,
+	users,
 } from '@/db/schema'
 import { NewPost, Post, PostSchema, PostUpdate } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
@@ -101,11 +103,34 @@ export async function getAllPosts(): Promise<Post[]> {
 
 export async function createPost(input: NewPost) {
 	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
 
-	if (!user || !ability.can('create', 'Content')) {
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
+
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, session?.user?.id),
+		with: {
+			accounts: true,
+		},
+	})
+
+	if (!user) {
+		throw new Error('🚨 User not found')
+	}
+
+	const eggheadToken = user?.accounts?.find(
+		(account) => account.provider === 'egghead',
+	)?.access_token
+
+	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
+
+	const profile = await fetch(eggheadUserUrl, {
+		headers: {
+			Authorization: `Bearer ${eggheadToken}`,
+			'User-Agent': 'authjs',
+		},
+	}).then(async (res) => await res.json())
 
 	const newPostId = `post_${guid()}`
 
@@ -116,6 +141,18 @@ export async function createPost(input: NewPost) {
 	if (!videoResource) {
 		throw new Error('🚨 Video Resource not found')
 	}
+
+	const eggheadLessonId = await eggheadPgQuery(
+		`INSERT INTO lessons (title, instructor_id, slug, resource_type)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id`,
+		[
+			input.title,
+			profile.instructor.id,
+			slugify(`${input.title}~${guid()}`),
+			'post',
+		],
+	)
 
 	await db
 		.insert(contentResource)
@@ -128,6 +165,7 @@ export async function createPost(input: NewPost) {
 				state: 'draft',
 				visibility: 'unlisted',
 				slug: slugify(`${input.title}~${guid()}`),
+				eggheadLessonId,
 			},
 		})
 		.catch((error) => {
@@ -172,12 +210,12 @@ export async function updatePost(
 
 	const currentPost = await getPost(input.id)
 
-	if (!user || !ability.can(action, subject('Content', currentPost))) {
-		throw new Error('Unauthorized')
-	}
-
 	if (!currentPost) {
 		throw new Error(`Post with id ${input.id} not found.`)
+	}
+
+	if (!user || !ability.can(action, subject('Content', currentPost))) {
+		throw new Error('Unauthorized')
 	}
 
 	let postSlug = currentPost.fields.slug
