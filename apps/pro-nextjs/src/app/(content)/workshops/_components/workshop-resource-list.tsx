@@ -73,13 +73,13 @@ export function WorkshopResourceList(props: Props) {
 		}
 	}, [scrollAreaRef])
 
+	const [ref, { height: headerHeight }] = useMeasure()
+
 	if (!workshopNavigation) {
 		return null
 	}
 
 	const { resources } = workshopNavigation
-
-	const [ref, { height: headerHeight }] = useMeasure()
 
 	return (
 		<nav className={cn('w-full max-w-sm flex-shrink-0 border-r', className)}>
