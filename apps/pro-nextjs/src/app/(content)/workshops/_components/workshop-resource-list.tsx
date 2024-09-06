@@ -34,6 +34,7 @@ type Props = {
 	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
+	isCollapsible?: boolean
 }
 
 export function WorkshopResourceList(props: Props) {
@@ -43,6 +44,7 @@ export function WorkshopResourceList(props: Props) {
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
+	const isCollapsible = 'isCollapsible' in props ? props.isCollapsible : true
 
 	const workshopNavigation = useWorkshopNavigation()
 	const { moduleProgress } = useModuleProgress()
@@ -90,7 +92,7 @@ export function WorkshopResourceList(props: Props) {
 		<nav
 			className={cn('relative w-full max-w-sm flex-shrink-0', className, {
 				'border-r': !isSidebarCollapsed,
-				'w-0': isSidebarCollapsed,
+				'w-0': isSidebarCollapsed && isCollapsible,
 			})}
 		>
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
@@ -178,6 +180,7 @@ export function WorkshopResourceList(props: Props) {
 								) : (
 									// top-level lessons
 									<LessonResource
+										className="border-b"
 										lesson={resource}
 										index={i}
 										moduleProgress={moduleProgress}
@@ -191,29 +194,31 @@ export function WorkshopResourceList(props: Props) {
 					</Accordion>
 				</ScrollArea>
 			</div>
-			<TooltipProvider>
-				<Tooltip delayDuration={0}>
-					<TooltipTrigger asChild>
-						<Button
-							className="bg-background text-foreground hover:bg-background fixed bottom-3 left-3 z-50 hidden h-8 w-8 border p-1 transition lg:flex"
-							size="icon"
-							type="button"
-							onClick={() => {
-								setIsSidebarCollapsed(!isSidebarCollapsed)
-							}}
-						>
-							{isSidebarCollapsed ? (
-								<PanelLeftOpen className="h-4 w-4" />
-							) : (
-								<PanelLeftClose className="h-4 w-4" />
-							)}
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent side="right">
-						{isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
-					</TooltipContent>
-				</Tooltip>
-			</TooltipProvider>
+			{isCollapsible && (
+				<TooltipProvider>
+					<Tooltip delayDuration={0}>
+						<TooltipTrigger asChild>
+							<Button
+								className="bg-background text-foreground hover:bg-background fixed bottom-1.5 left-1.5 z-50 hidden h-8 w-8 border p-1 transition lg:flex"
+								size="icon"
+								type="button"
+								onClick={() => {
+									setIsSidebarCollapsed(!isSidebarCollapsed)
+								}}
+							>
+								{isSidebarCollapsed ? (
+									<PanelLeftOpen className="h-4 w-4" />
+								) : (
+									<PanelLeftClose className="h-4 w-4" />
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent side="right">
+							{isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			)}
 		</nav>
 	)
 }
@@ -224,12 +229,14 @@ const LessonResource = ({
 	index,
 	ability,
 	abilityStatus,
+	className,
 }: {
 	lesson: NavigationResource
 	moduleProgress?: ModuleProgress | null
 	index: number
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
+	className?: string
 }) => {
 	const params = useParams()
 
@@ -240,7 +247,11 @@ const LessonResource = ({
 	)
 
 	return (
-		<li key={lesson.id} data-active={isActive ? 'true' : 'false'}>
+		<li
+			key={lesson.id}
+			className={cn('', className)}
+			data-active={isActive ? 'true' : 'false'}
+		>
 			<div className="relative flex w-full items-center">
 				<Link
 					className={cn(
