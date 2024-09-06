@@ -142,9 +142,9 @@ export async function createPost(input: NewPost) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
-	const eggheadLessonId = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type)
-		VALUES ($1, $2, $3, $4)
+	const eggheadLessonResult = await eggheadPgQuery(
+		`INSERT INTO lessons (title, instructor_id, slug, resource_type, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, NOW(), NOW())
 		RETURNING id`,
 		[
 			input.title,
@@ -153,6 +153,8 @@ export async function createPost(input: NewPost) {
 			'post',
 		],
 	)
+
+	const eggheadLessonId = eggheadLessonResult.rows[0].id
 
 	await db
 		.insert(contentResource)
