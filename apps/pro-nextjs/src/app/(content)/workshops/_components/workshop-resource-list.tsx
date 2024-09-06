@@ -11,6 +11,7 @@ import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Check, Lock, Pen } from 'lucide-react'
+import { useMeasure } from 'react-use'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import {
@@ -78,65 +79,63 @@ export function WorkshopResourceList(props: Props) {
 
 	const { resources } = workshopNavigation
 
+	const [ref, { height: headerHeight }] = useMeasure()
+
 	return (
-		<nav
-			className={cn(
-				'relative w-full max-w-sm flex-shrink-0 border-r',
-				className,
-			)}
-		>
+		<nav className={cn('w-full max-w-sm flex-shrink-0 border-r', className)}>
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
 				{withHeader && (
 					<div
+						ref={ref as any}
 						className={cn(
-							'relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]',
-							{
-								'pl-2': workshopNavigation.coverImage,
-								'pl-5': !workshopNavigation.coverImage,
-							},
+							'relative z-10 w-full border-b pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]',
 						)}
 					>
-						{workshopNavigation.coverImage && (
-							<CldImage
-								width={48}
-								height={48}
-								src={workshopNavigation.coverImage}
-								alt={workshopNavigation.title}
-							/>
-						)}
-						<div className="flex flex-col leading-tight">
-							<div className="flex items-center gap-0.5">
+						<div className="flex w-full flex-row items-center gap-3 p-3">
+							{workshopNavigation.coverImage && (
+								<CldImage
+									width={48}
+									height={48}
+									src={workshopNavigation.coverImage}
+									alt={workshopNavigation.title}
+								/>
+							)}
+							<div className="flex flex-col leading-tight">
+								<div className="flex items-center gap-0.5">
+									<Link
+										href="/workshops"
+										className="font-heading text-primary text-sm font-medium hover:underline"
+									>
+										Workshops
+									</Link>
+									<span className="opacity-50">/</span>
+								</div>
 								<Link
-									href="/workshops"
-									className="font-heading text-primary text-sm font-medium hover:underline"
+									className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
+									href={`/workshops/${workshopNavigation.slug}`}
 								>
-									Workshops
+									{workshopNavigation.title}
 								</Link>
-								<span className="opacity-50">/</span>
 							</div>
-							<Link
-								className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
-								href={`/workshops/${workshopNavigation.slug}`}
-							>
-								{workshopNavigation.title}
-							</Link>
 						</div>
 					</div>
 				)}
 				<ScrollArea
-					className={cn('h-full min-h-max', maxHeight)}
+					className={cn('h-full')}
+					style={{
+						maxHeight: props.maxHeight
+							? 'auto'
+							: `calc(100vh - ${headerHeight}px - var(--nav-height))`,
+					}}
 					viewportRef={scrollAreaRef}
 				>
 					<Accordion
 						type="single"
 						collapsible
-						className={cn(
-							'divide-border flex flex-col divide-y pb-16',
-							wrapperClassName,
-						)}
+						className={cn('flex flex-col', wrapperClassName)}
 						defaultValue={sectionId || resources[0]?.id}
 					>
-						<ol className="divide-border divide-y">
+						<ol className="">
 							{resources.map((resource: NavigationResource, i: number) => {
 								return resource.type === 'section' ? (
 									// sections
@@ -148,7 +147,7 @@ export function WorkshopResourceList(props: Props) {
 											{resource.lessons.length > 0 && (
 												// section lessons
 												<AccordionContent>
-													<ol className="divide-border bg-background divide-y">
+													<ol className="divide-border bg-background divide-y border-b">
 														{resource.lessons.map((lesson, index: number) => {
 															return (
 																<LessonResource
