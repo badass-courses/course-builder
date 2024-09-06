@@ -65,7 +65,7 @@ export function EditResourcesFormDesktop({
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
 	updateResource: (
 		values: z.infer<typeof resourceSchema>,
-		action?: string,
+		action?: 'save' | 'publish' | 'archive' | 'unpublish',
 	) => Promise<any>
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	sendResourceChatMessage: (options: {
