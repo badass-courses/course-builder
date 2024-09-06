@@ -153,7 +153,7 @@ const Welcome = async ({
 	const isDiscordConnected = await discordAccountsForCurrentUser()
 
 	return (
-		<div className="container border-x">
+		<div className="container">
 			<WelcomePage
 				product={product}
 				productResources={productResources}
