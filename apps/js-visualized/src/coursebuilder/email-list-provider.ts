@@ -36,6 +36,23 @@ function EmailListProvider(
 		options,
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
+		getSubscriberByEmail: async (email: string) => {
+			if (!email) return null
+
+			const user = await db.query.users.findFirst({
+				where: (user, { eq }) => eq(user.email, email),
+			})
+
+			return user
+				? {
+						id: user.id,
+						first_name: user.name,
+						email_address: user.email,
+						// TODO: filter the fields?
+						fields: user.fields || {},
+					}
+				: null
+		},
 		getSubscriber: async (subscriberId: string | null | CookieOption) => {
 			if (typeof subscriberId !== 'string') {
 				return null

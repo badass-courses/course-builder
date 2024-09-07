@@ -9,8 +9,8 @@ import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce
 
 export const addPurchasesConvertkit = inngest.createFunction(
 	{
-		id: `add-purchase-role-discord`,
-		name: 'Add Purchase Role Discord',
+		id: `add-purchase-convertkit`,
+		name: 'Add Purchase Convertkit',
 		idempotency: 'event.user.email',
 	},
 	{ event: NEW_PURCHASE_CREATED_EVENT },
