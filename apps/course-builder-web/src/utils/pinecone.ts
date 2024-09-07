@@ -29,7 +29,7 @@ export async function get_or_create_index(
 		const index: Index = await pc.index(opts.name)
 		return index
 	} catch (e) {
-		console.error('Error getting or creating index: ' + (e as Error).message)
+		console.debug('Error getting or creating index: ' + (e as Error).message)
 	}
 }
 
@@ -38,6 +38,6 @@ export async function get_index(name: string) {
 		const pc = new Pinecone()
 		return await pc.index(name)
 	} catch (e) {
-		console.error('Error getting index: ' + (e as Error).message)
+		console.debug('Error getting index: ' + (e as Error).message)
 	}
 }

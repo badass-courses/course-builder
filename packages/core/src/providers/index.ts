@@ -28,6 +28,16 @@ export interface EmailListConfig {
 	getSubscriber: (
 		subscriberId: string | null | CookieOption,
 	) => Promise<Subscriber | null>
+	getSubscriberByEmail: (email: string) => Promise<Subscriber | null>
+	tagSubscriber?: (options: {
+		tag: string
+		subscriberId: string
+	}) => Promise<any>
+	updateSubscriberFields?: (options: {
+		fields: Record<string, string>
+		subscriberId?: string
+		subscriberEmail?: string
+	}) => Promise<Subscriber | null>
 }
 
 export type EmailListConsumerConfig = Omit<

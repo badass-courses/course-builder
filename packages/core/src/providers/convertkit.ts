@@ -1,4 +1,5 @@
 import { find, isEmpty } from 'lodash'
+import { z } from 'zod'
 
 import { Cookie } from '../lib/utils/cookie'
 import { CookieOption } from '../types'
@@ -19,6 +20,28 @@ export default function ConvertkitProvider(
 		options,
 		apiKey: options.apiKey,
 		apiSecret: options.apiSecret,
+		tagSubscriber: async ({
+			tag,
+			subscriberId,
+		}: {
+			tag: string
+			subscriberId: string
+		}) => {
+			const subscriber = await fetchSubscriber({
+				convertkitId: subscriberId,
+				convertkitApiSecret: options.apiSecret,
+				convertkitApiKey: options.apiKey,
+			})
+		},
+		getSubscriberByEmail: async (email: string) => {
+			console.log({ email })
+			if (!email) return null
+			return await fetchSubscriber({
+				subscriberEmail: email,
+				convertkitApiSecret: options.apiSecret,
+				convertkitApiKey: options.apiKey,
+			})
+		},
 		getSubscriber: async (subscriberId: string | null | CookieOption) => {
 			if (!subscriberId) return null
 			return await fetchSubscriber({
@@ -78,11 +101,113 @@ export default function ConvertkitProvider(
 				convertkitApiSecret: options.apiSecret,
 			})
 		},
+		async updateSubscriberFields({
+			subscriberId,
+			subscriberEmail,
+			fields,
+		}: {
+			subscriberId?: string
+			subscriberEmail?: string
+			fields: Record<string, any>
+		}) {
+			const subscriber = await fetchSubscriber({
+				convertkitId: subscriberId,
+				subscriberEmail,
+				convertkitApiKey: options.apiKey,
+				convertkitApiSecret: options.apiSecret,
+			})
+
+			await setConvertkitSubscriberFields({
+				subscriber,
+				fields,
+				convertkitApiKey: options.apiKey,
+				convertkitApiSecret: options.apiSecret,
+			})
+
+			return await fetchSubscriber({
+				convertkitId: subscriberId,
+				subscriberEmail,
+				convertkitApiKey: options.apiKey,
+				convertkitApiSecret: options.apiSecret,
+			})
+		},
 	}
 }
 
 const hour = 3600000
 export const oneYear = 365 * 24 * hour
+
+const TagSubscriberResponseSchema = z.object({
+	subscription: z.object({
+		subscriber: z.object({
+			id: z.string(),
+			fields: z.record(z.string().nullable()).optional(),
+		}),
+	}),
+})
+
+async function createConvertkitTag({
+	name,
+	convertkitApiSecret,
+}: {
+	name: string
+	convertkitApiSecret: string
+}) {
+	try {
+		const response = await fetch(`${convertkitBaseUrl}/tags`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8',
+			},
+			body: JSON.stringify({
+				api_secret: convertkitApiSecret,
+				name,
+			}),
+		})
+
+		if (!response.ok) {
+			console.error(`Failed to create tag: ${response.statusText}`)
+			return null
+		}
+
+		const data = await response.json()
+		console.log('Tag created successfully')
+		return data
+	} catch (error) {
+		console.error('Error creating tag:', error)
+		return null
+	}
+}
+
+async function tagSubscriber({
+	email,
+	tagId,
+	convertkitApiKey,
+}: {
+	email: string
+	tagId: string
+	convertkitApiKey: string
+}) {
+	const url = `${convertkitBaseUrl}/tags/${tagId}/subscribe`
+	return await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json; charset=utf-8',
+		},
+		body: JSON.stringify({
+			email,
+			api_key: convertkitApiKey,
+		}),
+	})
+		.then((res) => res.json())
+		.then((jsonRes: any) => {
+			const result = TagSubscriberResponseSchema.safeParse(jsonRes)
+			if (!result.success) {
+				return undefined
+			}
+			return result.data.subscription.subscriber
+		})
+}
 
 export function getConvertkitSubscriberCookie(subscriber: any): Cookie[] {
 	return subscriber
@@ -173,8 +298,10 @@ async function fetchSubscriber({
 	convertkitId,
 	convertkitApiSecret,
 	convertkitApiKey,
+	subscriberEmail,
 }: {
-	convertkitId: string | number | CookieOption
+	convertkitId?: string | number | CookieOption
+	subscriberEmail?: string
 	convertkitApiSecret: string
 	convertkitApiKey: string
 }) {
@@ -186,6 +313,17 @@ async function fetchSubscriber({
 			.then((res) => res.json())
 			.then(({ subscriber }: any) => {
 				return subscriber
+			})
+	}
+
+	if (!subscriber && subscriberEmail) {
+		const tagsApiUrl = `${convertkitBaseUrl}subscribers?api_secret=${convertkitApiSecret}&email_address=${subscriberEmail.trim().toLowerCase()}`
+		console.log({ tagsApiUrl })
+		subscriber = await fetch(tagsApiUrl)
+			.then((res) => res.json())
+			.then((res: any) => {
+				const subscribers = res.subscribers
+				return subscribers[0]
 			})
 	}
 
@@ -240,11 +378,6 @@ export async function createConvertkitCustomField({
 	subscriberId: string
 }) {
 	try {
-		if (!process.env.CONVERTKIT_API_SECRET) {
-			console.warn('set CONVERTKIT_API_SECRET')
-			return
-		}
-
 		const subscriber = await fetchSubscriber({
 			convertkitId: subscriberId,
 			convertkitApiSecret,
@@ -264,7 +397,7 @@ export async function createConvertkitCustomField({
 					'Content-Type': 'application/json; charset=utf-8',
 				},
 				body: JSON.stringify({
-					api_secret: process.env.CONVERTKIT_API_SECRET,
+					api_secret: convertkitApiSecret,
 					label: customField,
 				}),
 			})

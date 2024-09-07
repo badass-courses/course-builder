@@ -1,4 +1,5 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
+import { addPurchasesConvertkit } from '@/inngest/functions/convertkit/add-purchased-convertkit'
 import { addPurchaseRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
@@ -11,6 +12,7 @@ import { postPurchaseWaitForProgress } from '@/inngest/functions/post-purchase-w
 import { postPurchaseWorkflow } from '@/inngest/functions/post-purchase-workflow'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { progressWasMade } from '@/inngest/functions/progress-was-made'
+import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -41,5 +43,7 @@ export const inngestConfig = {
 		postPurchaseWaitForProgress,
 		postPurchaseNoProgress,
 		noProgressContinued,
+		syncPurchaseTags,
+		addPurchasesConvertkit,
 	],
 }
