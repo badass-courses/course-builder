@@ -84,8 +84,7 @@ async function refreshDiscordToken(account: { refresh_token: string | null }) {
 			refresh_token?: string
 		}
 	} catch (error) {
-		console.error(error)
-		throw error
+		return { error: 'Failed to refresh session' }
 	}
 }
 
@@ -146,22 +145,31 @@ export const authOptions: NextAuthConfig = {
 				console.log('refreshing discord token')
 				const refreshedToken = await refreshDiscordToken(discordAccount)
 
-				await db
-					.update(accounts)
-					.set({
-						access_token: refreshedToken.access_token,
-						expires_at: Math.floor(
-							Date.now() / 1000 + refreshedToken.expires_in,
-						),
-						refresh_token: refreshedToken.refresh_token,
-					})
-					.where(
-						and(
-							eq(accounts.providerAccountId, discordAccount.providerAccountId),
-							eq(accounts.provider, 'discord'),
-							eq(accounts.userId, user.id),
-						),
-					)
+				if (
+					'access_token' in refreshedToken &&
+					'expires_in' in refreshedToken &&
+					'refresh_token' in refreshedToken
+				) {
+					await db
+						.update(accounts)
+						.set({
+							access_token: refreshedToken.access_token,
+							expires_at: Math.floor(
+								Date.now() / 1000 + refreshedToken.expires_in,
+							),
+							refresh_token: refreshedToken.refresh_token,
+						})
+						.where(
+							and(
+								eq(
+									accounts.providerAccountId,
+									discordAccount.providerAccountId,
+								),
+								eq(accounts.provider, 'discord'),
+								eq(accounts.userId, user.id),
+							),
+						)
+				}
 			}
 
 			const userRoles = await db.query.userRoles.findMany({

@@ -99,7 +99,6 @@ export async function LessonPage({
 										>
 											<WorkshopResourceList
 												currentLessonSlug={params.lesson}
-												maxHeight="h-[600px]"
 												className="max-w-none border-l-0 border-t"
 											/>
 										</Suspense>

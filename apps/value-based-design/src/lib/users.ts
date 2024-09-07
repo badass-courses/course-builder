@@ -35,3 +35,17 @@ export async function githubAccountsForCurrentUser() {
 
 	return !isEmpty(userAccounts)
 }
+
+export async function discordAccountsForCurrentUser() {
+	const token = await getServerAuthSession()
+	if (!token.session?.user) return false
+
+	const userAccounts = await db.query.accounts.findMany({
+		where: and(
+			eq(accounts.userId, token.session.user.id),
+			eq(accounts.provider, 'discord'),
+		),
+	})
+
+	return !isEmpty(userAccounts)
+}

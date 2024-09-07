@@ -9,6 +9,7 @@ import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { getPage } from '@/lib/pages-query'
 import { getPricingProps } from '@/lib/pricing-query'
+import MuxPlayer from '@mux/mux-player-react'
 import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -105,7 +106,7 @@ const Home = async ({ searchParams }: Props) => {
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
-							components={{ Instructor, Zap, Wrench, BarChart }}
+							components={{ Instructor, Zap, Wrench, BarChart, MuxPlayer }}
 						/>
 					) : null}
 				</article>

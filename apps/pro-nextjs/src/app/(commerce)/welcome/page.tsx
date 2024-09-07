@@ -170,6 +170,9 @@ const Welcome = async ({
 				userEmail={session?.user?.email}
 				cancelPurchaseTransfer={cancelPurchaseTransfer}
 				initiatePurchaseTransfer={initiatePurchaseTransfer}
+				welcomeVideoPlaybackId={
+					'sNy02WxzolM9RIiL900DJ5jL02IV1hKRTEDPQ32vLctTy4'
+				}
 			/>
 		</div>
 	)

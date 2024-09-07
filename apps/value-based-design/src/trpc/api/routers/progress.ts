@@ -96,8 +96,8 @@ export const progressRouter = createTRPCRouter({
 	getNextResource: publicProcedure
 		.input(
 			z.object({
-				lessonId: z.string(),
-				moduleSlug: z.string().optional().nullable(),
+				lessonId: z.string().nullish(),
+				moduleSlug: z.string().nullish(),
 			}),
 		)
 		.query(async ({ ctx, input }) => {
@@ -105,8 +105,6 @@ export const progressRouter = createTRPCRouter({
 			if (!lessonId || !moduleSlug) {
 				return null
 			}
-			const { session, ability } = await getServerAuthSession()
-			const user = session?.user
 			if (input.moduleSlug) {
 				return getNextResource(lessonId, moduleSlug)
 			}

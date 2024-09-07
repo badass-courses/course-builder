@@ -61,10 +61,7 @@ export default function RootLayout({
 					id="layout"
 					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
 				>
-					<Toaster
-						viewportClassName="sm:top-[var(--nav-height)] z-50"
-						className="data-[state=open]:sm:slide-in-from-right-full"
-					/>
+					<Toaster />
 					<FeedbackInsert />
 					<TRPCReactProvider>
 						<Party />

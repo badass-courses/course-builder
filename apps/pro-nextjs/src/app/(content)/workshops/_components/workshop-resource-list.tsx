@@ -10,7 +10,8 @@ import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/wor
 import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { Check, Lock, Pen } from 'lucide-react'
+import { Check, Lock, PanelLeftClose, PanelLeftOpen, Pen } from 'lucide-react'
+import { useMeasure } from 'react-use'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
 import {
@@ -20,6 +21,10 @@ import {
 	AccordionTrigger,
 	Button,
 	ScrollArea,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@coursebuilder/ui'
 
 type Props = {
@@ -29,6 +34,7 @@ type Props = {
 	wrapperClassName?: string
 	maxHeight?: string
 	withHeader?: boolean
+	isCollapsible?: boolean
 }
 
 export function WorkshopResourceList(props: Props) {
@@ -38,6 +44,7 @@ export function WorkshopResourceList(props: Props) {
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
 		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
+	const isCollapsible = 'isCollapsible' in props ? props.isCollapsible : true
 
 	const workshopNavigation = useWorkshopNavigation()
 	const { moduleProgress } = useModuleProgress()
@@ -72,71 +79,75 @@ export function WorkshopResourceList(props: Props) {
 		}
 	}, [scrollAreaRef])
 
+	const [ref, { height: headerHeight }] = useMeasure()
+
 	if (!workshopNavigation) {
 		return null
 	}
 
-	const { resources } = workshopNavigation
+	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
+		workshopNavigation
 
 	return (
 		<nav
-			className={cn(
-				'relative w-full max-w-sm flex-shrink-0 border-r',
-				className,
-			)}
+			className={cn('relative w-full max-w-sm flex-shrink-0', className, {
+				'border-r': !isSidebarCollapsed,
+				'w-0': isSidebarCollapsed && isCollapsible,
+			})}
 		>
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
 				{withHeader && (
 					<div
+						ref={ref as any}
 						className={cn(
-							'relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]',
-							{
-								'pl-2': workshopNavigation.coverImage,
-								'pl-5': !workshopNavigation.coverImage,
-							},
+							'relative z-10 w-full border-b pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]',
 						)}
 					>
-						{workshopNavigation.coverImage && (
-							<CldImage
-								width={48}
-								height={48}
-								src={workshopNavigation.coverImage}
-								alt={workshopNavigation.title}
-							/>
-						)}
-						<div className="flex flex-col leading-tight">
-							<div className="flex items-center gap-0.5">
+						<div className="flex w-full flex-row items-center gap-3 p-3">
+							{workshopNavigation.coverImage && (
+								<CldImage
+									width={48}
+									height={48}
+									src={workshopNavigation.coverImage}
+									alt={workshopNavigation.title}
+								/>
+							)}
+							<div className="flex flex-col leading-tight">
+								<div className="flex items-center gap-0.5">
+									<Link
+										href="/workshops"
+										className="font-heading text-primary text-sm font-medium hover:underline"
+									>
+										Workshops
+									</Link>
+									<span className="opacity-50">/</span>
+								</div>
 								<Link
-									href="/workshops"
-									className="font-heading text-primary text-sm font-medium hover:underline"
+									className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
+									href={`/workshops/${workshopNavigation.slug}`}
 								>
-									Workshops
+									{workshopNavigation.title}
 								</Link>
-								<span className="opacity-50">/</span>
 							</div>
-							<Link
-								className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
-								href={`/workshops/${workshopNavigation.slug}`}
-							>
-								{workshopNavigation.title}
-							</Link>
 						</div>
 					</div>
 				)}
 				<ScrollArea
-					className={cn('h-full min-h-max', maxHeight)}
+					className={cn('h-full')}
+					style={{
+						maxHeight: props.maxHeight
+							? 'auto'
+							: `calc(100vh - ${headerHeight}px - var(--nav-height))`,
+					}}
 					viewportRef={scrollAreaRef}
 				>
 					<Accordion
 						type="single"
 						collapsible
-						className={cn(
-							'divide-border flex flex-col divide-y pb-16',
-							wrapperClassName,
-						)}
+						className={cn('flex flex-col', wrapperClassName)}
 						defaultValue={sectionId || resources[0]?.id}
 					>
-						<ol className="divide-border divide-y">
+						<ol className="">
 							{resources.map((resource: NavigationResource, i: number) => {
 								return resource.type === 'section' ? (
 									// sections
@@ -148,7 +159,7 @@ export function WorkshopResourceList(props: Props) {
 											{resource.lessons.length > 0 && (
 												// section lessons
 												<AccordionContent>
-													<ol className="divide-border bg-background divide-y">
+													<ol className="divide-border bg-background divide-y border-b">
 														{resource.lessons.map((lesson, index: number) => {
 															return (
 																<LessonResource
@@ -169,6 +180,7 @@ export function WorkshopResourceList(props: Props) {
 								) : (
 									// top-level lessons
 									<LessonResource
+										className="border-b"
 										lesson={resource}
 										index={i}
 										moduleProgress={moduleProgress}
@@ -182,6 +194,31 @@ export function WorkshopResourceList(props: Props) {
 					</Accordion>
 				</ScrollArea>
 			</div>
+			{isCollapsible && (
+				<TooltipProvider>
+					<Tooltip delayDuration={0}>
+						<TooltipTrigger asChild>
+							<Button
+								className="bg-background text-foreground hover:bg-background fixed bottom-1.5 left-1.5 z-50 hidden h-8 w-8 border p-1 transition lg:flex"
+								size="icon"
+								type="button"
+								onClick={() => {
+									setIsSidebarCollapsed(!isSidebarCollapsed)
+								}}
+							>
+								{isSidebarCollapsed ? (
+									<PanelLeftOpen className="h-4 w-4" />
+								) : (
+									<PanelLeftClose className="h-4 w-4" />
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent side="right">
+							{isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			)}
 		</nav>
 	)
 }
@@ -192,12 +229,14 @@ const LessonResource = ({
 	index,
 	ability,
 	abilityStatus,
+	className,
 }: {
 	lesson: NavigationResource
 	moduleProgress?: ModuleProgress | null
 	index: number
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
+	className?: string
 }) => {
 	const params = useParams()
 
@@ -208,7 +247,11 @@ const LessonResource = ({
 	)
 
 	return (
-		<li key={lesson.id} data-active={isActive ? 'true' : 'false'}>
+		<li
+			key={lesson.id}
+			className={cn('', className)}
+			data-active={isActive ? 'true' : 'false'}
+		>
 			<div className="relative flex w-full items-center">
 				<Link
 					className={cn(

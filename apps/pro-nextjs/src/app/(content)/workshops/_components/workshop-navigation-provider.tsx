@@ -3,8 +3,13 @@
 import * as React from 'react'
 import { WorkshopNavigation } from '@/lib/workshops'
 
-const WorkshopNavigationContext =
-	React.createContext<WorkshopNavigation | null>(null)
+const WorkshopNavigationContext = React.createContext<
+	| (WorkshopNavigation & {
+			isSidebarCollapsed: boolean
+			setIsSidebarCollapsed: (isSidebarCollapsed: boolean) => void
+	  })
+	| null
+>(null)
 
 export const WorkshopNavigationProvider = ({
 	children,
@@ -14,8 +19,16 @@ export const WorkshopNavigationProvider = ({
 	workshopNavDataLoader: Promise<WorkshopNavigation | null>
 }) => {
 	const workshopNavigation = React.use(workshopNavDataLoader)
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
+
 	return (
-		<WorkshopNavigationContext.Provider value={workshopNavigation}>
+		<WorkshopNavigationContext.Provider
+			value={
+				workshopNavigation
+					? { ...workshopNavigation, isSidebarCollapsed, setIsSidebarCollapsed }
+					: null
+			}
+		>
 			{children}
 		</WorkshopNavigationContext.Provider>
 	)

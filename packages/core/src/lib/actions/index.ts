@@ -2,6 +2,7 @@ import { NodemailerConfig } from '@auth/core/providers/nodemailer'
 import { z } from 'zod'
 
 import { VIDEO_SRT_READY_EVENT } from '../../inngest/video-processing/events/event-video-srt-ready-to-asset'
+import { VIDEO_TRANSCRIPT_READY_EVENT } from '../../inngest/video-processing/events/event-video-transcript-ready'
 import {
 	filterNullFields,
 	getConvertkitSubscriberCookie,
@@ -289,7 +290,7 @@ export async function webhook(
 			})
 
 			await options.inngest.send({
-				name: 'video/transcript-ready-event',
+				name: VIDEO_TRANSCRIPT_READY_EVENT,
 				data: {
 					videoResourceId,
 				},

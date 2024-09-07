@@ -49,6 +49,9 @@ export function EditResourcesFormDesktop({
 	theme = 'light',
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
+	onPublish?: (resource: ContentResource) => Promise<void>
+	onArchive?: (resource: ContentResource) => Promise<void>
+	onUnPublish?: (resource: ContentResource) => Promise<void>
 	resource: ContentResource & {
 		fields: {
 			body?: string | null
@@ -60,7 +63,10 @@ export function EditResourcesFormDesktop({
 	resourceSchema: Schema
 	children?: React.ReactNode
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
-	updateResource: (values: z.infer<typeof resourceSchema>) => Promise<any>
+	updateResource: (
+		values: z.infer<typeof resourceSchema>,
+		action?: 'save' | 'publish' | 'archive' | 'unpublish',
+	) => Promise<any>
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	sendResourceChatMessage: (options: {
 		resourceId: string
@@ -72,8 +78,11 @@ export function EditResourcesFormDesktop({
 	tools?: ResourceTool[]
 	theme?: string
 }) {
-	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
-		const updatedResource = await updateResource(values)
+	const onSubmit = async (
+		values: z.infer<typeof resourceSchema>,
+		action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+	) => {
+		const updatedResource = await updateResource(values, action)
 		if (updatedResource) {
 			return await onSave(updatedResource)
 		}
@@ -84,20 +93,20 @@ export function EditResourcesFormDesktop({
 			<EditResourcesActionBar
 				resource={resource}
 				resourcePath={getResourcePath(resource.fields?.slug)}
-				onSubmit={() => {
-					onSubmit(form.getValues())
+				onSubmit={async () => {
+					await onSubmit(form.getValues(), 'save')
 				}}
-				onPublish={() => {
+				onPublish={async () => {
 					form.setValue('fields.state', 'published')
-					onSubmit(form.getValues())
+					await onSubmit(form.getValues(), 'publish')
 				}}
-				onArchive={() => {
+				onArchive={async () => {
 					form.setValue('fields.state', 'archived')
-					onSubmit(form.getValues())
+					await onSubmit(form.getValues(), 'archive')
 				}}
-				onUnPublish={() => {
+				onUnPublish={async () => {
 					form.setValue('fields.state', 'draft')
-					onSubmit(form.getValues())
+					await onSubmit(form.getValues(), 'unpublish')
 				}}
 			/>
 			<EditResourcePanelGroup>

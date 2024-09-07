@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -8,14 +9,18 @@ import type { TipUpdate } from '@/lib/tips'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-// import { Redis } from '@upstash/redis'
+import { Redis } from '@upstash/redis'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
 import { last } from 'lodash'
 import { z } from 'zod'
 
-import type { ContentResourceResource } from '@coursebuilder/core/schemas'
+import {
+	ContentResourceSchema,
+	type ContentResourceResource,
+} from '@coursebuilder/core/schemas'
+import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
-// const redis = Redis.fromEnv()
+const redis = Redis.fromEnv()
 
 export const getLessonVideoTranscript = async (
 	lessonIdOrSlug?: string | null,
@@ -42,6 +47,29 @@ export const getLessonVideoTranscript = async (
 
 	console.log({ parsedResult })
 	return parsedResult.data[0]?.transcript
+}
+
+export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
+	const query = sql`SELECT *
+		FROM vbd_ContentResource cr_lesson
+		JOIN vbd_ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
+		JOIN vbd_ContentResource cr_video ON crr.resourceId = cr_video.id
+		WHERE (cr_lesson.id = ${lessonIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonIdOrSlug})
+			AND cr_video.type = 'videoResource'
+		LIMIT 1;`
+
+	const result = await db.execute(query)
+
+	if (!result.rows.length) return null
+
+	const videoResourceRow = ContentResourceSchema.parse(result.rows[0])
+
+	const videoResource = {
+		...videoResourceRow,
+		...videoResourceRow.fields,
+	}
+
+	return VideoResourceSchema.parse(videoResource)
 }
 
 export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
@@ -129,30 +157,36 @@ export const addVideoResourceToLesson = async ({
 	})
 }
 
+export const getCachedLesson = unstable_cache(
+	async (slug: string) => getLesson(slug),
+	['lesson'],
+	{ revalidate: 3600 },
+)
+
 export async function getLesson(lessonSlugOrId: string) {
 	const start = new Date().getTime()
 
-	// const cachedLesson = await redis.get(
-	// 	`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-	// )
+	const cachedLesson = null // await redis.get(`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,)
 
-	const lesson = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					lessonSlugOrId,
+	const lesson = cachedLesson
+		? cachedLesson
+		: await db.query.contentResource.findFirst({
+				where: and(
+					or(
+						eq(
+							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+							lessonSlugOrId,
+						),
+						eq(contentResource.id, lessonSlugOrId),
+						like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
+					),
+					or(
+						eq(contentResource.type, 'lesson'),
+						eq(contentResource.type, 'exercise'),
+						eq(contentResource.type, 'solution'),
+					),
 				),
-				eq(contentResource.id, lessonSlugOrId),
-				like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
-			),
-			or(
-				eq(contentResource.type, 'lesson'),
-				eq(contentResource.type, 'exercise'),
-				eq(contentResource.type, 'solution'),
-			),
-		),
-	})
+			})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)
 	if (!parsedLesson.success) {
@@ -246,7 +280,7 @@ export async function updateLesson(input: TipUpdate) {
 		lessonSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	return courseBuilderAdapter.updateContentResourceFields({
+	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
 		id: currentLesson.id,
 		fields: {
 			...currentLesson.fields,
@@ -254,4 +288,8 @@ export async function updateLesson(input: TipUpdate) {
 			slug: lessonSlug,
 		},
 	})
+
+	revalidateTag('lesson')
+
+	return updatedResource
 }

@@ -83,7 +83,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 									moduleType="workshop"
 									moduleSlug={params.module}
 								/>
-								<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 sm:px-10 md:flex-row">
+								<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-5 sm:px-10 md:flex-row">
 									<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 										<p className="text-primary mb-2 text-base">Pro Workshop</p>
 										<h1 className="font-heading fluid-4xl font-bold">
