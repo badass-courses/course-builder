@@ -65,7 +65,7 @@ be using these services.
 ## Clone the Repository
 
 ```bash
-git clone https://www.github.com/joelhooks/course-builder
+git clone https://www.github.com/badass-courses/course-builder
 ```
 
 ## Install Dependencies
@@ -88,7 +88,7 @@ There are 3 (THREE!) different entries for the URL of the project in the environ
 :::
 
 ```dotenv
-NEXTAUTH_URL="YOUR_TUNNEL.ngrok-free.app/"
+NEXTAUTH_URL="YOUR_TUNNEL.ngrok-free.app/api/auth"
 UPLOADTHING_URL="http://localhost:3000"
 NEXT_PUBLIC_URL="https://YOUR_TUNNEL.ngrok-free.app/"
 ```

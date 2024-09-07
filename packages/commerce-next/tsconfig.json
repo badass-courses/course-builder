@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"declaration": true,
+		"declarationMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"esModuleInterop": true,
+		"skipDefaultLibCheck": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"stripInternal": true,
+		"target": "es2022",
+		"lib": ["dom", "dom.iterable", "ES2022"],
+		"outDir": "./dist",
+		"rootDir": "src"
+	},
+	"include": [".eslintrc.cjs", "*.ts", "test", "src/**/*"],
+	"exclude": ["node_modules", "dist"]
+}

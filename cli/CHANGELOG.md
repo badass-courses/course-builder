@@ -1,5 +1,97 @@
 # Changelog
 
+## 8.1.0
+
+### Minor Changes
+
+- [#186](https://github.com/badass-courses/course-builder/pull/186) [`080337e`](https://github.com/badass-courses/course-builder/commit/080337ef60c1e62e762673266b2478b7cd141b33) Thanks [@joelhooks](https://github.com/joelhooks)! - database schema alignment with Skill Stack so that porting those apps will be easier
+
+## 8.0.10
+
+### Patch Changes
+
+- [#170](https://github.com/badass-courses/course-builder/pull/170) [`22c290a`](https://github.com/badass-courses/course-builder/commit/22c290ad7eec68e664c0027ba9389af41c71a16a) Thanks [@joelhooks](https://github.com/joelhooks)! - enables purchase transfers end to end
+
+## 8.0.9
+
+### Patch Changes
+
+- [`ffb237b`](https://github.com/badass-courses/course-builder/commit/ffb237b34e792c15fdae4b554bb787e92403ccb8) Thanks [@joelhooks](https://github.com/joelhooks)! - updates postcss config in template
+
+- [#167](https://github.com/badass-courses/course-builder/pull/167) [`39b0ef5`](https://github.com/badass-courses/course-builder/commit/39b0ef5e4556ee1a1fd549f3bc48f405fe8b6984) Thanks [@joelhooks](https://github.com/joelhooks)! - redemptions and purchase recording with an email at the end
+
+- [#156](https://github.com/badass-courses/course-builder/pull/156) [`18169be`](https://github.com/badass-courses/course-builder/commit/18169be84613cac1cc2d35bc6cd386eaf803f53f) Thanks [@joelhooks](https://github.com/joelhooks)! - migrates commerce flows from Skill Stack into Course Builder
+
+## 8.0.8
+
+### Patch Changes
+
+- [#144](https://github.com/badass-courses/course-builder/pull/144) [`2b1ee5b`](https://github.com/badass-courses/course-builder/commit/2b1ee5bfddc417f5f8112f297e03b4ad8d281aa0) Thanks [@joelhooks](https://github.com/joelhooks)! - adds LLM provider (openai) to core
+
+- [#144](https://github.com/badass-courses/course-builder/pull/144) [`2b1ee5b`](https://github.com/badass-courses/course-builder/commit/2b1ee5bfddc417f5f8112f297e03b4ad8d281aa0) Thanks [@joelhooks](https://github.com/joelhooks)! - version maitenance and github actions
+
+## 8.0.7
+
+### Patch Changes
+
+- [#142](https://github.com/badass-courses/course-builder/pull/142) [`f30b19e`](https://github.com/badass-courses/course-builder/commit/f30b19ed3e45a9a91f76c17a0c265359c36e5096) Thanks [@joelhooks](https://github.com/joelhooks)! - version maitenance and github actions
+
+## 8.0.6
+
+### Patch Changes
+
+- [#126](https://github.com/badass-courses/course-builder/pull/126) [`0b590f9`](https://github.com/badass-courses/course-builder/commit/0b590f984b038d951fc2bceb243415e0cf49ce20) Thanks [@joelhooks](https://github.com/joelhooks)! - updates next-auth and auth-core and gives a "session" to coursebuilder
+
+## 8.0.5
+
+### Patch Changes
+
+- [#124](https://github.com/badass-courses/course-builder/pull/124) [`25df89a`](https://github.com/badass-courses/course-builder/commit/25df89a0524e8c340bbd4898fa369df3c9e2b720) Thanks [@joelhooks](https://github.com/joelhooks)! - integrates vitest for testing core and adapter-drizzle
+
+## 8.0.4
+
+### Patch Changes
+
+- [#104](https://github.com/badass-courses/course-builder/pull/104) [`2def195558d69b00ce6c1001781215c97488a99b`](https://github.com/badass-courses/course-builder/commit/2def195558d69b00ce6c1001781215c97488a99b) Thanks [@joelhooks](https://github.com/joelhooks)! - adding adapter and core packages to extend the pattern that is presented by authjs to include Course Builder `contentResource` schema
+
+  this approach will allow us to maintain adapters for mysql, sqlite, and pg, potentially beyond drizzle if needed
+
+## 8.0.3
+
+### Patch Changes
+
+- [#97](https://github.com/badass-courses/course-builder/pull/97) [`9faae9f039e18e59cc9522fedeb30a4379fadf8b`](https://github.com/badass-courses/course-builder/commit/9faae9f039e18e59cc9522fedeb30a4379fadf8b) Thanks [@joelhooks](https://github.com/joelhooks)! - next-auth version bump
+
+## 8.0.2
+
+### Patch Changes
+
+- [#94](https://github.com/badass-courses/course-builder/pull/94) [`145110e98d0fec29cb7272d00b6c62b15e69d44f`](https://github.com/badass-courses/course-builder/commit/145110e98d0fec29cb7272d00b6c62b15e69d44f) Thanks [@joelhooks](https://github.com/joelhooks)! - Changes to get Vercel's `ai` package running for RSC streaming stuff
+
+## 8.0.1
+
+### Patch Changes
+
+- [#90](https://github.com/badass-courses/course-builder/pull/90) [`644394f1bb9584de7f6dcfb6803b914991a5a149`](https://github.com/badass-courses/course-builder/commit/644394f1bb9584de7f6dcfb6803b914991a5a149) Thanks [@joelhooks](https://github.com/joelhooks)! - bumping dependency versions
+
+## 8.0.0
+
+### Major Changes
+
+- [#58](https://github.com/badass-courses/course-builder/pull/58)
+  [`709986aa09677d937ea891b66cc689de44affb0e`](https://github.com/badass-courses/course-builder/commit/709986aa09677d937ea891b66cc689de44affb0e)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - bumbing dep versions
+
+### Patch Changes
+
+- [#69](https://github.com/badass-courses/course-builder/pull/69)
+  [`ecd40cb8d6e2a94bd75233e6e853d423a1a23ef6`](https://github.com/badass-courses/course-builder/commit/ecd40cb8d6e2a94bd75233e6e853d423a1a23ef6)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - Bumped to the canary version of react ☠️
+
+- [#76](https://github.com/badass-courses/course-builder/pull/76)
+  [`10d1a2a3d4a8da2d4b098225d7b4c11167a8e059`](https://github.com/badass-courses/course-builder/commit/10d1a2a3d4a8da2d4b098225d7b4c11167a8e059)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - updating drizzle to latest
+
 ## 7.24.2
 
 ### Patch Changes

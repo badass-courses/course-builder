@@ -1,0 +1,106 @@
+/* ——— QUIZ ——— */
+[data-sr-quiz] {
+	@apply flex w-full flex-col items-center justify-center p-5;
+}
+
+/* ——— QUESTION ——— */
+[data-sr-quiz-question] {
+	@apply mx-auto w-full max-w-screen-sm;
+
+	/* ——— HEADER ——— */
+	[data-sr-quiz-question-header] {
+		@apply prose sm:prose-lg w-full max-w-none pb-6;
+
+		pre {
+			@apply p-0;
+		}
+	}
+
+	/* ——— BODY ——— */
+	[data-sr-quiz-question-body] {
+		@apply list-none;
+		& > li {
+			@apply list-none;
+		}
+	}
+
+	/* ——— CHOICES ——— */
+	[data-sr-quiz-question-choices] {
+		@apply flex flex-col space-y-4;
+	}
+
+	/* ——— CHOICE ——— */
+	[data-sr-quiz-question-choice] {
+		img {
+			@apply w-full;
+		}
+		label {
+			@apply flex flex-wrap items-center rounded-md border-2 border-black border-opacity-10 p-5 transition-all duration-100 ease-in-out;
+		}
+		input {
+			@apply mr-2;
+		}
+		p {
+			@apply flex-grow leading-tight;
+		}
+		span {
+			@apply rounded-full px-2 py-1 text-xs leading-none;
+		}
+	}
+
+	[data-sr-quiz-question-choice=''] {
+		label {
+			@apply cursor-pointer bg-transparent hover:bg-black hover:bg-opacity-5;
+		}
+	}
+
+	[data-sr-quiz-question-choice='correct'] {
+		label {
+			@apply border-green-500 border-opacity-40;
+		}
+		span {
+			@apply bg-green-500 text-white;
+		}
+	}
+
+	[data-sr-quiz-question-choice='incorrect'] {
+		label {
+			@apply cursor-default border-red-500 border-opacity-40;
+		}
+		span {
+			@apply bg-red-500 text-white;
+		}
+	}
+
+	/* ——— TEXTAREA ——— */
+	[data-sr-quiz-question-input] {
+		label {
+			@apply font-medium;
+		}
+		textarea {
+			@apply w-full rounded-lg border border-gray-200 p-3;
+		}
+	}
+
+	/* ——— ANSWER ——— */
+	[data-sr-quiz-question-answer] {
+		@apply prose max-w-none pt-5;
+		pre {
+			@apply mb-5 p-0;
+		}
+	}
+
+	/* ——— FOOTER ——— */
+	[data-sr-quiz-question-footer] {
+		@apply prose mt-5 max-w-none rounded-lg border-2 border-black border-opacity-10 px-5 py-1;
+	}
+
+	/* —— SUBMIT —— */
+	[data-sr-button] {
+		@apply mt-5 inline-flex cursor-pointer items-center rounded-md border-none bg-indigo-500 px-6 py-2 font-semibold leading-6 text-white transition hover:bg-indigo-600;
+	}
+
+	[data-sr-button][disabled] {
+		@apply cursor-not-allowed;
+	}
+}

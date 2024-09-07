@@ -11,3 +11,37 @@ dist-ssr
 server/dist
 public/dist
 .idea
+.react-email
+
+packages/*/*.js
+packages/*/*.d.ts
+packages/*/*.d.ts.map
+packages/*/lib
+packages/**/generated
+
+# Core
+packages/core/lib
+packages/core/providers
+packages/core/inngest
+packages/core/schemas
+
+# Tests
+coverage
+dynamodblocal-bin
+firestore-debug.log
+test.schema.gql
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
+## Drizzle migration folder
+.drizzle
+
+# build artifacts
+apps/*/public/sitemap.xml
+apps/*/public/sitemap-[0-99].xml
+apps/*/public/robots.txt
+
+# test results
+apps/*/test-results

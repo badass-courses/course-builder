@@ -1,0 +1,8 @@
+{ "name": "@coursebuilder/{{kebabCase name}}", "version": "0.0.0",
+"description": "Course Builder Package", "scripts": { "clean": "rm -rf ./dist",
+"build": "tsup", "dev": "tsup --watch" }, "keywords": [ "coursebuilder" ],
+"author": "", "license": "ISC", "type": "module", "types": "./dist/index.d.ts",
+"files": [ "dist", "src" ], "exports": { ".": { "types": "./dist/index.d.ts",
+"import": "./dist/index.js", "require": "./dist/index.cjs" } }, "private":
+false, "publishConfig": { "access": "public" }, "dependencies": {},
+"devDependencies": { "tsup": "8.0.2" } }

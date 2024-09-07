@@ -1,0 +1,164 @@
+{
+	"name": "@coursebuilder/core",
+	"version": "0.2.2",
+	"description": "Core package for Course Builder",
+	"scripts": {
+		"clean": "rm -rf *.js *.d.ts* lib",
+		"build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
+		"dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
+		"test": "vitest run -c ../utils/vitest.config.ts"
+	},
+	"keywords": [
+		"coursebuilder",
+		"drizzle"
+	],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"*.d.ts*",
+		"*.js*",
+		"lib",
+		"src",
+		"providers",
+		"inngest",
+		"dist",
+		"dist/*.d.ts*",
+		"dist/*.js*"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		},
+		"./types": {
+			"types": "./dist/types.d.ts"
+		},
+		"./adapters": {
+			"types": "./dist/adapters.d.ts",
+			"import": "./dist/adapters.js",
+			"require": "./dist/adapters.js"
+		},
+		"./utils/*": {
+			"types": "./dist/lib/utils/*.d.ts",
+			"import": "./dist/lib/utils/*.js",
+			"require": "./dist/lib/utils/*.js"
+		},
+		"./providers": {
+			"types": "./dist/providers/index.d.ts"
+		},
+		"./providers/*": {
+			"types": "./dist/providers/*.d.ts",
+			"import": "./dist/providers/*.js",
+			"require": "./dist/providers/*.js"
+		},
+		"./schemas": {
+			"types": "./dist/schemas/index.d.ts",
+			"import": "./dist/schemas/index.js",
+			"require": "./dist/schemas/index.js"
+		},
+		"./schemas/*": {
+			"types": "./dist/schemas/*.d.ts",
+			"import": "./dist/schemas/*.js",
+			"require": "./dist/schemas/*.js"
+		},
+		"./lib/*": {
+			"types": "./dist/lib/*.d.ts",
+			"import": "./dist/lib/*.js",
+			"require": "./dist/lib/*.js"
+		},
+		"./pricing/*": {
+			"types": "./dist/lib/pricing/*.d.ts",
+			"import": "./dist/lib/pricing/*.js",
+			"require": "./dist/lib/pricing/*.js"
+		},
+		"./inngest": {
+			"types": "./dist/inngest/index.d.ts",
+			"import": "./dist/inngest/index.js",
+			"require": "./dist/inngest/index.js"
+		},
+		"./inngest/co-gardener/resource-chat": {
+			"types": "./dist/inngest/co-gardener/resource-chat.d.ts",
+			"import": "./dist/inngest/co-gardener/resource-chat.js",
+			"require": "./dist/inngest/co-gardener/resource-chat.js"
+		},
+		"./inngest/stripe/*": {
+			"types": "./dist/inngest/stripe/*.d.ts",
+			"import": "./dist/inngest/stripe/*.js",
+			"require": "./dist/inngest/stripe/*.js"
+		},
+		"./inngest/purchase-transfer/*": {
+			"types": "./dist/inngest/purchase-transfer/*.d.ts",
+			"import": "./dist/inngest/purchase-transfer/*.js",
+			"require": "./dist/inngest/purchase-transfer/*.js"
+		},
+		"./inngest/video-processing/events": {
+			"types": "./dist/inngest/video-processing/events/index.d.ts",
+			"import": "./dist/inngest/video-processing/events/index.js",
+			"require": "./dist/inngest/video-processing/events/index.js"
+		},
+		"./inngest/video-processing/events/*": {
+			"types": "./dist/inngest/video-processing/events/*.d.ts",
+			"import": "./dist/inngest/video-processing/events/*.js",
+			"require": "./dist/inngest/video-processing/events/*.js"
+		},
+		"./inngest/video-processing/functions": {
+			"types": "./dist/inngest/video-processing/functions/index.d.ts",
+			"import": "./dist/inngest/video-processing/functions/index.js",
+			"require": "./dist/inngest/video-processing/functions/index.js"
+		},
+		"./inngest/video-processing/functions/*": {
+			"types": "./dist/inngest/video-processing/functions/*.d.ts",
+			"import": "./dist/inngest/video-processing/functions/*.js",
+			"require": "./dist/inngest/video-processing/functions/*.js"
+		},
+		"./inngest/video-processing/utils": {
+			"types": "./dist/inngest/video-processing/utils.d.ts",
+			"import": "./dist/inngest/video-processing/utils.js",
+			"require": "./dist/inngest/video-processing/utils.js"
+		},
+		"./inngest/*": {
+			"types": "./dist/inngest/*.d.ts",
+			"import": "./dist/inngest/*.js",
+			"require": "./dist/inngest/*.js"
+		}
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.17.1",
+		"@coursebuilder/email-templates": "^1.0.2",
+		"@react-email/components": "^0.0.22",
+		"@slack/web-api": "^7.0.4",
+		"@types/cookie": "0.6.0",
+		"@types/uuid": "9.0.8",
+		"ai": "3.0.19",
+		"cookie": "0.6.0",
+		"date-fns": "^2.30.0",
+		"drizzle-zod": "^0.5.1",
+		"inngest": "^3.22.5",
+		"liquidjs": "^10.16.3",
+		"lodash": "^4.17.21",
+		"nodemailer": "^6.7.2",
+		"openai-edge": "^1.2.2",
+		"pluralize": "^8.0.0",
+		"query-string": "^9.0.0",
+		"srt-parser-2": "^1.2.3",
+		"stripe": "16.9.0",
+		"uuid": "^9.0.1",
+		"xstate": "^5.13.0"
+	},
+	"devDependencies": {
+		"@auth/core": "^0.30.0",
+		"@types/lodash": "^4.14.200",
+		"@types/mjml": "^4.7.4",
+		"@types/nodemailer": "^6.4.14",
+		"@types/pluralize": "^0.0.33",
+		"tsup": "8.0.2",
+		"zod": "^3.22.4"
+	}
+}

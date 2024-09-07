@@ -1,0 +1,20 @@
+{
+	"name": "utils",
+	"version": "0.1.2",
+	"type": "module",
+	"private": true,
+	"dependencies": {
+		"unplugin-swc": "^1.4.4"
+	},
+	"devDependencies": {
+		"@coursebuilder/core": "workspace:*",
+		"@preact/preset-vite": "^2.8.1",
+		"@types/lodash": "^4.14.200",
+		"@types/uuid": "9.0.8",
+		"dotenv": "^10.0.0",
+		"lodash": "^4.17.21",
+		"nanoid": "^5.0.2",
+		"tsup": "8.0.2",
+		"uuid": "^9.0.1"
+	}
+}

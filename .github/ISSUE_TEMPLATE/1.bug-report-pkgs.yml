@@ -1,5 +1,5 @@
 name: 🐞 Bug Report (packages)
-description: File a bug report for the Uploadthing packages
+description: File a bug report for the Course Builder packages
 title: '[bug]: '
 labels: ['🐛 bug: unconfirmed', 'area:packages']
 body:

@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './login.css';
+@import './subscribe-form.css';
+
+@layer base {
+	:root {
+		--nav-height: 5rem;
+		--nav-height-mobile: 4.5rem;
+		--command-bar-height: 2.25rem;
+		--pane-layout-height: calc(
+			100vh - var(--nav-height) - var(--command-bar-height)
+		);
+
+		/* JSV colors */
+		--jsv-misty-white: rgba(255, 255, 255, 0.9);
+		--jsv-ghostly-white: rgba(255, 255, 255, 0.75);
+		--jsv-green: rgb(59, 246, 134);
+		--jsv-blue: rgb(76, 169, 255);
+		--jsv-blue-electric: rgb(77, 77, 255);
+		--jsv-purple: rgb(119, 31, 255);
+		--jsv-red: rgb(230, 26, 77);
+		--jsv-pink: #ff4d80;
+		--jsv-pink-hot: rgb(255, 0, 127);
+		--jsv-orange: rgb(246, 115, 59);
+		--jsv-hazy-charcoal: rgba(90, 102, 110, 0.5);
+		--jsv-charcoal: rgba(36, 40, 42, 0.4);
+		--jsv-charcoal-black: rgb(9, 9, 9);
+
+		/* shadcnui */
+		--background: 222.2 84% 4.9%;
+		--foreground: 210 40% 98%;
+
+		--card: 222.2 84% 4.9%;
+		--card-foreground: 210 40% 98%;
+
+		--popover: 222.2 84% 4.9%;
+		--popover-foreground: 210 40% 98%;
+
+		--primary: 210 40% 98%;
+		--primary-foreground: 222.2 47.4% 11.2%;
+
+		--secondary: 217.2 32.6% 17.5%;
+		--secondary-foreground: 210 40% 98%;
+
+		--muted: 217.2 32.6% 17.5%;
+		--muted-foreground: 215 20.2% 65.1%;
+
+		--accent: 217.2 32.6% 17.5%;
+		--accent-foreground: 210 40% 98%;
+
+		--destructive: 0 62.8% 30.6%;
+		--destructive-foreground: 210 40% 98%;
+
+		--border: 217.2 32.6% 17.5%;
+		--input: 217.2 32.6% 17.5%;
+		--ring: 212.7 26.8% 83.9%;
+
+		--radius: 0.5rem;
+
+		--grid: 8px;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+
+	body {
+		@apply bg-jsv-charcoal-black text-body-text;
+	}
+}
+
+mux-player {
+	aspect-ratio: 16 / 9;
+	width: 100%;
+	height: auto;
+	--seek-backward-button: none;
+	--seek-forward-button: none;
+	@apply overflow-hidden;
+}
+
+.tiptap {
+	border: #ff3300 solid 2px;
+	min-height: calc(100% - 40px);
+}
+
+.tiptap > * + * {
+	margin-top: 0.75em;
+}
+
+.tiptap ul,
+.tiptap ol {
+	padding: 0 1rem;
+}
+
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+	line-height: 1.1;
+}
+
+.tiptap code {
+	background-color: rgba(97, 97, 97, 0.1);
+	color: #616161;
+}
+
+.tiptap pre {
+	background: #0d0d0d;
+	color: #fff;
+	font-family: 'JetBrainsMono', monospace;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+}
+
+.tiptap pre code {
+	color: inherit;
+	padding: 0;
+	background: none;
+	font-size: 0.8rem;
+}
+
+.tiptap img {
+	max-width: 100%;
+	height: auto;
+}
+
+.tiptap blockquote {
+	padding-left: 1rem;
+	border-left: 2px solid rgba(13, 13, 13, 0.1);
+}
+
+.tiptap hr {
+	border: none;
+	border-top: 2px solid rgba(13, 13, 13, 0.1);
+	margin: 2rem 0;
+}

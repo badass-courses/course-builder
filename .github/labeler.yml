@@ -10,4 +10,11 @@
 '@coursebuilder/ui':
   - any: [ 'packages/ui/**', '!packages/ui/package.json' ]
 
+'@coursebuilder/core':
+  - any: [ 'packages/core/**', '!packages/core/package.json' ]
 
+'@coursebuilder/next':
+  - any: [ 'packages/next/**', '!packages/next/package.json' ]
+
+'@coursebuilder/adapter-drizzle':
+  - any: [ 'packages/adapter-drizzle/**', '!packages/adapter-drizzle/package.json' ]

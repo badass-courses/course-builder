@@ -1,64 +1,25 @@
-# Skill Recordings Course Builder POC
+# Course Builder
 
-This is an application that is primarily meant to be ran locally (for now) as a way to explore and experiment with gpt-4
-prompt chaining as a "tool for thought"""
+Course Builder is a real-time multiplayer CMS for building and deploying the opinionated data structures of developer education products
 
-Current State: https://www.loom.com/share/651287e8136a46429f46e6541e3dd0c2
+The main Course Builder web application can be found in `apps/course-builder-web` and has further instructions in the readme.
 
-Note that this is a monorepo and teh main app is in `apps/course-builder-web`!
-
-It's got a lot of moving parts 😅:
-
-- A database to store our data
-- An ORM to interact with our database
-- Authentication
-- Serverless Queueing
-- Email sending
-- Websockets
-- CMS
-
-![diagram of the stack](./apps/course-builder-web/public/stack.png)
+This is a monorepo managed by [Turborepo](https://turbo.build/)
 
 ## Getting Started
 
-We are building an application that allows us to build courses. It's largely based on the
-[Skill Recordings Products](https://github.com/skillrecordings/products) repository.
+```bash
+pnpm install
+pnpm build
+cd apps/course-builder-web
+cp .env.example .env
+pnpm dev
+```
 
-Async event-driven workflows are a key part of the application. We are using [Inngest](https://inngest.com) to process
-chained conversations with GPT-4 to produce summaries, titles, emails and other supplemental details.
+All of the environment variables for various services are the biggest obstacle to getting started. You can find the environment variables in the `apps/course-builder-web/.env` file. You can copy the `apps/course-builder-web/.env.example` file to `.env` and fill in the values for the environment variables. If you're a Skill Recordings team member, you can pull the `env` from Vercel. See the app project readme for more information.
 
-Here's an example from a production application that's using this approach:
+`pnpm dev` from the root of the project will run all the packages in the monorepo in development watch mode. Very convenient.
 
-![flow chart of generated email workflows](./apps/course-builder-web/public/epic-web-flows.png)
+It does not run the `apps`. Those need to be individually started. 
 
-Various events in the application trigger async workflows that occur in queued serverless background jobs.
-
-- an event is received
-- steps/actions are performed
-- we can sleep or wait for other events within the workflow
-- we can send events that trigger other workflows
-
-## Event-Driven Workflows
-
-The application is built around the concept of event-driven workflows. There are several kinds of events. The primary
-events are external to the workflow and are emitted from users interacting with the application. The user has requested
-work and provided input. When these are received, the workflow kicks into gear and begins processing the request.
-
-There are also external events that are generally received via webhooks when some service provider has completed some
-work. For example,
-[when a video is uploaded to Mux, they send a series of webhooks](https://docs.mux.com/guides/system/listen-for-webhooks)
-at various staging in the video processing to let us know when the asset is available.
-
-The receiving URL is configured within the Mux dashboard (not, for local development we use [ngrok](https://ngrok.com/)
-to expose our local server.
-
-Another example is ordering transcripts from Deepgram. When the video is uploaded we send the URL to Deepgram for
-transcription and include a callback url for Deepgram to contact when the transcript is ready.
-
-The last kind of event is internal to the workflow. These are events that are triggered by the workflow itself.
-
-![diagram of events](./apps/course-builder-web/public/event-diagram.png)
-
-- `VIDEO_UPLOADED_EVENT`: triggered when a new video has been uploaded and is available via a URL.
-
-_[more to come]_
+Built by [Badass Courses 🍄🌈💀](https://badass.dev)

@@ -4,10 +4,10 @@ description: 'Common setup steps for Actions'
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v2
-    - uses: actions/setup-node@v3
+    - uses: pnpm/action-setup@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
         cache: 'pnpm'
 
     - name: Setup bun
@@ -20,4 +20,6 @@ runs:
 
     - name: Copy .env.example files
       shell: bash
-      run: find ./apps -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
+      run:
+        find ./apps -type f -name ".env.example" -exec sh -c 'cp "$1"
+        "${1%.example}"' _ {} \;

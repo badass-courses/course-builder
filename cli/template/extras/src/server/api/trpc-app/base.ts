@@ -23,9 +23,9 @@ import { ZodError } from 'zod'
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  return {
-    ...opts,
-  }
+	return {
+		...opts,
+	}
 }
 
 /**
@@ -36,16 +36,17 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
  * errors on the backend.
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    }
-  },
+	transformer: superjson,
+	errorFormatter({ shape, error }) {
+		return {
+			...shape,
+			data: {
+				...shape.data,
+				zodError:
+					error.cause instanceof ZodError ? error.cause.flatten() : null,
+			},
+		}
+	},
 })
 
 /**

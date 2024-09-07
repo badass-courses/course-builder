@@ -1,0 +1,1458 @@
+{
+	"id": "00000000-0000-0000-0000-000000000000",
+	"prevId": "",
+	"version": "5",
+	"dialect": "mysql",
+	"tables": {
+		"Account": {
+			"name": "Account",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"type": {
+					"autoincrement": false,
+					"name": "type",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"provider": {
+					"autoincrement": false,
+					"name": "provider",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"providerAccountId": {
+					"autoincrement": false,
+					"name": "providerAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"refresh_token": {
+					"autoincrement": false,
+					"name": "refresh_token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"access_token": {
+					"autoincrement": false,
+					"name": "access_token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"expires_at": {
+					"autoincrement": false,
+					"name": "expires_at",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"token_type": {
+					"autoincrement": false,
+					"name": "token_type",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"scope": {
+					"autoincrement": false,
+					"name": "scope",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"id_token": {
+					"autoincrement": false,
+					"name": "id_token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"session_state": {
+					"autoincrement": false,
+					"name": "session_state",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"oauth_token_secret": {
+					"autoincrement": false,
+					"name": "oauth_token_secret",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"oauth_token": {
+					"autoincrement": false,
+					"name": "oauth_token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"refresh_token_expires_in": {
+					"autoincrement": false,
+					"name": "refresh_token_expires_in",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"Account_id": {
+					"name": "Account_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"Account_provider_providerAccountId_key": {
+					"name": "Account_provider_providerAccountId_key",
+					"columns": ["provider", "providerAccountId"]
+				}
+			}
+		},
+		"Comment": {
+			"name": "Comment",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"text": {
+					"autoincrement": false,
+					"name": "text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"context": {
+					"autoincrement": false,
+					"name": "context",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"updatedAt": {
+					"autoincrement": false,
+					"name": "updatedAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"Comment_id": {
+					"name": "Comment_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"Coupon": {
+			"name": "Coupon",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"code": {
+					"autoincrement": false,
+					"name": "code",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"expires": {
+					"autoincrement": false,
+					"name": "expires",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"maxUses": {
+					"default": -1,
+					"autoincrement": false,
+					"name": "maxUses",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"default": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "default",
+					"type": "tinyint",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantCouponId": {
+					"autoincrement": false,
+					"name": "merchantCouponId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"usedCount": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "usedCount",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"percentageDiscount": {
+					"autoincrement": false,
+					"name": "percentageDiscount",
+					"type": "decimal(3,2)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"restrictedToProductId": {
+					"autoincrement": false,
+					"name": "restrictedToProductId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"bulkPurchaseId": {
+					"autoincrement": false,
+					"name": "bulkPurchaseId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"Coupon_id": {
+					"name": "Coupon_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"Coupon_code_key": {
+					"name": "Coupon_code_key",
+					"columns": ["code"]
+				},
+				"Coupon_bulkPurchaseId_key": {
+					"name": "Coupon_bulkPurchaseId_key",
+					"columns": ["bulkPurchaseId"]
+				}
+			}
+		},
+		"DeviceAccessToken": {
+			"name": "DeviceAccessToken",
+			"columns": {
+				"token": {
+					"autoincrement": false,
+					"name": "token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"DeviceAccessToken_token": {
+					"name": "DeviceAccessToken_token",
+					"columns": ["token"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"DeviceVerification": {
+			"name": "DeviceVerification",
+			"columns": {
+				"deviceCode": {
+					"autoincrement": false,
+					"name": "deviceCode",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userCode": {
+					"autoincrement": false,
+					"name": "userCode",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"expires": {
+					"autoincrement": false,
+					"name": "expires",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"verifiedAt": {
+					"autoincrement": false,
+					"name": "verifiedAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"verifiedByUserId": {
+					"autoincrement": false,
+					"name": "verifiedByUserId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"DeviceVerification_deviceCode": {
+					"name": "DeviceVerification_deviceCode",
+					"columns": ["deviceCode"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"DeviceVerification_deviceCode_key": {
+					"name": "DeviceVerification_deviceCode_key",
+					"columns": ["deviceCode"]
+				}
+			}
+		},
+		"LessonProgress": {
+			"name": "LessonProgress",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"lessonId": {
+					"autoincrement": false,
+					"name": "lessonId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"sectionId": {
+					"autoincrement": false,
+					"name": "sectionId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"moduleId": {
+					"autoincrement": false,
+					"name": "moduleId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"lessonSlug": {
+					"autoincrement": false,
+					"name": "lessonSlug",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"lessonVersion": {
+					"autoincrement": false,
+					"name": "lessonVersion",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"completedAt": {
+					"autoincrement": false,
+					"name": "completedAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"updatedAt": {
+					"autoincrement": false,
+					"name": "updatedAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"LessonProgress_id": {
+					"name": "LessonProgress_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {
+				"LessonProgress_userId_lessonId_idx": {
+					"name": "LessonProgress_userId_lessonId_idx",
+					"columns": ["userId", "lessonId"],
+					"isUnique": false
+				},
+				"LessonProgress_completedAt_idx": {
+					"name": "LessonProgress_completedAt_idx",
+					"columns": ["completedAt"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"MerchantAccount": {
+			"name": "MerchantAccount",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"label": {
+					"autoincrement": false,
+					"name": "label",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantAccount_id": {
+					"name": "MerchantAccount_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"MerchantCharge": {
+			"name": "MerchantCharge",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantAccountId": {
+					"autoincrement": false,
+					"name": "merchantAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantProductId": {
+					"autoincrement": false,
+					"name": "merchantProductId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantCustomerId": {
+					"autoincrement": false,
+					"name": "merchantCustomerId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantCharge_id": {
+					"name": "MerchantCharge_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"MerchantCharge_identifier_key": {
+					"name": "MerchantCharge_identifier_key",
+					"columns": ["identifier"]
+				}
+			}
+		},
+		"MerchantCoupon": {
+			"name": "MerchantCoupon",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantAccountId": {
+					"autoincrement": false,
+					"name": "merchantAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"percentageDiscount": {
+					"autoincrement": false,
+					"name": "percentageDiscount",
+					"type": "decimal(3,2)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"type": {
+					"autoincrement": false,
+					"name": "type",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantCoupon_id": {
+					"name": "MerchantCoupon_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"MerchantCoupon_identifier_key": {
+					"name": "MerchantCoupon_identifier_key",
+					"columns": ["identifier"]
+				}
+			}
+		},
+		"MerchantCustomer": {
+			"name": "MerchantCustomer",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantAccountId": {
+					"autoincrement": false,
+					"name": "merchantAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantCustomer_id": {
+					"name": "MerchantCustomer_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"MerchantCustomer_identifier_key": {
+					"name": "MerchantCustomer_identifier_key",
+					"columns": ["identifier"]
+				}
+			}
+		},
+		"MerchantPrice": {
+			"name": "MerchantPrice",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantAccountId": {
+					"autoincrement": false,
+					"name": "merchantAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantProductId": {
+					"autoincrement": false,
+					"name": "merchantProductId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"priceId": {
+					"autoincrement": false,
+					"name": "priceId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantPrice_id": {
+					"name": "MerchantPrice_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"MerchantPrice_identifier_key": {
+					"name": "MerchantPrice_identifier_key",
+					"columns": ["identifier"]
+				}
+			}
+		},
+		"MerchantProduct": {
+			"name": "MerchantProduct",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantAccountId": {
+					"autoincrement": false,
+					"name": "merchantAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"productId": {
+					"autoincrement": false,
+					"name": "productId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantProduct_id": {
+					"name": "MerchantProduct_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"MerchantProduct_identifier_key": {
+					"name": "MerchantProduct_identifier_key",
+					"columns": ["identifier"]
+				}
+			}
+		},
+		"MerchantSession": {
+			"name": "MerchantSession",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantAccountId": {
+					"autoincrement": false,
+					"name": "merchantAccountId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"MerchantSession_id": {
+					"name": "MerchantSession_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"Price": {
+			"name": "Price",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"productId": {
+					"autoincrement": false,
+					"name": "productId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"nickname": {
+					"autoincrement": false,
+					"name": "nickname",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"unitAmount": {
+					"autoincrement": false,
+					"name": "unitAmount",
+					"type": "decimal(10,2)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"Price_id": {
+					"name": "Price_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"Product": {
+			"name": "Product",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"name": {
+					"autoincrement": false,
+					"name": "name",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"key": {
+					"autoincrement": false,
+					"name": "key",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"default": 0,
+					"autoincrement": false,
+					"name": "status",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"quantityAvailable": {
+					"default": -1,
+					"autoincrement": false,
+					"name": "quantityAvailable",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"productType": {
+					"autoincrement": false,
+					"name": "productType",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"Product_id": {
+					"name": "Product_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"Purchase": {
+			"name": "Purchase",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"totalAmount": {
+					"autoincrement": false,
+					"name": "totalAmount",
+					"type": "decimal(65,30)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"ip_address": {
+					"autoincrement": false,
+					"name": "ip_address",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"city": {
+					"autoincrement": false,
+					"name": "city",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"state": {
+					"autoincrement": false,
+					"name": "state",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"country": {
+					"autoincrement": false,
+					"name": "country",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"couponId": {
+					"autoincrement": false,
+					"name": "couponId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"bulkCouponId": {
+					"autoincrement": false,
+					"name": "bulkCouponId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"redeemedBulkCouponId": {
+					"autoincrement": false,
+					"name": "redeemedBulkCouponId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"productId": {
+					"autoincrement": false,
+					"name": "productId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantChargeId": {
+					"autoincrement": false,
+					"name": "merchantChargeId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"upgradedFromId": {
+					"autoincrement": false,
+					"name": "upgradedFromId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"default": "'Valid'",
+					"autoincrement": false,
+					"name": "status",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"merchantSessionId": {
+					"autoincrement": false,
+					"name": "merchantSessionId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"Purchase_id": {
+					"name": "Purchase_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {
+				"Purchase_userId_idx": {
+					"name": "Purchase_userId_idx",
+					"columns": ["userId"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"Purchase_upgradedFromId_key": {
+					"name": "Purchase_upgradedFromId_key",
+					"columns": ["upgradedFromId"]
+				}
+			}
+		},
+		"PurchaseUserTransfer": {
+			"name": "PurchaseUserTransfer",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"transferState": {
+					"default": "'AVAILABLE'",
+					"autoincrement": false,
+					"name": "transferState",
+					"type": "enum('AVAILABLE','INITIATED','VERIFIED','CANCELED','EXPIRED','CONFIRMED','COMPLETED')",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"purchaseId": {
+					"autoincrement": false,
+					"name": "purchaseId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sourceUserId": {
+					"autoincrement": false,
+					"name": "sourceUserId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"targetUserId": {
+					"autoincrement": false,
+					"name": "targetUserId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"expiresAt": {
+					"autoincrement": false,
+					"name": "expiresAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"canceledAt": {
+					"autoincrement": false,
+					"name": "canceledAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"confirmedAt": {
+					"autoincrement": false,
+					"name": "confirmedAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"completedAt": {
+					"autoincrement": false,
+					"name": "completedAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"PurchaseUserTransfer_id": {
+					"name": "PurchaseUserTransfer_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"Session": {
+			"name": "Session",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sessionToken": {
+					"autoincrement": false,
+					"name": "sessionToken",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"autoincrement": false,
+					"name": "userId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"expires": {
+					"autoincrement": false,
+					"name": "expires",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"Session_id": {
+					"name": "Session_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"UpgradableProducts": {
+			"name": "UpgradableProducts",
+			"columns": {
+				"upgradableToId": {
+					"autoincrement": false,
+					"name": "upgradableToId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"upgradableFromId": {
+					"autoincrement": false,
+					"name": "upgradableFromId",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"compositePrimaryKeys": {
+				"UpgradableProducts_upgradableToId_upgradableFromId": {
+					"name": "UpgradableProducts_upgradableToId_upgradableFromId",
+					"columns": ["upgradableToId", "upgradableFromId"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {}
+		},
+		"User": {
+			"name": "User",
+			"columns": {
+				"id": {
+					"autoincrement": false,
+					"name": "id",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"name": {
+					"autoincrement": false,
+					"name": "name",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"email": {
+					"autoincrement": false,
+					"name": "email",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"emailVerified": {
+					"autoincrement": false,
+					"name": "emailVerified",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"image": {
+					"autoincrement": false,
+					"name": "image",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"roles": {
+					"default": "'User'",
+					"autoincrement": false,
+					"name": "roles",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"fields": {
+					"autoincrement": false,
+					"name": "fields",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"User_id": {
+					"name": "User_id",
+					"columns": ["id"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"User_email_key": {
+					"name": "User_email_key",
+					"columns": ["email"]
+				}
+			}
+		},
+		"VerificationToken": {
+			"name": "VerificationToken",
+			"columns": {
+				"token": {
+					"autoincrement": false,
+					"name": "token",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"identifier": {
+					"autoincrement": false,
+					"name": "identifier",
+					"type": "varchar(191)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"expires": {
+					"autoincrement": false,
+					"name": "expires",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"default": "CURRENT_TIMESTAMP(3)",
+					"autoincrement": false,
+					"name": "createdAt",
+					"type": "datetime(3)",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"compositePrimaryKeys": {
+				"VerificationToken_token": {
+					"name": "VerificationToken_token",
+					"columns": ["token"]
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"uniqueConstraints": {
+				"VerificationToken_identifier_token_key": {
+					"name": "VerificationToken_identifier_token_key",
+					"columns": ["identifier", "token"]
+				}
+			}
+		}
+	},
+	"schemas": {},
+	"_meta": {
+		"schemas": {},
+		"tables": {},
+		"columns": {}
+	}
+}

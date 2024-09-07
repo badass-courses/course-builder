@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"baseUrl": ".",
+		"declaration": true,
+		"declarationMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"skipDefaultLibCheck": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"stripInternal": true,
+		"target": "es2020",
+		"outDir": ".",
+		"rootDir": "../"
+	},
+	"include": [".eslintrc.cjs", "./**/*"],
+	"exclude": ["node_modules", "*.js", "*.d.ts", "../dist"]
+}

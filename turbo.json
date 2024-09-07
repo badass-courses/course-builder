@@ -1,35 +1,112 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["PORT"],
-  "pipeline": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
-    },
-    "lint": {
-      "dependsOn": ["^topo", "^build"],
-      "outputs": []
-    },
-    "dev": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "clean": {
-      "cache": false
-    },
-    "typecheck": {
-      "dependsOn": ["^topo", "^build"]
-    },
-    "test": {
-      "dependsOn": ["build"]
-    },
-    "test:watch": {
-      "cache": false
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["**/.env.*local"],
+	"globalEnv": ["PORT"],
+	"tasks": {
+		"topo": {
+			"dependsOn": ["^topo"]
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [
+				".next/**",
+				"dist/**",
+				"lib/**",
+				"providers/**",
+				"inngest/**",
+				"schemas/**",
+				"*.js",
+				"*.d.ts",
+				"*.d.ts.map",
+				"!.next/cache/**"
+			],
+			"env": [
+				"STRIPE_SECRET_TOKEN",
+				"STRIPE_WEBHOOK_SECRET",
+				"COURSEBUILDER_URL",
+				"DATABASE_URL",
+				"NEXTAUTH_URL",
+				"NEXTAUTH_SECRET",
+				"OPENAI_API_KEY",
+				"REPLICATE_API_KEY",
+				"ANTHROPIC_API_KEY",
+				"INNGEST_EVENT_KEY",
+				"INNGEST_SIGNING_KEY",
+				"INNGEST_APP_NAME",
+				"MUX_SECRET_KEY",
+				"MUX_ACCESS_TOKEN_ID",
+				"OPENAI_MODEL_ID",
+				"UPSTASH_REDIS_REST_URL",
+				"UPSTASH_REDIS_REST_TOKEN",
+				"DEEPGRAM_API_KEY",
+				"UPLOADTHING_URL",
+				"UPLOADTHING_SECRET",
+				"UPLOADTHING_APP_ID",
+				"EMAIL_SERVER_HOST",
+				"EMAIL_SERVER_PORT",
+				"POSTMARK_KEY",
+				"POSTMARK_API_KEY",
+				"POSTMARK_WEBHOOK_SECRET",
+				"CONVERTKIT_API_SECRET",
+				"CONVERTKIT_API_KEY",
+				"CONVERTKIT_SIGNUP_FORM",
+				"GITHUB_CLIENT_ID",
+				"GITHUB_CLIENT_SECRET",
+				"TWITTER_CLIENT_ID",
+				"TWITTER_CLIENT_SECRET",
+				"RESEND_API_KEY",
+				"DISCORD_CLIENT_SECRET",
+				"DISCORD_BOT_TOKEN",
+				"DISCORD_GUILD_ID",
+				"DISCORD_MEMBER_ROLE_ID",
+				"DISCORD_PURCHASER_ROLE_ID",
+				"DISCORD_CLIENT_ID",
+				"CLOUDINARY_API_KEY",
+				"CLOUDINARY_API_SECRET",
+				"AWS_REGION",
+				"AWS_ACCESS_KEY_ID",
+				"AWS_SECRET_ACCESS_KEY",
+				"AWS_BUCKET_NAME",
+				"SLACK_TOKEN",
+				"SLACK_DEFAULT_CHANNEL_ID"
+			],
+			"outputLogs": "new-only"
+		},
+		"postbuild": {
+			"dependsOn": ["build"],
+			"outputs": ["public/sitemap.xml", "public/robots.txt"]
+		},
+		"lint": {
+			"dependsOn": ["^topo", "^build"],
+			"outputs": []
+		},
+		"dev": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"clean": {
+			"cache": false
+		},
+		"typecheck": {
+			"dependsOn": ["^topo", "^build"]
+		},
+		"test": {
+			"outputs": ["coverage/**"],
+			"inputs": ["src/**/", "test/**/"],
+			"cache": false,
+			"outputLogs": "new-only"
+		},
+		"test:e2e": {
+			"outputs": [
+				"blob-report/**",
+				"playwright-report/**",
+				"playwright/.cache/**",
+				"test-results/**"
+			]
+		},
+		"test:watch": {
+			"cache": false
+		}
+	}
 }

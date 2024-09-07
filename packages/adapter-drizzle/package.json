@@ -1,0 +1,69 @@
+{
+	"name": "@coursebuilder/adapter-drizzle",
+	"version": "0.5.0",
+	"description": "Drizzle adapter for Course Builder.",
+	"scripts": {
+		"clean": "find . -type d -name \".drizzle\" | xargs rm -rf",
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"test": "pnpm test:mysql",
+		"test:mysql": "pnpm clean && ./test/mysql/test.sh",
+		"test:mysql:watch": "pnpm clean && ./test/mysql/test.sh watch"
+	},
+	"keywords": [
+		"coursebuilder",
+		"drizzle"
+	],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"/dist/*.d.ts*",
+		"/dist/*.js",
+		"/dist/lib/mysql/*.d.ts*",
+		"/dist/lib/mysql/*.js",
+		"dist/lib",
+		"src"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./mysql": {
+			"types": "./dist/lib/mysql/index.d.ts",
+			"import": "./dist/lib/mysql/index.js",
+			"require": "./dist/lib/mysql/index.cjs"
+		}
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@sindresorhus/slugify": "^2.2.1",
+		"date-fns": "^2.30.0",
+		"nanoid": "^5.0.2",
+		"uuid": "^9.0.1"
+	},
+	"devDependencies": {
+		"@auth/core": "^0.30.0",
+		"@coursebuilder/core": "0.2.2",
+		"@libsql/client": "0.5.6",
+		"@types/better-sqlite3": "7.6.9",
+		"@types/uuid": "9.0.8",
+		"better-sqlite3": "9.4.3",
+		"drizzle-kit": "^0.22.1",
+		"drizzle-orm": "0.31.0",
+		"mysql2": "^3.6.1",
+		"postgres": "^3.3.4",
+		"tsup": "8.0.2",
+		"tsx": "^4.7.1",
+		"zod": "^3.22.4"
+	},
+	"peerDependencies": {
+		"drizzle-orm": "0.31.x"
+	}
+}

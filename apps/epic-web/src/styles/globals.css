@@ -1,0 +1,435 @@
+@tailwind base;
+@tailwind components;
+@import './subscribe-form.css';
+@import './quiz.css';
+@import './nprogress.css';
+@import './prism-theme.css';
+@import './portable-text.css';
+@import './video/github-link.css';
+@import './video/lesson-completion-toggle.css';
+@import './video/lesson-description.css';
+@import './video/lesson-title.css';
+@import './video/module-lesson-list.css';
+@import './video/video-overlays.css';
+@import './video/video-transcript.css';
+@import './team.css';
+@import './commerce.css';
+@import './login.css';
+@import './redeem-dialog.css';
+@import './video/reset-progress.css';
+@import './feedback-widget.css';
+
+/* @import '../search-bar/cmdk.css'; */
+
+@tailwind utilities;
+
+:root {
+	@apply selection:bg-primary selection:text-white;
+	scroll-padding-top: 50px;
+}
+
+.no-marker {
+	::-webkit-details-marker {
+		display: none;
+	}
+}
+
+/* Shiki highlighter */
+/* TODO: figure out how to override the color inside codeToHtml */
+.shiki.material-theme-palenight {
+	background-color: #111827 !important;
+}
+
+/* code-hike code blocks */
+.prose .ch-code {
+	@apply bg-gray-900 dark:bg-gray-900 !important;
+}
+.prose .ch-code-scroll-parent {
+	@apply scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700;
+}
+.prose .ch-codeblock {
+	@apply shadow-none;
+}
+
+.prose .ch-code-scroll-parent {
+	@apply leading-relaxed;
+}
+
+.prose > pre > code {
+	@apply !bg-transparent;
+}
+pre > code {
+	@apply !bg-transparent;
+}
+
+mux-player {
+	aspect-ratio: 16 / 9;
+	width: 100%;
+	height: auto;
+	/* margin-bottom: -6px; */
+	@apply overflow-hidden;
+}
+
+[data-video-embed-page] {
+	mux-player {
+		margin-bottom: 0;
+	}
+}
+
+mux-player::part(center play button) {
+	@apply sm:scale-50;
+}
+
+mux-player::part(vertical-layer) {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.noise {
+	background-image: url('/assets/stars-in-distance@2x.png');
+}
+
+.dark {
+	.bg-gradient-radial {
+		background: radial-gradient(circle at 50% 50%, #282644 0%, #0b0617 100%);
+	}
+}
+.light {
+	.bg-gradient-radial {
+		background: radial-gradient(circle at 50% 50%, #fff 0%, transparent 100%);
+	}
+}
+
+.light {
+	.invert-svg {
+		img[src$='.svg'] {
+			filter: invert(1);
+		}
+	}
+}
+
+@layer base {
+	:root {
+		--background: 215 25% 98%;
+		--foreground: 227 47% 6%;
+
+		--muted: 210 40% 96.1%;
+		--muted-foreground: 215.4 16.3% 46.9%;
+
+		--popover: 0 0% 100%;
+		--popover-foreground: 222.2 47.4% 11.2%;
+
+		--card: 0 0% 100%;
+		--card-foreground: 222.2 47.4% 11.2%;
+
+		--border: 214.3 31.8% 91.4%;
+		--input: 214.3 31.8% 91.4%;
+
+		--primary: 227 100% 65.5%;
+		--primary-foreground: 0 0% 100%;
+
+		--secondary: 215 23% 90%;
+		--secondary-foreground: 222.2 47.4% 11.2%;
+
+		--accent: 210 40% 96.1%;
+		--accent-foreground: 222.2 47.4% 11.2%;
+
+		--destructive: 0 100% 50%;
+		--destructive-foreground: 210 40% 98%;
+
+		--ring: 215 20.2% 65.1%;
+
+		--radius: 0.5rem;
+	}
+
+	.dark {
+		--background: 227.1 46.7% 5.9%;
+		--foreground: 220 13% 91%;
+
+		--muted: 223 47% 11%;
+		--muted-foreground: 215.4 16.3% 56.9%;
+
+		--popover: 224 71% 4%;
+		--popover-foreground: 215 20.2% 65.1%;
+
+		--card: 227 29% 10%;
+		--card-foreground: 220 13% 91%;
+
+		--border: 228 18% 19%;
+		--input: 228 18% 19%;
+
+		--primary: 227 100% 65.5%;
+		--primary-foreground: 0 0% 100%;
+
+		--secondary: 228 18% 19%;
+		--secondary-foreground: 220 13% 91%;
+
+		--accent: 228 18% 19%;
+		--accent-foreground: 210 40% 98%;
+
+		--destructive: 0 63% 31%;
+		--destructive-foreground: 210 40% 98%;
+
+		--ring: 227 100% 65.5%;
+
+		--radius: 0.5rem;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground overflow-y-scroll;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
+	}
+}
+
+/* code syntax highlighting */
+/* dark is default: */
+:root {
+	--base00: #131621; /* editor background */
+	--base01: #2d2d2d; /* unused (currently) */
+	--base02: #424242; /* unused (currently) */
+	--base03: #637777; /* code comments */
+	--base04: #555555; /* unused (currently) */
+	--base05: #d6deeb; /* fallback font color */
+	--base06: #c8c8c8; /* unused (currently) */
+	--base07: #fafafa; /* unused (currently) */
+	--base08: #7fdbca; /* variable references */
+	--base09: #f78c6c; /* numbers */
+	--base0A: #c792ea; /* keywords */
+	--base0B: #ecc48d; /* strings */
+	--base0C: #f78c6c; /* escape characters in strings */
+	--base0D: #82aaff; /* function calls */
+	--base0E: #c792ea; /* operators */
+	--base0F: #d3423e; /* "Embedded" (whatever that means) */
+}
+
+:root .light,
+:root.light {
+	--base00: #131621; /* editor background */
+	--base01: #2d2d2d; /* unused (currently) */
+	--base02: #424242; /* unused (currently) */
+	--base03: #637777; /* code comments */
+	--base04: #555555; /* unused (currently) */
+	--base05: #d6deeb; /* fallback font color */
+	--base06: #c8c8c8; /* unused (currently) */
+	--base07: #fafafa; /* unused (currently) */
+	--base08: #7fdbca; /* variable references */
+	--base09: #f78c6c; /* numbers */
+	--base0A: #c792ea; /* keywords */
+	--base0B: #ecc48d; /* strings */
+	--base0C: #f78c6c; /* escape characters in strings */
+	--base0D: #82aaff; /* function calls */
+	--base0E: #c792ea; /* operators */
+	--base0F: #d3423e; /* "Embedded" (whatever that means) */
+	/*
+  --base00: #f3f3f3; /* editor background
+  --base00: #131621; /* editor background
+  --base01: #e0e0e0; /* unused (currently)
+  --base02: #d6d6d6; /* unused (currently)
+  --base03: #989fb1; /* code comments
+  --base04: #969896; /* unused (currently)
+  --base05: #2e3039; /* fallback font color
+  --base05: #d6deeb; /* fallback font color
+  --base06: #282a2e; /* unused (currently)
+  --base07: #1d1f21; /* unused (currently)
+  --base08: #0c969b; /* variable references
+  --base09: #aa0982; /* numbers
+  --base0A: #994cc3; /* keywords
+  --base0B: #c96765; /* strings
+  --base0C: #aa0982; /* escape characters in strings
+  --base0D: #4876d6; /* function calls
+  --base0E: #994cc3; /* operators
+  --base0F: #d3423e; /* "Embedded" (whatever that means)
+*/
+}
+
+/* Code Blocks */
+
+.prose pre[data-line-numbers='true'],
+.prose pre[data-add],
+.prose pre[data-remove],
+.prose pre:has([data-highlight]) {
+	padding-left: 0rem;
+	padding-right: 0rem;
+}
+
+/**
+ keep it in separate css rule
+ has() is not supported in all browsers as of 2023-06-30
+*/
+.prose pre:not([data-line-numbers='true']):has([data-highlight]) {
+	padding-left: 0rem;
+	padding-right: 0rem;
+}
+
+.prose pre:not([data-line-numbers='true']) .codeblock-line:before,
+.prose pre[data-line-numbers='true'] .codeblock-line:before,
+.prose pre[data-remove] .codeblock-line:before,
+.prose pre[data-remove] .codeblock-line:before,
+.prose pre[data-add] .codeblock-line:before,
+.prose pre[data-add] .codeblock-line:before {
+	padding-left: 0rem;
+	content: attr(data-line-number);
+	text-align: right;
+	display: inline-block;
+	width: 3.5rem;
+	color: var(--base03);
+	opacity: 0.5;
+	font-size: 0.7rem;
+	padding-right: 1.5rem;
+	position: sticky;
+	left: 0;
+	background-color: var(--base00);
+}
+
+/* make this more specific than above */
+.prose
+	pre[data-line-numbers='false'][data-line-numbers='false']
+	.codeblock-line:before {
+	content: ' ';
+}
+
+.prose
+	pre[data-line-numbers='false']:not([data-add]):not([data-remove]):not(
+		:has([data-highlight])
+	)
+	.codeblock-line:before {
+	width: 0;
+	padding-right: 0;
+}
+
+.prose
+	pre[data-line-numbers='false']:not([data-add]):not([data-remove]):has(
+		[data-highlight]
+	)
+	.codeblock-line:before {
+	width: 2rem;
+}
+
+.prose pre[data-filename] {
+	padding-top: 2rem;
+}
+
+.prose pre[data-filename][data-buttons][data-fullpath] {
+	padding-top: 3rem;
+}
+
+.prose pre[data-lang]:not([data-nolang]) {
+	padding-bottom: 2rem;
+}
+
+.prose pre:not([data-lang]):not([data-nolang]) {
+	background-color: var(--base00);
+	color: var(--base05);
+}
+
+.prose
+	pre[data-line-numbers='true']
+	[data-line-number]:before
+	.codeblock-line[data-highlight='true']:before {
+	background: var(--base0E);
+}
+
+/*
+.prose *:not(pre) code {
+  background: var(--base00);
+  color: var(--base05);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.2rem;
+}
+*/
+
+.prose
+	pre[data-add]:not([data-line-numbers='true'])
+	[data-diff-line-number]:before,
+.prose
+	pre[data-remove]:not([data-line-numbers='true'])
+	[data-diff-line-number]:before {
+	content: attr(data-diff-line-number);
+}
+
+.prose pre > code {
+	display: inline-block;
+	min-width: 100%;
+}
+
+.codeblock-line {
+	display: block;
+	position: relative;
+	padding-right: 1rem;
+}
+
+.codeblock-line[data-highlight='true']:after,
+.prose pre[data-remove] .codeblock-line[data-remove]:after,
+.prose pre[data-add] .codeblock-line[data-add]:after {
+	content: ' ';
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	opacity: 0.15;
+	pointer-events: none;
+}
+
+.codeblock-line[data-highlight='true']:before {
+	border-left: 6px solid var(--base0E);
+}
+
+.codeblock-line[data-highlight='true']:after {
+	background: var(--base0E);
+}
+
+/* extra attributes are to make it more specific, otherwise the line number would show up */
+.prose
+	pre[data-remove][data-remove][data-remove]
+	.codeblock-line[data-remove]:before {
+	content: '-';
+}
+
+.prose pre[data-remove] .codeblock-line[data-remove]:after {
+	background: var(--base0F);
+}
+
+/* extra attributes are to make it more specific, otherwise the line number would show up */
+.prose pre[data-add][data-add][data-add] .codeblock-line[data-add]:before {
+	content: '+';
+}
+
+.prose pre[data-add] .codeblock-line[data-add]:after {
+	background: var(--base08);
+}
+
+.prose pre {
+	position: relative;
+}
+
+.prose pre[data-filename]:before {
+	content: attr(data-filename);
+	position: absolute;
+	left: 8px;
+	top: 4px;
+	font-size: 0.7rem;
+	opacity: 0.7;
+}
+
+.prose pre[data-lang]:not([data-nolang]):after {
+	content: attr(data-lang);
+	position: sticky;
+	right: 0;
+	font-size: 0.7rem;
+	opacity: 0.7;
+	display: inline-block;
+	transform: translate(-16px, 24px);
+	text-align: right;
+	width: 200px;
+	margin-left: -200px;
+}
+
+[data-checklist-item] {
+	@apply before:text-primary relative list-none !pl-6 before:absolute before:left-0 before:content-["✓"] sm:!pl-8;
+}

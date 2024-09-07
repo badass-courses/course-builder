@@ -1,0 +1,191 @@
+/* Team page reset */
+
+[data-team-page] {
+	[data-invite-team] {
+		/* reset styles because it is rendered within a card */
+		@apply block rounded-none border-0 bg-transparent p-0 shadow-none;
+	}
+}
+
+/* Purchase detail page reset */
+
+#purchase-detail {
+	[data-invite-team] {
+		/* reset styles because it is rendered within a card */
+		@apply flex w-full flex-col rounded-none border-none bg-transparent p-0 py-3 shadow-none;
+	}
+}
+
+/* Shared form component */
+
+[data-invite-team] {
+	@apply flex flex-col rounded-lg border border-gray-700/30 bg-gray-800 p-5 shadow-xl shadow-black/10;
+	[data-title] {
+		@apply py-3;
+		/* 3 seats left */
+		strong {
+			@apply font-semibold;
+		}
+	}
+	[data-copy-invite-link-container] {
+		@apply w-full;
+		[data-copy-invite-link] {
+			/* optional */
+		}
+	}
+	[data-redeem] {
+		@apply mt-5 flex flex-col items-center gap-3 border-t border-gray-700/60 pt-5 sm:mt-8 sm:flex-row sm:justify-between;
+		[data-title] {
+			/* Or get access yourself */
+			@apply flex items-center gap-1 font-semibold;
+		}
+		[data-self-redeem-button] {
+			/* optional */
+		}
+	}
+}
+
+/* Card */
+
+[data-team-card] {
+	@apply w-full rounded-lg border border-gray-700/30 bg-gray-800 p-5 text-white shadow-xl shadow-black/10;
+}
+
+[data-team-card] > [data-content] {
+	@apply pt-3;
+}
+
+[data-team-card] > [data-title] {
+	@apply flex items-center gap-3 text-xl font-semibold;
+}
+
+/* Self redeem button */
+
+[data-self-redeem-button] {
+	@apply rounded-md border border-cyan-500 px-4 py-2 font-medium text-cyan-400 transition hover:bg-cyan-600/20;
+}
+[data-self-redeem-button][disabled] {
+	@apply cursor-not-allowed opacity-30;
+}
+
+/* Buy more seats form */
+
+[data-buy-more-seats-form] {
+	@apply pt-3;
+	#team-upgrade-pricing-inline {
+		@apply flex w-full items-center justify-between;
+		[data-seats-form] {
+			@apply inline-flex items-center gap-3;
+			label {
+				@apply opacity-80;
+			}
+			input {
+				@apply rounded-md border border-gray-800 bg-gray-900 py-2 pl-3 font-mono font-bold;
+			}
+			button {
+				@apply flex h-full items-center justify-center rounded bg-gray-800/60 px-3 py-2 font-mono sm:hidden;
+			}
+		}
+		[data-pricing-product] {
+			@apply flex items-center justify-center gap-5;
+			[data-pricing-product-header] {
+				@apply flex items-center gap-5;
+				[data-price-container] {
+					@apply h-auto !important;
+				}
+			}
+			button[type='submit'] {
+				@apply rounded-md bg-cyan-400 px-5 py-2 font-medium text-black transition hover:bg-cyan-300;
+			}
+		}
+	}
+}
+
+/* Copy invite link form */
+[data-copy-invite-link] {
+	label {
+		/* Invite share link */
+		@apply sr-only;
+	}
+	div {
+		@apply flex gap-3 pt-2;
+	}
+	input {
+		@apply w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-inner selection:bg-cyan-500 selection:text-white;
+	}
+	input[disabled] {
+		@apply opacity-50;
+	}
+	[data-sr-button] {
+		@apply flex flex-shrink-0 items-center gap-1 rounded-md bg-cyan-400/20 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/30;
+	}
+	[data-sr-button][disabled] {
+		@apply cursor-not-allowed opacity-30;
+	}
+}
+
+/* Claimed seats */
+
+[data-claimed-seats-team] {
+	[data-claimed-seat] {
+		@apply text-gray-300;
+	}
+	[data-claimed-seat=''] {
+		@apply inline-flex items-center gap-1.5 before:translate-y-[2px] before:content-[url("/assets/check.svg")];
+	}
+}
+
+/* Route: /products/[slug] */
+
+[data-product-page] {
+	[data-invite-team] {
+		/* reset styles because it is rendered within a card */
+		@apply flex w-full flex-col rounded-none border-none bg-transparent p-0 shadow-none;
+		[data-redeem] {
+			@apply mt-3 justify-start border-transparent pt-0;
+			[data-title] {
+				@apply font-medium;
+			}
+		}
+		[data-copy-invite-link] {
+			/* @apply rounded-md bg-gray-800/50 p-5; */
+			label {
+				@apply not-sr-only font-semibold;
+			}
+			input {
+				@apply border-gray-800 bg-gray-800/50 font-medium selection:text-black;
+			}
+		}
+	}
+	[data-claimed-seats-team] {
+		[data-claimed-seat] {
+			@apply text-cyan-200;
+		}
+		svg {
+			@apply w-4;
+		}
+	}
+	[data-buy-more-seats-form] {
+		@apply pt-0;
+		#team-upgrade-pricing-inline {
+			@apply justify-start gap-5;
+			[data-pricing-product] {
+				[data-pricing-product-header] {
+					@apply flex;
+					[data-price-container] {
+						@apply w-32;
+					}
+					[data-price-container='loading'] {
+						@apply flex items-center justify-center;
+						svg {
+							@apply w-4;
+						}
+					}
+				}
+				button[type='submit'] {
+					@apply font-semibold;
+				}
+			}
+		}
+	}
+}
