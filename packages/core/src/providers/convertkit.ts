@@ -363,7 +363,7 @@ export async function setConvertkitSubscriberFields({
 			api_secret: process.env.CONVERTKIT_API_SECRET,
 			fields,
 		}),
-	})
+	}).then((res) => res.json())
 }
 
 export async function createConvertkitCustomField({
