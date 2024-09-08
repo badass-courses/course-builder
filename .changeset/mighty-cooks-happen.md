@@ -1,5 +1,4 @@
 ---
-"cb-video-blog": patch
 "@coursebuilder/react-rsc": patch
 "@coursebuilder/ui": patch
 ---
