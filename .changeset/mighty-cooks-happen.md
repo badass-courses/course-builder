@@ -1,5 +1,4 @@
 ---
-"@coursebuilder/react-rsc": patch
 "@coursebuilder/ui": patch
 ---
 
