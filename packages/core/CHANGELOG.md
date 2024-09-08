@@ -1,5 +1,32 @@
 # @coursebuilder/core
 
+## 0.2.3
+
+### Patch Changes
+
+- [#247](https://github.com/badass-courses/course-builder/pull/247) [`25f1e5e`](https://github.com/badass-courses/course-builder/commit/25f1e5efc39524d27172f8cce4902cbacc11c2a4) Thanks [@joelhooks](https://github.com/joelhooks)! - removes legacy bulkPurchaseId column from coupon table
+
+- [#288](https://github.com/badass-courses/course-builder/pull/288) [`cc4cc87`](https://github.com/badass-courses/course-builder/commit/cc4cc87c1ae0425c80c5ab5918c62a348aa47941) Thanks [@joelhooks](https://github.com/joelhooks)! - various changes for ProNextJS etc release
+
+- [#243](https://github.com/badass-courses/course-builder/pull/243) [`e1e94e2`](https://github.com/badass-courses/course-builder/commit/e1e94e24375af37b6e7c51d698a0131d268a7f66) Thanks [@joelhooks](https://github.com/joelhooks)! - adds a coursebuilder email list provider
+
+- [#240](https://github.com/badass-courses/course-builder/pull/240) [`764437e`](https://github.com/badass-courses/course-builder/commit/764437e71a1aebec3db81acf2d67d28fbfee8146) Thanks [@vojtaholik](https://github.com/vojtaholik)! - create purchases endpoint
+
+- [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea) Thanks [@vojtaholik](https://github.com/vojtaholik)! - implement getProductResources handler
+
+- [#235](https://github.com/badass-courses/course-builder/pull/235) [`bccc308`](https://github.com/badass-courses/course-builder/commit/bccc3084077ab2bf24f1ac9361c3c13936749c6a) Thanks [@joelhooks](https://github.com/joelhooks)! - improved progress loading for module
+
+- [#245](https://github.com/badass-courses/course-builder/pull/245) [`5bfac50`](https://github.com/badass-courses/course-builder/commit/5bfac5047ccc81f563d53a4b7780fcf14edf2bf8) Thanks [@joelhooks](https://github.com/joelhooks)! - properly identify bulk purchases
+
+- [#219](https://github.com/badass-courses/course-builder/pull/219) [`e32549a`](https://github.com/badass-courses/course-builder/commit/e32549ab4f0e903a467120a35ab27ef44892b115) Thanks [@joelhooks](https://github.com/joelhooks)! - removeResourceResource so content resources can be detached from parent
+
+- [#206](https://github.com/badass-courses/course-builder/pull/206) [`b138ba5`](https://github.com/badass-courses/course-builder/commit/b138ba58a22623ca9bdbe9529e054d10d6014881) Thanks [@joelhooks](https://github.com/joelhooks)! - tweaks for commerce
+
+- [#221](https://github.com/badass-courses/course-builder/pull/221) [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1) Thanks [@vojtaholik](https://github.com/vojtaholik)! - update redeemFullPriceCoupon method to return useful error message when trying to redeem existing purchase
+
+- Updated dependencies [[`e1e94e2`](https://github.com/badass-courses/course-builder/commit/e1e94e24375af37b6e7c51d698a0131d268a7f66)]:
+  - @coursebuilder/email-templates@1.0.3
+
 ## 0.2.2
 
 ### Patch Changes

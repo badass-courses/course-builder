@@ -1,5 +1,11 @@
 # @coursebuilder/email-templates
 
+## 1.0.3
+
+### Patch Changes
+
+- [#243](https://github.com/badass-courses/course-builder/pull/243) [`e1e94e2`](https://github.com/badass-courses/course-builder/commit/e1e94e24375af37b6e7c51d698a0131d268a7f66) Thanks [@joelhooks](https://github.com/joelhooks)! - adds a coursebuilder email list provider
+
 ## 1.0.2
 
 ### Patch Changes
