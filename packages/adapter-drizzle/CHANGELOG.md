@@ -1,5 +1,23 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.5.1
+
+### Patch Changes
+
+- [#247](https://github.com/badass-courses/course-builder/pull/247) [`25f1e5e`](https://github.com/badass-courses/course-builder/commit/25f1e5efc39524d27172f8cce4902cbacc11c2a4) Thanks [@joelhooks](https://github.com/joelhooks)! - removes legacy bulkPurchaseId column from coupon table
+
+- [#248](https://github.com/badass-courses/course-builder/pull/248) [`b685ecb`](https://github.com/badass-courses/course-builder/commit/b685ecbb07ef37dcaf63136fd6202d56514f4dc9) Thanks [@vojtaholik](https://github.com/vojtaholik)! - correctly return redeemedBulkCouponPurchases
+
+- [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea) Thanks [@vojtaholik](https://github.com/vojtaholik)! - implement getProductResources handler
+
+- [#235](https://github.com/badass-courses/course-builder/pull/235) [`bccc308`](https://github.com/badass-courses/course-builder/commit/bccc3084077ab2bf24f1ac9361c3c13936749c6a) Thanks [@joelhooks](https://github.com/joelhooks)! - improved progress loading for module
+
+- [#245](https://github.com/badass-courses/course-builder/pull/245) [`5bfac50`](https://github.com/badass-courses/course-builder/commit/5bfac5047ccc81f563d53a4b7780fcf14edf2bf8) Thanks [@joelhooks](https://github.com/joelhooks)! - properly identify bulk purchases
+
+- [#219](https://github.com/badass-courses/course-builder/pull/219) [`e32549a`](https://github.com/badass-courses/course-builder/commit/e32549ab4f0e903a467120a35ab27ef44892b115) Thanks [@joelhooks](https://github.com/joelhooks)! - removeResourceResource so content resources can be detached from parent
+
+- [#221](https://github.com/badass-courses/course-builder/pull/221) [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1) Thanks [@vojtaholik](https://github.com/vojtaholik)! - update redeemFullPriceCoupon method to return useful error message when trying to redeem existing purchase
+
 ## 0.5.0
 
 ### Minor Changes

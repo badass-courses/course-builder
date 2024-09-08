@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/adapter-drizzle",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "Drizzle adapter for Course Builder.",
 	"scripts": {
 		"clean": "find . -type d -name \".drizzle\" | xargs rm -rf",
@@ -50,7 +50,7 @@
 	},
 	"devDependencies": {
 		"@auth/core": "^0.30.0",
-		"@coursebuilder/core": "0.2.2",
+		"@coursebuilder/core": "0.2.3",
 		"@libsql/client": "0.5.6",
 		"@types/better-sqlite3": "7.6.9",
 		"@types/uuid": "9.0.8",

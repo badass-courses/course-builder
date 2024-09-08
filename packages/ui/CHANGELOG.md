@@ -1,5 +1,22 @@
 # @coursebuilder/ui
 
+## 1.0.16
+
+### Patch Changes
+
+- [#259](https://github.com/badass-courses/course-builder/pull/259) [`d22e4bf`](https://github.com/badass-courses/course-builder/commit/d22e4bf1bff80c7b47b7f9d30b3610a4788adc75) Thanks [@vojtaholik](https://github.com/vojtaholik)! - be more specific about tailwind content files
+
+- [#259](https://github.com/badass-courses/course-builder/pull/259) [`a0831d3`](https://github.com/badass-courses/course-builder/commit/a0831d3f0381ef7e3c032f2e5215d6fecf7d384f) Thanks [@vojtaholik](https://github.com/vojtaholik)! - add loading state into reducer
+
+- [#210](https://github.com/badass-courses/course-builder/pull/210) [`9382a6f`](https://github.com/badass-courses/course-builder/commit/9382a6f62fd5c4a3e848979595091b7e00d9cd1b) Thanks [@vojtaholik](https://github.com/vojtaholik)! - improved resource creation flows
+
+- [#206](https://github.com/badass-courses/course-builder/pull/206) [`b138ba5`](https://github.com/badass-courses/course-builder/commit/b138ba58a22623ca9bdbe9529e054d10d6014881) Thanks [@joelhooks](https://github.com/joelhooks)! - tweaks for commerce
+
+- [#268](https://github.com/badass-courses/course-builder/pull/268) [`c0160a2`](https://github.com/badass-courses/course-builder/commit/c0160a2126f9db27340a3739018cbd67fbd643ca) Thanks [@vojtaholik](https://github.com/vojtaholik)! - allow passing onDismiss to Toast
+
+- Updated dependencies [[`25f1e5e`](https://github.com/badass-courses/course-builder/commit/25f1e5efc39524d27172f8cce4902cbacc11c2a4), [`cc4cc87`](https://github.com/badass-courses/course-builder/commit/cc4cc87c1ae0425c80c5ab5918c62a348aa47941), [`e1e94e2`](https://github.com/badass-courses/course-builder/commit/e1e94e24375af37b6e7c51d698a0131d268a7f66), [`764437e`](https://github.com/badass-courses/course-builder/commit/764437e71a1aebec3db81acf2d67d28fbfee8146), [`624e04a`](https://github.com/badass-courses/course-builder/commit/624e04aa830cdbc7bedc302466363aa1a3831cea), [`bccc308`](https://github.com/badass-courses/course-builder/commit/bccc3084077ab2bf24f1ac9361c3c13936749c6a), [`5bfac50`](https://github.com/badass-courses/course-builder/commit/5bfac5047ccc81f563d53a4b7780fcf14edf2bf8), [`e32549a`](https://github.com/badass-courses/course-builder/commit/e32549ab4f0e903a467120a35ab27ef44892b115), [`b138ba5`](https://github.com/badass-courses/course-builder/commit/b138ba58a22623ca9bdbe9529e054d10d6014881), [`a5ff185`](https://github.com/badass-courses/course-builder/commit/a5ff1856f912badecea337b014df525b950badc1)]:
+  - @coursebuilder/core@0.2.3
+
 ## 1.0.15
 
 ### Patch Changes
