@@ -3,6 +3,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
 import { Contributor } from '@/app/_components/contributor'
+import { Certificate } from '@/app/(content)/_components/module-certificate-container'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { NextLessonButton } from '@/app/(content)/workshops/_components/next-lesson-button'
 import { PreviewWorkshopButton } from '@/app/(content)/workshops/_components/preview-workshop-button'
@@ -135,6 +136,7 @@ export default async function ModulePage({ params, searchParams }: Props) {
 											maxHeight="h-auto"
 											wrapperClassName="border bg-card overflow-hidden rounded pb-0"
 										/>
+										<Certificate resourceSlugOrId={params.module} />
 									</div>
 								</div>
 							</>
