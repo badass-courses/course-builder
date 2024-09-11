@@ -72,6 +72,8 @@ export const env = createEnv({
 		POSTMARK_KEY: z.string().optional(),
 		SLACK_TOKEN: z.string().optional(),
 		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
+		CLOUDINARY_API_KEY: z.string().optional(),
+		CLOUDINARY_API_SECRET: z.string().optional(),
 	},
 
 	/**
