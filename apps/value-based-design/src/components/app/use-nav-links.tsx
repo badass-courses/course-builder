@@ -7,10 +7,10 @@ export function useNavLinks() {
 	// const { data: availableEvents, status } = api.events.get.useQuery()
 
 	return [
-		// {
-		// 	href: '/tutorials',
-		// 	label: 'Tutorials',
-		// },
+		{
+			href: '/workshops',
+			label: 'Pro Workshops',
+		},
 		// {
 		// 	href: '/articles',
 		// 	label: 'Articles',
