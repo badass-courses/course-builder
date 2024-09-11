@@ -8,6 +8,7 @@ import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import { AssetDownloadButton } from '@/app/(content)/workshops/_components/asset-download-button'
+import { LessonDescription } from '@/app/(content)/workshops/_components/lesson-description'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
@@ -23,8 +24,6 @@ import {
 	getAbilityForResource,
 	type AbilityForResource,
 } from '@/utils/get-current-ability-rules'
-import { codeToHtml } from '@/utils/shiki'
-import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import {
 	Accordion,
@@ -301,27 +300,7 @@ async function LessonBody({
 				lesson={lesson}
 				className="mt-5 flex justify-end border-t px-5 pt-5 sm:hidden"
 			/>
-			{lesson.fields?.body && (
-				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
-					<MDXRemote
-						source={lesson.fields.body}
-						components={{
-							pre: async (props: any) => {
-								const children = props?.children.props.children
-								const language =
-									props?.children.props.className?.split('-')[1] || 'typescript'
-								try {
-									const html = await codeToHtml({ code: children, language })
-									return <div dangerouslySetInnerHTML={{ __html: html }} />
-								} catch (error) {
-									console.error(error)
-									return <pre {...props} />
-								}
-							},
-						}}
-					/>
-				</div>
-			)}
+			<LessonDescription lesson={lesson} abilityLoader={abilityLoader} />
 		</article>
 	)
 }
