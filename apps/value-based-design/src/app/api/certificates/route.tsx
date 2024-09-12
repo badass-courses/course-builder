@@ -83,6 +83,12 @@ export async function GET(request: Request) {
 			),
 		).then((res) => res.arrayBuffer())
 
+		const baseUrl = process.env.NEXT_PUBLIC_URL || new URL(request.url).origin
+		const signatureUrl = new URL(
+			'/assets/nick-signature.png',
+			baseUrl,
+		).toString()
+
 		return new ImageResponse(
 			(
 				<div
@@ -99,11 +105,11 @@ export async function GET(request: Request) {
 						<Background />
 					</div>
 					<div tw="flex flex-col items-center leading-none text-center justify-center w-full">
-						{/* <img
+						<img
 							src={resource?.fields?.coverImage.url}
 							width={500}
 							height={500}
-						/> */}
+						/>
 						<h1
 							style={{
 								fontSize: 75,
@@ -138,9 +144,9 @@ export async function GET(request: Request) {
 					>
 						Value-Based Design
 					</div>
-					{/* <div tw="absolute flex items-center justify-center bottom-24">
-						<Signature />
-					</div> */}
+					<div tw="absolute flex items-center justify-center bottom-24">
+						<img src={signatureUrl} height={87} width={225} />
+					</div>
 					<div tw="absolute flex items-center text-xl justify-center bottom-32 right-32">
 						{date && `${format(date, 'MMMM do, y')}`}
 					</div>
