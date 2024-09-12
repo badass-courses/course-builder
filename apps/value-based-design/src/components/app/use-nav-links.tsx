@@ -9,7 +9,7 @@ export function useNavLinks() {
 	return [
 		{
 			href: '/workshops',
-			label: 'Pro Workshops',
+			label: 'Workshops',
 		},
 		// {
 		// 	href: '/articles',
