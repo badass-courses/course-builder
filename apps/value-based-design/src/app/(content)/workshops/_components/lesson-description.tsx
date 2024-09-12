@@ -16,7 +16,6 @@ export async function LessonDescription({
 	const ability = await abilityLoader
 	const canView = ability?.canView
 
-	console.log('lesson.fields?.body-----', lesson.fields?.body)
 	const displayedBody = canView
 		? lesson.fields?.body
 		: take(lesson.fields?.body.split('\n'), 10).join('\n')
