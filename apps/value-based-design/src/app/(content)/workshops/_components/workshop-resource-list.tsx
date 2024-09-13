@@ -42,17 +42,10 @@ export function WorkshopResourceList(props: Props) {
 	const workshopNavigation = useWorkshopNavigation()
 	const { moduleProgress } = useModuleProgress()
 
-	const { data: abilityRules, status: abilityStatus } =
-		api.ability.getCurrentAbilityRules.useQuery({
-			moduleId: workshopNavigation?.id,
-		})
-
 	const sectionId = findSectionIdForLessonSlug(
 		workshopNavigation,
 		props.currentLessonSlug,
 	)
-
-	const ability = createAppAbility(abilityRules || [])
 
 	const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
@@ -153,10 +146,9 @@ export function WorkshopResourceList(props: Props) {
 															return (
 																<LessonResource
 																	lesson={lesson}
+																	moduleId={workshopNavigation?.id}
 																	index={index}
 																	moduleProgress={moduleProgress}
-																	ability={ability}
-																	abilityStatus={abilityStatus}
 																	key={lesson.id}
 																/>
 															)
@@ -170,10 +162,9 @@ export function WorkshopResourceList(props: Props) {
 									// top-level lessons
 									<LessonResource
 										lesson={resource}
+										moduleId={workshopNavigation?.id}
 										index={i}
 										moduleProgress={moduleProgress}
-										ability={ability}
-										abilityStatus={abilityStatus}
 										key={resource.id}
 									/>
 								)
@@ -188,18 +179,23 @@ export function WorkshopResourceList(props: Props) {
 
 const LessonResource = ({
 	lesson,
+	moduleId,
 	moduleProgress,
 	index,
-	ability,
-	abilityStatus,
 }: {
 	lesson: NavigationResource
+	moduleId: string
 	moduleProgress?: ModuleProgress | null
 	index: number
-	ability: AppAbility
-	abilityStatus: 'error' | 'success' | 'pending'
 }) => {
 	const params = useParams()
+
+	const { data: abilityRules, status: abilityStatus } =
+		api.ability.getCurrentAbilityRules.useQuery({
+			moduleId,
+			lessonId: lesson.id,
+		})
+	const ability = createAppAbility(abilityRules || [])
 
 	const isActive = lesson.slug === params.lesson
 
@@ -242,8 +238,7 @@ const LessonResource = ({
 					<span className="w-full text-balance text-base">{lesson.title}</span>
 					{abilityStatus === 'success' && (
 						<>
-							{ability.can('read', 'Content') ||
-							(lesson.type === 'lesson' && lesson?.isFreeToView) ? null : (
+							{ability.can('read', 'Content') ? null : (
 								<Lock
 									className="absolute right-5 w-3 text-gray-500"
 									aria-label="locked"

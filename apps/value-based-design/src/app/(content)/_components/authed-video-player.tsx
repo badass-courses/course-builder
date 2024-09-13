@@ -45,7 +45,7 @@ export function AuthedVideoPlayer({
 	moduleType?: 'workshop' | 'tutorial'
 } & MuxPlayerProps) {
 	const ability = abilityLoader ? use(abilityLoader) : null
-	const canView = ability?.canView || Boolean(resource?.fields?.isFreeToView)
+	const canView = ability?.canView
 	const playbackId = canView ? use(playbackIdLoader) : muxPlaybackId
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
