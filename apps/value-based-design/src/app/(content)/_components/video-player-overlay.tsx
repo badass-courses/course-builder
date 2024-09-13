@@ -305,7 +305,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	usePrefetchNextResource({ resource, moduleType, moduleSlug })
 
 	const ability = use(abilityLoader)
-	const canView = ability.canView
+	const canView = ability.canView || Boolean(resource?.fields?.isFreeToView)
 	const canInviteTeam = ability.canInviteTeam
 	const isRegionRestricted = ability.isRegionRestricted
 

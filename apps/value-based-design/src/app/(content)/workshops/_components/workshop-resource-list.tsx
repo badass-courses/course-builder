@@ -242,7 +242,8 @@ const LessonResource = ({
 					<span className="w-full text-balance text-base">{lesson.title}</span>
 					{abilityStatus === 'success' && (
 						<>
-							{ability.can('read', 'Content') || index === 0 ? null : (
+							{ability.can('read', 'Content') ||
+							(lesson.type === 'lesson' && lesson?.isFreeToView) ? null : (
 								<Lock
 									className="absolute right-5 w-3 text-gray-500"
 									aria-label="locked"

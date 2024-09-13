@@ -20,6 +20,7 @@ export const LessonSchema = z.object({
 		visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 		github: z.string().optional(),
 		gitpod: z.string().optional(),
+		isFreeToView: z.boolean().optional(),
 	}),
 	resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 })

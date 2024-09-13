@@ -14,6 +14,7 @@ export const NavigationResultSchema = z.object({
 	lesson_slug: z.string().nullable(),
 	lesson_title: z.string().nullable(),
 	lesson_position: z.number().nullable(),
+	isFreeToView: z.number().optional().nullable(),
 })
 
 export const NavigationResultSchemaArraySchema = z.array(NavigationResultSchema)
@@ -23,6 +24,7 @@ export const NavigationLessonSchema = z.object({
 	slug: z.string(),
 	title: z.string(),
 	position: z.number(),
+	isFreeToView: z.boolean().optional().nullable(),
 	type: z.literal('lesson'),
 })
 

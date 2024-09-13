@@ -14,7 +14,7 @@ export async function LessonDescription({
 	abilityLoader?: Promise<AbilityForResource>
 }) {
 	const ability = await abilityLoader
-	const canView = ability?.canView
+	const canView = ability?.canView || Boolean(lesson?.fields?.isFreeToView)
 
 	const displayedBody = canView
 		? lesson.fields?.body
