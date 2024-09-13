@@ -50,7 +50,12 @@ async function getAllWorkshopLessonsWithSectionInfo(
     combined.lesson_id,
     combined.lesson_slug,
     combined.lesson_title,
-    combined.lesson_position
+    combined.lesson_position,
+    CASE
+        WHEN combined.isFreeToView = 'true' THEN TRUE
+        WHEN combined.isFreeToView = 'false' THEN FALSE
+        ELSE NULL
+    END AS isFreeToView
 FROM
     ${contentResource} AS workshop
 # all of the lessons in the workshop with section information
@@ -64,6 +69,7 @@ LEFT JOIN (
         lesson_id,
         lesson_slug,
         lesson_title,
+        isFreeToView,
         position,
         'lesson' AS item_type,
         position AS lesson_position
@@ -73,6 +79,7 @@ LEFT JOIN (
             top_level_lessons.id AS lesson_id,
             top_level_lessons.fields->>'$.slug' AS lesson_slug,
             top_level_lessons.fields->>'$.title' AS lesson_title,
+            top_level_lessons.fields->>'$.isFreeToView' AS isFreeToView,
             top_level_lesson_relations.position
         FROM
             ${contentResource} AS workshop
@@ -97,6 +104,7 @@ LEFT JOIN (
         lesson_id,
         lesson_slug,
         lesson_title,
+        isFreeToView,
         section_position AS position,
         'section' AS item_type,
         lesson_position
@@ -106,6 +114,7 @@ LEFT JOIN (
             lessons.id AS lesson_id,
             lessons.fields->>'$.slug' AS lesson_slug,
             lessons.fields->>'$.title' AS lesson_title,
+            lessons.fields->>'$.isFreeToView' AS isFreeToView,
             lesson_relations.position AS lesson_position,
             sections.id AS section_id,
             sections.fields->>'$.slug' AS section_slug,
@@ -168,6 +177,7 @@ export async function getWorkshopNavigation(
 				slug: item.lesson_slug,
 				title: item.lesson_title,
 				position: item.lesson_position,
+				isFreeToView: Boolean(item.isFreeToView),
 				type: 'lesson',
 			})
 
@@ -191,6 +201,7 @@ export async function getWorkshopNavigation(
 					slug: item.lesson_slug,
 					title: item.lesson_title,
 					position: item.lesson_position,
+					isFreeToView: Boolean(item.isFreeToView),
 					type: 'lesson',
 				})
 				sectionsMap.get(item.section_id)?.lessons.push(newLesson)
