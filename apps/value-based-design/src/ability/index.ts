@@ -232,24 +232,7 @@ const isFreelyVisible = ({
 	lesson,
 	isSolution,
 }: ViewerAbilityInput) => {
-	const hasId = lesson && 'id' in lesson
-
-	// return false if it is a 'Solution'
-	if (isSolution || lesson?.type === 'solution' || !hasId) {
-		return false
-	}
-
-	const lessons = z
-		.array(z.object({ resourceId: z.string() }))
-		.parse(section ? section.resources : module?.resources || [])
-
-	const isFirstLesson =
-		(lesson?.type === 'exercise' ||
-			lesson?.type === 'explainer' ||
-			lesson?.type === 'lesson') &&
-		lesson.id === lessons?.[0]?.resourceId
-
-	return isFirstLesson && lesson && !isSolution
+	return lesson?.fields?.isFreeToView
 }
 
 /**
