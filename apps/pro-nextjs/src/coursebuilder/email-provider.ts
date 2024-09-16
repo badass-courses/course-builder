@@ -1,20 +1,13 @@
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
-import EmailProvider from 'next-auth/providers/nodemailer'
+import Postmark from 'next-auth/providers/postmark'
 
 import { sendVerificationRequest } from '@coursebuilder/core/lib/send-verification-request'
 
-export const emailProvider = EmailProvider({
+export const emailProvider = Postmark({
+	apiKey: env.POSTMARK_API_KEY,
 	from: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 	sendVerificationRequest: (params) => {
 		return sendVerificationRequest(params, courseBuilderAdapter)
-	},
-	server: {
-		host: env.EMAIL_SERVER_HOST,
-		port: Number(env.EMAIL_SERVER_PORT),
-		auth: {
-			user: env.POSTMARK_KEY,
-			pass: env.POSTMARK_KEY,
-		},
 	},
 })

@@ -233,11 +233,7 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
-		Postmark({
-			// If your environment variable is named differently than default
-			apiKey: env.POSTMARK_API_KEY,
-			from: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-		}),
+		emailProvider,
 	],
 	pages: {
 		signIn: '/login',
