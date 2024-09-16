@@ -29,7 +29,7 @@
 	},
 	"lint-staged": {
 		"**/*.{ts,tsx,js,jsx,cjs,mjs}": [
-			"pnpm run format"
+			"prettier --write --list-different"
 		]
 	},
 	"dependencies": {

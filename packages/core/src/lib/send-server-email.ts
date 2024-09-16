@@ -15,7 +15,7 @@ function hashToken(token: string, options: any) {
 	const { provider, secret } = options
 	return (
 		createHash('sha256')
-			// Prefer provider specific secret, but use default secret if none specified
+			// Prefer provider specific secret, but use default secret if none specified!
 			.update(`${token}${provider.secret ?? secret}`)
 			.digest('hex')
 	)
