@@ -12,6 +12,7 @@ import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import { and, eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
+import Postmark from 'next-auth/providers/postmark'
 
 import { userSchema } from '@coursebuilder/core/schemas'
 
@@ -232,7 +233,11 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
-		emailProvider,
+		Postmark({
+			// If your environment variable is named differently than default
+			apiKey: env.POSTMARK_API_KEY,
+			from: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+		}),
 	],
 	pages: {
 		signIn: '/login',
