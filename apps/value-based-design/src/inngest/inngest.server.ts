@@ -1,4 +1,5 @@
 import { emailProvider } from '@/coursebuilder/email-provider'
+import { slackProvider } from '@/coursebuilder/slack-provider'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
@@ -82,6 +83,7 @@ const middleware = createInngestMiddleware({
 	}),
 	paymentProvider: stripeProvider,
 	emailProvider,
+	notificationProvider: slackProvider,
 	getAuthConfig: () => authOptions,
 })
 
