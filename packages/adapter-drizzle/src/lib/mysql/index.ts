@@ -1977,6 +1977,100 @@ export function mySqlDrizzleAdapter(
 
 			return parsedLessonProgress.data
 		},
+		transferPurchaseToUser: async (options: {
+			purchaseId: string
+			targetUserId: string
+			sourceUserId: string
+		}) => {
+			const { purchaseId, targetUserId, sourceUserId } = options
+			const transferId = `put_${v4()}`
+			let purchase = await adapter.getPurchase(purchaseId)
+			if (!purchase) throw new Error('No purchase found')
+
+			if (purchase.userId !== sourceUserId)
+				throw new Error('Invalid source user')
+
+			await client.transaction(async (trx) => {
+				if (!purchase) throw new Error('No purchase found')
+				await trx
+					.update(purchaseTable)
+					.set({ userId: targetUserId })
+					.where(eq(purchaseTable.id, purchase.id))
+
+				await trx.insert(purchaseUserTransfer).values({
+					id: transferId,
+					purchaseId: purchase.id,
+					sourceUserId: sourceUserId,
+					targetUserId: targetUserId,
+					transferState: 'COMPLETED',
+					completedAt: new Date(),
+				})
+
+				purchase = await adapter.getPurchase(purchaseId)
+
+				if (!purchase) throw new Error('No purchase found')
+
+				if (paymentProvider && purchase.merchantChargeId) {
+					await trx
+						.update(merchantCharge)
+						.set({
+							userId: targetUserId,
+						})
+						.where(eq(merchantCharge.id, purchase.merchantChargeId))
+
+					const updatedMerchantCharge = await adapter.getMerchantCharge(
+						purchase.merchantChargeId,
+					)
+
+					if (!updatedMerchantCharge)
+						throw new Error('No merchant charge found')
+
+					await trx
+						.update(merchantCustomer)
+						.set({ userId: targetUserId })
+						.where(
+							eq(merchantCustomer.id, updatedMerchantCharge.merchantCustomerId),
+						)
+
+					const updatedMerchantCustomer = merchantCustomerSchema.parse(
+						await client.query.merchantCustomer.findFirst({
+							where: eq(
+								merchantCustomer.id,
+								updatedMerchantCharge.merchantCustomerId,
+							),
+						}),
+					)
+
+					const targetUser = userSchema.parse(
+						await client.query.users.findFirst({
+							where: eq(users.id, targetUserId),
+						}),
+					)
+
+					const sourceUser = userSchema.parse(
+						await client.query.users.findFirst({
+							where: eq(users.id, sourceUserId),
+						}),
+					)
+
+					await paymentProvider.updateCustomer(
+						updatedMerchantCustomer.identifier,
+						{
+							email: targetUser.email,
+							name: targetUser.name || sourceUser.name || '',
+							metadata: {
+								transferId,
+								transferredFrom: sourceUser.email,
+								transferredOn: new Date().toISOString(),
+							},
+						},
+					)
+				}
+			})
+			return await adapter.getPurchaseUserTransferById({
+				id: transferId,
+			})
+		},
 		transferPurchasesToNewUser(options: {
 			merchantCustomerId: string
 			userId: string

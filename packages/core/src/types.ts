@@ -84,7 +84,7 @@ export interface PaymentsProviderConfig {
 	getCustomer: (customerId: string) => Promise<Stripe.Customer>
 	updateCustomer: (
 		customerId: string,
-		customer: { name: string; email: string },
+		customer: { name: string; email: string; metadata?: Record<string, any> },
 	) => Promise<void>
 	getProduct(productId: string): Promise<Stripe.Response<Stripe.Product>>
 	getPrice(priceId: string): Promise<Stripe.Response<Stripe.Price>>
@@ -152,7 +152,7 @@ export interface PaymentsAdapter {
 	getCustomer(customerId: string): Promise<Stripe.Customer>
 	updateCustomer(
 		customerId: string,
-		customer: { name: string; email: string },
+		customer: { name: string; email: string; metadata?: Record<string, any> },
 	): Promise<void>
 	refundCharge(chargeId: string): Promise<Stripe.Refund>
 	getProduct(productId: string): Promise<Stripe.Response<Stripe.Product>>

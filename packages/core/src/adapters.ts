@@ -83,10 +83,18 @@ export interface CourseBuilderAdapter<
 		merchantAccountId: string
 	}): Promise<MerchantCustomer | null>
 	getMerchantPriceForProductId(productId: string): Promise<MerchantPrice | null>
+	transferPurchaseToUser(options: {
+		purchaseId: string
+		targetUserId: string
+		sourceUserId: string
+	}): Promise<PurchaseUserTransfer | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	client: null,
+	transferPurchaseToUser: async () => {
+		return null
+	},
 	redeemFullPriceCoupon: async () => {
 		return {} as any
 	},
