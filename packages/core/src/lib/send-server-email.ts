@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { AuthConfig } from '@auth/core'
-import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+import type { EmailConfig } from '@auth/core/src/providers'
 import { Theme } from '@auth/core/types'
 import { v4 } from 'uuid'
 
@@ -32,7 +32,7 @@ export async function createVerificationUrl({
 }: {
 	email: string
 	authOptions: AuthConfig
-	emailProvider: NodemailerConfig
+	emailProvider: EmailConfig
 	adapter: CourseBuilderAdapter
 	callbackUrl?: string
 	baseUrl: string
@@ -80,7 +80,7 @@ export async function sendServerEmail({
 	authOptions: AuthConfig
 	email: string
 	callbackUrl: string
-	emailProvider?: NodemailerConfig
+	emailProvider?: EmailConfig
 	type?: MagicLinkEmailType
 	html?: (options: HTMLEmailParams, theme?: Theme) => string
 	text?: (options: HTMLEmailParams, theme?: Theme) => string
