@@ -5,8 +5,16 @@ import { CreatePost } from '@/app/(content)/posts/_components/create-post'
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
 import { getCachedAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
+import { subject } from '@casl/ability'
 
-import { Card, CardFooter, CardHeader, CardTitle } from '@coursebuilder/ui'
+import { ContentResource } from '@coursebuilder/core/schemas'
+import {
+	Button,
+	Card,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@coursebuilder/ui'
 
 export default async function PostsListPage() {
 	return (
@@ -28,25 +36,33 @@ async function PostList() {
 
 	return (
 		<>
-			{postsModule.map((post) => (
-				<Card key={post.id}>
-					<CardHeader>
-						<CardTitle>
-							{/* posts are presented at the root of the site and not in a sub-route */}
-							<Link className="w-full" href={`/${post.fields.slug || post.id}`}>
-								{post.fields.title}
-							</Link>
-						</CardTitle>
-					</CardHeader>
-					{ability.can('delete', 'Content') && (
-						<CardFooter>
-							<div className="flex w-full justify-end">
-								<DeletePostButton id={post.id} />
-							</div>
-						</CardFooter>
-					)}
-				</Card>
-			))}
+			{postsModule.map((post: ContentResource) => {
+				return (
+					<Card key={post.id}>
+						<CardHeader>
+							<CardTitle>
+								{/* posts are presented at the root of the site and not in a sub-route */}
+								<Link
+									className="w-full"
+									href={`/${post?.fields?.slug || post.id}`}
+								>
+									{post?.fields?.title}
+								</Link>
+							</CardTitle>
+						</CardHeader>
+						{ability.can('manage', subject('Content', post)) && (
+							<CardFooter>
+								<div className="flex w-full justify-end gap-2">
+									<Button size="sm">
+										<Link href={`/posts/${post.id}/edit`}>Edit</Link>
+									</Button>
+									<DeletePostButton id={post.id} />
+								</div>
+							</CardFooter>
+						)}
+					</Card>
+				)
+			})}
 		</>
 	)
 }

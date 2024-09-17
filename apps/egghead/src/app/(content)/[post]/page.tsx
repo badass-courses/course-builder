@@ -10,6 +10,7 @@ import { Post } from '@/lib/posts'
 import { getCachedPost, getPost } from '@/lib/posts-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
+import { subject } from '@casl/ability'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -73,7 +74,7 @@ async function PostActionBar({
 
 	return (
 		<>
-			{post && ability.can('update', 'Content') ? (
+			{post && ability.can('manage', subject('Content', post)) ? (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button size="sm" asChild>
