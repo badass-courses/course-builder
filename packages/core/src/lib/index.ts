@@ -6,6 +6,7 @@ import { createMagicLink } from './actions/create-magic-link'
 import { getPricesFormatted } from './actions/prices-formatted'
 import { processRefund } from './actions/process-refund'
 import { redeem } from './actions/redeem'
+import { transferPurchase } from './actions/transfer-purchase'
 import { userLookup } from './actions/user-lookup'
 import { init } from './init'
 import { UnknownAction } from './utils/web'
@@ -54,6 +55,8 @@ export async function CourseBuilderInternal(
 				return await userLookup(request, cookies, options)
 			case 'create-magic-link':
 				return await createMagicLink(request, cookies, options)
+			case 'transfer':
+				return await transferPurchase(request, cookies, options)
 		}
 	}
 

@@ -66,7 +66,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 
 	const githubProvider = providers?.github
 	const discordProvider = providers?.discord
-	const emailProvider = providers?.nodemailer
+	const emailProvider = providers?.postmark
 
 	return (
 		<main data-login-template="">

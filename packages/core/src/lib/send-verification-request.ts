@@ -109,20 +109,31 @@ export const sendVerificationRequest = async (
 		console.log(`\n************************************\n`)
 	}
 
-	if (
-		isValidateEmailServerConfig(server) &&
-		process.env.SKIP_EMAIL !== 'true'
-	) {
-		const transport = createTransport(server)
-
-		const result = await transport.sendMail({
-			to: email,
-			from,
-			subject,
-			text: text({ url, host, email, expires, merchantChargeId }, theme),
-			html: html({ url, host, email, expires, merchantChargeId }, theme),
+	if (process.env.SKIP_EMAIL !== 'true') {
+		if (!process.env.POSTMARK_API_TOKEN! && !process.env.POSTMARK_KEY!) {
+			throw new Error('Missing Postmark API Key')
+		}
+		const res = await fetch('https://api.postmarkapp.com/email', {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'X-Postmark-Server-Token': (process.env.POSTMARK_API_TOKEN ||
+					process.env.POSTMARK_KEY) as string,
+			},
+			body: JSON.stringify({
+				From: from,
+				To: email,
+				Subject: subject,
+				TextBody: text({ url, host, email, expires, merchantChargeId }, theme),
+				HtmlBody: html({ url, host, email, expires, merchantChargeId }, theme),
+				MessageStream: 'outbound',
+			}),
 		})
-		console.debug(`📧 Email sent to ${email}! [${result.response}]`)
+
+		if (!res.ok)
+			throw new Error('Postmark error: ' + JSON.stringify(await res.json()))
+		console.debug(`📧 Email sent to ${email}! [${res.status}]`)
 	} else if (process.env.SKIP_EMAIL === 'true') {
 		console.warn(`🚫 email sending is disabled.`)
 	} else {

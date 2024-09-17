@@ -57,7 +57,7 @@ export default function StripeProvider(
 		},
 		updateCustomer: async (
 			customerId: string,
-			customer: { name: string; email: string },
+			customer: { name: string; email: string; metadata?: Record<string, any> },
 		) => {
 			return options.paymentsAdapter.updateCustomer(customerId, customer)
 		},
@@ -167,11 +167,19 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	}
 	async updateCustomer(
 		customerId: string,
-		customer: { name: string; email: string },
+		customer: { name: string; email: string; metadata: Record<string, string> },
 	) {
-		const stripeCustomer = await this.stripe.customers.update(customerId, {
-			name: customer.name,
-			email: customer.email,
+		const stripeCustomer = (await this.stripe.customers.retrieve(
+			customerId,
+		)) as Stripe.Customer
+
+		await this.stripe.customers.update(customerId, {
+			name: customer.name || stripeCustomer.name || undefined,
+			email: customer.email || stripeCustomer.email || undefined,
+			metadata: {
+				...stripeCustomer.metadata,
+				...customer.metadata,
+			},
 		})
 	}
 	async refundCharge(chargeId: string) {

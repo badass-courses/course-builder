@@ -12,6 +12,7 @@ import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import { and, eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
+import Postmark from 'next-auth/providers/postmark'
 
 import { userSchema } from '@coursebuilder/core/schemas'
 
