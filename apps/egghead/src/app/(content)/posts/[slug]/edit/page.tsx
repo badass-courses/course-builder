@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { courseBuilderAdapter } from '@/db'
 import { getPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
+import { subject } from '@casl/ability'
 
 import { EditPostForm } from '../../_components/edit-post-form'
 
@@ -19,6 +20,10 @@ export default async function PostPage({
 
 	if (!post || !ability.can('create', 'Content')) {
 		notFound()
+	}
+
+	if (ability.cannot('manage', subject('Content', post))) {
+		redirect(`/${post?.fields?.slug}`)
 	}
 
 	const resource = post.resources?.[0]?.resource.id
