@@ -64,7 +64,7 @@ export function EditPostForm({
 		<EditResourcesFormDesktop
 			resource={post}
 			resourceSchema={PostSchema}
-			getResourcePath={(slug) => `/posts/${slug}`}
+			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updatePost}
 			form={form}
 			availableWorkflows={[]}
