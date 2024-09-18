@@ -132,7 +132,8 @@ export async function createPost(input: NewPost) {
 		},
 	}).then(async (res) => await res.json())
 
-	const newPostId = `post_${guid()}`
+	const postGuid = guid()
+	const newPostId = `post_${postGuid}`
 
 	const videoResource = await courseBuilderAdapter.getVideoResource(
 		input.videoResourceId,
@@ -149,7 +150,7 @@ export async function createPost(input: NewPost) {
 		[
 			input.title,
 			profile.instructor.id,
-			slugify(`${input.title}~${guid()}`),
+			slugify(`${input.title}~${postGuid}`),
 			'post',
 		],
 	)
@@ -166,7 +167,7 @@ export async function createPost(input: NewPost) {
 				title: input.title,
 				state: 'draft',
 				visibility: 'unlisted',
-				slug: slugify(`${input.title}~${guid()}`),
+				slug: slugify(`${input.title}~${postGuid}`),
 				eggheadLessonId,
 			},
 		})
