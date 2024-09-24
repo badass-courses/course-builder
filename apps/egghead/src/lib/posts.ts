@@ -23,6 +23,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			body: z.string().nullable().optional(),
 			state: PostStateSchema.default('draft'),
 			visibility: PostVisibilitySchema.default('unlisted'),
+			eggheadLessonId: z.coerce.number().nullish(),
 			slug: z.string(),
 		}),
 	}),
