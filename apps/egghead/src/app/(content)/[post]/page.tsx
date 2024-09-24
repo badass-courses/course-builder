@@ -11,6 +11,7 @@ import { getCachedPost, getPost } from '@/lib/posts-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
+import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -74,13 +75,23 @@ async function PostActionBar({
 
 	return (
 		<>
-			{post && ability.can('manage', subject('Content', post)) ? (
+			{post && ability.can('update', subject('Content', post)) ? (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
-					<div />
 					<Button size="sm" asChild>
 						<Link href={`/posts/${post.fields.slug || post.id}/edit`}>
 							Edit
 						</Link>
+					</Button>
+					<Button
+						size="sm"
+						onClick={() => {
+							toast.success('Copied to clipboard')
+							return navigator.clipboard.writeText(
+								`https://egghead.io/${post.fields.slug}`,
+							)
+						}}
+					>
+						Copy egghead URL
 					</Button>
 				</div>
 			) : (
@@ -157,6 +168,12 @@ async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
 			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
 				{post.fields.title}
 			</h1>
+
+			<div>
+				<Link href={`https://egghead.io/${post.fields.slug}`}>
+					Open on egghead
+				</Link>
+			</div>
 
 			{post.fields.body && (
 				<>
