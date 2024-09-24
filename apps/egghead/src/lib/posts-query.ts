@@ -144,14 +144,14 @@ export async function createPost(input: NewPost) {
 	}
 
 	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, created_at, updated_at)
+		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,created_at, updated_at)
 		VALUES ($1, $2, $3, $4, NOW(), NOW())
 		RETURNING id`,
 		[
 			input.title,
 			profile.instructor.id,
 			slugify(`${input.title}~${postGuid}`),
-			'post',
+			'approved',
 		],
 	)
 
@@ -229,6 +229,23 @@ export async function updatePost(
 	}
 
 	revalidateTag('posts')
+
+	let lessonState = 'approved'
+
+	switch (action) {
+		case 'publish':
+			lessonState = 'published'
+			break
+		case 'unpublish':
+			lessonState = 'approved'
+			break
+	}
+
+	if (currentPost.fields.eggheadLessonId) {
+		await eggheadPgQuery(
+			`UPDATE lessons SET state = '${lessonState}' WHERE id = ${currentPost.fields.eggheadLessonId}`,
+		)
+	}
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentPost.id,
