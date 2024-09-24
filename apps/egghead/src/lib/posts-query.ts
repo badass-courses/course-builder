@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import {
@@ -15,7 +16,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
-import { asc, desc, eq, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function deletePost(id: string) {
@@ -98,6 +99,34 @@ export const getCachedAllPosts = unstable_cache(
 export async function getAllPosts(): Promise<Post[]> {
 	const posts = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'post'),
+		orderBy: desc(contentResource.createdAt),
+	})
+
+	const postsParsed = z.array(PostSchema).safeParse(posts)
+	if (!postsParsed.success) {
+		console.error('Error parsing posts', postsParsed)
+		return []
+	}
+
+	return postsParsed.data
+}
+
+export const getCachedAllPostsForUser = unstable_cache(
+	async ({ userId }: { userId?: string }) => getAllPostsForUser(userId),
+	['posts'],
+	{ revalidate: 3600 },
+)
+
+export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
+	if (!userId) {
+		redirect('/')
+	}
+
+	const posts = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'post'),
+			eq(contentResource.createdById, userId),
+		),
 		orderBy: desc(contentResource.createdAt),
 	})
 
