@@ -21,19 +21,28 @@ import { z } from 'zod'
 export async function deletePost(id: string) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	if (!user || !ability.can('delete', 'Content')) {
-		throw new Error('Unauthorized')
-	}
 
-	const post = await db.query.contentResource.findFirst({
-		where: eq(contentResource.id, id),
-		with: {
-			resources: true,
-		},
-	})
+	const post = PostSchema.nullish().parse(
+		await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, id),
+			with: {
+				resources: true,
+			},
+		}),
+	)
 
 	if (!post) {
 		throw new Error(`Post with id ${id} not found.`)
+	}
+
+	if (!user || !ability.can('delete', subject('Content', post))) {
+		throw new Error('Unauthorized')
+	}
+
+	if (post.fields.eggheadLessonId) {
+		await eggheadPgQuery(
+			`UPDATE lessons SET state = 'retired' WHERE id = ${post.fields.eggheadLessonId}`,
+		)
 	}
 
 	await db
@@ -143,15 +152,19 @@ export async function createPost(input: NewPost) {
 		throw new Error('🚨 Video Resource not found')
 	}
 
+	const EGGHEAD_LESSON_TYPE = 'post'
+	const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
+
 	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,created_at, updated_at)
-		VALUES ($1, $2, $3, $4, NOW(), NOW())
+		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state ,created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5,NOW(), NOW())
 		RETURNING id`,
 		[
 			input.title,
 			profile.instructor.id,
-			slugify(`${input.title}~${postGuid}`),
-			'approved',
+			`${slugify(input.title)}~${postGuid}`,
+			EGGHEAD_LESSON_TYPE,
+			EGGHEAD_INITIAL_LESSON_STATE,
 		],
 	)
 
