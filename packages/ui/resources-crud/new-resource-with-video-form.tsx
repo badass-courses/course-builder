@@ -213,9 +213,12 @@ export function NewResourceWithVideoForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{videoResourceId ? 'Video' : 'Upload a Video*'}
+								{videoResourceId ? 'Video' : 'Upload a Video'}
 							</FormLabel>
 							<FormDescription>
+								<span className="block">
+									You can upload a video later if needed.
+								</span>
 								Your video will be uploaded and then transcribed automatically.
 							</FormDescription>
 							<FormControl>

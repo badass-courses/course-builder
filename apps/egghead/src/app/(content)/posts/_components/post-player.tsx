@@ -12,10 +12,10 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 export function PostPlayer({
 	muxPlaybackId,
 	className,
-	videoResourceLoader,
+	videoResource,
 }: {
 	muxPlaybackId?: string
-	videoResourceLoader: Promise<VideoResource | null>
+	videoResource: VideoResource
 	className?: string
 }) {
 	const playerProps = {
@@ -27,8 +27,6 @@ export function PostPlayer({
 		maxResolution: '2160p',
 		minResolution: '540p',
 	} as MuxPlayerProps
-
-	const videoResource = use(videoResourceLoader)
 
 	const playbackId =
 		videoResource?.state === 'ready'

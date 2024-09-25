@@ -10,12 +10,12 @@ export function TranscriptContainer({
 	transcriptLoader: Promise<string | null | undefined>
 }) {
 	const transcript = use(transcriptLoader)
-	return (
+	return transcript ? (
 		<div className="w-full max-w-2xl pt-5">
 			<h3 className="font-bold">Transcript</h3>
 			<ReactMarkdown className="prose dark:prose-invert">
 				{transcript}
 			</ReactMarkdown>
 		</div>
-	)
+	) : null
 }

@@ -120,9 +120,9 @@ async function PlayerContainer({
 
 	const resource = post.resources?.[0]?.resource.id
 
-	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
 
-	return (
+	return videoResource ? (
 		<Suspense fallback={<PlayerContainerSkeleton />}>
 			<div className="relative z-10 flex items-center justify-center">
 				<div className="flex w-full max-w-screen-lg flex-col">
@@ -135,13 +135,13 @@ async function PlayerContainer({
 								},
 							)}
 						>
-							<PostPlayer videoResourceLoader={videoResourceLoader} />
+							<PostPlayer videoResource={videoResource} />
 						</div>
 					</div>
 				</div>
 			</div>
 		</Suspense>
-	)
+	) : null
 }
 
 async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
@@ -160,10 +160,10 @@ async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
 				{post.fields.title}
 			</h1>
 
-			<div className="align-right flex w-full justify-end gap-2">
+			<div className="flex w-full justify-start gap-2">
 				<Link
 					href={`https://egghead.io/${post.fields.slug}`}
-					className="underline underline-offset-2 hover:underline"
+					className="text-muted-foreground mb-5 text-sm underline underline-offset-2 hover:underline"
 					target="_blank"
 				>
 					Open on egghead
