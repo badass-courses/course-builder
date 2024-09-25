@@ -25,6 +25,9 @@ export const PostSchema = ContentResourceSchema.merge(
 			visibility: PostVisibilitySchema.default('unlisted'),
 			eggheadLessonId: z.coerce.number().nullish(),
 			slug: z.string(),
+			description: z.string().nullish(),
+			github: z.string().nullish(),
+			gitpod: z.string().nullish(),
 		}),
 	}),
 )
@@ -33,7 +36,7 @@ export type Post = z.infer<typeof PostSchema>
 
 export const NewPostSchema = z.object({
 	title: z.string().min(2).max(90),
-	videoResourceId: z.string().min(4, 'Please upload a video'),
+	videoResourceId: z.string().min(4, 'Please upload a video').nullish(),
 })
 
 export type NewPost = z.infer<typeof NewPostSchema>

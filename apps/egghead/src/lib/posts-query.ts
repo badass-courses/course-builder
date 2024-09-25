@@ -104,7 +104,7 @@ export async function getAllPosts(): Promise<Post[]> {
 
 	const postsParsed = z.array(PostSchema).safeParse(posts)
 	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed)
+		console.error('Error parsing posts', postsParsed.error)
 		return []
 	}
 
@@ -127,15 +127,12 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 			eq(contentResource.type, 'post'),
 			eq(contentResource.createdById, userId),
 		),
-		with: {
-			createdBy: true,
-		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
 	const postsParsed = z.array(PostSchema).safeParse(posts)
 	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed)
+		console.error('Error parsing posts', postsParsed.error)
 		return []
 	}
 
@@ -176,14 +173,6 @@ export async function createPost(input: NewPost) {
 	const postGuid = guid()
 	const newPostId = `post_${postGuid}`
 
-	const videoResource = await courseBuilderAdapter.getVideoResource(
-		input.videoResourceId,
-	)
-
-	if (!videoResource) {
-		throw new Error('🚨 Video Resource not found')
-	}
-
 	const EGGHEAD_LESSON_TYPE = 'post'
 	const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
@@ -223,11 +212,13 @@ export async function createPost(input: NewPost) {
 
 	const post = await getPost(newPostId)
 
-	if (post) {
+	if (post && input?.videoResourceId) {
 		await db
 			.insert(contentResourceResource)
 			.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
+	}
 
+	if (post) {
 		const contributionType = await db.query.contributionTypes.findFirst({
 			where: eq(contributionTypes.slug, 'author'),
 		})
