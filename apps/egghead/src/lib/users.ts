@@ -1,10 +1,48 @@
+import { unstable_cache } from 'next/cache'
 import { UserSchema } from '@/ability'
 import { db } from '@/db'
+import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { accounts, roles, userRoles, users } from '@/db/schema'
+import { getPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
+
+export const getCachedEggheadInstructorForUser = unstable_cache(
+	async (userId: string) => loadEggheadInstructorForUser(userId),
+	['users'],
+	{ revalidate: 3600 },
+)
+
+export const loadEggheadInstructorForUser = async (userId: string) => {
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, userId),
+		with: {
+			accounts: true,
+		},
+	})
+
+	if (!user) {
+		return null
+	}
+
+	const eggheadAccount = user?.accounts?.find(
+		(account) => account.provider === 'egghead',
+	)
+
+	if (!eggheadAccount) {
+		return null
+	}
+
+	const instructor = await eggheadPgQuery(
+		`SELECT * FROM instructors WHERE user_id = ${eggheadAccount.providerAccountId}`,
+	)
+
+	console.log('instructor', instructor)
+
+	return instructor.rows[0]
+}
 
 export const loadUsersForRole = async (role: string) => {
 	const usersByRole = await db

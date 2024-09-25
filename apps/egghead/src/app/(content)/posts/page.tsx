@@ -4,6 +4,10 @@ import Link from 'next/link'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
 import { getCachedAllPosts, getCachedAllPostsForUser } from '@/lib/posts-query'
+import {
+	getCachedEggheadInstructorForUser,
+	loadEggheadInstructorForUser,
+} from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -11,6 +15,7 @@ import { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Card,
+	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
@@ -59,7 +64,13 @@ async function PostList() {
 										{post?.fields?.title}
 									</Link>
 								</CardTitle>
+								<CardDescription>
+									<Suspense>
+										<InstructorByLine userId={post.createdById} />
+									</Suspense>
+								</CardDescription>
 							</CardHeader>
+
 							{ability.can('manage', subject('Content', post)) && (
 								<CardFooter>
 									<div className="flex w-full justify-end gap-2">
@@ -79,6 +90,15 @@ async function PostList() {
 				</div>
 			)}
 		</>
+	)
+}
+
+const InstructorByLine = async ({ userId }: { userId: string }) => {
+	const instructor = await getCachedEggheadInstructorForUser(userId)
+	return (
+		<div className="text-muted-foreground text-mono text-xs">
+			{instructor?.first_name} {instructor?.last_name}
+		</div>
 	)
 }
 

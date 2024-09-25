@@ -3,6 +3,7 @@ import { Suspense, use } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { CopyEggheadLinkButton } from '@/app/(content)/[post]/copy-link-button'
 import { TranscriptContainer } from '@/app/(content)/[post]/transcript'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { courseBuilderAdapter } from '@/db'
@@ -82,17 +83,7 @@ async function PostActionBar({
 							Edit
 						</Link>
 					</Button>
-					<Button
-						size="sm"
-						onClick={() => {
-							toast.success('Copied to clipboard')
-							return navigator.clipboard.writeText(
-								`https://egghead.io/${post.fields.slug}`,
-							)
-						}}
-					>
-						Copy egghead URL
-					</Button>
+					<CopyEggheadLinkButton slug={post.fields.slug} />
 				</div>
 			) : (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
@@ -169,8 +160,12 @@ async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
 				{post.fields.title}
 			</h1>
 
-			<div>
-				<Link href={`https://egghead.io/${post.fields.slug}`}>
+			<div className="align-right flex w-full justify-end gap-2">
+				<Link
+					href={`https://egghead.io/${post.fields.slug}`}
+					className="underline underline-offset-2 hover:underline"
+					target="_blank"
+				>
 					Open on egghead
 				</Link>
 			</div>

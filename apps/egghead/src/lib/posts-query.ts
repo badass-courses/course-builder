@@ -127,6 +127,9 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 			eq(contentResource.type, 'post'),
 			eq(contentResource.createdById, userId),
 		),
+		with: {
+			createdBy: true,
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
