@@ -1,3 +1,4 @@
+import * as ModuleNavigation from './module-navigation'
 import {
 	Accordion,
 	AccordionContent,
@@ -227,4 +228,5 @@ export {
 	ResizablePanel,
 	ResizablePanelGroup,
 	Switch,
+	ModuleNavigation,
 }
