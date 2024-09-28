@@ -11,6 +11,9 @@
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
+		--code-editor-layout-height: calc(
+			100vh - var(--nav-height) - var(--command-bar-height) - 30px
+		);
 
 		/* shadcnui */
 

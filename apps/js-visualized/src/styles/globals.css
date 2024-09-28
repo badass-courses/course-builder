@@ -13,6 +13,9 @@
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
+		--code-editor-layout-height: calc(
+			100vh - var(--nav-height) - var(--command-bar-height) - 30px
+		);
 
 		/* JSV colors */
 		--jsv-misty-white: rgba(255, 255, 255, 0.9);
