@@ -31,6 +31,9 @@
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
 		);
+		--code-editor-layout-height: calc(
+			100vh - var(--nav-height) - var(--command-bar-height) - 30px
+		);
 
 		--background: 0 0% 100%;
 		--foreground: 222.2 47.4% 11.2%;

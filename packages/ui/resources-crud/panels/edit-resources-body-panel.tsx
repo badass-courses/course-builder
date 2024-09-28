@@ -41,6 +41,7 @@ export function EditResourcesBodyPanel({
 		>
 			<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
 				<MarkdownEditor
+					height="var(--code-editor-layout-height)"
 					value={resource.fields.body || ''}
 					onChange={onChange}
 					theme={
