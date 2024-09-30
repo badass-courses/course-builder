@@ -13,25 +13,18 @@ import { NewResourceWithVideoForm } from '@coursebuilder/ui/resources-crud/new-r
 export function CreatePost() {
 	const router = useRouter()
 	return (
-		<Card>
-			<CardContent>
-				<NewResourceWithVideoForm
-					onResourceCreated={async (resource: ContentResource) => {
-						router.push(
-							`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
-						)
-					}}
-					createResource={createPost}
-					getVideoResource={getVideoResource}
-				>
-					{(handleSetVideoResourceId: (id: string) => void) => {
-						return (
-							<PostUploader setVideoResourceId={handleSetVideoResourceId} />
-						)
-					}}
-				</NewResourceWithVideoForm>
-			</CardContent>
-			<CardFooter></CardFooter>
-		</Card>
+		<NewResourceWithVideoForm
+			onResourceCreated={async (resource: ContentResource) => {
+				router.push(
+					`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
+				)
+			}}
+			createResource={createPost}
+			getVideoResource={getVideoResource}
+		>
+			{(handleSetVideoResourceId: (id: string) => void) => {
+				return <PostUploader setVideoResourceId={handleSetVideoResourceId} />
+			}}
+		</NewResourceWithVideoForm>
 	)
 }

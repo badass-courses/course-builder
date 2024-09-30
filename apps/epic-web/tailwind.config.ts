@@ -164,7 +164,6 @@ module.exports = withUt({
 		require('@tailwindcss/typography'),
 		require('tailwind-fluid-typography'),
 		require('tailwind-scrollbar'),
-		require('tailwindcss-radix'),
 		require('tailwindcss-animate'),
 	],
 })
