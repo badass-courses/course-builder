@@ -1,11 +1,9 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { courseBuilderAdapter } from '@/db'
 import { getArticle } from '@/lib/articles-query'
 import { getServerAuthSession } from '@/server/auth'
-import { ImagePlusIcon } from 'lucide-react'
 
 import { EditArticleForm } from '../../_components/edit-article-form'
 
