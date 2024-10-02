@@ -220,6 +220,26 @@ export async function webhook(
 
 			if (!videoResource) throw new Error('No videoResource')
 
+			const rawTranscriptId = `raw-transcript-${videoResourceId}`
+
+			const existingRawTranscript =
+				await options.adapter?.getContentResource(rawTranscriptId)
+
+			if (!existingRawTranscript) {
+				await options.adapter?.createContentResource({
+					id: rawTranscriptId,
+					type: 'raw-transcript',
+					fields: {
+						deepgramResults: results,
+					},
+					createdById: videoResource.createdById,
+				})
+				await options.adapter?.addResourceToResource({
+					childResourceId: rawTranscriptId,
+					parentResourceId: videoResourceId,
+				})
+			}
+
 			const srt = srtFromTranscriptResult(results)
 			const wordLevelSrt = wordLevelSrtFromTranscriptResult(results)
 			const transcript = transcriptAsParagraphsWithTimestamps(results)
