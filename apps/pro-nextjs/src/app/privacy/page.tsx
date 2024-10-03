@@ -163,6 +163,11 @@ We reserve the right, at our sole discretion, to update, change or replace any p
 
 Questions about the Terms of Service should be sent to us at [${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}](mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}).
 
+## Delivery of Products
+
+Access to digital products will be provided via an authenticated account using the email address
+of the purchaser.
+
 ## Refund Policy
 
 Our refund policy lasts 30 days. If 30 days have gone by since your purchase, unfortunately we can’t offer you a refund or exchange.
