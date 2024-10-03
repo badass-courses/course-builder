@@ -5,6 +5,7 @@ import {
 	ChatCompletionRequestMessage,
 	ChatCompletionRequestMessageRoleEnum,
 } from 'openai-edge'
+import { z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -17,7 +18,10 @@ import {
 } from '../primitives/resizable'
 import { Textarea } from '../primitives/textarea'
 import { AssistantWorkflowSelector } from './assistant-workflow-selector'
-import { ResourceChatResponse } from './resource-chat-response'
+import {
+	ResourceChatResponse,
+	useChatAssistant,
+} from './resource-chat-response'
 
 export function ResourceChatAssistant({
 	resource,
@@ -44,6 +48,11 @@ export function ResourceChatAssistant({
 			availableWorkflows[0]?.value ||
 			'basic',
 	)
+	const {
+		messages: messagesToDisplay,
+		setMessages: setMessagesToDisplay,
+		setIsWaitingForResponse,
+	} = useChatAssistant()
 
 	const handleSendMessage = (
 		event:
@@ -52,6 +61,14 @@ export function ResourceChatAssistant({
 		messages: ChatCompletionRequestMessage[],
 		selectedWorkflow?: string,
 	) => {
+		setIsWaitingForResponse(true)
+		setMessagesToDisplay([
+			...messagesToDisplay,
+			{
+				body: event.currentTarget.value,
+				userId: user?.id,
+			},
+		])
 		sendResourceChatMessage({
 			resourceId: resource.id,
 			messages: [
@@ -83,9 +100,11 @@ export function ResourceChatAssistant({
 					messageData.name === 'resource.chat.completed' &&
 					messageData.requestId === resource.id
 				) {
+					setIsWaitingForResponse(false)
 					setMessages(messageData.body)
 				}
 			} catch (error) {
+				setIsWaitingForResponse(false)
 				// noting to do
 			}
 		},
@@ -129,8 +148,14 @@ export function ResourceChatAssistant({
 						onKeyDown={async (event) => {
 							if (event.key === 'Enter' && !event.shiftKey) {
 								event.preventDefault()
-								handleSendMessage(event, messages, selectedWorkflow)
-								event.currentTarget.value = ''
+								const value = z
+									.string()
+									.min(1)
+									.safeParse(event.currentTarget.value)
+								if (value.success) {
+									handleSendMessage(event, messages, selectedWorkflow)
+									event.currentTarget.value = ''
+								}
 							}
 						}}
 					/>
@@ -141,8 +166,14 @@ export function ResourceChatAssistant({
 						onClick={async (event) => {
 							event.preventDefault()
 							if (textareaRef.current) {
-								handleSendMessage(event, messages, selectedWorkflow)
-								textareaRef.current.value = ''
+								const value = z
+									.string()
+									.min(1)
+									.safeParse(textareaRef.current.value)
+								if (value.success) {
+									handleSendMessage(event, messages, selectedWorkflow)
+									textareaRef.current.value = ''
+								}
 							}
 						}}
 					>
