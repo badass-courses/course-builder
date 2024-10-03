@@ -28,7 +28,7 @@ export function EditResourcesMetadataPanel({
 						console.log({ error })
 					})}
 				>
-					<ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
+					<ScrollArea className="h-[var(--pane-layout-height)]">
 						<div className="flex flex-col gap-5 py-5">{children}</div>
 					</ScrollArea>
 				</form>
