@@ -135,7 +135,6 @@ export const DeepgramResultsSchema = z.object({
 export type DeepgramResults = z.infer<typeof DeepgramResultsSchema>
 
 export function srtFromTranscriptResult(results: DeepgramResults) {
-	console.log({ deepgramResults: results })
 	return srtProcessor(results.channels[0]?.alternatives[0]?.words)
 }
 export function wordLevelSrtFromTranscriptResult(results: DeepgramResults) {
