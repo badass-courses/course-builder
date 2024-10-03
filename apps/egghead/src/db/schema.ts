@@ -33,4 +33,10 @@ export const {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	contentResourceTag,
+	contentResourceTagRelations,
+	tag,
+	tagRelations,
+	tagTag,
+	tagTagRelations,
 } = getCourseBuilderSchema(mysqlTable)

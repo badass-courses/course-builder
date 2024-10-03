@@ -166,6 +166,10 @@ import {
 	getContentResourceResourceSchema,
 } from './schemas/content/content-resource-resource.js'
 import {
+	getContentResourceTagRelationsSchema,
+	getContentResourceTagSchema,
+} from './schemas/content/content-resource-tag.js'
+import {
 	getContentResourceRelationsSchema,
 	getContentResourceSchema,
 } from './schemas/content/content-resource.js'
@@ -175,6 +179,11 @@ import {
 } from './schemas/content/contribution-types.js'
 import { getLessonProgressSchema } from './schemas/content/lesson-progress.js'
 import { getResourceProgressSchema } from './schemas/content/resource-progress.js'
+import {
+	getTagTagRelationsSchema,
+	getTagTagSchema,
+} from './schemas/content/tag-tag.js'
+import { getTagRelationsSchema, getTagSchema } from './schemas/content/tag.js'
 
 export const guid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
@@ -229,6 +238,9 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contentResourceResource: getContentResourceResourceSchema(mysqlTable),
 		contentResourceResourceRelations:
 			getContentResourceResourceRelationsSchema(mysqlTable),
+		contentResourceTag: getContentResourceTagSchema(mysqlTable),
+		contentResourceTagRelations:
+			getContentResourceTagRelationsSchema(mysqlTable),
 		contributionTypes: getContributionTypesSchema(mysqlTable),
 		contributionTypesRelations: getContributionTypesRelationsSchema(mysqlTable),
 		resourceProgress: getResourceProgressSchema(mysqlTable),
@@ -246,6 +258,10 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 			getDeviceVerificationRelationsSchema(mysqlTable),
 		deviceAccessToken: getDeviceAccessTokenSchema(mysqlTable),
 		deviceAccessTokenRelations: getDeviceAccessTokenRelationsSchema(mysqlTable),
+		tag: getTagSchema(mysqlTable),
+		tagRelations: getTagRelationsSchema(mysqlTable),
+		tagTag: getTagTagSchema(mysqlTable),
+		tagTagRelations: getTagTagRelationsSchema(mysqlTable),
 		userPrefs: getUserPrefsSchema(mysqlTable),
 		userPrefsRelations: getUserPrefsRelationsSchema(mysqlTable),
 	} as const
