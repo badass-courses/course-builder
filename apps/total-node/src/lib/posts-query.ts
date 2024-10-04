@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { NewPost, Post, PostSchema } from '@/lib/posts'
+import { NewPost, Post, PostSchema, type PostUpdate } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
@@ -13,10 +13,25 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export const getCachedAllPosts = unstable_cache(
-	async () => getPosts(),
+	async () => getAllPosts(),
 	['posts'],
 	{ revalidate: 3600 },
 )
+
+export async function getAllPosts(): Promise<Post[]> {
+	const posts = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'post'),
+		orderBy: desc(contentResource.createdAt),
+	})
+
+	const postsParsed = z.array(PostSchema).safeParse(posts)
+	if (!postsParsed.success) {
+		console.error('Error parsing posts', postsParsed.error)
+		return []
+	}
+
+	return postsParsed.data
+}
 
 export async function getPosts(): Promise<Post[]> {
 	const { ability } = await getServerAuthSession()
@@ -59,46 +74,69 @@ export async function createPost(input: NewPost) {
 		throw new Error('Unauthorized')
 	}
 
-	const newPostId = v4()
+	const postGuid = guid()
+	const newPostId = `post_${postGuid}`
 
-	await db.insert(contentResource).values({
+	const postValues = {
 		id: newPostId,
 		type: 'post',
+		createdById: user.id,
 		fields: {
-			title: input.fields.title,
+			title: input.title,
 			state: 'draft',
 			visibility: 'unlisted',
-			slug: slugify(`${input.fields.title}~${guid()}`),
+			slug: slugify(`${input.title}~${postGuid}`),
 		},
-		createdById: user.id,
-	})
+	}
+	await db
+		.insert(contentResource)
+		.values(postValues)
+		.catch((error) => {
+			console.error('🚨 Error creating post', error)
+			throw error
+		})
 
 	const post = await getPost(newPostId)
+	if (post) {
+		if (input?.videoResourceId) {
+			await db
+				.insert(contentResourceResource)
+				.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
+		}
 
-	revalidateTag('posts')
+		revalidateTag('posts')
 
-	return post
+		return post
+	} else {
+		throw new Error('🚨 Error creating post: Post not found')
+	}
 }
 
-export async function updatePost(input: Post) {
+export async function updatePost(
+	input: PostUpdate,
+	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	if (!user || !ability.can('update', 'Content')) {
-		throw new Error('Unauthorized')
-	}
 
 	const currentPost = await getPost(input.id)
 
 	if (!currentPost) {
-		return createPost(input)
+		throw new Error(`Post with id ${input.id} not found.`)
 	}
 
-	let postSlug = input.fields.slug
+	if (!user || !ability.can(action, subject('Content', currentPost))) {
+		throw new Error('Unauthorized')
+	}
 
-	if (input.fields.title !== currentPost?.fields.title) {
+	let postSlug = currentPost.fields.slug
+
+	if (input.fields.title !== currentPost.fields.title) {
 		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
+
+	revalidateTag('posts')
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentPost.id,

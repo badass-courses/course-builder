@@ -1,10 +1,9 @@
 import * as React from 'react'
-import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
-import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import { notFound, redirect } from 'next/navigation'
+import { courseBuilderAdapter } from '@/db'
 import { getPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
-import { ImagePlusIcon } from 'lucide-react'
+import { subject } from '@casl/ability'
 
 import { EditPostForm } from '../../_components/edit-post-form'
 
@@ -15,7 +14,6 @@ export default async function ArticleEditPage({
 }: {
 	params: { slug: string }
 }) {
-	headers()
 	const { ability } = await getServerAuthSession()
 	const post = await getPost(params.slug)
 
@@ -23,5 +21,19 @@ export default async function ArticleEditPage({
 		notFound()
 	}
 
-	return <EditPostForm key={post.fields.slug} post={post} />
+	if (ability.cannot('manage', subject('Content', post))) {
+		redirect(`/${post?.fields?.slug}`)
+	}
+
+	const resource = post.resources?.[0]?.resource.id
+
+	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+
+	return (
+		<EditPostForm
+			key={post.fields.slug}
+			post={post}
+			videoResourceLoader={videoResourceLoader}
+		/>
+	)
 }

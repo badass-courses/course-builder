@@ -55,7 +55,7 @@ export default async function PagesIndexPage() {
 }
 
 const PageTeaser: React.FC<{
-	article: Post
+	article: Page
 	i?: number
 	className?: string
 }> = ({ article, className, i }) => {

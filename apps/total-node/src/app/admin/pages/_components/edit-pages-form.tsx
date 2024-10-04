@@ -9,8 +9,6 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Page, PageSchema } from '@/lib/pages'
 import { updatePage } from '@/lib/pages-query'
-import { PostSchema, type Post } from '@/lib/posts'
-import { updatePost } from '@/lib/posts-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
@@ -52,8 +50,8 @@ export function EditPagesForm({
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(page)
 	const { forcedTheme: theme } = useTheme()
-	const form = useForm<z.infer<typeof PostSchema>>({
-		resolver: zodResolver(PostSchema),
+	const form = useForm<z.infer<typeof PageSchema>>({
+		resolver: zodResolver(PageSchema),
 		defaultValues: {
 			...page,
 			fields: {
@@ -78,7 +76,7 @@ export function EditPagesForm({
 		<ResourceForm
 			resource={page}
 			form={form}
-			resourceSchema={PostSchema}
+			resourceSchema={PageSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updatePage}
 			availableWorkflows={[

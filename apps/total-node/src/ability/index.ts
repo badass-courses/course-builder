@@ -32,17 +32,21 @@ type Actions =
 	| 'delete'
 	| 'manage'
 	| 'view'
+	| 'save'
+	| 'publish'
+	| 'archive'
+	| 'unpublish'
 	| 'invite'
 
 type Subjects =
+	| 'RegionRestriction'
+	| 'Team'
 	| 'Content'
 	| 'User'
 	| ContentResource
 	| User
 	| 'all'
 	| 'Invoice'
-	| 'RegionRestriction'
-	| 'Team'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -81,6 +85,10 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 		if (options.user.roles.map((role) => role.name).includes('contributor')) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: options.user.id } })
+			can('save', 'Content', { createdById: { $eq: options.user.id } })
+			can('publish', 'Content', { createdById: { $eq: options.user.id } })
+			can('archive', 'Content', { createdById: { $eq: options.user.id } })
+			can('unpublish', 'Content', { createdById: { $eq: options.user.id } })
 		}
 
 		can(['read', 'update'], 'User', { id: options.user.id })

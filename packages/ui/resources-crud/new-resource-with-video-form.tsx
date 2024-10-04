@@ -27,6 +27,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '../index'
+import { cn } from '../utils/cn'
 
 const NewResourceWithVideoSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -47,12 +48,14 @@ export function NewResourceWithVideoForm({
 	createResource,
 	onResourceCreated,
 	availableResourceTypes,
+	className,
 	children,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
 	availableResourceTypes?: string[] | undefined
+	className?: string
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
 	) => React.ReactNode
@@ -150,7 +153,7 @@ export function NewResourceWithVideoForm({
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="flex flex-col gap-5"
+				className={cn('flex flex-col gap-5', className)}
 			>
 				<FormField
 					control={form.control}

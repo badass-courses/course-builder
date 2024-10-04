@@ -5,7 +5,7 @@ import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import type { Post } from '@/lib/posts'
-import { getPosts } from '@/lib/posts-query'
+import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
@@ -20,6 +20,8 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+import { CreatePost, CreatePostModal } from './_components/create-post'
+
 export const metadata: Metadata = {
 	title: `Node.js Posts by ${config.author}`,
 	openGraph: {
@@ -33,7 +35,8 @@ export const metadata: Metadata = {
 
 export default async function PostsIndexPage() {
 	const { ability } = await getServerAuthSession()
-	const allPosts = await getPosts()
+	const allPosts = await getAllPosts()
+	console.log({ allPosts })
 	const publishedPublicPosts = allPosts.filter(
 		(post) =>
 			post.fields.visibility === 'public' && post.fields.state === 'published',
@@ -47,12 +50,12 @@ export default async function PostsIndexPage() {
 	return (
 		<main className="container flex flex-col-reverse px-5 lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
-				<div className="flex flex-col items-center border-x">
+				<div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
 						<div className="relative flex w-full">
 							<PostTeaser
 								post={latestPost}
-								className="h-full w-full md:aspect-[16/7] [&_[data-card='']]:bg-gradient-to-tr [&_[data-card='']]:from-[#3E75FE] [&_[data-card='']]:to-purple-500  [&_[data-card='']]:p-8 [&_[data-card='']]:text-white [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
+								className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-muted-foreground h-full w-full md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
 							/>
 						</div>
 					) : (
@@ -102,7 +105,7 @@ const PostTeaser: React.FC<{
 				<Card
 					data-card=""
 					className={cn(
-						'mx-auto flex h-full w-full flex-col justify-between rounded-none border-0 bg-transparent p-8 shadow-none',
+						'mx-auto flex h-full w-full flex-col justify-between rounded-none border-0 bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
 						{
 							'sm:border-r': (i && i % 2 === 0) || i === 0,
 						},
@@ -110,12 +113,12 @@ const PostTeaser: React.FC<{
 				>
 					<div>
 						<CardHeader className="p-0">
-							<p className="pb-1.5 text-sm opacity-60">
+							<p className="text-muted-foreground pb-1.5 text-sm opacity-60">
 								{createdAt && format(new Date(createdAt), 'MMMM do, y')}
 							</p>
 							<CardTitle
 								data-title=""
-								className="text-xl font-semibold leading-tight"
+								className="fluid-xl font-semibold leading-tight"
 							>
 								{title}
 							</CardTitle>
@@ -181,12 +184,7 @@ async function PostListActions({ posts }: { posts?: Post[] }) {
 			) : null}
 			{ability.can('update', 'Content') ? (
 				<div className="p-5">
-					<Button variant="outline" asChild className="w-full gap-1">
-						<Link href={`/posts/new`}>
-							<FilePlus2 className="h-4 w-4" />
-							New Post
-						</Link>
-					</Button>
+					<CreatePostModal />
 				</div>
 			) : null}
 		</aside>

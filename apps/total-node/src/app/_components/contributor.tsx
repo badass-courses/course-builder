@@ -9,7 +9,7 @@ export const Contributor: React.FC<{ className?: string }> = ({
 	className,
 }) => {
 	return (
-		<div className={cn('flex items-center gap-2 font-medium', className)}>
+		<div className={cn('flex items-center gap-2 font-normal', className)}>
 			<Image
 				src={require('../../../public/matt-pocock.jpg')}
 				alt={config.author}
@@ -17,7 +17,7 @@ export const Contributor: React.FC<{ className?: string }> = ({
 				height={40}
 				className="rounded-full"
 			/>
-			<span>{config.author}</span>
+			<span className="text-muted-foreground">{config.author}</span>
 		</div>
 	)
 }
