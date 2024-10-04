@@ -33,6 +33,17 @@ import {
 } from './primitives/card'
 import { Checkbox } from './primitives/checkbox'
 import {
+	Command,
+	CommandDialog,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+	CommandSeparator,
+	CommandShortcut,
+} from './primitives/command'
+import {
 	Dialog,
 	DialogClose,
 	DialogContent,
@@ -125,6 +136,15 @@ import { useToast } from './primitives/use-toast'
 
 export {
 	Button,
+	Command,
+	CommandDialog,
+	CommandInput,
+	CommandList,
+	CommandItem,
+	CommandShortcut,
+	CommandSeparator,
+	CommandEmpty,
+	CommandGroup,
 	Badge,
 	Input,
 	Label,

@@ -30,6 +30,11 @@ const config = {
 			},
 			{
 				protocol: 'https',
+				hostname: 'd2eip9sf3oo6c2.cloudfront.net',
+				port: '',
+			},
+			{
+				protocol: 'https',
 				hostname: 'neatly-diverse-goldfish.ngrok-free.app',
 				port: '',
 			},
