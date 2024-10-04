@@ -16,8 +16,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
-import MattPocockImage from '../../public/matt-pocock.jpg'
-
 export async function generateMetadata(
 	{ searchParams }: Props,
 	parent: ResolvingMetadata,
