@@ -16,7 +16,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
-import MattPocockImage from '../../public/matt-pocock.jpg'
+// import MattPocockImage from '../../public/matt-pocock.jpg'
 
 export async function generateMetadata(
 	{ searchParams }: Props,
@@ -72,7 +72,7 @@ const Home = async ({ searchParams }: Props) => {
 						Unleash godlike power in your backend development
 					</h1>
 					<h2 className="font-heading sm:fluid-lg fluid-base text-muted-foreground mb-5 mt-7 items-center text-balance text-center font-normal !tracking-tight sm:inline-flex">
-						<Image
+						{/* <Image
 							src={MattPocockImage}
 							alt={config.author}
 							priority
@@ -80,7 +80,7 @@ const Home = async ({ searchParams }: Props) => {
 							width={32}
 							quality={100}
 							height={32}
-						/>{' '}
+						/>{' '} */}
 						Matt Pocock
 					</h2>
 				</div>
@@ -145,14 +145,14 @@ const Instructor = ({ className }: { className?: string }) => {
 		>
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col items-center sm:gap-10 md:flex-row">
 				<div className="not-prose w-auto sm:mx-auto">
-					<Image
+					{/* <Image
 						src={MattPocockImage}
 						alt={config.author}
 						width={1200 / 2.6}
 						height={853 / 2.6}
 						quality={100}
 						className="rounded"
-					/>
+					/> */}
 				</div>
 				<div className="max-w-lg md:px-5">
 					<h3>Your Instructor</h3>
