@@ -34,7 +34,7 @@
 		"**/*.cjs",
 		"**/*.mjs",
 		".next/types/**/*.ts",
-		"./node_modules/y-codemirror.next/dist/src/index.d.ts"
-, "../egghead/src/lib/tags-query.ts"	],
+		"./node_modules/y-codemirror.next/dist/src/index.d.ts"	
+	],
 	"exclude": ["node_modules"]
 }
