@@ -146,7 +146,7 @@ const Instructor = ({ className }: { className?: string }) => {
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col items-center sm:gap-10 md:flex-row">
 				<div className="not-prose w-auto sm:mx-auto">
 					<Image
-						src={require('../../public/matt-pocock.jpg')}
+						src={MattPocockImage}
 						alt={config.author}
 						width={1200 / 2.6}
 						height={853 / 2.6}
