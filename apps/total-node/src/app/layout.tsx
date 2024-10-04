@@ -13,7 +13,7 @@ import { FeedbackInsert } from '@/feedback-widget/feedback-insert'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { maisonNeue, maisonNeueMono } from '@/utils/load-fonts'
+import { headingFont, maisonNeue, maisonNeueMono } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -59,7 +59,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
+					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} ${headingFont.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
@@ -67,7 +67,7 @@ export default function RootLayout({
 						<Party />
 						<ThemeProvider
 							attribute="class"
-							// forcedTheme="light"
+							forcedTheme="dark"
 							defaultTheme="dark"
 							enableSystem={false}
 							disableTransitionOnChange

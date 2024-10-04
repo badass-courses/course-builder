@@ -47,7 +47,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background/95 relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 backdrop-blur-md print:hidden',
+				'bg-background font-heading relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
 				{
 					'sticky top-0': !params.lesson,
 					// 'border-b': !isEditRoute,
@@ -67,9 +67,15 @@ const Navigation = () => {
 						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-4 text-lg font-semibold leading-none transition"
 					>
 						<LogoMark className="w-8" />
-						<span className="text-sm font-medium">Total Node</span>
+						<span className="text-muted-foreground fluid-base font-bold !leading-none">
+							Total Node
+						</span>
 					</Link>
 				</span>
+				<hr
+					aria-hidden="true"
+					className="bg-muted-foreground/50 mx-2 my-auto flex h-2 w-px"
+				/>
 				{links.length > 0 && (
 					<nav
 						className="hidden items-stretch sm:flex"

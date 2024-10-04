@@ -48,19 +48,18 @@ export const PrimaryNewsletterCta: React.FC<
 		<section
 			id={id}
 			aria-label="Newsletter sign-up"
-			className={cn(
-				'bg-muted relative flex flex-col items-center overflow-hidden px-5 py-20',
-				className,
-			)}
+			className={cn('relative flex flex-col items-center px-5', className)}
 		>
 			{children ? (
 				children
 			) : (
 				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center pb-10">
-					<h2 className="font-heading fluid-2xl text-center font-semibold ">
+					<h2 className="font-heading fluid-3xl text-muted-foreground text-center font-semibold">
 						{title}
 					</h2>
-					<h3 className="fluid-lg pt-4 text-center opacity-90">{byline}</h3>
+					<h3 className="fluid-xl text-primary pt-8 text-center font-medium">
+						{byline}
+					</h3>
 				</div>
 			)}
 			<SubscribeToConvertkitForm
@@ -68,7 +67,10 @@ export const PrimaryNewsletterCta: React.FC<
 				actionLabel={actionLabel}
 				className="relative z-10 [&_input]:h-16"
 			/>
-			<p data-nospam="" className="pt-8 text-center text-sm opacity-75">
+			<p
+				data-nospam=""
+				className="text-muted-foreground pt-8 text-center text-sm opacity-75"
+			>
 				I respect your privacy. Unsubscribe at any time.
 			</p>
 		</section>

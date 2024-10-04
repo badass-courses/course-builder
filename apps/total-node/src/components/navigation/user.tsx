@@ -57,7 +57,7 @@ export const User: React.FC<{
 							href="/team"
 						/>
 					)}
-					<ThemeToggle />
+					{/* <ThemeToggle /> */}
 					{!sessionData?.user?.email ? (
 						<NavLinkItem
 							className={loginClassName}

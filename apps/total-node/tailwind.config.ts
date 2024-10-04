@@ -19,7 +19,9 @@ module.exports = withUt({
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
-		fluidTypography: {},
+		fluidTypography: {
+			lineHeight: 1.1,
+		},
 		container: {
 			center: true,
 			padding: '2rem',
@@ -74,8 +76,8 @@ module.exports = withUt({
 			},
 			fontFamily: {
 				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
-				heading: ['var(--font-maison-neue)', ...fontFamily.sans],
-				// mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
+				heading: ['var(--font-heading)', ...fontFamily.sans],
+				mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
 			},
 			keyframes: {
 				'accordion-down': {

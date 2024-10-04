@@ -1,5 +1,33 @@
 import localFont from 'next/font/local'
 
+export const headingFont = localFont({
+	preload: true,
+	display: 'block',
+	variable: '--font-heading',
+	src: [
+		{
+			path: '../styles/fonts/Heading-Light.woff2',
+			weight: '300',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/Heading-Regular.woff2',
+			weight: '400',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/Heading-Medium.woff2',
+			weight: '500',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/Heading-Bold.woff2',
+			weight: '700',
+			style: 'normal',
+		},
+	],
+})
+
 export const maisonNeue = localFont({
 	preload: true,
 	display: 'block',

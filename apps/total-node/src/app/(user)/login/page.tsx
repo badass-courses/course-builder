@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 import { Login } from '@/components/login'
+import config from '@/config'
 import { getProviders } from '@/server/auth'
 
 import { getCsrf } from './actions'
@@ -12,5 +13,11 @@ export default async function LoginPage() {
 	const providers = getProviders()
 	const csrfToken = await getCsrf()
 
-	return <Login csrfToken={csrfToken} providers={providers} />
+	return (
+		<Login
+			csrfToken={csrfToken}
+			providers={providers}
+			subtitle={`to ${config.defaultTitle}`}
+		/>
+	)
 }

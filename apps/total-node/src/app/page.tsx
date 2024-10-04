@@ -16,7 +16,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
-// import MattPocockImage from '../../public/matt-pocock.jpg'
+import MattPocockImage from '../../public/matt-pocock.jpg'
 
 export async function generateMetadata(
 	{ searchParams }: Props,
@@ -66,13 +66,25 @@ const Home = async ({ searchParams }: Props) => {
 
 	return (
 		<div className="">
-			<header className="relative mx-auto flex w-full flex-col items-center justify-center pt-20">
-				<div className="relative z-10 flex flex-col items-center justify-center px-5">
-					<h1 className="leading-0 font-heading sm:fluid-3xl fluid-2xl w-full max-w-4xl text-center font-bold">
+			<header className="relative mx-auto flex min-h-[80vh] w-full flex-col items-center justify-center pt-20">
+				<Image
+					src={require('../../public/hero-1@2x.jpg')}
+					fill
+					alt=""
+					aria-hidden="true"
+					className="object-cover opacity-75"
+					quality={100}
+				/>
+				<div
+					aria-hidden="true"
+					className="bg-primary/20 pointer-events-none absolute z-20 h-80 w-80 rounded-full blur-[150px]"
+				/>
+				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
+					<h1 className="text-muted-foreground leading-0 font-heading sm:fluid-4xl fluid-2xl w-full max-w-4xl text-center font-bold">
 						Unleash godlike power in your backend development
 					</h1>
 					<h2 className="font-heading sm:fluid-lg fluid-base text-muted-foreground mb-5 mt-7 items-center text-balance text-center font-normal !tracking-tight sm:inline-flex">
-						{/* <Image
+						<Image
 							src={MattPocockImage}
 							alt={config.author}
 							priority
@@ -80,7 +92,7 @@ const Home = async ({ searchParams }: Props) => {
 							width={32}
 							quality={100}
 							height={32}
-						/>{' '} */}
+						/>{' '}
 						Matt Pocock
 					</h2>
 				</div>
@@ -125,10 +137,10 @@ const Home = async ({ searchParams }: Props) => {
 					</>
 				) : (
 					<>
-						<PrimaryNewsletterCta className="mt-16" />
-						<div className="flex w-full items-center justify-center">
+						<PrimaryNewsletterCta className="pb-32 pt-10" />
+						{/* <div className="flex w-full items-center justify-center">
 							<Instructor className="sm:prose-lg prose mx-auto w-full max-w-none px-6 py-6 sm:py-16" />
-						</div>
+						</div> */}
 					</>
 				)}
 			</main>
