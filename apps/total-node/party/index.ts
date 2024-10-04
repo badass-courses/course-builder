@@ -43,7 +43,9 @@ export default class Server implements Party.Server {
 		const party = this.party
 
 		return onConnect(conn, this.party, {
+			persist: { mode: 'snapshot' },
 			async load() {
+				console.log('loading the party', party.id)
 				const tip = await db.query.contentResource.findFirst({
 					where: or(
 						eq(
@@ -54,10 +56,8 @@ export default class Server implements Party.Server {
 					),
 				})
 
-				console.log('tip', tip)
-
 				const doc = new Y.Doc()
-				if (tip?.fields?.body) {
+				if (tip?.fields?.body && doc.getText('codemirror').length === 0) {
 					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
 				return doc
@@ -118,42 +118,3 @@ export default class Server implements Party.Server {
 }
 
 Server satisfies Party.Worker
-
-export async function sanityQuery<T = any>(
-	query: string,
-	env: any,
-	options: { useCdn?: boolean; revalidate?: number } = {
-		useCdn: true,
-		revalidate: 10,
-	},
-): Promise<T> {
-	return await fetch(
-		`https://${env.SANITY_STUDIO_PROJECT_ID}.${options.useCdn ? 'apicdn' : 'api'}.sanity.io/v${
-			env.SANITY_STUDIO_API_VERSION
-		}/data/query/${env.SANITY_STUDIO_DATASET || 'production'}?query=${encodeURIComponent(query)}&perspective=published`,
-		{
-			method: 'get',
-			headers: {
-				Authorization: `Bearer ${env.SANITY_API_TOKEN}`,
-			},
-			next: { revalidate: options.revalidate }, //seconds
-		},
-	)
-		.then(async (response) => {
-			if (response.status !== 200) {
-				throw new Error(
-					`Sanity Query failed with status ${response.status}: ${response.statusText}\n\n\n${JSON.stringify(
-						await response.json(),
-						null,
-						2,
-					)})}`,
-				)
-			}
-			const { result } = await response.json()
-			return result as T
-		})
-		.catch((error) => {
-			console.error('FAAAAAAIIIILLLLL', error)
-			throw error
-		})
-}

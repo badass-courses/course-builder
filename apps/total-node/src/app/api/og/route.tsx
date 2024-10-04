@@ -1,6 +1,6 @@
 // EXAMPLE USAGE
-// with resource: https://pronextjs.dev/api/og?resource=[SLUG_OR_ID]
-// with custom title: https://pronextjs.dev/api/og?title=ANYTHING
+// with resource: /api/og?resource=[SLUG_OR_ID]
+// with custom title: /api/og?title=ANYTHING
 
 import { ImageResponse } from 'next/og'
 import { db } from '@/db'
