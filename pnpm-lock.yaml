@@ -4161,6 +4161,649 @@ importers:
         specifier: 5.4.5
         version: 5.4.5
 
+  apps/total-node:
+    dependencies:
+      '@amplitude/analytics-browser':
+        specifier: ^2.6.1
+        version: 2.6.1
+      '@amplitude/analytics-node':
+        specifier: ^1.3.6
+        version: 1.3.6
+      '@anthropic-ai/sdk':
+        specifier: ^0.17.1
+        version: 0.17.2(encoding@0.1.13)
+      '@atlaskit/button':
+        specifier: ^17.7.2
+        version: 17.7.2(@types/react@18.3.1)(react@18.3.1)
+      '@atlaskit/form':
+        specifier: ^9.1.0
+        version: 9.1.0(@types/react@18.3.1)(react@18.3.1)
+      '@atlaskit/modal-dialog':
+        specifier: ^12.10.10
+        version: 12.10.10(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@atlaskit/pragmatic-drag-and-drop':
+        specifier: ^1.1.3
+        version: 1.1.3
+      '@atlaskit/pragmatic-drag-and-drop-flourish':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react@18.3.1)(react@18.3.1)
+      '@atlaskit/pragmatic-drag-and-drop-hitbox':
+        specifier: ^1.0.3
+        version: 1.0.3
+      '@atlaskit/pragmatic-drag-and-drop-live-region':
+        specifier: ^1.0.3
+        version: 1.0.3
+      '@atlaskit/select':
+        specifier: ^17.3.4
+        version: 17.3.4(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@atlaskit/tokens':
+        specifier: ^1.42.1
+        version: 1.42.1(react@18.3.1)
+      '@auth/core':
+        specifier: ^0.30.0
+        version: 0.30.0(nodemailer@6.9.11)
+      '@aws-sdk/client-s3':
+        specifier: ^3.525.0
+        version: 3.535.0
+      '@aws-sdk/client-textract':
+        specifier: ^3.525.0
+        version: 3.535.0
+      '@aws-sdk/credential-providers':
+        specifier: ^3.525.0
+        version: 3.535.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.441.0
+        version: 3.535.0
+      '@casl/ability':
+        specifier: ^6.5.0
+        version: 6.7.0
+      '@code-hike/mdx':
+        specifier: ^0.9.0
+        version: 0.9.0(encoding@0.1.13)(react@18.3.1)
+      '@codemirror/lang-markdown':
+        specifier: ^6.2.3
+        version: 6.2.4
+      '@codemirror/language-data':
+        specifier: ^6.4.1
+        version: 6.4.1(@codemirror/view@6.28.5)
+      '@codemirror/search':
+        specifier: ^6.5.6
+        version: 6.5.6
+      '@codemirror/state':
+        specifier: ^6.4.1
+        version: 6.4.1
+      '@codemirror/view':
+        specifier: ^6.26.0
+        version: 6.28.5
+      '@coursebuilder/adapter-drizzle':
+        specifier: 0.5.1
+        version: link:../../packages/adapter-drizzle
+      '@coursebuilder/commerce-next':
+        specifier: ^0.0.7
+        version: link:../../packages/commerce-next
+      '@coursebuilder/core':
+        specifier: 0.2.3
+        version: link:../../packages/core
+      '@coursebuilder/email-templates':
+        specifier: ^1.0.3
+        version: link:../../packages/email-templates
+      '@coursebuilder/next':
+        specifier: workspace:^
+        version: link:../../packages/next
+      '@coursebuilder/ui':
+        specifier: ^1.0.16
+        version: link:../../packages/ui
+      '@designbycode/tailwindcss-text-stroke':
+        specifier: ^1.2.1
+        version: 1.2.1(tailwindcss@3.4.1)
+      '@fontsource/inter':
+        specifier: ^5.0.16
+        version: 5.0.17
+      '@headlessui/react':
+        specifier: ^1.6.1
+        version: 1.7.19(react-dom@18.3.1)(react@18.3.1)
+      '@heroicons/react':
+        specifier: ^2.0.18
+        version: 2.1.1(react@18.3.1)
+      '@hookform/resolvers':
+        specifier: ^3.3.2
+        version: 3.3.4(react-hook-form@7.51.0)
+      '@internationalized/date':
+        specifier: ^3.5.2
+        version: 3.5.2
+      '@lezer/highlight':
+        specifier: ^1.2.0
+        version: 1.2.0
+      '@mdx-js/loader':
+        specifier: ^3.0.1
+        version: 3.0.1(webpack@5.93.0)
+      '@mdx-js/mdx':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@mdx-js/react':
+        specifier: ^3.0.1
+        version: 3.0.1(@types/react@18.3.1)(react@18.3.1)
+      '@msgpack/msgpack':
+        specifier: 3.0.0-beta2
+        version: 3.0.0-beta2
+      '@mux/mux-player-react':
+        specifier: ^2.6.0
+        version: 2.6.0(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@next/mdx':
+        specifier: 14.2.5
+        version: 14.2.5(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
+      '@next/third-parties':
+        specifier: ^14.1.4
+        version: 14.1.4(next@14.2.5)(react@18.3.1)
+      '@pinecone-database/pinecone':
+        specifier: ^2.1.0
+        version: 2.1.0
+      '@planetscale/database':
+        specifier: 1.14.0
+        version: 1.14.0
+      '@radix-ui/colors':
+        specifier: ^3.0.0
+        version: 3.0.0
+      '@radix-ui/react-alert-dialog':
+        specifier: ^1.0.5
+        version: 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-collapsible':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-dialog':
+        specifier: ^1.0.5
+        version: 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-dropdown-menu':
+        specifier: ^2.0.6
+        version: 2.0.6(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-hover-card':
+        specifier: ^1.0.7
+        version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-icons':
+        specifier: ^1.3.0
+        version: 1.3.0(react@18.3.1)
+      '@radix-ui/react-label':
+        specifier: ^2.0.2
+        version: 2.0.2(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-popover':
+        specifier: ^1.0.7
+        version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-progress':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-separator':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-slider':
+        specifier: ^1.1.2
+        version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-slot':
+        specifier: ^1.0.2
+        version: 1.1.0(@types/react@18.3.1)(react@18.3.1)
+      '@radix-ui/react-switch':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-tabs':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-toast':
+        specifier: ^1.1.5
+        version: 1.1.5(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-toggle-group':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.0.7
+        version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@react-email/components':
+        specifier: ^0.0.22
+        version: 0.0.22(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      '@react-email/markdown':
+        specifier: ^0.0.11
+        version: 0.0.11(react@18.3.1)
+      '@react-email/render':
+        specifier: ^0.0.17
+        version: 0.0.17(react-dom@18.3.1)(react@18.3.1)
+      '@sanity/icons':
+        specifier: ^2.6.0
+        version: 2.11.2(react@18.3.1)
+      '@sentry/nextjs':
+        specifier: ^8
+        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.25.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.25.1)(encoding@0.1.13)(next@14.2.5)(react@18.3.1)(webpack@5.93.0)
+      '@sindresorhus/slugify':
+        specifier: ^2.2.1
+        version: 2.2.1
+      '@skillrecordings/analytics':
+        specifier: ^1.0.1
+        version: 1.0.1(next@14.2.5)(react@18.3.1)
+      '@skillrecordings/config':
+        specifier: ^0.0.3
+        version: 0.0.3
+      '@skillrecordings/time':
+        specifier: ^0.0.13
+        version: 0.0.13
+      '@t3-oss/env-nextjs':
+        specifier: ^0.7.1
+        version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
+      '@tanstack/react-query':
+        specifier: 5.54.1
+        version: 5.54.1(react@18.3.1)
+      '@tanstack/react-query-devtools':
+        specifier: 5.54.1
+        version: 5.54.1(@tanstack/react-query@5.54.1)(react@18.3.1)
+      '@tanstack/react-table':
+        specifier: ^8.17.3
+        version: 8.17.3(react-dom@18.3.1)(react@18.3.1)
+      '@tiptap/extension-highlight':
+        specifier: ^2.6.4
+        version: 2.6.4(@tiptap/core@2.6.4)
+      '@tiptap/extension-link':
+        specifier: ^2.6.4
+        version: 2.6.4(@tiptap/core@2.6.4)(@tiptap/pm@2.6.4)
+      '@tiptap/extension-typography':
+        specifier: ^2.6.4
+        version: 2.6.4(@tiptap/core@2.6.4)
+      '@tiptap/react':
+        specifier: ^2.6.4
+        version: 2.6.4(@tiptap/core@2.6.4)(@tiptap/pm@2.6.4)(react-dom@18.3.1)(react@18.3.1)
+      '@tiptap/starter-kit':
+        specifier: ^2.6.4
+        version: 2.6.4
+      '@trpc/client':
+        specifier: next
+        version: 11.0.0-rc.553(@trpc/server@11.0.0-rc.553)
+      '@trpc/next':
+        specifier: next
+        version: 11.0.0-rc.553(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.553)(@trpc/react-query@11.0.0-rc.553)(@trpc/server@11.0.0-rc.553)(next@14.2.5)(react-dom@18.3.1)(react@18.3.1)
+      '@trpc/react-query':
+        specifier: next
+        version: 11.0.0-rc.553(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.553)(@trpc/server@11.0.0-rc.553)(react-dom@18.3.1)(react@18.3.1)
+      '@trpc/server':
+        specifier: next
+        version: 11.0.0-rc.553
+      '@types/html-to-text':
+        specifier: ^9.0.4
+        version: 9.0.4
+      '@types/lodash':
+        specifier: ^4.14.200
+        version: 4.17.4
+      '@types/mdx':
+        specifier: ^2.0.10
+        version: 2.0.11
+      '@types/sanitize-html':
+        specifier: ^2.11.0
+        version: 2.11.0
+      '@types/shortid':
+        specifier: ^0.0.31
+        version: 0.0.31
+      '@types/uuid':
+        specifier: 9.0.8
+        version: 9.0.8
+      '@uiw/codemirror-themes':
+        specifier: ^4.21.24
+        version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
+      '@uploadthing/react':
+        specifier: 6.7.2
+        version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
+      '@upstash/ratelimit':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@upstash/redis':
+        specifier: ^1.28.4
+        version: 1.28.4
+      add:
+        specifier: ^2.0.6
+        version: 2.0.6
+      ai:
+        specifier: 3.0.19
+        version: 3.0.19(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(vue@3.4.32)(zod@3.22.4)
+      axios:
+        specifier: ^1.5.1
+        version: 1.6.8
+      base-64:
+        specifier: ^1.0.0
+        version: 1.0.0
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.0
+      cloudinary:
+        specifier: ^1.41.0
+        version: 1.41.3
+      clsx:
+        specifier: ^2.0.0
+        version: 2.1.0
+      cmdk:
+        specifier: ^0.2.0
+        version: 0.2.1(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      codemirror:
+        specifier: ^6.0.1
+        version: 6.0.1(@lezer/common@1.2.1)
+      crypto:
+        specifier: ^1.0.1
+        version: 1.0.1
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      date-fns-tz:
+        specifier: ^2.0.1
+        version: 2.0.1(date-fns@2.30.0)
+      dotenv-flow:
+        specifier: ^4.1.0
+        version: 4.1.0
+      drizzle-orm:
+        specifier: 0.31.0
+        version: 0.31.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.14.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1)
+      formik:
+        specifier: 2.2.9
+        version: 2.2.9(react@18.3.1)
+      framer-motion:
+        specifier: ^11
+        version: 11.1.7(react-dom@18.3.1)(react@18.3.1)
+      groq:
+        specifier: ^3.18.1
+        version: 3.34.0
+      holy-loader:
+        specifier: ^2.2.10
+        version: 2.2.10(react@18.3.1)
+      html-to-text:
+        specifier: ^9.0.5
+        version: 9.0.5
+      i:
+        specifier: ^0.3.7
+        version: 0.3.7
+      inngest:
+        specifier: ^3.22.5
+        version: 3.22.5(encoding@0.1.13)(next@14.2.5)(typescript@5.4.5)
+      intl-segmenter-polyfill:
+        specifier: ^0.4.4
+        version: 0.4.4
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
+      json-schema:
+        specifier: ^0.4.0
+        version: 0.4.0
+      liquidjs:
+        specifier: ^10.16.3
+        version: 10.16.3
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lucide-react:
+        specifier: ^0.288.0
+        version: 0.288.0(react@18.3.1)
+      memoize-one:
+        specifier: ^6.0.0
+        version: 6.0.0
+      mjml:
+        specifier: ^4.15.3
+        version: 4.15.3(encoding@0.1.13)
+      nanoid:
+        specifier: ^5.0.2
+        version: 5.0.6
+      next:
+        specifier: 14.2.5
+        version: 14.2.5(@babel/core@7.24.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1)(react@18.3.1)
+      next-auth:
+        specifier: 5.0.0-beta.17
+        version: 5.0.0-beta.17(next@14.2.5)(nodemailer@6.9.11)(react@18.3.1)
+      next-axiom:
+        specifier: ^1.1.1
+        version: 1.1.1(next@14.2.5)(react@18.3.1)
+      next-cloudinary:
+        specifier: ^6.5.1
+        version: 6.5.1(next@14.2.5)(react@18.3.1)
+      next-mdx-remote:
+        specifier: ^4.4.1
+        version: 4.4.1(react-dom@18.3.1)(react@18.3.1)
+      next-themes:
+        specifier: ^0.3
+        version: 0.3.0(react-dom@18.3.1)(react@18.3.1)
+      node-html-markdown:
+        specifier: ^1.3.0
+        version: 1.3.0
+      nodemailer:
+        specifier: ^6.7.2
+        version: 6.9.11
+      nodemailer-postmark-transport:
+        specifier: ^5.2.1
+        version: 5.3.0(nodemailer@6.9.11)
+      npm:
+        specifier: ^10.2.1
+        version: 10.5.0
+      openai:
+        specifier: ^4.28.4
+        version: 4.29.1(encoding@0.1.13)
+      openai-edge:
+        specifier: ^1.2.2
+        version: 1.2.2
+      partysocket:
+        specifier: 1.0.1
+        version: 1.0.1
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
+      prism-react-renderer:
+        specifier: ^2.2.0
+        version: 2.3.1(react@18.3.1)
+      query-string:
+        specifier: ^9.0.0
+        version: 9.0.0
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-aria:
+        specifier: ^3.32.1
+        version: 3.32.1(react-dom@18.3.1)(react@18.3.1)
+      react-countdown:
+        specifier: ^2.3.5
+        version: 2.3.5(react-dom@18.3.1)(react@18.3.1)
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-gravatar:
+        specifier: ^2.6.3
+        version: 2.6.3(react@18.3.1)
+      react-hook-form:
+        specifier: ^7.48.0
+        version: 7.51.0(react@18.3.1)
+      react-hot-toast:
+        specifier: ^2.4.1
+        version: 2.4.1(csstype@3.1.3)(react-dom@18.3.1)(react@18.3.1)
+      react-icons:
+        specifier: ^4.11.0
+        version: 4.12.0(react@18.3.1)
+      react-markdown:
+        specifier: ^9.0.0
+        version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
+      react-resizable-panels:
+        specifier: ^2.0.12
+        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+      react-stately:
+        specifier: ^3.30.1
+        version: 3.30.1(react@18.3.1)
+      react-use:
+        specifier: ^17.5.0
+        version: 17.5.0(react-dom@18.3.1)(react@18.3.1)
+      react-wrap-balancer:
+        specifier: ^0.2.4
+        version: 0.2.4(react@18.3.1)
+      rehype-raw:
+        specifier: ^6.1.1
+        version: 6.1.1
+      rehype-slug:
+        specifier: ^5.1.0
+        version: 5.1.0
+      resend:
+        specifier: ^3.2.0
+        version: 3.2.0
+      sanitize-html:
+        specifier: ^2.13.0
+        version: 2.13.0
+      satori:
+        specifier: ^0.10.9
+        version: 0.10.13
+      schema-dts:
+        specifier: ^1.1.2
+        version: 1.1.2(typescript@5.4.5)
+      shortid:
+        specifier: ^2.2.16
+        version: 2.2.16
+      srt-parser-2:
+        specifier: ^1.2.3
+        version: 1.2.3
+      styled-components:
+        specifier: ~5.2.3
+        version: 5.2.3(@babel/core@7.24.9)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)
+      superjson:
+        specifier: ^2.2.1
+        version: 2.2.1
+      swr:
+        specifier: ^2.2.4
+        version: 2.2.5(react@18.3.1)
+      tailwind-fluid-typography:
+        specifier: ^1.3.0
+        version: 1.3.0(tailwindcss@3.4.1)
+      tailwind-merge:
+        specifier: ^1.14.0
+        version: 1.14.0
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.1)
+      tailwindcss-radix:
+        specifier: ^2.8.0
+        version: 2.9.0
+      tiny-invariant:
+        specifier: ^1.3.1
+        version: 1.3.3
+      unified:
+        specifier: ^10.1.2
+        version: 10.1.2
+      uploadthing:
+        specifier: 6.13.2
+        version: 6.13.2(next@14.2.5)(tailwindcss@3.4.1)
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+      y-codemirror.jh:
+        specifier: 0.3.2-joel-fork
+        version: 0.3.2-joel-fork(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(yjs@13.6.14)
+      y-partykit:
+        specifier: ^0.0.28
+        version: 0.0.28
+      y-prosemirror:
+        specifier: ^1.2.2
+        version: 1.2.3(prosemirror-model@1.22.2)(prosemirror-state@1.4.3)(prosemirror-view@1.33.9)(y-protocols@1.0.6)(yjs@13.6.14)
+      y-protocols:
+        specifier: ^1.0.6
+        version: 1.0.6(yjs@13.6.14)
+      yjs:
+        specifier: ^13.6.10
+        version: 13.6.14
+      yup:
+        specifier: ^0.32.11
+        version: 0.32.11
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
+      zod-to-json-schema:
+        specifier: ^3.22.4
+        version: 3.22.5(zod@3.22.4)
+      zustand:
+        specifier: ^4.4.7
+        version: 4.5.2(@types/react@18.3.1)(react@18.3.1)
+    devDependencies:
+      '@mux/mux-node':
+        specifier: ^7.3.2
+        version: 7.3.5
+      '@tailwindcss/typography':
+        specifier: ^0.5.10
+        version: 0.5.10(tailwindcss@3.4.1)
+      '@types/base-64':
+        specifier: ^1.0.1
+        version: 1.0.2
+      '@types/eslint':
+        specifier: ^8.44.2
+        version: 8.56.5
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
+      '@types/json-schema':
+        specifier: ^7.0.14
+        version: 7.0.15
+      '@types/node':
+        specifier: ^20.12.5
+        version: 20.12.5
+      '@types/pluralize':
+        specifier: ^0.0.33
+        version: 0.0.33
+      '@types/react':
+        specifier: ^18.3.1
+        version: 18.3.1
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.0
+      '@types/react-gravatar':
+        specifier: ^2.6.13
+        version: 2.6.14
+      '@types/styled-components':
+        specifier: ^5.1.29
+        version: 5.1.34
+      autoprefixer:
+        specifier: ^10.4.14
+        version: 10.4.18(postcss@8.4.39)
+      concurrently:
+        specifier: ^8.2.2
+        version: 8.2.2
+      dotenv-cli:
+        specifier: ^7.3.0
+        version: 7.4.1
+      drizzle-kit:
+        specifier: ^0.22.1
+        version: 0.22.1
+      encoding:
+        specifier: ^0.1.13
+        version: 0.1.13
+      eslint:
+        specifier: ^8.47.0
+        version: 8.57.0
+      eslint-config-next:
+        specifier: 13.5.6
+        version: 13.5.6(eslint@8.57.0)(typescript@5.4.5)
+      mysql2:
+        specifier: ^3.6.1
+        version: 3.9.2
+      partykit:
+        specifier: 0.0.104
+        version: 0.0.104
+      postcss:
+        specifier: ^8.4.27
+        version: 8.4.39
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
+      prettier-plugin-tailwindcss:
+        specifier: ^0.5.12
+        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
+      shiki:
+        specifier: 1.1.7
+        version: 1.1.7
+      stripe:
+        specifier: 16.9.0
+        version: 16.9.0
+      tailwind-scrollbar:
+        specifier: ^3.0.0
+        version: 3.1.0(tailwindcss@3.4.1)
+      tailwindcss:
+        specifier: ^3.3.3
+        version: 3.4.1(ts-node@10.9.2)
+      tsx:
+        specifier: ^4.7.1
+        version: 4.7.1
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+
   apps/value-based-design:
     dependencies:
       '@amplitude/analytics-browser':
@@ -6742,7 +7385,7 @@ packages:
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - aws-crt
@@ -7192,7 +7835,7 @@ packages:
     resolution: {integrity: sha512-0pYVBnDKZO2fnSPCrgM/6WMc7eS20Fbok+0r88fp+YtWVLZrp4CkafFGIp+W0VKw4a22sgebPT99y+FDNMdP4w==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.24.0
+      '@babel/types': 7.24.9
 
   /@babel/helper-module-imports@7.24.7(supports-color@5.5.0):
     resolution: {integrity: sha512-8AyH3C+74cgCVVXow/myrynrAGv+nTVg5vKu2nZph9x7RcRwzmh0VFallJuFTZ9mx6u4eSdXZfcOzSqTUm0HCA==}
@@ -7557,7 +8200,7 @@ packages:
       '@babel/helper-hoist-variables': 7.22.5
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/parser': 7.24.0
-      '@babel/types': 7.24.0
+      '@babel/types': 7.24.9
       debug: 4.3.5(supports-color@5.5.0)
       globals: 11.12.0
     transitivePeerDependencies:
@@ -7922,20 +8565,6 @@ packages:
       - encoding
     dev: false
 
-  /@codemirror/autocomplete@6.15.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(@lezer/common@1.2.1):
-    resolution: {integrity: sha512-G2Zm0mXznxz97JhaaOdoEG2cVupn4JjPaS4AcNvZzhOsnnG9YVN68VzfoUw6dYTsIxT6a/cmoFEN47KAWhXaOg==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      '@lezer/common': ^1.0.0
-    dependencies:
-      '@codemirror/language': 6.10.2
-      '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.0
-      '@lezer/common': 1.2.1
-    dev: false
-
   /@codemirror/autocomplete@6.15.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1):
     resolution: {integrity: sha512-G2Zm0mXznxz97JhaaOdoEG2cVupn4JjPaS4AcNvZzhOsnnG9YVN68VzfoUw6dYTsIxT6a/cmoFEN47KAWhXaOg==}
     peerDependencies:
@@ -8140,8 +8769,8 @@ packages:
   /@codemirror/lang-python@6.1.4(@codemirror/view@6.26.0):
     resolution: {integrity: sha512-b6d1TDqrkCjFNvMO01SWldFiDoZ39yl3tDMC1Y5f8glA2eZpynPxJhwYVTlGFr0stizcJgrp6ojLEGH2myoZAw==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(@lezer/common@1.2.1)
-      '@codemirror/language': 6.10.2
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(@lezer/common@1.2.1)
+      '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
       '@lezer/common': 1.2.1
       '@lezer/python': 1.1.12
@@ -8172,7 +8801,7 @@ packages:
     resolution: {integrity: sha512-l/bdzIABvnTo1nzdY6U+kPAC51czYQcOErfzQ9zSm9D8GmNPD0WTW8st/CJwBTPLO8jlrbyvlSEcN20dc4iL0Q==}
     dependencies:
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.26.0)
-      '@codemirror/language': 6.10.2
+      '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
       '@lezer/common': 1.2.1
       '@lezer/sass': 1.0.5
@@ -8252,8 +8881,8 @@ packages:
   /@codemirror/lang-yaml@6.0.0(@codemirror/view@6.26.0):
     resolution: {integrity: sha512-fVPapdX1oYr5HMC5bou1MHscGnNCvOHuhUW6C+V2gfIeIRcughvVfznV0OuUyHy0AdXoBCjOehjzFcmLRumu2Q==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(@lezer/common@1.2.1)
-      '@codemirror/language': 6.10.2
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)(@lezer/common@1.2.1)
+      '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
       '@lezer/common': 1.2.1
       '@lezer/yaml': 1.0.2
@@ -16232,6 +16861,14 @@ packages:
       '@trpc/server': 11.0.0-rc.544
     dev: false
 
+  /@trpc/client@11.0.0-rc.553(@trpc/server@11.0.0-rc.553):
+    resolution: {integrity: sha512-ICgziilbuAslRgHIVJZ162KaHQRpHXA1C1LPRsNpxPa9aStPF7eThAjn4V3JmDyJsuDLQgAmqLVRImlLPMYR5Q==}
+    peerDependencies:
+      '@trpc/server': 11.0.0-rc.553+9b629cc67
+    dependencies:
+      '@trpc/server': 11.0.0-rc.553
+    dev: false
+
   /@trpc/next@11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@14.2.5)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-WZEJTavWlZ7akZx6mFds2PCBLuYnaYAmL1WzWO5m0hzku2gORoPXfKJc6R8lctn+jG5TH8KKHwjnEKAke9q4GQ==}
     peerDependencies:
@@ -16351,6 +16988,31 @@ packages:
       '@trpc/client': 11.0.0-rc.477(@trpc/server@11.0.0-rc.477)
       '@trpc/react-query': 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@18.3.1)(react@18.3.1)
       '@trpc/server': 11.0.0-rc.477
+      next: 14.2.5(@babel/core@7.24.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@trpc/next@11.0.0-rc.553(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.553)(@trpc/react-query@11.0.0-rc.553)(@trpc/server@11.0.0-rc.553)(next@14.2.5)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-1bIuG4nKYmTuVFqgsqSbOGgIz2LsUcb1wXrK1zlfikRQHhssSMmpXSLSANfZffs/6lbFLVs057XaS9LX5HmCsw==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.54.1
+      '@trpc/client': 11.0.0-rc.553+9b629cc67
+      '@trpc/react-query': 11.0.0-rc.553+9b629cc67
+      '@trpc/server': 11.0.0-rc.553+9b629cc67
+      next: '*'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    peerDependenciesMeta:
+      '@tanstack/react-query':
+        optional: true
+      '@trpc/react-query':
+        optional: true
+    dependencies:
+      '@tanstack/react-query': 5.54.1(react@18.3.1)
+      '@trpc/client': 11.0.0-rc.553(@trpc/server@11.0.0-rc.553)
+      '@trpc/react-query': 11.0.0-rc.553(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.553)(@trpc/server@11.0.0-rc.553)(react-dom@18.3.1)(react@18.3.1)
+      '@trpc/server': 11.0.0-rc.553
       next: 14.2.5(@babel/core@7.24.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -16483,6 +17145,22 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
+  /@trpc/react-query@11.0.0-rc.553(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.553)(@trpc/server@11.0.0-rc.553)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-m88HBhpfIDJccJCXycHtkGS82RG2TVPsZUFIWswR8m6ip5eFNmqWASanu7DiiFbY6sufLT1S8ee28towrPUgoA==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.54.1
+      '@trpc/client': 11.0.0-rc.553+9b629cc67
+      '@trpc/server': 11.0.0-rc.553+9b629cc67
+      react: '>=18.2.0'
+      react-dom: '>=18.2.0'
+    dependencies:
+      '@tanstack/react-query': 5.54.1(react@18.3.1)
+      '@trpc/client': 11.0.0-rc.553(@trpc/server@11.0.0-rc.553)
+      '@trpc/server': 11.0.0-rc.553
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
   /@trpc/server@11.0.0-rc.351:
     resolution: {integrity: sha512-Y1Iw9iiF9LCJ2ldS/af+2RXzIbgWvQ4DHVVgHYOGB+uINpAugsUmogoEkZ6rYOgusNz6qkRzY8JKOSR7FQ1aUg==}
 
@@ -16512,6 +17190,10 @@ packages:
 
   /@trpc/server@11.0.0-rc.544:
     resolution: {integrity: sha512-Hv7w6PV9MQgD+TzX1LI1P1E2siweQaf4fS/xW+b6NCC15REgcYuWNPu69YFFpwcdkl3PuAkh+DL/0NPUpHdiHg==}
+    dev: false
+
+  /@trpc/server@11.0.0-rc.553:
+    resolution: {integrity: sha512-pYUhxV3QU834jP1ugJk1uhtPwwaY1ymIuupb4DiWOhNCl68syuXPlUdD8IYsYKd3BjLkmnjlsOUMoyd/aoOF/Q==}
     dev: false
 
   /@tsconfig/node10@1.0.11:
@@ -22229,7 +22911,7 @@ packages:
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.3.6
-      minimatch: 9.0.3
+      minimatch: 9.0.5
       minipass: 7.0.4
       path-scurry: 1.10.1
 
@@ -22240,7 +22922,7 @@ packages:
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.3.6
-      minimatch: 9.0.3
+      minimatch: 9.0.5
       minipass: 7.0.4
       path-scurry: 1.10.1
     dev: false
@@ -26222,7 +26904,6 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       brace-expansion: 2.0.1
-    dev: false
 
   /minimist-options@4.1.0:
     resolution: {integrity: sha512-Q4r8ghd80yhO/0j1O3B2BjweX3fiHg9cdOwjJd2J76Q135c+NDxGCqdYKQ1SKBuFfgWbAUzBfvYjPUEeNgqN1A==}
@@ -26305,7 +26986,7 @@ packages:
       html-minifier: 4.0.0
       js-beautify: 1.15.1
       lodash: 4.17.21
-      minimatch: 9.0.3
+      minimatch: 9.0.5
       mjml-core: 4.15.3(encoding@0.1.13)
       mjml-migrate: 4.15.3(encoding@0.1.13)
       mjml-parser-xml: 4.15.3
