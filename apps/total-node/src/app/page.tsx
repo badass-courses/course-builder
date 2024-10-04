@@ -85,12 +85,13 @@ const Home = async ({ searchParams }: Props) => {
 					</h1>
 					<h2 className="font-heading sm:fluid-lg fluid-base text-muted-foreground mb-5 mt-7 items-center text-balance text-center font-normal !tracking-tight sm:inline-flex">
 						<Image
-							src={MattPocockImage}
+							src={
+								'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
+							}
 							alt={config.author}
 							priority
 							className="ml-2 mr-1 inline-block rounded-full"
 							width={32}
-							quality={100}
 							height={32}
 						/>{' '}
 						Matt Pocock

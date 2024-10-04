@@ -11,10 +11,13 @@ export const Contributor: React.FC<{ className?: string }> = ({
 	return (
 		<div className={cn('flex items-center gap-2 font-normal', className)}>
 			<Image
-				src={require('../../../public/matt-pocock.jpg')}
+				src={
+					'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
+				}
 				alt={config.author}
 				width={40}
 				height={40}
+				priority
 				className="rounded-full"
 			/>
 			<span className="text-muted-foreground">{config.author}</span>
