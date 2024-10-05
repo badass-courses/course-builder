@@ -4,12 +4,14 @@ import * as React from 'react'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { MobileEditPostForm } from '@/app/(content)/posts/_components/edit-post-form-mobile'
 import { onPostSave } from '@/app/(content)/posts/[slug]/edit/actions'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -82,6 +84,38 @@ export function EditPostForm({
 			user={session?.data?.user}
 			onSave={onPostSave}
 			theme={theme}
+			tools={[
+				{ id: 'assistant' },
+				{
+					id: 'media',
+					icon: () => (
+						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<ImageResourceUploader
+							key={'image-uploader'}
+							belongsToResourceId={post.id}
+							uploadDirectory={`posts`}
+						/>
+					),
+				},
+				{
+					id: 'resources',
+					icon: () => (
+						<ListOrderedIcon
+							strokeWidth={1.5}
+							size={24}
+							width={18}
+							height={18}
+						/>
+					),
+					toolComponent: (
+						<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
+							TODO
+						</div>
+					),
+				},
+			]}
 		>
 			<PostMetadataFormFields
 				form={form}

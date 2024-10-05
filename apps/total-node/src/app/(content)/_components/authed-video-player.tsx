@@ -98,7 +98,7 @@ export function AuthedVideoPlayer({
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
-		accentColor: '#3D63DD',
+		accentColor: '#DD9637',
 		currentTime: time ? Number(time) : 0,
 		playbackRate,
 		onRateChange: (evt: Event) => {
