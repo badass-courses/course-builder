@@ -81,6 +81,7 @@ export async function getPost(slug: string): Promise<Post | null> {
 				with: {
 					tag: true,
 				},
+				orderBy: asc(contentResourceTagTable.position),
 			},
 			resources: {
 				with: {
@@ -109,6 +110,14 @@ export const getCachedAllPosts = unstable_cache(
 export async function getAllPosts(): Promise<Post[]> {
 	const posts = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'post'),
+		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
@@ -137,6 +146,14 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 			eq(contentResource.type, 'post'),
 			eq(contentResource.createdById, userId),
 		),
+		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
