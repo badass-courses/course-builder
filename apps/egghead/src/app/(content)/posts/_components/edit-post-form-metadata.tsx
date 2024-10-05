@@ -128,7 +128,7 @@ export const PostMetadataFormFields: React.FC<{
 				name="fields.postType"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Type</FormLabel>
+						<FormLabel className="text-lg font-bold">Type</FormLabel>
 						<Select onValueChange={field.onChange} defaultValue={field.value}>
 							<FormControl>
 								<SelectTrigger>
@@ -166,6 +166,7 @@ export const PostMetadataFormFields: React.FC<{
 				)}
 			/>
 			<div className="px-5">
+				<FormLabel className="text-lg font-bold">Tags</FormLabel>
 				<AdvancedTagSelector
 					availableTags={tags}
 					selectedTags={post.tags.map((tag) => tag.tag)}
