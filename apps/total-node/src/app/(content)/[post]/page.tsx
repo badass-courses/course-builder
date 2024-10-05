@@ -6,17 +6,23 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
+import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import { courseBuilderAdapter } from '@/db'
 import { type Post } from '@/lib/posts'
 import { getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
+import { cn } from '@/utils/cn'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
+
+import { PostPlayer } from '../posts/_components/post-player'
+import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
 type Props = {
 	params: { post: string }
@@ -74,7 +80,7 @@ async function Post({ postLoader }: { postLoader: Promise<Post | null> }) {
 	}
 
 	return (
-		<article className="prose sm:prose-lg mt-10 max-w-none border-t pt-10">
+		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
 			{post.fields.body && (
 				<MDXRemote
 					source={post.fields.body}
@@ -130,11 +136,12 @@ export default async function PostPage({
 
 	return (
 		<main>
-			<div className="container max-w-4xl pb-24 pt-10">
+			<PlayerContainer postLoader={postLoader} />
+			<div className="container max-w-screen-xl pb-24">
 				<div className="flex w-full items-center justify-between">
 					<Link
 						href="/posts"
-						className="text-primary mb-3 inline-flex text-sm hover:underline"
+						className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
 					>
 						← Posts
 					</Link>
@@ -142,11 +149,18 @@ export default async function PostPage({
 						<PostActionBar postLoader={postLoader} />
 					</Suspense>
 				</div>
-				<article>
-					<PostTitle postLoader={postLoader} />
-					<Contributor />
-					<Post postLoader={postLoader} />
-				</article>
+				<div>
+					<article className="flex h-full grid-cols-12 flex-col gap-5 md:grid">
+						<div className="col-span-8">
+							<PostTitle postLoader={postLoader} />
+							<Contributor className="flex md:hidden [&_img]:w-8" />
+							<Post postLoader={postLoader} />
+						</div>
+						<aside className="relative col-span-2 col-start-10 flex h-full flex-col pt-24">
+							<Contributor className="hidden md:flex" />
+						</aside>
+					</article>
+				</div>
 			</div>
 			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 				<section id="buy">
@@ -165,8 +179,45 @@ export default async function PostPage({
 					</div>
 				</section>
 			) : (
-				<PrimaryNewsletterCta />
+				<PrimaryNewsletterCta className="pb-20" />
 			)}
 		</main>
+	)
+}
+
+async function PlayerContainer({
+	postLoader,
+}: {
+	postLoader: Promise<Post | null>
+}) {
+	const post = await postLoader
+	const displayOverlay = false
+
+	if (!post) {
+		notFound()
+	}
+
+	const resource = post.resources?.[0]?.resource.id
+
+	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
+
+	return videoResource ? (
+		<Suspense fallback={<PlayerContainerSkeleton />}>
+			<section
+				aria-label="video"
+				className="mb-10 flex flex-col items-center justify-center border-b bg-black"
+			>
+				<PostPlayer
+					className="h-full max-h-[75vh] w-full overflow-hidden"
+					videoResource={videoResource}
+				/>
+				{!ckSubscriber && <PostNewsletterCta />}
+			</section>
+		</Suspense>
+	) : (
+		// spacer
+		<div className="pt-16" />
 	)
 }

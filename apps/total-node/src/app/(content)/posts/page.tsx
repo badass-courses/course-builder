@@ -57,6 +57,10 @@ export default async function PostsIndexPage() {
 								post={latestPost}
 								className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-muted-foreground h-full w-full md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
 							/>
+							<div
+								className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
+								aria-hidden="true"
+							/>
 						</div>
 					) : (
 						<h1 className="flex w-full py-16 text-center text-2xl">

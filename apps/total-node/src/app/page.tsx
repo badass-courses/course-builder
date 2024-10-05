@@ -58,9 +58,7 @@ type Props = {
 const Home = async ({ searchParams }: Props) => {
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
-	const page = await getPage(
-		allowPurchase ? 'home-selling-live~pmxxy' : 'page-16xsv',
-	)
+	const page = await getPage(allowPurchase ? 'home-6z2ir' : 'home-6z2ir')
 
 	return (
 		<div className="">

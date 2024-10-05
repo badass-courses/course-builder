@@ -9,13 +9,8 @@ export default async function AdminDashboardPage() {
 	}
 
 	return (
-		<main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-			<div className="flex items-center">
-				<h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
-			</div>
-			<div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
-				*coming soon*
-			</div>
+		<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5 pt-10 lg:gap-10">
+			<h1 className="fluid-3xl font-heading font-bold">Coming Soon</h1>
 		</main>
 	)
 }
