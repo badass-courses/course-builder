@@ -17,6 +17,7 @@ export const ContentResourceSchema = z.object({
 	id: z.string(),
 	type: z.string(),
 	createdById: z.string(),
+	currentVersionId: z.string().nullish(),
 	fields: z.record(z.string(), z.any()).default({}).nullable().optional(),
 	createdAt: z.coerce.date().nullable(),
 	updatedAt: z.coerce.date().nullable(),

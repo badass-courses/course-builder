@@ -37,6 +37,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			gitpod: z.string().nullish(),
 		}),
 		tags: z.array(z.any()),
+		currentVersionId: z.string().nullish(),
 	}),
 )
 

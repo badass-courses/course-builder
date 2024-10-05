@@ -12,6 +12,7 @@ import { getContentContributionsSchema } from './content-contributions.js'
 import { getContentResourceProductSchema } from './content-resource-product.js'
 import { getContentResourceResourceSchema } from './content-resource-resource.js'
 import { getContentResourceTagSchema } from './content-resource-tag.js'
+import { getContentResourceVersionSchema } from './content-resource-version.js'
 import { getTagSchema } from './tag.js'
 
 export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
@@ -22,6 +23,7 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 			type: varchar('type', { length: 255 }).notNull(),
 			createdById: varchar('createdById', { length: 255 }).notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
+			currentVersionId: varchar('currentVersionId', { length: 255 }),
 			createdAt: timestamp('createdAt', {
 				mode: 'date',
 				fsp: 3,
@@ -39,6 +41,9 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 			typeIdx: index('type_idx').on(cm.type),
 			createdByIdx: index('createdById_idx').on(cm.createdById),
 			createdAtIdx: index('createdAt_idx').on(cm.createdAt),
+			currentVersionIdIdx: index('currentVersionId_idx').on(
+				cm.currentVersionId,
+			),
 		}),
 	)
 }
@@ -50,6 +55,7 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentResourceProduct = getContentResourceProductSchema(mysqlTable)
 	const contentContributions = getContentContributionsSchema(mysqlTable)
 	const contentResourceTag = getContentResourceTagSchema(mysqlTable)
+	const contentResourceVersion = getContentResourceVersionSchema(mysqlTable)
 	const tag = getTagSchema(mysqlTable)
 	return relations(contentResource, ({ one, many }) => ({
 		createdBy: one(users, {
@@ -66,5 +72,11 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 		contributions: many(contentContributions, {
 			relationName: 'contributions',
 		}),
+		currentVersion: one(contentResourceVersion, {
+			fields: [contentResource.currentVersionId],
+			references: [contentResourceVersion.id],
+			relationName: 'currentVersionResource',
+		}),
+		versions: many(contentResourceVersion, { relationName: 'resource' }),
 	}))
 }

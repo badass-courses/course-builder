@@ -9,6 +9,7 @@ import {
 	contentResource,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
+	contentResourceVersion as contentResourceVersionTable,
 	contributionTypes,
 	users,
 } from '@/db/schema'
@@ -21,6 +22,8 @@ import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import 'server-only'
+
+import { v4 } from 'uuid'
 
 import { EggheadTag, EggheadTagSchema } from './tags'
 
@@ -70,8 +73,39 @@ export const getCachedPost = unstable_cache(
 	{ revalidate: 3600 },
 )
 
+async function createNewPostVersion(post: Post | null, createdById?: string) {
+	if (!post) return null
+	const currentVersion = post?.currentVersionId
+		? await db.query.contentResourceVersion.findFirst({
+				where: eq(contentResourceVersionTable.id, post.currentVersionId),
+			})
+		: null
+	const versionId = `version~${guid()}`
+	await db.transaction(async (trx) => {
+		await trx.insert(contentResourceVersionTable).values({
+			id: versionId,
+			resourceId: post.id,
+			parentVersionId: currentVersion ? currentVersion.id : null,
+			versionNumber: currentVersion ? currentVersion.versionNumber + 1 : 1,
+			fields: {
+				...post.fields,
+			},
+			createdAt: new Date(),
+			createdById: createdById ? createdById : post.createdById,
+		})
+
+		post.currentVersionId = versionId
+
+		await trx
+			.update(contentResource)
+			.set({ currentVersionId: versionId })
+			.where(eq(contentResource.id, post.id))
+	})
+	return post
+}
+
 export async function getPost(slug: string): Promise<Post | null> {
-	const post = await db.query.contentResource.findFirst({
+	const postData = await db.query.contentResource.findFirst({
 		where: or(
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
 			eq(contentResource.id, slug),
@@ -92,13 +126,19 @@ export async function getPost(slug: string): Promise<Post | null> {
 		},
 	})
 
-	const postParsed = PostSchema.safeParse(post)
-	if (!postParsed.success) {
-		console.error('Error parsing post', postParsed.error)
+	const parsedPost = PostSchema.safeParse(postData)
+	if (!parsedPost.success) {
+		console.error('Error parsing post', parsedPost.error)
 		return null
 	}
 
-	return postParsed.data
+	const post = parsedPost.data
+
+	if (!post.currentVersionId) {
+		await createNewPostVersion(post)
+	}
+
+	return post
 }
 
 export const getCachedAllPosts = unstable_cache(
@@ -239,6 +279,8 @@ export async function createPost(input: NewPost) {
 
 	const post = await getPost(newPostId)
 
+	await createNewPostVersion(post)
+
 	if (post && input?.videoResourceId) {
 		await db
 			.insert(contentResourceResource)
@@ -291,8 +333,6 @@ export async function updatePost(
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	revalidateTag('posts')
-
 	let lessonState = 'approved'
 
 	switch (action) {
@@ -310,7 +350,7 @@ export async function updatePost(
 		)
 	}
 
-	return courseBuilderAdapter.updateContentResourceFields({
+	await courseBuilderAdapter.updateContentResourceFields({
 		id: currentPost.id,
 		fields: {
 			...currentPost.fields,
@@ -318,6 +358,14 @@ export async function updatePost(
 			slug: postSlug,
 		},
 	})
+
+	revalidateTag('posts')
+
+	const post = await getPost(currentPost.id)
+
+	await createNewPostVersion(post, user.id)
+
+	return post
 }
 
 export async function removeLegacyTaggingsOnEgghead(postId: string) {

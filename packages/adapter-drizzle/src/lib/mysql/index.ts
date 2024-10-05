@@ -170,6 +170,10 @@ import {
 	getContentResourceTagSchema,
 } from './schemas/content/content-resource-tag.js'
 import {
+	getContentResourceVersionRelationsSchema,
+	getContentResourceVersionSchema,
+} from './schemas/content/content-resource-version.js'
+import {
 	getContentResourceRelationsSchema,
 	getContentResourceSchema,
 } from './schemas/content/content-resource.js'
@@ -234,6 +238,9 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contentContributionRelations:
 			getContentContributionRelationsSchema(mysqlTable),
 		contentResource: getContentResourceSchema(mysqlTable),
+		contentResourceVersion: getContentResourceVersionSchema(mysqlTable),
+		contentResourceVersionRelations:
+			getContentResourceVersionRelationsSchema(mysqlTable),
 		contentResourceRelations: getContentResourceRelationsSchema(mysqlTable),
 		contentResourceResource: getContentResourceResourceSchema(mysqlTable),
 		contentResourceResourceRelations:
