@@ -64,7 +64,13 @@
 		--card-foreground: 32 5% 90%;
 		--popover: 32 10% 5%;
 		--popover-foreground: 32 5% 90%;
-		--primary: 32 100% 64%;
+		/* @supports not (color: color(display-p3 1 1 1)) { */
+		--primary: 32 100% 64%; /* hsl */
+		/* } */
+		/* @supports (color: color(display-p3 1 1 1)) { */
+		/* oklch p3 */
+		/* --primary: 80.66% 0.1769 66.73;  */
+		/* } */
 		--primary-foreground: 0 0% 0%;
 		--secondary: 0 0% 11%;
 		--secondary-foreground: 0 0% 100%;

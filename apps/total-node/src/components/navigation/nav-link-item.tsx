@@ -28,9 +28,9 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 			<LinkOrButton
 				href={href}
 				className={cn(
-					'fluid-base text-muted-foreground relative flex h-full items-center px-4 font-medium brightness-125 transition',
+					'text-foreground-muted relative flex h-full items-center px-4 text-sm font-light transition',
 					{
-						'': isActive,
+						'brightness-125': isActive,
 					},
 					className,
 				)}

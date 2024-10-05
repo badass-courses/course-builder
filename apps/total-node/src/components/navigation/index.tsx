@@ -47,7 +47,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background font-heading relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
+				'bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
 				{
 					'sticky top-0': !params.lesson,
 					// 'border-b': !isEditRoute,
@@ -67,14 +67,14 @@ const Navigation = () => {
 						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-4 text-lg font-semibold leading-none transition"
 					>
 						<LogoMark className="w-8" />
-						<span className="text-muted-foreground fluid-base font-bold !leading-none">
+						<span className="text-muted-foreground text-[1.0625rem] font-bold !leading-none">
 							Total Node
 						</span>
 					</Link>
 				</span>
 				<hr
 					aria-hidden="true"
-					className="bg-muted-foreground/50 mx-2 my-auto flex h-2 w-px"
+					className="bg-muted-foreground/50 mx-2 my-auto hidden h-2 w-px sm:flex"
 				/>
 				{links.length > 0 && (
 					<nav
@@ -83,7 +83,13 @@ const Navigation = () => {
 					>
 						<ul className="flex items-stretch">
 							{links.map((link) => {
-								return <NavLinkItem key={link.href || link.label} {...link} />
+								return (
+									<NavLinkItem
+										className="font-heading text-[18px] font-semibold"
+										key={link.href || link.label}
+										{...link}
+									/>
+								)
 							})}
 						</ul>
 					</nav>
@@ -145,7 +151,16 @@ const MobileNav = ({
 				}}
 			>
 				{!isMobileMenuOpen ? (
-					<Menu className="h-5 w-5" />
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 16 16"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<line y1="4.5" x2="16" y2="4.5" stroke="currentColor" />
+						<line y1="11.5" x2="16" y2="11.5" stroke="currentColor" />
+					</svg>
 				) : (
 					<X className="h-5 w-5" />
 				)}

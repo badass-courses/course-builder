@@ -1,7 +1,7 @@
 import React from 'react'
-import Link from 'next/link'
+import { FileText, Mail, TicketIcon } from 'lucide-react'
 
-import { Badge } from '@coursebuilder/ui'
+import { NavItem } from './pages/_components/nav-link'
 
 const AdminLayout: React.FC<
 	React.PropsWithChildren<{
@@ -14,42 +14,28 @@ const AdminLayout: React.FC<
 		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
 			<div className="bg-muted/40 hidden border-r md:block">
 				<div className="flex h-full max-h-screen flex-col gap-2">
-					<div className="flex-1">
-						<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-							<Link
-								href="/admin/dashboard"
-								className="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
-								prefetch={false}
-							>
-								<HomeIcon className="h-4 w-4" />
-								Dashboard
-							</Link>
-							<Link
-								href="/admin/coupons"
-								className="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
-								prefetch={false}
-							>
-								<HomeIcon className="h-4 w-4" />
-								Coupons
-							</Link>
-							<Link
-								href="/admin/pages"
-								className="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
-								prefetch={false}
-							>
-								<HomeIcon className="h-4 w-4" />
-								Pages
-							</Link>
-							<Link
-								href="/admin/emails"
-								className="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
-								prefetch={false}
-							>
-								<HomeIcon className="h-4 w-4" />
-								Emails
-							</Link>
-						</nav>
-					</div>
+					<nav className="">
+						<ul>
+							<li className="divide-border flex flex-col divide-y">
+								<NavItem href="/admin">
+									<HomeIcon className="h-4 w-4" />
+									Dashboard
+								</NavItem>
+								<NavItem href="/admin/pages">
+									<FileText className="h-4 w-4" />
+									Pages
+								</NavItem>
+								<NavItem href="/admin/coupons">
+									<TicketIcon className="h-4 w-4" />
+									Coupons
+								</NavItem>
+								<NavItem href="/admin/emails">
+									<Mail className="h-4 w-4" />
+									Emails
+								</NavItem>
+							</li>
+						</ul>
+					</nav>
 				</div>
 			</div>
 			<div className="flex flex-col">{children}</div>
