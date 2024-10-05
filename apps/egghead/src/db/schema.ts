@@ -28,6 +28,8 @@ export const {
 	contentContributionRelations,
 	contentResource,
 	contentResourceRelations,
+	contentResourceVersion,
+	contentResourceVersionRelations,
 	contentResourceResource,
 	contentResourceResourceRelations,
 	contributionTypes,

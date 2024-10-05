@@ -255,6 +255,7 @@ export async function runBasicTests(options: TestOptions) {
 		const resource = {
 			id: id(),
 			type: 'tip',
+			currentVersionId: null,
 			createdById: user.id,
 			createdAt: new Date(),
 			deletedAt: null,

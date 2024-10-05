@@ -46,6 +46,8 @@ export const {
 	contentResource,
 	contentResourceRelations,
 	contentResourceResource,
+	contentResourceVersion,
+	contentResourceVersionRelations,
 	contentResourceResourceRelations,
 	contributionTypes,
 	contributionTypesRelations,
