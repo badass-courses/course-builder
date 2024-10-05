@@ -5,9 +5,9 @@ import { coursebuilder } from '@/coursebuilder/course-builder-config'
 import { getAllEggheadTags } from '@/lib/tags-query'
 
 export const metadata: Metadata = {
-	title: 'egghead Course Builder',
+	title: 'egghead Post Builder',
 	description:
-		'egghead Course Builder for building egghead courses with Course Builder',
+		'egghead Post Builder for building egghead courses with Course Builder',
 }
 
 export default async function PlaygroundPage() {

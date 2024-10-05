@@ -17,7 +17,6 @@ import {
 } from '@coursebuilder/ui'
 
 import TagCrudDialog from './tag-crud-dialog'
-import AdvancedTagSelector from './tag-selector'
 
 // Custom debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -86,7 +85,6 @@ export default function TagManagement({
 				<h1 className="mb-8 text-3xl font-bold text-gray-800">
 					Tag Management
 				</h1>
-				<AdvancedTagSelector availableTags={filteredTags()} />
 
 				<div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
 					<div className="relative w-full sm:w-64">

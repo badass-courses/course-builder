@@ -19,11 +19,17 @@ import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
+import {
+	POST_UPDATED_EVENT,
+	PostUpdated,
+} from './functions/sync-post-to-egghead'
+
 // Create a client to send and receive events
 export type Events = {
 	[IMAGE_RESOURCE_CREATED_EVENT]: ImageResourceCreated
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 	[USER_CREATED_EVENT]: UserCreated
+	[POST_UPDATED_EVENT]: PostUpdated
 }
 
 const callbackBase =

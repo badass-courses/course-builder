@@ -41,7 +41,7 @@ export function getTagRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentResourceTag = getContentResourceTagSchema(mysqlTable)
 	const tagTag = getTagTagSchema(mysqlTable)
 	return relations(tag, ({ many }) => ({
-		contentResources: many(contentResourceTag),
+		resources: many(contentResourceTag, { relationName: 'contentResource' }),
 		parentTags: many(tagTag, { relationName: 'childTag' }),
 		childTags: many(tagTag, { relationName: 'parentTag' }),
 	}))

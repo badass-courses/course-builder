@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
+import { EggheadTag } from '@/lib/tags'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -30,6 +31,7 @@ const NewPostFormSchema = z.object({
 export type EditPostFormProps = {
 	post: Post
 	videoResourceLoader: Promise<VideoResource | null>
+	tagLoader: Promise<EggheadTag[]>
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
@@ -39,6 +41,7 @@ export type EditPostFormProps = {
 export function EditPostForm({
 	post,
 	videoResourceLoader,
+	tagLoader,
 }: Omit<EditPostFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
@@ -63,6 +66,7 @@ export function EditPostForm({
 		<MobileEditPostForm
 			post={post}
 			form={form}
+			tagLoader={tagLoader}
 			videoResourceLoader={videoResourceLoader}
 			availableWorkflows={[
 				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
@@ -86,6 +90,7 @@ export function EditPostForm({
 			<PostMetadataFormFields
 				form={form}
 				videoResourceLoader={videoResourceLoader}
+				tagLoader={tagLoader}
 				post={post}
 			/>
 		</EditResourcesFormDesktop>

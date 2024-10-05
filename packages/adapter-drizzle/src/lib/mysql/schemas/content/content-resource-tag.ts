@@ -48,10 +48,12 @@ export function getContentResourceTagRelationsSchema(mysqlTable: MySqlTableFn) {
 		contentResource: one(contentResource, {
 			fields: [contentResourceTag.contentResourceId],
 			references: [contentResource.id],
+			relationName: 'contentResource',
 		}),
 		tag: one(tag, {
 			fields: [contentResourceTag.tagId],
 			references: [tag.id],
+			relationName: 'tag',
 		}),
 	}))
 }

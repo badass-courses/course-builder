@@ -8,6 +8,7 @@ import {
 	contentContributions,
 	contentResource,
 	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
 	contributionTypes,
 	users,
 } from '@/db/schema'
@@ -18,6 +19,10 @@ import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
+
+import 'server-only'
+
+import { EggheadTag, EggheadTagSchema } from './tags'
 
 export async function deletePost(id: string) {
 	const { session, ability } = await getServerAuthSession()
@@ -72,6 +77,11 @@ export async function getPost(slug: string): Promise<Post | null> {
 			eq(contentResource.id, slug),
 		),
 		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+			},
 			resources: {
 				with: {
 					resource: true,
@@ -83,7 +93,7 @@ export async function getPost(slug: string): Promise<Post | null> {
 
 	const postParsed = PostSchema.safeParse(post)
 	if (!postParsed.success) {
-		console.error('Error parsing post', postParsed)
+		console.error('Error parsing post', postParsed.error)
 		return null
 	}
 
@@ -291,4 +301,68 @@ export async function updatePost(
 			slug: postSlug,
 		},
 	})
+}
+
+export async function removeLegacyTaggingsOnEgghead(postId: string) {
+	const post = await getPost(postId)
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	return eggheadPgQuery(
+		`DELETE FROM taggings WHERE taggings.taggable_id = ${post.fields.eggheadLessonId}`,
+	)
+}
+
+export async function writeLegacyTaggingsToEgghead(postId: string) {
+	const post = await getPost(postId)
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	// just wipe them and rewrite, no need to be smart
+	await removeLegacyTaggingsOnEgghead(postId)
+
+	let query = ``
+
+	for (const tag of post.tags.map((tag) => tag.tag)) {
+		const tagId = Number(tag.id.split('_')[1])
+		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at) 
+					VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'tags', NOW(), NOW());
+		`
+	}
+	Boolean(query) && (await eggheadPgQuery(query))
+}
+
+export async function getPostTags(postId: string): Promise<EggheadTag[]> {
+	const tags = await db.query.contentResourceTag.findMany({
+		where: eq(contentResourceTagTable.contentResourceId, postId),
+		with: {
+			tag: true,
+		},
+	})
+
+	return z.array(EggheadTagSchema).parse(tags.map((tag) => tag.tag))
+}
+
+export async function addTagToPost(postId: string, tagId: string) {
+	await db.insert(contentResourceTagTable).values({
+		contentResourceId: postId,
+		tagId,
+	})
+	await writeLegacyTaggingsToEgghead(postId)
+}
+
+export async function removeTagFromPost(postId: string, tagId: string) {
+	await db
+		.delete(contentResourceTagTable)
+		.where(
+			and(
+				eq(contentResourceTagTable.contentResourceId, postId),
+				eq(contentResourceTagTable.tagId, tagId),
+			),
+		)
+	await writeLegacyTaggingsToEgghead(postId)
 }
