@@ -15,10 +15,17 @@ export const PostVisibilitySchema = z.union([
 	z.literal('unlisted'),
 ])
 
+export const PostTypeSchema = z.union([
+	z.literal('article'),
+	z.literal('lesson'),
+	z.literal('podcast'),
+])
+
 export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			title: z.string(),
+			postType: PostTypeSchema.default('lesson'),
 			summary: z.string().optional().nullable(),
 			body: z.string().nullable().optional(),
 			state: PostStateSchema.default('draft'),
@@ -46,6 +53,7 @@ export const PostUpdateSchema = z.object({
 	id: z.string(),
 	fields: z.object({
 		title: z.string().min(2).max(90),
+		postType: PostTypeSchema.optional().default('lesson'),
 		body: z.string().optional().nullable(),
 	}),
 })

@@ -21,6 +21,7 @@ import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-
 
 const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
+	postType: z.enum(['lesson', 'article', 'podcast']),
 	body: z.string().nullish(),
 	visibility: z.enum(['public', 'unlisted', 'private']),
 	description: z.string().nullish(),
@@ -51,6 +52,7 @@ export function EditPostForm({
 			id: post.id,
 			fields: {
 				title: post.fields?.title,
+				postType: post.fields?.postType || 'lesson',
 				body: post.fields?.body,
 				visibility: post.fields?.visibility || 'unlisted',
 				state: post.fields?.state || 'draft',

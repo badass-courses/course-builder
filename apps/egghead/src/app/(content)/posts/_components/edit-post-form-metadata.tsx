@@ -6,7 +6,7 @@ import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
 import AdvancedTagSelector from '@/components/resources-crud/tag-selector'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
-import { Post, PostSchema } from '@/lib/posts'
+import { Post, PostSchema, PostTypeSchema } from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { RefreshCcw } from 'lucide-react'
@@ -17,12 +17,18 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
 	Button,
+	FormControl,
 	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 	Textarea,
 	Tooltip,
 	TooltipContent,
@@ -116,6 +122,33 @@ export const PostMetadataFormFields: React.FC<{
 				control={form.control}
 				name="id"
 				render={({ field }) => <Input type="hidden" {...field} />}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.postType"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Type</FormLabel>
+						<Select onValueChange={field.onChange} defaultValue={field.value}>
+							<FormControl>
+								<SelectTrigger>
+									<SelectValue placeholder="Choose state" />
+								</SelectTrigger>
+							</FormControl>
+							<SelectContent className="">
+								{PostTypeSchema.options.map((option) => {
+									const value = option._def.value
+									return (
+										<SelectItem key={value} value={value}>
+											{value}
+										</SelectItem>
+									)
+								})}
+							</SelectContent>
+						</Select>
+						<FormMessage />
+					</FormItem>
+				)}
 			/>
 			<FormField
 				control={form.control}

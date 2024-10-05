@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
@@ -39,6 +39,7 @@ export async function reprocessTranscript({
 
 export const onPostSave = async (resource: ContentResource) => {
 	const post = await courseBuilderAdapter.getContentResource(resource.id)
+	revalidateTag('posts')
 	revalidatePath(`/${post?.fields?.slug}`)
 	redirect(`/${resource.fields?.slug}`)
 }
