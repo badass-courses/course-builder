@@ -122,7 +122,7 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export const getCachedAllPostsForUser = unstable_cache(
-	async ({ userId }: { userId?: string }) => getAllPostsForUser(userId),
+	async (userId?: string) => getAllPostsForUser(userId),
 	['posts'],
 	{ revalidate: 3600 },
 )
@@ -329,7 +329,7 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 
 	for (const tag of post.tags.map((tag) => tag.tag)) {
 		const tagId = Number(tag.id.split('_')[1])
-		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at) 
+		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
 					VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'tags', NOW(), NOW());
 		`
 	}

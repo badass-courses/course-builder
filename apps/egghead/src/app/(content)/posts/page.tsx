@@ -3,7 +3,12 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
-import { getCachedAllPosts, getCachedAllPostsForUser } from '@/lib/posts-query'
+import {
+	getAllPosts,
+	getAllPostsForUser,
+	getCachedAllPosts,
+	getCachedAllPostsForUser,
+} from '@/lib/posts-query'
 import {
 	getCachedEggheadInstructorForUser,
 	loadEggheadInstructorForUser,
@@ -26,7 +31,9 @@ export default async function PostsListPage() {
 		<div className="bg-muted flex h-full flex-grow flex-col-reverse gap-3 p-5 md:flex-row">
 			<div className="flex flex-grow flex-col space-y-2 md:order-2">
 				<h2 className="text-lg font-bold">Posts</h2>
-				<PostList />
+				<Suspense>
+					<PostList />
+				</Suspense>
 			</div>
 			<Suspense>
 				<PostListActions />
@@ -41,10 +48,12 @@ async function PostList() {
 	let postsModule
 
 	if (ability.can('manage', 'all')) {
-		postsModule = await getCachedAllPosts()
+		postsModule = await getAllPosts()
 	} else {
-		postsModule = await getCachedAllPostsForUser({ userId: session?.user?.id })
+		postsModule = await getAllPostsForUser(session?.user?.id)
 	}
+
+	console.log(`posts loaded`, JSON.stringify(postsModule, null, 2))
 	return (
 		<>
 			{postsModule.length > 0 ? (
