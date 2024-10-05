@@ -21,15 +21,18 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 export default function AdvancedTagSelector({
 	availableTags,
+	selectedTags: initialSelectedTags = [],
 	onTagSelect,
 	onTagRemove,
 }: {
 	availableTags: EggheadTag[]
+	selectedTags: EggheadTag[]
 	onTagSelect?: (tag: EggheadTag) => void
 	onTagRemove?: (tagId: string) => void
 }) {
 	const [open, setOpen] = React.useState(false)
-	const [selectedTags, setSelectedTags] = React.useState<EggheadTag[]>([])
+	const [selectedTags, setSelectedTags] =
+		React.useState<EggheadTag[]>(initialSelectedTags)
 	const [inputValue, setInputValue] = React.useState('')
 
 	const handleTagSelect = (tag: EggheadTag) => {

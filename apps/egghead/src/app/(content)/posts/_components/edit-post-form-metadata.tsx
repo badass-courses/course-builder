@@ -3,9 +3,12 @@ import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
+import AdvancedTagSelector from '@/components/resources-crud/tag-selector'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Post, PostSchema } from '@/lib/posts'
+import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import { EggheadTag } from '@/lib/tags'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -36,9 +39,11 @@ export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResourceLoader: Promise<VideoResource | null>
 	post: Post
-}> = ({ form, videoResourceLoader, post }) => {
+	tagLoader: Promise<EggheadTag[]>
+}> = ({ form, videoResourceLoader, post, tagLoader }) => {
 	const router = useRouter()
 	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
+	const tags = tagLoader ? use(tagLoader) : []
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
@@ -127,6 +132,40 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<div className="px-5">
+				<AdvancedTagSelector
+					availableTags={tags}
+					selectedTags={post.tags.map((tag) => tag.tag)}
+					onTagSelect={async (tag: EggheadTag) => {
+						await addTagToPost(post.id, tag.id)
+					}}
+					onTagRemove={async (tagId: string) => {
+						await removeTagFromPost(post.id, tagId)
+					}}
+				/>
+			</div>
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">
+							SEO Description ({`${field.value?.length ?? '0'} / 160`})
+						</FormLabel>
+						<FormDescription>
+							A short snippet that summarizes the post in under 160 characters.
+							Keywords should be included to support SEO.
+						</FormDescription>
+						<Textarea {...field} value={field.value ?? ''} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<FormField
 				control={form.control}
 				name="fields.description"
@@ -165,20 +204,7 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<FormField
-				control={form.control}
-				name="fields.gitpod"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
-						<FormDescription>
-							Gitpod link to start a new workspace with the post.
-						</FormDescription>
-						<Input {...field} value={field.value ?? ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+
 			{videoResource && (
 				<div className="px-5">
 					<div className="flex items-center justify-between gap-2">

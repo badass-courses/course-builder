@@ -2,7 +2,8 @@ import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { courseBuilderAdapter } from '@/db'
-import { getPost } from '@/lib/posts-query'
+import { getPost, getPostTags } from '@/lib/posts-query'
+import { getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -29,6 +30,7 @@ export default async function PostPage({
 	const resource = post.resources?.[0]?.resource.id
 
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const tagLoader = getTags()
 
 	return (
 		<Layout>
@@ -36,6 +38,7 @@ export default async function PostPage({
 				key={post.id}
 				post={post}
 				videoResourceLoader={videoResourceLoader}
+				tagLoader={tagLoader}
 			/>
 		</Layout>
 	)

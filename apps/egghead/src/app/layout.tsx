@@ -18,8 +18,8 @@ const inter = Inter({
 })
 
 export const metadata = {
-	title: 'egghead Course Builder',
-	description: 'build egghead courses',
+	title: 'egghead Post Builder',
+	description: 'build egghead posts',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 

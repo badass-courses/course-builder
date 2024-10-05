@@ -11,6 +11,8 @@ import { getUsersSchema } from '../auth/users.js'
 import { getContentContributionsSchema } from './content-contributions.js'
 import { getContentResourceProductSchema } from './content-resource-product.js'
 import { getContentResourceResourceSchema } from './content-resource-resource.js'
+import { getContentResourceTagSchema } from './content-resource-tag.js'
+import { getTagSchema } from './tag.js'
 
 export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -47,12 +49,15 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentResourceResource = getContentResourceResourceSchema(mysqlTable)
 	const contentResourceProduct = getContentResourceProductSchema(mysqlTable)
 	const contentContributions = getContentContributionsSchema(mysqlTable)
+	const contentResourceTag = getContentResourceTagSchema(mysqlTable)
+	const tag = getTagSchema(mysqlTable)
 	return relations(contentResource, ({ one, many }) => ({
 		createdBy: one(users, {
 			fields: [contentResource.createdById],
 			references: [users.id],
 			relationName: 'creator',
 		}),
+		tags: many(contentResourceTag, { relationName: 'contentResource' }),
 		resources: many(contentResourceResource, { relationName: 'resourceOf' }),
 		resourceOf: many(contentResourceResource, { relationName: 'resource' }),
 		resourceProducts: many(contentResourceProduct, {
