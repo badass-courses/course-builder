@@ -7,6 +7,6 @@ export default {
 	dbCredentials: {
 		url: env.DATABASE_URL,
 	},
-	tablesFilter: [`vbd_*`],
+	tablesFilter: [`astro-party_*`],
 	out: './src/db/generated',
 } satisfies Config
