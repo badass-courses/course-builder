@@ -66,7 +66,7 @@ const PageTeaser: React.FC<{
 	return (
 		<li className={cn('', className)}>
 			<Link
-				href={`/${article.fields.slug}`}
+				href={`/admin/pages/${article.fields.slug}/edit`}
 				passHref
 				className="fluid-lg flex w-full items-center gap-3"
 			>
