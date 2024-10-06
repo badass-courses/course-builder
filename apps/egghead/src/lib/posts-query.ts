@@ -268,7 +268,7 @@ export async function createPost(input: NewPost) {
 			fields: {
 				title: input.title,
 				state: 'draft',
-				visibility: 'unlisted',
+				visibility: 'public',
 				slug: `${slugify(input.title)}~${postGuid}`,
 				eggheadLessonId,
 			},
@@ -348,7 +348,7 @@ export async function updatePost(
 
 	switch (input.fields.visibility) {
 		case 'public':
-			lessonVisibilityState = 'indexed'
+			lessonVisibilityState = lessonState === 'published' ? 'indexed' : 'hidden'
 			break
 		default:
 			lessonVisibilityState = 'hidden'

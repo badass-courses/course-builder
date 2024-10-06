@@ -29,7 +29,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			summary: z.string().optional().nullable(),
 			body: z.string().nullable().optional(),
 			state: PostStateSchema.default('draft'),
-			visibility: PostVisibilitySchema.default('unlisted'),
+			visibility: PostVisibilitySchema.default('public'),
 			eggheadLessonId: z.coerce.number().nullish(),
 			slug: z.string(),
 			description: z.string().nullish(),
@@ -56,7 +56,7 @@ export const PostUpdateSchema = z.object({
 		title: z.string().min(2).max(90),
 		postType: PostTypeSchema.optional().default('lesson'),
 		body: z.string().optional().nullable(),
-		visibility: PostVisibilitySchema.optional().default('unlisted'),
+		visibility: PostVisibilitySchema.optional().default('public'),
 	}),
 })
 
