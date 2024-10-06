@@ -57,6 +57,7 @@ export const PostUpdateSchema = z.object({
 		postType: PostTypeSchema.optional().default('lesson'),
 		body: z.string().optional().nullable(),
 		visibility: PostVisibilitySchema.optional().default('public'),
+		state: PostStateSchema.optional().default('draft'),
 	}),
 })
 

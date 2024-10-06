@@ -19,6 +19,7 @@ import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
+import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
@@ -348,7 +349,11 @@ export async function updatePost(
 
 	switch (input.fields.visibility) {
 		case 'public':
-			lessonVisibilityState = lessonState === 'published' ? 'indexed' : 'hidden'
+			lessonVisibilityState =
+				input.fields.state === 'published' &&
+				input.fields.visibility === 'public'
+					? 'indexed'
+					: 'hidden'
 			break
 		default:
 			lessonVisibilityState = 'hidden'

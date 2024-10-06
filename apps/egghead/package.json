@@ -85,6 +85,7 @@
 		"tailwind-merge": "^1.14.0",
 		"tailwind-scrollbar": "^3.0.0",
 		"tailwindcss-animate": "^1.0.7",
+		"typesense": "^1.8.2",
 		"uploadthing": "6.13.2",
 		"uuid": "^9.0.1",
 		"y-partykit": "^0.0.28",
