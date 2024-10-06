@@ -335,7 +335,8 @@ export async function updatePost(
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	let lessonState = 'approved'
+	let lessonState
+
 	let lessonVisibilityState = 'hidden'
 
 	switch (action) {
@@ -345,15 +346,23 @@ export async function updatePost(
 		case 'unpublish':
 			lessonState = 'approved'
 			break
+		case 'archive':
+			lessonState = 'retired'
+			break
+		default:
+			lessonState =
+				input.fields.state === 'published'
+					? 'published'
+					: input.fields.state === 'archived'
+						? 'retired'
+						: 'approved'
+			break
 	}
 
 	switch (input.fields.visibility) {
 		case 'public':
 			lessonVisibilityState =
-				input.fields.state === 'published' &&
-				input.fields.visibility === 'public'
-					? 'indexed'
-					: 'hidden'
+				input.fields.state === 'published' ? 'indexed' : 'hidden'
 			break
 		default:
 			lessonVisibilityState = 'hidden'
