@@ -244,7 +244,7 @@ export async function createPost(input: NewPost) {
 	const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
 	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state ,created_at, updated_at)
+		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state ,created_at, updated_at, visibility_state)
 		VALUES ($1, $2, $3, $4, $5,NOW(), NOW())
 		RETURNING id`,
 		[
@@ -253,6 +253,7 @@ export async function createPost(input: NewPost) {
 			`${slugify(input.title)}~${postGuid}`,
 			EGGHEAD_LESSON_TYPE,
 			EGGHEAD_INITIAL_LESSON_STATE,
+			'hidden',
 		],
 	)
 
