@@ -200,28 +200,7 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<FormField
-				control={form.control}
-				name="fields.description"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">
-							SEO Description ({`${field.value?.length ?? '0'} / 160`})
-						</FormLabel>
-						<FormDescription>
-							A short snippet that summarizes the post in under 160 characters.
-							Keywords should be included to support SEO.
-						</FormDescription>
-						<Textarea {...field} value={field.value ?? ''} />
-						{field.value && field.value.length > 160 && (
-							<FormMessage>
-								Your description is longer than 160 characters
-							</FormMessage>
-						)}
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
 			<FormField

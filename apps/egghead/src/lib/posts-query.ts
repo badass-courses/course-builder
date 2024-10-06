@@ -334,6 +334,7 @@ export async function updatePost(
 	}
 
 	let lessonState = 'approved'
+	let lessonVisibilityState = 'hidden'
 
 	switch (action) {
 		case 'publish':
@@ -344,9 +345,21 @@ export async function updatePost(
 			break
 	}
 
+	switch (input.fields.visibility) {
+		case 'public':
+			lessonVisibilityState = 'indexed'
+			break
+		default:
+			lessonVisibilityState = 'hidden'
+			break
+	}
+
 	if (currentPost.fields.eggheadLessonId) {
 		await eggheadPgQuery(
-			`UPDATE lessons SET state = '${lessonState}' WHERE id = ${currentPost.fields.eggheadLessonId}`,
+			`UPDATE lessons SET state = '${lessonState}', 
+				updated_at = NOW(), 
+				visibility_state = '${lessonVisibilityState}' 
+			WHERE id = ${currentPost.fields.eggheadLessonId}`,
 		)
 	}
 
