@@ -26,6 +26,8 @@ import 'server-only'
 
 import { v4 } from 'uuid'
 
+import { getMuxAsset } from '@coursebuilder/core/lib/mux'
+
 import { EggheadTag, EggheadTagSchema } from './tags'
 
 export async function deletePost(id: string) {
@@ -369,9 +371,21 @@ export async function updatePost(
 			break
 	}
 
+	const videoResource = currentPost.resources?.find(
+		(resource) => resource.resource.type === 'videoResource',
+	)
+
+	let duration = 0
+
+	if (videoResource) {
+		const muxAsset = await getMuxAsset(videoResource.resource.fields.muxAssetId)
+		duration = muxAsset?.duration || 0
+	}
+
 	if (currentPost.fields.eggheadLessonId) {
 		await eggheadPgQuery(
 			`UPDATE lessons SET state = '${lessonState}', 
+				duration = ${duration},
 				updated_at = NOW(), 
 				visibility_state = '${lessonVisibilityState}' 
 			WHERE id = ${currentPost.fields.eggheadLessonId}`,
