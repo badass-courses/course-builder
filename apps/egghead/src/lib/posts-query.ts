@@ -268,7 +268,7 @@ export async function createPost(input: NewPost) {
 				title: input.title,
 				state: 'draft',
 				visibility: 'unlisted',
-				slug: slugify(`${input.title}~${postGuid}`),
+				slug: `${slugify(input.title)}~${postGuid}`,
 				eggheadLessonId,
 			},
 		})

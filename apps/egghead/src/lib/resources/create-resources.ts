@@ -25,7 +25,7 @@ export async function createResource(input: NewResource) {
 	}
 
 	const hash = guid()
-	const newResourceId = slugify(`${input.type}~${hash}`)
+	const newResourceId = `${slugify(input.type)}~${hash}`
 
 	const newResource = {
 		id: newResourceId,
@@ -34,7 +34,7 @@ export async function createResource(input: NewResource) {
 			title: input.title,
 			state: 'draft',
 			visibility: 'unlisted',
-			slug: slugify(`${input.title}~${hash}`),
+			slug: `${slugify(input.title)}-${hash}`,
 		},
 		createdById: user.id,
 	}
