@@ -395,7 +395,7 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 	for (const tag of post.tags.map((tag) => tag.tag)) {
 		const tagId = Number(tag.id.split('_')[1])
 		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
-					VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'tags', NOW(), NOW());
+					VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'topics', NOW(), NOW());
 		`
 	}
 	Boolean(query) && (await eggheadPgQuery(query))
