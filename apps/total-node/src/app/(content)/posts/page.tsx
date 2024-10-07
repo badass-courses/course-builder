@@ -36,8 +36,8 @@ export const metadata: Metadata = {
 export default async function PostsIndexPage() {
 	const { ability } = await getServerAuthSession()
 	const allPosts = await getAllPosts()
-	console.log({ allPosts })
-	const publishedPublicPosts = allPosts.filter(
+
+	const publishedPublicPosts = [...allPosts].filter(
 		(post) =>
 			post.fields.visibility === 'public' && post.fields.state === 'published',
 	)
@@ -48,14 +48,14 @@ export default async function PostsIndexPage() {
 	const latestPost = publishedPublicPosts[0]
 
 	return (
-		<main className="container flex flex-col-reverse px-5 lg:flex-row">
+		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col-reverse px-5 lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
 				<div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
 						<div className="relative flex w-full">
 							<PostTeaser
 								post={latestPost}
-								className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-muted-foreground h-full w-full md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+								className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
 							/>
 							<div
 								className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
@@ -67,17 +67,12 @@ export default async function PostsIndexPage() {
 							No posts found.
 						</h1>
 					)}
-					<ul className="divide-border relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2">
+					<ul className="divide-border relative grid w-full grid-cols-1 justify-center sm:grid-cols-2">
 						{publishedPublicPosts
 							.slice(1, publishedPublicPosts.length)
 							.map((post, i) => {
 								return (
-									<PostTeaser
-										i={i}
-										post={post}
-										key={post.id}
-										className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
-									/>
+									<PostTeaser i={i} post={post} key={post.id} className="" />
 								)
 							})}
 					</ul>
@@ -109,13 +104,13 @@ const PostTeaser: React.FC<{
 				<Card
 					data-card=""
 					className={cn(
-						'mx-auto flex h-full w-full flex-col justify-between rounded-none border-0 bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
+						'hover:bg-muted/50 mx-auto flex h-full w-full flex-col justify-between rounded-none border-0 border-b bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
 						{
 							'sm:border-r': (i && i % 2 === 0) || i === 0,
 						},
 					)}
 				>
-					<div>
+					<div className="">
 						<CardHeader className="p-0">
 							<p className="text-muted-foreground pb-1.5 text-sm opacity-60">
 								{createdAt && format(new Date(createdAt), 'MMMM do, y')}

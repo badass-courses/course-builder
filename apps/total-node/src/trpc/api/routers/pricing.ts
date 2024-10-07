@@ -326,15 +326,24 @@ export const pricingRouter = createTRPCRouter({
 		const token = await getServerAuthSession()
 		const verifiedUserId = token?.session?.user?.id
 
-		const purchases = getValidPurchases(
-			await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
-		)
-		const products = await db.query.products.findMany()
-		const productIds = products.map((product) => product.id)
-		const defaultCoupons =
-			await courseBuilderAdapter.getDefaultCoupon(productIds)
+		let purchases: Purchase[] = []
 
-		const defaultCoupon = defaultCoupons?.defaultCoupon
+		if (verifiedUserId) {
+			purchases = getValidPurchases(
+				await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
+			)
+		}
+		const products = await db.query.products.findMany()
+
+		if (!products) return null
+
+		const productIds = products.map((product) => product.id)
+
+		const defaultCoupons =
+			productIds.length > 0 &&
+			(await courseBuilderAdapter.getDefaultCoupon(productIds))
+
+		const defaultCoupon = defaultCoupons && defaultCoupons?.defaultCoupon
 
 		const hasPurchasedProductFromDefaultCoupon =
 			defaultCoupon &&

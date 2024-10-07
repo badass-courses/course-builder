@@ -32,7 +32,7 @@ const Navigation = () => {
 	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
-	useLiveEventToastNotifier()
+	// useLiveEventToastNotifier()
 	useSaleToastNotifier()
 
 	React.useEffect(() => {

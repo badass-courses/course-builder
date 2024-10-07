@@ -8,12 +8,12 @@ import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import { Share } from '@/components/share'
 import { courseBuilderAdapter } from '@/db'
 import { type Post } from '@/lib/posts'
-import { getPost } from '@/lib/posts-query'
+import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
-import { cn } from '@/utils/cn'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
@@ -27,6 +27,16 @@ import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-for
 type Props = {
 	params: { post: string }
 	searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateStaticParams() {
+	const posts = await getAllPosts()
+
+	return posts
+		.filter((post) => Boolean(post.fields?.slug))
+		.map((post) => ({
+			post: post.fields?.slug,
+		}))
 }
 
 export async function generateMetadata(
@@ -53,13 +63,8 @@ export async function generateMetadata(
 	}
 }
 
-async function PostActionBar({
-	postLoader,
-}: {
-	postLoader: Promise<Post | null>
-}) {
+async function PostActionBar({ post }: { post: Post | null }) {
 	const { session, ability } = await getServerAuthSession()
-	const post = await postLoader
 
 	return (
 		<>
@@ -72,9 +77,7 @@ async function PostActionBar({
 	)
 }
 
-async function Post({ postLoader }: { postLoader: Promise<Post | null> }) {
-	const post = await postLoader
-
+async function Post({ post }: { post: Post | null }) {
 	if (!post) {
 		notFound()
 	}
@@ -91,7 +94,12 @@ async function Post({ postLoader }: { postLoader: Promise<Post | null> }) {
 								props?.children.props.className?.split('-')[1] || 'typescript'
 							try {
 								const html = await codeToHtml({ code: children, language })
-								return <div dangerouslySetInnerHTML={{ __html: html }} />
+								return (
+									<div
+										className="before:via-foreground/10 relative rounded before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:to-transparent"
+										dangerouslySetInnerHTML={{ __html: html }}
+									/>
+								)
 							} catch (error) {
 								console.error(error)
 								return <pre {...props} />
@@ -104,9 +112,7 @@ async function Post({ postLoader }: { postLoader: Promise<Post | null> }) {
 	)
 }
 
-async function PostTitle({ postLoader }: { postLoader: Promise<Post | null> }) {
-	const post = await postLoader
-
+async function PostTitle({ post }: { post: Post | null }) {
 	return (
 		<h1 className="fluid-3xl mb-4 inline-flex font-bold">
 			{post?.fields?.title}
@@ -121,7 +127,7 @@ export default async function PostPage({
 	params: { post: string }
 	searchParams: { [key: string]: string | undefined }
 }) {
-	const postLoader = getPost(params.post)
+	const post = await getPost(params.post)
 	const cookieStore = cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
@@ -136,7 +142,7 @@ export default async function PostPage({
 
 	return (
 		<main>
-			<PlayerContainer postLoader={postLoader} />
+			<PlayerContainer post={post} />
 			<div className="container max-w-screen-xl pb-24">
 				<div className="flex w-full items-center justify-between">
 					<Link
@@ -146,18 +152,24 @@ export default async function PostPage({
 						← Posts
 					</Link>
 					<Suspense fallback={null}>
-						<PostActionBar postLoader={postLoader} />
+						<PostActionBar post={post} />
 					</Suspense>
 				</div>
 				<div>
 					<article className="flex h-full grid-cols-12 flex-col gap-5 md:grid">
 						<div className="col-span-8">
-							<PostTitle postLoader={postLoader} />
+							<PostTitle post={post} />
 							<Contributor className="flex md:hidden [&_img]:w-8" />
-							<Post postLoader={postLoader} />
+							<Post post={post} />
 						</div>
-						<aside className="relative col-span-2 col-start-10 flex h-full flex-col pt-24">
-							<Contributor className="hidden md:flex" />
+						<aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
+							<div className="top-20 md:sticky">
+								<Contributor className="hidden md:flex" />
+								<div className="mt-5 flex w-full flex-col gap-1">
+									<strong className="text-lg font-semibold">Share</strong>
+									<Share className="w-full" title={post?.fields.title} />
+								</div>
+							</div>
 						</aside>
 					</article>
 				</div>
@@ -165,7 +177,7 @@ export default async function PostPage({
 			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 				<section id="buy">
 					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-						Get Really Good At Next.js
+						Get Really Good At Node.js
 					</h2>
 					<div className="flex items-center justify-center border-y">
 						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
@@ -178,19 +190,16 @@ export default async function PostPage({
 						</div>
 					</div>
 				</section>
-			) : (
+			) : post?.resources?.find(
+					({ resource }) => resource.type === 'videoResource',
+			  ) ? null : (
 				<PrimaryNewsletterCta className="pb-20" />
 			)}
 		</main>
 	)
 }
 
-async function PlayerContainer({
-	postLoader,
-}: {
-	postLoader: Promise<Post | null>
-}) {
-	const post = await postLoader
+async function PlayerContainer({ post }: { post: Post | null }) {
 	const displayOverlay = false
 
 	if (!post) {
@@ -204,20 +213,19 @@ async function PlayerContainer({
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return videoResource ? (
-		<Suspense fallback={<PlayerContainerSkeleton />}>
+		<Suspense
+			fallback={<PlayerContainerSkeleton className="max-h-[75vh] bg-black" />}
+		>
 			<section
 				aria-label="video"
 				className="mb-10 flex flex-col items-center justify-center border-b bg-black"
 			>
 				<PostPlayer
-					className="h-full max-h-[75vh] w-full overflow-hidden"
+					className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
 					videoResource={videoResource}
 				/>
 				{!ckSubscriber && <PostNewsletterCta />}
 			</section>
 		</Suspense>
-	) : (
-		// spacer
-		<div className="pt-16" />
-	)
+	) : resource ? null : null // spacer // <div className="pt-16" />
 }
