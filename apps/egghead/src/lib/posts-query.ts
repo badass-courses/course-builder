@@ -248,7 +248,7 @@ export async function createPost(input: NewPost) {
 
 	const eggheadLessonResult = await eggheadPgQuery(
 		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state ,created_at, updated_at, visibility_state)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW())
+		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6)
 		RETURNING id`,
 		[
 			input.title,
@@ -320,11 +320,11 @@ async function updateEggheadLesson(
 	duration: number,
 ) {
 	await eggheadPgQuery(
-		`UPDATE lessons SET 
-			state = $1, 
+		`UPDATE lessons SET
+			state = $1,
 			duration = $2,
-			updated_at = NOW(), 
-			visibility_state = $3 
+			updated_at = NOW(),
+			visibility_state = $3
 		WHERE id = $4`,
 		[state, duration, visibilityState, eggheadLessonId],
 	)
