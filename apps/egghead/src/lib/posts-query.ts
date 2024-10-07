@@ -326,7 +326,7 @@ async function updateEggheadLesson(
 			updated_at = NOW(),
 			visibility_state = $3
 		WHERE id = $4`,
-		[state, duration, visibilityState, eggheadLessonId],
+		[state, Math.floor(duration), visibilityState, eggheadLessonId],
 	)
 }
 
