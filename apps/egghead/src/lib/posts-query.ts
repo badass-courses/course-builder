@@ -313,6 +313,61 @@ export async function createPost(input: NewPost) {
 	}
 }
 
+async function updateEggheadLesson(
+	eggheadLessonId: number,
+	state: string,
+	visibilityState: string,
+	duration: number,
+) {
+	await eggheadPgQuery(
+		`UPDATE lessons SET 
+			state = $1, 
+			duration = $2,
+			updated_at = NOW(), 
+			visibility_state = $3 
+		WHERE id = $4`,
+		[state, duration, visibilityState, eggheadLessonId],
+	)
+}
+
+function determineEggheadLessonState(
+	action: string,
+	currentState: string,
+): string {
+	switch (action) {
+		case 'publish':
+			return 'published'
+		case 'unpublish':
+			return 'approved'
+		case 'archive':
+			return 'retired'
+		default:
+			return currentState === 'published'
+				? 'published'
+				: currentState === 'archived'
+					? 'retired'
+					: 'approved'
+	}
+}
+
+function determineEggheadVisibilityState(
+	visibility: string,
+	state: string,
+): string {
+	return visibility === 'public' && state === 'published' ? 'indexed' : 'hidden'
+}
+
+async function getVideoDuration(resources: Post['resources']): Promise<number> {
+	const videoResource = resources?.find(
+		(resource) => resource.resource.type === 'videoResource',
+	)
+	if (videoResource) {
+		const muxAsset = await getMuxAsset(videoResource.resource.fields.muxAssetId)
+		return muxAsset?.duration || 0
+	}
+	return 0
+}
+
 export async function updatePost(
 	input: PostUpdate,
 	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
@@ -330,65 +385,22 @@ export async function updatePost(
 		throw new Error('Unauthorized')
 	}
 
-	let postSlug = currentPost.fields.slug
+	const postSlug = updatePostSlug(currentPost, input.fields.title)
 
-	if (input.fields.title !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
-	}
-
-	let lessonState
-
-	let lessonVisibilityState = 'hidden'
-
-	switch (action) {
-		case 'publish':
-			lessonState = 'published'
-			break
-		case 'unpublish':
-			lessonState = 'approved'
-			break
-		case 'archive':
-			lessonState = 'retired'
-			break
-		default:
-			lessonState =
-				input.fields.state === 'published'
-					? 'published'
-					: input.fields.state === 'archived'
-						? 'retired'
-						: 'approved'
-			break
-	}
-
-	switch (input.fields.visibility) {
-		case 'public':
-			lessonVisibilityState =
-				input.fields.state === 'published' ? 'indexed' : 'hidden'
-			break
-		default:
-			lessonVisibilityState = 'hidden'
-			break
-	}
-
-	const videoResource = currentPost.resources?.find(
-		(resource) => resource.resource.type === 'videoResource',
+	const lessonState = determineEggheadLessonState(action, input.fields.state)
+	const lessonVisibilityState = determineEggheadVisibilityState(
+		input.fields.visibility,
+		input.fields.state,
 	)
 
-	let duration = 0
-
-	if (videoResource) {
-		const muxAsset = await getMuxAsset(videoResource.resource.fields.muxAssetId)
-		duration = muxAsset?.duration || 0
-	}
+	const duration = await getVideoDuration(currentPost.resources)
 
 	if (currentPost.fields.eggheadLessonId) {
-		await eggheadPgQuery(
-			`UPDATE lessons SET state = '${lessonState}', 
-				duration = ${duration},
-				updated_at = NOW(), 
-				visibility_state = '${lessonVisibilityState}' 
-			WHERE id = ${currentPost.fields.eggheadLessonId}`,
+		await updateEggheadLesson(
+			currentPost.fields.eggheadLessonId,
+			lessonState,
+			lessonVisibilityState,
+			duration,
 		)
 	}
 
@@ -403,11 +415,18 @@ export async function updatePost(
 
 	revalidateTag('posts')
 
-	const post = await getPost(currentPost.id)
+	const updatedPost = await getPost(currentPost.id)
+	await createNewPostVersion(updatedPost, user.id)
 
-	await createNewPostVersion(post, user.id)
+	return updatedPost
+}
 
-	return post
+function updatePostSlug(currentPost: Post, newTitle: string): string {
+	if (newTitle !== currentPost.fields.title) {
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
+		return `${slugify(newTitle)}~${splitSlug[1] || guid()}`
+	}
+	return currentPost.fields.slug
 }
 
 export async function removeLegacyTaggingsOnEgghead(postId: string) {
