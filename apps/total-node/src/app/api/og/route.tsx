@@ -256,7 +256,7 @@ function generateUserShapeTemplate(
 	const transform = transformCustomShapeFromFigma(size)
 
 	return `
-    <g clip-path="url(#clip-${index})" filter="url(#ripple)" transform="translate(${x}, ${y}) ${rotation}">
+    <g clip-path="url(#clip-${index})" transform="translate(${x}, ${y}) ${rotation}">
       <path fill="${color}" transform="${transform}" fill-rule="evenodd" d="${d}" clip-rule="evenodd"/>
     </g>
     <defs>
