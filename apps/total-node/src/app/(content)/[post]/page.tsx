@@ -150,15 +150,21 @@ export default async function PostPage({
 		1000,
 		800,
 		0.8,
-		true,
+		false,
 	)
 
-	const hasVideo = post.resources?.[0]?.resource.id
+	const hasVideo = post?.resources?.find(
+		({ resource }) => resource.type === 'videoResource',
+	)
 
 	return (
 		<main>
-			<PlayerContainer post={post} />
-			<div className="container relative max-w-screen-xl pb-24">
+			{hasVideo && <PlayerContainer post={post} />}
+			<div
+				className={cn('container relative max-w-screen-xl pb-24', {
+					'pt-16': !hasVideo,
+				})}
+			>
 				<div
 					className={cn('absolute right-0 w-full', {
 						'-top-10': hasVideo,
@@ -242,9 +248,7 @@ export default async function PostPage({
 						</div>
 					</div>
 				</section>
-			) : post?.resources?.find(
-					({ resource }) => resource.type === 'videoResource',
-			  ) ? null : (
+			) : hasVideo ? null : (
 				<PrimaryNewsletterCta className="pb-20" />
 			)}
 		</main>
