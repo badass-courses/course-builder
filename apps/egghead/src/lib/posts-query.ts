@@ -363,7 +363,7 @@ async function getVideoDuration(resources: Post['resources']): Promise<number> {
 	)
 	if (videoResource) {
 		const muxAsset = await getMuxAsset(videoResource.resource.fields.muxAssetId)
-		return muxAsset?.duration || 0
+		return muxAsset?.duration ? Math.floor(muxAsset.duration) : 0
 	}
 	return 0
 }

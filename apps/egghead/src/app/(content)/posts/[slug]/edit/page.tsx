@@ -27,9 +27,17 @@ export default async function PostPage({
 		redirect(`/${post?.fields?.slug}`)
 	}
 
-	const resource = post.resources?.[0]?.resource.id
+	const videoResource =
+		post.resources
+			?.map((resource) => resource.resource)
+			?.find((resource) => {
+				console.log({ resource })
+				return resource.type === 'videoResource'
+			}) || null
 
-	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const videoResourceLoader = courseBuilderAdapter.getVideoResource(
+		videoResource.id,
+	)
 	await getAllEggheadTags()
 	const tagLoader = getTags()
 
@@ -39,6 +47,7 @@ export default async function PostPage({
 				key={post.id}
 				post={post}
 				videoResourceLoader={videoResourceLoader}
+				videoResourceId={videoResource.id}
 				tagLoader={tagLoader}
 			/>
 		</Layout>

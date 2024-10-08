@@ -32,6 +32,7 @@ const NewPostFormSchema = z.object({
 export type EditPostFormProps = {
 	post: Post
 	videoResourceLoader: Promise<VideoResource | null>
+	videoResourceId: string | null | undefined
 	tagLoader: Promise<EggheadTag[]>
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	children?: React.ReactNode
@@ -42,6 +43,7 @@ export type EditPostFormProps = {
 export function EditPostForm({
 	post,
 	videoResourceLoader,
+	videoResourceId,
 	tagLoader,
 }: Omit<EditPostFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
@@ -70,6 +72,7 @@ export function EditPostForm({
 			form={form}
 			tagLoader={tagLoader}
 			videoResourceLoader={videoResourceLoader}
+			videoResourceId={videoResourceId}
 			availableWorkflows={[
 				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
 			]}
@@ -92,6 +95,7 @@ export function EditPostForm({
 			<PostMetadataFormFields
 				form={form}
 				videoResourceLoader={videoResourceLoader}
+				videoResourceId={videoResourceId}
 				tagLoader={tagLoader}
 				post={post}
 			/>
