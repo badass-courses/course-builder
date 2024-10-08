@@ -14,6 +14,8 @@ import { type Post } from '@/lib/posts'
 import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
+import { cn } from '@/utils/cn'
+import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
@@ -79,7 +81,7 @@ async function PostActionBar({ post }: { post: Post | null }) {
 
 async function Post({ post }: { post: Post | null }) {
 	if (!post) {
-		notFound()
+		return null
 	}
 
 	return (
@@ -139,23 +141,60 @@ export default async function PostPage({
 					product: null,
 					commerceProps: null,
 				}
+	if (!post) {
+		notFound()
+	}
+
+	const squareGridPattern = generateGridPattern(
+		post.fields.title,
+		1000,
+		800,
+		0.8,
+		true,
+	)
+
+	const hasVideo = post.resources?.[0]?.resource.id
 
 	return (
 		<main>
 			<PlayerContainer post={post} />
-			<div className="container max-w-screen-xl pb-24">
-				<div className="flex w-full items-center justify-between">
+			<div className="container relative max-w-screen-xl pb-24">
+				<div
+					className={cn('absolute right-0 w-full', {
+						'-top-10': hasVideo,
+						'top-0': !hasVideo,
+					})}
+				>
+					<img
+						src={squareGridPattern}
+						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+					/>
+					<div
+						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						aria-hidden="true"
+					/>
+				</div>
+				{/* <div className="absolute left-0 top-0 -z-10 h-[76px] w-full">
+					<img
+						src={squareGridPattern}
+						className="absolute left-0 top-0 h-[76px] w-full overflow-hidden object-cover object-top"
+					/>
+					<div className="from-background via-background/80 to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r" />
+				</div> */}
+				<div className="relative z-10 flex w-full items-center justify-between">
 					<Link
 						href="/posts"
 						className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
 					>
 						← Posts
 					</Link>
-					<Suspense fallback={null}>
-						<PostActionBar post={post} />
-					</Suspense>
+					<div>
+						<Suspense fallback={null}>
+							<PostActionBar post={post} />
+						</Suspense>
+					</div>
 				</div>
-				<div>
+				<div className="relative z-10">
 					<article className="flex h-full grid-cols-12 flex-col gap-5 md:grid">
 						<div className="col-span-8">
 							<PostTitle post={post} />
@@ -167,8 +206,21 @@ export default async function PostPage({
 								<Contributor className="hidden md:flex" />
 								<div className="mt-5 flex w-full flex-col gap-1">
 									<strong className="text-lg font-semibold">Share</strong>
-									<Share className="w-full" title={post?.fields.title} />
+									<Share
+										className="bg-background w-full"
+										title={post?.fields.title}
+									/>
 								</div>
+								{/* <div className="relative">
+									<img
+										src={squareGridPattern}
+										className="my-2 h-[30px] w-[289px] overflow-hidden object-cover object-left-top opacity-75 saturate-0"
+									/>
+									<div
+										className="to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r from-transparent"
+										aria-hidden="true"
+									/>
+								</div> */}
 							</div>
 						</aside>
 					</article>
