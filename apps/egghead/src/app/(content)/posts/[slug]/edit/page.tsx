@@ -35,9 +35,10 @@ export default async function PostPage({
 				return resource.type === 'videoResource'
 			}) || null
 
-	const videoResourceLoader = courseBuilderAdapter.getVideoResource(
-		videoResource.id,
-	)
+	const videoResourceLoader = videoResource
+		? courseBuilderAdapter.getVideoResource(videoResource?.id)
+		: Promise.resolve(null)
+
 	await getAllEggheadTags()
 	const tagLoader = getTags()
 
@@ -47,7 +48,7 @@ export default async function PostPage({
 				key={post.id}
 				post={post}
 				videoResourceLoader={videoResourceLoader}
-				videoResourceId={videoResource.id}
+				videoResourceId={videoResource?.id}
 				tagLoader={tagLoader}
 			/>
 		</Layout>
