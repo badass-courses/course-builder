@@ -160,7 +160,7 @@ export const addVideoResourceToLesson = async ({
 export const getCachedLesson = unstable_cache(
 	async (slug: string) => getLesson(slug),
 	['lesson'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['lesson'] },
 )
 
 export async function getLesson(lessonSlugOrId: string) {

@@ -12,7 +12,7 @@ import { z } from 'zod'
 export const getCachedEggheadInstructorForUser = unstable_cache(
 	async (userId: string) => loadEggheadInstructorForUser(userId),
 	['users'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['users'] },
 )
 
 export const loadEggheadInstructorForUser = async (userId: string) => {

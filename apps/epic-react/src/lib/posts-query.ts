@@ -29,7 +29,7 @@ import {
 export const getCachedPost = unstable_cache(
 	async (slug: string) => getPost(slug),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getPost(slug: string): Promise<Post | null> {
@@ -60,7 +60,7 @@ export async function getPost(slug: string): Promise<Post | null> {
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getAllPosts(): Promise<Post[]> {
@@ -81,7 +81,7 @@ export async function getAllPosts(): Promise<Post[]> {
 export const getCachedAllPostsForUser = unstable_cache(
 	async (userId?: string) => getAllPostsForUser(userId),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {

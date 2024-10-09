@@ -140,7 +140,7 @@ ORDER BY
 export const getCachedWorkshopNavigation = unstable_cache(
 	async (slug: string) => getWorkshopNavigation(slug),
 	['workshop'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['workshop'] },
 )
 
 export async function getWorkshopNavigation(

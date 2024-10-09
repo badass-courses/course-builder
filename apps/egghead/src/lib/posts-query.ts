@@ -19,7 +19,7 @@ import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
-import Typesense from 'typesense'
+import readingTime from 'reading-time'
 import { z } from 'zod'
 
 import 'server-only'
@@ -73,7 +73,7 @@ export async function deletePost(id: string) {
 export const getCachedPost = unstable_cache(
 	async (slug: string) => getPost(slug),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 async function createNewPostVersion(post: Post | null, createdById?: string) {
@@ -147,7 +147,7 @@ export async function getPost(slug: string): Promise<Post | null> {
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getAllPosts(): Promise<Post[]> {
@@ -176,7 +176,7 @@ export async function getAllPosts(): Promise<Post[]> {
 export const getCachedAllPostsForUser = unstable_cache(
 	async (userId?: string) => getAllPostsForUser(userId),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
@@ -394,13 +394,16 @@ export async function updatePost(
 	)
 
 	const duration = await getVideoDuration(currentPost.resources)
+	const timeToRead = Math.floor(
+		readingTime(currentPost.fields.body ?? '').time / 1000,
+	)
 
 	if (currentPost.fields.eggheadLessonId) {
 		await updateEggheadLesson(
 			currentPost.fields.eggheadLessonId,
 			lessonState,
 			lessonVisibilityState,
-			duration,
+			duration > 0 ? duration : timeToRead,
 		)
 	}
 

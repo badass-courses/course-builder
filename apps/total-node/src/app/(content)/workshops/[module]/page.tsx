@@ -45,7 +45,7 @@ export async function generateStaticParams() {
 const getCachedMinimalWorkshop = unstable_cache(
 	async (slug: string) => getMinimalWorkshop(slug),
 	['workshop'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['workshop'] },
 )
 
 export async function generateMetadata(

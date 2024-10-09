@@ -15,7 +15,7 @@ import { z } from 'zod'
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getAllPosts(): Promise<Post[]> {
@@ -151,7 +151,7 @@ export async function updatePost(
 export const getCachedPost = unstable_cache(
 	async (slug: string) => getPost(slug),
 	['posts'],
-	{ revalidate: 3600 },
+	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getPost(slugOrId: string) {
