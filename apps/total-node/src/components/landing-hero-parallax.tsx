@@ -71,12 +71,12 @@ export const LandingHeroParallax = () => {
 
 				return (
 					<motion.div
+						key={name}
 						style={getStylesForImageName(name)}
 						transition={{}}
 						className="absolute left-0 top-0 h-full w-full"
 					>
 						<Image
-							key={name}
 							src={require(src)}
 							className={cn('object-cover object-bottom')}
 							alt=""
