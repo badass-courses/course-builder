@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { type Metadata } from 'next'
 import Image from 'next/image'
+import Footer from '@/components/app/footer'
 import { Layout } from '@/components/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -100,6 +101,7 @@ export default async function Home() {
 					</h2>
 				</PrimaryNewsletterCta>
 			</main>
+			<Footer />
 		</Layout>
 	)
 }
