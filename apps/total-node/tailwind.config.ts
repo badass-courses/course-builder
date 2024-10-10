@@ -78,6 +78,7 @@ module.exports = withUt({
 			fontFamily: {
 				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
 				heading: ['var(--font-heading)', ...fontFamily.sans],
+				greek: ['var(--font-dalek)', ...fontFamily.sans],
 				mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
 			},
 			keyframes: {

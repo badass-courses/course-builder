@@ -1,5 +1,18 @@
 import localFont from 'next/font/local'
 
+export const dalekFont = localFont({
+	preload: true,
+	display: 'block',
+	variable: '--font-dalek',
+	src: [
+		{
+			path: '../styles/fonts/dalek.woff2',
+			weight: '400',
+			style: 'normal',
+		},
+	],
+})
+
 export const headingFont = localFont({
 	preload: true,
 	display: 'block',

@@ -3,6 +3,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import LandingCopy from '@/components/landing-copy'
+import { LandingHeroParallax } from '@/components/landing-hero-parallax'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
@@ -62,8 +63,8 @@ const Home = async ({ searchParams }: Props) => {
 
 	return (
 		<div className="">
-			<header className="relative mx-auto flex min-h-[80vh] w-full flex-col items-center justify-center pt-20">
-				<Image
+			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-[7vw] lg:aspect-[1920/1080]">
+				{/* <Image
 					src={require('../../public/hero-1@2x.jpg')}
 					fill
 					alt=""
@@ -74,7 +75,8 @@ const Home = async ({ searchParams }: Props) => {
 				<div
 					aria-hidden="true"
 					className="bg-primary/20 pointer-events-none absolute z-20 h-80 w-80 rounded-full blur-[150px]"
-				/>
+				/> */}
+				<LandingHeroParallax />
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
 					<h1 className="text-muted-foreground leading-0 font-heading sm:fluid-4xl fluid-2xl w-full max-w-4xl text-center font-bold">
 						Unleash godlike power in your backend development
@@ -90,7 +92,7 @@ const Home = async ({ searchParams }: Props) => {
 							width={32}
 							height={32}
 						/>{' '}
-						Matt Pocock
+						{config.author}
 					</h2>
 				</div>
 			</header>

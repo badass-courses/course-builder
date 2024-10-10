@@ -13,7 +13,12 @@ import { FeedbackInsert } from '@/feedback-widget/feedback-insert'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { headingFont, maisonNeue, maisonNeueMono } from '@/utils/load-fonts'
+import {
+	dalekFont,
+	headingFont,
+	maisonNeue,
+	maisonNeueMono,
+} from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -59,7 +64,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} ${headingFont.variable} antialised font-sans`}
+					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} ${headingFont.variable} ${dalekFont.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
