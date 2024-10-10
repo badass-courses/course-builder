@@ -55,7 +55,7 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 			}
 		case 'clouds':
 			return {
-				y: mazeY,
+				y: cloudsY,
 				scale: cloudsScale,
 			}
 		default:
@@ -65,32 +65,39 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 
 export const LandingHeroParallax = () => {
 	const scrollAreaRef = React.useRef(null)
-	const { scrollY, scrollYProgress } = useScroll({
+	const { scrollYProgress } = useScroll({
 		target: scrollAreaRef,
 		offset: ['0%', '100%'],
 	})
 
-	const images = [
-		{ name: 'bg', src: '/assets/hero-bg.jpg' },
-		{ name: 'maze', src: '/assets/hero-maze.png' },
-		{ name: 'beam', src: '/assets/hero-beam.png' },
-		{ name: 'clouds', src: '/assets/hero-clouds.png' },
-		{ name: 'platform', src: '/assets/hero-platform.png' },
-	]
+	// Call useStylesForImage for each image individually
+	const bgStyles = useStylesForImage('bg', scrollYProgress)
+	const mazeStyles = useStylesForImage('maze', scrollYProgress)
+	const beamStyles = useStylesForImage('beam', scrollYProgress)
+	const cloudsStyles = useStylesForImage('clouds', scrollYProgress)
+	const platformStyles = useStylesForImage('platform', scrollYProgress)
 
-	const animatedStyles = images.map(({ name }) =>
-		useStylesForImage(name, scrollYProgress),
-	)
+	const images = [
+		{ name: 'bg', src: '/assets/hero-bg.jpg', styles: bgStyles },
+		{ name: 'maze', src: '/assets/hero-maze.png', styles: mazeStyles },
+		{ name: 'beam', src: '/assets/hero-beam.png', styles: beamStyles },
+		{ name: 'clouds', src: '/assets/hero-clouds.png', styles: cloudsStyles },
+		{
+			name: 'platform',
+			src: '/assets/hero-platform.png',
+			styles: platformStyles,
+		},
+	]
 
 	return (
 		<div
 			ref={scrollAreaRef}
 			className="absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden lg:aspect-[1920/1080]"
 		>
-			{images.map(({ name, src }, index) => (
+			{images.map(({ name, src, styles }) => (
 				<motion.div
 					key={name}
-					style={animatedStyles[index]}
+					style={styles}
 					transition={{}}
 					className="absolute left-0 top-0 h-full w-full"
 				>
