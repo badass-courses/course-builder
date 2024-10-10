@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
+import Footer from '@/components/app/footer'
 import { Instructor } from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -145,6 +146,7 @@ const Home = async ({ searchParams }: Props) => {
 					</>
 				)}
 			</main>
+			<Footer />
 		</div>
 	)
 }
