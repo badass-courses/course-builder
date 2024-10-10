@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import Footer from './footer'
+
 export async function Layout({
 	children,
 	className,
@@ -18,6 +20,7 @@ export async function Layout({
 			>
 				{children}
 			</div>
+			<Footer />
 		</div>
 	)
 }
