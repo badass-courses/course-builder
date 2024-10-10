@@ -6,7 +6,7 @@ export const dalekFont = localFont({
 	variable: '--font-dalek',
 	src: [
 		{
-			path: '../styles/fonts/dalek.woff2',
+			path: '../styles/fonts/Dalek.woff2',
 			weight: '400',
 			style: 'normal',
 		},
