@@ -1,9 +1,4 @@
 /* @import url('https://use.typekit.net/tjw2gng.css'); */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import './quiz.css';
 @import './primary-newsletter-cta.css';
 @import './tip-newsletter-cta.css';
 @import './video-block-newsletter-cta.css';
@@ -22,6 +17,10 @@
 @import './ui/button.css';
 @import './login.css';
 @import './commerce.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
 	:root {
