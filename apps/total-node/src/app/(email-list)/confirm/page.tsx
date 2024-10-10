@@ -38,6 +38,8 @@ export default async function ConfirmSubscriptionPage() {
 			<Image
 				src={require('../../../../public/assets/bg-text-1@2x.jpg')}
 				fill
+				alt=""
+				aria-hidden="true"
 				className="-z-10 object-cover object-center md:object-contain"
 			/>
 		</main>
