@@ -1,5 +1,6 @@
 import * as React from 'react'
 import Image from 'next/image'
+import Footer from '@/components/app/footer'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import ReactMarkdown from 'react-markdown'
 import Balancer from 'react-wrap-balancer'
@@ -97,6 +98,7 @@ That's where ProAWS comes in. This isn't a typical AWS course. You won't study a
 					/>
 				</section>
 			</main>
+			<Footer />
 			<div aria-hidden="true" className="py-10" />
 		</div>
 	)
