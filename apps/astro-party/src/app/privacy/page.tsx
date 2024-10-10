@@ -2,8 +2,27 @@ import ReactMarkdown from 'react-markdown'
 
 const PrivacyPage = () => (
 	<main className="p-5 py-16 lg:py-24">
-		<article className="prose dark:prose-invert mx-auto">
-			<ReactMarkdown>{markdownContent}</ReactMarkdown>
+		<article className="prose dark:prose-invert mx-auto text-white">
+			<ReactMarkdown
+				components={{
+					h1: ({ children }) => (
+						<h1 className="text-4xl text-white">{children}</h1>
+					),
+					h2: ({ children }) => (
+						<h2 className="text-xl text-white">{children}</h2>
+					),
+					h3: ({ children }) => (
+						<h3 className="text-lg text-white">{children}</h3>
+					),
+					a: ({ children, href }) => (
+						<a href={href} className="text-white underline">
+							{children}
+						</a>
+					),
+				}}
+			>
+				{markdownContent}
+			</ReactMarkdown>
 		</article>
 	</main>
 )
