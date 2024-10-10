@@ -55,7 +55,7 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 			}
 		case 'clouds':
 			return {
-				y: cloudsY,
+				y: mazeY,
 				scale: cloudsScale,
 			}
 		default:
