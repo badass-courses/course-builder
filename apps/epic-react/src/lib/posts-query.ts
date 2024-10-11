@@ -207,6 +207,8 @@ export async function updatePost(
 	) {
 		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	} else if (input.fields.slug !== currentPost.fields.slug) {
+		postSlug = input.fields.slug
 	}
 
 	revalidateTag('posts')
