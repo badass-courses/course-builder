@@ -49,6 +49,7 @@ export function EditPostForm({
 			fields: {
 				title: post.fields?.title,
 				body: post.fields?.body,
+				slug: post.fields?.slug,
 				visibility: post.fields?.visibility || 'unlisted',
 				state: post.fields?.state || 'draft',
 				description: post.fields?.description ?? '',
