@@ -201,7 +201,10 @@ export async function updatePost(
 
 	let postSlug = currentPost.fields.slug
 
-	if (input.fields.title !== currentPost.fields.title) {
+	if (
+		input.fields.title !== currentPost.fields.title &&
+		input.fields.slug.includes('~')
+	) {
 		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}

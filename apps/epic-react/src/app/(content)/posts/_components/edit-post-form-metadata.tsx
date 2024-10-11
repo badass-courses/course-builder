@@ -129,6 +129,18 @@ export const PostMetadataFormFields: React.FC<{
 			/>
 			<FormField
 				control={form.control}
+				name="fields.slug"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormDescription>Short with keywords is best.</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
