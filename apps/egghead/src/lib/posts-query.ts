@@ -20,6 +20,7 @@ import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
+import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
@@ -434,13 +435,14 @@ export async function updatePost(
 	})
 
 	if (
-		updatedPost.fields.state !== 'published' ||
-		updatedPost.fields.visibility !== 'public'
+		updatedPost?.fields?.eggheadLessonId &&
+		(updatedPost?.fields.state !== 'published' ||
+			updatedPost?.fields.visibility !== 'public')
 	) {
 		await client
 			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents()
-			.delete(updatedPost.fields.eggheadLessonId)
+			.documents(updatedPost.fields.eggheadLessonId.toString())
+			.delete()
 			.catch((err) => {
 				console.error(err)
 			})
