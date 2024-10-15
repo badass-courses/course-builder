@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { tag as tagTable } from '@/db/schema'
@@ -43,10 +43,10 @@ export async function getTags(): Promise<EggheadTag[]> {
 	return z.array(EggheadTagSchema).parse(tags)
 }
 
-export const getAllCachedEggheadTags = unstable_cache(
+export const getAllEggheadTagsCached = unstable_cache(
 	async () => getAllEggheadTags(),
 	['tags'],
-	{ revalidate: 3600, tags: ['tags'] },
+	{ revalidate: 60, tags: ['tags'] },
 )
 
 export async function getAllEggheadTags(): Promise<EggheadTag[]> {
@@ -235,5 +235,6 @@ export async function updateTag(input: UpdateTagInput): Promise<EggheadTag> {
 		.set(updatedTag)
 		.where(eq(tagTable.id, updatedTag.id))
 
+	revalidateTag('tags')
 	return updatedTag
 }
