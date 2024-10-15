@@ -421,6 +421,31 @@ export async function updatePost(
 	const updatedPost = await getPost(currentPost.id)
 	await createNewPostVersion(updatedPost, user.id)
 
+	let client = new Typesense.Client({
+		nodes: [
+			{
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
+
+	if (
+		updatedPost.fields.state !== 'published' ||
+		updatedPost.fields.visibility !== 'public'
+	) {
+		await client
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents()
+			.delete(updatedPost.fields.eggheadLessonId)
+			.catch((err) => {
+				console.error(err)
+			})
+	}
+
 	return updatedPost
 }
 
