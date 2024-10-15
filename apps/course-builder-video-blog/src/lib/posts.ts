@@ -32,7 +32,7 @@ export type Post = z.infer<typeof PostSchema>
 
 export const NewPostSchema = z.object({
 	title: z.string().min(2).max(90),
-	videoResourceId: z.string().min(4, 'Please upload a video'),
+	videoResourceId: z.string().min(4, 'Please upload a video').optional(),
 })
 
 export type NewPost = z.infer<typeof NewPostSchema>
@@ -40,8 +40,8 @@ export type NewPost = z.infer<typeof NewPostSchema>
 export const PostUpdateSchema = z.object({
 	id: z.string(),
 	fields: z.object({
-		title: z.string().min(2).max(90),
-		body: z.string().optional().nullable(),
+		title: z.string().min(2).max(90).optional(),
+		body: z.string().optional(),
 	}),
 })
 

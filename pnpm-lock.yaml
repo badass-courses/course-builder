@@ -718,7 +718,7 @@ importers:
         specifier: ^1.0.16
         version: link:../../packages/ui
       '@heroicons/react':
-        specifier: ^2.0.18
+        specifier: ^2.1.1
         version: 2.1.1(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^3.3.2
@@ -804,6 +804,9 @@ importers:
       framer-motion:
         specifier: ^11
         version: 11.1.7(react-dom@18.3.1)(react@18.3.1)
+      human-readable-ids:
+        specifier: ^1.0.4
+        version: 1.0.4
       inngest:
         specifier: ^3.22.5
         version: 3.22.5(next@14.2.5)(typescript@5.4.5)
@@ -23717,6 +23720,12 @@ packages:
     resolution: {integrity: sha512-UNopramDEhHJD+VR+ehk8rOslwSfByxPIZyJRfV739NDhN5LF1fa1MqnzKm2lGTQRjNrjK19Q5fhkgIfjlVUKw==}
     dev: false
 
+  /human-readable-ids@1.0.4:
+    resolution: {integrity: sha512-h1zwThTims8A/SpqFGWyTx+jG1+WRMJaEeZgbtPGrIpj2AZjsOgy8Y+iNzJ0yAyN669Q6F02EK66WMWcst+2FA==}
+    dependencies:
+      knuth-shuffle: 1.0.8
+    dev: false
+
   /human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
@@ -25134,6 +25143,10 @@ packages:
   /kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
+    dev: false
+
+  /knuth-shuffle@1.0.8:
+    resolution: {integrity: sha512-IdC4Hpp+mx53zTt6VAGsAtbGM0g4BV9fP8tTcviCosSwocHcRDw9uG5Rnv6wLWckF4r72qeXFoK9NkvV1gUJCQ==}
     dev: false
 
   /kolorist@1.8.0:
