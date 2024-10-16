@@ -1,11 +1,13 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
+import { LockIcon, ShieldCheckIcon } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
 import common from '../text/common'
@@ -46,10 +48,23 @@ export const PrimaryNewsletterCta: React.FC<
 
 	return (
 		<section
+			data-theme="elysium"
 			id={id}
 			aria-label="Newsletter sign-up"
-			className={cn('relative flex flex-col items-center px-5', className)}
+			className={cn(
+				'border-border/50 relative flex flex-col items-center border-b px-5 pb-[450px]',
+				className,
+			)}
 		>
+			<Image
+				src={require('../../public/assets/mountain.jpg')}
+				className="object-cover object-bottom"
+				aria-hidden="true"
+				quality={100}
+				priority
+				alt=""
+				fill
+			/>
 			{children ? (
 				children
 			) : (
@@ -57,7 +72,7 @@ export const PrimaryNewsletterCta: React.FC<
 					<h2 className="font-heading fluid-3xl text-muted-foreground text-center font-semibold">
 						{title}
 					</h2>
-					<h3 className="fluid-xl text-primary pt-8 text-center font-medium">
+					<h3 className="fluid-lg text-secondary pt-8 text-center font-sans font-light">
 						{byline}
 					</h3>
 				</div>
@@ -69,9 +84,10 @@ export const PrimaryNewsletterCta: React.FC<
 			/>
 			<p
 				data-nospam=""
-				className="text-muted-foreground pt-8 text-center text-sm opacity-75"
+				className="text-muted-foreground inline-flex items-center pt-8 text-center text-sm opacity-75"
 			>
-				I respect your privacy. Unsubscribe at any time.
+				<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
+				Unsubscribe at any time.
 			</p>
 		</section>
 	)

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { cookies } from 'next/headers'
 import Image from 'next/image'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import Footer from '@/components/app/footer'
@@ -13,6 +14,7 @@ import { getPage } from '@/lib/pages-query'
 import { getPricingProps } from '@/lib/pricing-query'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -61,22 +63,12 @@ const Home = async ({ searchParams }: Props) => {
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
 	const page = await getPage(allowPurchase ? 'home-6z2ir' : 'home-6z2ir')
+	const cookieStore = cookies()
+	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return (
 		<div className="">
 			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-[7vw] lg:aspect-[1920/1080]">
-				{/* <Image
-					src={require('../../public/hero-1@2x.jpg')}
-					fill
-					alt=""
-					aria-hidden="true"
-					className="object-cover opacity-75"
-					quality={100}
-				/>
-				<div
-					aria-hidden="true"
-					className="bg-primary/20 pointer-events-none absolute z-20 h-80 w-80 rounded-full blur-[150px]"
-				/> */}
 				<LandingHeroParallax />
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
 					<h1 className="text-muted-foreground leading-0 font-heading sm:fluid-4xl fluid-2xl w-full max-w-4xl text-center font-bold">
@@ -98,8 +90,8 @@ const Home = async ({ searchParams }: Props) => {
 				</div>
 			</header>
 
-			<main className="mx-auto w-full pt-5 sm:pt-16">
-				<article className="prose sm:prose-lg prose-p:mx-auto prose-headings:mx-auto prose-ul:mx-auto prose-img:mx-auto prose-h2:text-center prose-p:max-w-[45rem] prose-headings:max-w-[45rem] prose-ul:max-w-[45rem] mx-auto w-full max-w-none px-6 sm:px-10">
+			<main className="w-full pt-5 sm:pt-16">
+				<article className="prose sm:prose-lg lg:prose-xl mx-auto px-5 pb-16 sm:pb-24">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
@@ -135,16 +127,10 @@ const Home = async ({ searchParams }: Props) => {
 							/>
 						</section>
 					</>
-				) : (
-					<>
-						<PrimaryNewsletterCta className="pb-32 pt-10" />
-						{/* <div className="flex w-full items-center justify-center">
-							<Instructor className="sm:prose-lg prose mx-auto w-full max-w-none px-6 py-6 sm:py-16" />
-						</div> */}
-					</>
+				) : ckSubscriber ? null : (
+					<PrimaryNewsletterCta className="pt-10" />
 				)}
 			</main>
-			<Footer />
 		</div>
 	)
 }
