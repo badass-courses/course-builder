@@ -476,8 +476,6 @@ export async function updatePost(
 		updatedPost.fields.visibility === 'public'
 
 	if (!shouldIndex) {
-		console.log('🚨 Not indexing post', updatedPost.fields.eggheadLessonId)
-		console.log(process.env.TYPESENSE_COLLECTION_NAME)
 		await client
 			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents(String(updatedPost.fields.eggheadLessonId))
