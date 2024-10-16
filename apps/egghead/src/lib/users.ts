@@ -39,8 +39,6 @@ export const loadEggheadInstructorForUser = async (userId: string) => {
 		`SELECT * FROM instructors WHERE user_id = ${eggheadAccount.providerAccountId}`,
 	)
 
-	console.log('instructor', instructor)
-
 	return instructor.rows[0]
 }
 

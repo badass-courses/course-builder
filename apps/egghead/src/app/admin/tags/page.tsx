@@ -13,6 +13,5 @@ export default async function TagManagementPage() {
 	}
 
 	const tags = await getTags()
-	console.log(tags)
 	return <TagManagement initialTags={tags} />
 }

@@ -31,7 +31,6 @@ export default async function PostPage({
 		post.resources
 			?.map((resource) => resource.resource)
 			?.find((resource) => {
-				console.log({ resource })
 				return resource.type === 'videoResource'
 			}) || null
 

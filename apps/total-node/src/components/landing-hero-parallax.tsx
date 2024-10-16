@@ -78,13 +78,13 @@ export const LandingHeroParallax = () => {
 	const platformStyles = useStylesForImage('platform', scrollYProgress)
 
 	const images = [
-		{ name: 'bg', src: '/assets/hero-bg.jpg', styles: bgStyles },
-		{ name: 'maze', src: '/assets/hero-maze.png', styles: mazeStyles },
-		{ name: 'beam', src: '/assets/hero-beam.png', styles: beamStyles },
-		{ name: 'clouds', src: '/assets/hero-clouds.png', styles: cloudsStyles },
+		{ name: 'bg', src: '/assets/hero-bg@2x.jpg', styles: bgStyles },
+		{ name: 'maze', src: '/assets/hero-maze@2x.png', styles: mazeStyles },
+		{ name: 'beam', src: '/assets/hero-beam@2x.png', styles: beamStyles },
+		{ name: 'clouds', src: '/assets/hero-clouds@2x.png', styles: cloudsStyles },
 		{
 			name: 'platform',
-			src: '/assets/hero-platform.png',
+			src: '/assets/hero-platform@2x.png',
 			styles: platformStyles,
 		},
 	]
@@ -107,6 +107,7 @@ export const LandingHeroParallax = () => {
 						alt=""
 						fill
 						priority
+						quality={100}
 					/>
 				</motion.div>
 			))}

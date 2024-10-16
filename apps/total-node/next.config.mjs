@@ -17,6 +17,9 @@ const withMDX = createMDX({
 
 /** @type {import("next").NextConfig} */
 const config = {
+	experimental: {
+		mdxRs: true,
+	},
 	images: {
 		remotePatterns: [
 			{
@@ -37,7 +40,7 @@ const config = {
 		],
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
-	transpilePackages: ['@coursebuilder/ui'],
+	transpilePackages: ['@coursebuilder/ui', 'next-mdx-remote', 'shiki'],
 }
 
 export default withAxiom(withMDX(config))

@@ -54,74 +54,76 @@ const Navigation = () => {
 				},
 			)}
 		>
-			<div className="flex items-stretch">
-				<span
-					onContextMenu={(e) => {
-						e.preventDefault()
-						router.push('/brand')
-					}}
-				>
-					<Link
-						tabIndex={isRoot ? -1 : 0}
-						href="/"
-						className="font-heading hover:bg-border/50 flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-4 text-lg font-semibold leading-none transition"
+			<div className="container flex w-full items-stretch justify-between">
+				<div className="flex items-stretch">
+					<span
+						onContextMenu={(e) => {
+							e.preventDefault()
+							router.push('/brand')
+						}}
 					>
-						<LogoMark className="w-8" />
-						<span className="text-muted-foreground text-[1.0625rem] font-bold !leading-none">
-							Total Node
-						</span>
-					</Link>
-				</span>
-				<hr
-					aria-hidden="true"
-					className="bg-muted-foreground/50 mx-2 my-auto hidden h-2 w-px sm:flex"
-				/>
-				{links.length > 0 && (
-					<nav
-						className="hidden items-stretch sm:flex"
-						aria-label={`Navigation header with ${links.length} links`}
-					>
-						<ul className="flex items-stretch">
-							{links.map((link) => {
-								return (
-									<NavLinkItem
-										className="font-heading text-[18px] font-semibold"
-										key={link.href || link.label}
-										{...link}
-									/>
-								)
-							})}
-						</ul>
-					</nav>
-				)}
-			</div>
-			<div className="flex items-stretch">
-				{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
+						<Link
+							tabIndex={isRoot ? -1 : 0}
+							href="/"
+							className="font-heading flex h-[var(--nav-height)] w-full items-center justify-center gap-2 pr-4 text-lg font-semibold leading-none transition"
+						>
+							<LogoMark className="w-8" />
+							<span className="text-muted-foreground text-xl font-bold !leading-none">
+								Total Node
+							</span>
+						</Link>
+					</span>
+					<hr
+						aria-hidden="true"
+						className="bg-muted-foreground/50 mx-2 my-auto hidden h-2 w-px sm:flex"
+					/>
+					{links.length > 0 && (
+						<nav
+							className="hidden items-stretch sm:flex"
+							aria-label={`Navigation header with ${links.length} links`}
+						>
+							<ul className="flex items-stretch">
+								{links.map((link) => {
+									return (
+										<NavLinkItem
+											className="font-heading text-[18px] font-semibold"
+											key={link.href || link.label}
+											{...link}
+										/>
+									)
+								})}
+							</ul>
+						</nav>
+					)}
+				</div>
+				<div className="flex items-stretch">
+					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
 					<div className="flex items-center pr-5">
 						<Button asChild size="sm" className="h-8">
 							<Link href="/#buy">Get Access</Link>
 						</Button>
 					</div>
 				)} */}
-				{sessionStatus === 'authenticated' && (
+					{sessionStatus === 'authenticated' && (
+						<div className="hidden items-stretch sm:flex">
+							<NavLinkItem
+								label="Feedback"
+								onClick={() => {
+									setIsFeedbackDialogOpen(true)
+								}}
+							/>
+						</div>
+					)}
 					<div className="hidden items-stretch sm:flex">
-						<NavLinkItem
-							label="Feedback"
-							onClick={() => {
-								setIsFeedbackDialogOpen(true)
-							}}
-						/>
+						<User />
 					</div>
-				)}
-				<div className="hidden items-stretch pr-3 sm:flex">
-					<User />
 				</div>
-			</div>
-			<div className="flex items-stretch sm:hidden">
-				<MobileNav
-					isMobileMenuOpen={isMobileMenuOpen}
-					setIsMobileMenuOpen={setIsMobileMenuOpen}
-				/>
+				<div className="flex items-stretch sm:hidden">
+					<MobileNav
+						isMobileMenuOpen={isMobileMenuOpen}
+						setIsMobileMenuOpen={setIsMobileMenuOpen}
+					/>
+				</div>
 			</div>
 		</header>
 	)

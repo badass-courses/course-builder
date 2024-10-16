@@ -270,7 +270,9 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 
 	return videoResource ? (
 		<Suspense
-			fallback={<PlayerContainerSkeleton className="max-h-[75vh] bg-black" />}
+			fallback={
+				<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />
+			}
 		>
 			<section
 				aria-label="video"

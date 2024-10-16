@@ -5,11 +5,11 @@
 		@apply mb-2;
 	}
 	input {
-		@apply relative flex p-5 text-base;
+		@apply placeholder:text-muted-foreground relative flex p-5 text-base placeholder:opacity-75;
 		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent;
 	}
 	[data-sr-input-label] {
-		@apply mt-3 inline-block pb-1 text-base font-normal;
+		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal opacity-80;
 	}
 	[data-sr-input-asterisk] {
 		@apply opacity-50;

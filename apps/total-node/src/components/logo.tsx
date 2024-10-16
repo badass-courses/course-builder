@@ -47,13 +47,12 @@ export const Logo: React.FC<{ className?: string; onDark?: boolean }> = ({
 }
 
 export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
-	className,
+	className = 'w-8 h-8',
 	onDark = false,
 }) => {
 	return (
 		<svg
-			width="30"
-			height="30"
+			className={cn('', className)}
 			viewBox="0 0 30 30"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
@@ -62,6 +61,7 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				d="M0.707107 15L15 0.707107L29.2929 15L15 29.2929L0.707107 15Z"
 				fill="#1D1511"
 				stroke="#7B6B5B"
+				strokeWidth={1}
 			/>
 			<path
 				opacity="0.2"
@@ -70,13 +70,15 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				stroke="#7B6B5B"
 				strokeLinecap="round"
 				strokeDasharray="1 3"
+				strokeWidth={1}
 			/>
 			<path
 				d="M12.0359 13.2887L15 11.5774L17.9641 13.2887V16.7113L15 18.4226L12.0359 16.7113V13.2887Z"
 				fill="#1D1511"
 				stroke="#FFAB49"
+				strokeWidth={1}
 			/>
-			<circle cx="15" cy="15" r="13.6176" stroke="#7B6B5B" />
+			<circle cx="15" cy="15" r="13.6176" stroke="#7B6B5B" strokeWidth={1} />
 		</svg>
 	)
 }
