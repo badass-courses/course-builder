@@ -480,8 +480,8 @@ export async function updatePost(
 		console.log(process.env.TYPESENSE_COLLECTION_NAME)
 		await client
 			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents()
-			.delete(updatedPost.fields.eggheadLessonId)
+			.documents(String(updatedPost.fields.eggheadLessonId))
+			.delete()
 			.catch((err) => {
 				console.error(err)
 			})
