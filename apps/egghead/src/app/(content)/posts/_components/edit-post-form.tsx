@@ -94,7 +94,6 @@ export function EditPostForm({
 			user={session?.data?.user}
 			onSave={onPostSave}
 			tools={[
-				{ id: 'assistant' },
 				{
 					id: 'publish-checklist',
 					label: 'Publish Checklist',
@@ -103,6 +102,7 @@ export function EditPostForm({
 					),
 					toolComponent: <PublishPostChecklist key={'post-checklist'} />,
 				},
+				{ id: 'assistant' },
 			]}
 			theme={theme}
 		>
