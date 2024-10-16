@@ -12,7 +12,6 @@ export async function getCsrf() {
 		},
 		cache: 'no-cache',
 	}
-	console.log('csrf url', `${env.COURSEBUILDER_URL}/api/auth/csrf`)
 
 	return await fetch(`${env.COURSEBUILDER_URL}/api/auth/csrf`, options)
 		.then(async (res) => {

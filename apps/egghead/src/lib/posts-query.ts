@@ -20,10 +20,12 @@ import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
+import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
 
+import crypto from 'crypto'
 import { v4 } from 'uuid'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
@@ -76,20 +78,43 @@ export const getCachedPost = unstable_cache(
 	{ revalidate: 3600, tags: ['posts'] },
 )
 
+function generateContentHash(post: Post): string {
+	const content = JSON.stringify({
+		title: post.fields.title,
+		body: post.fields.body,
+		description: post.fields.description,
+		slug: post.fields.slug,
+		// Add any other fields that should be considered for content changes
+	})
+	return crypto.createHash('sha256').update(content).digest('hex')
+}
+
 async function createNewPostVersion(post: Post | null, createdById?: string) {
 	if (!post) return null
-	const currentVersion = post?.currentVersionId
-		? await db.query.contentResourceVersion.findFirst({
-				where: eq(contentResourceVersionTable.id, post.currentVersionId),
-			})
-		: null
-	const versionId = `version~${guid()}`
+	const contentHash = generateContentHash(post)
+	const versionId = `version~${contentHash}`
+
+	// Check if this version already exists
+	const existingVersion = await db.query.contentResourceVersion.findFirst({
+		where: eq(contentResourceVersionTable.id, versionId),
+	})
+
+	if (existingVersion) {
+		// If this exact version already exists, just update the current version pointer
+		await db
+			.update(contentResource)
+			.set({ currentVersionId: versionId })
+			.where(eq(contentResource.id, post.id))
+		return post
+	}
+
+	// If it's a new version, create it
 	await db.transaction(async (trx) => {
 		await trx.insert(contentResourceVersionTable).values({
 			id: versionId,
 			resourceId: post.id,
-			parentVersionId: currentVersion ? currentVersion.id : null,
-			versionNumber: currentVersion ? currentVersion.versionNumber + 1 : 1,
+			parentVersionId: post.currentVersionId,
+			versionNumber: (await getLatestVersionNumber(post.id)) + 1,
 			fields: {
 				...post.fields,
 			},
@@ -105,6 +130,14 @@ async function createNewPostVersion(post: Post | null, createdById?: string) {
 			.where(eq(contentResource.id, post.id))
 	})
 	return post
+}
+
+async function getLatestVersionNumber(postId: string): Promise<number> {
+	const latestVersion = await db.query.contentResourceVersion.findFirst({
+		where: eq(contentResourceVersionTable.resourceId, postId),
+		orderBy: desc(contentResourceVersionTable.versionNumber),
+	})
+	return latestVersion ? latestVersion.versionNumber : 0
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
@@ -419,7 +452,12 @@ export async function updatePost(
 	revalidateTag('posts')
 
 	const updatedPost = await getPost(currentPost.id)
-	await createNewPostVersion(updatedPost, user.id)
+	const newContentHash = generateContentHash(updatedPost)
+	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
+
+	if (newContentHash !== currentContentHash) {
+		await createNewPostVersion(updatedPost, user.id)
+	}
 
 	let client = new Typesense.Client({
 		nodes: [
@@ -433,10 +471,13 @@ export async function updatePost(
 		connectionTimeoutSeconds: 2,
 	})
 
-	if (
-		updatedPost.fields.state !== 'published' ||
-		updatedPost.fields.visibility !== 'public'
-	) {
+	const shouldIndex =
+		updatedPost.fields.state === 'published' &&
+		updatedPost.fields.visibility === 'public'
+
+	if (!shouldIndex) {
+		console.log('🚨 Not indexing post', updatedPost.fields.eggheadLessonId)
+		console.log(process.env.TYPESENSE_COLLECTION_NAME)
 		await client
 			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents()

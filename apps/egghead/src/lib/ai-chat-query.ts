@@ -25,8 +25,6 @@ export async function sendResourceChatMessage({
 		throw new Error('Unauthorized')
 	}
 
-	console.log('sendResourceChatMessage', messages, selectedWorkflow)
-
 	await inngest.send({
 		name: RESOURCE_CHAT_REQUEST_EVENT,
 		data: {
