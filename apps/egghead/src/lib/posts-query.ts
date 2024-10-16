@@ -452,6 +452,11 @@ export async function updatePost(
 	revalidateTag('posts')
 
 	const updatedPost = await getPost(currentPost.id)
+
+	if (!updatedPost) {
+		throw new Error(`Post with id ${currentPost.id} not found.`)
+	}
+
 	const newContentHash = generateContentHash(updatedPost)
 	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
 
