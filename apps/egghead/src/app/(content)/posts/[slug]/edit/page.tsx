@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { courseBuilderAdapter } from '@/db'
 import { getPost, getPostTags } from '@/lib/posts-query'
-import { getAllEggheadTags, getTags } from '@/lib/tags-query'
+import { getAllEggheadTagsCached, getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -31,7 +31,6 @@ export default async function PostPage({
 		post.resources
 			?.map((resource) => resource.resource)
 			?.find((resource) => {
-				console.log({ resource })
 				return resource.type === 'videoResource'
 			}) || null
 
@@ -39,7 +38,7 @@ export default async function PostPage({
 		? courseBuilderAdapter.getVideoResource(videoResource?.id)
 		: Promise.resolve(null)
 
-	await getAllEggheadTags()
+	await getAllEggheadTagsCached()
 	const tagLoader = getTags()
 
 	return (

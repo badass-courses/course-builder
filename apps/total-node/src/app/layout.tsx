@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Metadata } from 'next'
 import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
+import Footer from '@/components/app/footer'
 import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import config from '@/config'
@@ -100,6 +101,7 @@ export default function RootLayout({
 							>
 								{children}
 							</CouponProvider>
+							<Footer />
 						</ThemeProvider>
 					</TRPCReactProvider>
 					{isGoogleAnalyticsAvailable && (

@@ -99,7 +99,12 @@ module.exports = withUt({
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),
-						'li, strong, h1, h2, h3, h4, h5, h6': {
+						p: { fontWeight: 300 },
+						'h1, h2, h3, h4': {
+							fontWeight: 900,
+							color: theme('colors.muted.foreground'),
+						},
+						'li, strong': {
 							color: theme('colors.foreground'),
 						},
 						a: {

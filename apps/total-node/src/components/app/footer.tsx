@@ -1,14 +1,37 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+import { LogoMark } from '../logo'
 
 export default function Footer() {
+	const pathname = usePathname()
+	const isRoot = pathname === '/'
+
 	return (
-		<footer className="relative mx-auto flex w-full max-w-screen-lg flex-col items-start justify-between gap-16 px-5 pb-48 pt-14 sm:flex-row sm:px-10 sm:pt-16 lg:px-5">
-			<small className="text-muted-foreground absolute bottom-5 left-5 flex items-center gap-5 text-sm opacity-75">
-				<span>© TotalNodeJS.com</span>
-				<Link className=" transition hover:opacity-100" href="/privacy">
+		<footer className="w-full border-t pb-16 pt-20">
+			<div className="container mx-auto flex w-full items-center justify-center sm:justify-between">
+				<Link
+					tabIndex={isRoot ? -1 : 0}
+					href="/"
+					className="font-heading flex items-center justify-center gap-2 font-semibold leading-none saturate-0"
+				>
+					<LogoMark className="h-16 w-16" />
+					{/* <span className="text-muted-foreground text-3xl font-bold !leading-none">
+						Total Node
+					</span> */}
+				</Link>
+			</div>
+			<div className="container mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light sm:justify-start">
+				<span className="opacity-75">© TotalNodeJS.com</span>
+				<Link
+					className="opacity-75 transition hover:opacity-100"
+					href="/privacy"
+				>
 					Terms & Conditions
 				</Link>
-			</small>
+			</div>
 		</footer>
 	)
 }

@@ -2,7 +2,6 @@ import * as React from 'react'
 import { type Metadata } from 'next'
 import { Landing } from '@/app/_components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
-import { getAllEggheadTags } from '@/lib/tags-query'
 
 export const metadata: Metadata = {
 	title: 'egghead Post Builder',

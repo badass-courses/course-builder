@@ -53,7 +53,6 @@ async function PostList() {
 		postsModule = await getAllPostsForUser(session?.user?.id)
 	}
 
-	console.log(`posts loaded`, JSON.stringify(postsModule, null, 2))
 	return (
 		<>
 			{postsModule.length > 0 ? (

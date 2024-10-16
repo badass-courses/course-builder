@@ -5,7 +5,6 @@ import toast from 'react-hot-toast'
 import { Button } from '@coursebuilder/ui'
 
 export function CopyEggheadLinkButton({ slug }: { slug: string }) {
-	console.log('slug', slug)
 	return (
 		<Button
 			size="sm"

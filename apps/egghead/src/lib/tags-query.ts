@@ -1,3 +1,4 @@
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { tag as tagTable } from '@/db/schema'
@@ -41,6 +42,12 @@ export async function getTags(): Promise<EggheadTag[]> {
 	const tags = await db.query.tag.findMany()
 	return z.array(EggheadTagSchema).parse(tags)
 }
+
+export const getAllEggheadTagsCached = unstable_cache(
+	async () => getAllEggheadTags(),
+	['tags'],
+	{ revalidate: 60, tags: ['tags'] },
+)
 
 export async function getAllEggheadTags(): Promise<EggheadTag[]> {
 	const response = await fetch('https://app.egghead.io/api/v1/tags')
@@ -228,5 +235,6 @@ export async function updateTag(input: UpdateTagInput): Promise<EggheadTag> {
 		.set(updatedTag)
 		.where(eq(tagTable.id, updatedTag.id))
 
+	revalidateTag('tags')
 	return updatedTag
 }
