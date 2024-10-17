@@ -29,7 +29,7 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 		damping: 20,
 		stiffness: 100,
 	})
-	const cloudsY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 300]), {
+	const cloudsY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 30]), {
 		damping: 20,
 		stiffness: 100,
 	})
@@ -57,7 +57,7 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 			}
 		case 'clouds':
 			return {
-				y: mazeY,
+				y: cloudsY,
 				scale: cloudsScale,
 			}
 		default:
