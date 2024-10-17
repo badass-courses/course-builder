@@ -15,8 +15,9 @@ import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import {
+	callunaFont,
 	dalekFont,
-	headingFont,
+	// headingFont,
 	maisonNeue,
 	maisonNeueMono,
 } from '@/utils/load-fonts'
@@ -65,7 +66,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} ${headingFont.variable} ${dalekFont.variable} antialised font-sans`}
+					className={`relative ${maisonNeue.variable} ${callunaFont.variable} ${maisonNeueMono.variable} ${dalekFont.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

@@ -1,5 +1,43 @@
 import localFont from 'next/font/local'
 
+export const callunaFont = localFont({
+	preload: true,
+	display: 'block',
+	variable: '--font-calluna',
+	src: [
+		{
+			path: '../styles/fonts/calluna_300_normal.woff2',
+			weight: '300',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/calluna_600_normal.woff2',
+			weight: '600',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/calluna_600_italic.woff2',
+			weight: '600',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/calluna_700_normal.woff2',
+			weight: '700',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/calluna_700_italic.woff2',
+			weight: '700',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/calluna_900_normal.woff2',
+			weight: '900',
+			style: 'normal',
+		},
+	],
+})
+
 export const dalekFont = localFont({
 	preload: true,
 	display: 'block',

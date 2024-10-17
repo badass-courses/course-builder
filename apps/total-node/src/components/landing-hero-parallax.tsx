@@ -17,12 +17,12 @@ function useParallax(value: MotionValue<number>, distance: number) {
 }
 
 function useStylesForImage(name: string, scrollYProgress: MotionValue) {
-	const platformY = useSpring(useTransform(scrollYProgress, [0, 1], [1, 100]), {
+	const platformY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 200]), {
 		damping: 20,
 		stiffness: 100,
 	})
 	const platformScale = useSpring(
-		useTransform(scrollYProgress, [0, 1], [1, 1.5]),
+		useTransform(scrollYProgress, [0, 1], [0.93, 1.2]),
 		{ damping: 20, stiffness: 100 },
 	)
 	const mazeY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 50]), {
@@ -44,10 +44,12 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 				y: platformY,
 				scale: platformScale,
 				transformOrigin: 'bottom',
+				x: -5,
 			}
 		case 'maze':
 			return {
 				y: mazeY,
+				filter: 'saturate(0.75)',
 			}
 		case 'beam':
 			return {
@@ -78,7 +80,7 @@ export const LandingHeroParallax = () => {
 	const platformStyles = useStylesForImage('platform', scrollYProgress)
 
 	const images = [
-		{ name: 'bg', src: '/assets/hero-bg@2x.jpg', styles: bgStyles },
+		// { name: 'bg', src: '/assets/hero-bg@2x.jpg', styles: bgStyles },
 		{ name: 'maze', src: '/assets/hero-maze@2x.png', styles: mazeStyles },
 		{ name: 'beam', src: '/assets/hero-beam@2x.png', styles: beamStyles },
 		{ name: 'clouds', src: '/assets/hero-clouds@2x.png', styles: cloudsStyles },
@@ -92,7 +94,7 @@ export const LandingHeroParallax = () => {
 	return (
 		<div
 			ref={scrollAreaRef}
-			className="absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden lg:aspect-[1920/1080]"
+			className="absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden bg-[#AD9F95] lg:aspect-[1920/1080]"
 		>
 			{images.map(({ name, src, styles }) => (
 				<motion.div
