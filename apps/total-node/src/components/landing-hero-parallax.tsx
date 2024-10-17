@@ -91,25 +91,54 @@ export const LandingHeroParallax = () => {
 		},
 	]
 
+	// State variables to track image loading
+	const [imagesLoaded, setImagesLoaded] = React.useState(0)
+	const totalImages = 4 // Update this if you change the number of images
+	const [allImagesLoaded, setAllImagesLoaded] = React.useState(false)
+
+	// Update the allImagesLoaded state when all images have loaded
+	React.useEffect(() => {
+		if (imagesLoaded >= totalImages) {
+			setAllImagesLoaded(true)
+		}
+	}, [imagesLoaded, totalImages])
+
+	// Render a loading indicator until all images are loaded
+
 	return (
 		<div
 			ref={scrollAreaRef}
-			className="absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden bg-[#AD9F95] lg:aspect-[1920/1080]"
+			className={cn(
+				'absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden bg-[#AD9F95] lg:aspect-[1920/1080]',
+			)}
 		>
+			{!allImagesLoaded && (
+				<Image
+					src={require('../../public/assets/hero-loading@2x.jpg')}
+					fill
+					className="object-cover object-bottom"
+					alt=""
+					priority
+					aria-hidden="true"
+				/>
+			)}
 			{images.map(({ name, src, styles }) => (
 				<motion.div
 					key={name}
 					style={styles}
 					transition={{}}
-					className="absolute left-0 top-0 h-full w-full"
+					className={cn('absolute left-0 top-0 h-full w-full', {
+						'opacity-0': !allImagesLoaded,
+					})}
 				>
 					<Image
 						src={src}
 						className={cn('object-cover object-bottom')}
 						alt=""
 						fill
-						priority
+						// priority
 						quality={100}
+						onLoadingComplete={() => setImagesLoaded((prev) => prev + 1)}
 					/>
 				</motion.div>
 			))}
