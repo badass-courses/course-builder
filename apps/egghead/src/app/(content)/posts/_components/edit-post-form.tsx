@@ -11,6 +11,7 @@ import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { CheckIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -18,6 +19,8 @@ import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+
+import PublishPostChecklist from './publish-post-checklist'
 
 const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -90,6 +93,17 @@ export function EditPostForm({
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onPostSave}
+			tools={[
+				{
+					id: 'publish-checklist',
+					label: 'Publish Checklist',
+					icon: () => (
+						<CheckIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: <PublishPostChecklist key={'post-checklist'} />,
+				},
+				{ id: 'assistant' },
+			]}
 			theme={theme}
 		>
 			<PostMetadataFormFields
