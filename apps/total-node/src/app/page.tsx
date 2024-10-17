@@ -24,7 +24,8 @@ export async function generateMetadata(
 	{ searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Unleash godlike power in your backend development')}`
+	let ogImageUrl =
+		'https://res.cloudinary.com/total-typescript/image/upload/v1729158522/totalnodejs.com/card-ttnjs_2x_mvr3o8.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node.js')}`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -37,13 +38,13 @@ export async function generateMetadata(
 		const validCoupon = Boolean(coupon && coupon.isValid)
 		if (validCoupon)
 			ogImageUrl =
-				'https://res.cloudinary.com/pro-nextjs/image/upload/v1723783882/golden-ticket_2x_qvicr9.jpg'
+				'https://res.cloudinary.com/total-typescript/image/upload/v1729158523/totalnodejs.com/golden-ticket-tnjs_2x_ggbrxn.png'
 	}
 
 	return {
 		title: {
 			template: '%s | Total Node',
-			default: `Unleash godlike power in your backend development`,
+			default: `From Zero to Hero in Node.js`,
 		},
 		openGraph: {
 			images: [
