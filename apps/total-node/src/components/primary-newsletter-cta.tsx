@@ -61,7 +61,7 @@ export const PrimaryNewsletterCta: React.FC<
 				className="object-cover object-bottom"
 				aria-hidden="true"
 				quality={100}
-				priority
+				loading="eager"
 				alt=""
 				fill
 			/>
