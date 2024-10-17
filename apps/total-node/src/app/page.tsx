@@ -72,8 +72,10 @@ const Home = async ({ searchParams }: Props) => {
 			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-16 lg:aspect-[1920/1080] lg:pt-[7vw]">
 				<LandingHeroParallax />
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
-					<h1 className="font-heading sm:fluid-5xl fluid-3xl w-full max-w-4xl text-center font-extrabold text-black shadow-[#AD9F95] drop-shadow-xl">
-						From Zero to Hero in Node
+					<h1 className="font-heading sm:fluid-5xl fluid-3xl w-full max-w-4xl text-balance text-center font-extrabold text-[#221801] shadow-[#AD9F95] drop-shadow-xl sm:text-black">
+						From Zero
+						<br />
+						to Hero in Node
 					</h1>
 					{/* <h2 className="font-heading sm:fluid-lg fluid-base mb-5 mt-7 items-center text-balance text-center font-bold uppercase !tracking-widest text-black sm:inline-flex">
 						From Zero To Hero

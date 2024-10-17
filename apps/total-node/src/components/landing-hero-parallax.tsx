@@ -22,14 +22,14 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 		stiffness: 100,
 	})
 	const platformScale = useSpring(
-		useTransform(scrollYProgress, [0, 1], [0.93, 1.2]),
+		useTransform(scrollYProgress, [0, 1], [1, 1.2]),
 		{ damping: 20, stiffness: 100 },
 	)
 	const mazeY = useSpring(useTransform(scrollYProgress, [0, 1], [0, -50]), {
 		damping: 20,
 		stiffness: 100,
 	})
-	const cloudsY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 30]), {
+	const cloudsY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 15]), {
 		damping: 20,
 		stiffness: 100,
 	})
@@ -48,12 +48,13 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 			}
 		case 'maze':
 			return {
-				y: mazeY,
+				// y: mazeY,
+				scale: cloudsScale,
 				filter: 'saturate(0.75)',
 			}
 		case 'beam':
 			return {
-				y: mazeY,
+				// y: mazeY,
 			}
 		case 'clouds':
 			return {
