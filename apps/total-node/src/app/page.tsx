@@ -25,7 +25,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1729158522/totalnodejs.com/card-ttnjs_2x_mvr3o8.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node.js')}`
+		'https://res.cloudinary.com/total-typescript/image/upload/v1729160439/totalnodejs.com/card-tn_2x_qg1pmy.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -44,7 +44,7 @@ export async function generateMetadata(
 	return {
 		title: {
 			template: '%s | Total Node',
-			default: `From Zero to Hero in Node.js`,
+			default: `From Zero to Hero in Node`,
 		},
 		openGraph: {
 			images: [
@@ -73,7 +73,7 @@ const Home = async ({ searchParams }: Props) => {
 				<LandingHeroParallax />
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
 					<h1 className="font-heading sm:fluid-5xl fluid-3xl w-full max-w-4xl text-center font-extrabold text-black shadow-[#AD9F95] drop-shadow-xl">
-						From Zero to Hero in Node.js
+						From Zero to Hero in Node
 					</h1>
 					{/* <h2 className="font-heading sm:fluid-lg fluid-base mb-5 mt-7 items-center text-balance text-center font-bold uppercase !tracking-widest text-black sm:inline-flex">
 						From Zero To Hero
