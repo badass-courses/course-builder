@@ -25,7 +25,7 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 		useTransform(scrollYProgress, [0, 1], [0.93, 1.2]),
 		{ damping: 20, stiffness: 100 },
 	)
-	const mazeY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 50]), {
+	const mazeY = useSpring(useTransform(scrollYProgress, [0, 1], [0, -50]), {
 		damping: 20,
 		stiffness: 100,
 	})
