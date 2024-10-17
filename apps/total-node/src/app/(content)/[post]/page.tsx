@@ -249,7 +249,7 @@ export default async function PostPage({
 					</div>
 				</section>
 			) : hasVideo ? null : (
-				<PrimaryNewsletterCta className="pb-20" />
+				<PrimaryNewsletterCta className="pt-20" />
 			)}
 		</main>
 	)

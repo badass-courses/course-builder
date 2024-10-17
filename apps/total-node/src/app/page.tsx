@@ -68,25 +68,28 @@ const Home = async ({ searchParams }: Props) => {
 
 	return (
 		<div className="">
-			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-[7vw] lg:aspect-[1920/1080]">
+			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-16 lg:aspect-[1920/1080] lg:pt-[7vw]">
 				<LandingHeroParallax />
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
-					<h1 className="text-muted-foreground leading-0 font-heading sm:fluid-4xl fluid-2xl w-full max-w-4xl text-center font-bold">
-						Unleash godlike power in your backend development
+					<h1 className="font-heading sm:fluid-5xl fluid-3xl w-full max-w-4xl text-center font-extrabold text-black shadow-[#AD9F95] drop-shadow-xl">
+						From Zero to Hero in Node.js
 					</h1>
-					<h2 className="font-heading sm:fluid-lg fluid-base text-muted-foreground mb-5 mt-7 items-center text-balance text-center font-normal !tracking-tight sm:inline-flex">
-						<Image
-							src={
-								'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
-							}
-							alt={config.author}
-							priority
-							className="ml-2 mr-1 inline-block rounded-full"
-							width={32}
-							height={32}
-						/>{' '}
-						{config.author}
-					</h2>
+					{/* <h2 className="font-heading sm:fluid-lg fluid-base mb-5 mt-7 items-center text-balance text-center font-bold uppercase !tracking-widest text-black sm:inline-flex">
+						From Zero To Hero
+					</h2> */}
+				</div>
+				<div className="absolute bottom-10 flex items-center justify-center text-white">
+					<Image
+						src={
+							'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
+						}
+						alt={config.author}
+						priority
+						className="mr-2 inline-block rounded-full"
+						width={36}
+						height={36}
+					/>{' '}
+					{config.author}
 				</div>
 			</header>
 

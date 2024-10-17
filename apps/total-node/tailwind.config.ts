@@ -24,7 +24,7 @@ module.exports = withUt({
 		},
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: '1.5rem',
 			screens: {
 				'2xl': '1280px',
 			},
@@ -77,7 +77,7 @@ module.exports = withUt({
 			},
 			fontFamily: {
 				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
-				heading: ['var(--font-heading)', ...fontFamily.sans],
+				heading: ['var(--font-calluna)', ...fontFamily.sans],
 				greek: ['var(--font-dalek)', ...fontFamily.sans],
 				mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
 			},

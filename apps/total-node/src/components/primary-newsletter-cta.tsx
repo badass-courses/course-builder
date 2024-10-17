@@ -69,7 +69,7 @@ export const PrimaryNewsletterCta: React.FC<
 				children
 			) : (
 				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center pb-10">
-					<h2 className="font-heading fluid-3xl text-muted-foreground text-center font-semibold">
+					<h2 className="font-heading fluid-3xl text-muted-foreground text-center font-extrabold">
 						{title}
 					</h2>
 					<h3 className="fluid-lg text-secondary pt-8 text-center font-sans font-light">
