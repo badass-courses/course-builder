@@ -15,11 +15,12 @@ import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import {
-	callunaFont,
+	ceaserDressingFont,
 	dalekFont,
-	// headingFont,
+	ffMetaFont,
 	maisonNeue,
 	maisonNeueMono,
+	quadorFont,
 } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
@@ -66,7 +67,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${maisonNeue.variable} ${callunaFont.variable} ${maisonNeueMono.variable} ${dalekFont.variable} antialised font-sans`}
+					className={`relative ${maisonNeue.variable} ${ffMetaFont.variable} ${quadorFont.variable} ${ceaserDressingFont.variable} ${maisonNeueMono.variable} ${dalekFont.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

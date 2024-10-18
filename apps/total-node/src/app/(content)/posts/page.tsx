@@ -48,7 +48,7 @@ export default async function PostsIndexPage() {
 	const latestPost = publishedPublicPosts[0]
 
 	return (
-		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col-reverse px-5 lg:flex-row">
+		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
 				<div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
@@ -147,7 +147,7 @@ const PostTeaser: React.FC<{
 async function PostListActions({ posts }: { posts?: Post[] }) {
 	const { ability, session } = await getServerAuthSession()
 	return ability.can('create', 'Content') ? (
-		<aside className="w-full border-x lg:max-w-xs lg:border-l-0 lg:border-r">
+		<aside className="w-full border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
 			<div className="border-b p-5">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!

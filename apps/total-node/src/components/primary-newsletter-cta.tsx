@@ -10,6 +10,7 @@ import { cn } from '@/utils/cn'
 import { LockIcon, ShieldCheckIcon } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
+import MountainIllustration from '../../public/assets/mountain.jpg'
 import common from '../text/common'
 
 type PrimaryNewsletterCtaProps = {
@@ -52,13 +53,13 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'border-border/50 relative flex flex-col items-center border-b px-5 pb-[450px]',
+				'border-border/50 relative flex flex-col items-center overflow-x-hidden border-b pb-[180px] sm:pb-[450px]',
 				className,
 			)}
 		>
 			<Image
-				src={require('../../public/assets/mountain.jpg')}
-				className="object-cover object-bottom"
+				src={MountainIllustration}
+				className="hidden object-cover object-bottom sm:block"
 				aria-hidden="true"
 				quality={100}
 				loading="eager"
@@ -68,7 +69,7 @@ export const PrimaryNewsletterCta: React.FC<
 			{children ? (
 				children
 			) : (
-				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center pb-10">
+				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center px-5 pb-10">
 					<h2 className="font-heading fluid-3xl text-muted-foreground text-center font-extrabold">
 						{title}
 					</h2>
@@ -84,11 +85,19 @@ export const PrimaryNewsletterCta: React.FC<
 			/>
 			<p
 				data-nospam=""
-				className="text-muted-foreground inline-flex items-center pt-8 text-center text-sm opacity-75"
+				className="text-muted-foreground inline-flex items-center px-5 pt-8 text-center text-sm opacity-75"
 			>
 				<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
 				Unsubscribe at any time.
 			</p>
+			<Image
+				src={MountainIllustration}
+				className="absolute bottom-0 block origin-bottom scale-[2] sm:hidden"
+				aria-hidden="true"
+				quality={100}
+				loading="eager"
+				alt=""
+			/>
 		</section>
 	)
 }
