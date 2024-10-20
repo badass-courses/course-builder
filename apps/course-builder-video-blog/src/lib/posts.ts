@@ -32,7 +32,7 @@ export const PostSchema = ContentResourceSchema.merge(
 		fields: z.object({
 			title: z.string(),
 			summary: z.string().optional().nullable(),
-			body: z.string().nullable().optional(),
+			body: z.string().default(''),
 			state: PostStateSchema.default('draft'),
 			visibility: PostVisibilitySchema.default('unlisted'),
 			slug: z.string(),
@@ -52,8 +52,8 @@ export type NewPost = z.infer<typeof NewPostSchema>
 export const PostUpdateSchema = z.object({
 	id: z.string(),
 	fields: z.object({
-		title: z.string().min(2).max(90).optional(),
-		body: z.string().optional(),
+		title: z.string().min(2).max(90),
+		body: z.string(),
 	}),
 })
 

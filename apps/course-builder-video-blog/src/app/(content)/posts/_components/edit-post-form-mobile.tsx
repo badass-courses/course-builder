@@ -78,8 +78,6 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 		}
 	}
 
-	const formValues = form.getValues()
-
 	return (
 		<>
 			<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
