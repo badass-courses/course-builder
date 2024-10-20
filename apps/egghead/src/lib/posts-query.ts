@@ -13,7 +13,15 @@ import {
 	contributionTypes,
 	users,
 } from '@/db/schema'
-import { NewPost, Post, PostSchema, PostUpdate } from '@/lib/posts'
+import {
+	generateContentHash,
+	NewPost,
+	Post,
+	PostAction,
+	PostSchema,
+	PostUpdate,
+	updatePostSlug,
+} from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
@@ -25,12 +33,18 @@ import { z } from 'zod'
 
 import 'server-only'
 
-import crypto from 'crypto'
-import { v4 } from 'uuid'
-
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
+import {
+	crreateEggheadLesson,
+	determineEggheadLessonState,
+	determineEggheadVisibilityState,
+	getEggheadUserProfile,
+	updateEggheadLesson,
+	writeLegacyTaggingsToEgghead,
+} from './egghead'
 import { EggheadTag, EggheadTagSchema } from './tags'
+import { upsertPostToTypeSense } from './typesense'
 
 export async function deletePost(id: string) {
 	const { session, ability } = await getServerAuthSession()
@@ -53,17 +67,7 @@ export async function deletePost(id: string) {
 		throw new Error('Unauthorized')
 	}
 
-	if (post.fields.eggheadLessonId) {
-		await eggheadPgQuery(
-			`UPDATE lessons SET state = 'retired' WHERE id = ${post.fields.eggheadLessonId}`,
-		)
-	}
-
-	await db
-		.delete(contentResourceResource)
-		.where(eq(contentResourceResource.resourceOfId, id))
-
-	await db.delete(contentResource).where(eq(contentResource.id, id))
+	await deletePostFromDatabase(id)
 
 	revalidateTag('posts')
 	revalidateTag(id)
@@ -77,68 +81,6 @@ export const getCachedPost = unstable_cache(
 	['posts'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
-
-function generateContentHash(post: Post): string {
-	const content = JSON.stringify({
-		title: post.fields.title,
-		body: post.fields.body,
-		description: post.fields.description,
-		slug: post.fields.slug,
-		// Add any other fields that should be considered for content changes
-	})
-	return crypto.createHash('sha256').update(content).digest('hex')
-}
-
-async function createNewPostVersion(post: Post | null, createdById?: string) {
-	if (!post) return null
-	const contentHash = generateContentHash(post)
-	const versionId = `version~${contentHash}`
-
-	// Check if this version already exists
-	const existingVersion = await db.query.contentResourceVersion.findFirst({
-		where: eq(contentResourceVersionTable.id, versionId),
-	})
-
-	if (existingVersion) {
-		// If this exact version already exists, just update the current version pointer
-		await db
-			.update(contentResource)
-			.set({ currentVersionId: versionId })
-			.where(eq(contentResource.id, post.id))
-		return post
-	}
-
-	// If it's a new version, create it
-	await db.transaction(async (trx) => {
-		await trx.insert(contentResourceVersionTable).values({
-			id: versionId,
-			resourceId: post.id,
-			parentVersionId: post.currentVersionId,
-			versionNumber: (await getLatestVersionNumber(post.id)) + 1,
-			fields: {
-				...post.fields,
-			},
-			createdAt: new Date(),
-			createdById: createdById ? createdById : post.createdById,
-		})
-
-		post.currentVersionId = versionId
-
-		await trx
-			.update(contentResource)
-			.set({ currentVersionId: versionId })
-			.where(eq(contentResource.id, post.id))
-	})
-	return post
-}
-
-async function getLatestVersionNumber(postId: string): Promise<number> {
-	const latestVersion = await db.query.contentResourceVersion.findFirst({
-		where: eq(contentResourceVersionTable.resourceId, postId),
-		orderBy: desc(contentResourceVersionTable.versionNumber),
-	})
-	return latestVersion ? latestVersion.versionNumber : 0
-}
 
 export async function getPost(slug: string): Promise<Post | null> {
 	const postData = await db.query.contentResource.findFirst({
@@ -193,6 +135,12 @@ export async function getAllPosts(): Promise<Post[]> {
 				},
 				orderBy: asc(contentResourceTagTable.position),
 			},
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
 		},
 		orderBy: desc(contentResource.createdAt),
 	})
@@ -229,6 +177,12 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 				},
 				orderBy: asc(contentResourceTagTable.position),
 			},
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
 		},
 		orderBy: desc(contentResource.createdAt),
 	})
@@ -249,95 +203,14 @@ export async function createPost(input: NewPost) {
 		throw new Error('Unauthorized')
 	}
 
-	const user = await db.query.users.findFirst({
-		where: eq(users.id, session?.user?.id),
-		with: {
-			accounts: true,
-		},
+	const profile = await getEggheadUserProfile(session.user.id)
+	const post = writeNewPostToDatabase({
+		newPost: input,
+		eggheadInstructorId: profile.instructor.id,
+		createdById: session.user.id,
 	})
 
-	if (!user) {
-		throw new Error('🚨 User not found')
-	}
-
-	const eggheadToken = user?.accounts?.find(
-		(account) => account.provider === 'egghead',
-	)?.access_token
-
-	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
-
-	const profile = await fetch(eggheadUserUrl, {
-		headers: {
-			Authorization: `Bearer ${eggheadToken}`,
-			'User-Agent': 'authjs',
-		},
-	}).then(async (res) => await res.json())
-
-	const postGuid = guid()
-	const newPostId = `post_${postGuid}`
-
-	const EGGHEAD_LESSON_TYPE = 'post'
-	const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
-
-	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state ,created_at, updated_at, visibility_state)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6)
-		RETURNING id`,
-		[
-			input.title,
-			profile.instructor.id,
-			`${slugify(input.title)}~${postGuid}`,
-			EGGHEAD_LESSON_TYPE,
-			EGGHEAD_INITIAL_LESSON_STATE,
-			'hidden',
-		],
-	)
-
-	const eggheadLessonId = eggheadLessonResult.rows[0].id
-
-	await db
-		.insert(contentResource)
-		.values({
-			id: newPostId,
-			type: 'post',
-			createdById: user.id,
-			fields: {
-				title: input.title,
-				state: 'draft',
-				visibility: 'public',
-				slug: `${slugify(input.title)}~${postGuid}`,
-				eggheadLessonId,
-			},
-		})
-		.catch((error) => {
-			console.error('🚨 Error creating post', error)
-			throw error
-		})
-
-	const post = await getPost(newPostId)
-
-	await createNewPostVersion(post)
-
-	if (post && input?.videoResourceId) {
-		await db
-			.insert(contentResourceResource)
-			.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
-	}
-
 	if (post) {
-		const contributionType = await db.query.contributionTypes.findFirst({
-			where: eq(contributionTypes.slug, 'author'),
-		})
-
-		if (contributionType) {
-			await db.insert(contentContributions).values({
-				id: `cc-${guid()}`,
-				userId: user.id,
-				contentId: post.id,
-				contributionTypeId: contributionType.id,
-			})
-		}
-
 		revalidateTag('posts')
 
 		return post
@@ -346,64 +219,9 @@ export async function createPost(input: NewPost) {
 	}
 }
 
-async function updateEggheadLesson(
-	eggheadLessonId: number,
-	state: string,
-	visibilityState: string,
-	duration: number,
-) {
-	await eggheadPgQuery(
-		`UPDATE lessons SET
-			state = $1,
-			duration = $2,
-			updated_at = NOW(),
-			visibility_state = $3
-		WHERE id = $4`,
-		[state, Math.floor(duration), visibilityState, eggheadLessonId],
-	)
-}
-
-function determineEggheadLessonState(
-	action: string,
-	currentState: string,
-): string {
-	switch (action) {
-		case 'publish':
-			return 'published'
-		case 'unpublish':
-			return 'approved'
-		case 'archive':
-			return 'retired'
-		default:
-			return currentState === 'published'
-				? 'published'
-				: currentState === 'archived'
-					? 'retired'
-					: 'approved'
-	}
-}
-
-function determineEggheadVisibilityState(
-	visibility: string,
-	state: string,
-): string {
-	return visibility === 'public' && state === 'published' ? 'indexed' : 'hidden'
-}
-
-async function getVideoDuration(resources: Post['resources']): Promise<number> {
-	const videoResource = resources?.find(
-		(resource) => resource.resource.type === 'videoResource',
-	)
-	if (videoResource) {
-		const muxAsset = await getMuxAsset(videoResource.resource.fields.muxAssetId)
-		return muxAsset?.duration ? Math.floor(muxAsset.duration) : 0
-	}
-	return 0
-}
-
 export async function updatePost(
 	input: PostUpdate,
-	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+	action: PostAction = 'save',
 ) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -418,120 +236,14 @@ export async function updatePost(
 		throw new Error('Unauthorized')
 	}
 
-	const postSlug = updatePostSlug(currentPost, input.fields.title)
-
-	const lessonState = determineEggheadLessonState(action, input.fields.state)
-	const lessonVisibilityState = determineEggheadVisibilityState(
-		input.fields.visibility,
-		input.fields.state,
-	)
-
-	const duration = await getVideoDuration(currentPost.resources)
-	const timeToRead = Math.floor(
-		readingTime(currentPost.fields.body ?? '').time / 1000,
-	)
-
-	if (currentPost.fields.eggheadLessonId) {
-		await updateEggheadLesson(
-			currentPost.fields.eggheadLessonId,
-			lessonState,
-			lessonVisibilityState,
-			duration > 0 ? duration : timeToRead,
-		)
-	}
-
-	await courseBuilderAdapter.updateContentResourceFields({
-		id: currentPost.id,
-		fields: {
-			...currentPost.fields,
-			...input.fields,
-			slug: postSlug,
-		},
-	})
-
 	revalidateTag('posts')
 
-	const updatedPost = await getPost(currentPost.id)
-
-	if (!updatedPost) {
-		throw new Error(`Post with id ${currentPost.id} not found.`)
-	}
-
-	const newContentHash = generateContentHash(updatedPost)
-	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
-
-	if (newContentHash !== currentContentHash) {
-		await createNewPostVersion(updatedPost, user.id)
-	}
-
-	let client = new Typesense.Client({
-		nodes: [
-			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-				port: 443,
-				protocol: 'https',
-			},
-		],
-		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-		connectionTimeoutSeconds: 2,
+	return writePostUpdateToDatabase({
+		currentPost,
+		postUpdate: input,
+		action,
+		updatedById: user.id,
 	})
-
-	const shouldIndex =
-		updatedPost.fields.state === 'published' &&
-		updatedPost.fields.visibility === 'public'
-
-	if (!shouldIndex) {
-		await client
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents(String(updatedPost.fields.eggheadLessonId))
-			.delete()
-			.catch((err) => {
-				console.error(err)
-			})
-	}
-
-	return updatedPost
-}
-
-function updatePostSlug(currentPost: Post, newTitle: string): string {
-	if (newTitle !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		return `${slugify(newTitle)}~${splitSlug[1] || guid()}`
-	}
-	return currentPost.fields.slug
-}
-
-export async function removeLegacyTaggingsOnEgghead(postId: string) {
-	const post = await getPost(postId)
-
-	if (!post) {
-		throw new Error(`Post with id ${postId} not found.`)
-	}
-
-	return eggheadPgQuery(
-		`DELETE FROM taggings WHERE taggings.taggable_id = ${post.fields.eggheadLessonId}`,
-	)
-}
-
-export async function writeLegacyTaggingsToEgghead(postId: string) {
-	const post = await getPost(postId)
-
-	if (!post) {
-		throw new Error(`Post with id ${postId} not found.`)
-	}
-
-	// just wipe them and rewrite, no need to be smart
-	await removeLegacyTaggingsOnEgghead(postId)
-
-	let query = ``
-
-	for (const tag of post.tags.map((tag) => tag.tag)) {
-		const tagId = Number(tag.id.split('_')[1])
-		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
-					VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'topics', NOW(), NOW());
-		`
-	}
-	Boolean(query) && (await eggheadPgQuery(query))
 }
 
 export async function getPostTags(postId: string): Promise<EggheadTag[]> {
@@ -563,4 +275,244 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 			),
 		)
 	await writeLegacyTaggingsToEgghead(postId)
+}
+
+export async function writeNewPostToDatabase(input: {
+	newPost: NewPost
+	eggheadInstructorId: number
+	createdById: string
+}) {
+	const { title, videoResourceId } = input.newPost
+	const { eggheadInstructorId, createdById } = input
+	const postGuid = guid()
+	const newPostId = `post_${postGuid}`
+	const videoResource =
+		await courseBuilderAdapter.getVideoResource(videoResourceId)
+
+	const eggheadLessonId = await crreateEggheadLesson({
+		title: title,
+		slug: `${slugify(title)}~${postGuid}`,
+		instructorId: eggheadInstructorId,
+	})
+
+	await db
+		.insert(contentResource)
+		.values({
+			id: newPostId,
+			type: 'post',
+			createdById,
+			fields: {
+				title,
+				state: 'draft',
+				visibility: 'unlisted',
+				slug: `${slugify(title)}~${postGuid}`,
+				eggheadLessonId,
+			},
+		})
+		.catch((error) => {
+			console.error('🚨 Error creating post', error)
+			throw error
+		})
+
+	const post = await getPost(newPostId)
+
+	await createNewPostVersion(post)
+
+	if (post) {
+		if (videoResource) {
+			await db
+				.insert(contentResourceResource)
+				.values({ resourceOfId: post.id, resourceId: videoResource.id })
+		}
+
+		const contributionType = await db.query.contributionTypes.findFirst({
+			where: eq(contributionTypes.slug, 'author'),
+		})
+
+		if (contributionType) {
+			await db.insert(contentContributions).values({
+				id: `cc-${guid()}`,
+				userId: createdById,
+				contentId: post.id,
+				contributionTypeId: contributionType.id,
+			})
+		}
+
+		return post
+	}
+	return null
+}
+
+export async function writePostUpdateToDatabase(input: {
+	currentPost: Post
+	postUpdate: PostUpdate
+	action: PostAction
+	updatedById: string
+}) {
+	const {
+		currentPost = await getPost(input.postUpdate.id),
+		postUpdate,
+		action = 'save',
+		updatedById,
+	} = input
+
+	if (!currentPost) {
+		throw new Error(`Post with id ${input.postUpdate.id} not found.`)
+	}
+
+	if (!postUpdate.fields.title) {
+		throw new Error('Title is required')
+	}
+
+	let postSlug = updatePostSlug(currentPost, postUpdate.fields.title)
+
+	if (postUpdate.fields.title !== currentPost.fields.title) {
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
+		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${splitSlug[1] || guid()}`
+	}
+
+	const lessonState = determineEggheadLessonState(
+		action,
+		postUpdate.fields.state,
+	)
+	const lessonVisibilityState = determineEggheadVisibilityState(
+		postUpdate.fields.visibility,
+		postUpdate.fields.state,
+	)
+
+	const duration = await getVideoDuration(currentPost.resources)
+	const timeToRead = Math.floor(
+		readingTime(currentPost.fields.body ?? '').time / 1000,
+	)
+
+	if (currentPost.fields.eggheadLessonId) {
+		await updateEggheadLesson({
+			eggheadLessonId: currentPost.fields.eggheadLessonId,
+			state: lessonState,
+			visibilityState: lessonVisibilityState,
+			duration: duration > 0 ? duration : timeToRead,
+		})
+	}
+
+	await courseBuilderAdapter.updateContentResourceFields({
+		id: currentPost.id,
+		fields: {
+			...currentPost.fields,
+			...postUpdate.fields,
+			slug: postSlug,
+		},
+	})
+
+	const updatedPost = await getPost(currentPost.id)
+
+	if (!updatedPost) {
+		throw new Error(`Post with id ${currentPost.id} not found.`)
+	}
+
+	const newContentHash = generateContentHash(updatedPost)
+	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
+
+	if (newContentHash !== currentContentHash) {
+		await createNewPostVersion(updatedPost, updatedById)
+	}
+
+	await upsertPostToTypeSense(updatedPost)
+
+	return updatedPost
+}
+
+export async function deletePostFromDatabase(id: string) {
+	const post = PostSchema.nullish().parse(
+		await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, id),
+			with: {
+				resources: true,
+			},
+		}),
+	)
+
+	if (!post) {
+		throw new Error(`Post with id ${id} not found.`)
+	}
+
+	if (post.fields.eggheadLessonId) {
+		await eggheadPgQuery(
+			`UPDATE lessons SET state = 'retired' WHERE id = ${post.fields.eggheadLessonId}`,
+		)
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(eq(contentResourceResource.resourceOfId, id))
+
+	await db.delete(contentResource).where(eq(contentResource.id, id))
+
+	return true
+}
+
+export async function createNewPostVersion(
+	post: Post | null,
+	createdById?: string,
+) {
+	if (!post) return null
+	const contentHash = generateContentHash(post)
+	const versionId = `version~${contentHash}`
+
+	// Check if this version already exists
+	const existingVersion = await db.query.contentResourceVersion.findFirst({
+		where: eq(contentResourceVersionTable.id, versionId),
+	})
+
+	if (existingVersion) {
+		// If this exact version already exists, just update the current version pointer
+		await db
+			.update(contentResource)
+			.set({ currentVersionId: versionId })
+			.where(eq(contentResource.id, post.id))
+		return post
+	}
+
+	// If it's a new version, create it
+	await db.transaction(async (trx) => {
+		await trx.insert(contentResourceVersionTable).values({
+			id: versionId,
+			resourceId: post.id,
+			parentVersionId: post.currentVersionId,
+			versionNumber: (await getLatestVersionNumber(post.id)) + 1,
+			fields: {
+				...post.fields,
+			},
+			createdAt: new Date(),
+			createdById: createdById ? createdById : post.createdById,
+		})
+
+		post.currentVersionId = versionId
+
+		await trx
+			.update(contentResource)
+			.set({ currentVersionId: versionId })
+			.where(eq(contentResource.id, post.id))
+	})
+	return post
+}
+
+export async function getLatestVersionNumber(postId: string): Promise<number> {
+	const latestVersion = await db.query.contentResourceVersion.findFirst({
+		where: eq(contentResourceVersionTable.resourceId, postId),
+		orderBy: desc(contentResourceVersionTable.versionNumber),
+	})
+	return latestVersion ? latestVersion.versionNumber : 0
+}
+
+export async function getVideoDuration(
+	resources: Post['resources'],
+): Promise<number> {
+	const videoResource = resources?.find(
+		(resource) => resource.resource.type === 'videoResource',
+	)
+	if (videoResource) {
+		const muxAsset = await getMuxAsset(videoResource.resource.fields.muxAssetId)
+		return muxAsset?.duration ? Math.floor(muxAsset.duration) : 0
+	}
+	return 0
 }

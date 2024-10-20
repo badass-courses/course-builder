@@ -7,7 +7,7 @@ import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-p
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { PostUpdate } from '@/lib/posts'
-import { updatePost } from '@/lib/posts-query'
+import { updatePost } from '@/lib/posts-server-functions'
 import { useSession } from 'next-auth/react'
 
 import { Button, Form } from '@coursebuilder/ui'
@@ -77,8 +77,6 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 			router.push(`/${slug}`)
 		}
 	}
-
-	const formValues = form.getValues()
 
 	return (
 		<>

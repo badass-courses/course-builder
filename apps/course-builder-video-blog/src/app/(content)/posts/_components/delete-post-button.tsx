@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { deletePost } from '@/lib/posts-query'
+import { deletePost } from '@/lib/posts-server-functions'
 
 import { Button } from '@coursebuilder/ui'
 

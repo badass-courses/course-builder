@@ -1,6 +1,18 @@
+import crypto from 'crypto'
+import { guid } from '@/utils/guid'
+import slugify from '@sindresorhus/slugify'
 import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+
+export const PostActionSchema = z.union([
+	z.literal('publish'),
+	z.literal('unpublish'),
+	z.literal('archive'),
+	z.literal('save'),
+])
+
+export type PostAction = z.infer<typeof PostActionSchema>
 
 export const PostStateSchema = z.union([
 	z.literal('draft'),
@@ -9,17 +21,23 @@ export const PostStateSchema = z.union([
 	z.literal('deleted'),
 ])
 
+export type PostState = z.infer<typeof PostStateSchema>
+
 export const PostVisibilitySchema = z.union([
 	z.literal('public'),
 	z.literal('private'),
 	z.literal('unlisted'),
 ])
 
+export type PostVisibility = z.infer<typeof PostVisibilitySchema>
+
 export const PostTypeSchema = z.union([
 	z.literal('article'),
 	z.literal('lesson'),
 	z.literal('podcast'),
 ])
+
+export type PostType = z.infer<typeof PostTypeSchema>
 
 export const PostSchema = ContentResourceSchema.merge(
 	z.object({
@@ -62,3 +80,22 @@ export const PostUpdateSchema = z.object({
 })
 
 export type PostUpdate = z.infer<typeof PostUpdateSchema>
+
+export function updatePostSlug(currentPost: Post, newTitle: string): string {
+	if (newTitle !== currentPost.fields.title) {
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
+		return `${slugify(newTitle)}~${splitSlug[1] || guid()}`
+	}
+	return currentPost.fields.slug
+}
+
+export function generateContentHash(post: Post): string {
+	const content = JSON.stringify({
+		title: post.fields.title,
+		body: post.fields.body,
+		description: post.fields.description,
+		slug: post.fields.slug,
+		// Add any other fields that should be considered for content changes
+	})
+	return crypto.createHash('sha256').update(content).digest('hex')
+}

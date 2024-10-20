@@ -10,10 +10,14 @@ import {
 } from '@/db/schema'
 import { NewPost, Post, PostSchema, PostUpdate } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
-import { guid } from '@/utils/guid'
-import slugify from '@sindresorhus/slugify'
 import { asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
+
+import 'server-only'
+
+import { slugify } from 'inngest'
+
+import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 
 export async function deletePost(id: string) {
 	const { session, ability } = await getServerAuthSession()
@@ -22,22 +26,7 @@ export async function deletePost(id: string) {
 		throw new Error('Unauthorized')
 	}
 
-	const post = await db.query.contentResource.findFirst({
-		where: eq(contentResource.id, id),
-		with: {
-			resources: true,
-		},
-	})
-
-	if (!post) {
-		throw new Error(`Post with id ${id} not found.`)
-	}
-
-	await db
-		.delete(contentResourceResource)
-		.where(eq(contentResourceResource.resourceOfId, id))
-
-	await db.delete(contentResource).where(eq(contentResource.id, id))
+	await deletePostFromDatabase(id)
 
 	revalidateTag('posts')
 	revalidateTag(id)
@@ -47,7 +36,6 @@ export async function deletePost(id: string) {
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
-	console.log({ slug })
 	const post = await db.query.contentResource.findFirst({
 		where: or(
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
@@ -75,6 +63,13 @@ export async function getPost(slug: string): Promise<Post | null> {
 export async function getAllPosts(): Promise<Post[]> {
 	const posts = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'post'),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+			},
+		},
 		orderBy: desc(contentResource.createdAt),
 	})
 
@@ -95,22 +90,69 @@ export async function createPost(input: NewPost) {
 		throw new Error('Unauthorized')
 	}
 
-	const newPostId = `post_${guid()}`
+	const post = writeNewPostToDatabase(input)
+	if (post) {
+		revalidatePath('/posts')
+		revalidateTag('posts')
+		return post
+	}
+	return null
+}
 
+export async function updatePost(input: PostUpdate) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const updatedPost = await writePostUpdateToDatabase(input)
+
+	revalidatePath('/posts')
+
+	return updatedPost
+}
+
+export async function writePostUpdateToDatabase(input: PostUpdate) {
+	const currentPost = await getPost(input.id)
+
+	if (!currentPost) {
+		throw new Error(`Post with id ${input.id} not found.`)
+	}
+
+	if (!input.fields.title) {
+		throw new Error('Title is required')
+	}
+
+	let postSlug = currentPost.fields.slug
+
+	if (input.fields.title !== currentPost.fields.title) {
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
+		postSlug = `${slugify(input.fields.title ?? '')}~${splitSlug[1] || guid()}`
+	}
+
+	return courseBuilderAdapter.updateContentResourceFields({
+		id: currentPost.id,
+		fields: {
+			...currentPost.fields,
+			...input.fields,
+			slug: postSlug,
+		},
+	})
+}
+
+export async function writeNewPostToDatabase(input: NewPost) {
+	const newPostId = `post_${guid()}`
 	const videoResource = await courseBuilderAdapter.getVideoResource(
 		input.videoResourceId,
 	)
 
-	if (!videoResource) {
-		throw new Error('🚨 Video Resource not found')
-	}
-
-	const resource = await db
+	await db
 		.insert(contentResource)
 		.values({
 			id: newPostId,
 			type: 'post',
-			createdById: user.id,
+			createdById: '8ee01d65-144c-4977-9468-420e78dc8cd7', //user.id,
 			fields: {
 				title: input.title,
 				state: 'draft',
@@ -126,9 +168,11 @@ export async function createPost(input: NewPost) {
 	const post = await getPost(newPostId)
 
 	if (post) {
-		await db
-			.insert(contentResourceResource)
-			.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
+		if (videoResource) {
+			await db
+				.insert(contentResourceResource)
+				.values({ resourceOfId: post.id, resourceId: videoResource.id })
+		}
 
 		const contributionType = await db.query.contributionTypes.findFirst({
 			where: eq(contributionTypes.slug, 'author'),
@@ -137,46 +181,34 @@ export async function createPost(input: NewPost) {
 		if (contributionType) {
 			await db.insert(contentContributions).values({
 				id: `cc-${guid()}`,
-				userId: user.id,
+				userId: '8ee01d65-144c-4977-9468-420e78dc8cd7', //user.id,
 				contentId: post.id,
 				contributionTypeId: contributionType.id,
 			})
 		}
 
-		revalidateTag('posts')
-
 		return post
-	} else {
-		throw new Error('🚨 Error creating post: Post not found')
 	}
+	return null
 }
 
-export async function updatePost(input: PostUpdate) {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-	if (!user || !ability.can('update', 'Content')) {
-		throw new Error('Unauthorized')
-	}
-
-	const currentPost = await getPost(input.id)
-
-	if (!currentPost) {
-		throw new Error(`Post with id ${input.id} not found.`)
-	}
-
-	let postSlug = currentPost.fields.slug
-
-	if (input.fields.title !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
-	}
-
-	return courseBuilderAdapter.updateContentResourceFields({
-		id: currentPost.id,
-		fields: {
-			...currentPost.fields,
-			...input.fields,
-			slug: postSlug,
+export async function deletePostFromDatabase(id: string) {
+	const post = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, id),
+		with: {
+			resources: true,
 		},
 	})
+
+	if (!post) {
+		throw new Error(`Post with id ${id} not found.`)
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(eq(contentResourceResource.resourceOfId, id))
+
+	await db.delete(contentResource).where(eq(contentResource.id, id))
+
+	return true
 }

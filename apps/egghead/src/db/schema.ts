@@ -41,4 +41,8 @@ export const {
 	tagRelations,
 	tagTag,
 	tagTagRelations,
+	deviceVerifications,
+	deviceVerificationRelations,
+	deviceAccessToken,
+	deviceAccessTokenRelations,
 } = getCourseBuilderSchema(mysqlTable)
