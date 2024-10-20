@@ -1,10 +1,7 @@
 import * as React from 'react'
-import { GetServerSideProps } from 'next'
 import { redirect } from 'next/navigation'
-import { useRouter } from 'next/router'
 import { Layout } from '@/components/app/layout'
 import { getServerAuthSession } from '@/server/auth'
-import { api } from '@/trpc/react'
 
 import Verify from './_components/verifiy'
 

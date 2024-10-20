@@ -1,13 +1,15 @@
+'use client'
+
 import * as React from 'react'
-import { useRouter } from 'next/router'
+import { useSearchParams } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { XCircleIcon } from '@heroicons/react/24/solid'
 import Balancer from 'react-wrap-balancer'
 
 export default function ActivateFailure() {
-	const router = useRouter()
+	const searchParams = useSearchParams()
 
-	const { message = 'Unable to verify.' } = router.query
+	const message = searchParams.get('message') || 'Unable to verify.'
 
 	return (
 		<Layout>
