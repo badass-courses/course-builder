@@ -17,19 +17,19 @@ function useParallax(value: MotionValue<number>, distance: number) {
 }
 
 function useStylesForImage(name: string, scrollYProgress: MotionValue) {
-	const platformY = useSpring(useTransform(scrollYProgress, [0, 1], [1, 100]), {
+	const platformY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 200]), {
 		damping: 20,
 		stiffness: 100,
 	})
 	const platformScale = useSpring(
-		useTransform(scrollYProgress, [0, 1], [1, 1.5]),
+		useTransform(scrollYProgress, [0, 1], [1, 1.2]),
 		{ damping: 20, stiffness: 100 },
 	)
-	const mazeY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 50]), {
+	const mazeY = useSpring(useTransform(scrollYProgress, [0, 1], [0, -50]), {
 		damping: 20,
 		stiffness: 100,
 	})
-	const cloudsY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 300]), {
+	const cloudsY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 15]), {
 		damping: 20,
 		stiffness: 100,
 	})
@@ -44,18 +44,21 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 				y: platformY,
 				scale: platformScale,
 				transformOrigin: 'bottom',
+				x: -5,
 			}
 		case 'maze':
 			return {
-				y: mazeY,
+				// y: mazeY,
+				scale: cloudsScale,
+				filter: 'saturate(0.75)',
 			}
 		case 'beam':
 			return {
-				y: mazeY,
+				// y: mazeY,
 			}
 		case 'clouds':
 			return {
-				y: mazeY,
+				y: cloudsY,
 				scale: cloudsScale,
 			}
 		default:
@@ -78,7 +81,7 @@ export const LandingHeroParallax = () => {
 	const platformStyles = useStylesForImage('platform', scrollYProgress)
 
 	const images = [
-		{ name: 'bg', src: '/assets/hero-bg@2x.jpg', styles: bgStyles },
+		// { name: 'bg', src: '/assets/hero-bg@2x.jpg', styles: bgStyles },
 		{ name: 'maze', src: '/assets/hero-maze@2x.png', styles: mazeStyles },
 		{ name: 'beam', src: '/assets/hero-beam@2x.png', styles: beamStyles },
 		{ name: 'clouds', src: '/assets/hero-clouds@2x.png', styles: cloudsStyles },
@@ -89,25 +92,54 @@ export const LandingHeroParallax = () => {
 		},
 	]
 
+	// State variables to track image loading
+	const [imagesLoaded, setImagesLoaded] = React.useState(0)
+	const totalImages = 4 // Update this if you change the number of images
+	const [allImagesLoaded, setAllImagesLoaded] = React.useState(false)
+
+	// Update the allImagesLoaded state when all images have loaded
+	React.useEffect(() => {
+		if (imagesLoaded >= totalImages) {
+			setAllImagesLoaded(true)
+		}
+	}, [imagesLoaded, totalImages])
+
+	// Render a loading indicator until all images are loaded
+
 	return (
 		<div
 			ref={scrollAreaRef}
-			className="absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden lg:aspect-[1920/1080]"
+			className={cn(
+				'absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden bg-[#AD9F95] lg:aspect-[1920/1080]',
+			)}
 		>
+			{!allImagesLoaded && (
+				<Image
+					src={require('../../public/assets/hero-loading@2x.jpg')}
+					fill
+					className="object-cover object-bottom"
+					alt=""
+					priority
+					aria-hidden="true"
+				/>
+			)}
 			{images.map(({ name, src, styles }) => (
 				<motion.div
 					key={name}
 					style={styles}
 					transition={{}}
-					className="absolute left-0 top-0 h-full w-full"
+					className={cn('absolute left-0 top-0 h-full w-full', {
+						'opacity-0': !allImagesLoaded,
+					})}
 				>
 					<Image
 						src={src}
 						className={cn('object-cover object-bottom')}
 						alt=""
 						fill
-						priority
+						// priority
 						quality={100}
+						onLoadingComplete={() => setImagesLoaded((prev) => prev + 1)}
 					/>
 				</motion.div>
 			))}

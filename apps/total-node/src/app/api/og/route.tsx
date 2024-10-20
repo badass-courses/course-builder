@@ -62,7 +62,10 @@ export async function GET(request: Request) {
 		}
 
 		const fontData = await fetch(
-			new URL('../../../../public/fonts/Heading-Medium.ttf', import.meta.url),
+			new URL(
+				'../../../../public/fonts/calluna_900_normal.ttf',
+				import.meta.url,
+			),
 		).then((res) => res.arrayBuffer())
 
 		const seed = resourceSlugOrID || title || 'default-seed'

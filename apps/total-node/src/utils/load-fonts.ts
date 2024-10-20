@@ -1,8 +1,157 @@
 import localFont from 'next/font/local'
 
-export const dalekFont = localFont({
+export const quadorFont = localFont({
+	// preload: true,
+	display: 'auto',
+	variable: '--font-quador',
+	src: [
+		{
+			path: '../styles/fonts/quador-display_300_normal.woff2',
+			weight: '300',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/quador-display_300_italic.woff2',
+			weight: '300',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/quador-display_400_normal.woff2',
+			weight: '400',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/quador-display_400_italic.woff2',
+			weight: '400',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/quador-display_500_normal.woff2',
+			weight: '500',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/quador-display_500_italic.woff2',
+			weight: '500',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/quador-display_600_normal.woff2',
+			weight: '600',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/quador-display_600_italic.woff2',
+			weight: '600',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/quador-display_700_normal.woff2',
+			weight: '700',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/quador-display_700_italic.woff2',
+			weight: '700',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/quador-display_800_normal.woff2',
+			weight: '800',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/quador-display_800_italic.woff2',
+			weight: '800',
+			style: 'italic',
+		},
+	],
+})
+
+export const ceaserDressingFont = localFont({
+	// preload: true,
+	display: 'auto',
+	variable: '--font-ceaser',
+	src: [
+		{
+			path: '../styles/fonts/CaesarDressing-Regular.woff2',
+			weight: '300',
+			style: 'normal',
+		},
+	],
+})
+
+export const ffMetaFont = localFont({
 	preload: true,
 	display: 'block',
+	variable: '--font-meta',
+	src: [
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_300_normal.woff2',
+			weight: '300',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_300_italic.woff2',
+			weight: '300',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_500_normal.woff2',
+			weight: '500',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_500_italic.woff2',
+			weight: '500',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_600_normal.woff2',
+			weight: '600',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_600_italic.woff2',
+			weight: '600',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_700_normal.woff2',
+			weight: '700',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_700_italic.woff2',
+			weight: '700',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_800_normal.woff2',
+			weight: '800',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_800_italic.woff2',
+			weight: '800',
+			style: 'italic',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_900_normal.woff2',
+			weight: '900',
+			style: 'normal',
+		},
+		{
+			path: '../styles/fonts/ff-meta-serif-web-pro_900_italic.woff2',
+			weight: '900',
+			style: 'italic',
+		},
+	],
+})
+
+export const dalekFont = localFont({
+	// preload: true,
+	display: 'auto',
 	variable: '--font-dalek',
 	src: [
 		{

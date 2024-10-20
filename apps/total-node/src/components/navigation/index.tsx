@@ -54,7 +54,7 @@ const Navigation = () => {
 				},
 			)}
 		>
-			<div className="container flex w-full items-stretch justify-between">
+			<div className="container flex w-full items-stretch justify-between px-3 sm:px-6">
 				<div className="flex items-stretch">
 					<span
 						onContextMenu={(e) => {
