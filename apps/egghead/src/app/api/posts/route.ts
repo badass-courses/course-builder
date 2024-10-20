@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { courseBuilderAdapter } from '@/db'
 import { getEggheadUserProfile } from '@/lib/egghead'
+import { NewPostSchema, PostActionSchema, PostUpdateSchema } from '@/lib/posts'
 import {
 	deletePostFromDatabase,
-	NewPostSchema,
-	PostActionSchema,
-	PostUpdateSchema,
+	getAllPostsForUser,
+	getPost,
 	writeNewPostToDatabase,
 	writePostUpdateToDatabase,
-} from '@/lib/posts'
-import { getAllPostsForUser, getPost } from '@/lib/posts-query'
+} from '@/lib/posts-query'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { subject } from '@casl/ability'
 
