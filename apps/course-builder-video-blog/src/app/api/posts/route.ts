@@ -1,80 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAbility, UserSchema } from '@/ability'
-import { db } from '@/db'
-import { deviceAccessToken } from '@/db/schema'
-import { NewPostSchema, PostUpdateSchema } from '@/lib/posts'
+import { courseBuilderAdapter, db } from '@/db'
 import {
-	createPost,
-	deletePost,
-	getAllPosts,
-	getPost,
-	updatePost,
-} from '@/lib/posts-query'
-import { getServerAuthSession } from '@/server/auth'
+	deletePostFromDatabase,
+	NewPostSchema,
+	PostUpdateSchema,
+	writeNewPostToDatabase,
+	writePostUpdateToDatabase,
+} from '@/lib/posts'
+import { getAllPosts, getPost } from '@/lib/posts-server-functions'
+import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { subject } from '@casl/ability'
-import { eq } from 'drizzle-orm'
-
-async function getUserAbilityForRequest(request: NextRequest) {
-	const authToken = request.headers.get('Authorization')?.split(' ')[1]
-
-	console.log('authToken', authToken)
-
-	if (!authToken) {
-		return { user: null, ability: null }
-	}
-
-	const deviceToken = await db.query.deviceAccessToken.findFirst({
-		where: eq(deviceAccessToken.token, authToken),
-		with: {
-			verifiedBy: {
-				with: {
-					roles: {
-						with: {
-							role: true,
-						},
-					},
-				},
-			},
-		},
-	})
-
-	if (!deviceToken) {
-		return { user: null, ability: null }
-	}
-
-	const userParsed = UserSchema.safeParse({
-		...deviceToken.verifiedBy,
-		roles: deviceToken.verifiedBy.roles.map((role) => role.role),
-	})
-
-	if (!userParsed.success) {
-		return { user: null, ability: null }
-	}
-
-	const ability = getAbility({ user: userParsed.data })
-
-	if (!ability.can('create', 'Content')) {
-		return { user: userParsed.data, ability }
-	}
-
-	return { user: userParsed.data, ability }
-}
 
 export async function GET(request: NextRequest) {
-	const { user, ability } = await getUserAbilityForRequest(request)
+	const { ability } = await getUserAbilityForRequest(request)
 	const { searchParams } = new URL(request.url)
 	const slug = searchParams.get('slug')
 
-	if (!ability.can('read', 'Content')) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-	}
+	console.log('GET THAT POST', { slug })
 
 	if (slug) {
 		const post = await getPost(slug)
+		console.log('post....')
+		console.dir(post, { depth: null })
 		if (!post) {
 			return NextResponse.json({ error: 'Post not found' }, { status: 404 })
 		}
-		return NextResponse.json(post)
+		if (ability.can('read', subject('Content', post))) {
+			return NextResponse.json(post)
+		}
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+	}
+
+	if (ability.cannot('read', 'Content')) {
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
 	const posts = await getAllPosts()
@@ -82,14 +40,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-	const { user, ability } = await getUserAbilityForRequest(request)
+	const { ability } = await getUserAbilityForRequest(request)
 
-	if (!user || !ability.can('create', 'Content')) {
+	if (ability.cannot('create', 'Content')) {
 		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
 	const body = await request.json()
-	console.log('POST', { body })
 	const validatedData = NewPostSchema.safeParse(body)
 
 	if (!validatedData.success) {
@@ -110,7 +67,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
 	const body = await request.json()
 
-	const { user, ability } = await getUserAbilityForRequest(request)
+	const { ability } = await getUserAbilityForRequest(request)
 
 	const validatedData = PostUpdateSchema.safeParse(body)
 
@@ -122,7 +79,11 @@ export async function PUT(request: NextRequest) {
 		validatedData.data.id,
 	)
 
-	if (!user || !ability.can('manage', subject('Content', originalPost))) {
+	if (!originalPost) {
+		return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+	}
+
+	if (ability.cannot('manage', subject('Content', originalPost))) {
 		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
@@ -139,16 +100,21 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-	const { user, ability } = await getUserAbilityForRequest(request)
-	if (!user || !ability.can('delete', 'Content')) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-	}
-
+	const { ability } = await getUserAbilityForRequest(request)
 	const { searchParams } = new URL(request.url)
 	const id = searchParams.get('id')
 
 	if (!id) {
 		return NextResponse.json({ error: 'Missing post ID' }, { status: 400 })
+	}
+	const postToDelete = await courseBuilderAdapter.getContentResource(id)
+
+	if (!postToDelete) {
+		return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+	}
+
+	if (ability.cannot('delete', subject('Content', postToDelete))) {
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
 	try {

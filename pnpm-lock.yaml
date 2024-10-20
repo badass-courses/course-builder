@@ -702,6 +702,12 @@ importers:
       '@auth/core':
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
+      '@aws-sdk/client-s3':
+        specifier: ^3.525.0
+        version: 3.535.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.441.0
+        version: 3.535.0
       '@casl/ability':
         specifier: ^6.5.0
         version: 6.7.0
@@ -768,6 +774,9 @@ importers:
       '@trpc/server':
         specifier: next
         version: 11.0.0-rc.390
+      '@types/axios':
+        specifier: ^0.14.0
+        version: 0.14.0
       '@types/lodash':
         specifier: ^4.14.200
         version: 4.17.4
@@ -792,6 +801,9 @@ importers:
       ai:
         specifier: 3.0.19
         version: 3.0.19(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(vue@3.4.32)(zod@3.22.4)
+      axios:
+        specifier: ^1.5.1
+        version: 1.6.8
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1505,6 +1517,12 @@ importers:
       '@auth/core':
         specifier: ^0.30.0
         version: 0.30.0(nodemailer@6.9.11)
+      '@aws-sdk/client-s3':
+        specifier: ^3.525.0
+        version: 3.535.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.441.0
+        version: 3.535.0
       '@casl/ability':
         specifier: ^6.5.0
         version: 6.7.0
@@ -1571,6 +1589,9 @@ importers:
       '@trpc/server':
         specifier: next
         version: 11.0.0-rc.498
+      '@types/axios':
+        specifier: ^0.14.0
+        version: 0.14.0
       '@types/lodash':
         specifier: ^4.14.200
         version: 4.17.4
@@ -1595,6 +1616,9 @@ importers:
       ai:
         specifier: 3.0.19
         version: 3.0.19(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(vue@3.4.32)(zod@3.22.4)
+      axios:
+        specifier: ^1.5.1
+        version: 1.6.8
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1607,6 +1631,9 @@ importers:
       framer-motion:
         specifier: ^11
         version: 11.1.7(react-dom@18.3.1)(react@18.3.1)
+      human-readable-ids:
+        specifier: ^1.0.4
+        version: 1.0.4
       inngest:
         specifier: ^3.22.5
         version: 3.22.5(next@14.2.5)(typescript@5.4.5)
@@ -7179,7 +7206,7 @@ packages:
       '@smithy/util-middleware': 2.2.0
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     transitivePeerDependencies:
       - aws-crt
     dev: false
@@ -7228,7 +7255,7 @@ packages:
       '@smithy/util-middleware': 2.2.0
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     transitivePeerDependencies:
       - aws-crt
     dev: false
@@ -7292,7 +7319,7 @@ packages:
       '@smithy/smithy-client': 2.5.0
       '@smithy/types': 2.12.0
       fast-xml-parser: 4.2.5
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/credential-provider-cognito-identity@3.535.0:
@@ -7368,7 +7395,7 @@ packages:
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     transitivePeerDependencies:
       - aws-crt
     dev: false
@@ -7408,7 +7435,7 @@ packages:
       '@aws-sdk/types': 3.535.0
       '@smithy/property-provider': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - aws-crt
@@ -7472,7 +7499,7 @@ packages:
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/middleware-host-header@3.535.0:
@@ -7482,7 +7509,7 @@ packages:
       '@aws-sdk/types': 3.535.0
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/middleware-location-constraint@3.535.0:
@@ -7500,7 +7527,7 @@ packages:
     dependencies:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/middleware-recursion-detection@3.535.0:
@@ -7525,7 +7552,7 @@ packages:
       '@smithy/smithy-client': 2.5.0
       '@smithy/types': 2.12.0
       '@smithy/util-config-provider': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/middleware-signing@3.535.0:
@@ -7538,7 +7565,7 @@ packages:
       '@smithy/signature-v4': 2.2.0
       '@smithy/types': 2.12.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/middleware-ssec@3.535.0:
@@ -7547,7 +7574,7 @@ packages:
     dependencies:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/middleware-user-agent@3.535.0:
@@ -7558,7 +7585,7 @@ packages:
       '@aws-sdk/util-endpoints': 3.535.0
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/region-config-resolver@3.535.0:
@@ -7570,7 +7597,7 @@ packages:
       '@smithy/types': 2.12.0
       '@smithy/util-config-provider': 2.3.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/s3-request-presigner@3.535.0:
@@ -7596,7 +7623,7 @@ packages:
       '@smithy/protocol-http': 3.3.0
       '@smithy/signature-v4': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/token-providers@3.535.0(@aws-sdk/credential-provider-node@3.535.0):
@@ -7619,7 +7646,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/util-arn-parser@3.535.0:
@@ -7636,7 +7663,7 @@ packages:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
       '@smithy/util-endpoints': 1.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/util-format-url@3.535.0:
@@ -7646,7 +7673,7 @@ packages:
       '@aws-sdk/types': 3.535.0
       '@smithy/querystring-builder': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/util-locate-window@3.535.0:
@@ -7662,7 +7689,7 @@ packages:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
       bowser: 2.11.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/util-user-agent-node@3.535.0:
@@ -7677,7 +7704,7 @@ packages:
       '@aws-sdk/types': 3.535.0
       '@smithy/node-config-provider': 2.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@aws-sdk/util-utf8-browser@3.259.0:
@@ -7691,7 +7718,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@babel/code-frame@7.23.5:
@@ -15635,7 +15662,7 @@ packages:
       '@smithy/types': 2.12.0
       '@smithy/util-config-provider': 2.3.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/core@1.4.0:
@@ -15649,7 +15676,7 @@ packages:
       '@smithy/smithy-client': 2.5.0
       '@smithy/types': 2.12.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/credential-provider-imds@2.3.0:
@@ -15695,7 +15722,7 @@ packages:
     dependencies:
       '@smithy/eventstream-serde-universal': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/eventstream-serde-universal@2.2.0:
@@ -15723,7 +15750,7 @@ packages:
       '@smithy/chunked-blob-reader': 2.2.0
       '@smithy/chunked-blob-reader-native': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/hash-node@2.2.0:
@@ -15733,7 +15760,7 @@ packages:
       '@smithy/types': 2.12.0
       '@smithy/util-buffer-from': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/hash-stream-node@2.2.0:
@@ -15742,14 +15769,14 @@ packages:
     dependencies:
       '@smithy/types': 2.12.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/invalid-dependency@2.2.0:
     resolution: {integrity: sha512-nEDASdbKFKPXN2O6lOlTgrEEOO9NHIeO+HVvZnkqc8h5U9g3BIhWsvzFo+UcUbliMHvKNPD/zVxDrkP1Sbgp8Q==}
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/is-array-buffer@2.2.0:
@@ -15764,7 +15791,7 @@ packages:
     dependencies:
       '@smithy/types': 2.12.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/middleware-content-length@2.2.0:
@@ -15786,7 +15813,7 @@ packages:
       '@smithy/types': 2.12.0
       '@smithy/url-parser': 2.2.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/middleware-retry@2.2.0:
@@ -15809,7 +15836,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/middleware-stack@2.2.0:
@@ -15817,7 +15844,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/node-config-provider@2.3.0:
@@ -15827,7 +15854,7 @@ packages:
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/node-http-handler@2.5.0:
@@ -15854,7 +15881,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/querystring-builder@2.2.0:
@@ -15912,14 +15939,14 @@ packages:
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
       '@smithy/util-stream': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/types@2.12.0:
     resolution: {integrity: sha512-QwYgloJ0sVNBeBuBs65cIkTbfzV/Q6ZNPCJ99EICFEdJYG50nGIY/uYXp+TbsdJReIuPr0a0kXmCvren3MbRRw==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/url-parser@2.2.0:
@@ -15927,7 +15954,7 @@ packages:
     dependencies:
       '@smithy/querystring-parser': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-base64@2.3.0:
@@ -15936,7 +15963,7 @@ packages:
     dependencies:
       '@smithy/util-buffer-from': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-body-length-browser@2.2.0:
@@ -15949,7 +15976,7 @@ packages:
     resolution: {integrity: sha512-ITWT1Wqjubf2CJthb0BuT9+bpzBfXeMokH/AAa5EJQgbv9aPMVfnM76iFIZVFf50hYXGbtiV71BHAthNWd6+dw==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-buffer-from@2.2.0:
@@ -15975,7 +16002,7 @@ packages:
       '@smithy/smithy-client': 2.5.0
       '@smithy/types': 2.12.0
       bowser: 2.11.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-defaults-mode-node@2.3.0:
@@ -15988,7 +16015,7 @@ packages:
       '@smithy/property-provider': 2.2.0
       '@smithy/smithy-client': 2.5.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-endpoints@1.2.0:
@@ -15997,7 +16024,7 @@ packages:
     dependencies:
       '@smithy/node-config-provider': 2.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-hex-encoding@2.2.0:
@@ -16021,7 +16048,7 @@ packages:
     dependencies:
       '@smithy/service-error-classification': 2.1.5
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-stream@2.2.0:
@@ -16035,7 +16062,7 @@ packages:
       '@smithy/util-buffer-from': 2.2.0
       '@smithy/util-hex-encoding': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-uri-escape@2.2.0:
@@ -16050,7 +16077,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@smithy/util-buffer-from': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@smithy/util-waiter@2.2.0:
@@ -16059,7 +16086,7 @@ packages:
     dependencies:
       '@smithy/abort-controller': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.6.3
     dev: false
 
   /@socket.io/component-emitter@3.1.0:
@@ -17486,6 +17513,15 @@ packages:
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
     dependencies:
       '@types/estree': 1.0.5
+    dev: false
+
+  /@types/axios@0.14.0:
+    resolution: {integrity: sha512-KqQnQbdYE54D7oa/UmYVMZKq7CO4l8DEENzOKc4aBRwxCXSlJXGz83flFx5L7AWrOQnmuN3kVsRdt+GZPPjiVQ==}
+    deprecated: This is a stub types definition for axios (https://github.com/mzabriskie/axios). axios provides its own type definitions, so you don't need @types/axios installed!
+    dependencies:
+      axios: 1.6.8
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@types/babel__core@7.20.5:

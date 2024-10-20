@@ -10,7 +10,7 @@ import { ContentResource } from '@coursebuilder/core/schemas'
 
 export const UserSchema = z.object({
 	role: z.string().optional(),
-	id: z.string().optional(),
+	id: z.string(),
 	name: z.nullable(z.string().optional()),
 	email: z.string().optional(),
 	roles: z.array(

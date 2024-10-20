@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
-import { createPost } from '@/lib/posts-query'
+import { createPost } from '@/lib/posts-server-functions'
 import { getVideoResource } from '@/lib/video-resource-query'
 import pluralize from 'pluralize'
 
