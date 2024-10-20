@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { courseBuilderAdapter, db } from '@/db'
+import { NewPostSchema, PostUpdateSchema } from '@/lib/posts'
 import {
 	deletePostFromDatabase,
-	NewPostSchema,
-	PostUpdateSchema,
+	getAllPosts,
+	getPost,
 	writeNewPostToDatabase,
 	writePostUpdateToDatabase,
-} from '@/lib/posts'
-import { getAllPosts, getPost } from '@/lib/posts-server-functions'
+} from '@/lib/posts-server-functions'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { subject } from '@casl/ability'
 

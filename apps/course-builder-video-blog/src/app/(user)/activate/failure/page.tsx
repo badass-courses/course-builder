@@ -7,10 +7,6 @@ import { XCircleIcon } from '@heroicons/react/24/solid'
 import Balancer from 'react-wrap-balancer'
 
 export default function ActivateFailure() {
-	const searchParams = useSearchParams()
-
-	const message = searchParams.get('message') || 'Unable to verify.'
-
 	return (
 		<Layout>
 			<main className="mx-auto flex w-full max-w-lg flex-grow flex-col items-center justify-center pb-24 pt-16">
@@ -20,10 +16,19 @@ export default function ActivateFailure() {
 						Device Activation Failed
 					</h1>
 					<p className="w-full py-4 text-gray-600 dark:text-gray-400">
-						<Balancer>{message} Please try again.</Balancer>
+						<React.Suspense>
+							<Message />
+						</React.Suspense>
 					</p>
 				</div>
 			</main>
 		</Layout>
 	)
+}
+
+function Message() {
+	const searchParams = useSearchParams()
+
+	const message = searchParams.get('message') || 'Unable to verify.'
+	return <Balancer>{message} Please try again.</Balancer>
 }
