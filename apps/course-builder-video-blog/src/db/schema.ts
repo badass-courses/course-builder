@@ -35,4 +35,8 @@ export const {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	deviceVerifications,
+	deviceVerificationRelations,
+	deviceAccessToken,
+	deviceAccessTokenRelations,
 } = getCourseBuilderSchema(mysqlTable)

@@ -1,4 +1,5 @@
-import { getPost, writeLegacyTaggingsToEgghead } from '@/lib/posts-query'
+import { writeLegacyTaggingsToEgghead } from '@/lib/egghead'
+import { getPost } from '@/lib/posts-query'
 import { NonRetriableError } from 'inngest'
 import { z } from 'zod'
 

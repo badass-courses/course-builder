@@ -37,7 +37,7 @@ export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
 type GetAbilityOptions = {
 	user?: {
-		id: string
+		id?: string
 		role?: string
 		roles: {
 			id: string

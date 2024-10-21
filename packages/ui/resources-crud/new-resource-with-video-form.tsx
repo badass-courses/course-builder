@@ -234,7 +234,7 @@ export function NewResourceWithVideoForm({
 									<div className="flex flex-col divide-y">
 										<span className="text-primary flex items-center gap-2 py-1 text-sm">
 											<FileVideo className="h-4 w-4" />
-											<span>asdds{videoResourceId}</span>
+											<span>{videoResourceId}</span>
 										</span>
 									</div>
 									<Button

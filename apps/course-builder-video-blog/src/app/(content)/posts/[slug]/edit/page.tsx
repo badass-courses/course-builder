@@ -2,7 +2,7 @@ import * as React from 'react'
 import { notFound } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import { courseBuilderAdapter } from '@/db'
-import { getPost } from '@/lib/posts-query'
+import { getPost } from '@/lib/posts-server-functions'
 import { getServerAuthSession } from '@/server/auth'
 
 import { EditPostForm } from '../../_components/edit-post-form'
