@@ -92,6 +92,13 @@ module.exports = withUt({
 				'accordion-up': 'accordion-up 0.2s ease-out',
 			},
 			typography: (theme: any) => ({
+				invert: {
+					css: {
+						a: {
+							color: 'hsl(226 70% 65%)',
+						},
+					},
+				},
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),

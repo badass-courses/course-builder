@@ -55,7 +55,7 @@ export const Instructor = ({ className }: { className?: string }) => {
 								href="https://www.youtube.com/@jherr"
 								target="_blank"
 								rel="noreferrer noopener"
-								className="text-primary"
+								className="text-primary dark:text-blue-400"
 							>
 								YouTube channel
 							</a>{' '}

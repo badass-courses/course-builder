@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `card@2x.jpg`,
+				url: `${process.env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Pro Next.js by Jack Herrington')}&image=https://res.cloudinary.com/pro-nextjs/image/upload/v1720601718/workshops/c6dea77d-45d4-4720-9935-863b5d2bede6/xr0s0tsdv8noxqcafpc4.png`,
 				width: 1200,
 				height: 630,
 			},

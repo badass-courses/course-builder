@@ -20,7 +20,7 @@ export async function generateMetadata(
 	{ searchParams }: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('The No-BS Solution for Enterprise-Ready Next.js Applications')}`
+	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Pro Next.js by Jack Herrington')}&image=https://res.cloudinary.com/pro-nextjs/image/upload/v1720601718/workshops/c6dea77d-45d4-4720-9935-863b5d2bede6/xr0s0tsdv8noxqcafpc4.png`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
