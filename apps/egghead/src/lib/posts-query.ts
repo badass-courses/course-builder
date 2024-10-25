@@ -416,7 +416,7 @@ export async function writePostUpdateToDatabase(input: {
 		await createNewPostVersion(updatedPost, updatedById)
 	}
 
-	await upsertPostToTypeSense(updatedPost)
+	await upsertPostToTypeSense(updatedPost, action)
 
 	return updatedPost
 }
