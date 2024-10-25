@@ -10,7 +10,7 @@ import { cn } from '@/utils/cn'
 import { LockIcon, ShieldCheckIcon } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
-import MountainIllustration from '../../public/assets/mountain.jpg'
+import MountainImage from '../../public/assets/mountain.jpg'
 import common from '../text/common'
 
 type PrimaryNewsletterCtaProps = {
@@ -58,7 +58,7 @@ export const PrimaryNewsletterCta: React.FC<
 			)}
 		>
 			<Image
-				src={MountainIllustration}
+				src={MountainImage}
 				className="hidden object-cover object-bottom sm:block"
 				aria-hidden="true"
 				quality={100}
@@ -91,7 +91,7 @@ export const PrimaryNewsletterCta: React.FC<
 				Unsubscribe at any time.
 			</p>
 			<Image
-				src={MountainIllustration}
+				src={MountainImage}
 				className="absolute bottom-0 block origin-bottom scale-[2] sm:hidden"
 				aria-hidden="true"
 				quality={100}
