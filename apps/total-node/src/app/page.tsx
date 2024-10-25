@@ -15,10 +15,17 @@ import { getPricingProps } from '@/lib/pricing-query'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { BarChart, Wrench, Zap } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+
+import {
+	BlueSection,
+	CenteredTitle,
+	Instructor,
+	Section,
+	Spacer,
+} from './admin/pages/_components/page-builder-mdx-components'
 
 export async function generateMetadata(
 	{ searchParams }: Props,
@@ -97,11 +104,18 @@ const Home = async ({ searchParams }: Props) => {
 			</header>
 
 			<main className="w-full pt-5 sm:pt-16">
-				<article className="prose sm:prose-lg lg:prose-xl mx-auto px-5 pb-16 sm:pb-24">
+				<article className="prose sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mx-auto max-w-none px-5">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
-							components={{ Instructor, Zap, Wrench, BarChart, MuxPlayer }}
+							components={{
+								CenteredTitle,
+								Instructor,
+								BlueSection,
+								Spacer,
+								Section,
+								MuxPlayer,
+							}}
 						/>
 					) : (
 						<LandingCopy />
@@ -142,32 +156,3 @@ const Home = async ({ searchParams }: Props) => {
 }
 
 export default Home
-
-const Instructor = ({ className }: { className?: string }) => {
-	return (
-		<section
-			className={cn('relative flex w-full flex-col items-center', className)}
-		>
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col items-center sm:gap-10 md:flex-row">
-				<div className="not-prose w-auto sm:mx-auto">
-					{/* <Image
-						src={MattPocockImage}
-						alt={config.author}
-						width={1200 / 2.6}
-						height={853 / 2.6}
-						quality={100}
-						className="rounded"
-					/> */}
-				</div>
-				<div className="max-w-lg md:px-5">
-					<h3>Your Instructor</h3>
-					<div
-					// className="flex flex-col gap-4 text-lg leading-relaxed"
-					>
-						<p>TODO</p>
-					</div>
-				</div>
-			</div>
-		</section>
-	)
-}

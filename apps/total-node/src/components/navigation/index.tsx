@@ -50,11 +50,17 @@ const Navigation = () => {
 				'bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
 				{
 					'sticky top-0': !params.lesson,
-					// 'border-b': !isEditRoute,
 				},
 			)}
 		>
-			<div className="container flex w-full items-stretch justify-between px-3 sm:px-6">
+			<div
+				className={cn(
+					'flex w-full items-stretch justify-between px-3 sm:px-5',
+					{
+						container: !isEditRoute,
+					},
+				)}
+			>
 				<div className="flex items-stretch">
 					<span
 						onContextMenu={(e) => {
