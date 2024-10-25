@@ -22,6 +22,7 @@ import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce
 import {
 	BlueSection,
 	CenteredTitle,
+	CheckList,
 	Instructor,
 	Section,
 	Spacer,
@@ -114,6 +115,7 @@ const Home = async ({ searchParams }: Props) => {
 								BlueSection,
 								Spacer,
 								Section,
+								CheckList,
 								MuxPlayer,
 							}}
 						/>

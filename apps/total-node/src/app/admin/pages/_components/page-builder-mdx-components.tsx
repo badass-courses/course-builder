@@ -111,6 +111,14 @@ const Instructor = ({ className }: { className?: string }) => {
 	)
 }
 
+const CheckList = ({ children }: { children: React.ReactNode }) => {
+	return (
+		<div className="[&_li]:list-none [&_li]:pl-0 [&_li]:before:mr-3 [&_li]:before:content-['✓'] [&_ul]:list-inside [&_ul]:pl-0">
+			{children}
+		</div>
+	)
+}
+
 const data = {
 	layout: [
 		{
@@ -153,6 +161,13 @@ const data = {
 		{
 			name: 'Instructor',
 			component: Instructor,
+			props: {},
+		},
+	],
+	lists: [
+		{
+			name: 'CheckList',
+			component: CheckList,
 			props: {},
 		},
 	],
@@ -216,6 +231,29 @@ const PageBlocks = () => {
 				})}
 			</div>
 			<div className="flex flex-wrap items-center gap-1">
+				<strong className="mb-1">Lists</strong>
+				{data.lists.map((item, index) => {
+					return (
+						<BlockItem
+							key={item.name}
+							item={item}
+							onDragStart={(e) =>
+								e.dataTransfer.setData(
+									'text/plain',
+									`
+<${item.name}>
+- List Item 1
+- List Item 2
+- List Item 3
+</${item.name}>
+`,
+								)
+							}
+						/>
+					)
+				})}
+			</div>
+			<div className="flex flex-wrap items-center gap-1">
 				<strong className="mb-1">Sections</strong>
 				{data.sections.map((item, index) => {
 					return (
@@ -258,6 +296,7 @@ const allMdxPageBuilderComponents = {
 	BlueSection,
 	Spacer,
 	Section,
+	CheckList,
 	MuxPlayer,
 }
 
@@ -267,6 +306,7 @@ export {
 	BlueSection,
 	Spacer,
 	Section,
+	CheckList,
 	allMdxPageBuilderComponents,
 	PageBlocks,
 }
