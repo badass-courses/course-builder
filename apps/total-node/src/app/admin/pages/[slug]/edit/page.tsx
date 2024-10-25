@@ -1,12 +1,11 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { getPage } from '@/lib/pages-query'
 import { getServerAuthSession } from '@/server/auth'
-import { ImagePlusIcon } from 'lucide-react'
 
 import { EditPagesForm } from '../../_components/edit-pages-form'
+import { MDXPreviewProvider } from '../../_components/mdx-preview-provider'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,5 +22,9 @@ export default async function ArticleEditPage({
 		notFound()
 	}
 
-	return <EditPagesForm key={page.fields.slug} page={page} />
+	return (
+		<MDXPreviewProvider initialValue={page.fields.body}>
+			<EditPagesForm key={page.fields.slug} page={page} />
+		</MDXPreviewProvider>
+	)
 }

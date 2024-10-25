@@ -30,7 +30,7 @@ export function WorkshopPricing({
 				quantityAvailable={quantityAvailable}
 				pricingDataLoader={pricingDataLoader}
 				pricingWidgetOptions={{
-					withImage: true,
+					withImage: false,
 					withGuaranteeBadge: true,
 					isLiveEvent: false,
 					teamQuantityLimit,

@@ -4,7 +4,7 @@ import { ImagePlusIcon, ZapIcon } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
-import { ResizablePanel } from '../primitives/resizable'
+import { ResizableHandle, ResizablePanel } from '../primitives/resizable'
 import { cn } from '../utils/cn'
 import { EditResourcesToolPanelContents } from './edit-resources-tool-panel-contents'
 import { EditResourcesToolbar } from './edit-resources-toolbar'
@@ -51,33 +51,47 @@ export function EditResourcesToolPanel({
 	user?: User | null
 	tools?: ResourceTool[]
 }) {
-	const [activeToolId, setActiveToolId] = React.useState<string>(
+	const [activeToolId, setActiveToolId] = React.useState<string | null>(
 		tools?.[0]?.id || 'assistant',
 	)
 	return (
 		<>
-			<ResizablePanel
-				className={cn(
-					'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full',
-					className,
-				)}
-				minSize={minSize}
-				defaultSize={defaultSize}
-				maxSize={maxSize}
-			>
-				<EditResourcesToolPanelContents
-					resource={resource}
-					activeToolId={activeToolId}
-					availableWorkflows={availableWorkflows}
-					sendResourceChatMessage={sendResourceChatMessage}
-					hostUrl={hostUrl}
-					user={user}
-					tools={tools}
-				/>
-			</ResizablePanel>
+			{activeToolId !== null && (
+				<>
+					<ResizableHandle />
+					<ResizablePanel
+						id="edit-resources-tool-panel"
+						order={4}
+						className={cn(
+							'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full',
+							className,
+						)}
+						minSize={minSize}
+						defaultSize={defaultSize}
+						maxSize={maxSize}
+					>
+						<EditResourcesToolPanelContents
+							resource={resource}
+							activeToolId={activeToolId}
+							availableWorkflows={availableWorkflows}
+							sendResourceChatMessage={sendResourceChatMessage}
+							hostUrl={hostUrl}
+							user={user}
+							tools={tools}
+						/>
+					</ResizablePanel>
+				</>
+			)}
 			<EditResourcesToolbar
 				tools={tools}
-				onToolChange={(tool) => setActiveToolId(tool.id)}
+				onToolChange={(tool) => {
+					if (activeToolId === tool.id) {
+						setActiveToolId(null)
+						return
+					}
+
+					setActiveToolId(tool.id)
+				}}
 			/>
 		</>
 	)

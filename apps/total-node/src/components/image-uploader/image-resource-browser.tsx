@@ -19,29 +19,36 @@ export const ImageResourceBrowser = () => {
 	})
 
 	return (
-		<div>
-			<h3 className="inline-flex px-5 text-lg font-bold">Media Browser</h3>
-			<div className="grid grid-cols-3 gap-1 px-5">
-				{images.map((asset) => {
-					return asset?.url ? (
-						<div
-							key={asset.id}
-							className="flex aspect-square items-center justify-center overflow-hidden rounded border"
-						>
-							<img
-								src={asset.url}
-								alt={asset.id}
-								onDragStart={(e) => {
-									e.dataTransfer.setData(
-										'text/plain',
-										`![](${e.currentTarget.src})`,
-									)
-								}}
-							/>
-						</div>
-					) : null
-				})}
-			</div>
+		<div className="py-5">
+			<h3 className="inline-flex px-5 text-xl font-bold">Media Browser</h3>
+			{images.length > 0 ? (
+				<div className="grid grid-cols-3 gap-1 px-5">
+					{images.map((asset) => {
+						return asset?.url ? (
+							<div
+								key={asset.id}
+								className="flex aspect-square items-center justify-center overflow-hidden rounded border"
+							>
+								<img
+									src={asset.url}
+									alt={asset.id}
+									onDragStart={(e) => {
+										e.dataTransfer.setData(
+											'text/plain',
+											`![](${e.currentTarget.src})`,
+										)
+									}}
+								/>
+							</div>
+						) : null
+					})}
+				</div>
+			) : (
+				<div className="mt-5 px-5">
+					<p className="mb-2 text-lg">No images found</p>
+					<p className="text-sm">Upload some images to get started!</p>
+				</div>
+			)}
 		</div>
 	)
 }

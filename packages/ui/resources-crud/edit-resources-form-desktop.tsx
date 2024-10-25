@@ -47,6 +47,10 @@ export function EditResourcesFormDesktop({
 	user,
 	tools = [],
 	theme = 'light',
+	bodyPanelSlot,
+	onResourceBodyChange = () => {},
+	toggleMdxPreview,
+	isShowingMdxPreview,
 }: {
 	onSave: (resource: ContentResource) => Promise<void>
 	onPublish?: (resource: ContentResource) => Promise<void>
@@ -77,6 +81,10 @@ export function EditResourcesFormDesktop({
 	user?: User | null
 	tools?: ResourceTool[]
 	theme?: string
+	bodyPanelSlot?: React.ReactNode
+	onResourceBodyChange?: (value: string) => void
+	toggleMdxPreview?: () => void
+	isShowingMdxPreview?: boolean
 }) {
 	const onSubmit = async (
 		values: z.infer<typeof resourceSchema>,
@@ -120,8 +128,12 @@ export function EditResourcesFormDesktop({
 					resource={resource}
 					form={form}
 					theme={theme}
-				/>
-				<ResizableHandle />
+					onResourceBodyChange={(value) => onResourceBodyChange(value)}
+					toggleMdxPreview={toggleMdxPreview}
+					isShowingMdxPreview={isShowingMdxPreview}
+				>
+					{bodyPanelSlot}
+				</EditResourcesBodyPanel>
 				<EditResourcesToolPanel
 					resource={{ ...resource, ...form.getValues() }}
 					availableWorkflows={availableWorkflows}

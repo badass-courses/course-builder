@@ -24,7 +24,7 @@ export function EditResourcesToolPanelContents({
 			slug: string
 		}
 	}
-	activeToolId: string
+	activeToolId: string | null
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	children?: React.ReactNode
 	sendResourceChatMessage: (options: {

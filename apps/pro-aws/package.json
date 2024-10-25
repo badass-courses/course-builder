@@ -158,7 +158,7 @@
 		"react-hot-toast": "^2.4.1",
 		"react-icons": "^4.11.0",
 		"react-markdown": "^9.0.0",
-		"react-resizable-panels": "^2.0.12",
+		"react-resizable-panels": "^2.1.5",
 		"react-stately": "^3.30.1",
 		"react-wrap-balancer": "^0.2.4",
 		"rehype-raw": "^6.1.1",

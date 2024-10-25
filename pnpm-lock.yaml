@@ -510,8 +510,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -1343,8 +1343,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -2465,8 +2465,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -3376,8 +3376,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -4010,8 +4010,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -4478,6 +4478,9 @@ importers:
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
+      '@uiw/react-markdown-editor':
+        specifier: ^6.1.2
+        version: 6.1.2(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.28.5)(@types/react@18.3.1)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1)
       '@uploadthing/react':
         specifier: 6.7.2
         version: 6.7.2(next@14.2.5)(react@18.3.1)(solid-js@1.8.18)(svelte@4.2.18)(uploadthing@6.13.2)(vue@3.4.32)
@@ -4637,6 +4640,9 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
+      react-error-boundary:
+        specifier: ^4.1.2
+        version: 4.1.2(react@18.3.1)
       react-gravatar:
         specifier: ^2.6.3
         version: 2.6.3(react@18.3.1)
@@ -4653,8 +4659,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -5239,8 +5245,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-stately:
         specifier: ^3.30.1
         version: 3.30.1(react@18.3.1)
@@ -6131,8 +6137,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.1(@types/react@18.3.1)(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.0.12
-        version: 2.0.13(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.3.1)(react@18.3.1)
       react-wrap-balancer:
         specifier: ^0.2.4
         version: 0.2.4(react@18.3.1)
@@ -8773,7 +8779,7 @@ packages:
     resolution: {integrity: sha512-EYdQTG22V+KUUk8Qq582g7FMnCZeEHsyuOJisHRft/mQ+ZSZ2w51NupvDUHiqtsOy7It5cHLPGfHQLpMh9bqpQ==}
     dependencies:
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.28.5)
-      '@codemirror/language': 6.10.2
+      '@codemirror/language': 6.10.3
       '@lezer/common': 1.2.1
       '@lezer/highlight': 1.2.0
       '@lezer/lr': 1.4.0
@@ -8887,8 +8893,8 @@ packages:
   /@codemirror/lang-sql@6.6.1(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-tRHMLymUbL1yY8dzdrGdHVg+nMlfacOU54tjN5+VF45Syw5L3APxsFFhgdWIs4yg7OTt929Z9Ffw5qyV++kbWQ==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
-      '@codemirror/language': 6.10.2
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
       '@lezer/common': 1.2.1
       '@lezer/highlight': 1.2.0
@@ -8943,8 +8949,8 @@ packages:
   /@codemirror/lang-yaml@6.0.0(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-fVPapdX1oYr5HMC5bou1MHscGnNCvOHuhUW6C+V2gfIeIRcughvVfznV0OuUyHy0AdXoBCjOehjzFcmLRumu2Q==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
-      '@codemirror/language': 6.10.2
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
       '@lezer/common': 1.2.1
       '@lezer/yaml': 1.0.2
@@ -9002,7 +9008,7 @@ packages:
       '@codemirror/lang-wast': 6.0.2
       '@codemirror/lang-xml': 6.1.0
       '@codemirror/lang-yaml': 6.0.0(@codemirror/view@6.28.5)
-      '@codemirror/language': 6.10.2
+      '@codemirror/language': 6.10.3
       '@codemirror/legacy-modes': 6.3.3
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -18160,12 +18166,40 @@ packages:
       '@codemirror/view': 6.26.0
     dev: false
 
+  /@uiw/codemirror-extensions-basic-setup@4.23.0(@codemirror/autocomplete@6.15.0)(@codemirror/commands@6.6.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5):
+    resolution: {integrity: sha512-+k5nkRpUWGaHr1JWT8jcKsVewlXw5qBgSopm9LW8fZ6KnSNZBycz8kHxh0+WSvckmXEESGptkIsb7dlkmJT/hQ==}
+    peerDependencies:
+      '@codemirror/autocomplete': '>=6.0.0'
+      '@codemirror/commands': '>=6.0.0'
+      '@codemirror/language': '>=6.0.0'
+      '@codemirror/lint': '>=6.0.0'
+      '@codemirror/search': '>=6.0.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/commands': 6.6.0
+      '@codemirror/language': 6.10.3
+      '@codemirror/lint': 6.5.0
+      '@codemirror/search': 6.5.6
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.28.5
+    dev: false
+
   /@uiw/codemirror-extensions-events@4.23.0(@codemirror/view@6.26.0):
     resolution: {integrity: sha512-QlUSFT/5P+0YhBM1FtRFdanj+IctLOrwNOi33ROgBwUx6edx/ihu7je9dUrIRduNE7LLdaEhzbC1Gbn5orydDw==}
     peerDependencies:
       '@codemirror/view': '>=6.0.0'
     dependencies:
       '@codemirror/view': 6.26.0
+    dev: false
+
+  /@uiw/codemirror-extensions-events@4.23.0(@codemirror/view@6.28.5):
+    resolution: {integrity: sha512-QlUSFT/5P+0YhBM1FtRFdanj+IctLOrwNOi33ROgBwUx6edx/ihu7je9dUrIRduNE7LLdaEhzbC1Gbn5orydDw==}
+    peerDependencies:
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/view': 6.28.5
     dev: false
 
   /@uiw/codemirror-themes@4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0):
@@ -18223,6 +18257,33 @@ packages:
       - '@codemirror/search'
     dev: false
 
+  /@uiw/react-codemirror@4.23.0(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.28.5)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-MnqTXfgeLA3fsUUQjqjJgemEuNyoGALgsExVm0NQAllAAi1wfj+IoKFeK+h3XXMlTFRCFYOUh4AHDv0YXJLsOg==}
+    peerDependencies:
+      '@babel/runtime': '>=7.11.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/theme-one-dark': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+      codemirror: '>=6.0.0'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@babel/runtime': 7.24.0
+      '@codemirror/commands': 6.6.0
+      '@codemirror/state': 6.4.1
+      '@codemirror/theme-one-dark': 6.1.2
+      '@codemirror/view': 6.28.5
+      '@uiw/codemirror-extensions-basic-setup': 4.23.0(@codemirror/autocomplete@6.15.0)(@codemirror/commands@6.6.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
+      codemirror: 6.0.1(@lezer/common@1.2.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    transitivePeerDependencies:
+      - '@codemirror/autocomplete'
+      - '@codemirror/language'
+      - '@codemirror/lint'
+      - '@codemirror/search'
+    dev: false
+
   /@uiw/react-markdown-editor@6.1.2(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.0)(@types/react@18.3.1)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-nC1EnPBzJdVdmi+8+R/8Tr4hoj5ewjpguVjOxz448c4TF9bieqCQEb9Ivar5tGkduEOV0xFkcKupp4nhkGHI6A==}
     peerDependencies:
@@ -18236,6 +18297,35 @@ packages:
       '@uiw/codemirror-extensions-events': 4.23.0(@codemirror/view@6.26.0)
       '@uiw/codemirror-themes': 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
       '@uiw/react-codemirror': 4.23.0(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.0)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1)
+      '@uiw/react-markdown-preview': 5.1.2(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    transitivePeerDependencies:
+      - '@codemirror/autocomplete'
+      - '@codemirror/language'
+      - '@codemirror/lint'
+      - '@codemirror/search'
+      - '@codemirror/state'
+      - '@codemirror/theme-one-dark'
+      - '@codemirror/view'
+      - '@types/react'
+      - codemirror
+      - supports-color
+    dev: false
+
+  /@uiw/react-markdown-editor@6.1.2(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.28.5)(@types/react@18.3.1)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-nC1EnPBzJdVdmi+8+R/8Tr4hoj5ewjpguVjOxz448c4TF9bieqCQEb9Ivar5tGkduEOV0xFkcKupp4nhkGHI6A==}
+    peerDependencies:
+      '@babel/runtime': '>=7.10.0'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@babel/runtime': 7.24.0
+      '@codemirror/lang-markdown': 6.2.4
+      '@codemirror/language-data': 6.4.1(@codemirror/view@6.28.5)
+      '@uiw/codemirror-extensions-events': 4.23.0(@codemirror/view@6.28.5)
+      '@uiw/codemirror-themes': 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
+      '@uiw/react-codemirror': 4.23.0(@babel/runtime@7.24.0)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.3)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.28.5)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1)
       '@uiw/react-markdown-preview': 5.1.2(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -29585,6 +29675,15 @@ packages:
       - webpack-cli
     dev: false
 
+  /react-error-boundary@4.1.2(react@18.3.1):
+    resolution: {integrity: sha512-GQDxZ5Jd+Aq/qUxbCm1UtzmL/s++V7zKgE8yMktJiCQXCCFZnMZh9ng+6/Ne6PjNSXH0L9CjeOEREfRnq6Duag==}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      '@babel/runtime': 7.24.0
+      react: 18.3.1
+    dev: false
+
   /react-fast-compare@2.0.4:
     resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
     dev: false
@@ -29765,11 +29864,11 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.3.1)(react@18.3.1)
     dev: false
 
-  /react-resizable-panels@2.0.13(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-DZxLv5Pc6rfuqkgQ+2JW3eLPiX3BgAAR38Cd0lXuCVHXEZLrD+3W4Nag5TqCoNgEM/4IUU9L/pLM2toOUOd6UQ==}
+  /react-resizable-panels@2.1.5(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-JMSe18rYupmx+dzYcdfWYZ93ZdxqQmLum3xWDVSUMI0UVwl9bB9gUaFmPbxYoO4G+m5sqgdXQCYQxnOysytfnw==}
     peerDependencies:
-      react: ^16.14.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)

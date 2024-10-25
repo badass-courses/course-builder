@@ -3,8 +3,8 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { createAppAbility } from '@/ability'
 import { useFeedback } from '@/feedback-widget/feedback-context'
+import { useLiveEventToastNotifier } from '@/hooks/use-live-event-toast-notifier'
 import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
@@ -13,10 +13,10 @@ import { useSession } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
 
-import { useLiveEventToastNotifier } from '../app/use-live-event-toast-notifier'
 import { useNavLinks } from '../app/use-nav-links'
 import { LogoMark } from '../logo'
 import { NavLinkItem } from './nav-link-item'
+import SaleBanner from './sale-banner'
 import { User } from './user'
 
 const Navigation = () => {
@@ -33,7 +33,7 @@ const Navigation = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
 	useLiveEventToastNotifier()
-	useSaleToastNotifier()
+	// useSaleToastNotifier()
 
 	React.useEffect(() => {
 		setIsMobileMenuOpen(false)
@@ -91,6 +91,7 @@ const Navigation = () => {
 						</Button>
 					</div>
 				)} */}
+				<SaleBanner className="hidden sm:flex" />
 				{sessionStatus === 'authenticated' && (
 					<div className="hidden items-stretch sm:flex">
 						<NavLinkItem
@@ -106,6 +107,7 @@ const Navigation = () => {
 				</div>
 			</div>
 			<div className="flex items-stretch sm:hidden">
+				<SaleBanner className="mr-0" />
 				<MobileNav
 					isMobileMenuOpen={isMobileMenuOpen}
 					setIsMobileMenuOpen={setIsMobileMenuOpen}
