@@ -2,10 +2,10 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
 const { fontFamily } = require('tailwindcss/defaultTheme')
 
-const { withUt } = require('uploadthing/tw')
+// const { withUt } = require('uploadthing/tw')
 
 /** @type {import('tailwindcss').Config} */
-module.exports = withUt({
+module.exports = {
 	darkMode: ['class'],
 	content: [
 		'./src/**/*.{ts,tsx,mdx}',
@@ -143,4 +143,4 @@ module.exports = withUt({
 		require('@designbycode/tailwindcss-text-stroke'),
 		require('tailwind-fluid-typography'),
 	],
-})
+}

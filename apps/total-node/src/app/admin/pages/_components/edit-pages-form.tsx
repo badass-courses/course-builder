@@ -1,8 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import { onPostSave } from '@/app/(content)/posts/[slug]/edit/actions'
-import { onPageSave } from '@/app/admin/pages/[slug]/edit/actions'
+import {
+	onPageSave,
+	serializeForPreview,
+} from '@/app/admin/pages/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -11,7 +13,8 @@ import { Page, PageSchema } from '@/lib/pages'
 import { updatePage } from '@/lib/pages-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
+import { debounce } from 'lodash'
+import { ImagePlusIcon, LayoutTemplate, ListOrderedIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -23,6 +26,10 @@ import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/ed
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
+import MDXLivePreview from './mdx-live-preview'
+import { useMDXPreview } from './mdx-preview-provider'
+import { PageBlocks } from './page-builder-mdx-components'
+
 type EditArticleFormProps = {
 	page: Page
 	tools?: ResourceTool[]
@@ -30,7 +37,21 @@ type EditArticleFormProps = {
 
 export function EditPagesForm({
 	page,
+
 	tools = [
+		{
+			id: 'MDX Components',
+			label: 'MDX Components',
+			icon: () => (
+				<LayoutTemplate strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: (
+				<div className="mt-3 px-5">
+					<h3 className="mb-3 inline-flex text-xl font-bold">MDX Components</h3>
+					<PageBlocks />
+				</div>
+			),
+		},
 		{ id: 'assistant' },
 		{
 			id: 'media',
@@ -72,8 +93,33 @@ export function EditPagesForm({
 		? EditResourcesFormMobile
 		: EditResourcesFormDesktop
 
+	const bodyText = form.getValues('fields.body')
+	const {
+		editorValue,
+		setEditorValue,
+		setMdxContent,
+		togglePreviewPanel,
+		isShowingMdxPreview,
+	} = useMDXPreview()
+	const debouncedOnChange = React.useCallback(
+		debounce(async (value: string | null) => {
+			if (value) {
+				setEditorValue(value)
+				const mdxContent = await serializeForPreview(value)
+				mdxContent && setMdxContent(mdxContent)
+			}
+		}, 300), // Adjust the debounce delay as needed
+		[],
+	)
+
+	React.useEffect(() => {
+		debouncedOnChange(editorValue)
+	}, [])
+
 	return (
 		<ResourceForm
+			onResourceBodyChange={debouncedOnChange}
+			bodyPanelSlot={<MDXLivePreview />}
 			resource={page}
 			form={form}
 			resourceSchema={PageSchema}
@@ -92,6 +138,8 @@ export function EditPagesForm({
 			onSave={onPageSave}
 			tools={tools}
 			theme={theme}
+			toggleMdxPreview={togglePreviewPanel}
+			isShowingMdxPreview={isShowingMdxPreview}
 		>
 			<PageMetadataFormFields form={form} />
 		</ResourceForm>

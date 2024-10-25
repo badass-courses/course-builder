@@ -16,6 +16,8 @@ export function EditResourcesMetadataPanel({
 }) {
 	return (
 		<ResizablePanel
+			id="edit-resources-metadata-panel"
+			order={1}
 			minSize={5}
 			defaultSize={20}
 			maxSize={35}
