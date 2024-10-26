@@ -42,7 +42,7 @@ const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
 export async function getEggheadLesson(eggheadLessonId: number) {
 	const lesson = await fetch(
-		`${process.env.NEXT_PUBLIC_AUTH_DOMAIN}/api/v1/lessons/${eggheadLessonId}`,
+		`https://app.egghead.io/api/v1/lessons/${eggheadLessonId}`,
 	).then((res) => res.json())
 
 	return lesson
