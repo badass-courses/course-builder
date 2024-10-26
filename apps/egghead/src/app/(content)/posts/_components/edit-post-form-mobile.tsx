@@ -73,7 +73,9 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 		if (!updatedPost) {
 			// handle edge case, e.g. toast an error message
 		} else {
-			const { fields: slug } = updatedPost
+			const {
+				fields: { slug },
+			} = updatedPost
 
 			router.push(`/${slug}`)
 		}
@@ -107,7 +109,7 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 					className="disabled:cursor-wait"
 					disabled={updatePostStatus === 'loading'}
 				>
-					Save
+					Save!!!
 				</Button>
 			</div>
 			<div className="flex flex-col">
