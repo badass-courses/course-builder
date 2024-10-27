@@ -75,8 +75,8 @@ export async function getAllEggheadTags(): Promise<EggheadTag[]> {
 				url: url ?? null,
 				popularity_order: popularity_order ?? null,
 			},
-			createdAt: updated_at ?? null,
-			updatedAt: updated_at ?? null,
+			createdAt: updated_at ?? new Date(),
+			updatedAt: updated_at ?? new Date(),
 		}
 	})
 
