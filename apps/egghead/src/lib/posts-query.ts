@@ -265,6 +265,23 @@ export async function addTagToPost(postId: string, tagId: string) {
 	await writeLegacyTaggingsToEgghead(postId)
 }
 
+export async function updatePostTags(postId: string, tags: EggheadTag[]) {
+	await db
+		.transaction(async (trx) => {
+			await trx
+				.delete(contentResourceTagTable)
+				.where(eq(contentResourceTagTable.contentResourceId, postId))
+
+			await trx.insert(contentResourceTagTable).values(
+				tags.map((tag) => ({
+					contentResourceId: postId,
+					tagId: tag.id,
+				})),
+			)
+		})
+		.then(() => writeLegacyTaggingsToEgghead(postId))
+}
+
 export async function removeTagFromPost(postId: string, tagId: string) {
 	await db
 		.delete(contentResourceTagTable)
