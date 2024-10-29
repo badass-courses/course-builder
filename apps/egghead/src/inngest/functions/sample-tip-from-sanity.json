@@ -1,0 +1,82 @@
+{
+	"collaborators": [
+		{
+			"person": {
+				"_ref": "person-kevin-cunningham",
+				"_type": "reference",
+				"_key": "iG_EsE6wJ6Oo3EqavbqNr"
+			},
+			"_rev": "zrh9EjkuGogxko3MvsnwWa",
+			"_id": "collaborator-instructor-kevin-cunningham",
+			"title": "instructor",
+			"eggheadInstructorId": "407",
+			"role": "instructor",
+			"_type": "collaborator",
+			"department": "egghead",
+			"_updatedAt": "2022-03-22T16:54:26Z",
+			"_createdAt": "2021-02-22T23:58:04Z"
+		}
+	],
+	"slug": {
+		"current": "enhance-your-testing-workflow-with-vitest",
+		"_type": "slug"
+	},
+	"_type": "tip",
+	"_createdAt": "2023-10-27T21:12:41Z",
+	"_updatedAt": "2023-10-27T22:11:03Z",
+	"resources": [
+		{
+			"transcript": {
+				"srt": "1\n00:00:00,000 --> 00:00:07,840\nWhen I have a package script like this I can run it with npm run test. vitest runs in watch mode\n\n2\n00:00:07,840 --> 00:00:17,440\nautomatically so that if I change my function to fail it will run if I update it will run again.\n\n3\n00:00:18,160 --> 00:00:26,640\nIf instead I only wanted this to run one time I can run vitest run. In my package script I could add a\n\n4\n00:00:26,640 --> 00:00:37,920\nanother script tag vitest run like that and then npm run test once. It'll run once and then quit.\n\n5\n00:00:37,920 --> 00:00:44,240\nvitest also comes with a UI which we can access with a flag dash dash UI. So I'll add another\n\n6\n00:00:44,240 --> 00:00:53,200\nscript vitest dash dash UI and I'll run npm run test UI which as well as running my test in watch\n\n7\n00:00:53,200 --> 00:01:00,720\nmode will launch this dashboard where I can look at each test its report the module graph and the\n\n8\n00:01:00,720 --> 00:01:06,720\ncode where the test goes from. Creating these multiple test functions just to pass these\n\n9\n00:01:06,720 --> 00:01:12,800\nparameters can be a bit frustrating especially for parameters that you're only using once or twice.\n\n10\n00:01:13,360 --> 00:01:20,880\nIf I do npm run test run then that will do the same as test once so we can get rid of that one.\n\n11\n00:01:20,880 --> 00:01:29,200\nIf I do npm run test dash dash UI that does not launch my UI and that's because\n\n12\n00:01:30,000 --> 00:01:38,720\nthis dash dash UI flag is being passed to npm and not to the script that npm run test is pointing\n\n13\n00:01:38,720 --> 00:01:45,280\ntowards. If I do want to pass additional flags to this script in other words reproduce this vitest\n\n14\n00:01:45,280 --> 00:01:52,640\ndash dash UI then before my flags I do a separate dash dash. This is telling npm that anything that\n\n15\n00:01:52,640 --> 00:01:59,120\ncomes after this point shouldn't be passed to npm but should instead be appended to the end of the\n\n16\n00:01:59,120 --> 00:02:06,480\nscript tag. So this npm run test dash dash dash dash UI is the same as vitest dash dash UI so it's the\n\n17\n00:02:06,480 --> 00:02:12,800\nsame as this. So if I run this as well as running my tests I also get my dashboard. So you can pass\n\n18\n00:02:12,800 --> 00:02:16,160\narguments to package scripts in line but to be able to pass\n\n19\n00:02:16,160 --> 00:02:20,240\nflags to package scripts you have to use an additional double dash.",
+				"text": "[00:00] When I have a package script like this I can run it with npm run test. vitest runs in watch mode automatically so that if I change my function to fail it will run if I update it will run again.\n\n[00:18] If instead I only wanted this to run one time I can run vitest run. In my package script I could add a another script tag vitest run like that and then npm run test once. It'll run once and then quit.\n\n[00:37] vitest also comes with a UI which we can access with a flag dash dash UI. So I'll add another script vitest dash dash UI and I'll run npm run test UI which as well as running my test in watch\n\n[00:53] mode will launch this dashboard where I can look at each test its report the module graph and the code where the test goes from. Creating these multiple test functions just to pass these parameters can be a bit frustrating especially for parameters that you're only using once or twice.\n\n[01:13] If I do npm run test run then that will do the same as test once so we can get rid of that one. If I do npm run test dash dash UI that does not launch my UI and that's because\n\n[01:30] this dash dash UI flag is being passed to npm and not to the script that npm run test is pointing towards. If I do want to pass additional flags to this script in other words reproduce this vitest\n\n[01:45] dash dash UI then before my flags I do a separate dash dash. This is telling npm that anything that comes after this point shouldn't be passed to npm but should instead be appended to the end of the\n\n[01:59] script tag. So this npm run test dash dash dash dash UI is the same as vitest dash dash UI so it's the same as this. So if I run this as well as running my tests I also get my dashboard. So you can pass arguments to package scripts in line but to be able to pass\n\n[02:16] flags to package scripts you have to use an additional double dash."
+			},
+			"_rev": "IhesUmTp3xGmPglPThowcP",
+			"muxAsset": {
+				"muxPlaybackId": "t50200lzaoFJ02lfsJo2h74jPNSHJA7Enj910113iS2xBsk",
+				"muxAssetId": "lYe1d91Lick8JYUVvq7agLcQBSPTn3m9L73A400BibJQ",
+				"_type": "muxAsset"
+			},
+			"duration": 140,
+			"filename": "PackageScriptFlags.mp4",
+			"originalVideoUrl": "https://egghead-video-uploads.s3.amazonaws.com/egghead/egghead-tips/PackageScriptFlags.mp4",
+			"_createdAt": "2023-10-27T21:13:58Z",
+			"_type": "videoResource",
+			"_id": "mbkmfI649lIjAh_VPi0F6",
+			"_updatedAt": "2023-10-27T21:14:55Z"
+		}
+	],
+	"eggheadRailsCreatedAt": "2023-10-27T21:12:52.746Z",
+	"eggheadRailsLessonId": 10247,
+	"_id": "067d52bd-568c-4f0b-812b-c461f9df9b11",
+	"state": "published",
+	"accessLevel": "free",
+	"title": "Enhance Your Testing Workflow with vitest",
+	"summary": "Improve your testing process by understanding how to run vitest in different modes and launch the UI dashboard using NPM package scripts.",
+	"publishedAt": "2023-10-27",
+	"description": "Improve your testing process by understanding how to run vitest in different modes and launch the UI dashboard using NPM package scripts.",
+	"body": "vitest is a versatile testing tool that provides various options to run tests. Here's a breakdown of how you can use it:\n\n**Running Tests in Watch Mode**\n\nBy default, vitest runs in watch mode. This means that the tests will re-run automatically whenever there are changes in your functions.\n\nFor example, if you have a script defined in your package.json as:\n```json\n{\n  \"scripts\": {\n    \"test\": \"vitest\"\n  }\n}\n```\n\nYou can run it with the following command:\n\n```bash\nnpm run test\n```\n\nIf your function fails and you update it, vitest will run again, giving you immediate feedback.\n\n**Running Tests Once**\n\nIf you wish to run the tests just once without entering the watch mode, you can use the `vitest run` command.\n\nYou can add this to your package.json scripts as:\n\n```json\n{\n  \"scripts\": {\n    \"test\": \"vitest\",\n    \"test:once\": \"vitest run\"\n  }\n}\n```\n\nAnd then run it with:\n```bash\nnpm run test:once\n```\n\n**Accessing the vitest UI**\n\nvitest comes with a built-in UI which can be accessed using the `--UI` flag. \n\nIn your package.json, you can have a script like:\n```json\n{\n  \"scripts\": {\n    \"test\": \"vitest\",\n    \"test:ui\": \"vitest --ui\"\n  }\n}\n```\n\nTo launch the dashboard along with the tests in watch mode, use:\n```bash\nnpm run test:ui\n```\n\n![vitest ui](https://res.cloudinary.com/dg3gyk0gu/image/upload/v1698440916/tips/kevin-cunningham/vitest-ui.png)\n\nThis dashboard provides insights into:\n\neach test and its report:\n\n![single test](https://res.cloudinary.com/dg3gyk0gu/image/upload/v1698440916/tips/kevin-cunningham/vitest-single-test.png)\n\nthe module graph:\n\n![module graph](https://res.cloudinary.com/dg3gyk0gu/image/upload/v1698440916/tips/kevin-cunningham/vitest-module-graph.png)\n\nthe code where the test originates from:\n\n![code tested](https://res.cloudinary.com/dg3gyk0gu/image/upload/v1698440917/tips/kevin-cunningham/vitest-code-test.png)\n\n**Passing Flags to Package Scripts**\n\nWhen you want to pass additional flags to the script with `npm run`, you might encounter an issue. For instance, running:\n```bash\nnpm run test --ui\n```\n\nWon't work as expected. This is because the `--UI` flag is being passed to npm and not to the vitest command.\n\nTo correctly pass the flag, use an additional double dash `--` before your flags, like so:\n```bash\nnpm run test -- --ui\n```\n\nThis tells npm that the subsequent flags should be passed to the script and not npm itself.\n\nIn conclusion, vitest offers a rich set of features to help you run and monitor your tests effectively. Whether you prefer the watch mode for continuous feedback or need the UI dashboard for detailed insights, vitest has you covered. Remember to use the double dash `--` when passing flags to your npm scripts to ensure they work as intended.",
+	"softwareLibraries": [
+		{
+			"library": {
+				"_createdAt": "2021-02-22T23:39:12Z",
+				"_type": "software-library",
+				"name": "npm",
+				"_updatedAt": "2022-04-19T20:53:30Z",
+				"url": "https://www.npmjs.com/",
+				"image": {
+					"url": "https://d2eip9sf3oo6c2.cloudfront.net/tags/images/000/000/188/thumb/npmlogo.png"
+				},
+				"path": "/q/npm",
+				"_rev": "FzZqLY5Qxw30cNb7xa5qna",
+				"description": "npm is the package manager for JavaScript. Find, share, and reuse packages of code from hundreds of thousands of developers — and assemble them in powerful new ways.",
+				"_id": "software-library-npm",
+				"slug": {
+					"current": "npm"
+				}
+			},
+			"_type": "versioned-software-library",
+			"_key": "eae71e1487a6"
+		}
+	],
+	"_rev": "IhesUmTp3xGmPglPThralB"
+}
