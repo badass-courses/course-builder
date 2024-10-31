@@ -150,7 +150,7 @@ const Home = async ({ searchParams }: Props) => {
 						</section>
 					</>
 				) : ckSubscriber ? null : (
-					<PrimaryNewsletterCta className="pt-10" />
+					<PrimaryNewsletterCta className="px-5 pt-10" />
 				)}
 			</main>
 		</div>
