@@ -1,0 +1,142 @@
+/* @import url('https://use.typekit.net/tjw2gng.css'); */
+@import './primary-newsletter-cta.css';
+@import './tip-newsletter-cta.css';
+@import './video-block-newsletter-cta.css';
+@import './nprogress.css';
+@import './video/mux-player.css';
+@import './video/github-link.css';
+@import './video/lesson-completion-toggle.css';
+@import './video/lesson-description.css';
+@import './video/lesson-title.css';
+@import './video/module-lesson-list.css';
+@import './video/video-overlays.css';
+@import './video/video-transcript.css';
+@import './video/module-navigator.css';
+@import './focus-visible.css';
+@import '@code-hike/mdx/dist/index.css';
+@import './ui/button.css';
+@import './login.css';
+@import './commerce.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--nav-height: 4rem;
+		--command-bar-height: 2.25rem;
+		--pane-layout-height: calc(
+			100vh - var(--nav-height) - var(--command-bar-height)
+		);
+		--code-editor-layout-height: calc(
+			100vh - var(--nav-height) - var(--command-bar-height) - 30px
+		);
+
+		--background: 32 8% 99%;
+		--foreground: 32 5% 10%;
+		--card: 32 8% 99%;
+		--card-foreground: 32 5% 15%;
+		--popover: 32 8% 99%;
+		--popover-foreground: 32 95% 10%;
+		--primary: 32 100% 64.3%;
+		--primary-foreground: 0 0% 0%;
+		--secondary: 32 10% 90%;
+		--secondary-foreground: 0 0% 0%;
+		--muted: -6 10% 95%;
+		--muted-foreground: 32 5% 40%;
+		--accent: -6 10% 90%;
+		--accent-foreground: 32 5% 15%;
+		--destructive: 0 50% 50%;
+		--destructive-foreground: 32 5% 99%;
+		--border: 32 20% 82%;
+		--input: 32 20% 50%;
+		--ring: 32 100% 64.3%;
+		--radius: 0.3rem;
+		color-scheme: light;
+	}
+
+	.dark {
+		/* golden color scheme */
+		--background: 0 0% 0%;
+		--foreground: 32 5% 85%;
+		--card: 32 8% 0%;
+		--card-foreground: 32 5% 90%;
+		--popover: 32 10% 5%;
+		--popover-foreground: 32 5% 90%;
+		/* @supports not (color: color(display-p3 1 1 1)) { */
+		--primary: 32 100% 64%; /* hsl */
+		/* } */
+		/* @supports (color: color(display-p3 1 1 1)) { */
+		/* oklch p3 */
+		/* --primary: 80.66% 0.1769 66.73;  */
+		/* } */
+		--primary-foreground: 0 0% 0%;
+		--secondary: 0 0% 11%;
+		--secondary-foreground: 0 0% 100%;
+
+		--muted: 0 0% 10%;
+		--muted-foreground: 22.3 64.2% 93.3%;
+
+		--accent: 0 0% 5%;
+		--accent-foreground: 32 5% 90%;
+
+		--destructive: 0 50% 30%;
+		--destructive-foreground: 32 5% 90%;
+
+		--border: 0 0% 10%;
+		--input: 32 16% 38%;
+		--ring: 32 100% 64%;
+		--radius: 0.3rem;
+		color-scheme: dark;
+
+		[data-theme='elysium'] {
+			/* blue-ish color scheme */
+			--primary: 241.2 43.4% 76.5%;
+			--primary-foreground: 0 0% 0%;
+			--secondary: 176.5 37.6% 54.2%;
+			--secondary-foreground: 0 0% 0%;
+			--muted: 231 20% 19%;
+			--muted-foreground: 235 100% 95%;
+			--border: 230.8 20.7% 18.8%;
+			--input: 230.8 20.7% 18.8%;
+			--ring: 241.2 43.4% 76.5%;
+		}
+
+		[data-theme='erebus'] {
+			/* green-ish color scheme */
+		}
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply font-heading text-balance font-bold;
+	}
+
+	body {
+		@apply bg-background text-foreground font-normal antialiased;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
+	}
+
+	html.dark .shiki,
+	html.dark .shiki span {
+		color: var(--shiki-dark) !important;
+		background-color: var(--background) !important;
+		/* Optional, if you also want font styles */
+		font-style: var(--shiki-dark-font-style) !important;
+		font-weight: var(--shiki-dark-font-weight) !important;
+		text-decoration: var(--shiki-dark-text-decoration) !important;
+	}
+}
