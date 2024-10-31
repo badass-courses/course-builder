@@ -77,7 +77,9 @@ export const PostNewsletterCta: React.FC<
 								strokeDasharray="3 3"
 							/>
 						</svg>
-						<div className="fluid-xl font-heading font-semibold">Node Tips</div>
+						<div className="fluid-xl font-heading font-semibold">
+							AI Engineering Tips
+						</div>
 					</div>
 					<div className="text-primary fluid-lg font-heading">
 						Delivered to your inbox
