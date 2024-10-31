@@ -33,7 +33,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1729160439/totalnodejs.com/card-tn_2x_qg1pmy.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
+		'https://res.cloudinary.com/total-typescript/image/upload/v1730364146/aihero-card_2x_jkg4cs.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -46,7 +46,7 @@ export async function generateMetadata(
 		const validCoupon = Boolean(coupon && coupon.isValid)
 		if (validCoupon)
 			ogImageUrl =
-				'https://res.cloudinary.com/total-typescript/image/upload/v1729158523/totalnodejs.com/golden-ticket-tnjs_2x_ggbrxn.png'
+				'https://res.cloudinary.com/total-typescript/image/upload/v1730364326/aihero-golden-ticket_2x_qghsfq.png'
 	}
 
 	return {
