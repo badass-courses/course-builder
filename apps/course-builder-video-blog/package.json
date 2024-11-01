@@ -58,6 +58,8 @@
 		"axios": "^1.5.1",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
+		"date-fns": "^2.30.0",
+		"date-fns-tz": "^2.0.1",
 		"drizzle-orm": "0.31.0",
 		"framer-motion": "^11",
 		"human-readable-ids": "^1.0.4",

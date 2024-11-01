@@ -54,6 +54,8 @@
 		"ai": "3.0.19",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.0.0",
+		"date-fns": "^2.30.0",
+		"date-fns-tz": "^2.0.1",
 		"drizzle-orm": "0.31.0",
 		"framer-motion": "^11",
 		"inngest": "^3.22.5",
