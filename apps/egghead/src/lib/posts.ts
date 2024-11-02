@@ -31,12 +31,15 @@ export const PostVisibilitySchema = z.union([
 
 export type PostVisibility = z.infer<typeof PostVisibilitySchema>
 
-export const PostTypeSchema = z.union([
-	z.literal('article'),
-	z.literal('lesson'),
-	z.literal('podcast'),
-	z.literal('tip'),
-])
+export const PostTypeSchema = z
+	.union([
+		z.literal('article'),
+		z.literal('lesson'),
+		z.literal('podcast'),
+		z.literal('tip'),
+		z.literal('course'),
+	])
+	.or(z.string())
 
 export type PostType = z.infer<typeof PostTypeSchema>
 
