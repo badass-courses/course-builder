@@ -91,6 +91,7 @@ async function Post({ post }: { post: Post | null }) {
 				<MDXRemote
 					source={post.fields.body}
 					components={{
+						// @ts-expect-error
 						pre: async (props: any) => {
 							const children = props?.children.props.children
 							const language =

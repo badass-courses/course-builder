@@ -26,4 +26,4 @@ const ModuleLayout: React.FC<
 	)
 }
 
-export default ModuleLayout``
+export default ModuleLayout

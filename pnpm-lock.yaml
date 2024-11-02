@@ -501,8 +501,8 @@ importers:
         specifier: ^6.5.1
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -1099,8 +1099,8 @@ importers:
         specifier: ^6.5.1
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -1938,8 +1938,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -3075,8 +3075,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -3496,8 +3496,8 @@ importers:
         specifier: ^6.5.1
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -3995,8 +3995,8 @@ importers:
         specifier: ^6.5.1
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -4623,8 +4623,8 @@ importers:
         specifier: ^6.5.1
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -5212,8 +5212,8 @@ importers:
         specifier: ^6.5.1
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
-        specifier: ^4.4.1
-        version: 4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 5.0.0
+        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -7774,7 +7774,7 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.25.9
       js-tokens: 4.0.0
-      picocolors: 1.0.1
+      picocolors: 1.1.1
 
   /@babel/compat-data@7.23.5:
     resolution: {integrity: sha512-uU27kfDRlhfKl+w1U6vp16IuvSLtjAxdArVXPa9BvLkrr7CYIsxH5adpHObeAGY/41+syctUWOZ140a2Rvkgjw==}
@@ -7816,7 +7816,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@babel/code-frame': 7.24.7
+      '@babel/code-frame': 7.26.2
       '@babel/generator': 7.24.10
       '@babel/helper-compilation-targets': 7.24.8
       '@babel/helper-module-transforms': 7.24.9(@babel/core@7.24.9)
@@ -8005,7 +8005,7 @@ packages:
       '@babel/helper-module-imports': 7.24.7(supports-color@5.5.0)
       '@babel/helper-simple-access': 7.24.7
       '@babel/helper-split-export-declaration': 7.24.7
-      '@babel/helper-validator-identifier': 7.24.7
+      '@babel/helper-validator-identifier': 7.25.9
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -8361,7 +8361,7 @@ packages:
     resolution: {integrity: sha512-Bkf2q8lMB0AFpX0NFEqSbx1OkTHf0f+0j82mkw+ZpzBnkk7e9Ql0891vlfgi+kHwOk8tQjiQHpqh4LaSa0fKEA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.23.5
+      '@babel/code-frame': 7.26.2
       '@babel/parser': 7.24.0
       '@babel/types': 7.24.0
 
@@ -8369,7 +8369,7 @@ packages:
     resolution: {integrity: sha512-jYqfPrU9JTF0PmPy1tLYHW4Mp4KlgxJD9l2nP9fD6yT/ICi554DmrWBAEYpIelzjHf1msDP3PxJIRt/nFNfBig==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.24.7
+      '@babel/code-frame': 7.26.2
       '@babel/parser': 7.24.8
       '@babel/types': 7.24.9
 
@@ -11392,16 +11392,6 @@ packages:
       vfile: 6.0.1
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /@mdx-js/react@2.3.0(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-zQH//gdOmuu7nt2oJR29vFhDv88oGPmVw6BggmrHeMI+xgEkp1B2dX9/bMBSYtK0dyLX/aOmesKS09g222K1/g==}
-    peerDependencies:
-      react: '>=16'
-    dependencies:
-      '@types/mdx': 2.0.11
-      '@types/react': 18.3.1
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@mdx-js/react@3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1):
@@ -19762,10 +19752,6 @@ packages:
   /@types/js-cookie@3.0.6:
     resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
 
-  /@types/js-yaml@4.0.9:
-    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
-    dev: false
-
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -27596,7 +27582,7 @@ packages:
     resolution: {integrity: sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@babel/code-frame': 7.23.5
+      '@babel/code-frame': 7.26.2
       '@jest/types': 29.6.3
       '@types/stack-utils': 2.0.3
       chalk: 4.1.2
@@ -30470,7 +30456,7 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.37.2(nodemailer@6.9.11)
-      next: 15.0.2(@babel/core@7.24.0)(react-dom@18.3.1)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
 
   /next-axiom@1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028):
@@ -30500,20 +30486,21 @@ packages:
       react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
-  /next-mdx-remote@4.4.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-1BvyXaIou6xy3XoNF4yaMZUCb6vD2GTAa5ciOa6WoO+gAUTYsb1K4rI/HSC2ogAWLrb/7VSV52skz07vOzmqIQ==}
+  /next-mdx-remote@5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1):
+    resolution: {integrity: sha512-RNNbqRpK9/dcIFZs/esQhuLA8jANqlH694yqoDBK8hkVdJUndzzGmnPHa2nyi90N4Z9VmzuSWNRpr5ItT3M7xQ==}
     engines: {node: '>=14', npm: '>=7'}
     peerDependencies:
-      react: '>=16.x <=18.x'
-      react-dom: '>=16.x <=18.x'
+      react: '>=16'
     dependencies:
-      '@mdx-js/mdx': 2.3.0
-      '@mdx-js/react': 2.3.0(react@19.0.0-rc-02c0e824-20241028)
+      '@babel/code-frame': 7.26.2
+      '@mdx-js/mdx': 3.0.1
+      '@mdx-js/react': 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      vfile: 5.3.7
-      vfile-matter: 3.0.1
+      unist-util-remove: 3.1.1
+      vfile: 6.0.1
+      vfile-matter: 5.0.0
     transitivePeerDependencies:
+      - '@types/react'
       - supports-color
     dev: false
 
@@ -30609,6 +30596,7 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+    dev: true
 
   /next@15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-rxIWHcAu4gGSDmwsELXacqAPUk+j8dV/A9cDF5fsiCMpkBDYkO2AEaL1dfD+nNmDiU6QMCFN8Q30VEKapT9UHQ==}
@@ -30653,7 +30641,6 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
-    dev: true
 
   /next@15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-rxIWHcAu4gGSDmwsELXacqAPUk+j8dV/A9cDF5fsiCMpkBDYkO2AEaL1dfD+nNmDiU6QMCFN8Q30VEKapT9UHQ==}
@@ -31448,7 +31435,7 @@ packages:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
     dependencies:
-      '@babel/code-frame': 7.24.7
+      '@babel/code-frame': 7.26.2
       error-ex: 1.3.2
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4
@@ -36492,12 +36479,11 @@ packages:
       vfile: 6.0.1
     dev: false
 
-  /vfile-matter@3.0.1:
-    resolution: {integrity: sha512-CAAIDwnh6ZdtrqAuxdElUqQRQDQgbbIrYtDYI8gCjXS1qQ+1XdLoK8FIZWxJwn0/I+BkSSZpar3SOgjemQz4fg==}
+  /vfile-matter@5.0.0:
+    resolution: {integrity: sha512-jhPSqlj8hTSkTXOqyxbUeZAFFVq/iwu/jukcApEqc/7DOidaAth6rDc0Zgg0vWpzUnWkwFP7aK28l6nBmxMqdQ==}
     dependencies:
-      '@types/js-yaml': 4.0.9
-      is-buffer: 2.0.5
-      js-yaml: 4.1.0
+      vfile: 6.0.1
+      yaml: 2.4.1
     dev: false
 
   /vfile-message@3.1.4:
