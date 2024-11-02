@@ -198,7 +198,7 @@ export const PostMetadataFormFields: React.FC<{
 							</FormControl>
 							<SelectContent className="">
 								{PostTypeSchema.options.map((option) => {
-									const value = PostSchema.shape.fields.postType.enum[option]
+									const value = option._def.value
 									return (
 										<SelectItem key={value} value={value}>
 											{value}
