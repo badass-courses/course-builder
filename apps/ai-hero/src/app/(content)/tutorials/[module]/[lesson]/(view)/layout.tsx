@@ -16,7 +16,11 @@ const LessonLayout: React.FC<
 			lesson: string
 		}
 	}>
-> = async ({ children, params }) => {
+> = async (props) => {
+	const params = await props.params
+
+	const { children } = props
+
 	const tutorial = await getTutorial(params.module)
 	const currentLesson = await getLesson(params.lesson)
 	const currentSection =

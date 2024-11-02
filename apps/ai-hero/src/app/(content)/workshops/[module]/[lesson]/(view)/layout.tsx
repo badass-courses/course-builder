@@ -10,7 +10,11 @@ const LessonLayout: React.FC<
 			lesson: string
 		}
 	}>
-> = async ({ children, params }) => {
+> = async (props) => {
+	const params = await props.params
+
+	const { children } = props
+
 	return (
 		<div className="flex">
 			<React.Suspense

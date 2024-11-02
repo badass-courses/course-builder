@@ -26,8 +26,8 @@ import { WorkshopPricing as WorkshopPricingClient } from '../_components/worksho
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
 type Props = {
-	params: { module: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ module: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateStaticParams() {
@@ -49,9 +49,10 @@ const getCachedMinimalWorkshop = unstable_cache(
 )
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	if (!workshop) {
@@ -73,7 +74,9 @@ export async function generateMetadata(
 	}
 }
 
-export default async function ModulePage({ params, searchParams }: Props) {
+export default async function ModulePage(props: Props) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	if (!workshop) {

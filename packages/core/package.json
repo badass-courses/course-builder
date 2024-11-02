@@ -153,12 +153,18 @@
 		"xstate": "^5.13.0"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.30.0",
+		"@auth/core": "^0.37.2",
 		"@types/lodash": "^4.14.200",
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pluralize": "^0.0.33",
 		"tsup": "8.0.2",
 		"zod": "^3.22.4"
+	},
+	"pnpm": {
+		"overrides": {
+			"@types/react": "npm:types-react@19.0.0-rc.1",
+			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		}
 	}
 }

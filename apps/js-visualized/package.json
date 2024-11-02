@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"@amplitude/analytics-browser": "^2.6.1",
-		"@auth/core": "^0.30.0",
+		"@auth/core": "^0.37.2",
 		"@casl/ability": "^6.5.0",
 		"@coursebuilder/adapter-drizzle": "0.5.1",
 		"@coursebuilder/commerce-next": "^0.0.7",
@@ -34,7 +34,7 @@
 		"@mdx-js/loader": "^3.0.1",
 		"@mdx-js/react": "^3.0.1",
 		"@mux/mux-player-react": "^2.6.0",
-		"@next/mdx": "14.2.5",
+		"@next/mdx": "15.0.2",
 		"@planetscale/database": "1.14.0",
 		"@react-email/components": "^0.0.22",
 		"@react-email/markdown": "^0.0.11",
@@ -71,8 +71,8 @@
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.288.0",
 		"nanoid": "^5.0.2",
-		"next": "14.2.5",
-		"next-auth": "5.0.0-beta.17",
+		"next": "15.0.2",
+		"next-auth": "5.0.0-beta.25",
 		"next-axiom": "^1.1.1",
 		"next-cloudinary": "^6.5.1",
 		"next-mdx-remote": "^4.4.1",
@@ -83,8 +83,8 @@
 		"pluralize": "^8.0.0",
 		"prism-react-renderer": "^2.2.0",
 		"query-string": "^9.0.0",
-		"react": "18.3.1",
-		"react-dom": "18.3.1",
+		"react": "19.0.0-rc-02c0e824-20241028",
+		"react-dom": "19.0.0-rc-02c0e824-20241028",
 		"react-gravatar": "^2.6.3",
 		"react-hook-form": "^7.48.0",
 		"react-hot-toast": "^2.4.1",
@@ -110,7 +110,7 @@
 		"@types/js-cookie": "^3.0.6",
 		"@types/node": "^20.12.5",
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "^18.3.1",
+		"@types/react": "npm:types-react@19.0.0-rc.1",
 		"@types/react-gravatar": "^2.6.13",
 		"concurrently": "^8.2.2",
 		"dotenv-cli": "^7.3.0",
@@ -127,5 +127,11 @@
 	"ct3aMetadata": {
 		"initVersion": "7.22.0"
 	},
-	"packageManager": "pnpm@8.15.5"
+	"packageManager": "pnpm@8.15.5",
+	"pnpm": {
+		"overrides": {
+			"@types/react": "npm:types-react@19.0.0-rc.1",
+			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		}
+	}
 }

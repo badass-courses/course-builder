@@ -29,9 +29,10 @@ import {
 } from './admin/pages/_components/page-builder-mdx-components'
 
 export async function generateMetadata(
-	{ searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const searchParams = await props.searchParams
 	let ogImageUrl =
 		'https://res.cloudinary.com/total-typescript/image/upload/v1730364146/aihero-card_2x_jkg4cs.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
 	const codeParam = searchParams?.code
@@ -65,14 +66,15 @@ export async function generateMetadata(
 }
 
 type Props = {
-	searchParams: { [key: string]: string | undefined }
+	searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
-const Home = async ({ searchParams }: Props) => {
+const Home = async (props: Props) => {
+	const searchParams = await props.searchParams
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
 	const page = await getPage(allowPurchase ? 'home-6z2ir' : 'home-6z2ir')
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return (

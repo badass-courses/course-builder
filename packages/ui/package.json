@@ -8,7 +8,7 @@
 	"main": "index.tsx",
 	"types": "index.tsx",
 	"dependencies": {
-		"@auth/core": "^0.30.0",
+		"@auth/core": "^0.37.2",
 		"@codemirror/commands": "^6.6.0",
 		"@codemirror/lang-markdown": "^6.2.3",
 		"@codemirror/language-data": "^6.4.1",
@@ -50,9 +50,9 @@
 		"lucide-react": "^0.288.0",
 		"openai-edge": "^1.2.2",
 		"partysocket": "1.0.1",
-		"react": "18.3.1",
+		"react": "19.0.0-rc-02c0e824-20241028",
 		"react-day-picker": "^9.2.1",
-		"react-dom": "18.3.1",
+		"react-dom": "19.0.0-rc-02c0e824-20241028",
 		"react-gravatar": "^2.6.3",
 		"react-hook-form": "^7.48.0",
 		"react-markdown": "^9.0.0",
@@ -67,8 +67,14 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@types/react": "^18.3.1",
-		"@types/react-dom": "^18.3.0",
+		"@types/react": "npm:types-react@19.0.0-rc.1",
+		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
 		"@types/react-gravatar": "^2.6.13"
+	},
+	"pnpm": {
+		"overrides": {
+			"@types/react": "npm:types-react@19.0.0-rc.1",
+			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		}
 	}
 }

@@ -8,7 +8,7 @@ import { useActions, useUIState } from 'ai/rsc'
 import { Button, Textarea } from '@coursebuilder/ui'
 
 function useEnterSubmit(): {
-	formRef: RefObject<HTMLFormElement>
+	formRef: RefObject<HTMLFormElement | null>
 	onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void
 } {
 	const formRef = useRef<HTMLFormElement>(null)

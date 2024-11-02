@@ -49,7 +49,7 @@
 		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.30.0",
+		"@auth/core": "^0.37.2",
 		"@coursebuilder/core": "0.2.3",
 		"@libsql/client": "0.5.6",
 		"@types/better-sqlite3": "7.6.9",
@@ -65,5 +65,11 @@
 	},
 	"peerDependencies": {
 		"drizzle-orm": "0.31.x"
+	},
+	"pnpm": {
+		"overrides": {
+			"@types/react": "npm:types-react@19.0.0-rc.1",
+			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		}
 	}
 }

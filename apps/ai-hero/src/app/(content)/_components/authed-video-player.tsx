@@ -212,7 +212,7 @@ async function handleOnVideoEnded({
 	canView?: boolean
 	resource: ContentResource
 	isFullscreen: boolean
-	playerRef: React.RefObject<MuxPlayerRefAttributes>
+	playerRef: React.RefObject<MuxPlayerRefAttributes | null>
 	dispatchVideoPlayerOverlay: React.Dispatch<VideoPlayerOverlayAction>
 	setCurrentResource: React.Dispatch<ContentResource>
 	currentResource: ContentResource
