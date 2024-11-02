@@ -134,7 +134,7 @@
 		"dotenv-flow": "^4.1.0",
 		"drizzle-orm": "0.31.0",
 		"formik": "2.2.9",
-		"framer-motion": "^11",
+		"framer-motion": "11.11.11",
 		"groq": "^3.18.1",
 		"holy-loader": "^2.2.10",
 		"html-to-text": "^9.0.5",

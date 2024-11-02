@@ -62,7 +62,7 @@
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
 		"drizzle-orm": "0.31.0",
-		"framer-motion": "^11",
+		"framer-motion": "11.11.11",
 		"human-readable-ids": "^1.0.4",
 		"inngest": "^3.22.5",
 		"lodash": "^4.17.21",
