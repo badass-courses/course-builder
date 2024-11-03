@@ -1,6 +1,7 @@
+import Database from 'better-sqlite3'
 import { mysqlTable } from 'drizzle-orm/mysql-core'
-import { drizzle } from 'drizzle-orm/mysql2'
-import { createPool } from 'mysql2'
+import { drizzle, MySql2Database } from 'drizzle-orm/mysql2'
+import { createPool, Pool } from 'mysql2'
 
 import { createTables } from '../../src/lib/mysql/index.js'
 

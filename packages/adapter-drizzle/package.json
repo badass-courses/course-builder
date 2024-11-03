@@ -55,8 +55,8 @@
 		"@types/better-sqlite3": "7.6.9",
 		"@types/uuid": "9.0.8",
 		"better-sqlite3": "9.4.3",
-		"drizzle-kit": "^0.22.1",
-		"drizzle-orm": "0.31.0",
+		"drizzle-kit": "0.27.1",
+		"drizzle-orm": "0.36.0",
 		"mysql2": "^3.6.1",
 		"postgres": "^3.3.4",
 		"tsup": "8.0.2",
@@ -64,7 +64,7 @@
 		"zod": "^3.22.4"
 	},
 	"peerDependencies": {
-		"drizzle-orm": "0.31.x"
+		"drizzle-orm": "0.36.x"
 	},
 	"pnpm": {
 		"overrides": {
