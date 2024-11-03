@@ -243,8 +243,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -438,8 +438,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.14.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -721,7 +721,7 @@ importers:
         specifier: 13.5.6
         version: 13.5.6(eslint@8.57.0)(typescript@5.4.5)
       mysql2:
-        specifier: ^3.6.1
+        specifier: ^3.9.2
         version: 3.9.2
       partykit:
         specifier: 0.0.104
@@ -877,8 +877,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -1036,8 +1036,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -1391,8 +1391,8 @@ importers:
         specifier: 14.2.5
         version: 14.2.5(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@react-email/components':
         specifier: ^0.0.22
         version: 0.0.22(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
@@ -1466,8 +1466,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       framer-motion:
         specifier: 11.11.11
         version: 11.11.11(react-dom@18.3.1)(react@18.3.1)
@@ -1737,8 +1737,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -1887,8 +1887,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -2212,8 +2212,8 @@ importers:
         specifier: 14.2.5
         version: 14.2.5(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@react-email/components':
         specifier: ^0.0.22
         version: 0.0.22(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
@@ -2290,8 +2290,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       framer-motion:
         specifier: 11.11.11
         version: 11.11.11(react-dom@18.3.1)(react@18.3.1)
@@ -2498,8 +2498,8 @@ importers:
         specifier: 14.2.5
         version: 14.2.5(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@react-email/components':
         specifier: ^0.0.22
         version: 0.0.22(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
@@ -2567,8 +2567,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       framer-motion:
         specifier: 11.11.11
         version: 11.11.11(react-dom@18.3.1)(react@18.3.1)
@@ -2853,8 +2853,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -3021,8 +3021,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -3376,8 +3376,8 @@ importers:
         specifier: 14.2.5
         version: 14.2.5(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@react-email/components':
         specifier: ^0.0.22
         version: 0.0.22(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
@@ -3454,8 +3454,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -3767,8 +3767,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -3935,8 +3935,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -4368,8 +4368,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -4560,8 +4560,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.14.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -4993,8 +4993,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -5152,8 +5152,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@18.3.1)
@@ -5499,8 +5499,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@5.11.0)(next-auth@5.0.0-beta.17)
       '@planetscale/database':
-        specifier: 1.14.0
-        version: 1.14.0
+        specifier: 1.19.0
+        version: 1.19.0
       '@prisma/client':
         specifier: ^5.6.0
         version: 5.11.0(prisma@5.11.0)
@@ -5644,8 +5644,8 @@ importers:
         specifier: ^0.22.1
         version: 0.22.1
       drizzle-orm:
-        specifier: 0.31.0
-        version: 0.31.0(@libsql/client@0.5.6)(@types/better-sqlite3@7.6.9)(better-sqlite3@9.4.3)(mysql2@3.9.2)(postgres@3.4.3)
+        specifier: 0.36.0
+        version: 0.36.0(@libsql/client@0.5.6)(@types/better-sqlite3@7.6.9)(better-sqlite3@9.4.3)(mysql2@3.9.2)(postgres@3.4.3)
       mysql2:
         specifier: ^3.6.1
         version: 3.9.2
@@ -5911,7 +5911,7 @@ importers:
         version: 2.30.0
       drizzle-zod:
         specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.31.0)(zod@3.22.4)
+        version: 0.5.1(drizzle-orm@0.36.0)(zod@3.22.4)
       inngest:
         specifier: ^3.22.5
         version: 3.22.5(next@14.2.5)(typescript@5.4.5)
@@ -11972,8 +11972,8 @@ packages:
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
     dev: false
 
-  /@planetscale/database@1.14.0:
-    resolution: {integrity: sha512-7BB+iH6EH4YJuDeVeEbxpo60BFz3wIXJNXCmBGl40eC4HStRMGZ1COxKfiuPcINWwwrJhAhI9AEI97AOZYT7JQ==}
+  /@planetscale/database@1.19.0:
+    resolution: {integrity: sha512-Tv4jcFUFAFjOWrGSio49H6R2ijALv0ZzVBfJKIdm+kl9X046Fh4LLawrF9OMsglVbK6ukqMJsUCeucGAFTBcMA==}
     engines: {node: '>=16'}
 
   /@pnpm/config.env-replace@1.1.0:
@@ -22156,17 +22156,20 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.31.0(@libsql/client@0.5.6)(@types/better-sqlite3@7.6.9)(better-sqlite3@9.4.3)(mysql2@3.9.2)(postgres@3.4.3):
-    resolution: {integrity: sha512-Uf5a3sGOqoyC+ZpQ4NCPR373q0pHOHezIJwdumMix+3rzLdtKgRhdaOabYeqNHBB48gF3Q9rrndkNc4ddE3AWA==}
+  /drizzle-orm@0.36.0(@libsql/client@0.5.6)(@types/better-sqlite3@7.6.9)(better-sqlite3@9.4.3)(mysql2@3.9.2)(postgres@3.4.3):
+    resolution: {integrity: sha512-6BETYPdKSR7cDHC0ZfqZk2VrKJ8n/Rfd3ajFPsAbc69gi87nwZ6oBA2wUGMELHA0tQE4kUKN0Ds00LUZQ6Z69A==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
-      '@electric-sql/pglite': '>=0.1.1'
-      '@libsql/client': '*'
+      '@electric-sql/pglite': '>=0.2.0'
+      '@libsql/client': '>=0.10.0'
+      '@libsql/client-wasm': '>=0.10.0'
       '@neondatabase/serverless': '>=0.1'
       '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
       '@planetscale/database': '>=1'
+      '@prisma/client': '*'
+      '@tidbcloud/serverless': '*'
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
       '@types/react': '>=18'
@@ -22181,6 +22184,7 @@ packages:
       mysql2: '>=2'
       pg: '>=8'
       postgres: '>=3'
+      prisma: '*'
       react: '>=18'
       sql.js: '>=1'
       sqlite3: '>=5'
@@ -22193,6 +22197,8 @@ packages:
         optional: true
       '@libsql/client':
         optional: true
+      '@libsql/client-wasm':
+        optional: true
       '@neondatabase/serverless':
         optional: true
       '@op-engineering/op-sqlite':
@@ -22200,6 +22206,10 @@ packages:
       '@opentelemetry/api':
         optional: true
       '@planetscale/database':
+        optional: true
+      '@prisma/client':
+        optional: true
+      '@tidbcloud/serverless':
         optional: true
       '@types/better-sqlite3':
         optional: true
@@ -22228,6 +22238,8 @@ packages:
       pg:
         optional: true
       postgres:
+        optional: true
+      prisma:
         optional: true
       react:
         optional: true
@@ -22243,17 +22255,20 @@ packages:
       postgres: 3.4.3
     dev: true
 
-  /drizzle-orm@0.31.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.14.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1):
-    resolution: {integrity: sha512-Uf5a3sGOqoyC+ZpQ4NCPR373q0pHOHezIJwdumMix+3rzLdtKgRhdaOabYeqNHBB48gF3Q9rrndkNc4ddE3AWA==}
+  /drizzle-orm@0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@18.3.1)(mysql2@3.9.2)(react@18.3.1):
+    resolution: {integrity: sha512-6BETYPdKSR7cDHC0ZfqZk2VrKJ8n/Rfd3ajFPsAbc69gi87nwZ6oBA2wUGMELHA0tQE4kUKN0Ds00LUZQ6Z69A==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
-      '@electric-sql/pglite': '>=0.1.1'
-      '@libsql/client': '*'
+      '@electric-sql/pglite': '>=0.2.0'
+      '@libsql/client': '>=0.10.0'
+      '@libsql/client-wasm': '>=0.10.0'
       '@neondatabase/serverless': '>=0.1'
       '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
       '@planetscale/database': '>=1'
+      '@prisma/client': '*'
+      '@tidbcloud/serverless': '*'
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
       '@types/react': '>=18'
@@ -22268,6 +22283,7 @@ packages:
       mysql2: '>=2'
       pg: '>=8'
       postgres: '>=3'
+      prisma: '*'
       react: '>=18'
       sql.js: '>=1'
       sqlite3: '>=5'
@@ -22280,6 +22296,8 @@ packages:
         optional: true
       '@libsql/client':
         optional: true
+      '@libsql/client-wasm':
+        optional: true
       '@neondatabase/serverless':
         optional: true
       '@op-engineering/op-sqlite':
@@ -22287,6 +22305,10 @@ packages:
       '@opentelemetry/api':
         optional: true
       '@planetscale/database':
+        optional: true
+      '@prisma/client':
+        optional: true
+      '@tidbcloud/serverless':
         optional: true
       '@types/better-sqlite3':
         optional: true
@@ -22315,6 +22337,8 @@ packages:
       pg:
         optional: true
       postgres:
+        optional: true
+      prisma:
         optional: true
       react:
         optional: true
@@ -22324,23 +22348,26 @@ packages:
         optional: true
     dependencies:
       '@opentelemetry/api': 1.9.0
-      '@planetscale/database': 1.14.0
+      '@planetscale/database': 1.19.0
       '@types/react': 18.3.1
       mysql2: 3.9.2
       react: 18.3.1
     dev: false
 
-  /drizzle-orm@0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1):
-    resolution: {integrity: sha512-Uf5a3sGOqoyC+ZpQ4NCPR373q0pHOHezIJwdumMix+3rzLdtKgRhdaOabYeqNHBB48gF3Q9rrndkNc4ddE3AWA==}
+  /drizzle-orm@0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1):
+    resolution: {integrity: sha512-6BETYPdKSR7cDHC0ZfqZk2VrKJ8n/Rfd3ajFPsAbc69gi87nwZ6oBA2wUGMELHA0tQE4kUKN0Ds00LUZQ6Z69A==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
-      '@electric-sql/pglite': '>=0.1.1'
-      '@libsql/client': '*'
+      '@electric-sql/pglite': '>=0.2.0'
+      '@libsql/client': '>=0.10.0'
+      '@libsql/client-wasm': '>=0.10.0'
       '@neondatabase/serverless': '>=0.1'
       '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
       '@planetscale/database': '>=1'
+      '@prisma/client': '*'
+      '@tidbcloud/serverless': '*'
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
       '@types/react': '>=18'
@@ -22355,6 +22382,7 @@ packages:
       mysql2: '>=2'
       pg: '>=8'
       postgres: '>=3'
+      prisma: '*'
       react: '>=18'
       sql.js: '>=1'
       sqlite3: '>=5'
@@ -22367,6 +22395,8 @@ packages:
         optional: true
       '@libsql/client':
         optional: true
+      '@libsql/client-wasm':
+        optional: true
       '@neondatabase/serverless':
         optional: true
       '@op-engineering/op-sqlite':
@@ -22374,6 +22404,10 @@ packages:
       '@opentelemetry/api':
         optional: true
       '@planetscale/database':
+        optional: true
+      '@prisma/client':
+        optional: true
+      '@tidbcloud/serverless':
         optional: true
       '@types/better-sqlite3':
         optional: true
@@ -22403,6 +22437,8 @@ packages:
         optional: true
       postgres:
         optional: true
+      prisma:
+        optional: true
       react:
         optional: true
       sql.js:
@@ -22410,7 +22446,7 @@ packages:
       sqlite3:
         optional: true
     dependencies:
-      '@planetscale/database': 1.14.0
+      '@planetscale/database': 1.19.0
       '@types/pg': 8.11.8
       '@types/react': 18.3.1
       mysql2: 3.9.2
@@ -22418,13 +22454,13 @@ packages:
       react: 18.3.1
     dev: false
 
-  /drizzle-zod@0.5.1(drizzle-orm@0.31.0)(zod@3.22.4):
+  /drizzle-zod@0.5.1(drizzle-orm@0.36.0)(zod@3.22.4):
     resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
     peerDependencies:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.31.0(@planetscale/database@1.14.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
+      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@18.3.1)(mysql2@3.9.2)(pg@8.12.0)(react@18.3.1)
       zod: 3.22.4
     dev: false
 
