@@ -102,7 +102,7 @@
 		"@types/react-gravatar": "^2.6.13",
 		"concurrently": "^8.2.2",
 		"dotenv-cli": "^7.3.0",
-		"drizzle-kit": "^0.22.1",
+		"drizzle-kit": "0.27.1",
 		"partykit": "0.0.104",
 		"postcss": "^8.4.27",
 		"prettier": "^3.2.5",

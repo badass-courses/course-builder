@@ -55,7 +55,7 @@
 		"@types/better-sqlite3": "7.6.9",
 		"@types/uuid": "9.0.8",
 		"better-sqlite3": "9.4.3",
-		"drizzle-kit": "^0.22.1",
+		"drizzle-kit": "0.27.1",
 		"drizzle-orm": "0.36.0",
 		"mysql2": "^3.6.1",
 		"postgres": "^3.3.4",

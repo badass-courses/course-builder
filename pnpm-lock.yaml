@@ -709,8 +709,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -1298,8 +1298,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -1593,8 +1593,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       mysql2:
         specifier: ^3.6.1
         version: 3.9.2
@@ -2125,8 +2125,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -2432,8 +2432,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       mysql2:
         specifier: ^3.6.1
         version: 3.9.2
@@ -2700,8 +2700,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       partykit:
         specifier: 0.0.104
         version: 0.0.104
@@ -3289,8 +3289,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -3608,8 +3608,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       mysql2:
         specifier: ^3.6.1
         version: 3.9.2
@@ -4185,8 +4185,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -4828,8 +4828,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -5408,8 +5408,8 @@ importers:
         specifier: ^7.3.0
         version: 7.4.1
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       encoding:
         specifier: ^0.1.13
         version: 0.1.13
@@ -5535,8 +5535,8 @@ importers:
         specifier: ^20.12.5
         version: 20.12.5
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.24.0)(react-dom@18.3.1)(react@18.3.1)
@@ -5641,8 +5641,8 @@ importers:
         specifier: 9.4.3
         version: 9.4.3
       drizzle-kit:
-        specifier: ^0.22.1
-        version: 0.22.1
+        specifier: 0.27.1
+        version: 0.27.1
       drizzle-orm:
         specifier: 0.36.0
         version: 0.36.0(@libsql/client@0.5.6)(@types/better-sqlite3@7.6.9)(better-sqlite3@9.4.3)(mysql2@3.9.2)(postgres@3.4.3)
@@ -9309,6 +9309,10 @@ packages:
       tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
+  /@drizzle-team/brocli@0.10.2:
+    resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+    dev: true
+
   /@effect/schema@0.68.12(effect@3.4.5):
     resolution: {integrity: sha512-UWJsFXzeYTBQYnftwI1KR2uaxIZ8fk+kffDS7BnJwnGjPPgODq3/AzeoBDSu1MAlnwBKOz+QRdMuSMxrT/pHig==}
     peerDependencies:
@@ -9448,6 +9452,7 @@ packages:
 
   /@esbuild-kit/core-utils@3.3.2:
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
+    deprecated: 'Merged into tsx: https://tsx.is'
     dependencies:
       esbuild: 0.18.20
       source-map-support: 0.5.21
@@ -9455,6 +9460,7 @@ packages:
 
   /@esbuild-kit/esm-loader@2.6.5:
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
+    deprecated: 'Merged into tsx: https://tsx.is'
     dependencies:
       '@esbuild-kit/core-utils': 3.3.2
       get-tsconfig: 4.7.3
@@ -19868,7 +19874,7 @@ packages:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
     dependencies:
-      debug: 4.3.5(supports-color@5.5.0)
+      debug: 4.3.7
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -22145,10 +22151,11 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /drizzle-kit@0.22.1:
-    resolution: {integrity: sha512-2at6LeHSGdhkwGtZbghtJaMUxWmeuLfX9X1O7um/SxfVbtK580h2jd59Gd5Z7TnofSS2tgmFiyEtM4fBat3KeA==}
+  /drizzle-kit@0.27.1:
+    resolution: {integrity: sha512-4BNA0T2blN+jW5wSwhtc+FIlCMuxYSMWCnYYdOBi5rttwq8aVXRUid0d0NCzcBKtZQSPZGAUxy+TXr7Q1OgEug==}
     hasBin: true
     dependencies:
+      '@drizzle-team/brocli': 0.10.2
       '@esbuild-kit/esm-loader': 2.6.5
       esbuild: 0.19.12
       esbuild-register: 3.5.0(esbuild@0.19.12)
@@ -22797,7 +22804,7 @@ packages:
     peerDependencies:
       esbuild: '>=0.12 <1'
     dependencies:
-      debug: 4.3.5(supports-color@5.5.0)
+      debug: 4.3.7
       esbuild: 0.19.12
     transitivePeerDependencies:
       - supports-color
@@ -24996,7 +25003,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.5(supports-color@5.5.0)
+      debug: 4.3.7
     transitivePeerDependencies:
       - supports-color
     dev: false
