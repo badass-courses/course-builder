@@ -1,6 +1,7 @@
 import { mysqlTable } from '@/db/mysql-table'
 import { env } from '@/env.mjs'
 import { Client } from '@planetscale/database'
+import { MySqlDatabase } from 'drizzle-orm/mysql-core'
 import { drizzle } from 'drizzle-orm/planetscale-serverless'
 
 import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
@@ -14,4 +15,6 @@ export const db = drizzle(
 	{ schema },
 )
 
-export const courseBuilderAdapter = DrizzleAdapter(db, mysqlTable)
+export const courseBuilderAdapter = DrizzleAdapter<
+	MySqlDatabase<any, any, any>
+>(db, mysqlTable)
