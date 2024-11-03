@@ -67,7 +67,7 @@
     "@next/mdx": "15.0.2",
     "@next/third-parties": "15.0.2",
     "@pinecone-database/pinecone": "^2.1.0",
-    "@planetscale/database": "1.14.0",
+    "@planetscale/database": "1.19.0",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.1.1",

@@ -71,7 +71,7 @@
 	},
 	"peerDependencies": {
 		"next": "^15",
-		"react": "^19"
+		"react": "19.0.0-rc-02c0e824-20241028"
 	},
 	"dependencies": {
 		"@auth/core": "^0.37.2",
