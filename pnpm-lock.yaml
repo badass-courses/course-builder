@@ -219,14 +219,14 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@mdx-js/loader':
-        specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        specifier: ^3.1.0
+        version: 3.1.0(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/mdx':
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^3.1.0
+        version: 3.1.0(acorn@8.14.0)
       '@mdx-js/react':
-        specifier: ^3.0.1
-        version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        specifier: ^3.1.0
+        version: 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       '@msgpack/msgpack':
         specifier: 3.0.0-beta2
         version: 3.0.0-beta2
@@ -235,7 +235,7 @@ importers:
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
         specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.0.1)(@mdx-js/react@3.0.1)
+        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
         specifier: 15.0.2
         version: 15.0.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
@@ -372,8 +372,8 @@ importers:
         specifier: ^4.14.200
         version: 4.17.4
       '@types/mdx':
-        specifier: ^2.0.10
-        version: 2.0.11
+        specifier: ^2.0.13
+        version: 2.0.13
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.11.0
@@ -444,8 +444,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -502,7 +502,7 @@ importers:
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -551,9 +551,6 @@ importers:
       react-error-boundary:
         specifier: ^4.1.2
         version: 4.1.2(react@19.0.0-rc-02c0e824-20241028)
-      react-gravatar:
-        specifier: ^2.6.3
-        version: 2.6.3(react@19.0.0-rc-02c0e824-20241028)
       react-hook-form:
         specifier: ^7.48.0
         version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
@@ -579,11 +576,11 @@ importers:
         specifier: ^0.2.4
         version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
       rehype-raw:
-        specifier: ^6.1.1
-        version: 6.1.1
+        specifier: ^7.0.0
+        version: 7.0.0
       rehype-slug:
-        specifier: ^5.1.0
-        version: 5.1.0
+        specifier: ^6.0.0
+        version: 6.0.0
       resend:
         specifier: ^3.2.0
         version: 3.2.0
@@ -627,8 +624,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.3
       unified:
-        specifier: ^10.1.2
-        version: 10.1.2
+        specifier: ^11.0.5
+        version: 11.0.5
       uploadthing:
         specifier: 6.13.2
         version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
@@ -860,7 +857,7 @@ importers:
         version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -1042,8 +1039,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       geist:
         specifier: ^1.3.0
         version: 1.3.0(next@15.0.2)
@@ -1100,7 +1097,7 @@ importers:
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -1380,7 +1377,7 @@ importers:
         version: 3.3.4(react-hook-form@7.51.0)
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -1469,8 +1466,8 @@ importers:
         specifier: 0.36.0
         version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       human-readable-ids:
         specifier: ^1.0.4
         version: 1.0.4
@@ -1720,7 +1717,7 @@ importers:
         version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -1893,8 +1890,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -1939,7 +1936,7 @@ importers:
         version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -2201,7 +2198,7 @@ importers:
         version: 3.3.4(react-hook-form@7.51.0)
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -2293,8 +2290,8 @@ importers:
         specifier: 0.36.0
         version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       human-readable-ids:
         specifier: ^1.0.4
         version: 1.0.4
@@ -2487,7 +2484,7 @@ importers:
         version: 3.3.4(react-hook-form@7.51.0)
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -2570,8 +2567,8 @@ importers:
         specifier: 0.36.0
         version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       inngest:
         specifier: ^3.22.5
         version: 3.22.5(next@15.0.2)(typescript@5.4.5)
@@ -2833,7 +2830,7 @@ importers:
         version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/mdx':
         specifier: ^3.0.1
         version: 3.0.1
@@ -3027,8 +3024,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -3076,7 +3073,7 @@ importers:
         version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -3365,7 +3362,7 @@ importers:
         version: 3.3.4(react-hook-form@7.51.0)
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -3460,8 +3457,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       geist:
         specifier: ^1.3.0
         version: 1.3.0(next@15.0.2)
@@ -3497,7 +3494,7 @@ importers:
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -3744,7 +3741,7 @@ importers:
         version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/mdx':
         specifier: ^3.0.1
         version: 3.0.1
@@ -3941,8 +3938,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -3996,7 +3993,7 @@ importers:
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -4345,7 +4342,7 @@ importers:
         version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/mdx':
         specifier: ^3.0.1
         version: 3.0.1
@@ -4566,8 +4563,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -4624,7 +4621,7 @@ importers:
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -4976,7 +4973,7 @@ importers:
         version: 1.2.0
       '@mdx-js/loader':
         specifier: ^3.0.1
-        version: 3.0.1(webpack@5.96.1)
+        version: 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react':
         specifier: ^3.0.1
         version: 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -5158,8 +5155,8 @@ importers:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       geist:
         specifier: ^1.3.0
         version: 1.3.0(next@15.0.2)
@@ -5213,7 +5210,7 @@ importers:
         version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
-        version: 5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -6112,6 +6109,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.3
         version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
+      '@types/md5':
+        specifier: ^2.3.5
+        version: 2.3.5
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.26.0)
@@ -6134,17 +6134,23 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.2.3)
       framer-motion:
-        specifier: 11.11.11
-        version: 11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: ^12.0.0-alpha.1
+        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
+      md5:
+        specifier: ^2.3.0
+        version: 2.3.0
       openai-edge:
         specifier: ^1.2.2
         version: 1.2.2
       partysocket:
         specifier: 1.0.1
         version: 1.0.1
+      query-string:
+        specifier: ^9.0.0
+        version: 9.0.0
       react:
         specifier: 19.0.0-rc-02c0e824-20241028
         version: 19.0.0-rc-02c0e824-20241028
@@ -6154,9 +6160,6 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-02c0e824-20241028
         version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-gravatar:
-        specifier: ^2.6.3
-        version: 2.6.3(react@19.0.0-rc-02c0e824-20241028)
       react-hook-form:
         specifier: ^7.48.0
         version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
@@ -6262,7 +6265,7 @@ packages:
       '@amplitude/analytics-connector': 1.5.0
       '@amplitude/analytics-core': 2.2.3
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /@amplitude/analytics-connector@1.5.0:
@@ -6273,14 +6276,14 @@ packages:
     resolution: {integrity: sha512-V7CVlHVN+1diKiOpdp2bCPZ0mbS4CmUYF+v+eXDwVfJL3M/t3sVcT1apXnmVYGYi14cGu9hQOD11rD6qKbUOsw==}
     dependencies:
       '@amplitude/analytics-types': 1.3.4
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /@amplitude/analytics-core@2.2.3:
     resolution: {integrity: sha512-rtA7TSqie6Jgcvax3tEHaZUzOJM5Hdd5/+JYFIJK2gPgHsWZj3jDF75fL8BSn4uBiA2zcZ0vbCHORMVqXg5pRw==}
     dependencies:
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /@amplitude/analytics-node@1.3.6:
@@ -6304,7 +6307,7 @@ packages:
     dependencies:
       '@amplitude/analytics-client-common': 2.1.2
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /@amplitude/plugin-web-attribution-browser@2.1.6:
@@ -6313,7 +6316,7 @@ packages:
       '@amplitude/analytics-client-common': 2.1.2
       '@amplitude/analytics-core': 2.2.3
       '@amplitude/analytics-types': 2.5.0
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /@ampproject/remapping@2.3.0:
@@ -11354,15 +11357,32 @@ packages:
       read-yaml-file: 1.1.0
     dev: false
 
-  /@mdx-js/loader@3.0.1(webpack@5.96.1):
+  /@mdx-js/loader@3.0.1(acorn@8.14.0)(webpack@5.96.1):
     resolution: {integrity: sha512-YbYUt7YyEOdFxhyuCWmLKf5vKhID/hJAojEUnheJk4D8iYVLFQw+BAoBWru/dHGch1omtmZOPstsmKPyBF68Tw==}
     peerDependencies:
       webpack: '>=5'
     dependencies:
-      '@mdx-js/mdx': 3.0.1
+      '@mdx-js/mdx': 3.1.0(acorn@8.14.0)
       source-map: 0.7.4
       webpack: 5.96.1(esbuild@0.19.12)
     transitivePeerDependencies:
+      - acorn
+      - supports-color
+    dev: false
+
+  /@mdx-js/loader@3.1.0(acorn@8.14.0)(webpack@5.96.1):
+    resolution: {integrity: sha512-xU/lwKdOyfXtQGqn3VnJjlDrmKXEvMi1mgYxVmukEUtVycIz1nh7oQ40bKTd4cA7rLStqu0740pnhGYxGoqsCg==}
+    peerDependencies:
+      webpack: '>=5'
+    peerDependenciesMeta:
+      webpack:
+        optional: true
+    dependencies:
+      '@mdx-js/mdx': 3.1.0(acorn@8.14.0)
+      source-map: 0.7.4
+      webpack: 5.96.1(esbuild@0.19.12)
+    transitivePeerDependencies:
+      - acorn
       - supports-color
     dev: false
 
@@ -11370,7 +11390,7 @@ packages:
     resolution: {integrity: sha512-jLuwRlz8DQfQNiUCJR50Y09CGPq3fLtmtUQfVrj79E0JWu3dvsVcxVIcfhR5h0iXu+/z++zDrYeiJqifRynJkA==}
     dependencies:
       '@types/estree-jsx': 1.0.5
-      '@types/mdx': 2.0.11
+      '@types/mdx': 2.0.13
       estree-util-build-jsx: 2.2.2
       estree-util-is-identifier-name: 2.1.0
       estree-util-to-js: 1.2.0
@@ -11396,7 +11416,7 @@ packages:
       '@types/estree': 1.0.5
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.4
-      '@types/mdx': 2.0.11
+      '@types/mdx': 2.0.13
       collapse-white-space: 2.1.0
       devlop: 1.1.0
       estree-util-build-jsx: 3.0.1
@@ -11411,12 +11431,44 @@ packages:
       remark-parse: 11.0.0
       remark-rehype: 11.1.0
       source-map: 0.7.4
-      unified: 11.0.4
+      unified: 11.0.5
       unist-util-position-from-estree: 2.0.0
       unist-util-stringify-position: 4.0.0
       unist-util-visit: 5.0.0
       vfile: 6.0.1
     transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@mdx-js/mdx@3.1.0(acorn@8.14.0):
+    resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
+    dependencies:
+      '@types/estree': 1.0.6
+      '@types/estree-jsx': 1.0.5
+      '@types/hast': 3.0.4
+      '@types/mdx': 2.0.13
+      collapse-white-space: 2.1.0
+      devlop: 1.1.0
+      estree-util-is-identifier-name: 3.0.0
+      estree-util-scope: 1.0.0
+      estree-walker: 3.0.3
+      hast-util-to-jsx-runtime: 2.3.0
+      markdown-extensions: 2.0.0
+      recma-build-jsx: 1.0.0
+      recma-jsx: 1.0.0(acorn@8.14.0)
+      recma-stringify: 1.0.0
+      rehype-recma: 1.0.0
+      remark-mdx: 3.0.1
+      remark-parse: 11.0.0
+      remark-rehype: 11.1.0
+      source-map: 0.7.4
+      unified: 11.0.5
+      unist-util-position-from-estree: 2.0.0
+      unist-util-stringify-position: 4.0.0
+      unist-util-visit: 5.0.0
+      vfile: 6.0.1
+    transitivePeerDependencies:
+      - acorn
       - supports-color
     dev: false
 
@@ -11426,7 +11478,18 @@ packages:
       '@types/react': '>=16'
       react: '>=16'
     dependencies:
-      '@types/mdx': 2.0.11
+      '@types/mdx': 2.0.13
+      '@types/react': /types-react@19.0.0-rc.1
+      react: 19.0.0-rc-02c0e824-20241028
+    dev: false
+
+  /@mdx-js/react@3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1):
+    resolution: {integrity: sha512-QjHtSaoameoalGnKDT3FoIl4+9RwyTmo9ZJGBdLOks/YOiWHoRDI3PUwEzOE7kEmGcV3AFcp9K6dYu9rEuKLAQ==}
+    peerDependencies:
+      '@types/react': '>=16'
+      react: '>=16'
+    dependencies:
+      '@types/mdx': 2.0.13
       '@types/react': /types-react@19.0.0-rc.1
       react: 19.0.0-rc-02c0e824-20241028
     dev: false
@@ -11559,8 +11622,24 @@ packages:
       '@mdx-js/react':
         optional: true
     dependencies:
-      '@mdx-js/loader': 3.0.1(webpack@5.96.1)
+      '@mdx-js/loader': 3.0.1(acorn@8.14.0)(webpack@5.96.1)
       '@mdx-js/react': 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+      source-map: 0.7.4
+    dev: false
+
+  /@next/mdx@15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
+    resolution: {integrity: sha512-CANCD3snLdLJxCcqn0DBAl5qMUBvAPdWA2cWljt+lnVtcvIfGXRVLwraqSOHBjddvZ3ClCYcf3AvjEBHA4NBxA==}
+    peerDependencies:
+      '@mdx-js/loader': '>=0.15.0'
+      '@mdx-js/react': '>=0.15.0'
+    peerDependenciesMeta:
+      '@mdx-js/loader':
+        optional: true
+      '@mdx-js/react':
+        optional: true
+    dependencies:
+      '@mdx-js/loader': 3.1.0(acorn@8.14.0)(webpack@5.96.1)
+      '@mdx-js/react': 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       source-map: 0.7.4
     dev: false
 
@@ -18222,7 +18301,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       estree-walker: 2.0.2
       picomatch: 2.3.1
       rollup: 3.29.4
@@ -18237,7 +18316,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       estree-walker: 2.0.2
       picomatch: 2.3.1
       rollup: 4.17.2
@@ -20814,7 +20893,7 @@ packages:
   /@types/acorn@4.0.6:
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /@types/axios@0.14.0:
@@ -20898,7 +20977,7 @@ packages:
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
     dependencies:
       '@types/eslint': 8.56.5
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /@types/eslint@8.56.5:
@@ -20910,7 +20989,7 @@ packages:
   /@types/estree-jsx@1.0.5:
     resolution: {integrity: sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /@types/estree@1.0.5:
@@ -20918,7 +20997,6 @@ packages:
 
   /@types/estree@1.0.6:
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
-    dev: false
 
   /@types/event-source-polyfill@1.0.5:
     resolution: {integrity: sha512-iaiDuDI2aIFft7XkcwMzDWLqo7LVDixd2sR6B4wxJut9xcp/Ev9bO4EFg4rm6S9QxATLBj5OPxdeocgmhjwKaw==}
@@ -21056,6 +21134,10 @@ packages:
       '@types/mdurl': 2.0.0
     dev: false
 
+  /@types/md5@2.3.5:
+    resolution: {integrity: sha512-/i42wjYNgE6wf0j2bcTX6kuowmdL/6PE4IVitMpm2eYKBUuYCprdcWVK+xEF0gcV6ufMCRhtxmReGfc6hIK7Jw==}
+    dev: false
+
   /@types/mdast@3.0.15:
     resolution: {integrity: sha512-LnwD+mUEfxWMa1QpDraczIn6k0Ee3SMicuYSSzS6ZYl2gKS09EClnJYGd8Du6rfc5r/GZEk5o1mRb8TaTj03sQ==}
     dependencies:
@@ -21074,6 +21156,10 @@ packages:
 
   /@types/mdx@2.0.11:
     resolution: {integrity: sha512-HM5bwOaIQJIQbAYfax35HCKxx7a3KrK3nBtIqJgSOitivTD1y3oW9P3rxY9RkXYPUk7y/AjAohfHKmFpGE79zw==}
+    dev: false
+
+  /@types/mdx@2.0.13:
+    resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
     dev: false
 
   /@types/minimist@1.2.5:
@@ -22227,6 +22313,14 @@ packages:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
       acorn: 8.12.1
+
+  /acorn-jsx@5.3.2(acorn@8.14.0):
+    resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
+    peerDependencies:
+      acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
+    dependencies:
+      acorn: 8.14.0
+    dev: false
 
   /acorn-walk@8.3.2:
     resolution: {integrity: sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==}
@@ -25444,6 +25538,24 @@ packages:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
 
+  /esast-util-from-estree@2.0.0:
+    resolution: {integrity: sha512-4CyanoAudUSBAn5K13H4JhsMH6L9ZP7XbLVe/dKybkxMO7eDyLsT8UHl9TRNrU2Gr9nz+FovfSIjuXWJ81uVwQ==}
+    dependencies:
+      '@types/estree-jsx': 1.0.5
+      devlop: 1.1.0
+      estree-util-visit: 2.0.0
+      unist-util-position-from-estree: 2.0.0
+    dev: false
+
+  /esast-util-from-js@2.0.1:
+    resolution: {integrity: sha512-8Ja+rNJ0Lt56Pcf3TAmpBZjmx8ZcK5Ts4cAzIOjsjevg9oSXJnl6SUQ2EevU8tv3h6ZLWmoKL5H4fgWvdvfETw==}
+    dependencies:
+      '@types/estree-jsx': 1.0.5
+      acorn: 8.14.0
+      esast-util-from-estree: 2.0.0
+      vfile-message: 4.0.2
+    dev: false
+
   /esbuild-react18-useclient@1.0.7:
     resolution: {integrity: sha512-4RITwBZwzt1MDQqt20QUqAhEBiMVjiP4yno74HTMa/bvSwh7q+hgtH/PGkMRwcmUPAI9Nyo72csYN3L7eAKs1g==}
     deprecated: This package is deprecated in favor of [esbuild-plugin-react18](https://github.com/mayank1513/esbuild-plugin-react18). Please switch to [esbuild-plugin-react18](https://github.com/mayank1513/esbuild-plugin-react18), which also offers additional options and more control over your build output.
@@ -26152,13 +26264,13 @@ packages:
   /estree-util-attach-comments@2.1.1:
     resolution: {integrity: sha512-+5Ba/xGGS6mnwFbXIuQiDPTbuTxuMCooq3arVv7gPZtYpjp+VXH/NkHAP35OOefPhNG/UGqU3vt/LTABwcHX0w==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /estree-util-attach-comments@3.0.0:
     resolution: {integrity: sha512-cKUwm/HUcTDsYh/9FgnuFqpfquUbwIqwKM26BVCGDPVgvaCl/nDCCjUfiLlx6lsEZ3Z4RFxNbOQ60pkaEwFxGw==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /estree-util-build-jsx@2.2.2:
@@ -26184,6 +26296,13 @@ packages:
 
   /estree-util-is-identifier-name@3.0.0:
     resolution: {integrity: sha512-hFtqIDZTIUZ9BXLb8y4pYGyk6+wekIivNVTcmvk8NoOh+VeRn5y6cEHzbURrWbfp1fIqdVipilzj+lfaadNZmg==}
+    dev: false
+
+  /estree-util-scope@1.0.0:
+    resolution: {integrity: sha512-2CAASclonf+JFWBNJPndcOpA8EMJwa0Q8LUFJEKqXLW6+qBvbFZuF5gItbQOs/umBUkjviCSDCbBwU2cXbmrhQ==}
+    dependencies:
+      '@types/estree': 1.0.6
+      devlop: 1.1.0
     dev: false
 
   /estree-util-to-js@1.2.0:
@@ -26222,7 +26341,7 @@ packages:
   /estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /esutils@2.0.3:
@@ -26803,8 +26922,8 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /framer-motion@11.11.11(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-tuDH23ptJAKUHGydJQII9PhABNJBpB+z0P1bmgKK9QFIssHGlfPd6kxMq00LSKwE27WFsb2z0ovY0bpUyMvfRw==}
+  /framer-motion@12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+    resolution: {integrity: sha512-WpMrDfk6I5Q4T/7+LEjQOVbAD5Yb/cGbbV+LLllFEg+dHi8XZ7QecJ9aYS9bn12cWuF7gGy+uqskyAkGTWHs3w==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0
@@ -27423,7 +27542,7 @@ packages:
   /hast-util-to-estree@2.3.3:
     resolution: {integrity: sha512-ihhPIUPxN0v0w6M5+IiAZZrn0LH2uZomeWwhn7uP7avZC6TE7lIiEh2yBMPr5+zi1aUCXq6VoYRgs2Bw9xmycQ==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       '@types/estree-jsx': 1.0.5
       '@types/hast': 2.3.10
       '@types/unist': 2.0.10
@@ -28372,12 +28491,12 @@ packages:
   /is-reference@1.2.1:
     resolution: {integrity: sha512-U82MsXXiFIrjCK4otLT+o2NA2Cd2g5MLoOVXUZjIOhLurrRxpEXzI8O0KZHr3IjLvlAH1kTPYSuqer5T9ZVBKQ==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
 
   /is-reference@3.0.2:
     resolution: {integrity: sha512-v3rht/LgVcsdZa3O2Nqs+NMowLOxeOm7Ay9+/ARQ2F+qEoANRcqrjAZKGN0v8ymUetZGgkp26LTnGT7H0Qo9Pg==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
     dev: false
 
   /is-regex@1.1.4:
@@ -30470,7 +30589,7 @@ packages:
   /micromark-extension-mdx-expression@1.0.8:
     resolution: {integrity: sha512-zZpeQtc5wfWKdzDsHRBY003H2Smg+PUi2REhqgIhdzAa5xonhP03FcXxqFSerFiNUr5AWmHpaNPQTBVOS4lrXw==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       micromark-factory-mdx-expression: 1.0.9
       micromark-factory-space: 1.1.0
       micromark-util-character: 1.2.0
@@ -30483,7 +30602,7 @@ packages:
   /micromark-extension-mdx-expression@3.0.0:
     resolution: {integrity: sha512-sI0nwhUDz97xyzqJAbHQhp5TfaxEvZZZ2JDqUo+7NvyIYG6BZ5CPPqj2ogUoPJlmXHBnyZUzISg9+oUmU6tUjQ==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       devlop: 1.1.0
       micromark-factory-mdx-expression: 2.0.1
       micromark-factory-space: 2.0.0
@@ -30497,7 +30616,7 @@ packages:
     resolution: {integrity: sha512-gPH+9ZdmDflbu19Xkb8+gheqEDqkSpdCEubQyxuz/Hn8DOXiXvrXeikOoBA71+e8Pfi0/UYmU3wW3H58kr7akA==}
     dependencies:
       '@types/acorn': 4.0.6
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       estree-util-is-identifier-name: 2.1.0
       micromark-factory-mdx-expression: 1.0.9
       micromark-factory-space: 1.1.0
@@ -30512,7 +30631,7 @@ packages:
     resolution: {integrity: sha512-uvhhss8OGuzR4/N17L1JwvmJIpPhAd8oByMawEKx6NVdBCbesjH4t+vjEp3ZXft9DwvlKSD07fCeI44/N0Vf2w==}
     dependencies:
       '@types/acorn': 4.0.6
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       devlop: 1.1.0
       estree-util-is-identifier-name: 3.0.0
       micromark-factory-mdx-expression: 2.0.1
@@ -30538,7 +30657,7 @@ packages:
   /micromark-extension-mdxjs-esm@1.0.5:
     resolution: {integrity: sha512-xNRBw4aoURcyz/S69B19WnZAkWJMxHMT5hE36GtDAyhoyn/8TuAeqjFJQlwk+MKQsUD7b3l7kFX+vlfVWgcX1w==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       micromark-core-commonmark: 1.1.0
       micromark-util-character: 1.2.0
       micromark-util-events-to-acorn: 1.2.3
@@ -30552,7 +30671,7 @@ packages:
   /micromark-extension-mdxjs-esm@3.0.0:
     resolution: {integrity: sha512-DJFl4ZqkErRpq/dAPyeWp15tGrcrrJho1hKK5uBS70BCtfrIFg81sqcTVu3Ta+KD1Tk5vAtBNElWxtAa+m8K9A==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.0
       micromark-util-character: 2.1.0
@@ -30566,8 +30685,8 @@ packages:
   /micromark-extension-mdxjs@1.0.1:
     resolution: {integrity: sha512-7YA7hF6i5eKOfFUzZ+0z6avRG52GpWR8DL+kN47y3f2KhxbBZMhmxe7auOeaTBrW2DenbbZTf1ea9tA2hDpC2Q==}
     dependencies:
-      acorn: 8.12.1
-      acorn-jsx: 5.3.2(acorn@8.12.1)
+      acorn: 8.14.0
+      acorn-jsx: 5.3.2(acorn@8.14.0)
       micromark-extension-mdx-expression: 1.0.8
       micromark-extension-mdx-jsx: 1.0.5
       micromark-extension-mdx-md: 1.0.1
@@ -30579,8 +30698,8 @@ packages:
   /micromark-extension-mdxjs@3.0.0:
     resolution: {integrity: sha512-A873fJfhnJ2siZyUrJ31l34Uqwy4xIFmvPY1oj+Ean5PHcPBYzEsvqvWGaWcfEIr11O5Dlw3p2y0tZWpKHDejQ==}
     dependencies:
-      acorn: 8.12.1
-      acorn-jsx: 5.3.2(acorn@8.12.1)
+      acorn: 8.14.0
+      acorn-jsx: 5.3.2(acorn@8.14.0)
       micromark-extension-mdx-expression: 3.0.0
       micromark-extension-mdx-jsx: 3.0.0
       micromark-extension-mdx-md: 2.0.0
@@ -30626,7 +30745,7 @@ packages:
   /micromark-factory-mdx-expression@1.0.9:
     resolution: {integrity: sha512-jGIWzSmNfdnkJq05c7b0+Wv0Kfz3NJ3N4cBjnbO4zjXIlxJr+f8lk+5ZmwFvqdAbUy2q6B5rCY//g0QAAaXDWA==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       micromark-util-character: 1.2.0
       micromark-util-events-to-acorn: 1.2.3
       micromark-util-symbol: 1.1.0
@@ -30639,7 +30758,7 @@ packages:
   /micromark-factory-mdx-expression@2.0.1:
     resolution: {integrity: sha512-F0ccWIUHRLRrYp5TC9ZYXmZo+p2AM13ggbsW4T0b5CRKP8KHVRB8t4pwtBgTxtjRmwrK0Irwm7vs2JOZabHZfg==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       devlop: 1.1.0
       micromark-util-character: 2.1.0
       micromark-util-events-to-acorn: 2.0.2
@@ -30797,7 +30916,7 @@ packages:
     resolution: {integrity: sha512-ij4X7Wuc4fED6UoLWkmo0xJQhsktfNh1J0m8g4PbIMPlx+ek/4YdW5mvbye8z/aZvAPUoxgXHrwVlXAPKMRp1w==}
     dependencies:
       '@types/acorn': 4.0.6
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       '@types/unist': 2.0.10
       estree-util-visit: 1.2.1
       micromark-util-symbol: 1.1.0
@@ -30810,7 +30929,7 @@ packages:
     resolution: {integrity: sha512-Fk+xmBrOv9QZnEDguL9OI9/NQQp6Hz4FuQ4YmCb/5V7+9eAh1s6AYSvL20kHkD67YIg7EpE54TiSlcsf3vyZgA==}
     dependencies:
       '@types/acorn': 4.0.6
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       '@types/unist': 3.0.2
       devlop: 1.1.0
       estree-util-visit: 2.0.0
@@ -30929,7 +31048,7 @@ packages:
     resolution: {integrity: sha512-o/sd0nMof8kYff+TqcDx3VSrgBTcZpSvYcAHIfHhv5VAuNmisCxjhx6YmxS8PFEpb9z5WKWKPdzf0jM23ro3RQ==}
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.3.5(supports-color@5.5.0)
+      debug: 4.3.7
       decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.0
@@ -31722,21 +31841,22 @@ packages:
       react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
-  /next-mdx-remote@5.0.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1):
+  /next-mdx-remote@5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1):
     resolution: {integrity: sha512-RNNbqRpK9/dcIFZs/esQhuLA8jANqlH694yqoDBK8hkVdJUndzzGmnPHa2nyi90N4Z9VmzuSWNRpr5ItT3M7xQ==}
     engines: {node: '>=14', npm: '>=7'}
     peerDependencies:
       react: '>=16'
     dependencies:
       '@babel/code-frame': 7.26.2
-      '@mdx-js/mdx': 3.0.1
-      '@mdx-js/react': 3.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+      '@mdx-js/mdx': 3.1.0(acorn@8.14.0)
+      '@mdx-js/react': 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       react: 19.0.0-rc-02c0e824-20241028
       unist-util-remove: 3.1.1
       vfile: 6.0.1
       vfile-matter: 5.0.0
     transitivePeerDependencies:
       - '@types/react'
+      - acorn
       - supports-color
     dev: false
 
@@ -32848,7 +32968,7 @@ packages:
   /periscopic@3.1.0:
     resolution: {integrity: sha512-vKiQ8RRtkl9P+r/+oefh25C3fhybptkHKCZSPlcXiJux2tJF55GnEj3BVn4A5gKfq9NWWXXrxkHBwVPUfH0opw==}
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       estree-walker: 3.0.3
       is-reference: 3.0.2
     dev: false
@@ -34072,7 +34192,7 @@ packages:
       react: 19.0.0-rc-02c0e824-20241028
       remark-parse: 11.0.0
       remark-rehype: 11.1.0
-      unified: 11.0.4
+      unified: 11.0.5
       unist-util-visit: 5.0.0
       vfile: 6.0.1
     transitivePeerDependencies:
@@ -34375,7 +34495,7 @@ packages:
     dependencies:
       '@types/react': /types-react@19.0.0-rc.1
       react: 19.0.0-rc-02c0e824-20241028
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /react-universal-interface@0.6.2(react@19.0.0-rc-02c0e824-20241028)(tslib@2.6.3):
@@ -34551,6 +34671,44 @@ packages:
       resolve: 1.22.8
     dev: false
 
+  /recma-build-jsx@1.0.0:
+    resolution: {integrity: sha512-8GtdyqaBcDfva+GUKDr3nev3VpKAhup1+RvkMvUxURHpW7QyIvk9F5wz7Vzo06CEMSilw6uArgRqhpiUcWp8ew==}
+    dependencies:
+      '@types/estree': 1.0.6
+      estree-util-build-jsx: 3.0.1
+      vfile: 6.0.1
+    dev: false
+
+  /recma-jsx@1.0.0(acorn@8.14.0):
+    resolution: {integrity: sha512-5vwkv65qWwYxg+Atz95acp8DMu1JDSqdGkA2Of1j6rCreyFUE/gp15fC8MnGEuG1W68UKjM6x6+YTWIh7hZM/Q==}
+    dependencies:
+      acorn-jsx: 5.3.2(acorn@8.14.0)
+      estree-util-to-js: 2.0.0
+      recma-parse: 1.0.0
+      recma-stringify: 1.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - acorn
+    dev: false
+
+  /recma-parse@1.0.0:
+    resolution: {integrity: sha512-OYLsIGBB5Y5wjnSnQW6t3Xg7q3fQ7FWbw/vcXtORTnyaSFscOtABg+7Pnz6YZ6c27fG1/aN8CjfwoUEUIdwqWQ==}
+    dependencies:
+      '@types/estree': 1.0.6
+      esast-util-from-js: 2.0.1
+      unified: 11.0.5
+      vfile: 6.0.1
+    dev: false
+
+  /recma-stringify@1.0.0:
+    resolution: {integrity: sha512-cjwII1MdIIVloKvC9ErQ+OgAtwHBmcZ0Bg4ciz78FtbT8In39aAYbaA7zvxQ61xVMSPE8WxhLwLbhif4Js2C+g==}
+    dependencies:
+      '@types/estree': 1.0.6
+      estree-util-to-js: 2.0.0
+      unified: 11.0.5
+      vfile: 6.0.1
+    dev: false
+
   /redent@3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
     engines: {node: '>=8'}
@@ -34610,7 +34768,7 @@ packages:
     resolution: {integrity: sha512-Up50Xfra8tyxnkJdCzLBIBtxOcB2M1xdeKe1324U06RAvSjYm7ULSeoM+b/nYPQPVd7jsXJ9+39IG1WAJPXONw==}
     engines: {node: '>=16'}
     dependencies:
-      unified: 11.0.4
+      unified: 11.0.5
       unist-util-visit: 5.0.0
     dev: false
 
@@ -34621,7 +34779,7 @@ packages:
       '@ungap/structured-clone': 1.2.0
       hast-util-heading-rank: 3.0.0
       hast-util-is-element: 3.0.0
-      unified: 11.0.4
+      unified: 11.0.5
       unist-util-visit: 5.0.0
     dev: false
 
@@ -34636,7 +34794,7 @@ packages:
     engines: {node: '>=16'}
     dependencies:
       hast-util-select: 6.0.2
-      unified: 11.0.4
+      unified: 11.0.5
       unist-util-visit: 5.0.0
     dev: false
 
@@ -34654,7 +34812,7 @@ packages:
     dependencies:
       '@types/hast': 3.0.4
       hast-util-from-html: 2.0.2
-      unified: 11.0.4
+      unified: 11.0.5
     dev: false
 
   /rehype-prism-plus@2.0.0:
@@ -34684,12 +34842,22 @@ packages:
       vfile: 6.0.1
     dev: false
 
+  /rehype-recma@1.0.0:
+    resolution: {integrity: sha512-lqA4rGUf1JmacCNWWZx0Wv1dHqMwxzsDWYMTowuplHF3xH0N/MmrZ/G3BDZnzAkRmxDadujCjaKM2hqYdCBOGw==}
+    dependencies:
+      '@types/estree': 1.0.6
+      '@types/hast': 3.0.4
+      hast-util-to-estree: 3.1.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /rehype-rewrite@4.0.2:
     resolution: {integrity: sha512-rjLJ3z6fIV11phwCqHp/KRo8xuUCO8o9bFJCNw5o6O2wlLk6g8r323aRswdGBQwfXPFYeSuZdAjp4tzo6RGqEg==}
     engines: {node: '>=16.0.0'}
     dependencies:
       hast-util-select: 6.0.2
-      unified: 11.0.4
+      unified: 11.0.5
       unist-util-visit: 5.0.0
     dev: false
 
@@ -34767,7 +34935,7 @@ packages:
       micromark-extension-gfm: 3.0.0
       remark-parse: 11.0.0
       remark-stringify: 11.0.0
-      unified: 11.0.4
+      unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -34813,7 +34981,7 @@ packages:
       '@types/mdast': 4.0.3
       mdast-util-from-markdown: 2.0.0
       micromark-util-types: 2.0.0
-      unified: 11.0.4
+      unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -34833,7 +35001,7 @@ packages:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.3
       mdast-util-to-hast: 13.1.0
-      unified: 11.0.4
+      unified: 11.0.5
       vfile: 6.0.1
     dev: false
 
@@ -34851,7 +35019,7 @@ packages:
     dependencies:
       '@types/mdast': 4.0.3
       mdast-util-to-markdown: 2.1.0
-      unified: 11.0.4
+      unified: 11.0.5
     dev: false
 
   /remeda@1.50.1:
@@ -35142,7 +35310,7 @@ packages:
   /rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   /sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
@@ -36441,7 +36609,7 @@ packages:
     engines: {node: ^14.18.0 || >=16.0.0}
     dependencies:
       '@pkgr/core': 0.1.1
-      tslib: 2.6.3
+      tslib: 2.8.1
     dev: false
 
   /system-architecture@0.1.0:
@@ -36898,6 +37066,7 @@ packages:
 
   /tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
+    dev: false
 
   /tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
@@ -37338,8 +37507,8 @@ packages:
       vfile: 5.3.7
     dev: false
 
-  /unified@11.0.4:
-    resolution: {integrity: sha512-apMPnyLjAX+ty4OrNap7yumyVAMlKx5IWU2wlzzUdYJO9A8f1p9m/gywF/GM2ZDFcjQPrx59Mc90KwmxsoklxQ==}
+  /unified@11.0.5:
+    resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
     dependencies:
       '@types/unist': 3.0.2
       bail: 2.0.2
@@ -38259,7 +38428,7 @@ packages:
         optional: true
     dependencies:
       '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       '@webassemblyjs/ast': 1.12.1
       '@webassemblyjs/wasm-edit': 1.12.1
       '@webassemblyjs/wasm-parser': 1.12.1

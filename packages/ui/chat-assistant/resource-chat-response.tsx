@@ -3,11 +3,11 @@ import { useRef } from 'react'
 import { User } from '@auth/core/types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CopyIcon, LoaderIcon } from 'lucide-react'
-import Gravatar from 'react-gravatar'
 import ReactMarkdown from 'react-markdown'
 
 import { useSocket } from '../hooks/use-socket'
 import { Button } from '../primitives/button'
+import { Gravatar } from '../primitives/react-gravatar'
 import { ScrollArea } from '../primitives/scroll-area'
 
 const STREAM_COMPLETE = `\\ok`
@@ -135,6 +135,7 @@ export function ResourceChatResponse({
 					<ReactMarkdown
 						className="prose prose-sm dark:prose-invert"
 						components={{
+							// @ts-expect-error
 							pre: ({ children }) => <PreWithCopy children={children} />,
 						}}
 					>

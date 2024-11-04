@@ -85,6 +85,7 @@ import { Input } from './primitives/input'
 import { Label } from './primitives/label'
 import { Popover, PopoverContent, PopoverTrigger } from './primitives/popover'
 import { Progress } from './primitives/progress'
+import { Gravatar } from './primitives/react-gravatar'
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -249,4 +250,5 @@ export {
 	ResizablePanelGroup,
 	Switch,
 	ModuleNavigation,
+	Gravatar,
 }
