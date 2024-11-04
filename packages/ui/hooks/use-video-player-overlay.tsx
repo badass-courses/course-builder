@@ -9,7 +9,7 @@ type VideoPlayerOverlayState = {
 
 export type CompletedAction = {
 	type: 'COMPLETED'
-	playerRef: React.RefObject<MuxPlayerRefAttributes>
+	playerRef: React.RefObject<MuxPlayerRefAttributes | null>
 }
 
 export type VideoPlayerOverlayAction =

@@ -23,6 +23,7 @@ export default function MDXLivePreview() {
 				{mdxContent && (
 					<article className="prose sm:prose-lg prose-headings:mx-auto prose-headings:max-w-screen-md prose-p:mx-auto prose-p:max-w-screen-md prose-ul:mx-auto prose-ul:max-w-screen-md prose-img:mx-auto prose-img:max-w-screen-md mx-auto max-w-none p-5">
 						<MDXRemote
+							// @ts-expect-error
 							components={allMdxPageBuilderComponents}
 							{...mdxContent}
 						/>

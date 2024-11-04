@@ -118,6 +118,7 @@ const Home = async (props: Props) => {
 								Spacer,
 								Section,
 								CheckList,
+								// @ts-expect-error
 								MuxPlayer,
 							}}
 						/>
