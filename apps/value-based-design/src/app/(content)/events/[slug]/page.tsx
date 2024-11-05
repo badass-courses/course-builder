@@ -30,15 +30,13 @@ import { EventPricingWidgetContainer } from './_components/event-pricing-widget-
 import { EventSidebar } from './_components/event-sidebar'
 
 export async function generateMetadata(
-	{
-		params,
-		searchParams,
-	}: {
-		params: { slug: string }
-		searchParams: { [key: string]: string | string[] | undefined }
+	props: {
+		params: Promise<{ slug: string }>
+		searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 	},
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const event = await getEvent(params.slug)
 
 	if (!event) {
@@ -52,13 +50,12 @@ export async function generateMetadata(
 	}
 }
 
-export default async function EventPage({
-	params,
-	searchParams,
-}: {
-	params: { slug: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+export default async function EventPage(props: {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
@@ -83,7 +80,7 @@ export default async function EventPage({
 		})
 
 		const countryCode =
-			headers().get('x-vercel-ip-country') ||
+			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
 		const commerceProps = await propsForCommerce(

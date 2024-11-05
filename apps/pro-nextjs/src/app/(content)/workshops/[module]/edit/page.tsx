@@ -6,11 +6,10 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditTutorialPage({
-	params,
-}: {
-	params: { module: string }
+export default async function EditTutorialPage(props: {
+	params: Promise<{ module: string }>
 }) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('update', 'Content')) {

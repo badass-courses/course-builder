@@ -34,11 +34,10 @@ export const metadata: Metadata = {
 	},
 }
 
-export default async function Workshops({
-	searchParams,
-}: {
-	searchParams: { [key: string]: string | undefined }
+export default async function Workshops(props: {
+	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
+	const searchParams = await props.searchParams
 	const { ability } = await getServerAuthSession()
 	const {
 		allowPurchase,

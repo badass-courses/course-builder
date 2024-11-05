@@ -45,7 +45,7 @@ export async function fetchSubscriber(convertkitId: string | number) {
 }
 
 export async function getSubscriberFromCookie() {
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	if (!cookieStore) return null
 
 	const cookie = cookieStore.get('ck_subscriber')?.value

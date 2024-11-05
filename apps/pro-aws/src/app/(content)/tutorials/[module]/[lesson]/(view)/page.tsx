@@ -43,9 +43,10 @@ import {
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const lesson = await getLesson(params.lesson)
 
 	if (!lesson) {
@@ -60,12 +61,13 @@ export async function generateMetadata(
 }
 
 type Props = {
-	params: { lesson: string; module: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ lesson: string; module: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function LessonPage({ params }: Props) {
-	headers()
+export default async function LessonPage(props: Props) {
+	const params = await props.params
+	await headers()
 	const tutorialLoader = getTutorial(params.module)
 	const lessonLoader = getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
@@ -268,7 +270,7 @@ async function LessonBody({
 }) {
 	const lesson = await lessonLoader
 	const { session } = await getServerAuthSession()
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	if (!lesson) {

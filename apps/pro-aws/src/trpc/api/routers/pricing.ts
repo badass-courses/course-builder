@@ -231,7 +231,7 @@ export const pricingRouter = createTRPCRouter({
 					})
 				: undefined
 			const countryCode =
-				headers().get('x-vercel-ip-country') ||
+				(await headers()).get('x-vercel-ip-country') ||
 				process.env.DEFAULT_COUNTRY ||
 				'US'
 			const props = await propsForCommerce(
@@ -270,7 +270,7 @@ export const pricingRouter = createTRPCRouter({
 			if (!productId) throw new Error('productId is required')
 
 			const country =
-				headers().get('x-vercel-ip-country') ||
+				(await headers()).get('x-vercel-ip-country') ||
 				process.env.DEFAULT_COUNTRY ||
 				'US'
 

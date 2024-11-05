@@ -27,14 +27,15 @@ import { AuthedVideoPlayer } from '../../_components/authed-video-player'
 import { Transcript } from '../../_components/video-transcript-renderer'
 
 type Props = {
-	params: { slug: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const tip = await getTip(params.slug)
 
 	if (!tip) {
@@ -46,13 +47,12 @@ export async function generateMetadata(
 	}
 }
 
-export default async function TipPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function TipPage(props: {
+	params: Promise<{ slug: string }>
 }) {
-	headers()
-	console.log('🤡', cookies().get('ck_subscriber_id'))
+	const params = await props.params
+	await headers()
+	console.log('🤡', (await cookies()).get('ck_subscriber_id'))
 	const tipLoader = getTip(params.slug)
 
 	return (

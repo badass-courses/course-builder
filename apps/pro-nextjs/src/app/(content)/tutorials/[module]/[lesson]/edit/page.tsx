@@ -6,11 +6,10 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function LessonEditPage({
-	params,
-}: {
-	params: { lesson: string }
+export default async function LessonEditPage(props: {
+	params: Promise<{ lesson: string }>
 }) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 	const lesson = await getLesson(params.lesson)
 

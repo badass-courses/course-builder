@@ -31,14 +31,15 @@ import VideoPlayerOverlay from '../../_components/video-player-overlay'
 import { Transcript } from '../../_components/video-transcript-renderer'
 
 type Props = {
-	params: { slug: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const tip = await getTip(params.slug)
 
 	if (!tip) {
@@ -52,14 +53,13 @@ export async function generateMetadata(
 	}
 }
 
-export default async function TipPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function TipPage(props: {
+	params: Promise<{ slug: string }>
 }) {
-	headers()
+	const params = await props.params
+	await headers()
 	const tipLoader = getTip(params.slug)
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	const transcriptLoader = getLessonVideoTranscript(params.slug)

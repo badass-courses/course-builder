@@ -22,7 +22,7 @@ export const LessonControls = async ({
 	moduleType?: 'tutorial' | 'workshop'
 }) => {
 	const { session } = await getServerAuthSession()
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	if (!lesson) {

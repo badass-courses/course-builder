@@ -4,11 +4,10 @@ import { notFound, redirect } from 'next/navigation'
 import { getTutorial } from '@/lib/tutorials-query'
 import { getServerAuthSession } from '@/server/auth'
 
-export default async function ModulePage({
-	params,
-}: {
-	params: { module: string }
+export default async function ModulePage(props: {
+	params: Promise<{ module: string }>
 }) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('read', 'Content')) {

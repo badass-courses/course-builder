@@ -4,7 +4,7 @@ import { DiscordConnectButton } from '@/app/discord/connect/discord-connect-butt
 import { getProviders } from '@/server/auth'
 
 export default async function Discord() {
-	headers()
+	await headers()
 
 	const providers = getProviders()
 

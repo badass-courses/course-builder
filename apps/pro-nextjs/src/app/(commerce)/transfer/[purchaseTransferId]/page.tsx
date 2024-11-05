@@ -5,11 +5,10 @@ import { courseBuilderAdapter } from '@/db'
 import { acceptPurchaseTransfer } from '@/purchase-transfer/purchase-transfer-actions'
 import { getServerAuthSession } from '@/server/auth'
 
-const PurchaseTransferPage = async ({
-	params,
-}: {
-	params: { purchaseTransferId: string }
+const PurchaseTransferPage = async (props: {
+	params: Promise<{ purchaseTransferId: string }>
 }) => {
+	const params = await props.params
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 	const purchaseTransfer =

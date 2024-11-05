@@ -17,9 +17,10 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
 export async function generateMetadata(
-	{ searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const searchParams = await props.searchParams
 	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Pro Next.js by Jack Herrington')}&image=https://res.cloudinary.com/pro-nextjs/image/upload/v1720601718/workshops/c6dea77d-45d4-4720-9935-863b5d2bede6/xr0s0tsdv8noxqcafpc4.png`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
@@ -52,10 +53,11 @@ export async function generateMetadata(
 }
 
 type Props = {
-	searchParams: { [key: string]: string | undefined }
+	searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
-const Home = async ({ searchParams }: Props) => {
+const Home = async (props: Props) => {
+	const searchParams = await props.searchParams
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
 	const page = await getPage(

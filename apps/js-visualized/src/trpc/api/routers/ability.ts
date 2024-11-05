@@ -13,7 +13,7 @@ const convertkitBaseUrl =
 	process.env.CONVERTKIT_BASE_URL || 'https://api.convertkit.com/v3/'
 
 export async function getSubscriberFromCookie() {
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	if (!cookieStore) return null
 
 	const cookie = cookieStore.get('ck_subscriber')?.value

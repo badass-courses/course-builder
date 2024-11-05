@@ -60,7 +60,7 @@ async function getUser() {
 		return user
 	}
 
-	const subscriberCookie = cookies().get('ck_subscriber')
+	const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 	if (!subscriberCookie) {
 		console.debug('no subscriber cookie')
@@ -153,7 +153,7 @@ export async function getModuleProgressForUser(
 		return moduleProgress
 	}
 
-	const subscriberCookie = cookies().get('ck_subscriber')
+	const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 	if (!subscriberCookie) {
 		console.debug('no subscriber cookie')

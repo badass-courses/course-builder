@@ -21,14 +21,15 @@ import { Button } from '@coursebuilder/ui'
 import { TutorialLessonList } from '../_components/tutorial-lesson-list'
 
 type Props = {
-	params: { module: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ module: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const tutorial = await getTutorial(params.module)
 
 	if (!tutorial) {
@@ -50,7 +51,8 @@ export async function generateMetadata(
 	}
 }
 
-export default async function ModulePage({ params }: Props) {
+export default async function ModulePage(props: Props) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('read', 'Content')) {

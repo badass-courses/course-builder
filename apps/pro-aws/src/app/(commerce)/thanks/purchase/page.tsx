@@ -109,12 +109,11 @@ const LoginLinkComp: React.FC<{ email: string }> = ({ email }) => {
 	)
 }
 
-export default async function ThanksPurchasePage({
-	searchParams,
-}: {
-	searchParams: { session_id: string; provider: string }
+export default async function ThanksPurchasePage(props: {
+	searchParams: Promise<{ session_id: string; provider: string }>
 }) {
-	headers()
+	const searchParams = await props.searchParams
+	await headers()
 	const { session_id } = searchParams
 	const {
 		purchase,
