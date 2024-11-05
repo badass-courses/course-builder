@@ -109,6 +109,7 @@ const Home = async (props: Props) => {
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
+							// @ts-expect-error
 							components={{ Instructor, Zap, Wrench, BarChart, MuxPlayer }}
 						/>
 					) : null}

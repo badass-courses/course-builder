@@ -27,6 +27,7 @@ export async function LessonDescription({
 					<MDXRemote
 						source={displayedBody}
 						components={{
+							// @ts-expect-error
 							pre: async (props: any) => {
 								const children = props?.children.props.children
 								const language =

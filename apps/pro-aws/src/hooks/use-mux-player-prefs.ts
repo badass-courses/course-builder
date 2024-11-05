@@ -86,7 +86,7 @@ export const useMuxPlayerPrefs = () => {
 }
 
 export const setPreferredTextTrack = (
-	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes>,
+	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes | null>,
 ) => {
 	if (muxPlayerRef.current) {
 		let player = muxPlayerRef.current
@@ -100,7 +100,7 @@ export const setPreferredTextTrack = (
 }
 
 export const handleTextTrackChange = (
-	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes>,
+	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes | null>,
 	setPlayerPrefs: (e: { subtitle: Subtitle }) => void,
 ) => {
 	if (muxPlayerRef.current) {

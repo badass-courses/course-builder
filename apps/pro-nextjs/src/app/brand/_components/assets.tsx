@@ -24,6 +24,7 @@ export const LogoAsset: React.FC<
 					type="button"
 					variant="outline"
 					onClick={() => {
+						// @ts-expect-error
 						navigator.clipboard.writeText(renderToString(asset))
 						toast({
 							title: 'SVG Copied',
@@ -37,6 +38,7 @@ export const LogoAsset: React.FC<
 					type="button"
 					variant="outline"
 					onClick={() => {
+						// @ts-expect-error
 						const svg = new Blob([renderToString(asset)], {
 							type: 'image/svg+xml',
 						})

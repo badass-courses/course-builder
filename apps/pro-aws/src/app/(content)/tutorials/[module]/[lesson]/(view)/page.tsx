@@ -90,7 +90,7 @@ export default async function LessonPage(props: Props) {
 						<div>
 							<main className="">
 								<PlayerContainer
-									params={params}
+									params={props.params}
 									lessonLoader={lessonLoader}
 									moduleLoader={
 										tutorialLoader as unknown as Promise<ContentResource | null>
@@ -223,18 +223,16 @@ async function PlayerContainer({
 	lessonLoader: Promise<ContentResource | null>
 	moduleLoader: Promise<ContentResource | null>
 	moduleProgressLoader: Promise<ModuleProgress | null>
-	params: Props['params']
+	params: Promise<{ lesson: string; module: string }>
 }) {
 	const lesson = await lessonLoader
 
 	if (!lesson) {
 		notFound()
 	}
+	const { lesson: lessonId, module } = await params
 
-	const canViewLoader = getViewingAbilityForResource(
-		params.lesson,
-		params.module,
-	)
+	const canViewLoader = getViewingAbilityForResource(lessonId, module)
 	const resource = lesson.resources?.[0]?.resource.id
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 	const nextResourceLoader = getNextResource(lesson.id)
@@ -304,6 +302,7 @@ async function LessonBody({
 					<MDXRemote
 						source={lesson.fields.body}
 						components={{
+							// @ts-expect-error
 							pre: async (props: any) => {
 								const children = props?.children.props.children
 								const language =

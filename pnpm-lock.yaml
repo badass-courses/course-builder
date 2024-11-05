@@ -2933,6 +2933,9 @@ importers:
       '@skillrecordings/analytics':
         specifier: ^1.0.1
         version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+      '@skillrecordings/config':
+        specifier: ^0.0.3
+        version: 0.0.3
       '@t3-oss/env-nextjs':
         specifier: ^0.7.1
         version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
@@ -3155,6 +3158,9 @@ importers:
       react-wrap-balancer:
         specifier: ^0.2.4
         version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
+      reading-time:
+        specifier: ^1.5.0
+        version: 1.5.0
       rehype-raw:
         specifier: ^7.0.0
         version: 7.0.0

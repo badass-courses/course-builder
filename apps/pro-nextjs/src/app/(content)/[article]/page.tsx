@@ -86,6 +86,7 @@ async function Article({
 				<MDXRemote
 					source={article.fields.body}
 					components={{
+						// @ts-expect-error
 						pre: async (props: any) => {
 							const children = props?.children.props.children
 							const language =

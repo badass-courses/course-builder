@@ -134,6 +134,7 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 			<MDXRemote
 				source={tip.fields.body}
 				components={{
+					// @ts-expect-error
 					pre: async (props: any) => {
 						const children = props?.children.props.children
 						const language =

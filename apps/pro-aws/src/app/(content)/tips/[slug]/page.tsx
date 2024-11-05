@@ -22,7 +22,6 @@ import { Button, Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import { AuthedVideoPlayer } from '../../_components/authed-video-player'
-import VideoPlayerOverlay from '../../_components/video-player-overlay'
 import { Transcript } from '../../_components/video-transcript-renderer'
 
 type Props = {
@@ -202,6 +201,7 @@ async function TipBody({ tipLoader }: { tipLoader: Promise<Tip | null> }) {
 					<MDXRemote
 						source={tip.fields.body}
 						components={{
+							// @ts-expect-error
 							pre: async (props: any) => {
 								const children = props?.children.props.children
 								const language =
