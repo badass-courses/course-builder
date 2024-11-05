@@ -1,5 +1,13 @@
 # @coursebuilder/adapter-drizzle
 
+## 0.5.2
+
+### Patch Changes
+
+- [#315](https://github.com/badass-courses/course-builder/pull/315) [`2180c88`](https://github.com/badass-courses/course-builder/commit/2180c8887041cbe99bdbdcf37e391c5183644c0c) Thanks [@joelhooks](https://github.com/joelhooks)! - update to next 15 and react 19 😭
+
+- [#316](https://github.com/badass-courses/course-builder/pull/316) [`1672eaf`](https://github.com/badass-courses/course-builder/commit/1672eaf93ff71c65b37dbca327aa2eb9188410e7) Thanks [@joelhooks](https://github.com/joelhooks)! - this is a catchup after a long slacking off with releases
+
 ## 0.5.1
 
 ### Patch Changes

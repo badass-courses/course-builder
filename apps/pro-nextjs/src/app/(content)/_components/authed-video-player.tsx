@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { use } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { revalidateModuleLesson } from '@/app/(content)/actions'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
 	handleTextTrackChange,
@@ -11,7 +12,6 @@ import {
 } from '@/hooks/use-mux-player-prefs'
 import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
-import { track } from '@/utils/analytics'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import MuxPlayer, {
 	type MuxPlayerProps,
@@ -19,18 +19,12 @@ import MuxPlayer, {
 } from '@mux/mux-player-react'
 import pluralize from 'pluralize'
 
-import type {
-	ContentResource,
-	ModuleProgress,
-} from '@coursebuilder/core/schemas'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	useVideoPlayerOverlay,
 	type VideoPlayerOverlayAction,
 } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
-
-import { revalidateModuleLesson } from '../actions'
-import { useModuleProgress } from './module-progress-provider'
 
 export function AuthedVideoPlayer({
 	muxPlaybackId,
@@ -88,8 +82,6 @@ export function AuthedVideoPlayer({
 
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
-	const { moduleProgress, addLessonProgress } = useModuleProgress()
-	const [isPending, startTransition] = React.useTransition()
 
 	const playerProps = {
 		defaultHiddenCaptions: true,
@@ -122,26 +114,22 @@ export function AuthedVideoPlayer({
 				playerRef?.current?.play()
 			}
 		},
-		onEnded: () => {
-			startTransition(async () => {
-				await handleOnVideoEnded({
-					canView,
-					resource,
-					nextResource,
-					nextLessonPlaybackId,
-					isFullscreen,
-					playerRef,
-					currentResource,
-					dispatchVideoPlayerOverlay,
-					setCurrentResource,
-					handleSetLessonComplete,
-					bingeMode,
-					moduleSlug,
-					moduleType,
-					router,
-					moduleProgress,
-					addLessonProgress,
-				})
+		onEnded: async () => {
+			await handleOnVideoEnded({
+				canView,
+				resource,
+				nextResource,
+				nextLessonPlaybackId,
+				isFullscreen,
+				playerRef,
+				currentResource,
+				dispatchVideoPlayerOverlay,
+				setCurrentResource,
+				handleSetLessonComplete,
+				bingeMode,
+				moduleSlug,
+				moduleType,
+				router,
 			})
 		},
 		onPlay: () => {
@@ -153,13 +141,11 @@ export function AuthedVideoPlayer({
 
 	const handleFullscreenChange = React.useCallback(() => {
 		setIsFullscreen((fullscreen) => {
+			console.log('setting fullscreen', !fullscreen)
 			if (fullscreen && currentResource) {
-				setTimeout(() => {
-					console.log('navigate to', currentResource?.fields?.slug)
-					router.push(
-						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
-					)
-				}, 250)
+				router.push(
+					`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
+				)
 			}
 			return !fullscreen
 		})
@@ -198,8 +184,6 @@ async function handleOnVideoEnded({
 	dispatchVideoPlayerOverlay,
 	setCurrentResource,
 	handleSetLessonComplete,
-	moduleProgress,
-	addLessonProgress,
 	bingeMode,
 	moduleSlug,
 	moduleType,
@@ -212,7 +196,7 @@ async function handleOnVideoEnded({
 	canView?: boolean
 	resource: ContentResource
 	isFullscreen: boolean
-	playerRef: React.RefObject<MuxPlayerRefAttributes>
+	playerRef: React.RefObject<MuxPlayerRefAttributes | null>
 	dispatchVideoPlayerOverlay: React.Dispatch<VideoPlayerOverlayAction>
 	setCurrentResource: React.Dispatch<ContentResource>
 	currentResource: ContentResource
@@ -225,17 +209,7 @@ async function handleOnVideoEnded({
 	nextResource?: ContentResource | null
 	nextLessonPlaybackId?: string | null
 	router: ReturnType<typeof useRouter>
-	moduleProgress: ModuleProgress | null
-	addLessonProgress: (lessonId: string) => void
 }) {
-	await track('completed: video', {
-		resourceSlug: resource?.fields?.slug,
-		resourceType: resource?.type,
-		moduleSlug: moduleSlug,
-		moduleType: moduleType,
-		bingeMode,
-		isFullscreen,
-	})
 	if (resource?.type === 'exercise') {
 		router.push(`${resource?.fields?.slug}/exercise`)
 	} else {
@@ -248,33 +222,18 @@ async function handleOnVideoEnded({
 		) {
 			dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			playerRef.current.playbackId = nextLessonPlaybackId
-			await handleSetLessonComplete({
-				currentResource,
-				moduleProgress,
-				addLessonProgress,
-			})
+			await handleSetLessonComplete({ currentResource, moduleSlug, moduleType })
 			setCurrentResource(nextResource)
 		} else if (bingeMode) {
+			console.log({ nextResource })
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			}
-			await handleSetLessonComplete({
-				currentResource,
-				moduleProgress,
-				addLessonProgress,
-			})
-			await revalidateModuleLesson(
-				moduleSlug as string,
-				currentResource.fields?.slug as string,
-				moduleType,
-				currentResource.type as 'lesson' | 'exercise' | 'solution',
-			)
+			await handleSetLessonComplete({ currentResource, moduleSlug, moduleType })
 			if (nextResource) {
-				setTimeout(() => {
-					router.push(
-						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
-					)
-				}, 250)
+				router.push(
+					`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
+				)
 			} else {
 				dispatchVideoPlayerOverlay({
 					type: 'COMPLETED',
@@ -282,8 +241,6 @@ async function handleOnVideoEnded({
 				})
 			}
 		} else {
-			if (isFullscreen) {
-			}
 			dispatchVideoPlayerOverlay({
 				type: 'COMPLETED',
 				playerRef,
@@ -294,25 +251,25 @@ async function handleOnVideoEnded({
 
 type handleSetLessonCompleteProps = {
 	currentResource: ContentResource
-	moduleProgress: ModuleProgress | null
-	addLessonProgress: (lessonId: string) => void
+	moduleSlug?: string
+	moduleType?: 'tutorial' | 'workshop'
 }
 
 async function handleSetLessonComplete({
 	currentResource,
-	moduleProgress,
-	addLessonProgress,
+	moduleSlug,
+	moduleType,
 }: handleSetLessonCompleteProps) {
-	const isCurrentLessonCompleted = Boolean(
-		moduleProgress?.completedLessons?.some(
-			(p) => p.resourceId === currentResource.id && p.completedAt,
-		),
-	)
-	if (!isCurrentLessonCompleted) {
-		addLessonProgress(currentResource.id)
-		await setProgressForResource({
-			resourceId: currentResource.id,
-			isCompleted: true,
-		})
+	await setProgressForResource({
+		resourceId: currentResource.id,
+		isCompleted: true,
+	})
+	if (moduleSlug && moduleType && currentResource?.fields?.slug) {
+		await revalidateModuleLesson(
+			moduleSlug,
+			currentResource?.fields?.slug,
+			moduleType,
+			currentResource.type as 'lesson' | 'exercise' | 'solution',
+		)
 	}
 }

@@ -14,8 +14,9 @@ export async function OPTIONS() {
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { videoResourceId: string } },
+	props: { params: Promise<{ videoResourceId: string }> },
 ) {
+	const params = await props.params
 	const { ability, user } = await getUserAbilityForRequest(request)
 
 	if (params.videoResourceId) {

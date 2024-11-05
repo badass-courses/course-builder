@@ -6,11 +6,10 @@ import { getServerAuthSession } from '@/server/auth'
 
 import { Button } from '@coursebuilder/ui'
 
-export default async function ModulePage({
-	params,
-}: {
-	params: { module: string }
+export default async function ModulePage(props: {
+	params: Promise<{ module: string }>
 }) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('read', 'Content')) {

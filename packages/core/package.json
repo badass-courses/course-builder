@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/core",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"description": "Core package for Course Builder",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib",
@@ -131,8 +131,8 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
-		"@coursebuilder/email-templates": "^1.0.3",
-		"@react-email/components": "^0.0.22",
+		"@coursebuilder/email-templates": "^1.0.4",
+		"@react-email/components": "0.0.27",
 		"@slack/web-api": "^7.0.4",
 		"@types/cookie": "0.6.0",
 		"@types/uuid": "9.0.8",
@@ -153,12 +153,18 @@
 		"xstate": "^5.13.0"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.30.0",
+		"@auth/core": "^0.37.2",
 		"@types/lodash": "^4.14.200",
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pluralize": "^0.0.33",
 		"tsup": "8.0.2",
 		"zod": "^3.22.4"
+	},
+	"pnpm": {
+		"overrides": {
+			"@types/react": "npm:types-react@19.0.0-rc.1",
+			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		}
 	}
 }

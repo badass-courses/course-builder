@@ -7,12 +7,11 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ArticleEditEmail({
-	params,
-}: {
-	params: { slug: string }
+export default async function ArticleEditEmail(props: {
+	params: Promise<{ slug: string }>
 }) {
-	headers()
+	const params = await props.params
+	await headers()
 	const { ability } = await getServerAuthSession()
 	const email = await getEmail(params.slug)
 

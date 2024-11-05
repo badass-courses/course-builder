@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/commerce-next",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"description": "Commerce Functionality for Course Builder with Next.js",
 	"scripts": {
 		"clean": "rm -rf ./dist",
@@ -61,30 +61,30 @@
 	"devDependencies": {
 		"@types/lodash": "^4.14.200",
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "^18.3.1",
-		"@types/react-dom": "^18.3.0",
+		"@types/react": "npm:types-react@19.0.0-rc.1",
+		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
 		"@types/uuid": "9.0.8",
 		"bunchee": "^5.1.2",
 		"esbuild-react18-useclient": "^1.0.7",
-		"next": "14.2.5",
-		"react": "18.3.1"
+		"next": "15.0.2",
+		"react": "19.0.0-rc-02c0e824-20241028"
 	},
 	"peerDependencies": {
-		"next": "^14",
-		"react": "^18"
+		"next": "^15",
+		"react": "19.0.0-rc-02c0e824-20241028"
 	},
 	"dependencies": {
-		"@auth/core": "^0.30.0",
-		"@coursebuilder/core": "^0.2.3",
-		"@coursebuilder/email-templates": "^1.0.3",
-		"@coursebuilder/ui": "^1.0.16",
+		"@auth/core": "^0.37.2",
+		"@coursebuilder/core": "^0.2.4",
+		"@coursebuilder/email-templates": "^1.0.4",
+		"@coursebuilder/ui": "^1.0.17",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
 		"@mux/mux-player-react": "^2.6.0",
-		"@radix-ui/react-alert-dialog": "^1.0.5",
-		"@radix-ui/react-slot": "^1.0.2",
-		"@radix-ui/react-switch": "^1.0.3",
-		"@react-email/components": "^0.0.22",
+		"@radix-ui/react-alert-dialog": "^1.1.2",
+		"@radix-ui/react-slot": "^1.1.0",
+		"@radix-ui/react-switch": "^1.1.1",
+		"@react-email/components": "0.0.27",
 		"@react-email/render": "^0.0.17",
 		"@tanstack/react-query": "5.54.1",
 		"@xstate/react": "^4.1.1",
@@ -92,10 +92,10 @@
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
 		"formik": "2.2.9",
-		"framer-motion": "^11",
+		"framer-motion": "^12.0.0-alpha.1",
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.288.0",
-		"next-auth": "5.0.0-beta.17",
+		"next-auth": "5.0.0-beta.25",
 		"next-cloudinary": "^6.5.1",
 		"pluralize": "^8.0.0",
 		"query-string": "^9.0.0",
@@ -111,5 +111,11 @@
 		"xstate": "^5.13.0",
 		"yup": "^0.32.11",
 		"zod": "^3.22.4"
+	},
+	"pnpm": {
+		"overrides": {
+			"@types/react": "npm:types-react@19.0.0-rc.1",
+			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		}
 	}
 }

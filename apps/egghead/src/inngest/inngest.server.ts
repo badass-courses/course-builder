@@ -20,6 +20,10 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	TIPS_UPDATED_EVENT,
+	TipsUpdated,
+} from './functions/migrate-tips-to-posts'
+import {
 	POST_UPDATED_EVENT,
 	PostUpdated,
 } from './functions/sync-post-to-egghead'
@@ -30,6 +34,7 @@ export type Events = {
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 	[USER_CREATED_EVENT]: UserCreated
 	[POST_UPDATED_EVENT]: PostUpdated
+	[TIPS_UPDATED_EVENT]: TipsUpdated
 }
 
 const callbackBase =

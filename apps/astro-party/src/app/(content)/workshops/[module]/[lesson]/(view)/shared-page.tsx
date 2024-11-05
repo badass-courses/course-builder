@@ -283,6 +283,7 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 					<MDXRemote
 						source={lesson.fields.body}
 						components={{
+							// @ts-expect-error
 							pre: async (props: any) => {
 								const children = props?.children.props.children
 								const language =

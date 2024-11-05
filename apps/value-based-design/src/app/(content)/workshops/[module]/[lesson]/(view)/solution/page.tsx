@@ -6,16 +6,15 @@ import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
 export async function generateMetadata(
-	{
-		params,
-	}: {
-		params: {
+	props: {
+		params: Promise<{
 			module: string
 			lesson: string
-		}
+		}>
 	},
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const lesson = await getLesson(params.lesson)
 
 	if (!lesson) {
@@ -30,16 +29,15 @@ export async function generateMetadata(
 	}
 }
 
-export default async function LessonSolutionPage({
-	params,
-	searchParams,
-}: {
-	params: {
+export default async function LessonSolutionPage(props: {
+	params: Promise<{
 		module: string
 		lesson: string
-	}
-	searchParams: { [key: string]: string | string[] | undefined }
+	}>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const lesson = await getExerciseSolution(params.lesson)
 
 	return (

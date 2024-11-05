@@ -16,10 +16,11 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-	searchParams: { [key: string]: string | undefined }
+	searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
-export default async function Home({ searchParams }: Props) {
+export default async function Home(props: Props) {
+	const searchParams = await props.searchParams
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
 	const page = await getPage('page-1dywz')

@@ -23,14 +23,15 @@ import { Article as ArticleJsonLD, WithContext } from 'schema-dts'
 import { Button } from '@coursebuilder/ui'
 
 type Props = {
-	params: { article: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ article: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const article = await getArticle(params.article)
 
 	return {
@@ -205,11 +206,10 @@ const Header = ({
 	)
 }
 
-export default async function ArticlePage({
-	params,
-}: {
-	params: { article: string }
+export default async function ArticlePage(props: {
+	params: Promise<{ article: string }>
 }) {
+	const params = await props.params
 	const articleLoader = getArticle(params.article)
 	return (
 		<div>

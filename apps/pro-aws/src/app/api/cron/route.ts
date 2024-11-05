@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-	headers()
+	await headers()
 	console.log(
 		'refreshing inngest',
 		await fetch(`${process.env.COURSEBUILDER_URL}/api/inngest`, {

@@ -16,13 +16,12 @@ import { Button } from '@coursebuilder/ui'
 import { EventPageProps } from './_components/event-page-props'
 import { EventTemplate } from './_components/event-template'
 
-export default async function EventPage({
-	params,
-	searchParams,
-}: {
-	params: { slug: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+export default async function EventPage(props: {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 

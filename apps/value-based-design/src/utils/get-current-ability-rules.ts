@@ -16,7 +16,7 @@ export async function getCurrentAbilityRules({
 	lessonId?: string
 	moduleId?: string
 }) {
-	const headerStore = headers()
+	const headerStore = await headers()
 	const country =
 		headerStore.get('x-vercel-ip-country') ||
 		process.env.DEFAULT_COUNTRY ||

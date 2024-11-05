@@ -5,8 +5,6 @@ import { useMuxPlayer } from '@/hooks/use-mux-player'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import ReactMarkdown from 'react-markdown'
 
-import type { ContentResource } from '@coursebuilder/core/schemas'
-
 export function Transcript({
 	transcriptLoader,
 }: {
@@ -23,6 +21,7 @@ export function Transcript({
 			components={{
 				p: ({ children }) =>
 					paragraphWithTimestampButtons({
+						// @ts-expect-error
 						children,
 						canShowVideo,
 						muxPlayerRef,

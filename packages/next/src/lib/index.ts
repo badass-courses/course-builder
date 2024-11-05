@@ -54,10 +54,10 @@ export function initCourseBuilder(
 	onLazyLoad?: (config: NextCourseBuilderConfig) => void,
 ) {
 	if (typeof config === 'function') {
-		return (...args: WithCourseBuilderArgs) => {
+		return async (...args: WithCourseBuilderArgs) => {
 			if (!args.length) {
 				// React Server Components
-				const _headers = headers()
+				const _headers = await headers()
 				const _config = config(undefined) // Review: Should we pass headers() here instead?
 				onLazyLoad?.(_config)
 
@@ -113,10 +113,10 @@ export function initCourseBuilder(
 			)
 		}
 	}
-	return (...args: WithCourseBuilderArgs) => {
+	return async (...args: WithCourseBuilderArgs) => {
 		if (!args.length) {
 			// React Server Components
-			return getSession(headers(), config).then((r) => r.json())
+			return getSession(await headers(), config).then((r) => r.json())
 		}
 
 		if (args[0] instanceof Request) {

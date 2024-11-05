@@ -19,14 +19,15 @@ import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 type Props = {
-	params: { post: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ post: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const post = await getCachedPost(params.post)
 
 	if (!post) {
@@ -38,7 +39,8 @@ export async function generateMetadata(
 	}
 }
 
-export default async function PostPage({ params }: Props) {
+export default async function PostPage(props: Props) {
+	const params = await props.params
 	const postLoader = getPost(params.post)
 	return (
 		<div>

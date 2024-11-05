@@ -33,13 +33,12 @@ const EventActionsBar = async ({ event }: { event: Event }) => {
 	) : null
 }
 
-export default async function EventPage({
-	params,
-	searchParams,
-}: {
-	params: { slug: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+export default async function EventPage(props: {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 

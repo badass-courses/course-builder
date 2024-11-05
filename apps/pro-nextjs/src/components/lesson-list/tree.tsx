@@ -3,16 +3,11 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
-	useReducer,
 	useRef,
 	useState,
 } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
-import {
-	updateResourcePosition,
-	updateResourcePositions,
-} from '@/lib/tutorials-query'
+import { useParams } from 'next/navigation'
+import { updateResourcePositions } from '@/lib/tutorials-query'
 import { triggerPostMoveFlash } from '@atlaskit/pragmatic-drag-and-drop-flourish/trigger-post-move-flash'
 import {
 	Instruction,
@@ -28,12 +23,10 @@ import { Product } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import {
-	getInitialTreeState,
 	tree,
 	TreeAction,
 	TreeItem as TreeItemType,
 	TreeState,
-	treeStateReducer,
 } from './data/tree'
 import {
 	DependencyContext,

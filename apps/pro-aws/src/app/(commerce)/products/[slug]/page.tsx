@@ -53,14 +53,13 @@ async function ProductTitle({
 	return <h1 className="text-3xl font-bold sm:text-4xl">{product?.name}</h1>
 }
 
-export default async function ProductPage({
-	params,
-	searchParams,
-}: {
-	params: { slug: string }
+export default async function ProductPage(props: {
+	params: Promise<{ slug: string }>
 	//arbitrary search params or query string
-	searchParams: ParsedUrlQuery
+	searchParams: Promise<ParsedUrlQuery>
 }) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const productLoader = getProduct(params.slug)
 
 	return (
@@ -97,7 +96,9 @@ async function ProductCommerce({
 	let productProps: any
 
 	const countryCode =
-		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
+		(await headers()).get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
 	let commerceProps = await propsForCommerce(
 		{
 			query: {

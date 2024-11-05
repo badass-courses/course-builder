@@ -11,11 +11,10 @@ import { EditPostForm } from '../../_components/edit-post-form'
 
 export const dynamic = 'force-dynamic'
 
-export default async function PostPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function PostPage(props: {
+	params: Promise<{ slug: string }>
 }) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 	const post = await getPost(params.slug)
 

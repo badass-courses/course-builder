@@ -28,7 +28,7 @@ export default function NextCourseBuilder(
 	}
 	setEnvDefaults(config)
 	const httpHandler = async (req: NextRequest) => {
-		const stripeHeader = headers().get('stripe-signature')
+		const stripeHeader = (await headers()).get('stripe-signature')
 		const isWebhook = ['stripe-signature'].every((prop: string) => {
 			return prop in req.headers
 		})

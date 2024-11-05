@@ -20,9 +20,10 @@ import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const lesson = await getLesson(params.lesson)
 
 	if (!lesson) {
@@ -42,12 +43,13 @@ export async function generateMetadata(
 }
 
 type Props = {
-	params: { lesson: string; module: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ lesson: string; module: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function LessonPage({ params }: Props) {
-	headers()
+export default async function LessonPage(props: Props) {
+	const params = await props.params
+	await headers()
 	const tutorialLoader = getTutorial(params.module)
 	const lessonLoader = getLesson(params.lesson)
 	return (

@@ -103,11 +103,11 @@ async function PostList() {
 
 const InstructorByLine = async ({ userId }: { userId: string }) => {
 	const instructor = await getCachedEggheadInstructorForUser(userId)
-	return (
+	return instructor ? (
 		<div className="text-muted-foreground text-mono text-xs">
 			{instructor?.first_name} {instructor?.last_name}
 		</div>
-	)
+	) : null
 }
 
 async function PostListActions() {

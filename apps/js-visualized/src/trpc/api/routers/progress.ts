@@ -51,7 +51,7 @@ export const progressRouter = createTRPCRouter({
 
 					return progress
 				} else {
-					const subscriberCookie = cookies().get('ck_subscriber')
+					const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 					if (!subscriberCookie) {
 						console.debug('no subscriber cookie')
@@ -154,7 +154,7 @@ export const progressRouter = createTRPCRouter({
 				return []
 			}
 		} else {
-			const subscriberCookie = cookies().get('ck_subscriber')
+			const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 			if (!subscriberCookie) {
 				console.debug('no subscriber cookie')

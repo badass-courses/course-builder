@@ -35,6 +35,8 @@ export const PostTypeSchema = z.union([
 	z.literal('article'),
 	z.literal('lesson'),
 	z.literal('podcast'),
+	z.literal('tip'),
+	z.literal('course'),
 ])
 
 export type PostType = z.infer<typeof PostTypeSchema>
