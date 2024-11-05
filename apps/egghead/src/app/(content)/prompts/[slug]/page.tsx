@@ -12,14 +12,15 @@ import ReactMarkdown from 'react-markdown'
 import { Button } from '@coursebuilder/ui'
 
 type Props = {
-	params: { prompt: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ prompt: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const prompt = await getPrompt(params.prompt)
 
 	if (!prompt) {
@@ -107,11 +108,10 @@ async function PromptTitle({
 	)
 }
 
-export default async function PromptPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function PromptPage(props: {
+	params: Promise<{ slug: string }>
 }) {
+	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
