@@ -30,7 +30,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@react-email/components": "^0.0.22",
+		"@react-email/components": "0.0.27",
 		"@react-email/markdown": "^0.0.11",
 		"@types/react": "npm:types-react@19.0.0-rc.1",
 		"date-fns": "^2.30.0",
