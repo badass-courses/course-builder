@@ -120,7 +120,9 @@ async function ProductCommerce({
 	let productProps: any
 
 	const countryCode =
-		headers().get('x-vercel-ip-country') || process.env.DEFAULT_COUNTRY || 'US'
+		(await headers()).get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
 	let commerceProps = await propsForCommerce(
 		{
 			query: {

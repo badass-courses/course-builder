@@ -84,7 +84,7 @@ export default async function EventPage({
 		})
 
 		const countryCode =
-			headers().get('x-vercel-ip-country') ||
+			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
 		const commerceProps = await propsForCommerce(

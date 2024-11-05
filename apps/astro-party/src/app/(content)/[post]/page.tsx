@@ -130,7 +130,7 @@ export default async function PostPage({
 		notFound()
 	}
 
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	const videoResourceId = post?.resources?.find((resourceJoin) => {
