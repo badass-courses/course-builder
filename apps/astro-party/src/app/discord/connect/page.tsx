@@ -5,7 +5,7 @@ import { Layout } from '@/components/layout'
 import { getProviders } from '@/server/auth'
 
 export default async function Discord() {
-	headers()
+	await headers()
 
 	const providers = getProviders()
 
