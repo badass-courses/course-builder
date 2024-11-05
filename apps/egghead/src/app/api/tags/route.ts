@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getAllEggheadTagsCached } from '@/lib/tags-query'
 
-export const revalidate = 60 * 60 * 0.25 // every 15 minutes
-
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'GET, OPTIONS',

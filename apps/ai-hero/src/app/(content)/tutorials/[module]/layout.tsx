@@ -6,11 +6,15 @@ import { getWorkshopNavigation } from '@/lib/workshops-query'
 
 const ModuleLayout: React.FC<
 	React.PropsWithChildren<{
-		params: {
+		params: Promise<{
 			module: string
-		}
+		}>
 	}>
-> = async ({ children, params }) => {
+> = async (props) => {
+	const params = await props.params
+
+	const { children } = props
+
 	const workshopNavDataLoader = getWorkshopNavigation(params.module, 'tutorial')
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
 	return (

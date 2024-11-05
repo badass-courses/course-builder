@@ -90,11 +90,10 @@ async function updateDiscordRolesForUser(
 		.where(eq(users.id, user.id))
 }
 
-export default async function DiscordCallback({
-	searchParams,
-}: {
-	searchParams: { code: string }
+export default async function DiscordCallback(props: {
+	searchParams: Promise<{ code: string }>
 }) {
+	const searchParams = await props.searchParams
 	const { session } = await getServerAuthSession()
 
 	const user = session?.user

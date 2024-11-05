@@ -1,7 +1,8 @@
 import React from 'react'
 import Spinner from '@/components/spinner'
-import { Subscriber } from '@/convertkit/subscriber'
-import { useConvertkitForm } from '@/convertkit/use-convertkit-form'
+import { useConvertkitForm } from '@/hooks/use-convertkit-form'
+import { type Subscriber } from '@/schemas/subscriber'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import queryString from 'query-string'
 import * as Yup from 'yup'
 
@@ -11,10 +12,14 @@ export type SubscribeFormProps = {
 	actionLabel?: string
 	successMessage?: string | React.ReactElement
 	errorMessage?: string | React.ReactElement
-	submitButtonElem?: React.ReactElement
+	submitButtonElem?: React.ReactElement<{
+		type?: 'submit'
+		disabled?: boolean
+		children?: React.ReactNode
+	}>
 	onError?: (error?: any) => void
 	onSuccess?: (subscriber?: Subscriber, email?: string) => void
-	formId?: string
+	formId?: number
 	subscribeApiURL?: string
 	id?: string
 	fields?: Record<string, string>
@@ -56,7 +61,11 @@ export type SubscribeFormProps = {
  * @param onError function to call on error
  * @param onSuccess function to call on success
  * @param subscribeApiURL optional param to override the api url that gets posted to
+ * @param id
  * @param fields custom subscriber fields to create or update
+ * @param className
+ * @param validationSchema
+ * @param validateOnChange
  * @param rest anything else!
  * @constructor
  */
@@ -107,7 +116,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					data-input-with-error={Boolean(
 						touched.first_name && errors.first_name,
 					)}
-					className="h-auto text-base"
+					className="h-auto"
 					name="first_name"
 					id={id ? `first_name_${id}` : 'first_name'}
 					onChange={handleChange}
@@ -124,7 +133,7 @@ export const SubscribeToConvertkitForm: React.FC<
 				</Label>
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
-					className="h-auto text-base"
+					className="h-auto"
 					name="email"
 					id={id ? `email_${id}` : 'email'}
 					onChange={handleChange}
@@ -150,7 +159,6 @@ export const SubscribeToConvertkitForm: React.FC<
 				<Button
 					variant="default"
 					size="lg"
-					className="h-auto"
 					disabled={
 						(touched.first_name && errors.first_name) ||
 						(touched.email && errors.email) ||
@@ -190,7 +198,7 @@ export const redirectUrlBuilder = (
 	const url = queryString.stringifyUrl({
 		url: path,
 		query: {
-			['ck_subscriber_id']: subscriber.id,
+			[CK_SUBSCRIBER_KEY]: subscriber.id,
 			email: subscriber.email_address,
 			...queryParams,
 		},

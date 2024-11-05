@@ -30,7 +30,7 @@ export async function addProgress({ resourceId }: { resourceId: string }) {
 			})
 			return progress
 		} else {
-			const subscriberCookie = cookies().get('ck_subscriber')
+			const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 			if (!subscriberCookie) {
 				console.debug('no subscriber cookie')
@@ -86,7 +86,7 @@ export async function toggleProgress({ resourceId }: { resourceId: string }) {
 			const parsedProgress = resourceProgressSchema.parse(progress)
 			return progress
 		} else {
-			const subscriberCookie = cookies().get('ck_subscriber')
+			const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 			if (!subscriberCookie) {
 				console.debug('no subscriber cookie')
@@ -160,7 +160,7 @@ export async function getModuleProgressForUser(
 		return moduleProgress
 	}
 
-	const subscriberCookie = cookies().get('ck_subscriber')
+	const subscriberCookie = (await cookies()).get('ck_subscriber')
 
 	if (!subscriberCookie) {
 		console.debug('no subscriber cookie')

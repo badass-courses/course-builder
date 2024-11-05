@@ -6,16 +6,20 @@ const PrivacyPage = () => (
 			<ReactMarkdown
 				components={{
 					h1: ({ children }) => (
+						// @ts-expect-error
 						<h1 className="text-4xl text-white">{children}</h1>
 					),
 					h2: ({ children }) => (
+						// @ts-expect-error
 						<h2 className="text-xl text-white">{children}</h2>
 					),
 					h3: ({ children }) => (
+						// @ts-expect-error
 						<h3 className="text-lg text-white">{children}</h3>
 					),
 					a: ({ children, href }) => (
 						<a href={href} className="text-white underline">
+							{/* @ts-expect-error */}
 							{children}
 						</a>
 					),

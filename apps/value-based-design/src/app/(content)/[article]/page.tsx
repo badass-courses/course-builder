@@ -17,14 +17,15 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { Button } from '@coursebuilder/ui'
 
 type Props = {
-	params: { article: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ article: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const article = await getArticle(params.article)
 
 	if (!article) {
@@ -83,6 +84,7 @@ async function Article({
 				<MDXRemote
 					source={article.fields.body}
 					components={{
+						// @ts-expect-error
 						pre: async (props: any) => {
 							const children = props?.children.props.children
 							const language =
@@ -116,13 +118,12 @@ async function ArticleTitle({
 	)
 }
 
-export default async function ArticlePage({
-	params,
-}: {
-	params: { article: string }
+export default async function ArticlePage(props: {
+	params: Promise<{ article: string }>
 }) {
+	const params = await props.params
 	const articleLoader = getArticle(params.article)
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return (

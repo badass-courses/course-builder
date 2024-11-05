@@ -4,11 +4,10 @@ import { EditLessonForm } from '@/app/(content)/_components/edit-lesson-form'
 import { getLesson, getVideoResourceForLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
 
-export default async function LessonEditPage({
-	params,
-}: {
-	params: { lesson: string }
+export default async function LessonEditPage(props: {
+	params: Promise<{ lesson: string }>
 }) {
+	const params = await props.params
 	const { ability } = await getServerAuthSession()
 	const lesson = await getLesson(params.lesson)
 

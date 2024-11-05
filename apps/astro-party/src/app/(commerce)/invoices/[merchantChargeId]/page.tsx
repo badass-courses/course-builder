@@ -90,12 +90,11 @@ async function getChargeDetails(merchantChargeId: string) {
 	}
 }
 
-const Invoice = async ({
-	params,
-}: {
-	params: { merchantChargeId: string }
+const Invoice = async (props: {
+	params: Promise<{ merchantChargeId: string }>
 }) => {
-	headers()
+	const params = await props.params
+	await headers()
 	const chargeDetails = await getChargeDetails(params.merchantChargeId)
 
 	if (chargeDetails?.state !== 'SUCCESS') {

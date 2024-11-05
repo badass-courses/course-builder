@@ -43,9 +43,10 @@ import {
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const lesson = await getLesson(params.lesson)
 
 	if (!lesson) {
@@ -60,12 +61,13 @@ export async function generateMetadata(
 }
 
 type Props = {
-	params: { lesson: string; module: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ lesson: string; module: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function LessonPage({ params }: Props) {
-	headers()
+export default async function LessonPage(props: Props) {
+	const params = await props.params
+	await headers()
 	const tutorialLoader = getTutorial(params.module)
 	const lessonLoader = getLesson(params.lesson)
 	const moduleProgressLoader = getModuleProgressForUser(params.module)
@@ -88,7 +90,7 @@ export default async function LessonPage({ params }: Props) {
 						<div>
 							<main className="">
 								<PlayerContainer
-									params={params}
+									params={props.params}
 									lessonLoader={lessonLoader}
 									moduleLoader={
 										tutorialLoader as unknown as Promise<ContentResource | null>
@@ -221,18 +223,16 @@ async function PlayerContainer({
 	lessonLoader: Promise<ContentResource | null>
 	moduleLoader: Promise<ContentResource | null>
 	moduleProgressLoader: Promise<ModuleProgress | null>
-	params: Props['params']
+	params: Promise<{ lesson: string; module: string }>
 }) {
 	const lesson = await lessonLoader
 
 	if (!lesson) {
 		notFound()
 	}
+	const { lesson: lessonId, module } = await params
 
-	const canViewLoader = getViewingAbilityForResource(
-		params.lesson,
-		params.module,
-	)
+	const canViewLoader = getViewingAbilityForResource(lessonId, module)
 	const resource = lesson.resources?.[0]?.resource.id
 	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
 	const nextResourceLoader = getNextResource(lesson.id)
@@ -268,7 +268,7 @@ async function LessonBody({
 }) {
 	const lesson = await lessonLoader
 	const { session } = await getServerAuthSession()
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	if (!lesson) {
@@ -302,6 +302,7 @@ async function LessonBody({
 					<MDXRemote
 						source={lesson.fields.body}
 						components={{
+							// @ts-expect-error
 							pre: async (props: any) => {
 								const children = props?.children.props.children
 								const language =

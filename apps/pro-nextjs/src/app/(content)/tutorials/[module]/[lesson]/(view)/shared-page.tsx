@@ -236,7 +236,7 @@ async function LessonBody({
 	exercise: Lesson | null
 }) {
 	const { session } = await getServerAuthSession()
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	if (!lesson) {
@@ -329,6 +329,7 @@ async function LessonBody({
 					<MDXRemote
 						source={lesson.fields.body}
 						components={{
+							// @ts-expect-error
 							pre: async (props: any) => {
 								const children = props?.children.props.children
 								const language =

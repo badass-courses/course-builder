@@ -12,7 +12,7 @@ import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widg
 
 import { EventPageProps } from './event-page-props'
 
-export async function EventTemplate(props: EventPageProps) {
+export function EventTemplate(props: EventPageProps) {
 	const path = usePathname()
 	const {
 		event,

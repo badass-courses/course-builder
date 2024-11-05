@@ -1,22 +1,14 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
-import { Module } from '@/lib/module'
 import { getPricingData } from '@/lib/pricing-query'
 import { getWorkshopProduct } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
-import first from 'lodash/first'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
-import {
-	productSchema,
-	type Product,
-	type Purchase,
-	type User,
-} from '@coursebuilder/core/schemas'
+import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
 
 import { type WorkshopPageProps } from './workshop-page-props'
-import { WorkshopPricing as WorkshopPricingClient } from './workshop-pricing'
 
 export async function WorkshopPricing({
 	searchParams,
@@ -40,7 +32,7 @@ export async function WorkshopPricing({
 		})
 
 		const countryCode =
-			headers().get('x-vercel-ip-country') ||
+			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
 		const commerceProps = await propsForCommerce(

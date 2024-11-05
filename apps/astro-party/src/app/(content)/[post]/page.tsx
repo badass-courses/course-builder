@@ -26,14 +26,15 @@ import { AuthedVideoPlayer } from '../_components/authed-video-player'
 import { MDXBody } from '../_components/mdx-body'
 
 type Props = {
-	params: { post: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ post: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const post = await getArticle(params.post)
 
 	if (!post) {
@@ -120,17 +121,16 @@ async function PostVideo({
 	)
 }
 
-export default async function PostPage({
-	params,
-}: {
-	params: { post: string }
+export default async function PostPage(props: {
+	params: Promise<{ post: string }>
 }) {
+	const params = await props.params
 	const post = await getArticle(params.post)
 	if (!post) {
 		notFound()
 	}
 
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	const videoResourceId = post?.resources?.find((resourceJoin) => {

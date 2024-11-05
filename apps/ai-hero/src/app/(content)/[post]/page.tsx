@@ -27,8 +27,8 @@ import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
 type Props = {
-	params: { post: string }
-	searchParams: { [key: string]: string | string[] | undefined }
+	params: Promise<{ post: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateStaticParams() {
@@ -42,9 +42,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(
-	{ params, searchParams }: Props,
+	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const post = await getPost(params.post)
 
 	if (!post) {
@@ -90,6 +91,7 @@ async function Post({ post }: { post: Post | null }) {
 				<MDXRemote
 					source={post.fields.body}
 					components={{
+						// @ts-expect-error
 						pre: async (props: any) => {
 							const children = props?.children.props.children
 							const language =
@@ -122,15 +124,14 @@ async function PostTitle({ post }: { post: Post | null }) {
 	)
 }
 
-export default async function PostPage({
-	params,
-	searchParams,
-}: {
-	params: { post: string }
-	searchParams: { [key: string]: string | undefined }
+export default async function PostPage(props: {
+	params: Promise<{ post: string }>
+	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
+	const searchParams = await props.searchParams
+	const params = await props.params
 	const post = await getPost(params.post)
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		ckSubscriber
@@ -265,7 +266,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 	const resource = post.resources?.[0]?.resource.id
 
 	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
-	const cookieStore = cookies()
+	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return videoResource ? (

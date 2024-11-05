@@ -7,12 +7,11 @@ import { Mail } from 'lucide-react'
 
 import * as LoginLink from '@coursebuilder/commerce-next/post-purchase/login-link'
 
-const ThanksRedeem = async ({
-	searchParams,
-}: {
-	searchParams: { purchaseId: string }
+const ThanksRedeem = async (props: {
+	searchParams: Promise<{ purchaseId: string }>
 }) => {
-	headers()
+	const searchParams = await props.searchParams
+	await headers()
 
 	const purchase = await courseBuilderAdapter.getPurchaseWithUser(
 		searchParams.purchaseId,

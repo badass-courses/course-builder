@@ -7,14 +7,14 @@ import { Skeleton } from '@coursebuilder/ui'
 
 import { TutorialLessonList } from '../../../_components/tutorial-lesson-list'
 
-const LessonLayout: React.FC<
-	React.PropsWithChildren<{
-		params: {
-			module: string
-			lesson: string
-		}
-	}>
-> = async ({ children, params }) => {
+const LessonLayout = async (props: {
+	params: Promise<{ module: string; lesson: string }>
+	children: React.ReactNode
+}) => {
+	const params = await props.params
+
+	const { children } = props
+
 	const tutorial = await courseBuilderAdapter.getContentResource(params.module)
 	const currentLesson = await courseBuilderAdapter.getContentResource(
 		params.lesson,

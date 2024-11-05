@@ -9,12 +9,11 @@ import { MDXPreviewProvider } from '../../_components/mdx-preview-provider'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ArticleEditPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function ArticleEditPage(props: {
+	params: Promise<{ slug: string }>
 }) {
-	headers()
+	const params = await props.params
+	await headers()
 	const { ability } = await getServerAuthSession()
 	const page = await getPage(params.slug)
 

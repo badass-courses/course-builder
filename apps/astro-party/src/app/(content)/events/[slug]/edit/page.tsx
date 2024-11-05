@@ -8,12 +8,11 @@ import { EditEventForm } from './_components/edit-event-form'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EventEditPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function EventEditPage(props: {
+	params: Promise<{ slug: string }>
 }) {
-	headers()
+	const params = await props.params
+	await headers()
 	const { ability } = await getServerAuthSession()
 	const event = await getEvent(params.slug)
 

@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import { env } from '@/env.mjs'
 
 export async function getCsrf() {
-	const headerStore = headers()
+	const headerStore = await headers()
 	const cookie = headerStore.get('cookie')
 	const options: RequestInit = {
 		headers: {

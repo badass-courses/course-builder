@@ -84,12 +84,15 @@ const getServerSideProps = async (query: {
 	redirect(`/`)
 }
 
-const Welcome = async ({
-	searchParams,
-}: {
-	searchParams: { session_id: string; provider: string; purchaseId: string }
+const Welcome = async (props: {
+	searchParams: Promise<{
+		session_id: string
+		provider: string
+		purchaseId: string
+	}>
 }) => {
-	headers()
+	const searchParams = await props.searchParams
+	await headers()
 	const { session } = await getServerAuthSession()
 
 	const {

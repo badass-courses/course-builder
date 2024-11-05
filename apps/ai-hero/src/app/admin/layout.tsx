@@ -3,13 +3,13 @@ import { FileText, Mail, TicketIcon } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
 
-const AdminLayout: React.FC<
-	React.PropsWithChildren<{
-		params: {
-			module: string
-		}
-	}>
-> = async ({ children, params }) => {
+const AdminLayout = async ({
+	children,
+	params,
+}: {
+	children: React.ReactNode
+	params: Promise<{ module: string }>
+}) => {
 	return (
 		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
 			<div className="bg-muted/40 hidden border-r md:block">

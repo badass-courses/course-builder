@@ -88,7 +88,7 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
 async function submitUserMessage(content: string) {
 	'use server'
 
-	const ip = headers().get('x-forwarded-for')
+	const ip = (await headers()).get('x-forwarded-for')
 	const ratelimit = new Ratelimit({
 		redis,
 		// rate limit to 5 requests per 10 seconds

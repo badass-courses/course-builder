@@ -15,11 +15,12 @@ export const metadata: Metadata = {
 }
 
 type UnsubscribedProps = {
-	searchParams: { [key: string]: string | string[] | undefined }
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-const Unsubscribed = async ({ searchParams }: UnsubscribedProps) => {
-	headers()
+const Unsubscribed = async (props: UnsubscribedProps) => {
+	const searchParams = await props.searchParams
+	await headers()
 	const userId = searchParams.userId
 
 	if (!userId) {

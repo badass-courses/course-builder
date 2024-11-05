@@ -302,11 +302,8 @@ const CouponGeneratorForm = ({
 								)}
 							</Button>
 						</div>
-						<motion.div
+						<div
 							key={codes.join('\n')}
-							animate={{
-								opacity: form.formState.isSubmitted ? [1, 0.5, 1] : 1,
-							}}
 							className="flex w-full items-end gap-2 sm:justify-end"
 						>
 							{form.formState.isSubmitted && codes && (
@@ -332,7 +329,7 @@ const CouponGeneratorForm = ({
 									</Button>
 								</>
 							)}
-						</motion.div>
+						</div>
 					</div>
 				</div>
 			</form>

@@ -67,9 +67,12 @@ function useStylesForImage(name: string, scrollYProgress: MotionValue) {
 }
 
 export const LandingHeroParallax = () => {
-	const scrollAreaRef = React.useRef(null)
+	const scrollAreaRef = React.useRef<HTMLDivElement | null>(null)
 	const { scrollYProgress } = useScroll({
-		target: scrollAreaRef,
+		target:
+			scrollAreaRef.current !== null
+				? (scrollAreaRef as React.RefObject<HTMLElement>)
+				: undefined,
 		offset: ['0%', '100%'],
 	})
 

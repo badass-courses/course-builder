@@ -7,7 +7,7 @@ import { getCsrf } from './actions'
 export const dynamic = 'force-dynamic'
 
 export default async function LoginPage() {
-	headers()
+	await headers()
 
 	const providers = getProviders()
 	const csrfToken = await getCsrf()

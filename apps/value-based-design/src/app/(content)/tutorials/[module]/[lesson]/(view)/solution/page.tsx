@@ -5,16 +5,15 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { LessonPageWrapper } from '../shared-page'
 
 export async function generateMetadata(
-	{
-		params,
-	}: {
-		params: {
+	props: {
+		params: Promise<{
 			module: string
 			lesson: string
-		}
+		}>
 	},
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params
 	const lesson = await getLesson(params.lesson)
 
 	if (!lesson) {
@@ -29,13 +28,12 @@ export async function generateMetadata(
 	}
 }
 
-export default async function LessonPage({
-	params,
-}: {
-	params: {
+export default async function LessonPage(props: {
+	params: Promise<{
 		module: string
 		lesson: string
-	}
+	}>
 }) {
+	const params = await props.params
 	return <LessonPageWrapper params={params} lessonPageType="solution" />
 }

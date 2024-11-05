@@ -18,6 +18,10 @@ export default function parseProviders(params: {
 		const provider = typeof p === 'function' ? p() : p
 		const { options: userOptions, ...defaults } = provider
 
+		if (!userOptions) {
+			throw new Error(`Provider ${provider.id} is missing options`)
+		}
+
 		const { paymentsAdapter, ...userOptionsWithPaymentsAdapter } = userOptions
 
 		return {

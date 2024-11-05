@@ -12,7 +12,11 @@ export type SubscribeFormProps = {
 	actionLabel?: string
 	successMessage?: string | React.ReactElement
 	errorMessage?: string | React.ReactElement
-	submitButtonElem?: React.ReactElement
+	submitButtonElem?: React.ReactElement<{
+		type?: 'submit'
+		disabled?: boolean
+		children?: React.ReactNode
+	}>
 	onError?: (error?: any) => void
 	onSuccess?: (subscriber?: Subscriber, email?: string) => void
 	formId?: number

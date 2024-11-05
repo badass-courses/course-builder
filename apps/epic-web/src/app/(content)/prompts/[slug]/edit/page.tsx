@@ -7,12 +7,11 @@ import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function PromptEditPage({
-	params,
-}: {
-	params: { slug: string }
+export default async function PromptEditPage(props: {
+	params: Promise<{ slug: string }>
 }) {
-	headers()
+	const params = await props.params
+	await headers()
 	const { ability } = await getServerAuthSession()
 	const prompt = await getPrompt(params.slug)
 
