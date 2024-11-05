@@ -4,13 +4,10 @@ import { WorkshopNavigationProvider } from '@/app/(content)/workshops/_component
 import { getModuleProgressForUser } from '@/lib/progress'
 import { getWorkshopNavigation } from '@/lib/workshops-query'
 
-const ModuleLayout: React.FC<
-	React.PropsWithChildren<{
-		params: {
-			module: string
-		}
-	}>
-> = async (props) => {
+const ModuleLayout = async (props: {
+	params: Promise<{ module: string }>
+	children: React.ReactNode
+}) => {
 	const params = await props.params
 
 	const { children } = props

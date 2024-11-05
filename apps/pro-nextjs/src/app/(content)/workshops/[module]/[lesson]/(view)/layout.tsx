@@ -3,14 +3,10 @@ import { WorkshopResourceList } from '@/app/(content)/workshops/_components/work
 
 import { Skeleton } from '@coursebuilder/ui'
 
-const LessonLayout: React.FC<
-	React.PropsWithChildren<{
-		params: {
-			module: string
-			lesson: string
-		}
-	}>
-> = async (props) => {
+const LessonLayout = async (props: {
+	params: Promise<{ module: string; lesson: string }>
+	children: React.ReactNode
+}) => {
 	const params = await props.params
 
 	const { children } = props
