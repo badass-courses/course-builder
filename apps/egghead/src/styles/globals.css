@@ -1,8 +1,8 @@
+@import './login.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import './login.css';
 
 @layer base {
 	:root {
