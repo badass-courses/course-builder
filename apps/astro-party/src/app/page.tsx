@@ -5,7 +5,6 @@ import Footer from '@/components/app/footer'
 import { Layout } from '@/components/layout'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
-import { env } from '@/env.mjs'
 import { getPage } from '@/lib/pages-query'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -66,6 +65,7 @@ export default async function Home() {
 						{page?.fields?.body ? (
 							<MDXRemote
 								components={{
+									// @ts-expect-error
 									Image,
 								}}
 								source={page.fields.body}

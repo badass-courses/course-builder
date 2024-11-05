@@ -2,6 +2,7 @@ import React from 'react'
 import Spinner from '@/components/spinner'
 import { useConvertkitForm } from '@/hooks/use-convertkit-form'
 import { type Subscriber } from '@/schemas/subscriber'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import queryString from 'query-string'
 import * as Yup from 'yup'
 
@@ -11,7 +12,11 @@ export type SubscribeFormProps = {
 	actionLabel?: string
 	successMessage?: string | React.ReactElement
 	errorMessage?: string | React.ReactElement
-	submitButtonElem?: React.ReactElement
+	submitButtonElem?: React.ReactElement<{
+		type?: 'submit'
+		disabled?: boolean
+		children?: React.ReactNode
+	}>
 	onError?: (error?: any) => void
 	onSuccess?: (subscriber?: Subscriber, email?: string) => void
 	formId?: number
@@ -111,8 +116,8 @@ export const SubscribeToConvertkitForm: React.FC<
 					data-input-with-error={Boolean(
 						touched.first_name && errors.first_name,
 					)}
+					className="h-auto"
 					name="first_name"
-					data-sr-input=""
 					id={id ? `first_name_${id}` : 'first_name'}
 					onChange={handleChange}
 					placeholder="Preferred name"
@@ -128,8 +133,8 @@ export const SubscribeToConvertkitForm: React.FC<
 				</Label>
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
+					className="h-auto"
 					name="email"
-					data-sr-input=""
 					id={id ? `email_${id}` : 'email'}
 					onChange={handleChange}
 					placeholder="you@example.com"
@@ -140,7 +145,6 @@ export const SubscribeToConvertkitForm: React.FC<
 					<p data-input-error-message>{errors.email}</p>
 				)}
 			</div>
-
 			{submitButtonElem ? (
 				React.cloneElement(submitButtonElem, {
 					type: 'submit',
@@ -154,7 +158,7 @@ export const SubscribeToConvertkitForm: React.FC<
 			) : (
 				<Button
 					variant="default"
-					className="text-lg"
+					size="lg"
 					disabled={
 						(touched.first_name && errors.first_name) ||
 						(touched.email && errors.email) ||
@@ -194,7 +198,7 @@ export const redirectUrlBuilder = (
 	const url = queryString.stringifyUrl({
 		url: path,
 		query: {
-			['ck_subscriber_id']: subscriber.id,
+			[CK_SUBSCRIBER_KEY]: subscriber.id,
 			email: subscriber.email_address,
 			...queryParams,
 		},
