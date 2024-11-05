@@ -13,8 +13,8 @@ export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
 	id,
 }) => {
 	const session = useSession()
-	const cloudinaryRef = React.useRef<any>()
-	const widgetRef = React.useRef<any>()
+	const cloudinaryRef = React.useRef<any>(null)
+	const widgetRef = React.useRef<any>(null)
 	const containerRef = React.useRef<HTMLDivElement>(null)
 	React.useEffect(() => {
 		cloudinaryRef.current = (window as any).cloudinary

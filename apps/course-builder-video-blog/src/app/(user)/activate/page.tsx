@@ -5,11 +5,10 @@ import { getServerAuthSession } from '@/server/auth'
 
 import Verify from './_components/verifiy'
 
-export default async function Activate({
-	searchParams,
-}: {
-	searchParams: { user_code: string }
+export default async function Activate(props: {
+	searchParams: Promise<{ user_code: string }>
 }) {
+	const searchParams = await props.searchParams
 	const { session } = await getServerAuthSession()
 	const userCode = searchParams.user_code
 	const unAuthedCallbackUrl = `/activate%3Fuser_code=${userCode}`
