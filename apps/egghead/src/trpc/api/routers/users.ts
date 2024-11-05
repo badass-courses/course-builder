@@ -1,11 +1,13 @@
 import { db } from '@/db'
-import { accounts } from '@/db/schema'
+import { eggheadPgQuery } from '@/db/eggheadPostgres'
+import { accounts, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import {
 	createTRPCRouter,
 	protectedProcedure,
 	publicProcedure,
 } from '@/trpc/api/trpc'
+import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
@@ -36,4 +38,101 @@ export const usersRouter = createTRPCRouter({
 
 		return !isEmpty(userAccounts)
 	}),
+	updateProfile: publicProcedure
+		.input(
+			z.object({
+				name: z.string(),
+				email: z.string().email(),
+				twitter: z.string(),
+				website: z.string(),
+				blueSky: z.string(),
+				bio: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const token = await getServerAuthSession()
+			const user = token.session?.user
+			if (!user)
+				throw new TRPCError({
+					message: 'Not authenticated',
+					code: 'UNAUTHORIZED',
+				})
+			const userId = user.id
+
+			const fullUser = await db.query.users.findFirst({
+				where: eq(users.id, userId),
+				with: {
+					accounts: true,
+				},
+			})
+
+			const eggheadAccount = fullUser?.accounts?.find(
+				(account) => account.provider === 'egghead',
+			)
+
+			try {
+				await db
+					.update(users)
+					.set({
+						name: input.name,
+						fields: {
+							...(fullUser && fullUser.fields),
+							twitter: input.twitter,
+							website: input.website,
+							bio: input.bio,
+							blueSky: input.blueSky,
+						},
+					})
+					.where(eq(users.id, userId))
+			} catch (e) {
+				throw new TRPCError({
+					message: 'Failed to update profile',
+					code: 'INTERNAL_SERVER_ERROR',
+				})
+			}
+
+			try {
+				if (!eggheadAccount) {
+					throw new TRPCError({
+						message: `No egghead account found for ${userId} found`,
+						code: 'INTERNAL_SERVER_ERROR',
+					})
+				}
+
+				const pgResult = await eggheadPgQuery(
+					`
+          UPDATE instructors
+          SET
+          twitter = $1,
+          website = $2,
+          bio_short = $3
+          WHERE user_id = $4
+          RETURNING *
+        `,
+					[
+						input.twitter,
+						input.website,
+						input.bio,
+						eggheadAccount.providerAccountId,
+					],
+				)
+			} catch (e) {
+				console.log({ e })
+				throw new TRPCError({
+					message: 'Failed to sync with egghead',
+					code: 'INTERNAL_SERVER_ERROR',
+				})
+			}
+
+			return {
+				name: input.name,
+				fields: {
+					...(fullUser && fullUser.fields),
+					twitter: input.twitter,
+					website: input.website,
+					bio: input.bio,
+					blueSky: input.blueSky,
+				},
+			}
+		}),
 })
