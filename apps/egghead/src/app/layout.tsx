@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+import '@/styles/login.css'
 
 import * as React from 'react'
 import { Inter } from 'next/font/google'
