@@ -2446,6 +2446,9 @@ importers:
       '@types/react':
         specifier: npm:types-react@19.0.0-rc.1
         version: /types-react@19.0.0-rc.1
+      '@types/react-dom':
+        specifier: npm:types-react-dom@19.0.0-rc.1
+        version: /types-react-dom@19.0.0-rc.1
       '@types/react-gravatar':
         specifier: ^2.6.13
         version: 2.6.14
