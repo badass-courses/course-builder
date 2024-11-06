@@ -103,10 +103,9 @@ async function PostList() {
 
 const InstructorByLine = async ({ userId }: { userId: string }) => {
 	const instructor = await getCachedEggheadInstructorForUser(userId)
-	return instructor ? (
-		<div className="text-muted-foreground text-mono text-xs">
-			{instructor?.first_name} {instructor?.last_name}
-		</div>
+	const fullName = `${instructor?.first_name} ${instructor?.last_name}`.trim()
+	return Boolean(fullName) ? (
+		<div className="text-muted-foreground text-mono text-xs">{fullName}</div>
 	) : null
 }
 
