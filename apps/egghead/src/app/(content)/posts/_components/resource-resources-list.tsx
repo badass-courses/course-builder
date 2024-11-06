@@ -9,6 +9,7 @@ import {
 } from '@/components/lesson-list/data/tree'
 import Tree from '@/components/lesson-list/tree'
 import { CreatePostForm } from '@/components/resources-crud/create-post-form'
+import { SearchExistingLessons } from '@/components/resources-crud/search-existing-lessons'
 import { addResourceToResource, createPost } from '@/lib/posts-query'
 import { createResource } from '@/lib/resources/create-resources'
 
@@ -16,13 +17,39 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
 
+type FormState = {
+	activeForm: 'lesson' | 'section' | 'existing_lesson' | null
+}
+
+type FormAction =
+	| { type: 'SHOW_LESSON_FORM' }
+	| { type: 'SHOW_SECTION_FORM' }
+	| { type: 'SHOW_EXISTING_LESSON_FORM' }
+	| { type: 'HIDE_FORM' }
+
+function formReducer(state: FormState, action: FormAction): FormState {
+	switch (action.type) {
+		case 'SHOW_LESSON_FORM':
+			return { activeForm: 'lesson' }
+		case 'SHOW_SECTION_FORM':
+			return { activeForm: 'section' }
+		case 'SHOW_EXISTING_LESSON_FORM':
+			return { activeForm: 'existing_lesson' }
+		case 'HIDE_FORM':
+			return { activeForm: null }
+		default:
+			return state
+	}
+}
+
 export function ResourceResourcesList({
 	resource,
 }: {
 	resource: ContentResource
 }) {
-	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
-	const [isAddingSection, setIsAddingSection] = React.useState(false)
+	const [formState, formDispatch] = useReducer(formReducer, {
+		activeForm: null,
+	})
 
 	const initialData = [
 		...(resource.resources
@@ -79,8 +106,7 @@ export function ResourceResourcesList({
 			})
 		}
 
-		setIsAddingSection(false)
-		setIsAddingLesson(false)
+		formDispatch({ type: 'HIDE_FORM' })
 		router.refresh()
 	}
 
@@ -94,34 +120,47 @@ export function ResourceResourcesList({
 				updateState={updateState}
 			/>
 			<div className="flex flex-col gap-1">
-				{isAddingLesson && (
+				{formState.activeForm === 'lesson' && (
 					<CreatePostForm
 						resourceType="post"
 						onCreate={handleResourceCreated}
 						createPost={createPost}
 					/>
 				)}
-				{isAddingSection && (
+				{formState.activeForm === 'section' && (
 					<CreateResourceForm
 						resourceType={'section'}
 						onCreate={handleResourceCreated}
 						createResource={createResource}
 					/>
 				)}
+				{formState.activeForm === 'existing_lesson' && (
+					<SearchExistingLessons
+						onSelect={handleResourceCreated}
+						onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
+					/>
+				)}
 				<div className="flex gap-1 px-5">
 					<Button
-						onClick={() => setIsAddingLesson(true)}
+						onClick={() => formDispatch({ type: 'SHOW_LESSON_FORM' })}
 						className="mt-2"
 						variant="outline"
 					>
 						+ add a lesson
 					</Button>
 					<Button
-						onClick={() => setIsAddingSection(true)}
+						onClick={() => formDispatch({ type: 'SHOW_SECTION_FORM' })}
 						className="mt-2"
 						variant="outline"
 					>
 						+ add section
+					</Button>
+					<Button
+						onClick={() => formDispatch({ type: 'SHOW_EXISTING_LESSON_FORM' })}
+						className="mt-2"
+						variant="outline"
+					>
+						+ add existing lesson
 					</Button>
 				</div>
 			</div>

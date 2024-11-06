@@ -35,20 +35,24 @@ export default async function PostPage(props: {
 
 	const videoResourceLoader = videoResource
 		? courseBuilderAdapter.getVideoResource(videoResource?.id)
-		: Promise.resolve(null)
+		: async () => Promise.resolve(null)
 
 	await getAllEggheadTagsCached()
 	const tagLoader = getTags()
 
+	console.log({ videoResourceLoader, tagLoader, post })
+
 	return (
 		<Layout>
-			<EditPostForm
-				key={post.id}
-				post={post}
-				videoResourceLoader={videoResourceLoader}
-				videoResourceId={videoResource?.id}
-				tagLoader={tagLoader}
-			/>
+			<React.Suspense fallback={<div>Loading...</div>}>
+				<EditPostForm
+					key={post.id}
+					post={post}
+					videoResourceLoader={videoResourceLoader}
+					videoResourceId={videoResource?.id}
+					tagLoader={tagLoader}
+				/>
+			</React.Suspense>
 		</Layout>
 	)
 }
