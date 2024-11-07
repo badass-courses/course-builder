@@ -35,7 +35,7 @@ export default async function PostPage(props: {
 
 	const videoResourceLoader = videoResource
 		? courseBuilderAdapter.getVideoResource(videoResource?.id)
-		: async () => Promise.resolve(null)
+		: Promise.resolve(null)
 
 	await getAllEggheadTagsCached()
 	const tagLoader = getTags()
