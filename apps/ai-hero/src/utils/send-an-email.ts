@@ -19,7 +19,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	To: string
 	type?: 'transactional' | 'broadcast'
 }) {
-	const emailHtml = render(Component(componentProps))
+	const emailHtml = await render(Component(componentProps))
 
 	const MessageStream = type === 'broadcast' ? 'broadcast' : 'outbound'
 

@@ -326,8 +326,11 @@ type HTMLEmailParams = Record<'url' | 'host' | 'email', string> & {
 	expires?: Date
 }
 
-function defaultHtml({ url, host, email }: HTMLEmailParams, theme?: Theme) {
-	return render(
+async function defaultHtml(
+	{ url, host, email }: HTMLEmailParams,
+	theme?: Theme,
+) {
+	return await render(
 		PurchaseTransferEmail(
 			{
 				url,
@@ -345,8 +348,11 @@ function defaultHtml({ url, host, email }: HTMLEmailParams, theme?: Theme) {
 }
 
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
-function defaultText({ url, host, email }: HTMLEmailParams, theme?: Theme) {
-	return render(
+async function defaultText(
+	{ url, host, email }: HTMLEmailParams,
+	theme?: Theme,
+) {
+	return await render(
 		PurchaseTransferEmail(
 			{
 				url,

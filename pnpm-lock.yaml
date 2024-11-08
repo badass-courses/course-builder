@@ -306,8 +306,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -940,8 +940,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -1406,8 +1406,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
@@ -1806,8 +1806,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -2227,8 +2227,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/client':
         specifier: ^6.7.0
         version: 6.22.2
@@ -2516,8 +2516,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
@@ -2922,8 +2922,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -3535,8 +3535,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -4136,8 +4136,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -4761,8 +4761,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@sanity/icons':
         specifier: ^2.6.0
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
@@ -5400,8 +5400,8 @@ importers:
         specifier: 0.0.27
         version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@react-email/render':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@tanstack/react-query':
         specifier: 5.54.1
         version: 5.54.1(react@19.0.0-rc-02c0e824-20241028)
@@ -15262,20 +15262,6 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@react-email/render@0.0.17(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-xBQ+/73+WsGuXKY7r1U73zMBNV28xdV0cp9cFjhNYipBReDHhV97IpA6v7Hl0dDtDzt+yS/72dY5vYXrF1v8NA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.2.0
-      react-dom: ^18.2.0
-    dependencies:
-      html-to-text: 9.0.5
-      js-beautify: 1.15.1
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-promise-suspense: 0.3.4
-    dev: false
-
   /@react-email/render@1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@18.3.1):
     resolution: {integrity: sha512-q82eBd39TepzA/xjlm8szqJlrQk/gh7mgtxXMGlJ4dcdx89go1m9YBDpZY98SFy+2r2KAOd5A1mxvUbsPwoATg==}
     engines: {node: '>=18.0.0'}
@@ -23078,7 +23064,7 @@ packages:
       '@one-ini/wasm': 0.1.1
       commander: 10.0.1
       minimatch: 9.0.1
-      semver: 7.6.0
+      semver: 7.6.3
     dev: false
 
   /ee-first@1.1.1:
@@ -33212,7 +33198,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     requiresBuild: true
-    optional: true
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}

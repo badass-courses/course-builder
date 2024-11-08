@@ -58,8 +58,6 @@ export const sendVerificationRequest = async (
 		merchantChargeId,
 	} = params
 
-	console.log('params', params)
-
 	let text = params.text || defaultText
 	let html = params.html || defaultHtml
 
