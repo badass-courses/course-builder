@@ -69,7 +69,7 @@ export async function getEggheadLesson(eggheadLessonId: number) {
 	return lesson
 }
 
-export async function crreateEggheadLesson(input: {
+export async function createEggheadLesson(input: {
 	title: string
 	slug: string
 	instructorId: string | number
