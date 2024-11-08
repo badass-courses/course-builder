@@ -164,6 +164,8 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 
 	let query = ``
 
+	if (!post?.tags) return
+
 	for (const tag of post.tags.map((tag) => tag.tag)) {
 		const tagId = Number(tag.id.split('_')[1])
 		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)

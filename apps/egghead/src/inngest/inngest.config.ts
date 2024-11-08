@@ -4,6 +4,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { migrateTipsToPosts } from './functions/migrate-tips-to-posts'
+import { notifySlack } from './functions/notify-slack-for-post'
 import { syncPostToEgghead } from './functions/sync-post-to-egghead'
 
 export const inngestConfig = {
@@ -15,5 +16,6 @@ export const inngestConfig = {
 		imageResourceCreated,
 		syncPostToEgghead,
 		migrateTipsToPosts,
+		notifySlack,
 	],
 }
