@@ -44,8 +44,8 @@ export const sendVerificationRequest = async (
 	params: SendVerificationRequestParams & {
 		type?: MagicLinkEmailType
 		merchantChargeId?: string | null
-		html?: (options: HTMLEmailParams, theme?: Theme) => string
-		text?: (options: HTMLEmailParams, theme?: Theme) => string
+		html?: (options: HTMLEmailParams, theme?: Theme) => Promise<string>
+		text?: (options: HTMLEmailParams, theme?: Theme) => Promise<string>
 	},
 	adapter: CourseBuilderAdapter,
 ) => {
@@ -57,6 +57,8 @@ export const sendVerificationRequest = async (
 		expires,
 		merchantChargeId,
 	} = params
+
+	console.log('params', params)
 
 	let text = params.text || defaultText
 	let html = params.html || defaultHtml
@@ -113,6 +115,7 @@ export const sendVerificationRequest = async (
 		if (!process.env.POSTMARK_API_TOKEN! && !process.env.POSTMARK_KEY!) {
 			throw new Error('Missing Postmark API Key')
 		}
+
 		const res = await fetch('https://api.postmarkapp.com/email', {
 			method: 'POST',
 			headers: {
@@ -125,8 +128,14 @@ export const sendVerificationRequest = async (
 				From: from,
 				To: email,
 				Subject: subject,
-				TextBody: text({ url, host, email, expires, merchantChargeId }, theme),
-				HtmlBody: html({ url, host, email, expires, merchantChargeId }, theme),
+				TextBody: await text(
+					{ url, host, email, expires, merchantChargeId },
+					theme,
+				),
+				HtmlBody: await html(
+					{ url, host, email, expires, merchantChargeId },
+					theme,
+				),
 				MessageStream: 'outbound',
 			}),
 		})
@@ -171,11 +180,11 @@ function defaultHtml(
 }
 
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
-function defaultText(
+async function defaultText(
 	{ url, host, email, merchantChargeId }: HTMLEmailParams,
 	theme?: Theme,
 ) {
-	return render(
+	return await render(
 		PostPurchaseLoginEmail(
 			{
 				url,
@@ -201,8 +210,11 @@ function defaultText(
 	)
 }
 
-function signUpHtml({ url, host, email }: HTMLEmailParams, theme?: Theme) {
-	return render(
+async function signUpHtml(
+	{ url, host, email }: HTMLEmailParams,
+	theme?: Theme,
+) {
+	return await render(
 		NewMemberEmail({
 			url,
 			host,
@@ -216,8 +228,11 @@ function signUpHtml({ url, host, email }: HTMLEmailParams, theme?: Theme) {
 }
 
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
-function signUpText({ url, host, email }: HTMLEmailParams, theme?: Theme) {
-	return render(
+async function signUpText(
+	{ url, host, email }: HTMLEmailParams,
+	theme?: Theme,
+) {
+	return await render(
 		NewMemberEmail({
 			url,
 			host,
