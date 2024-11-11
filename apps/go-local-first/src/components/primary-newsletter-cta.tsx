@@ -56,15 +56,6 @@ export const PrimaryNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<Image
-				src={require('../../public/assets/mountain.jpg')}
-				className="hidden object-cover object-bottom sm:block"
-				aria-hidden="true"
-				quality={100}
-				loading="eager"
-				alt=""
-				fill
-			/>
 			{children ? (
 				children
 			) : (

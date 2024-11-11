@@ -19,7 +19,7 @@ export default function Footer() {
 				>
 					<LogoMark className="h-16 w-16" />
 					{/* <span className="text-muted-foreground text-3xl font-bold !leading-none">
-						AI Hero
+						Local-First
 					</span> */}
 				</Link>
 			</div>

@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import Footer from '@/components/app/footer'
 import LandingCopy from '@/components/landing-copy'
-import { LandingHeroParallax } from '@/components/landing-hero-parallax'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
@@ -33,8 +32,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
-	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1730364146/aihero-card_2x_jkg4cs.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
+	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Go Local-First')}`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -46,14 +44,13 @@ export async function generateMetadata(
 		)
 		const validCoupon = Boolean(coupon && coupon.isValid)
 		if (validCoupon)
-			ogImageUrl =
-				'https://res.cloudinary.com/total-typescript/image/upload/v1730364326/aihero-golden-ticket_2x_qghsfq.png'
+			ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Go Local-First')}`
 	}
 
 	return {
 		title: {
-			template: '%s | AI Hero',
-			default: `From Zero to AI Hero`,
+			template: '%s | Go Local-First',
+			default: `Go Local-First`,
 		},
 		openGraph: {
 			images: [
@@ -80,29 +77,10 @@ const Home = async (props: Props) => {
 	return (
 		<div className="">
 			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-16 lg:aspect-[1920/1080] lg:pt-[7vw]">
-				<LandingHeroParallax />
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
 					<h1 className="font-heading sm:fluid-4xl fluid-3xl w-full max-w-4xl text-balance text-center font-bold text-[#221801] shadow-[#AD9F95] drop-shadow-xl sm:text-black">
-						From Zero
-						<br />
-						to AI Hero
+						Go Local-First
 					</h1>
-					{/* <h2 className="font-heading sm:fluid-lg fluid-base mb-5 mt-7 items-center text-balance text-center font-bold uppercase !tracking-widest text-black sm:inline-flex">
-						From Zero To Hero
-					</h2> */}
-				</div>
-				<div className="absolute bottom-10 flex items-center justify-center text-white">
-					<Image
-						src={
-							'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
-						}
-						alt={config.author}
-						priority
-						className="mr-2 inline-block rounded-full"
-						width={36}
-						height={36}
-					/>{' '}
-					{config.author}
 				</div>
 			</header>
 
@@ -130,7 +108,7 @@ const Home = async (props: Props) => {
 					<>
 						<section id="buy" className="mt-10 sm:mt-24">
 							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-								Get Really Good At AI
+								Go Local-First
 							</h2>
 							<div className="flex items-center justify-center border-y">
 								<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
