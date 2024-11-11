@@ -4,6 +4,8 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
+import config from '@/config'
+import { env } from '@/env.mjs'
 import { useFeedback } from '@/feedback-widget/feedback-context'
 import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
@@ -75,7 +77,7 @@ const Navigation = () => {
 						>
 							<LogoMark className="w-8" />
 							<span className="text-muted-foreground text-xl font-bold !leading-none ">
-								Local-First
+								{config.defaultTitle}
 							</span>
 						</Link>
 					</span>

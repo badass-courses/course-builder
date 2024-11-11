@@ -7,8 +7,7 @@ import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { LockIcon, ShieldCheckIcon } from 'lucide-react'
-import { twMerge } from 'tailwind-merge'
+import { ShieldCheckIcon } from 'lucide-react'
 
 import common from '../text/common'
 

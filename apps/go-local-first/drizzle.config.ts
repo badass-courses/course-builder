@@ -7,6 +7,8 @@ export default {
 	dbCredentials: {
 		url: env.DATABASE_URL,
 	},
-	tablesFilter: [`GLF_*`],
+	tablesFilter: [
+		`${env.DATABASE_TABLE_PREFIX ? `${env.DATABASE_TABLE_PREFIX}_` : ''}*`,
+	],
 	out: './src/db/generated',
 } satisfies Config

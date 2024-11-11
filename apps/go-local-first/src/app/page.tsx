@@ -49,8 +49,8 @@ export async function generateMetadata(
 
 	return {
 		title: {
-			template: '%s | Go Local-First',
-			default: `Go Local-First`,
+			template: `%s | ${config.defaultTitle}`,
+			default: config.defaultTitle,
 		},
 		openGraph: {
 			images: [
@@ -79,7 +79,7 @@ const Home = async (props: Props) => {
 			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-16 lg:aspect-[1920/1080] lg:pt-[7vw]">
 				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
 					<h1 className="font-heading sm:fluid-4xl fluid-3xl w-full max-w-4xl text-balance text-center font-bold text-[#221801] shadow-[#AD9F95] drop-shadow-xl sm:text-black">
-						Go Local-First
+						{config.defaultTitle}
 					</h1>
 				</div>
 			</header>
@@ -108,7 +108,7 @@ const Home = async (props: Props) => {
 					<>
 						<section id="buy" className="mt-10 sm:mt-24">
 							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-								Go Local-First
+								{config.defaultTitle}
 							</h2>
 							<div className="flex items-center justify-center border-y">
 								<div className="bg-background flex w-full max-w-md flex-col border-x p-8">

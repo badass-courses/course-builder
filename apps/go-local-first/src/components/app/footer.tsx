@@ -19,7 +19,7 @@ export default function Footer() {
 				>
 					<LogoMark className="h-16 w-16" />
 					{/* <span className="text-muted-foreground text-3xl font-bold !leading-none">
-						Local-First
+						{env.NEXT_PUBLIC_SITE_TITLE
 					</span> */}
 				</Link>
 			</div>
