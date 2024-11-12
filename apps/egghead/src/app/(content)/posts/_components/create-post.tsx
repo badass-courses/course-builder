@@ -37,7 +37,7 @@ export function CreatePost() {
 							console.error('🚨 Error creating post', error)
 							signOut()
 							router.push('/sign-in')
-							return null
+							throw error
 						}
 					}}
 					getVideoResource={getVideoResource}
