@@ -13,7 +13,7 @@ export default async function InstructorsPage() {
 
 	return (
 		<>
-			<h1 className="mb-8 mt-10 text-3xl font-bold text-gray-200">
+			<h1 className="mb-8 mt-10 text-3xl font-bold text-gray-800 dark:text-gray-200">
 				Instructors
 			</h1>
 			<InstructorDataTable users={instructors} />

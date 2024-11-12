@@ -108,7 +108,7 @@ const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
 					/>
 				</div>
 				<Button
-					className="w-full disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+					className="w-full disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
 					disabled
 				>
 					<Plus className="mr-2 h-4 w-4" /> Add New Instructor
