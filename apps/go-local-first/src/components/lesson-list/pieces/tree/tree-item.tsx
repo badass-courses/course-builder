@@ -8,7 +8,7 @@ import React, {
 	useState,
 } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { removeSection } from '@/app/(content)/workshops/actions'
+// import { removeSection } from '@/app/(content)/workshops/actions'
 import { cn } from '@/utils/cn'
 import {
 	Instruction,
@@ -412,7 +412,7 @@ const TreeItem = memo(function TreeItem({
 						size="icon"
 						variant="destructive"
 						onClick={async () => {
-							await removeSection(item.id, pathname)
+							// await removeSection(item.id, pathname)
 							return dispatch({ type: 'remove-item', itemId: item.id })
 						}}
 					>
