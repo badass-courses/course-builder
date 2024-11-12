@@ -97,14 +97,14 @@ const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
 
 	return (
 		<div className="w-full">
-			<div className="flex items-center justify-between pb-4">
-				<div className="relative w-full sm:w-64">
+			<div className="flex flex-col items-center justify-between gap-2 pb-4 sm:flex-row">
+				<div className="relative w-full">
 					<Search className="absolute left-2 top-3 h-4 w-4 text-gray-400" />
 					<Input
 						placeholder="Search instructors..."
 						value={globalFilter}
 						onChange={(e) => table.setGlobalFilter(String(e.target.value))}
-						className="max-w-sm pl-8"
+						className="w-full max-w-sm pl-8"
 					/>
 				</div>
 				<Button
@@ -164,7 +164,7 @@ const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
 					</TableBody>
 				</Table>
 			</div>
-			<div className="flex items-center justify-between space-x-2 px-4">
+			<div className="flex flex-col items-center justify-between gap-2 px-4 py-4 sm:flex-row">
 				<span className="flex items-center gap-1 text-xs opacity-50">
 					<div>Page</div>
 					<strong>
@@ -172,42 +172,44 @@ const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
 						{table.getPageCount().toLocaleString()}
 					</strong>
 				</span>
-				<div className="flex items-center justify-end space-x-2 py-4">
-					<div className="space-x-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => table.previousPage()}
-							disabled={!table.getCanPreviousPage()}
-						>
-							Previous
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => table.nextPage()}
-							disabled={!table.getCanNextPage()}
-						>
-							Next
-						</Button>
-						<select
-							value={table.getState().pagination.pageSize}
-							onChange={(e) => {
-								table.setPageSize(Number(e.target.value))
-							}}
-							className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-6 items-center justify-center whitespace-nowrap rounded-md border px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-						>
-							{[10, 25, 50, 100].map((pageSize) => (
-								<option
-									key={pageSize}
-									value={pageSize}
-									className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground border text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-								>
-									Show {pageSize}
-								</option>
-							))}
-						</select>
-					</div>
+				<div className="flex flex-col items-center justify-end gap-2 sm:flex-row">
+					{(table.getCanPreviousPage() || table.getCanNextPage()) && (
+						<div className="flex gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => table.previousPage()}
+								disabled={!table.getCanPreviousPage()}
+							>
+								Previous
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => table.nextPage()}
+								disabled={!table.getCanNextPage()}
+							>
+								Next
+							</Button>
+						</div>
+					)}
+					<select
+						value={table.getState().pagination.pageSize}
+						onChange={(e) => {
+							table.setPageSize(Number(e.target.value))
+						}}
+						className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-6 items-center justify-center whitespace-nowrap rounded-md border px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+					>
+						{[10, 25, 50, 100].map((pageSize) => (
+							<option
+								key={pageSize}
+								value={pageSize}
+								className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground border text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+							>
+								Show {pageSize}
+							</option>
+						))}
+					</select>
 				</div>
 			</div>
 		</div>
