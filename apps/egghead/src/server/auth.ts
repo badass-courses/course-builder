@@ -1,12 +1,14 @@
 import { getAbility } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
+import { accounts } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
 import { addRoleToUser } from '@/lib/users'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
+import { eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 import { z } from 'zod'
 
@@ -58,12 +60,23 @@ export const authOptions: NextAuthConfig = {
 			console.log('linkAccount', { account, user, profile })
 		},
 		signIn: async (params) => {
-			const { user } = params
+			console.log('signIn', params)
+			const { user, account } = params
 			const profile = z
 				.object({
 					roles: z.array(z.string()),
 				})
 				.parse(params.profile)
+
+			if (account) {
+				await db
+					.update(accounts)
+					.set({
+						access_token: account.access_token,
+						expires_at: account.expires_at,
+					})
+					.where(eq(accounts.providerAccountId, account.providerAccountId))
+			}
 			if (user.id && profile.roles.includes('instructor')) {
 				await addRoleToUser(user.id, 'contributor')
 			}
