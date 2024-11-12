@@ -8,7 +8,6 @@ import React, {
 	useState,
 } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-// import { removeSection } from '@/app/(content)/workshops/actions'
 import { cn } from '@/utils/cn'
 import {
 	Instruction,
@@ -407,18 +406,6 @@ const TreeItem = memo(function TreeItem({
 						</span>
 					) : null} */}
 				</button>
-				{item.type === 'section' && item.children.length === 0 && (
-					<Button
-						size="icon"
-						variant="destructive"
-						onClick={async () => {
-							// await removeSection(item.id, pathname)
-							return dispatch({ type: 'remove-item', itemId: item.id })
-						}}
-					>
-						<Trash size={12} />
-					</Button>
-				)}
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>
