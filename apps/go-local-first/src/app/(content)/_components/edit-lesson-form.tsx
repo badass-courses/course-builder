@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useParams } from 'next/navigation'
 import { LessonMetadataFormFields } from '@/app/(content)/_components/edit-lesson-form-metadata'
-import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
+// import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -43,10 +43,10 @@ export function EditLessonForm({
 	const { forcedTheme: theme } = useTheme()
 
 	const { module: moduleSlug } = useParams()
-	const onLessonSaveWithModule = onLessonSave.bind(
-		null,
-		`/${pluralize(moduleType)}/${moduleSlug}/`,
-	)
+	// const onLessonSaveWithModule = onLessonSave.bind(
+	// 	null,
+	// 	`/${pluralize(moduleType)}/${moduleSlug}/`,
+	// )
 	const session = useSession()
 	const form = useForm<z.infer<typeof LessonSchema>>({
 		resolver: zodResolver(NewLessonFormSchema),
@@ -85,7 +85,7 @@ export function EditLessonForm({
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
-			onSave={onLessonSaveWithModule}
+			onSave={() => Promise.resolve(console.log('noop'))}
 			theme={theme}
 		>
 			<LessonMetadataFormFields

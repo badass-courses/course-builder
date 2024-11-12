@@ -3,8 +3,8 @@
 import React, { use } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { CldImage } from '@/app/_components/cld-image'
-import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
-import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
+// import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
+// import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import { usePrefetchNextResource } from '@/hooks/use-prefetch-next-resource'
@@ -30,8 +30,8 @@ import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
-import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
-import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+// import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
+// import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
 import { useModuleProgress } from './module-progress-provider'
 
 export const CompletedLessonOverlay: React.FC<{
@@ -107,11 +107,12 @@ export const CompletedLessonOverlay: React.FC<{
 				</Button>
 			</div>
 		) : (
-			<CompletedModuleOverlay
-				action={action}
-				resource={resource}
-				moduleType={moduleType}
-			/>
+			<div>todo add CompletedModuleOverlay</div>
+			// <CompletedModuleOverlay
+			// 	action={action}
+			// 	resource={resource}
+			// 	moduleType={moduleType}
+			// />
 		)
 	) : (
 		<div
@@ -123,66 +124,66 @@ export const CompletedLessonOverlay: React.FC<{
 	)
 }
 
-export const CompletedModuleOverlay: React.FC<{
-	action: CompletedAction
-	resource: ContentResource | null
-	moduleType?: 'workshop' | 'tutorial'
-}> = ({ action, resource, moduleType = 'tutorial' }) => {
-	const { playerRef } = action
-	const session = useSession()
-	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
-	const moduleNavigation = useWorkshopNavigation()
+// export const CompletedModuleOverlay: React.FC<{
+// 	action: CompletedAction
+// 	resource: ContentResource | null
+// 	moduleType?: 'workshop' | 'tutorial'
+// }> = ({ action, resource, moduleType = 'tutorial' }) => {
+// 	const { playerRef } = action
+// 	const session = useSession()
+// 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
+// 	const moduleNavigation = useWorkshopNavigation()
 
-	React.useEffect(() => {
-		if (resource) {
-			const run = async () => {
-				await addProgress({
-					resourceId: resource.id,
-				})
-			}
-			run()
-		}
-	}, [resource, session])
+// 	React.useEffect(() => {
+// 		if (resource) {
+// 			const run = async () => {
+// 				await addProgress({
+// 					resourceId: resource.id,
+// 				})
+// 			}
+// 			run()
+// 		}
+// 	}, [resource, session])
 
-	return (
-		<div
-			aria-live="polite"
-			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
-		>
-			<p className="font-heading fluid-xl pb-3 text-center font-bold">
-				Great job!
-			</p>
-			<p className="fluid-base text-center">
-				You&apos;ve completed the {moduleNavigation?.title} {moduleType}.
-			</p>
-			<div className="flex w-full items-center justify-center gap-3">
-				<Button
-					variant="default"
-					type="button"
-					onClick={() => {
-						if (playerRef.current) {
-							playerRef.current.play()
-						}
-					}}
-				>
-					Replay
-				</Button>
-			</div>
-			<Button
-				type="button"
-				className="text-foreground absolute right-5 top-5"
-				variant="outline"
-				size="icon"
-				onClick={() => {
-					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
-				}}
-			>
-				<span className="sr-only">Dismiss</span>
-				<XMarkIcon aria-hidden="true" className="h-4 w-4" />
-			</Button>
-		</div>
-	)
-}
+// 	return (
+// 		<div
+// 			aria-live="polite"
+// 			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+// 		>
+// 			<p className="font-heading fluid-xl pb-3 text-center font-bold">
+// 				Great job!
+// 			</p>
+// 			<p className="fluid-base text-center">
+// 				You&apos;ve completed the {moduleNavigation?.title} {moduleType}.
+// 			</p>
+// 			<div className="flex w-full items-center justify-center gap-3">
+// 				<Button
+// 					variant="default"
+// 					type="button"
+// 					onClick={() => {
+// 						if (playerRef.current) {
+// 							playerRef.current.play()
+// 						}
+// 					}}
+// 				>
+// 					Replay
+// 				</Button>
+// 			</div>
+// 			<Button
+// 				type="button"
+// 				className="text-foreground absolute right-5 top-5"
+// 				variant="outline"
+// 				size="icon"
+// 				onClick={() => {
+// 					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
+// 				}}
+// 			>
+// 				<span className="sr-only">Dismiss</span>
+// 				<XMarkIcon aria-hidden="true" className="h-4 w-4" />
+// 			</Button>
+// 		</div>
+// 	)
+// }
 
 const ContinueButton: React.FC<{
 	resource: ContentResource
@@ -193,7 +194,7 @@ const ContinueButton: React.FC<{
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
 	const { moduleProgress, addLessonProgress } = useModuleProgress()
-	const moduleNavigation = useWorkshopNavigation()
+	// const moduleNavigation = useWorkshopNavigation()
 	const isCurrentLessonCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(
 			(p) => p.resourceId === resource.id && p.completedAt,
@@ -214,16 +215,16 @@ const ContinueButton: React.FC<{
 					})
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}
-				if (nextResource && moduleNavigation) {
-					if (nextResource.type === 'solution') {
-						return router.push(
-							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
-						)
-					}
-					return router.push(
-						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
-					)
-				}
+				// if (nextResource && moduleNavigation) {
+				// 	if (nextResource.type === 'solution') {
+				// 		return router.push(
+				// 			`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
+				// 		)
+				// 	}
+				// 	return router.push(
+				// 		`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
+				// 	)
+				// }
 			}}
 			type="submit"
 			disabled={isPending}
@@ -242,7 +243,10 @@ export const SoftBlockOverlay: React.FC<{
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { toast } = useToast()
 
-	const moduleNavigation = useWorkshopNavigation()
+	const moduleNavigation = {
+		title: 'todo',
+	}
+	// useWorkshopNavigation()
 
 	return (
 		<div
@@ -250,13 +254,13 @@ export const SoftBlockOverlay: React.FC<{
 			className="bg-background/90 z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleNavigation?.title}
+				moduleTitle={moduleNavigation?.title ?? ''}
 				onSuccess={async (subscriber?: Subscriber) => {
 					if (subscriber && moduleNavigation && resource) {
-						await revalidateTutorialLesson(
-							moduleNavigation.slug,
-							resource?.fields?.slug,
-						)
+						// await revalidateTutorialLesson(
+						// 	moduleNavigation.slug,
+						// 	resource?.fields?.slug,
+						// )
 						dispatchVideoPlayerOverlay({ type: 'LOADING' })
 						toast({
 							title: 'Check your email',
@@ -264,7 +268,7 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleNavigation?.coverImage && (
+				{/* {moduleNavigation?.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
 						src={moduleNavigation.coverImage}
@@ -272,7 +276,7 @@ export const SoftBlockOverlay: React.FC<{
 						width={150}
 						height={150}
 					/>
-				)}
+				)} */}
 			</VideoBlockNewsletterCta>
 		</div>
 	)
@@ -281,7 +285,7 @@ export const SoftBlockOverlay: React.FC<{
 type VideoPlayerOverlayProps = {
 	resource: ContentResource
 	abilityLoader: Promise<AbilityForResource>
-	pricingProps?: WorkshopPageProps
+	pricingProps?: any //WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
 }
@@ -307,7 +311,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		moduleSlug: moduleSlug,
 	})
 	const purchaseForProduct = pricingProps?.purchases?.find(
-		(purchase) => purchase.productId === pricingProps?.product?.id,
+		(purchase: any) => purchase.productId === pricingProps?.product?.id,
 	)
 
 	const showRegionRestrictedBlock =
@@ -386,14 +390,16 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		if (moduleType === 'tutorial') {
 			return <SoftBlockOverlay resource={resource} />
 		}
-		return (
-			<div
-				aria-live="polite"
-				className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
-			>
-				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
-			</div>
-		)
+
+		return <div>todo add VideoOverlayWorkshopPricing</div>
+		// return (
+		// 	<div
+		// 		aria-live="polite"
+		// 		className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
+		// 	>
+		// 		{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
+		// 	</div>
+		// )
 	}
 
 	switch (overlayState.action?.type) {
