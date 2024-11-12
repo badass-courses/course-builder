@@ -16,6 +16,7 @@ export function getCommentsSchema(mysqlTable: MySqlTableFn) {
 		'Comment',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 255 }).notNull(),
 			context: json('context').$type<Record<string, any>>().default({}),
 			text: text('text').notNull(),
@@ -35,6 +36,7 @@ export function getCommentsSchema(mysqlTable: MySqlTableFn) {
 		(crr) => ({
 			pk: primaryKey({ columns: [crr.id] }),
 			crrUserIdIdKey: index('crr_userIdId_idx').on(crr.userId),
+			organizationIdIdx: index('organizationId_idx').on(crr.organizationId),
 		}),
 	)
 }

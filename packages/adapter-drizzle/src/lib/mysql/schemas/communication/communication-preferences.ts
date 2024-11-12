@@ -17,6 +17,7 @@ export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 		'CommunicationPreference',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 255 }).notNull(),
 			channelId: varchar('channelId', { length: 255 }).notNull(),
 			preferenceLevel: mysqlEnum('preferenceLevel', ['low', 'medium', 'high'])
@@ -49,6 +50,7 @@ export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 			userIdIdx: index('userId_idx').on(cp.userId),
 			preferenceTypeIdx: index('preferenceTypeId_idx').on(cp.preferenceTypeId),
 			channelIdIdx: index('channelId_idx').on(cp.channelId),
+			organizationIdIdx: index('organizationId_idx').on(cp.organizationId),
 		}),
 	)
 }

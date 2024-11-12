@@ -20,6 +20,7 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 		'ContentResource',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			type: varchar('type', { length: 255 }).notNull(),
 			createdById: varchar('createdById', { length: 255 }).notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
@@ -44,6 +45,7 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 			currentVersionIdIdx: index('currentVersionId_idx').on(
 				cm.currentVersionId,
 			),
+			organizationIdIdx: index('organizationId_idx').on(cm.organizationId),
 		}),
 	)
 }

@@ -15,6 +15,7 @@ export function getTagSchema(mysqlTable: MySqlTableFn) {
 		'Tag',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			type: varchar('type', { length: 255 }).notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
 			createdAt: timestamp('createdAt', {
@@ -32,6 +33,7 @@ export function getTagSchema(mysqlTable: MySqlTableFn) {
 		},
 		(t) => ({
 			typeIdx: index('type_idx').on(t.type),
+			organizationIdIdx: index('organizationId_idx').on(t.organizationId),
 		}),
 	)
 }

@@ -16,6 +16,7 @@ export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
 		'ContentContribution',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 255 }).notNull(),
 			contentId: varchar('contentId', { length: 255 }).notNull(),
 			contributionTypeId: varchar('contributionTypeId', {
@@ -41,6 +42,7 @@ export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
 			contributionTypeIdIdx: index('contributionTypeId_idx').on(
 				cc.contributionTypeId,
 			),
+			organizationIdIdx: index('organizationId_idx').on(cc.organizationId),
 		}),
 	)
 }

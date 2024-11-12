@@ -19,6 +19,7 @@ export function getContentResourceResourceSchema(mysqlTable: MySqlTableFn) {
 			resourceId: varchar('resourceId', { length: 255 }).notNull(),
 			position: double('position').notNull().default(0),
 			metadata: json('metadata').$type<Record<string, any>>().default({}),
+			organizationId: varchar('organizationId', { length: 191 }),
 			createdAt: timestamp('createdAt', {
 				mode: 'date',
 				fsp: 3,
@@ -36,6 +37,7 @@ export function getContentResourceResourceSchema(mysqlTable: MySqlTableFn) {
 			pk: primaryKey({ columns: [crr.resourceOfId, crr.resourceId] }),
 			contentResourceIdIdx: index('contentResourceId_idx').on(crr.resourceOfId),
 			resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
+			organizationIdIdx: index('organizationId_idx').on(crr.organizationId),
 		}),
 	)
 }

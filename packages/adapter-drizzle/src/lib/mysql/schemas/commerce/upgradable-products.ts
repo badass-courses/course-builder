@@ -17,6 +17,7 @@ export function getUpgradableProductsSchema(mysqlTable: MySqlTableFn) {
 		{
 			upgradableToId: varchar('upgradableToId', { length: 255 }).notNull(),
 			upgradableFromId: varchar('upgradableFrom', { length: 255 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			position: double('position').notNull().default(0),
 			metadata: json('metadata').$type<Record<string, any>>().default({}),
 			createdAt: timestamp('createdAt', {
@@ -36,6 +37,7 @@ export function getUpgradableProductsSchema(mysqlTable: MySqlTableFn) {
 			pk: primaryKey({ columns: [crr.upgradableToId, crr.upgradableFromId] }),
 			upgradableToIdIdx: index('upgradableFromId_idx').on(crr.upgradableToId),
 			upgradableFromIdIdx: index('upgradableToId_idx').on(crr.upgradableFromId),
+			organizationIdIdx: index('organizationId_idx').on(crr.organizationId),
 		}),
 	)
 }

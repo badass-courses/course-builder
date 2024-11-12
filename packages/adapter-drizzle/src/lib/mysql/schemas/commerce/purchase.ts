@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getOrganizationsSchema } from '../org/organizations.js'
 import { getCouponSchema } from './coupon.js'
 import { getMerchantChargeSchema } from './merchant-charge.js'
 import { getMerchantSessionSchema } from './merchant-session.js'
@@ -22,6 +23,7 @@ export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			userId: varchar('userId', { length: 191 }),
+			organizationId: varchar('organizationId', { length: 191 }),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
@@ -52,6 +54,7 @@ export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 				purchaseUpgradedFromIdKey: unique('Purchase_upgradedFromId_key').on(
 					table.upgradedFromId,
 				),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)
@@ -64,6 +67,7 @@ export function getPurchaseRelationsSchema(mysqlTable: MySqlTableFn) {
 	const merchantCharges = getMerchantChargeSchema(mysqlTable)
 	const merchantSessions = getMerchantSessionSchema(mysqlTable)
 	const coupons = getCouponSchema(mysqlTable)
+	const organizations = getOrganizationsSchema(mysqlTable)
 
 	return relations(purchases, ({ many, one }) => ({
 		redeemedBulkCoupon: one(coupons, {
@@ -75,6 +79,11 @@ export function getPurchaseRelationsSchema(mysqlTable: MySqlTableFn) {
 			fields: [purchases.userId],
 			references: [users.id],
 			relationName: 'user',
+		}),
+		organization: one(organizations, {
+			fields: [purchases.organizationId],
+			references: [organizations.id],
+			relationName: 'organization',
 		}),
 		product: one(products, {
 			fields: [purchases.productId],

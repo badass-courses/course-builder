@@ -15,7 +15,7 @@
 		"db:studio": "dotenv drizzle-kit studio",
 		"db:seed": "dotenv tsx ./src/db/seed.ts",
 		"db:generate": "dotenv drizzle-kit generate",
-		"db:migrate": "dotenv drizzle-kit migrate",
+		"db:migrate": "dotenv drizzle-kit ",
 		"db:introspect": "dotenv drizzle-kit introspect",
 		"lint": "next lint",
 		"start": "next start",

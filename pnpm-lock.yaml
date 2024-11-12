@@ -458,6 +458,9 @@ importers:
       i:
         specifier: ^0.3.7
         version: 0.3.7
+      import-in-the-middle:
+        specifier: ^1.11.2
+        version: 1.11.2
       inngest:
         specifier: ^3.22.5
         version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
@@ -743,7 +746,7 @@ importers:
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -1615,7 +1618,7 @@ importers:
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -2457,7 +2460,7 @@ importers:
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -2722,7 +2725,7 @@ importers:
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier@3.2.5)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -3978,7 +3981,7 @@ importers:
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -4573,7 +4576,7 @@ importers:
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -5213,7 +5216,7 @@ importers:
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -5911,10 +5914,10 @@ importers:
         version: 2.2.1
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(postcss@8.4.47)(typescript@5.4.5)
+        version: 8.0.2(postcss@8.4.39)(typescript@5.4.5)
       type-fest:
         specifier: ^3.7.0
         version: 3.13.1
@@ -5950,7 +5953,7 @@ importers:
         version: 0.32.6
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -6110,7 +6113,7 @@ importers:
         version: 1.14.0
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -6780,7 +6783,7 @@ packages:
     dependencies:
       '@astrojs/markdown-remark': 3.5.0(astro@3.6.5)
       '@mdx-js/mdx': 2.3.0
-      acorn: 8.11.3
+      acorn: 8.14.0
       astro: 3.6.5(@types/node@20.12.5)(typescript@5.4.5)
       es-module-lexer: 1.4.1
       estree-util-visit: 1.2.1
@@ -6821,7 +6824,7 @@ packages:
     dependencies:
       '@astrojs/starlight': 0.12.1(astro@3.6.5)
       '@astrojs/tailwind': 5.1.0(astro@3.6.5)(tailwindcss@3.4.1)
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /@astrojs/starlight@0.12.1(astro@3.6.5):
@@ -6858,8 +6861,8 @@ packages:
       astro: 3.6.5(@types/node@20.12.5)(typescript@5.4.5)
       autoprefixer: 10.4.18(postcss@8.4.47)
       postcss: 8.4.47
-      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
-      tailwindcss: 3.4.1
+      postcss-load-config: 4.0.2(postcss@8.4.47)
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     transitivePeerDependencies:
       - ts-node
     dev: false
@@ -9787,7 +9790,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /@drizzle-team/brocli@0.10.2:
@@ -12645,7 +12648,7 @@ packages:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/api-logs': 0.52.1
       '@types/shimmer': 1.2.0
-      import-in-the-middle: 1.11.0
+      import-in-the-middle: 1.11.2
       require-in-the-middle: 7.4.0
       semver: 7.6.0
       shimmer: 1.2.1
@@ -17472,7 +17475,7 @@ packages:
       '@sentry/opentelemetry': 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.25.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.25.1)(@opentelemetry/semantic-conventions@1.25.1)
       '@sentry/types': 8.26.0
       '@sentry/utils': 8.26.0
-      import-in-the-middle: 1.11.0
+      import-in-the-middle: 1.11.2
     optionalDependencies:
       opentelemetry-instrumentation-fetch-node: 1.2.3(@opentelemetry/api@1.9.0)
     transitivePeerDependencies:
@@ -18573,7 +18576,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: true
 
   /@tanstack/query-core@5.54.1:
@@ -21164,12 +21167,12 @@ packages:
       acorn: 8.14.0
     dev: false
 
-  /acorn-import-attributes@1.9.5(acorn@8.12.1):
+  /acorn-import-attributes@1.9.5(acorn@8.14.0):
     resolution: {integrity: sha512-n02Vykv5uA3eHGM/Z2dQrcD56kL8TyDb2p1+0P83PClMnC/nc+anbQRhIOWnSq4Ke/KvDPrY3C9hDtC/A3eHnQ==}
     peerDependencies:
       acorn: ^8
     dependencies:
-      acorn: 8.12.1
+      acorn: 8.14.0
     dev: false
 
   /acorn-jsx@5.3.2(acorn@8.12.1):
@@ -27072,11 +27075,11 @@ packages:
       parent-module: 1.0.1
       resolve-from: 4.0.0
 
-  /import-in-the-middle@1.11.0:
-    resolution: {integrity: sha512-5DimNQGoe0pLUHbR9qK84iWaWjjbsxiqXnw6Qz64+azRgleqv9k2kTt5fw7QsOpmaGYtuxxursnPPsnTKEx10Q==}
+  /import-in-the-middle@1.11.2:
+    resolution: {integrity: sha512-gK6Rr6EykBcc6cVWRSBR5TWf8nn6hZMYSRYqCcHa0l0d1fPK7JSYo6+Mlmck76jIX9aL/IZ71c06U2VpFwl1zA==}
     dependencies:
-      acorn: 8.12.1
-      acorn-import-attributes: 1.9.5(acorn@8.12.1)
+      acorn: 8.14.0
+      acorn-import-attributes: 1.9.5(acorn@8.14.0)
       cjs-module-lexer: 1.2.3
       module-details-from-path: 1.0.3
     dev: false
@@ -32150,6 +32153,7 @@ packages:
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.8
+    dev: false
 
   /postcss-js@4.0.1(postcss@8.4.39):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
@@ -32168,6 +32172,7 @@ packages:
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.4.47
+    dev: false
 
   /postcss-load-config@4.0.2(postcss@8.4.35):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
@@ -32186,7 +32191,7 @@ packages:
       yaml: 2.4.1
     dev: false
 
-  /postcss-load-config@4.0.2(postcss@8.4.39):
+  /postcss-load-config@4.0.2(postcss@8.4.39)(ts-node@10.9.2):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -32200,9 +32205,10 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.39
+      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       yaml: 2.4.1
 
-  /postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2):
+  /postcss-load-config@4.0.2(postcss@8.4.47):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -32216,8 +32222,8 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.47
-      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       yaml: 2.4.1
+    dev: false
 
   /postcss-nested@6.0.1(postcss@8.4.39):
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
@@ -32236,6 +32242,7 @@ packages:
     dependencies:
       postcss: 8.4.47
       postcss-selector-parser: 6.0.16
+    dev: false
 
   /postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -35543,7 +35550,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=1.2.0'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /tailwind-merge@1.14.0:
@@ -35566,14 +35573,14 @@ packages:
     peerDependencies:
       tailwindcss: 3.x
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
 
   /tailwindcss-animate@1.0.7(tailwindcss@3.4.1):
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /tailwindcss-radix@2.9.0:
@@ -35602,7 +35609,7 @@ packages:
       postcss: 8.4.47
       postcss-import: 15.1.0(postcss@8.4.47)
       postcss-js: 4.0.1(postcss@8.4.47)
-      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.47)
       postcss-nested: 6.0.1(postcss@8.4.47)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
@@ -35611,7 +35618,7 @@ packages:
       - ts-node
     dev: false
 
-  /tailwindcss@3.4.1:
+  /tailwindcss@3.4.1(ts-node@10.9.2):
     resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -35633,44 +35640,13 @@ packages:
       postcss: 8.4.39
       postcss-import: 15.1.0(postcss@8.4.39)
       postcss-js: 4.0.1(postcss@8.4.39)
-      postcss-load-config: 4.0.2(postcss@8.4.39)
+      postcss-load-config: 4.0.2(postcss@8.4.39)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.39)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
       sucrase: 3.35.0
     transitivePeerDependencies:
       - ts-node
-
-  /tailwindcss@3.4.1(ts-node@10.9.2):
-    resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.2
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.0
-      lilconfig: 2.1.0
-      micromatch: 4.0.5
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.0.1
-      postcss: 8.4.47
-      postcss-import: 15.1.0(postcss@8.4.47)
-      postcss-js: 4.0.1(postcss@8.4.47)
-      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
-      postcss-nested: 6.0.1(postcss@8.4.47)
-      postcss-selector-parser: 6.0.16
-      resolve: 1.22.8
-      sucrase: 3.35.0
-    transitivePeerDependencies:
-      - ts-node
-    dev: true
 
   /tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
@@ -36051,7 +36027,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.39)(ts-node@10.9.2)
       resolve-from: 5.0.0
       rollup: 4.13.0
       source-map: 0.8.0-beta.0
@@ -36103,7 +36079,7 @@ packages:
       - ts-node
     dev: false
 
-  /tsup@8.0.2(postcss@8.4.47)(typescript@5.4.5):
+  /tsup@8.0.2(postcss@8.4.39)(typescript@5.4.5):
     resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
     engines: {node: '>=18'}
     hasBin: true
@@ -36130,8 +36106,8 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss: 8.4.47
-      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
+      postcss: 8.4.39
+      postcss-load-config: 4.0.2(postcss@8.4.39)(ts-node@10.9.2)
       resolve-from: 5.0.0
       rollup: 4.13.0
       source-map: 0.8.0-beta.0
@@ -36639,7 +36615,7 @@ packages:
   /unplugin@1.0.1:
     resolution: {integrity: sha512-aqrHaVBWW1JVKBHmGo33T5TxeL0qWzfvjWokObHA9bYmN7eNDkwOxmLjhioHl9878qDFMAaT51XNroRyuz7WxA==}
     dependencies:
-      acorn: 8.12.1
+      acorn: 8.14.0
       chokidar: 3.6.0
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.5.0
@@ -36649,7 +36625,7 @@ packages:
     resolution: {integrity: sha512-CuZtvvO8ua2Wl+9q2jEaqH6m3DoQ38N7pvBYQbbaeNlWGvK2l6GHiKi29aIHDPoSxdUzQ7Unevf1/ugil5X6Pg==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      acorn: 8.11.3
+      acorn: 8.14.0
       chokidar: 3.6.0
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.6.1
@@ -36706,7 +36682,7 @@ packages:
       effect: 3.4.5
       next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       std-env: 3.7.0
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /upper-case-first@2.0.2:
