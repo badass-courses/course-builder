@@ -90,6 +90,7 @@
 		"squid": "^0.5.2",
 		"srt-parser-2": "^1.2.3",
 		"styled-components": "~5.2.3",
+		"superjson": "^2.2.1",
 		"tailwind-merge": "^1.14.0",
 		"tailwind-scrollbar": "^3.0.0",
 		"tailwindcss-animate": "^1.0.7",
