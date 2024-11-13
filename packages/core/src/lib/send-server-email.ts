@@ -82,8 +82,8 @@ export async function sendServerEmail({
 	callbackUrl: string
 	emailProvider?: EmailConfig
 	type?: MagicLinkEmailType
-	html?: (options: HTMLEmailParams, theme?: Theme) => string
-	text?: (options: HTMLEmailParams, theme?: Theme) => string
+	html?: (options: HTMLEmailParams, theme?: Theme) => Promise<string>
+	text?: (options: HTMLEmailParams, theme?: Theme) => Promise<string>
 	expiresAt?: Date | null
 	adapter: CourseBuilderAdapter
 	baseUrl: string

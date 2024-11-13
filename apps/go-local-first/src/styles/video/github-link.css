@@ -1,0 +1,25 @@
+[data-github-link][role='status'] {
+	@apply flex w-full items-center justify-center py-12;
+}
+[data-github-link] {
+	@apply mt-6 pb-4;
+	[data-content] {
+		@apply flex items-center gap-2;
+		a {
+			@apply inline-flex items-center gap-4 rounded-md border border-gray-700/50 bg-gray-800/50 px-4 py-3 text-lg font-medium text-white transition hover:bg-slate-800/90;
+			svg {
+				@apply h-14 w-14 flex-shrink-0 rounded-full bg-black/30 p-2;
+			}
+			div {
+			}
+			[data-repo] {
+				@apply text-xl font-semibold;
+			}
+			[data-file] {
+				@apply font-mono text-xs text-gray-400 2xl:text-xs;
+				span {
+				}
+			}
+		}
+	}
+}

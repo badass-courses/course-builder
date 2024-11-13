@@ -1,0 +1,43 @@
+[data-lesson-completion-toggle] {
+	@apply mt-16 flex w-full items-center justify-center border-y border-dashed border-gray-800;
+	form {
+		@apply inline-flex flex-col items-center justify-center gap-3 rounded-md py-10 sm:flex-row;
+		[data-title] {
+			@apply text-2xl font-semibold;
+		}
+		label {
+			@apply relative inline-flex flex-row items-center overflow-hidden rounded bg-gray-800/0 px-3 py-2 transition hover:bg-gray-800/40 sm:flex-row-reverse;
+			[data-label] {
+				@apply pr-2 text-base leading-none text-gray-300 transition sm:pl-2 lg:text-lg;
+			}
+		}
+		label:hover {
+			[data-label] {
+				@apply text-white;
+			}
+			button {
+				span {
+					@apply radix-state-checked:translate-x-5 translate-x-1 bg-white;
+				}
+			}
+		}
+		label[data-fetching='true'] {
+			@apply hover:cursor-wait;
+		}
+		label[data-fetching='false'] {
+			@apply hover:cursor-pointer;
+		}
+		button {
+			@apply radix-state-checked:border-cyan-400 radix-state-checked:bg-cyan-500 relative h-5 w-10 rounded-full border border-gray-700/50 bg-gray-800 shadow-md shadow-black/50;
+			span {
+				@apply radix-state-checked:translate-x-5 radix-state-checked:bg-white block h-4 w-4 translate-x-0.5 rounded-full bg-gray-200 shadow-sm shadow-black/50 transition-all ease-out;
+			}
+		}
+		button[disabled] {
+			@apply animate-pulse;
+		}
+		[data-loading-indicator] {
+			@apply absolute left-0 h-full bg-white/10;
+		}
+	}
+}

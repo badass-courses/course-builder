@@ -47,6 +47,15 @@
 		--radius: 0.5rem;
 
 		--grid: 8px;
+
+		--sidebar-background: var(--background);
+		--sidebar-foreground: var(--foreground);
+		--sidebar-primary: var(--primary);
+		--sidebar-primary-foreground: var(--primary-foreground);
+		--sidebar-accent: var(--accent);
+		--sidebar-accent-foreground: var(--accent-foreground);
+		--sidebar-border: var(--border);
+		--sidebar-ring: var(--ring);
 	}
 
 	.dark {
@@ -77,6 +86,14 @@
 		--border: 217.2 32.6% 17.5%;
 		--input: 217.2 32.6% 17.5%;
 		--ring: 212.7 26.8% 83.9%;
+		--sidebar-background: var(--background);
+		--sidebar-foreground: var(--foreground);
+		--sidebar-primary: var(--primary);
+		--sidebar-primary-foreground: var(--primary-foreground);
+		--sidebar-accent: var(--accent);
+		--sidebar-accent-foreground: var(--accent-foreground);
+		--sidebar-border: var(--border);
+		--sidebar-ring: var(--ring);
 	}
 }
 

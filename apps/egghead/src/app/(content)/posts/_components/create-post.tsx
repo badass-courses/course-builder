@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
+import { signOut } from 'next-auth/react'
 import pluralize from 'pluralize'
 
 import {
@@ -25,12 +26,19 @@ export function CreatePost() {
 						)
 					}}
 					createResource={async ({ title, videoResourceId }) => {
-						return ContentResourceSchema.parse(
-							await createPost({
-								title,
-								videoResourceId,
-							}),
-						)
+						try {
+							return ContentResourceSchema.parse(
+								await createPost({
+									title,
+									videoResourceId,
+								}),
+							)
+						} catch (error) {
+							console.error('🚨 Error creating post', error)
+							signOut()
+							router.push('/sign-in')
+							throw error
+						}
 					}}
 					getVideoResource={getVideoResource}
 				>

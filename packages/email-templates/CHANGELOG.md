@@ -1,5 +1,11 @@
 # @coursebuilder/email-templates
 
+## 1.0.4
+
+### Patch Changes
+
+- [#315](https://github.com/badass-courses/course-builder/pull/315) [`2180c88`](https://github.com/badass-courses/course-builder/commit/2180c8887041cbe99bdbdcf37e391c5183644c0c) Thanks [@joelhooks](https://github.com/joelhooks)! - update to next 15 and react 19 😭
+
 ## 1.0.3
 
 ### Patch Changes
