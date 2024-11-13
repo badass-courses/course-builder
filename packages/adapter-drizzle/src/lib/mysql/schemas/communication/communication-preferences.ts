@@ -9,6 +9,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getCommunicationChannelSchema } from './communication-channel.js'
 import { getCommunicationPreferenceTypesSchema } from './communication-preference-types.js'
 
@@ -17,8 +18,11 @@ export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 		'CommunicationPreference',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
-			organizationId: varchar('organizationId', { length: 191 }),
+
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationMembershipId: varchar('organizationMembershipId', {
+				length: 255,
+			}),
 			channelId: varchar('channelId', { length: 255 }).notNull(),
 			preferenceLevel: mysqlEnum('preferenceLevel', ['low', 'medium', 'high'])
 				.notNull()
@@ -50,7 +54,9 @@ export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 			userIdIdx: index('userId_idx').on(cp.userId),
 			preferenceTypeIdx: index('preferenceTypeId_idx').on(cp.preferenceTypeId),
 			channelIdIdx: index('channelId_idx').on(cp.channelId),
-			organizationIdIdx: index('organizationId_idx').on(cp.organizationId),
+			organizationMembershipIdIdx: index('organizationMembershipId_idx').on(
+				cp.organizationMembershipId,
+			),
 		}),
 	)
 }
@@ -63,11 +69,17 @@ export function getCommunicationPreferencesRelationsSchema(
 	const communicationChannel = getCommunicationChannelSchema(mysqlTable)
 	const communicationPreferenceTypes =
 		getCommunicationPreferenceTypesSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	return relations(communicationPreferences, ({ one }) => ({
 		user: one(users, {
 			fields: [communicationPreferences.userId],
 			references: [users.id],
 			relationName: 'user',
+		}),
+		organizationMembership: one(organizationMemberships, {
+			fields: [communicationPreferences.organizationMembershipId],
+			references: [organizationMemberships.id],
+			relationName: 'organizationMembership',
 		}),
 		channel: one(communicationChannel, {
 			fields: [communicationPreferences.channelId],

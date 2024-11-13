@@ -10,14 +10,17 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 
 export function getCommentsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
 		'Comment',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
-			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationMembershipId: varchar('organizationMembershipId', {
+				length: 255,
+			}),
 			context: json('context').$type<Record<string, any>>().default({}),
 			text: text('text').notNull(),
 			createdAt: timestamp('createdAt', {
@@ -36,7 +39,9 @@ export function getCommentsSchema(mysqlTable: MySqlTableFn) {
 		(crr) => ({
 			pk: primaryKey({ columns: [crr.id] }),
 			crrUserIdIdKey: index('crr_userIdId_idx').on(crr.userId),
-			organizationIdIdx: index('organizationId_idx').on(crr.organizationId),
+			organizationMembershipIdIdx: index('organizationMembershipId_idx').on(
+				crr.organizationMembershipId,
+			),
 		}),
 	)
 }
@@ -44,11 +49,17 @@ export function getCommentsSchema(mysqlTable: MySqlTableFn) {
 export function getCommentRelationsSchema(mysqlTable: MySqlTableFn) {
 	const comment = getCommentsSchema(mysqlTable)
 	const user = getUsersSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	return relations(comment, ({ one }) => ({
 		user: one(user, {
 			fields: [comment.userId],
 			references: [user.id],
 			relationName: 'user',
+		}),
+		organizationMembership: one(organizationMemberships, {
+			fields: [comment.organizationMembershipId],
+			references: [organizationMemberships.id],
+			relationName: 'organizationMembership',
 		}),
 	}))
 }

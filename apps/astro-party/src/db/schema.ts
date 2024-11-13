@@ -56,4 +56,10 @@ export const {
 	contentResourceProductRelations,
 	upgradableProducts,
 	upgradableProductsRelations,
+	organization,
+	organizationRelations,
+	organizationMemberships,
+	organizationMembershipRelations,
+	organizationMembershipRoles,
+	organizationMembershipRolesRelations,
 } = getCourseBuilderSchema(mysqlTable)

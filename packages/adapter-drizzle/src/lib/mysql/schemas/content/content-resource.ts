@@ -8,6 +8,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getContentContributionsSchema } from './content-contributions.js'
 import { getContentResourceProductSchema } from './content-resource-product.js'
 import { getContentResourceResourceSchema } from './content-resource-resource.js'
@@ -20,7 +21,12 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 		'ContentResource',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
-			organizationId: varchar('organizationId', { length: 191 }),
+			createdByOrganizationMembershipId: varchar(
+				'createdByOrganizationMembershipId',
+				{
+					length: 191,
+				},
+			),
 			type: varchar('type', { length: 255 }).notNull(),
 			createdById: varchar('createdById', { length: 255 }).notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
@@ -45,7 +51,9 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 			currentVersionIdIdx: index('currentVersionId_idx').on(
 				cm.currentVersionId,
 			),
-			organizationIdIdx: index('organizationId_idx').on(cm.organizationId),
+			createdByOrganizationMembershipIdIdx: index(
+				'createdByOrganizationMembershipId_idx',
+			).on(cm.createdByOrganizationMembershipId),
 		}),
 	)
 }
@@ -58,12 +66,18 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentContributions = getContentContributionsSchema(mysqlTable)
 	const contentResourceTag = getContentResourceTagSchema(mysqlTable)
 	const contentResourceVersion = getContentResourceVersionSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	const tag = getTagSchema(mysqlTable)
 	return relations(contentResource, ({ one, many }) => ({
 		createdBy: one(users, {
 			fields: [contentResource.createdById],
 			references: [users.id],
 			relationName: 'creator',
+		}),
+		createdByOrganizationMembership: one(organizationMemberships, {
+			fields: [contentResource.createdByOrganizationMembershipId],
+			references: [organizationMemberships.id],
+			relationName: 'createdByOrganizationMembership',
 		}),
 		tags: many(contentResourceTag, { relationName: 'contentResource' }),
 		resources: many(contentResourceResource, { relationName: 'resourceOf' }),

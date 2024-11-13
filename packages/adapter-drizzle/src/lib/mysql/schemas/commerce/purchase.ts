@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getOrganizationsSchema } from '../org/organizations.js'
 import { getCouponSchema } from './coupon.js'
 import { getMerchantChargeSchema } from './merchant-charge.js'
@@ -23,6 +24,9 @@ export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			userId: varchar('userId', { length: 191 }),
+			purchasedByorganizationMembershipId: varchar('organizationMembershipId', {
+				length: 191,
+			}),
 			organizationId: varchar('organizationId', { length: 191 }),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
@@ -55,6 +59,9 @@ export function getPurchaseSchema(mysqlTable: MySqlTableFn) {
 					table.upgradedFromId,
 				),
 				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
+				organizationMembershipIdIdx: index('organizationMembershipId_idx').on(
+					table.purchasedByorganizationMembershipId,
+				),
 			}
 		},
 	)
@@ -68,6 +75,7 @@ export function getPurchaseRelationsSchema(mysqlTable: MySqlTableFn) {
 	const merchantSessions = getMerchantSessionSchema(mysqlTable)
 	const coupons = getCouponSchema(mysqlTable)
 	const organizations = getOrganizationsSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 
 	return relations(purchases, ({ many, one }) => ({
 		redeemedBulkCoupon: one(coupons, {
@@ -84,6 +92,11 @@ export function getPurchaseRelationsSchema(mysqlTable: MySqlTableFn) {
 			fields: [purchases.organizationId],
 			references: [organizations.id],
 			relationName: 'organization',
+		}),
+		purchasedBy: one(organizationMemberships, {
+			fields: [purchases.purchasedByorganizationMembershipId],
+			references: [organizationMemberships.id],
+			relationName: 'organizationMembership',
 		}),
 		product: one(products, {
 			fields: [purchases.productId],

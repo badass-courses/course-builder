@@ -9,6 +9,8 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getPurchaseSchema } from '../commerce/purchase.js'
+import { getSubscriptionSchema } from '../commerce/subscription.js'
+import { getOrganizationMembershipsSchema } from './organization-memberships.js'
 
 export function getOrganizationsSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -32,8 +34,16 @@ export function getOrganizationsSchema(mysqlTable: MySqlTableFn) {
 export function getOrganizationsRelationsSchema(mysqlTable: MySqlTableFn) {
 	const organizations = getOrganizationsSchema(mysqlTable)
 	const purchases = getPurchaseSchema(mysqlTable)
+	const subscriptions = getSubscriptionSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	return relations(organizations, ({ many }) => ({
 		purchases: many(purchases, {
+			relationName: 'organization',
+		}),
+		subscriptions: many(subscriptions, {
+			relationName: 'organization',
+		}),
+		members: many(organizationMemberships, {
 			relationName: 'organization',
 		}),
 	}))

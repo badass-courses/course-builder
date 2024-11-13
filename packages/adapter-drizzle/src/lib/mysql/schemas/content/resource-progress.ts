@@ -13,8 +13,10 @@ export function getResourceProgressSchema(mysqlTable: MySqlTableFn) {
 		'ResourceProgress',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationMembershipId: varchar('organizationMembershipId', {
+				length: 191,
+			}),
 			resourceId: varchar('resourceId', { length: 255 }),
-			organizationId: varchar('organizationId', { length: 191 }),
 			fields: json('fields').$type<Record<string, any>>().default({}),
 			completedAt: datetime('completedAt', { mode: 'date', fsp: 3 }),
 			updatedAt: datetime('updatedAt', { mode: 'date', fsp: 3 }),
@@ -31,7 +33,9 @@ export function getResourceProgressSchema(mysqlTable: MySqlTableFn) {
 				pk: primaryKey({ columns: [crp.userId, crp.resourceId] }),
 				contentResourceIdIdx: index('contentResourceId_idx').on(crp.resourceId),
 				userIdIdx: index('resourceId_idx').on(crp.userId),
-				organizationIdIdx: index('organizationId_idx').on(crp.organizationId),
+				organizationMembershipIdIdx: index('organizationMembershipId_idx').on(
+					crp.organizationMembershipId,
+				),
 			}
 		},
 	)

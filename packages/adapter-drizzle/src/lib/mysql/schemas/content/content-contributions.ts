@@ -8,6 +8,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 
 import { getUsersSchema } from '../auth/users.js'
+import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getContentResourceSchema } from './content-resource.js'
 import { getContributionTypesSchema } from './contribution-types.js'
 
@@ -16,8 +17,10 @@ export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
 		'ContentContribution',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
-			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationMembershipId: varchar('organizationMembershipId', {
+				length: 255,
+			}),
 			contentId: varchar('contentId', { length: 255 }).notNull(),
 			contributionTypeId: varchar('contributionTypeId', {
 				length: 255,
@@ -42,7 +45,9 @@ export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
 			contributionTypeIdIdx: index('contributionTypeId_idx').on(
 				cc.contributionTypeId,
 			),
-			organizationIdIdx: index('organizationId_idx').on(cc.organizationId),
+			organizationMembershipIdIdx: index('organizationMembershipId_idx').on(
+				cc.organizationMembershipId,
+			),
 		}),
 	)
 }
@@ -54,6 +59,7 @@ export function getContentContributionRelationsSchema(
 	const users = getUsersSchema(mysqlTable)
 	const contentResource = getContentResourceSchema(mysqlTable)
 	const contributionTypes = getContributionTypesSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 
 	return relations(contentContributions, ({ one }) => ({
 		user: one(users, {
@@ -70,6 +76,11 @@ export function getContentContributionRelationsSchema(
 			fields: [contentContributions.contributionTypeId],
 			references: [contributionTypes.id],
 			relationName: 'contributionType',
+		}),
+		organizationMembership: one(organizationMemberships, {
+			fields: [contentContributions.organizationMembershipId],
+			references: [organizationMemberships.id],
+			relationName: 'organizationMembership',
 		}),
 	}))
 }

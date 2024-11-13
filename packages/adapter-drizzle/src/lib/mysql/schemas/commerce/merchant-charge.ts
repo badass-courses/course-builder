@@ -12,6 +12,7 @@ import {
 import { getMerchantAccountSchema } from './merchant-account.js'
 import { getMerchantCustomerSchema } from './merchant-customer.js'
 import { getMerchantProductSchema } from './merchant-product.js'
+import { getMerchantSubscriptionSchema } from './merchant-subscription.js'
 
 export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -28,6 +29,9 @@ export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
 			merchantProductId: varchar('merchantProductId', {
 				length: 191,
 			}).notNull(),
+			merchantSubscriptionId: varchar('merchantSubscriptionId', {
+				length: 191,
+			}),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
 				.notNull(),
@@ -44,6 +48,9 @@ export function getMerchantChargeSchema(mysqlTable: MySqlTableFn) {
 				merchantChargeIdentifierKey: unique('MerchantCharge_identifier_key').on(
 					table.identifier,
 				),
+				merchantSubscriptionIdIdx: index('merchantSubscriptionId_idx').on(
+					table.merchantSubscriptionId,
+				),
 				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
@@ -55,6 +62,7 @@ export function getMerchantChargeRelationsSchema(mysqlTable: MySqlTableFn) {
 	const merchantAccount = getMerchantAccountSchema(mysqlTable)
 	const merchantProduct = getMerchantProductSchema(mysqlTable)
 	const merchantCustomer = getMerchantCustomerSchema(mysqlTable)
+	const merchantSubscription = getMerchantSubscriptionSchema(mysqlTable)
 	return relations(merchantCharge, ({ one }) => ({
 		merchantAccount: one(merchantAccount, {
 			fields: [merchantCharge.merchantAccountId],
@@ -70,6 +78,11 @@ export function getMerchantChargeRelationsSchema(mysqlTable: MySqlTableFn) {
 			fields: [merchantCharge.merchantCustomerId],
 			references: [merchantCustomer.id],
 			relationName: 'merchantCustomer',
+		}),
+		merchantSubscription: one(merchantSubscription, {
+			fields: [merchantCharge.merchantSubscriptionId],
+			references: [merchantSubscription.id],
+			relationName: 'merchantSubscription',
 		}),
 	}))
 }

@@ -14,7 +14,9 @@ export function getLessonProgressSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull().primaryKey(),
 			userId: varchar('userId', { length: 191 }).notNull(),
-			organizationId: varchar('organizationId', { length: 191 }),
+			organizationMembershipId: varchar('organizationMembershipId', {
+				length: 191,
+			}),
 			lessonId: varchar('lessonId', { length: 191 }),
 			lessonSlug: varchar('lessonSlug', { length: 191 }),
 			lessonVersion: varchar('lessonVersion', { length: 191 }),
@@ -34,7 +36,9 @@ export function getLessonProgressSchema(mysqlTable: MySqlTableFn) {
 				),
 				userIdIdx: index('userId_idx').on(crp.userId),
 				lessonIdIdx: index('lessonId_idx').on(crp.lessonId),
-				organizationIdIdx: index('organizationId_idx').on(crp.organizationId),
+				organizationMembershipIdIdx: index('organizationMembershipId_idx').on(
+					crp.organizationMembershipId,
+				),
 			}
 		},
 	)
