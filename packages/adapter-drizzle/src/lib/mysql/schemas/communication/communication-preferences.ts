@@ -18,7 +18,7 @@ export function getCommunicationPreferencesSchema(mysqlTable: MySqlTableFn) {
 		'CommunicationPreference',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
-
+			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 255 }).notNull(),
 			organizationMembershipId: varchar('organizationMembershipId', {
 				length: 255,

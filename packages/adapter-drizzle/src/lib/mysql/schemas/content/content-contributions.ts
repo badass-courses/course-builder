@@ -18,6 +18,7 @@ export function getContentContributionsSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			organizationMembershipId: varchar('organizationMembershipId', {
 				length: 255,
 			}),

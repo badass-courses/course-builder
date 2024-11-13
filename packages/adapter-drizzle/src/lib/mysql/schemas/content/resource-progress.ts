@@ -13,6 +13,7 @@ export function getResourceProgressSchema(mysqlTable: MySqlTableFn) {
 		'ResourceProgress',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			organizationMembershipId: varchar('organizationMembershipId', {
 				length: 191,
 			}),

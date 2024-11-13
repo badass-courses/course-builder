@@ -21,6 +21,7 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 		'ContentResource',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			createdByOrganizationMembershipId: varchar(
 				'createdByOrganizationMembershipId',
 				{
