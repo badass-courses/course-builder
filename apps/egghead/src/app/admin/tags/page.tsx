@@ -8,7 +8,7 @@ import TagManagement from './tag-management-client-page'
 export default async function TagManagementPage() {
 	const { ability } = await getServerAuthSession()
 
-	if (!ability.can('manage', 'Content')) {
+	if (!ability.can('manage', 'all')) {
 		notFound()
 	}
 

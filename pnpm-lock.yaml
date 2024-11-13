@@ -2220,6 +2220,18 @@ importers:
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
+      '@radix-ui/react-dialog':
+        specifier: 1.1.2
+        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
+      '@radix-ui/react-separator':
+        specifier: ^1.1.0
+        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
+      '@radix-ui/react-slot':
+        specifier: ^1.1.0
+        version: 1.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.1.3
+        version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@react-email/components':
         specifier: 0.0.27
         version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -2244,6 +2256,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: 5.54.1
         version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
+      '@tanstack/react-table':
+        specifier: ^8.17.3
+        version: 8.17.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/client':
         specifier: next
         version: 11.0.0-rc.498(@trpc/server@11.0.0-rc.498)
@@ -9279,10 +9294,10 @@ packages:
   /@codemirror/lang-css@6.2.1(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-/UNWDNV5Viwi/1lpr/dIXJNWiwDxpw13I4pTUAsNxZdg6E0mI2kTQb0P2iHczg1Tu+H4EBgJR+hYhKiHKko7qg==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/css': 1.1.8
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -9357,7 +9372,7 @@ packages:
     dependencies:
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.28.5)
       '@codemirror/language': 6.10.3
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.0
     transitivePeerDependencies:
@@ -9426,10 +9441,10 @@ packages:
   /@codemirror/lang-python@6.1.4(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-b6d1TDqrkCjFNvMO01SWldFiDoZ39yl3tDMC1Y5f8glA2eZpynPxJhwYVTlGFr0stizcJgrp6ojLEGH2myoZAw==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/python': 1.1.12
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -9472,7 +9487,7 @@ packages:
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.28.5)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/sass': 1.0.5
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -9506,10 +9521,10 @@ packages:
   /@codemirror/lang-sql@6.6.1(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-tRHMLymUbL1yY8dzdrGdHVg+nMlfacOU54tjN5+VF45Syw5L3APxsFFhgdWIs4yg7OTt929Z9Ffw5qyV++kbWQ==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.0
     transitivePeerDependencies:
@@ -9575,10 +9590,10 @@ packages:
   /@codemirror/lang-yaml@6.0.0(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-fVPapdX1oYr5HMC5bou1MHscGnNCvOHuhUW6C+V2gfIeIRcughvVfznV0OuUyHy0AdXoBCjOehjzFcmLRumu2Q==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/yaml': 1.0.2
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -11037,17 +11052,6 @@ packages:
     dependencies:
       '@floating-ui/core': 1.6.0
       '@floating-ui/utils': 0.2.1
-    dev: false
-
-  /@floating-ui/react-dom@2.0.8(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-HOdqOt3R3OGeTKidaLvJKcgg75S6tibQ3Tif4eyd91QnIJWr0NLvoXFpJA/j8HqkFSL68GDca9AuyWEHlhyClw==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      '@floating-ui/dom': 1.6.12
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /@floating-ui/react-dom@2.1.2(react-dom@18.3.1)(react@18.3.1):
@@ -13799,7 +13803,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.26.0
-      '@floating-ui/react-dom': 2.0.8(react-dom@18.3.1)(react@18.3.1)
+      '@floating-ui/react-dom': 2.1.2(react-dom@18.3.1)(react@18.3.1)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.3.1)(react@18.3.1)
       '@radix-ui/react-context': 1.0.1(@types/react@18.3.1)(react@18.3.1)
@@ -21779,11 +21783,11 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      browserslist: 4.23.2
-      caniuse-lite: 1.0.30001642
+      browserslist: 4.24.2
+      caniuse-lite: 1.0.30001676
       fraction.js: 4.3.7
       normalize-range: 0.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.1
       postcss: 8.4.39
       postcss-value-parser: 4.2.0
     dev: true
