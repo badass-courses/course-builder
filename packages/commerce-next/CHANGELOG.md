@@ -1,5 +1,13 @@
 # @coursebuilder/commerce-next
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies [[`d6caa19`](https://github.com/badass-courses/course-builder/commit/d6caa19626edc5424c39fca90b293311d852cc12)]:
+  - @coursebuilder/core@1.0.0
+  - @coursebuilder/ui@2.0.0
+
 ## 0.0.8
 
 ### Patch Changes
