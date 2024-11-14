@@ -14,6 +14,7 @@ export function getMerchantCustomerSchema(mysqlTable: MySqlTableFn) {
 		'MerchantCustomer',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			userId: varchar('userId', { length: 191 }).notNull(),
 			merchantAccountId: varchar('merchantAccountId', {
 				length: 191,
@@ -34,6 +35,7 @@ export function getMerchantCustomerSchema(mysqlTable: MySqlTableFn) {
 					'MerchantCustomer_identifier_key',
 				).on(table.identifier),
 				userIdIdx: index('idx_MerchantCustomer_on_userId').on(table.userId),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

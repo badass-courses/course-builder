@@ -9,7 +9,6 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
-import { AxiomWebVitals } from 'next-axiom'
 import { extractRouterConfig } from 'uploadthing/server'
 
 const inter = Inter({
@@ -31,7 +30,6 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning={true}>
-				<AxiomWebVitals />
 				<body className={`font-sans ${inter.variable}`}>
 					<TRPCReactProvider>
 						<Party />

@@ -2,6 +2,12 @@ import React from 'react'
 import { useSocket } from '@/hooks/use-socket'
 import { api } from '@/trpc/react'
 
+type ImageResource = {
+	id: string
+	url: string
+	alt?: string | null | undefined
+}
+
 export const ImageResourceBrowser = () => {
 	const { data: images = [], refetch } = api.imageResources.getAll.useQuery()
 
@@ -22,7 +28,7 @@ export const ImageResourceBrowser = () => {
 		<div>
 			<h3 className="inline-flex px-5 text-lg font-bold">Media Browser</h3>
 			<div className="grid grid-cols-3 gap-1 px-5">
-				{images.map((asset) => {
+				{images.map((asset: ImageResource) => {
 					return asset?.url ? (
 						<div
 							key={asset.id}

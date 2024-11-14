@@ -12,6 +12,7 @@ export function getCommunicationChannelSchema(mysqlTable: MySqlTableFn) {
 		'CommunicationChannel',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			name: varchar('name', { length: 255 }).notNull(),
 			description: text('description'),
 			active: boolean('active').notNull().default(true),
@@ -30,6 +31,7 @@ export function getCommunicationChannelSchema(mysqlTable: MySqlTableFn) {
 		},
 		(cc) => ({
 			nameIdx: index('name_idx').on(cc.name),
+			organizationIdIdx: index('organizationId_idx').on(cc.organizationId),
 		}),
 	)
 }

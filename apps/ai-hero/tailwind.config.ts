@@ -100,10 +100,15 @@ module.exports = {
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),
+
 						p: { fontWeight: 300 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
 							color: theme('colors.muted.foreground'),
+						},
+						blockquote: {
+							borderLeftColor: theme('colors.muted.DEFAULT'),
+							color: theme('colors.foreground'),
 						},
 						'li, strong': {
 							color: theme('colors.foreground'),

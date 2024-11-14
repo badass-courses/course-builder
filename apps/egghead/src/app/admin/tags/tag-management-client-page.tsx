@@ -81,8 +81,8 @@ export default function TagManagement({
 
 	return (
 		<div className="min-h-screen py-10">
-			<div className="container mx-auto px-4">
-				<h1 className="mb-8 text-3xl font-bold text-gray-800">
+			<div>
+				<h1 className="mb-8 text-3xl font-bold text-gray-800 dark:text-gray-200">
 					Tag Management
 				</h1>
 

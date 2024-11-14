@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import {
+	index,
 	int,
 	MySqlTableFn,
 	primaryKey,
@@ -12,6 +13,7 @@ export function getMerchantAccountSchema(mysqlTable: MySqlTableFn) {
 		'MerchantAccount',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			status: int('status').default(0).notNull(),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
@@ -25,6 +27,7 @@ export function getMerchantAccountSchema(mysqlTable: MySqlTableFn) {
 					columns: [table.id],
 					name: 'MerchantAccount_id',
 				}),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

@@ -18,12 +18,27 @@ export async function getEggheadUserProfile(userId: string) {
 	})
 
 	if (!user) {
-		throw new Error('🚨 User not found')
+		throw new Error('no-user')
 	}
 
-	const eggheadToken = user?.accounts?.find(
+	const eggheadAccount = user?.accounts?.find(
 		(account) => account.provider === 'egghead',
-	)?.access_token
+	)
+
+	if (!eggheadAccount) {
+		throw new Error('no-account')
+	}
+
+	const eggheadToken = eggheadAccount.access_token
+	const eggheadExpiresAt = eggheadAccount.expires_at
+
+	if (!eggheadToken) {
+		throw new Error('no-token')
+	}
+
+	if (eggheadExpiresAt && new Date(eggheadExpiresAt * 1000) < new Date()) {
+		throw new Error('token-expired')
+	}
 
 	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
 
@@ -32,7 +47,13 @@ export async function getEggheadUserProfile(userId: string) {
 			Authorization: `Bearer ${eggheadToken}`,
 			'User-Agent': 'authjs',
 		},
-	}).then(async (res) => await res.json())
+	}).then(async (res) => {
+		if (!res.ok) {
+			const errorText = await res.text()
+			throw new Error('api-error')
+		}
+		return await res.json()
+	})
 
 	return profile
 }

@@ -23,6 +23,8 @@ export const ContentResourceSchema = z.object({
 	updatedAt: z.coerce.date().nullable(),
 	deletedAt: z.coerce.date().nullable(),
 	resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
+	organizationId: z.string().nullable(),
+	createdByOrganizationMembershipId: z.string().nullable(),
 })
 
 export const ContentResourceProductSchema = z.object({

@@ -1,5 +1,6 @@
 import { relations, sql } from 'drizzle-orm'
 import {
+	index,
 	int,
 	json,
 	MySqlTableFn,
@@ -17,6 +18,7 @@ export function getProductSchema(mysqlTable: MySqlTableFn) {
 		'Product',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			name: varchar('name', { length: 191 }).notNull(),
 			key: varchar('key', { length: 191 }),
 			type: varchar('type', { length: 191 }),
@@ -30,6 +32,7 @@ export function getProductSchema(mysqlTable: MySqlTableFn) {
 		(table) => {
 			return {
 				productId: primaryKey({ columns: [table.id], name: 'Product_id' }),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)
