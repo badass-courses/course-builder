@@ -14,6 +14,7 @@ export function getLessonProgressSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull().primaryKey(),
 			userId: varchar('userId', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			organizationMembershipId: varchar('organizationMembershipId', {
 				length: 191,
 			}),
