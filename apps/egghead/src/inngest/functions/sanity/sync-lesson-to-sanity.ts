@@ -33,75 +33,68 @@ export const syncLessonToSanity = inngest.createFunction(
 		event: EGGHEAD_LESSON_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		await Promise.all(
-			event.data.ids.map(async (id: number) => {
-				const lesson = await step.run('Get lesson', async () => {
-					return await getEggheadLesson(id)
-				})
+		const lesson = await step.run('Get lesson', async () => {
+			return await getEggheadLesson(event.data.id)
+		})
 
-				const softwareLibraries = await step.run(
-					'Get software libraries',
-					async () => {
-						const libraries = await Promise.all(
-							lesson.topic_list.map(async (library: string) => {
-								const libraryData = await sanityWriteClient.fetch(
-									`*[_type == "software-library" && slug.current == "${library}"][0]`,
-								)
-								if (!libraryData) {
-									return null
-								}
-								return {
-									_key: keyGenerator(),
-									_type: 'versioned-software-library',
-									library: {
-										_type: 'reference',
-										_ref: libraryData._id,
-									},
-								}
-							}),
+		const softwareLibraries = await step.run(
+			'Get software libraries',
+			async () => {
+				const libraries = await Promise.all(
+					lesson.topic_list.map(async (library: string) => {
+						const libraryData = await sanityWriteClient.fetch(
+							`*[_type == "software-library" && slug.current == "${library}"][0]`,
 						)
-						return libraries
-					},
-				)
-
-				const collaborators = await step.run('Get collaborators', async () => {
-					const instructor = await sanityWriteClient.fetch(
-						`*[_type == "collaborator" && eggheadInstructorId == "${lesson.instructor.id}"][0]`,
-					)
-
-					if (!instructor) {
-						return null
-					}
-
-					return [
-						{
+						if (!libraryData) {
+							return null
+						}
+						return {
 							_key: keyGenerator(),
-							_type: 'reference',
-							_ref: instructor._id,
-						},
-					]
-				})
-
-				const sanityLesson = await step.run(
-					'Create lesson in sanity',
-					async () => {
-						return await sanityWriteClient.create({
-							_type: 'lesson',
-							title: lesson.title,
-							slug: {
-								_type: 'slug',
-								current: lesson.slug,
+							_type: 'versioned-software-library',
+							library: {
+								_type: 'reference',
+								_ref: libraryData._id,
 							},
-							description: lesson.summary,
-							railsLessonId: lesson.id,
-							softwareLibraries,
-							status: lesson.state,
-							accessLevel: lesson.free_forever ? 'free' : 'pro',
-							collaborators,
-						})
-					},
+						}
+					}),
 				)
-			}),
+				return libraries
+			},
 		)
+
+		const collaborators = await step.run('Get collaborators', async () => {
+			const instructor = await sanityWriteClient.fetch(
+				`*[_type == "collaborator" && eggheadInstructorId == "${lesson.instructor.id}"][0]`,
+			)
+
+			if (!instructor) {
+				return null
+			}
+
+			return [
+				{
+					_key: keyGenerator(),
+					_type: 'reference',
+					_ref: instructor._id,
+				},
+			]
+		})
+
+		const sanityLesson = await step.run('Create lesson in sanity', async () => {
+			return await sanityWriteClient.create({
+				_type: 'lesson',
+				title: lesson.title,
+				slug: {
+					_type: 'slug',
+					current: lesson.slug,
+				},
+				description: lesson.summary,
+				railsLessonId: lesson.id,
+				softwareLibraries,
+				status: lesson.state,
+				accessLevel: lesson.free_forever ? 'free' : 'pro',
+				collaborators,
+			})
+		})
 	},
 )
