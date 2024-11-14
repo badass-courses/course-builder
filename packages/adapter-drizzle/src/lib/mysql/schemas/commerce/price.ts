@@ -1,6 +1,7 @@
 import { relations, sql } from 'drizzle-orm'
 import {
 	decimal,
+	index,
 	int,
 	json,
 	MySqlTableFn,
@@ -18,6 +19,7 @@ export function getPriceSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			productId: varchar('productId', { length: 191 }),
+			organizationId: varchar('organizationId', { length: 191 }),
 			nickname: varchar('nickname', { length: 191 }),
 			status: int('status').default(0).notNull(),
 			unitAmount: decimal('unitAmount', { precision: 10, scale: 2 }).notNull(),
@@ -29,6 +31,7 @@ export function getPriceSchema(mysqlTable: MySqlTableFn) {
 		(table) => {
 			return {
 				priceId: primaryKey({ columns: [table.id], name: 'Price_id' }),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

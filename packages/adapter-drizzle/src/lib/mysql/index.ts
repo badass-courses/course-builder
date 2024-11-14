@@ -126,6 +126,10 @@ import { getMerchantCustomerSchema } from './schemas/commerce/merchant-customer.
 import { getMerchantPriceSchema } from './schemas/commerce/merchant-price.js'
 import { getMerchantProductSchema } from './schemas/commerce/merchant-product.js'
 import { getMerchantSessionSchema } from './schemas/commerce/merchant-session.js'
+import {
+	getMerchantSubscriptionRelationsSchema,
+	getMerchantSubscriptionSchema,
+} from './schemas/commerce/merchant-subscription.js'
 import { getPriceSchema } from './schemas/commerce/price.js'
 import {
 	getProductRelationsSchema,
@@ -139,6 +143,10 @@ import {
 	getPurchaseRelationsSchema,
 	getPurchaseSchema,
 } from './schemas/commerce/purchase.js'
+import {
+	getSubscriptionRelationsSchema,
+	getSubscriptionSchema,
+} from './schemas/commerce/subscription.js'
 import {
 	getUpgradableProductsRelationsSchema,
 	getUpgradableProductsSchema,
@@ -188,6 +196,18 @@ import {
 	getTagTagSchema,
 } from './schemas/content/tag-tag.js'
 import { getTagRelationsSchema, getTagSchema } from './schemas/content/tag.js'
+import {
+	getOrganizationMembershipRolesRelationsSchema,
+	getOrganizationMembershipRolesSchema,
+} from './schemas/org/organization-membership-roles.js'
+import {
+	getOrganizationMembershipsRelationsSchema,
+	getOrganizationMembershipsSchema,
+} from './schemas/org/organization-memberships.js'
+import {
+	getOrganizationsRelationsSchema,
+	getOrganizationsSchema,
+} from './schemas/org/organizations.js'
 
 export const guid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
@@ -271,6 +291,20 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		tagTagRelations: getTagTagRelationsSchema(mysqlTable),
 		userPrefs: getUserPrefsSchema(mysqlTable),
 		userPrefsRelations: getUserPrefsRelationsSchema(mysqlTable),
+		organization: getOrganizationsSchema(mysqlTable),
+		organizationRelations: getOrganizationsRelationsSchema(mysqlTable),
+		organizationMemberships: getOrganizationMembershipsSchema(mysqlTable),
+		organizationMembershipRelations:
+			getOrganizationMembershipsRelationsSchema(mysqlTable),
+		organizationMembershipRoles:
+			getOrganizationMembershipRolesSchema(mysqlTable),
+		organizationMembershipRolesRelations:
+			getOrganizationMembershipRolesRelationsSchema(mysqlTable),
+		merchantSubscription: getMerchantSubscriptionSchema(mysqlTable),
+		merchantSubscriptionRelations:
+			getMerchantSubscriptionRelationsSchema(mysqlTable),
+		subscription: getSubscriptionSchema(mysqlTable),
+		subscriptionRelations: getSubscriptionRelationsSchema(mysqlTable),
 	} as const
 }
 

@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
-		"dev:next": "next dev --turbo",
+		"dev:next": "next dev",
 		"dev:inngest": "pnpx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest",
 		"dev:party": "pnpx partykit dev",
 		"tunnel": "ngrok http --domain=neatly-diverse-goldfish.ngrok-free.app 3000",
@@ -139,6 +139,7 @@
 		"holy-loader": "^2.2.10",
 		"html-to-text": "^9.0.5",
 		"i": "^0.3.7",
+		"import-in-the-middle": "^1.11.2",
 		"inngest": "^3.22.5",
 		"intl-segmenter-polyfill": "^0.4.4",
 		"js-cookie": "^3.0.5",

@@ -65,4 +65,10 @@ export const {
 	userPrefs,
 	userPrefsRelations,
 	lessonProgress,
+	organization,
+	organizationRelations,
+	organizationMemberships,
+	organizationMembershipRelations,
+	organizationMembershipRoles,
+	organizationMembershipRolesRelations,
 } = getCourseBuilderSchema(mysqlTable)

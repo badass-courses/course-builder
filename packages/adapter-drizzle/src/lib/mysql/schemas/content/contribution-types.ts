@@ -15,6 +15,7 @@ export function getContributionTypesSchema(mysqlTable: MySqlTableFn) {
 		'ContributionType',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			slug: varchar('slug', { length: 255 }).notNull().unique(),
 			name: varchar('name', { length: 255 }).notNull(),
 			description: text('description'),
@@ -35,6 +36,7 @@ export function getContributionTypesSchema(mysqlTable: MySqlTableFn) {
 		(ct) => ({
 			nameIdx: index('name_idx').on(ct.name),
 			slugIdx: index('slug_idx').on(ct.slug),
+			organizationIdIdx: index('organizationId_idx').on(ct.organizationId),
 		}),
 	)
 }

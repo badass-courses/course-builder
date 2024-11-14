@@ -45,4 +45,10 @@ export const {
 	deviceVerificationRelations,
 	deviceAccessToken,
 	deviceAccessTokenRelations,
+	organization,
+	organizationRelations,
+	organizationMemberships,
+	organizationMembershipRelations,
+	organizationMembershipRoles,
+	organizationMembershipRolesRelations,
 } = getCourseBuilderSchema(mysqlTable)

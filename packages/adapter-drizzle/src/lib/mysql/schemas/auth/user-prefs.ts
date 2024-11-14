@@ -16,6 +16,7 @@ export function getUserPrefsSchema(mysqlTable: MySqlTableFn) {
 		'UserPrefs',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			type: varchar('type', { length: 191 }).default('Global').notNull(),
 			userId: varchar('userId', { length: 255 }).notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
@@ -35,6 +36,7 @@ export function getUserPrefsSchema(mysqlTable: MySqlTableFn) {
 		(crr) => ({
 			pk: primaryKey({ columns: [crr.id] }),
 			crrUserIdIdKey: index('crr_userIdId_idx').on(crr.userId),
+			organizationIdIdx: index('organizationId_idx').on(crr.organizationId),
 		}),
 	)
 }
