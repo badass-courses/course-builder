@@ -256,6 +256,8 @@ export async function runBasicTests(options: TestOptions) {
 			id: id(),
 			type: 'tip',
 			currentVersionId: null,
+			createdByOrganizationMembershipId: null,
+			organizationId: null,
 			createdById: user.id,
 			createdAt: new Date(),
 			deletedAt: null,
