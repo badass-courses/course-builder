@@ -9,6 +9,31 @@ import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
 
+export const getCachedEggheadInstructors = unstable_cache(
+	async () => loadEggheadInstructors(),
+	['users'],
+	{ revalidate: 3600, tags: ['users'] },
+)
+
+export const loadEggheadInstructors = async () => {
+	const instructors = await db
+		.select({
+			id: users.id,
+			name: users.name,
+			email: users.email,
+			image: users.image,
+		})
+		.from(users)
+		.innerJoin(userRoles, eq(users.id, userRoles.userId))
+		.innerJoin(roles, eq(userRoles.roleId, roles.id))
+		.where(eq(roles.name, 'contributor'))
+
+	if (!instructors) {
+		return []
+	}
+
+	return instructors
+}
 export const getCachedEggheadInstructorForUser = unstable_cache(
 	async (userId: string) => loadEggheadInstructorForUser(userId),
 	['users'],

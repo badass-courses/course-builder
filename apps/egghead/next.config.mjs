@@ -3,7 +3,6 @@
  * for Docker builds.
  */
 import createMDX from '@next/mdx'
-import { withAxiom } from 'next-axiom'
 
 await import('./src/env.mjs')
 
@@ -60,4 +59,4 @@ const config = {
 	},
 }
 
-export default withAxiom(withMDX(config))
+export default withMDX(config)

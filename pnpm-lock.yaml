@@ -234,11 +234,11 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
         specifier: 15.0.2
-        version: 15.0.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -313,13 +313,13 @@ importers:
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
       '@sentry/nextjs':
         specifier: ^8
-        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1)
+        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -358,7 +358,7 @@ importers:
         version: 11.0.0-rc.604(@trpc/server@11.0.0-rc.604)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/react-query@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/react-query@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -391,7 +391,7 @@ importers:
         version: 6.1.2(@babel/runtime@7.26.0)(@codemirror/autocomplete@6.18.2)(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.28.5)(codemirror@6.0.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -463,7 +463,7 @@ importers:
         version: 1.11.2
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -492,17 +492,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -631,7 +631,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -874,8 +874,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -953,7 +953,7 @@ importers:
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -974,7 +974,7 @@ importers:
         version: 11.0.0-rc.477(@trpc/server@11.0.0-rc.477)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -998,7 +998,7 @@ importers:
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1049,7 +1049,7 @@ importers:
         version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       geist:
         specifier: ^1.3.0
-        version: 1.3.0(next@15.0.2)
+        version: 1.3.0(next@15.0.3)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -1061,7 +1061,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1090,17 +1090,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -1226,7 +1226,7 @@ importers:
         version: 1.3.3
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1397,8 +1397,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
@@ -1449,7 +1449,7 @@ importers:
         version: 9.0.8
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1485,7 +1485,7 @@ importers:
         version: 1.0.4
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(next@15.0.3)(typescript@5.4.5)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1496,14 +1496,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -1563,7 +1563,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.1)
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1740,8 +1740,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -1831,7 +1831,7 @@ importers:
         version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -1855,7 +1855,7 @@ importers:
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1912,7 +1912,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1938,14 +1938,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -2056,7 +2056,7 @@ importers:
         version: 1.3.3
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2218,11 +2218,23 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
+      '@radix-ui/react-dialog':
+        specifier: 1.1.2
+        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
+      '@radix-ui/react-separator':
+        specifier: ^1.1.0
+        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
+      '@radix-ui/react-slot':
+        specifier: ^1.1.0
+        version: 1.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.1.3
+        version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@react-email/components':
         specifier: 0.0.27
         version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -2247,6 +2259,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: 5.54.1
         version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
+      '@tanstack/react-table':
+        specifier: ^8.17.3
+        version: 8.17.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/client':
         specifier: next
         version: 11.0.0-rc.498(@trpc/server@11.0.0-rc.498)
@@ -2273,7 +2288,7 @@ importers:
         version: 9.0.8
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2309,7 +2324,7 @@ importers:
         version: 1.0.4
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(next@15.0.3)(typescript@5.4.5)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2320,14 +2335,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -2402,7 +2417,7 @@ importers:
         version: 1.8.2(@babel/runtime@7.26.0)
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2507,8 +2522,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
@@ -2556,7 +2571,7 @@ importers:
         version: 9.0.8
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2586,7 +2601,7 @@ importers:
         version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(next@15.0.3)(typescript@5.4.5)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2600,14 +2615,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -2670,7 +2685,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.1)
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2856,8 +2871,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -2935,7 +2950,7 @@ importers:
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -2953,7 +2968,7 @@ importers:
         version: 11.0.0-rc.377(@trpc/server@11.0.0-rc.377)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/react-query@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/react-query@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -2992,7 +3007,7 @@ importers:
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -3049,7 +3064,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -3078,14 +3093,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -3223,7 +3238,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3472,11 +3487,11 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
         specifier: 15.0.2
-        version: 15.0.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -3551,13 +3566,13 @@ importers:
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
       '@sentry/nextjs':
         specifier: ^8
-        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1)
+        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -3596,7 +3611,7 @@ importers:
         version: 11.0.0-rc.621(@trpc/server@11.0.0-rc.621)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/react-query@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/react-query@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -3629,7 +3644,7 @@ importers:
         version: 6.1.2(@babel/runtime@7.26.0)(@codemirror/autocomplete@6.18.2)(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.34.1)(codemirror@6.0.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -3698,7 +3713,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -3727,17 +3742,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -3866,7 +3881,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -4112,11 +4127,11 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
         specifier: 15.0.2
-        version: 15.0.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -4194,7 +4209,7 @@ importers:
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -4218,7 +4233,7 @@ importers:
         version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -4242,7 +4257,7 @@ importers:
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -4308,7 +4323,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -4337,17 +4352,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -4461,7 +4476,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -4713,11 +4728,11 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
         specifier: 15.0.2
-        version: 15.0.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -4792,13 +4807,13 @@ importers:
         version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
       '@sentry/nextjs':
         specifier: ^8
-        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1)
+        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -4837,7 +4852,7 @@ importers:
         version: 11.0.0-rc.390(@trpc/server@11.0.0-rc.390)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/react-query@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/react-query@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -4867,7 +4882,7 @@ importers:
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -4936,7 +4951,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -4965,17 +4980,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -5101,7 +5116,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -5341,8 +5356,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@next/mdx':
-        specifier: 15.0.2
-        version: 15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.0.3
+        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -5420,7 +5435,7 @@ importers:
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -5441,7 +5456,7 @@ importers:
         version: 11.0.0-rc.366(@trpc/server@11.0.0-rc.366)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/react-query@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/react-query@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -5465,7 +5480,7 @@ importers:
         version: 4.21.24(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)
       '@uploadthing/react':
         specifier: 6.7.2
-        version: 6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
+        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -5516,7 +5531,7 @@ importers:
         version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       geist:
         specifier: ^1.3.0
-        version: 1.3.0(next@15.0.2)
+        version: 1.3.0(next@15.0.3)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -5525,7 +5540,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -5554,17 +5569,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
@@ -5678,7 +5693,7 @@ importers:
         version: 1.3.3
       uploadthing:
         specifier: 6.13.2
-        version: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -5866,7 +5881,7 @@ importers:
         version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/react-query':
         specifier: next
         version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
@@ -5889,11 +5904,11 @@ importers:
         specifier: 0.27.1
         version: 0.27.1
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
@@ -6080,10 +6095,10 @@ importers:
         version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
@@ -6104,7 +6119,7 @@ importers:
         version: 9.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       react-use:
         specifier: ^17.5.0
-        version: 17.5.0(react@19.0.0-rc-02c0e824-20241028)
+        version: 17.5.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react-wrap-balancer:
         specifier: ^0.2.4
         version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
@@ -6149,8 +6164,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react:
         specifier: 19.0.0-rc-02c0e824-20241028
         version: 19.0.0-rc-02c0e824-20241028
@@ -6265,7 +6280,7 @@ importers:
         version: 0.5.1(drizzle-orm@0.36.0)(zod@3.22.4)
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(next@15.0.3)(typescript@5.4.5)
       liquidjs:
         specifier: ^10.16.3
         version: 10.16.3
@@ -6353,17 +6368,17 @@ importers:
         version: link:../core
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.0.2)(typescript@5.4.5)
+        version: 3.22.5(next@15.0.3)(typescript@5.4.5)
     devDependencies:
       '@auth/core':
         specifier: ^0.37.2
         version: 0.37.2(nodemailer@6.9.11)
       next:
-        specifier: 15.0.2
-        version: 15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+        specifier: 15.0.3
+        version: 15.0.3(@babel/core@7.24.0)(react-dom@18.3.1)(react@19.0.0-rc-02c0e824-20241028)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+        version: 5.0.0-beta.25(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
       react:
         specifier: 19.0.0-rc-02c0e824-20241028
         version: 19.0.0-rc-02c0e824-20241028
@@ -9282,10 +9297,10 @@ packages:
   /@codemirror/lang-css@6.2.1(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-/UNWDNV5Viwi/1lpr/dIXJNWiwDxpw13I4pTUAsNxZdg6E0mI2kTQb0P2iHczg1Tu+H4EBgJR+hYhKiHKko7qg==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/css': 1.1.8
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -9360,7 +9375,7 @@ packages:
     dependencies:
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.28.5)
       '@codemirror/language': 6.10.3
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.0
     transitivePeerDependencies:
@@ -9429,10 +9444,10 @@ packages:
   /@codemirror/lang-python@6.1.4(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-b6d1TDqrkCjFNvMO01SWldFiDoZ39yl3tDMC1Y5f8glA2eZpynPxJhwYVTlGFr0stizcJgrp6ojLEGH2myoZAw==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/python': 1.1.12
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -9475,7 +9490,7 @@ packages:
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.28.5)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/sass': 1.0.5
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -9509,10 +9524,10 @@ packages:
   /@codemirror/lang-sql@6.6.1(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-tRHMLymUbL1yY8dzdrGdHVg+nMlfacOU54tjN5+VF45Syw5L3APxsFFhgdWIs4yg7OTt929Z9Ffw5qyV++kbWQ==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.0
     transitivePeerDependencies:
@@ -9578,10 +9593,10 @@ packages:
   /@codemirror/lang-yaml@6.0.0(@codemirror/view@6.28.5):
     resolution: {integrity: sha512-fVPapdX1oYr5HMC5bou1MHscGnNCvOHuhUW6C+V2gfIeIRcughvVfznV0OuUyHy0AdXoBCjOehjzFcmLRumu2Q==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.18.2(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.28.5)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
       '@codemirror/state': 6.4.1
-      '@lezer/common': 1.2.1
+      '@lezer/common': 1.2.3
       '@lezer/yaml': 1.0.2
     transitivePeerDependencies:
       - '@codemirror/view'
@@ -11042,17 +11057,6 @@ packages:
       '@floating-ui/utils': 0.2.1
     dev: false
 
-  /@floating-ui/react-dom@2.0.8(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-HOdqOt3R3OGeTKidaLvJKcgg75S6tibQ3Tif4eyd91QnIJWr0NLvoXFpJA/j8HqkFSL68GDca9AuyWEHlhyClw==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      '@floating-ui/dom': 1.6.12
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-    dev: false
-
   /@floating-ui/react-dom@2.1.2(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
     peerDependencies:
@@ -12141,15 +12145,15 @@ packages:
       next-auth: ^4
     dependencies:
       '@prisma/client': 5.11.0(prisma@5.11.0)
-      next-auth: 5.0.0-beta.25(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)
+      next-auth: 5.0.0-beta.25(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
     dev: true
 
   /@next/env@14.1.0:
     resolution: {integrity: sha512-Py8zIo+02ht82brwwhTg36iogzFqGLPXlRGKQw5s+qP/kMNc4MAyDeEwBKDijk6zTIbegEgu8Qy7C1LboslQAw==}
     dev: false
 
-  /@next/env@15.0.2:
-    resolution: {integrity: sha512-c0Zr0ModK5OX7D4ZV8Jt/wqoXtitLNPwUfG9zElCZztdaZyNVnN40rDXVZ/+FGuR4CcNV5AEfM6N8f+Ener7Dg==}
+  /@next/env@15.0.3:
+    resolution: {integrity: sha512-t9Xy32pjNOvVn2AS+Utt6VmyrshbpfUMhIjFO60gI58deSo/KgLOp31XZ4O+kY/Is8WAGYwA5gR7kOb1eORDBA==}
 
   /@next/eslint-plugin-next@14.1.3:
     resolution: {integrity: sha512-VCnZI2cy77Yaj3L7Uhs3+44ikMM1VD/fBMwvTBb3hIaTIuqa+DmG4dhUDq+MASu3yx97KhgsVJbsas0XuiKyww==}
@@ -12163,8 +12167,8 @@ packages:
       fast-glob: 3.3.1
     dev: true
 
-  /@next/mdx@15.0.2(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
-    resolution: {integrity: sha512-CANCD3snLdLJxCcqn0DBAl5qMUBvAPdWA2cWljt+lnVtcvIfGXRVLwraqSOHBjddvZ3ClCYcf3AvjEBHA4NBxA==}
+  /@next/mdx@15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
+    resolution: {integrity: sha512-EwCJKDeJqfbHbsS7rIdWpKDOZsOPsif9AX4PaIhy5ghSMsZvi+/vIZVc07pZT7BdwCIoL9XM1KZMd/vzxCxF5A==}
     peerDependencies:
       '@mdx-js/loader': '>=0.15.0'
       '@mdx-js/react': '>=0.15.0'
@@ -12188,8 +12192,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-darwin-arm64@15.0.2:
-    resolution: {integrity: sha512-GK+8w88z+AFlmt+ondytZo2xpwlfAR8U6CRwXancHImh6EdGfHMIrTSCcx5sOSBei00GyLVL0ioo1JLKTfprgg==}
+  /@next/swc-darwin-arm64@15.0.3:
+    resolution: {integrity: sha512-s3Q/NOorCsLYdCKvQlWU+a+GeAd3C8Rb3L1YnetsgwXzhc3UTWrtQpB/3eCjFOdGUj5QmXfRak12uocd1ZiiQw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -12205,8 +12209,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-darwin-x64@15.0.2:
-    resolution: {integrity: sha512-KUpBVxIbjzFiUZhiLIpJiBoelqzQtVZbdNNsehhUn36e2YzKHphnK8eTUW1s/4aPy5kH/UTid8IuVbaOpedhpw==}
+  /@next/swc-darwin-x64@15.0.3:
+    resolution: {integrity: sha512-Zxl/TwyXVZPCFSf0u2BNj5sE0F2uR6iSKxWpq4Wlk/Sv9Ob6YCKByQTkV2y6BCic+fkabp9190hyrDdPA/dNrw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -12222,8 +12226,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-linux-arm64-gnu@15.0.2:
-    resolution: {integrity: sha512-9J7TPEcHNAZvwxXRzOtiUvwtTD+fmuY0l7RErf8Yyc7kMpE47MIQakl+3jecmkhOoIyi/Rp+ddq7j4wG6JDskQ==}
+  /@next/swc-linux-arm64-gnu@15.0.3:
+    resolution: {integrity: sha512-T5+gg2EwpsY3OoaLxUIofmMb7ohAUlcNZW0fPQ6YAutaWJaxt1Z1h+8zdl4FRIOr5ABAAhXtBcpkZNwUcKI2fw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -12239,8 +12243,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-linux-arm64-musl@15.0.2:
-    resolution: {integrity: sha512-BjH4ZSzJIoTTZRh6rG+a/Ry4SW0HlizcPorqNBixBWc3wtQtj4Sn9FnRZe22QqrPnzoaW0ctvSz4FaH4eGKMww==}
+  /@next/swc-linux-arm64-musl@15.0.3:
+    resolution: {integrity: sha512-WkAk6R60mwDjH4lG/JBpb2xHl2/0Vj0ZRu1TIzWuOYfQ9tt9NFsIinI1Epma77JVgy81F32X/AeD+B2cBu/YQA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -12256,8 +12260,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-linux-x64-gnu@15.0.2:
-    resolution: {integrity: sha512-i3U2TcHgo26sIhcwX/Rshz6avM6nizrZPvrDVDY1bXcLH1ndjbO8zuC7RoHp0NSK7wjJMPYzm7NYL1ksSKFreA==}
+  /@next/swc-linux-x64-gnu@15.0.3:
+    resolution: {integrity: sha512-gWL/Cta1aPVqIGgDb6nxkqy06DkwJ9gAnKORdHWX1QBbSZZB+biFYPFti8aKIQL7otCE1pjyPaXpFzGeG2OS2w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -12273,8 +12277,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-linux-x64-musl@15.0.2:
-    resolution: {integrity: sha512-AMfZfSVOIR8fa+TXlAooByEF4OB00wqnms1sJ1v+iu8ivwvtPvnkwdzzFMpsK5jA2S9oNeeQ04egIWVb4QWmtQ==}
+  /@next/swc-linux-x64-musl@15.0.3:
+    resolution: {integrity: sha512-QQEMwFd8r7C0GxQS62Zcdy6GKx999I/rTO2ubdXEe+MlZk9ZiinsrjwoiBL5/57tfyjikgh6GOU2WRQVUej3UA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -12290,8 +12294,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-win32-arm64-msvc@15.0.2:
-    resolution: {integrity: sha512-JkXysDT0/hEY47O+Hvs8PbZAeiCQVxKfGtr4GUpNAhlG2E0Mkjibuo8ryGD29Qb5a3IOnKYNoZlh/MyKd2Nbww==}
+  /@next/swc-win32-arm64-msvc@15.0.3:
+    resolution: {integrity: sha512-9TEp47AAd/ms9fPNgtgnT7F3M1Hf7koIYYWCMQ9neOwjbVWJsHZxrFbI3iEDJ8rf1TDGpmHbKxXf2IFpAvheIQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -12316,21 +12320,21 @@ packages:
     dev: false
     optional: true
 
-  /@next/swc-win32-x64-msvc@15.0.2:
-    resolution: {integrity: sha512-foaUL0NqJY/dX0Pi/UcZm5zsmSk5MtP/gxx3xOPyREkMFN+CTjctPfu3QaqrQHinaKdPnMWPJDKt4VjDfTBe/Q==}
+  /@next/swc-win32-x64-msvc@15.0.3:
+    resolution: {integrity: sha512-VNAz+HN4OGgvZs6MOoVfnn41kBzT+M+tB+OK4cww6DNyWS6wKaDpaAm/qLeOUbnMh0oVx1+mg0uoYARF69dJyA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     optional: true
 
-  /@next/third-parties@15.0.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028):
+  /@next/third-parties@15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-Ohlh0KKfag3Vrx+yuSMJ/fSoCVvRoVG9wRiz8jvYelmg+l0970d41VoGzF2UeKwh9s5qXVRDVqiN/mIeiJ4iLg==}
     peerDependencies:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
     dependencies:
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       third-party-capital: 1.0.20
     dev: false
@@ -13802,7 +13806,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.26.0
-      '@floating-ui/react-dom': 2.0.8(react-dom@18.3.1)(react@18.3.1)
+      '@floating-ui/react-dom': 2.1.2(react-dom@18.3.1)(react@18.3.1)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.3.1)(react@18.3.1)
       '@radix-ui/react-context': 1.0.1(@types/react@18.3.1)(react@18.3.1)
@@ -17406,7 +17410,7 @@ packages:
       '@sentry/utils': 8.26.0
     dev: false
 
-  /@sentry/nextjs@8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1):
+  /@sentry/nextjs@8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.27.0)(encoding@0.1.13)(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.96.1):
     resolution: {integrity: sha512-FO4xtYRpmtKpVt9kJsdcL73SoJbFkfZbHONh2kvGalCa06w8DCdHuzYvPgKaf8UcjEixeb0qiM9ncmPpoDsnHA==}
     engines: {node: '>=14.18'}
     peerDependencies:
@@ -17428,7 +17432,7 @@ packages:
       '@sentry/vercel-edge': 8.26.0
       '@sentry/webpack-plugin': 2.20.1(encoding@0.1.13)(webpack@5.96.1)
       chalk: 3.0.0
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       resolve: 1.22.8
       rollup: 3.29.4
       stacktrace-parser: 0.1.10
@@ -17661,14 +17665,14 @@ packages:
       '@sinonjs/commons': 3.0.1
     dev: false
 
-  /@skillrecordings/analytics@1.0.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028):
+  /@skillrecordings/analytics@1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-gqJa4mC+3GVpNQD2EHuYi6TOW6kMBONfdrMVx/7jHozJ6jLq2hsadWjk/zXYup+vdLONysAi5aUUpLpizzXitg==}
     peerDependencies:
       next: '>= 11.1.2 < 13'
       react: ^17.0.2 < 18.0.0
     dependencies:
       lodash: 4.17.21
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
@@ -18995,7 +18999,7 @@ packages:
       '@trpc/server': 11.0.0-rc.621
     dev: false
 
-  /@trpc/next@11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-WZEJTavWlZ7akZx6mFds2PCBLuYnaYAmL1WzWO5m0hzku2gORoPXfKJc6R8lctn+jG5TH8KKHwjnEKAke9q4GQ==}
     peerDependencies:
       '@tanstack/react-query': ^5.25.0
@@ -19015,11 +19019,11 @@ packages:
       '@trpc/client': 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
       '@trpc/react-query': 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.351
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
 
-  /@trpc/next@11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/react-query@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/react-query@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-RDWC87Y6pTDHZHSEvDYrBYA0x/+jXqc/qRDVAMSMsFUo+X+I74aNcsFNR9YBnMd5aENvD+To2KwnctYUsZ9R4w==}
     peerDependencies:
       '@tanstack/react-query': ^5.25.0
@@ -19039,12 +19043,12 @@ packages:
       '@trpc/client': 11.0.0-rc.366(@trpc/server@11.0.0-rc.366)
       '@trpc/react-query': 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.366
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
-  /@trpc/next@11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/react-query@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/react-query@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-jd99QwnUi9/KKUO9MlS7yv00D9dNzuDE8mTjwMWMqZxAMkLkYPlL/2rDHLP9UrAwV/XeiUS3uP0FSXB69u+vNg==}
     peerDependencies:
       '@tanstack/react-query': ^5.25.0
@@ -19064,12 +19068,12 @@ packages:
       '@trpc/client': 11.0.0-rc.377(@trpc/server@11.0.0-rc.377)
       '@trpc/react-query': 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.377
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
-  /@trpc/next@11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/react-query@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/react-query@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-8Evkb9LP1BgbP1wwxop4ZUgb51C923GqjAygMzNnWsKpIJ3kQWvbCYN8lxoO9nBe+X+YnjGZ7nEnA+r+q85hUQ==}
     peerDependencies:
       '@tanstack/react-query': ^5.25.0
@@ -19089,12 +19093,12 @@ packages:
       '@trpc/client': 11.0.0-rc.390(@trpc/server@11.0.0-rc.390)
       '@trpc/react-query': 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.390
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
-  /@trpc/next@11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-cijR4i0nvt9izzZkGoKtHj8CfIquuH1I/QN3c1/9eNi9VZvB6KPlCYuxpgctZBPTlzbpgagh0SmKC634tXnl/Q==}
     peerDependencies:
       '@tanstack/react-query': ^5.49.2
@@ -19114,12 +19118,12 @@ packages:
       '@trpc/client': 11.0.0-rc.477(@trpc/server@11.0.0-rc.477)
       '@trpc/react-query': 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.477
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
-  /@trpc/next@11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/react-query@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/react-query@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-yUA14ehBzv8G2g1a9roO2Z/N3DlKNQVvwvguDdoIja71lnptsZIQhrXfePYHSZVWYGBHpluWgoRu6Tpi+svzHw==}
     peerDependencies:
       '@tanstack/react-query': ^5.59.15
@@ -19139,12 +19143,12 @@ packages:
       '@trpc/client': 11.0.0-rc.604(@trpc/server@11.0.0-rc.604)
       '@trpc/react-query': 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.604
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
-  /@trpc/next@11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/react-query@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(next@15.0.2)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+  /@trpc/next@11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/react-query@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-M1WOmTqrA8XcLEm0vaG1quvPufViiokWRgpa27nqFucVOBqsuGK4ZR+jXzHxeExPsqiAkEU3AzhklH0jziLgzA==}
     peerDependencies:
       '@tanstack/react-query': ^5.59.15
@@ -19164,7 +19168,7 @@ packages:
       '@trpc/client': 11.0.0-rc.621(@trpc/server@11.0.0-rc.621)
       '@trpc/react-query': 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       '@trpc/server': 11.0.0-rc.621
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
@@ -20712,7 +20716,7 @@ packages:
     resolution: {integrity: sha512-kz3F0oEgAyts25NAGXlUBCWh3mXonbSOQJFGFMawHuIgbUbnzXbe4w5WI+0XdneCbjNmikfWrdWrs8m/7HATfQ==}
     dev: false
 
-  /@uploadthing/react@6.7.2(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12):
+  /@uploadthing/react@6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.12):
     resolution: {integrity: sha512-9Mdslj1S24qbISA/LE3In5OFQ/U7OxdMbBlTPkJxKPkh+UW7BqZS0XuRTfkZYPkdBGDoXw5aH7VG3D/vGgpmxg==}
     peerDependencies:
       next: '*'
@@ -20725,10 +20729,10 @@ packages:
       '@uploadthing/dropzone': 0.4.1(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.12)
       '@uploadthing/shared': 6.7.8
       file-selector: 0.6.0
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       tailwind-merge: 2.4.0
-      uploadthing: 6.13.2(next@15.0.2)(tailwindcss@3.4.1)
+      uploadthing: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
     transitivePeerDependencies:
       - solid-js
       - svelte
@@ -21782,11 +21786,11 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      browserslist: 4.23.2
-      caniuse-lite: 1.0.30001642
+      browserslist: 4.24.2
+      caniuse-lite: 1.0.30001676
       fraction.js: 4.3.7
       normalize-range: 0.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.1
       postcss: 8.4.39
       postcss-value-parser: 4.2.0
     dev: true
@@ -22765,6 +22769,7 @@ packages:
 
   /color-string@1.9.1:
     resolution: {integrity: sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg==}
+    requiresBuild: true
     dependencies:
       color-name: 1.1.4
       simple-swizzle: 0.2.2
@@ -22772,6 +22777,7 @@ packages:
   /color@4.2.3:
     resolution: {integrity: sha512-1rXeuUUiGGrykh+CeBdu5Ie7OJwinCgQY0bc7GCRxy5xVHy+moaqkpL/jqQq0MtQOeYcrqEz4abc5f0KtU7W4A==}
     engines: {node: '>=12.5.0'}
+    requiresBuild: true
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
@@ -26066,12 +26072,12 @@ packages:
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
 
-  /geist@1.3.0(next@15.0.2):
+  /geist@1.3.0(next@15.0.3):
     resolution: {integrity: sha512-IoGBfcqVEYB4bEwsfHd35jF4+X9LHRPYZymHL4YOltHSs9LJa24DYs1Z7rEMQ/lsEvaAIc61Y9aUxgcJaQ8lrg==}
     peerDependencies:
       next: '>=13.2.0 <15.0.0-0'
     dependencies:
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
   /generate-function@2.3.1:
@@ -27149,7 +27155,7 @@ packages:
       fast-loops: 1.1.3
     dev: false
 
-  /inngest@3.22.5(encoding@0.1.13)(next@15.0.2)(typescript@5.4.5):
+  /inngest@3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5):
     resolution: {integrity: sha512-GF9+XEHi0eGRCLMjba203XFdi45lwLFXCgIhzOYIaSOIkurUDVP2UNiVft3dMIUwGW9kZ5c40ebSYOg8MTg4wQ==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -27193,7 +27199,7 @@ packages:
       hash.js: 1.1.7
       json-stringify-safe: 5.0.1
       ms: 2.1.3
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       serialize-error-cjs: 0.1.3
       strip-ansi: 5.2.0
       typescript: 5.4.5
@@ -27203,7 +27209,7 @@ packages:
       - supports-color
     dev: false
 
-  /inngest@3.22.5(next@15.0.2)(typescript@5.4.5):
+  /inngest@3.22.5(next@15.0.3)(typescript@5.4.5):
     resolution: {integrity: sha512-GF9+XEHi0eGRCLMjba203XFdi45lwLFXCgIhzOYIaSOIkurUDVP2UNiVft3dMIUwGW9kZ5c40ebSYOg8MTg4wQ==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -27247,7 +27253,7 @@ packages:
       hash.js: 1.1.7
       json-stringify-safe: 5.0.1
       ms: 2.1.3
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       serialize-error-cjs: 0.1.3
       strip-ansi: 5.2.0
       typescript: 5.4.5
@@ -27358,6 +27364,7 @@ packages:
 
   /is-arrayish@0.3.2:
     resolution: {integrity: sha512-eVRqCvVlZbuw3GrM63ovNSNAeA1K16kaR/LRY/92w0zxQ5/1YzwblUX652i4Xs9RwAGjW9d9y6X88t8OaAJfWQ==}
+    requiresBuild: true
 
   /is-async-function@2.0.0:
     resolution: {integrity: sha512-Y1JXKrfykRJGdlDwdKlLpLyMIiWqWvuSd17TvZk68PLAOGOoF4Xyav1z0Xhoi+gCYjZVeC5SI+hYFOfvXmGRCA==}
@@ -30824,7 +30831,7 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: false
 
-  /next-auth@5.0.0-beta.25(next@15.0.2)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028):
+  /next-auth@5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-2dJJw1sHQl2qxCrRk+KTQbeH+izFbGFPuJj5eGgBZFYyiYYtvlrBeUw1E/OJJxTRjuxbSYGnCTkUIRsIIW0bog==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -30841,12 +30848,12 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.37.2(nodemailer@6.9.11)
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       nodemailer: 6.9.11
       react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
-  /next-auth@5.0.0-beta.25(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028):
+  /next-auth@5.0.0-beta.25(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-2dJJw1sHQl2qxCrRk+KTQbeH+izFbGFPuJj5eGgBZFYyiYYtvlrBeUw1E/OJJxTRjuxbSYGnCTkUIRsIIW0bog==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -30863,23 +30870,23 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.37.2(nodemailer@6.9.11)
-      next: 15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
 
-  /next-axiom@1.1.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028):
+  /next-axiom@1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-0r/TJ+/zetD+uDc7B+2E7WpC86hEtQ1U+DuWYrP/JNmUz+ZdPFbrZgzOSqaZ6TwYbXP56VVlPfYwq1YsKHTHYQ==}
     engines: {node: '>=18'}
     peerDependencies:
       next: '>=13.4'
       react: '>=18.0.0'
     dependencies:
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       remeda: 1.50.1
       whatwg-fetch: 3.6.20
     dev: false
 
-  /next-cloudinary@6.5.1(next@15.0.2)(react@19.0.0-rc-02c0e824-20241028):
+  /next-cloudinary@6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-YxZevyfDBmEa/nThq6HCKaFuvfZldTXrA1nCbGyOcf5tZ/ms5yQSNkJimwz0qApWyqKt/jBC8UfqG8wrRNnD/A==}
     peerDependencies:
       next: ^12 || ^13 || ^14
@@ -30889,7 +30896,7 @@ packages:
       '@cloudinary-util/url-loader': 5.2.2
       '@cloudinary-util/util': 3.0.0
       '@tsconfig/recommended': 1.0.6
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
@@ -30961,16 +30968,16 @@ packages:
       - babel-plugin-macros
     dev: false
 
-  /next@15.0.2(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-rxIWHcAu4gGSDmwsELXacqAPUk+j8dV/A9cDF5fsiCMpkBDYkO2AEaL1dfD+nNmDiU6QMCFN8Q30VEKapT9UHQ==}
-    engines: {node: '>=18.18.0'}
+  /next@15.0.3(@babel/core@7.24.0)(react-dom@18.3.1)(react@19.0.0-rc-02c0e824-20241028):
+    resolution: {integrity: sha512-ontCbCRKJUIoivAdGB34yCaOcPgYXr9AAkV/IwqFfWWTXEPUgLYkSkqBhIk9KK7gGmgjc64B+RdoeIDM13Irnw==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
       '@playwright/test': ^1.41.2
       babel-plugin-react-compiler: '*'
-      react: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
-      react-dom: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
+      react: ^18.2.0 || 19.0.0-rc-66855b96-20241106
+      react-dom: ^18.2.0 || 19.0.0-rc-66855b96-20241106
       sass: ^1.3.0
     peerDependenciesMeta:
       '@opentelemetry/api':
@@ -30982,7 +30989,52 @@ packages:
       sass:
         optional: true
     dependencies:
-      '@next/env': 15.0.2
+      '@next/env': 15.0.3
+      '@swc/counter': 0.1.3
+      '@swc/helpers': 0.5.13
+      busboy: 1.6.0
+      caniuse-lite: 1.0.30001676
+      postcss: 8.4.31
+      react: 19.0.0-rc-02c0e824-20241028
+      react-dom: 18.3.1(react@19.0.0-rc-02c0e824-20241028)
+      styled-jsx: 5.1.6(@babel/core@7.24.0)(react@19.0.0-rc-02c0e824-20241028)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 15.0.3
+      '@next/swc-darwin-x64': 15.0.3
+      '@next/swc-linux-arm64-gnu': 15.0.3
+      '@next/swc-linux-arm64-musl': 15.0.3
+      '@next/swc-linux-x64-gnu': 15.0.3
+      '@next/swc-linux-x64-musl': 15.0.3
+      '@next/swc-win32-arm64-msvc': 15.0.3
+      '@next/swc-win32-x64-msvc': 15.0.3
+      sharp: 0.33.5
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+    dev: true
+
+  /next@15.0.3(@babel/core@7.24.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+    resolution: {integrity: sha512-ontCbCRKJUIoivAdGB34yCaOcPgYXr9AAkV/IwqFfWWTXEPUgLYkSkqBhIk9KK7gGmgjc64B+RdoeIDM13Irnw==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.1.0
+      '@playwright/test': ^1.41.2
+      babel-plugin-react-compiler: '*'
+      react: ^18.2.0 || 19.0.0-rc-66855b96-20241106
+      react-dom: ^18.2.0 || 19.0.0-rc-66855b96-20241106
+      sass: ^1.3.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@playwright/test':
+        optional: true
+      babel-plugin-react-compiler:
+        optional: true
+      sass:
+        optional: true
+    dependencies:
+      '@next/env': 15.0.3
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.13
       busboy: 1.6.0
@@ -30992,29 +31044,29 @@ packages:
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
       styled-jsx: 5.1.6(@babel/core@7.24.0)(react@19.0.0-rc-02c0e824-20241028)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.0.2
-      '@next/swc-darwin-x64': 15.0.2
-      '@next/swc-linux-arm64-gnu': 15.0.2
-      '@next/swc-linux-arm64-musl': 15.0.2
-      '@next/swc-linux-x64-gnu': 15.0.2
-      '@next/swc-linux-x64-musl': 15.0.2
-      '@next/swc-win32-arm64-msvc': 15.0.2
-      '@next/swc-win32-x64-msvc': 15.0.2
+      '@next/swc-darwin-arm64': 15.0.3
+      '@next/swc-darwin-x64': 15.0.3
+      '@next/swc-linux-arm64-gnu': 15.0.3
+      '@next/swc-linux-arm64-musl': 15.0.3
+      '@next/swc-linux-x64-gnu': 15.0.3
+      '@next/swc-linux-x64-musl': 15.0.3
+      '@next/swc-win32-arm64-msvc': 15.0.3
+      '@next/swc-win32-x64-msvc': 15.0.3
       sharp: 0.33.5
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
 
-  /next@15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-rxIWHcAu4gGSDmwsELXacqAPUk+j8dV/A9cDF5fsiCMpkBDYkO2AEaL1dfD+nNmDiU6QMCFN8Q30VEKapT9UHQ==}
-    engines: {node: '>=18.18.0'}
+  /next@15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
+    resolution: {integrity: sha512-ontCbCRKJUIoivAdGB34yCaOcPgYXr9AAkV/IwqFfWWTXEPUgLYkSkqBhIk9KK7gGmgjc64B+RdoeIDM13Irnw==}
+    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
       '@playwright/test': ^1.41.2
       babel-plugin-react-compiler: '*'
-      react: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
-      react-dom: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
+      react: ^18.2.0 || 19.0.0-rc-66855b96-20241106
+      react-dom: ^18.2.0 || 19.0.0-rc-66855b96-20241106
       sass: ^1.3.0
     peerDependenciesMeta:
       '@opentelemetry/api':
@@ -31026,7 +31078,7 @@ packages:
       sass:
         optional: true
     dependencies:
-      '@next/env': 15.0.2
+      '@next/env': 15.0.3
       '@opentelemetry/api': 1.9.0
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.13
@@ -31037,14 +31089,14 @@ packages:
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
       styled-jsx: 5.1.6(@babel/core@7.26.0)(react@19.0.0-rc-02c0e824-20241028)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.0.2
-      '@next/swc-darwin-x64': 15.0.2
-      '@next/swc-linux-arm64-gnu': 15.0.2
-      '@next/swc-linux-arm64-musl': 15.0.2
-      '@next/swc-linux-x64-gnu': 15.0.2
-      '@next/swc-linux-x64-musl': 15.0.2
-      '@next/swc-win32-arm64-msvc': 15.0.2
-      '@next/swc-win32-x64-msvc': 15.0.2
+      '@next/swc-darwin-arm64': 15.0.3
+      '@next/swc-darwin-x64': 15.0.3
+      '@next/swc-linux-arm64-gnu': 15.0.3
+      '@next/swc-linux-arm64-musl': 15.0.3
+      '@next/swc-linux-x64-gnu': 15.0.3
+      '@next/swc-linux-x64-musl': 15.0.3
+      '@next/swc-win32-arm64-msvc': 15.0.3
+      '@next/swc-win32-x64-msvc': 15.0.3
       sharp: 0.33.5
     transitivePeerDependencies:
       - '@babel/core'
@@ -32947,6 +32999,16 @@ packages:
       scheduler: 0.23.2
     dev: false
 
+  /react-dom@18.3.1(react@19.0.0-rc-02c0e824-20241028):
+    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+    peerDependencies:
+      react: ^18.3.1
+    dependencies:
+      loose-envify: 1.4.0
+      react: 19.0.0-rc-02c0e824-20241028
+      scheduler: 0.23.2
+    dev: true
+
   /react-dom@19.0.0-rc-02c0e824-20241028(react@18.3.1):
     resolution: {integrity: sha512-LrZf3DfHL6Fs07wwlUCHrzFTCMM19yA99MvJpfLokN4I2nBAZvREGZjZAn8VPiSfN72+i9j1eL4wB8gC695F3Q==}
     peerDependencies:
@@ -33387,16 +33449,6 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /react-universal-interface@0.6.2(react@19.0.0-rc-02c0e824-20241028)(tslib@2.6.3):
-    resolution: {integrity: sha512-dg8yXdcQmvgR13RIlZbTRQOoUrDciFVoSBZILwjE2LFISxZZ8loVJKAkuzswl5js8BHda79bIb2b84ehU8IjXw==}
-    peerDependencies:
-      react: '*'
-      tslib: '*'
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-      tslib: 2.6.3
-    dev: false
-
   /react-universal-interface@0.6.2(react@19.0.0-rc-02c0e824-20241028)(tslib@2.8.1):
     resolution: {integrity: sha512-dg8yXdcQmvgR13RIlZbTRQOoUrDciFVoSBZILwjE2LFISxZZ8loVJKAkuzswl5js8BHda79bIb2b84ehU8IjXw==}
     peerDependencies:
@@ -33433,29 +33485,6 @@ packages:
       nano-css: 5.6.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-universal-interface: 0.6.2(react@19.0.0-rc-02c0e824-20241028)(tslib@2.6.3)
-      resize-observer-polyfill: 1.5.1
-      screenfull: 5.2.0
-      set-harmonic-interval: 1.0.1
-      throttle-debounce: 3.0.1
-      ts-easing: 0.2.0
-      tslib: 2.6.3
-    dev: false
-
-  /react-use@17.5.0(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-PbfwSPMwp/hoL847rLnm/qkjg3sTRCvn6YhUZiHaUa3FA6/aNoFX79ul5Xt70O1rK+9GxSVqkY0eTwMdsR/bWg==}
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-    dependencies:
-      '@types/js-cookie': 2.2.7
-      '@xobotyi/scrollbar-width': 1.9.5
-      copy-to-clipboard: 3.3.3
-      fast-deep-equal: 3.1.3
-      fast-shallow-equal: 1.0.0
-      js-cookie: 2.2.1
-      nano-css: 5.6.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
       react-universal-interface: 0.6.2(react@19.0.0-rc-02c0e824-20241028)(tslib@2.8.1)
       resize-observer-polyfill: 1.5.1
       screenfull: 5.2.0
@@ -34298,7 +34327,6 @@ packages:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /scheduler@0.25.0-rc-02c0e824-20241028:
     resolution: {integrity: sha512-GysnKjmMSaWcwsKTLzeJO0IhU3EyIiC0ivJKE6yDNLqt3IMxDByx8b6lSNXRNdN+ULUY0WLLjSPaZ0LuU/GnTg==}
@@ -34639,6 +34667,7 @@ packages:
 
   /simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
+    requiresBuild: true
     dependencies:
       is-arrayish: 0.3.2
 
@@ -36651,7 +36680,7 @@ packages:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  /uploadthing@6.13.2(next@15.0.2)(tailwindcss@3.4.1):
+  /uploadthing@6.13.2(next@15.0.3)(tailwindcss@3.4.1):
     resolution: {integrity: sha512-hrxwOgqKs8siczPloop72drRBiUYaFDHMp45OR/sSAaAbOPyGBmBL88Bi4UWCvgC+aBWCLRxtMEGeoqrfu+OMg==}
     engines: {node: '>=18.13.0'}
     peerDependencies:
@@ -36680,7 +36709,7 @@ packages:
       '@uploadthing/shared': 6.7.8
       consola: 3.2.3
       effect: 3.4.5
-      next: 15.0.2(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
+      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       std-env: 3.7.0
       tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
