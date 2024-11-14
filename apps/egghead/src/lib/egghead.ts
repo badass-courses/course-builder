@@ -1,6 +1,8 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { users } from '@/db/schema'
+import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
+import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
 
 import { PostAction, PostState, PostVisibility } from './posts'
@@ -91,6 +93,13 @@ export async function createEggheadLesson(input: {
 	)
 
 	const eggheadLessonId = eggheadLessonResult.rows[0].id
+
+	await inngest.send({
+		name: EGGHEAD_LESSON_CREATED_EVENT,
+		data: {
+			id: eggheadLessonId,
+		},
+	})
 
 	return eggheadLessonId
 }
