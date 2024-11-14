@@ -7,7 +7,7 @@ export type EggheadLessonCreated = {
 	data: EggheadLessonCreatedEvent
 }
 export const EggheadLessonCreatedEventSchema = z.object({
-	ids: z.array(z.number()),
+	id: z.number(),
 })
 
 export type EggheadLessonCreatedEvent = z.infer<

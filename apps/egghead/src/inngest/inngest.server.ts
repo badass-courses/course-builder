@@ -20,6 +20,10 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	EGGHEAD_LESSON_CREATED_EVENT,
+	EggheadLessonCreated,
+} from './events/egghead/lesson-created'
+import {
 	TIPS_UPDATED_EVENT,
 	TipsUpdated,
 } from './functions/migrate-tips-to-posts'
@@ -35,6 +39,7 @@ export type Events = {
 	[USER_CREATED_EVENT]: UserCreated
 	[POST_UPDATED_EVENT]: PostUpdated
 	[TIPS_UPDATED_EVENT]: TipsUpdated
+	[EGGHEAD_LESSON_CREATED_EVENT]: EggheadLessonCreated
 }
 
 const callbackBase =
