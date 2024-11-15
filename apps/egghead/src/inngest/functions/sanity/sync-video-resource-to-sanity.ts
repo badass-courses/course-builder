@@ -1,51 +1,15 @@
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
-import { createClient } from '@sanity/client'
-import { and, eq, sql } from 'drizzle-orm'
+import {
+	keyGenerator,
+	sanityVideoResourceDocumentSchema,
+} from '@/lib/sanity-content'
+import { sanityWriteClient } from '@/server/sanity-write-client'
+import { eq } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
-import { z } from 'zod'
 
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-resource'
-
-export const sanityWriteClient = createClient({
-	projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-	dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_ID || 'production',
-	useCdn: false, // `false` if you want to ensure fresh data
-	apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
-	token: process.env.SANITY_EDITOR_TOKEN,
-})
-
-export const sanityVideoResourceDocumentSchema = z.object({
-	_createdAt: z.string().datetime().optional(),
-	_id: z.string().optional(),
-	_rev: z.string().optional(),
-	_type: z.literal('videoResource'),
-	_updatedAt: z.string().datetime().optional(),
-	filename: z.string().optional(),
-	mediaUrls: z.object({
-		hlsUrl: z.string(),
-		dashUrl: z.string().optional(),
-	}),
-	muxAsset: z
-		.object({
-			muxAssetId: z.string().optional(),
-			muxPlaybackId: z.string().optional(),
-		})
-		.optional(),
-	transcript: z
-		.object({
-			srt: z.string(),
-			text: z.string(),
-		})
-		.optional(),
-})
-
-const keyGenerator = () => {
-	return [...Array(12)]
-		.map(() => Math.floor(Math.random() * 16).toString(16))
-		.join('')
-}
 
 export const syncVideoResourceToSanity = inngest.createFunction(
 	{

@@ -4,6 +4,7 @@ import { users } from '@/db/schema'
 import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
 import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { PostAction, PostState, PostVisibility } from './posts'
 import { getPost } from './posts-query'
@@ -181,3 +182,18 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 	}
 	Boolean(query) && (await eggheadPgQuery(query))
 }
+
+export const eggheadLessonSchema = z.object({
+	id: z.number(),
+	title: z.string(),
+	slug: z.string(),
+	summary: z.string().nullish(),
+	topic_list: z.array(z.string()),
+	free_forever: z.boolean(),
+	state: z.string(),
+	instructor: z.object({
+		id: z.number(),
+	}),
+})
+
+export type EggheadLesson = z.infer<typeof eggheadLessonSchema>

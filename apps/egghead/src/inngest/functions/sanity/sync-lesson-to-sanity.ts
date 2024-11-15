@@ -1,28 +1,22 @@
-import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
 import { inngest } from '@/inngest/inngest.server'
-import { getEggheadLesson } from '@/lib/egghead'
-import { createClient } from '@sanity/client'
-
-export const sanityWriteClient = createClient({
-	projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-	dataset: process.env.NEXT_PUBLIC_SANITY_DATASET_ID || 'production',
-	useCdn: false, // `false` if you want to ensure fresh data
-	apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
-	token: process.env.SANITY_EDITOR_TOKEN,
-})
-
-/*
-export const EggheadLessonCreatedEventSchema = z.object({
-	id: z.number(),
-})
-*/
-
-const keyGenerator = () => {
-	return [...Array(12)]
-		.map(() => Math.floor(Math.random() * 16).toString(16))
-		.join('')
-}
+import { eggheadLessonSchema, getEggheadLesson } from '@/lib/egghead'
+import type { EggheadLesson } from '@/lib/egghead'
+import {
+	sanityCollaboratorDocumentSchema,
+	sanityCollaboratorReferenceObjectSchema,
+	sanityVersionedSoftwareLibraryObjectSchema,
+} from '@/lib/sanity-content'
+import type {
+	SanityCollaboratorDocument,
+	SanityCollaboratorReferenceObject,
+	SanityVersionedSoftwareLibraryObject,
+} from '@/lib/sanity-content'
+import {
+	getSanityCollaborator,
+	getSanitySoftwareLibrary,
+	postSanityLesson,
+} from '@/lib/sanity-content-query'
 
 export const syncLessonToSanity = inngest.createFunction(
 	{
@@ -33,68 +27,38 @@ export const syncLessonToSanity = inngest.createFunction(
 		event: EGGHEAD_LESSON_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		const lesson = await step.run('Get lesson', async () => {
-			return await getEggheadLesson(event.data.id)
-		})
+		const lesson = (await step.run('Get lesson', async () => {
+			return eggheadLessonSchema.parse(await getEggheadLesson(event.data.id))
+		})) as EggheadLesson
 
-		const softwareLibraries = await step.run(
-			'Get software libraries',
+		const versionedSoftwareLibraryReferences = (await step.run(
+			'Get an array of versioned software library references',
 			async () => {
-				const libraries = await Promise.all(
+				return await Promise.all(
 					lesson.topic_list.map(async (library: string) => {
-						const libraryData = await sanityWriteClient.fetch(
-							`*[_type == "software-library" && slug.current == "${library}"][0]`,
+						return sanityVersionedSoftwareLibraryObjectSchema.parse(
+							await getSanitySoftwareLibrary(library),
 						)
-						if (!libraryData) {
-							return null
-						}
-						return {
-							_key: keyGenerator(),
-							_type: 'versioned-software-library',
-							library: {
-								_type: 'reference',
-								_ref: libraryData._id,
-							},
-						}
 					}),
 				)
-				return libraries
 			},
-		)
+		)) as SanityVersionedSoftwareLibraryObject[]
 
-		const collaborators = await step.run('Get collaborators', async () => {
-			const instructor = await sanityWriteClient.fetch(
-				`*[_type == "collaborator" && eggheadInstructorId == "${lesson.instructor.id}"][0]`,
-			)
-
-			if (!instructor) {
-				return null
-			}
-
-			return [
-				{
-					_key: keyGenerator(),
-					_type: 'reference',
-					_ref: instructor._id,
-				},
-			]
-		})
+		const sanityCollaboratorReferenceObject = (await step.run(
+			'Get collaborator',
+			async () => {
+				return sanityCollaboratorReferenceObjectSchema.parse(
+					await getSanityCollaborator(lesson.instructor.id),
+				)
+			},
+		)) as SanityCollaboratorReferenceObject
 
 		const sanityLesson = await step.run('Create lesson in sanity', async () => {
-			return await sanityWriteClient.create({
-				_type: 'lesson',
-				title: lesson.title,
-				slug: {
-					_type: 'slug',
-					current: lesson.slug,
-				},
-				description: lesson.summary,
-				railsLessonId: lesson.id,
-				softwareLibraries,
-				status: lesson.state,
-				accessLevel: lesson.free_forever ? 'free' : 'pro',
-				collaborators,
-			})
+			return await postSanityLesson(
+				lesson,
+				sanityCollaboratorReferenceObject,
+				versionedSoftwareLibraryReferences,
+			)
 		})
 	},
 )
