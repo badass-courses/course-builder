@@ -38,7 +38,7 @@ export async function getArticles(): Promise<Article[]> {
 
 	const articlesParsed = z.array(ArticleSchema).safeParse(articles)
 	if (!articlesParsed.success) {
-		console.error('Error parsing articles', articlesParsed)
+		console.error('Error parsing articles', articlesParsed.error)
 		return []
 	}
 
