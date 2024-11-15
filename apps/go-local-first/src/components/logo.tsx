@@ -58,7 +58,7 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				r="40"
 				fill="none"
 				stroke="#2D3748"
-				stroke-width="6"
+				strokeWidth="6"
 			/>
 
 			<path
@@ -70,7 +70,7 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				d="M30 65 A15 15 0 0 1 50 65 A15 15 0 0 0 70 65"
 				fill="none"
 				stroke="#48BB78"
-				stroke-width="6"
+				strokeWidth="6"
 				stroke-linecap="round"
 			/>
 
@@ -78,7 +78,7 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				d="M70 65 L75 65 L72.5 60"
 				fill="none"
 				stroke="#48BB78"
-				stroke-width="6"
+				strokeWidth="6"
 				stroke-linecap="round"
 				stroke-linejoin="round"
 			/>
