@@ -71,7 +71,7 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				fill="none"
 				stroke="#48BB78"
 				strokeWidth="6"
-				stroke-linecap="round"
+				strokeLinecap="round"
 			/>
 
 			<path
@@ -79,8 +79,8 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 				fill="none"
 				stroke="#48BB78"
 				strokeWidth="6"
-				stroke-linecap="round"
-				stroke-linejoin="round"
+				strokeLinecap="round"
+				strokeLinejoin="round"
 			/>
 
 			<circle cx="30" cy="65" r="3" fill="#48BB78" />
