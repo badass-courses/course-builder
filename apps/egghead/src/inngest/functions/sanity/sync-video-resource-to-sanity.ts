@@ -1,15 +1,14 @@
-import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import { courseBuilderAdapter } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
 import {
-	keyGenerator,
-	sanityVideoResourceDocumentSchema,
-} from '@/lib/sanity-content'
-import { sanityWriteClient } from '@/server/sanity-write-client'
-import { eq } from 'drizzle-orm'
+	patchSanityLessonWithVideoResourceReference,
+	postSanityVideoResource,
+} from '@/lib/sanity-content-query'
+import { getResourceOfVideoResource } from '@/lib/video-resource-query'
 import { NonRetriableError } from 'inngest'
 
 import { VIDEO_RESOURCE_CREATED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-resource'
+import type { VideoResource } from '@coursebuilder/core/schemas'
 
 export const syncVideoResourceToSanity = inngest.createFunction(
 	{
@@ -20,12 +19,12 @@ export const syncVideoResourceToSanity = inngest.createFunction(
 		event: VIDEO_RESOURCE_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		const courseBuilderVideoResource = await step.run(
+		const courseBuilderVideoResource = (await step.run(
 			'Get video resource',
 			async () => {
-				const videoResource = await db.query.contentResource.findFirst({
-					where: eq(contentResource.id, event.data.videoResourceId),
-				})
+				const videoResource = await courseBuilderAdapter.getVideoResource(
+					event.data.videoResourceId,
+				)
 
 				if (!videoResource) {
 					throw new NonRetriableError('Video resource not found')
@@ -33,85 +32,27 @@ export const syncVideoResourceToSanity = inngest.createFunction(
 
 				return videoResource
 			},
-		)
+		)) as VideoResource
 
-		const courseBuilderLesson = await step.run(
-			'Get lesson from resource resource',
-			async () => {
-				const lessonVideoContentResourceResource =
-					await db.query.contentResourceResource.findFirst({
-						where: eq(
-							contentResourceResource.resourceId,
-							courseBuilderVideoResource?.id || '',
-						),
-					})
-
-				return await db.query.contentResource.findFirst({
-					where: eq(
-						contentResource.id,
-						lessonVideoContentResourceResource?.resourceOfId || '',
-					),
-				})
-			},
-		)
-
-		const sanityLesson = await step.run('Get lesson from sanity', async () => {
-			if (!courseBuilderLesson) return
-
-			return await sanityWriteClient.fetch(
-				`*[_type == "lesson" && railsLessonId == ${courseBuilderLesson?.fields?.eggheadLessonId}][0]`,
-			)
-		})
-
-		const sanityVideoResource = await step.run(
+		const sanityVideoResourceDocument = await step.run(
 			'Create video resource in sanity',
 			async () => {
-				if (!courseBuilderVideoResource) return
-				const { id, fields } = courseBuilderVideoResource
-
-				const streamUrl =
-					fields?.muxPlaybackId &&
-					`https://stream.mux.com/${fields?.muxPlaybackId}.m3u8`
-
-				const url = fields?.originalMediaUrl
-				const filename = url ? url.substring(url.lastIndexOf('/') + 1) : ''
-
-				const body = sanityVideoResourceDocumentSchema.parse({
-					_type: 'videoResource',
-					filename,
-					muxAsset: {
-						muxAssetId: fields?.muxAssetId,
-						muxPlaybackId: fields?.muxPlaybackId,
-					},
-					mediaUrls: {
-						hlsUrl: streamUrl,
-					},
-					transcript: {
-						srt: fields?.srt,
-						text: fields?.transcript,
-					},
-				})
-
-				return await sanityWriteClient.create(body)
+				return await postSanityVideoResource(courseBuilderVideoResource)
 			},
 		)
 
-		await step.run('Update sanity lesson with video resource', async () => {
-			if (!sanityLesson?._id || !sanityVideoResource?._id) return
+		await step.run(
+			'Associate video document with lesson via reference',
+			async () => {
+				const post = await getResourceOfVideoResource(
+					courseBuilderVideoResource.id,
+				)
 
-			return await sanityWriteClient
-				.patch(sanityLesson._id)
-				.set({
-					resources: [
-						...(sanityLesson?.resources || []),
-						{
-							_key: keyGenerator(),
-							_type: 'reference',
-							_ref: sanityVideoResource._id,
-						},
-					],
-				})
-				.commit()
-		})
+				return patchSanityLessonWithVideoResourceReference(
+					post?.fields?.eggheadLessonId,
+					sanityVideoResourceDocument._id,
+				)
+			},
+		)
 	},
 )

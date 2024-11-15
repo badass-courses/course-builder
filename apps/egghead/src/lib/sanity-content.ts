@@ -47,28 +47,28 @@ export type SanityCollaboratorReferenceObject = z.infer<
 >
 
 export const sanityVideoResourceDocumentSchema = z.object({
-	_createdAt: z.string().datetime().optional(),
-	_id: z.string().optional(),
-	_rev: z.string().optional(),
+	_createdAt: z.string().datetime().nullish(),
+	_id: z.string().nullish(),
+	_rev: z.string().nullish(),
 	_type: z.literal('videoResource'),
-	_updatedAt: z.string().datetime().optional(),
-	filename: z.string().optional(),
+	_updatedAt: z.string().datetime().nullish(),
+	filename: z.string().nullish(),
 	mediaUrls: z.object({
 		hlsUrl: z.string(),
-		dashUrl: z.string().optional(),
+		dashUrl: z.string().nullish(),
 	}),
 	muxAsset: z
 		.object({
-			muxAssetId: z.string().optional(),
-			muxPlaybackId: z.string().optional(),
+			muxAssetId: z.string().nullish(),
+			muxPlaybackId: z.string().nullish(),
 		})
-		.optional(),
+		.nullish(),
 	transcript: z
 		.object({
-			srt: z.string(),
-			text: z.string(),
+			srt: z.string().nullish(),
+			text: z.string().nullish(),
 		})
-		.optional(),
+		.nullish(),
 })
 
 export type SanityVideoResourceDocument = z.infer<

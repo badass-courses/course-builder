@@ -1,10 +1,12 @@
+'use server'
+
 import type { EggheadLesson } from '@/lib/egghead'
 import {
 	keyGenerator,
 	sanityCollaboratorDocumentSchema,
 	sanityLessonDocumentSchema,
 	sanitySoftwareLibraryDocumentSchema,
-	sanityVersionedSoftwareLibraryObjectSchema,
+	sanityVideoResourceDocumentSchema,
 } from '@/lib/sanity-content'
 import type {
 	SanityCollaboratorDocument,
@@ -13,6 +15,72 @@ import type {
 	SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
 import { sanityWriteClient } from '@/server/sanity-write-client'
+
+import type { VideoResource } from '@coursebuilder/core/schemas'
+
+export async function postSanityVideoResource(videoResource: VideoResource) {
+	const { muxPlaybackId, muxAssetId, transcript, srt, id } = videoResource
+
+	const streamUrl =
+		muxPlaybackId && `https://stream.mux.com/${muxPlaybackId}.m3u8`
+
+	const body = sanityVideoResourceDocumentSchema.parse({
+		_type: 'videoResource',
+		filename: id,
+		muxAsset: {
+			muxAssetId,
+			muxPlaybackId,
+		},
+		mediaUrls: {
+			hlsUrl: streamUrl,
+		},
+		transcript: {
+			srt,
+			text: transcript,
+		},
+	})
+
+	const sanityVideoResourceDocument = await sanityWriteClient.create(body)
+
+	if (!sanityVideoResourceDocument) {
+		throw new Error('Failed to create video resource in sanity')
+	}
+
+	return sanityVideoResourceDocument
+}
+
+export async function patchSanityLessonWithVideoResourceReference(
+	eggheadLessonId: number,
+	videoResourceDocumentId: string,
+) {
+	const sanityLessonDocument = await getSanityLesson(eggheadLessonId)
+
+	if (!sanityLessonDocument) return
+
+	return await sanityWriteClient
+		.patch(sanityLessonDocument._id)
+		.set({
+			resources: [
+				...(sanityLessonDocument?.resources || []),
+				{
+					_key: keyGenerator(),
+					_type: 'reference',
+					_ref: videoResourceDocumentId,
+				},
+			],
+		})
+		.commit()
+}
+
+export async function getSanityLesson(
+	eggheadLessonId: number | null | undefined,
+) {
+	if (!eggheadLessonId) return
+
+	return sanityWriteClient.fetch(
+		`*[_type == "lesson" && railsLessonId == ${eggheadLessonId}][0]`,
+	)
+}
 
 export async function postSanityLesson(
 	eggheadLesson: EggheadLesson,
