@@ -41,7 +41,7 @@ const getServerSideProps = async (session_id: string) => {
 		throw new Error(`No session_id found: ${session_id}`)
 	}
 
-	const maxRetries = 30
+	const maxRetries = 1
 	const initialDelay = 100
 	const maxDelay = 1000
 

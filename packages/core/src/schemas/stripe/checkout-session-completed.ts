@@ -27,7 +27,7 @@ const dataObjectSchema = z.object({
 	customer_details: customerDetailsSchema,
 	livemode: z.boolean(),
 	metadata: z.record(z.string()),
-	mode: z.string(),
+	mode: z.enum(['payment', 'setup', 'subscription']),
 	payment_intent: z.string(),
 	payment_method_collection: z.string(),
 	payment_status: z.string(),

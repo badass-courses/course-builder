@@ -2,6 +2,7 @@ import { add } from 'date-fns'
 import first from 'lodash/first'
 import isEmpty from 'lodash/isEmpty'
 import { CourseBuilderAdapter } from 'src/adapters'
+import Stripe from 'stripe'
 import { z } from 'zod'
 
 import { Product, Purchase, UpgradableProduct } from '../../schemas'
@@ -283,6 +284,12 @@ export async function stripeCheckout({
 				throw new Error('No merchant price or product found')
 			}
 
+			const stripePrice = await config.paymentsAdapter.getPrice(
+				merchantPriceIdentifier,
+			)
+
+			console.log('stripePrice', stripePrice)
+
 			const merchantCoupon = couponId
 				? await adapter.getMerchantCoupon(couponId as string)
 				: null
@@ -420,6 +427,8 @@ export async function stripeCheckout({
 				siteName: process.env.NEXT_PUBLIC_APP_NAME as string,
 			}
 
+			const isRecurring = stripePrice?.type === 'recurring'
+
 			const sessionUrl = await config.paymentsAdapter.createCheckoutSession({
 				discounts,
 				line_items: [
@@ -429,16 +438,18 @@ export async function stripeCheckout({
 					},
 				],
 				expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
-				mode: 'payment',
+				mode: isRecurring ? 'subscription' : 'payment',
 				success_url: successUrl,
 				cancel_url: cancelUrl,
 				...(customerId
 					? { customer: customerId }
 					: { customer_creation: 'always' }),
 				metadata,
-				payment_intent_data: {
-					metadata,
-				},
+				...(!isRecurring && {
+					payment_intent_data: {
+						metadata,
+					},
+				}),
 			})
 
 			if (sessionUrl) {

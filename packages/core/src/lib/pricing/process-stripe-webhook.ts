@@ -251,7 +251,25 @@ export async function processStripeWebhook(
 	const courseBuilderAdapter = options.adapter
 
 	switch (event.type) {
+		case 'customer.updated':
+			console.log('customer.updated', event)
+			// update the organization accordingly
+			break
+		case 'customer.subscription.created':
+			console.log('customer.subscription.created', event)
+			// add the subscription to the organization
+			break
+		case 'customer.subscription.deleted':
+			console.log('customer.subscription.deleted', event)
+			// remove the subscription from the organization
+			break
+		case 'customer.subscription.updated':
+			console.log('customer.subscription.updated', event)
+			// update the subscription
+			break
 		case 'checkout.session.completed':
+			console.log('checkout.session.completed', event)
+			// is this a subscription payment? (event.data.object.mode)
 			await options.inngest.send({
 				name: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 				data: {
