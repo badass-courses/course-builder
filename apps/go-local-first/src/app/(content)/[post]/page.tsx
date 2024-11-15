@@ -172,10 +172,10 @@ export default async function PostPage(props: {
 						'top-0': !hasVideo,
 					})}
 				>
-					<img
+					{/* <img
 						src={squareGridPattern}
 						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
-					/>
+					/> */}
 					<div
 						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
 						aria-hidden="true"
@@ -236,7 +236,7 @@ export default async function PostPage(props: {
 			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 				<section id="buy">
 					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-						Get Really Good At Node.js
+						Get Really Good At Local First Development
 					</h2>
 					<div className="flex items-center justify-center border-y">
 						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
