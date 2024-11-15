@@ -11,9 +11,7 @@ export const Contributor: React.FC<{ className?: string }> = ({
 	return (
 		<div className={cn('flex items-center gap-2 font-normal', className)}>
 			<Image
-				src={
-					'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
-				}
+				src={'/nik-graf.jpeg'}
 				alt={config.author}
 				width={40}
 				height={40}
