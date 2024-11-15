@@ -23,6 +23,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
 
+import { Transcript } from '../_components/video-transcript-renderer'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
@@ -85,6 +86,8 @@ async function Post({ post }: { post: Post | null }) {
 		return null
 	}
 
+	const transcript = post.resources?.[0]?.resource?.fields?.transcript
+
 	return (
 		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
 			{post.fields.body && (
@@ -111,6 +114,16 @@ async function Post({ post }: { post: Post | null }) {
 						},
 					}}
 				/>
+			)}
+			{transcript && (
+				<>
+					<div className="mt-10 border-t px-5 pt-8 sm:px-8">
+						<h3 className="font-heading mb-8 text-2xl font-bold leading-none">
+							Transcript
+						</h3>
+						<Transcript transcriptLoader={Promise.resolve(transcript)} />
+					</div>
+				</>
 			)}
 		</article>
 	)
