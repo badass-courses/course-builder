@@ -24,7 +24,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 4rem;
+		--nav-height: 4.5rem;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
@@ -33,79 +33,71 @@
 			100vh - var(--nav-height) - var(--command-bar-height) - 30px
 		);
 
-		--background: 32 8% 99%;
-		--foreground: 32 5% 10%;
-		--card: 32 8% 99%;
-		--card-foreground: 32 5% 15%;
-		--popover: 32 8% 99%;
-		--popover-foreground: 32 95% 10%;
-		--primary: 32 100% 64.3%;
-		--primary-foreground: 0 0% 0%;
-		--secondary: 32 10% 90%;
-		--secondary-foreground: 0 0% 0%;
-		--muted: -6 10% 95%;
-		--muted-foreground: 32 5% 40%;
-		--accent: -6 10% 90%;
-		--accent-foreground: 32 5% 15%;
-		--destructive: 0 50% 50%;
-		--destructive-foreground: 32 5% 99%;
-		--border: 32 20% 82%;
-		--input: 32 20% 50%;
-		--ring: 32 100% 64.3%;
-		--radius: 0.3rem;
+		--background: 0 0% 100%;
+		--foreground: 204 12% 17%;
+
+		--muted: 240 14% 97%;
+		--muted-foreground: 237 8% 50%;
+
+		--popover: 0 0% 100%;
+		--popover-foreground: 222.2 47.4% 11.2%;
+
+		--card: 0 0% 100%;
+		--card-foreground: 217 33% 17%;
+
+		--border: 0 0% 95%;
+		--input: 0 0% 95%;
+
+		--primary: 226 70% 55%;
+		--primary-foreground: 0 0% 100%;
+
+		--secondary: 217 33% 17%;
+		--secondary-foreground: 210 40% 98%;
+
+		--accent: 0 0% 95%;
+		--accent-foreground: 226 70% 55%;
+
+		--destructive: 0 100% 50%;
+		--destructive-foreground: 210 40% 98%;
+
+		--ring: 215 20.2% 65.1%;
+
+		--radius: 0.35rem;
 		color-scheme: light;
 	}
 
 	.dark {
-		/* golden color scheme */
-		--background: 0 0% 0%;
-		--foreground: 32 5% 85%;
-		--card: 32 8% 0%;
-		--card-foreground: 32 5% 90%;
-		--popover: 32 10% 5%;
-		--popover-foreground: 32 5% 90%;
-		/* @supports not (color: color(display-p3 1 1 1)) { */
-		--primary: 32 100% 64%; /* hsl */
-		/* } */
-		/* @supports (color: color(display-p3 1 1 1)) { */
-		/* oklch p3 */
-		/* --primary: 80.66% 0.1769 66.73;  */
-		/* } */
-		--primary-foreground: 0 0% 0%;
-		--secondary: 0 0% 11%;
-		--secondary-foreground: 0 0% 100%;
+		--background: 224 71% 4%;
+		--foreground: 213 31% 91%;
 
-		--muted: 0 0% 10%;
-		--muted-foreground: 22.3 64.2% 93.3%;
+		--muted: 223 47% 11%;
+		--muted-foreground: 213 19% 57%;
 
-		--accent: 0 0% 5%;
-		--accent-foreground: 32 5% 90%;
+		--popover: 224 71% 4%;
+		--popover-foreground: 215 20.2% 65.1%;
 
-		--destructive: 0 50% 30%;
-		--destructive-foreground: 32 5% 90%;
+		--card: 224 71% 4%;
+		--card-foreground: 213 31% 91%;
 
-		--border: 0 0% 10%;
-		--input: 32 16% 38%;
-		--ring: 32 100% 64%;
-		--radius: 0.3rem;
+		--border: 216 34% 17%;
+		--input: 216 34% 17%;
+
+		--primary: 226 70% 55%;
+		--primary-foreground: 0 0% 100%;
+
+		--secondary: 222.2 47.4% 11.2%;
+		--secondary-foreground: 210 40% 98%;
+
+		--accent: 216 34% 17%;
+		--accent-foreground: 210 40% 98%;
+
+		--destructive: 0 63% 31%;
+		--destructive-foreground: 210 40% 98%;
+
+		--ring: 217 91% 60%;
+
+		--radius: 0.5rem;
 		color-scheme: dark;
-
-		[data-theme='elysium'] {
-			/* blue-ish color scheme */
-			--primary: 241.2 43.4% 76.5%;
-			--primary-foreground: 0 0% 0%;
-			--secondary: 176.5 37.6% 54.2%;
-			--secondary-foreground: 0 0% 0%;
-			--muted: 231 20% 19%;
-			--muted-foreground: 235 100% 95%;
-			--border: 230.8 20.7% 18.8%;
-			--input: 230.8 20.7% 18.8%;
-			--ring: 241.2 43.4% 76.5%;
-		}
-
-		[data-theme='erebus'] {
-			/* green-ish color scheme */
-		}
 	}
 }
 
@@ -120,7 +112,7 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-heading text-balance font-bold;
+		@apply text-balance;
 	}
 
 	body {
