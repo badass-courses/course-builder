@@ -1,6 +1,6 @@
 {
 	"name": "utils",
-	"version": "0.1.2",
+	"version": "1.0.0",
 	"type": "module",
 	"private": true,
 	"dependencies": {

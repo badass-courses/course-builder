@@ -23,10 +23,10 @@
 	"dependencies": {
 		"@auth/core": "^0.37.2",
 		"@casl/ability": "^6.5.0",
-		"@coursebuilder/adapter-drizzle": "0.5.2",
-		"@coursebuilder/core": "0.2.4",
+		"@coursebuilder/adapter-drizzle": "1.0.0",
+		"@coursebuilder/core": "1.0.0",
 		"@coursebuilder/next": "workspace:^",
-		"@coursebuilder/ui": "^1.0.17",
+		"@coursebuilder/ui": "^2.0.0",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
 		"@mdx-js/loader": "^3.1.0",
