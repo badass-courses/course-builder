@@ -24,7 +24,7 @@ export default function Footer() {
 				</Link>
 			</div>
 			<div className="container mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light sm:justify-start">
-				<span className="opacity-75">© AIHero.dev</span>
+				<span className="opacity-75">© golocalfirst.dev</span>
 				<Link
 					className="opacity-75 transition hover:opacity-100"
 					href="/privacy"
