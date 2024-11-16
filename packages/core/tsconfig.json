@@ -24,7 +24,7 @@
 		"outDir": ".",
 		"rootDir": "src"
 	},
-	"include": [".eslintrc.cjs", "src/**/*"],
+	"include": [".eslintrc.cjs", "src/**/*", "test/**/*"],
 	"exclude": [
 		"node_modules",
 		"*.js",

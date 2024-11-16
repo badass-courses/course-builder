@@ -1,6 +1,11 @@
-import { parseCheckoutSession } from '../../providers/stripe'
+import Stripe from 'stripe'
+
+import { parsePurchaseInfoFromCheckoutSession } from '../../lib/pricing/stripe-purchase-utils'
 import { User } from '../../schemas'
-import { CheckoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
+import {
+	CheckoutSessionCompletedEvent,
+	checkoutSessionCompletedEvent,
+} from '../../schemas/stripe/checkout-session-completed'
 import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
 import {
 	CoreInngestFunctionInput,
@@ -46,7 +51,9 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 		//  find or create the merchant customer in the database
 		//  create a merchant charge and purchase in the database
 
-		const stripeEvent = event.data.stripeEvent
+		const stripeEvent = checkoutSessionCompletedEvent.parse(
+			event.data.stripeEvent,
+		)
 		const paymentsAdapter = paymentProvider.options.paymentsAdapter
 		const stripeCheckoutSession = stripeEvent.data.object
 
@@ -72,83 +79,93 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			},
 		)
 
-		const purchaseInfo = await step.run('parse checkout session', async () => {
-			return await parseCheckoutSession(checkoutSession, db)
-		})
+		if (checkoutSession.mode === 'payment') {
+			// this could be a separate function that gets invoked here
+			const purchaseInfo = await step.run(
+				'parse checkout session',
+				async () => {
+					return await parsePurchaseInfoFromCheckoutSession(checkoutSession, db)
+				},
+			)
 
-		const { user, isNewUser } = await step.run('load the user', async () => {
-			if (!purchaseInfo.email) {
-				throw new Error('purchaseInfo.email is null')
-			}
-			return await db.findOrCreateUser(purchaseInfo.email)
-		})
+			const { user, isNewUser } = await step.run('load the user', async () => {
+				if (!purchaseInfo.email) {
+					throw new Error('purchaseInfo.email is null')
+				}
+				return await db.findOrCreateUser(purchaseInfo.email)
+			})
 
-		const merchantProduct = await step.run(
-			'load the merchant product',
-			async () => {
-				if (!purchaseInfo.productIdentifier) {
-					throw new Error('purchaseInfo.productIdentifier is null')
-				}
-				return await db.getMerchantProduct(purchaseInfo.productIdentifier)
-			},
-		)
+			const merchantProduct = await step.run(
+				'load the merchant product',
+				async () => {
+					if (!purchaseInfo.productIdentifier) {
+						throw new Error('purchaseInfo.productIdentifier is null')
+					}
+					return await db.getMerchantProduct(purchaseInfo.productIdentifier)
+				},
+			)
 
-		const merchantCustomer = await step.run(
-			'load the merchant customer',
-			async () => {
-				if (!purchaseInfo.customerIdentifier) {
-					throw new Error('purchaseInfo.customerIdentifier is null')
-				}
-				return await db.findOrCreateMerchantCustomer({
-					user: user as User,
-					identifier: purchaseInfo.customerIdentifier,
-					merchantAccountId: merchantAccount.id,
-				})
-			},
-		)
+			const merchantCustomer = await step.run(
+				'load the merchant customer',
+				async () => {
+					if (!purchaseInfo.customerIdentifier) {
+						throw new Error('purchaseInfo.customerIdentifier is null')
+					}
+					return await db.findOrCreateMerchantCustomer({
+						user: user as User,
+						identifier: purchaseInfo.customerIdentifier,
+						merchantAccountId: merchantAccount.id,
+					})
+				},
+			)
 
-		const purchase = await step.run(
-			'create a merchant charge and purchase',
-			async () => {
-				if (!merchantProduct) {
-					throw new Error('merchantProduct is null')
-				}
-				if (!merchantCustomer) {
-					throw new Error('merchantCustomer is null')
-				}
-				if (!purchaseInfo.chargeIdentifier) {
-					throw new Error('purchaseInfo.chargeIdentifier is null')
-				}
-				return await db.createMerchantChargeAndPurchase({
-					userId: user.id,
-					productId: merchantProduct.productId,
-					stripeChargeId: purchaseInfo.chargeIdentifier,
-					stripeCouponId: purchaseInfo.couponIdentifier,
-					merchantAccountId: merchantAccount.id,
-					merchantProductId: merchantProduct.id,
-					merchantCustomerId: merchantCustomer.id,
-					stripeChargeAmount: purchaseInfo.chargeAmount || 0,
-					quantity: purchaseInfo.quantity,
+			const purchase = await step.run(
+				'create a merchant charge and purchase',
+				async () => {
+					if (!merchantProduct) {
+						throw new Error('merchantProduct is null')
+					}
+					if (!merchantCustomer) {
+						throw new Error('merchantCustomer is null')
+					}
+
+					return await db.createMerchantChargeAndPurchase({
+						userId: user.id,
+						productId: merchantProduct.productId,
+						stripeChargeId: purchaseInfo.chargeIdentifier,
+						stripeCouponId: purchaseInfo.couponIdentifier,
+						merchantAccountId: merchantAccount.id,
+						merchantProductId: merchantProduct.id,
+						merchantCustomerId: merchantCustomer.id,
+						stripeChargeAmount: purchaseInfo.chargeAmount,
+						quantity: purchaseInfo.quantity,
+						checkoutSessionId: stripeCheckoutSession.id,
+						country: purchaseInfo.metadata?.country,
+						appliedPPPStripeCouponId:
+							purchaseInfo.metadata?.appliedPPPStripeCouponId,
+						upgradedFromPurchaseId:
+							purchaseInfo.metadata?.upgradedFromPurchaseId,
+						usedCouponId: purchaseInfo.metadata?.usedCouponId,
+					})
+				},
+			)
+
+			await step.sendEvent(NEW_PURCHASE_CREATED_EVENT, {
+				name: NEW_PURCHASE_CREATED_EVENT,
+				data: {
+					purchaseId: purchase.id,
 					checkoutSessionId: stripeCheckoutSession.id,
-					country: purchaseInfo.metadata?.country,
-					appliedPPPStripeCouponId:
-						purchaseInfo.metadata?.appliedPPPStripeCouponId,
-					upgradedFromPurchaseId: purchaseInfo.metadata?.upgradedFromPurchaseId,
-					usedCouponId: purchaseInfo.metadata?.usedCouponId,
-				})
-			},
-		)
+				},
+				user,
+			})
 
-		await step.sendEvent(NEW_PURCHASE_CREATED_EVENT, {
-			name: NEW_PURCHASE_CREATED_EVENT,
-			data: {
-				purchaseId: purchase.id,
-				checkoutSessionId: stripeCheckoutSession.id,
-			},
-			user,
-		})
+			return { purchase, purchaseInfo }
+		}
 
-		return { purchase, purchaseInfo }
+		if (checkoutSession.mode === 'subscription') {
+			//this is where we will handle subscription payments
+			console.log('subscription payment not handled here', checkoutSession)
+		}
 	}
 
 export const stripeCheckoutSessionComplete = {

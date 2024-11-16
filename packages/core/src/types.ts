@@ -171,14 +171,6 @@ export interface PaymentsAdapter {
 	createProduct(
 		product: Stripe.ProductCreateParams,
 	): Promise<Stripe.Response<Stripe.Product>>
-	getSubscription(
-		subscriptionId: string,
-	): Promise<
-		Stripe.Response<
-			Stripe.Subscription & { latest_invoice: { charge: Stripe.Charge } }
-		>
-	>
-	getCharge(chargeId: string): Promise<Stripe.Response<Stripe.Charge>>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'

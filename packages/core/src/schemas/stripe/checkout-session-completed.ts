@@ -15,7 +15,7 @@ const customerDetailsSchema = z.object({
 	name: z.string().nullable(),
 })
 
-const dataObjectSchema = z.object({
+const baseDataObjectSchema = {
 	id: z.string(),
 	object: z.literal('checkout.session'),
 	amount_subtotal: z.number(),
@@ -27,8 +27,6 @@ const dataObjectSchema = z.object({
 	customer_details: customerDetailsSchema,
 	livemode: z.boolean(),
 	metadata: z.record(z.string()),
-	mode: z.enum(['payment', 'setup', 'subscription']),
-	payment_intent: z.string(),
 	payment_method_collection: z.string(),
 	payment_status: z.string(),
 	phone_number_collection: z.object({ enabled: z.boolean() }),
@@ -39,7 +37,28 @@ const dataObjectSchema = z.object({
 		amount_shipping: z.number(),
 		amount_tax: z.number(),
 	}),
-})
+}
+
+const dataObjectSchema = z.discriminatedUnion('mode', [
+	z.object({
+		...baseDataObjectSchema,
+		mode: z.literal('payment'),
+		payment_intent: z.string(),
+		subscription: z.null(),
+	}),
+	z.object({
+		...baseDataObjectSchema,
+		mode: z.literal('subscription'),
+		payment_intent: z.null(),
+		subscription: z.string(),
+	}),
+	z.object({
+		...baseDataObjectSchema,
+		mode: z.literal('setup'),
+		payment_intent: z.null(),
+		subscription: z.null(),
+	}),
+])
 
 const dataSchema = z.object({
 	object: dataObjectSchema,
