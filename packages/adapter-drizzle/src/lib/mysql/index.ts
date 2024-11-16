@@ -61,6 +61,8 @@ import {
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
+import { OrganizationMemberSchema } from '@coursebuilder/core/schemas/organization-member'
+import { OrganizationSchema } from '@coursebuilder/core/schemas/organization-schema'
 import { type ModuleProgress } from '@coursebuilder/core/schemas/resource-progress-schema'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { PaymentsProviderConfig } from '@coursebuilder/core/types'
@@ -342,6 +344,10 @@ export function mySqlDrizzleAdapter(
 		upgradableProducts,
 		resourceProgress,
 		comments,
+		organization: organizationTable,
+		organizationMemberships: organizationMembershipTable,
+		organizationMembershipRoles: organizationMembershipRoleTable,
+		roles: roleTable,
 	} = createTables(tableFn)
 
 	const adapter: CourseBuilderAdapter = {
@@ -2441,6 +2447,32 @@ export function mySqlDrizzleAdapter(
 
 				await client.insert(users).values({ ...data, id })
 
+				// creating a personal organization for the user
+				// every user gets an organization of their very own
+				const personalOrganization = await adapter.createOrganization({
+					name: `Personal (${data.email})`,
+				})
+
+				if (!personalOrganization) {
+					throw new Error('Failed to create personal organization')
+				}
+
+				const membership = await adapter.addMemberToOrganization({
+					organizationId: personalOrganization.id,
+					userId: id,
+					invitedById: id,
+				})
+
+				if (!membership) {
+					throw new Error('Failed to add user to personal organization')
+				}
+
+				await adapter.addRoleForMember({
+					organizationId: personalOrganization.id,
+					memberId: id,
+					role: 'owner',
+				})
+
 				return await client
 					.select()
 					.from(users)
@@ -2630,6 +2662,149 @@ export function mySqlDrizzleAdapter(
 				)
 
 			return undefined
+		},
+		createOrganization: async (options: { name: string }) => {
+			const organizationId = crypto.randomUUID()
+			await client.insert(organizationTable).values({
+				...options,
+				id: organizationId,
+			})
+
+			return adapter.getOrganization(organizationId)
+		},
+		getOrganization: async (organizationId: string) => {
+			return OrganizationSchema.parse(
+				await client.query.organizations.findFirst({
+					where: eq(organizationTable.id, organizationId),
+				}),
+			)
+		},
+		addMemberToOrganization: async (options: {
+			organizationId: string
+			userId: string
+			invitedById: string
+		}) => {
+			const id = crypto.randomUUID()
+			await client.insert(organizationMembershipTable).values({
+				...options,
+				id,
+			})
+
+			return OrganizationMemberSchema.parse(
+				await client.query.organizationMemberships.findFirst({
+					where: eq(organizationMembershipTable.id, id),
+				}),
+			)
+		},
+		removeMemberFromOrganization: async (options: {
+			organizationId: string
+			userId: string
+		}) => {
+			await client
+				.delete(organizationMembershipTable)
+				.where(
+					and(
+						eq(
+							organizationMembershipTable.organizationId,
+							options.organizationId,
+						),
+						eq(organizationMembershipTable.userId, options.userId),
+					),
+				)
+		},
+		addRoleForMember: async (options: {
+			organizationId: string
+			memberId: string
+			role: string
+		}) => {
+			const existingRole = z
+				.object({
+					id: z.string(),
+				})
+				.nullable()
+				.parse(
+					await client.query.role.findFirst({
+						where: and(
+							eq(roleTable.organizationId, options.organizationId),
+							eq(roleTable.name, options.role),
+						),
+					}),
+				)
+
+			const roleId = existingRole?.id || crypto.randomUUID()
+
+			if (!existingRole) {
+				await client.insert(roleTable).values({
+					name: options.role,
+					organizationId: options.organizationId,
+					id: roleId,
+				})
+			}
+
+			await client.insert(organizationMembershipRoleTable).values({
+				organizationMembershipId: options.memberId,
+				roleId,
+			})
+		},
+		removeRoleForMember: async (options: {
+			organizationId: string
+			memberId: string
+			role: string
+		}) => {
+			const existingRole = z
+				.object({
+					id: z.string(),
+				})
+				.nullable()
+				.parse(
+					await client.query.role.findFirst({
+						where: and(
+							eq(roleTable.organizationId, options.organizationId),
+							eq(roleTable.name, options.role),
+						),
+					}),
+				)
+
+			const roleId = existingRole?.id
+
+			if (roleId) {
+				await client
+					.delete(organizationMembershipRoleTable)
+					.where(eq(organizationMembershipRoleTable.roleId, roleId))
+			}
+		},
+		getMembershipsForUser: async (userId: string) => {
+			return OrganizationMemberSchema.array().parse(
+				await client.query.organizationMemberships.findMany({
+					where: eq(organizationMembershipTable.userId, userId),
+				}),
+			)
+		},
+		getOrganizationMembers: async (organizationId: string) => {
+			return OrganizationMemberSchema.array().parse(
+				await client.query.organizationMemberships.findMany({
+					where: eq(organizationMembershipTable.organizationId, organizationId),
+				}),
+			)
+		},
+		getMerchantSubscription: async (merchantSubscriptionId: string) => {
+			throw new Error('Not implemented')
+		},
+		createMerchantSubscription: async (options: {
+			merchantAccountId: string
+			merchantCustomerId: string
+			merchantProductId: string
+		}) => {
+			throw new Error('Not implemented')
+		},
+		updateMerchantSubscription: async (options: {
+			merchantSubscriptionId: string
+			status: string
+		}) => {
+			throw new Error('Not implemented')
+		},
+		deleteMerchantSubscription: async (merchantSubscriptionId: string) => {
+			throw new Error('Not implemented')
 		},
 	}
 

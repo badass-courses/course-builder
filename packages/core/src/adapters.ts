@@ -13,6 +13,9 @@ import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
 import { MerchantPrice } from './schemas/merchant-price-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
+import { MerchantSubscription } from './schemas/merchant-subscription'
+import { OrganizationMember } from './schemas/organization-member'
+import { Organization } from './schemas/organization-schema'
 import { Price } from './schemas/price-schema'
 import { Product } from './schemas/product-schema'
 import { Purchase } from './schemas/purchase-schema'
@@ -88,6 +91,42 @@ export interface CourseBuilderAdapter<
 		targetUserId: string
 		sourceUserId: string
 	}): Promise<PurchaseUserTransfer | null>
+	createOrganization(options: { name: string }): Promise<Organization | null>
+	getOrganization(organizationId: string): Promise<Organization | null>
+	addMemberToOrganization(options: {
+		organizationId: string
+		userId: string
+		invitedById: string
+	}): Promise<OrganizationMember | null>
+	removeMemberFromOrganization(options: {
+		organizationId: string
+		userId: string
+	}): Promise<void>
+	addRoleForMember(options: {
+		organizationId: string
+		memberId: string
+		role: string
+	}): Promise<void>
+	removeRoleForMember(options: {
+		organizationId: string
+		memberId: string
+		role: string
+	}): Promise<void>
+	getMembershipsForUser(userId: string): Promise<OrganizationMember[]>
+	getOrganizationMembers(organizationId: string): Promise<OrganizationMember[]>
+	getMerchantSubscription(
+		merchantSubscriptionId: string,
+	): Promise<MerchantSubscription | null>
+	createMerchantSubscription(options: {
+		merchantAccountId: string
+		merchantCustomerId: string
+		merchantProductId: string
+	}): Promise<MerchantSubscription | null>
+	updateMerchantSubscription(options: {
+		merchantSubscriptionId: string
+		status: string
+	}): Promise<MerchantSubscription | null>
+	deleteMerchantSubscription(merchantSubscriptionId: string): Promise<void>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -364,6 +403,18 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	updateContentResourceFields(_) {
 		return null
 	},
+	createOrganization: async () => null,
+	getOrganization: async () => null,
+	addMemberToOrganization: async () => null,
+	removeMemberFromOrganization: async () => undefined,
+	addRoleForMember: async () => undefined,
+	removeRoleForMember: async () => undefined,
+	getMembershipsForUser: async () => [],
+	getOrganizationMembers: async () => [],
+	getMerchantSubscription: async () => null,
+	createMerchantSubscription: async () => null,
+	updateMerchantSubscription: async () => null,
+	deleteMerchantSubscription: async () => undefined,
 }
 
 interface SkillProductsCommerceSdk {
