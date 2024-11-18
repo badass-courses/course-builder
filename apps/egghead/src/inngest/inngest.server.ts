@@ -20,11 +20,11 @@ import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
-import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
 	EGGHEAD_LESSON_CREATED_EVENT,
 	EggheadLessonCreated,
 } from './events/egghead/lesson-created'
+import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
 	TIPS_UPDATED_EVENT,
 	TipsUpdated,
