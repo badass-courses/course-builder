@@ -13,9 +13,9 @@ import type {
 	SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
 import {
+	createSanityLesson,
 	getSanityCollaborator,
 	getSanitySoftwareLibrary,
-	postSanityLesson,
 } from '@/lib/sanity-content-query'
 
 export const syncLessonToSanity = inngest.createFunction(
@@ -54,7 +54,7 @@ export const syncLessonToSanity = inngest.createFunction(
 		)) as SanityCollaboratorReferenceObject
 
 		const sanityLesson = await step.run('Create lesson in sanity', async () => {
-			return await postSanityLesson(
+			return await createSanityLesson(
 				lesson,
 				sanityCollaboratorReferenceObject,
 				versionedSoftwareLibraryReferences,

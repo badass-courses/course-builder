@@ -1,8 +1,8 @@
 import { courseBuilderAdapter } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
 import {
+	createSanityVideoResource,
 	patchSanityLessonWithVideoResourceReference,
-	postSanityVideoResource,
 } from '@/lib/sanity-content-query'
 import { getResourceOfVideoResource } from '@/lib/video-resource-query'
 import { NonRetriableError } from 'inngest'
@@ -37,7 +37,7 @@ export const syncVideoResourceToSanity = inngest.createFunction(
 		const sanityVideoResourceDocument = await step.run(
 			'Create video resource in sanity',
 			async () => {
-				return await postSanityVideoResource(courseBuilderVideoResource)
+				return await createSanityVideoResource(courseBuilderVideoResource)
 			},
 		)
 

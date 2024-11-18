@@ -18,7 +18,7 @@ import { sanityWriteClient } from '@/server/sanity-write-client'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
 
-export async function postSanityVideoResource(videoResource: VideoResource) {
+export async function createSanityVideoResource(videoResource: VideoResource) {
 	const { muxPlaybackId, muxAssetId, transcript, srt, id } = videoResource
 
 	const streamUrl =
@@ -82,7 +82,7 @@ export async function getSanityLesson(
 	)
 }
 
-export async function postSanityLesson(
+export async function createSanityLesson(
 	eggheadLesson: EggheadLesson,
 	collaborator: SanityCollaboratorReferenceObject,
 	softwareLibraries: SanityVersionedSoftwareLibraryObject[],
