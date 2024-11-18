@@ -1,5 +1,6 @@
 import {
 	decimal,
+	index,
 	int,
 	MySqlTableFn,
 	primaryKey,
@@ -13,6 +14,7 @@ export function getMerchantCouponSchema(mysqlTable: MySqlTableFn) {
 		{
 			id: varchar('id', { length: 191 }).notNull(),
 			identifier: varchar('identifier', { length: 191 }),
+			organizationId: varchar('organizationId', { length: 191 }),
 			status: int('status').default(0).notNull(),
 			merchantAccountId: varchar('merchantAccountId', {
 				length: 191,
@@ -32,6 +34,7 @@ export function getMerchantCouponSchema(mysqlTable: MySqlTableFn) {
 				merchantCouponIdentifierKey: unique('MerchantCoupon_identifier_key').on(
 					table.identifier,
 				),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

@@ -18,6 +18,7 @@ export function getUserRolesSchema(mysqlTable: MySqlTableFn) {
 			userId: varchar('userId', { length: 255 }).notNull(),
 			roleId: varchar('roleId', { length: 255 }).notNull(),
 			active: boolean('active').notNull().default(true),
+			organizationId: varchar('organizationId', { length: 191 }),
 			createdAt: timestamp('createdAt', {
 				mode: 'date',
 				fsp: 3,
@@ -35,6 +36,7 @@ export function getUserRolesSchema(mysqlTable: MySqlTableFn) {
 			pk: primaryKey({ columns: [ur.userId, ur.roleId] }),
 			userIdIdx: index('userId_idx').on(ur.userId),
 			roleIdIdx: index('roleId_idx').on(ur.roleId),
+			organizationIdIdx: index('organizationId_idx').on(ur.organizationId),
 		}),
 	)
 }

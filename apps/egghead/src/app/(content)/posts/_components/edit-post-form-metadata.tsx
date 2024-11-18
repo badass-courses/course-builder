@@ -230,7 +230,7 @@ export const PostMetadataFormFields: React.FC<{
 				<FormLabel className="text-lg font-bold">Tags</FormLabel>
 				<AdvancedTagSelector
 					availableTags={tags}
-					selectedTags={post.tags.map((tag) => tag.tag)}
+					selectedTags={post?.tags?.map((tag) => tag.tag) ?? []}
 					onTagSelect={async (tag: EggheadTag) => {
 						await addTagToPost(post.id, tag.id)
 					}}

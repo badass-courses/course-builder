@@ -70,17 +70,30 @@ const Home = async (props: Props) => {
 	const searchParams = await props.searchParams
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
-	const page = await getPage(allowPurchase ? 'home-6z2ir' : 'home-6z2ir')
+	const page = await getPage(allowPurchase ? 'home-z9ik9' : 'home-z9ik9')
 	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return (
 		<div className="">
-			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-16 lg:aspect-[1920/1080] lg:pt-[7vw]">
-				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
-					<h1 className="font-heading sm:fluid-4xl fluid-3xl w-full max-w-4xl text-balance text-center font-bold text-[#221801] shadow-[#AD9F95] drop-shadow-xl sm:text-black">
+			<header className="relative mx-auto flex w-full flex-col items-center justify-center">
+				<div className="relative z-10 mt-20 flex flex-col items-center justify-center px-5">
+					<h1 className="leading-0 font-heading sm:fluid-3xl fluid-2xl w-full max-w-4xl text-center font-bold">
 						{config.defaultTitle}
 					</h1>
+					<h2 className="font-heading sm:fluid-lg fluid-base text-muted-foreground mb-5 mt-7 items-center text-balance text-center font-normal !tracking-tight sm:inline-flex">
+						Professional Course by{' '}
+						<Image
+							src={require('../../public/nik-graf.jpeg')}
+							alt={config.author}
+							priority
+							className="ml-2 mr-1 inline-block rounded-full"
+							width={32}
+							quality={100}
+							height={32}
+						/>{' '}
+						Nik Graf
+					</h2>
 				</div>
 			</header>
 

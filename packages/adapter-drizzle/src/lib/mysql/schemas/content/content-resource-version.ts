@@ -17,6 +17,7 @@ export function getContentResourceVersionSchema(mysqlTable: MySqlTableFn) {
 		'ContentResourceVersion',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			resourceId: varchar('resourceId', { length: 255 }).notNull(),
 			parentVersionId: varchar('parentVersionId', { length: 255 }),
 			versionNumber: int('versionNumber').notNull(),
@@ -38,6 +39,7 @@ export function getContentResourceVersionSchema(mysqlTable: MySqlTableFn) {
 				crv.resourceId,
 				crv.versionNumber,
 			),
+			organizationIdIdx: index('organizationId_idx').on(crv.organizationId),
 		}),
 	)
 }

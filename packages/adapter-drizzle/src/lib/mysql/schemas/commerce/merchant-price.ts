@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import {
+	index,
 	int,
 	MySqlTableFn,
 	primaryKey,
@@ -13,6 +14,7 @@ export function getMerchantPriceSchema(mysqlTable: MySqlTableFn) {
 		'MerchantPrice',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			merchantAccountId: varchar('merchantAccountId', {
 				length: 191,
 			}).notNull(),
@@ -35,6 +37,7 @@ export function getMerchantPriceSchema(mysqlTable: MySqlTableFn) {
 				merchantPriceIdentifierKey: unique('MerchantPrice_identifier_key').on(
 					table.identifier,
 				),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

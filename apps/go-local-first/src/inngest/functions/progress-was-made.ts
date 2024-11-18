@@ -37,18 +37,21 @@ export const progressWasMade = inngest.createFunction(
 				return db.getLessonProgressForUser(event.user.id)
 			})) || []
 
-		const aiHeroModules = await step.run(`get ai hero product`, async () => {
-			const productResources =
-				(await db.getProductResources('product-ypo8b')) || []
-			const modules = []
-			for (let resource of productResources) {
-				if (resource.type === 'workshop') {
-					modules.push(resource)
+		const glfModules = await step.run(
+			`get go local first product`,
+			async () => {
+				const productResources =
+					(await db.getProductResources('product-ypo8b')) || []
+				const modules = []
+				for (let resource of productResources) {
+					if (resource.type === 'workshop') {
+						modules.push(resource)
+					}
 				}
-			}
 
-			return z.array(ModuleSchema).parse(modules)
-		})
+				return z.array(ModuleSchema).parse(modules)
+			},
+		)
 
 		const lessonParentModule = await step.run(
 			`get lesson parent module`,
@@ -93,12 +96,15 @@ export const progressWasMade = inngest.createFunction(
 
 		if (!lessonParentModule) return 'no module found'
 
-		const progress = await step.run(`get ai hero module progress`, async () => {
-			return await db.getModuleProgressForUser(
-				event.user.id,
-				lessonParentModule.fields.slug,
-			)
-		})
+		const progress = await step.run(
+			`get go local first module progress`,
+			async () => {
+				return await db.getModuleProgressForUser(
+					event.user.id,
+					lessonParentModule.fields.slug,
+				)
+			},
+		)
 
 		if (!progress) return 'no progress or module found'
 
@@ -110,7 +116,7 @@ export const progressWasMade = inngest.createFunction(
 		)
 
 		let emailResourceId = 'email-t21sa'
-		let emailSubject = "You've made progress with AI Hero"
+		let emailSubject = "You've made progress with go local first"
 		let emailPreview = 'keep going!'
 		let emailCTA = `You got this.`
 		let nextLessonUrl = progress
@@ -119,7 +125,7 @@ export const progressWasMade = inngest.createFunction(
 
 		switch (true) {
 			case userProgress.length === 1:
-				emailSubject = "You've taken the first step with AI Hero"
+				emailSubject = "You've taken the first step with go local first"
 				emailCTA = `How's the course so far?`
 				break
 			case moduleComplete:

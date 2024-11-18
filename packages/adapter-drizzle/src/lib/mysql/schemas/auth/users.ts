@@ -13,6 +13,7 @@ import { getCommentsSchema } from '../communication/comment.js'
 import { getCommunicationPreferencesSchema } from '../communication/communication-preferences.js'
 import { getContentContributionsSchema } from '../content/content-contributions.js'
 import { getContentResourceSchema } from '../content/content-resource.js'
+import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getAccountsSchema } from './accounts.js'
 import { getUserPermissionsSchema } from './user-permissions.js'
 import { getUserPrefsSchema } from './user-prefs.js'
@@ -56,6 +57,7 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const purchases = getPurchaseSchema(mysqlTable)
 	const comments = getCommentsSchema(mysqlTable)
 	const userPrefs = getUserPrefsSchema(mysqlTable)
+	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	return relations(users, ({ many }) => ({
 		accounts: many(accounts, {
 			relationName: 'user',
@@ -82,6 +84,9 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 			relationName: 'user',
 		}),
 		prefs: many(userPrefs, {
+			relationName: 'user',
+		}),
+		organizationMemberships: many(organizationMemberships, {
 			relationName: 'user',
 		}),
 	}))
