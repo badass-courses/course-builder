@@ -39,7 +39,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
 import {
-	crreateEggheadLesson,
+	createEggheadLesson,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
 	getEggheadUserProfile,
@@ -316,7 +316,7 @@ export async function writeNewPostToDatabase(input: {
 	const videoResource =
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
 
-	const eggheadLessonId = await crreateEggheadLesson({
+	const eggheadLessonId = await createEggheadLesson({
 		title: title,
 		slug: `${slugify(title)}~${postGuid}`,
 		instructorId: eggheadInstructorId,
