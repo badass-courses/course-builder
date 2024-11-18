@@ -38,7 +38,7 @@ export async function getPages(): Promise<Page[]> {
 
 	const pagesParsed = z.array(PageSchema).safeParse(pages)
 	if (!pagesParsed.success) {
-		console.error('Error parsing pages', pagesParsed)
+		console.debug('Error parsing pages', pagesParsed.error)
 		return []
 	}
 

@@ -21,7 +21,7 @@ export function generateGridPattern(
 
 			// Generate square outline
 			const squarePath = generateSquarePath(x, y, squareSize)
-			svgElements += `<path d="${squarePath}" stroke="#524C46" stroke-width="2" fill="none" />`
+			svgElements += `<path d="${squarePath}" stroke="#524C46" strokeWidth="2" fill="none" />`
 
 			const shapes: string[] = [
 				'M6 6h14v11h-6.8v-5.2h2V15H18V8H8v15h32V8H30v7h2.8v-3.2h2V17H28V6h14v36H28V31h6.8v5.2h-2V33H30v7h10V25H8v15h10v-7h-2.8v3.2h-2V31H20v11H6V6Z',

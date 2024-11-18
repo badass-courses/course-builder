@@ -1,3 +1,4 @@
+import { slackProvider } from '@/coursebuilder/slack-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
@@ -23,6 +24,7 @@ import {
 	EGGHEAD_LESSON_CREATED_EVENT,
 	EggheadLessonCreated,
 } from './events/egghead/lesson-created'
+import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
 	TIPS_UPDATED_EVENT,
 	TipsUpdated,
@@ -40,6 +42,7 @@ export type Events = {
 	[POST_UPDATED_EVENT]: PostUpdated
 	[TIPS_UPDATED_EVENT]: TipsUpdated
 	[EGGHEAD_LESSON_CREATED_EVENT]: EggheadLessonCreated
+	[POST_CREATED_EVENT]: PostCreated
 }
 
 const callbackBase =
@@ -60,6 +63,7 @@ const middleware = createInngestMiddleware({
 		apiKey: env.DEEPGRAM_API_KEY,
 		callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
 	}),
+	notificationProvider: slackProvider,
 	getAuthConfig: () => authOptions,
 })
 

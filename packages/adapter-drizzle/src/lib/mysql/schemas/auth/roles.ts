@@ -15,6 +15,7 @@ export function getRolesSchema(mysqlTable: MySqlTableFn) {
 		'Role',
 		{
 			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			name: varchar('name', { length: 255 }).notNull().unique(),
 			description: text('description'),
 			active: boolean('active').notNull().default(true),
@@ -33,6 +34,7 @@ export function getRolesSchema(mysqlTable: MySqlTableFn) {
 		},
 		(role) => ({
 			nameIdx: index('name_idx').on(role.name),
+			organizationIdIdx: index('organizationId_idx').on(role.organizationId),
 		}),
 	)
 }
@@ -40,6 +42,7 @@ export function getRolesSchema(mysqlTable: MySqlTableFn) {
 export function getRolesRelationsSchema(mysqlTable: MySqlTableFn) {
 	const roles = getRolesSchema(mysqlTable)
 	const userRoles = getUserRolesSchema(mysqlTable)
+
 	return relations(roles, ({ many }) => ({
 		userRoles: many(userRoles, { relationName: 'role' }),
 	}))

@@ -1,5 +1,11 @@
 # @coursebuilder/adapter-drizzle
 
+## 1.0.0
+
+### Major Changes
+
+- [#320](https://github.com/badass-courses/course-builder/pull/320) [`d6caa19`](https://github.com/badass-courses/course-builder/commit/d6caa19626edc5424c39fca90b293311d852cc12) Thanks [@joelhooks](https://github.com/joelhooks)! - adds organizations for multi-tenant
+
 ## 0.5.2
 
 ### Patch Changes

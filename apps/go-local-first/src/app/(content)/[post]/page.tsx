@@ -23,6 +23,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
 
+import { Transcript } from '../_components/video-transcript-renderer'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
@@ -85,6 +86,8 @@ async function Post({ post }: { post: Post | null }) {
 		return null
 	}
 
+	const transcript = post.resources?.[0]?.resource?.fields?.transcript
+
 	return (
 		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
 			{post.fields.body && (
@@ -111,6 +114,16 @@ async function Post({ post }: { post: Post | null }) {
 						},
 					}}
 				/>
+			)}
+			{transcript && (
+				<>
+					<div className="mt-10 border-t px-5 pt-8 sm:px-8">
+						<h3 className="font-heading mb-8 text-2xl font-bold leading-none">
+							Transcript
+						</h3>
+						<Transcript transcriptLoader={Promise.resolve(transcript)} />
+					</div>
+				</>
 			)}
 		</article>
 	)
@@ -172,10 +185,10 @@ export default async function PostPage(props: {
 						'top-0': !hasVideo,
 					})}
 				>
-					<img
+					{/* <img
 						src={squareGridPattern}
 						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
-					/>
+					/> */}
 					<div
 						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
 						aria-hidden="true"
@@ -236,7 +249,7 @@ export default async function PostPage(props: {
 			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 				<section id="buy">
 					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-						Get Really Good At Node.js
+						Get Really Good At Local First Development
 					</h2>
 					<div className="flex items-center justify-center border-y">
 						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">

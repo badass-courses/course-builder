@@ -16,6 +16,7 @@ export function getUserPermissionsSchema(mysqlTable: MySqlTableFn) {
 		'UserPermission',
 		{
 			userId: varchar('userId', { length: 255 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			permissionId: varchar('permissionId', { length: 255 }).notNull(),
 			active: boolean('active').notNull().default(true),
 			createdAt: timestamp('createdAt', {
@@ -35,6 +36,7 @@ export function getUserPermissionsSchema(mysqlTable: MySqlTableFn) {
 			pk: primaryKey({ columns: [up.userId, up.permissionId] }),
 			userIdIdx: index('userId_idx').on(up.userId),
 			permissionIdIdx: index('permissionId_idx').on(up.permissionId),
+			organizationIdIdx: index('organizationId_idx').on(up.organizationId),
 		}),
 	)
 }

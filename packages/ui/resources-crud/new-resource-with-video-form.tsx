@@ -52,7 +52,9 @@ export function NewResourceWithVideoForm({
 	children,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
-	createResource: (values: NewResourceWithVideo) => Promise<ContentResource>
+	createResource: (
+		values: NewResourceWithVideo,
+	) => Promise<ContentResource | null>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
 	availableResourceTypes?: string[] | undefined
 	className?: string
