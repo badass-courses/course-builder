@@ -192,6 +192,7 @@ export const eggheadLessonSchema = z.object({
 	summary: z.string().nullish(),
 	topic_list: z.array(z.string()),
 	free_forever: z.boolean(),
+	body: z.string(),
 	state: z.string(),
 	instructor: z.object({
 		id: z.number(),

@@ -94,7 +94,7 @@ export async function createSanityLesson(
 			_type: 'slug',
 			current: eggheadLesson.slug,
 		},
-		description: eggheadLesson.summary,
+		description: eggheadLesson.body,
 		railsLessonId: eggheadLesson.id,
 		status: eggheadLesson.state,
 		accessLevel: eggheadLesson.free_forever ? 'free' : 'pro',
