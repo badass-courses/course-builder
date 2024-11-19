@@ -41,15 +41,21 @@ const EditProfileForm: React.FC<{
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules)
 
-	console.log({ user })
-
 	const instructorProfile = user?.profiles.find(
 		(p: { type: string }) => p.type === 'instructor',
 	)
 
-	console.log({ instructorProfile })
-
-	const { mutateAsync: updateProfile } = api.users.updateProfile.useMutation()
+	const { mutateAsync: updateProfile } = api.users.updateProfile.useMutation({
+		onSuccess: async (data) => {
+			form.reset()
+			form.setValue('name', data.name as string)
+			form.setValue('blueSky', data.blueSky as string)
+			form.setValue('twitter', data.twitter as string)
+			form.setValue('website', data.website as string)
+			form.setValue('bio', data.bio as string)
+			toast({ title: 'Profile updated successfully!' })
+		},
+	})
 	const { toast } = useToast()
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -180,7 +186,7 @@ const EditProfileForm: React.FC<{
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel htmlFor="slackChannelId">
-												Slack Group ID
+												Slack Channel ID
 											</FormLabel>
 											<FormControl>
 												<Input
