@@ -125,27 +125,31 @@ const EditProfileForm: React.FC<{
 								</FormItem>
 							)}
 						/>
-						<FormField
-							name="affiliateCode"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="affiliateCode">Affiliate Code</FormLabel>
-									<FormControl>
-										<Input
-											readOnly
-											disabled
-											id="affiliateCode"
-											{...field}
-											onChange={field.onChange}
-										/>
-									</FormControl>
-									<FormDescription>
-										Append your code to the end of egghead URLs to track your
-										referrals.
-									</FormDescription>
-								</FormItem>
-							)}
-						/>
+						{ability.can('create', 'Content') && (
+							<FormField
+								name="affiliateCode"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel htmlFor="affiliateCode">
+											Affiliate Code
+										</FormLabel>
+										<FormControl>
+											<Input
+												readOnly
+												disabled
+												id="affiliateCode"
+												{...field}
+												onChange={field.onChange}
+											/>
+										</FormControl>
+										<FormDescription>
+											Append your code to the end of egghead URLs to track your
+											referrals.
+										</FormDescription>
+									</FormItem>
+								)}
+							/>
+						)}
 						<Gravatar
 							className="h-20 w-20 rounded-full"
 							email={user?.email}
@@ -201,75 +205,97 @@ const EditProfileForm: React.FC<{
 								/>
 							</>
 						)}
-						<hr />
-						<h2 className="text-xl font-semibold">
-							Instructor Profile (public)
-						</h2>
-						<FormField
-							name="name"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="name">Name</FormLabel>
-									<FormControl>
-										<Input
-											id="name"
-											{...field}
-											required
-											onChange={field.onChange}
-										/>
-									</FormControl>
-									<FormDescription></FormDescription>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name="Blue Sky"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="blueSky">Blue Sky</FormLabel>
-									<FormControl>
-										<Input id="blueSky" {...field} onChange={field.onChange} />
-									</FormControl>
-									<FormDescription></FormDescription>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name="twitter"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="twitter">Twitter</FormLabel>
-									<FormControl>
-										<Input id="twitter" {...field} onChange={field.onChange} />
-									</FormControl>
-									<FormDescription></FormDescription>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name="website"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="website">Website</FormLabel>
-									<FormControl>
-										<Input id="website" {...field} onChange={field.onChange} />
-									</FormControl>
-									<FormDescription></FormDescription>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name="bio"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="bio">Bio</FormLabel>
-									<FormControl>
-										<Textarea rows={5} {...field} value={field.value ?? ''} />
-									</FormControl>
-									<FormDescription>A short bio about yourself.</FormDescription>
-								</FormItem>
-							)}
-						/>
+						{ability.can('create', 'Content') && (
+							<>
+								<hr />
+								<h2 className="text-xl font-semibold">
+									Instructor Profile (public)
+								</h2>
+								<FormField
+									name="name"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel htmlFor="name">Name</FormLabel>
+											<FormControl>
+												<Input
+													id="name"
+													{...field}
+													required
+													onChange={field.onChange}
+												/>
+											</FormControl>
+											<FormDescription></FormDescription>
+										</FormItem>
+									)}
+								/>
+								<FormField
+									name="Blue Sky"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel htmlFor="blueSky">Blue Sky</FormLabel>
+											<FormControl>
+												<Input
+													id="blueSky"
+													{...field}
+													onChange={field.onChange}
+												/>
+											</FormControl>
+											<FormDescription></FormDescription>
+										</FormItem>
+									)}
+								/>
+								<FormField
+									name="twitter"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel htmlFor="twitter">Twitter</FormLabel>
+											<FormControl>
+												<Input
+													id="twitter"
+													{...field}
+													onChange={field.onChange}
+												/>
+											</FormControl>
+											<FormDescription></FormDescription>
+										</FormItem>
+									)}
+								/>
+								<FormField
+									name="website"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel htmlFor="website">Website</FormLabel>
+											<FormControl>
+												<Input
+													id="website"
+													{...field}
+													onChange={field.onChange}
+												/>
+											</FormControl>
+											<FormDescription></FormDescription>
+										</FormItem>
+									)}
+								/>
+								<FormField
+									name="bio"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel htmlFor="bio">Bio</FormLabel>
+											<FormControl>
+												<Textarea
+													rows={5}
+													{...field}
+													value={field.value ?? ''}
+												/>
+											</FormControl>
+											<FormDescription>
+												A short bio about yourself.
+											</FormDescription>
+										</FormItem>
+									)}
+								/>
+							</>
+						)}
 					</fieldset>
 					{(Object.keys(form.formState.dirtyFields).length > 0 ||
 						form.formState.isSubmitting) && (
