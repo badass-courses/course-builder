@@ -320,6 +320,7 @@ export async function writeNewPostToDatabase(input: {
 		title: title,
 		slug: `${slugify(title)}~${postGuid}`,
 		instructorId: eggheadInstructorId,
+		guid: postGuid,
 	})
 
 	await db

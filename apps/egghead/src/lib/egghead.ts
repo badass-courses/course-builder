@@ -75,13 +75,14 @@ export async function getEggheadLesson(eggheadLessonId: number) {
 export async function createEggheadLesson(input: {
 	title: string
 	slug: string
+	guid: string
 	instructorId: string | number
 }) {
-	const { title, slug, instructorId } = input
+	const { title, slug, guid, instructorId } = input
 	const eggheadLessonResult = await eggheadPgQuery(
 		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6)
+			created_at, updated_at, visibility_state, guid)
+		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6, $7)
 		RETURNING id`,
 		[
 			title,
@@ -90,6 +91,7 @@ export async function createEggheadLesson(input: {
 			EGGHEAD_LESSON_TYPE,
 			EGGHEAD_INITIAL_LESSON_STATE,
 			'hidden',
+			guid,
 		],
 	)
 
