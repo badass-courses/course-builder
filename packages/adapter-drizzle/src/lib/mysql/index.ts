@@ -83,7 +83,10 @@ import {
 	getPermissionsRelationsSchema,
 	getPermissionsSchema,
 } from './schemas/auth/permissions.js'
-import { getProfilesSchema } from './schemas/auth/profiles.js'
+import {
+	getProfilesRelationsSchema,
+	getProfilesSchema,
+} from './schemas/auth/profiles.js'
 import {
 	getRolePermissionsRelationsSchema,
 	getRolePermissionsSchema,
@@ -104,6 +107,10 @@ import {
 	getUserPrefsRelationsSchema,
 	getUserPrefsSchema,
 } from './schemas/auth/user-prefs.js'
+import {
+	getUserProfilesRelationsSchema,
+	getUserProfilesSchema,
+} from './schemas/auth/user-profiles.js'
 import {
 	getUserRolesRelationsSchema,
 	getUserRolesSchema,
@@ -307,6 +314,9 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		subscription: getSubscriptionSchema(mysqlTable),
 		subscriptionRelations: getSubscriptionRelationsSchema(mysqlTable),
 		profiles: getProfilesSchema(mysqlTable),
+		profilesRelations: getProfilesRelationsSchema(mysqlTable),
+		userProfiles: getUserProfilesSchema(mysqlTable),
+		userProfilesRelations: getUserProfilesRelationsSchema(mysqlTable),
 	} as const
 }
 

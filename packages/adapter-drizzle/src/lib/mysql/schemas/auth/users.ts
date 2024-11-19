@@ -61,10 +61,8 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const userPrefs = getUserPrefsSchema(mysqlTable)
 	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	return relations(users, ({ many, one }) => ({
-		profile: one(profiles, {
-			fields: [users.id],
-			references: [profiles.userId],
-			relationName: 'profile',
+		profiles: many(profiles, {
+			relationName: 'profiles',
 		}),
 		accounts: many(accounts, {
 			relationName: 'user',
