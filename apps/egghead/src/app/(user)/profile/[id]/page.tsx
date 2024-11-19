@@ -5,12 +5,13 @@ import { getServerAuthSession } from '@/server/auth'
 
 import EditProfileForm from '../_components/edit-profile-form'
 
-export default async function ProfilePage({
-	params,
-}: {
-	params: { id: string }
-}) {
+type Props = {
+	params: Promise<{ id: string }>
+}
+
+export default async function ProfilePage(props: Props) {
 	const { session, ability } = await getServerAuthSession()
+	const params = await props.params
 
 	const fullUser = await db.query.users.findFirst({
 		where: (users, { eq }) => eq(users.id, params.id),
