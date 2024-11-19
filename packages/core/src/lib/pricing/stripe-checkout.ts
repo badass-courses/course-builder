@@ -2,6 +2,7 @@ import { add } from 'date-fns'
 import first from 'lodash/first'
 import isEmpty from 'lodash/isEmpty'
 import { CourseBuilderAdapter } from 'src/adapters'
+import { CheckoutSessionMetadataSchema } from 'src/schemas/stripe/checkout-session-metadata'
 import Stripe from 'stripe'
 import { z } from 'zod'
 
@@ -26,6 +27,7 @@ export const CheckoutParamsSchema = z.object({
 	}, z.boolean()),
 	cancelUrl: z.string(),
 	usedCouponId: z.string().optional(),
+	organizationId: z.string().optional(),
 })
 
 export type CheckoutParams = z.infer<typeof CheckoutParamsSchema>
@@ -411,7 +413,7 @@ export async function stripeCheckout({
 				}
 			})()
 
-			const metadata = {
+			const metadata = CheckoutSessionMetadataSchema.parse({
 				...(Boolean(availableUpgrade && upgradeFromPurchase) && {
 					upgradeFromPurchaseId: upgradeFromPurchaseId as string,
 				}),
@@ -425,7 +427,8 @@ export async function stripeCheckout({
 				product: loadedProduct.name,
 				...(user && { userId: user.id }),
 				siteName: process.env.NEXT_PUBLIC_APP_NAME as string,
-			}
+				...(params.organizationId && { organizationId: params.organizationId }),
+			})
 
 			const isRecurring = stripePrice?.type === 'recurring'
 

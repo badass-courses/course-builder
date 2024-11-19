@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const subscriptionSchema = z.object({
+export const SubscriptionSchema = z.object({
 	id: z.string(),
 	organizationId: z.string().optional(),
 	productId: z.string(),
@@ -10,4 +10,4 @@ export const subscriptionSchema = z.object({
 	fields: z.record(z.any()).default({}),
 })
 
-export type Subscription = z.infer<typeof subscriptionSchema>
+export type Subscription = z.infer<typeof SubscriptionSchema>

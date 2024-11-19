@@ -26,6 +26,7 @@ export async function checkout(
 			request.query?.ip_address ||
 			request.headers?.['x-forwarded-for'] ||
 			'0.0.0.0',
+		organizationId: request.query?.organizationId,
 	})
 
 	if (!checkoutParamsParsed.success) {

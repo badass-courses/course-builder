@@ -12,6 +12,8 @@ import { getOrganizationsSchema } from '../org/organizations.js'
 import { getMerchantSubscriptionSchema } from './merchant-subscription.js'
 import { getProductSchema } from './product.js'
 
+// TODO: do we add a renewal date here? probably just add that stuff to fields
+// 	even status feels out of place at the top level maybe
 export function getSubscriptionSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
 		'Subscription',

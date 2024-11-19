@@ -135,6 +135,8 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 				'line_items.data.price.product',
 				'line_items.data.discounts',
 				'payment_intent.latest_charge',
+				'subscription',
+				'subscription.plan.product',
 			],
 		})
 	}

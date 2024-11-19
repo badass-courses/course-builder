@@ -13,6 +13,7 @@ import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
 import { MerchantPrice } from './schemas/merchant-price-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
+import { MerchantSession } from './schemas/merchant-session'
 import { MerchantSubscription } from './schemas/merchant-subscription'
 import { OrganizationMember } from './schemas/organization-member'
 import { Organization } from './schemas/organization-schema'
@@ -27,6 +28,7 @@ import {
 	ModuleProgress,
 	ResourceProgress,
 } from './schemas/resource-progress-schema'
+import { Subscription } from './schemas/subscription'
 import { User } from './schemas/user-schema'
 import { VideoResource } from './schemas/video-resource'
 import { type Awaitable } from './types'
@@ -80,6 +82,11 @@ export interface CourseBuilderAdapter<
 	getMerchantAccount(options: {
 		provider: 'stripe'
 	}): Promise<MerchantAccount | null>
+	createMerchantSession(options: {
+		identifier: string
+		merchantAccountId: string
+		organizationId?: string
+	}): Promise<MerchantSession>
 	createMerchantCustomer(options: {
 		userId: string
 		identifier: string
@@ -127,6 +134,11 @@ export interface CourseBuilderAdapter<
 		status: string
 	}): Promise<MerchantSubscription | null>
 	deleteMerchantSubscription(merchantSubscriptionId: string): Promise<void>
+	createSubscription(options: {
+		organizationId: string
+		merchantSubscriptionId: string
+		productId: string
+	}): Promise<Subscription | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -415,6 +427,8 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	createMerchantSubscription: async () => null,
 	updateMerchantSubscription: async () => null,
 	deleteMerchantSubscription: async () => undefined,
+	createMerchantSession: async () => Promise.resolve({} as MerchantSession),
+	createSubscription: async () => null,
 }
 
 interface SkillProductsCommerceSdk {
