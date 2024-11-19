@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
-import { accounts, users } from '@/db/schema'
+import { accounts, profiles, userProfiles, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import {
 	createTRPCRouter,
@@ -47,6 +47,8 @@ export const usersRouter = createTRPCRouter({
 				website: z.string(),
 				blueSky: z.string(),
 				bio: z.string(),
+				slackChannelId: z.string(),
+				slackId: z.string(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -63,27 +65,67 @@ export const usersRouter = createTRPCRouter({
 				where: eq(users.id, userId),
 				with: {
 					accounts: true,
+					profiles: true,
 				},
 			})
 
-			const eggheadAccount = fullUser?.accounts?.find(
-				(account) => account.provider === 'egghead',
-			)
-
 			try {
-				await db
-					.update(users)
-					.set({
-						name: input.name,
-						fields: {
-							...(fullUser && fullUser.fields),
-							twitter: input.twitter,
-							website: input.website,
-							bio: input.bio,
-							blueSky: input.blueSky,
-						},
+				await db.transaction(async (tx) => {
+					await tx
+						.update(users)
+						.set({
+							name: input.name,
+							fields: {
+								...(fullUser && fullUser.fields),
+								slackChannelId: input.slackChannelId,
+								slackId: input.slackId,
+							},
+						})
+						.where(eq(users.id, userId))
+
+					const existingProfile = await tx.query.profiles.findFirst({
+						where: and(
+							eq(profiles.userId, userId),
+							eq(profiles.type, 'instructor'),
+						),
 					})
-					.where(eq(users.id, userId))
+
+					const profileId = existingProfile?.id || crypto.randomUUID()
+
+					await tx
+						.insert(profiles)
+						.values({
+							id: profileId,
+							userId,
+							type: 'instructor',
+							fields: {
+								twitter: input.twitter,
+								website: input.website,
+								bio: input.bio,
+								blueSky: input.blueSky,
+							},
+						})
+						.onDuplicateKeyUpdate({
+							set: {
+								fields: {
+									twitter: input.twitter,
+									website: input.website,
+									bio: input.bio,
+									blueSky: input.blueSky,
+								},
+							},
+						})
+
+					if (!existingProfile) {
+						await tx.insert(userProfiles).values({
+							userId,
+							profileId,
+							// Add any other required fields for UserProfile
+						})
+					}
+
+					return { success: true }
+				})
 			} catch (e) {
 				throw new TRPCError({
 					message: 'Failed to update profile',
@@ -91,38 +133,42 @@ export const usersRouter = createTRPCRouter({
 				})
 			}
 
-			try {
-				if (!eggheadAccount) {
-					throw new TRPCError({
-						message: `No egghead account found for ${userId} found`,
-						code: 'INTERNAL_SERVER_ERROR',
-					})
-				}
+			// const eggheadAccount = fullUser?.accounts?.find(
+			// 	(account) => account.provider === 'egghead',
+			// )
 
-				const pgResult = await eggheadPgQuery(
-					`
-          UPDATE instructors
-          SET
-          twitter = $1,
-          website = $2,
-          bio_short = $3
-          WHERE user_id = $4
-          RETURNING *
-        `,
-					[
-						input.twitter,
-						input.website,
-						input.bio,
-						eggheadAccount.providerAccountId,
-					],
-				)
-			} catch (e) {
-				console.log({ e })
-				throw new TRPCError({
-					message: 'Failed to sync with egghead',
-					code: 'INTERNAL_SERVER_ERROR',
-				})
-			}
+			// try {
+			// 	if (!eggheadAccount) {
+			// 		throw new TRPCError({
+			// 			message: `No egghead account found for ${userId} found`,
+			// 			code: 'INTERNAL_SERVER_ERROR',
+			// 		})
+			// 	}
+
+			// 	const pgResult = await eggheadPgQuery(
+			// 		`
+			//     UPDATE instructors
+			//     SET
+			//     twitter = $1,
+			//     website = $2,
+			//     bio_short = $3
+			//     WHERE user_id = $4
+			//     RETURNING *
+			//   `,
+			// 		[
+			// 			input.twitter,
+			// 			input.website,
+			// 			input.bio,
+			// 			eggheadAccount.providerAccountId,
+			// 		],
+			// 	)
+			// } catch (e) {
+			// 	console.log({ e })
+			// 	throw new TRPCError({
+			// 		message: 'Failed to sync with egghead',
+			// 		code: 'INTERNAL_SERVER_ERROR',
+			// 	})
+			// }
 
 			return {
 				name: input.name,

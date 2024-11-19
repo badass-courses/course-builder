@@ -54,7 +54,7 @@ export const columns = () => {
 			accessorFn: (data) => data.id,
 			cell: ({ row }) => {
 				return (
-					<Link href={`/instructors/${row.getValue('id')}`}>
+					<Link href={`/profile/${row.getValue('id')}`}>
 						<Button variant="outline" size="sm">
 							Go to Profile
 						</Button>

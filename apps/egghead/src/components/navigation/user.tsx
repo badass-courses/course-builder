@@ -2,12 +2,10 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/solid'
-import { cx } from 'class-variance-authority'
 import { ChevronDownIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
@@ -22,13 +20,12 @@ import {
 } from '@coursebuilder/ui'
 
 export const User: React.FC<{ className?: string }> = ({ className }) => {
-	const pathname = usePathname()
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules)
 	const isLoadingUserInfo = sessionStatus === 'loading'
 
-	const canCreateContent = ability.can('create', 'Content')
+	const isAdmin = ability.can('manage', 'all')
 
 	return (
 		<>
@@ -60,16 +57,9 @@ export const User: React.FC<{ className?: string }> = ({ className }) => {
 							className="flex items-center justify-between"
 							asChild
 						>
-							<Link
-								href="/profile"
-								className={cx({
-									underline: pathname.includes('/profile'),
-								})}
-							>
-								Profile
-							</Link>
+							<Link href={`/profile/${sessionData?.user?.id}`}>Profile</Link>
 						</DropdownMenuItem>
-						{canCreateContent && (
+						{isAdmin && (
 							<>
 								{' '}
 								<DropdownMenuSeparator />
@@ -77,14 +67,7 @@ export const User: React.FC<{ className?: string }> = ({ className }) => {
 									className="flex items-center justify-between"
 									asChild
 								>
-									<Link
-										href="/admin"
-										className={cx({
-											underline: pathname.includes('/admin'),
-										})}
-									>
-										Admin
-									</Link>
+									<Link href="/admin">Admin</Link>
 								</DropdownMenuItem>
 							</>
 						)}

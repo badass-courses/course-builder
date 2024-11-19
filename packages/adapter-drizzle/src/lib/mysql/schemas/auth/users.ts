@@ -15,6 +15,7 @@ import { getContentContributionsSchema } from '../content/content-contributions.
 import { getContentResourceSchema } from '../content/content-resource.js'
 import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getAccountsSchema } from './accounts.js'
+import { getProfilesSchema } from './profiles.js'
 import { getUserPermissionsSchema } from './user-permissions.js'
 import { getUserPrefsSchema } from './user-prefs.js'
 import { getUserRolesSchema } from './user-roles.js'
@@ -48,6 +49,7 @@ export function getUsersSchema(mysqlTable: MySqlTableFn) {
 
 export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const users = getUsersSchema(mysqlTable)
+	const profiles = getProfilesSchema(mysqlTable)
 	const accounts = getAccountsSchema(mysqlTable)
 	const communicationPreferences = getCommunicationPreferencesSchema(mysqlTable)
 	const userRoles = getUserRolesSchema(mysqlTable)
@@ -58,7 +60,12 @@ export function getUsersRelationsSchema(mysqlTable: MySqlTableFn) {
 	const comments = getCommentsSchema(mysqlTable)
 	const userPrefs = getUserPrefsSchema(mysqlTable)
 	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
-	return relations(users, ({ many }) => ({
+	return relations(users, ({ many, one }) => ({
+		profile: one(profiles, {
+			fields: [users.id],
+			references: [profiles.userId],
+			relationName: 'profile',
+		}),
 		accounts: many(accounts, {
 			relationName: 'user',
 		}),
