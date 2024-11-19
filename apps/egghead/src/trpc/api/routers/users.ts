@@ -120,7 +120,6 @@ export const usersRouter = createTRPCRouter({
 						await tx.insert(userProfiles).values({
 							userId,
 							profileId,
-							// Add any other required fields for UserProfile
 						})
 					}
 
@@ -133,42 +132,42 @@ export const usersRouter = createTRPCRouter({
 				})
 			}
 
-			// const eggheadAccount = fullUser?.accounts?.find(
-			// 	(account) => account.provider === 'egghead',
-			// )
+			const eggheadAccount = fullUser?.accounts?.find(
+				(account) => account.provider === 'egghead',
+			)
 
-			// try {
-			// 	if (!eggheadAccount) {
-			// 		throw new TRPCError({
-			// 			message: `No egghead account found for ${userId} found`,
-			// 			code: 'INTERNAL_SERVER_ERROR',
-			// 		})
-			// 	}
+			try {
+				if (!eggheadAccount) {
+					throw new TRPCError({
+						message: `No egghead account found for ${userId} found`,
+						code: 'INTERNAL_SERVER_ERROR',
+					})
+				}
 
-			// 	const pgResult = await eggheadPgQuery(
-			// 		`
-			//     UPDATE instructors
-			//     SET
-			//     twitter = $1,
-			//     website = $2,
-			//     bio_short = $3
-			//     WHERE user_id = $4
-			//     RETURNING *
-			//   `,
-			// 		[
-			// 			input.twitter,
-			// 			input.website,
-			// 			input.bio,
-			// 			eggheadAccount.providerAccountId,
-			// 		],
-			// 	)
-			// } catch (e) {
-			// 	console.log({ e })
-			// 	throw new TRPCError({
-			// 		message: 'Failed to sync with egghead',
-			// 		code: 'INTERNAL_SERVER_ERROR',
-			// 	})
-			// }
+				const pgResult = await eggheadPgQuery(
+					`
+			    UPDATE instructors
+			    SET
+			    twitter = $1,
+			    website = $2,
+			    bio_short = $3
+			    WHERE user_id = $4
+			    RETURNING *
+			  `,
+					[
+						input.twitter,
+						input.website,
+						input.bio,
+						eggheadAccount.providerAccountId,
+					],
+				)
+			} catch (e) {
+				console.log({ e })
+				throw new TRPCError({
+					message: 'Failed to sync with egghead',
+					code: 'INTERNAL_SERVER_ERROR',
+				})
+			}
 
 			return {
 				name: input.name,
