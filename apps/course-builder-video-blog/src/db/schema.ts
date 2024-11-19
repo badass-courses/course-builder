@@ -5,6 +5,8 @@ import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
 export const {
 	accounts,
 	accountsRelations,
+	profiles,
+	profilesRelations,
 	permissions,
 	permissionsRelations,
 	rolePermissions,
@@ -13,6 +15,8 @@ export const {
 	rolesRelations,
 	sessions,
 	sessionsRelations,
+	userProfiles,
+	userProfilesRelations,
 	userPermissions,
 	userPermissionsRelations,
 	userRoles,
