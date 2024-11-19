@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { accounts, profiles, userProfiles, users } from '@/db/schema'
+import { updateContributorProfile } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
 import {
 	createTRPCRouter,
@@ -66,118 +67,39 @@ export const usersRouter = createTRPCRouter({
 				with: {
 					accounts: true,
 					profiles: true,
+					roles: {
+						with: {
+							role: true,
+						},
+					},
 				},
 			})
 
-			try {
-				await db.transaction(async (tx) => {
-					await tx
-						.update(users)
-						.set({
-							name: input.name,
-							fields: {
-								...(fullUser && fullUser.fields),
-								slackChannelId: input.slackChannelId,
-								slackId: input.slackId,
-							},
-						})
-						.where(eq(users.id, userId))
-
-					const existingProfile = await tx.query.profiles.findFirst({
-						where: and(
-							eq(profiles.userId, userId),
-							eq(profiles.type, 'instructor'),
-						),
-					})
-
-					const profileId = existingProfile?.id || crypto.randomUUID()
-
-					await tx
-						.insert(profiles)
-						.values({
-							id: profileId,
-							userId,
-							type: 'instructor',
-							fields: {
-								twitter: input.twitter,
-								website: input.website,
-								bio: input.bio,
-								blueSky: input.blueSky,
-							},
-						})
-						.onDuplicateKeyUpdate({
-							set: {
-								fields: {
-									twitter: input.twitter,
-									website: input.website,
-									bio: input.bio,
-									blueSky: input.blueSky,
-								},
-							},
-						})
-
-					if (!existingProfile) {
-						await tx.insert(userProfiles).values({
-							userId,
-							profileId,
-						})
-					}
-
-					return { success: true }
-				})
-			} catch (e) {
-				throw new TRPCError({
-					message: 'Failed to update profile',
-					code: 'INTERNAL_SERVER_ERROR',
-				})
-			}
-
-			const eggheadAccount = fullUser?.accounts?.find(
-				(account) => account.provider === 'egghead',
+			const isContributor = fullUser?.roles?.some(
+				(roleRelation) => roleRelation.role.name === 'contributor',
 			)
 
-			try {
-				if (!eggheadAccount) {
+			if (isContributor) {
+				try {
+					await updateContributorProfile({
+						...input,
+						user: fullUser,
+					})
+				} catch (e) {
 					throw new TRPCError({
-						message: `No egghead account found for ${userId} found`,
+						message: 'Failed to update contributor profile',
 						code: 'INTERNAL_SERVER_ERROR',
 					})
 				}
-
-				const pgResult = await eggheadPgQuery(
-					`
-			    UPDATE instructors
-			    SET
-			    twitter = $1,
-			    website = $2,
-			    bio_short = $3
-			    WHERE user_id = $4
-			    RETURNING *
-			  `,
-					[
-						input.twitter,
-						input.website,
-						input.bio,
-						eggheadAccount.providerAccountId,
-					],
-				)
-			} catch (e) {
-				console.log({ e })
-				throw new TRPCError({
-					message: 'Failed to sync with egghead',
-					code: 'INTERNAL_SERVER_ERROR',
-				})
 			}
 
 			return {
 				name: input.name,
-				fields: {
-					...(fullUser && fullUser.fields),
-					twitter: input.twitter,
-					website: input.website,
-					bio: input.bio,
-					blueSky: input.blueSky,
-				},
+				...(fullUser && fullUser.fields),
+				twitter: input.twitter,
+				website: input.website,
+				bio: input.bio,
+				blueSky: input.blueSky,
 			}
 		}),
 })
