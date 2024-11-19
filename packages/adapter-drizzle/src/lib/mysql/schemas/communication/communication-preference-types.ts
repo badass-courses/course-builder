@@ -11,6 +11,7 @@ export function getCommunicationPreferenceTypesSchema(
 ) {
 	return mysqlTable('CommunicationPreferenceType', {
 		id: varchar('id', { length: 255 }).notNull().primaryKey(),
+		organizationId: varchar('organizationId', { length: 191 }),
 		name: varchar('name', { length: 255 }).notNull(),
 		description: text('description'),
 		active: boolean('active').notNull().default(true),

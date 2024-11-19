@@ -35,4 +35,10 @@ export const {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	organization,
+	organizationRelations,
+	organizationMemberships,
+	organizationMembershipRelations,
+	organizationMembershipRoles,
+	organizationMembershipRolesRelations,
 } = getCourseBuilderSchema(mysqlTable)

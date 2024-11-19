@@ -1,5 +1,6 @@
 import { relations, sql } from 'drizzle-orm'
 import {
+	index,
 	mysqlEnum,
 	MySqlTableFn,
 	primaryKey,
@@ -27,6 +28,7 @@ export function getPurchaseUserTransferSchema(mysqlTable: MySqlTableFn) {
 				.default('AVAILABLE')
 				.notNull(),
 			purchaseId: varchar('purchaseId', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			sourceUserId: varchar('sourceUserId', { length: 191 }).notNull(),
 			targetUserId: varchar('targetUserId', { length: 191 }),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
@@ -43,6 +45,7 @@ export function getPurchaseUserTransferSchema(mysqlTable: MySqlTableFn) {
 					columns: [table.id],
 					name: 'PurchaseUserTransfer_id',
 				}),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

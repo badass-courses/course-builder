@@ -9,5 +9,5 @@ import { mysqlTableCreator } from 'drizzle-orm/mysql-core'
  */
 export const mysqlTable = mysqlTableCreator(
 	(name) =>
-		`${env.DATABASE_TABLE_PREFIX ? `${env.DATABASE_TABLE_PREFIX}_${name}` : ''}${name}`,
+		`${env.DATABASE_TABLE_PREFIX ? `${env.DATABASE_TABLE_PREFIX}_${name}` : name}`,
 )

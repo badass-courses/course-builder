@@ -18,6 +18,7 @@ export function getContentResourceTagSchema(mysqlTable: MySqlTableFn) {
 			contentResourceId: varchar('contentResourceId', {
 				length: 255,
 			}).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			tagId: varchar('tagId', { length: 255 }).notNull(),
 			position: double('position').notNull().default(0),
 			createdAt: timestamp('createdAt', {
@@ -36,6 +37,7 @@ export function getContentResourceTagSchema(mysqlTable: MySqlTableFn) {
 			),
 			tagIdIdx: index('tagId_idx').on(crt.tagId),
 			positionIdx: index('position_idx').on(crt.position),
+			organizationIdIdx: index('organizationId_idx').on(crt.organizationId),
 		}),
 	)
 }

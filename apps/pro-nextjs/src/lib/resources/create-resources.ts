@@ -24,17 +24,19 @@ export async function createResource(input: NewResource) {
 		throw new Error('Unauthorized')
 	}
 
+	const validatedInput = NewResourceSchema.parse(input)
+
 	const hash = guid()
-	const newResourceId = slugify(`${input.type}~${hash}`)
+	const newResourceId = slugify(`${validatedInput.type}~${hash}`)
 
 	const newResource = {
 		id: newResourceId,
-		type: input.type,
+		type: validatedInput.type,
 		fields: {
-			title: input.title,
+			title: validatedInput.title,
 			state: 'draft',
 			visibility: 'unlisted',
-			slug: slugify(`${input.title}~${hash}`),
+			slug: slugify(`${validatedInput.title}~${hash}`),
 		},
 		createdById: user.id,
 	}

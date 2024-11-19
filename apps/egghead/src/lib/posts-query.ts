@@ -33,10 +33,13 @@ import { z } from 'zod'
 
 import 'server-only'
 
+import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
+import { inngest } from '@/inngest/inngest.server'
+
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
 import {
-	crreateEggheadLesson,
+	createEggheadLesson,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
 	getEggheadUserProfile,
@@ -211,6 +214,13 @@ export async function createPost(input: NewPost) {
 	})
 
 	if (post) {
+		await inngest.send({
+			name: POST_CREATED_EVENT,
+			data: {
+				post: await post,
+			},
+		})
+
 		revalidateTag('posts')
 
 		return post
@@ -306,10 +316,11 @@ export async function writeNewPostToDatabase(input: {
 	const videoResource =
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
 
-	const eggheadLessonId = await crreateEggheadLesson({
+	const eggheadLessonId = await createEggheadLesson({
 		title: title,
 		slug: `${slugify(title)}~${postGuid}`,
 		instructorId: eggheadInstructorId,
+		guid: postGuid,
 	})
 
 	await db

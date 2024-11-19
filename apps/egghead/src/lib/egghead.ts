@@ -1,7 +1,10 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { users } from '@/db/schema'
+import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
+import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { PostAction, PostState, PostVisibility } from './posts'
 import { getPost } from './posts-query'
@@ -69,16 +72,17 @@ export async function getEggheadLesson(eggheadLessonId: number) {
 	return lesson
 }
 
-export async function crreateEggheadLesson(input: {
+export async function createEggheadLesson(input: {
 	title: string
 	slug: string
+	guid: string
 	instructorId: string | number
 }) {
-	const { title, slug, instructorId } = input
+	const { title, slug, guid, instructorId } = input
 	const eggheadLessonResult = await eggheadPgQuery(
 		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6)
+			created_at, updated_at, visibility_state, guid)
+		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6, $7)
 		RETURNING id`,
 		[
 			title,
@@ -87,10 +91,18 @@ export async function crreateEggheadLesson(input: {
 			EGGHEAD_LESSON_TYPE,
 			EGGHEAD_INITIAL_LESSON_STATE,
 			'hidden',
+			guid,
 		],
 	)
 
 	const eggheadLessonId = eggheadLessonResult.rows[0].id
+
+	await inngest.send({
+		name: EGGHEAD_LESSON_CREATED_EVENT,
+		data: {
+			id: eggheadLessonId,
+		},
+	})
 
 	return eggheadLessonId
 }
@@ -164,6 +176,8 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 
 	let query = ``
 
+	if (!post?.tags) return
+
 	for (const tag of post.tags.map((tag) => tag.tag)) {
 		const tagId = Number(tag.id.split('_')[1])
 		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
@@ -172,3 +186,19 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 	}
 	Boolean(query) && (await eggheadPgQuery(query))
 }
+
+export const eggheadLessonSchema = z.object({
+	id: z.number(),
+	title: z.string(),
+	slug: z.string(),
+	summary: z.string().nullish(),
+	topic_list: z.array(z.string()),
+	free_forever: z.boolean(),
+	body: z.string().nullish(),
+	state: z.string(),
+	instructor: z.object({
+		id: z.number(),
+	}),
+})
+
+export type EggheadLesson = z.infer<typeof eggheadLessonSchema>

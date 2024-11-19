@@ -18,6 +18,7 @@ export function getContentResourceProductSchema(mysqlTable: MySqlTableFn) {
 		{
 			productId: varchar('productId', { length: 255 }).notNull(),
 			resourceId: varchar('resourceId', { length: 255 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			position: double('position').notNull().default(0),
 			metadata: json('metadata').$type<Record<string, any>>().default({}),
 			createdAt: timestamp('createdAt', {
@@ -37,6 +38,7 @@ export function getContentResourceProductSchema(mysqlTable: MySqlTableFn) {
 			pk: primaryKey({ columns: [crr.productId, crr.resourceId] }),
 			contentResourceIdIdx: index('contentResourceId_idx').on(crr.productId),
 			resourceIdIdx: index('resourceId_idx').on(crr.resourceId),
+			organizationIdIdx: index('organizationId_idx').on(crr.organizationId),
 		}),
 	)
 }

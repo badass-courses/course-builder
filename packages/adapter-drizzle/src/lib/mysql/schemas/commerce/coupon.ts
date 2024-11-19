@@ -21,6 +21,7 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 		'Coupon',
 		{
 			id: varchar('id', { length: 191 }).notNull(),
+			organizationId: varchar('organizationId', { length: 191 }),
 			code: varchar('code', { length: 191 }),
 			createdAt: timestamp('createdAt', { mode: 'date', fsp: 3 })
 				.default(sql`CURRENT_TIMESTAMP(3)`)
@@ -46,6 +47,7 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 				),
 				couponId: primaryKey({ columns: [table.id], name: 'Coupon_id' }),
 				couponCodeKey: unique('Coupon_code_key').on(table.code),
+				organizationIdIdx: index('organizationId_idx').on(table.organizationId),
 			}
 		},
 	)

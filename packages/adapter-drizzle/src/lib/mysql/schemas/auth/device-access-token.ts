@@ -15,6 +15,9 @@ export function getDeviceAccessTokenSchema(mysqlTable: MySqlTableFn) {
 		{
 			token: varchar('token', { length: 191 }).notNull(),
 			userId: varchar('userId', { length: 191 }).notNull(),
+			organizationMembershipId: varchar('organizationMembershipId', {
+				length: 191,
+			}),
 			createdAt: timestamp('createdAt', {
 				mode: 'date',
 				fsp: 3,

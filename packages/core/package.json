@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/core",
-	"version": "0.2.4",
+	"version": "1.0.0",
 	"description": "Core package for Course Builder",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib",
