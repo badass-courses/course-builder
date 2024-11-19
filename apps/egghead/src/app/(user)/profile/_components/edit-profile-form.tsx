@@ -17,6 +17,7 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
+	Gravatar,
 	Input,
 	Textarea,
 	useToast,
@@ -139,6 +140,22 @@ const EditProfileForm: React.FC<{
 								</FormItem>
 							)}
 						/>
+						<Gravatar
+							className="h-20 w-20 rounded-full"
+							email={user?.email}
+							default="mp"
+						/>
+						<p className="text-muted-foreground text-sm">
+							Change your personal account avatar at{' '}
+							<a
+								href="https://gravatar.com"
+								target="_blank"
+								rel="noreferrer"
+								className="underline"
+							>
+								Gravatar.com
+							</a>
+						</p>
 						{ability.can('manage', 'all') && (
 							<>
 								<h3 className="text-lg font-semibold">Admin</h3>
