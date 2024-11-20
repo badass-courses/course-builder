@@ -82,7 +82,6 @@ export function EditPostForm({
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
-			onSave={onPostSave}
 			theme={theme}
 			tools={[
 				{ id: 'assistant' },
