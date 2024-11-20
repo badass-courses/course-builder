@@ -79,33 +79,6 @@ const Home = async (props: Props) => {
 
 	return (
 		<div className="">
-			<header className="relative mx-auto flex aspect-square h-full w-full flex-col items-center justify-start pt-16 lg:aspect-[1920/1080] lg:pt-[7vw]">
-				<LandingHeroParallax />
-				<div className="relative z-10 flex flex-col items-center justify-center px-5 pb-16">
-					<h1 className="font-heading sm:fluid-4xl fluid-3xl w-full max-w-4xl text-balance text-center font-bold text-[#221801] shadow-[#AD9F95] drop-shadow-xl sm:text-black">
-						From Zero
-						<br />
-						to AI Hero
-					</h1>
-					{/* <h2 className="font-heading sm:fluid-lg fluid-base mb-5 mt-7 items-center text-balance text-center font-bold uppercase !tracking-widest text-black sm:inline-flex">
-						From Zero To Hero
-					</h2> */}
-				</div>
-				<div className="absolute bottom-10 flex items-center justify-center text-white">
-					<Image
-						src={
-							'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
-						}
-						alt={config.author}
-						priority
-						className="mr-2 inline-block rounded-full"
-						width={36}
-						height={36}
-					/>{' '}
-					{config.author}
-				</div>
-			</header>
-
 			<main className="w-full pt-5 sm:pt-16">
 				<article className="prose sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-blockquote:mx-auto prose-blockquote:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
 					{page?.fields?.body ? (
