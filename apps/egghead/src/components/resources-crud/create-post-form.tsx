@@ -123,7 +123,7 @@ export function CreatePostForm({
 					>
 						{form.formState.isSubmitting
 							? 'Creating...'
-							: `Create Draft ${restrictToPostType || resourceType}`}
+							: `Create Draft ${resourceType}`}
 					</Button>
 				</div>
 			</form>
