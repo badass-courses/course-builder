@@ -6340,7 +6340,7 @@ importers:
         version: 5.13.0
     devDependencies:
       '@auth/core':
-        specifier: 0.37.2
+        specifier: ^0.37.2
         version: 0.37.2(nodemailer@6.9.11)
       '@types/lodash':
         specifier: ^4.14.200
