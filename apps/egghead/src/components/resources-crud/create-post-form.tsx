@@ -23,10 +23,14 @@ export function CreatePostForm({
 	resourceType,
 	onCreate,
 	createPost,
+	restrictToPostType,
+	onCancel,
 }: {
 	resourceType: string
 	onCreate: (resource: ContentResource) => Promise<void>
 	createPost: (values: NewPost) => Promise<ContentResource | null>
+	restrictToPostType?: string
+	onCancel?: () => void
 }) {
 	const form = useForm<{ fields: { title: string; postType: string } }>({
 		resolver: zodResolver(
@@ -40,7 +44,7 @@ export function CreatePostForm({
 		defaultValues: {
 			fields: {
 				title: '',
-				postType: 'lesson',
+				postType: restrictToPostType || 'lesson',
 			},
 		},
 	})
@@ -79,41 +83,49 @@ export function CreatePostForm({
 							</FormItem>
 						)}
 					/>
-					<FormField
-						control={form.control}
-						name="fields.postType"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Post Type</FormLabel>
-								<FormDescription>
-									Select the type of content you are creating
-								</FormDescription>
-								<FormControl>
-									<select
-										{...field}
-										className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-									>
-										<option value="lesson">Lesson</option>
-									</select>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+					{!restrictToPostType && (
+						<FormField
+							control={form.control}
+							name="fields.postType"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Post Type</FormLabel>
+									<FormDescription>
+										Select the type of content you are creating
+									</FormDescription>
+									<FormControl>
+										<select
+											{...field}
+											className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+										>
+											<option value="lesson">Lesson</option>
+										</select>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					)}
 				</div>
-				<Button
-					type="submit"
-					className="mt-4 capitalize"
-					variant="default"
-					disabled={
-						(form.formState.isDirty && !form.formState.isValid) ||
-						form.formState.isSubmitting
-					}
-				>
-					{form.formState.isSubmitting
-						? 'Creating...'
-						: `Create Draft ${resourceType}`}
-				</Button>
+				<div className="mt-4 flex gap-2">
+					{onCancel && (
+						<Button type="button" variant="outline" onClick={onCancel}>
+							Cancel
+						</Button>
+					)}
+					<Button
+						type="submit"
+						variant="default"
+						disabled={
+							(form.formState.isDirty && !form.formState.isValid) ||
+							form.formState.isSubmitting
+						}
+					>
+						{form.formState.isSubmitting
+							? 'Creating...'
+							: `Create Draft ${restrictToPostType || resourceType}`}
+					</Button>
+				</div>
 			</form>
 		</Form>
 	)

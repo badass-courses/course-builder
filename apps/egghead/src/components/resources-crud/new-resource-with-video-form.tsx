@@ -154,6 +154,8 @@ export function NewResourceWithVideoForm({
 		}
 	}
 
+	const selectedPostType = form.watch('postType')
+
 	return (
 		<Form {...form}>
 			<form
@@ -181,23 +183,32 @@ export function NewResourceWithVideoForm({
 					<FormField
 						control={form.control}
 						name="postType"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Type</FormLabel>
-								<FormDescription>
-									Select the type of resource you are creating.
-								</FormDescription>
-								<FormControl>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-									>
-										<SelectTrigger className="capitalize">
-											<SelectValue placeholder="Select Type..." />
-										</SelectTrigger>
-										<SelectContent>
-											{availableResourceTypes.map((type) => {
-												return (
+						render={({ field }) => {
+							const descriptions = {
+								lesson: 'A traditional egghead lesson video',
+								article: 'A standard article',
+								podcast:
+									'A podcast episode that will be distributed across podcast networks via the egghead podcast',
+								course:
+									'A collection of lessons that will be distributed as a course',
+							}
+
+							return (
+								<FormItem>
+									<FormLabel>Type</FormLabel>
+									<FormDescription>
+										Select the type of resource you are creating.
+									</FormDescription>
+									<FormControl>
+										<Select
+											onValueChange={field.onChange}
+											defaultValue={field.value}
+										>
+											<SelectTrigger className="capitalize">
+												<SelectValue placeholder="Select Type..." />
+											</SelectTrigger>
+											<SelectContent>
+												{availableResourceTypes.map((type) => (
 													<SelectItem
 														className="capitalize"
 														value={type}
@@ -205,17 +216,22 @@ export function NewResourceWithVideoForm({
 													>
 														{type}
 													</SelectItem>
-												)
-											})}
-										</SelectContent>
-									</Select>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
+												))}
+											</SelectContent>
+										</Select>
+									</FormControl>
+									{field.value && (
+										<div className="bg-muted text-muted-foreground mx-auto mt-2 max-w-[300px] whitespace-normal break-words rounded-md p-3 py-2 text-sm">
+											{descriptions[field.value as keyof typeof descriptions]}
+										</div>
+									)}
+									<FormMessage />
+								</FormItem>
+							)
+						}}
 					/>
 				)}
-				{POST_TYPES_WITH_VIDEO.includes(form.getValues().postType) && (
+				{POST_TYPES_WITH_VIDEO.includes(selectedPostType) && (
 					<FormField
 						control={form.control}
 						name="videoResourceId"

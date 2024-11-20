@@ -125,13 +125,8 @@ export function ResourceResourcesList({
 						resourceType="post"
 						onCreate={handleResourceCreated}
 						createPost={createPost}
-					/>
-				)}
-				{formState.activeForm === 'section' && (
-					<CreateResourceForm
-						resourceType={'section'}
-						onCreate={handleResourceCreated}
-						createResource={createResource}
+						restrictToPostType="lesson"
+						onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
 					/>
 				)}
 				{formState.activeForm === 'existing_lesson' && (
@@ -147,13 +142,6 @@ export function ResourceResourcesList({
 						variant="outline"
 					>
 						+ add a lesson
-					</Button>
-					<Button
-						onClick={() => formDispatch({ type: 'SHOW_SECTION_FORM' })}
-						className="mt-2"
-						variant="outline"
-					>
-						+ add section
 					</Button>
 					<Button
 						onClick={() => formDispatch({ type: 'SHOW_EXISTING_LESSON_FORM' })}

@@ -32,12 +32,16 @@ import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
-import { last } from 'lodash'
+
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
+import { last } from 'lodash'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
-import { ContentResource } from '@coursebuilder/core/schemas'
+import {
+	ContentResource,
+	ContentResourceSchema,
+} from '@coursebuilder/core/schemas'
 
 import {
 	createEggheadLesson,
@@ -49,6 +53,38 @@ import {
 } from './egghead'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense'
+
+export async function searchLessons(searchTerm: string) {
+	const { session } = await getServerAuthSession()
+	const userId = session?.user?.id
+
+	const lessons = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'post'),
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
+			or(
+				sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`}`,
+				sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.body')) LIKE ${`%${searchTerm.toLowerCase()}%`}`,
+			),
+		),
+		orderBy: [
+			// Sort by createdById matching current user (if logged in)
+			sql`CASE 
+				WHEN ${contentResource.createdById} = ${userId} THEN 0 
+				ELSE 1 
+			END`,
+			// Secondary sort by title match (prioritize title matches)
+			sql`CASE 
+				WHEN LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`} THEN 0 
+				ELSE 1 
+			END`,
+			// Then sort by title alphabetically
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
+		],
+	})
+
+	return ContentResourceSchema.array().parse(lessons)
+}
 
 export async function deletePost(id: string) {
 	console.log('deleting post', id)
@@ -314,12 +350,14 @@ export async function writeNewPostToDatabase(input: {
 	const videoResource =
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
 	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
-	const eggheadLessonId = TYPES_WITH_LESSONS.includes(input.newPost.postType) ? await createEggheadLesson({
-		title: title,
-		slug: `${slugify(title)}~${postGuid}`,
-		instructorId: eggheadInstructorId,
-		guid: postGuid,
-	}) : null
+	const eggheadLessonId = TYPES_WITH_LESSONS.includes(input.newPost.postType)
+		? await createEggheadLesson({
+				title: title,
+				slug: `${slugify(title)}~${postGuid}`,
+				instructorId: eggheadInstructorId,
+				guid: postGuid,
+			})
+		: null
 
 	await db
 		.insert(contentResource)

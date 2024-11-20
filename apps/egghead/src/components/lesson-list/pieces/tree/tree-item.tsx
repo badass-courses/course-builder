@@ -345,10 +345,7 @@ const TreeItem = memo(function TreeItem({
 										return
 									}
 									if (rootResource) {
-										router.push(
-											// @ts-expect-error
-											`/${pluralize(Object.hasOwn(rootResource, 'type') ? rootResource?.type : rootResource.fields?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
-										)
+										router.push(`/posts/${item.id}/edit`)
 									}
 								}
 					}
