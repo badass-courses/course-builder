@@ -3,10 +3,10 @@ import config from '@/config'
 export default {
 	'primary-newsletter-button-cta-label': 'Subscribe',
 	'primary-newsletter-tittle':
-		'Subscribe for Free Tips, Tutorials, and Special Discounts',
+		'Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.',
 	'primary-newsletter-byline': `We're in this together!`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
-	'tip-newsletter-tittle': 'New NextJS tips delivered to your inbox:',
+	'tip-newsletter-tittle': 'New AI Engineering tips delivered to your inbox:',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',
 	'video-block-newsletter-tittle': (moduleTitle: string) =>
 		`Level up with ${moduleTitle}`,

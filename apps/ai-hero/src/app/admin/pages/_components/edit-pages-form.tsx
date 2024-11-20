@@ -135,7 +135,6 @@ export function EditPagesForm({
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
-			onSave={onPageSave}
 			tools={tools}
 			theme={theme}
 			toggleMdxPreview={togglePreviewPanel}
