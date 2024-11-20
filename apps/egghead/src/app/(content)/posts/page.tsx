@@ -30,11 +30,10 @@ import {
 
 import { PostsFilterToggle } from './_components/posts-filter-toggle'
 
-export default async function PostsListPage({
-	searchParams,
-}: {
-	searchParams: { [key: string]: string | undefined }
+export default async function PostsListPage(props: {
+	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
+	const searchParams = await props.searchParams
 	const { ability } = await getServerAuthSession()
 
 	return (
