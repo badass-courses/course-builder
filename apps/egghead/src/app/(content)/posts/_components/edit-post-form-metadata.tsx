@@ -7,7 +7,12 @@ import { NewLessonVideoForm } from '@/components/resources-crud/new-lesson-video
 import AdvancedTagSelector from '@/components/resources-crud/tag-selector'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
-import { Post, PostSchema, PostTypeSchema } from '@/lib/posts'
+import {
+	Post,
+	POST_TYPES_WITH_VIDEO,
+	PostSchema,
+	PostTypeSchema,
+} from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { api } from '@/trpc/react'
@@ -109,76 +114,78 @@ export const PostMetadataFormFields: React.FC<{
 	})
 	return (
 		<>
-			<div>
-				<Suspense
-					fallback={
-						<>
-							<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-								video is loading
-							</div>
-						</>
-					}
-				>
-					{videoResourceId ? (
-						replacingVideo ? (
-							<div>
-								<NewLessonVideoForm
-									parentResourceId={post.id}
-									onVideoUploadCompleted={(videoResourceId) => {
-										setReplacingVideo(false)
-										setVideoUploadStatus('finalizing upload')
-										setVideoResourceId(videoResourceId)
-									}}
-									onVideoResourceCreated={(videoResourceId) =>
-										setVideoResourceId(videoResourceId)
-									}
-								/>
-								<Button
-									variant="ghost"
-									type="button"
-									onClick={() => setReplacingVideo(false)}
-								>
-									Cancel Replace Video
-								</Button>
-							</div>
-						) : (
+			{POST_TYPES_WITH_VIDEO.includes(post.fields.postType) && (
+				<div>
+					<Suspense
+						fallback={
 							<>
-								{videoResource && videoResource.state === 'ready' ? (
-									<div>
-										<PostPlayer videoResource={videoResource} />
-										<Button
-											variant="ghost"
-											type="button"
-											onClick={() => setReplacingVideo(true)}
-										>
-											Replace Video
-										</Button>
-									</div>
-								) : videoResource ? (
-									<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-										video is {videoResource.state}
-									</div>
-								) : (
-									<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-										video is {videoUploadStatus}
-									</div>
-								)}
+								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+									video is loading
+								</div>
 							</>
-						)
-					) : (
-						<NewLessonVideoForm
-							parentResourceId={post.id}
-							onVideoUploadCompleted={(videoResourceId) => {
-								setVideoUploadStatus('finalizing upload')
-								setVideoResourceId(videoResourceId)
-							}}
-							onVideoResourceCreated={(videoResourceId) =>
-								setVideoResourceId(videoResourceId)
-							}
-						/>
-					)}
-				</Suspense>
-			</div>
+						}
+					>
+						{videoResourceId ? (
+							replacingVideo ? (
+								<div>
+									<NewLessonVideoForm
+										parentResourceId={post.id}
+										onVideoUploadCompleted={(videoResourceId) => {
+											setReplacingVideo(false)
+											setVideoUploadStatus('finalizing upload')
+											setVideoResourceId(videoResourceId)
+										}}
+										onVideoResourceCreated={(videoResourceId) =>
+											setVideoResourceId(videoResourceId)
+										}
+									/>
+									<Button
+										variant="ghost"
+										type="button"
+										onClick={() => setReplacingVideo(false)}
+									>
+										Cancel Replace Video
+									</Button>
+								</div>
+							) : (
+								<>
+									{videoResource && videoResource.state === 'ready' ? (
+										<div>
+											<PostPlayer videoResource={videoResource} />
+											<Button
+												variant="ghost"
+												type="button"
+												onClick={() => setReplacingVideo(true)}
+											>
+												Replace Video
+											</Button>
+										</div>
+									) : videoResource ? (
+										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+											video is {videoResource.state}
+										</div>
+									) : (
+										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+											video is {videoUploadStatus}
+										</div>
+									)}
+								</>
+							)
+						) : (
+							<NewLessonVideoForm
+								parentResourceId={post.id}
+								onVideoUploadCompleted={(videoResourceId) => {
+									setVideoUploadStatus('finalizing upload')
+									setVideoResourceId(videoResourceId)
+								}}
+								onVideoResourceCreated={(videoResourceId) =>
+									setVideoResourceId(videoResourceId)
+								}
+							/>
+						)}
+					</Suspense>
+				</div>
+			)}
 			<FormField
 				control={form.control}
 				name="id"

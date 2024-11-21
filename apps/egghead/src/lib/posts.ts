@@ -5,6 +5,8 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
+
 export const PostActionSchema = z.union([
 	z.literal('publish'),
 	z.literal('unpublish'),
@@ -65,6 +67,7 @@ export type Post = z.infer<typeof PostSchema>
 
 export const NewPostSchema = z.object({
 	title: z.string().min(2).max(90),
+	postType: PostTypeSchema.default('lesson'),
 	videoResourceId: z.string().min(4, 'Please upload a video').nullish(),
 })
 

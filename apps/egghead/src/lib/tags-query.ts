@@ -1,3 +1,5 @@
+'use server'
+
 import { revalidateTag, unstable_cache } from 'next/cache'
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
