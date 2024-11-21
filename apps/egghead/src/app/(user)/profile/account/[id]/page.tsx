@@ -3,7 +3,7 @@ import { Layout } from '@/components/app/layout'
 import { db } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
 
-import EditProfileForm from '../_components/edit-profile-form'
+import EditAccountForm from '../../_components/edit-account-form'
 
 type Props = {
 	params: Promise<{ id: string }>
@@ -27,7 +27,7 @@ export default async function ProfilePage(props: Props) {
 		return (
 			<Layout>
 				<main className="mx-auto w-full max-w-screen-sm">
-					<EditProfileForm user={fullUser} />
+					<EditAccountForm user={fullUser} />
 				</main>
 			</Layout>
 		)

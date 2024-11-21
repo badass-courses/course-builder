@@ -54,9 +54,9 @@ type GetAbilityOptions = {
 			name: string
 			description: string | null
 			active: boolean
-			createdAt: Date | null
-			updatedAt: Date | null
-			deletedAt: Date | null
+			createdAt?: Date | null
+			updatedAt?: Date | null
+			deletedAt?: Date | null
 		}[]
 	}
 }

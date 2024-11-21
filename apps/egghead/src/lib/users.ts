@@ -126,11 +126,9 @@ export async function addRoleToUser(userId: string, roleName: string) {
 	}
 }
 
-interface UpdateProfileData {
+type UpdateProfileData = {
 	user: any
 	name: string
-	slackChannelId: string
-	slackId: string
 	twitter: string
 	website: string
 	bio: string
@@ -144,11 +142,6 @@ export async function updateContributorProfile(data: UpdateProfileData) {
 			.update(users)
 			.set({
 				name: data.name,
-				fields: {
-					...(data.existingFields || {}),
-					slackChannelId: data.slackChannelId,
-					slackId: data.slackId,
-				},
 			})
 			.where(eq(users.id, data.user.id))
 
@@ -217,6 +210,27 @@ export async function updateContributorProfile(data: UpdateProfileData) {
 			code: 'INTERNAL_SERVER_ERROR',
 		})
 	}
+
+	return true
+}
+
+type InstructorAccountData = {
+	user: any
+	slackChannelId: string
+	slackId: string
+}
+
+export async function updateInstructorAccount(data: InstructorAccountData) {
+	await db
+		.update(users)
+		.set({
+			fields: {
+				...(data.user.fields || {}),
+				slackChannelId: data.slackChannelId,
+				slackId: data.slackId,
+			},
+		})
+		.where(eq(users.id, data.user.id))
 
 	return true
 }
