@@ -126,6 +126,14 @@ export const usersRouter = createTRPCRouter({
 
 			const fullUser = await db.query.users.findFirst({
 				where: eq(users.id, input.userId),
+				with: {
+					accounts: true,
+					roles: {
+						with: {
+							role: true,
+						},
+					},
+				},
 			})
 
 			try {

@@ -232,5 +232,35 @@ export async function updateInstructorAccount(data: InstructorAccountData) {
 		})
 		.where(eq(users.id, data.user.id))
 
+	const eggheadAccount = data.user.accounts?.find(
+		(account: { provider: string }) => account.provider === 'egghead',
+	)
+
+	try {
+		if (!eggheadAccount) {
+			throw new TRPCError({
+				message: `No egghead account found for ${data.user.id} found`,
+				code: 'INTERNAL_SERVER_ERROR',
+			})
+		}
+
+		const pgResult = await eggheadPgQuery(
+			`
+          UPDATE instructors
+          SET
+          slack_group_id = $1,
+          slack_id = $2
+          RETURNING *
+        `,
+			[data.slackChannelId, data.slackId],
+		)
+	} catch (e) {
+		console.log({ e })
+		throw new TRPCError({
+			message: 'Failed to sync with egghead',
+			code: 'INTERNAL_SERVER_ERROR',
+		})
+	}
+
 	return true
 }
