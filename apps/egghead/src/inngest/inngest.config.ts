@@ -8,6 +8,7 @@ import { notifySlack } from './functions/notify-slack-for-post'
 import { syncLessonToSanity } from './functions/sanity/sync-lesson-to-sanity'
 import { syncVideoResourceToSanity } from './functions/sanity/sync-video-resource-to-sanity'
 import { syncPostToEgghead } from './functions/sync-post-to-egghead'
+import { syncVideoResourceData } from './functions/video-resource-created'
 
 export const inngestConfig = {
 	client: inngest,
@@ -21,5 +22,6 @@ export const inngestConfig = {
 		syncLessonToSanity,
 		syncVideoResourceToSanity,
 		notifySlack,
+		syncVideoResourceData,
 	],
 }

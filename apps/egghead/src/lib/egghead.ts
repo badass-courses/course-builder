@@ -77,11 +77,12 @@ export async function createEggheadLesson(input: {
 	slug: string
 	guid: string
 	instructorId: string | number
+	hlsUrl?: string
 }) {
-	const { title, slug, guid, instructorId } = input
+	const { title, slug, guid, instructorId, hlsUrl = null } = input
 	const eggheadLessonResult = await eggheadPgQuery(
 		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state, guid)
+			created_at, updated_at, visibility_state, guid, current_video_hls_url)
 		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6, $7)
 		RETURNING id`,
 		[
@@ -92,6 +93,7 @@ export async function createEggheadLesson(input: {
 			EGGHEAD_INITIAL_LESSON_STATE,
 			'hidden',
 			guid,
+			hlsUrl,
 		],
 	)
 
@@ -112,16 +114,24 @@ export async function updateEggheadLesson(input: {
 	state: string
 	visibilityState: string
 	duration: number
+	hlsUrl?: string
 }) {
-	const { eggheadLessonId, state, visibilityState, duration } = input
+	const {
+		eggheadLessonId,
+		state,
+		visibilityState,
+		duration,
+		hlsUrl = null,
+	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
 			state = $1,
 			duration = $2,
 			updated_at = NOW(),
-			visibility_state = $3
-		WHERE id = $4`,
-		[state, Math.floor(duration), visibilityState, eggheadLessonId],
+			visibility_state = $3,
+			current_video_hls_url = $4
+		WHERE id = $5`,
+		[state, Math.floor(duration), visibilityState, hlsUrl, eggheadLessonId],
 	)
 }
 
