@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
+import { PostSchema } from '@/lib/posts'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { signOut } from 'next-auth/react'
@@ -12,7 +14,6 @@ import {
 	type ContentResource,
 } from '@coursebuilder/core/schemas'
 import { Card, CardContent, CardFooter, CardHeader } from '@coursebuilder/ui'
-import { NewResourceWithVideoForm } from '@coursebuilder/ui/resources-crud/new-resource-with-video-form'
 
 export function CreatePost() {
 	const router = useRouter()
@@ -25,12 +26,13 @@ export function CreatePost() {
 							`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
 						)
 					}}
-					createResource={async ({ title, videoResourceId }) => {
+					createResource={async ({ title, videoResourceId, postType }) => {
 						try {
 							return ContentResourceSchema.parse(
 								await createPost({
 									title,
 									videoResourceId,
+									postType,
 								}),
 							)
 						} catch (error) {
@@ -41,6 +43,7 @@ export function CreatePost() {
 						}
 					}}
 					getVideoResource={getVideoResource}
+					availableResourceTypes={['lesson', 'article', 'podcast', 'course']}
 				>
 					{(handleSetVideoResourceId: (id: string) => void) => {
 						return (

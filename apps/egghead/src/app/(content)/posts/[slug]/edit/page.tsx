@@ -9,6 +9,26 @@ import { subject } from '@casl/ability'
 
 import { EditPostForm } from '../../_components/edit-post-form'
 
+function EditPostSkeleton() {
+	return (
+		<div className="animate-pulse space-y-6 p-6">
+			<div className="h-8 w-3/4 rounded bg-gray-200" />
+			<div className="space-y-4">
+				<div className="h-40 rounded bg-gray-200" />
+				<div className="h-12 w-1/2 rounded bg-gray-200" />
+			</div>
+			<div className="space-y-2">
+				<div className="h-4 w-1/4 rounded bg-gray-200" />
+				<div className="h-10 rounded bg-gray-200" />
+			</div>
+			<div className="flex gap-2">
+				<div className="h-10 w-24 rounded bg-gray-200" />
+				<div className="h-10 w-24 rounded bg-gray-200" />
+			</div>
+		</div>
+	)
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function PostPage(props: {
@@ -40,15 +60,19 @@ export default async function PostPage(props: {
 	await getAllEggheadTagsCached()
 	const tagLoader = getTags()
 
+	console.log({ videoResourceLoader, tagLoader, post })
+
 	return (
 		<Layout>
-			<EditPostForm
-				key={post.id}
-				post={post}
-				videoResourceLoader={videoResourceLoader}
-				videoResourceId={videoResource?.id}
-				tagLoader={tagLoader}
-			/>
+			<React.Suspense fallback={<EditPostSkeleton />}>
+				<EditPostForm
+					key={post.id}
+					post={post}
+					videoResourceLoader={videoResourceLoader}
+					videoResourceId={videoResource?.id}
+					tagLoader={tagLoader}
+				/>
+			</React.Suspense>
 		</Layout>
 	)
 }

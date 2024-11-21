@@ -31,6 +31,9 @@ const config = {
 		cardType: 'summary_large_image',
 		handle: `@${process.env.NEXT_PUBLIC_PARTNER_TWITTER}`,
 	},
+	bluesky: {
+		handle: `@${process.env.NEXT_PUBLIC_PARTNER_BLUESKY}`,
+	},
 	sameAs: [`https://twitter.com/${process.env.NEXT_PUBLIC_PARTNER_TWITTER}`],
 	openGraph: {
 		type: 'website',
