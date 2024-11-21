@@ -15,8 +15,6 @@ export const {
 	rolesRelations,
 	sessions,
 	sessionsRelations,
-	userProfiles,
-	userProfilesRelations,
 	userPermissions,
 	userPermissionsRelations,
 	userRoles,

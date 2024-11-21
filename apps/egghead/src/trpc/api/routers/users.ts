@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
-import { accounts, profiles, userProfiles, users } from '@/db/schema'
+import { accounts, profiles, users } from '@/db/schema'
 import { updateContributorProfile } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
 import {

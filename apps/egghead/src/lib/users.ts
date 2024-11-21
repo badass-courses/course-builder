@@ -2,14 +2,7 @@ import { unstable_cache } from 'next/cache'
 import { UserSchema } from '@/ability'
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
-import {
-	accounts,
-	profiles,
-	roles,
-	userProfiles,
-	userRoles,
-	users,
-} from '@/db/schema'
+import { accounts, profiles, roles, userRoles, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
@@ -191,13 +184,6 @@ export async function updateContributorProfile(data: UpdateProfileData) {
 					},
 				},
 			})
-
-		if (!existingProfile) {
-			await tx.insert(userProfiles).values({
-				userId: data.user.id,
-				profileId,
-			})
-		}
 	})
 
 	const eggheadAccount = data.user.accounts?.find(
