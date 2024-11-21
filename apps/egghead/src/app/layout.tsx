@@ -12,6 +12,8 @@ import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { extractRouterConfig } from 'uploadthing/server'
 
+import { Toaster } from '@coursebuilder/ui/primitives/toaster'
+
 const inter = Inter({
 	subsets: ['latin'],
 	variable: '--font-sans',
@@ -34,6 +36,7 @@ export default function RootLayout({
 				<body className={`font-sans ${inter.variable}`}>
 					<TRPCReactProvider>
 						<Party />
+						<Toaster />
 						<ThemeProvider
 							attribute="class"
 							defaultTheme="system"

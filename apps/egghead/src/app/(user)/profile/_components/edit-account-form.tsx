@@ -4,6 +4,7 @@ import React from 'react'
 import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Clipboard } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -111,7 +112,23 @@ const EditAccountForm: React.FC<{
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel htmlFor="affiliateCode">
-											Affiliate Code
+											<div className="flex items-center gap-2">
+												<p>Affiliate Code</p>
+												<button
+													className="rounded-md p-1 hover:bg-gray-100"
+													type="button"
+													onClick={() => {
+														navigator.clipboard.writeText(
+															`?af=${user?.fields?.affiliateCode}`,
+														)
+														toast({
+															title: 'Affiliate Code Copied to Clipboard',
+														})
+													}}
+												>
+													<Clipboard className="h-4 w-4" />
+												</button>
+											</div>
 										</FormLabel>
 										<FormControl>
 											<Input
