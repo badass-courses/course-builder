@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { sql } from 'drizzle-orm'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -23,18 +24,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lessons.fields->>'$.title' AS lesson_title,
       lesson_relations.position AS lesson_position
     FROM
-      ContentResource AS workshop
-    LEFT JOIN ContentResourceResource AS section_relations
+      ${contentResource} AS workshop
+    LEFT JOIN ${contentResourceResource} AS section_relations
       ON workshop.id = section_relations.resourceOfId
-    LEFT JOIN ContentResource AS sections
+    LEFT JOIN ${contentResource} AS sections
       ON sections.id = section_relations.resourceId AND sections.type = 'section'
-    LEFT JOIN ContentResourceResource AS lesson_relations
+    LEFT JOIN ${contentResourceResource} AS lesson_relations
       ON sections.id = lesson_relations.resourceOfId
-    LEFT JOIN ContentResource AS lessons
+    LEFT JOIN ${contentResource} AS lessons
       ON lessons.id = lesson_relations.resourceId AND (lessons.type = 'lesson' OR lessons.type = 'exercise')
-    LEFT JOIN ContentResourceResource AS top_level_lesson_relations
+    LEFT JOIN ${contentResourceResource} AS top_level_lesson_relations
       ON workshop.id = top_level_lesson_relations.resourceOfId
-    LEFT JOIN ContentResource AS top_level_lessons
+    LEFT JOIN ${contentResource} AS top_level_lessons
       ON top_level_lessons.id = top_level_lesson_relations.resourceId
       AND (top_level_lessons.type = 'lesson' OR top_level_lessons.type = 'exercise')
     WHERE
@@ -83,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       cr.fields->>'$.slug' AS slug,
       cr.updatedAt
     FROM
-      ContentResource cr
+      ${contentResource} cr
     WHERE
       cr.type IN ('post')
       AND cr.deletedAt IS NULL

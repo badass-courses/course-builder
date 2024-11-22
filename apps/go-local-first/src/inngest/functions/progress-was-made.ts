@@ -1,4 +1,5 @@
 import { db as rawDb } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
 import { env } from '@/env.mjs'
 import { LESSON_COMPLETED_EVENT } from '@/inngest/events/lesson-completed'
@@ -59,18 +60,18 @@ export const progressWasMade = inngest.createFunction(
 				const query = sql`
 						SELECT COALESCE(workshop.id, direct_parent.id) AS rootModuleId,
 									 COALESCE(workshop.type, direct_parent.type) AS rootModuleType
-						FROM ContentResource AS resource
+						FROM ${contentResource} AS resource
 						LEFT JOIN (
 								SELECT crr1.resourceId, cr1.id, cr1.type
-								FROM ContentResourceResource AS crr1
-								JOIN ContentResource AS cr1 ON crr1.resourceOfId = cr1.id
+								FROM ${contentResourceResource} AS crr1
+								JOIN ${contentResource} AS cr1 ON crr1.resourceOfId = cr1.id
 								WHERE cr1.type = 'workshop'
 						) AS direct_parent ON resource.id = direct_parent.resourceId
 						LEFT JOIN (
 								SELECT crr2.resourceId, cr2.id, cr2.type
-								FROM ContentResourceResource AS crr2
-								JOIN ContentResourceResource AS crr3 ON crr2.resourceOfId = crr3.resourceId
-								JOIN ContentResource AS cr2 ON crr3.resourceOfId = cr2.id
+								FROM ${contentResourceResource} AS crr2
+								JOIN ${contentResourceResource} AS crr3 ON crr2.resourceOfId = crr3.resourceId
+								JOIN ${contentResource} AS cr2 ON crr3.resourceOfId = cr2.id
 								WHERE cr2.type = 'workshop'
 						) AS workshop ON resource.id = workshop.resourceId
 						WHERE resource.id = ${event.data.lessonId}
