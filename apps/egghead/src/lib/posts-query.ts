@@ -349,6 +349,7 @@ export async function writeNewPostToDatabase(input: {
 	const newPostId = `post_${postGuid}`
 	const videoResource =
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
+
 	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
 	const eggheadLessonId = TYPES_WITH_LESSONS.includes(input.newPost.postType)
 		? await createEggheadLesson({
@@ -356,6 +357,9 @@ export async function writeNewPostToDatabase(input: {
 				slug: `${slugify(title)}~${postGuid}`,
 				instructorId: eggheadInstructorId,
 				guid: postGuid,
+				...(videoResource?.muxPlaybackId && {
+					hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+				}),
 			})
 		: null
 
@@ -450,12 +454,25 @@ export async function writePostUpdateToDatabase(input: {
 		readingTime(currentPost.fields.body ?? '').time / 1000,
 	)
 
+	const videoResourceId =
+		postUpdate.videoResourceId ??
+		currentPost.resources?.find(
+			(resource) => resource.resource.type === 'videoResource',
+		)?.resourceId
+
+	const videoResource = videoResourceId
+		? await courseBuilderAdapter.getVideoResource(videoResourceId)
+		: null
+
 	if (currentPost.fields.eggheadLessonId) {
 		await updateEggheadLesson({
 			eggheadLessonId: currentPost.fields.eggheadLessonId,
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
 			duration: duration > 0 ? duration : timeToRead,
+			...(videoResource?.muxPlaybackId && {
+				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+			}),
 		})
 	}
 

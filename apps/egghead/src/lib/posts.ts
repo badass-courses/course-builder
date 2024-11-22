@@ -82,6 +82,7 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional().default('public'),
 		state: PostStateSchema.optional().default('draft'),
 	}),
+	videoResourceId: z.string().optional().nullable(),
 })
 
 export type PostUpdate = z.infer<typeof PostUpdateSchema>
