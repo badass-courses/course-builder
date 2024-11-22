@@ -80,21 +80,32 @@ export async function createEggheadLesson(input: {
 	hlsUrl?: string
 }) {
 	const { title, slug, guid, instructorId, hlsUrl = null } = input
+
 	const eggheadLessonResult = await eggheadPgQuery(
 		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state, guid, current_video_hls_url)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6, $7)
+			created_at, updated_at, visibility_state, guid${hlsUrl ? ', current_video_hls_url' : ''})
+		VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6, $7${hlsUrl ? ', $8' : ''})
 		RETURNING id`,
-		[
-			title,
-			instructorId,
-			slug,
-			EGGHEAD_LESSON_TYPE,
-			EGGHEAD_INITIAL_LESSON_STATE,
-			'hidden',
-			guid,
-			hlsUrl,
-		],
+		hlsUrl
+			? [
+					title,
+					instructorId,
+					slug,
+					EGGHEAD_LESSON_TYPE,
+					EGGHEAD_INITIAL_LESSON_STATE,
+					'hidden',
+					guid,
+					hlsUrl,
+				]
+			: [
+					title,
+					instructorId,
+					slug,
+					EGGHEAD_LESSON_TYPE,
+					EGGHEAD_INITIAL_LESSON_STATE,
+					'hidden',
+					guid,
+				],
 	)
 
 	const eggheadLessonId = eggheadLessonResult.rows[0].id
@@ -111,6 +122,9 @@ export async function createEggheadLesson(input: {
 
 export async function updateEggheadLesson(input: {
 	eggheadLessonId: number
+	title: string
+	slug: string
+	guid: string
 	state: string
 	visibilityState: string
 	duration: number
@@ -122,6 +136,9 @@ export async function updateEggheadLesson(input: {
 		visibilityState,
 		duration,
 		hlsUrl = null,
+		title,
+		slug,
+		guid,
 	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
@@ -129,9 +146,21 @@ export async function updateEggheadLesson(input: {
 			duration = $2,
 			updated_at = NOW(),
 			visibility_state = $3,
-			current_video_hls_url = $4
-		WHERE id = $5`,
-		[state, Math.floor(duration), visibilityState, hlsUrl, eggheadLessonId],
+			current_video_hls_url = $4,
+			title = $5,
+			slug = $6,
+			guid = $7
+		WHERE id = $8`,
+		[
+			state,
+			Math.floor(duration),
+			visibilityState,
+			hlsUrl,
+			title,
+			slug,
+			guid,
+			eggheadLessonId,
+		],
 	)
 }
 

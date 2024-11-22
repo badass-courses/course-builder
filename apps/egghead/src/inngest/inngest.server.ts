@@ -33,6 +33,10 @@ import {
 	POST_UPDATED_EVENT,
 	PostUpdated,
 } from './functions/sync-post-to-egghead'
+import {
+	SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT,
+	SyncPostsToEggheadLessonsEvent,
+} from './functions/sync-posts-to-egghead-lessons'
 
 // Create a client to send and receive events
 export type Events = {
@@ -43,6 +47,7 @@ export type Events = {
 	[TIPS_UPDATED_EVENT]: TipsUpdated
 	[EGGHEAD_LESSON_CREATED_EVENT]: EggheadLessonCreated
 	[POST_CREATED_EVENT]: PostCreated
+	[SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT]: SyncPostsToEggheadLessonsEvent
 }
 
 const callbackBase =

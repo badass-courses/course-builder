@@ -413,7 +413,7 @@ export async function writeNewPostToDatabase(input: {
 }
 
 export async function writePostUpdateToDatabase(input: {
-	currentPost: Post
+	currentPost?: Post
 	postUpdate: PostUpdate
 	action: PostAction
 	updatedById: string
@@ -435,9 +435,11 @@ export async function writePostUpdateToDatabase(input: {
 
 	let postSlug = updatePostSlug(currentPost, postUpdate.fields.title)
 
+	const postGuid = currentPost?.fields.slug.split('~')[1] || guid()
+
 	if (postUpdate.fields.title !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${splitSlug[1] || guid()}`
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', postGuid]
+		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${postGuid}`
 	}
 
 	const lessonState = determineEggheadLessonState(
@@ -464,8 +466,13 @@ export async function writePostUpdateToDatabase(input: {
 		? await courseBuilderAdapter.getVideoResource(videoResourceId)
 		: null
 
+	// probably update sanity here
+
 	if (currentPost.fields.eggheadLessonId) {
 		await updateEggheadLesson({
+			title: postUpdate.fields.title,
+			slug: postSlug, // probably bypassing friendly id here, does it matter?
+			guid: postGuid,
 			eggheadLessonId: currentPost.fields.eggheadLessonId,
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
@@ -715,4 +722,18 @@ export async function removeSection(
 	return await db
 		.delete(contentResourceResource)
 		.where(eq(contentResourceResource.resourceId, sectionId))
+}
+
+export async function getAllPostIds() {
+	return await db.query.contentResource
+		.findMany({
+			where: and(
+				eq(contentResource.type, 'post'),
+				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
+			),
+			columns: {
+				id: true,
+			},
+		})
+		.then((posts) => posts.map((post) => post.id))
 }
