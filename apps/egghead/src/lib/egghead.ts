@@ -81,32 +81,41 @@ export async function createEggheadLesson(input: {
 }) {
 	const { title, slug, guid, instructorId, hlsUrl = null } = input
 
-	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state, guid${hlsUrl ? ', current_video_hls_url' : ''})
-		VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6, $7${hlsUrl ? ', $8' : ''})
-		RETURNING id`,
-		hlsUrl
-			? [
-					title,
-					instructorId,
-					slug,
-					EGGHEAD_LESSON_TYPE,
-					EGGHEAD_INITIAL_LESSON_STATE,
-					'hidden',
-					guid,
-					hlsUrl,
-				]
-			: [
-					title,
-					instructorId,
-					slug,
-					EGGHEAD_LESSON_TYPE,
-					EGGHEAD_INITIAL_LESSON_STATE,
-					'hidden',
-					guid,
-				],
-	)
+	const columns = [
+		'title',
+		'instructor_id',
+		'slug',
+		'resource_type',
+		'state',
+		'created_at',
+		'updated_at',
+		'visibility_state',
+		'guid',
+		...(hlsUrl ? ['current_video_hls_url'] : []),
+	]
+
+	const values = [
+		title,
+		instructorId,
+		slug,
+		EGGHEAD_LESSON_TYPE,
+		EGGHEAD_INITIAL_LESSON_STATE,
+		new Date(), // created_at
+		new Date(), // updated_at
+		'hidden',
+		guid,
+		...(hlsUrl ? [hlsUrl] : []),
+	]
+
+	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+
+	const query = `
+		INSERT INTO lessons (${columns.join(', ')})
+		VALUES (${placeholders})
+		RETURNING id
+	`
+
+	const eggheadLessonResult = await eggheadPgQuery(query, values)
 
 	const eggheadLessonId = eggheadLessonResult.rows[0].id
 
@@ -129,6 +138,7 @@ export async function updateEggheadLesson(input: {
 	visibilityState: string
 	duration: number
 	hlsUrl?: string
+	body?: string
 }) {
 	const {
 		eggheadLessonId,
@@ -139,6 +149,7 @@ export async function updateEggheadLesson(input: {
 		title,
 		slug,
 		guid,
+		body = '',
 	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
@@ -149,8 +160,9 @@ export async function updateEggheadLesson(input: {
 			current_video_hls_url = $4,
 			title = $5,
 			slug = $6,
-			guid = $7
-		WHERE id = $8`,
+			guid = $7,
+			summary = $8
+		WHERE id = $9`,
 		[
 			state,
 			Math.floor(duration),
@@ -159,6 +171,7 @@ export async function updateEggheadLesson(input: {
 			title,
 			slug,
 			guid,
+			body,
 			eggheadLessonId,
 		],
 	)
@@ -233,6 +246,7 @@ export const eggheadLessonSchema = z.object({
 	summary: z.string().nullish(),
 	topic_list: z.array(z.string()),
 	free_forever: z.boolean(),
+	is_pro: z.boolean(),
 	body: z.string().nullish(),
 	state: z.string(),
 	instructor: z.object({

@@ -11,7 +11,6 @@ import {
 	contentResourceTag as contentResourceTagTable,
 	contentResourceVersion as contentResourceVersionTable,
 	contributionTypes,
-	users,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -28,7 +27,6 @@ import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
-import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
@@ -51,6 +49,10 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
+import {
+	replaceSanityLessonResources,
+	updateSanityLesson,
+} from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense'
 
@@ -385,6 +387,14 @@ export async function writeNewPostToDatabase(input: {
 
 	const post = await getPost(newPostId)
 
+	if (post && post.fields.eggheadLessonId) {
+		await updateSanityLesson(post.fields.eggheadLessonId, post)
+		await replaceSanityLessonResources({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			videoResourceId: videoResourceId,
+		})
+	}
+
 	await createNewPostVersion(post)
 
 	if (post) {
@@ -466,13 +476,12 @@ export async function writePostUpdateToDatabase(input: {
 		? await courseBuilderAdapter.getVideoResource(videoResourceId)
 		: null
 
-	// probably update sanity here
-
 	if (currentPost.fields.eggheadLessonId) {
 		await updateEggheadLesson({
 			title: postUpdate.fields.title,
 			slug: postSlug, // probably bypassing friendly id here, does it matter?
 			guid: postGuid,
+			body: postUpdate.fields.body ?? '',
 			eggheadLessonId: currentPost.fields.eggheadLessonId,
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
@@ -497,6 +506,12 @@ export async function writePostUpdateToDatabase(input: {
 	if (!updatedPost) {
 		throw new Error(`Post with id ${currentPost.id} not found.`)
 	}
+
+	await updateSanityLesson(currentPost.fields.eggheadLessonId, updatedPost)
+	await replaceSanityLessonResources({
+		eggheadLessonId: currentPost.fields.eggheadLessonId,
+		videoResourceId: videoResourceId,
+	})
 
 	const newContentHash = generateContentHash(updatedPost)
 	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
