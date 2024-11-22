@@ -357,12 +357,11 @@ export async function writeNewPostToDatabase(input: {
 				slug: `${slugify(title)}~${postGuid}`,
 				instructorId: eggheadInstructorId,
 				guid: postGuid,
-      	...(videoResource?.muxPlaybackId && {
-			    hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
-		    }),
+				...(videoResource?.muxPlaybackId && {
+					hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+				}),
 			})
 		: null
-
 
 	await db
 		.insert(contentResource)
