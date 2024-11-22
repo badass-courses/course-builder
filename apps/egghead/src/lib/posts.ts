@@ -79,6 +79,7 @@ export const PostUpdateSchema = z.object({
 		title: z.string().min(2).max(90),
 		postType: PostTypeSchema.optional().default('lesson'),
 		body: z.string().optional().nullable(),
+		description: z.string().optional().nullable(),
 		visibility: PostVisibilitySchema.optional().default('public'),
 		state: PostStateSchema.optional().default('draft'),
 	}),
