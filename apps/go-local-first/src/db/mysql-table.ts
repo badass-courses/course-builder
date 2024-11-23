@@ -7,7 +7,4 @@ import { mysqlTableCreator } from 'drizzle-orm/mysql-core'
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const mysqlTable = mysqlTableCreator(
-	(name) =>
-		`${env.DATABASE_TABLE_PREFIX ? `${env.DATABASE_TABLE_PREFIX}_${name}` : name}`,
-)
+export const mysqlTable = mysqlTableCreator((name) => `GLF_${name}`)
