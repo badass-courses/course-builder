@@ -26,7 +26,7 @@ export const env = createEnv({
 				(str) => !str.includes('YOUR_MYSQL_URL_HERE'),
 				'You forgot to change the default URL',
 			),
-		DATABASE_TABLE_PREFIX: z.string(),
+		TABLE_PREFIX: z.string(),
 		NODE_ENV: z
 			.enum(['development', 'test', 'production'])
 			.default('development'),
@@ -112,7 +112,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
 		COURSEBUILDER_URL: process.env.COURSEBUILDER_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
-		DATABASE_TABLE_PREFIX: process.env.DATABASE_TABLE_PREFIX,
+		TABLE_PREFIX: process.env.TABLE_PREFIX,
 		NODE_ENV: process.env.NODE_ENV,
 		NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 		NEXTAUTH_URL: process.env.NEXTAUTH_URL,
