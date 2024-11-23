@@ -33,6 +33,7 @@ import 'server-only'
 
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
+import { sanityWriteClient } from '@/server/sanity-write-client'
 import { last } from 'lodash'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
@@ -49,6 +50,7 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
+import { sanityLessonDocumentSchema } from './sanity-content'
 import {
 	replaceSanityLessonResources,
 	updateSanityLesson,
@@ -364,6 +366,21 @@ export async function writeNewPostToDatabase(input: {
 				}),
 			})
 		: null
+
+	if (eggheadLessonId) {
+		const lesson = sanityLessonDocumentSchema.parse({
+			_id: `lesson-${eggheadLessonId}`,
+			_type: 'lesson',
+			title,
+			slug: {
+				_type: 'slug',
+				current: `${slugify(title)}~${postGuid}`,
+			},
+			railsLessonId: eggheadLessonId,
+		})
+
+		await sanityWriteClient.create(lesson)
+	}
 
 	await db
 		.insert(contentResource)

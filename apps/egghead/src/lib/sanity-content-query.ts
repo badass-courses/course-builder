@@ -1,7 +1,11 @@
 'use server'
 
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceResource,
+	contentResourceTag,
+} from '@/db/schema'
 import { getEggheadLesson, type EggheadLesson } from '@/lib/egghead'
 import {
 	keyGenerator,
@@ -19,11 +23,11 @@ import type {
 	SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
 import { sanityWriteClient } from '@/server/sanity-write-client'
-import { eq, sql } from 'drizzle-orm'
+import { asc, eq, sql } from 'drizzle-orm'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
 
-import { Post } from './posts'
+import { Post, PostSchema } from './posts'
 
 export async function createSanityVideoResource(videoResource: VideoResource) {
 	const { muxPlaybackId, muxAssetId, transcript, srt, id } = videoResource
@@ -151,7 +155,7 @@ export async function updateSanityLesson(
 		await getSanityCollaborator(eggheadLesson.instructor.id),
 	)
 
-	await sanityWriteClient
+	return await sanityWriteClient
 		.patch(sanityLessonDocument._id)
 		.set({
 			description: lesson.fields.body,
@@ -177,15 +181,39 @@ export async function createSanityLesson(
 	collaborator: SanityCollaboratorReferenceObject,
 	softwareLibraries: SanityVersionedSoftwareLibraryObject[],
 ) {
-	const post = await db.query.contentResource.findFirst({
-		where: eq(
-			sql`JSON_EXTRACT (${contentResource.fields}, "$.eggheadLessonId")`,
-			eggheadLesson.id,
-		),
-	})
+	const post = PostSchema.nullable().parse(
+		await db.query.contentResource.findFirst({
+			where: eq(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.eggheadLessonId")`,
+				eggheadLesson.id,
+			),
+			with: {
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTag.position),
+				},
+				resources: {
+					with: {
+						resource: true,
+					},
+					orderBy: asc(contentResourceResource.position),
+				},
+			},
+		}),
+	)
 
 	if (!post) {
 		throw new Error(`Post with id ${eggheadLesson.id} not found.`)
+	}
+
+	const existingSanityLessonDocument = await getSanityLessonForEggheadLessonId(
+		eggheadLesson.id,
+	)
+
+	if (existingSanityLessonDocument) {
+		return updateSanityLesson(eggheadLesson.id, post)
 	}
 
 	const lesson = sanityLessonDocumentSchema.parse({
