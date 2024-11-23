@@ -46,7 +46,7 @@ const config = {
 		],
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
-	transpilePackages: ['@coursebuilder/ui'],
+	transpilePackages: ['@coursebuilder/ui', 'next-mdx-remote', 'shiki'],
 	// @ts-expect-error
 	async redirects() {
 		return [
