@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
@@ -289,7 +290,15 @@ export const PostMetadataFormFields: React.FC<{
 			{videoResource && (
 				<div className="px-5">
 					<div className="flex items-center justify-between gap-2">
-						<label className="text-lg font-bold">Transcript</label>
+						<div className="flex items-center gap-2">
+							<label className="text-lg font-bold">Transcript</label>
+							<Link
+								href={`/posts/${post.fields?.slug}/edit/transcript`}
+								className="text-sm text-blue-500 hover:text-blue-700"
+							>
+								Edit
+							</Link>
+						</div>
 						{Boolean(videoResourceId) && (
 							<TooltipProvider delayDuration={0}>
 								<Tooltip>
