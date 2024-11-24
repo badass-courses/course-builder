@@ -3,8 +3,12 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getPost } from '@/lib/posts-query'
 import {
+	Alternative,
+	Channel,
 	DeepgramResponse,
 	DeepgramResponseSchema,
+	Paragraph,
+	Sentence,
 } from '@/lib/transcript-deepgram-response'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
@@ -12,17 +16,19 @@ import { eq } from 'drizzle-orm/expressions'
 
 import TranscriptEditorPage from './transcript-editor'
 
-function transformTranscriptData(data: any): DeepgramResponse {
+function transformTranscriptData(data: DeepgramResponse): DeepgramResponse {
 	const transformed = structuredClone(data)
 
-	transformed.deepgramResults.channels.forEach((channel) => {
-		channel.alternatives.forEach((alt) => {
+	transformed.deepgramResults.channels.forEach((channel: Channel) => {
+		channel.alternatives.forEach((alt: Alternative) => {
 			if (alt.paragraphs) {
 				// Transform paragraphs to match new schema
 				alt.paragraphs.paragraphs = alt.paragraphs.paragraphs.map(
-					(paragraph) => {
+					(paragraph: Paragraph) => {
 						// Combine sentences text to create paragraph text
-						const text = paragraph.sentences.map((s) => s.text).join(' ')
+						const text = paragraph.sentences
+							.map((s: Sentence) => s.text)
+							.join(' ')
 
 						return {
 							text,
@@ -66,12 +72,14 @@ export default async function TranscriptEditor({
 		where: eq(contentResource.id, `raw-transcript-${videoResourceId}`),
 	})
 
-	if (!transcript) {
+	if (!transcript || !transcript.fields) {
 		return notFound()
 	}
 
 	// Transform the data before validation
-	const transformedData = transformTranscriptData(transcript.fields)
+	const transformedData = transformTranscriptData(
+		DeepgramResponseSchema.parse(transcript.fields),
+	)
 
 	// Validate the transformed data
 	const transcriptData = DeepgramResponseSchema.parse(transformedData)
