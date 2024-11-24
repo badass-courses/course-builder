@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Word } from '@/lib/transcript-deepgram-response'
-import { Copy, Edit2, Save, X } from 'lucide-react'
+import { Copy, Edit2, Link2, Save, X } from 'lucide-react'
 
 interface WordEditorProps {
 	word: Word
@@ -16,6 +16,8 @@ interface WordEditorProps {
 	onSave: (replaceAll: boolean) => void
 	onCancel: () => void
 	onChange: (newWord: Word) => void
+	onMerge: () => void
+	canMerge: boolean
 }
 
 export const WordEditor: React.FC<WordEditorProps> = ({
@@ -27,6 +29,8 @@ export const WordEditor: React.FC<WordEditorProps> = ({
 	onSave,
 	onCancel,
 	onChange,
+	onMerge,
+	canMerge,
 }) => {
 	const inputRef = React.useRef<HTMLInputElement>(null)
 
@@ -104,12 +108,24 @@ export const WordEditor: React.FC<WordEditorProps> = ({
 			>
 				{word.punctuated_word}
 			</span>
-			<button
-				onClick={onEdit}
-				className="p-1 opacity-0 transition-opacity hover:opacity-100"
-			>
-				<Edit2 className="h-3 w-3 text-gray-400" />
-			</button>
+			<div className="flex">
+				<button
+					onClick={onEdit}
+					className="p-1 opacity-0 transition-opacity hover:opacity-100"
+					title="Edit word"
+				>
+					<Edit2 className="h-3 w-3 text-gray-400" />
+				</button>
+				{canMerge && (
+					<button
+						onClick={onMerge}
+						className="p-1 opacity-0 transition-opacity hover:opacity-100"
+						title="Merge with next word"
+					>
+						<Link2 className="h-3 w-3 text-gray-400" />
+					</button>
+				)}
+			</div>
 			{occurrences > 1 && (
 				<span className="ml-1 text-xs text-gray-500">({occurrences})</span>
 			)}

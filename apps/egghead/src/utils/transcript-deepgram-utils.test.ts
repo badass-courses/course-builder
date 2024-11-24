@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { sampleData } from '../data/sampleTranscript'
 import {
+	mergeWords,
 	replaceAllWords,
 	updateTranscriptData,
 } from './transcript-deepgram-utils'
@@ -188,6 +189,121 @@ describe('transcript-deepgram-utils', () => {
 			const originalWord = validatedData.deepgramResults.utterances[0]?.words[1]
 
 			expect(originalWord?.word).toBe('the')
+		})
+	})
+
+	describe('mergeWords', () => {
+		let utterance: (typeof validatedData.deepgramResults.utterances)[0]
+		let word1: Word
+		let word2: Word
+
+		beforeEach(() => {
+			const firstUtterance = validatedData.deepgramResults.utterances[0]
+			if (!firstUtterance || !firstUtterance.words) {
+				throw new Error('Invalid test data: missing utterance or word data')
+			}
+			utterance = firstUtterance
+
+			const firstWord = utterance.words[0]
+			const secondWord = utterance.words[1]
+			if (!firstWord || !secondWord) {
+				throw new Error('Invalid test data: need at least two words')
+			}
+			word1 = firstWord
+			word2 = secondWord
+		})
+
+		it('should merge two adjacent words in utterance', () => {
+			const result = mergeWords(validatedData, utterance.id, 0)
+			const mergedWord = result.deepgramResults.utterances[0]?.words[0]
+
+			expect(mergedWord?.word).toBe(`${word1.word}${word2.word}`)
+		})
+
+		it('should preserve start time of first word and end time of second word', () => {
+			const result = mergeWords(validatedData, utterance.id, 0)
+			const mergedWord = result.deepgramResults.utterances[0]?.words[0]
+
+			expect(mergedWord?.start).toBe(word1.start)
+			expect(mergedWord?.end).toBe(word2.end)
+		})
+
+		it('should average the confidence of merged words', () => {
+			const result = mergeWords(validatedData, utterance.id, 0)
+			const mergedWord = result.deepgramResults.utterances[0]?.words[0]
+
+			const expectedConfidence = (word1.confidence + word2.confidence) / 2
+			expect(mergedWord?.confidence).toBe(expectedConfidence)
+		})
+
+		it('should update the utterance transcript after merging', () => {
+			const result = mergeWords(validatedData, utterance.id, 0)
+			const updatedUtterance = result.deepgramResults.utterances[0]
+
+			expect(updatedUtterance?.transcript).toBe(
+				updatedUtterance?.words
+					.map((w) => w.punctuated_word)
+					.join(' ')
+					.replace(/\s([,.!?])/g, '$1'),
+			)
+		})
+
+		it('should merge corresponding words in channels', () => {
+			const result = mergeWords(validatedData, utterance.id, 0)
+			const channelWord =
+				result.deepgramResults.channels[0]?.alternatives[0]?.words[0]
+
+			expect(channelWord?.word).toBe(`${word1.word}${word2.word}`)
+		})
+
+		it('should preserve punctuation from second word', () => {
+			// Create test data with punctuation
+			const testData = structuredClone(validatedData)
+			const firstUtterance = testData.deepgramResults.utterances[0]
+			if (!firstUtterance?.words?.[1]) {
+				throw new Error('Invalid test data structure')
+			}
+
+			firstUtterance.words[1].punctuated_word = 'word.'
+
+			const result = mergeWords(testData, utterance.id, 0)
+			const mergedWord = result.deepgramResults.utterances[0]?.words[0]
+
+			expect(mergedWord?.punctuated_word.endsWith('.')).toBe(true)
+		})
+
+		it('should return unmodified data for non-existent utterance', () => {
+			const result = mergeWords(validatedData, 'non-existent-id', 0)
+			expect(result).toEqual(validatedData)
+		})
+
+		it('should return unmodified data for invalid word index', () => {
+			const result = mergeWords(
+				validatedData,
+				utterance.id,
+				utterance.words.length - 1,
+			)
+			expect(result).toEqual(validatedData)
+		})
+
+		it('should reduce total word count by one', () => {
+			const originalWordCount =
+				validatedData.deepgramResults.utterances[0]?.words.length || 0
+			const result = mergeWords(validatedData, utterance.id, 0)
+			const newWordCount =
+				result.deepgramResults.utterances[0]?.words.length || 0
+
+			expect(newWordCount).toBe(originalWordCount - 1)
+		})
+
+		it('should not mutate original data', () => {
+			const originalWordCount =
+				validatedData.deepgramResults.utterances[0]?.words.length || 0
+			mergeWords(validatedData, utterance.id, 0)
+
+			expect(validatedData.deepgramResults.utterances[0]?.words.length).toBe(
+				originalWordCount,
+			)
 		})
 	})
 })

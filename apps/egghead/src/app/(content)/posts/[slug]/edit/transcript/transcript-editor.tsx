@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { TranscriptEditor } from '@/components/transcript-editor/transcript-editor'
 import { DeepgramResponse, Word } from '@/lib/transcript-deepgram-response'
 import { updateTranscript } from '@/lib/transcript-query'
+import { mergeWords } from '@/utils/transcript-deepgram-utils'
 
 export default function TranscriptEditorPage({
 	transcriptData: initialTranscriptData,
@@ -167,9 +168,21 @@ export default function TranscriptEditorPage({
 		})
 	}
 
+	const handleMergeWords = (utteranceId: string, wordIndex: number) => {
+		setIsDirty(true)
+		setTranscriptData((prevData) =>
+			mergeWords(prevData, utteranceId, wordIndex),
+		)
+	}
+
 	const handleSave = async () => {
 		const result = await updateTranscript(videoResourceId, transcriptData)
 		console.log(result)
+		setIsDirty(false)
+	}
+
+	const handleDiscard = () => {
+		setTranscriptData(initialTranscriptData)
 		setIsDirty(false)
 	}
 
@@ -189,12 +202,20 @@ export default function TranscriptEditorPage({
 							Transcript Editor
 						</h1>
 						{isDirty && (
-							<button
-								onClick={handleSave}
-								className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-							>
-								Save Changes
-							</button>
+							<div className="flex gap-2">
+								<button
+									onClick={handleDiscard}
+									className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-600 hover:bg-gray-50"
+								>
+									Discard Changes
+								</button>
+								<button
+									onClick={handleSave}
+									className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+								>
+									Save Changes
+								</button>
+							</div>
 						)}
 					</div>
 				</div>
@@ -204,6 +225,7 @@ export default function TranscriptEditorPage({
 					utterances={transcriptData.deepgramResults.utterances}
 					onUpdateWord={handleUpdateWord}
 					onReplaceAll={handleReplaceAll}
+					onMergeWords={handleMergeWords}
 				/>
 			</main>
 		</div>

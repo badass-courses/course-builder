@@ -14,10 +14,15 @@ export const SentenceSchema = z.object({
 	end: z.number(),
 })
 
-export const ParagraphSchema = z.object({
-	text: z.string(),
-	sentences: z.array(SentenceSchema),
-})
+export const ParagraphSchema = z
+	.object({
+		text: z.string().optional(),
+		sentences: z.array(SentenceSchema),
+	})
+	.transform((data) => ({
+		...data,
+		text: data.text ?? data.sentences.map((s) => s.text).join(' '),
+	}))
 
 export const AlternativeSchema = z.object({
 	transcript: z.string(),

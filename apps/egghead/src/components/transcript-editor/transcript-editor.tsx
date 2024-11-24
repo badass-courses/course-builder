@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { Utterance, Word } from '@/lib/transcript-deepgram-response'
-import { Copy, Edit2, Save, X } from 'lucide-react'
+import { Copy, Edit2, Link2, Save, X } from 'lucide-react'
 
 import { WordEditor } from './word-editor'
 
@@ -10,12 +10,14 @@ interface TranscriptEditorProps {
 	utterances: Utterance[]
 	onUpdateWord: (utteranceId: string, wordIndex: number, newWord: Word) => void
 	onReplaceAll: (originalWord: string, newWord: Word) => void
+	onMergeWords: (utteranceId: string, wordIndex: number) => void
 }
 
 export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
 	utterances,
 	onUpdateWord,
 	onReplaceAll,
+	onMergeWords,
 }) => {
 	const [editingWord, setEditingWord] = React.useState<{
 		utteranceId: string
@@ -67,6 +69,10 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
 		}, 0)
 	}
 
+	const handleMergeWords = (utteranceId: string, wordIndex: number) => {
+		onMergeWords(utteranceId, wordIndex)
+	}
+
 	return (
 		<div className="mx-auto max-w-4xl space-y-8 p-6">
 			{utterances.map((utterance) => (
@@ -101,6 +107,8 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
 										prev ? { ...prev, word: newWord } : null,
 									)
 								}
+								onMerge={() => handleMergeWords(utterance.id, index)}
+								canMerge={index < utterance.words.length - 1}
 							/>
 						))}
 					</div>

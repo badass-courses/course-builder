@@ -191,3 +191,89 @@ export function replaceAllWords(
 
 	return newData
 }
+
+export function mergeWords(
+	prevData: DeepgramResponse,
+	utteranceId: string,
+	wordIndex: number,
+): DeepgramResponse {
+	const newData = structuredClone(prevData)
+
+	const utteranceIndex = newData.deepgramResults.utterances.findIndex(
+		(u) => u.id === utteranceId,
+	)
+
+	if (utteranceIndex === -1) return newData
+
+	const utterance = newData.deepgramResults.utterances[utteranceIndex]
+	if (!utterance?.words || wordIndex >= utterance.words.length - 1)
+		return newData
+
+	const word1 = utterance.words[wordIndex]
+	const word2 = utterance.words[wordIndex + 1]
+	if (!word1 || !word2) return newData
+
+	// Create merged word
+	const mergedWord: Word = {
+		word: `${word1.word}${word2.word}`,
+		punctuated_word: `${word1.word}${word2.word}${
+			word2.punctuated_word.match(/[,.!?]$/)?.[0] || ''
+		}`,
+		start: word1.start,
+		end: word2.end,
+		confidence: (word1.confidence + word2.confidence) / 2,
+	}
+
+	// Replace the two words with the merged word
+	utterance.words.splice(wordIndex, 2, mergedWord)
+
+	// Update utterance transcript
+	utterance.transcript = utterance.words
+		.map((w) => w.punctuated_word)
+		.join(' ')
+		.replace(/\s([,.!?])/g, '$1')
+
+	// Update channel alternatives
+	newData.deepgramResults.channels.forEach((channel) => {
+		channel.alternatives.forEach((alt) => {
+			// Find and merge corresponding words in the alternative
+			const altWordIndex = alt.words.findIndex(
+				(w) => w.start === word1.start && w.end === word1.end,
+			)
+			if (altWordIndex !== -1 && altWordIndex < alt.words.length - 1) {
+				alt.words.splice(altWordIndex, 2, mergedWord)
+
+				// Update alternative transcript
+				alt.transcript = alt.words
+					.map((w) => w.punctuated_word)
+					.join(' ')
+					.replace(/\s([,.!?])/g, '$1')
+
+				// Update paragraphs if they exist
+				if (alt.paragraphs) {
+					alt.paragraphs.paragraphs.forEach((paragraph) => {
+						paragraph.sentences.forEach((sentence) => {
+							if (
+								sentence.start <= mergedWord.end &&
+								sentence.end >= mergedWord.start
+							) {
+								const sentenceWords = alt.words.filter(
+									(w) => w.start >= sentence.start && w.end <= sentence.end,
+								)
+								sentence.text = sentenceWords
+									.map((w) => w.punctuated_word)
+									.join(' ')
+									.replace(/\s([,.!?])/g, '$1')
+							}
+						})
+
+						// Update paragraph text
+						paragraph.text = paragraph.sentences.map((s) => s.text).join(' ')
+					})
+				}
+			}
+		})
+	})
+
+	return newData
+}
