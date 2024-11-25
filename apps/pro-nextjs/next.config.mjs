@@ -37,7 +37,7 @@ const config = {
 		],
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
-	transpilePackages: ['@coursebuilder/ui'],
+	transpilePackages: ['@coursebuilder/ui', 'next-mdx-remote'],
 	async redirects() {
 		return [...sanityTutorialRedirects]
 	},

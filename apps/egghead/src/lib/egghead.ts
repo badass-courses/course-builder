@@ -77,23 +77,45 @@ export async function createEggheadLesson(input: {
 	slug: string
 	guid: string
 	instructorId: string | number
+	hlsUrl?: string
 }) {
-	const { title, slug, guid, instructorId } = input
-	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state, guid)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6, $7)
-		RETURNING id`,
-		[
-			title,
-			instructorId,
-			slug,
-			EGGHEAD_LESSON_TYPE,
-			EGGHEAD_INITIAL_LESSON_STATE,
-			'hidden',
-			guid,
-		],
-	)
+	const { title, slug, guid, instructorId, hlsUrl = null } = input
+
+	const columns = [
+		'title',
+		'instructor_id',
+		'slug',
+		'resource_type',
+		'state',
+		'created_at',
+		'updated_at',
+		'visibility_state',
+		'guid',
+		...(hlsUrl ? ['current_video_hls_url'] : []),
+	]
+
+	const values = [
+		title,
+		instructorId,
+		slug,
+		EGGHEAD_LESSON_TYPE,
+		EGGHEAD_INITIAL_LESSON_STATE,
+		new Date(), // created_at
+		new Date(), // updated_at
+		'hidden',
+		guid,
+		...(hlsUrl ? [hlsUrl] : []),
+	]
+
+	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+
+	const query = `
+		INSERT INTO lessons (${columns.join(', ')})
+		VALUES (${placeholders})
+		RETURNING id
+	`
+
+	const eggheadLessonResult = await eggheadPgQuery(query, values)
 
 	const eggheadLessonId = eggheadLessonResult.rows[0].id
 
@@ -109,19 +131,49 @@ export async function createEggheadLesson(input: {
 
 export async function updateEggheadLesson(input: {
 	eggheadLessonId: number
+	title: string
+	slug: string
+	guid: string
 	state: string
 	visibilityState: string
 	duration: number
+	hlsUrl?: string
+	body?: string
 }) {
-	const { eggheadLessonId, state, visibilityState, duration } = input
+	const {
+		eggheadLessonId,
+		state,
+		visibilityState,
+		duration,
+		hlsUrl = null,
+		title,
+		slug,
+		guid,
+		body = '',
+	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
 			state = $1,
 			duration = $2,
 			updated_at = NOW(),
-			visibility_state = $3
-		WHERE id = $4`,
-		[state, Math.floor(duration), visibilityState, eggheadLessonId],
+			visibility_state = $3,
+			current_video_hls_url = $4,
+			title = $5,
+			slug = $6,
+			guid = $7,
+			summary = $8
+		WHERE id = $9`,
+		[
+			state,
+			Math.floor(duration),
+			visibilityState,
+			hlsUrl,
+			title,
+			slug,
+			guid,
+			body,
+			eggheadLessonId,
+		],
 	)
 }
 
@@ -194,6 +246,7 @@ export const eggheadLessonSchema = z.object({
 	summary: z.string().nullish(),
 	topic_list: z.array(z.string()),
 	free_forever: z.boolean(),
+	is_pro: z.boolean(),
 	body: z.string().nullish(),
 	state: z.string(),
 	instructor: z.object({

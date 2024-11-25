@@ -26,7 +26,6 @@ export const env = createEnv({
 				(str) => !str.includes('YOUR_MYSQL_URL_HERE'),
 				'You forgot to change the default URL',
 			),
-		DATABASE_TABLE_PREFIX: z.string().optional(),
 		NODE_ENV: z
 			.enum(['development', 'test', 'production'])
 			.default('development'),
@@ -65,9 +64,9 @@ export const env = createEnv({
 		AWS_ACCESS_KEY_ID: z.string().optional(),
 		AWS_SECRET_ACCESS_KEY: z.string().optional(),
 		AWS_BUCKET_NAME: z.string().optional(),
-		CONVERTKIT_API_SECRET: z.string(),
-		CONVERTKIT_API_KEY: z.string(),
-		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]),
+		CONVERTKIT_API_SECRET: z.string().optional(),
+		CONVERTKIT_API_KEY: z.string().optional(),
+		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]).optional(),
 		EMAIL_SERVER_HOST: z.string().optional(),
 		EMAIL_SERVER_PORT: z.coerce.number().optional(),
 		POSTMARK_KEY: z.string().optional(),
@@ -112,7 +111,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
 		COURSEBUILDER_URL: process.env.COURSEBUILDER_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
-		DATABASE_TABLE_PREFIX: process.env.DATABASE_TABLE_PREFIX,
 		NODE_ENV: process.env.NODE_ENV,
 		NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 		NEXTAUTH_URL: process.env.NEXTAUTH_URL,

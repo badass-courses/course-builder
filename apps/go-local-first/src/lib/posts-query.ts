@@ -9,7 +9,6 @@ import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
-import { v4 } from 'uuid'
 import { z } from 'zod'
 
 export const getCachedAllPosts = unstable_cache(

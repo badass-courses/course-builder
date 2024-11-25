@@ -11,7 +11,6 @@ import {
 	contentResourceTag as contentResourceTagTable,
 	contentResourceVersion as contentResourceVersionTable,
 	contributionTypes,
-	users,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -28,13 +27,13 @@ import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
-import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
 
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
+import { sanityWriteClient } from '@/server/sanity-write-client'
 import { last } from 'lodash'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
@@ -51,6 +50,11 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
+import { sanityLessonDocumentSchema } from './sanity-content'
+import {
+	replaceSanityLessonResources,
+	updateSanityLesson,
+} from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense'
 
@@ -349,6 +353,7 @@ export async function writeNewPostToDatabase(input: {
 	const newPostId = `post_${postGuid}`
 	const videoResource =
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
+
 	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
 	const eggheadLessonId = TYPES_WITH_LESSONS.includes(input.newPost.postType)
 		? await createEggheadLesson({
@@ -356,8 +361,26 @@ export async function writeNewPostToDatabase(input: {
 				slug: `${slugify(title)}~${postGuid}`,
 				instructorId: eggheadInstructorId,
 				guid: postGuid,
+				...(videoResource?.muxPlaybackId && {
+					hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+				}),
 			})
 		: null
+
+	if (eggheadLessonId) {
+		const lesson = sanityLessonDocumentSchema.parse({
+			_id: `lesson-${eggheadLessonId}`,
+			_type: 'lesson',
+			title,
+			slug: {
+				_type: 'slug',
+				current: `${slugify(title)}~${postGuid}`,
+			},
+			railsLessonId: eggheadLessonId,
+		})
+
+		await sanityWriteClient.create(lesson)
+	}
 
 	await db
 		.insert(contentResource)
@@ -380,6 +403,14 @@ export async function writeNewPostToDatabase(input: {
 		})
 
 	const post = await getPost(newPostId)
+
+	if (post && post.fields.eggheadLessonId) {
+		await updateSanityLesson(post.fields.eggheadLessonId, post)
+		await replaceSanityLessonResources({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			videoResourceId: videoResourceId,
+		})
+	}
 
 	await createNewPostVersion(post)
 
@@ -409,7 +440,7 @@ export async function writeNewPostToDatabase(input: {
 }
 
 export async function writePostUpdateToDatabase(input: {
-	currentPost: Post
+	currentPost?: Post
 	postUpdate: PostUpdate
 	action: PostAction
 	updatedById: string
@@ -431,9 +462,11 @@ export async function writePostUpdateToDatabase(input: {
 
 	let postSlug = updatePostSlug(currentPost, postUpdate.fields.title)
 
+	const postGuid = currentPost?.fields.slug.split('~')[1] || guid()
+
 	if (postUpdate.fields.title !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${splitSlug[1] || guid()}`
+		const splitSlug = currentPost?.fields.slug.split('~') || ['', postGuid]
+		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${postGuid}`
 	}
 
 	const lessonState = determineEggheadLessonState(
@@ -450,12 +483,29 @@ export async function writePostUpdateToDatabase(input: {
 		readingTime(currentPost.fields.body ?? '').time / 1000,
 	)
 
+	const videoResourceId =
+		postUpdate.videoResourceId ??
+		currentPost.resources?.find(
+			(resource) => resource.resource.type === 'videoResource',
+		)?.resourceId
+
+	const videoResource = videoResourceId
+		? await courseBuilderAdapter.getVideoResource(videoResourceId)
+		: null
+
 	if (currentPost.fields.eggheadLessonId) {
 		await updateEggheadLesson({
+			title: postUpdate.fields.title,
+			slug: postSlug, // probably bypassing friendly id here, does it matter?
+			guid: postGuid,
+			body: postUpdate.fields.body ?? '',
 			eggheadLessonId: currentPost.fields.eggheadLessonId,
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
 			duration: duration > 0 ? duration : timeToRead,
+			...(videoResource?.muxPlaybackId && {
+				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+			}),
 		})
 	}
 
@@ -473,6 +523,12 @@ export async function writePostUpdateToDatabase(input: {
 	if (!updatedPost) {
 		throw new Error(`Post with id ${currentPost.id} not found.`)
 	}
+
+	await updateSanityLesson(currentPost.fields.eggheadLessonId, updatedPost)
+	await replaceSanityLessonResources({
+		eggheadLessonId: currentPost.fields.eggheadLessonId,
+		videoResourceId: videoResourceId,
+	})
 
 	const newContentHash = generateContentHash(updatedPost)
 	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
@@ -698,4 +754,18 @@ export async function removeSection(
 	return await db
 		.delete(contentResourceResource)
 		.where(eq(contentResourceResource.resourceId, sectionId))
+}
+
+export async function getAllPostIds() {
+	return await db.query.contentResource
+		.findMany({
+			where: and(
+				eq(contentResource.type, 'post'),
+				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
+			),
+			columns: {
+				id: true,
+			},
+		})
+		.then((posts) => posts.map((post) => post.id))
 }
