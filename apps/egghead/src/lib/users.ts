@@ -2,9 +2,9 @@ import { unstable_cache } from 'next/cache'
 import { UserSchema } from '@/ability'
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
-import { accounts, roles, userRoles, users } from '@/db/schema'
-import { getPost } from '@/lib/posts-query'
+import { accounts, profiles, roles, userRoles, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
+import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
@@ -124,4 +124,143 @@ export async function addRoleToUser(userId: string, roleName: string) {
 			console.debug(`user already has role ${roleName}`)
 		}
 	}
+}
+
+type UpdateProfileData = {
+	user: any
+	name: string
+	twitter: string
+	website: string
+	bio: string
+	blueSky: string
+	existingFields?: Record<string, any>
+}
+
+export async function updateContributorProfile(data: UpdateProfileData) {
+	await db.transaction(async (tx) => {
+		await tx
+			.update(users)
+			.set({
+				name: data.name,
+			})
+			.where(eq(users.id, data.user.id))
+
+		const existingProfile = await tx.query.profiles.findFirst({
+			where: and(
+				eq(profiles.userId, data.user.id),
+				eq(profiles.type, 'instructor'),
+			),
+		})
+
+		const profileId = existingProfile?.id || crypto.randomUUID()
+
+		await tx
+			.insert(profiles)
+			.values({
+				id: profileId,
+				userId: data.user.id,
+				type: 'instructor',
+				fields: {
+					twitter: data.twitter,
+					website: data.website,
+					bio: data.bio,
+					blueSky: data.blueSky,
+				},
+			})
+			.onDuplicateKeyUpdate({
+				set: {
+					fields: {
+						twitter: data.twitter,
+						website: data.website,
+						bio: data.bio,
+						blueSky: data.blueSky,
+					},
+				},
+			})
+	})
+
+	const eggheadAccount = data.user.accounts?.find(
+		(account: { provider: string }) => account.provider === 'egghead',
+	)
+
+	try {
+		if (!eggheadAccount) {
+			throw new TRPCError({
+				message: `No egghead account found for ${data.user.id} found`,
+				code: 'INTERNAL_SERVER_ERROR',
+			})
+		}
+
+		const pgResult = await eggheadPgQuery(
+			`
+			    UPDATE instructors
+			    SET
+			    twitter = $1,
+			    website = $2,
+			    bio_short = $3
+			    WHERE user_id = $4
+			    RETURNING *
+			  `,
+			[data.twitter, data.website, data.bio, eggheadAccount.providerAccountId],
+		)
+	} catch (e) {
+		console.log({ e })
+		throw new TRPCError({
+			message: 'Failed to sync with egghead',
+			code: 'INTERNAL_SERVER_ERROR',
+		})
+	}
+
+	return true
+}
+
+type InstructorAccountData = {
+	user: any
+	slackChannelId: string
+	slackId: string
+}
+
+export async function updateInstructorAccount(data: InstructorAccountData) {
+	await db
+		.update(users)
+		.set({
+			fields: {
+				...(data.user.fields || {}),
+				slackChannelId: data.slackChannelId,
+				slackId: data.slackId,
+			},
+		})
+		.where(eq(users.id, data.user.id))
+
+	const eggheadAccount = data.user.accounts?.find(
+		(account: { provider: string }) => account.provider === 'egghead',
+	)
+
+	try {
+		if (!eggheadAccount) {
+			throw new TRPCError({
+				message: `No egghead account found for ${data.user.id} found`,
+				code: 'INTERNAL_SERVER_ERROR',
+			})
+		}
+
+		const pgResult = await eggheadPgQuery(
+			`
+          UPDATE instructors
+          SET
+          slack_group_id = $1,
+          slack_id = $2
+          RETURNING *
+        `,
+			[data.slackChannelId, data.slackId],
+		)
+	} catch (e) {
+		console.log({ e })
+		throw new TRPCError({
+			message: 'Failed to sync with egghead',
+			code: 'INTERNAL_SERVER_ERROR',
+		})
+	}
+
+	return true
 }
