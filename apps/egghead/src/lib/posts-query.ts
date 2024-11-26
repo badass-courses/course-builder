@@ -373,7 +373,7 @@ export async function writeNewPostToDatabase(input: {
 			_id: `lesson-${eggheadLessonId}`,
 			_type: 'lesson',
 			title,
-			accessLevel: 'free',
+			accessLevel: 'pro',
 			slug: {
 				_type: 'slug',
 				current: `${slugify(title)}~${postGuid}`,
