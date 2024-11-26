@@ -61,7 +61,7 @@ export async function getEggheadUserProfile(userId: string) {
 	return profile
 }
 
-const EGGHEAD_LESSON_TYPE = 'post'
+const EGGHEAD_LESSON_TYPE = 'lesson'
 const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
 export async function getEggheadLesson(eggheadLessonId: number) {
