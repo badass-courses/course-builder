@@ -33,6 +33,10 @@ export const PostVisibilitySchema = z.union([
 
 export type PostVisibility = z.infer<typeof PostVisibilitySchema>
 
+export const PostAccessSchema = z.union([z.literal('free'), z.literal('pro')])
+
+export type PostAccess = z.infer<typeof PostAccessSchema>
+
 export const PostTypeSchema = z.union([
 	z.literal('article'),
 	z.literal('lesson'),
@@ -52,6 +56,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			body: z.string().nullable().optional(),
 			state: PostStateSchema.default('draft'),
 			visibility: PostVisibilitySchema.default('public'),
+			access: PostAccessSchema.default('free'),
 			eggheadLessonId: z.coerce.number().nullish(),
 			slug: z.string(),
 			description: z.string().nullish(),
@@ -81,6 +86,7 @@ export const PostUpdateSchema = z.object({
 		body: z.string().optional().nullable(),
 		description: z.string().optional().nullable(),
 		visibility: PostVisibilitySchema.optional().default('public'),
+		access: PostAccessSchema.optional().default('free'),
 		state: PostStateSchema.optional().default('draft'),
 	}),
 	videoResourceId: z.string().optional().nullable(),

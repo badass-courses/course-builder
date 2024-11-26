@@ -44,6 +44,7 @@ import {
 
 import {
 	createEggheadLesson,
+	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
 	getEggheadUserProfile,
@@ -372,6 +373,7 @@ export async function writeNewPostToDatabase(input: {
 			_id: `lesson-${eggheadLessonId}`,
 			_type: 'lesson',
 			title,
+			accessLevel: 'free',
 			slug: {
 				_type: 'slug',
 				current: `${slugify(title)}~${postGuid}`,
@@ -392,6 +394,7 @@ export async function writeNewPostToDatabase(input: {
 				title,
 				state: 'draft',
 				visibility: 'unlisted',
+				access: 'free',
 				postType: input.newPost.postType,
 				slug: `${slugify(title)}~${postGuid}`,
 				...(eggheadLessonId ? { eggheadLessonId } : {}),
@@ -478,6 +481,8 @@ export async function writePostUpdateToDatabase(input: {
 		postUpdate.fields.state,
 	)
 
+	const access = determineEggheadAccess(postUpdate?.fields?.access)
+
 	const duration = await getVideoDuration(currentPost.resources)
 	const timeToRead = Math.floor(
 		readingTime(currentPost.fields.body ?? '').time / 1000,
@@ -502,6 +507,7 @@ export async function writePostUpdateToDatabase(input: {
 			eggheadLessonId: currentPost.fields.eggheadLessonId,
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
+			access,
 			duration: duration > 0 ? duration : timeToRead,
 			...(videoResource?.muxPlaybackId && {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,

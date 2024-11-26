@@ -6,7 +6,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { PostAction, PostState, PostVisibility } from './posts'
+import { PostAccess, PostAction, PostState, PostVisibility } from './posts'
 import { getPost } from './posts-query'
 
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
@@ -91,6 +91,8 @@ export async function createEggheadLesson(input: {
 		'updated_at',
 		'visibility_state',
 		'guid',
+		'is_pro_content',
+		'free_forever',
 		...(hlsUrl ? ['current_video_hls_url'] : []),
 	]
 
@@ -104,6 +106,8 @@ export async function createEggheadLesson(input: {
 		new Date(), // updated_at
 		'hidden',
 		guid,
+		'false',
+		'true',
 		...(hlsUrl ? [hlsUrl] : []),
 	]
 
@@ -136,6 +140,7 @@ export async function updateEggheadLesson(input: {
 	guid: string
 	state: string
 	visibilityState: string
+	access: boolean
 	duration: number
 	hlsUrl?: string
 	body?: string
@@ -144,6 +149,7 @@ export async function updateEggheadLesson(input: {
 		eggheadLessonId,
 		state,
 		visibilityState,
+		access,
 		duration,
 		hlsUrl = null,
 		title,
@@ -161,7 +167,9 @@ export async function updateEggheadLesson(input: {
 			title = $5,
 			slug = $6,
 			guid = $7,
-			summary = $8
+			summary = $8,
+      is_pro_content = $10,
+      free_forever = NOT $10
 		WHERE id = $9`,
 		[
 			state,
@@ -173,6 +181,7 @@ export async function updateEggheadLesson(input: {
 			guid,
 			body,
 			eggheadLessonId,
+			access,
 		],
 	)
 }
@@ -195,6 +204,10 @@ export function determineEggheadLessonState(
 					? 'retired'
 					: 'approved'
 	}
+}
+
+export function determineEggheadAccess(access: PostAccess) {
+	return access === 'pro' ? true : false
 }
 
 export function determineEggheadVisibilityState(

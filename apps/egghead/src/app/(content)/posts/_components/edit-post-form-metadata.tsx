@@ -47,6 +47,7 @@ import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import { MetadataFieldAccess } from './metadata-field-access'
 import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
@@ -271,6 +272,7 @@ export const PostMetadataFormFields: React.FC<{
 			/>
 
 			<MetadataFieldVisibility form={form} />
+			<MetadataFieldAccess form={form} />
 			<MetadataFieldState form={form} />
 			<FormField
 				control={form.control}
