@@ -62,7 +62,7 @@ export function EditPostForm({
 				postType: post.fields?.postType || 'lesson',
 				body: post.fields?.body,
 				visibility: post.fields?.visibility || 'unlisted',
-				access: post.fields?.access || 'free',
+				access: post.fields?.access || 'pro',
 				state: post.fields?.state || 'draft',
 				description: post.fields?.description ?? '',
 				github: post.fields?.github ?? '',

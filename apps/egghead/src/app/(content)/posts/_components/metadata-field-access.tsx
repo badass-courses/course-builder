@@ -46,7 +46,7 @@ export function MetadataFieldAccess({ form }: { form: UseFormReturn<any> }) {
 					</Select>
 					<FormDescription>
 						Choose whether this post is visible to paying members only or
-						everyone. Default to free.
+						everyone. Default to pro (members only).
 					</FormDescription>
 					<FormMessage />
 				</FormItem>
