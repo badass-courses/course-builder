@@ -60,6 +60,9 @@ export function EditPostForm({
 		},
 	})
 	const isMobile = useIsMobile()
+	const videoResource = videoResourceLoader
+		? React.use(videoResourceLoader)
+		: null
 
 	return isMobile ? (
 		<MobileEditPostForm
@@ -119,6 +122,7 @@ export function EditPostForm({
 			<PostMetadataFormFields
 				form={form}
 				videoResourceLoader={videoResourceLoader}
+				videoResourceId={videoResource?.id}
 				post={post}
 			/>
 		</EditResourcesFormDesktop>

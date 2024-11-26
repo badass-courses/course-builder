@@ -1,14 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import {
-	NewPost,
-	POST_TYPES_WITH_VIDEO,
-	PostType,
-	PostTypeSchema,
-} from '@/lib/posts'
+import { NewPost, PostType, PostTypeSchema } from '@/lib/posts'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FileVideo } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -34,6 +28,8 @@ import {
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { VideoUploadFormItem } from './video-upload-form-item'
+
 const NewResourceWithVideoSchema = z.object({
 	title: z.string().min(2).max(90),
 	videoResourceId: z.string().min(4, 'Please upload a video'),
@@ -55,6 +51,7 @@ export function NewResourceWithVideoForm({
 	availableResourceTypes,
 	className,
 	children,
+	uploadEnabled = true,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewPost) => Promise<ContentResource>
@@ -64,6 +61,7 @@ export function NewResourceWithVideoForm({
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
 	) => React.ReactNode
+	uploadEnabled?: boolean
 }) {
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | undefined
@@ -185,7 +183,8 @@ export function NewResourceWithVideoForm({
 						name="postType"
 						render={({ field }) => {
 							const descriptions = {
-								lesson: 'A traditional egghead lesson video',
+								lesson:
+									'A traditional egghead lesson video. (upload on next screen)',
 								article: 'A standard article',
 								podcast:
 									'A podcast episode that will be distributed across podcast networks via the egghead podcast',
@@ -231,56 +230,18 @@ export function NewResourceWithVideoForm({
 						}}
 					/>
 				)}
-				{POST_TYPES_WITH_VIDEO.includes(selectedPostType) && (
-					<FormField
-						control={form.control}
-						name="videoResourceId"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>
-									{videoResourceId ? 'Video' : 'Upload a Video'}
-								</FormLabel>
-								<FormDescription>
-									<span className="block">
-										You can upload a video later if needed.
-									</span>
-									Your video will be uploaded and then transcribed
-									automatically.
-								</FormDescription>
-								<FormControl>
-									<Input type="hidden" {...field} />
-								</FormControl>
-								{!videoResourceId ? (
-									children(handleSetVideoResourceId)
-								) : (
-									<div className="mt-5 flex w-full justify-between border-t pt-5">
-										<div className="flex flex-col divide-y">
-											<span className="text-primary flex items-center gap-2 py-1 text-sm">
-												<FileVideo className="h-4 w-4" />
-												<span>{videoResourceId}</span>
-											</span>
-										</div>
-										<Button
-											type="button"
-											variant="outline"
-											size="sm"
-											onClick={() => {
-												setVideoResourceId('')
-												form.setValue('videoResourceId', '')
-											}}
-										>
-											clear
-										</Button>
-									</div>
-								)}
-								{isValidatingVideoResource && !videoResourceValid ? (
-									<FormMessage>Processing Upload</FormMessage>
-								) : null}
-
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+				{uploadEnabled && (
+					<VideoUploadFormItem
+						selectedPostType={selectedPostType}
+						form={form}
+						videoResourceId={videoResourceId}
+						setVideoResourceId={setVideoResourceId}
+						handleSetVideoResourceId={handleSetVideoResourceId}
+						isValidatingVideoResource={isValidatingVideoResource}
+						videoResourceValid={videoResourceValid}
+					>
+						{children}
+					</VideoUploadFormItem>
 				)}
 				<Button
 					type="submit"
