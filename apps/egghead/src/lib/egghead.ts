@@ -106,8 +106,8 @@ export async function createEggheadLesson(input: {
 		new Date(), // updated_at
 		'hidden',
 		guid,
-		'false',
 		'true',
+		'false',
 		...(hlsUrl ? [hlsUrl] : []),
 	]
 
