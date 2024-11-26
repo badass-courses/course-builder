@@ -394,7 +394,7 @@ export async function writeNewPostToDatabase(input: {
 				title,
 				state: 'draft',
 				visibility: 'unlisted',
-				access: 'free',
+				access: 'pro',
 				postType: input.newPost.postType,
 				slug: `${slugify(title)}~${postGuid}`,
 				...(eggheadLessonId ? { eggheadLessonId } : {}),
