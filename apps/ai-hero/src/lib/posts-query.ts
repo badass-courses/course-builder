@@ -131,9 +131,14 @@ export async function updatePost(
 
 	let postSlug = currentPost.fields.slug
 
-	if (input.fields.title !== currentPost.fields.title) {
+	if (
+		input.fields.title !== currentPost.fields.title &&
+		input.fields.slug.includes('~')
+	) {
 		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	} else if (input.fields.slug !== currentPost.fields.slug) {
+		postSlug = input.fields.slug
 	}
 
 	revalidateTag('posts')
@@ -172,6 +177,7 @@ export async function getPost(slugOrId: string) {
 			or(
 				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
 				eq(contentResource.id, slugOrId),
+				eq(contentResource.id, `post_${slugOrId.split('~')[1]}`),
 			),
 			eq(contentResource.type, 'post'),
 			inArray(
