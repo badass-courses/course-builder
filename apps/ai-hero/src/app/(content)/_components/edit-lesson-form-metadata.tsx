@@ -125,7 +125,7 @@ export const LessonMetadataFormFields: React.FC<{
 						replacingVideo ? (
 							<div>
 								<NewLessonVideoForm
-									lessonId={lesson.id}
+									parentResourceId={lesson.id}
 									moduleSlugOrId={module}
 									onVideoUploadCompleted={(videoResourceId) => {
 										setReplacingVideo(false)
@@ -170,7 +170,7 @@ export const LessonMetadataFormFields: React.FC<{
 						)
 					) : (
 						<NewLessonVideoForm
-							lessonId={lesson.id}
+							parentResourceId={lesson.id}
 							moduleSlugOrId={module}
 							onVideoUploadCompleted={(videoResourceId) => {
 								setVideoUploadStatus('finalizing upload')
