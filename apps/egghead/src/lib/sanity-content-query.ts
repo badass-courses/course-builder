@@ -143,19 +143,24 @@ export async function updateSanityLesson(
 		await getSanityLessonForEggheadLessonId(eggheadLessonId)
 	const eggheadLesson = await getEggheadLesson(eggheadLessonId)
 
+	console.log('sanityLessonDocument', sanityLessonDocument)
+	console.log('eggheadLesson', eggheadLesson)
+
 	if (!sanityLessonDocument || !eggheadLesson) return
+
+	// TODO: write sanity libraries and collaborator when not existing
 
 	const softwareLibraries = await Promise.all(
 		eggheadLesson.topic_list.map(async (library: string) => {
-			return sanityVersionedSoftwareLibraryObjectSchema.parse(
-				await getSanitySoftwareLibrary(library),
-			)
+			return sanityVersionedSoftwareLibraryObjectSchema
+				.nullable()
+				.parse(await getSanitySoftwareLibrary(library))
 		}),
 	)
 
-	const collaborator = sanityCollaboratorReferenceObjectSchema.parse(
-		await getSanityCollaborator(eggheadLesson.instructor.id),
-	)
+	const collaborator = sanityCollaboratorReferenceObjectSchema
+		.nullable()
+		.parse(await getSanityCollaborator(eggheadLesson.instructor.id))
 
 	return await sanityWriteClient
 		.patch(sanityLessonDocument._id)
