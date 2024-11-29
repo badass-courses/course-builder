@@ -146,7 +146,11 @@ export async function getPost(slug: string): Promise<Post | null> {
 
 	const parsedPost = PostSchema.safeParse(postData)
 	if (!parsedPost.success) {
-		console.error('Error parsing post', parsedPost.error)
+		console.error(
+			'Error parsing post',
+			parsedPost.error,
+			JSON.stringify(postData),
+		)
 		return null
 	}
 
@@ -274,6 +278,8 @@ export async function updatePost(
 ) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
+
+	console.log('updatePost', input)
 
 	const currentPost = await getPost(input.id)
 
