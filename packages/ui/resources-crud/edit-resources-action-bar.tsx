@@ -43,7 +43,7 @@ export function EditResourcesActionBar({
 					</span>
 				</span>
 			</div>
-			<div className="flex items-center gap-1">
+			<div className="flex items-center gap-3">
 				{resource.fields?.state === 'draft' && (
 					<Button
 						onClick={(e) => {
