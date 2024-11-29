@@ -283,7 +283,9 @@ export async function getSanitySoftwareLibrary(
 		`*[_type == "software-library" && slug.current == "${librarySlug}"][0]`,
 	)
 
-	const library = sanitySoftwareLibraryDocumentSchema.parse(libraryData)
+	const library = sanitySoftwareLibraryDocumentSchema
+		.nullable()
+		.parse(libraryData)
 
 	if (!library) {
 		return null
