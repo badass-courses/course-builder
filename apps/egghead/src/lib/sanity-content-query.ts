@@ -152,15 +152,22 @@ export async function updateSanityLesson(
 
 	const softwareLibraries = await Promise.all(
 		eggheadLesson.topic_list.map(async (library: string) => {
+			console.log('process topic library', library)
 			return sanityVersionedSoftwareLibraryObjectSchema
 				.nullable()
 				.parse(await getSanitySoftwareLibrary(library))
 		}),
 	)
 
+	const collaboratorData = await getSanityCollaborator(
+		eggheadLesson.instructor.id,
+	)
+
+	console.log('collaboratorData', collaboratorData)
+
 	const collaborator = sanityCollaboratorReferenceObjectSchema
 		.nullable()
-		.parse(await getSanityCollaborator(eggheadLesson.instructor.id))
+		.parse(collaboratorData)
 
 	return await sanityWriteClient
 		.patch(sanityLessonDocument._id)

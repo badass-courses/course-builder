@@ -34,13 +34,18 @@ export const syncLessonToSanity = inngest.createFunction(
 		const versionedSoftwareLibraryReferences = (await step.run(
 			'Get an array of versioned software library references',
 			async () => {
-				return await Promise.all(
-					lesson.topic_list.map(async (library: string) => {
-						return sanityVersionedSoftwareLibraryObjectSchema.parse(
-							await getSanitySoftwareLibrary(library),
-						)
-					}),
-				)
+				try {
+					return await Promise.all(
+						lesson.topic_list.map(async (library: string) => {
+							return sanityVersionedSoftwareLibraryObjectSchema.parse(
+								await getSanitySoftwareLibrary(library),
+							)
+						}),
+					)
+				} catch (error) {
+					console.error('Error getting software libraries', error)
+					return []
+				}
 			},
 		)) as SanityVersionedSoftwareLibraryObject[]
 

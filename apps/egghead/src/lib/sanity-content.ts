@@ -36,11 +36,13 @@ export type SanityCollaboratorDocument = z.infer<
 	typeof sanityCollaboratorDocumentSchema
 >
 
-export const sanityCollaboratorReferenceObjectSchema = z.object({
-	_type: z.literal('reference'),
-	_key: z.string(),
-	_ref: z.string(),
-})
+export const sanityCollaboratorReferenceObjectSchema = z
+	.object({
+		_type: z.literal('reference'),
+		_key: z.string(),
+		_ref: z.string(),
+	})
+	.nullable()
 
 export type SanityCollaboratorReferenceObject = z.infer<
 	typeof sanityCollaboratorReferenceObjectSchema
