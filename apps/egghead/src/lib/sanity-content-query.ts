@@ -137,6 +137,8 @@ export async function updateSanityLesson(
 ) {
 	if (!eggheadLessonId || !lesson) return
 
+	console.log('updateSanityLesson', eggheadLessonId, lesson)
+
 	const sanityLessonDocument =
 		await getSanityLessonForEggheadLessonId(eggheadLessonId)
 	const eggheadLesson = await getEggheadLesson(eggheadLessonId)
