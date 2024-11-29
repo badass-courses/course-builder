@@ -263,7 +263,9 @@ export async function getSanityCollaborator(
 		`*[_type == "collaborator" && eggheadInstructorId == "${instructorId}" && role == "${role}"][0]`,
 	)
 
-	const collaborator = sanityCollaboratorDocumentSchema.parse(collaboratorData)
+	const collaborator = sanityCollaboratorDocumentSchema
+		.nullable()
+		.parse(collaboratorData)
 
 	if (!collaborator) {
 		return null
