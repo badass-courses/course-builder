@@ -12,6 +12,15 @@ import { getPost } from './posts-query'
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
 
+export class EggheadApiError extends Error {
+	status: number
+	constructor(message = 'Egghead API Error', status = 500) {
+		super(message)
+		this.name = 'EggheadApiError'
+		this.status = status
+	}
+}
+
 export async function getEggheadUserProfile(userId: string) {
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
@@ -52,8 +61,7 @@ export async function getEggheadUserProfile(userId: string) {
 		},
 	}).then(async (res) => {
 		if (!res.ok) {
-			const errorText = await res.text()
-			throw new Error('api-error')
+			throw new EggheadApiError(res.statusText, res.status)
 		}
 		return await res.json()
 	})

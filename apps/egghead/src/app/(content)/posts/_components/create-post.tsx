@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
+import { EggheadApiError } from '@/lib/egghead'
 import { PostType } from '@/lib/posts'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
@@ -49,9 +50,12 @@ export function CreatePost() {
 								}),
 							)
 						} catch (error) {
-							console.error('🚨 Error creating post', error)
-							signOut()
-							router.push('/sign-in')
+							console.error('error creating post', error)
+							if (error instanceof EggheadApiError && error.status === 403) {
+								signOut()
+								router.push('/sign-in')
+							}
+
 							throw error
 						}
 					}}
