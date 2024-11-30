@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { users } from '@/db/schema'
+import { EggheadApiError } from '@/errors/egghead-api-error'
 import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
 import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
@@ -9,17 +10,10 @@ import { z } from 'zod'
 import { PostAccess, PostAction, PostState, PostVisibility } from './posts'
 import { getPost } from './posts-query'
 
+import 'server-only'
+
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
-
-export class EggheadApiError extends Error {
-	status: number
-	constructor(message = 'Egghead API Error', status = 500) {
-		super(message)
-		this.name = 'EggheadApiError'
-		this.status = status
-	}
-}
 
 export async function getEggheadUserProfile(userId: string) {
 	const user = await db.query.users.findFirst({
