@@ -5,6 +5,8 @@ import { accounts } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import { validateProfileForSanity } from '@/lib/instructor'
+import { syncInstructorToSanity } from '@/lib/instructor-query'
 import { addRoleToUser } from '@/lib/users'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
@@ -62,11 +64,15 @@ export const authOptions: NextAuthConfig = {
 		signIn: async (params) => {
 			console.log('signIn', params)
 			const { user, account } = params
+
+			console.log('params.profile', params.profile)
 			const profile = z
 				.object({
 					roles: z.array(z.string()),
 				})
 				.parse(params.profile)
+
+			console.log('profile', profile)
 
 			if (account) {
 				await db
@@ -77,8 +83,10 @@ export const authOptions: NextAuthConfig = {
 					})
 					.where(eq(accounts.providerAccountId, account.providerAccountId))
 			}
+
 			if (user.id && profile.roles.includes('instructor')) {
 				await addRoleToUser(user.id, 'contributor')
+				await syncInstructorToSanity(validateProfileForSanity(params.profile))
 			}
 		},
 	},
@@ -115,34 +123,6 @@ export const authOptions: NextAuthConfig = {
 			clientSecret: process.env.EGGHEAD_CLIENT_SECRET,
 			allowDangerousEmailAccountLinking: true,
 		}),
-		/**
-		 * ...add more providers here.
-		 *
-		 * Most other providers require a bit more work than the Discord provider. For example, the
-		 * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-		 * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-		 *
-		 * @see https://next-auth.js.org/providers/github
-		 */
-		...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
-			? [
-					GithubProvider({
-						clientId: env.GITHUB_CLIENT_ID,
-						clientSecret: env.GITHUB_CLIENT_SECRET,
-						allowDangerousEmailAccountLinking: true,
-					}),
-				]
-			: []),
-		...(env.TWITTER_CLIENT_ID && env.TWITTER_CLIENT_SECRET
-			? [
-					TwitterProvider({
-						clientId: env.TWITTER_CLIENT_ID,
-						clientSecret: env.TWITTER_CLIENT_SECRET,
-						allowDangerousEmailAccountLinking: true,
-					}),
-				]
-			: []),
-		emailProvider,
 	],
 	pages: {
 		signIn: '/login',
