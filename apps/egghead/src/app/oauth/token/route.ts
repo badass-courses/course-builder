@@ -38,8 +38,6 @@ export async function POST(request: Request) {
 
 		const user = await getUser(deviceVerification.verifiedByUserId)
 
-		console.log({ user })
-
 		if (user) {
 			await db.insert(deviceAccessToken).values({
 				userId: user.id,
@@ -49,8 +47,6 @@ export async function POST(request: Request) {
 			const deviceToken = await db.query.deviceAccessToken.findFirst({
 				where: eq(deviceAccessToken.userId, user.id),
 			})
-
-			console.log({ deviceToken })
 
 			await db
 				.delete(deviceVerifications)

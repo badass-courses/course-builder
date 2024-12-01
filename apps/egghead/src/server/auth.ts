@@ -64,15 +64,11 @@ export const authOptions: NextAuthConfig = {
 		signIn: async (params) => {
 			console.log('signIn', params)
 			const { user, account } = params
-
-			console.log('params.profile', params.profile)
 			const profile = z
 				.object({
 					roles: z.array(z.string()),
 				})
 				.parse(params.profile)
-
-			console.log('profile', profile)
 
 			if (account) {
 				await db

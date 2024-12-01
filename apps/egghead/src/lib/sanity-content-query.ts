@@ -5,20 +5,26 @@ import {
 	contentResource,
 	contentResourceResource,
 	contentResourceTag,
+	users,
 } from '@/db/schema'
-import { getEggheadLesson, type EggheadLesson } from '@/lib/egghead'
 import {
+	getEggheadLesson,
+	getEggheadUserProfile,
+	type EggheadLesson,
+} from '@/lib/egghead'
+import {
+	createSanityReference,
 	keyGenerator,
 	sanityCollaboratorDocumentSchema,
-	sanityCollaboratorReferenceObjectSchema,
 	sanityLessonDocumentSchema,
+	sanityReferenceSchema,
 	sanitySoftwareLibraryDocumentSchema,
 	sanityVersionedSoftwareLibraryObjectSchema,
 	sanityVideoResourceDocumentSchema,
 } from '@/lib/sanity-content'
 import type {
 	SanityCollaboratorDocument,
-	SanityCollaboratorReferenceObject,
+	SanityReference,
 	SanitySoftwareLibraryDocument,
 	SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
@@ -27,6 +33,7 @@ import { asc, eq, sql } from 'drizzle-orm'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
 
+import { syncInstructorToSanity } from './instructor-query'
 import { Post, PostSchema } from './posts'
 
 export async function createSanityVideoResource(videoResource: VideoResource) {
@@ -61,9 +68,11 @@ export async function createSanityVideoResource(videoResource: VideoResource) {
 }
 
 export async function replaceSanityLessonResources({
+	post,
 	eggheadLessonId,
 	videoResourceId,
 }: {
+	post: Post
 	eggheadLessonId: number | null | undefined
 	videoResourceId: string | null | undefined
 }) {
@@ -76,8 +85,75 @@ export async function replaceSanityLessonResources({
 		throw new Error(`Video resource with id ${videoResourceId} not found.`)
 	}
 
-	const sanityLessonDocument =
+	let sanityLessonDocument =
 		await getSanityLessonForEggheadLessonId(eggheadLessonId)
+
+	if (!sanityLessonDocument) {
+		const eggheadLesson = await getEggheadLesson(eggheadLessonId)
+
+		if (!eggheadLesson) {
+			throw new Error(`Egghead lesson with id ${eggheadLessonId} not found.`)
+		}
+
+		let collaboratorReference = (await getSanityCollaborator(
+			eggheadLesson.instructor.id,
+			'instructor',
+			true,
+		)) as SanityReference
+
+		if (!collaboratorReference) {
+			const user = await db.query.users.findFirst({
+				where: eq(users.id, post.createdById),
+				with: {
+					accounts: true,
+				},
+			})
+
+			const eggheadAccountId = user?.accounts?.find(
+				(account) => account.provider === 'egghead',
+			)?.providerAccountId
+
+			if (!eggheadAccountId) {
+				throw new Error(
+					`Egghead account id not found for user ${post.createdById}.`,
+				)
+			}
+
+			// [next]  ⨯ apps/egghead/src/lib/egghead.ts (27:9) @ getEggheadUserProfile
+			// [next]  ⨯ Error: no-user
+			// [next]     at getEggheadUserProfile (./apps/egghead/src/lib/egghead.ts:27:9)
+			// [next]     at async replaceSanityLessonResources (./apps/egghead/src/lib/sanity-content-query.ts:116:31)
+			// [next]     at async writePostUpdateToDatabase (./apps/egghead/src/lib/posts-query.ts:559:2)
+
+			const eggheadUserProfile = await getEggheadUserProfile(user.id)
+
+			if (!eggheadUserProfile) {
+				throw new Error(
+					`Egghead user profile with id ${eggheadLesson.instructor.user_id} not found.`,
+				)
+			}
+
+			await syncInstructorToSanity(eggheadUserProfile)
+
+			collaboratorReference = (await getSanityCollaborator(
+				eggheadLesson.instructor.id,
+				'instructor',
+				true,
+			)) as SanityReference
+
+			if (!collaboratorReference) {
+				throw new Error(
+					`Sanity collaborator with egghead instructor id ${eggheadLesson.instructor.id} not found.`,
+				)
+			}
+		}
+
+		// create sanity lesson
+
+		await createSanityLesson(eggheadLesson, collaboratorReference, [])
+		sanityLessonDocument =
+			await getSanityLessonForEggheadLessonId(eggheadLessonId)
+	}
 
 	const sanityVideoResourceDocument =
 		await createSanityVideoResource(videoResource)
@@ -137,14 +213,9 @@ export async function updateSanityLesson(
 ) {
 	if (!eggheadLessonId || !lesson) return
 
-	console.log('updateSanityLesson', eggheadLessonId, lesson)
-
 	const sanityLessonDocument =
 		await getSanityLessonForEggheadLessonId(eggheadLessonId)
 	const eggheadLesson = await getEggheadLesson(eggheadLessonId)
-
-	console.log('sanityLessonDocument', sanityLessonDocument)
-	console.log('eggheadLesson', eggheadLesson)
 
 	if (!sanityLessonDocument || !eggheadLesson) return
 
@@ -163,11 +234,46 @@ export async function updateSanityLesson(
 		eggheadLesson.instructor.id,
 	)
 
-	console.log('collaboratorData', collaboratorData)
+	let collaborator = sanityReferenceSchema.nullable().parse(collaboratorData)
 
-	const collaborator = sanityCollaboratorReferenceObjectSchema
-		.nullable()
-		.parse(collaboratorData)
+	if (!collaborator) {
+		const user = await db.query.users.findFirst({
+			where: eq(users.id, lesson.createdById),
+			with: {
+				accounts: true,
+			},
+		})
+
+		const eggheadAccountId = user?.accounts?.find(
+			(account) => account.provider === 'egghead',
+		)?.providerAccountId
+
+		if (!eggheadAccountId) {
+			throw new Error(
+				`Egghead account id not found for user ${lesson.createdById}.`,
+			)
+		}
+
+		const eggheadUserProfile = await getEggheadUserProfile(eggheadAccountId)
+
+		if (!eggheadUserProfile) {
+			throw new Error(
+				`Egghead user profile with id ${eggheadLesson.instructor.user_id} not found.`,
+			)
+		}
+
+		await syncInstructorToSanity(eggheadUserProfile)
+
+		collaborator = sanityReferenceSchema
+			.nullable()
+			.parse(await getSanityCollaborator(eggheadLesson.instructor.id))
+
+		if (!collaborator) {
+			throw new Error(
+				`Sanity collaborator with egghead instructor id ${eggheadLesson.instructor.id} not found.`,
+			)
+		}
+	}
 
 	return await sanityWriteClient
 		.patch(sanityLessonDocument._id)
@@ -192,7 +298,7 @@ export async function updateSanityLesson(
 
 export async function createSanityLesson(
 	eggheadLesson: EggheadLesson,
-	collaborator: SanityCollaboratorReferenceObject,
+	collaborator: SanityReference,
 	softwareLibraries: SanityVersionedSoftwareLibraryObject[],
 ) {
 	const post = PostSchema.nullable().parse(
@@ -258,6 +364,7 @@ export async function createSanityLesson(
 export async function getSanityCollaborator(
 	instructorId: number,
 	role: SanityCollaboratorDocument['role'] = 'instructor',
+	returnReference = true,
 ) {
 	const collaboratorData = await sanityWriteClient.fetch(
 		`*[_type == "collaborator" && eggheadInstructorId == "${instructorId}" && role == "${role}"][0]`,
@@ -267,15 +374,11 @@ export async function getSanityCollaborator(
 		.nullable()
 		.parse(collaboratorData)
 
-	if (!collaborator) {
-		return null
-	}
+	if (!collaborator) return null
 
-	return {
-		_key: keyGenerator(),
-		_type: 'reference',
-		_ref: collaborator._id,
-	}
+	return returnReference
+		? createSanityReference(collaborator._id)
+		: collaborator
 }
 
 export async function getSanitySoftwareLibrary(

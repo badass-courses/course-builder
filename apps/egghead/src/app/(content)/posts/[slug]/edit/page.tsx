@@ -60,8 +60,6 @@ export default async function PostPage(props: {
 	await getAllEggheadTagsCached()
 	const tagLoader = getTags()
 
-	console.log({ videoResourceLoader, tagLoader, post })
-
 	return (
 		<Layout>
 			<React.Suspense fallback={<EditPostSkeleton />}>

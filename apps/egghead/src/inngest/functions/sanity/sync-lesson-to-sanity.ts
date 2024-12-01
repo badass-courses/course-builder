@@ -3,13 +3,12 @@ import { inngest } from '@/inngest/inngest.server'
 import { eggheadLessonSchema, getEggheadLesson } from '@/lib/egghead'
 import type { EggheadLesson } from '@/lib/egghead'
 import {
-	sanityCollaboratorDocumentSchema,
-	sanityCollaboratorReferenceObjectSchema,
+	sanityReferenceSchema,
 	sanityVersionedSoftwareLibraryObjectSchema,
 } from '@/lib/sanity-content'
 import type {
 	SanityCollaboratorDocument,
-	SanityCollaboratorReferenceObject,
+	SanityReference,
 	SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
 import {
@@ -52,11 +51,11 @@ export const syncLessonToSanity = inngest.createFunction(
 		const sanityCollaboratorReferenceObject = (await step.run(
 			'Get collaborator',
 			async () => {
-				return sanityCollaboratorReferenceObjectSchema.parse(
+				return sanityReferenceSchema?.parse(
 					await getSanityCollaborator(lesson.instructor.id),
 				)
 			},
-		)) as SanityCollaboratorReferenceObject
+		)) as SanityReference
 
 		const sanityLesson = await step.run('Create lesson in sanity', async () => {
 			return await createSanityLesson(

@@ -177,7 +177,6 @@ export default function TranscriptEditorPage({
 
 	const handleSave = async () => {
 		const result = await updateTranscript(videoResourceId, transcriptData)
-		console.log(result)
 		setIsDirty(false)
 	}
 

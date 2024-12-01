@@ -36,17 +36,21 @@ export type SanityCollaboratorDocument = z.infer<
 	typeof sanityCollaboratorDocumentSchema
 >
 
-export const sanityCollaboratorReferenceObjectSchema = z
-	.object({
-		_type: z.literal('reference'),
-		_key: z.string(),
-		_ref: z.string(),
-	})
-	.nullable()
+export const sanityReferenceSchema = z.object({
+	_type: z.literal('reference'),
+	_key: z.string(),
+	_ref: z.string(),
+})
 
-export type SanityCollaboratorReferenceObject = z.infer<
-	typeof sanityCollaboratorReferenceObjectSchema
->
+export type SanityReference = z.infer<typeof sanityReferenceSchema>
+
+export function createSanityReference(documentId: string): SanityReference {
+	return {
+		_type: 'reference',
+		_key: keyGenerator(),
+		_ref: documentId,
+	}
+}
 
 export const sanityVideoResourceDocumentSchema = z.object({
 	_createdAt: z.string().datetime().nullish(),
@@ -90,7 +94,7 @@ export const sanityLessonDocumentSchema = z.object({
 	softwareLibraries: z
 		.array(sanityVersionedSoftwareLibraryObjectSchema)
 		.nullish(),
-	collaborators: z.array(sanityCollaboratorReferenceObjectSchema).nullish(),
+	collaborators: z.array(sanityReferenceSchema).nullish(),
 	status: z.string().nullish(),
 	accessLevel: z.enum(['free', 'pro']).nullish(),
 })

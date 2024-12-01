@@ -111,7 +111,6 @@ export function NewResourceWithVideoForm({
 				await pollVideoResource(values.videoResourceId).next()
 			}
 			const resource = await createResource(values as any)
-			console.log({ resource })
 			if (!resource) {
 				// Handle edge case, e.g., toast an error message
 				console.log('no resource in onSubmit')
@@ -132,19 +131,15 @@ export function NewResourceWithVideoForm({
 
 	async function handleSetVideoResourceId(videoResourceId: string) {
 		try {
-			console.log('inside handleSetVideoResourceId')
 			setVideoResourceId(videoResourceId)
 			setIsValidatingVideoResource(true)
 			form.setValue('videoResourceId', videoResourceId)
-			console.log('setValue videoResourceId: ', videoResourceId)
 			await pollVideoResource(videoResourceId).next()
 
 			setVideoResourceValid(true)
-			console.log('setting video resource valid')
 			setIsValidatingVideoResource(false)
 		} catch (error) {
 			setVideoResourceValid(false)
-			console.log('setting video resource INVALID')
 			form.setError('videoResourceId', { message: 'Video resource not found' })
 			setVideoResourceId('')
 			form.setValue('videoResourceId', '')

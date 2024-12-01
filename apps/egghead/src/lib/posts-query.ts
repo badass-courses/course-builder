@@ -241,8 +241,6 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 }
 
 export async function createPost(input: NewPost) {
-	console.log('createPost', input)
-
 	const { session, ability } = await getServerAuthSession()
 
 	if (!session?.user?.id || !ability.can('create', 'Content')) {
@@ -416,6 +414,7 @@ export async function writeNewPostToDatabase(input: {
 	if (post && post.fields.eggheadLessonId) {
 		await updateSanityLesson(post.fields.eggheadLessonId, post)
 		await replaceSanityLessonResources({
+			post,
 			eggheadLessonId: post.fields.eggheadLessonId,
 			videoResourceId: videoResourceId,
 		})
@@ -454,7 +453,6 @@ export async function writePostUpdateToDatabase(input: {
 	action: PostAction
 	updatedById: string
 }) {
-	console.log('writePostUpdateToDatabase', input)
 	const {
 		currentPost = await getPost(input.postUpdate.id),
 		postUpdate,
@@ -472,11 +470,7 @@ export async function writePostUpdateToDatabase(input: {
 
 	let postSlug = updatePostSlug(currentPost, postUpdate.fields.title)
 
-	console.log('postSlug', postSlug)
-
 	const postGuid = currentPost?.fields.slug.split('~')[1] || guid()
-
-	console.log('postGuid', postGuid)
 
 	if (postUpdate.fields.title !== currentPost.fields.title) {
 		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${postGuid}`
@@ -487,18 +481,12 @@ export async function writePostUpdateToDatabase(input: {
 		postUpdate.fields.state,
 	)
 
-	console.log('lessonState', lessonState)
-
 	const lessonVisibilityState = determineEggheadVisibilityState(
 		postUpdate.fields.visibility,
 		postUpdate.fields.state,
 	)
 
-	console.log('lessonVisibilityState', lessonVisibilityState)
-
 	const access = determineEggheadAccess(postUpdate?.fields?.access)
-
-	console.log('access', access)
 
 	const duration = await getVideoDuration(currentPost.resources)
 	const timeToRead = Math.floor(
@@ -511,16 +499,11 @@ export async function writePostUpdateToDatabase(input: {
 			(resource) => resource.resource.type === 'videoResource',
 		)?.resourceId
 
-	console.log('videoResourceId', videoResourceId)
-
 	const videoResource = videoResourceId
 		? await courseBuilderAdapter.getVideoResource(videoResourceId)
 		: null
 
-	console.log('videoResource', videoResource)
-
 	if (currentPost.fields.eggheadLessonId) {
-		console.log('updating egghead lesson')
 		await updateEggheadLesson({
 			title: postUpdate.fields.title,
 			slug: postSlug, // probably bypassing friendly id here, does it matter?
@@ -548,25 +531,20 @@ export async function writePostUpdateToDatabase(input: {
 
 	const updatedPost = await getPost(currentPost.id)
 
-	console.log('updatedPost', updatedPost)
-
 	if (!updatedPost) {
 		throw new Error(`Post with id ${currentPost.id} not found.`)
 	}
 
 	await updateSanityLesson(currentPost.fields.eggheadLessonId, updatedPost)
 	await replaceSanityLessonResources({
+		post: updatedPost,
 		eggheadLessonId: currentPost.fields.eggheadLessonId,
 		videoResourceId: videoResourceId,
 	})
 
 	const newContentHash = generateContentHash(updatedPost)
 
-	console.log('newContentHash', newContentHash)
-
 	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
-
-	console.log('currentContentHash', currentContentHash)
 
 	if (newContentHash !== currentContentHash) {
 		await createNewPostVersion(updatedPost, updatedById)
