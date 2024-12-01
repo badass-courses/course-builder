@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
@@ -78,4 +79,6 @@ export async function updateTranscript(
 			},
 		})
 	}
+
+	revalidateTag('posts')
 }
