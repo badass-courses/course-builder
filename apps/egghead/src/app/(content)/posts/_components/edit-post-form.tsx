@@ -11,7 +11,7 @@ import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CheckIcon, ListOrderedIcon } from 'lucide-react'
+import { CheckIcon, ListOrderedIcon, ShareIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -20,6 +20,7 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
+import { SocialShare } from '../../_components/social-share'
 import PublishPostChecklist from './publish-post-checklist'
 import { ResourceResourcesList } from './resource-resources-list'
 
@@ -121,6 +122,19 @@ export function EditPostForm({
 						<CheckIcon strokeWidth={1.5} size={24} width={18} height={18} />
 					),
 					toolComponent: <PublishPostChecklist key={'post-checklist'} />,
+				},
+				{
+					id: 'social-share',
+					label: 'Social Share',
+					icon: () => (
+						<ShareIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<SocialShare
+							post={post}
+							videoResourceLoader={videoResourceLoader}
+						/>
+					),
 				},
 				{ id: 'assistant' },
 			]}
