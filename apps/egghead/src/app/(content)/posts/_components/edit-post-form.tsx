@@ -3,7 +3,10 @@
 import * as React from 'react'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { MobileEditPostForm } from '@/app/(content)/posts/_components/edit-post-form-mobile'
-import { onPostSave } from '@/app/(content)/posts/[slug]/edit/actions'
+import {
+	onPostPublish,
+	onPostSave,
+} from '@/app/(content)/posts/[slug]/edit/actions'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -96,6 +99,7 @@ export function EditPostForm({
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onPostSave}
+			onPublish={onPostPublish}
 			theme={theme}
 			tools={[
 				{
