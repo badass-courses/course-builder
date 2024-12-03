@@ -3,6 +3,7 @@ import { Suspense, use } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import SharePostModal from '@/app/_components/share-post-modal'
 import { CopyEggheadLinkButton } from '@/app/(content)/[post]/copy-link-button'
 import { TranscriptContainer } from '@/app/(content)/[post]/transcript'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
@@ -52,7 +53,6 @@ export default async function PostPage(props: Props) {
 				>
 					<PostActionBar postLoader={postLoader} />
 				</Suspense>
-
 				<PlayerContainer postLoader={postLoader} />
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
 					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
@@ -161,7 +161,7 @@ async function PostBody({ postLoader }: { postLoader: Promise<Post | null> }) {
 			<h1 className="font-heading relative inline-flex w-full max-w-2xl items-baseline pb-5 text-2xl font-black sm:text-3xl lg:text-4xl">
 				{post.fields.title}
 			</h1>
-
+			<SharePostModal post={post} />
 			<div className="flex w-full justify-start gap-2">
 				<Link
 					href={`https://egghead.io/${post.fields.slug}`}

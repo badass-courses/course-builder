@@ -42,6 +42,7 @@ export function EditResourcesFormDesktop({
 	updateResource,
 	availableWorkflows,
 	onSave,
+	onPublish,
 	sendResourceChatMessage,
 	hostUrl,
 	user,
@@ -91,6 +92,10 @@ export function EditResourcesFormDesktop({
 		action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
 	) => {
 		const updatedResource = await updateResource(values, action)
+		if (action === 'publish' && onPublish) {
+			return await onPublish(updatedResource)
+		}
+
 		if (updatedResource && onSave) {
 			return await onSave(updatedResource)
 		}
