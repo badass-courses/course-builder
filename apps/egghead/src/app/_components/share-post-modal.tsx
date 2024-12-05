@@ -41,13 +41,12 @@ export default function SharePostModal({ post }: { post: Post }) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
+				<DialogHeader className="space-y-3">
 					<DialogTitle>Share</DialogTitle>
 					<DialogDescription className="pb-4">
 						If you don't share it, no one will know about it!
 					</DialogDescription>
-					<Share post={post} message={message} />
-					<DialogDescription className="flex items-center justify-between pt-4 text-sm">
+					<DialogDescription className="flex items-center justify-between text-sm">
 						<span>Add a message to your post</span>{' '}
 						<span>({message.length}/300)</span>
 					</DialogDescription>
@@ -56,13 +55,9 @@ export default function SharePostModal({ post }: { post: Post }) {
 						onChange={(e) => setMessage(e.target.value)}
 						placeholder="Learn how to..."
 					/>
+					<Share className="" post={post} message={message} />
 				</DialogHeader>
 				<DialogFooter>
-					<Button variant="outline" onClick={handleClose}>
-						<a href={url} target="_blank" rel="noopener noreferrer">
-							View {post?.fields?.postType}
-						</a>
-					</Button>
 					<Button variant="secondary" onClick={handleClose}>
 						Close
 					</Button>
