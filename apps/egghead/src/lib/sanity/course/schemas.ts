@@ -1,5 +1,6 @@
 import * as z from 'zod'
 
+import { SanityCollaboratorSchema } from '../collaborator/schemas'
 import {
 	ImageSchema,
 	ReferenceSchema,
@@ -29,7 +30,11 @@ export const SanityCourseSchema = z.object({
 	railsCourseId: z.number().optional(),
 	sharedId: z.string().optional(),
 	softwareLibraries: z.array(SoftwareLibrarySchema).optional(),
-	collaborators: z.array(ReferenceSchema).optional(),
+	collaborators: z
+		.array(ReferenceSchema)
+		.optional()
+		.or(SanityCollaboratorSchema)
+		.optional(),
 	resources: z.array(ReferenceSchema).optional(),
 })
 

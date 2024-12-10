@@ -29,3 +29,11 @@ export const SystemFieldsSchema = z.object({
 	_updatedAt: z.coerce.date().optional(),
 })
 export type SystemFields = z.infer<typeof SystemFieldsSchema>
+
+export const sanityReferenceSchema = z.object({
+	_type: z.literal('reference'),
+	_key: z.string(),
+	_ref: z.string(),
+})
+
+export type SanityReference = z.infer<typeof sanityReferenceSchema>

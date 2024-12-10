@@ -3,7 +3,7 @@ import { sanityWriteClient } from '@/server/sanity-write-client'
 import { systemFieldsProjection } from '../utils/projections'
 import { SanityCourse, SanityCourseSchema } from './schemas'
 
-const courseProjection = `
+const courseProjectionQueryString: string = `
   ${systemFieldsProjection},
   title,
   slug,
@@ -50,15 +50,15 @@ const courseProjection = `
   productionProcessState
 `
 
-export const fetchAllCourses = `
+export const fetchAllCoursesQueryString: string = `
   *[_type == "course"] {
-    ${courseProjection}
+    ${courseProjectionQueryString}
   }
 `
 
-export const fetchCourseById = (id: string) => `
+export const fetchCourseByIdQueryString = (id: string): string => `
   *[_type == "course" && _id == "${id}"][0] {
-    ${courseProjection}
+    ${courseProjectionQueryString}
   }
 `
 

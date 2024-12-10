@@ -26,17 +26,17 @@ import {
 } from './events/egghead/lesson-created'
 import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
-	TIPS_UPDATED_EVENT,
-	TipsUpdated,
-} from './functions/migrate-tips-to-posts'
+	SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT,
+	SyncPostsToEggheadLessonsEvent,
+} from './functions/egghead/lessons/sync-posts-to-egghead-lessons'
 import {
 	POST_UPDATED_EVENT,
 	PostUpdated,
-} from './functions/sync-post-to-egghead'
+} from './functions/egghead/posts/sync-post-to-egghead'
 import {
-	SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT,
-	SyncPostsToEggheadLessonsEvent,
-} from './functions/sync-posts-to-egghead-lessons'
+	TIPS_UPDATED_EVENT,
+	TipsUpdated,
+} from './functions/migrate-tips-to-posts'
 
 // Create a client to send and receive events
 export type Events = {

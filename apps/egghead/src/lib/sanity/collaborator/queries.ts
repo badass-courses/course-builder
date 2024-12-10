@@ -1,7 +1,10 @@
 import { sanityWriteClient } from '@/server/sanity-write-client'
 
-import { systemFieldsProjection } from '../utils/projections'
-import { SanityCollaborator } from './schemas'
+import {
+	createSanityReference,
+	systemFieldsProjection,
+} from '../utils/projections'
+import { SanityCollaborator, SanityCollaboratorSchema } from './schemas'
 
 const collaboratorProjection = `
   ${systemFieldsProjection},
@@ -14,17 +17,37 @@ const collaboratorProjection = `
   _updatedAt
 `
 
-export const fetchAllCollaborators = `
+export const fetchAllCollaborators = sanityWriteClient.fetch(`
   *[_type == "collaborator"] {
     ${collaboratorProjection}
   }
-`
+`)
 
-export const fetchCollaboratorById = (id: string) => `
+export const fetchCollaboratorById = (id: string) =>
+	sanityWriteClient.fetch(`
   *[_type == "collaborator" && _id == "${id}"][0] {
     ${collaboratorProjection}
   }
-`
+`)
+
+export async function getSanityCollaborator(
+	instructorId: number,
+	role: SanityCollaborator['role'] = 'instructor',
+	returnReference = true,
+) {
+	const collaboratorData = await sanityWriteClient.fetch(
+		`*[_type == "collaborator" && eggheadInstructorId == "${instructorId}" && role == "${role}"][0]`,
+	)
+
+	const collaborator =
+		SanityCollaboratorSchema.nullable().parse(collaboratorData)
+
+	if (!collaborator || !collaborator._id) return null
+
+	return returnReference
+		? createSanityReference(collaborator._id)
+		: collaborator
+}
 
 export const createCollaborator = async (
 	collaborator: Partial<SanityCollaborator>,

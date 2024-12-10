@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { sanityReferenceSchema } from './sanity/utils/schemas'
+
 export const sanitySoftwareLibraryDocumentSchema = z.object({
 	_type: z.literal('software-library'),
 	_id: z.string(),
@@ -35,22 +37,6 @@ export const sanityCollaboratorDocumentSchema = z.object({
 export type SanityCollaboratorDocument = z.infer<
 	typeof sanityCollaboratorDocumentSchema
 >
-
-export const sanityReferenceSchema = z.object({
-	_type: z.literal('reference'),
-	_key: z.string(),
-	_ref: z.string(),
-})
-
-export type SanityReference = z.infer<typeof sanityReferenceSchema>
-
-export function createSanityReference(documentId: string): SanityReference {
-	return {
-		_type: 'reference',
-		_key: keyGenerator(),
-		_ref: documentId,
-	}
-}
 
 export const sanityVideoResourceDocumentSchema = z.object({
 	_createdAt: z.string().datetime().nullish(),
