@@ -50,10 +50,7 @@ export const PrimaryNewsletterCta: React.FC<
 			data-theme="elysium"
 			id={id}
 			aria-label="Newsletter sign-up"
-			className={cn(
-				'border-border/50 relative flex flex-col items-center overflow-x-hidden border-b pb-[180px] sm:pb-[450px]',
-				className,
-			)}
+			className={cn('relative flex flex-col items-center', className)}
 		>
 			{children ? (
 				children
@@ -77,14 +74,6 @@ export const PrimaryNewsletterCta: React.FC<
 				<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
 				Unsubscribe at any time.
 			</p>
-			<Image
-				src={require('../../public/assets/mountain.jpg')}
-				className="absolute bottom-0 block origin-bottom scale-[2] sm:hidden"
-				aria-hidden="true"
-				quality={100}
-				loading="eager"
-				alt=""
-			/>
 		</section>
 	)
 }

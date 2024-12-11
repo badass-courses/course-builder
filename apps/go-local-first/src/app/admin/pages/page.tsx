@@ -26,7 +26,7 @@ export default async function PagesIndexPage() {
 	const allPages = await getPages()
 
 	return (
-		<main className="flex w-full justify-between p-10">
+		<main className="flex w-full justify-between">
 			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
 				<div className="mb-5 flex w-full items-center justify-between">
 					<h1 className="fluid-3xl font-heading font-bold">Pages</h1>

@@ -73,9 +73,8 @@ module.exports = withUt({
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
-				heading: ['var(--font-maison-neue)', ...fontFamily.sans],
-				// mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
+				sans: ['var(--gabarito)', ...fontFamily.sans],
+				heading: ['var(--gabarito)', ...fontFamily.sans],
 			},
 			keyframes: {
 				'accordion-down': {

@@ -27,12 +27,15 @@ import {
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
 
+const LANDING_PAGE_RESOURCE_SLUG = 'home-z9ik9'
+
 export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
-	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Go Local-First')}`
+	const page = await getPage(LANDING_PAGE_RESOURCE_SLUG)
+	let ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(page?.fields?.title || 'Build apps you can use anywhere')}`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -44,7 +47,7 @@ export async function generateMetadata(
 		)
 		const validCoupon = Boolean(coupon && coupon.isValid)
 		if (validCoupon)
-			ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('Go Local-First')}`
+			ogImageUrl = `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(page?.fields?.title || 'Build apps you can use anywhere')}`
 	}
 
 	return {
@@ -70,21 +73,23 @@ const Home = async (props: Props) => {
 	const searchParams = await props.searchParams
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
 		await getPricingProps({ searchParams })
-	const page = await getPage(allowPurchase ? 'home-z9ik9' : 'home-z9ik9')
+	const page = await getPage(
+		allowPurchase ? LANDING_PAGE_RESOURCE_SLUG : LANDING_PAGE_RESOURCE_SLUG,
+	)
 	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return (
 		<div className="">
-			<header className="relative mx-auto flex w-full flex-col items-center justify-center">
-				<div className="relative z-10 mt-20 flex flex-col items-center justify-center px-5">
-					<h1 className="leading-0 font-heading sm:fluid-3xl fluid-2xl w-full max-w-4xl text-center font-bold">
-						{config.defaultTitle}
+			<header className="bg-primary text-primary-foreground relative mx-auto flex w-full flex-col items-start justify-end pb-8 pt-48">
+				<div className="container flex flex-col items-baseline justify-between gap-0 md:flex-row md:gap-10">
+					<h1 className="leading-0 font-heading sm:fluid-3xl fluid-2xl w-full font-bold">
+						{page?.fields?.title || 'Build apps you can use anywhere'}
 					</h1>
-					<h2 className="font-heading sm:fluid-lg fluid-base text-muted-foreground mb-5 mt-7 items-center text-balance text-center font-normal !tracking-tight sm:inline-flex">
+					<h2 className="flex-shrink-0">
 						Professional Course by{' '}
 						<Image
-							src={require('../../public/nik-graf.jpeg')}
+							src={'/nik-graf.jpeg'}
 							alt={config.author}
 							priority
 							className="ml-2 mr-1 inline-block rounded-full"
@@ -96,18 +101,14 @@ const Home = async (props: Props) => {
 					</h2>
 				</div>
 			</header>
-
-			<main className="w-full pt-5 sm:pt-16">
-				<article className="prose sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mx-auto max-w-none px-5">
+			<main className="container flex w-full flex-col justify-start pt-10 sm:pt-16">
+				<article className="prose sm:prose-lg lg:prose-xl max-w-4xl">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
 							components={{
 								CenteredTitle,
-								Instructor,
-								BlueSection,
 								Spacer,
-								Section,
 								CheckList,
 								// @ts-expect-error
 								MuxPlayer,
@@ -144,7 +145,7 @@ const Home = async (props: Props) => {
 						</section>
 					</>
 				) : ckSubscriber ? null : (
-					<PrimaryNewsletterCta className="px-5 pt-10" />
+					<PrimaryNewsletterCta className="px-5 pb-32 pt-24" />
 				)}
 			</main>
 		</div>

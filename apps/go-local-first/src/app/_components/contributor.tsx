@@ -18,7 +18,7 @@ export const Contributor: React.FC<{ className?: string }> = ({
 				priority
 				className="rounded-full"
 			/>
-			<span className="text-muted-foreground">{config.author}</span>
+			<span className="opacity-90">{config.author}</span>
 		</div>
 	)
 }
