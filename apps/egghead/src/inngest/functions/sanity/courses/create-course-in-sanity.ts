@@ -3,7 +3,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { getSanityCollaborator } from '@/lib/sanity/collaborator/queries'
 import { createCourse } from '@/lib/sanity/course/queries'
 import { SanityCourseSchema } from '@/lib/sanity/course/schemas'
-import { getCachedEggheadInstructorForUser } from '@/lib/users'
+import { loadEggheadInstructorForUser } from '@/lib/users'
 import { NonRetriableError } from 'inngest'
 
 export const createCourseInSanity = inngest.createFunction(
@@ -29,28 +29,30 @@ export const createCourseInSanity = inngest.createFunction(
 		})
 
 		const contributor = await step.run('get-contributor', async () => {
-			const instructorId = await getCachedEggheadInstructorForUser(
-				post.createdById,
-			)
+			const instructor = await loadEggheadInstructorForUser(post.createdById)
 
-			if (!instructorId) {
+			if (!instructor) {
 				return null
 			}
 
-			const contributor = await getSanityCollaborator(instructorId)
+			const contributor = await getSanityCollaborator(instructor.id)
 
 			return contributor
 		})
 
-		const sanityCourse = step.run('create-course', async () => {
-			const { id, fields } = post
+		const sanityCourse = await step.run('create-course', async () => {
+			const { fields } = post
 
 			const coursePayload = SanityCourseSchema.safeParse({
 				title: fields?.title,
-				slug: fields?.slug,
+				slug: {
+					current: fields?.slug,
+					_type: 'slug',
+				},
 				description: fields?.body,
 				railsCourseId: fields?.railsCourseId,
 				collaborators: [contributor],
+				searchIndexingState: 'hidden',
 			})
 
 			if (!coursePayload.success) {
