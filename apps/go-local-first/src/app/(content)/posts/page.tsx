@@ -186,6 +186,6 @@ async function PostListActions({ posts }: { posts?: Post[] }) {
 			) : null}
 		</aside>
 	) : (
-		<aside className="hidden w-full max-w-xs border-r lg:block" />
+		<aside className="hidden w-full max-w-xs lg:block" />
 	)
 }
