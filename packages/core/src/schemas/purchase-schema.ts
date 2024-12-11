@@ -28,6 +28,12 @@ export const purchaseSchema = z.object({
 	user: userSchema.optional().nullable(),
 	bulkCoupon: couponSchema.optional().nullable(),
 	product: productSchema.optional().nullable(),
+	purchasedByorganizationMembershipId: z
+		.string()
+		.max(191)
+		.optional()
+		.nullable(),
+	organizationId: z.string().max(191).optional().nullable(),
 })
 
 export type Purchase = z.infer<typeof purchaseSchema>
