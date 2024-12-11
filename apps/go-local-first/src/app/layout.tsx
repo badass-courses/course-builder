@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 	title: `${config.defaultTitle} by ${config.author}`,
 	description: config.description,
 	icons: [
-		{ rel: 'icon', sizes: 'any', url: '/favicon.ico' },
 		{ rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' },
+		{ rel: 'icon', sizes: 'any', url: '/favicon.ico' },
 	],
 	twitter: {
 		card: 'summary_large_image',
