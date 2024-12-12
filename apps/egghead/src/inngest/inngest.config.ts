@@ -3,6 +3,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { instructorInviteCreated } from './functions/instructor-invite-created'
 import { migrateTipsToPosts } from './functions/migrate-tips-to-posts'
 import { notifySlack } from './functions/notify-slack-for-post'
 import { syncLessonToSanity } from './functions/sanity/sync-lesson-to-sanity'
@@ -25,5 +26,6 @@ export const inngestConfig = {
 		notifySlack,
 		syncVideoResourceData,
 		syncPostsToEggheadLessons,
+		instructorInviteCreated,
 	],
 }
