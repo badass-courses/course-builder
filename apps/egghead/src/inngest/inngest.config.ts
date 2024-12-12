@@ -3,12 +3,13 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { syncPostsToEggheadLessons } from './functions/egghead/lessons/sync-posts-to-egghead-lessons'
+import { syncPostToEgghead } from './functions/egghead/posts/sync-post-to-egghead'
 import { migrateTipsToPosts } from './functions/migrate-tips-to-posts'
 import { notifySlack } from './functions/notify-slack-for-post'
-import { syncLessonToSanity } from './functions/sanity/sync-lesson-to-sanity'
-import { syncVideoResourceToSanity } from './functions/sanity/sync-video-resource-to-sanity'
-import { syncPostToEgghead } from './functions/sync-post-to-egghead'
-import { syncPostsToEggheadLessons } from './functions/sync-posts-to-egghead-lessons'
+import { createCourseInSanity } from './functions/sanity/courses/create-course-in-sanity'
+import { syncLessonToSanity } from './functions/sanity/lessons/sync-lesson-to-sanity'
+import { syncVideoResourceToSanity } from './functions/sanity/video-resources/sync-video-resource-to-sanity'
 import { syncVideoResourceData } from './functions/video-resource-created'
 
 export const inngestConfig = {
@@ -25,5 +26,6 @@ export const inngestConfig = {
 		notifySlack,
 		syncVideoResourceData,
 		syncPostsToEggheadLessons,
+		createCourseInSanity,
 	],
 }

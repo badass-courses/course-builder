@@ -13,21 +13,19 @@ import {
 	type EggheadLesson,
 } from '@/lib/egghead'
 import {
-	createSanityReference,
 	keyGenerator,
-	sanityCollaboratorDocumentSchema,
 	sanityLessonDocumentSchema,
-	sanityReferenceSchema,
 	sanitySoftwareLibraryDocumentSchema,
 	sanityVersionedSoftwareLibraryObjectSchema,
 	sanityVideoResourceDocumentSchema,
 } from '@/lib/sanity-content'
 import type {
-	SanityCollaboratorDocument,
-	SanityReference,
 	SanitySoftwareLibraryDocument,
 	SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
+import { getSanityCollaborator } from '@/lib/sanity/collaborator/queries'
+import { sanityReferenceSchema } from '@/lib/sanity/utils/schemas'
+import type { SanityReference } from '@/lib/sanity/utils/schemas'
 import { sanityWriteClient } from '@/server/sanity-write-client'
 import { asc, eq, sql } from 'drizzle-orm'
 
@@ -359,26 +357,6 @@ export async function createSanityLesson(
 	const sanityLesson = await sanityWriteClient.create(lesson)
 
 	return sanityLesson
-}
-
-export async function getSanityCollaborator(
-	instructorId: number,
-	role: SanityCollaboratorDocument['role'] = 'instructor',
-	returnReference = true,
-) {
-	const collaboratorData = await sanityWriteClient.fetch(
-		`*[_type == "collaborator" && eggheadInstructorId == "${instructorId}" && role == "${role}"][0]`,
-	)
-
-	const collaborator = sanityCollaboratorDocumentSchema
-		.nullable()
-		.parse(collaboratorData)
-
-	if (!collaborator) return null
-
-	return returnReference
-		? createSanityReference(collaborator._id)
-		: collaborator
 }
 
 export async function getSanitySoftwareLibrary(

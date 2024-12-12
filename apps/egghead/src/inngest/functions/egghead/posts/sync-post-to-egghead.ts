@@ -3,7 +3,7 @@ import { getPost } from '@/lib/posts-query'
 import { NonRetriableError } from 'inngest'
 import { z } from 'zod'
 
-import { inngest } from '../inngest.server'
+import { inngest } from '../../../inngest.server'
 
 export const POST_UPDATED_EVENT = 'post/updated'
 

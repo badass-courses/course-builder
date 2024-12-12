@@ -3,19 +3,16 @@ import { inngest } from '@/inngest/inngest.server'
 import { eggheadLessonSchema, getEggheadLesson } from '@/lib/egghead'
 import type { EggheadLesson } from '@/lib/egghead'
 import {
-	sanityReferenceSchema,
 	sanityVersionedSoftwareLibraryObjectSchema,
-} from '@/lib/sanity-content'
-import type {
-	SanityCollaboratorDocument,
-	SanityReference,
-	SanityVersionedSoftwareLibraryObject,
+	type SanityVersionedSoftwareLibraryObject,
 } from '@/lib/sanity-content'
 import {
 	createSanityLesson,
-	getSanityCollaborator,
 	getSanitySoftwareLibrary,
 } from '@/lib/sanity-content-query'
+import { getSanityCollaborator } from '@/lib/sanity/collaborator/queries'
+import { sanityReferenceSchema } from '@/lib/sanity/utils/schemas'
+import type { SanityReference } from '@/lib/sanity/utils/schemas'
 
 export const syncLessonToSanity = inngest.createFunction(
 	{

@@ -6,7 +6,7 @@ import {
 } from '@/lib/posts-query'
 import { z } from 'zod'
 
-import { inngest } from '../inngest.server'
+import { inngest } from '../../../inngest.server'
 
 export const SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT =
 	'posts/sync-to-egghead-lessons'
