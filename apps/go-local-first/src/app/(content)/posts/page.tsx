@@ -23,11 +23,11 @@ import {
 import { CreatePost, CreatePostModal } from './_components/create-post'
 
 export const metadata: Metadata = {
-	title: `AI Engineering Posts by ${config.author}`,
+	title: `Local-First Posts by ${config.author}`,
 	openGraph: {
 		images: [
 			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`AI Engineering Posts by ${config.author}`)}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Local-First Posts by ${config.author}`)}`,
 			},
 		],
 	},
