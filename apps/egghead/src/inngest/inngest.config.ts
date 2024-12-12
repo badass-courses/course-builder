@@ -5,6 +5,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { migrateTipsToPosts } from './functions/migrate-tips-to-posts'
 import { notifySlack } from './functions/notify-slack-for-post'
+import { createCourseInSanity } from './functions/sanity/create-course-in-sanity'
 import { syncLessonToSanity } from './functions/sanity/sync-lesson-to-sanity'
 import { syncVideoResourceToSanity } from './functions/sanity/sync-video-resource-to-sanity'
 import { syncPostToEgghead } from './functions/sync-post-to-egghead'
@@ -25,5 +26,6 @@ export const inngestConfig = {
 		notifySlack,
 		syncVideoResourceData,
 		syncPostsToEggheadLessons,
+		createCourseInSanity,
 	],
 }

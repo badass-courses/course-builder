@@ -51,7 +51,7 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
-import { sanityLessonDocumentSchema } from './sanity-content'
+import { SanityLessonDocumentSchema } from './sanity-content'
 import {
 	replaceSanityLessonResources,
 	updateSanityLesson,
@@ -373,7 +373,7 @@ export async function writeNewPostToDatabase(input: {
 		: null
 
 	if (eggheadLessonId) {
-		const lesson = sanityLessonDocumentSchema.parse({
+		const lesson = SanityLessonDocumentSchema.parse({
 			_id: `lesson-${eggheadLessonId}`,
 			_type: 'lesson',
 			title,
