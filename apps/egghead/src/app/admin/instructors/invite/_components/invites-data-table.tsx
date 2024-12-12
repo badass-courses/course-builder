@@ -66,10 +66,8 @@ export const columns = () => {
 			header: 'Created At',
 			accessorFn: (data) => data.createdAt,
 			cell: ({ row }) => {
-				const date = row.getValue('createdAt')
-				return date ? (
-					<div>{format(new Date(date), 'MMM d, yyyy h:mm a')}</div>
-				) : null
+				const date = row.getValue('createdAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
 			},
 		},
 		{
@@ -77,10 +75,8 @@ export const columns = () => {
 			header: 'Expires At',
 			accessorFn: (data) => data.expiresAt,
 			cell: ({ row }) => {
-				const date = row.getValue('expiresAt')
-				return date ? (
-					<div>{format(new Date(date), 'MMM d, yyyy h:mm a')}</div>
-				) : null
+				const date = row.getValue('expiresAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
 			},
 		},
 		{
@@ -88,10 +84,8 @@ export const columns = () => {
 			header: 'Confirmed At',
 			accessorFn: (data) => data.confirmedAt,
 			cell: ({ row }) => {
-				const date = row.getValue('confirmedAt')
-				return date ? (
-					<div>{format(new Date(date), 'MMM d, yyyy h:mm a')}</div>
-				) : null
+				const date = row.getValue('confirmedAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
 			},
 		},
 		{
@@ -99,10 +93,8 @@ export const columns = () => {
 			header: 'Completed At',
 			accessorFn: (data) => data.completedAt,
 			cell: ({ row }) => {
-				const date = row.getValue('completedAt')
-				return date ? (
-					<div>{format(new Date(date), 'MMM d, yyyy h:mm a')}</div>
-				) : null
+				const date = row.getValue('completedAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
 			},
 		},
 	] as ColumnDef<InviteRow>[]
