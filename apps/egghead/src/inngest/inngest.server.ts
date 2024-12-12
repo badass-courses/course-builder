@@ -24,6 +24,10 @@ import {
 	EGGHEAD_LESSON_CREATED_EVENT,
 	EggheadLessonCreated,
 } from './events/egghead/lesson-created'
+import {
+	INSTRUCTOR_INVITE_CREATED_EVENT,
+	InstructorInviteCreated,
+} from './events/instructor-invite-created'
 import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
 	TIPS_UPDATED_EVENT,
@@ -48,6 +52,7 @@ export type Events = {
 	[EGGHEAD_LESSON_CREATED_EVENT]: EggheadLessonCreated
 	[POST_CREATED_EVENT]: PostCreated
 	[SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT]: SyncPostsToEggheadLessonsEvent
+	[INSTRUCTOR_INVITE_CREATED_EVENT]: InstructorInviteCreated
 }
 
 const callbackBase =
