@@ -2850,6 +2850,7 @@ export function mySqlDrizzleAdapter(
 			merchantAccountId: string
 			merchantCustomerId: string
 			merchantProductId: string
+			identifier: string
 		}) => {
 			const id = crypto.randomUUID()
 			await client.insert(merchantSubscriptionTable).values({
@@ -2871,6 +2872,23 @@ export function mySqlDrizzleAdapter(
 		},
 		deleteMerchantSubscription: async (merchantSubscriptionId: string) => {
 			throw new Error('Not implemented')
+		},
+		getSubscriptionForStripeId: async (stripeSubscriptionId: string) => {
+			const merchantSubscription = MerchantSubscriptionSchema.parse(
+				await client.query.merchantSubscription.findFirst({
+					where: eq(merchantSubscriptionTable.identifier, stripeSubscriptionId),
+				}),
+			)
+			const subscription = SubscriptionSchema.parse(
+				await client.query.subscription.findFirst({
+					where: eq(
+						subscriptionTable.merchantSubscriptionId,
+						merchantSubscription.id,
+					),
+				}),
+			)
+
+			return subscription
 		},
 	}
 

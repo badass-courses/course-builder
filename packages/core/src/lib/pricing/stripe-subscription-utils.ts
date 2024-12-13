@@ -9,21 +9,36 @@ import {
 	SubscriptionInfo,
 	SubscriptionInfoSchema,
 } from '../../schemas/subscription-info'
+import { logger } from '../utils/logger'
 
 export async function parseSubscriptionInfoFromCheckoutSession(
 	checkoutSession: Stripe.Checkout.Session,
 ) {
+	logger.debug('Parsing subscription info from checkout session', {
+		checkoutSession,
+	})
+
 	const { customer, subscription, metadata } = checkoutSession
 	const { email, name, id: stripeCustomerId } = customer as Stripe.Customer
 	const stripeSubscription = subscription as Stripe.Subscription
 
 	const subscriptionItem = first(stripeSubscription.items.data)
-	if (!subscriptionItem) throw new Error('No subscription item found')
+	if (!subscriptionItem) {
+		logger.error(new Error('No subscription item found in checkout session'))
+		throw new Error('No subscription item found')
+	}
 
 	const stripePrice = subscriptionItem.price
 	const quantity = subscriptionItem.quantity || 1
 	const stripeProduct = (stripeSubscription as any).plan
 		?.product as Stripe.Product
+
+	logger.debug('Found subscription details', {
+		stripeCustomerId,
+		subscriptionId: stripeSubscription.id,
+		productId: stripeProduct.id,
+		quantity,
+	})
 
 	// Add required fields to metadata before parsing
 	const enrichedMetadata = {
@@ -39,6 +54,8 @@ export async function parseSubscriptionInfoFromCheckoutSession(
 	const parsedMetadata = enrichedMetadata
 		? CheckoutSessionMetadataSchema.parse(enrichedMetadata)
 		: undefined
+
+	logger.debug('Enriched metadata', { enrichedMetadata, parsedMetadata })
 
 	const info: SubscriptionInfo = {
 		customerIdentifier: stripeCustomerId,
@@ -57,7 +74,9 @@ export async function parseSubscriptionInfoFromCheckoutSession(
 		metadata: parsedMetadata,
 	}
 
-	return SubscriptionInfoSchema.parse(info)
+	const parsedInfo = SubscriptionInfoSchema.parse(info)
+	logger.debug('Successfully parsed subscription info', { parsedInfo })
+	return parsedInfo
 }
 
 export interface SubscriptionPermissions {
@@ -72,12 +91,21 @@ export function determineSubscriptionPermissions(
 	organizationId: string,
 	purchasingMemberId: string,
 ): SubscriptionPermissions {
+	logger.debug('Determining subscription permissions', {
+		metadata,
+		organizationId,
+		purchasingMemberId,
+	})
+
 	const isMultiUser = metadata.bulk === 'true'
 
-	return {
+	const permissions = {
 		organizationId,
 		purchasingMemberId,
 		isMultiUser,
 		assignToMember: !isMultiUser ? purchasingMemberId : undefined,
 	}
+
+	logger.debug('Determined subscription permissions', { permissions })
+	return permissions
 }

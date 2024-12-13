@@ -8,6 +8,7 @@ import { priceSchema } from './price-schema'
 
 export const productSchema = z.object({
 	id: z.string().max(191),
+	organizationId: z.string().max(191).optional().nullable(),
 	name: z.string().max(191),
 	key: z.string().max(191).optional().nullable(),
 	type: z.enum(['live', 'self-paced']).default('self-paced'),

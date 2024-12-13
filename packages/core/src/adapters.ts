@@ -128,6 +128,7 @@ export interface CourseBuilderAdapter<
 		merchantAccountId: string
 		merchantCustomerId: string
 		merchantProductId: string
+		identifier: string
 	}): Promise<MerchantSubscription | null>
 	updateMerchantSubscription(options: {
 		merchantSubscriptionId: string
@@ -139,6 +140,9 @@ export interface CourseBuilderAdapter<
 		merchantSubscriptionId: string
 		productId: string
 	}): Promise<Subscription | null>
+	getSubscriptionForStripeId(
+		stripeSubscriptionId: string,
+	): Promise<Subscription | null>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -429,6 +433,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	deleteMerchantSubscription: async () => undefined,
 	createMerchantSession: async () => Promise.resolve({} as MerchantSession),
 	createSubscription: async () => null,
+	getSubscriptionForStripeId: async () => null,
 }
 
 interface SkillProductsCommerceSdk {

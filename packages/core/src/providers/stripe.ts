@@ -1,3 +1,4 @@
+import { parseSubscriptionInfoFromCheckoutSession } from 'src/lib/pricing/stripe-subscription-utils'
 import Stripe from 'stripe'
 
 import { CourseBuilderAdapter } from '../adapters'
@@ -19,6 +20,16 @@ export default function StripeProvider(
 		type: 'payment',
 		...options,
 		options,
+		getSubscriptionInfo: async (
+			checkoutSessionId: string,
+			_: CourseBuilderAdapter,
+		) => {
+			const checkoutSession =
+				await options.paymentsAdapter.getCheckoutSession(checkoutSessionId)
+			console.log('checkoutSession', checkoutSession)
+
+			return parseSubscriptionInfoFromCheckoutSession(checkoutSession)
+		},
 		getPurchaseInfo: async (
 			checkoutSessionId: string,
 			adapter: CourseBuilderAdapter,
@@ -230,6 +241,7 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 		baseSuccessUrl: 'mock-base-success-url',
 		paymentsAdapter: mockStripeAdapter,
 	},
+	getSubscriptionInfo: async () => ({}) as any,
 	getPurchaseInfo: async (
 		checkoutSessionId: string,
 		adapter: CourseBuilderAdapter,

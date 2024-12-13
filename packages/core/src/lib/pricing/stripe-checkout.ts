@@ -290,7 +290,7 @@ export async function stripeCheckout({
 				merchantPriceIdentifier,
 			)
 
-			console.log('stripePrice', stripePrice)
+			const isRecurring = stripePrice?.recurring
 
 			const merchantCoupon = couponId
 				? await adapter.getMerchantCoupon(couponId as string)
@@ -400,6 +400,11 @@ export async function stripeCheckout({
 					provider: 'stripe',
 				}
 
+				if (isRecurring) {
+					const queryParamString = buildSearchParams(baseQueryParams)
+					return `${config.baseSuccessUrl}/thanks/subscription?${queryParamString}`
+				}
+
 				if (isUpgrade) {
 					const queryParamString = buildSearchParams({
 						...baseQueryParams,
@@ -430,8 +435,6 @@ export async function stripeCheckout({
 				...(params.organizationId && { organizationId: params.organizationId }),
 			})
 
-			const isRecurring = stripePrice?.type === 'recurring'
-
 			const sessionUrl = await config.paymentsAdapter.createCheckoutSession({
 				discounts,
 				line_items: [
@@ -444,9 +447,11 @@ export async function stripeCheckout({
 				mode: isRecurring ? 'subscription' : 'payment',
 				success_url: successUrl,
 				cancel_url: cancelUrl,
-				...(customerId
-					? { customer: customerId }
-					: { customer_creation: 'always' }),
+				...(isRecurring
+					? customerId && { customer: customerId }
+					: customerId
+						? { customer: customerId }
+						: { customer_creation: 'always' }),
 				metadata,
 				...(!isRecurring && {
 					payment_intent_data: {

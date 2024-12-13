@@ -1,6 +1,4 @@
 import { parseSubscriptionInfoFromCheckoutSession } from 'src/lib/pricing/stripe-subscription-utils'
-import { CheckoutSessionMetadataSchema } from 'src/schemas/stripe/checkout-session-metadata'
-import Stripe from 'stripe'
 
 import { parsePurchaseInfoFromCheckoutSession } from '../../lib/pricing/stripe-purchase-utils'
 import { User } from '../../schemas'
@@ -280,6 +278,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 						merchantAccountId: merchantAccount.id,
 						merchantCustomerId: merchantCustomer.id,
 						merchantProductId: merchantProduct.id,
+						identifier: subscriptionInfo.subscriptionIdentifier,
 					})
 
 					if (!merchantSubscription) {
