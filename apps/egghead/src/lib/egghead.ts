@@ -146,7 +146,7 @@ export async function updateEggheadLesson(input: {
 	duration: number
 	hlsUrl?: string
 	body?: string
-	published_at?: number
+	published_at?: string
 }) {
 	const {
 		eggheadLessonId,
@@ -270,6 +270,10 @@ export const eggheadLessonSchema = z.object({
 	state: z.string(),
 	instructor: z.object({
 		id: z.number(),
+		name: z.string(),
+		url: z.string().url(),
+		avatar_url: z.string().url(),
+		avatar_file_name: z.string(),
 	}),
 })
 
