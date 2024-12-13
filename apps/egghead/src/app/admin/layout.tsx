@@ -8,13 +8,18 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { MicIcon, TagIcon } from 'lucide-react'
+import { MailIcon, MicIcon, TagIcon } from 'lucide-react'
 
 const adminSidebar = [
 	{
 		label: 'Instructors',
 		href: '/admin/instructors',
 		icon: MicIcon,
+	},
+	{
+		label: 'Instructor Invites',
+		href: '/admin/instructors/invite',
+		icon: MailIcon,
 	},
 	{
 		label: 'Tags',
