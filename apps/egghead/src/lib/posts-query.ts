@@ -57,7 +57,7 @@ import {
 	updateSanityLesson,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
-import { upsertPostToTypeSense } from './typesense'
+import { upsertPostToTypeSense } from './typesense-query'
 
 export async function searchLessons(searchTerm: string) {
 	const { session } = await getServerAuthSession()
@@ -518,7 +518,7 @@ export async function writePostUpdateToDatabase(input: {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
 			}),
 			...(action === 'publish' && {
-				published_at: Date.now(),
+				published_at: new Date().toISOString(),
 			}),
 		})
 	}
