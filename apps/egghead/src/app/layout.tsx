@@ -10,6 +10,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { extractRouterConfig } from 'uploadthing/server'
 
 import { Toaster } from '@coursebuilder/ui/primitives/toaster'
@@ -35,30 +36,32 @@ export default function RootLayout({
 			<html lang="en" suppressHydrationWarning={true}>
 				<body className={`font-sans ${inter.variable}`}>
 					<TRPCReactProvider>
-						<Party />
-						<Toaster />
-						<ThemeProvider
-							attribute="class"
-							defaultTheme="system"
-							enableSystem
-							disableTransitionOnChange
-						>
-							<div key="1" className="flex min-h-screen w-full flex-col">
-								<Navigation />
-								<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
-									<NextSSRPlugin
-										/**
-										 * The `extractRouterConfig` will extract **only** the route configs from the
-										 * router to prevent additional information from being leaked to the client. The
-										 * data passed to the client is the same as if you were to fetch
-										 * `/api/uploadthing` directly.
-										 */
-										routerConfig={extractRouterConfig(ourFileRouter)}
-									/>
-									{children}
-								</main>
-							</div>
-						</ThemeProvider>
+						<NuqsAdapter>
+							<Party />
+							<Toaster />
+							<ThemeProvider
+								attribute="class"
+								defaultTheme="system"
+								enableSystem
+								disableTransitionOnChange
+							>
+								<div key="1" className="flex min-h-screen w-full flex-col">
+									<Navigation />
+									<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
+										<NextSSRPlugin
+											/**
+											 * The `extractRouterConfig` will extract **only** the route configs from the
+											 * router to prevent additional information from being leaked to the client. The
+											 * data passed to the client is the same as if you were to fetch
+											 * `/api/uploadthing` directly.
+											 */
+											routerConfig={extractRouterConfig(ourFileRouter)}
+										/>
+										{children}
+									</main>
+								</div>
+							</ThemeProvider>
+						</NuqsAdapter>
 					</TRPCReactProvider>
 				</body>
 			</html>

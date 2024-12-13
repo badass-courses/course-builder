@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown } from 'lucide-react'
+import { useQueryState } from 'nuqs'
 import {
 	useClearRefinements,
 	useRefinementList,
@@ -23,14 +24,23 @@ import {
 } from '@coursebuilder/ui'
 
 export function RefinementList(
-	props: UseRefinementListProps & { label?: string },
+	props: UseRefinementListProps & { label?: string; queryKey?: string },
 ) {
 	const { items, refine } = useRefinementList({
 		attribute: props.attribute,
+		limit: 100,
 		operator: 'or',
 	})
+	const [queryParam] = useQueryState<string[]>(
+		props.queryKey || props.attribute,
+		{
+			defaultValue: [],
+			parse: (value) => value.split(','),
+		},
+	)
+
 	const [open, setOpen] = React.useState(false)
-	const [values, setValues] = React.useState<string[]>([])
+	const [values, setValues] = React.useState<string[]>(queryParam)
 
 	const { refine: clear } = useClearRefinements({
 		includedAttributes: [props.attribute],
