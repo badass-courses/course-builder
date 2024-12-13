@@ -12,10 +12,15 @@ import {
 	PaginationState,
 	useReactTable,
 } from '@tanstack/react-table'
+import { format } from 'date-fns'
 import { ChevronDown, Plus, Search } from 'lucide-react'
 
 import {
 	Button,
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
 	Input,
 	Table,
 	TableBody,
@@ -33,54 +38,92 @@ export const columns = () => {
 			accessorFn: (data) => data.id,
 		},
 		{
-			id: 'name',
-			header: 'Name',
-			accessorFn: (data) => data.name,
+			id: 'inviteState',
+			header: 'State',
+			accessorFn: (data) => data.inviteState,
 			cell: ({ row }) => {
-				return <div>{row.getValue('name')}</div>
+				return <div>{row.getValue('inviteState')}</div>
 			},
 		},
 		{
-			id: 'email',
-			header: 'Email',
-			accessorFn: (data) => data.email,
+			id: 'inviteEmail',
+			header: 'Invited Email',
+			accessorFn: (data) => data.inviteEmail,
 			cell: ({ row }) => {
-				return <div>{row.getValue('email')}</div>
+				return <div>{row.getValue('inviteEmail')}</div>
 			},
 		},
 		{
-			id: 'profile',
-			header: 'Profile',
-			accessorFn: (data) => data.id,
+			id: 'acceptedEmail',
+			header: 'Accepted Email',
+			accessorFn: (data) => data.acceptedEmail,
 			cell: ({ row }) => {
-				return (
-					<Link href={`/profile/${row.getValue('id')}`}>
-						<Button variant="outline" size="sm">
-							Go to Profile
-						</Button>
-					</Link>
-				)
+				return <div>{row.getValue('acceptedEmail')}</div>
 			},
 		},
-	] as ColumnDef<UserRow>[]
+		{
+			id: 'createdAt',
+			header: 'Created At',
+			accessorFn: (data) => data.createdAt,
+			cell: ({ row }) => {
+				const date = row.getValue('createdAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
+			},
+		},
+		{
+			id: 'expiresAt',
+			header: 'Expires At',
+			accessorFn: (data) => data.expiresAt,
+			cell: ({ row }) => {
+				const date = row.getValue('expiresAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
+			},
+		},
+		{
+			id: 'confirmedAt',
+			header: 'Confirmed At',
+			accessorFn: (data) => data.confirmedAt,
+			cell: ({ row }) => {
+				const date = row.getValue('confirmedAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
+			},
+		},
+		{
+			id: 'completedAt',
+			header: 'Completed At',
+			accessorFn: (data) => data.completedAt,
+			cell: ({ row }) => {
+				const date = row.getValue('completedAt') as Date | null
+				return date ? <div>{format(date, 'MMM d, yyyy h:mm a')}</div> : null
+			},
+		},
+	] as ColumnDef<InviteRow>[]
 }
 
-type UserRow = {
+type InviteRow = {
 	id: string
-	name: string | null
-	email: string
-	image: string | null
+	inviteState: 'INITIATED' | 'VERIFIED' | 'CANCELED' | 'EXPIRED' | 'COMPLETED'
+	inviteEmail: string
+	acceptedEmail: string | null
+	userId: string | null
+	createdAt: Date | null
+	expiresAt: Date | null
+	canceledAt: Date | null
+	confirmedAt: Date | null
+	completedAt: Date | null
 }
 
-const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
+const InstructorDataTable: React.FC<{ invites: InviteRow[] }> = ({
+	invites,
+}) => {
 	const [pagination, setPagination] = React.useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 50,
 	})
 	const [globalFilter, setGlobalFilter] = React.useState<any>([])
 
-	const table = useReactTable<UserRow>({
-		data: users,
+	const table = useReactTable<InviteRow>({
+		data: invites,
 		columns: columns(),
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -96,17 +139,44 @@ const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
 	})
 
 	return (
-		<div className="w-full">
+		<div className="w-full max-w-screen-lg">
+			<h2 className="pb-4 text-lg font-bold">Current Invites</h2>
 			<div className="flex flex-col items-center justify-between gap-2 pb-4 sm:flex-row">
 				<div className="relative w-full">
 					<Search className="absolute left-2 top-3 h-4 w-4 text-gray-400" />
 					<Input
-						placeholder="Search instructors..."
+						placeholder="Search invites..."
 						value={globalFilter}
 						onChange={(e) => table.setGlobalFilter(String(e.target.value))}
 						className="w-full max-w-sm pl-8"
 					/>
 				</div>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" className="ml-auto">
+							Columns <ChevronDown className="ml-2 h-4 w-4" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						{table
+							.getAllColumns()
+							.filter((column) => column.getCanHide())
+							.map((column) => {
+								return (
+									<DropdownMenuCheckboxItem
+										key={column.id}
+										className="capitalize"
+										checked={column.getIsVisible()}
+										onCheckedChange={(value) =>
+											column.toggleVisibility(!!value)
+										}
+									>
+										{column.id}
+									</DropdownMenuCheckboxItem>
+								)
+							})}
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 			<div className="rounded-md border">
 				<Table>

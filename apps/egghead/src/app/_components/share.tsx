@@ -18,7 +18,7 @@ export const Share = ({
 	message?: string
 }) => {
 	const pathname = usePathname()
-	const url = env.NEXT_PUBLIC_URL + pathname
+	const url = 'https://egghead.io' + pathname
 	const { toast } = useToast()
 
 	const displayedMessage = message ?? post?.fields?.title ?? ''
@@ -40,8 +40,8 @@ export const Share = ({
 			/>
 			<a
 				href={`https://bsky.app/intent/compose?text=${encodeURIComponent(`${displayedMessage}
-        
-        ${url}`)}`}
+          
+${url}`)}`}
 				target="_blank"
 				rel="noopener noreferrer"
 			>
