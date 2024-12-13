@@ -2,7 +2,11 @@
 
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceProduct,
+	contentResourceResource,
+} from '@/db/schema'
 import { Module, ModuleSchema } from '@/lib/module'
 import {
 	NavigationLesson,
@@ -218,8 +222,8 @@ export async function getWorkshopNavigation(
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	const query = sql`
 		SELECT p.*
-		FROM ContentResource cr
-		LEFT JOIN ContentResourceProduct crp ON cr.id = crp.resourceId
+		FROM ${contentResource} cr
+		LEFT JOIN ${contentResourceProduct} crp ON cr.id = crp.resourceId
 		LEFT JOIN Product p ON crp.productId = p.id
 		WHERE cr.id = ${workshopIdOrSlug}
 			OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug}

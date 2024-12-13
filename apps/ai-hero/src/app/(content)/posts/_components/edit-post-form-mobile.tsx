@@ -122,6 +122,7 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 								form={form}
 								videoResourceLoader={videoResourceLoader}
 								post={post}
+								videoResourceId={videoResourceId}
 							/>
 						</div>
 					</form>

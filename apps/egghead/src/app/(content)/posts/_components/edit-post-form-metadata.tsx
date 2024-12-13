@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
@@ -7,7 +8,12 @@ import { NewLessonVideoForm } from '@/components/resources-crud/new-lesson-video
 import AdvancedTagSelector from '@/components/resources-crud/tag-selector'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
-import { Post, PostSchema, PostTypeSchema } from '@/lib/posts'
+import {
+	Post,
+	POST_TYPES_WITH_VIDEO,
+	PostSchema,
+	PostTypeSchema,
+} from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { api } from '@/trpc/react'
@@ -41,6 +47,7 @@ import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import { MetadataFieldAccess } from './metadata-field-access'
 import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
@@ -109,76 +116,78 @@ export const PostMetadataFormFields: React.FC<{
 	})
 	return (
 		<>
-			<div>
-				<Suspense
-					fallback={
-						<>
-							<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-								video is loading
-							</div>
-						</>
-					}
-				>
-					{videoResourceId ? (
-						replacingVideo ? (
-							<div>
-								<NewLessonVideoForm
-									parentResourceId={post.id}
-									onVideoUploadCompleted={(videoResourceId) => {
-										setReplacingVideo(false)
-										setVideoUploadStatus('finalizing upload')
-										setVideoResourceId(videoResourceId)
-									}}
-									onVideoResourceCreated={(videoResourceId) =>
-										setVideoResourceId(videoResourceId)
-									}
-								/>
-								<Button
-									variant="ghost"
-									type="button"
-									onClick={() => setReplacingVideo(false)}
-								>
-									Cancel Replace Video
-								</Button>
-							</div>
-						) : (
+			{POST_TYPES_WITH_VIDEO.includes(post.fields.postType) && (
+				<div>
+					<Suspense
+						fallback={
 							<>
-								{videoResource && videoResource.state === 'ready' ? (
-									<div>
-										<PostPlayer videoResource={videoResource} />
-										<Button
-											variant="ghost"
-											type="button"
-											onClick={() => setReplacingVideo(true)}
-										>
-											Replace Video
-										</Button>
-									</div>
-								) : videoResource ? (
-									<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-										video is {videoResource.state}
-									</div>
-								) : (
-									<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-										video is {videoUploadStatus}
-									</div>
-								)}
+								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+									video is loading
+								</div>
 							</>
-						)
-					) : (
-						<NewLessonVideoForm
-							parentResourceId={post.id}
-							onVideoUploadCompleted={(videoResourceId) => {
-								setVideoUploadStatus('finalizing upload')
-								setVideoResourceId(videoResourceId)
-							}}
-							onVideoResourceCreated={(videoResourceId) =>
-								setVideoResourceId(videoResourceId)
-							}
-						/>
-					)}
-				</Suspense>
-			</div>
+						}
+					>
+						{videoResourceId ? (
+							replacingVideo ? (
+								<div>
+									<NewLessonVideoForm
+										parentResourceId={post.id}
+										onVideoUploadCompleted={(videoResourceId) => {
+											setReplacingVideo(false)
+											setVideoUploadStatus('finalizing upload')
+											setVideoResourceId(videoResourceId)
+										}}
+										onVideoResourceCreated={(videoResourceId) =>
+											setVideoResourceId(videoResourceId)
+										}
+									/>
+									<Button
+										variant="ghost"
+										type="button"
+										onClick={() => setReplacingVideo(false)}
+									>
+										Cancel Replace Video
+									</Button>
+								</div>
+							) : (
+								<>
+									{videoResource && videoResource.state === 'ready' ? (
+										<div>
+											<PostPlayer videoResource={videoResource} />
+											<Button
+												variant="ghost"
+												type="button"
+												onClick={() => setReplacingVideo(true)}
+											>
+												Replace Video
+											</Button>
+										</div>
+									) : videoResource ? (
+										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+											video is {videoResource.state}
+										</div>
+									) : (
+										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+											video is {videoUploadStatus}
+										</div>
+									)}
+								</>
+							)
+						) : (
+							<NewLessonVideoForm
+								parentResourceId={post.id}
+								onVideoUploadCompleted={(videoResourceId) => {
+									setVideoUploadStatus('finalizing upload')
+									setVideoResourceId(videoResourceId)
+								}}
+								onVideoResourceCreated={(videoResourceId) =>
+									setVideoResourceId(videoResourceId)
+								}
+							/>
+						)}
+					</Suspense>
+				</div>
+			)}
 			<FormField
 				control={form.control}
 				name="id"
@@ -263,6 +272,7 @@ export const PostMetadataFormFields: React.FC<{
 			/>
 
 			<MetadataFieldVisibility form={form} />
+			<MetadataFieldAccess form={form} />
 			<MetadataFieldState form={form} />
 			<FormField
 				control={form.control}
@@ -282,7 +292,15 @@ export const PostMetadataFormFields: React.FC<{
 			{videoResource && (
 				<div className="px-5">
 					<div className="flex items-center justify-between gap-2">
-						<label className="text-lg font-bold">Transcript</label>
+						<div className="flex items-center gap-2">
+							<label className="text-lg font-bold">Transcript</label>
+							<Link
+								href={`/posts/${post.fields?.slug}/edit/transcript`}
+								className="text-sm text-blue-500 hover:text-blue-700"
+							>
+								Edit
+							</Link>
+						</div>
 						{Boolean(videoResourceId) && (
 							<TooltipProvider delayDuration={0}>
 								<Tooltip>

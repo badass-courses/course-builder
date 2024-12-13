@@ -19,7 +19,7 @@ export function EditResourcesActionBar({
 			slug: string
 		}
 	}
-	onSubmit: () => void
+	onSubmit: () => Promise<void>
 	onPublish: () => void
 	onUnPublish: () => void
 	onArchive: () => void
@@ -43,7 +43,7 @@ export function EditResourcesActionBar({
 					</span>
 				</span>
 			</div>
-			<div className="flex items-center gap-1">
+			<div className="flex items-center gap-3">
 				{resource.fields?.state === 'draft' && (
 					<Button
 						onClick={(e) => {
@@ -86,9 +86,11 @@ export function EditResourcesActionBar({
 					</Button>
 				)}
 				<Button
-					onClick={(e) => {
+					onClick={async (e) => {
 						setIsSubmitting(true)
-						onSubmit()
+						await onSubmit().then(() => {
+							setIsSubmitting(false)
+						})
 					}}
 					type="button"
 					variant="default"

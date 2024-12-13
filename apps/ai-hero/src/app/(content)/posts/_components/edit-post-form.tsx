@@ -51,6 +51,7 @@ export function EditPostForm({
 			fields: {
 				title: post.fields?.title,
 				body: post.fields?.body,
+				slug: post.fields?.slug,
 				visibility: post.fields?.visibility || 'unlisted',
 				state: post.fields?.state || 'draft',
 				description: post.fields?.description ?? '',
@@ -60,6 +61,9 @@ export function EditPostForm({
 		},
 	})
 	const isMobile = useIsMobile()
+	const videoResource = videoResourceLoader
+		? React.use(videoResourceLoader)
+		: null
 
 	return isMobile ? (
 		<MobileEditPostForm
@@ -82,7 +86,6 @@ export function EditPostForm({
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
-			onSave={onPostSave}
 			theme={theme}
 			tools={[
 				{ id: 'assistant' },
@@ -120,6 +123,7 @@ export function EditPostForm({
 			<PostMetadataFormFields
 				form={form}
 				videoResourceLoader={videoResourceLoader}
+				videoResourceId={videoResource?.id}
 				post={post}
 			/>
 		</EditResourcesFormDesktop>

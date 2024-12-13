@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+import '@/styles/login.css'
 
 import * as React from 'react'
 import { Inter } from 'next/font/google'
@@ -10,6 +11,8 @@ import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { extractRouterConfig } from 'uploadthing/server'
+
+import { Toaster } from '@coursebuilder/ui/primitives/toaster'
 
 const inter = Inter({
 	subsets: ['latin'],
@@ -33,6 +36,7 @@ export default function RootLayout({
 				<body className={`font-sans ${inter.variable}`}>
 					<TRPCReactProvider>
 						<Party />
+						<Toaster />
 						<ThemeProvider
 							attribute="class"
 							defaultTheme="system"

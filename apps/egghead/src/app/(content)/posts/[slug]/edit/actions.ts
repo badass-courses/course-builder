@@ -43,3 +43,7 @@ export const onPostSave = async (resource: ContentResource) => {
 	revalidatePath(`/${post?.fields?.slug}`)
 	redirect(`/${resource.fields?.slug}`)
 }
+
+export const onPostPublish = async (resource: ContentResource) => {
+	redirect(`/${resource.fields?.slug}?published=true`)
+}

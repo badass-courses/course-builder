@@ -54,7 +54,7 @@ export const columns = () => {
 			accessorFn: (data) => data.id,
 			cell: ({ row }) => {
 				return (
-					<Link href={`/instructors/${row.getValue('id')}`}>
+					<Link href={`/profile/${row.getValue('id')}`}>
 						<Button variant="outline" size="sm">
 							Go to Profile
 						</Button>
@@ -107,12 +107,6 @@ const InstructorDataTable: React.FC<{ users: UserRow[] }> = ({ users }) => {
 						className="w-full max-w-sm pl-8"
 					/>
 				</div>
-				<Button
-					className="w-full disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-					disabled
-				>
-					<Plus className="mr-2 h-4 w-4" /> Add New Instructor
-				</Button>
 			</div>
 			<div className="rounded-md border">
 				<Table>

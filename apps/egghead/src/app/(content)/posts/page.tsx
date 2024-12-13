@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
 import {
@@ -24,15 +25,26 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
+	Checkbox,
 } from '@coursebuilder/ui'
 
-export default async function PostsListPage() {
+import { PostsFilterToggle } from './_components/posts-filter-toggle'
+
+export default async function PostsListPage(props: {
+	searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
+	const searchParams = await props.searchParams
+	const { ability } = await getServerAuthSession()
+
 	return (
 		<div className="bg-muted flex h-full flex-grow flex-col-reverse gap-3 p-5 md:flex-row">
 			<div className="flex flex-grow flex-col space-y-2 md:order-2">
-				<h2 className="text-lg font-bold">Posts</h2>
+				<div className="flex items-center justify-between">
+					<h2 className="text-lg font-bold">Posts</h2>
+					<PostsFilterToggle canManageAll={ability.can('manage', 'all')} />
+				</div>
 				<Suspense>
-					<PostList />
+					<PostList showAllPosts={searchParams.view === 'all'} />
 				</Suspense>
 			</div>
 			<Suspense>
@@ -42,12 +54,12 @@ export default async function PostsListPage() {
 	)
 }
 
-async function PostList() {
+async function PostList({ showAllPosts }: { showAllPosts: boolean }) {
 	const { ability, session } = await getServerAuthSession()
 
 	let postsModule
 
-	if (ability.can('manage', 'all')) {
+	if (ability.can('manage', 'all') && showAllPosts) {
 		postsModule = await getAllPosts()
 	} else {
 		postsModule = await getAllPostsForUser(session?.user?.id)
@@ -60,8 +72,10 @@ async function PostList() {
 					return (
 						<Card key={post.id}>
 							<CardHeader>
-								<div className="text-muted-foreground text-mono text-xs">
-									{post.fields?.state}
+								<div className="flex gap-2">
+									<div className="text-muted-foreground text-mono text-xs">
+										{post.fields?.state} {post.fields?.postType}
+									</div>
 								</div>
 								<CardTitle>
 									{/* posts are presented at the root of the site and not in a sub-route */}
@@ -103,10 +117,9 @@ async function PostList() {
 
 const InstructorByLine = async ({ userId }: { userId: string }) => {
 	const instructor = await getCachedEggheadInstructorForUser(userId)
-	return instructor ? (
-		<div className="text-muted-foreground text-mono text-xs">
-			{instructor?.first_name} {instructor?.last_name}
-		</div>
+	const fullName = `${instructor?.first_name} ${instructor?.last_name}`.trim()
+	return Boolean(fullName) ? (
+		<div className="text-muted-foreground text-mono text-xs">{fullName}</div>
 	) : null
 }
 

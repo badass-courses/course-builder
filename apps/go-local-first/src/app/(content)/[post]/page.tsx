@@ -15,7 +15,6 @@ import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
@@ -23,6 +22,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { Button } from '@coursebuilder/ui'
 
+import { Transcript } from '../_components/video-transcript-renderer'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
@@ -85,6 +85,8 @@ async function Post({ post }: { post: Post | null }) {
 		return null
 	}
 
+	const transcript = post.resources?.[0]?.resource?.fields?.transcript
+
 	return (
 		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
 			{post.fields.body && (
@@ -111,6 +113,16 @@ async function Post({ post }: { post: Post | null }) {
 						},
 					}}
 				/>
+			)}
+			{transcript && (
+				<>
+					<div className="mt-16 border-t">
+						<h3 className="text-fluid-xl mb-8 font-bold leading-none">
+							Transcript
+						</h3>
+						<Transcript transcriptLoader={Promise.resolve(transcript)} />
+					</div>
+				</>
 			)}
 		</article>
 	)
@@ -146,14 +158,6 @@ export default async function PostPage(props: {
 		notFound()
 	}
 
-	const squareGridPattern = generateGridPattern(
-		post.fields.title,
-		1000,
-		800,
-		0.8,
-		false,
-	)
-
 	const hasVideo = post?.resources?.find(
 		({ resource }) => resource.type === 'videoResource',
 	)
@@ -172,22 +176,12 @@ export default async function PostPage(props: {
 						'top-0': !hasVideo,
 					})}
 				>
-					<img
-						src={squareGridPattern}
-						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
-					/>
 					<div
 						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
 						aria-hidden="true"
 					/>
 				</div>
-				{/* <div className="absolute left-0 top-0 -z-10 h-[76px] w-full">
-					<img
-						src={squareGridPattern}
-						className="absolute left-0 top-0 h-[76px] w-full overflow-hidden object-cover object-top"
-					/>
-					<div className="from-background via-background/80 to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r" />
-				</div> */}
+
 				<div className="relative z-10 flex w-full items-center justify-between">
 					<Link
 						href="/posts"
@@ -236,7 +230,7 @@ export default async function PostPage(props: {
 			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 				<section id="buy">
 					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-						Get Really Good At Node.js
+						Get Really Good At Local First Development
 					</h2>
 					<div className="flex items-center justify-center border-y">
 						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">

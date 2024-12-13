@@ -1,11 +1,10 @@
+import { createAppAbility, getAbilityRules } from '@/ability'
 import { db } from '@/db'
-import { accounts } from '@/db/schema'
+import { accounts, users } from '@/db/schema'
+import { updateContributorProfile, updateInstructorAccount } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from '@/trpc/api/trpc'
+import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
+import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
 import { isEmpty } from 'lodash'
 import { z } from 'zod'
@@ -36,4 +35,123 @@ export const usersRouter = createTRPCRouter({
 
 		return !isEmpty(userAccounts)
 	}),
+	updateProfile: publicProcedure
+		.input(
+			z.object({
+				userId: z.string(),
+				name: z.string(),
+				twitter: z.string(),
+				website: z.string(),
+				blueSky: z.string(),
+				bio: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const token = await getServerAuthSession()
+			const signedInUser = token.session?.user
+			if (!signedInUser)
+				throw new TRPCError({
+					message: 'Not authenticated',
+					code: 'UNAUTHORIZED',
+				})
+
+			const fullUser = await db.query.users.findFirst({
+				where: eq(users.id, input.userId),
+				with: {
+					accounts: true,
+					profiles: true,
+					roles: {
+						with: {
+							role: true,
+						},
+					},
+				},
+			})
+
+			const isContributor = fullUser?.roles?.some(
+				(roleRelation) => roleRelation.role.name === 'contributor',
+			)
+
+			if (isContributor) {
+				try {
+					await updateContributorProfile({
+						...input,
+						user: fullUser,
+					})
+				} catch (e) {
+					throw new TRPCError({
+						message: 'Failed to update contributor profile',
+						code: 'INTERNAL_SERVER_ERROR',
+					})
+				}
+			}
+
+			return {
+				name: input.name,
+				...(fullUser && fullUser.fields),
+				twitter: input.twitter,
+				website: input.website,
+				bio: input.bio,
+				blueSky: input.blueSky,
+			}
+		}),
+	updateInstructorAccount: publicProcedure
+		.input(
+			z.object({
+				userId: z.string(),
+				slackChannelId: z.string(),
+				slackId: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const token = await getServerAuthSession()
+			const user = token.session?.user
+
+			if (!user)
+				throw new TRPCError({
+					message: 'Not authenticated',
+					code: 'UNAUTHORIZED',
+				})
+
+			const abilityRules = getAbilityRules({ user })
+			const ability = createAppAbility(abilityRules)
+
+			const isAdmin = ability.can('manage', 'all')
+
+			if (!isAdmin)
+				throw new TRPCError({
+					message: 'Not authorized',
+					code: 'FORBIDDEN',
+				})
+
+			const fullUser = await db.query.users.findFirst({
+				where: eq(users.id, input.userId),
+				with: {
+					accounts: true,
+					roles: {
+						with: {
+							role: true,
+						},
+					},
+				},
+			})
+
+			try {
+				await updateInstructorAccount({
+					user: fullUser,
+					slackChannelId: input.slackChannelId,
+					slackId: input.slackId,
+				})
+			} catch (e) {
+				throw new TRPCError({
+					message: 'Failed to update instructor account',
+					code: 'INTERNAL_SERVER_ERROR',
+				})
+			}
+
+			return {
+				slackChannelId: input.slackChannelId,
+				slackId: input.slackId,
+			}
+		}),
 })

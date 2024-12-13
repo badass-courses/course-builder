@@ -1,10 +1,19 @@
 import { mysqlTable } from '@/db/mysql-table'
+import {
+	getInvitesRelationsSchema,
+	getInvitesSchema,
+} from '@/db/schemas/invites'
 
 import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
+
+export const invites = getInvitesSchema(mysqlTable)
+export const invitesRelations = getInvitesRelationsSchema(mysqlTable)
 
 export const {
 	accounts,
 	accountsRelations,
+	profiles,
+	profilesRelations,
 	permissions,
 	permissionsRelations,
 	rolePermissions,

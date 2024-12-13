@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '@/utils/cn'
 import { FileText, Mail, TicketIcon } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
@@ -11,12 +12,16 @@ const AdminLayout = async ({
 	params: Promise<{ module: string }>
 }) => {
 	return (
-		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-			<div className="bg-muted/40 hidden border-r md:block">
+		<div
+			className={cn(
+				'grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]',
+			)}
+		>
+			<div className="hidden border-r md:block">
 				<div className="flex h-full max-h-screen flex-col gap-2">
 					<nav className="">
 						<ul>
-							<li className="divide-border flex flex-col divide-y">
+							<li className="flex flex-col">
 								<NavItem href="/admin">
 									<HomeIcon className="h-4 w-4" />
 									Dashboard
@@ -38,7 +43,7 @@ const AdminLayout = async ({
 					</nav>
 				</div>
 			</div>
-			<div className="flex flex-col">{children}</div>
+			<div className="flex flex-col pt-10">{children}</div>
 		</div>
 	)
 }

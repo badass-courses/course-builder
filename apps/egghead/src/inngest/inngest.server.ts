@@ -20,6 +20,14 @@ import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
+import {
+	EGGHEAD_LESSON_CREATED_EVENT,
+	EggheadLessonCreated,
+} from './events/egghead/lesson-created'
+import {
+	INSTRUCTOR_INVITE_CREATED_EVENT,
+	InstructorInviteCreated,
+} from './events/instructor-invite-created'
 import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
 	TIPS_UPDATED_EVENT,
@@ -29,6 +37,10 @@ import {
 	POST_UPDATED_EVENT,
 	PostUpdated,
 } from './functions/sync-post-to-egghead'
+import {
+	SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT,
+	SyncPostsToEggheadLessonsEvent,
+} from './functions/sync-posts-to-egghead-lessons'
 
 // Create a client to send and receive events
 export type Events = {
@@ -37,7 +49,10 @@ export type Events = {
 	[USER_CREATED_EVENT]: UserCreated
 	[POST_UPDATED_EVENT]: PostUpdated
 	[TIPS_UPDATED_EVENT]: TipsUpdated
+	[EGGHEAD_LESSON_CREATED_EVENT]: EggheadLessonCreated
 	[POST_CREATED_EVENT]: PostCreated
+	[SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT]: SyncPostsToEggheadLessonsEvent
+	[INSTRUCTOR_INVITE_CREATED_EVENT]: InstructorInviteCreated
 }
 
 const callbackBase =

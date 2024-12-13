@@ -42,6 +42,7 @@ export function EditResourcesFormDesktop({
 	updateResource,
 	availableWorkflows,
 	onSave,
+	onPublish,
 	sendResourceChatMessage,
 	hostUrl,
 	user,
@@ -52,7 +53,7 @@ export function EditResourcesFormDesktop({
 	toggleMdxPreview,
 	isShowingMdxPreview,
 }: {
-	onSave: (resource: ContentResource) => Promise<void>
+	onSave?: (resource: ContentResource) => Promise<void>
 	onPublish?: (resource: ContentResource) => Promise<void>
 	onArchive?: (resource: ContentResource) => Promise<void>
 	onUnPublish?: (resource: ContentResource) => Promise<void>
@@ -91,7 +92,11 @@ export function EditResourcesFormDesktop({
 		action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
 	) => {
 		const updatedResource = await updateResource(values, action)
-		if (updatedResource) {
+		if (action === 'publish' && onPublish) {
+			return await onPublish(updatedResource)
+		}
+
+		if (updatedResource && onSave) {
 			return await onSave(updatedResource)
 		}
 	}

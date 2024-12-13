@@ -10,7 +10,7 @@ const config = {
 		{
 			rel: 'mask-icon',
 			href: `${process.env.NEXT_PUBLIC_URL}/favicon.svg`,
-			color: '#363438',
+			color: '#000',
 		},
 		{
 			rel: 'apple-touch-icon',

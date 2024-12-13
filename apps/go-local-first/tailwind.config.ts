@@ -2,10 +2,10 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
 const { fontFamily } = require('tailwindcss/defaultTheme')
 
-// const { withUt } = require('uploadthing/tw')
+const { withUt } = require('uploadthing/tw')
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+module.exports = withUt({
 	darkMode: ['class'],
 	content: [
 		'./src/**/*.{ts,tsx,mdx}',
@@ -19,12 +19,10 @@ module.exports = {
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
-		fluidTypography: {
-			lineHeight: 1.1,
-		},
+		fluidTypography: {},
 		container: {
 			center: true,
-			padding: '1.5rem',
+			padding: '2rem',
 			screens: {
 				'2xl': '1280px',
 			},
@@ -42,7 +40,6 @@ module.exports = {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					// DEFAULT: 'oklch(var(--primary) / <alpha-value>)',
 					foreground: 'hsl(var(--primary-foreground))',
 				},
 				secondary: {
@@ -76,11 +73,8 @@ module.exports = {
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
-				heading: ['var(--font-meta)', ...fontFamily.sans],
-				display: ['var(--font-quador)', ...fontFamily.sans],
-				greek: ['var(--font-ceaser)', ...fontFamily.sans],
-				mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
+				sans: ['var(--gabarito)', ...fontFamily.sans],
+				heading: ['var(--gabarito)', ...fontFamily.sans],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -97,15 +91,17 @@ module.exports = {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 			},
 			typography: (theme: any) => ({
+				invert: {
+					css: {
+						a: {
+							color: 'hsl(226 70% 65%)',
+						},
+					},
+				},
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),
-						p: { fontWeight: 300 },
-						'h1, h2, h3, h4': {
-							fontWeight: 700,
-							color: theme('colors.muted.foreground'),
-						},
-						'li, strong': {
+						'li, strong, h1, h2, h3, h4, h5, h6': {
 							color: theme('colors.foreground'),
 						},
 						a: {
@@ -143,4 +139,4 @@ module.exports = {
 		require('@designbycode/tailwindcss-text-stroke'),
 		require('tailwind-fluid-typography'),
 	],
-}
+})

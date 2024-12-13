@@ -11,7 +11,6 @@ import {
 	contentResourceTag as contentResourceTagTable,
 	contentResourceVersion as contentResourceVersionTable,
 	contributionTypes,
-	users,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -26,41 +25,79 @@ import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
-import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
-import Typesense from 'typesense'
 import { z } from 'zod'
 
 import 'server-only'
 
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
+import { sanityWriteClient } from '@/server/sanity-write-client'
+import { last } from 'lodash'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
+import {
+	ContentResource,
+	ContentResourceSchema,
+} from '@coursebuilder/core/schemas'
 
 import {
-	crreateEggheadLesson,
+	createEggheadLesson,
+	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
 	getEggheadUserProfile,
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
+import { SanityLessonDocumentSchema } from './sanity-content'
+import {
+	replaceSanityLessonResources,
+	updateSanityLesson,
+} from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense'
 
+export async function searchLessons(searchTerm: string) {
+	const { session } = await getServerAuthSession()
+	const userId = session?.user?.id
+
+	const lessons = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'post'),
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
+			or(
+				sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`}`,
+				sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.body')) LIKE ${`%${searchTerm.toLowerCase()}%`}`,
+			),
+		),
+		orderBy: [
+			// Sort by createdById matching current user (if logged in)
+			sql`CASE 
+				WHEN ${contentResource.createdById} = ${userId} THEN 0 
+				ELSE 1 
+			END`,
+			// Secondary sort by title match (prioritize title matches)
+			sql`CASE 
+				WHEN LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`} THEN 0 
+				ELSE 1 
+			END`,
+			// Then sort by title alphabetically
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
+		],
+	})
+
+	return ContentResourceSchema.array().parse(lessons)
+}
+
 export async function deletePost(id: string) {
+	console.log('deleting post', id)
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
+	const postData = await getPost(id)
 
-	const post = PostSchema.nullish().parse(
-		await db.query.contentResource.findFirst({
-			where: eq(contentResource.id, id),
-			with: {
-				resources: true,
-			},
-		}),
-	)
+	const post = PostSchema.nullish().parse(postData)
 
 	if (!post) {
 		throw new Error(`Post with id ${id} not found.`)
@@ -109,7 +146,11 @@ export async function getPost(slug: string): Promise<Post | null> {
 
 	const parsedPost = PostSchema.safeParse(postData)
 	if (!parsedPost.success) {
-		console.error('Error parsing post', parsedPost.error)
+		console.error(
+			'Error parsing post',
+			parsedPost.error,
+			JSON.stringify(postData),
+		)
 		return null
 	}
 
@@ -236,6 +277,8 @@ export async function updatePost(
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
+	console.log('updatePost', input)
+
 	const currentPost = await getPost(input.id)
 
 	if (!currentPost) {
@@ -316,11 +359,34 @@ export async function writeNewPostToDatabase(input: {
 	const videoResource =
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
 
-	const eggheadLessonId = await crreateEggheadLesson({
-		title: title,
-		slug: `${slugify(title)}~${postGuid}`,
-		instructorId: eggheadInstructorId,
-	})
+	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
+	const eggheadLessonId = TYPES_WITH_LESSONS.includes(input.newPost.postType)
+		? await createEggheadLesson({
+				title: title,
+				slug: `${slugify(title)}~${postGuid}`,
+				instructorId: eggheadInstructorId,
+				guid: postGuid,
+				...(videoResource?.muxPlaybackId && {
+					hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+				}),
+			})
+		: null
+
+	if (eggheadLessonId) {
+		const lesson = SanityLessonDocumentSchema.parse({
+			_id: `lesson-${eggheadLessonId}`,
+			_type: 'lesson',
+			title,
+			accessLevel: 'pro',
+			slug: {
+				_type: 'slug',
+				current: `${slugify(title)}~${postGuid}`,
+			},
+			railsLessonId: eggheadLessonId,
+		})
+
+		await sanityWriteClient.create(lesson)
+	}
 
 	await db
 		.insert(contentResource)
@@ -332,8 +398,10 @@ export async function writeNewPostToDatabase(input: {
 				title,
 				state: 'draft',
 				visibility: 'unlisted',
+				access: 'pro',
+				postType: input.newPost.postType,
 				slug: `${slugify(title)}~${postGuid}`,
-				eggheadLessonId,
+				...(eggheadLessonId ? { eggheadLessonId } : {}),
 			},
 		})
 		.catch((error) => {
@@ -342,6 +410,15 @@ export async function writeNewPostToDatabase(input: {
 		})
 
 	const post = await getPost(newPostId)
+
+	if (post && post.fields.eggheadLessonId) {
+		await updateSanityLesson(post.fields.eggheadLessonId, post)
+		await replaceSanityLessonResources({
+			post,
+			eggheadLessonId: post.fields.eggheadLessonId,
+			videoResourceId: videoResourceId,
+		})
+	}
 
 	await createNewPostVersion(post)
 
@@ -371,7 +448,7 @@ export async function writeNewPostToDatabase(input: {
 }
 
 export async function writePostUpdateToDatabase(input: {
-	currentPost: Post
+	currentPost?: Post
 	postUpdate: PostUpdate
 	action: PostAction
 	updatedById: string
@@ -393,31 +470,53 @@ export async function writePostUpdateToDatabase(input: {
 
 	let postSlug = updatePostSlug(currentPost, postUpdate.fields.title)
 
+	const postGuid = currentPost?.fields.slug.split('~')[1] || guid()
+
 	if (postUpdate.fields.title !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${splitSlug[1] || guid()}`
+		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${postGuid}`
 	}
 
 	const lessonState = determineEggheadLessonState(
 		action,
 		postUpdate.fields.state,
 	)
+
 	const lessonVisibilityState = determineEggheadVisibilityState(
 		postUpdate.fields.visibility,
 		postUpdate.fields.state,
 	)
+
+	const access = determineEggheadAccess(postUpdate?.fields?.access)
 
 	const duration = await getVideoDuration(currentPost.resources)
 	const timeToRead = Math.floor(
 		readingTime(currentPost.fields.body ?? '').time / 1000,
 	)
 
+	const videoResourceId =
+		postUpdate.videoResourceId ??
+		currentPost.resources?.find(
+			(resource) => resource.resource.type === 'videoResource',
+		)?.resourceId
+
+	const videoResource = videoResourceId
+		? await courseBuilderAdapter.getVideoResource(videoResourceId)
+		: null
+
 	if (currentPost.fields.eggheadLessonId) {
 		await updateEggheadLesson({
+			title: postUpdate.fields.title,
+			slug: postSlug, // probably bypassing friendly id here, does it matter?
+			guid: postGuid,
+			body: postUpdate.fields.body ?? '',
 			eggheadLessonId: currentPost.fields.eggheadLessonId,
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
+			access,
 			duration: duration > 0 ? duration : timeToRead,
+			...(videoResource?.muxPlaybackId && {
+				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+			}),
 		})
 	}
 
@@ -436,7 +535,15 @@ export async function writePostUpdateToDatabase(input: {
 		throw new Error(`Post with id ${currentPost.id} not found.`)
 	}
 
+	await updateSanityLesson(currentPost.fields.eggheadLessonId, updatedPost)
+	await replaceSanityLessonResources({
+		post: updatedPost,
+		eggheadLessonId: currentPost.fields.eggheadLessonId,
+		videoResourceId: videoResourceId,
+	})
+
 	const newContentHash = generateContentHash(updatedPost)
+
 	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
 
 	if (newContentHash !== currentContentHash) {
@@ -449,14 +556,7 @@ export async function writePostUpdateToDatabase(input: {
 }
 
 export async function deletePostFromDatabase(id: string) {
-	const post = PostSchema.nullish().parse(
-		await db.query.contentResource.findFirst({
-			where: eq(contentResource.id, id),
-			with: {
-				resources: true,
-			},
-		}),
-	)
+	const post = PostSchema.nullish().parse(await getPost(id))
 
 	if (!post) {
 		throw new Error(`Post with id ${id} not found.`)
@@ -542,4 +642,143 @@ export async function getVideoDuration(
 		return muxAsset?.duration ? Math.floor(muxAsset.duration) : 0
 	}
 	return 0
+}
+
+export const addResourceToResource = async ({
+	resource,
+	resourceId,
+}: {
+	resource: ContentResource
+	resourceId: string
+}) => {
+	const parentResource = await db.query.contentResource.findFirst({
+		where: like(contentResource.id, `%${last(resourceId.split('-'))}%`),
+		with: {
+			resources: true,
+		},
+	})
+
+	if (!parentResource) {
+		throw new Error(`Workshop with id ${resourceId} not found`)
+	}
+	await db.insert(contentResourceResource).values({
+		resourceOfId: parentResource.id,
+		resourceId: resource.id,
+		position: parentResource.resources.length,
+	})
+
+	const resourceResource = db.query.contentResourceResource.findFirst({
+		where: and(
+			eq(contentResourceResource.resourceOfId, parentResource.id),
+			eq(contentResourceResource.resourceId, resource.id),
+		),
+		with: {
+			resource: true,
+		},
+	})
+
+	revalidateTag('posts')
+
+	return resourceResource
+}
+
+export const updateResourcePosition = async ({
+	currentParentResourceId,
+	parentResourceId,
+	resourceId,
+	position,
+}: {
+	currentParentResourceId: string
+	parentResourceId: string
+	resourceId: string
+	position: number
+}) => {
+	const result = await db
+		.update(contentResourceResource)
+		.set({ position, resourceOfId: parentResourceId })
+		.where(
+			and(
+				eq(contentResourceResource.resourceOfId, currentParentResourceId),
+				eq(contentResourceResource.resourceId, resourceId),
+			),
+		)
+
+	revalidateTag('posts')
+
+	return result
+}
+
+type positionInputIten = {
+	currentParentResourceId: string
+	parentResourceId: string
+	resourceId: string
+	position: number
+	children?: positionInputIten[]
+}
+
+export const updateResourcePositions = async (input: positionInputIten[]) => {
+	const result = await db.transaction(async (trx) => {
+		for (const {
+			currentParentResourceId,
+			parentResourceId,
+			resourceId,
+			position,
+			children,
+		} of input) {
+			await trx
+				.update(contentResourceResource)
+				.set({ position, resourceOfId: parentResourceId })
+				.where(
+					and(
+						eq(contentResourceResource.resourceOfId, currentParentResourceId),
+						eq(contentResourceResource.resourceId, resourceId),
+					),
+				)
+			for (const child of children || []) {
+				await trx
+					.update(contentResourceResource)
+					.set({
+						position: child.position,
+						resourceOfId: child.parentResourceId,
+					})
+					.where(
+						and(
+							eq(
+								contentResourceResource.resourceOfId,
+								child.currentParentResourceId,
+							),
+							eq(contentResourceResource.resourceId, child.resourceId),
+						),
+					)
+			}
+		}
+	})
+
+	return result
+}
+
+export async function removeSection(
+	sectionId: string,
+	pathToRevalidate: string,
+) {
+	await db.delete(contentResource).where(eq(contentResource.id, sectionId))
+
+	revalidatePath(pathToRevalidate)
+	return await db
+		.delete(contentResourceResource)
+		.where(eq(contentResourceResource.resourceId, sectionId))
+}
+
+export async function getAllPostIds() {
+	return await db.query.contentResource
+		.findMany({
+			where: and(
+				eq(contentResource.type, 'post'),
+				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
+			),
+			columns: {
+				id: true,
+			},
+		})
+		.then((posts) => posts.map((post) => post.id))
 }

@@ -1,10 +1,16 @@
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { users } from '@/db/schema'
+import { EggheadApiError } from '@/errors/egghead-api-error'
+import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
+import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
-import { PostAction, PostState, PostVisibility } from './posts'
+import { PostAccess, PostAction, PostState, PostVisibility } from './posts'
 import { getPost } from './posts-query'
+
+import 'server-only'
 
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
@@ -49,8 +55,7 @@ export async function getEggheadUserProfile(userId: string) {
 		},
 	}).then(async (res) => {
 		if (!res.ok) {
-			const errorText = await res.text()
-			throw new Error('api-error')
+			throw new EggheadApiError(res.statusText, res.status)
 		}
 		return await res.json()
 	})
@@ -58,7 +63,7 @@ export async function getEggheadUserProfile(userId: string) {
 	return profile
 }
 
-const EGGHEAD_LESSON_TYPE = 'post'
+const EGGHEAD_LESSON_TYPE = 'lesson'
 const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
 export async function getEggheadLesson(eggheadLessonId: number) {
@@ -69,47 +74,117 @@ export async function getEggheadLesson(eggheadLessonId: number) {
 	return lesson
 }
 
-export async function crreateEggheadLesson(input: {
+export async function createEggheadLesson(input: {
 	title: string
 	slug: string
+	guid: string
 	instructorId: string | number
+	hlsUrl?: string
 }) {
-	const { title, slug, instructorId } = input
-	const eggheadLessonResult = await eggheadPgQuery(
-		`INSERT INTO lessons (title, instructor_id, slug, resource_type, state,
-			created_at, updated_at, visibility_state)
-		VALUES ($1, $2, $3, $4, $5,NOW(), NOW(), $6)
-		RETURNING id`,
-		[
-			title,
-			instructorId,
-			slug,
-			EGGHEAD_LESSON_TYPE,
-			EGGHEAD_INITIAL_LESSON_STATE,
-			'hidden',
-		],
-	)
+	const { title, slug, guid, instructorId, hlsUrl = null } = input
+
+	const columns = [
+		'title',
+		'instructor_id',
+		'slug',
+		'resource_type',
+		'state',
+		'created_at',
+		'updated_at',
+		'visibility_state',
+		'guid',
+		'is_pro_content',
+		'free_forever',
+		...(hlsUrl ? ['current_video_hls_url'] : []),
+	]
+
+	const values = [
+		title,
+		instructorId,
+		slug,
+		EGGHEAD_LESSON_TYPE,
+		EGGHEAD_INITIAL_LESSON_STATE,
+		new Date(), // created_at
+		new Date(), // updated_at
+		'hidden',
+		guid,
+		'true',
+		'false',
+		...(hlsUrl ? [hlsUrl] : []),
+	]
+
+	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+
+	const query = `
+		INSERT INTO lessons (${columns.join(', ')})
+		VALUES (${placeholders})
+		RETURNING id
+	`
+
+	const eggheadLessonResult = await eggheadPgQuery(query, values)
 
 	const eggheadLessonId = eggheadLessonResult.rows[0].id
+
+	await inngest.send({
+		name: EGGHEAD_LESSON_CREATED_EVENT,
+		data: {
+			id: eggheadLessonId,
+		},
+	})
 
 	return eggheadLessonId
 }
 
 export async function updateEggheadLesson(input: {
 	eggheadLessonId: number
+	title: string
+	slug: string
+	guid: string
 	state: string
 	visibilityState: string
+	access: boolean
 	duration: number
+	hlsUrl?: string
+	body?: string
 }) {
-	const { eggheadLessonId, state, visibilityState, duration } = input
+	const {
+		eggheadLessonId,
+		state,
+		visibilityState,
+		access,
+		duration,
+		hlsUrl = null,
+		title,
+		slug,
+		guid,
+		body = '',
+	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
 			state = $1,
 			duration = $2,
 			updated_at = NOW(),
-			visibility_state = $3
-		WHERE id = $4`,
-		[state, Math.floor(duration), visibilityState, eggheadLessonId],
+			visibility_state = $3,
+			current_video_hls_url = $4,
+			title = $5,
+			slug = $6,
+			guid = $7,
+			summary = $8,
+      is_pro_content = $10,
+      free_forever = NOT $10
+		WHERE id = $9`,
+		[
+			state,
+			Math.floor(duration),
+			visibilityState,
+			hlsUrl,
+			title,
+			slug,
+			guid,
+			body,
+			eggheadLessonId,
+			access,
+		],
 	)
 }
 
@@ -131,6 +206,10 @@ export function determineEggheadLessonState(
 					? 'retired'
 					: 'approved'
 	}
+}
+
+export function determineEggheadAccess(access: PostAccess) {
+	return access === 'pro' ? true : false
 }
 
 export function determineEggheadVisibilityState(
@@ -174,3 +253,20 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 	}
 	Boolean(query) && (await eggheadPgQuery(query))
 }
+
+export const eggheadLessonSchema = z.object({
+	id: z.number(),
+	title: z.string(),
+	slug: z.string(),
+	summary: z.string().nullish(),
+	topic_list: z.array(z.string()),
+	free_forever: z.boolean(),
+	is_pro: z.boolean(),
+	body: z.string().nullish(),
+	state: z.string(),
+	instructor: z.object({
+		id: z.number(),
+	}),
+})
+
+export type EggheadLesson = z.infer<typeof eggheadLessonSchema>

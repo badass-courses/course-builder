@@ -18,7 +18,7 @@ import { LogoMark } from '../logo'
 import { NavLinkItem } from './nav-link-item'
 import { User } from './user'
 
-const Navigation = () => {
+const Navigation = ({ className }: { className?: string }) => {
 	const links = useNavLinks()
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
@@ -28,7 +28,9 @@ const Navigation = () => {
 	const { setIsFeedbackDialogOpen } = useFeedback()
 
 	const isLessonRoute = params.lesson && params.module
-	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
+	const isFullWidth = Boolean(
+		isEditRoute || isLessonRoute || pathname.includes('/admin'),
+	)
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
 	// useLiveEventToastNotifier()
@@ -46,21 +48,21 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
+				'relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between bg-transparent print:hidden',
+				className,
 				{
-					'sticky top-0': !params.lesson,
+					// 'sticky top-0': !params.lesson,
+					'border-b': isFullWidth,
 				},
 			)}
 		>
 			<div
-				className={cn(
-					'flex w-full items-stretch justify-between px-3 sm:px-5',
-					{
-						container: !isEditRoute,
-					},
-				)}
+				className={cn('flex w-full items-stretch justify-between', {
+					'sm:container': !isFullWidth,
+					'px-5': isFullWidth,
+				})}
 			>
-				<div className="flex items-stretch">
+				<div className="flex items-stretch pl-3 sm:pl-0">
 					<span
 						onContextMenu={(e) => {
 							e.preventDefault()
@@ -72,10 +74,7 @@ const Navigation = () => {
 							href="/"
 							className="font-heading flex h-[var(--nav-height)] w-full items-center justify-center gap-2 pr-4 text-lg font-semibold leading-none transition"
 						>
-							<LogoMark className="w-8" />
-							<span className="text-muted-foreground text-xl font-bold !leading-none ">
-								{config.defaultTitle}
-							</span>
+							<LogoMark className="w-16" />
 						</Link>
 					</span>
 					<hr

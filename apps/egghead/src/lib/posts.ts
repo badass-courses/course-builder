@@ -5,6 +5,8 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
+
 export const PostActionSchema = z.union([
 	z.literal('publish'),
 	z.literal('unpublish'),
@@ -31,6 +33,10 @@ export const PostVisibilitySchema = z.union([
 
 export type PostVisibility = z.infer<typeof PostVisibilitySchema>
 
+export const PostAccessSchema = z.union([z.literal('free'), z.literal('pro')])
+
+export type PostAccess = z.infer<typeof PostAccessSchema>
+
 export const PostTypeSchema = z.union([
 	z.literal('article'),
 	z.literal('lesson'),
@@ -50,6 +56,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			body: z.string().nullable().optional(),
 			state: PostStateSchema.default('draft'),
 			visibility: PostVisibilitySchema.default('public'),
+			access: PostAccessSchema.default('pro'),
 			eggheadLessonId: z.coerce.number().nullish(),
 			slug: z.string(),
 			description: z.string().nullish(),
@@ -65,6 +72,7 @@ export type Post = z.infer<typeof PostSchema>
 
 export const NewPostSchema = z.object({
 	title: z.string().min(2).max(90),
+	postType: PostTypeSchema.default('lesson'),
 	videoResourceId: z.string().min(4, 'Please upload a video').nullish(),
 })
 
@@ -76,9 +84,12 @@ export const PostUpdateSchema = z.object({
 		title: z.string().min(2).max(90),
 		postType: PostTypeSchema.optional().default('lesson'),
 		body: z.string().optional().nullable(),
+		description: z.string().optional().nullable(),
 		visibility: PostVisibilitySchema.optional().default('public'),
+		access: PostAccessSchema.optional().default('pro'),
 		state: PostStateSchema.optional().default('draft'),
 	}),
+	videoResourceId: z.string().optional().nullable(),
 })
 
 export type PostUpdate = z.infer<typeof PostUpdateSchema>

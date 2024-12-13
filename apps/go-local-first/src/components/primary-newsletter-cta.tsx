@@ -50,21 +50,16 @@ export const PrimaryNewsletterCta: React.FC<
 			data-theme="elysium"
 			id={id}
 			aria-label="Newsletter sign-up"
-			className={cn(
-				'border-border/50 relative flex flex-col items-center overflow-x-hidden border-b pb-[180px] sm:pb-[450px]',
-				className,
-			)}
+			className={cn('relative flex flex-col items-center', className)}
 		>
 			{children ? (
 				children
 			) : (
-				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center px-5 pb-10">
-					<h2 className="font-heading fluid-3xl text-muted-foreground text-center font-extrabold">
+				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center pb-10">
+					<h2 className="font-heading fluid-2xl text-center font-semibold ">
 						{title}
 					</h2>
-					<h3 className="fluid-lg text-secondary pt-8 text-center font-sans font-light">
-						{byline}
-					</h3>
+					<h3 className="fluid-lg pt-4 text-center opacity-90">{byline}</h3>
 				</div>
 			)}
 			<SubscribeToConvertkitForm
@@ -79,14 +74,6 @@ export const PrimaryNewsletterCta: React.FC<
 				<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
 				Unsubscribe at any time.
 			</p>
-			<Image
-				src={require('../../public/assets/mountain.jpg')}
-				className="absolute bottom-0 block origin-bottom scale-[2] sm:hidden"
-				aria-hidden="true"
-				quality={100}
-				loading="eager"
-				alt=""
-			/>
 		</section>
 	)
 }

@@ -34,7 +34,8 @@
 		"**/*.cjs",
 		"**/*.mjs",
 		".next/types/**/*.ts",
-		"./node_modules/y-codemirror.next/dist/src/index.d.ts"
+		"./node_modules/y-codemirror.next/dist/src/index.d.ts",
+		"tailwind.config.mjs"
 	],
 	"exclude": ["node_modules"]
 }

@@ -92,7 +92,7 @@ const Instructor = ({ className }: { className?: string }) => {
 			)}
 		>
 			<Image
-				src={'/matt-pocock.jpg'}
+				src={'/nik-graf.jpeg'}
 				alt={config.author}
 				width={200}
 				height={200}

@@ -6,6 +6,7 @@ import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Post, PostSchema } from '@/lib/posts'
+import { api } from '@/trpc/react'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -30,19 +31,36 @@ import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import { NewLessonVideoForm } from '../../_components/new-lesson-video-form'
 import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResourceLoader: Promise<VideoResource | null>
+	videoResourceId: string | null | undefined
 	post: Post
-}> = ({ form, videoResourceLoader, post }) => {
+}> = ({
+	form,
+	videoResourceLoader,
+	post,
+	videoResourceId: initialVideoResourceId,
+}) => {
 	const router = useRouter()
-	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(post.resources?.[0]?.resource.id)
+	>(initialVideoResourceId)
+
+	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
+		videoResourceId: videoResourceId,
+	})
+
+	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
+		'loading' | 'finalizing upload'
+	>('loading')
+
+	const [replacingVideo, setReplacingVideo] = React.useState(false)
+
 	const [transcript, setTranscript] = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
@@ -89,11 +107,64 @@ export const PostMetadataFormFields: React.FC<{
 							</>
 						}
 					>
-						<PostPlayer videoResource={videoResource} />
-
-						<div className="text-muted-foreground px-5 text-xs">
-							video is {videoResource?.state}
-						</div>
+						{videoResourceId ? (
+							replacingVideo ? (
+								<div>
+									<NewLessonVideoForm
+										parentResourceId={post.id}
+										onVideoUploadCompleted={(videoResourceId) => {
+											setReplacingVideo(false)
+											setVideoUploadStatus('finalizing upload')
+											setVideoResourceId(videoResourceId)
+										}}
+										onVideoResourceCreated={(videoResourceId) =>
+											setVideoResourceId(videoResourceId)
+										}
+									/>
+									<Button
+										variant="ghost"
+										type="button"
+										onClick={() => setReplacingVideo(false)}
+									>
+										Cancel Replace Video
+									</Button>
+								</div>
+							) : (
+								<>
+									{videoResource && videoResource.state === 'ready' ? (
+										<div>
+											<PostPlayer videoResource={videoResource} />
+											<Button
+												variant="ghost"
+												type="button"
+												onClick={() => setReplacingVideo(true)}
+											>
+												Replace Video
+											</Button>
+										</div>
+									) : videoResource ? (
+										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+											video is {videoResource.state}
+										</div>
+									) : (
+										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
+											video is {videoUploadStatus}
+										</div>
+									)}
+								</>
+							)
+						) : (
+							<NewLessonVideoForm
+								parentResourceId={post.id}
+								onVideoUploadCompleted={(videoResourceId) => {
+									setVideoUploadStatus('finalizing upload')
+									setVideoResourceId(videoResourceId)
+								}}
+								onVideoResourceCreated={(videoResourceId) =>
+									setVideoResourceId(videoResourceId)
+								}
+							/>
+						)}
 					</Suspense>
 				) : (
 					<div className="px-5">
@@ -120,6 +191,18 @@ export const PostMetadataFormFields: React.FC<{
 							A title should summarize the post and explain what it is about
 							clearly.
 						</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.slug"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormDescription>Short with keywords is best.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
 					</FormItem>

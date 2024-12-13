@@ -6,12 +6,12 @@ import { pollVideoResource } from '@/utils/poll-video-resource'
 import { PostUploader } from '../posts/_components/post-uploader'
 
 export function NewLessonVideoForm({
-	lessonId,
+	parentResourceId,
 	onVideoResourceCreated,
 	onVideoUploadCompleted,
 	moduleSlugOrId,
 }: {
-	lessonId: string
+	parentResourceId: string
 	onVideoResourceCreated: (videoResourceId: string) => void
 	onVideoUploadCompleted: (videoResourceId: string) => void
 	moduleSlugOrId?: string
@@ -30,7 +30,7 @@ export function NewLessonVideoForm({
 	return (
 		<PostUploader
 			setVideoResourceId={handleSetVideoResourceId}
-			parentResourceId={lessonId}
+			parentResourceId={parentResourceId}
 		/>
 	)
 }

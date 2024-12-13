@@ -11,8 +11,6 @@ export type EventVideoTranscriptReady = {
 
 export const VideoTranscriptReadyEventSchema = z.object({
 	videoResourceId: z.string().nullable(),
-	moduleSlug: z.string().nullable(),
-	results: DeepgramResultsSchema,
 })
 
 export type VideoTranscriptReadyEvent = z.infer<
