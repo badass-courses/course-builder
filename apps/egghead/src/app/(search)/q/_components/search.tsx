@@ -47,7 +47,6 @@ export default function Search() {
 					if (refinementList && refinementList.length > 0) {
 						setState(refinementList)
 					} else {
-						console.log(`clearing ${attribute}`)
 						setState(null)
 					}
 				}

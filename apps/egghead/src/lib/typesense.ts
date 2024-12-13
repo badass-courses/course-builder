@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { getEggheadLesson } from './egghead'
 import { Post, PostAction } from './posts'
+import { getPostTags } from './posts-query'
 
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 	let client = new Typesense.Client({
@@ -19,6 +20,8 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 	const shouldIndex =
 		post.fields.state === 'published' && post.fields.visibility === 'public'
+
+	const postTags = await getPostTags(post.id)
 
 	if (!shouldIndex) {
 		await client
@@ -43,6 +46,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			name: post.fields.title,
 			path: `/${post.fields.slug}`,
 			type: post.fields.postType,
+			tags: postTags,
 			...(lesson && {
 				instructor_name: lesson.instructor?.full_name,
 				instructor: lesson.instructor,

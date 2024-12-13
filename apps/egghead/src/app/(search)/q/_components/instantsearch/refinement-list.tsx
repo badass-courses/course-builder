@@ -76,8 +76,8 @@ export function RefinementList(
 						className="w-[200px] justify-between"
 					>
 						<span className="truncate">
-							{values.length > 0
-								? values
+							{queryParam.length
+								? queryParam
 										.map(
 											(value) =>
 												items.find((item) => item.value === value)?.label,
@@ -95,7 +95,7 @@ export function RefinementList(
 							<CommandEmpty>No {props.label} found.</CommandEmpty>
 							<CommandGroup>
 								{items.map((item) => {
-									const isSelected = values.includes(item.value)
+									const isSelected = queryParam.includes(item.value)
 
 									return (
 										<CommandItem
