@@ -15,18 +15,19 @@ import {
 import {
 	createSanityReference,
 	keyGenerator,
-	sanityCollaboratorDocumentSchema,
-	sanityLessonDocumentSchema,
-	sanityReferenceSchema,
+	SanityCollaboratorSchema,
+	SanityLessonDocumentSchema,
+	SanityReferenceSchema,
 	sanitySoftwareLibraryDocumentSchema,
-	sanityVersionedSoftwareLibraryObjectSchema,
-	sanityVideoResourceDocumentSchema,
+	SanityVideoResourceDocumentSchema,
+	SoftwareLibraryArrayObjectSchema,
 } from '@/lib/sanity-content'
 import type {
-	SanityCollaboratorDocument,
+	SanityCollaborator,
+	SanityCourse,
 	SanityReference,
 	SanitySoftwareLibraryDocument,
-	SanityVersionedSoftwareLibraryObject,
+	SoftwareLibraryArrayObject,
 } from '@/lib/sanity-content'
 import { sanityWriteClient } from '@/server/sanity-write-client'
 import { asc, eq, sql } from 'drizzle-orm'
@@ -42,7 +43,7 @@ export async function createSanityVideoResource(videoResource: VideoResource) {
 	const streamUrl =
 		muxPlaybackId && `https://stream.mux.com/${muxPlaybackId}.m3u8`
 
-	const body = sanityVideoResourceDocumentSchema.parse({
+	const body = SanityVideoResourceDocumentSchema.parse({
 		_type: 'videoResource',
 		filename: id,
 		muxAsset: {
@@ -224,9 +225,9 @@ export async function updateSanityLesson(
 	const softwareLibraries = await Promise.all(
 		eggheadLesson.topic_list.map(async (library: string) => {
 			console.log('process topic library', library)
-			return sanityVersionedSoftwareLibraryObjectSchema
-				.nullable()
-				.parse(await getSanitySoftwareLibrary(library))
+			return SoftwareLibraryArrayObjectSchema.nullable().parse(
+				await getSanitySoftwareLibrary(library),
+			)
 		}),
 	)
 
@@ -234,7 +235,7 @@ export async function updateSanityLesson(
 		eggheadLesson.instructor.id,
 	)
 
-	let collaborator = sanityReferenceSchema.nullable().parse(collaboratorData)
+	let collaborator = SanityReferenceSchema.nullable().parse(collaboratorData)
 
 	if (!collaborator) {
 		const user = await db.query.users.findFirst({
@@ -264,9 +265,9 @@ export async function updateSanityLesson(
 
 		await syncInstructorToSanity(eggheadUserProfile)
 
-		collaborator = sanityReferenceSchema
-			.nullable()
-			.parse(await getSanityCollaborator(eggheadLesson.instructor.id))
+		collaborator = SanityReferenceSchema.nullable().parse(
+			await getSanityCollaborator(eggheadLesson.instructor.id),
+		)
 
 		if (!collaborator) {
 			throw new Error(
@@ -299,7 +300,7 @@ export async function updateSanityLesson(
 export async function createSanityLesson(
 	eggheadLesson: EggheadLesson,
 	collaborator: SanityReference,
-	softwareLibraries: SanityVersionedSoftwareLibraryObject[],
+	softwareLibraries: SoftwareLibraryArrayObject[],
 ) {
 	const post = PostSchema.nullable().parse(
 		await db.query.contentResource.findFirst({
@@ -336,7 +337,7 @@ export async function createSanityLesson(
 		return updateSanityLesson(eggheadLesson.id, post)
 	}
 
-	const lesson = sanityLessonDocumentSchema.parse({
+	const lesson = SanityLessonDocumentSchema.parse({
 		_id: `lesson-${eggheadLesson.id}`,
 		_type: 'lesson',
 		title: eggheadLesson.title,
@@ -363,18 +364,17 @@ export async function createSanityLesson(
 
 export async function getSanityCollaborator(
 	instructorId: number,
-	role: SanityCollaboratorDocument['role'] = 'instructor',
+	role: SanityCollaborator['role'] = 'instructor',
 	returnReference = true,
 ) {
 	const collaboratorData = await sanityWriteClient.fetch(
 		`*[_type == "collaborator" && eggheadInstructorId == "${instructorId}" && role == "${role}"][0]`,
 	)
 
-	const collaborator = sanityCollaboratorDocumentSchema
-		.nullable()
-		.parse(collaboratorData)
+	const collaborator =
+		SanityCollaboratorSchema.nullable().parse(collaboratorData)
 
-	if (!collaborator) return null
+	if (!collaborator || !collaborator._id) return null
 
 	return returnReference
 		? createSanityReference(collaborator._id)
@@ -404,4 +404,11 @@ export async function getSanitySoftwareLibrary(
 			_ref: library._id,
 		},
 	}
+}
+
+export const createCourse = async (course: Partial<SanityCourse>) => {
+	return await sanityWriteClient.create({
+		_type: 'course',
+		...course,
+	})
 }
