@@ -517,6 +517,9 @@ export async function writePostUpdateToDatabase(input: {
 			...(videoResource?.muxPlaybackId && {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
 			}),
+			...(action === 'publish' && {
+				published_at: Date.now(),
+			}),
 		})
 	}
 
