@@ -1,7 +1,9 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
+import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
+import { Post } from '@/lib/posts'
 import { getPost, getPostTags } from '@/lib/posts-query'
 import { getAllEggheadTagsCached, getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -9,22 +11,11 @@ import { subject } from '@casl/ability'
 
 import { EditPostForm } from '../../_components/edit-post-form'
 
-function EditPostSkeleton() {
+function EditPostSkeleton({ title = '' }: { title: string }) {
 	return (
-		<div className="animate-pulse space-y-6 p-6">
-			<div className="h-8 w-3/4 rounded bg-gray-200" />
-			<div className="space-y-4">
-				<div className="h-40 rounded bg-gray-200" />
-				<div className="h-12 w-1/2 rounded bg-gray-200" />
-			</div>
-			<div className="space-y-2">
-				<div className="h-4 w-1/4 rounded bg-gray-200" />
-				<div className="h-10 rounded bg-gray-200" />
-			</div>
-			<div className="flex gap-2">
-				<div className="h-10 w-24 rounded bg-gray-200" />
-				<div className="h-10 w-24 rounded bg-gray-200" />
-			</div>
+		<div className="bg-background/80 fixed inset-0 flex h-full w-full flex-col items-center justify-center gap-5 backdrop-blur-sm">
+			<Spinner className="h-8 w-8" />
+			{title}
 		</div>
 	)
 }
@@ -62,7 +53,9 @@ export default async function PostPage(props: {
 
 	return (
 		<Layout>
-			<React.Suspense fallback={<EditPostSkeleton />}>
+			<React.Suspense
+			// fallback={<EditPostSkeleton title={post?.fields?.title} />}
+			>
 				<EditPostForm
 					key={post.id}
 					post={post}
