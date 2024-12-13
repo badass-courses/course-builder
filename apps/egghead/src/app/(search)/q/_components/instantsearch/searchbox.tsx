@@ -13,7 +13,7 @@ export const SearchBox = (props: SearchBoxProps) => {
 
 	return (
 		<Input
-			className="bg-background my-4"
+			className="bg-background my-4 text-base"
 			onChange={(event) => refine(event.currentTarget.value)}
 			defaultValue={queryParam || ''}
 			placeholder="Search..."

@@ -19,7 +19,7 @@ export function HitsPerPageSelect(props: UseHitsPerPageProps) {
 				refine(Number(value))
 			}}
 		>
-			<SelectTrigger className="bg-background w-2/3 lg:w-1/5">
+			<SelectTrigger className="text-muted-foreground bg-background text-base sm:w-2/3 lg:w-1/5">
 				<SelectValue placeholder="Results per Page" />
 			</SelectTrigger>
 			<SelectContent>

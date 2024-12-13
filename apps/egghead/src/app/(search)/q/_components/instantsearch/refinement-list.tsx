@@ -73,9 +73,13 @@ export function RefinementList(
 						variant="outline"
 						role="combobox"
 						aria-expanded={open}
-						className="w-[200px] justify-between"
+						className="w-full justify-between sm:w-[200px]"
 					>
-						<span className="truncate">
+						<span
+							className={cn('truncate text-base font-normal', {
+								'text-muted-foreground': !queryParam.length,
+							})}
+						>
 							{queryParam.length
 								? queryParam
 										.map(
@@ -85,7 +89,7 @@ export function RefinementList(
 										.join(', ')
 								: `${props.label}...`}
 						</span>
-						<ChevronsUpDown className="opacity-50" />
+						<ChevronsUpDown className="opacity-50" size={16} />
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className="w-[200px] p-0">

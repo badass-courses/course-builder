@@ -12,12 +12,12 @@ export default function ClearRefinements() {
 		<Button
 			variant="ghost"
 			disabled={!canClear}
-			className="flex items-center gap-2"
+			className="text-muted-foreground flex items-center gap-1 font-normal"
 			onClick={() => {
 				clear()
 			}}
 		>
-			<X size={24} /> Clear all filters
+			<X size={16} /> Clear all filters
 		</Button>
 	)
 }

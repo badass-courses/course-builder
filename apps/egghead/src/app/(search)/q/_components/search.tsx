@@ -78,7 +78,7 @@ export default function Search() {
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
 			<SearchBox />
-			<div className="mb-3 flex flex-wrap items-center gap-3">
+			<div className="mb-3 flex flex-col flex-wrap items-center gap-3 sm:flex-row">
 				<RefinementList
 					attribute="instructor_name"
 					queryKey="instructor"
