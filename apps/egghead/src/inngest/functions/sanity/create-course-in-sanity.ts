@@ -52,6 +52,9 @@ export const createCourseInSanity = inngest.createFunction(
 				railsCourseId: fields?.railsCourseId,
 				collaborators: [contributor],
 				searchIndexingState: 'hidden',
+				accessLevel: 'pro',
+				productionProcessState: 'new',
+				sharedId: post.id,
 			})
 
 			if (!coursePayload.success) {
