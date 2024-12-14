@@ -7,6 +7,7 @@ import {
 	checkoutSessionCompletedEvent,
 } from '../../schemas/stripe/checkout-session-completed'
 import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
+import { NEW_SUBSCRIPTION_CREATED_EVENT } from '../commerce/event-new-subscription-created'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
@@ -271,7 +272,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				throw new Error('merchantProduct is null')
 			}
 
-			const { subscription, merchantSubscription } = await step.run(
+			const { subscription } = await step.run(
 				'create a merchant subscription',
 				async () => {
 					const merchantSubscription = await db.createMerchantSubscription({
@@ -320,7 +321,20 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				})
 			})
 
-			console.log('subscriptionInfo', subscriptionInfo)
+			if (!subscription) {
+				throw new Error('subscription is null')
+			}
+
+			await step.sendEvent(NEW_SUBSCRIPTION_CREATED_EVENT, {
+				name: NEW_SUBSCRIPTION_CREATED_EVENT,
+				data: {
+					subscriptionId: subscription.id,
+					checkoutSessionId: stripeCheckoutSession.id,
+				},
+				user,
+			})
+
+			return { subscription, subscriptionInfo }
 		}
 	}
 

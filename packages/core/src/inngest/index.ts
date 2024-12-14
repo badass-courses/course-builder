@@ -8,6 +8,10 @@ import {
 	NewPurchaseCreated,
 } from './commerce/event-new-purchase-created'
 import {
+	NEW_SUBSCRIPTION_CREATED_EVENT,
+	NewSubscriptionCreated,
+} from './commerce/event-new-subscription-created'
+import {
 	PURCHASE_STATUS_UPDATED_EVENT,
 	PurchaseStatusUpdated,
 	updatePurchaseStatus,
@@ -56,6 +60,7 @@ export type CourseBuilderCoreEvents = {
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
 	[PURCHASE_STATUS_UPDATED_EVENT]: PurchaseStatusUpdated
 	[NEW_PURCHASE_CREATED_EVENT]: NewPurchaseCreated
+	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 }
 
 export const courseBuilderCoreFunctions = [
