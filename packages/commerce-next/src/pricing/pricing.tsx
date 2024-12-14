@@ -4,6 +4,7 @@ import { Slot } from '@radix-ui/react-slot'
 import * as Switch from '@radix-ui/react-switch'
 import pluralize from 'pluralize'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
+import { useForm } from 'react-hook-form'
 import Balancer from 'react-wrap-balancer'
 
 import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
@@ -72,7 +73,8 @@ const PricingProduct = ({
 		options: { cancelUrl },
 	} = usePricing()
 
-	console.log({ product })
+	const isMembership = product.type === 'membership'
+
 	return (
 		<form
 			className={cn('', className)}

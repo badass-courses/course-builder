@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { stripeSubscriptionSchema } from './subscription'
+import { stripeSubscriptionSchema } from '../../schemas/stripe/subscription'
 
 export const customerSubscriptionCreatedEvent = z.object({
 	id: z.string(),

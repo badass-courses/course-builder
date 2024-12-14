@@ -38,7 +38,7 @@ export const SanityProductSchema = z.object({
 		.nullable(),
 	productId: z.string().optional(),
 	body: z.nullable(z.string()).optional(),
-	type: z.enum(['live', 'self-paced']),
+	type: z.enum(['live', 'self-paced', 'membership']),
 	state: z.enum(['draft', 'active', 'unavailable', 'archived']),
 	modules: z.array(z.any()).optional(),
 	upgradableTo: z.array(z.any()).default([]),

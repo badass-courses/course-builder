@@ -225,6 +225,8 @@ export async function stripeCheckout({
 
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
+			console.log('user', user)
+
 			const upgradeFromPurchase = upgradeFromPurchaseId
 				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
@@ -244,6 +246,8 @@ export async function stripeCheckout({
 						config.paymentsAdapter,
 					)
 				: false
+
+			console.log('customerId', customerId)
 
 			const loadedProduct = await adapter.getProduct(productId)
 
@@ -448,7 +452,9 @@ export async function stripeCheckout({
 				success_url: successUrl,
 				cancel_url: cancelUrl,
 				...(isRecurring
-					? customerId && { customer: customerId }
+					? customerId
+						? { customer: customerId }
+						: user && { customer_email: user.email }
 					: customerId
 						? { customer: customerId }
 						: { customer_creation: 'always' }),
