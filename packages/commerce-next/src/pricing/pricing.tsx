@@ -71,6 +71,8 @@ const PricingProduct = ({
 
 		options: { cancelUrl },
 	} = usePricing()
+
+	console.log({ product })
 	return (
 		<form
 			className={cn('', className)}
