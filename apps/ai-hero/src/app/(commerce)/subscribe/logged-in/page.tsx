@@ -2,7 +2,7 @@ import { ParsedUrlQuery } from 'querystring'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
 import { z } from 'zod'
 
@@ -38,11 +38,38 @@ export default async function LoginPage({
 	const user = session?.user
 
 	if (user) {
-		const stripe = await stripeProvider.createCheckoutSession(
-			{ ...checkoutParams, userId: user?.id },
-			courseBuilderAdapter,
+		const memberships = await courseBuilderAdapter.getMembershipsForUser(
+			user.id,
 		)
-		return redirect(stripe.redirect)
+		let hasActiveSubscription = false
+		for (const membership of memberships) {
+			if (!membership.organizationId) continue
+			const organization = await courseBuilderAdapter.getOrganization(
+				membership.organizationId,
+			)
+			if (!organization) continue
+			const subscriptions = await db.query.subscription.findMany({
+				where: (subscription, { eq, and }) =>
+					and(
+						eq(subscription.organizationId, organization.id),
+						eq(subscription.status, 'active'),
+					),
+			})
+			if (subscriptions.length > 0) {
+				hasActiveSubscription = true
+				break
+			}
+		}
+
+		if (!hasActiveSubscription) {
+			const stripe = await stripeProvider.createCheckoutSession(
+				{ ...checkoutParams, userId: user?.id },
+				courseBuilderAdapter,
+			)
+			return redirect(stripe.redirect)
+		} else {
+			return redirect(`/subscribe/already-subscribed`)
+		}
 	}
 
 	return notFound()
