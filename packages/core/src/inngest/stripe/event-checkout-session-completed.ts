@@ -1,3 +1,4 @@
+import { PROVIDERS, ROLES } from 'src/constants'
 import { parseSubscriptionInfoFromCheckoutSession } from 'src/lib/pricing/stripe-subscription-utils'
 
 import { parsePurchaseInfoFromCheckoutSession } from '../../lib/pricing/stripe-purchase-utils'
@@ -62,7 +63,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			'load the merchant account',
 			async () => {
 				return await db.getMerchantAccount({
-					provider: 'stripe',
+					provider: PROVIDERS.STRIPE,
 				})
 			},
 		)
@@ -222,7 +223,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				await db.addRoleForMember({
 					organizationId: personalOrganization.id,
 					memberId: membership.id,
-					role: 'owner',
+					role: ROLES.OWNER,
 				})
 
 				return personalOrganization
@@ -317,7 +318,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				await db.addRoleForMember({
 					memberId: organizationMembership.id,
 					organizationId: organization.id,
-					role: 'learner',
+					role: ROLES.LEARNER,
 				})
 			})
 
