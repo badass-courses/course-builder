@@ -1,5 +1,35 @@
 import { z } from 'zod'
 
+export const ImageSchema = z.object({
+	_type: z.string().optional(),
+	label: z.string().optional(),
+	url: z.string().optional(),
+	_key: z.string().optional(),
+})
+export type Image = z.infer<typeof ImageSchema>
+
+export const SlugSchema = z.object({
+	current: z.string().optional(),
+	_type: z.string().optional(),
+})
+export type Slug = z.infer<typeof SlugSchema>
+
+export const SystemFieldsSchema = z.object({
+	_id: z.string().optional(),
+	_type: z.string().optional(),
+	_rev: z.string().optional(),
+	_createdAt: z.coerce.date().optional(),
+	_updatedAt: z.coerce.date().optional(),
+})
+export type SystemFields = z.infer<typeof SystemFieldsSchema>
+
+export const ReferenceSchema = z.object({
+	_ref: z.string().optional(),
+	_type: z.string().optional(),
+	_key: z.string().optional(),
+})
+export type Reference = z.infer<typeof ReferenceSchema>
+
 export const sanitySoftwareLibraryDocumentSchema = z.object({
 	_type: z.literal('software-library'),
 	_id: z.string(),
@@ -12,37 +42,22 @@ export type SanitySoftwareLibraryDocument = z.infer<
 	typeof sanitySoftwareLibraryDocumentSchema
 >
 
-export const sanityVersionedSoftwareLibraryObjectSchema = z.object({
-	_type: z.literal('versioned-software-library'),
-	_key: z.string(),
-	library: z.object({
-		_type: z.literal('reference'),
-		_ref: z.string(),
-	}),
-})
-
-export type SanityVersionedSoftwareLibraryObject = z.infer<
-	typeof sanityVersionedSoftwareLibraryObjectSchema
->
-
-export const sanityCollaboratorDocumentSchema = z.object({
-	_type: z.literal('collaborator'),
-	role: z.enum(['instructor', 'staff', 'illustrator']),
-	_id: z.string(),
-	eggheadInstructorId: z.string(),
-})
-
-export type SanityCollaboratorDocument = z.infer<
-	typeof sanityCollaboratorDocumentSchema
->
-
-export const sanityReferenceSchema = z.object({
+export const SanityReferenceSchema = z.object({
 	_type: z.literal('reference'),
 	_key: z.string(),
 	_ref: z.string(),
 })
 
-export type SanityReference = z.infer<typeof sanityReferenceSchema>
+export const SoftwareLibraryArrayObjectSchema = z.object({
+	_type: z.string().optional(),
+	_key: z.string().optional(),
+	library: ReferenceSchema.optional(),
+})
+export type SoftwareLibraryArrayObject = z.infer<
+	typeof SoftwareLibraryArrayObjectSchema
+>
+
+export type SanityReference = z.infer<typeof SanityReferenceSchema>
 
 export function createSanityReference(documentId: string): SanityReference {
 	return {
@@ -52,7 +67,7 @@ export function createSanityReference(documentId: string): SanityReference {
 	}
 }
 
-export const sanityVideoResourceDocumentSchema = z.object({
+export const SanityVideoResourceDocumentSchema = z.object({
 	_createdAt: z.string().datetime().nullish(),
 	_id: z.string().nullish(),
 	_rev: z.string().nullish(),
@@ -78,10 +93,10 @@ export const sanityVideoResourceDocumentSchema = z.object({
 })
 
 export type SanityVideoResourceDocument = z.infer<
-	typeof sanityVideoResourceDocumentSchema
+	typeof SanityVideoResourceDocumentSchema
 >
 
-export const sanityLessonDocumentSchema = z.object({
+export const SanityLessonDocumentSchema = z.object({
 	_type: z.literal('lesson'),
 	_id: z.string().nullish(),
 	title: z.string(),
@@ -91,18 +106,51 @@ export const sanityLessonDocumentSchema = z.object({
 	}),
 	description: z.string().nullish(),
 	railsLessonId: z.string().or(z.number()).nullish(),
-	softwareLibraries: z
-		.array(sanityVersionedSoftwareLibraryObjectSchema)
-		.nullish(),
-	collaborators: z.array(sanityReferenceSchema).nullish(),
+	softwareLibraries: z.array(SoftwareLibraryArrayObjectSchema).nullish(),
+	collaborators: z.array(SanityReferenceSchema).nullish(),
 	status: z.string().nullish(),
 	accessLevel: z.enum(['free', 'pro']).nullish(),
 })
 
-export type SanityLessonDocument = z.infer<typeof sanityLessonDocumentSchema>
+export type SanityLessonDocument = z.infer<typeof SanityLessonDocumentSchema>
 
 export const keyGenerator = () => {
 	return [...Array(12)]
 		.map(() => Math.floor(Math.random() * 16).toString(16))
 		.join('')
 }
+
+export const SanityCollaboratorSchema = z.object({
+	...SystemFieldsSchema.shape,
+	person: ReferenceSchema.optional(),
+	title: z.string().optional(),
+	eggheadInstructorId: z.string().optional(),
+	role: z.string().optional(),
+	department: z.string().optional(),
+})
+export type SanityCollaborator = z.infer<typeof SanityCollaboratorSchema>
+
+export const SanityCourseSchema = z.object({
+	...SystemFieldsSchema.shape,
+	title: z.string().optional(),
+	slug: SlugSchema.optional(),
+	summary: z.string().optional(),
+	description: z.string().optional(),
+	image: z.string().optional(),
+	images: z.array(ImageSchema).optional(),
+	imageIllustrator: ReferenceSchema.optional(),
+	accessLevel: z.string().optional(),
+	searchIndexingState: z.string().optional(),
+	productionProcessState: z.string().optional(),
+	railsCourseId: z.number().optional(),
+	sharedId: z.string().optional(),
+	softwareLibraries: z.array(SoftwareLibraryArrayObjectSchema).optional(),
+	collaborators: z
+		.array(ReferenceSchema)
+		.optional()
+		.or(SanityCollaboratorSchema)
+		.optional(),
+	resources: z.array(ReferenceSchema).optional(),
+})
+
+export type SanityCourse = z.infer<typeof SanityCourseSchema>

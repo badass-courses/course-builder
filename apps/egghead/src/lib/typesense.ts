@@ -1,69 +1,31 @@
-import Typesense from 'typesense'
-import { z } from 'zod'
+import * as z from 'zod'
 
-import { getEggheadLesson } from './egghead'
-import { Post, PostAction } from './posts'
+export const InstructorSchema = z.object({
+	id: z.number().optional(),
+	name: z.string().optional(),
+	first_name: z.string().optional(),
+	last_name: z.string().optional(),
+	full_name: z.string().optional(),
+	avatar_url: z.string().url().optional(),
+})
 
-export async function upsertPostToTypeSense(post: Post, action: PostAction) {
-	let client = new Typesense.Client({
-		nodes: [
-			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-				port: 443,
-				protocol: 'https',
-			},
-		],
-		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-		connectionTimeoutSeconds: 2,
-	})
-
-	const shouldIndex =
-		post.fields.state === 'published' && post.fields.visibility === 'public'
-
-	if (!shouldIndex) {
-		await client
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents(String(post.fields.eggheadLessonId))
-			.delete()
-			.catch((err) => {
-				console.error(err)
-			})
-	} else {
-		if (!post.fields.eggheadLessonId) {
-			return
-		}
-		const lesson = await getEggheadLesson(post.fields.eggheadLessonId)
-		const resource: TypesenseResource = {
-			id: `${post.fields.eggheadLessonId}`,
-			externalId: post.id,
-			title: post.fields.title,
-			slug: post.fields.slug,
-			summary: post.fields.description,
-			description: post.fields.body,
-			name: post.fields.title,
-			path: `/${post.fields.slug}`,
-			type: post.fields.postType,
-			...(lesson && {
-				instructor_name: lesson.instructor?.full_name,
-				instructor: lesson.instructor,
-				image: lesson.image_480_url,
-			}),
-		}
-		await client
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents()
-			.upsert({
-				...resource,
-				...(action === 'publish' && {
-					published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-				}),
-				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-			})
-			.catch((err) => {
-				console.error(err)
-			})
-	}
-}
+export const TypesensePostSchema = z.object({
+	type: z.string().optional(),
+	id: z.string().optional(),
+	name: z.string().optional(),
+	title: z.string().optional(),
+	slug: z.string().optional(),
+	externalId: z.string().optional(),
+	description: z.string().optional(),
+	summary: z.string().optional(),
+	image: z.string().optional(),
+	_tags: z.array(z.string()).optional(),
+	instructor: InstructorSchema.optional(),
+	instructor_name: z.string().optional(),
+	instructor_url: z.string().url().optional(),
+	path: z.string().optional(),
+	published_at_timestamp: z.number().nullish(),
+})
 
 const TypesenseResourceSchema = z.object({
 	id: z.string(),
@@ -85,8 +47,6 @@ const TypesenseResourceSchema = z.object({
 	updated_at_timestamp: z.number(),
 })
 
-export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>
-
 export const attributeLabelMap: {
 	[K in keyof z.infer<typeof TypesenseResourceSchema>]: string
 } = {
@@ -106,3 +66,7 @@ export const attributeLabelMap: {
 	updated_at_timestamp: 'Updated At',
 	slug: 'Slug',
 } as const
+
+export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>
+export type TypesensePost = z.infer<typeof TypesensePostSchema>
+

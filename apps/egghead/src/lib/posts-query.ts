@@ -51,13 +51,13 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
-import { sanityLessonDocumentSchema } from './sanity-content'
+import { SanityLessonDocumentSchema } from './sanity-content'
 import {
 	replaceSanityLessonResources,
 	updateSanityLesson,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
-import { upsertPostToTypeSense } from './typesense'
+import { upsertPostToTypeSense } from './typesense-query'
 
 export async function searchLessons(searchTerm: string) {
 	const { session } = await getServerAuthSession()
@@ -373,7 +373,7 @@ export async function writeNewPostToDatabase(input: {
 		: null
 
 	if (eggheadLessonId) {
-		const lesson = sanityLessonDocumentSchema.parse({
+		const lesson = SanityLessonDocumentSchema.parse({
 			_id: `lesson-${eggheadLessonId}`,
 			_type: 'lesson',
 			title,
@@ -516,6 +516,9 @@ export async function writePostUpdateToDatabase(input: {
 			duration: duration > 0 ? duration : timeToRead,
 			...(videoResource?.muxPlaybackId && {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+			}),
+			...(action === 'publish' && {
+				published_at: new Date().toISOString(),
 			}),
 		})
 	}
