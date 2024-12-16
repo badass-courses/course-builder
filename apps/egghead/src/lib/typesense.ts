@@ -69,4 +69,3 @@ export const attributeLabelMap: {
 
 export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>
 export type TypesensePost = z.infer<typeof TypesensePostSchema>
-
