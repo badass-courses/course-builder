@@ -3,6 +3,7 @@ import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
+import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Post, PostSchema } from '@/lib/posts'
@@ -97,84 +98,95 @@ export const PostMetadataFormFields: React.FC<{
 	return (
 		<>
 			<div>
-				{videoResourceId && videoResource ? (
-					<Suspense
-						fallback={
-							<>
-								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-									video is loading
-								</div>
-							</>
-						}
-					>
-						{videoResourceId ? (
-							replacingVideo ? (
-								<div>
-									<NewLessonVideoForm
-										parentResourceId={post.id}
-										onVideoUploadCompleted={(videoResourceId) => {
-											setReplacingVideo(false)
-											setVideoUploadStatus('finalizing upload')
-											setVideoResourceId(videoResourceId)
-										}}
-										onVideoResourceCreated={(videoResourceId) =>
-											setVideoResourceId(videoResourceId)
-										}
-									/>
-									<Button
-										variant="ghost"
-										type="button"
-										onClick={() => setReplacingVideo(false)}
-									>
-										Cancel Replace Video
-									</Button>
-								</div>
+				<Suspense
+					fallback={
+						<>
+							<div className="bg-muted flex aspect-video h-full w-full flex-col items-center justify-center gap-2 p-5 text-sm">
+								<Spinner className="h-4 w-4" />
+								<span>video is loading</span>
+							</div>
+						</>
+					}
+				>
+					{videoResourceId ? (
+						<>
+							{videoResourceId ? (
+								replacingVideo ? (
+									<div>
+										<NewLessonVideoForm
+											parentResourceId={post.id}
+											onVideoUploadCompleted={(videoResourceId) => {
+												setReplacingVideo(false)
+												setVideoUploadStatus('finalizing upload')
+												setVideoResourceId(videoResourceId)
+											}}
+											onVideoResourceCreated={(videoResourceId) =>
+												setVideoResourceId(videoResourceId)
+											}
+										/>
+										<Button
+											variant="ghost"
+											type="button"
+											onClick={() => setReplacingVideo(false)}
+										>
+											Cancel Replace Video
+										</Button>
+									</div>
+								) : (
+									<>
+										{videoResource && videoResource.state === 'ready' ? (
+											<div className="-mt-5 border-b">
+												<PostPlayer videoResource={videoResource} />
+												<div className="flex items-center gap-1 px-2 pb-2">
+													<Button
+														variant="outline"
+														size={'sm'}
+														type="button"
+														onClick={() => setReplacingVideo(true)}
+													>
+														Replace Video
+													</Button>
+													{/* <span className="truncate font-mono text-xs">
+														{videoResource.muxAssetId}
+													</span> */}
+												</div>
+											</div>
+										) : videoResource ? (
+											<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+												<Spinner className="h-5 w-5" />
+												<span>video is {videoResource.state}</span>
+											</div>
+										) : (
+											<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+												<Spinner className="h-5 w-5" />
+												<span>video is {videoUploadStatus}</span>
+											</div>
+										)}
+									</>
+								)
 							) : (
-								<>
-									{videoResource && videoResource.state === 'ready' ? (
-										<div>
-											<PostPlayer videoResource={videoResource} />
-											<Button
-												variant="ghost"
-												type="button"
-												onClick={() => setReplacingVideo(true)}
-											>
-												Replace Video
-											</Button>
-										</div>
-									) : videoResource ? (
-										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-											video is {videoResource.state}
-										</div>
-									) : (
-										<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-											video is {videoUploadStatus}
-										</div>
-									)}
-								</>
-							)
-						) : (
-							<NewLessonVideoForm
+								<NewLessonVideoForm
+									parentResourceId={post.id}
+									onVideoUploadCompleted={(videoResourceId) => {
+										setVideoUploadStatus('finalizing upload')
+										setVideoResourceId(videoResourceId)
+									}}
+									onVideoResourceCreated={(videoResourceId) =>
+										setVideoResourceId(videoResourceId)
+									}
+								/>
+							)}
+						</>
+					) : (
+						<div className="px-5">
+							<FormLabel className="text-lg font-bold">Video</FormLabel>
+							<PostUploader
+								setVideoResourceId={setVideoResourceId}
 								parentResourceId={post.id}
-								onVideoUploadCompleted={(videoResourceId) => {
-									setVideoUploadStatus('finalizing upload')
-									setVideoResourceId(videoResourceId)
-								}}
-								onVideoResourceCreated={(videoResourceId) =>
-									setVideoResourceId(videoResourceId)
-								}
 							/>
-						)}
-					</Suspense>
-				) : (
-					<div className="px-5">
-						<FormLabel className="text-lg font-bold">Video</FormLabel>
-						<PostUploader
-							setVideoResourceId={setVideoResourceId}
-							parentResourceId={post.id}
-						/>
-					</div>
-				)}
+						</div>
+					)}
+				</Suspense>
 			</div>
 			<FormField
 				control={form.control}
@@ -289,7 +301,7 @@ export const PostMetadataFormFields: React.FC<{
 						)}
 					</div>
 					<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-						{transcript ? transcript : 'Transcript Processing'}
+						{transcript ? transcript : 'Processing...'}
 					</ReactMarkdown>
 				</div>
 			)}

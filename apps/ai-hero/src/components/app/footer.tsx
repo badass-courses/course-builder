@@ -8,6 +8,11 @@ import { LogoMark } from '../logo'
 export default function Footer() {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
+	const isEditRoute = pathname.includes('/edit')
+
+	if (isEditRoute) {
+		return null
+	}
 
 	return (
 		<footer className="w-full border-t pb-16 pt-20">
