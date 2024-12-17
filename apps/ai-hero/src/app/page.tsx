@@ -80,7 +80,7 @@ const Home = async (props: Props) => {
 	return (
 		<div className="">
 			<main className="w-full pt-5 sm:pt-16">
-				<article className="prose sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-blockquote:mx-auto prose-blockquote:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
+				<article className="prose prose-h1:text-center sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
