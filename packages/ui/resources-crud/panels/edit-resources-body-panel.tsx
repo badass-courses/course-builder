@@ -1,23 +1,15 @@
 import * as React from 'react'
 import { User } from '@auth/core/types'
-import { EditorView, type Command } from '@codemirror/view'
-import MarkdownEditor, {
-	defaultCommands,
-	ICommand,
-} from '@uiw/react-markdown-editor'
-import type { Commands } from '@uiw/react-markdown-editor/cjs/components/ToolBar'
-import { CogIcon, EyeIcon } from 'lucide-react'
+import { EditorView } from '@codemirror/view'
+import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
+import { EyeIcon } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import {
 	CourseBuilderEditorThemeDark,
 	CourseBuilderEditorThemeLight,
 } from '../../codemirror/editor'
-import {
-	ResizableHandle,
-	ResizablePanel,
-	ResizablePanelGroup,
-} from '../../primitives/resizable'
+import { ResizableHandle, ResizablePanel } from '../../primitives/resizable'
 import { ScrollArea } from '../../primitives/scroll-area'
 import { cn } from '../../utils/cn'
 
@@ -30,7 +22,7 @@ export function EditResourcesBodyPanel({
 	children,
 	onResourceBodyChange,
 	toggleMdxPreview,
-	isShowingMdxPreview,
+	isShowingMdxPreview = false,
 }: {
 	resource: {
 		id: string
@@ -54,6 +46,11 @@ export function EditResourcesBodyPanel({
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
 
+	const [hasMounted, setHasMounted] = React.useState(false)
+	React.useEffect(() => {
+		setHasMounted(true)
+	}, [])
+
 	const previewMdxButton: ICommand = {
 		name: 'mdx-preview',
 		keyCommand: 'cmd+shift+p',
@@ -74,7 +71,7 @@ export function EditResourcesBodyPanel({
 		},
 	}
 
-	const withMdxPreview = children
+	const withMdxPreview = Boolean(children)
 
 	const defaultCommands = [
 		'undo',
@@ -115,26 +112,28 @@ export function EditResourcesBodyPanel({
 				className="flex min-h-[var(--pane-layout-height)] md:min-h-full"
 			>
 				<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
-					<MarkdownEditor
-						height="var(--code-editor-layout-height)"
-						value={resource.fields.body || ''}
-						onChange={onChange}
-						enablePreview={withMdxPreview ? false : true}
-						theme={
-							theme === 'dark'
-								? CourseBuilderEditorThemeDark
-								: CourseBuilderEditorThemeLight
-						}
-						extensions={[EditorView.lineWrapping]}
-						basicSetup={{
-							syntaxHighlighting: true,
-						}}
-						toolbars={
-							withMdxPreview
-								? [previewMdxButton, ...defaultCommands]
-								: [...defaultCommands]
-						}
-					/>
+					{hasMounted && (
+						<MarkdownEditor
+							height="var(--code-editor-layout-height)"
+							value={resource.fields.body || ''}
+							onChange={onChange}
+							enablePreview={withMdxPreview ? false : true}
+							theme={
+								theme === 'dark'
+									? CourseBuilderEditorThemeDark
+									: CourseBuilderEditorThemeLight
+							}
+							extensions={[EditorView.lineWrapping]}
+							basicSetup={{
+								syntaxHighlighting: true,
+							}}
+							toolbars={
+								withMdxPreview
+									? [previewMdxButton, ...defaultCommands]
+									: [...defaultCommands]
+							}
+						/>
+					)}
 				</ScrollArea>
 			</ResizablePanel>
 		</>

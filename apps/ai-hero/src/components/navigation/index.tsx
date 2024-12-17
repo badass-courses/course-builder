@@ -74,7 +74,7 @@ const Navigation = () => {
 							className="font-heading flex h-[var(--nav-height)] w-full items-center justify-center gap-2 pr-4 text-lg font-semibold leading-none transition"
 						>
 							<LogoMark className="w-8" />
-							<span className="text-muted-foreground text-xl font-bold !leading-none">
+							<span className="text-foreground text-xl font-bold !leading-none">
 								AI Hero
 							</span>
 						</Link>
