@@ -29,7 +29,7 @@ export function MetadataFieldVisibility({
 			name="fields.visibility"
 			render={({ field }) => (
 				<FormItem className="px-5">
-					<FormLabel>Visibility</FormLabel>
+					<FormLabel className="text-lg font-bold">Visibility</FormLabel>
 					<Select onValueChange={field.onChange} defaultValue={field.value}>
 						<FormControl>
 							<SelectTrigger>

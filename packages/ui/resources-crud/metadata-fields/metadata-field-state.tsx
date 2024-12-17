@@ -16,7 +16,7 @@ export function MetadataFieldState({ form }: { form: UseFormReturn<any> }) {
 			name="fields.state"
 			render={({ field }) => (
 				<FormItem className="px-5">
-					<FormLabel>State</FormLabel>
+					<FormLabel className="text-lg font-bold">State</FormLabel>
 					<Input {...field} readOnly disabled />
 					<FormMessage />
 				</FormItem>
