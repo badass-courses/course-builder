@@ -76,6 +76,10 @@ export interface PaymentsProviderConfig {
 	name: string
 	type: 'payment'
 	options: PaymentsProviderConsumerConfig
+	getBillingPortalUrl: (
+		customerId: string,
+		returnUrl: string,
+	) => Promise<string>
 	getSubscription: (subscriptionId: string) => Promise<Stripe.Subscription>
 	getSubscriptionInfo: (
 		checkoutSessionId: string,
@@ -181,6 +185,7 @@ export interface PaymentsAdapter {
 		product: Stripe.ProductCreateParams,
 	): Promise<Stripe.Response<Stripe.Product>>
 	getSubscription(subscriptionId: string): Promise<Stripe.Subscription>
+	getBillingPortalUrl(customerId: string, returnUrl: string): Promise<string>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'

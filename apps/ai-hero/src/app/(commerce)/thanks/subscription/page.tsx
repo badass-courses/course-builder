@@ -83,7 +83,7 @@ const getServerSideProps = async (session_id: string) => {
 			}
 		} catch (error) {
 			retries++
-			console.log(error.message)
+			console.log((error as Error).message)
 			logger.error(
 				new Error(
 					`Error getting subscription info: ${error} ${retries}/${maxRetries}`,

@@ -196,6 +196,11 @@ const Welcome = async (props: {
 			subscription?.merchantSubscription?.identifier,
 		)
 
+		const billingPortalUrl = await stripeProvider.getBillingPortalUrl(
+			stripeSubscription.customer,
+			`${env.COURSEBUILDER_URL}/welcome?subscriptionId=${subscription.id}`,
+		)
+
 		const isGithubConnected = await githubAccountsForCurrentUser()
 		const isDiscordConnected = await discordAccountsForCurrentUser()
 
@@ -206,6 +211,7 @@ const Welcome = async (props: {
 					stripeSubscription={stripeSubscription}
 					isGithubConnected={isGithubConnected}
 					isDiscordConnected={isDiscordConnected}
+					billingPortalUrl={billingPortalUrl}
 				/>
 			</div>
 		)

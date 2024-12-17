@@ -44,12 +44,14 @@ export function SubscriptionWelcomePage({
 	isGithubConnected,
 	isDiscordConnected = false,
 	providers = {},
+	billingPortalUrl,
 }: {
 	subscription: Subscription
 	stripeSubscription: Stripe.Subscription
 	isGithubConnected: boolean
 	isDiscordConnected?: boolean
 	providers?: any
+	billingPortalUrl: string
 }) {
 	const product = subscription.product
 	const firstResource = first(product.resources)
@@ -171,7 +173,7 @@ export function SubscriptionWelcomePage({
 
 							<div className="mt-4 flex gap-2">
 								<Button asChild variant="outline">
-									<Link href="/account/billing">Manage Billing</Link>
+									<Link href={billingPortalUrl}>Manage Billing</Link>
 								</Button>
 							</div>
 						</div>

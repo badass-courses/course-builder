@@ -23,6 +23,9 @@ export default function StripeProvider(
 		getSubscription: async (subscriptionId: string) => {
 			return options.paymentsAdapter.getSubscription(subscriptionId)
 		},
+		getBillingPortalUrl: async (customerId: string, returnUrl: string) => {
+			return options.paymentsAdapter.getBillingPortalUrl(customerId, returnUrl)
+		},
 		getSubscriptionInfo: async (
 			checkoutSessionId: string,
 			_: CourseBuilderAdapter,
@@ -216,6 +219,14 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	async getSubscription(subscriptionId: string) {
 		return this.stripe.subscriptions.retrieve(subscriptionId)
 	}
+	async getBillingPortalUrl(customerId: string, returnUrl: string) {
+		return this.stripe.billingPortal.sessions
+			.create({
+				customer: customerId,
+				return_url: returnUrl,
+			})
+			.then((session) => session.url)
+	}
 }
 
 export const mockStripeAdapter: PaymentsAdapter = {
@@ -236,6 +247,7 @@ export const mockStripeAdapter: PaymentsAdapter = {
 	createPrice: async () => ({}) as any,
 	createProduct: async () => ({}) as any,
 	getSubscription: async () => ({}) as any,
+	getBillingPortalUrl: async () => 'mock-billing-portal-url',
 }
 
 export const MockStripeProvider: PaymentsProviderConfig = {
@@ -271,4 +283,5 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 	createPrice: async () => ({}) as any,
 	createProduct: async () => ({}) as any,
 	getSubscription: async () => ({}) as any,
+	getBillingPortalUrl: async () => 'mock-billing-portal-url',
 }
