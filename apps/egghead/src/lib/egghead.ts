@@ -288,7 +288,7 @@ export const KvstoreSchema = z.object({
 export type Kvstore = z.infer<typeof KvstoreSchema>
 
 export const EggheadDbCourseSchema = z.object({
-	id: z.number().optional(),
+	id: z.number(),
 	access_state: z.string().optional(),
 	code_url: z.string().optional(),
 	created_at: z.coerce.date().optional(),
