@@ -40,10 +40,10 @@ export const getCachedEggheadInstructorForUser = unstable_cache(
 	{ revalidate: 3600, tags: ['users'] },
 )
 
-export const InstructorDbSchema = z.object({
+export const InstructorEggheadDbSchema = z.object({
 	id: z.number(),
 	user_id: z.number(),
-	email: z.string(),
+	email: z.string().nullish(),
 	avatar_content_type: z.string().nullish(),
 	avatar_file_name: z.string().nullish(),
 	avatar_file_size: z.number().nullish(),
@@ -68,7 +68,7 @@ export const InstructorDbSchema = z.object({
 	updated_at: z.coerce.date().nullish(),
 	website: z.string().nullish(),
 })
-export type InstructorDb = z.infer<typeof InstructorDbSchema>
+export type InstructorEggheadDb = z.infer<typeof InstructorEggheadDbSchema>
 
 export const loadEggheadInstructorForUser = async (userId: string) => {
 	const user = await db.query.users.findFirst({
@@ -94,7 +94,9 @@ export const loadEggheadInstructorForUser = async (userId: string) => {
 		`SELECT * FROM instructors WHERE user_id = ${eggheadAccount.providerAccountId}`,
 	)
 
-	const instructor = InstructorDbSchema.safeParse(instructorResult.rows[0])
+	const instructor = InstructorEggheadDbSchema.safeParse(
+		instructorResult.rows[0],
+	)
 
 	if (!instructor.success) {
 		console.log('instructor.error', instructor.error)
