@@ -124,9 +124,6 @@ export function EditResourcesBodyPanel({
 									: CourseBuilderEditorThemeLight
 							}
 							extensions={[EditorView.lineWrapping]}
-							basicSetup={{
-								syntaxHighlighting: true,
-							}}
 							toolbars={
 								withMdxPreview
 									? [previewMdxButton, ...defaultCommands]

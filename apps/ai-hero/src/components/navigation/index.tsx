@@ -92,7 +92,7 @@ const Navigation = () => {
 								{links.map((link) => {
 									return (
 										<NavLinkItem
-											className="font-heading text-[18px] font-semibold"
+											className=""
 											key={link.href || link.label}
 											{...link}
 										/>
