@@ -180,7 +180,10 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			})
 
 			const organization = await step.run('load the organization', async () => {
-				if (subscriptionInfo.metadata?.organizationId) {
+				if (
+					subscriptionInfo.metadata?.organizationId &&
+					subscriptionInfo.metadata?.organizationId !== 'undefined'
+				) {
 					return await db.getOrganization(
 						subscriptionInfo.metadata.organizationId,
 					)

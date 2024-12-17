@@ -20,6 +20,9 @@ export default function StripeProvider(
 		type: 'payment',
 		...options,
 		options,
+		getSubscription: async (subscriptionId: string) => {
+			return options.paymentsAdapter.getSubscription(subscriptionId)
+		},
 		getSubscriptionInfo: async (
 			checkoutSessionId: string,
 			_: CourseBuilderAdapter,
@@ -210,6 +213,9 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 	async createProduct(product: Stripe.ProductCreateParams) {
 		return this.stripe.products.create(product)
 	}
+	async getSubscription(subscriptionId: string) {
+		return this.stripe.subscriptions.retrieve(subscriptionId)
+	}
 }
 
 export const mockStripeAdapter: PaymentsAdapter = {
@@ -229,6 +235,7 @@ export const mockStripeAdapter: PaymentsAdapter = {
 	getPrice: async () => ({}) as any,
 	createPrice: async () => ({}) as any,
 	createProduct: async () => ({}) as any,
+	getSubscription: async () => ({}) as any,
 }
 
 export const MockStripeProvider: PaymentsProviderConfig = {
@@ -263,4 +270,5 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 	getPrice: async () => ({}) as any,
 	createPrice: async () => ({}) as any,
 	createProduct: async () => ({}) as any,
+	getSubscription: async () => ({}) as any,
 }

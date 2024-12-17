@@ -24,7 +24,7 @@ export const CheckoutParamsSchema = z.object({
 	upgradeFromPurchaseId: z.string().optional(),
 	bulk: z.preprocess((val) => {
 		return val === 'false' ? false : Boolean(val)
-	}, z.boolean()),
+	}, z.coerce.boolean()),
 	cancelUrl: z.string(),
 	usedCouponId: z.string().optional(),
 	organizationId: z.string().optional(),

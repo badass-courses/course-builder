@@ -2880,21 +2880,34 @@ export function mySqlDrizzleAdapter(
 			throw new Error('Not implemented')
 		},
 		getSubscriptionForStripeId: async (stripeSubscriptionId: string) => {
-			const merchantSubscription = MerchantSubscriptionSchema.parse(
+			const merchantSubscriptionParsed = MerchantSubscriptionSchema.safeParse(
 				await client.query.merchantSubscription.findFirst({
 					where: eq(merchantSubscriptionTable.identifier, stripeSubscriptionId),
 				}),
 			)
-			const subscription = SubscriptionSchema.parse(
+
+			if (!merchantSubscriptionParsed.success) {
+				throw new Error(
+					`No merchant subscription found for stripe id ${stripeSubscriptionId} ${merchantSubscriptionParsed.error}`,
+				)
+			}
+
+			const subscriptionParsed = SubscriptionSchema.safeParse(
 				await client.query.subscription.findFirst({
 					where: eq(
 						subscriptionTable.merchantSubscriptionId,
-						merchantSubscription.id,
+						merchantSubscriptionParsed.data.id,
 					),
 				}),
 			)
 
-			return subscription
+			if (!subscriptionParsed.success) {
+				throw new Error(
+					`No subscription found for merchant subscription ${merchantSubscriptionParsed.data.id} ${subscriptionParsed.error}`,
+				)
+			}
+
+			return subscriptionParsed.data
 		},
 	}
 

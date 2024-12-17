@@ -26,7 +26,7 @@ const getServerSideProps = async (session_id: string) => {
 		throw new Error(`No session_id found: ${session_id}`)
 	}
 
-	const maxRetries = 15
+	const maxRetries = 3
 	const initialDelay = 100
 	const maxDelay = 1000
 
@@ -63,6 +63,8 @@ const getServerSideProps = async (session_id: string) => {
 					subscriptionIdentifier,
 				)
 
+			logger.debug('Got subscription', { subscription })
+
 			if (!subscription || !email) {
 				logger.error(new Error('Subscription or email not found'))
 				throw new Error('Subscription or email not found')
@@ -71,6 +73,8 @@ const getServerSideProps = async (session_id: string) => {
 			const product = await courseBuilderAdapter.getProduct(
 				subscription.productId,
 			)
+
+			logger.debug('Got product', { product })
 			return {
 				subscription: convertToSerializeForNextResponse(subscription),
 				email,
@@ -79,6 +83,7 @@ const getServerSideProps = async (session_id: string) => {
 			}
 		} catch (error) {
 			retries++
+			console.log(error.message)
 			logger.error(
 				new Error(
 					`Error getting subscription info: ${error} ${retries}/${maxRetries}`,

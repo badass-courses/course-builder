@@ -6,7 +6,10 @@ import { type ChatCompletionRequestMessage } from 'openai-edge'
 import Stripe from 'stripe'
 
 import { CourseBuilderAdapter } from './adapters'
-import { CheckoutParams } from './lib/pricing/stripe-checkout'
+import {
+	CheckoutParams,
+	CheckoutParamsSchema,
+} from './lib/pricing/stripe-checkout'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
@@ -73,6 +76,7 @@ export interface PaymentsProviderConfig {
 	name: string
 	type: 'payment'
 	options: PaymentsProviderConsumerConfig
+	getSubscription: (subscriptionId: string) => Promise<Stripe.Subscription>
 	getSubscriptionInfo: (
 		checkoutSessionId: string,
 		adapter: CourseBuilderAdapter,
@@ -176,6 +180,7 @@ export interface PaymentsAdapter {
 	createProduct(
 		product: Stripe.ProductCreateParams,
 	): Promise<Stripe.Response<Stripe.Product>>
+	getSubscription(subscriptionId: string): Promise<Stripe.Subscription>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
@@ -319,3 +324,5 @@ export type PricingOptions = {
 	allowTeamPurchase: boolean
 	cancelUrl: string
 }
+
+export { CheckoutParamsSchema, type CheckoutParams }

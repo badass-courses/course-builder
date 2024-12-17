@@ -2,7 +2,8 @@ import * as React from 'react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
+import { getSubscription } from '@/lib/subscriptions'
 import {
 	discordAccountsForCurrentUser,
 	githubAccountsForCurrentUser,
@@ -15,6 +16,7 @@ import {
 import { authOptions, getServerAuthSession } from '@/server/auth'
 import { isString } from 'lodash'
 
+import { SubscriptionWelcomePage } from '@coursebuilder/commerce-next/post-purchase/subscription-welcome-page'
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
@@ -45,10 +47,11 @@ async function getPurchaseForChargeId(chargeIdentifier: string) {
 	}
 }
 
-const getServerSideProps = async (query: {
+const getPurchaseDetailsForWelcome = async (query: {
 	session_id: string
 	provider: string
-	purchaseId: string
+	purchaseId?: string
+	subscriptionId?: string
 	upgrade?: 'true'
 }) => {
 	const token = await getServerAuthSession()
@@ -114,71 +117,99 @@ const Welcome = async (props: {
 	searchParams: Promise<{
 		session_id: string
 		provider: string
-		purchaseId: string
+		purchaseId?: string
+		subscriptionId?: string
 	}>
 }) => {
 	const searchParams = await props.searchParams
 	await headers()
 	const { session } = await getServerAuthSession()
 
-	const {
-		upgrade,
-		purchase,
-		existingPurchase,
-		product,
-		providers = {},
-		productResources,
-	} = await getServerSideProps(searchParams)
+	const { purchaseId, subscriptionId } = searchParams
 
-	const redemptionsLeft =
-		purchase.bulkCoupon &&
-		purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
+	if (purchaseId) {
+		const {
+			upgrade,
+			purchase,
+			existingPurchase,
+			product,
+			providers = {},
+			productResources,
+		} = await getPurchaseDetailsForWelcome(searchParams)
 
-	const hasCharge = Boolean(purchase.merchantChargeId)
+		const redemptionsLeft =
+			purchase.bulkCoupon &&
+			purchase.bulkCoupon.maxUses > purchase.bulkCoupon.usedCount
 
-	const purchaseUserTransfers = await getPurchaseTransferForPurchaseId({
-		id: purchase.id,
-		sourceUserId: session?.user?.id,
-	})
+		const hasCharge = Boolean(purchase.merchantChargeId)
 
-	const isTransferAvailable =
-		!purchase.bulkCoupon &&
-		Boolean(
-			purchaseUserTransfers?.filter(
-				(purchaseUserTransfer: PurchaseUserTransfer) =>
-					['AVAILABLE', 'INITIATED', 'COMPLETED'].includes(
-						purchaseUserTransfer.transferState,
-					),
-			).length,
+		const purchaseUserTransfers = await getPurchaseTransferForPurchaseId({
+			id: purchase.id,
+			sourceUserId: session?.user?.id,
+		})
+
+		const isTransferAvailable =
+			!purchase.bulkCoupon &&
+			Boolean(
+				purchaseUserTransfers?.filter(
+					(purchaseUserTransfer: PurchaseUserTransfer) =>
+						['AVAILABLE', 'INITIATED', 'COMPLETED'].includes(
+							purchaseUserTransfer.transferState,
+						),
+				).length,
+			)
+
+		const isGithubConnected = await githubAccountsForCurrentUser()
+		const isDiscordConnected = await discordAccountsForCurrentUser()
+
+		return (
+			<div className="container border-x">
+				<WelcomePage
+					product={product}
+					productResources={productResources}
+					purchase={purchase}
+					existingPurchase={existingPurchase}
+					upgrade={upgrade}
+					providers={providers}
+					isGithubConnected={isGithubConnected}
+					isDiscordConnected={isDiscordConnected}
+					redemptionsLeft={redemptionsLeft}
+					isTransferAvailable={isTransferAvailable}
+					purchaseUserTransfers={purchaseUserTransfers}
+					hasCharge={hasCharge}
+					userEmail={session?.user?.email}
+					cancelPurchaseTransfer={cancelPurchaseTransfer}
+					initiatePurchaseTransfer={initiatePurchaseTransfer}
+				/>
+			</div>
+		)
+	}
+
+	if (subscriptionId) {
+		const subscription = await getSubscription(subscriptionId)
+
+		if (!subscription?.merchantSubscription?.identifier) {
+			redirect(`/`)
+		}
+
+		const stripeSubscription = await stripeProvider.getSubscription(
+			subscription?.merchantSubscription?.identifier,
 		)
 
-	const isGithubConnected = await githubAccountsForCurrentUser()
-	const isDiscordConnected = await discordAccountsForCurrentUser()
+		const isGithubConnected = await githubAccountsForCurrentUser()
+		const isDiscordConnected = await discordAccountsForCurrentUser()
 
-	return (
-		<div className="container border-x">
-			<WelcomePage
-				product={product}
-				productResources={productResources}
-				purchase={purchase}
-				existingPurchase={existingPurchase}
-				upgrade={upgrade}
-				providers={providers}
-				isGithubConnected={isGithubConnected}
-				isDiscordConnected={isDiscordConnected}
-				redemptionsLeft={redemptionsLeft}
-				isTransferAvailable={isTransferAvailable}
-				purchaseUserTransfers={purchaseUserTransfers}
-				hasCharge={hasCharge}
-				userEmail={session?.user?.email}
-				cancelPurchaseTransfer={cancelPurchaseTransfer}
-				initiatePurchaseTransfer={initiatePurchaseTransfer}
-				welcomeVideoPlaybackId={
-					'sNy02WxzolM9RIiL900DJ5jL02IV1hKRTEDPQ32vLctTy4'
-				}
-			/>
-		</div>
-	)
+		return (
+			<div className="container border-x">
+				<SubscriptionWelcomePage
+					subscription={subscription}
+					stripeSubscription={stripeSubscription}
+					isGithubConnected={isGithubConnected}
+					isDiscordConnected={isDiscordConnected}
+				/>
+			</div>
+		)
+	}
 }
 
 export default Welcome

@@ -1,5 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getSubscriptionStatus } from '@/lib/subscriptions'
 import { getServerAuthSession } from '@/server/auth'
 import { BookOpen, Plus, Users } from 'lucide-react'
 
@@ -13,6 +15,14 @@ import {
 
 export default async function AlreadySubscribedPage() {
 	const { session, ability } = await getServerAuthSession()
+
+	const { user } = session
+
+	const { hasActiveSubscription } = await getSubscriptionStatus(user?.id)
+
+	if (!hasActiveSubscription) {
+		return redirect('/')
+	}
 
 	// TODO: we want to make sure that the user can actually do the actions below
 

@@ -4,9 +4,11 @@ import { redirect } from 'next/navigation'
 import { getCsrf } from '@/app/(user)/login/actions'
 import { Login } from '@/components/login'
 import config from '@/config'
-import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
+import { getSubscriptionStatus } from '@/lib/subscriptions'
 import { getProviders, getServerAuthSession } from '@/server/auth'
+
+import { CheckoutParamsSchema } from '@coursebuilder/core/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,34 +25,19 @@ export default async function LoginPage({
 	const csrfToken = await getCsrf()
 
 	if (user) {
-		const memberships = await courseBuilderAdapter.getMembershipsForUser(
-			user.id,
-		)
-		let hasActiveSubscription = false
-		for (const membership of memberships) {
-			if (!membership.organizationId) continue
-			const organization = await courseBuilderAdapter.getOrganization(
-				membership.organizationId,
-			)
-			if (!organization) continue
-			const subscriptions = await db.query.subscription.findMany({
-				where: (subscription, { eq, and }) =>
-					and(
-						eq(subscription.organizationId, organization.id),
-						eq(subscription.status, 'active'),
-					),
-			})
-			if (subscriptions.length > 0) {
-				hasActiveSubscription = true
-				break
-			}
-		}
+		const { hasActiveSubscription } = await getSubscriptionStatus(user?.id)
 
 		if (!hasActiveSubscription) {
 			return redirect(checkoutUrl as string)
 		} else {
 			return redirect(`/subscribe/already-subscribed`)
 		}
+	}
+
+	const parsedCheckoutParams = CheckoutParamsSchema.safeParse(checkoutParams)
+
+	if (!parsedCheckoutParams.success) {
+		return redirect('/login')
 	}
 
 	const checkoutSearchParams = new URLSearchParams(
