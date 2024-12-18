@@ -20,7 +20,7 @@ const config = {
 	experimental: {
 		mdxRs: true,
 	},
-	serverExternalPackages: ['liquidjs'],
+	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
 	images: {
 		remotePatterns: [
 			{
