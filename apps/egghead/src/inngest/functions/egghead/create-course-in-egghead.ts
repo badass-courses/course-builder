@@ -1,9 +1,13 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { EGGHEAD_COURSE_CREATED_EVENT } from '@/inngest/events/egghead/course-created'
-import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
+import { COURSE_POST_CREATED_EVENT } from '@/inngest/events/course-post-created'
 import { inngest } from '@/inngest/inngest.server'
 import { createEggheadCourse } from '@/lib/egghead'
+import { SanityCourseSchema } from '@/lib/sanity-content'
+import {
+	createCourse as createSanityCourse,
+	getSanityCollaborator,
+} from '@/lib/sanity-content-query'
 import { loadEggheadInstructorForUser } from '@/lib/users'
 import { eq } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
@@ -33,35 +37,26 @@ export const createCourseInEgghead = inngest.createFunction(
 		const instructor = await step.run('get-instructor', async () => {
 			const instructor = await loadEggheadInstructorForUser(post.createdById)
 
-			if (!instructor) {
-				throw new NonRetriableError('Instructor not found', {
-					cause: {
-						postId: post.id,
-						instructorId: post.createdById,
-					},
-				})
-			}
-
 			return instructor
 		})
 
-		const course = await step.run('create-egghead-course', async () => {
-			const courseGuid = post.fields?.slug.split('~').pop()
+		if (!instructor) {
+			throw new NonRetriableError('Instructor not found', {
+				cause: {
+					postId: post.id,
+					instructorId: post.createdById,
+				},
+			})
+		}
 
-			const course = await createEggheadCourse({
+		const courseGuid = post.fields?.slug.split('~').pop() ?? ''
+
+		const eggheadCourse = await step.run('create-egghead-course', async () => {
+			return await createEggheadCourse({
 				title: post.fields?.title,
 				guid: courseGuid,
 				ownerId: instructor.user_id,
 			})
-
-			return course
-		})
-
-		step.sendEvent(EGGHEAD_COURSE_CREATED_EVENT, {
-			name: EGGHEAD_COURSE_CREATED_EVENT,
-			data: {
-				id: course.id,
-			},
 		})
 
 		await step.run('sync-course-id-to-builder', async () => {
@@ -70,7 +65,7 @@ export const createCourseInEgghead = inngest.createFunction(
 				.set({
 					fields: {
 						...post.fields,
-						eggheadCourseId: course.id,
+						eggheadCourseId: eggheadCourse.id,
 					},
 				})
 				.where(eq(contentResource.id, post.id))
@@ -79,5 +74,55 @@ export const createCourseInEgghead = inngest.createFunction(
 					throw error
 				})
 		})
+
+		const sanityContributor = await step.run(
+			'get-sanity-contributor',
+			async () => {
+				const contributor = await getSanityCollaborator(instructor.id)
+
+				if (!contributor) {
+					throw new NonRetriableError('Sanity contributor not found', {
+						cause: {
+							postId: post.id,
+							instructorId: instructor.id,
+						},
+					})
+				}
+
+				return contributor
+			},
+		)
+
+		const sanityCourse = await step.run('create-course', async () => {
+			const { fields } = post
+
+			const coursePayload = SanityCourseSchema.safeParse({
+				title: fields?.title,
+				slug: {
+					current: fields?.slug,
+					_type: 'slug',
+				},
+				description: fields?.body,
+				collaborators: [sanityContributor],
+				searchIndexingState: 'hidden',
+				accessLevel: 'pro',
+				productionProcessState: 'new',
+				sharedId: courseGuid,
+				railsCourseId: eggheadCourse.id,
+			})
+
+			if (!coursePayload.success) {
+				throw new NonRetriableError('Failed to create course in sanity', {
+					cause: coursePayload.error.flatten().fieldErrors,
+				})
+			}
+
+			return await createSanityCourse(coursePayload.data)
+		})
+
+		return {
+			eggheadCourse,
+			sanityCourse,
+		}
 	},
 )
