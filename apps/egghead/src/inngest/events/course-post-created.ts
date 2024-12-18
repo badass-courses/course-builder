@@ -6,7 +6,9 @@ export const COURSE_POST_CREATED_EVENT = 'course/post/created'
 
 export type CoursePostCreated = {
 	name: typeof COURSE_POST_CREATED_EVENT
-	data: CoursePostCreatedEvent
+	data: {
+		post: CoursePostCreatedEvent
+	}
 }
 
 export const CoursePostCreatedEventSchema = ContentResourceSchema.merge(
