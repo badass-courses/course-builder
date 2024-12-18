@@ -1,35 +1,26 @@
 import React from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import { sendFeedbackFromUser } from '@/feedback-widget/feedback-actions'
-import { FormikHelpers } from 'formik'
+import { usePathname } from 'next/navigation'
 
-import { FeedbackFormValues } from './form'
+import { sendFeedbackFromUser } from './feedback-actions'
+import type { FeedbackFormValues } from './feedback-schema'
 
 export const useFeedbackForm = ({ location }: { location: string }) => {
 	const pathname = usePathname()
-	const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false)
+	const [isSubmitted, setIsSubmitted] = React.useState(false)
 	const [error, setError] = React.useState<string>()
 
 	const submitFeedbackForm = React.useCallback(
-		async (
-			values: FeedbackFormValues,
-			{ setSubmitting, resetForm }: FormikHelpers<FeedbackFormValues>,
-		) => {
-			setSubmitting(true)
-
-			await sendFeedbackFromUser({
-				feedbackText: values.text,
-				context: values.context,
-			})
-				.then(() => {
-					setIsSubmitted(true)
-					resetForm()
+		async (values: FeedbackFormValues) => {
+			try {
+				await sendFeedbackFromUser({
+					feedbackText: values.text,
+					context: values.context,
 				})
-				.catch((error) => {
-					setError(error.message)
-					setIsSubmitted(true)
-					resetForm()
-				})
+				setIsSubmitted(true)
+			} catch (error) {
+				setError(error instanceof Error ? error.message : 'An error occurred')
+				setIsSubmitted(true)
+			}
 		},
 		[],
 	)

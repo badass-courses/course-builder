@@ -4,7 +4,7 @@ import React from 'react'
 
 import FeedbackDialog from './feedback-dialog'
 
-type FeedbackContextType = {
+export type FeedbackContextType = {
 	isFeedbackDialogOpen: boolean
 	setIsFeedbackDialogOpen: (value: boolean, location?: string) => void
 	feedbackComponent: React.ReactElement | null
