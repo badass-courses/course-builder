@@ -14,7 +14,7 @@ export const createCourseInEgghead = inngest.createFunction(
 		name: 'Create Course in Egghead',
 	},
 	{
-		event: POST_CREATED_EVENT,
+		event: COURSE_POST_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
 		const post = await step.run('verify-post', async () => {
