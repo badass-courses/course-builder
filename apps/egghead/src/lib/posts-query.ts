@@ -262,9 +262,7 @@ export async function createPost(input: NewPost) {
 		const coursePost = CoursePostCreatedEventSchema.parse(post)
 		await inngest.send({
 			name: COURSE_POST_CREATED_EVENT,
-			data: {
-				post: coursePost,
-			},
+			data: coursePost,
 		})
 	}
 
