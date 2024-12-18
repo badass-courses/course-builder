@@ -45,7 +45,7 @@ export const createCourseInEgghead = inngest.createFunction(
 			return instructor
 		})
 
-		const course = await step.run('create-course', async () => {
+		const course = await step.run('create-egghead-course', async () => {
 			const courseGuid = post.fields?.slug.split('~').pop()
 
 			const course = await createEggheadCourse({
