@@ -268,9 +268,9 @@ export async function createPost(input: NewPost) {
 				post: coursePost,
 			},
 		})
-	}
-
-	if (post) {
+		revalidateTag('posts')
+		return post
+	} else if (post) {
 		await inngest.send({
 			name: POST_CREATED_EVENT,
 			data: {
@@ -279,11 +279,10 @@ export async function createPost(input: NewPost) {
 		})
 
 		revalidateTag('posts')
-
 		return post
-	} else {
-		throw new Error('🚨 Error creating post: Post not found')
 	}
+
+	throw new Error('🚨 Error creating post: Post not found')
 }
 
 export async function updatePost(
