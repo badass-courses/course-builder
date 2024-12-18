@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
+import { env } from '@/env.mjs'
 import { getSubscription } from '@/lib/subscriptions'
 import {
 	discordAccountsForCurrentUser,
@@ -197,7 +198,9 @@ const Welcome = async (props: {
 		)
 
 		const billingPortalUrl = await stripeProvider.getBillingPortalUrl(
-			stripeSubscription.customer,
+			typeof stripeSubscription.customer === 'string'
+				? stripeSubscription.customer
+				: stripeSubscription.customer.id,
 			`${env.COURSEBUILDER_URL}/welcome?subscriptionId=${subscription.id}`,
 		)
 
