@@ -30,7 +30,7 @@ function isAttributeLabel(
 }
 
 function formatLabel(label: string): string {
-	return isAttributeLabel(label) ? attributeLabelMap[label] : label
+	return isAttributeLabel(label) ? attributeLabelMap[label] ?? label : label
 }
 
 export function CurrentRefinements(props: UseCurrentRefinementsProps) {
