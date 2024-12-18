@@ -1,5 +1,7 @@
 import { courseBuilderAdapter, db } from '@/db'
 
+import { SubscriptionSchema } from '@coursebuilder/core/schemas/subscription'
+
 export async function getSubscriptionStatus(userId?: string) {
 	if (!userId) {
 		return {
@@ -39,5 +41,5 @@ export async function getSubscription(subscriptionId: string) {
 		},
 	})
 
-	return subscription
+	return SubscriptionSchema.parse(subscription)
 }

@@ -3,6 +3,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { first } from 'lodash'
 import { FileText } from 'lucide-react'
 import { signIn } from 'next-auth/react'
@@ -52,14 +53,18 @@ export function SubscriptionWelcomePage({
 	providers = {},
 	billingPortalUrl,
 }: {
-	subscription: Subscription
+	subscription: Subscription | null
 	stripeSubscription: Stripe.Subscription
 	isGithubConnected: boolean
 	isDiscordConnected?: boolean
 	providers?: any
 	billingPortalUrl: string
 }) {
-	const product = subscription.product
+	if (!subscription) {
+		redirect('/')
+	}
+
+	const product = subscription?.product
 
 	const subscriptionDetails: SubscriptionDetails = {
 		status: stripeSubscription.status,

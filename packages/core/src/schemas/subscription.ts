@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { MerchantSubscriptionSchema } from './merchant-subscription'
 import { productSchema } from './product-schema'
 
 export const SubscriptionSchema = z.object({
@@ -11,6 +12,7 @@ export const SubscriptionSchema = z.object({
 	status: z.string().default('active'),
 	fields: z.record(z.any()).default({}),
 	product: productSchema,
+	merchantSubscription: MerchantSubscriptionSchema.optional(),
 })
 
 export type Subscription = z.infer<typeof SubscriptionSchema>
