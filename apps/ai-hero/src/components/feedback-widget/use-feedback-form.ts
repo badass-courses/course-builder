@@ -1,8 +1,9 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 
+import { type FeedbackFormValues } from '@coursebuilder/ui/feedback-widget'
+
 import { sendFeedbackFromUser } from './feedback-actions'
-import type { FeedbackFormValues } from './feedback-schema'
 
 export const useFeedbackForm = ({ location }: { location: string }) => {
 	const pathname = usePathname()

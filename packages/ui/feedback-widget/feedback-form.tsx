@@ -1,17 +1,15 @@
 import React from 'react'
-import Link from 'next/link'
-import Spinner from '@/components/spinner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, XCircleIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { Button, Form, Textarea } from '@coursebuilder/ui'
-import { cn } from '@coursebuilder/ui/utils/cn'
-
+import { useFeedbackForm } from '../../../apps/ai-hero/src/components/feedback-widget/use-feedback-form'
+import { Button, Form, Textarea } from '../index'
+import Spinner from '../primitives/spinner'
+import { cn } from '../utils/cn'
 import { useFeedback } from './feedback-context'
 import { CategoryField, EmotionField } from './feedback-fields'
 import { feedbackFormSchema, FeedbackFormValues } from './feedback-schema'
-import { useFeedbackForm } from './use-feedback-form'
 
 export const FeedbackForm: React.FC<{ location: string }> = ({ location }) => {
 	const { initialValues, submitFeedbackForm, isSubmitted, error } =
@@ -64,13 +62,13 @@ export const FeedbackForm: React.FC<{ location: string }> = ({ location }) => {
 const CodeQuestionMessage = () => (
 	<div className="pt-0.5 text-center">
 		If you have any code related question or need help solving an exercise,{' '}
-		<Link
+		<a
 			className="text-primary font-medium hover:underline"
 			href="/discord"
 			target="_blank"
 		>
 			ask on my Discord server ↗︎
-		</Link>
+		</a>
 	</div>
 )
 

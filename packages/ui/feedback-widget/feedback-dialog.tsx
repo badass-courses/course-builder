@@ -7,8 +7,7 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-} from '@coursebuilder/ui'
-
+} from '../primitives/dialog'
 import { useFeedback } from './feedback-context'
 import FeedbackForm from './feedback-form'
 
