@@ -12,6 +12,8 @@ import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
+import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
+
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
 	['posts'],
@@ -104,6 +106,8 @@ export async function createPost(input: NewPost) {
 				.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
 		}
 
+		await upsertPostToTypeSense(post, 'save')
+
 		revalidateTag('posts')
 
 		return post
@@ -140,6 +144,8 @@ export async function updatePost(
 	} else if (input.fields.slug !== currentPost.fields.slug) {
 		postSlug = input.fields.slug
 	}
+
+	await upsertPostToTypeSense(currentPost, action)
 
 	revalidateTag('posts')
 
@@ -231,6 +237,8 @@ export async function deletePost(id: string) {
 		.where(eq(contentResourceResource.resourceOfId, id))
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
+
+	await deletePostInTypeSense(post.id)
 
 	revalidateTag('posts')
 	revalidateTag(id)
