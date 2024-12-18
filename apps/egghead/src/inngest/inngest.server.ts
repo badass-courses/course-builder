@@ -21,6 +21,10 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	COURSE_POST_CREATED_EVENT,
+	CoursePostCreated,
+} from './events/course-post-created'
+import {
 	EGGHEAD_COURSE_CREATED_EVENT,
 	EggheadCourseCreated,
 } from './events/egghead/course-created'
@@ -58,6 +62,7 @@ export type Events = {
 	[SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT]: SyncPostsToEggheadLessonsEvent
 	[INSTRUCTOR_INVITE_CREATED_EVENT]: InstructorInviteCreated
 	[EGGHEAD_COURSE_CREATED_EVENT]: EggheadCourseCreated
+	[COURSE_POST_CREATED_EVENT]: CoursePostCreated
 }
 
 const callbackBase =

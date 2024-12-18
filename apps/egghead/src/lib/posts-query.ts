@@ -31,6 +31,10 @@ import { z } from 'zod'
 
 import 'server-only'
 
+import {
+	COURSE_POST_CREATED_EVENT,
+	CoursePostCreatedEventSchema,
+} from '@/inngest/events/course-post-created'
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sanityWriteClient } from '@/server/sanity-write-client'
@@ -248,17 +252,27 @@ export async function createPost(input: NewPost) {
 	}
 
 	const profile = await getEggheadUserProfile(session.user.id)
-	const post = writeNewPostToDatabase({
+	const post = await writeNewPostToDatabase({
 		newPost: input,
 		eggheadInstructorId: profile.instructor.id,
 		createdById: session.user.id,
 	})
 
+	if (post && post.fields.postType === 'course') {
+		const coursePost = CoursePostCreatedEventSchema.parse(post)
+		await inngest.send({
+			name: COURSE_POST_CREATED_EVENT,
+			data: {
+				post: coursePost,
+			},
+		})
+	}
+
 	if (post) {
 		await inngest.send({
 			name: POST_CREATED_EVENT,
 			data: {
-				post: await post,
+				post: post,
 			},
 		})
 
