@@ -1,8 +1,16 @@
 'use client'
 
-import FeedbackDialog from './dialog'
+import * as React from 'react'
+
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from '@coursebuilder/ui'
+
 import { useFeedback } from './feedback-context'
-import FeedbackForm from './form'
+import FeedbackForm from './feedback-form'
 
 const Feedback = () => {
 	const { isFeedbackDialogOpen, setIsFeedbackDialogOpen, location } =
@@ -18,6 +26,30 @@ const Feedback = () => {
 		>
 			<FeedbackForm location={location} />
 		</FeedbackDialog>
+	)
+}
+
+type DialogProps = {
+	handleCloseDialog: () => void
+	isOpen: boolean
+	title: string
+}
+
+const FeedbackDialog: React.FC<React.PropsWithChildren<DialogProps>> = ({
+	handleCloseDialog,
+	children,
+	isOpen,
+	title,
+}) => {
+	return (
+		<Dialog open={isOpen} onOpenChange={handleCloseDialog}>
+			<DialogContent className="max-w-lg">
+				<DialogHeader>
+					<DialogTitle>{title}</DialogTitle>
+				</DialogHeader>
+				{children}
+			</DialogContent>
+		</Dialog>
 	)
 }
 

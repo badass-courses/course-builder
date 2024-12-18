@@ -4,7 +4,7 @@ import { db } from '@/db'
 import { users } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
 import { env } from '@/env.mjs'
-import { FeedbackContext } from '@/feedback-widget/form'
+import { FeedbackContext } from '@/feedback-widget/feedback-schema'
 import { getEmoji } from '@/feedback-widget/get-emoji'
 import { getServerAuthSession } from '@/server/auth'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -45,7 +45,7 @@ export async function sendFeedbackFromUser({
 		await sendAnEmail({
 			Component: BasicEmail,
 			componentProps: {
-				body: `${sanitizeHtml(feedbackText)} <i>${
+				body: `${sanitizeHtml(feedbackText)} <br/><br/><i>${
 					context?.url ? context.url : ''
 				}</i>`,
 				messageType: 'transactional',
