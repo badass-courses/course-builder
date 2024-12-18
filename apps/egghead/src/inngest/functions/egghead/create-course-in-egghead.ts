@@ -34,20 +34,16 @@ export const createCourseInEgghead = inngest.createFunction(
 			const instructor = await loadEggheadInstructorForUser(post.createdById)
 
 			if (!instructor) {
-				return null
+				throw new NonRetriableError('Instructor not found', {
+					cause: {
+						postId: post.id,
+						instructorId: post.createdById,
+					},
+				})
 			}
 
 			return instructor
 		})
-
-		if (!instructor) {
-			throw new NonRetriableError('Instructor not found', {
-				cause: {
-					postId: post.id,
-					instructorId: post.createdById,
-				},
-			})
-		}
 
 		const course = await step.run('create-course', async () => {
 			const courseGuid = post.fields?.slug.split('~').pop()
