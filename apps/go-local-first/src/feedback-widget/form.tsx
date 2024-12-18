@@ -50,12 +50,8 @@ export const FeedbackForm: React.FC<
 				const isCodeQuestion = values.context.category === 'code'
 
 				return (
-					<Form
-						className="flex flex-col space-y-5"
-						placeholder=""
-						onPointerEnterCapture={undefined}
-						onPointerLeaveCapture={undefined}
-					>
+					// @ts-ignore
+					<Form className="flex flex-col space-y-5">
 						<div
 							className={cn({ 'pointer-events-none blur-sm': isCodeQuestion })}
 						>

@@ -76,7 +76,7 @@
 		--secondary-foreground: 0 0% 100%;
 
 		--muted: 0 0% 10%;
-		--muted-foreground: 22.3 64.2% 93.3%;
+		--muted-foreground: 0 0% 70%;
 
 		--accent: 0 0% 5%;
 		--accent-foreground: 32 5% 90%;
@@ -85,7 +85,7 @@
 		--destructive-foreground: 32 5% 90%;
 
 		--border: 0 0% 10%;
-		--input: 32 16% 38%;
+		--input: 0 0% 15%;
 		--ring: 32 100% 64%;
 		--radius: 0.3rem;
 		color-scheme: dark;
@@ -139,4 +139,8 @@
 		font-weight: var(--shiki-dark-font-weight) !important;
 		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
+}
+
+.md-editor-toolbar-warp {
+	@apply bg-background border-border border-b !important;
 }

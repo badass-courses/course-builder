@@ -13,6 +13,7 @@ export default async function ArticleEditPage(props: {
 	params: Promise<{ slug: string }>
 }) {
 	const params = await props.params
+
 	const { ability } = await getServerAuthSession()
 	const post = await getPost(params.slug)
 
@@ -24,14 +25,21 @@ export default async function ArticleEditPage(props: {
 		redirect(`/${post?.fields?.slug}`)
 	}
 
-	const resource = post.resources?.[0]?.resource.id
+	const videoResource =
+		post.resources
+			?.map((resource) => resource.resource)
+			?.find((resource) => {
+				return resource.type === 'videoResource'
+			}) || null
 
-	const videoResourceLoader = courseBuilderAdapter.getVideoResource(resource)
+	const videoResourceLoader = videoResource
+		? courseBuilderAdapter.getVideoResource(videoResource.id)
+		: Promise.resolve(null)
 
 	return (
 		<EditPostForm
 			key={post.fields.slug}
-			post={post}
+			post={{ ...post }}
 			videoResourceLoader={videoResourceLoader}
 		/>
 	)

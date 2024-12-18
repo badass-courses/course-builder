@@ -1,3 +1,4 @@
+import { EGGHEAD_COURSE_CREATED_EVENT } from '@/inngest/events/egghead/course-created'
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
 import { SanityCourseSchema } from '@/lib/sanity-content'
@@ -39,8 +40,24 @@ export const createCourseInSanity = inngest.createFunction(
 			return contributor
 		})
 
+		const courseCreatedEvent = await step.waitForEvent(
+			`wait for course created in egghead-rails`,
+			{
+				event: EGGHEAD_COURSE_CREATED_EVENT,
+				timeout: '3 mins',
+			},
+		)
+
+		if (!courseCreatedEvent) {
+			throw new NonRetriableError('Course not created in egghead')
+		}
+
+		const courseId = courseCreatedEvent.data.id
+
 		const sanityCourse = await step.run('create-course', async () => {
 			const { fields } = post
+
+			const courseGuid = fields?.slug.split('~').pop()
 
 			const coursePayload = SanityCourseSchema.safeParse({
 				title: fields?.title,
@@ -49,12 +66,12 @@ export const createCourseInSanity = inngest.createFunction(
 					_type: 'slug',
 				},
 				description: fields?.body,
-				railsCourseId: fields?.railsCourseId,
 				collaborators: [contributor],
 				searchIndexingState: 'hidden',
 				accessLevel: 'pro',
 				productionProcessState: 'new',
-				sharedId: post.id,
+				sharedId: courseGuid,
+				railsCourseId: courseId,
 			})
 
 			if (!coursePayload.success) {

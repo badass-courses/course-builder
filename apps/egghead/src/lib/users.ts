@@ -40,6 +40,36 @@ export const getCachedEggheadInstructorForUser = unstable_cache(
 	{ revalidate: 3600, tags: ['users'] },
 )
 
+export const InstructorEggheadDbSchema = z.object({
+	id: z.number(),
+	user_id: z.number(),
+	email: z.string().nullish(),
+	avatar_content_type: z.string().nullish(),
+	avatar_file_name: z.string().nullish(),
+	avatar_file_size: z.number().nullish(),
+	avatar_processing: z.boolean().nullish(),
+	avatar_updated_at: z.coerce.date().nullish(),
+	bio_short: z.string().nullish(),
+	contract_id: z.string().nullish(),
+	created_at: z.coerce.date().nullish(),
+	first_name: z.string().nullish(),
+	gear_tracking_number: z.string().nullish(),
+	internal_note: z.string().nullish(),
+	last_name: z.string().nullish(),
+	percentage: z.string().nullish(),
+	profile_picture_url: z.string().nullish(),
+	skip_onboarding: z.boolean().nullish(),
+	slack_group_id: z.string().nullish(),
+	slack_id: z.string().nullish(),
+	slug: z.string().nullish(),
+	state: z.string().nullish(),
+	trained_by_instructor_id: z.number().nullish(),
+	twitter: z.string().nullish(),
+	updated_at: z.coerce.date().nullish(),
+	website: z.string().nullish(),
+})
+export type InstructorEggheadDb = z.infer<typeof InstructorEggheadDbSchema>
+
 export const loadEggheadInstructorForUser = async (userId: string) => {
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
@@ -60,11 +90,20 @@ export const loadEggheadInstructorForUser = async (userId: string) => {
 		return null
 	}
 
-	const instructor = await eggheadPgQuery(
+	const instructorResult = await eggheadPgQuery(
 		`SELECT * FROM instructors WHERE user_id = ${eggheadAccount.providerAccountId}`,
 	)
 
-	return instructor.rows[0]
+	const instructor = InstructorEggheadDbSchema.safeParse(
+		instructorResult.rows[0],
+	)
+
+	if (!instructor.success) {
+		console.log('instructor.error', instructor.error)
+		throw new Error('Failed to load instructor from egghead')
+	}
+
+	return instructor.data
 }
 
 export const loadUsersForRole = async (role: string) => {

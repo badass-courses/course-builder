@@ -1,6 +1,5 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-const colors = require('tailwindcss/colors')
-const { fontFamily } = require('tailwindcss/defaultTheme')
+import colors from 'tailwindcss/colors'
+import { fontFamily } from 'tailwindcss/defaultTheme'
 
 // const { withUt } = require('uploadthing/tw')
 
@@ -100,11 +99,10 @@ module.exports = {
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),
-
-						p: { fontWeight: 300 },
+						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
-							color: theme('colors.muted.foreground'),
+							color: theme('colors.foreground'),
 						},
 						blockquote: {
 							borderLeftColor: theme('colors.muted.DEFAULT'),
@@ -145,7 +143,6 @@ module.exports = {
 		require('tailwind-scrollbar'),
 		require('tailwindcss-radix'),
 		require('tailwindcss-animate'),
-		require('@designbycode/tailwindcss-text-stroke'),
 		require('tailwind-fluid-typography'),
 	],
 }

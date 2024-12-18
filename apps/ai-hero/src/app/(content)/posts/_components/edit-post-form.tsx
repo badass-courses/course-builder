@@ -2,8 +2,6 @@
 
 import * as React from 'react'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
-import { MobileEditPostForm } from '@/app/(content)/posts/_components/edit-post-form-mobile'
-import { onPostSave } from '@/app/(content)/posts/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -11,7 +9,7 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
+import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -19,6 +17,8 @@ import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+
+import { MobileEditPostForm } from './edit-post-form-mobile'
 
 const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -102,30 +102,16 @@ export function EditPostForm({
 						/>
 					),
 				},
-				{
-					id: 'resources',
-					icon: () => (
-						<ListOrderedIcon
-							strokeWidth={1.5}
-							size={24}
-							width={18}
-							height={18}
-						/>
-					),
-					toolComponent: (
-						<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
-							TODO
-						</div>
-					),
-				},
 			]}
 		>
-			<PostMetadataFormFields
-				form={form}
-				videoResourceLoader={videoResourceLoader}
-				videoResourceId={videoResource?.id}
-				post={post}
-			/>
+			<React.Suspense fallback={<div>loading</div>}>
+				<PostMetadataFormFields
+					form={form}
+					videoResourceLoader={videoResourceLoader}
+					videoResourceId={videoResource?.id}
+					post={post}
+				/>
+			</React.Suspense>
 		</EditResourcesFormDesktop>
 	)
 }

@@ -12,6 +12,8 @@ import { getPost } from './posts-query'
 
 import 'server-only'
 
+import slugify from '@sindresorhus/slugify'
+
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
 
@@ -146,7 +148,6 @@ export async function updateEggheadLesson(input: {
 	duration: number
 	hlsUrl?: string
 	body?: string
-	published_at?: string
 }) {
 	const {
 		eggheadLessonId,
@@ -159,7 +160,6 @@ export async function updateEggheadLesson(input: {
 		slug,
 		guid,
 		body = '',
-		published_at = null,
 	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
@@ -174,7 +174,6 @@ export async function updateEggheadLesson(input: {
 			summary = $8,
       is_pro_content = $10,
       free_forever = NOT $10,
-      published_at = $11
 		WHERE id = $9`,
 		[
 			state,
@@ -187,8 +186,21 @@ export async function updateEggheadLesson(input: {
 			body,
 			eggheadLessonId,
 			access,
-			published_at,
 		],
+	)
+}
+
+export function setPublishedAt(eggheadLessonId: number, publishedAt: string) {
+	return eggheadPgQuery(`UPDATE lessons SET published_at = $1 WHERE id = $2`, [
+		publishedAt,
+		eggheadLessonId,
+	])
+}
+
+export function clearPublishedAt(eggheadLessonId: number) {
+	return eggheadPgQuery(
+		`UPDATE lessons SET published_at = NULL WHERE id = $1`,
+		[eggheadLessonId],
 	)
 }
 
@@ -278,3 +290,100 @@ export const eggheadLessonSchema = z.object({
 })
 
 export type EggheadLesson = z.infer<typeof eggheadLessonSchema>
+
+export const KvstoreSchema = z.object({
+	tags: z.array(z.string()).optional(),
+	difficulty: z.string().optional(),
+})
+export type Kvstore = z.infer<typeof KvstoreSchema>
+
+export const EggheadDbCourseSchema = z.object({
+	id: z.number(),
+	access_state: z.string().optional(),
+	code_url: z.string().optional(),
+	created_at: z.coerce.date().optional(),
+	description: z.string().optional(),
+	featured: z.boolean().optional(),
+	guid: z.string().optional(),
+	is_complete: z.boolean().optional(),
+	kvstore: KvstoreSchema.optional(),
+	owner_id: z.number().optional(),
+	price: z.number().optional(),
+	published: z.boolean().optional(),
+	published_at: z.coerce.date().optional(),
+	queue_order: z.number().optional(),
+	revshare_percent: z.number().optional(),
+	row_order: z.number().optional(),
+	shared_id: z.string().optional(),
+	site: z.string().optional(),
+	slug: z.string().optional(),
+	square_cover_content_type: z.string().optional(),
+	square_cover_file_name: z.string().optional(),
+	square_cover_file_size: z.number().optional(),
+	square_cover_processing: z.boolean().optional(),
+	square_cover_updated_at: z.coerce.date().optional(),
+	state: z.string().optional(),
+	summary: z.string().optional(),
+	tagline: z.string().optional(),
+	title: z.string().optional(),
+	tweeted_on: z.coerce.date().optional(),
+	updated_at: z.coerce.date().optional(),
+	visibility_state: z.string().optional(),
+})
+export type EggheadDbCourse = z.infer<typeof EggheadDbCourseSchema>
+
+const EGGHEAD_INITIAL_COURSE_STATE = 'draft'
+
+export async function createEggheadCourse(input: {
+	title: string
+	guid: string
+	ownerId: number
+}) {
+	const { title, guid, ownerId } = input
+
+	const columns = [
+		'title',
+		'owner_id',
+		'slug',
+		'guid',
+		'state',
+		'visibility_state',
+		'created_at',
+		'updated_at',
+	]
+
+	const slug = slugify(title) + `~${guid}`
+
+	const values = [
+		title,
+		ownerId,
+		slug,
+		guid,
+		EGGHEAD_INITIAL_COURSE_STATE,
+		'hidden',
+		new Date(), // created_at
+		new Date(), // updated_at
+	]
+
+	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+
+	const query = `
+		INSERT INTO playlists (${columns.join(', ')})
+		VALUES (${placeholders})
+		RETURNING id
+	`
+
+	const eggheadCourseResult = await eggheadPgQuery(query, values)
+
+	const eggheadCourse = EggheadDbCourseSchema.safeParse(
+		eggheadCourseResult.rows[0],
+	)
+
+	if (!eggheadCourse.success) {
+		throw new Error('Failed to create course in egghead', {
+			cause: eggheadCourse.error.flatten().fieldErrors,
+		})
+	}
+
+	return eggheadCourse.data
+}
