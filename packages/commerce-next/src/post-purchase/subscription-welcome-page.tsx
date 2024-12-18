@@ -9,7 +9,7 @@ import { signIn } from 'next-auth/react'
 import Balancer from 'react-wrap-balancer'
 import type { Stripe } from 'stripe'
 
-import type { Subscription } from '@coursebuilder/core/schemas'
+import { Subscription } from '@coursebuilder/core/schemas/subscription'
 import { Button } from '@coursebuilder/ui'
 
 import { Icon } from '../components'
@@ -38,6 +38,12 @@ function formatSubscriptionInterval(interval: string): string {
 	return interval === 'month' ? 'Monthly' : 'Yearly'
 }
 
+interface Resource {
+	fields?: {
+		slug?: string
+	}
+}
+
 export function SubscriptionWelcomePage({
 	subscription,
 	stripeSubscription,
@@ -54,7 +60,6 @@ export function SubscriptionWelcomePage({
 	billingPortalUrl: string
 }) {
 	const product = subscription.product
-	const firstResource = first(product.resources)
 
 	const subscriptionDetails: SubscriptionDetails = {
 		status: stripeSubscription.status,
@@ -93,14 +98,6 @@ export function SubscriptionWelcomePage({
 							</h1>
 
 							<div className="flex flex-wrap justify-center gap-3 pt-8 sm:justify-start">
-								{firstResource && (
-									<Button asChild>
-										<Link href={`/tutorials/${firstResource.fields?.slug}`}>
-											Start Learning
-										</Link>
-									</Button>
-								)}
-
 								{providers.discord && !isDiscordConnected && (
 									<button
 										onClick={() => signIn('discord')}
@@ -143,7 +140,7 @@ export function SubscriptionWelcomePage({
 									<span>
 										{formatSubscriptionInterval(subscriptionDetails.interval)} -{' '}
 										{formatPrice(
-											subscriptionDetails.price.unitAmount *
+											(subscriptionDetails.price.unitAmount ?? 0) *
 												subscriptionDetails.quantity,
 											subscriptionDetails.price.currency,
 										)}

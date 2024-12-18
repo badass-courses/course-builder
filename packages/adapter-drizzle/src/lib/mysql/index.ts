@@ -2842,6 +2842,9 @@ export function mySqlDrizzleAdapter(
 			return SubscriptionSchema.parse(
 				await client.query.subscription.findFirst({
 					where: eq(subscriptionTable.id, id),
+					with: {
+						product: true,
+					},
 				}),
 			)
 		},
@@ -2898,6 +2901,9 @@ export function mySqlDrizzleAdapter(
 						subscriptionTable.merchantSubscriptionId,
 						merchantSubscriptionParsed.data.id,
 					),
+					with: {
+						product: true,
+					},
 				}),
 			)
 
