@@ -173,7 +173,7 @@ export async function updateEggheadLesson(input: {
 			guid = $7,
 			summary = $8,
       is_pro_content = $10,
-      free_forever = NOT $10,
+      free_forever = NOT $10
 		WHERE id = $9`,
 		[
 			state,
