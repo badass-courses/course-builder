@@ -1,6 +1,5 @@
 'use client'
 
-import type { PostSchema } from '@/lib/posts'
 import type { TypesenseResource } from '@/lib/typesense'
 import { useInfiniteHits } from 'react-instantsearch'
 import { z } from 'zod'
