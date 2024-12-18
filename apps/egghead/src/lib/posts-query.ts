@@ -47,11 +47,13 @@ import {
 } from '@coursebuilder/core/schemas'
 
 import {
+	clearPublishedAt,
 	createEggheadLesson,
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
 	getEggheadUserProfile,
+	setPublishedAt,
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
@@ -529,10 +531,18 @@ export async function writePostUpdateToDatabase(input: {
 			...(videoResource?.muxPlaybackId && {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
 			}),
-			...(action === 'publish' && {
-				published_at: new Date().toISOString(),
-			}),
 		})
+
+		if (action === 'publish') {
+			await setPublishedAt(
+				currentPost.fields.eggheadLessonId,
+				new Date().toISOString(),
+			)
+		}
+
+		if (action === 'unpublish') {
+			await clearPublishedAt(currentPost.fields.eggheadLessonId)
+		}
 	}
 
 	await courseBuilderAdapter.updateContentResourceFields({

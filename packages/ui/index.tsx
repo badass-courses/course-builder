@@ -85,6 +85,7 @@ import { Input } from './primitives/input'
 import { Label } from './primitives/label'
 import { Popover, PopoverContent, PopoverTrigger } from './primitives/popover'
 import { Progress } from './primitives/progress'
+import { RadioGroup, RadioGroupItem } from './primitives/radio-group'
 import { Gravatar } from './primitives/react-gravatar'
 import {
 	ResizableHandle,
@@ -251,4 +252,6 @@ export {
 	Switch,
 	ModuleNavigation,
 	Gravatar,
+	RadioGroup,
+	RadioGroupItem,
 }
