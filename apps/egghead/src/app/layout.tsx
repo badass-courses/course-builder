@@ -41,8 +41,8 @@ export default function RootLayout({
 							<Toaster />
 							<ThemeProvider
 								attribute="class"
-								defaultTheme="system"
-								enableSystem
+								defaultTheme="dark"
+								enableSystem={false}
 								disableTransitionOnChange
 							>
 								<div key="1" className="flex min-h-screen w-full flex-col">

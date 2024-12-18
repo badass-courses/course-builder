@@ -119,9 +119,10 @@ export function EditResourcesBodyPanel({
 							onChange={onChange}
 							enablePreview={withMdxPreview ? false : true}
 							theme={
-								theme === 'dark'
+								(theme === 'dark'
 									? CourseBuilderEditorThemeDark
-									: CourseBuilderEditorThemeLight
+									: CourseBuilderEditorThemeLight) ||
+								CourseBuilderEditorThemeDark
 							}
 							extensions={[EditorView.lineWrapping]}
 							toolbars={

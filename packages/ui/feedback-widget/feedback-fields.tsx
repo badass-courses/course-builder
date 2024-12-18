@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { Control, useController } from 'react-hook-form'
 
-import { Label, RadioGroup, RadioGroupItem } from '@coursebuilder/ui'
-
+import { Label, RadioGroup, RadioGroupItem } from '../index'
 import { FeedbackFormValues } from './feedback-schema'
 import { getEmoji } from './get-emoji'
 
