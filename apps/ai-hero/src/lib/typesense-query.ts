@@ -1,6 +1,5 @@
 'use server'
 
-import { env } from '@/env.mjs'
 import Typesense from 'typesense'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -13,12 +12,12 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 	let typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
-				host: env.NEXT_PUBLIC_TYPESENSE_HOST,
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
 				port: 443,
 				protocol: 'https',
 			},
 		],
-		apiKey: env.TYPESENSE_WRITE_API_KEY,
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
 
@@ -27,7 +26,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 	if (!shouldIndex) {
 		await typesenseWriteClient
-			.collections(env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents(String(post.id))
 			.delete()
 			.catch((err: any) => {
@@ -56,7 +55,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		console.log('resource', resource.data)
 
 		await typesenseWriteClient
-			.collections(env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.upsert({
 				...resource.data,
@@ -75,17 +74,17 @@ export async function deletePostInTypeSense(postId: string) {
 	let typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
-				host: env.NEXT_PUBLIC_TYPESENSE_HOST,
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
 				port: 443,
 				protocol: 'https',
 			},
 		],
-		apiKey: env.TYPESENSE_WRITE_API_KEY,
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
 
 	await typesenseWriteClient
-		.collections(env.TYPESENSE_COLLECTION_NAME!)
+		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 		.documents(postId)
 		.delete()
 		.catch((err: any) => {
@@ -100,19 +99,19 @@ export async function indexAllContentToTypeSense(
 	let typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
-				host: env.NEXT_PUBLIC_TYPESENSE_HOST,
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
 				port: 443,
 				protocol: 'https',
 			},
 		],
-		apiKey: env.TYPESENSE_WRITE_API_KEY,
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
 
 	if (deleteFirst) {
 		console.log('Deleting all documents')
 		await typesenseWriteClient
-			.collections(env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.delete({
 				filter_by: 'visibility:public',
@@ -166,7 +165,7 @@ export async function indexAllContentToTypeSense(
 
 	try {
 		await typesenseWriteClient
-			.collections(env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.import(documents, { action: 'upsert' })
 
