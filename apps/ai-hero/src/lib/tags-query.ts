@@ -10,7 +10,6 @@ import { Tag, TagSchema } from './tags'
 
 export async function getTags(): Promise<Tag[]> {
 	const tags = await db.query.tag.findMany()
-	console.log({ tags })
 	return z.array(TagSchema).parse(tags)
 }
 
