@@ -145,7 +145,11 @@ export async function updatePost(
 		postSlug = input.fields.slug
 	}
 
-	await upsertPostToTypeSense(currentPost, action)
+	try {
+		await upsertPostToTypeSense(currentPost, action)
+	} catch (e) {
+		console.error('Failed to update post in Typesense', e)
+	}
 
 	revalidateTag('posts')
 
