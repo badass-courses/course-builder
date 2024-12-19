@@ -9,6 +9,18 @@ import { Post, PostAction } from './posts'
 // import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
 
+let typesenseWriteClient = new Typesense.Client({
+	nodes: [
+		{
+			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+			port: 443,
+			protocol: 'https',
+		},
+	],
+	apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+	connectionTimeoutSeconds: 2,
+})
+
 // export async function indexAllContentToTypeSense(
 // 	resources: ContentResource[],
 // 	deleteFirst = true,
@@ -81,23 +93,11 @@ import { TypesenseResourceSchema } from './typesense'
 // }
 
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
-	let client = new Typesense.Client({
-		nodes: [
-			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-				port: 443,
-				protocol: 'https',
-			},
-		],
-		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-		connectionTimeoutSeconds: 2,
-	})
-
 	const shouldIndex =
 		post.fields.state === 'published' && post.fields.visibility === 'public'
 
 	if (!shouldIndex) {
-		await client
+		await typesenseWriteClient
 			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents(String(post.id))
 			.delete()
@@ -126,7 +126,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 		console.log('resource', resource.data)
 
-		await client
+		await typesenseWriteClient
 			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.upsert({
