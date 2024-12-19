@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import Typesense from 'typesense'
 import * as z from 'zod'
 
@@ -9,7 +10,7 @@ export const typesenseWriteClient = new Typesense.Client({
 			protocol: 'https',
 		},
 	],
-	apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+	apiKey: env.TYPESENSE_WRITE_API_KEY!,
 	connectionTimeoutSeconds: 2,
 })
 
