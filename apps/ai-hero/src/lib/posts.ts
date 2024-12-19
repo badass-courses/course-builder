@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { TagFieldsSchema, TagSchema } from './tags'
+
 export const PostActionSchema = z.union([
 	z.literal('publish'),
 	z.literal('unpublish'),
@@ -43,6 +45,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
 		}),
+		tags: z.array(z.any()).nullish(),
 	}),
 )
 
