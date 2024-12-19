@@ -18,7 +18,6 @@ type CreateTagInput = z.infer<typeof TagSchema>
 
 export async function createTag(input: CreateTagInput): Promise<Tag> {
 	const validatedInput = TagSchema.parse(input)
-	console.log({ validatedInput })
 	await db.insert(tagTable).values(validatedInput)
 
 	return validatedInput
