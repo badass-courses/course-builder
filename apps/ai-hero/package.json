@@ -19,8 +19,7 @@
 		"db:introspect": "dotenv drizzle-kit introspect",
 		"lint": "next lint",
 		"start": "next start",
-		"typecheck": "tsc --noEmit",
-		"index-typesense": "tsx ./scripts/index-content.ts"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@amplitude/analytics-browser": "^2.6.1",
