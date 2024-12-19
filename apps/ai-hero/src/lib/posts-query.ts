@@ -12,7 +12,7 @@ import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
-import { upsertPostToTypeSense } from './typesense-query'
+import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
@@ -242,7 +242,7 @@ export async function deletePost(id: string) {
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
-	// await deletePostInTypeSense(post.id)
+	await deletePostInTypeSense(post.id)
 
 	revalidateTag('posts')
 	revalidateTag(id)
