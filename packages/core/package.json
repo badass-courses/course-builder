@@ -34,7 +34,9 @@
 			"require": "./dist/index.js"
 		},
 		"./types": {
-			"types": "./dist/types.d.ts"
+			"types": "./dist/types.d.ts",
+			"import": "./dist/types.js",
+			"require": "./dist/types.js"
 		},
 		"./adapters": {
 			"types": "./dist/adapters.d.ts",
