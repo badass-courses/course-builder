@@ -26,6 +26,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
 import { AxiomWebVitals } from 'next-axiom'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { extractRouterConfig } from 'uploadthing/server'
 
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
@@ -72,39 +73,41 @@ export default function RootLayout({
 					<Toaster />
 					<FeedbackInsert />
 					<TRPCReactProvider>
-						<Party />
-						<ThemeProvider
-							attribute="class"
-							forcedTheme="dark"
-							defaultTheme="dark"
-							enableSystem={false}
-							disableTransitionOnChange
-						>
-							<NextSSRPlugin
-								/**
-								 * The `extractRouterConfig` will extract **only** the route configs from the
-								 * router to prevent additional information from being leaked to the client. The
-								 * data passed to the client is the same as if you were to fetch
-								 * `/api/uploadthing` directly.
-								 */
-								routerConfig={extractRouterConfig(ourFileRouter)}
-							/>
-							<Navigation />
-							<CouponProvider
-								getCouponForCode={async (couponCodeOrId: string | null) => {
-									'use server'
-									return getCouponForCode(
-										couponCodeOrId,
-										[],
-										courseBuilderAdapter,
-									)
-								}}
-								getProduct={getProduct}
+						<NuqsAdapter>
+							<Party />
+							<ThemeProvider
+								attribute="class"
+								forcedTheme="dark"
+								defaultTheme="dark"
+								enableSystem={false}
+								disableTransitionOnChange
 							>
-								{children}
-							</CouponProvider>
-							<Footer />
-						</ThemeProvider>
+								<NextSSRPlugin
+									/**
+									 * The `extractRouterConfig` will extract **only** the route configs from the
+									 * router to prevent additional information from being leaked to the client. The
+									 * data passed to the client is the same as if you were to fetch
+									 * `/api/uploadthing` directly.
+									 */
+									routerConfig={extractRouterConfig(ourFileRouter)}
+								/>
+								<Navigation />
+								<CouponProvider
+									getCouponForCode={async (couponCodeOrId: string | null) => {
+										'use server'
+										return getCouponForCode(
+											couponCodeOrId,
+											[],
+											courseBuilderAdapter,
+										)
+									}}
+									getProduct={getProduct}
+								>
+									{children}
+								</CouponProvider>
+								<Footer />
+							</ThemeProvider>
+						</NuqsAdapter>
 					</TRPCReactProvider>
 					{isGoogleAnalyticsAvailable && (
 						<GoogleAnalytics gaId={env.NEXT_PUBLIC_GOOGLE_ANALYTICS!} />
