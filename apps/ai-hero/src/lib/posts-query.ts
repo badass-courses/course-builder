@@ -106,7 +106,11 @@ export async function createPost(input: NewPost) {
 				.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
 		}
 
-		await upsertPostToTypeSense(post, 'save')
+		try {
+			await upsertPostToTypeSense(post, 'save')
+		} catch (e) {
+			console.error('Failed to create post in Typesense', e)
+		}
 
 		revalidateTag('posts')
 
@@ -145,7 +149,11 @@ export async function updatePost(
 		postSlug = input.fields.slug
 	}
 
-	await upsertPostToTypeSense(currentPost, action)
+	try {
+		await upsertPostToTypeSense(currentPost, action)
+	} catch (e) {
+		console.error('Failed to update post in Typesense', e)
+	}
 
 	revalidateTag('posts')
 

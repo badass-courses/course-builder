@@ -3,13 +3,30 @@ import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { sql } from 'drizzle-orm'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+interface SitemapEntry {
+	url: string
+	title: string
+	description: string
+	lastModified: Date
+	changeFrequency:
+		| 'yearly'
+		| 'monthly'
+		| 'weekly'
+		| 'daily'
+		| 'hourly'
+		| 'always'
+		| 'never'
+	priority: number
+}
+
+export default async function sitemap(): Promise<SitemapEntry[]> {
 	const workshopItems = await db.execute(sql`
     SELECT DISTINCT
       workshop.id AS workshop_id,
       workshop.type AS workshop_type,
       workshop.fields->>'$.slug' AS workshop_slug,
       workshop.fields->>'$.title' AS workshop_title,
+      workshop.fields->>'$.description' AS workshop_description,
       COALESCE(sections.id, top_level_lessons.id) AS section_or_lesson_id,
       COALESCE(sections.fields->>'$.slug', top_level_lessons.fields->>'$.slug') AS section_or_lesson_slug,
       COALESCE(sections.fields->>'$.title', top_level_lessons.fields->>'$.title') AS section_or_lesson_title,
@@ -22,6 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lessons.id AS lesson_id,
       lessons.fields->>'$.slug' AS lesson_slug,
       lessons.fields->>'$.title' AS lesson_title,
+      lessons.fields->>'$.description' AS lesson_description,
       lesson_relations.position AS lesson_position
     FROM
       ${contentResource} AS workshop
@@ -45,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lesson_relations.position
   `)
 
-	const sitemapEntries: MetadataRoute.Sitemap = []
+	const sitemapEntries: SitemapEntry[] = []
 
 	// Add workshop and tutorial entries
 	const workshopsAndTutorials = new Set<string>()
@@ -54,6 +72,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			workshopsAndTutorials.add(item.workshop_id)
 			sitemapEntries.push({
 				url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}`,
+				title: item.workshop_title,
+				description: item.workshop_description || '',
 				lastModified: new Date(),
 				changeFrequency: 'monthly',
 				priority: 0.9,
@@ -68,6 +88,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			if (slug) {
 				sitemapEntries.push({
 					url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}/${slug}`,
+					title: item.lesson_title || item.section_or_lesson_title,
+					description: item.lesson_description || '',
 					lastModified: new Date(),
 					changeFrequency: 'monthly',
 					priority: 0.7,
@@ -82,6 +104,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       cr.id,
       cr.type,
       cr.fields->>'$.slug' AS slug,
+			cr.fields->>'$.title' AS title,
+      cr.fields->>'$.description' AS description,
       cr.updatedAt
     FROM
       ${contentResource} cr
@@ -118,6 +142,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 		sitemapEntries.push({
 			url,
+			title: item.title,
+			description: item.description || '',
 			lastModified: new Date(item.updatedAt),
 			changeFrequency,
 			priority,
@@ -127,6 +153,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	// Add the homepage
 	sitemapEntries.unshift({
 		url: `${process.env.COURSEBUILDER_URL}/`,
+		title: 'Homepage',
+		description: '',
 		lastModified: new Date(),
 		changeFrequency: 'daily',
 		priority: 1,

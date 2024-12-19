@@ -182,12 +182,12 @@ export default async function PostPage(props: {
 					/>
 				</div>
 				{/* <div className="absolute left-0 top-0 -z-10 h-[76px] w-full">
-					<img
-						src={squareGridPattern}
-						className="absolute left-0 top-0 h-[76px] w-full overflow-hidden object-cover object-top"
-					/>
-					<div className="from-background via-background/80 to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r" />
-				</div> */}
+          <img
+            src={squareGridPattern}
+            className="absolute left-0 top-0 h-[76px] w-full overflow-hidden object-cover object-top"
+          />
+          <div className="from-background via-background/80 to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r" />
+        </div> */}
 				<div className="relative z-10 flex w-full items-center justify-between">
 					<Link
 						href="/posts"
@@ -219,15 +219,15 @@ export default async function PostPage(props: {
 									/>
 								</div>
 								{/* <div className="relative">
-									<img
-										src={squareGridPattern}
-										className="my-2 h-[30px] w-[289px] overflow-hidden object-cover object-left-top opacity-75 saturate-0"
-									/>
-									<div
-										className="to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r from-transparent"
-										aria-hidden="true"
-									/>
-								</div> */}
+                  <img
+                    src={squareGridPattern}
+                    className="my-2 h-[30px] w-[289px] overflow-hidden object-cover object-left-top opacity-75 saturate-0"
+                  />
+                  <div
+                    className="to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r from-transparent"
+                    aria-hidden="true"
+                  />
+                </div> */}
 							</div>
 						</aside>
 					</article>

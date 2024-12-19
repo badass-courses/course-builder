@@ -1,13 +1,113 @@
+'use server'
+
+import Typesense from 'typesense'
+
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { Post, PostAction } from './posts'
 // import { getPostTags } from './posts-query'
-import { TypesenseResourceSchema, typesenseWriteClient } from './typesense'
+import { TypesenseResourceSchema } from './typesense'
+
+export async function upsertPostToTypeSense(post: Post, action: PostAction) {
+	let typesenseWriteClient = new Typesense.Client({
+		nodes: [
+			{
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
+
+	const shouldIndex =
+		post.fields.state === 'published' && post.fields.visibility === 'public'
+
+	if (!shouldIndex) {
+		await typesenseWriteClient
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents(String(post.id))
+			.delete()
+			.catch((err: any) => {
+				console.error(err)
+			})
+	} else {
+		// const tags = await getPostTags(post.id)
+		const now = Date.now()
+		const resource = TypesenseResourceSchema.safeParse({
+			id: post.id,
+			title: post.fields.title,
+			slug: post.fields.slug,
+			description: post.fields.body,
+			type: post.type,
+			visibility: post.fields.visibility,
+			state: post.fields.state,
+			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
+			// _tags: tags.map((tag) => tag.fields.name),
+		})
+
+		if (!resource.success) {
+			console.error('Schema validation error:', resource.error)
+			return
+		}
+
+		console.log('resource', resource.data)
+
+		await typesenseWriteClient
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents()
+			.upsert({
+				...resource.data,
+				...(action === 'publish' && {
+					published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+				}),
+				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+			})
+			.catch((err: any) => {
+				console.error(err)
+			})
+	}
+}
+
+export async function deletePostInTypeSense(postId: string) {
+	let typesenseWriteClient = new Typesense.Client({
+		nodes: [
+			{
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
+
+	await typesenseWriteClient
+		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+		.documents(postId)
+		.delete()
+		.catch((err: any) => {
+			console.error(err)
+		})
+}
 
 export async function indexAllContentToTypeSense(
 	resources: ContentResource[],
 	deleteFirst = true,
 ) {
+	let typesenseWriteClient = new Typesense.Client({
+		nodes: [
+			{
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
+
 	if (deleteFirst) {
 		console.log('Deleting all documents')
 		await typesenseWriteClient
@@ -73,64 +173,4 @@ export async function indexAllContentToTypeSense(
 	} catch (error) {
 		console.error('Failed to index documents:', error)
 	}
-}
-
-export async function upsertPostToTypeSense(post: Post, action: PostAction) {
-	const shouldIndex =
-		post.fields.state === 'published' && post.fields.visibility === 'public'
-
-	if (!shouldIndex) {
-		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents(String(post.id))
-			.delete()
-			.catch((err: any) => {
-				console.error(err)
-			})
-	} else {
-		// const tags = await getPostTags(post.id)
-		const now = Date.now()
-		const resource = TypesenseResourceSchema.safeParse({
-			id: post.id,
-			title: post.fields.title,
-			slug: post.fields.slug,
-			description: post.fields.body,
-			type: post.type,
-			visibility: post.fields.visibility,
-			state: post.fields.state,
-			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
-			// _tags: tags.map((tag) => tag.fields.name),
-		})
-
-		if (!resource.success) {
-			console.error(resource.error)
-			return
-		}
-
-		console.log('resource', resource.data)
-
-		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents()
-			.upsert({
-				...resource.data,
-				...(action === 'publish' && {
-					published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-				}),
-				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-			})
-			.catch((err: any) => {
-				console.error(err)
-			})
-	}
-}
-
-export async function deletePostInTypeSense(postId: string) {
-	await typesenseWriteClient
-		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-		.documents(postId)
-		.delete()
-		.catch((err: any) => {
-			console.error(err)
-		})
 }
