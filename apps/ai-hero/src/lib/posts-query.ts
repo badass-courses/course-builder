@@ -2,7 +2,11 @@
 
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
+} from '@/db/schema'
 import { NewPost, Post, PostSchema, type PostUpdate } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
@@ -12,6 +16,7 @@ import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
+import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export const getCachedAllPosts = unstable_cache(
@@ -33,6 +38,17 @@ export async function getAllPosts(): Promise<Post[]> {
 	}
 
 	return postsParsed.data
+}
+
+export async function getPostTags(postId: string): Promise<Tag[]> {
+	const tags = await db.query.contentResourceTag.findMany({
+		where: eq(contentResourceTagTable.contentResourceId, postId),
+		with: {
+			tag: true,
+		},
+	})
+
+	return z.array(TagSchema).parse(tags.map((tag) => tag.tag))
 }
 
 export async function getPosts(): Promise<Post[]> {
@@ -207,6 +223,12 @@ export async function getPost(slugOrId: string) {
 				},
 				orderBy: asc(contentResourceResource.position),
 			},
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 		},
 	})
 
@@ -253,4 +275,37 @@ export async function deletePost(id: string) {
 	revalidatePath('/posts')
 
 	return true
+}
+
+export async function addTagToPost(postId: string, tagId: string) {
+	await db.insert(contentResourceTagTable).values({
+		contentResourceId: postId,
+		tagId,
+	})
+}
+
+export async function updatePostTags(postId: string, tags: Tag[]) {
+	await db.transaction(async (trx) => {
+		await trx
+			.delete(contentResourceTagTable)
+			.where(eq(contentResourceTagTable.contentResourceId, postId))
+
+		await trx.insert(contentResourceTagTable).values(
+			tags.map((tag) => ({
+				contentResourceId: postId,
+				tagId: tag.id,
+			})),
+		)
+	})
+}
+
+export async function removeTagFromPost(postId: string, tagId: string) {
+	await db
+		.delete(contentResourceTagTable)
+		.where(
+			and(
+				eq(contentResourceTagTable.contentResourceId, postId),
+				eq(contentResourceTagTable.tagId, tagId),
+			),
+		)
 }
