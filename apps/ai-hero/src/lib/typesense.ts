@@ -1,17 +1,17 @@
 import Typesense from 'typesense'
 import * as z from 'zod'
 
-export const typesenseWriteClient = new Typesense.Client({
-	nodes: [
-		{
-			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-			port: 443,
-			protocol: 'https',
-		},
-	],
-	apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-	connectionTimeoutSeconds: 2,
-})
+// export const typesenseWriteClient = new Typesense.Client({
+// 	nodes: [
+// 		{
+// 			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+// 			port: 443,
+// 			protocol: 'https',
+// 		},
+// 	],
+// 	apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+// 	connectionTimeoutSeconds: 2,
+// })
 
 export const TypesenseResourceSchema = z.object({
 	id: z.string(),

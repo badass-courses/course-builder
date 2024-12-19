@@ -1,3 +1,5 @@
+'use server'
+
 // import { env } from '@/env.mjs'
 import Typesense from 'typesense'
 
@@ -5,7 +7,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { Post, PostAction } from './posts'
 // import { getPostTags } from './posts-query'
-import { TypesenseResourceSchema, typesenseWriteClient } from './typesense'
+import { TypesenseResourceSchema } from './typesense'
 
 // export async function indexAllContentToTypeSense(
 // 	resources: ContentResource[],
