@@ -2,6 +2,7 @@ import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
 import { getPost } from '@/lib/posts-query'
+import { getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -35,11 +36,13 @@ export default async function ArticleEditPage(props: {
 	const videoResourceLoader = videoResource
 		? courseBuilderAdapter.getVideoResource(videoResource.id)
 		: Promise.resolve(null)
+	const tagLoader = getTags()
 
 	return (
 		<EditPostForm
 			key={post.fields.slug}
 			post={{ ...post }}
+			tagLoader={tagLoader}
 			videoResourceLoader={videoResourceLoader}
 		/>
 	)

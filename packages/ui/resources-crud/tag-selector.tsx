@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { EggheadTag } from '@/lib/tags'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
 import {
@@ -16,27 +15,43 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from '@coursebuilder/ui'
-import { cn } from '@coursebuilder/ui/utils/cn'
+} from '../index'
+import { cn } from '../utils/cn'
+
+type Tag = {
+	id: string
+	fields: {
+		label: string
+		name: string
+	}
+}
 
 export default function AdvancedTagSelector({
 	availableTags,
 	selectedTags: initialSelectedTags = [],
 	onTagSelect,
 	onTagRemove,
+	className,
 }: {
-	availableTags: EggheadTag[]
-	selectedTags: EggheadTag[]
-	onTagSelect?: (tag: EggheadTag) => void
+	availableTags: Tag[]
+	selectedTags: Tag[]
+	onTagSelect?: (tag: Tag) => void
 	onTagRemove?: (tagId: string) => void
+	className?: string
 }) {
 	const [open, setOpen] = React.useState(false)
 	const [selectedTags, setSelectedTags] =
-		React.useState<EggheadTag[]>(initialSelectedTags)
+		React.useState<Tag[]>(initialSelectedTags)
 	const [inputValue, setInputValue] = React.useState('')
 
-	const handleTagSelect = (tag: EggheadTag) => {
-		onTagSelect?.(tag)
+	const handleTagSelect = (tag: Tag) => {
+		const isAlreadySelected = selectedTags.some((t) => t.id === tag.id)
+		if (isAlreadySelected) {
+			onTagRemove?.(tag.id)
+		} else {
+			onTagSelect?.(tag)
+		}
+
 		setSelectedTags((prev) => {
 			if (prev.some((t) => t.id === tag.id)) {
 				return prev.filter((t) => t.id !== tag.id)
@@ -56,7 +71,21 @@ export default function AdvancedTagSelector({
 	)
 
 	return (
-		<div className="w-full max-w-md space-y-4">
+		<div className={cn('mt-1 w-full max-w-md space-y-2', className)}>
+			<div className="flex flex-wrap gap-2" aria-live="polite">
+				{selectedTags.map((tag) => (
+					<Badge key={tag.id} variant="secondary" className="text-sm">
+						{tag?.fields?.label}
+						<button
+							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+							onClick={() => handleTagRemove(tag.id)}
+							aria-label={`Remove ${tag?.fields?.label} tag`}
+						>
+							<X className="h-3 w-3" />
+						</button>
+					</Badge>
+				))}
+			</div>
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
 					<Button
@@ -87,7 +116,7 @@ export default function AdvancedTagSelector({
 									className="flex items-center justify-between"
 								>
 									<div>
-										<span>{tag.fields.label}</span>
+										<span>{tag?.fields?.label}</span>
 										<span className="text-muted-foreground ml-2 text-sm">
 											{tag.fields.name}
 										</span>
@@ -106,21 +135,6 @@ export default function AdvancedTagSelector({
 					</Command>
 				</PopoverContent>
 			</Popover>
-
-			<div className="flex flex-wrap gap-2" aria-live="polite">
-				{selectedTags.map((tag) => (
-					<Badge key={tag.id} variant="secondary" className="text-sm">
-						{tag.fields.label}
-						<button
-							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
-							onClick={() => handleTagRemove(tag.id)}
-							aria-label={`Remove ${tag.fields.label} tag`}
-						>
-							<X className="h-3 w-3" />
-						</button>
-					</Badge>
-				))}
-			</div>
 		</div>
 	)
 }

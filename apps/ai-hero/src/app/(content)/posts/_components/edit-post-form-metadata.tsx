@@ -7,6 +7,8 @@ import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { Post, PostSchema } from '@/lib/posts'
+import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -31,6 +33,7 @@ import {
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
+import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 import { NewLessonVideoForm } from '../../_components/new-lesson-video-form'
 import { PostUploader } from './post-uploader'
@@ -40,18 +43,20 @@ export const PostMetadataFormFields: React.FC<{
 	videoResourceLoader: Promise<VideoResource | null>
 	videoResourceId: string | null | undefined
 	post: Post
+	tagLoader: Promise<Tag[]>
 }> = ({
 	form,
 	videoResourceLoader,
 	post,
 	videoResourceId: initialVideoResourceId,
+	tagLoader,
 }) => {
 	const router = useRouter()
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
 	>(initialVideoResourceId)
-
+	const tags = tagLoader ? use(tagLoader) : []
 	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
 		videoResourceId: videoResourceId,
 	})
@@ -220,6 +225,21 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			{tags?.length > 0 && (
+				<div className="px-5">
+					<FormLabel className="text-lg font-bold">Tags</FormLabel>
+					<AdvancedTagSelector
+						availableTags={tags}
+						selectedTags={post?.tags?.map((tag) => tag.tag) ?? []}
+						onTagSelect={async (tag: { id: string }) => {
+							await addTagToPost(post.id, tag.id)
+						}}
+						onTagRemove={async (tagId: string) => {
+							await removeTagFromPost(post.id, tagId)
+						}}
+					/>
+				</div>
+			)}
 			<FormField
 				control={form.control}
 				name="fields.description"

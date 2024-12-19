@@ -21,6 +21,7 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 	videoResourceLoader,
 	availableWorkflows,
 	theme = 'light',
+	tagLoader,
 }) => {
 	const session = useSession()
 	const videoResource = use(videoResourceLoader)
@@ -119,6 +120,7 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 					>
 						<div className="flex flex-col gap-8">
 							<PostMetadataFormFields
+								tagLoader={tagLoader}
 								form={form}
 								videoResourceLoader={videoResourceLoader}
 								post={post}
