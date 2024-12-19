@@ -76,14 +76,14 @@ export async function searchLessons(searchTerm: string) {
 		),
 		orderBy: [
 			// Sort by createdById matching current user (if logged in)
-			sql`CASE 
-				WHEN ${contentResource.createdById} = ${userId} THEN 0 
-				ELSE 1 
+			sql`CASE
+				WHEN ${contentResource.createdById} = ${userId} THEN 0
+				ELSE 1
 			END`,
 			// Secondary sort by title match (prioritize title matches)
-			sql`CASE 
-				WHEN LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`} THEN 0 
-				ELSE 1 
+			sql`CASE
+				WHEN LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`} THEN 0
+				ELSE 1
 			END`,
 			// Then sort by title alphabetically
 			sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,

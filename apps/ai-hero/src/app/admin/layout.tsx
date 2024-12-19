@@ -1,5 +1,5 @@
 import React from 'react'
-import { FileText, Mail, TicketIcon } from 'lucide-react'
+import { FileText, Mail, TagIcon, TicketIcon } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
 
@@ -28,6 +28,10 @@ const AdminLayout = async ({
 								<NavItem href="/admin/coupons">
 									<TicketIcon className="h-4 w-4" />
 									Coupons
+								</NavItem>
+								<NavItem href="/admin/tags">
+									<TagIcon className="h-4 w-4" />
+									Tags
 								</NavItem>
 								<NavItem href="/admin/emails">
 									<Mail className="h-4 w-4" />

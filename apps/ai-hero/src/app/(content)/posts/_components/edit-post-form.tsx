@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
+import type { Tag } from '@/lib/tags'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -36,11 +37,13 @@ export type EditPostFormProps = {
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
+	tagLoader: Promise<Tag[]>
 }
 
 export function EditPostForm({
 	post,
 	videoResourceLoader,
+	tagLoader,
 }: Omit<EditPostFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
@@ -67,6 +70,7 @@ export function EditPostForm({
 
 	return isMobile ? (
 		<MobileEditPostForm
+			tagLoader={tagLoader}
 			post={post}
 			form={form}
 			videoResourceLoader={videoResourceLoader}
@@ -106,6 +110,7 @@ export function EditPostForm({
 		>
 			<React.Suspense fallback={<div>loading</div>}>
 				<PostMetadataFormFields
+					tagLoader={tagLoader}
 					form={form}
 					videoResourceLoader={videoResourceLoader}
 					videoResourceId={videoResource?.id}
