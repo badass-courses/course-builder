@@ -81,8 +81,8 @@ export const env = createEnv({
 		CLOUDINARY_API_KEY: z.string(),
 		CLOUDINARY_API_SECRET: z.string(),
 		PINECONE_API_KEY: z.string().optional(),
-		TYPESENSE_WRITE_API_KEY: z.string().optional(),
-		TYPESENSE_COLLECTION_NAME: z.string().optional(),
+		TYPESENSE_WRITE_API_KEY: z.string(),
+		TYPESENSE_COLLECTION_NAME: z.string(),
 	},
 
 	/**
@@ -102,7 +102,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().optional(),
-		NEXT_PUBLIC_TYPESENSE_HOST: z.string().optional(),
+		NEXT_PUBLIC_TYPESENSE_HOST: z.string(),
 		NEXT_PUBLIC_TYPESENSE_API_KEY: z.string().optional(),
 		NEXT_PUBLIC_TYPESENSE_PORT: z.string().optional(),
 	},

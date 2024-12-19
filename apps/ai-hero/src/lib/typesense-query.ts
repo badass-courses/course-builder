@@ -82,12 +82,12 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 	let client = new Typesense.Client({
 		nodes: [
 			{
-				host: env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				host: env.NEXT_PUBLIC_TYPESENSE_HOST,
 				port: 443,
 				protocol: 'https',
 			},
 		],
-		apiKey: env.TYPESENSE_WRITE_API_KEY!,
+		apiKey: env.TYPESENSE_WRITE_API_KEY,
 		connectionTimeoutSeconds: 2,
 	})
 	const shouldIndex =
@@ -95,7 +95,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 	if (!shouldIndex) {
 		await client
-			.collections(env.TYPESENSE_COLLECTION_NAME!)
+			.collections(env.TYPESENSE_COLLECTION_NAME)
 			.documents(String(post.id))
 			.delete()
 			.catch((err: any) => {
@@ -124,7 +124,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		console.log('resource', resource.data)
 
 		await client
-			.collections(env.TYPESENSE_COLLECTION_NAME!)
+			.collections(env.TYPESENSE_COLLECTION_NAME)
 			.documents()
 			.upsert({
 				...resource.data,
@@ -141,7 +141,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 export async function deletePostInTypeSense(postId: string) {
 	await typesenseWriteClient
-		.collections(env.TYPESENSE_COLLECTION_NAME!)
+		.collections(env.TYPESENSE_COLLECTION_NAME)
 		.documents(postId)
 		.delete()
 		.catch((err: any) => {
