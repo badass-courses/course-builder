@@ -3,7 +3,6 @@ import { Suspense, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
-import AdvancedTagSelector from '@/components/resources-crud/tag-selector'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
@@ -34,6 +33,7 @@ import {
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
+import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 import { NewLessonVideoForm } from '../../_components/new-lesson-video-form'
 import { PostUploader } from './post-uploader'
@@ -231,7 +231,7 @@ export const PostMetadataFormFields: React.FC<{
 					<AdvancedTagSelector
 						availableTags={tags}
 						selectedTags={post?.tags?.map((tag) => tag.tag) ?? []}
-						onTagSelect={async (tag: Tag) => {
+						onTagSelect={async (tag: { id: string }) => {
 							await addTagToPost(post.id, tag.id)
 						}}
 						onTagRemove={async (tagId: string) => {
