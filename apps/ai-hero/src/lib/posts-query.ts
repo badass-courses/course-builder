@@ -12,7 +12,7 @@ import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
-// import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
+import { upsertPostToTypeSense } from './typesense-query'
 
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
@@ -145,7 +145,7 @@ export async function updatePost(
 		postSlug = input.fields.slug
 	}
 
-	// await upsertPostToTypeSense(currentPost, action)
+	await upsertPostToTypeSense(currentPost, action)
 
 	revalidateTag('posts')
 
