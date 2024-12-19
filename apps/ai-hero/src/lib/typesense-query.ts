@@ -1,4 +1,5 @@
 import { env } from '@/env.mjs'
+import Typesense from 'typesense'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -78,11 +79,22 @@ export async function indexAllContentToTypeSense(
 }
 
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
+	let client = new Typesense.Client({
+		nodes: [
+			{
+				host: env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
 	const shouldIndex =
 		post.fields.state === 'published' && post.fields.visibility === 'public'
 
 	if (!shouldIndex) {
-		await typesenseWriteClient
+		await client
 			.collections(env.TYPESENSE_COLLECTION_NAME!)
 			.documents(String(post.id))
 			.delete()
@@ -105,13 +117,13 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		})
 
 		if (!resource.success) {
-			console.error(resource.error)
+			console.error('Schema validation error:', resource.error)
 			return
 		}
 
 		console.log('resource', resource.data)
 
-		await typesenseWriteClient
+		await client
 			.collections(env.TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.upsert({
