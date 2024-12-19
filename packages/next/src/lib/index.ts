@@ -164,8 +164,6 @@ export function initCourseBuilder(
 }
 
 async function getSession(headers: Headers, config: CourseBuilderConfig) {
-	// TODO what's a coursebuilder session?
-
 	const url = createActionURL(
 		'session',
 		// @ts-expect-error `x-forwarded-proto` is not nullable, next.js sets it by default

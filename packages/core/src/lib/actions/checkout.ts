@@ -26,6 +26,7 @@ export async function checkout(
 			request.query?.ip_address ||
 			request.headers?.['x-forwarded-for'] ||
 			'0.0.0.0',
+		organizationId: request.query?.organizationId,
 	})
 
 	if (!checkoutParamsParsed.success) {
@@ -36,11 +37,33 @@ export async function checkout(
 
 	const checkoutParams = checkoutParamsParsed.data
 
+	console.log('checkoutParams', checkoutParams)
+
 	try {
 		const stripe = await options.provider.createCheckoutSession(
 			checkoutParams,
 			options.adapter,
 		)
+
+		const product = await options.adapter?.getProduct(checkoutParams.productId)
+
+		if (product?.type === 'membership') {
+			return Response.redirect(
+				`${options.baseUrl}/subscribe/verify-login?${new URLSearchParams({
+					...request.query,
+					country:
+						request.query?.country ||
+						request.headers?.['x-vercel-ip-country'] ||
+						process.env.DEFAULT_COUNTRY ||
+						'US',
+					ip_address:
+						request.query?.ip_address ||
+						request.headers?.['x-forwarded-for'] ||
+						'0.0.0.0',
+					organizationId: request.query?.organizationId,
+				})}&checkoutUrl=${encodeURIComponent(stripe.redirect)}`,
+			)
+		}
 
 		return Response.redirect(stripe.redirect)
 	} catch (e) {

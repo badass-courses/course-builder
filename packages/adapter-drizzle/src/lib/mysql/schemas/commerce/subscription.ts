@@ -8,14 +8,12 @@ import {
 	varchar,
 } from 'drizzle-orm/mysql-core'
 
-import { getUsersSchema } from '../auth/users.js'
 import { getOrganizationsSchema } from '../org/organizations.js'
-import { getCouponSchema } from './coupon.js'
-import { getMerchantChargeSchema } from './merchant-charge.js'
-import { getMerchantSessionSchema } from './merchant-session.js'
 import { getMerchantSubscriptionSchema } from './merchant-subscription.js'
 import { getProductSchema } from './product.js'
 
+// TODO: do we add a renewal date here? probably just add that stuff to fields
+// 	even status feels out of place at the top level maybe
 export function getSubscriptionSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
 		'Subscription',
@@ -29,7 +27,7 @@ export function getSubscriptionSchema(mysqlTable: MySqlTableFn) {
 			merchantSubscriptionId: varchar('merchantSubscriptionId', {
 				length: 191,
 			}).notNull(),
-			status: varchar('status', { length: 191 }).default('Valid').notNull(),
+			status: varchar('status', { length: 191 }).default('active').notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
 		},
 		(table) => {

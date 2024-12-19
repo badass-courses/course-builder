@@ -250,15 +250,69 @@ export async function processStripeWebhook(
 	const stripeAdapter = stripeProvider.options.paymentsAdapter
 	const courseBuilderAdapter = options.adapter
 
+	// charge.dispute.created
+	// charge.dispute.funds_withdrawn
+	// charge.refunded
+	// charge.succeeded
+	// checkout.session.async_payment_failed
+	// checkout.session.async_payment_succeeded
+	// checkout.session.completed
+	// customer.subscription.created
+	// customer.subscription.deleted
+	// customer.subscription.updated
+	// customer.updated
+
 	switch (event.type) {
+		case 'charge.dispute.funds_withdrawn':
+			console.log('charge.dispute.funds_withdrawn', event)
+			// record the transaction
+			break
+		case 'charge.succeeded':
+			console.log('charge.succeeded', event)
+			// record the transaction
+			break
+		case 'customer.updated':
+			console.log('customer.updated', event)
+			// update the organization accordingly
+			break
+		case 'customer.subscription.created':
+			console.log('customer.subscription.created', event)
+			// add the subscription to the organization
+			// assign appropriate permissions
+			// if it is for a single member org the default is to give it to the purchasing user's memberahip to the org
+			// if it is multi user org, or for multiple people default is to not assign any permissions
+			// the subscription is owned by the organization
+			// the purchaing member is the billing contact
+			// the purchasing member is a subscription admin
+			// additional billing contacts and admins can be added
+			// admins can add/remove billing contacts and admins
+			// there must be at least 1 admin and billing contact
+			break
+		case 'customer.subscription.deleted':
+			console.log('customer.subscription.deleted', event)
+			// this is the final cancellation of a subscription
+			// remove the subscription from the organization
+			break
+		case 'customer.subscription.updated':
+			console.log('customer.subscription.updated', event)
+			// update the subscription
+			// some status update for an existing subscription
+			// Occurs whenever a subscription changes (e.g., switching from one plan to another, or changing the status from trial to active).
+			break
 		case 'checkout.session.completed':
+			// is this a subscription payment? (event.data.object.mode)
 			await options.inngest.send({
 				name: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 				data: {
 					stripeEvent: checkoutSessionCompletedEvent.parse(event),
 				},
 			})
-
+			break
+		case 'checkout.session.async_payment_failed':
+			console.log('checkout.session.async_payment_failed', event)
+			break
+		case 'checkout.session.async_payment_succeeded':
+			console.log('checkout.session.async_payment_succeeded', event)
 			break
 		case 'charge.refunded':
 			await updatePurchaseStatus({
@@ -266,6 +320,7 @@ export async function processStripeWebhook(
 				status: 'Refunded',
 				options,
 			})
+			// log the transaction
 			break
 		case 'charge.dispute.created':
 			await updatePurchaseStatus({

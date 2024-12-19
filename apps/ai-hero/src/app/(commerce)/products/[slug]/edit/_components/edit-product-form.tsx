@@ -272,6 +272,7 @@ export function EditProductForm({ product }: { product: Product }) {
 								<SelectContent>
 									<SelectItem value="live">Live</SelectItem>
 									<SelectItem value="self-paced">Self-paced</SelectItem>
+									<SelectItem value="membership">Membership</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

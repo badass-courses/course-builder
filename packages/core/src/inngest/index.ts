@@ -8,6 +8,10 @@ import {
 	NewPurchaseCreated,
 } from './commerce/event-new-purchase-created'
 import {
+	NEW_SUBSCRIPTION_CREATED_EVENT,
+	NewSubscriptionCreated,
+} from './commerce/event-new-subscription-created'
+import {
 	PURCHASE_STATUS_UPDATED_EVENT,
 	PurchaseStatusUpdated,
 	updatePurchaseStatus,
@@ -19,6 +23,21 @@ import {
 	stripeCheckoutSessionComplete,
 	StripeCheckoutSessionCompleted,
 } from './stripe/event-checkout-session-completed'
+import {
+	STRIPE_CUSTOMER_SUBSCRIPTION_CREATED_EVENT,
+	stripeCustomerSubscriptionCreated,
+	StripeCustomerSubscriptionCreated,
+} from './stripe/event-customer-subscription-created'
+import {
+	STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT,
+	stripeCustomerSubscriptionUpdated,
+	StripeCustomerSubscriptionUpdated,
+} from './stripe/event-customer-subscription-updated'
+import {
+	STRIPE_INVOICE_PAYMENT_SUCCEEDED_EVENT,
+	stripeInvoicePaymentSucceeded,
+	StripeInvoicePaymentSucceeded,
+} from './stripe/event-invoice-payment-succeeded'
 import {
 	EventVideoMuxWebhook,
 	MUX_WEBHOOK_EVENT,
@@ -54,14 +73,21 @@ export type CourseBuilderCoreEvents = {
 	[MUX_WEBHOOK_EVENT]: EventVideoMuxWebhook
 	[RESOURCE_CHAT_REQUEST_EVENT]: ResourceChat
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
+	[STRIPE_CUSTOMER_SUBSCRIPTION_CREATED_EVENT]: StripeCustomerSubscriptionCreated
+	[STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT]: StripeCustomerSubscriptionUpdated
+	[STRIPE_INVOICE_PAYMENT_SUCCEEDED_EVENT]: StripeInvoicePaymentSucceeded
 	[PURCHASE_STATUS_UPDATED_EVENT]: PurchaseStatusUpdated
 	[NEW_PURCHASE_CREATED_EVENT]: NewPurchaseCreated
+	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 }
 
 export const courseBuilderCoreFunctions = [
 	...coreVideoProcessingFunctions,
 	sendPostPurchaseEmail,
 	stripeCheckoutSessionComplete,
+	stripeCustomerSubscriptionCreated,
+	stripeCustomerSubscriptionUpdated,
+	stripeInvoicePaymentSucceeded,
 	sendCreatorSlackNotification,
 	resourceChat,
 	updatePurchaseStatus,

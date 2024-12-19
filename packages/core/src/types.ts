@@ -6,7 +6,10 @@ import { type ChatCompletionRequestMessage } from 'openai-edge'
 import Stripe from 'stripe'
 
 import { CourseBuilderAdapter } from './adapters'
-import { CheckoutParams } from './lib/pricing/stripe-checkout'
+import {
+	CheckoutParams,
+	CheckoutParamsSchema,
+} from './lib/pricing/stripe-checkout'
 import { Cookie } from './lib/utils/cookie'
 import { LoggerInstance } from './lib/utils/logger'
 import { EmailListConfig, ProviderType, TranscriptionConfig } from './providers'
@@ -20,6 +23,7 @@ import {
 	User,
 } from './schemas'
 import { PurchaseInfo } from './schemas/purchase-info'
+import { SubscriptionInfo } from './schemas/subscription-info'
 
 export type Awaitable<T> = T | PromiseLike<T>
 
@@ -72,6 +76,15 @@ export interface PaymentsProviderConfig {
 	name: string
 	type: 'payment'
 	options: PaymentsProviderConsumerConfig
+	getBillingPortalUrl: (
+		customerId: string,
+		returnUrl: string,
+	) => Promise<string>
+	getSubscription: (subscriptionId: string) => Promise<Stripe.Subscription>
+	getSubscriptionInfo: (
+		checkoutSessionId: string,
+		adapter: CourseBuilderAdapter,
+	) => Promise<SubscriptionInfo>
 	getPurchaseInfo: (
 		checkoutSessionId: string,
 		adapter: CourseBuilderAdapter,
@@ -171,6 +184,8 @@ export interface PaymentsAdapter {
 	createProduct(
 		product: Stripe.ProductCreateParams,
 	): Promise<Stripe.Response<Stripe.Product>>
+	getSubscription(subscriptionId: string): Promise<Stripe.Subscription>
+	getBillingPortalUrl(customerId: string, returnUrl: string): Promise<string>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'
@@ -314,3 +329,5 @@ export type PricingOptions = {
 	allowTeamPurchase: boolean
 	cancelUrl: string
 }
+
+export { CheckoutParamsSchema, type CheckoutParams }

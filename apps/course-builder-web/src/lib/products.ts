@@ -27,7 +27,7 @@ export const ProductContentSchema = ContentResourceSchema.merge(
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
-			type: z.enum(['live', 'self-paced']),
+			type: z.enum(['live', 'self-paced', 'membership']),
 		}),
 	}),
 )
