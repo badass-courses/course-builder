@@ -33,4 +33,4 @@ export const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter(
 )
 
 export const TYPESENSE_COLLECTION_NAME =
-	process.env.TYPESENSE_COLLECTION_NAME || 'content_production'
+	process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME || 'content_production'

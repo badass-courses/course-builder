@@ -26,7 +26,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 	if (!shouldIndex) {
 		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME!)
 			.documents(String(post.id))
 			.delete()
 			.catch((err: any) => {
@@ -55,7 +55,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		console.log('resource', resource.data)
 
 		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.upsert({
 				...resource.data,
@@ -84,7 +84,7 @@ export async function deletePostInTypeSense(postId: string) {
 	})
 
 	await typesenseWriteClient
-		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+		.collections(process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME!)
 		.documents(postId)
 		.delete()
 		.catch((err: any) => {
@@ -111,7 +111,7 @@ export async function indexAllContentToTypeSense(
 	if (deleteFirst) {
 		console.log('Deleting all documents')
 		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.delete({
 				filter_by: 'visibility:public',
@@ -165,7 +165,7 @@ export async function indexAllContentToTypeSense(
 
 	try {
 		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME!)
 			.documents()
 			.import(documents, { action: 'upsert' })
 

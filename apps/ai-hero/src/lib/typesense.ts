@@ -1,4 +1,3 @@
-import Typesense from 'typesense'
 import * as z from 'zod'
 
 export const TypesenseResourceSchema = z.object({
