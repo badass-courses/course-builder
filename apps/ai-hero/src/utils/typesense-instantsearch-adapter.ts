@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter'
 import type { ConfigurationOptions } from 'typesense/lib/Typesense/Configuration'
 
@@ -6,12 +7,12 @@ export const typsenseAdapterConfig: {
 	additionalSearchParameters: Record<string, string>
 } = {
 	server: {
-		apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY ?? '', // Be sure to use an API key that only allows search operations
+		apiKey: env.NEXT_PUBLIC_TYPESENSE_API_KEY ?? '', // Be sure to use an API key that only allows search operations
 		nodes: [
 			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST ?? 'test',
+				host: env.NEXT_PUBLIC_TYPESENSE_HOST ?? 'test',
 				path: '',
-				port: Number(process.env.NEXT_PUBLIC_TYPESENSE_PORT) ?? 8108,
+				port: Number(env.NEXT_PUBLIC_TYPESENSE_PORT) ?? 8108,
 				protocol: 'https',
 			},
 		],
@@ -33,4 +34,4 @@ export const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter(
 )
 
 export const TYPESENSE_COLLECTION_NAME =
-	process.env.TYPESENSE_COLLECTION_NAME || 'content_production'
+	env.TYPESENSE_COLLECTION_NAME || 'content_production'
