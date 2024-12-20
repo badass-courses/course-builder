@@ -50,9 +50,13 @@ export const PricingWidget: React.FC<{
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
-					<Pricing.TeamToggle />
-					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton />
+					{pricingWidgetOptions?.allowTeamPurchase && (
+						<>
+							<Pricing.TeamToggle />
+							<Pricing.TeamQuantityInput />
+						</>
+					)}
+					<Pricing.BuyButton className="mt-4">Join Now</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.SaleCountdown className="py-4" />
