@@ -1,4 +1,5 @@
 import * as React from 'react'
+import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
 import { getPost } from '@/lib/posts-query'
@@ -9,6 +10,27 @@ import { subject } from '@casl/ability'
 import { EditPostForm } from '../../_components/edit-post-form'
 
 export const dynamic = 'force-dynamic'
+
+type Props = {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata(
+	props: Props,
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const params = await props.params
+	const post = await getPost(params.slug)
+
+	if (!post) {
+		return parent as Metadata
+	}
+
+	return {
+		title: `📝 ${post.fields.title}`,
+	}
+}
 
 export default async function ArticleEditPage(props: {
 	params: Promise<{ slug: string }>
