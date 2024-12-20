@@ -184,7 +184,9 @@ function PrimaryTagSelector({
 						<button
 							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
 							onClick={() => {
-								setSelectedPrimaryTag('')
+								if (tag.id === selectedPrimaryTag) {
+									setSelectedPrimaryTag('')
+								}
 								handleTagRemove(tag.id)
 							}}
 							aria-label={`Remove ${tag?.fields?.label} tag`}
