@@ -165,7 +165,7 @@ function PrimaryTagSelector({
 	return (
 		<div className="" aria-live="polite">
 			<RadioGroup
-				defaultValue={selectedPrimaryTag}
+				value={selectedPrimaryTag}
 				onValueChange={(value) => handleTagSelect(value)}
 				className="flex flex-wrap items-center"
 			>
@@ -183,7 +183,10 @@ function PrimaryTagSelector({
 						</Label>
 						<button
 							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
-							onClick={() => handleTagRemove(tag.id)}
+							onClick={() => {
+								setSelectedPrimaryTag('')
+								handleTagRemove(tag.id)
+							}}
 							aria-label={`Remove ${tag?.fields?.label} tag`}
 						>
 							<X className="h-3 w-3" />

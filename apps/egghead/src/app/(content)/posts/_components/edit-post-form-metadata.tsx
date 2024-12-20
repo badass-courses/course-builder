@@ -250,6 +250,7 @@ export const PostMetadataFormFields: React.FC<{
 					primaryTagId={post?.fields?.primaryTagId ?? ''}
 					onTagSelect={async (tag: { id: string }) => {
 						await addTagToPost(post.id, tag.id)
+						router.refresh()
 					}}
 					onTagRemove={async (tagId: string) => {
 						await removeTagFromPost(post.id, tagId)
