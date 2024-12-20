@@ -62,6 +62,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			description: z.string().nullish(),
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
+			primaryTagId: z.string().nullish(),
 		}),
 		tags: z.array(z.any()).nullish(),
 		currentVersionId: z.string().nullish(),
