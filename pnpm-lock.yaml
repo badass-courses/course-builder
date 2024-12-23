@@ -633,9 +633,6 @@ importers:
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.4.1
-        version: 7.4.1
       drizzle-kit:
         specifier: 0.27.1
         version: 0.27.1
