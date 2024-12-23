@@ -5,12 +5,9 @@ import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import {
-	contentContributions,
 	contentResource,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
-	contentResourceVersion as contentResourceVersionTable,
-	contributionTypes,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -33,7 +30,6 @@ import 'server-only'
 
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
-import { sanityWriteClient } from '@/server/sanity-write-client'
 import { last } from 'lodash'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
@@ -44,8 +40,6 @@ import {
 
 import {
 	clearPublishedAt,
-	createEggheadCourse,
-	createEggheadLesson,
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
@@ -54,19 +48,14 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
+import { writeNewPostToDatabase } from './posts-new-query'
+import { createNewPostVersion } from './posts-version-query'
 import {
-	SanityCourseSchema,
-	SanityLessonDocumentSchema,
-} from './sanity-content'
-import {
-	createSanityCourse,
-	getSanityCollaborator,
 	replaceSanityLessonResources,
 	updateSanityLesson,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense-query'
-import { loadEggheadInstructorForUser } from './users'
 
 export async function searchLessons(searchTerm: string) {
 	const { session } = await getServerAuthSession()
@@ -259,12 +248,13 @@ export async function createPost(input: NewPost) {
 
 	const profile = await getEggheadUserProfile(session.user.id)
 	const post = await writeNewPostToDatabase({
-		newPost: input,
+		title: input.title,
+		videoResourceId: input.videoResourceId || undefined,
+		postType: input.postType,
 		eggheadInstructorId: profile.instructor.id,
 		createdById: session.user.id,
 	})
 
-	// events are the "thing has occured" not a command to do work
 	if (post) {
 		await inngest.send({
 			name: POST_CREATED_EVENT,
@@ -356,177 +346,6 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 			),
 		)
 	await writeLegacyTaggingsToEgghead(postId)
-}
-
-export async function writeNewPostToDatabase(input: {
-	newPost: NewPost
-	eggheadInstructorId: number
-	createdById: string
-}) {
-	const { title, videoResourceId, postType } = input.newPost
-	const { eggheadInstructorId, createdById } = input
-	const postGuid = guid()
-	const newPostId = `post_${postGuid}`
-	const videoResource =
-		await courseBuilderAdapter.getVideoResource(videoResourceId)
-
-	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
-	const TYPES_WITH_PLAYLISTS = ['course', 'playlist']
-
-	const isLessonType = TYPES_WITH_LESSONS.includes(postType)
-	const isPlaylistType = TYPES_WITH_PLAYLISTS.includes(postType)
-
-	let eggheadLessonId: number | null = null
-	let eggheadPlaylistId: number | null = null
-
-	// we could create the post in the db up here and update it below as the
-	// additional fields data is acquired through other calls
-
-	// create the lesson in egghead database and Sanity
-	if (isLessonType) {
-		eggheadLessonId = await createEggheadLesson({
-			title: title,
-			slug: `${slugify(title)}~${postGuid}`,
-			instructorId: eggheadInstructorId,
-			guid: postGuid,
-			...(videoResource?.muxPlaybackId && {
-				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
-			}),
-		})
-
-		if (!eggheadLessonId) {
-			throw new Error('🚨 Error creating egghead lesson')
-		}
-
-		const lesson = SanityLessonDocumentSchema.parse({
-			_id: `lesson-${eggheadLessonId}`,
-			_type: 'lesson',
-			title,
-			accessLevel: 'pro',
-			slug: {
-				_type: 'slug',
-				current: `${slugify(title)}~${postGuid}`,
-			},
-			railsLessonId: eggheadLessonId,
-		})
-
-		await sanityWriteClient.create(lesson)
-	}
-
-	// create the playlist in egghead database
-	// sanity occurs down below
-	if (isPlaylistType) {
-		const playlist = await createEggheadCourse({
-			title,
-			guid: postGuid,
-			ownerId: eggheadInstructorId,
-		})
-
-		if (!playlist) {
-			throw new Error('🚨 Error creating egghead playlist')
-		}
-
-		eggheadPlaylistId = playlist.id
-	}
-
-	// write the new post to the database
-	// could we write earlier and update the fields down here?
-	await db
-		.insert(contentResource)
-		.values({
-			id: newPostId,
-			type: 'post',
-			createdById,
-			fields: {
-				title,
-				state: 'draft',
-				visibility: 'unlisted',
-				slug: `${slugify(title)}~${postGuid}`,
-				postType: input.newPost.postType,
-				access: 'pro',
-				...(eggheadLessonId ? { eggheadLessonId } : {}),
-				...(eggheadPlaylistId ? { eggheadPlaylistId } : {}),
-			},
-		})
-		.catch((error) => {
-			console.error('🚨 Error creating post', error)
-			throw error
-		})
-
-	// post should be done so let's load it fresh to be sure
-	const post = await getPost(newPostId)
-
-	if (!post) {
-		throw new Error('🚨 Error creating post')
-	}
-
-	// start contribution
-	const contributionType = await db.query.contributionTypes.findFirst({
-		where: eq(contributionTypes.slug, 'author'),
-	})
-
-	if (contributionType) {
-		await db.insert(contentContributions).values({
-			id: `cc-${postGuid}`,
-			userId: createdById,
-			contentId: post.id,
-			contributionTypeId: contributionType.id,
-		})
-	}
-	// end contribution
-
-	// update lesson in sanity
-	if (isLessonType) {
-		await updateSanityLesson(post.fields.eggheadLessonId, post)
-		await replaceSanityLessonResources({
-			post,
-			eggheadLessonId: post.fields.eggheadLessonId,
-			videoResourceId: videoResourceId,
-		})
-
-		if (videoResource) {
-			await db
-				.insert(contentResourceResource)
-				.values({ resourceOfId: post.id, resourceId: videoResource.id })
-		}
-	}
-
-	// create playlist/course in sanity
-	if (isPlaylistType) {
-		const instructor = await loadEggheadInstructorForUser(post.createdById)
-
-		if (!instructor) {
-			throw new Error(`egghead instructor not found [id: ${post.createdById}]`)
-		}
-
-		const contributor = await getSanityCollaborator(instructor.id)
-		const { fields } = post
-		const coursePayload = SanityCourseSchema.safeParse({
-			title: fields?.title,
-			slug: {
-				current: fields?.slug,
-				_type: 'slug',
-			},
-			description: fields?.body,
-			collaborators: [contributor],
-			searchIndexingState: 'hidden',
-			accessLevel: 'pro',
-			productionProcessState: 'new',
-			sharedId: postGuid,
-			railsCourseId: eggheadPlaylistId,
-		})
-		if (!coursePayload.success) {
-			throw new Error('Failed to create course in sanity', {
-				cause: coursePayload.error.flatten().fieldErrors,
-			})
-		}
-		await createSanityCourse(coursePayload.data)
-	}
-
-	// always create a version!
-	await createNewPostVersion(post)
-
-	return post
 }
 
 export async function writePostUpdateToDatabase(input: {
@@ -668,60 +487,6 @@ export async function deletePostFromDatabase(id: string) {
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
 	return true
-}
-
-export async function createNewPostVersion(
-	post: Post | null,
-	createdById?: string,
-) {
-	if (!post) return null
-	const contentHash = generateContentHash(post)
-	const versionId = `version~${contentHash}`
-
-	// Check if this version already exists
-	const existingVersion = await db.query.contentResourceVersion.findFirst({
-		where: eq(contentResourceVersionTable.id, versionId),
-	})
-
-	if (existingVersion) {
-		// If this exact version already exists, just update the current version pointer
-		await db
-			.update(contentResource)
-			.set({ currentVersionId: versionId })
-			.where(eq(contentResource.id, post.id))
-		return post
-	}
-
-	// If it's a new version, create it
-	await db.transaction(async (trx) => {
-		await trx.insert(contentResourceVersionTable).values({
-			id: versionId,
-			resourceId: post.id,
-			parentVersionId: post.currentVersionId,
-			versionNumber: (await getLatestVersionNumber(post.id)) + 1,
-			fields: {
-				...post.fields,
-			},
-			createdAt: new Date(),
-			createdById: createdById ? createdById : post.createdById,
-		})
-
-		post.currentVersionId = versionId
-
-		await trx
-			.update(contentResource)
-			.set({ currentVersionId: versionId })
-			.where(eq(contentResource.id, post.id))
-	})
-	return post
-}
-
-export async function getLatestVersionNumber(postId: string): Promise<number> {
-	const latestVersion = await db.query.contentResourceVersion.findFirst({
-		where: eq(contentResourceVersionTable.resourceId, postId),
-		orderBy: desc(contentResourceVersionTable.versionNumber),
-	})
-	return latestVersion ? latestVersion.versionNumber : 0
 }
 
 export async function getVideoDuration(
