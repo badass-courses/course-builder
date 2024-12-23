@@ -21,7 +21,8 @@
 		"start": "next start",
 		"typecheck": "tsc --noEmit",
 		"index-typesense": "tsx ./scripts/index-content.ts",
-		"test": "vitest run -c vitest.config.ts"
+		"test": "vitest run -c vitest.config.ts",
+		"test:e2e": "playwright test"
 	},
 	"dependencies": {
 		"@amplitude/analytics-browser": "^2.6.1",
@@ -69,6 +70,7 @@
 		"@next/third-parties": "15.0.2",
 		"@pinecone-database/pinecone": "^2.1.0",
 		"@planetscale/database": "1.19.0",
+		"@playwright/test": "^1.46.1",
 		"@react-email/components": "0.0.27",
 		"@react-email/markdown": "^0.0.11",
 		"@react-email/render": "1.0.2",
@@ -107,6 +109,7 @@
 		"crypto": "^1.0.1",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
+		"dotenv": "^10.0.0",
 		"dotenv-flow": "^4.1.0",
 		"drizzle-orm": "0.36.0",
 		"feed": "^4.2.2",
