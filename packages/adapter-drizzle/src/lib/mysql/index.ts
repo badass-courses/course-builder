@@ -2497,15 +2497,17 @@ export function mySqlDrizzleAdapter(
 
 				await adapter.addRoleForMember({
 					organizationId: personalOrganization.id,
-					memberId: id,
+					memberId: membership.id,
 					role: 'owner',
 				})
 
-				return await client
-					.select()
-					.from(users)
-					.where(eq(users.id, id))
-					.then((res) => res[0] as AdapterUser)
+				const user = await adapter.getUser?.(id)
+
+				if (!user) {
+					throw new Error('Failed to get user')
+				}
+
+				return user
 			} catch (error) {
 				console.error(error)
 				throw error
@@ -2721,6 +2723,10 @@ export function mySqlDrizzleAdapter(
 			return OrganizationMemberSchema.parse(
 				await client.query.organizationMemberships.findFirst({
 					where: eq(organizationMembershipTable.id, id),
+					with: {
+						organization: true,
+						user: true,
+					},
 				}),
 			)
 		},
@@ -2782,6 +2788,7 @@ export function mySqlDrizzleAdapter(
 
 			if (!currentOrgMembershipRole) {
 				await client.insert(organizationMembershipRoleTable).values({
+					organizationId: options.organizationId,
 					organizationMembershipId: options.memberId,
 					roleId,
 				})
@@ -2816,16 +2823,20 @@ export function mySqlDrizzleAdapter(
 		},
 		getMembershipsForUser: async (userId: string) => {
 			return OrganizationMemberSchema.array().parse(
-				await client.query.organizationMemberships.findMany({
+				(await client.query.organizationMemberships.findMany({
 					where: eq(organizationMembershipTable.userId, userId),
-				}),
+					with: {
+						organization: true,
+						user: true,
+					},
+				})) || [],
 			)
 		},
 		getOrganizationMembers: async (organizationId: string) => {
 			return OrganizationMemberSchema.array().parse(
-				await client.query.organizationMemberships.findMany({
+				(await client.query.organizationMemberships.findMany({
 					where: eq(organizationMembershipTable.organizationId, organizationId),
-				}),
+				})) || [],
 			)
 		},
 		createSubscription: async (options: {

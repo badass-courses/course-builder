@@ -20,6 +20,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { computeVideoSplitPoints } from './functions/split_video'
+import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 
 export const inngestConfig = {
 	client: inngest,
@@ -45,5 +46,6 @@ export const inngestConfig = {
 		noProgressContinued,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
+		stripeSubscriptionCheckoutSessionComplete,
 	],
 }

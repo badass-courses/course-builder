@@ -42,6 +42,10 @@ import {
 	ResourceChat,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
+import {
+	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
+	StripeCheckoutSessionCompleted,
+} from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
@@ -76,6 +80,7 @@ export type Events = {
 	[OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT]: OauthProviderAccountLinked
 	[NO_PROGRESS_MADE_EVENT]: NoProgressMade
 	[SYNC_PURCHASE_TAGS_EVENT]: SyncPurchaseTags
+	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
 }
 
 const callbackBase =

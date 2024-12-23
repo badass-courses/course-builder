@@ -1,7 +1,5 @@
-import process from 'process'
 import { Theme } from '@auth/core/types'
 import { render } from '@react-email/components'
-import { createTransport } from 'nodemailer'
 
 import { NewMemberEmail } from '@coursebuilder/email-templates/emails/new-member'
 import { PostPurchaseLoginEmail } from '@coursebuilder/email-templates/emails/post-purchase-login'

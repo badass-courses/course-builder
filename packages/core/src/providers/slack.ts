@@ -1,8 +1,39 @@
-import {
-	ChatPostMessageResponse,
-	MessageAttachment,
-	WebClient,
-} from '@slack/web-api'
+export interface ChatPostMessageResponse {
+	ok: boolean
+	channel: string
+	ts: string
+	message: {
+		text: string
+		username: string
+		bot_id?: string
+		attachments?: MessageAttachment[]
+		type: string
+		subtype?: string
+	}
+}
+
+export interface MessageAttachment {
+	fallback?: string
+	color?: string
+	pretext?: string
+	author_name?: string
+	author_link?: string
+	author_icon?: string
+	mrkdwn_in?: string[]
+	title?: string
+	title_link?: string
+	text?: string
+	fields?: {
+		title: string
+		value: string
+		short?: boolean
+	}[]
+	image_url?: string
+	thumb_url?: string
+	footer?: string
+	footer_icon?: string
+	ts?: number
+}
 
 export interface NotificationProviderConfig {
 	id: string
@@ -45,7 +76,6 @@ export default function SlackProvider(
 			if (!options.apiKey) {
 				throw new Error('No apiKey found for notification provider')
 			}
-			const webClient = new WebClient(options.apiKey)
 			const channel = sendOptions.channel || options.defaultChannelId
 			if (!channel) {
 				throw new Error('No channel found')
@@ -56,14 +86,28 @@ export default function SlackProvider(
 				icon_emoji = ':robot_face:',
 				username = 'Announce Bot',
 			} = sendOptions
+
 			try {
-				return await webClient.chat.postMessage({
-					icon_emoji,
-					username,
-					attachments,
-					channel,
-					text,
+				const response = await fetch('https://slack.com/api/chat.postMessage', {
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${options.apiKey}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						icon_emoji,
+						username,
+						attachments,
+						channel,
+						text,
+					}),
 				})
+
+				if (!response.ok) {
+					throw new Error(`Slack API error: ${response.statusText}`)
+				}
+
+				return (await response.json()) as ChatPostMessageResponse
 			} catch (e) {
 				console.log(e)
 				return Promise.reject(e)

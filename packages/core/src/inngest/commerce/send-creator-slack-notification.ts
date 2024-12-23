@@ -1,6 +1,6 @@
 import { NonRetriableError } from 'inngest'
-import { isEmpty } from 'lodash'
 import pluralize from 'pluralize'
+import { isEmpty } from 'src/lib/utils/is-empty'
 
 import {
 	CoreInngestFunctionInput,
