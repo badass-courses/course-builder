@@ -208,7 +208,6 @@ export async function getSanityLessonForEggheadLessonId(
 	)
 }
 
-// createSanityCourse
 // updateSanityCourse
 
 export async function updateSanityLesson(
