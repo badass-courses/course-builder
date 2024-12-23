@@ -2,7 +2,10 @@ import { EGGHEAD_COURSE_CREATED_EVENT } from '@/inngest/events/egghead/course-cr
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
 import { SanityCourseSchema } from '@/lib/sanity-content'
-import { createCourse, getSanityCollaborator } from '@/lib/sanity-content-query'
+import {
+	createSanityCourse,
+	getSanityCollaborator,
+} from '@/lib/sanity-content-query'
 import { loadEggheadInstructorForUser } from '@/lib/users'
 import { NonRetriableError } from 'inngest'
 
@@ -80,7 +83,7 @@ export const createCourseInSanity = inngest.createFunction(
 				})
 			}
 
-			const course = await createCourse(coursePayload.data)
+			const course = await createSanityCourse(coursePayload.data)
 
 			return course
 		})

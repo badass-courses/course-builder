@@ -76,6 +76,8 @@ export async function getEggheadLesson(eggheadLessonId: number) {
 	return lesson
 }
 
+// createEggheadCourse
+
 export async function createEggheadLesson(input: {
 	title: string
 	slug: string

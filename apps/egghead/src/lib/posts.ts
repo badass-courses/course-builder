@@ -58,6 +58,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			visibility: PostVisibilitySchema.default('public'),
 			access: PostAccessSchema.default('pro'),
 			eggheadLessonId: z.coerce.number().nullish(),
+			eggheadPlaylistId: z.coerce.number().nullish(),
 			slug: z.string(),
 			description: z.string().nullish(),
 			github: z.string().nullish(),

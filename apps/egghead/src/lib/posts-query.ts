@@ -44,6 +44,7 @@ import {
 
 import {
 	clearPublishedAt,
+	createEggheadCourse,
 	createEggheadLesson,
 	determineEggheadAccess,
 	determineEggheadLessonState,
@@ -242,6 +243,7 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	return postsParsed.data
 }
 
+// rpc style "action" verb-y
 export async function createPost(input: NewPost) {
 	const { session, ability } = await getServerAuthSession()
 
@@ -250,17 +252,18 @@ export async function createPost(input: NewPost) {
 	}
 
 	const profile = await getEggheadUserProfile(session.user.id)
-	const post = writeNewPostToDatabase({
+	const post = await writeNewPostToDatabase({
 		newPost: input,
 		eggheadInstructorId: profile.instructor.id,
 		createdById: session.user.id,
 	})
 
+	// events are the "thing has occured" not a command to do work
 	if (post) {
 		await inngest.send({
 			name: POST_CREATED_EVENT,
 			data: {
-				post: await post,
+				post: post,
 			},
 		})
 
@@ -362,19 +365,30 @@ export async function writeNewPostToDatabase(input: {
 		await courseBuilderAdapter.getVideoResource(videoResourceId)
 
 	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
-	const eggheadLessonId = TYPES_WITH_LESSONS.includes(input.newPost.postType)
-		? await createEggheadLesson({
-				title: title,
-				slug: `${slugify(title)}~${postGuid}`,
-				instructorId: eggheadInstructorId,
-				guid: postGuid,
-				...(videoResource?.muxPlaybackId && {
-					hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
-				}),
-			})
-		: null
+	const TYPES_WITH_PLAYLISTS = ['course', 'playlist']
 
-	if (eggheadLessonId) {
+	const isLessonType = TYPES_WITH_LESSONS.includes(input.newPost.postType)
+	const isPlaylistType = TYPES_WITH_PLAYLISTS.includes(input.newPost.postType)
+
+	let eggheadLessonId: number | null = null
+	let eggheadPlaylistId: number | null = null
+
+	// create the lesson in egghead database and Sanity
+	if (isLessonType) {
+		eggheadLessonId = await createEggheadLesson({
+			title: title,
+			slug: `${slugify(title)}~${postGuid}`,
+			instructorId: eggheadInstructorId,
+			guid: postGuid,
+			...(videoResource?.muxPlaybackId && {
+				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
+			}),
+		})
+
+		if (!eggheadLessonId) {
+			throw new Error('🚨 Error creating egghead lesson')
+		}
+
 		const lesson = SanityLessonDocumentSchema.parse({
 			_id: `lesson-${eggheadLessonId}`,
 			_type: 'lesson',
@@ -390,6 +404,21 @@ export async function writeNewPostToDatabase(input: {
 		await sanityWriteClient.create(lesson)
 	}
 
+	// create the playlist in egghead database and Sanity
+	if (isPlaylistType) {
+		const playlist = await createEggheadCourse({
+			title,
+			guid: postGuid,
+			ownerId: eggheadInstructorId,
+		})
+
+		if (!playlist) {
+			throw new Error('🚨 Error creating egghead playlist')
+		}
+
+		eggheadPlaylistId = playlist.id
+	}
+
 	await db
 		.insert(contentResource)
 		.values({
@@ -400,10 +429,11 @@ export async function writeNewPostToDatabase(input: {
 				title,
 				state: 'draft',
 				visibility: 'unlisted',
-				access: 'pro',
-				postType: input.newPost.postType,
 				slug: `${slugify(title)}~${postGuid}`,
+				postType: input.newPost.postType,
+				access: 'pro',
 				...(eggheadLessonId ? { eggheadLessonId } : {}),
+				...(eggheadPlaylistId ? { eggheadPlaylistId } : {}),
 			},
 		})
 		.catch((error) => {
@@ -413,40 +443,70 @@ export async function writeNewPostToDatabase(input: {
 
 	const post = await getPost(newPostId)
 
-	if (post && post.fields.eggheadLessonId) {
+	if (!post) {
+		throw new Error('🚨 Error creating post')
+	}
+
+	// update the lesson in Sanity after verified save
+	if (isLessonType) {
 		await updateSanityLesson(post.fields.eggheadLessonId, post)
 		await replaceSanityLessonResources({
 			post,
 			eggheadLessonId: post.fields.eggheadLessonId,
 			videoResourceId: videoResourceId,
 		})
-	}
 
-	await createNewPostVersion(post)
-
-	if (post) {
 		if (videoResource) {
 			await db
 				.insert(contentResourceResource)
 				.values({ resourceOfId: post.id, resourceId: videoResource.id })
 		}
-
-		const contributionType = await db.query.contributionTypes.findFirst({
-			where: eq(contributionTypes.slug, 'author'),
-		})
-
-		if (contributionType) {
-			await db.insert(contentContributions).values({
-				id: `cc-${guid()}`,
-				userId: createdById,
-				contentId: post.id,
-				contributionTypeId: contributionType.id,
-			})
-		}
-
-		return post
 	}
-	return null
+
+	// update the playlist/course in Sanity after verified save
+	if (isPlaylistType) {
+		// TODO update Sanity resources
+		// const { fields } = post
+		// const courseGuid = fields?.slug.split('~').pop()
+		// const coursePayload = SanityCourseSchema.safeParse({
+		// 	title: fields?.title,
+		// 	slug: {
+		// 		current: fields?.slug,
+		// 		_type: 'slug',
+		// 	},
+		// 	description: fields?.body,
+		// 	collaborators: [contributor],
+		// 	searchIndexingState: 'hidden',
+		// 	accessLevel: 'pro',
+		// 	productionProcessState: 'new',
+		// 	sharedId: courseGuid,
+		// 	railsCourseId: courseId,
+		// })
+		// if (!coursePayload.success) {
+		// 	throw new Error('Failed to create course in sanity', {
+		// 		cause: coursePayload.error.flatten().fieldErrors,
+		// 	})
+		// }
+		// const course = await createSanityCourse(coursePayload.data)
+	}
+
+	// always create a version!
+	await createNewPostVersion(post)
+
+	const contributionType = await db.query.contributionTypes.findFirst({
+		where: eq(contributionTypes.slug, 'author'),
+	})
+
+	if (contributionType) {
+		await db.insert(contentContributions).values({
+			id: `cc-${postGuid}`,
+			userId: createdById,
+			contentId: post.id,
+			contributionTypeId: contributionType.id,
+		})
+	}
+
+	return post
 }
 
 export async function writePostUpdateToDatabase(input: {
