@@ -54,13 +54,19 @@ import {
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
-import { SanityLessonDocumentSchema } from './sanity-content'
 import {
+	SanityCourseSchema,
+	SanityLessonDocumentSchema,
+} from './sanity-content'
+import {
+	createSanityCourse,
+	getSanityCollaborator,
 	replaceSanityLessonResources,
 	updateSanityLesson,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense-query'
+import { loadEggheadInstructorForUser } from './users'
 
 export async function searchLessons(searchTerm: string) {
 	const { session } = await getServerAuthSession()
@@ -357,7 +363,7 @@ export async function writeNewPostToDatabase(input: {
 	eggheadInstructorId: number
 	createdById: string
 }) {
-	const { title, videoResourceId } = input.newPost
+	const { title, videoResourceId, postType } = input.newPost
 	const { eggheadInstructorId, createdById } = input
 	const postGuid = guid()
 	const newPostId = `post_${postGuid}`
@@ -367,11 +373,14 @@ export async function writeNewPostToDatabase(input: {
 	const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
 	const TYPES_WITH_PLAYLISTS = ['course', 'playlist']
 
-	const isLessonType = TYPES_WITH_LESSONS.includes(input.newPost.postType)
-	const isPlaylistType = TYPES_WITH_PLAYLISTS.includes(input.newPost.postType)
+	const isLessonType = TYPES_WITH_LESSONS.includes(postType)
+	const isPlaylistType = TYPES_WITH_PLAYLISTS.includes(postType)
 
 	let eggheadLessonId: number | null = null
 	let eggheadPlaylistId: number | null = null
+
+	// we could create the post in the db up here and update it below as the
+	// additional fields data is acquired through other calls
 
 	// create the lesson in egghead database and Sanity
 	if (isLessonType) {
@@ -404,7 +413,8 @@ export async function writeNewPostToDatabase(input: {
 		await sanityWriteClient.create(lesson)
 	}
 
-	// create the playlist in egghead database and Sanity
+	// create the playlist in egghead database
+	// sanity occurs down below
 	if (isPlaylistType) {
 		const playlist = await createEggheadCourse({
 			title,
@@ -419,6 +429,8 @@ export async function writeNewPostToDatabase(input: {
 		eggheadPlaylistId = playlist.id
 	}
 
+	// write the new post to the database
+	// could we write earlier and update the fields down here?
 	await db
 		.insert(contentResource)
 		.values({
@@ -441,13 +453,29 @@ export async function writeNewPostToDatabase(input: {
 			throw error
 		})
 
+	// post should be done so let's load it fresh to be sure
 	const post = await getPost(newPostId)
 
 	if (!post) {
 		throw new Error('🚨 Error creating post')
 	}
 
-	// update the lesson in Sanity after verified save
+	// start contribution
+	const contributionType = await db.query.contributionTypes.findFirst({
+		where: eq(contributionTypes.slug, 'author'),
+	})
+
+	if (contributionType) {
+		await db.insert(contentContributions).values({
+			id: `cc-${postGuid}`,
+			userId: createdById,
+			contentId: post.id,
+			contributionTypeId: contributionType.id,
+		})
+	}
+	// end contribution
+
+	// update lesson in sanity
 	if (isLessonType) {
 		await updateSanityLesson(post.fields.eggheadLessonId, post)
 		await replaceSanityLessonResources({
@@ -463,48 +491,40 @@ export async function writeNewPostToDatabase(input: {
 		}
 	}
 
-	// update the playlist/course in Sanity after verified save
+	// create playlist/course in sanity
 	if (isPlaylistType) {
-		// TODO update Sanity resources
-		// const { fields } = post
-		// const courseGuid = fields?.slug.split('~').pop()
-		// const coursePayload = SanityCourseSchema.safeParse({
-		// 	title: fields?.title,
-		// 	slug: {
-		// 		current: fields?.slug,
-		// 		_type: 'slug',
-		// 	},
-		// 	description: fields?.body,
-		// 	collaborators: [contributor],
-		// 	searchIndexingState: 'hidden',
-		// 	accessLevel: 'pro',
-		// 	productionProcessState: 'new',
-		// 	sharedId: courseGuid,
-		// 	railsCourseId: courseId,
-		// })
-		// if (!coursePayload.success) {
-		// 	throw new Error('Failed to create course in sanity', {
-		// 		cause: coursePayload.error.flatten().fieldErrors,
-		// 	})
-		// }
-		// const course = await createSanityCourse(coursePayload.data)
+		const instructor = await loadEggheadInstructorForUser(post.createdById)
+
+		if (!instructor) {
+			throw new Error(`egghead instructor not found [id: ${post.createdById}]`)
+		}
+
+		const contributor = await getSanityCollaborator(instructor.id)
+		const { fields } = post
+		const coursePayload = SanityCourseSchema.safeParse({
+			title: fields?.title,
+			slug: {
+				current: fields?.slug,
+				_type: 'slug',
+			},
+			description: fields?.body,
+			collaborators: [contributor],
+			searchIndexingState: 'hidden',
+			accessLevel: 'pro',
+			productionProcessState: 'new',
+			sharedId: postGuid,
+			railsCourseId: eggheadPlaylistId,
+		})
+		if (!coursePayload.success) {
+			throw new Error('Failed to create course in sanity', {
+				cause: coursePayload.error.flatten().fieldErrors,
+			})
+		}
+		await createSanityCourse(coursePayload.data)
 	}
 
 	// always create a version!
 	await createNewPostVersion(post)
-
-	const contributionType = await db.query.contributionTypes.findFirst({
-		where: eq(contributionTypes.slug, 'author'),
-	})
-
-	if (contributionType) {
-		await db.insert(contentContributions).values({
-			id: `cc-${postGuid}`,
-			userId: createdById,
-			contentId: post.id,
-			contributionTypeId: contributionType.id,
-		})
-	}
 
 	return post
 }
