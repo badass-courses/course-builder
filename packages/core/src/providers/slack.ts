@@ -19,6 +19,7 @@ export interface MessageAttachment {
 	author_name?: string
 	author_link?: string
 	author_icon?: string
+	mrkdwn_in?: string[]
 	title?: string
 	title_link?: string
 	text?: string

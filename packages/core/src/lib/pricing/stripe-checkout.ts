@@ -1,6 +1,5 @@
 import { add } from 'date-fns'
 import first from 'lodash/first'
-import isEmpty from 'lodash/isEmpty'
 import { CourseBuilderAdapter } from 'src/adapters'
 import { CheckoutSessionMetadataSchema } from 'src/schemas/stripe/checkout-session-metadata'
 import Stripe from 'stripe'
@@ -8,6 +7,7 @@ import { z } from 'zod'
 
 import { Product, Purchase, UpgradableProduct } from '../../schemas'
 import { PaymentsAdapter, PaymentsProviderConsumerConfig } from '../../types'
+import { isEmpty } from '../utils/is-empty'
 import { getFixedDiscountForIndividualUpgrade } from './format-prices-for-product'
 import { getCalculatedPrice } from './get-calculated-price'
 
