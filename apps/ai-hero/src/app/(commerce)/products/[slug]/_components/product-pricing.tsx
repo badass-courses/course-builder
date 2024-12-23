@@ -47,6 +47,7 @@ export function ProductPricing({
 					teamQuantityLimit,
 					isPPPEnabled: product.type !== 'live',
 					cancelUrl: cancelUrl,
+					allowTeamPurchase: false,
 				}}
 			/>
 		</PriceCheckProvider>

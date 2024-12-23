@@ -10,6 +10,7 @@ import {
 
 import { getRolesSchema } from '../auth/roles.js'
 import { getOrganizationMembershipsSchema } from './organization-memberships.js'
+import { getOrganizationsSchema } from './organizations.js'
 
 export function getOrganizationMembershipRolesSchema(mysqlTable: MySqlTableFn) {
 	return mysqlTable(
@@ -53,6 +54,7 @@ export function getOrganizationMembershipRolesRelationsSchema(
 		getOrganizationMembershipRolesSchema(mysqlTable)
 	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	const roles = getRolesSchema(mysqlTable)
+	const organizations = getOrganizationsSchema(mysqlTable)
 	return relations(organizationMembershipRoles, ({ one }) => ({
 		organizationMembership: one(organizationMemberships, {
 			fields: [organizationMembershipRoles.organizationMembershipId],
@@ -63,6 +65,11 @@ export function getOrganizationMembershipRolesRelationsSchema(
 			fields: [organizationMembershipRoles.roleId],
 			references: [roles.id],
 			relationName: 'role',
+		}),
+		organization: one(organizations, {
+			fields: [organizationMembershipRoles.organizationId],
+			references: [organizations.id],
+			relationName: 'organization',
 		}),
 	}))
 }

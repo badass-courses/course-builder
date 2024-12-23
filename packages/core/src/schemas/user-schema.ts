@@ -8,10 +8,31 @@ export const userSchema = z.object({
 	emailVerified: z.coerce.date().nullable(),
 	image: z.string().max(255).optional().nullable(),
 	createdAt: z.coerce.date().nullable(),
+	memberships: z
+		.array(
+			z.object({
+				id: z.string(),
+				organizationId: z.string(),
+			}),
+		)
+		.optional()
+		.default([]),
 	roles: z
 		.array(
 			z.object({
 				id: z.string(),
+				name: z.string(),
+				description: z.string().nullable(),
+				active: z.boolean(),
+			}),
+		)
+		.optional()
+		.default([]),
+	organizationRoles: z
+		.array(
+			z.object({
+				id: z.string(),
+				organizationId: z.string(),
 				name: z.string(),
 				description: z.string().nullable(),
 				active: z.boolean(),

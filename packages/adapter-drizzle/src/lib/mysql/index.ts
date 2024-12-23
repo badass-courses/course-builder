@@ -61,7 +61,15 @@ import {
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
+import {
+	MerchantSession,
+	MerchantSessionSchema,
+} from '@coursebuilder/core/schemas/merchant-session'
+import { MerchantSubscriptionSchema } from '@coursebuilder/core/schemas/merchant-subscription'
+import { OrganizationMemberSchema } from '@coursebuilder/core/schemas/organization-member'
+import { OrganizationSchema } from '@coursebuilder/core/schemas/organization-schema'
 import { type ModuleProgress } from '@coursebuilder/core/schemas/resource-progress-schema'
+import { SubscriptionSchema } from '@coursebuilder/core/schemas/subscription'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { PaymentsProviderConfig } from '@coursebuilder/core/types'
 import { logger } from '@coursebuilder/core/utils/logger'
@@ -348,6 +356,12 @@ export function mySqlDrizzleAdapter(
 		upgradableProducts,
 		resourceProgress,
 		comments,
+		organization: organizationTable,
+		organizationMemberships: organizationMembershipTable,
+		organizationMembershipRoles: organizationMembershipRoleTable,
+		roles: roleTable,
+		merchantSubscription: merchantSubscriptionTable,
+		subscription: subscriptionTable,
 	} = createTables(tableFn)
 
 	const adapter: CourseBuilderAdapter = {
@@ -661,6 +675,23 @@ export function mySqlDrizzleAdapter(
 
 			return parsedCoupon.data
 		},
+		async createMerchantSession(options): Promise<MerchantSession> {
+			const id = `ms_${v4()}`
+			await client.insert(merchantSession).values({
+				id,
+				identifier: options.identifier,
+				merchantAccountId: options.merchantAccountId,
+				...(options.organizationId
+					? { organizationId: options.organizationId }
+					: {}),
+			})
+
+			return MerchantSessionSchema.parse(
+				await client.query.merchantSession.findFirst({
+					where: eq(merchantSession.id, id),
+				}),
+			)
+		},
 		async createMerchantChargeAndPurchase(options): Promise<Purchase> {
 			const purchaseId = await client.transaction(async (trx) => {
 				try {
@@ -793,15 +824,14 @@ export function mySqlDrizzleAdapter(
 						}
 					}
 
+					// create a new merchant session
 					const merchantSessionId = `ms_${v4()}`
 
-					const newMerchantSession = await client
-						.insert(merchantSession)
-						.values({
-							id: merchantSessionId,
-							identifier: checkoutSessionId,
-							merchantAccountId,
-						})
+					await client.insert(merchantSession).values({
+						id: merchantSessionId,
+						identifier: checkoutSessionId,
+						merchantAccountId,
+					})
 
 					const merchantCouponUsed = stripeCouponId
 						? await client.query.merchantCoupon.findFirst({
@@ -823,7 +853,7 @@ export function mySqlDrizzleAdapter(
 							? 'Restricted'
 							: 'Valid'
 
-					const newPurchase = await client.insert(purchaseTable).values({
+					await client.insert(purchaseTable).values({
 						id: purchaseId,
 						status: newPurchaseStatus,
 						userId,
@@ -839,16 +869,14 @@ export function mySqlDrizzleAdapter(
 
 					const oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7
 
-					const newPurchaseUserTransfer = await client
-						.insert(purchaseUserTransfer)
-						.values({
-							id: `put_${v4()}`,
-							purchaseId: purchaseId as string,
-							expiresAt: existingPurchase
-								? new Date()
-								: new Date(Date.now() + oneWeekInMilliseconds),
-							sourceUserId: userId,
-						})
+					await client.insert(purchaseUserTransfer).values({
+						id: `put_${v4()}`,
+						purchaseId: purchaseId as string,
+						expiresAt: existingPurchase
+							? new Date()
+							: new Date(Date.now() + oneWeekInMilliseconds),
+						sourceUserId: userId,
+					})
 
 					// const result = await Promise.all([
 					// 	newMerchantCharge,
@@ -2447,11 +2475,39 @@ export function mySqlDrizzleAdapter(
 
 				await client.insert(users).values({ ...data, id })
 
-				return await client
-					.select()
-					.from(users)
-					.where(eq(users.id, id))
-					.then((res) => res[0] as AdapterUser)
+				// creating a personal organization for the user
+				// every user gets an organization of their very own
+				const personalOrganization = await adapter.createOrganization({
+					name: `Personal (${data.email})`,
+				})
+
+				if (!personalOrganization) {
+					throw new Error('Failed to create personal organization')
+				}
+
+				const membership = await adapter.addMemberToOrganization({
+					organizationId: personalOrganization.id,
+					userId: id,
+					invitedById: id,
+				})
+
+				if (!membership) {
+					throw new Error('Failed to add user to personal organization')
+				}
+
+				await adapter.addRoleForMember({
+					organizationId: personalOrganization.id,
+					memberId: membership.id,
+					role: 'owner',
+				})
+
+				const user = await adapter.getUser?.(id)
+
+				if (!user) {
+					throw new Error('Failed to get user')
+				}
+
+				return user
 			} catch (error) {
 				console.error(error)
 				throw error
@@ -2636,6 +2692,239 @@ export function mySqlDrizzleAdapter(
 				)
 
 			return undefined
+		},
+		createOrganization: async (options: { name: string }) => {
+			const organizationId = crypto.randomUUID()
+			await client.insert(organizationTable).values({
+				...options,
+				id: organizationId,
+			})
+
+			return adapter.getOrganization(organizationId)
+		},
+		getOrganization: async (organizationId: string) => {
+			return OrganizationSchema.parse(
+				await client.query.organization.findFirst({
+					where: eq(organizationTable.id, organizationId),
+				}),
+			)
+		},
+		addMemberToOrganization: async (options: {
+			organizationId: string
+			userId: string
+			invitedById: string
+		}) => {
+			const id = crypto.randomUUID()
+			await client.insert(organizationMembershipTable).values({
+				...options,
+				id,
+			})
+
+			return OrganizationMemberSchema.parse(
+				await client.query.organizationMemberships.findFirst({
+					where: eq(organizationMembershipTable.id, id),
+					with: {
+						organization: true,
+						user: true,
+					},
+				}),
+			)
+		},
+		removeMemberFromOrganization: async (options: {
+			organizationId: string
+			userId: string
+		}) => {
+			await client
+				.delete(organizationMembershipTable)
+				.where(
+					and(
+						eq(
+							organizationMembershipTable.organizationId,
+							options.organizationId,
+						),
+						eq(organizationMembershipTable.userId, options.userId),
+					),
+				)
+		},
+		addRoleForMember: async (options: {
+			organizationId: string
+			memberId: string
+			role: string
+		}) => {
+			const existingRole = z
+				.object({
+					id: z.string(),
+				})
+				.nullish()
+				.parse(
+					await client.query.roles.findFirst({
+						where: and(
+							eq(roleTable.organizationId, options.organizationId),
+							eq(roleTable.name, options.role),
+						),
+					}),
+				)
+
+			const roleId = existingRole?.id || crypto.randomUUID()
+
+			if (!existingRole) {
+				await client.insert(roleTable).values({
+					name: options.role,
+					organizationId: options.organizationId,
+					id: roleId,
+				})
+			}
+
+			const currentOrgMembershipRole =
+				await client.query.organizationMembershipRoles.findFirst({
+					where: and(
+						eq(
+							organizationMembershipRoleTable.organizationMembershipId,
+							options.memberId,
+						),
+						eq(organizationMembershipRoleTable.roleId, roleId),
+					),
+				})
+
+			if (!currentOrgMembershipRole) {
+				await client.insert(organizationMembershipRoleTable).values({
+					organizationId: options.organizationId,
+					organizationMembershipId: options.memberId,
+					roleId,
+				})
+			}
+		},
+		removeRoleForMember: async (options: {
+			organizationId: string
+			memberId: string
+			role: string
+		}) => {
+			const existingRole = z
+				.object({
+					id: z.string(),
+				})
+				.nullable()
+				.parse(
+					await client.query.roles.findFirst({
+						where: and(
+							eq(roleTable.organizationId, options.organizationId),
+							eq(roleTable.name, options.role),
+						),
+					}),
+				)
+
+			const roleId = existingRole?.id
+
+			if (roleId) {
+				await client
+					.delete(organizationMembershipRoleTable)
+					.where(eq(organizationMembershipRoleTable.roleId, roleId))
+			}
+		},
+		getMembershipsForUser: async (userId: string) => {
+			return OrganizationMemberSchema.array().parse(
+				(await client.query.organizationMemberships.findMany({
+					where: eq(organizationMembershipTable.userId, userId),
+					with: {
+						organization: true,
+						user: true,
+					},
+				})) || [],
+			)
+		},
+		getOrganizationMembers: async (organizationId: string) => {
+			return OrganizationMemberSchema.array().parse(
+				(await client.query.organizationMemberships.findMany({
+					where: eq(organizationMembershipTable.organizationId, organizationId),
+				})) || [],
+			)
+		},
+		createSubscription: async (options: {
+			organizationId: string
+			merchantSubscriptionId: string
+			productId: string
+		}) => {
+			const id = `sub_${crypto.randomUUID()}`
+			await client.insert(subscriptionTable).values({
+				...options,
+				id,
+			})
+
+			return SubscriptionSchema.parse(
+				await client.query.subscription.findFirst({
+					where: eq(subscriptionTable.id, id),
+					with: {
+						product: true,
+					},
+				}),
+			)
+		},
+		getMerchantSubscription: async (merchantSubscriptionId: string) => {
+			return MerchantSubscriptionSchema.parse(
+				await client.query.merchantSubscription.findFirst({
+					where: eq(merchantSubscriptionTable.id, merchantSubscriptionId),
+				}),
+			)
+		},
+		createMerchantSubscription: async (options: {
+			merchantAccountId: string
+			merchantCustomerId: string
+			merchantProductId: string
+			identifier: string
+		}) => {
+			const id = crypto.randomUUID()
+			await client.insert(merchantSubscriptionTable).values({
+				...options,
+				id,
+			})
+
+			return MerchantSubscriptionSchema.parse(
+				await client.query.merchantSubscription.findFirst({
+					where: eq(merchantSubscriptionTable.id, id),
+				}),
+			)
+		},
+		updateMerchantSubscription: async (options: {
+			merchantSubscriptionId: string
+			status: string
+		}) => {
+			throw new Error('Not implemented')
+		},
+		deleteMerchantSubscription: async (merchantSubscriptionId: string) => {
+			throw new Error('Not implemented')
+		},
+		getSubscriptionForStripeId: async (stripeSubscriptionId: string) => {
+			const merchantSubscriptionParsed = MerchantSubscriptionSchema.safeParse(
+				await client.query.merchantSubscription.findFirst({
+					where: eq(merchantSubscriptionTable.identifier, stripeSubscriptionId),
+				}),
+			)
+
+			if (!merchantSubscriptionParsed.success) {
+				throw new Error(
+					`No merchant subscription found for stripe id ${stripeSubscriptionId} ${merchantSubscriptionParsed.error}`,
+				)
+			}
+
+			const subscriptionParsed = SubscriptionSchema.safeParse(
+				await client.query.subscription.findFirst({
+					where: eq(
+						subscriptionTable.merchantSubscriptionId,
+						merchantSubscriptionParsed.data.id,
+					),
+					with: {
+						product: true,
+					},
+				}),
+			)
+
+			if (!subscriptionParsed.success) {
+				throw new Error(
+					`No subscription found for merchant subscription ${merchantSubscriptionParsed.data.id} ${subscriptionParsed.error}`,
+				)
+			}
+
+			return subscriptionParsed.data
 		},
 	}
 

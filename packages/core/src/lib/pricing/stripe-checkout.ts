@@ -1,11 +1,13 @@
 import { add } from 'date-fns'
 import first from 'lodash/first'
-import isEmpty from 'lodash/isEmpty'
 import { CourseBuilderAdapter } from 'src/adapters'
+import { CheckoutSessionMetadataSchema } from 'src/schemas/stripe/checkout-session-metadata'
+import Stripe from 'stripe'
 import { z } from 'zod'
 
 import { Product, Purchase, UpgradableProduct } from '../../schemas'
 import { PaymentsAdapter, PaymentsProviderConsumerConfig } from '../../types'
+import { isEmpty } from '../utils/is-empty'
 import { getFixedDiscountForIndividualUpgrade } from './format-prices-for-product'
 import { getCalculatedPrice } from './get-calculated-price'
 
@@ -22,9 +24,10 @@ export const CheckoutParamsSchema = z.object({
 	upgradeFromPurchaseId: z.string().optional(),
 	bulk: z.preprocess((val) => {
 		return val === 'false' ? false : Boolean(val)
-	}, z.boolean()),
+	}, z.coerce.boolean()),
 	cancelUrl: z.string(),
 	usedCouponId: z.string().optional(),
+	organizationId: z.string().optional(),
 })
 
 export type CheckoutParams = z.infer<typeof CheckoutParamsSchema>
@@ -222,6 +225,8 @@ export async function stripeCheckout({
 
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
+			console.log('user', user)
+
 			const upgradeFromPurchase = upgradeFromPurchaseId
 				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
@@ -241,6 +246,8 @@ export async function stripeCheckout({
 						config.paymentsAdapter,
 					)
 				: false
+
+			console.log('customerId', customerId)
 
 			const loadedProduct = await adapter.getProduct(productId)
 
@@ -282,6 +289,12 @@ export async function stripeCheckout({
 			if (!merchantPriceIdentifier || !merchantProductIdentifier) {
 				throw new Error('No merchant price or product found')
 			}
+
+			const stripePrice = await config.paymentsAdapter.getPrice(
+				merchantPriceIdentifier,
+			)
+
+			const isRecurring = stripePrice?.recurring
 
 			const merchantCoupon = couponId
 				? await adapter.getMerchantCoupon(couponId as string)
@@ -391,6 +404,11 @@ export async function stripeCheckout({
 					provider: 'stripe',
 				}
 
+				if (isRecurring) {
+					const queryParamString = buildSearchParams(baseQueryParams)
+					return `${config.baseSuccessUrl}/thanks/subscription?${queryParamString}`
+				}
+
 				if (isUpgrade) {
 					const queryParamString = buildSearchParams({
 						...baseQueryParams,
@@ -404,7 +422,7 @@ export async function stripeCheckout({
 				}
 			})()
 
-			const metadata = {
+			const metadata = CheckoutSessionMetadataSchema.parse({
 				...(Boolean(availableUpgrade && upgradeFromPurchase) && {
 					upgradeFromPurchaseId: upgradeFromPurchaseId as string,
 				}),
@@ -418,7 +436,8 @@ export async function stripeCheckout({
 				product: loadedProduct.name,
 				...(user && { userId: user.id }),
 				siteName: process.env.NEXT_PUBLIC_APP_NAME as string,
-			}
+				...(params.organizationId && { organizationId: params.organizationId }),
+			})
 
 			const sessionUrl = await config.paymentsAdapter.createCheckoutSession({
 				discounts,
@@ -429,16 +448,22 @@ export async function stripeCheckout({
 					},
 				],
 				expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
-				mode: 'payment',
+				mode: isRecurring ? 'subscription' : 'payment',
 				success_url: successUrl,
 				cancel_url: cancelUrl,
-				...(customerId
-					? { customer: customerId }
-					: { customer_creation: 'always' }),
+				...(isRecurring
+					? customerId
+						? { customer: customerId }
+						: user && { customer_email: user.email }
+					: customerId
+						? { customer: customerId }
+						: { customer_creation: 'always' }),
 				metadata,
-				payment_intent_data: {
-					metadata,
-				},
+				...(!isRecurring && {
+					payment_intent_data: {
+						metadata,
+					},
+				}),
 			})
 
 			if (sessionUrl) {

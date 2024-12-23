@@ -18,6 +18,7 @@ export type LoginTemplateProps = {
 	image?: React.ReactElement
 	title?: string
 	subtitle?: string
+	callbackUrl?: string
 }
 
 export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
@@ -26,6 +27,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	image,
 	title,
 	subtitle,
+	callbackUrl: callbackUrlProp,
 }) => {
 	const {
 		register,
@@ -34,9 +36,13 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 
 	const searchParams = useSearchParams()
 
-	const callbackUrl = searchParams.get('callbackUrl')
-		? (searchParams.get('callbackUrl') as string)
-		: '/'
+	const callbackUrl = callbackUrlProp
+		? callbackUrlProp
+		: searchParams.get('callbackUrl')
+			? (searchParams.get('callbackUrl') as string)
+			: '/'
+
+	console.log('callbackUrl', { callbackUrl, callbackUrlProp, searchParams })
 	const message = searchParams.get('message')
 		? (searchParams.get('message') as string)
 		: null

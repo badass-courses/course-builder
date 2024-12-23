@@ -146,6 +146,8 @@ export async function formatPricesForProduct(
 
 	const usedCoupon = usedCouponId ? await getCoupon(usedCouponId) : null
 
+	// TODO subscription versus single purchase
+
 	const upgradeFromPurchase = upgradeFromPurchaseId
 		? await getPurchase(upgradeFromPurchaseId)
 		: null

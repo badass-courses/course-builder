@@ -1,3 +1,4 @@
+import { cookies, headers } from 'next/headers'
 import { getAbility } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
@@ -12,7 +13,6 @@ import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
 import { and, eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
-import Postmark from 'next-auth/providers/postmark'
 
 import { userSchema } from '@coursebuilder/core/schemas'
 
@@ -36,6 +36,16 @@ declare module 'next-auth' {
 		// ...other properties
 		role?: Role
 		roles: {
+			id: string
+			name: string
+			description: string | null
+			active: boolean
+			createdAt: Date | null
+			updatedAt: Date | null
+			deletedAt: Date | null
+		}[]
+		organizationRoles: {
+			organizationId: string | null
 			id: string
 			name: string
 			description: string | null
@@ -129,6 +139,10 @@ export const authOptions: NextAuthConfig = {
 				user,
 			})
 		},
+		signOut: async () => {
+			const cookieStore = await cookies()
+			cookieStore.delete('organizationId')
+		},
 	},
 	callbacks: {
 		session: async ({ session, user }) => {
@@ -136,6 +150,16 @@ export const authOptions: NextAuthConfig = {
 				where: (users, { eq }) => eq(users.id, user.id),
 				with: {
 					accounts: true,
+					organizationMemberships: {
+						with: {
+							organization: true,
+							organizationMembershipRoles: {
+								with: {
+									role: true,
+								},
+							},
+						},
+					},
 				},
 			})
 
@@ -186,7 +210,15 @@ export const authOptions: NextAuthConfig = {
 				},
 			})
 
+			const headersList = await headers()
+			const organizationId = headersList.get('x-organization-id')
+
 			const role = dbUser?.role || 'user'
+
+			const organizationRoles =
+				dbUser?.organizationMemberships.flatMap((membership) =>
+					membership.organizationMembershipRoles.map((role) => role.role),
+				) || []
 
 			return {
 				...session,
@@ -195,6 +227,7 @@ export const authOptions: NextAuthConfig = {
 					id: user.id,
 					role: role as Role,
 					roles: userRoles.map((userRole) => userRole.role),
+					organizationRoles,
 				},
 			}
 		},

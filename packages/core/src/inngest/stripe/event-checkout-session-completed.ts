@@ -1,7 +1,13 @@
-import { parseCheckoutSession } from '../../providers/stripe'
+import { PROVIDERS, ROLES } from 'src/constants'
+
+import { parsePurchaseInfoFromCheckoutSession } from '../../lib/pricing/stripe-purchase-utils'
 import { User } from '../../schemas'
-import { CheckoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
+import {
+	CheckoutSessionCompletedEvent,
+	checkoutSessionCompletedEvent,
+} from '../../schemas/stripe/checkout-session-completed'
 import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
+import { NEW_SUBSCRIPTION_CREATED_EVENT } from '../commerce/event-new-subscription-created'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
@@ -25,6 +31,7 @@ export const stripeCheckoutSessionCompletedConfig = {
 
 export const stripeCheckoutSessionCompletedTrigger: CoreInngestTrigger = {
 	event: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
+	if: "event.data.stripeEvent.data.object.mode == 'payment'",
 }
 
 export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
@@ -46,7 +53,9 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 		//  find or create the merchant customer in the database
 		//  create a merchant charge and purchase in the database
 
-		const stripeEvent = event.data.stripeEvent
+		const stripeEvent = checkoutSessionCompletedEvent.parse(
+			event.data.stripeEvent,
+		)
 		const paymentsAdapter = paymentProvider.options.paymentsAdapter
 		const stripeCheckoutSession = stripeEvent.data.object
 
@@ -54,7 +63,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			'load the merchant account',
 			async () => {
 				return await db.getMerchantAccount({
-					provider: 'stripe',
+					provider: PROVIDERS.STRIPE,
 				})
 			},
 		)
@@ -71,9 +80,9 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				)
 			},
 		)
-
+		// this could be a separate function that gets invoked here
 		const purchaseInfo = await step.run('parse checkout session', async () => {
-			return await parseCheckoutSession(checkoutSession, db)
+			return await parsePurchaseInfoFromCheckoutSession(checkoutSession, db)
 		})
 
 		const { user, isNewUser } = await step.run('load the user', async () => {
@@ -116,9 +125,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				if (!merchantCustomer) {
 					throw new Error('merchantCustomer is null')
 				}
-				if (!purchaseInfo.chargeIdentifier) {
-					throw new Error('purchaseInfo.chargeIdentifier is null')
-				}
+
 				return await db.createMerchantChargeAndPurchase({
 					userId: user.id,
 					productId: merchantProduct.productId,
@@ -127,7 +134,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 					merchantAccountId: merchantAccount.id,
 					merchantProductId: merchantProduct.id,
 					merchantCustomerId: merchantCustomer.id,
-					stripeChargeAmount: purchaseInfo.chargeAmount || 0,
+					stripeChargeAmount: purchaseInfo.chargeAmount,
 					quantity: purchaseInfo.quantity,
 					checkoutSessionId: stripeCheckoutSession.id,
 					country: purchaseInfo.metadata?.country,

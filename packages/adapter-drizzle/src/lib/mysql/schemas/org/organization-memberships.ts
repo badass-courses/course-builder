@@ -10,6 +10,7 @@ import {
 
 import { getUsersSchema } from '../auth/users.js'
 import { getPurchaseSchema } from '../commerce/purchase.js'
+import { getOrganizationMembershipRolesSchema } from './organization-membership-roles.js'
 import { getOrganizationsSchema } from './organizations.js'
 
 export function getOrganizationMembershipsSchema(mysqlTable: MySqlTableFn) {
@@ -47,6 +48,8 @@ export function getOrganizationMembershipsRelationsSchema(
 	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
 	const purchases = getPurchaseSchema(mysqlTable)
 	const organizations = getOrganizationsSchema(mysqlTable)
+	const organizationMembershipRoles =
+		getOrganizationMembershipRolesSchema(mysqlTable)
 
 	return relations(organizationMemberships, ({ one, many }) => ({
 		user: one(users, {
@@ -64,6 +67,9 @@ export function getOrganizationMembershipsRelationsSchema(
 			fields: [organizationMemberships.organizationId],
 			references: [organizations.id],
 			relationName: 'organization',
+		}),
+		organizationMembershipRoles: many(organizationMembershipRoles, {
+			relationName: 'organizationMembership',
 		}),
 	}))
 }
