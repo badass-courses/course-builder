@@ -35,15 +35,22 @@ import { loadEggheadInstructorForUser } from './users'
 const NewPostInputSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
 	videoResourceId: z.string().optional(),
-	postType: z.enum(['lesson', 'podcast', 'tip', 'course', 'playlist']),
+	postType: z.enum([
+		'lesson',
+		'podcast',
+		'tip',
+		'course',
+		'playlist',
+		'article',
+	]),
 	eggheadInstructorId: z.number(),
 	createdById: z.string(),
 })
 
 export type NewPostInput = z.infer<typeof NewPostInputSchema>
 
-const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip'] as const
-const TYPES_WITH_PLAYLISTS = ['course', 'playlist'] as const
+const TYPES_WITH_LESSONS = ['lesson', 'podcast', 'tip']
+const TYPES_WITH_PLAYLISTS = ['course', 'playlist']
 
 export async function writeNewPostToDatabase(
 	input: NewPostInput,
@@ -393,8 +400,8 @@ async function cleanupExternalResources({
 	eggheadLessonId?: number | null
 	eggheadPlaylistId?: number | null
 }) {
-	const isLessonType = TYPES_WITH_LESSONS.includes(postType as any)
-	const isPlaylistType = TYPES_WITH_PLAYLISTS.includes(postType as any)
+	const isLessonType = TYPES_WITH_LESSONS.includes(postType)
+	const isPlaylistType = TYPES_WITH_PLAYLISTS.includes(postType)
 
 	try {
 		if (isLessonType && eggheadLessonId) {
