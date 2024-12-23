@@ -9,7 +9,18 @@ export const SubscriptionSchema = z.object({
 	productId: z.string(),
 	createdAt: z.date(),
 	merchantSubscriptionId: z.string(),
-	status: z.string().default('active'),
+	status: z
+		.enum([
+			'incomplete',
+			'incomplete_expired',
+			'trialing',
+			'active',
+			'past_due',
+			'canceled',
+			'unpaid',
+			'paused',
+		])
+		.default('active'),
 	fields: z.record(z.any()).default({}),
 	product: productSchema,
 	merchantSubscription: MerchantSubscriptionSchema.optional(),

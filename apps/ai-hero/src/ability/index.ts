@@ -13,7 +13,6 @@ import {
 	userSchema,
 	type Purchase,
 } from '@coursebuilder/core/schemas'
-import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 import {
 	hasAvailableSeats,
@@ -24,6 +23,10 @@ import {
 export const UserSchema = userSchema
 
 export type User = z.infer<typeof UserSchema>
+
+interface OrganizationBilling {
+	organizationId: string
+}
 
 type Actions =
 	| 'create'
@@ -37,6 +40,7 @@ type Actions =
 	| 'archive'
 	| 'unpublish'
 	| 'invite'
+	| 'transfer'
 
 type Subjects =
 	| 'RegionRestriction'
@@ -47,6 +51,10 @@ type Subjects =
 	| User
 	| 'all'
 	| 'Invoice'
+	| 'Organization'
+	| 'OrganizationMember'
+	| OrganizationBilling
+	| 'OrganizationBilling'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -57,6 +65,16 @@ type GetAbilityOptions = {
 		id: string
 		role?: string
 		roles: {
+			id: string
+			name: string
+			description: string | null
+			active: boolean
+			createdAt: Date | null
+			updatedAt: Date | null
+			deletedAt: Date | null
+		}[]
+		organizationRoles?: {
+			organizationId: string | null
 			id: string
 			name: string
 			description: string | null
@@ -79,7 +97,7 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 
 	if (options.user) {
 		if (options.user.roles.map((role) => role.name).includes('admin')) {
-			can('manage', 'all')
+			// can('manage', 'all')
 		}
 
 		if (options.user.roles.map((role) => role.name).includes('contributor')) {
@@ -92,6 +110,54 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 		}
 
 		can(['read', 'update'], 'User', { id: options.user.id })
+
+		// Organization permissions
+		if (options.user.organizationRoles) {
+			options.user.organizationRoles.forEach(({ organizationId, name }) => {
+				// Base permissions for all roles
+				can('read', 'Organization', { organizationId: { $eq: organizationId } })
+
+				if (name === 'owner') {
+					can('manage', 'Organization', {
+						organizationId: { $eq: organizationId },
+					})
+					can('manage', 'OrganizationMember', {
+						organizationId: { $eq: organizationId },
+					})
+					can('manage', 'OrganizationBilling', {
+						organizationId: { $eq: organizationId },
+					})
+					can('transfer', 'Organization', {
+						organizationId: { $eq: organizationId },
+					})
+				}
+
+				if (name === 'admin') {
+					can(['create', 'read', 'update'], 'Organization', {
+						organizationId: { $eq: organizationId },
+					})
+					can(['create', 'read', 'update', 'delete'], 'OrganizationMember', {
+						organizationId: { $eq: organizationId },
+					})
+					can(['read', 'update'], 'OrganizationBilling', {
+						organizationId: { $eq: organizationId },
+					})
+				}
+
+				if (name === 'member' || name === 'learner') {
+					can('read', 'Organization', {
+						organizationId: { $eq: organizationId },
+					})
+					can('read', 'OrganizationMember', {
+						organizationId: { $eq: organizationId },
+					})
+					can('delete', 'OrganizationMember', {
+						organizationId: { $eq: organizationId },
+						userId: { $eq: options.user?.id },
+					})
+				}
+			})
+		}
 	}
 
 	can('read', 'Content', {

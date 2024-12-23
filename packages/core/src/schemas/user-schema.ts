@@ -28,6 +28,18 @@ export const userSchema = z.object({
 		)
 		.optional()
 		.default([]),
+	organizationRoles: z
+		.array(
+			z.object({
+				id: z.string(),
+				organizationId: z.string(),
+				name: z.string(),
+				description: z.string().nullable(),
+				active: z.boolean(),
+			}),
+		)
+		.optional()
+		.default([]),
 })
 
 export type User = z.infer<typeof userSchema>

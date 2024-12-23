@@ -24,7 +24,11 @@
 		"outDir": ".",
 		"rootDir": "src"
 	},
-	"include": [".eslintrc.cjs", "src/**/*"],
+	"include": [
+		".eslintrc.cjs",
+		"src/**/*",
+		"../../apps/ai-hero/src/subscriptions/stripe-subscription-utils.ts"
+	],
 	"exclude": [
 		"node_modules",
 		"*.js",

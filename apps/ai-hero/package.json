@@ -20,7 +20,8 @@
 		"lint": "next lint",
 		"start": "next start",
 		"typecheck": "tsc --noEmit",
-		"index-typesense": "tsx ./scripts/index-content.ts"
+		"index-typesense": "tsx ./scripts/index-content.ts",
+		"test": "vitest run -c vitest.config.ts"
 	},
 	"dependencies": {
 		"@amplitude/analytics-browser": "^2.6.1",
@@ -198,7 +199,7 @@
 		"@types/styled-components": "^5.1.29",
 		"autoprefixer": "^10.4.14",
 		"concurrently": "^8.2.2",
-		"dotenv-cli": "^7.3.0",
+		"dotenv-cli": "^7.4.1",
 		"drizzle-kit": "0.27.1",
 		"encoding": "^0.1.13",
 		"eslint": "^8.47.0",
@@ -213,7 +214,8 @@
 		"tailwind-scrollbar": "^3.0.0",
 		"tailwindcss": "^3.3.3",
 		"tsx": "^4.7.1",
-		"typescript": "5.4.5"
+		"typescript": "5.4.5",
+		"vite-tsconfig-paths": "^5.1.4"
 	},
 	"ct3aMetadata": {
 		"initVersion": "7.22.0"
