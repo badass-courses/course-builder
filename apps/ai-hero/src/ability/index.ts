@@ -97,7 +97,7 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 
 	if (options.user) {
 		if (options.user.roles.map((role) => role.name).includes('admin')) {
-			// can('manage', 'all')
+			can('manage', 'all')
 		}
 
 		if (options.user.roles.map((role) => role.name).includes('contributor')) {
