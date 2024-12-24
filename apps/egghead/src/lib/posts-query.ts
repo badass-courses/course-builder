@@ -317,6 +317,45 @@ export async function addTagToPost(postId: string, tagId: string) {
 		tagId,
 	})
 	await writeLegacyTaggingsToEgghead(postId)
+
+	const post = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, postId),
+		with: {
+			tags: true,
+		},
+	})
+
+	if (post?.tags.length === 1) {
+		await db
+			.update(contentResource)
+			.set({
+				fields: {
+					...post.fields,
+					primaryTagId: tagId,
+				},
+			})
+			.where(eq(contentResource.id, postId))
+	}
+}
+
+export async function setPrimaryTagToPost(postId: string, tagId: string) {
+	const post = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, postId),
+	})
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	await db
+		.update(contentResource)
+		.set({
+			fields: {
+				...post.fields,
+				primaryTagId: tagId,
+			},
+		})
+		.where(eq(contentResource.id, postId))
 }
 
 export async function updatePostTags(postId: string, tags: EggheadTag[]) {
@@ -337,6 +376,10 @@ export async function updatePostTags(postId: string, tags: EggheadTag[]) {
 }
 
 export async function removeTagFromPost(postId: string, tagId: string) {
+	const post = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, postId),
+	})
+
 	await db
 		.delete(contentResourceTagTable)
 		.where(
@@ -346,6 +389,18 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 			),
 		)
 	await writeLegacyTaggingsToEgghead(postId)
+
+	if (post?.fields?.primaryTagId === tagId) {
+		await db
+			.update(contentResource)
+			.set({
+				fields: {
+					...post.fields,
+					primaryTagId: null,
+				},
+			})
+			.where(eq(contentResource.id, postId))
+	}
 }
 
 export async function writePostUpdateToDatabase(input: {

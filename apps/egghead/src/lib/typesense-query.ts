@@ -36,8 +36,6 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 		const lesson = await getEggheadLesson(post.fields.eggheadLessonId)
 
-		console.log('lesson', lesson)
-
 		const instructor = InstructorSchema.parse({
 			id: lesson.instructor?.id,
 			name: lesson.instructor?.full_name,
@@ -48,10 +46,12 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		})
 
 		const tags = await getPostTags(post.id)
+		const primaryTag = tags.find((tag) => post?.fields?.primaryTagId === tag.id)
+		const postGuid = post.id.split('_').pop()
 
 		const resource = TypesensePostSchema.safeParse({
 			id: `${post.fields.eggheadLessonId}`,
-			externalId: post.id,
+			externalId: postGuid,
 			title: post.fields.title,
 			slug: post.fields.slug,
 			summary: post.fields.description,
@@ -60,6 +60,12 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			path: `/${post.fields.slug}`,
 			type: post.fields.postType,
 			_tags: tags.map((tag) => tag.fields.name),
+			...(primaryTag && {
+				primary_tag: primaryTag,
+				...(primaryTag.fields?.image_url && {
+					primary_tag_image_url: primaryTag.fields.image_url,
+				}),
+			}),
 			...(lesson && {
 				instructor_name: lesson.instructor?.full_name,
 				instructor,

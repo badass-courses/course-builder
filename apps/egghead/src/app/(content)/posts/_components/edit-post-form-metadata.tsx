@@ -13,7 +13,11 @@ import {
 	PostSchema,
 	PostTypeSchema,
 } from '@/lib/posts'
-import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import {
+	addTagToPost,
+	removeTagFromPost,
+	setPrimaryTagToPost,
+} from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { api } from '@/trpc/react'
 import { RefreshCcw } from 'lucide-react'
@@ -45,7 +49,7 @@ import {
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
-import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
+import AdvancedTagSelectorWithPrimary from '@coursebuilder/ui/resources-crud/tag-selector-with-primary'
 
 import { MetadataFieldAccess } from './metadata-field-access'
 import { PostUploader } from './post-uploader'
@@ -237,14 +241,22 @@ export const PostMetadataFormFields: React.FC<{
 			/>
 			<div className="px-5">
 				<FormLabel className="text-lg font-bold">Tags</FormLabel>
-				<AdvancedTagSelector
+				<FormDescription>
+					The selected tag will be used as the primary tag for the post.
+				</FormDescription>
+				<AdvancedTagSelectorWithPrimary
 					availableTags={tags}
 					selectedTags={post?.tags?.map((tag) => tag.tag) ?? []}
+					primaryTagId={post?.fields?.primaryTagId ?? ''}
 					onTagSelect={async (tag: { id: string }) => {
 						await addTagToPost(post.id, tag.id)
+						router.refresh()
 					}}
 					onTagRemove={async (tagId: string) => {
 						await removeTagFromPost(post.id, tagId)
+					}}
+					onPrimaryTagSelect={async (tagId: string) => {
+						await setPrimaryTagToPost(post.id, tagId)
 					}}
 				/>
 			</div>
