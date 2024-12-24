@@ -260,7 +260,7 @@ async function createCorePost({
 			fields: {
 				title,
 				state: 'draft',
-				visibility: 'unlisted',
+				visibility: 'public',
 				slug: `${slugify(title)}~${postGuid}`,
 				postType,
 				access: 'pro',
