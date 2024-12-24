@@ -11,18 +11,14 @@ import {
 	users as usersTable,
 } from '@/db/schema'
 import { Post, PostSchema } from '@/lib/posts'
-import { createNewPostVersion, getPost } from '@/lib/posts-query'
+import { getPost } from '@/lib/posts-query'
+import { createNewPostVersion } from '@/lib/posts-version-query'
 import { EggheadTagSchema } from '@/lib/tags'
 import { guid } from '@/utils/guid'
-// import { createClient } from '@sanity/client'
-import slugify from '@sindresorhus/slugify'
 import { eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
-import {
-	VideoResource,
-	VideoResourceSchema,
-} from '@coursebuilder/core/schemas/video-resource'
+import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
 import { inngest } from '../inngest.server'
 

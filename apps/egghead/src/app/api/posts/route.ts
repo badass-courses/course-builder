@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { courseBuilderAdapter } from '@/db'
 import { getEggheadUserProfile } from '@/lib/egghead'
 import { NewPostSchema, PostActionSchema, PostUpdateSchema } from '@/lib/posts'
+import { writeNewPostToDatabase } from '@/lib/posts-new-query'
 import {
 	deletePostFromDatabase,
 	getAllPostsForUser,
 	getPost,
-	writeNewPostToDatabase,
 	writePostUpdateToDatabase,
 } from '@/lib/posts-query'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
@@ -93,7 +93,9 @@ export async function POST(request: NextRequest) {
 
 	try {
 		const newPost = await writeNewPostToDatabase({
-			newPost: validatedData.data,
+			title: validatedData.data.title,
+			videoResourceId: validatedData.data.videoResourceId || undefined,
+			postType: validatedData.data.postType,
 			eggheadInstructorId: profile.instructor.id,
 			createdById: user.id,
 		})

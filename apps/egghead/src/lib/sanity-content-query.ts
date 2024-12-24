@@ -208,6 +208,8 @@ export async function getSanityLessonForEggheadLessonId(
 	)
 }
 
+// updateSanityCourse
+
 export async function updateSanityLesson(
 	eggheadLessonId: number | null | undefined,
 	lesson?: Post | null,
@@ -406,7 +408,7 @@ export async function getSanitySoftwareLibrary(
 	}
 }
 
-export const createCourse = async (course: Partial<SanityCourse>) => {
+export const createSanityCourse = async (course: Partial<SanityCourse>) => {
 	return await sanityWriteClient.create({
 		_type: 'course',
 		...course,
