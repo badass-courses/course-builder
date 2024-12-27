@@ -4,6 +4,9 @@ import { EditorView } from '@codemirror/view'
 import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
 import { EyeIcon } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
+import { yCollab } from 'y-codemirror.jh'
+import YPartyKitProvider from 'y-partykit/provider'
+import * as Y from 'yjs'
 
 import {
 	CourseBuilderEditorThemeDark,
@@ -27,6 +30,7 @@ export function EditResourcesBodyPanel({
 	resource: {
 		id: string
 		fields: {
+			yDoc?: string | null
 			body?: string | null
 			title?: string | null
 			slug: string
@@ -41,15 +45,30 @@ export function EditResourcesBodyPanel({
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
 }) {
-	const onChange = React.useCallback((value: string) => {
+	const onChange = React.useCallback((value: string, yDoc?: any) => {
+		if (yDoc) {
+			form.setValue('fields.yDoc', yDoc)
+		}
 		form.setValue('fields.body', value)
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
+
+	const partyKitProviderRef = React.useRef<YPartyKitProvider | null>(null)
 
 	const [hasMounted, setHasMounted] = React.useState(false)
 	React.useEffect(() => {
 		setHasMounted(true)
 	}, [])
+
+	React.useEffect(() => {
+		partyKitProviderRef.current = new YPartyKitProvider(
+			partykitUrl,
+			resource.id,
+		)
+		return () => {
+			partyKitProviderRef.current?.destroy()
+		}
+	}, [partykitUrl, resource.id])
 
 	const previewMdxButton: ICommand = {
 		name: 'mdx-preview',
@@ -91,6 +110,10 @@ export function EditResourcesBodyPanel({
 		'codeBlock',
 	] as ICommand[]
 
+	const ytext =
+		partyKitProviderRef.current?.doc.getText('codemirror') ||
+		new Y.Doc().getText('codemirror')
+
 	return (
 		<>
 			{isShowingMdxPreview && (
@@ -115,8 +138,13 @@ export function EditResourcesBodyPanel({
 					{hasMounted && (
 						<MarkdownEditor
 							height="var(--code-editor-layout-height)"
-							value={resource.fields.body || ''}
-							onChange={onChange}
+							value={ytext.toString() || ''}
+							onChange={(value, viewUpdate) => {
+								const yDoc = Buffer.from(
+									Y.encodeStateAsUpdate(partyKitProviderRef.current!.doc),
+								).toString('base64')
+								onChange(viewUpdate.state.doc.toString(), yDoc)
+							}}
 							enablePreview={withMdxPreview ? false : true}
 							theme={
 								(theme === 'dark'
@@ -124,7 +152,12 @@ export function EditResourcesBodyPanel({
 									: CourseBuilderEditorThemeLight) ||
 								CourseBuilderEditorThemeDark
 							}
-							extensions={[EditorView.lineWrapping]}
+							extensions={[
+								EditorView.lineWrapping,
+								...(partyKitProviderRef.current
+									? [yCollab(ytext, partyKitProviderRef.current.awareness)]
+									: []),
+							]}
 							toolbars={
 								withMdxPreview
 									? [previewMdxButton, ...defaultCommands]

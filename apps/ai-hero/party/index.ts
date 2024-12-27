@@ -57,7 +57,12 @@ export default class Server implements Party.Server {
 				})
 
 				const doc = new Y.Doc()
-				if (tip?.fields?.body && doc.getText('codemirror').length === 0) {
+				if (tip?.fields?.yDoc) {
+					Y.applyUpdate(
+						doc,
+						new Uint8Array(Buffer.from(tip?.fields?.yDoc, 'base64')),
+					)
+				} else if (tip?.fields?.body) {
 					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
 				return doc
