@@ -56,10 +56,15 @@ export default class Server implements Party.Server {
 					),
 				})
 
-				console.log('tip', tip)
-
 				const doc = new Y.Doc()
-				if (tip?.fields?.body && doc.getText('codemirror').length === 0) {
+				if (tip?.fields?.yDoc) {
+					const binaryString = atob(tip.fields.yDoc)
+					const bytes = new Uint8Array(binaryString.length)
+					for (let i = 0; i < binaryString.length; i++) {
+						bytes[i] = binaryString.charCodeAt(i)
+					}
+					Y.applyUpdate(doc, bytes)
+				} else if (tip?.fields?.body) {
 					doc.getText('codemirror').insert(0, tip.fields.body)
 				}
 				return doc

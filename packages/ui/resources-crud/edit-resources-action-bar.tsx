@@ -11,12 +11,14 @@ export function EditResourcesActionBar({
 	onPublish,
 	onArchive,
 	onUnPublish,
+	isAutoSaving = false,
 }: {
 	resource: ContentResource & {
 		fields?: {
 			body?: string | null
 			title?: string | null
 			slug: string
+			state?: string
 		}
 	}
 	onSubmit: () => Promise<void>
@@ -24,9 +26,10 @@ export function EditResourcesActionBar({
 	onUnPublish: () => void
 	onArchive: () => void
 	resourcePath: string
+	isAutoSaving?: boolean
 }) {
 	const [isSubmitting, setIsSubmitting] = React.useState(false)
-	const isDisabled = isSubmitting
+	const isDisabled = isSubmitting || isAutoSaving
 
 	return (
 		<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
@@ -52,6 +55,7 @@ export function EditResourcesActionBar({
 						type="button"
 						variant="default"
 						size="sm"
+						disabled={isDisabled}
 						className="h-7 disabled:cursor-wait"
 					>
 						Save & Publish
@@ -96,9 +100,11 @@ export function EditResourcesActionBar({
 					variant="default"
 					size="sm"
 					disabled={isDisabled}
-					className="h-7 disabled:cursor-wait"
+					className="relative h-7 w-[90px] disabled:cursor-wait"
 				>
-					{isSubmitting ? 'Saving' : 'Save'}
+					<span className="absolute left-1/2 -translate-x-1/2">
+						{isAutoSaving ? 'Auto-saving...' : isSubmitting ? 'Saving' : 'Save'}
+					</span>
 				</Button>
 			</div>
 		</div>
