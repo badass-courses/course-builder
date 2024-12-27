@@ -63,6 +63,10 @@ import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
+import {
+	CREATE_USER_ORGANIZATIONS_EVENT,
+	CreateUserOrganizations,
+} from './functions/create-user-organization'
 
 // Create a client to send and receive events
 export type Events = {
@@ -81,6 +85,7 @@ export type Events = {
 	[NO_PROGRESS_MADE_EVENT]: NoProgressMade
 	[SYNC_PURCHASE_TAGS_EVENT]: SyncPurchaseTags
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
+	[CREATE_USER_ORGANIZATIONS_EVENT]: CreateUserOrganizations
 }
 
 const callbackBase =

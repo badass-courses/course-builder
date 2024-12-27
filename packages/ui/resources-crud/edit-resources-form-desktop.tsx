@@ -15,24 +15,6 @@ import { EditResourcePanelGroup } from './panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from './panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from './panels/edit-resources-metadata-panel'
 
-/**
- * This is a form that is used to create or edit a resource.
- *
- * @param resource @type {ContentResource}
- * @param getResourcePath
- * @param resourceSchema
- * @param children
- * @param form
- * @param updateResource
- * @param availableWorkflows
- * @param onSave
- * @param sendResourceChatMessage
- * @param hostUrl @type {string} - the host url of the Partykit
- * @param user
- * @param tools
- * @param theme
- * @constructor
- */
 export function EditResourcesFormDesktop({
 	resource,
 	getResourcePath,
@@ -87,6 +69,29 @@ export function EditResourcesFormDesktop({
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
 }) {
+	const [isAutoSaving, setIsAutoSaving] = React.useState(false)
+	const autoSaveTimerRef = React.useRef<NodeJS.Timeout>(null)
+
+	const debouncedAutoSave = React.useCallback(async () => {
+		if (autoSaveTimerRef.current) {
+			clearTimeout(autoSaveTimerRef.current)
+		}
+
+		autoSaveTimerRef.current = setTimeout(async () => {
+			setIsAutoSaving(true)
+			await updateResource(form.getValues(), 'save')
+			setIsAutoSaving(false)
+		}, 1000)
+	}, [form, updateResource])
+
+	React.useEffect(() => {
+		return () => {
+			if (autoSaveTimerRef.current) {
+				clearTimeout(autoSaveTimerRef.current)
+			}
+		}
+	}, [])
+
 	const onSubmit = async (
 		values: z.infer<typeof resourceSchema>,
 		action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
@@ -106,6 +111,7 @@ export function EditResourcesFormDesktop({
 			<EditResourcesActionBar
 				resource={resource}
 				resourcePath={getResourcePath(resource.fields?.slug)}
+				isAutoSaving={isAutoSaving}
 				onSubmit={async () => {
 					await onSubmit(form.getValues(), 'save')
 				}}
@@ -133,7 +139,10 @@ export function EditResourcesFormDesktop({
 					resource={resource}
 					form={form}
 					theme={theme}
-					onResourceBodyChange={(value) => onResourceBodyChange(value)}
+					onResourceBodyChange={(value) => {
+						onResourceBodyChange(value)
+						debouncedAutoSave()
+					}}
 					toggleMdxPreview={toggleMdxPreview}
 					isShowingMdxPreview={isShowingMdxPreview}
 				>
