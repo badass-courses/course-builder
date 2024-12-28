@@ -6,6 +6,7 @@ import { EyeIcon } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { yCollab } from 'y-codemirror.jh'
 import YPartyKitProvider from 'y-partykit/provider'
+import useYProvider from 'y-partykit/react'
 import * as Y from 'yjs'
 
 import {
@@ -53,22 +54,15 @@ export function EditResourcesBodyPanel({
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
 
-	const partyKitProviderRef = React.useRef<YPartyKitProvider | null>(null)
+	const partyKitProvider = useYProvider({
+		host: partykitUrl,
+		room: resource.id,
+	})
 
 	const [hasMounted, setHasMounted] = React.useState(false)
 	React.useEffect(() => {
 		setHasMounted(true)
 	}, [])
-
-	React.useEffect(() => {
-		partyKitProviderRef.current = new YPartyKitProvider(
-			partykitUrl,
-			resource.id,
-		)
-		return () => {
-			partyKitProviderRef.current?.destroy()
-		}
-	}, [partykitUrl, resource.id])
 
 	const previewMdxButton: ICommand = {
 		name: 'mdx-preview',
@@ -111,7 +105,7 @@ export function EditResourcesBodyPanel({
 	] as ICommand[]
 
 	const ytext =
-		partyKitProviderRef.current?.doc.getText('codemirror') ||
+		partyKitProvider.doc.getText('codemirror') ||
 		new Y.Doc().getText('codemirror')
 
 	return (
@@ -138,12 +132,12 @@ export function EditResourcesBodyPanel({
 					{hasMounted && (
 						<MarkdownEditor
 							height="var(--code-editor-layout-height)"
-							value={ytext.toString() || ''}
+							value={resource.fields.body || ''}
 							onChange={(value, viewUpdate) => {
 								const yDoc = Buffer.from(
-									Y.encodeStateAsUpdate(partyKitProviderRef.current!.doc),
+									Y.encodeStateAsUpdate(partyKitProvider.doc),
 								).toString('base64')
-								onChange(viewUpdate.state.doc.toString(), yDoc)
+								onChange(value, yDoc)
 							}}
 							enablePreview={withMdxPreview ? false : true}
 							theme={
@@ -154,9 +148,9 @@ export function EditResourcesBodyPanel({
 							}
 							extensions={[
 								EditorView.lineWrapping,
-								...(partyKitProviderRef.current
-									? [yCollab(ytext, partyKitProviderRef.current.awareness)]
-									: []),
+								// ...(partyKitProvider
+								// 	? [yCollab(ytext, partyKitProvider.awareness)]
+								// 	: []),
 							]}
 							toolbars={
 								withMdxPreview

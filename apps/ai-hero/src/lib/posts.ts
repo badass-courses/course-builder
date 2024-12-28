@@ -36,6 +36,7 @@ export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			body: z.string().nullable().optional(),
+			yDoc: z.string().nullable().optional(),
 			title: z.string(),
 			summary: z.string().optional().nullable(),
 			description: z.string().optional(),

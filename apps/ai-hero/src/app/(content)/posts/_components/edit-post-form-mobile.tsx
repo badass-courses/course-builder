@@ -8,12 +8,37 @@ import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { PostUpdate } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
+import { EditorView } from '@codemirror/view'
+import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
 import { useSession } from 'next-auth/react'
+import { yCollab } from 'y-codemirror.jh'
+import YPartyKitProvider from 'y-partykit/provider'
+import * as Y from 'yjs'
 
 import { Button, Form } from '@coursebuilder/ui'
-import { ResourceChatAssistant } from '@coursebuilder/ui/chat-assistant/resource-chat-assistant'
-import { CodemirrorEditor } from '@coursebuilder/ui/codemirror/editor'
+import {
+	CourseBuilderEditorThemeDark,
+	CourseBuilderEditorThemeLight,
+} from '@coursebuilder/ui/codemirror/editor'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+
+const defaultCommands = [
+	'undo',
+	'redo',
+	'bold',
+	'italic',
+	'header',
+	'strike',
+	'underline',
+	'quote',
+	'olist',
+	'ulist',
+	'todo',
+	'link',
+	'image',
+	'code',
+	'codeBlock',
+] as ICommand[]
 
 export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 	post,
@@ -81,6 +106,35 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 
 	const formValues = form.getValues()
 
+	const onChange = React.useCallback((value: string, yDoc?: any) => {
+		if (yDoc) {
+			form.setValue('fields.yDoc', yDoc)
+		}
+		form.setValue('fields.body', value)
+	}, [])
+
+	const partyKitProviderRef = React.useRef<YPartyKitProvider | null>(null)
+	const ytext =
+		partyKitProviderRef.current?.doc.getText('codemirror') ||
+		new Y.Doc().getText('codemirror')
+
+	console.log({
+		url: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		resourceId: post.id,
+		ytext,
+	})
+
+	React.useEffect(() => {
+		partyKitProviderRef.current = new YPartyKitProvider(
+			env.NEXT_PUBLIC_PARTY_KIT_URL,
+			post.id,
+			ytext.doc || new Y.Doc(),
+		)
+		return () => {
+			partyKitProviderRef.current?.destroy()
+		}
+	}, [post.id])
+
 	return (
 		<>
 			<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
@@ -130,23 +184,29 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 					</form>
 				</Form>
 				<div className="pt-5">
-					<label className="px-5 text-lg font-bold">Content</label>
-					<CodemirrorEditor
-						partykitUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-						roomName={`${post.id}`}
+					<label className="px-5 text-lg font-bold">Contentz</label>
+					<MarkdownEditor
+						height="var(--code-editor-layout-height)"
 						value={post.fields.body || ''}
-						onChange={(data) => {
-							form.setValue('fields.body', data)
+						onChange={(value, viewUpdate) => {
+							const yDoc = Buffer.from(
+								Y.encodeStateAsUpdate(partyKitProviderRef.current!.doc),
+							).toString('base64')
+							onChange(value, yDoc)
 						}}
-					/>
-				</div>
-				<div className="pt-5">
-					<ResourceChatAssistant
-						resource={post}
-						availableWorkflows={availableWorkflows}
-						user={session?.data?.user}
-						hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-						sendResourceChatMessage={sendResourceChatMessage}
+						enablePreview={false}
+						theme={
+							(theme === 'dark'
+								? CourseBuilderEditorThemeDark
+								: CourseBuilderEditorThemeLight) || CourseBuilderEditorThemeDark
+						}
+						extensions={[
+							EditorView.lineWrapping,
+							// ...(partyKitProviderRef.current
+							// 	? [yCollab(ytext, partyKitProviderRef.current.awareness)]
+							// 	: []),
+						]}
+						toolbars={[...defaultCommands]}
 					/>
 				</div>
 			</div>
