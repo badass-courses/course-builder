@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import * as schema from '@/db/schema'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -45,32 +46,60 @@ export default class Server implements Party.Server {
 		return onConnect(conn, this.party, {
 			persist: { mode: 'snapshot' },
 			async load() {
-				console.log('loading the party', party.id)
-				const tip = await db.query.contentResource.findFirst({
-					where: or(
-						eq(
-							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-							party.id,
+				try {
+					console.log('[PartyKit] Loading document for:', party.id)
+					const tip = await db.query.contentResource.findFirst({
+						where: or(
+							eq(
+								sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+								party.id,
+							),
+							eq(contentResource.id, party.id),
 						),
-						eq(contentResource.id, party.id),
-					),
-				})
+					})
 
-				const doc = new Y.Doc()
-				if (tip?.fields?.yDoc) {
-					const binaryString = atob(tip.fields.yDoc)
-					const bytes = new Uint8Array(binaryString.length)
-					for (let i = 0; i < binaryString.length; i++) {
-						bytes[i] = binaryString.charCodeAt(i)
+					console.log('[PartyKit] Found resource:', {
+						id: tip?.id,
+						hasYDoc: !!tip?.fields?.yDoc,
+						hasBody: !!tip?.fields?.body,
+					})
+
+					const doc = new Y.Doc()
+
+					if (tip?.fields?.yDoc) {
+						try {
+							console.log('[PartyKit] Applying yDoc update for:', party.id)
+							const update = Buffer.from(tip.fields.yDoc, 'base64')
+							Y.applyUpdate(doc, new Uint8Array(update))
+							console.log('[PartyKit] Successfully applied yDoc update')
+						} catch (e) {
+							console.error('[PartyKit] Failed to apply yDoc update:', e)
+							// Fallback to body if yDoc update fails
+							if (tip?.fields?.body) {
+								console.log('[PartyKit] Falling back to body text')
+								doc.getText('codemirror').insert(0, tip.fields.body)
+							}
+						}
+					} else if (tip?.fields?.body) {
+						console.log('[PartyKit] Setting initial body text')
+						doc.getText('codemirror').insert(0, tip.fields.body)
 					}
-					Y.applyUpdate(doc, bytes)
-				} else if (tip?.fields?.body) {
-					doc.getText('codemirror').insert(0, tip.fields.body)
+
+					console.log('[PartyKit] Final doc state:', {
+						length: doc.getText('codemirror').length,
+						content: doc.getText('codemirror').toString().slice(0, 100) + '...',
+					})
+
+					return doc
+				} catch (e) {
+					console.error('[PartyKit] Critical error in load:', e)
+					// Return empty doc as last resort
+					return new Y.Doc()
 				}
-				return doc
 			},
 			callback: {
 				handler: async (doc) => {
+					console.log('callback handler', party.id)
 					// autosave
 				},
 			},
