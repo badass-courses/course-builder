@@ -75,7 +75,7 @@ export function EditResourcesFormDesktop({
 		onSave: async () => {
 			await updateResource(form.getValues(), 'save')
 		},
-		inactivityTimeout: 1000,
+		inactivityTimeout: 2000,
 	})
 	const onSubmit = async (
 		values: z.infer<typeof resourceSchema>,
