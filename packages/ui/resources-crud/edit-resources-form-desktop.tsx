@@ -5,7 +5,9 @@ import { Schema, z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
+import { useAutoSave } from '../hooks/use-auto-save'
 import { ResizableHandle } from '../primitives/resizable'
+import { useToast } from '../primitives/use-toast'
 import { EditResourcesActionBar } from './edit-resources-action-bar'
 import {
 	EditResourcesToolPanel,
@@ -69,28 +71,12 @@ export function EditResourcesFormDesktop({
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
 }) {
-	const [isAutoSaving, setIsAutoSaving] = React.useState(false)
-	const autoSaveTimerRef = React.useRef<NodeJS.Timeout>(null)
-
-	const debouncedAutoSave = React.useCallback(async () => {
-		if (autoSaveTimerRef.current) {
-			clearTimeout(autoSaveTimerRef.current)
-		}
-
-		autoSaveTimerRef.current = setTimeout(async () => {
-			setIsAutoSaving(true)
+	const { isAutoSaving, triggerAutoSave } = useAutoSave({
+		onSave: async () => {
 			await updateResource(form.getValues(), 'save')
-			setIsAutoSaving(false)
-		}, 1000)
-	}, [form, updateResource])
-
-	React.useEffect(() => {
-		return () => {
-			if (autoSaveTimerRef.current) {
-				clearTimeout(autoSaveTimerRef.current)
-			}
-		}
-	}, [])
+		},
+		inactivityTimeout: 1000,
+	})
 
 	const onSubmit = async (
 		values: z.infer<typeof resourceSchema>,
@@ -106,6 +92,8 @@ export function EditResourcesFormDesktop({
 		}
 	}
 
+	const { toast } = useToast()
+
 	return (
 		<>
 			<EditResourcesActionBar
@@ -113,7 +101,11 @@ export function EditResourcesFormDesktop({
 				resourcePath={getResourcePath(resource.fields?.slug)}
 				isAutoSaving={isAutoSaving}
 				onSubmit={async () => {
-					await onSubmit(form.getValues(), 'save')
+					await onSubmit(form.getValues(), 'save').then(() => {
+						toast({
+							title: '✅ Saved!',
+						})
+					})
 				}}
 				onPublish={async () => {
 					form.setValue('fields.state', 'published')
@@ -141,7 +133,7 @@ export function EditResourcesFormDesktop({
 					theme={theme}
 					onResourceBodyChange={(value) => {
 						onResourceBodyChange(value)
-						debouncedAutoSave()
+						triggerAutoSave()
 					}}
 					toggleMdxPreview={toggleMdxPreview}
 					isShowingMdxPreview={isShowingMdxPreview}
