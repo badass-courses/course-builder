@@ -136,9 +136,17 @@ export async function createPost(input: NewPost) {
 	}
 }
 
+export async function autoUpdatePost(
+	input: PostUpdate,
+	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+) {
+	return await updatePost(input, action, false)
+}
+
 export async function updatePost(
 	input: PostUpdate,
 	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+	revalidate = true,
 ) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -171,7 +179,7 @@ export async function updatePost(
 		console.error('Failed to update post in Typesense', e)
 	}
 
-	revalidateTag('posts')
+	revalidate && revalidateTag('posts')
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentPost.id,

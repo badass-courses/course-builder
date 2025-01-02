@@ -7,7 +7,7 @@ import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
-import { updatePost } from '@/lib/posts-query'
+import { autoUpdatePost, updatePost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
@@ -85,15 +85,14 @@ export function EditPostForm({
 			resourceSchema={PostSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updatePost}
+			autoUpdateResource={autoUpdatePost}
 			form={form}
 			availableWorkflows={[]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			theme={theme}
-			onResourceBodyChange={() => {
-				console.log('onResourceBodyChange')
-			}}
+			onResourceBodyChange={() => {}}
 			tools={[
 				{ id: 'assistant' },
 				{
