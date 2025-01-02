@@ -72,8 +72,10 @@ export function EditResourcesFormDesktop({
 	isShowingMdxPreview?: boolean
 }) {
 	const { isAutoSaving, triggerAutoSave } = useAutoSave({
+		getCurrentValue: () => form.getValues('fields.body'),
 		onSave: async () => {
-			await updateResource(form.getValues(), 'save')
+			const result = await updateResource(form.getValues(), 'save')
+			return result
 		},
 		inactivityTimeout: 1000,
 	})

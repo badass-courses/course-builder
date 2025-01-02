@@ -1,7 +1,8 @@
 import React from 'react'
 
-type AutoSaveOptions = {
-	onSave: () => Promise<void>
+type AutoSaveOptions<T> = {
+	onSave: (content: T) => Promise<T>
+	getCurrentValue: () => T
 	inactivityTimeout?: number
 }
 
@@ -24,34 +25,48 @@ type AutoSaveOptions = {
  * });
  * ```
  */
-export function useAutoSave({
+export function useAutoSave<T>({
 	onSave,
+	getCurrentValue,
 	inactivityTimeout = 2000,
-}: AutoSaveOptions) {
-	// Track save state and maintain timer references
+}: AutoSaveOptions<T>) {
 	const [isAutoSaving, setIsAutoSaving] = React.useState(false)
 	const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null)
 	const lastTypedRef = React.useRef<number>(Date.now())
+	const latestContentRef = React.useRef<T>(getCurrentValue())
 
-	const triggerAutoSave = React.useCallback(() => {
-		// Reset existing timer to prevent multiple concurrent saves
+	const triggerAutoSave = React.useCallback(async () => {
 		if (autoSaveTimerRef.current) {
 			clearTimeout(autoSaveTimerRef.current)
 		}
 
-		// Update timestamp for inactivity tracking
 		lastTypedRef.current = Date.now()
+		// Store latest content immediately
+		latestContentRef.current = getCurrentValue()
+		console.log({ latestContentRef })
 
 		autoSaveTimerRef.current = setTimeout(async () => {
-			// Double-check inactivity duration to prevent premature saves
-			// that might occur due to React's state batching
 			if (Date.now() - lastTypedRef.current >= inactivityTimeout) {
 				setIsAutoSaving(true)
-				await onSave()
-				setIsAutoSaving(false)
+
+				try {
+					// Save with latest content at the time of save
+					const currentContent = getCurrentValue()
+					const savedContent = await onSave(currentContent)
+
+					// Only update if server response differs and no new changes were made
+					if (
+						JSON.stringify(savedContent) !== JSON.stringify(currentContent) &&
+						JSON.stringify(currentContent) === JSON.stringify(getCurrentValue())
+					) {
+						latestContentRef.current = savedContent
+					}
+				} finally {
+					setIsAutoSaving(false)
+				}
 			}
 		}, inactivityTimeout)
-	}, [onSave, inactivityTimeout])
+	}, [getCurrentValue, onSave, inactivityTimeout])
 
 	// Cleanup timer on unmount to prevent memory leaks
 	React.useEffect(() => {
@@ -65,5 +80,6 @@ export function useAutoSave({
 	return {
 		isAutoSaving,
 		triggerAutoSave,
+		latestContent: latestContentRef.current,
 	}
 }
