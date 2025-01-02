@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { undo as undoHandle } from '@codemirror/commands'
 
 import { ICommand } from '.'

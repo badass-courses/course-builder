@@ -1,11 +1,17 @@
-import { execSync } from 'child_process'
-import { defineConfig, Format } from 'tsup'
+import { lessLoader } from 'esbuild-plugin-less'
+import { defineConfig } from 'tsup'
 
-export const config = {
-	sourcemap: true,
+export default defineConfig({
+	entry: ['src/index.tsx'],
+	format: ['cjs', 'esm'],
 	dts: true,
-	format: ['esm', 'cjs'] as Format[],
-	entry: ['./src/**/*.ts'],
-}
-
-export default defineConfig(config)
+	splitting: false,
+	sourcemap: true,
+	clean: true,
+	treeshake: true,
+	external: ['react', 'react-dom'],
+	esbuildPlugins: [lessLoader()],
+	esbuildOptions(options) {
+		options.assetNames = 'assets/[name]-[hash]'
+	},
+})

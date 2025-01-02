@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { EditorSelection } from '@codemirror/state'
 
 import { ICommand } from '.'

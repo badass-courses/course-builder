@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { redo as redoHandle } from '@codemirror/commands'
 
 import { ICommand } from '.'

@@ -17,6 +17,9 @@ import CodeMirror, {
 import MarkdownPreview, {
 	MarkdownPreviewProps,
 } from '@uiw/react-markdown-preview'
+import { yCollab } from 'y-codemirror.jh'
+import useYProvider from 'y-partykit/react'
+import * as Y from 'yjs'
 
 import { getCommands, getModeCommands } from './commands'
 import ToolBar, { type Commands } from './components/ToolBar'
@@ -72,6 +75,11 @@ export interface IMarkdownEditor extends ReactCodeMirrorProps {
 	reExtensions?: ReactCodeMirrorProps['extensions']
 	/** Edit mode and preview mode switching event */
 	onPreviewMode?: (isHide: boolean) => void
+	partyKit?: {
+		host: string
+		room: string
+	}
+	onYdocChange: (value: string, yDoc: string) => void
 }
 
 export interface ToolBarProps {
@@ -126,6 +134,8 @@ function MarkdownEditorInternal(
 		previewWidth = '50%',
 		reExtensions,
 		onPreviewMode,
+		partyKit,
+		onYdocChange,
 		...codemirrorProps
 	} = props
 	const [value, setValue] = useState(props.value || '')
@@ -134,6 +144,11 @@ function MarkdownEditorInternal(
 	const containerEditor = useRef<HTMLDivElement>(null)
 	const preview = useRef<HTMLDivElement>(null)
 	const active = useRef<'editor' | 'preview'>('editor')
+
+	const partyKitProvider = useYProvider({
+		host: partyKit?.host || '',
+		room: partyKit?.room || '',
+	})
 
 	useImperativeHandle(
 		ref,
@@ -199,11 +214,18 @@ function MarkdownEditorInternal(
 		scroll: previewScrollHandle,
 	})
 
+	const ytext =
+		partyKitProvider.doc.getText('codemirror') ||
+		new Y.Doc().getText('codemirror')
+
 	let extensionsData: IMarkdownEditor['extensions'] = reExtensions
 		? reExtensions
 		: [
 				markdown({ base: markdownLanguage, codeLanguages: languages }),
 				scrollerStyle,
+				...(partyKitProvider
+					? [yCollab(ytext, partyKitProvider.awareness)]
+					: []),
 				...extensions,
 			]
 	if (enableScroll) {
@@ -215,8 +237,12 @@ function MarkdownEditorInternal(
 		.join(' ')
 	previewProps['source'] = value
 	const handleChange = (value: string, viewUpdate: ViewUpdate) => {
+		const yDoc = Buffer.from(
+			Y.encodeStateAsUpdate(partyKitProvider.doc),
+		).toString('base64')
 		setValue(value)
 		onChange && onChange(value, viewUpdate)
+		onYdocChange && onYdocChange(value, yDoc)
 	}
 	const conentView = (
 		<div
