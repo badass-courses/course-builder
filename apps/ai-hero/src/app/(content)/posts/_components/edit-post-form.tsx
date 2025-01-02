@@ -91,9 +91,7 @@ export function EditPostForm({
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			theme={theme}
-			onResourceBodyChange={() => {
-				console.log('onResourceBodyChange')
-			}}
+			onResourceBodyChange={() => {}}
 			tools={[
 				{ id: 'assistant' },
 				{
