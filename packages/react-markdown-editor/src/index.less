@@ -1,0 +1,60 @@
+@editor-prefix:~ "md-editor";
+
+[data-color-mode*='dark'] .@{editor-prefix} {
+  --color-border-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 0 0 rgb(255 255 255 / 0%), 0 1px 1px rgb(255 255 255 / 20%);
+}
+[data-color-mode*='light'] .@{editor-prefix} {
+  --color-border-shadow: 0 0 0 1px rgb(16 22 26 / 10%), 0 0 0 rgb(16 22 26 / 0%), 0 1px 1px rgb(16 22 26 / 20%);
+}
+
+.@{editor-prefix} {
+  color: var(--color-fg-default);
+  box-shadow: var(--color-border-shadow);
+  text-align: left;
+  border-radius: 3px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-canvas-subtle);
+  &-content {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+  }
+  &-fullscreen & {
+    border-radius: 0;
+  }
+  &-fullscreen {
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  &-fullscreen &-toolbar {
+    border-radius: 0;
+  }
+  &-preview {
+    padding: 20px;
+    width: 0%;
+    overflow: hidden;
+    border-left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    background-color: var(--color-canvas-default);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    a {
+      display: none;
+    }
+  }
+}
