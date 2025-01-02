@@ -9,7 +9,7 @@ import { Post, PostAction } from './posts'
 import { TypesenseResourceSchema } from './typesense'
 
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
-	let typesenseWriteClient = new Typesense.Client({
+	const typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
 				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
@@ -20,6 +20,14 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
+
+	if (
+		!typesenseWriteClient.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents
+	) {
+		console.error('Typesense write client not found')
+		return
+	}
 
 	const shouldIndex =
 		post.fields.state === 'published' && post.fields.visibility === 'public'
@@ -71,7 +79,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 }
 
 export async function deletePostInTypeSense(postId: string) {
-	let typesenseWriteClient = new Typesense.Client({
+	const typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
 				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
@@ -82,6 +90,14 @@ export async function deletePostInTypeSense(postId: string) {
 		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
+
+	if (
+		!typesenseWriteClient.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents
+	) {
+		console.error('Typesense write client not found')
+		return
+	}
 
 	await typesenseWriteClient
 		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
@@ -96,7 +112,7 @@ export async function indexAllContentToTypeSense(
 	resources: ContentResource[],
 	deleteFirst = true,
 ) {
-	let typesenseWriteClient = new Typesense.Client({
+	const typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
 				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
@@ -107,6 +123,14 @@ export async function indexAllContentToTypeSense(
 		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
+
+	if (
+		!typesenseWriteClient.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents
+	) {
+		console.error('Typesense write client not found')
+		return
+	}
 
 	if (deleteFirst) {
 		console.log('Deleting all documents')

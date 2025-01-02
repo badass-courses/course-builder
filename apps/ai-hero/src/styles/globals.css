@@ -17,6 +17,7 @@
 @import './ui/button.css';
 @import './login.css';
 @import './commerce.css';
+@import '@coursebuilder/react-markdown-editor/dist/index.css';
 
 @tailwind base;
 @tailwind components;

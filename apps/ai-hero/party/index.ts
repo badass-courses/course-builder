@@ -99,8 +99,39 @@ export default class Server implements Party.Server {
 			},
 			callback: {
 				handler: async (doc) => {
-					console.log('callback handler', party.id)
-					// autosave
+					console.log('😭 doc up in here')
+					try {
+						const update = Buffer.from(Y.encodeStateAsUpdate(doc)).toString(
+							'base64',
+						)
+						const text = doc.getText('codemirror').toString()
+
+						await db
+							.update(contentResource)
+							.set({
+								fields: sql`JSON_SET(
+									COALESCE(fields, '{}'),
+									'$.yDoc', ${update},
+									'$.body', ${text}
+								)`,
+							})
+							.where(
+								or(
+									eq(
+										sql`JSON_EXTRACT(${contentResource.fields}, "$.slug")`,
+										party.id,
+									),
+									eq(contentResource.id, party.id),
+								),
+							)
+
+						console.log(
+							'[PartyKit] Successfully saved document state for:',
+							party.id,
+						)
+					} catch (e) {
+						console.error('[PartyKit] Failed to save document state:', e)
+					}
 				},
 			},
 		})

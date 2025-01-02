@@ -1,13 +1,12 @@
 import * as React from 'react'
 import { User } from '@auth/core/types'
 import { EditorView } from '@codemirror/view'
-import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
 import { EyeIcon } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { yCollab } from 'y-codemirror.jh'
-import YPartyKitProvider from 'y-partykit/provider'
-import useYProvider from 'y-partykit/react'
 import * as Y from 'yjs'
+
+import MarkdownEditor, { ICommand } from '@coursebuilder/react-markdown-editor'
 
 import {
 	CourseBuilderEditorThemeDark,
@@ -54,11 +53,6 @@ export function EditResourcesBodyPanel({
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
 
-	const partyKitProvider = useYProvider({
-		host: partykitUrl,
-		room: resource.id,
-	})
-
 	const [hasMounted, setHasMounted] = React.useState(false)
 	React.useEffect(() => {
 		setHasMounted(true)
@@ -104,10 +98,6 @@ export function EditResourcesBodyPanel({
 		'codeBlock',
 	] as ICommand[]
 
-	const ytext =
-		partyKitProvider.doc.getText('codemirror') ||
-		new Y.Doc().getText('codemirror')
-
 	return (
 		<>
 			{isShowingMdxPreview && (
@@ -132,11 +122,7 @@ export function EditResourcesBodyPanel({
 					{hasMounted && (
 						<MarkdownEditor
 							height="var(--code-editor-layout-height)"
-							value={resource.fields.body || ''}
-							onChange={(value, viewUpdate) => {
-								const yDoc = Buffer.from(
-									Y.encodeStateAsUpdate(partyKitProvider.doc),
-								).toString('base64')
+							onYdocChange={(value, yDoc) => {
 								onChange(value, yDoc)
 							}}
 							enablePreview={withMdxPreview ? false : true}
@@ -146,12 +132,7 @@ export function EditResourcesBodyPanel({
 									: CourseBuilderEditorThemeLight) ||
 								CourseBuilderEditorThemeDark
 							}
-							extensions={[
-								EditorView.lineWrapping,
-								// ...(partyKitProvider
-								// 	? [yCollab(ytext, partyKitProvider.awareness)]
-								// 	: []),
-							]}
+							extensions={[EditorView.lineWrapping]}
 							toolbars={
 								withMdxPreview
 									? [previewMdxButton, ...defaultCommands]
