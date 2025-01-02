@@ -24,6 +24,7 @@ export function EditResourcesFormDesktop({
 	children,
 	form,
 	updateResource,
+	autoUpdateResource,
 	availableWorkflows,
 	onSave,
 	onPublish,
@@ -55,7 +56,10 @@ export function EditResourcesFormDesktop({
 	updateResource: (
 		values: z.infer<typeof resourceSchema>,
 		action?: 'save' | 'publish' | 'archive' | 'unpublish',
-		revalidate?: boolean,
+	) => Promise<any>
+	autoUpdateResource?: (
+		values: z.infer<typeof resourceSchema>,
+		action?: 'save' | 'publish' | 'archive' | 'unpublish',
 	) => Promise<any>
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	sendResourceChatMessage: (options: {
@@ -74,7 +78,7 @@ export function EditResourcesFormDesktop({
 }) {
 	const { isAutoSaving, triggerAutoSave } = useAutoSave({
 		onSave: async () => {
-			await updateResource(form.getValues(), 'save', false)
+			autoUpdateResource && (await autoUpdateResource(form.getValues(), 'save'))
 		},
 		inactivityTimeout: 2000,
 	})

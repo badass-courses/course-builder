@@ -136,6 +136,13 @@ export async function createPost(input: NewPost) {
 	}
 }
 
+export async function autoUpdatePost(
+	input: PostUpdate,
+	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+) {
+	return await updatePost(input, action, false)
+}
+
 export async function updatePost(
 	input: PostUpdate,
 	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
