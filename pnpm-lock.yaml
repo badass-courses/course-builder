@@ -512,6 +512,9 @@ importers:
       rehype-slug:
         specifier: ^6.0.0
         version: 6.0.0
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.0
       resend:
         specifier: ^3.2.0
         version: 3.2.0

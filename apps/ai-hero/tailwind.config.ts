@@ -100,6 +100,12 @@ module.exports = {
 				DEFAULT: {
 					css: {
 						color: theme('colors.foreground'),
+						th: {
+							color: theme('colors.foreground'),
+						},
+						'tr, thead': {
+							borderColor: theme('colors.border'),
+						},
 						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
@@ -124,7 +130,7 @@ module.exports = {
 						code: {
 							backgroundColor: theme('colors.muted.DEFAULT'),
 							color: theme('colors.foreground'),
-							padding: '0.25rem',
+							padding: '0.1rem 0.25rem',
 							borderRadius: '0.25rem',
 							whiteSpace: 'nowrap',
 						},

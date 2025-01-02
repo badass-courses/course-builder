@@ -20,6 +20,7 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
 
@@ -90,6 +91,11 @@ async function Post({ post }: { post: Post | null }) {
 			{post.fields.body && (
 				<MDXRemote
 					source={post.fields.body}
+					options={{
+						mdxOptions: {
+							remarkPlugins: [remarkGfm],
+						},
+					}}
 					components={{
 						// @ts-expect-error
 						pre: async (props: any) => {
