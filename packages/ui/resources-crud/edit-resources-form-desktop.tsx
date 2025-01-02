@@ -72,14 +72,11 @@ export function EditResourcesFormDesktop({
 	isShowingMdxPreview?: boolean
 }) {
 	const { isAutoSaving, triggerAutoSave } = useAutoSave({
-		getCurrentValue: () => form.getValues('fields.body'),
 		onSave: async () => {
-			const result = await updateResource(form.getValues(), 'save')
-			return result
+			await updateResource(form.getValues(), 'save')
 		},
 		inactivityTimeout: 1000,
 	})
-
 	const onSubmit = async (
 		values: z.infer<typeof resourceSchema>,
 		action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
