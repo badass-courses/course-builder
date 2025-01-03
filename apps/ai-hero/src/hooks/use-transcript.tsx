@@ -16,99 +16,11 @@ import {
 } from '@coursebuilder/ui'
 
 type TranscriptDialogProps = {
-	transcript: string | null
+	transcript?: string | null
 	isProcessing: boolean
 	onReprocess: () => Promise<void>
 	isOpen: boolean
 	onOpenChange: (open: boolean) => void
-}
-
-export function useTranscript(options: {
-	videoResourceId: string | null | undefined
-	initialTranscript?: string | null
-}) {
-	const [transcript, setTranscript] = React.useState<string | null>(
-		options.initialTranscript || null,
-	)
-	const [isProcessing, setIsProcessing] = React.useState(false)
-	const [isOpen, setIsOpen] = React.useState(false)
-
-	React.useEffect(() => {
-		let isSubscribed = true
-
-		async function run() {
-			try {
-				if (options.videoResourceId) {
-					const { value: transcript } = await pollVideoResourceTranscript(
-						options.videoResourceId,
-					).next()
-					if (transcript && isSubscribed) {
-						setTranscript(transcript)
-					}
-				}
-			} catch (error) {
-				console.error('Error polling video resource transcript:', error)
-			}
-		}
-
-		if (!options.initialTranscript && transcript === null) {
-			run()
-		}
-
-		return () => {
-			isSubscribed = false
-		}
-	}, [options.initialTranscript, options.videoResourceId, transcript])
-
-	const handleReprocess = async () => {
-		if (!options.videoResourceId) return
-
-		setIsProcessing(true)
-		setTranscript(null)
-		await reprocessTranscript({
-			videoResourceId: options.videoResourceId,
-		})
-	}
-
-	const TranscriptDialogComponent = transcript ? (
-		<TranscriptDialog
-			transcript={transcript}
-			isProcessing={isProcessing}
-			onReprocess={handleReprocess}
-			isOpen={isOpen}
-			onOpenChange={setIsOpen}
-		/>
-	) : null
-
-	return {
-		transcript,
-		setTranscript,
-		isProcessing,
-		setIsProcessing,
-		TranscriptDialog: TranscriptDialogComponent,
-	} as const
-}
-
-async function* pollVideoResourceTranscript(
-	videoResourceId: string,
-	maxAttempts = 30,
-	initialDelay = 250,
-	delayIncrement = 1000,
-) {
-	let delay = initialDelay
-
-	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-		const videoResource = await getVideoResource(videoResourceId)
-		if (videoResource?.transcript) {
-			yield videoResource.transcript
-			return
-		}
-
-		await new Promise((resolve) => setTimeout(resolve, delay))
-		delay += delayIncrement
-	}
-
-	throw new Error('Video resource not found after maximum attempts')
 }
 
 const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
@@ -148,7 +60,6 @@ const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
 						className="gap-2 [&_svg]:opacity-40"
 						onClick={onReprocess}
 						title="Reprocess"
-						disabled={isProcessing}
 					>
 						<RefreshCcw className="w-3" /> Reprocess Transcript
 					</Button>
@@ -159,4 +70,101 @@ const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
 			</DialogContent>
 		</Dialog>
 	)
+}
+
+export function useTranscript(options: {
+	videoResourceId: string | null | undefined
+	initialTranscript?: string | null
+}) {
+	const [transcript, setTranscript] = React.useState<string | null>(
+		options.initialTranscript || null,
+	)
+	const [isProcessing, setIsProcessing] = React.useState(false)
+	const [isOpen, setIsOpen] = React.useState(false)
+
+	// Update transcript when initialTranscript changes
+	React.useEffect(() => {
+		if (options.initialTranscript) {
+			setTranscript(options.initialTranscript)
+			setIsProcessing(false)
+		}
+	}, [options.initialTranscript])
+
+	React.useEffect(() => {
+		let isSubscribed = true
+
+		async function run() {
+			try {
+				if (options.videoResourceId) {
+					const { value: transcript } = await pollVideoResourceTranscript(
+						options.videoResourceId,
+					).next()
+					if (transcript && isSubscribed) {
+						setTranscript(transcript)
+					}
+				}
+			} catch (error) {
+				console.error('Error polling video resource transcript:', error)
+			}
+		}
+
+		if (!options.initialTranscript && transcript === null) {
+			run()
+		}
+
+		return () => {
+			isSubscribed = false
+		}
+	}, [options.initialTranscript, options.videoResourceId, transcript])
+
+	const handleReprocess = async () => {
+		if (!options.videoResourceId) return
+
+		setIsProcessing(true)
+		setTranscript(null)
+		await reprocessTranscript({
+			videoResourceId: options.videoResourceId,
+		})
+	}
+
+	const TranscriptDialogComponent =
+		options.initialTranscript || transcript ? (
+			<TranscriptDialog
+				transcript={transcript || options.initialTranscript}
+				isProcessing={isProcessing}
+				onReprocess={handleReprocess}
+				isOpen={isOpen}
+				onOpenChange={setIsOpen}
+			/>
+		) : null
+
+	return {
+		transcript: transcript || options.initialTranscript,
+		setTranscript,
+		isProcessing,
+		setIsProcessing,
+		TranscriptDialog: TranscriptDialogComponent,
+	} as const
+}
+
+async function* pollVideoResourceTranscript(
+	videoResourceId: string,
+	maxAttempts = 30,
+	initialDelay = 250,
+	delayIncrement = 1000,
+) {
+	let delay = initialDelay
+
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		const videoResource = await getVideoResource(videoResourceId)
+		if (videoResource?.transcript) {
+			yield videoResource.transcript
+			return
+		}
+
+		await new Promise((resolve) => setTimeout(resolve, delay))
+		delay += delayIncrement
+	}
+
+	throw new Error('Video resource not found after maximum attempts')
 }
