@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
-import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
@@ -10,9 +10,8 @@ import { Post, PostSchema } from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
-import { RefreshCcw } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
-import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
@@ -25,10 +24,6 @@ import {
 	FormMessage,
 	Input,
 	Textarea,
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
@@ -67,7 +62,12 @@ export const PostMetadataFormFields: React.FC<{
 
 	const [replacingVideo, setReplacingVideo] = React.useState(false)
 
-	const [transcript, setTranscript] = useTranscript({
+	const {
+		transcript,
+		setTranscript,
+		setIsProcessing: setIsTranscriptProcessing,
+		TranscriptDialog,
+	} = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
 	})
@@ -91,6 +91,7 @@ export const PostMetadataFormFields: React.FC<{
 						break
 					case 'transcript.ready':
 						setTranscript(data.body)
+						setIsTranscriptProcessing(false)
 						break
 					default:
 						break
@@ -100,6 +101,13 @@ export const PostMetadataFormFields: React.FC<{
 			}
 		},
 	})
+
+	const [isOpenedTranscriptDialog, setIsOpenedTranscriptDialog] =
+		React.useState(false)
+
+	const toggleTranscriptDialog = () =>
+		setIsOpenedTranscriptDialog((bool) => !bool)
+
 	return (
 		<>
 			<div>
@@ -142,18 +150,22 @@ export const PostMetadataFormFields: React.FC<{
 										{videoResource && videoResource.state === 'ready' ? (
 											<div className="-mt-5 border-b">
 												<PostPlayer videoResource={videoResource} />
-												<div className="flex items-center gap-1 px-2 pb-2">
+												<div className="flex items-center gap-1 px-4 pb-2">
 													<Button
-														variant="outline"
+														variant="secondary"
 														size={'sm'}
 														type="button"
 														onClick={() => setReplacingVideo(true)}
 													>
 														Replace Video
 													</Button>
-													{/* <span className="truncate font-mono text-xs">
-														{videoResource.muxAssetId}
-													</span> */}
+													{transcript ? (
+														TranscriptDialog
+													) : (
+														<span className="px-3 text-xs">
+															Processing transcript...
+														</span>
+													)}
 												</div>
 											</div>
 										) : videoResource ? (
@@ -227,7 +239,19 @@ export const PostMetadataFormFields: React.FC<{
 			/>
 			{tags?.length > 0 && (
 				<div className="px-5">
-					<FormLabel className="text-lg font-bold">Tags</FormLabel>
+					<div className="flex w-full items-baseline justify-between">
+						<FormLabel className="text-lg font-bold">Tags</FormLabel>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="flex items-center gap-1 opacity-75 hover:opacity-100"
+							asChild
+						>
+							<Link href="/admin/tags">
+								<Pencil className="h-3 w-3" /> Edit
+							</Link>
+						</Button>
+					</div>
 					<AdvancedTagSelector
 						availableTags={tags}
 						selectedTags={post?.tags?.map((tag) => tag.tag) ?? []}
@@ -292,39 +316,6 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			{videoResource && (
-				<div className="px-5">
-					<div className="flex items-center justify-between gap-2">
-						<label className="text-lg font-bold">Transcript</label>
-						{Boolean(videoResourceId) && (
-							<TooltipProvider delayDuration={0}>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<Button
-											variant="ghost"
-											size="icon"
-											type="button"
-											onClick={async (event) => {
-												event.preventDefault()
-												await reprocessTranscript({ videoResourceId })
-											}}
-											title="Reprocess"
-										>
-											<RefreshCcw className="w-3" />
-										</Button>
-									</TooltipTrigger>
-									<TooltipContent side="top">
-										Reprocess Transcript
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
-						)}
-					</div>
-					<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-						{transcript ? transcript : 'Processing...'}
-					</ReactMarkdown>
-				</div>
-			)}
 		</>
 	)
 }
