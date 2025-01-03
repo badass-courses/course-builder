@@ -59,7 +59,7 @@ export const LessonMetadataFormFields: React.FC<{
 		videoResourceId: videoResourceId,
 	})
 
-	const [transcript, setTranscript] = useTranscript({
+	const { transcript, setTranscript } = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
 	})
