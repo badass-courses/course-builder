@@ -1,4 +1,13 @@
 import * as React from 'react'
+import {
+	Archive,
+	ArrowLeft,
+	ArrowLeftToLine,
+	ChevronLeftCircle,
+	SkipBack,
+	Undo,
+	Undo2,
+} from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -33,20 +42,25 @@ export function EditResourcesActionBar({
 
 	return (
 		<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
-			<div className="flex items-center gap-2">
-				<Button className="px-0" asChild variant="link">
-					<a href={resourcePath} className="aspect-square">
-						←
+			<div className="flex items-center">
+				<Button
+					title={`View ${resource.type}`}
+					className="aspect-square p-0"
+					asChild
+					variant="link"
+				>
+					<a href={resourcePath}>
+						<ArrowLeft className="w-4" />
 					</a>
 				</Button>
 				<span className="font-medium">
-					{resource.type.toUpperCase()}{' '}
+					{resource?.fields?.title} {/* ({resource.type.toUpperCase()})*/}
 					<span className="hidden font-mono text-xs font-normal md:inline-block">
 						({resource.id})
 					</span>
 				</span>
 			</div>
-			<div className="flex items-center gap-3">
+			<div className="flex items-center gap-2">
 				{resource.fields?.state === 'draft' && (
 					<Button
 						onClick={(e) => {
@@ -70,8 +84,9 @@ export function EditResourcesActionBar({
 						variant="ghost"
 						size="sm"
 						disabled={isDisabled}
-						className="h-7 disabled:cursor-wait"
+						className="h-7 gap-1 px-2 disabled:cursor-wait"
 					>
+						<Archive className="w-3 opacity-75" />
 						Archive
 					</Button>
 				)}
@@ -81,11 +96,12 @@ export function EditResourcesActionBar({
 							onUnPublish()
 						}}
 						type="button"
-						variant="outline"
+						variant="ghost"
 						size="sm"
 						disabled={isDisabled}
-						className="h-7 disabled:cursor-wait"
+						className="h-7 gap-1 px-2 disabled:cursor-wait"
 					>
+						<Undo2 className="w-3 opacity-75" />
 						Return to Draft
 					</Button>
 				)}
