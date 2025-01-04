@@ -41,3 +41,10 @@ export function sortBy<T>(array: T[], iteratee: SortByIteratee<T>): T[] {
 		return valA < valB ? -1 : 1
 	})
 }
+
+/**
+ * Gets the first element of array
+ */
+export function first<T>(array: T[] | null | undefined): T | undefined {
+	return array?.[0]
+}

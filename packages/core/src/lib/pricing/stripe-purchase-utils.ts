@@ -1,4 +1,3 @@
-import { first } from 'lodash'
 import { CourseBuilderAdapter } from 'src/adapters'
 import { Purchase } from 'src/schemas'
 import {
@@ -15,7 +14,7 @@ import {
 } from 'src/schemas/purchase-type'
 import Stripe from 'stripe'
 
-import { isEmpty, sortBy } from '@coursebuilder/nodash'
+import { first, isEmpty, sortBy } from '@coursebuilder/nodash'
 
 export async function parsePurchaseInfoFromCheckoutSession(
 	checkoutSession: Stripe.Checkout.Session,

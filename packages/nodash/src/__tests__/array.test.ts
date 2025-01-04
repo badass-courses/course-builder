@@ -1,6 +1,31 @@
 import { describe, expect, test } from 'vitest'
 
-import { sortBy } from '../array'
+import { first, sortBy } from '../array'
+
+describe('first', () => {
+	test('gets first element of array', () => {
+		expect(first([1, 2, 3])).toBe(1)
+		expect(first(['a', 'b', 'c'])).toBe('a')
+	})
+
+	test('handles empty arrays', () => {
+		expect(first([])).toBe(undefined)
+	})
+
+	test('handles null/undefined', () => {
+		expect(first(null)).toBe(undefined)
+		expect(first(undefined)).toBe(undefined)
+	})
+
+	test('handles arrays with one element', () => {
+		expect(first([42])).toBe(42)
+	})
+
+	test('handles arrays with undefined/null elements', () => {
+		expect(first([undefined, 1, 2])).toBe(undefined)
+		expect(first([null, 1, 2])).toBe(null)
+	})
+})
 
 describe('sortBy', () => {
 	const users = [
