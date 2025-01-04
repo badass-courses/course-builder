@@ -1,14 +1,14 @@
 /**
  * > **caution**
- * > `auth-astro` is currently experimental. Be aware of breaking changes between versions.
+ * > `@coursebuilder/astro` is currently experimental. Be aware of breaking changes between versions.
  *
  *
- * Astro Auth is the unofficial Astro integration for Auth.js.
- * It provides a simple way to add authentication to your Astro site in a few lines of code.
+ * Course Builder Astro is the official Astro integration for Course Builder.
+ * It provides a simple way to add course functionality to your Astro site in a few lines of code.
  *
  * ## Installation
  *
- * `auth-astro` requires building your site in `server` mode with a platform adaper like `@astrojs/node`.
+ * `@coursebuilder/astro` requires building your site in `server` mode with a platform adapter like `@astrojs/node`.
  * ```js
  * // astro.config.mjs
  * export default defineConfig({
@@ -20,14 +20,14 @@
  * ```
  *
  * ```bash npm2yarn2pnpm
- * npm install @auth/core @auth/astro
+ * npm install @coursebuilder/astro
  * ```
  */
 import { Auth } from '@auth/core'
-import type { AuthAction, Session } from '@auth/core/types'
+import type { AuthAction } from '@auth/core/types'
 import type { APIContext } from 'astro'
+import coursebuilderConfig from 'coursebuilder:config'
 import { parseString } from 'set-cookie-parser'
-import authConfig from 'auth:config'
 
 const actions: AuthAction[] = [
 	'providers',
@@ -40,7 +40,7 @@ const actions: AuthAction[] = [
 	'error',
 ]
 
-function AstroAuthHandler(prefix: string, options = authConfig) {
+function CoursebuilderHandler(prefix: string, options = coursebuilderConfig) {
 	return async ({ cookies, request }: APIContext) => {
 		const url = new URL(request.url)
 		const action = url.pathname.slice(prefix.length + 1).split('/')[0] as AuthAction
@@ -82,16 +82,16 @@ function AstroAuthHandler(prefix: string, options = authConfig) {
  * @param config The configuration for authentication providers and other options.
  * @returns An object with `GET` and `POST` methods that can be exported in an Astro endpoint.
  */
-export function AstroAuth(options = authConfig) {
+export function Coursebuilder(options = coursebuilderConfig) {
 	// @ts-ignore
-	const { AUTH_SECRET, AUTH_TRUST_HOST, VERCEL, NODE_ENV } = import.meta.env
+	const { COURSEBUILDER_SECRET, COURSEBUILDER_TRUST_HOST, VERCEL, NODE_ENV } = import.meta.env
 
-	options.secret ??= AUTH_SECRET
-	options.trustHost ??= !!(AUTH_TRUST_HOST ?? VERCEL ?? NODE_ENV !== 'production')
+	options.secret ??= COURSEBUILDER_SECRET
+	options.trustHost ??= !!(COURSEBUILDER_TRUST_HOST ?? VERCEL ?? NODE_ENV !== 'production')
 
-	const { prefix = '/api/auth', ...authOptions } = options
+	const { prefix = '/api/coursebuilder', ...coursebuilderOptions } = options
 
-	const handler = AstroAuthHandler(prefix, authOptions)
+	const handler = CoursebuilderHandler(prefix, coursebuilderOptions)
 	return {
 		async GET(context: APIContext) {
 			return await handler(context)
@@ -100,25 +100,4 @@ export function AstroAuth(options = authConfig) {
 			return await handler(context)
 		},
 	}
-}
-
-/**
- * Fetches the current session.
- * @param req The request object.
- * @returns The current session, or `null` if there is no session.
- */
-export async function getSession(req: Request, options = authConfig): Promise<Session | null> {
-	// @ts-ignore
-	options.secret ??= import.meta.env.AUTH_SECRET
-	options.trustHost ??= true
-
-	const url = new URL(`${options.prefix}/session`, req.url)
-	const response = await Auth(new Request(url, { headers: req.headers }), options)
-	const { status = 200 } = response
-
-	const data = await response.json()
-
-	if (!data || !Object.keys(data).length) return null
-	if (status === 200) return data
-	throw new Error(data.message)
 }

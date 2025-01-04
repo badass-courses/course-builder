@@ -8,6 +8,6 @@ import coursebuilder from '@coursebuilder/astro'
 // https://astro.build/config
 export default defineConfig({
 	adapter: vercel(),
-	integrations: [auth()],
+	integrations: [auth(), coursebuilder()],
 	output: 'server',
 })

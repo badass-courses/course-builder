@@ -1,49 +1,37 @@
 {
 	"name": "@coursebuilder/astro",
-	"description": "The easiest way to add authentication to your Astro project!",
-	"version": "4.2.0",
+	"description": "The official Course Builder integration for Astro projects!",
+	"version": "0.0.1",
 	"type": "module",
 	"main": "./index.ts",
 	"types": "module.d.ts",
 	"license": "MIT",
-	"repository": "https://github.com/nowaythatworked/auth-astro.git",
+	"repository": "https://github.com/joelhooks/course-builder.git",
 	"author": "Joel Hooks <joelhooks@gmail.com>",
-	"contributors": [
-		"nowaythatworked <jan.czekala99@web.de>",
-		"Otterlord <otterlord.dev@gmail.com>",
-		"tajkirkpatrick"
-	],
 	"scripts": {
 		"format": "prettier --config .prettierrc --ignore-path .prettierignore -w  ."
 	},
 	"peerDependencies": {
-		"@auth/core": "^0.37.3",
 		"astro": ">=4.0.0"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.37.3",
 		"@types/node": "^20.12.5",
 		"@types/set-cookie-parser": "^2.4.2",
 		"astro": "^5.1.2",
-		"next-auth": "^4.24.10",
 		"prettier": "^3.2.5",
 		"prettier-plugin-astro": "^0.14.1",
 		"typescript": "5.4.5"
 	},
 	"dependencies": {
+		"@coursebuilder/core": "workspace:*",
 		"set-cookie-parser": "^2.5.1"
 	},
 	"keywords": [
 		"astro",
-		"auth",
-		"authentication",
-		"integration",
-		"@auth",
-		"@auth/core",
-		"authjs",
-		"jwt",
-		"oauth",
-		"astro-auth",
+		"coursebuilder",
+		"courses",
+		"education",
+		"learning",
 		"astro-integration",
 		"astro-component",
 		"withastro"

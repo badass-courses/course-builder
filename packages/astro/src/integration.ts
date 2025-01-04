@@ -1,12 +1,13 @@
-import type { AstroIntegration } from 'astro'
-import { type AstroAuthConfig, virtualConfigModule } from './config'
 import { dirname, join } from 'node:path'
+import type { AstroIntegration } from 'astro'
 
-export default (config: AstroAuthConfig = {}): AstroIntegration => ({
-	name: 'astro-auth',
+import { virtualConfigModule, type CoursebuilderConfig } from './config'
+
+export default (config: CoursebuilderConfig = {}): AstroIntegration => ({
+	name: 'coursebuilder-astro',
 	hooks: {
-		'astro:config:setup': async ({
-			config: astroConfig,
+		'coursebuilder:config:setup': async ({
+			config: coursebuilderConfig,
 			injectRoute,
 			injectScript,
 			updateConfig,
@@ -15,26 +16,26 @@ export default (config: AstroAuthConfig = {}): AstroIntegration => ({
 			updateConfig({
 				vite: {
 					plugins: [virtualConfigModule(config.configFile)],
-					optimizeDeps: { exclude: ['auth:config'] },
+					optimizeDeps: { exclude: ['coursebuilder:config'] },
 				},
 			})
 
-			config.prefix ??= '/api/auth'
+			config.prefix ??= '/api/coursebuilder'
 
 			if (config.injectEndpoints !== false) {
 				const currentDir = dirname(import.meta.url.replace('file://', ''))
-				const entrypoint = join(`${currentDir}/api/[...auth].ts`)
+				const entrypoint = join(`${currentDir}/api/[...coursebuilder].ts`)
 				injectRoute({
-					pattern: `${config.prefix}/[...auth]`,
+					pattern: `${config.prefix}/[...coursebuilder]`,
 					entrypoint,
 				})
 			}
 
-			if (!astroConfig.adapter) {
+			if (!coursebuilderConfig.adapter) {
 				logger.error('No Adapter found, please make sure you provide one in your Astro config')
 			}
 			const edge = ['@astrojs/vercel/edge', '@astrojs/cloudflare'].includes(
-				astroConfig.adapter.name
+				coursebuilderConfig.adapter.name
 			)
 
 			if (
