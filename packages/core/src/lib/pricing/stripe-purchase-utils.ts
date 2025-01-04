@@ -15,8 +15,7 @@ import {
 } from 'src/schemas/purchase-type'
 import Stripe from 'stripe'
 
-import { isEmpty } from '../utils/is-empty'
-import { sortBy } from '../utils/sort-by'
+import { isEmpty, sortBy } from '@coursebuilder/nodash'
 
 export async function parsePurchaseInfoFromCheckoutSession(
 	checkoutSession: Stripe.Checkout.Session,
