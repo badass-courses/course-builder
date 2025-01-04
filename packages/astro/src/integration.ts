@@ -6,13 +6,14 @@ import { virtualConfigModule, type CoursebuilderConfig } from './config'
 export default (config: CoursebuilderConfig = {}): AstroIntegration => ({
 	name: 'coursebuilder-astro',
 	hooks: {
-		'coursebuilder:config:setup': async ({
+		'astro:config:setup': async ({
 			config: coursebuilderConfig,
 			injectRoute,
 			injectScript,
 			updateConfig,
 			logger,
 		}) => {
+			console.log('coursebuilderConfig', config)
 			updateConfig({
 				vite: {
 					plugins: [virtualConfigModule(config.configFile)],

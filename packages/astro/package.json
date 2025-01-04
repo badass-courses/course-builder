@@ -12,9 +12,11 @@
 		"format": "prettier --config .prettierrc --ignore-path .prettierignore -w  ."
 	},
 	"peerDependencies": {
-		"astro": ">=4.0.0"
+		"astro": ">=4.0.0",
+		"@coursebuilder/core": "workspace:*"
 	},
 	"devDependencies": {
+		"@coursebuilder/core": "workspace:*",
 		"@types/node": "^20.12.5",
 		"@types/set-cookie-parser": "^2.4.2",
 		"astro": "^5.1.2",
@@ -24,7 +26,6 @@
 		"vite": "5.4.10"
 	},
 	"dependencies": {
-		"@coursebuilder/core": "workspace:*",
 		"set-cookie-parser": "^2.5.1"
 	},
 	"keywords": [
