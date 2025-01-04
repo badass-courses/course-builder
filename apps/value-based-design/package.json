@@ -32,7 +32,7 @@
 		"@atlaskit/pragmatic-drag-and-drop-live-region": "^1.0.3",
 		"@atlaskit/select": "^17.3.4",
 		"@atlaskit/tokens": "^1.42.1",
-		"@auth/core": "^0.37.2",
+		"@auth/core": "^0.37.3",
 		"@aws-sdk/client-s3": "^3.525.0",
 		"@aws-sdk/client-textract": "^3.525.0",
 		"@aws-sdk/credential-providers": "^3.525.0",

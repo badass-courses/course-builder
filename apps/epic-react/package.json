@@ -21,7 +21,7 @@
 		"coupons": "dotenv tsx src/scripts/bootstrap-basic-coupons.ts"
 	},
 	"dependencies": {
-		"@auth/core": "^0.37.2",
+		"@auth/core": "^0.37.3",
 		"@casl/ability": "^6.5.0",
 		"@coursebuilder/adapter-drizzle": "1.0.0",
 		"@coursebuilder/core": "1.0.0",

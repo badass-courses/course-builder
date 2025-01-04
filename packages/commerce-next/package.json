@@ -74,7 +74,7 @@
 		"react": "19.0.0-rc-02c0e824-20241028"
 	},
 	"dependencies": {
-		"@auth/core": "^0.37.2",
+		"@auth/core": "^0.37.3",
 		"@coursebuilder/core": "^1.0.0",
 		"@coursebuilder/email-templates": "^1.0.4",
 		"@coursebuilder/ui": "^2.0.0",

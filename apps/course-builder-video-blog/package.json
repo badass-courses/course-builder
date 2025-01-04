@@ -21,7 +21,7 @@
 		"coupons": "dotenv tsx src/scripts/bootstrap-basic-coupons.ts"
 	},
 	"dependencies": {
-		"@auth/core": "^0.37.2",
+		"@auth/core": "^0.37.3",
 		"@aws-sdk/client-s3": "^3.525.0",
 		"@aws-sdk/s3-request-presigner": "^3.441.0",
 		"@casl/ability": "^6.5.0",
