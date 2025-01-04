@@ -3,7 +3,7 @@ declare module 'auth:config' {
 	export default config
 }
 
-declare module 'coursebuilder-astro' {
+declare module '@coursebuilder/astro' {
 	const index: import('./index').Integration
 
 	type FullAuthConfig = import('./src/config').FullAuthConfig

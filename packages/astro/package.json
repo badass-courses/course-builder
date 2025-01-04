@@ -2,6 +2,7 @@
 	"name": "@coursebuilder/astro",
 	"description": "The easiest way to add authentication to your Astro project!",
 	"version": "4.2.0",
+	"type": "module",
 	"main": "./index.ts",
 	"types": "module.d.ts",
 	"license": "MIT",
