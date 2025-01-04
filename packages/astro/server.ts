@@ -2,7 +2,6 @@
  * > **caution**
  * > `@coursebuilder/astro` is currently experimental. Be aware of breaking changes between versions.
  *
- *
  * Course Builder Astro is the official Astro integration for Course Builder.
  * It provides a simple way to add course functionality to your Astro site in a few lines of code.
  *
@@ -23,81 +22,39 @@
  * npm install @coursebuilder/astro
  * ```
  */
-import { Auth } from '@auth/core'
-import type { AuthAction } from '@auth/core/types'
 import type { APIContext } from 'astro'
 import coursebuilderConfig from 'coursebuilder:config'
-import { parseString } from 'set-cookie-parser'
 
-const actions: AuthAction[] = [
-	'providers',
-	'session',
-	'csrf',
-	'signin',
-	'signout',
-	'callback',
-	'verify-request',
-	'error',
-]
+import { CourseBuilder } from '@coursebuilder/core'
+import { setEnvDefaults } from '@coursebuilder/core/utils/env'
 
-function CoursebuilderHandler(prefix: string, options = coursebuilderConfig) {
-	return async ({ cookies, request }: APIContext) => {
-		const url = new URL(request.url)
-		const action = url.pathname.slice(prefix.length + 1).split('/')[0] as AuthAction
+import type { FullCoursebuilderConfig } from './config'
 
-		if (!actions.includes(action) || !url.pathname.startsWith(prefix + '/')) return
-
-		const res = await Auth(request, options)
-		if (['callback', 'signin', 'signout'].includes(action)) {
-			// Properly handle multiple Set-Cookie headers (they can't be concatenated in one)
-			const getSetCookie = res.headers.getSetCookie()
-			if (getSetCookie.length > 0) {
-				getSetCookie.forEach((cookie) => {
-					const { name, value, ...options } = parseString(cookie)
-					// Astro's typings are more explicit than @types/set-cookie-parser for sameSite
-					cookies.set(name, value, options as Parameters<(typeof cookies)['set']>[2])
-				})
-				res.headers.delete('Set-Cookie')
-			}
-		}
-		return res
-	}
+function reqWithEnvURL(request: Request) {
+	return new Request(request, {
+		headers: request.headers,
+	})
 }
 
-/**
- * Creates a set of Astro endpoints for authentication.
- *
- * @example
- * ```ts
- * export const { GET, POST } = AstroAuth({
- *   providers: [
- *     GitHub({
- *       clientId: process.env.GITHUB_ID!,
- *       clientSecret: process.env.GITHUB_SECRET!,
- *     }),
- *   ],
- *   debug: false,
- * })
- * ```
- * @param config The configuration for authentication providers and other options.
- * @returns An object with `GET` and `POST` methods that can be exported in an Astro endpoint.
- */
-export function Coursebuilder(options = coursebuilderConfig) {
-	// @ts-ignore
-	const { COURSEBUILDER_SECRET, COURSEBUILDER_TRUST_HOST, VERCEL, NODE_ENV } = import.meta.env
+function initCourseBuilder(config: FullCoursebuilderConfig) {
+	setEnvDefaults(config)
+	return config
+}
 
-	options.secret ??= COURSEBUILDER_SECRET
-	options.trustHost ??= !!(COURSEBUILDER_TRUST_HOST ?? VERCEL ?? NODE_ENV !== 'production')
+export function Coursebuilder(config: FullCoursebuilderConfig = coursebuilderConfig) {
+	setEnvDefaults(config)
+	const handler = async ({ request }: APIContext) => {
+		const isWebhook = ['stripe-signature'].every((prop: string) => {
+			return prop in request.headers
+		})
 
-	const { prefix = '/api/coursebuilder', ...coursebuilderOptions } = options
+		const newReq = reqWithEnvURL(request)
+		return CourseBuilder(newReq, config)
+	}
 
-	const handler = CoursebuilderHandler(prefix, coursebuilderOptions)
 	return {
-		async GET(context: APIContext) {
-			return await handler(context)
-		},
-		async POST(context: APIContext) {
-			return await handler(context)
-		},
+		GET: handler,
+		POST: handler,
+		coursebuilder: initCourseBuilder(config),
 	}
 }
