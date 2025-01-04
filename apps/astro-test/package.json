@@ -1,0 +1,17 @@
+{
+	"name": "astro-test",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/vercel": "^8.0.1",
+		"@auth/core": "^0.37.3",
+		"astro": "^5.1.2",
+		"auth-astro": "^4.2.0"
+	}
+}
