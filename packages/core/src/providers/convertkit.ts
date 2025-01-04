@@ -1,6 +1,7 @@
-import { find } from 'lodash'
 import { isEmpty } from 'src/lib/utils/is-empty'
 import { z } from 'zod'
+
+import { find } from '@coursebuilder/nodash'
 
 import { Cookie } from '../lib/utils/cookie'
 import { CookieOption } from '../types'

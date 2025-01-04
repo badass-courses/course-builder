@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { first, sortBy } from '../array'
+import { find, first, sortBy } from '../array'
 
 describe('first', () => {
 	test('gets first element of array', () => {
@@ -76,5 +76,27 @@ describe('sortBy', () => {
 		const sorted = sortBy(items, 'group')
 		expect(sorted[0].val).toBe(1)
 		expect(sorted[1].val).toBe(2)
+	})
+})
+
+describe('find', () => {
+	test('finds element in array', () => {
+		const array = [1, 2, 3, 4]
+		expect(find(array, (x) => x > 2)).toBe(3)
+	})
+
+	test('returns undefined if no match', () => {
+		const array = [1, 2, 3]
+		expect(find(array, (x) => x > 5)).toBe(undefined)
+	})
+
+	test('handles null/undefined arrays', () => {
+		expect(find(null, (x) => x > 2)).toBe(undefined)
+		expect(find(undefined, (x) => x > 2)).toBe(undefined)
+	})
+
+	test('provides index to predicate', () => {
+		const array = ['a', 'b', 'c']
+		expect(find(array, (_, i) => i === 1)).toBe('b')
 	})
 })

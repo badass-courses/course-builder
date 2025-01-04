@@ -48,3 +48,13 @@ export function sortBy<T>(array: T[], iteratee: SortByIteratee<T>): T[] {
 export function first<T>(array: T[] | null | undefined): T | undefined {
 	return array?.[0]
 }
+
+/**
+ * Finds the first element in an array that matches a predicate
+ */
+export function find<T>(
+	array: T[] | null | undefined,
+	predicate: (value: T, index: number, obj: T[]) => boolean,
+): T | undefined {
+	return array?.find(predicate)
+}

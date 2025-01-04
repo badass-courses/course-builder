@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { isEmpty, isNotEmpty } from '../object'
+import { isEmpty, isNil, isNotEmpty, omitBy } from '../object'
 
 describe('isEmpty', () => {
 	test('handles null/undefined', () => {
@@ -47,5 +47,45 @@ describe('isNotEmpty', () => {
 		if (isNotEmpty(value)) {
 			expect(value.length).toBeGreaterThan(0)
 		}
+	})
+})
+
+describe('isNil', () => {
+	test('returns true for null and undefined', () => {
+		expect(isNil(null)).toBe(true)
+		expect(isNil(undefined)).toBe(true)
+	})
+
+	test('returns false for other values', () => {
+		expect(isNil(0)).toBe(false)
+		expect(isNil('')).toBe(false)
+		expect(isNil(false)).toBe(false)
+		expect(isNil({})).toBe(false)
+		expect(isNil([])).toBe(false)
+	})
+})
+
+describe('omitBy', () => {
+	test('omits properties based on predicate', () => {
+		const object = { a: 1, b: null, c: 3, d: undefined }
+		const result = omitBy(object, isNil)
+		expect(result).toEqual({ a: 1, c: 3 })
+	})
+
+	test('handles null/undefined objects', () => {
+		expect(omitBy(null, isNil)).toEqual({})
+		expect(omitBy(undefined, isNil)).toEqual({})
+	})
+
+	test('provides key to predicate', () => {
+		const object = { a: 1, b: 2, c: 3 }
+		const result = omitBy(object, (_, key) => key === 'b')
+		expect(result).toEqual({ a: 1, c: 3 })
+	})
+
+	test('returns empty object when all properties are omitted', () => {
+		const object = { a: 1, b: 2 }
+		const result = omitBy(object, () => true)
+		expect(result).toEqual({})
 	})
 })

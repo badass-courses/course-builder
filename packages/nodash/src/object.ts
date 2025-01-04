@@ -44,3 +44,28 @@ export function isEmpty(value: any): boolean {
 export function isNotEmpty<T>(value: T | null | undefined): value is T {
 	return !isEmpty(value)
 }
+
+/**
+ * Checks if value is null or undefined
+ */
+export function isNil(value: unknown): value is null | undefined {
+	return value === null || value === undefined
+}
+
+/**
+ * Creates an object composed of the own enumerable string keyed properties
+ * of object that predicate doesn't return truthy for
+ */
+export function omitBy<T extends object>(
+	object: T | null | undefined,
+	predicate: (value: T[keyof T], key: string) => boolean,
+): Partial<T> {
+	if (!object) return {}
+
+	return Object.entries(object).reduce((acc, [key, value]) => {
+		if (!predicate(value as T[keyof T], key)) {
+			acc[key as keyof T] = value as T[keyof T]
+		}
+		return acc
+	}, {} as Partial<T>)
+}
