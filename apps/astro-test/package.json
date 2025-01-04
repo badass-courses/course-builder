@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@astrojs/vercel": "^8.0.1",
 		"@auth/core": "^0.37.3",
+		"@coursebuilder/astro": "workspace:*",
 		"astro": "^5.1.2",
 		"auth-astro": "^4.2.0"
 	}
