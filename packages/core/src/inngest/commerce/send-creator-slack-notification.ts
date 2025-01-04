@@ -1,6 +1,7 @@
 import { NonRetriableError } from 'inngest'
 import pluralize from 'pluralize'
-import { isEmpty } from 'src/lib/utils/is-empty'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 import {
 	CoreInngestFunctionInput,

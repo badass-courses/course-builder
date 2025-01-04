@@ -37,12 +37,13 @@ function reqWithEnvURL(request: Request) {
 }
 
 function initCourseBuilder(config: FullCoursebuilderConfig) {
-	setEnvDefaults(config)
+	setEnvDefaults(import.meta.env, config)
 	return config
 }
 
 export function Coursebuilder(config: FullCoursebuilderConfig = coursebuilderConfig) {
-	setEnvDefaults(config)
+	console.log('Coursebuilder', config)
+	setEnvDefaults(import.meta.env, config)
 	const handler = async ({ request }: APIContext) => {
 		const isWebhook = ['stripe-signature'].every((prop: string) => {
 			return prop in request.headers
