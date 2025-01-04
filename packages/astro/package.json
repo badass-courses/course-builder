@@ -20,7 +20,8 @@
 		"astro": "^5.1.2",
 		"prettier": "^3.2.5",
 		"prettier-plugin-astro": "^0.14.1",
-		"typescript": "5.4.5"
+		"typescript": "5.4.5",
+		"vite": "5.4.10"
 	},
 	"dependencies": {
 		"@coursebuilder/core": "workspace:*",
