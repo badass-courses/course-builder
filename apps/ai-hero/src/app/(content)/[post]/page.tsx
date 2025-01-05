@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
+import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
@@ -17,9 +18,10 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { highlight, Pre, RawCode } from 'codehike/code'
+import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
+import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
@@ -86,38 +88,40 @@ async function Post({ post }: { post: Post | null }) {
 		return null
 	}
 
+	if (!post.fields.body) {
+		return null
+	}
+
+	const { content } = await compileMDX({
+		source: post.fields.body,
+		// @ts-expect-error
+		components: { Code, Scrollycoding },
+		options: {
+			mdxOptions: {
+				remarkPlugins: [
+					remarkGfm,
+					[
+						remarkCodeHike,
+						{
+							components: { code: 'Code' },
+						},
+					],
+				],
+				recmaPlugins: [
+					[
+						recmaCodeHike,
+						{
+							components: { code: 'Code' },
+						},
+					],
+				],
+			},
+		},
+	})
+
 	return (
 		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
-			{post.fields.body && (
-				<MDXRemote
-					source={post.fields.body}
-					options={{
-						mdxOptions: {
-							remarkPlugins: [remarkGfm],
-						},
-					}}
-					components={{
-						// @ts-expect-error
-						pre: async (props: any) => {
-							const children = props?.children.props.children
-							const language =
-								props?.children.props.className?.split('-')[1] || 'typescript'
-							try {
-								const html = await codeToHtml({ code: children, language })
-								return (
-									<div
-										className="before:via-foreground/10 relative rounded before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:to-transparent"
-										dangerouslySetInnerHTML={{ __html: html }}
-									/>
-								)
-							} catch (error) {
-								console.error(error)
-								return <pre {...props} />
-							}
-						},
-					}}
-				/>
-			)}
+			{content}
 		</article>
 	)
 }
@@ -208,13 +212,12 @@ export default async function PostPage(props: {
 					</div>
 				</div>
 				<div className="relative z-10">
-					<article className="flex h-full grid-cols-12 flex-col gap-5 md:grid">
-						<div className="col-span-8">
-							<PostTitle post={post} />
-							<Contributor className="flex md:hidden [&_img]:w-8" />
-							<Post post={post} />
-						</div>
-						<aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
+					<article className="flex h-full flex-col gap-5">
+						<PostTitle post={post} />
+						<Contributor className="flex md:hidden [&_img]:w-8" />
+						<Post post={post} />
+
+						{/* <aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
 							<div className="top-20 md:sticky">
 								<Contributor className="hidden md:flex" />
 								<div className="mt-5 flex w-full flex-col gap-1">
@@ -224,18 +227,8 @@ export default async function PostPage(props: {
 										title={post?.fields.title}
 									/>
 								</div>
-								{/* <div className="relative">
-                  <img
-                    src={squareGridPattern}
-                    className="my-2 h-[30px] w-[289px] overflow-hidden object-cover object-left-top opacity-75 saturate-0"
-                  />
-                  <div
-                    className="to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r from-transparent"
-                    aria-hidden="true"
-                  />
-                </div> */}
 							</div>
-						</aside>
+						</aside> */}
 					</article>
 				</div>
 			</div>
@@ -293,4 +286,16 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			</section>
 		</Suspense>
 	) : resource ? null : null // spacer // <div className="pt-16" />
+}
+
+export async function Code({ codeblock }: { codeblock: RawCode }) {
+	const highlighted = await highlight(codeblock, 'github-dark')
+	return (
+		<Pre
+			code={highlighted}
+			className="bg-background text-xs sm:text-sm"
+			style={{ ...highlighted.style, padding: '1rem', borderRadius: '0.5rem' }}
+			// handlers={[callout]}
+		/>
+	)
 }

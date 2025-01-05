@@ -105,6 +105,7 @@
 		"cloudinary": "^1.41.0",
 		"clsx": "^2.0.0",
 		"cmdk": "^0.2.0",
+		"codehike": "^1.0.4",
 		"codemirror": "^6.0.1",
 		"crypto": "^1.0.1",
 		"date-fns": "^2.30.0",
