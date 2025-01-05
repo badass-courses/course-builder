@@ -116,6 +116,6 @@ export function last<T>(array: T[] | null | undefined): T | undefined {
  * Takes n elements from the beginning of an array
  */
 export function take<T>(array: T[] | null | undefined, n = 1): T[] {
-	if (!array) return []
+	if (!array || n <= 0) return []
 	return array.slice(0, n)
 }
