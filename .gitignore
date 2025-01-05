@@ -16,6 +16,7 @@ public/dist
 packages/*/*.js
 packages/*/*.d.ts
 !packages/astro/module.d.ts
+!packages/auth-astro/module.d.ts
 packages/*/*.d.ts.map
 packages/*/lib
 packages/**/generated
