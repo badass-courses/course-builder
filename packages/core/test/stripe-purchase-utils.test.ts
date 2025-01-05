@@ -48,7 +48,11 @@ describe('stripe-purchase-utils', () => {
 
 			const mockAdapter = {
 				getUserByEmail: vi.fn().mockResolvedValue({ id: 'user_123' }),
-				getPurchaseForStripeCharge: vi.fn().mockResolvedValue(null),
+				getPurchaseForStripeCharge: vi.fn().mockResolvedValue({
+					id: 'purchase_123',
+					productId: 'prod_123',
+					createdAt: new Date(),
+				}),
 				getPurchasesForUser: vi.fn().mockResolvedValue([]),
 			} as unknown as CourseBuilderAdapter
 
