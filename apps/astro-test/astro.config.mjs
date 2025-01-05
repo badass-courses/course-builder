@@ -13,4 +13,11 @@ export default defineConfig({
 		coursebuilder({ configFile: './coursebuilder.config.ts' }),
 	],
 	output: 'server',
+	vite: {
+		resolve: {
+			alias: {
+				crypto: 'node:crypto',
+			},
+		},
+	},
 })
