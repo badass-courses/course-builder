@@ -305,6 +305,9 @@ importers:
       '@types/html-to-text':
         specifier: ^9.0.4
         version: 9.0.4
+      '@types/mdx':
+        specifier: ^2.0.13
+        version: 2.0.13
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.11.0
@@ -3613,9 +3616,24 @@ importers:
       '@trpc/server':
         specifier: next
         version: 11.0.0-rc.621
+      '@types/html-to-text':
+        specifier: ^9.0.4
+        version: 9.0.4
+      '@types/lodash':
+        specifier: ^4.14.200
+        version: 4.17.4
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
+      '@types/sanitize-html':
+        specifier: ^2.11.0
+        version: 2.11.0
+      '@types/shortid':
+        specifier: ^0.0.31
+        version: 0.0.31
+      '@types/uuid':
+        specifier: 9.0.8
+        version: 9.0.8
       '@uiw/codemirror-themes':
         specifier: ^4.21.24
         version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
@@ -4836,9 +4854,18 @@ importers:
       '@trpc/server':
         specifier: next
         version: 11.0.0-rc.390
+      '@types/html-to-text':
+        specifier: ^9.0.4
+        version: 9.0.4
+      '@types/lodash':
+        specifier: ^4.14.200
+        version: 4.17.4
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
+      '@types/sanitize-html':
+        specifier: ^2.11.0
+        version: 2.11.0
       '@types/shortid':
         specifier: ^0.0.31
         version: 0.0.31

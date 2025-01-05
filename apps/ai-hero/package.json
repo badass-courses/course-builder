@@ -90,6 +90,7 @@
 		"@trpc/react-query": "next",
 		"@trpc/server": "next",
 		"@types/html-to-text": "^9.0.4",
+		"@types/mdx": "^2.0.13",
 		"@types/sanitize-html": "^2.11.0",
 		"@types/shortid": "^0.0.31",
 		"@types/uuid": "9.0.8",
