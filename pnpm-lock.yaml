@@ -5999,7 +5999,7 @@ importers:
         version: 9.0.1
     devDependencies:
       '@auth/core':
-        specifier: ^0.37.3
+        specifier: ^0.37.4
         version: 0.37.4(nodemailer@6.9.11)
       '@coursebuilder/core':
         specifier: 1.0.0
@@ -6072,7 +6072,7 @@ importers:
   packages/commerce-next:
     dependencies:
       '@auth/core':
-        specifier: ^0.37.3
+        specifier: ^0.37.4
         version: 0.37.4(nodemailer@6.9.11)
       '@coursebuilder/core':
         specifier: ^1.0.0
@@ -6354,7 +6354,7 @@ importers:
         version: 5.13.0
     devDependencies:
       '@auth/core':
-        specifier: ^0.37.3
+        specifier: ^0.37.4
         version: 0.37.4(nodemailer@6.9.11)
       '@types/lodash':
         specifier: ^4.14.200
@@ -6412,7 +6412,7 @@ importers:
         version: 3.22.5(next@15.0.3)(typescript@5.4.5)
     devDependencies:
       '@auth/core':
-        specifier: ^0.37.3
+        specifier: ^0.37.4
         version: 0.37.4(nodemailer@6.9.11)
       next:
         specifier: 15.0.3
@@ -6439,7 +6439,7 @@ importers:
   packages/ui:
     dependencies:
       '@auth/core':
-        specifier: ^0.37.3
+        specifier: ^0.37.4
         version: 0.37.4(nodemailer@6.9.11)
       '@codemirror/commands':
         specifier: ^6.6.0
