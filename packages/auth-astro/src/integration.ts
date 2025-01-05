@@ -1,6 +1,7 @@
-import type { AstroIntegration } from 'astro'
-import { type AstroAuthConfig, virtualConfigModule } from './config'
 import { dirname, join } from 'node:path'
+import type { AstroIntegration } from 'astro'
+
+import { virtualConfigModule, type AstroAuthConfig } from './config'
 
 export default (config: AstroAuthConfig = {}): AstroIntegration => ({
 	name: 'astro-auth',
@@ -31,10 +32,12 @@ export default (config: AstroAuthConfig = {}): AstroIntegration => ({
 			}
 
 			if (!astroConfig.adapter) {
-				logger.error('No Adapter found, please make sure you provide one in your Astro config')
+				logger.error(
+					'No Adapter found, please make sure you provide one in your Astro config',
+				)
 			}
 			const edge = ['@astrojs/vercel/edge', '@astrojs/cloudflare'].includes(
-				astroConfig.adapter.name
+				astroConfig.adapter.name,
 			)
 
 			if (
@@ -47,7 +50,7 @@ export default (config: AstroAuthConfig = {}): AstroIntegration => ({
 if (!globalThis.crypto) globalThis.crypto = crypto;
 if (typeof globalThis.crypto.subtle === "undefined") globalThis.crypto.subtle = crypto.webcrypto.subtle;
 if (typeof globalThis.crypto.randomUUID === "undefined") globalThis.crypto.randomUUID = crypto.randomUUID;
-`
+`,
 				)
 			}
 		},

@@ -18,10 +18,13 @@ attrs.class = `signout-${key} ${attrs.class ?? ''}`
 
 <script>
 	import { signOut } from '../../client'
+
 	// @ts-ignore
 	window.signOut = signOut
 </script>
 
 <script define:vars={{ params, key }}>
-	document.querySelector(`.signout-${key}`)?.addEventListener('click', () => signOut(params))
+	document
+		.querySelector(`.signout-${key}`)
+		?.addEventListener('click', () => signOut(params))
 </script>

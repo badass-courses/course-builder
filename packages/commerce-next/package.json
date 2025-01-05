@@ -75,8 +75,8 @@
 	"dependencies": {
 		"@auth/core": "0.37.2",
 		"@coursebuilder/core": "^1.0.0",
-		"@coursebuilder/nodash": "workspace:*",
 		"@coursebuilder/email-templates": "^1.0.4",
+		"@coursebuilder/nodash": "workspace:*",
 		"@coursebuilder/ui": "^2.0.0",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",

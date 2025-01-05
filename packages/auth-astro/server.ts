@@ -26,8 +26,8 @@
 import { Auth } from '@auth/core'
 import type { AuthAction, Session } from '@auth/core/types'
 import type { APIContext } from 'astro'
-import { parseString } from 'set-cookie-parser'
 import authConfig from 'auth:config'
+import { parseString } from 'set-cookie-parser'
 
 const actions: AuthAction[] = [
 	'providers',
@@ -43,9 +43,12 @@ const actions: AuthAction[] = [
 function AstroAuthHandler(prefix: string, options = authConfig) {
 	return async ({ cookies, request }: APIContext) => {
 		const url = new URL(request.url)
-		const action = url.pathname.slice(prefix.length + 1).split('/')[0] as AuthAction
+		const action = url.pathname
+			.slice(prefix.length + 1)
+			.split('/')[0] as AuthAction
 
-		if (!actions.includes(action) || !url.pathname.startsWith(prefix + '/')) return
+		if (!actions.includes(action) || !url.pathname.startsWith(prefix + '/'))
+			return
 
 		const res = await Auth(request, options)
 		if (['callback', 'signin', 'signout'].includes(action)) {
@@ -55,7 +58,11 @@ function AstroAuthHandler(prefix: string, options = authConfig) {
 				getSetCookie.forEach((cookie) => {
 					const { name, value, ...options } = parseString(cookie)
 					// Astro's typings are more explicit than @types/set-cookie-parser for sameSite
-					cookies.set(name, value, options as Parameters<(typeof cookies)['set']>[2])
+					cookies.set(
+						name,
+						value,
+						options as Parameters<(typeof cookies)['set']>[2],
+					)
 				})
 				res.headers.delete('Set-Cookie')
 			}
@@ -87,7 +94,11 @@ export function AstroAuth(options = authConfig) {
 	const { AUTH_SECRET, AUTH_TRUST_HOST, VERCEL, NODE_ENV } = import.meta.env
 
 	options.secret ??= AUTH_SECRET
-	options.trustHost ??= !!(AUTH_TRUST_HOST ?? VERCEL ?? NODE_ENV !== 'production')
+	options.trustHost ??= !!(
+		AUTH_TRUST_HOST ??
+		VERCEL ??
+		NODE_ENV !== 'production'
+	)
 
 	const { prefix = '/api/auth', ...authOptions } = options
 
@@ -107,13 +118,19 @@ export function AstroAuth(options = authConfig) {
  * @param req The request object.
  * @returns The current session, or `null` if there is no session.
  */
-export async function getSession(req: Request, options = authConfig): Promise<Session | null> {
+export async function getSession(
+	req: Request,
+	options = authConfig,
+): Promise<Session | null> {
 	// @ts-ignore
 	options.secret ??= import.meta.env.AUTH_SECRET
 	options.trustHost ??= true
 
 	const url = new URL(`${options.prefix}/session`, req.url)
-	const response = await Auth(new Request(url, { headers: req.headers }), options)
+	const response = await Auth(
+		new Request(url, { headers: req.headers }),
+		options,
+	)
 	const { status = 200 } = response
 
 	const data = await response.json()

@@ -12,8 +12,8 @@
 		"format": "prettier --config .prettierrc --ignore-path .prettierignore -w  ."
 	},
 	"peerDependencies": {
-		"astro": ">=4.0.0",
-		"@coursebuilder/core": "workspace:*"
+		"@coursebuilder/core": "workspace:*",
+		"astro": ">=4.0.0"
 	},
 	"devDependencies": {
 		"@coursebuilder/core": "workspace:*",
