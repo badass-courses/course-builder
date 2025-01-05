@@ -10,11 +10,12 @@
 	},
 	"dependencies": {
 		"@astrojs/vercel": "^8.0.1",
-		"@auth/core": "^0.37.3",
+		"@auth/core": "0.37.2",
 		"@coursebuilder/astro": "workspace:*",
 		"@coursebuilder/core": "workspace:*",
+		"@coursebuilder/nodash": "workspace:^",
 		"astro": "^5.1.2",
-		"auth-astro": "^4.2.0",
+		"auth-astro": "workspace:*",
 		"react": "19.0.0-rc-02c0e824-20241028",
 		"react-dom": "19.0.0-rc-02c0e824-20241028"
 	},

@@ -21,13 +21,14 @@
 		"coupons": "dotenv tsx src/scripts/bootstrap-basic-coupons.ts"
 	},
 	"dependencies": {
-		"@auth/core": "^0.37.3",
+		"@auth/core": "0.37.2",
 		"@aws-sdk/client-s3": "^3.525.0",
 		"@aws-sdk/s3-request-presigner": "^3.441.0",
 		"@casl/ability": "^6.5.0",
 		"@coursebuilder/adapter-drizzle": "1.0.0",
 		"@coursebuilder/core": "1.0.0",
 		"@coursebuilder/next": "workspace:^",
+		"@coursebuilder/nodash": "workspace:^",
 		"@coursebuilder/ui": "^2.0.0",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
