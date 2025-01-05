@@ -111,3 +111,11 @@ export const shuffle = <T>(arr: T[]): T[] => {
 export function last<T>(array: T[] | null | undefined): T | undefined {
 	return array?.[array.length - 1]
 }
+
+/**
+ * Takes n elements from the beginning of an array
+ */
+export function take<T>(array: T[] | null | undefined, n = 1): T[] {
+	if (!array) return []
+	return array.slice(0, n)
+}

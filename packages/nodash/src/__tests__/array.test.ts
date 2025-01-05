@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { find, first, last, sortBy } from '../array'
+import { find, first, last, sortBy, take } from '../array'
 
 describe('first', () => {
 	test('gets first element of array', () => {
@@ -123,5 +123,37 @@ describe('last', () => {
 	test('handles arrays with undefined/null elements', () => {
 		expect(last([1, 2, undefined])).toBe(undefined)
 		expect(last([1, 2, null])).toBe(null)
+	})
+})
+
+describe('take', () => {
+	test('takes n elements from array', () => {
+		expect(take([1, 2, 3, 4], 2)).toEqual([1, 2])
+		expect(take(['a', 'b', 'c'], 1)).toEqual(['a'])
+	})
+
+	test('defaults to taking 1 element', () => {
+		expect(take([1, 2, 3])).toEqual([1])
+	})
+
+	test('handles n greater than array length', () => {
+		expect(take([1, 2], 5)).toEqual([1, 2])
+	})
+
+	test('handles empty arrays', () => {
+		expect(take([], 2)).toEqual([])
+	})
+
+	test('handles null/undefined', () => {
+		expect(take(null, 2)).toEqual([])
+		expect(take(undefined, 2)).toEqual([])
+	})
+
+	test('handles zero n', () => {
+		expect(take([1, 2, 3], 0)).toEqual([])
+	})
+
+	test('handles negative n', () => {
+		expect(take([1, 2, 3], -1)).toEqual([])
 	})
 })
