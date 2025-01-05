@@ -10,11 +10,11 @@ import {
 	initiatePurchaseTransfer,
 } from '@/purchase-transfer/purchase-transfer-actions'
 import { authOptions, getServerAuthSession } from '@/server/auth'
-import { isString } from 'lodash'
 
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
+import { isString } from '@coursebuilder/nodash'
 
 const getServerSideProps = async (query: {
 	session_id: string

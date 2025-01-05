@@ -7,10 +7,10 @@ import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
-import { isEmpty } from 'lodash'
 import { z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { isEmpty } from '@coursebuilder/nodash'
 
 const convertkitBaseUrl =
 	process.env.CONVERTKIT_BASE_URL || 'https://api.convertkit.com/v3/'

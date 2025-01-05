@@ -6,8 +6,9 @@ import { accounts, profiles, roles, userRoles, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
-import { isEmpty } from 'lodash'
 import { z } from 'zod'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export const getCachedEggheadInstructors = unstable_cache(
 	async () => loadEggheadInstructors(),

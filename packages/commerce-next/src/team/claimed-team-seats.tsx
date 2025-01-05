@@ -1,7 +1,7 @@
 import React from 'react'
-import { isEmpty } from 'lodash'
 
 import { Purchase, type Coupon } from '@coursebuilder/core/schemas'
+import { isEmpty } from '@coursebuilder/nodash'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 type ClaimedTeamSeatsProps = {

@@ -3,8 +3,9 @@ import { env } from '@/env.mjs'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
-import { isEmpty } from 'lodash'
 import { z } from 'zod'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 const convertkitBaseUrl =
 	process.env.CONVERTKIT_BASE_URL || 'https://api.convertkit.com/v3/'

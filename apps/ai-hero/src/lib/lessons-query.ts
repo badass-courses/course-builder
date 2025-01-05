@@ -11,7 +11,6 @@ import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { Redis } from '@upstash/redis'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
-import { last } from 'lodash'
 import { z } from 'zod'
 
 import {
@@ -19,6 +18,7 @@ import {
 	type ContentResourceResource,
 } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import { last } from '@coursebuilder/nodash'
 
 const redis = Redis.fromEnv()
 

@@ -15,12 +15,12 @@ import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
-import { first } from 'lodash'
 import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
 import { EventDetails } from './_components/event-details'

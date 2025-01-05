@@ -4,9 +4,10 @@ import { removeQueryParamsFromRouter } from '@/convertkit/remove-query-params-fr
 import { Subscriber, SubscriberSchema } from '@/convertkit/subscriber'
 import { identify } from '@/utils/analytics'
 import { useQuery } from '@tanstack/react-query'
-import { isEmpty } from 'lodash'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export type ConvertkitContextType = {
 	subscriber?: Subscriber | boolean

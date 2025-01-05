@@ -3,7 +3,6 @@ import { courseBuilderAdapter, db } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
-import { find } from 'lodash'
 import { z } from 'zod'
 
 import { formatPricesForProduct } from '@coursebuilder/core'
@@ -14,6 +13,7 @@ import {
 	productSchema,
 	Purchase,
 } from '@coursebuilder/core/schemas'
+import { find } from '@coursebuilder/nodash'
 
 const merchantCouponSchema = z.object({
 	id: z.string(),
