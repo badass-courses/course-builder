@@ -19,10 +19,10 @@ import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
-import { last } from 'lodash'
 import z from 'zod'
 
 import { ContentResource, productSchema } from '@coursebuilder/core/schemas'
+import { last } from '@coursebuilder/nodash'
 
 async function getAllWorkshopLessonsWithSectionInfo(
 	moduleSlugOrId: string,

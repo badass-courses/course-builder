@@ -1,6 +1,7 @@
 import { isAfter } from 'date-fns'
-import find from 'lodash/find'
 import { z } from 'zod'
+
+import { find } from '@coursebuilder/nodash'
 
 import { CourseBuilderAdapter } from '../../adapters'
 import { Coupon, Purchase } from '../../schemas'

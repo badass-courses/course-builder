@@ -3,8 +3,9 @@ import { db } from '@/db'
 import { accounts, roles, userRoles, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
-import { isEmpty } from 'lodash'
 import { z } from 'zod'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export const loadUsersForRole = async (role: string) => {
 	const usersByRole = await db

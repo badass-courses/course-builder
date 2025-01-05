@@ -1,5 +1,6 @@
-import { first } from 'lodash'
 import type Stripe from 'stripe'
+
+import { first } from '@coursebuilder/nodash'
 
 import {
 	CheckoutSessionMetadata,

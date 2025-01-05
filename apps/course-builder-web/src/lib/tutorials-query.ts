@@ -5,10 +5,10 @@ import { contentResource, contentResourceResource } from '@/db/schema'
 import { TutorialSchema } from '@/lib/tutorial'
 import { getServerAuthSession } from '@/server/auth'
 import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
-import { last } from 'lodash'
 import z from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
+import { last } from '@coursebuilder/nodash'
 
 export async function getTutorial(moduleSlugOrId: string) {
 	const { ability } = await getServerAuthSession()

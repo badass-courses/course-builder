@@ -2,6 +2,7 @@
 	"name": "@coursebuilder/email-templates",
 	"version": "1.0.4",
 	"description": "",
+	"type": "module",
 	"main": "index.js",
 	"scripts": {
 		"build": "tsup",
@@ -23,7 +24,7 @@
 		"./emails/*": {
 			"types": "./dist/*.d.ts",
 			"import": "./dist/*.js",
-			"require": "./dist/*.js"
+			"default": "./dist/*.js"
 		}
 	},
 	"keywords": [],

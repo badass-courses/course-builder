@@ -6,7 +6,7 @@
 		"clean": "rm -rf *.js *.d.ts* lib",
 		"build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
 		"dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
-		"test": "vitest run -c ../utils/vitest.config.ts"
+		"test": "vitest run"
 	},
 	"keywords": [
 		"coursebuilder",
@@ -134,6 +134,7 @@
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
 		"@coursebuilder/email-templates": "^1.0.4",
+		"@coursebuilder/nodash": "workspace:^",
 		"@react-email/components": "0.0.27",
 		"@slack/web-api": "^7.0.4",
 		"@types/cookie": "0.6.0",
@@ -144,22 +145,23 @@
 		"drizzle-zod": "^0.5.1",
 		"inngest": "^3.22.5",
 		"liquidjs": "^10.16.3",
-		"lodash": "^4.17.21",
 		"nodemailer": "^6.7.2",
 		"openai-edge": "^1.2.2",
 		"pluralize": "^8.0.0",
 		"query-string": "^9.0.0",
 		"srt-parser-2": "^1.2.3",
 		"stripe": "16.9.0",
+		"unplugin-swc": "^1.4.4",
 		"uuid": "^9.0.1",
 		"xstate": "^5.13.0"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.37.3",
-		"@types/lodash": "^4.14.200",
+		"@auth/core": "0.37.2",
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pluralize": "^0.0.33",
+		"@types/react": "npm:types-react@19.0.0-rc.1",
+		"react": "19.0.0-rc-02c0e824-20241028",
 		"tsup": "8.0.2",
 		"zod": "^3.22.4"
 	},

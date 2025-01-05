@@ -1,5 +1,6 @@
 import cookies from 'js-cookie'
-import { isString } from 'lodash'
+
+import { isString } from '@coursebuilder/nodash'
 
 const cookieUtil = {
 	set(name: string, value: any, options: any = {}) {

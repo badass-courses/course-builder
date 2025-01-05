@@ -6,8 +6,9 @@ import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { TRPCError } from '@trpc/server'
 import { and, eq } from 'drizzle-orm'
-import { isEmpty } from 'lodash'
 import { z } from 'zod'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export const usersRouter = createTRPCRouter({
 	get: publicProcedure

@@ -1,5 +1,6 @@
-import { isNil, omitBy } from 'lodash'
 import { z } from 'zod'
+
+import { isNil, omitBy } from '@coursebuilder/nodash'
 
 const ParamsSchema = z
 	.object({

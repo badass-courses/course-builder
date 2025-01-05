@@ -1,4 +1,4 @@
-import sum from 'lodash/sum'
+import { sum } from '@coursebuilder/nodash'
 
 import { CourseBuilderAdapter } from '../../adapters'
 import { Price, Product, Purchase } from '../../schemas'

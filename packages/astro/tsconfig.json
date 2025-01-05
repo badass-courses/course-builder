@@ -1,0 +1,17 @@
+{
+	"extends": "astro/tsconfigs/base",
+	"compilerOptions": {
+		"types": ["astro/client"],
+		"moduleResolution": "Node",
+		"module": "ESNext",
+		"target": "ESNext",
+		"declaration": true,
+		"declarationMap": true,
+		"baseUrl": ".",
+		"paths": {
+			"@coursebuilder/astro": ["./index.ts"]
+		}
+	},
+	"include": ["**/*.ts", "**/*.d.ts"],
+	"exclude": ["node_modules", "dist"]
+}

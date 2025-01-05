@@ -4,7 +4,7 @@ import { defineConfig, Format } from 'tsup'
 export const config = {
 	sourcemap: true,
 	dts: true,
-	format: ['esm', 'cjs'] as Format[],
+	format: ['esm'] as Format[],
 	entry: ['./emails/**/*.tsx'],
 }
 

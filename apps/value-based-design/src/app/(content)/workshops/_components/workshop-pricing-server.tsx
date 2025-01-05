@@ -5,7 +5,6 @@ import { Module } from '@/lib/module'
 import { getPricingData } from '@/lib/pricing-query'
 import { getWorkshopProduct } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
-import first from 'lodash/first'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import {
@@ -14,6 +13,7 @@ import {
 	type Purchase,
 	type User,
 } from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 
 import { type WorkshopPageProps } from './workshop-page-props'
 import { WorkshopPricing as WorkshopPricingClient } from './workshop-pricing'
