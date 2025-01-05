@@ -151,6 +151,7 @@
 		"query-string": "^9.0.0",
 		"srt-parser-2": "^1.2.3",
 		"stripe": "16.9.0",
+		"unplugin-swc": "^1.4.4",
 		"uuid": "^9.0.1",
 		"xstate": "^5.13.0"
 	},
