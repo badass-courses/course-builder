@@ -109,6 +109,7 @@
 		"@trpc/next": "next",
 		"@trpc/react-query": "next",
 		"@trpc/server": "next",
+		"@types/mdx": "^2.0.13",
 		"@uiw/codemirror-themes": "^4.21.24",
 		"@uiw/react-markdown-editor": "^6.1.2",
 		"@uploadthing/react": "6.7.2",
