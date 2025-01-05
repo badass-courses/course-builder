@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
+import { callout } from '@/components/codehike/callout'
+import { fold } from '@/components/codehike/fold'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
@@ -172,8 +174,9 @@ export default async function PostPage(props: {
 		<main>
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
-				className={cn('container relative max-w-screen-xl pb-24', {
+				className={cn('container relative max-w-screen-xl', {
 					'pt-16': !hasVideo,
+					'pb-24': ckSubscriber,
 				})}
 			>
 				<div
@@ -214,9 +217,15 @@ export default async function PostPage(props: {
 				<div className="relative z-10">
 					<article className="flex h-full flex-col gap-5">
 						<PostTitle post={post} />
-						<Contributor className="flex md:hidden [&_img]:w-8" />
+						<Contributor className="flex [&_img]:w-8" />
 						<Post post={post} />
-
+						<div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-1">
+							<strong className="text-lg font-semibold">Share</strong>
+							<Share
+								className="bg-background w-full"
+								title={post?.fields.title}
+							/>
+						</div>
 						{/* <aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
 							<div className="top-20 md:sticky">
 								<Contributor className="hidden md:flex" />
@@ -295,7 +304,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			code={highlighted}
 			className="bg-background text-xs sm:text-sm"
 			style={{ ...highlighted.style, padding: '1rem', borderRadius: '0.5rem' }}
-			// handlers={[callout]}
+			handlers={[callout, fold]}
 		/>
 	)
 }

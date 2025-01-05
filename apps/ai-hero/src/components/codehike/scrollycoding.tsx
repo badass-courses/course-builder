@@ -44,14 +44,14 @@ export default function Scrollycoding(props: any) {
 				Scrollycoding
 				<ArrowDown size={12} />
 			</p>
-			<SelectionProvider className="relative mb-10 flex-col gap-4 sm:mb-24 xl:flex xl:flex-row">
-				<div className="mb-10 flex flex-col gap-10 xl:flex-1">
+			<SelectionProvider className="relative mb-10 flex-col gap-5 sm:mb-24 lg:flex lg:flex-row">
+				<div className="mb-10 flex flex-col gap-10 lg:flex-1">
 					{steps.map((step: any, i: number) => (
 						<Selectable
 							key={i}
 							index={i}
 							selectOn={['click', 'scroll']}
-							className="data-[selected=true]:border-primary first-of-type:prose-headings:mt-5 -mx-5 border-l-4 px-5"
+							className="data-[selected=true]:border-primary hover:bg-secondary first-of-type:prose-headings:mt-5 -mx-5 cursor-pointer rounded border-l-4 px-5 transition duration-100 ease-in-out data-[selected=false]:hover:border-gray-700 sm:mx-0"
 						>
 							{step._data?.header && renderHeading(step._data.header)}
 							<div>{step.children}</div>
@@ -60,7 +60,7 @@ export default function Scrollycoding(props: any) {
 				</div>
 				<div
 					className={cn(
-						'sticky bottom-0 -mx-6 lg:mx-auto lg:w-[40vw] lg:max-w-xl',
+						'sticky bottom-0 -mx-6 lg:mx-0 lg:w-[40vw] lg:max-w-xl',
 						{
 							// padding top dynamic based on height of the first selectable item
 						},
@@ -93,7 +93,7 @@ async function Code({
 		<Pre
 			code={highlighted}
 			handlers={[tokenTransitions]}
-			className="mb-0 mt-0 h-full max-h-[300px] !rounded-none border-t bg-[#0d1117] p-5 text-xs shadow-inner sm:max-h-full sm:text-sm"
+			className="mb-0 mt-0 h-full max-h-[300px] rounded-none bg-[#0d1117] p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
 		/>
 	)
 }
