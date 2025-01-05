@@ -5937,6 +5937,9 @@ importers:
 
   packages/adapter-drizzle:
     dependencies:
+      '@coursebuilder/nodash':
+        specifier: 0.0.1
+        version: link:../nodash
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1

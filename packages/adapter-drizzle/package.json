@@ -43,6 +43,7 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"@coursebuilder/nodash": "0.0.1",
 		"@sindresorhus/slugify": "^2.2.1",
 		"date-fns": "^2.30.0",
 		"nanoid": "^5.0.2",
