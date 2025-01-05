@@ -1,0 +1,53 @@
+{
+	"name": "auth-astro",
+	"description": "The easiest way to add authentication to your Astro project!",
+	"version": "4.2.0",
+	"main": "./index.ts",
+	"types": "module.d.ts",
+	"engines": {
+		"node": ">=17.4"
+	},
+	"license": "MIT",
+	"repository": "https://github.com/nowaythatworked/auth-astro.git",
+	"author": "nowaythatworked <jan.czekala99@web.de>",
+	"contributors": [
+		"Otterlord <otterlord.dev@gmail.com>",
+		"tajkirkpatrick"
+	],
+	"scripts": {
+		"format": "prettier --config .prettierrc --ignore-path .prettierignore -w  ."
+	},
+	"peerDependencies": {
+		"@auth/core": "0.37.2",
+		"astro": ">=4.0.0"
+	},
+	"devDependencies": {
+		"@auth/core": "0.37.2",
+		"@types/node": "^18.17.1",
+		"@types/set-cookie-parser": "^2.4.2",
+		"astro": "^5.0.0",
+		"next-auth": "5.0.0-beta.25",
+		"prettier": "^2.8.6",
+		"prettier-plugin-astro": "^0.8.0",
+		"typescript": "^5.6.2"
+	},
+	"dependencies": {
+		"set-cookie-parser": "^2.5.1"
+	},
+	"keywords": [
+		"astro",
+		"auth",
+		"authentication",
+		"integration",
+		"@auth",
+		"@auth/core",
+		"authjs",
+		"jwt",
+		"oauth",
+		"astro-auth",
+		"astro-integration",
+		"astro-component",
+		"withastro"
+	],
+	"packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}
