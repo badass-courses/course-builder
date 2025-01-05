@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { find, first, sortBy } from '../array'
+import { find, first, last, sortBy } from '../array'
 
 describe('first', () => {
 	test('gets first element of array', () => {
@@ -82,21 +82,46 @@ describe('sortBy', () => {
 describe('find', () => {
 	test('finds element in array', () => {
 		const array = [1, 2, 3, 4]
-		expect(find(array, (x) => x > 2)).toBe(3)
+		expect(find(array, (x: number) => x > 2)).toBe(3)
 	})
 
 	test('returns undefined if no match', () => {
 		const array = [1, 2, 3]
-		expect(find(array, (x) => x > 5)).toBe(undefined)
+		expect(find(array, (x: number) => x > 5)).toBe(undefined)
 	})
 
 	test('handles null/undefined arrays', () => {
-		expect(find(null, (x) => x > 2)).toBe(undefined)
-		expect(find(undefined, (x) => x > 2)).toBe(undefined)
+		expect(find(null, (x: number) => x > 2)).toBe(undefined)
+		expect(find(undefined, (x: number) => x > 2)).toBe(undefined)
 	})
 
 	test('provides index to predicate', () => {
 		const array = ['a', 'b', 'c']
 		expect(find(array, (_, i) => i === 1)).toBe('b')
+	})
+})
+
+describe('last', () => {
+	test('gets last element of array', () => {
+		expect(last([1, 2, 3])).toBe(3)
+		expect(last(['a', 'b', 'c'])).toBe('c')
+	})
+
+	test('handles empty arrays', () => {
+		expect(last([])).toBe(undefined)
+	})
+
+	test('handles null/undefined', () => {
+		expect(last(null)).toBe(undefined)
+		expect(last(undefined)).toBe(undefined)
+	})
+
+	test('handles arrays with one element', () => {
+		expect(last([42])).toBe(42)
+	})
+
+	test('handles arrays with undefined/null elements', () => {
+		expect(last([1, 2, undefined])).toBe(undefined)
+		expect(last([1, 2, null])).toBe(null)
 	})
 })

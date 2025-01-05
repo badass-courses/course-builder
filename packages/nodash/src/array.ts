@@ -104,3 +104,10 @@ export const shuffle = <T>(arr: T[]): T[] => {
 	}
 	return result
 }
+
+/**
+ * Gets the last element of array
+ */
+export function last<T>(array: T[] | null | undefined): T | undefined {
+	return array?.[array.length - 1]
+}
