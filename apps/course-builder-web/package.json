@@ -92,6 +92,7 @@
 		"@trpc/next": "next",
 		"@trpc/react-query": "next",
 		"@trpc/server": "next",
+		"@types/mdx": "^2.0.13",
 		"@types/shortid": "^0.0.31",
 		"@types/uuid": "9.0.8",
 		"@uiw/codemirror-themes": "^4.21.24",

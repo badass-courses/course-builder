@@ -1797,6 +1797,9 @@ importers:
       '@trpc/server':
         specifier: next
         version: 11.0.0-rc.351
+      '@types/mdx':
+        specifier: ^2.0.13
+        version: 2.0.13
       '@types/shortid':
         specifier: ^0.0.31
         version: 0.0.31
