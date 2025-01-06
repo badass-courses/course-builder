@@ -12,6 +12,7 @@ const config = {
 	plugins: [
 		'@ianvs/prettier-plugin-sort-imports',
 		'prettier-plugin-tailwindcss',
+		'prettier-plugin-astro',
 	],
 	// Last version that doesn't squash type and value imports
 	importOrderTypeScriptVersion: '4.4.0',

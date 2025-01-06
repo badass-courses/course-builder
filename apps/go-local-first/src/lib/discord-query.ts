@@ -5,7 +5,8 @@ import { accounts, users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
-import { isEmpty } from 'lodash'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export async function getDiscordAccount(userId: string) {
 	return db.query.accounts.findFirst({

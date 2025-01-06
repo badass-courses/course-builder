@@ -1,4 +1,3 @@
-import { first } from 'lodash'
 import { v4 } from 'uuid'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
@@ -9,6 +8,7 @@ import {
 } from '@coursebuilder/core/lib/pricing/format-prices-for-product'
 import { getCalculatedPrice } from '@coursebuilder/core/lib/pricing/get-calculated-price'
 import { Coupon, Product, Purchase } from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 
 import { TestOptions } from './adapter.js'
 

@@ -6,7 +6,8 @@ import {
 	setUserId,
 } from '@amplitude/analytics-browser'
 import { track as defaultTrack } from '@skillrecordings/analytics'
-import { isEmpty } from 'lodash'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export async function track(event: string, params?: any) {
 	console.debug(`track ${event}`, params)

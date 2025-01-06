@@ -27,3 +27,9 @@ yarn-error.log*
 dist
 .solid
 pnpm-lock.yaml
+
+.astro/
+.vercel/
+.partykit/
+
+module.d.ts

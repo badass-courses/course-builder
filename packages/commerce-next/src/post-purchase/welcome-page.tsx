@@ -5,7 +5,6 @@ import Image from 'next/image.js'
 import Link from 'next/link.js'
 import { useRouter } from 'next/navigation.js'
 import MuxPlayer from '@mux/mux-player-react'
-import { first } from 'lodash'
 import { FileText } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import pluralize from 'pluralize'
@@ -20,6 +19,7 @@ import {
 	PurchaseUserTransfer,
 } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
 import { Icon } from '../components'

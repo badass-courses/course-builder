@@ -30,13 +30,13 @@ import 'server-only'
 
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
-import { last } from 'lodash'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 import {
 	ContentResource,
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas'
+import { last } from '@coursebuilder/nodash'
 
 import {
 	clearPublishedAt,

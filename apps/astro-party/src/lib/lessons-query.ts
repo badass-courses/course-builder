@@ -7,10 +7,10 @@ import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, eq, like, or, sql } from 'drizzle-orm'
-import { last } from 'lodash'
 import { z } from 'zod'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
+import { last } from '@coursebuilder/nodash'
 
 export const getLessonVideoTranscript = async (
 	lessonIdOrSlug?: string | null,

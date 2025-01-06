@@ -8,7 +8,7 @@
 	"main": "index.tsx",
 	"types": "index.tsx",
 	"dependencies": {
-		"@auth/core": "^0.37.3",
+		"@auth/core": "0.37.2",
 		"@codemirror/commands": "^6.6.0",
 		"@codemirror/lang-markdown": "^6.3.1",
 		"@codemirror/language-data": "^6.5.1",

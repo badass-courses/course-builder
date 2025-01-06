@@ -1,71 +1,41 @@
 {
 	"name": "@coursebuilder/astro",
-	"description": "The easiest way to add authentication to your Astro project!",
-	"version": "4.2.0",
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.js"
-		}
-	},
-	"files": [
-		"dist",
-		"src",
-		"*.d.ts"
-	],
-	"engines": {
-		"node": ">=17.4"
-	},
+	"description": "The official Course Builder integration for Astro projects!",
+	"version": "0.0.1",
+	"type": "module",
+	"main": "./index.ts",
+	"types": "module.d.ts",
 	"license": "MIT",
-	"repository": "https://github.com/badass-courses/course-builder",
-	"author": "Badass Courses <team@badass.dev>",
-	"contributors": [
-		"joel Hooks <joelhooks@gmail.com>",
-		"Otterlord <otterlord.dev@gmail.com>",
-		"tajkirkpatrick"
-	],
+	"repository": "https://github.com/joelhooks/course-builder.git",
+	"author": "Joel Hooks <joelhooks@gmail.com>",
 	"scripts": {
-		"build": "tsup",
-		"dev": "tsup --watch",
-		"format": "prettier --config .prettierrc --ignore-path .prettierignore -w  .",
-		"typecheck": "tsc --noEmit"
+		"format": "prettier --config .prettierrc --ignore-path .prettierignore -w  ."
 	},
 	"peerDependencies": {
-		"@auth/core": "^0.37.3",
+		"@coursebuilder/core": "workspace:*",
 		"astro": ">=4.0.0"
 	},
 	"devDependencies": {
-		"@auth/core": "^0.37.3",
+		"@coursebuilder/core": "workspace:*",
 		"@types/node": "^20.12.5",
 		"@types/set-cookie-parser": "^2.4.2",
-		"astro": "^5.0.0",
-		"next-auth": "5.0.0-beta.25",
+		"astro": "^5.1.2",
 		"prettier": "^3.2.5",
 		"prettier-plugin-astro": "^0.14.1",
-		"tsup": "^8.0.2",
-		"typescript": "5.4.5"
+		"typescript": "5.4.5",
+		"vite": "5.4.10"
 	},
 	"dependencies": {
 		"set-cookie-parser": "^2.5.1"
 	},
 	"keywords": [
 		"astro",
-		"auth",
-		"authentication",
-		"integration",
-		"@auth",
-		"@auth/core",
-		"authjs",
-		"jwt",
-		"oauth",
-		"astro-auth",
+		"coursebuilder",
+		"courses",
+		"education",
+		"learning",
 		"astro-integration",
 		"astro-component",
 		"withastro"
-	],
-	"packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+	]
 }

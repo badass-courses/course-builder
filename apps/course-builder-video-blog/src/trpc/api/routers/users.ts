@@ -7,8 +7,9 @@ import {
 	publicProcedure,
 } from '@/trpc/api/trpc'
 import { and, eq } from 'drizzle-orm'
-import { isEmpty } from 'lodash'
 import { z } from 'zod'
+
+import { isEmpty } from '@coursebuilder/nodash'
 
 export const usersRouter = createTRPCRouter({
 	get: publicProcedure

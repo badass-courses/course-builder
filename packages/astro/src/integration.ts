@@ -1,43 +1,42 @@
 import { dirname, join } from 'node:path'
 import type { AstroIntegration } from 'astro'
 
-import { virtualConfigModule, type AstroAuthConfig } from './config'
+import { virtualConfigModule, type CoursebuilderConfig } from './config'
 
-export default (config: AstroAuthConfig = {}): AstroIntegration => ({
-	name: 'astro-auth',
+export default (config: CoursebuilderConfig = {}): AstroIntegration => ({
+	name: 'coursebuilder-astro',
 	hooks: {
 		'astro:config:setup': async ({
-			config: astroConfig,
+			config: coursebuilderConfig,
 			injectRoute,
 			injectScript,
 			updateConfig,
 			logger,
 		}) => {
+			console.log('coursebuilderConfig', config)
 			updateConfig({
 				vite: {
 					plugins: [virtualConfigModule(config.configFile)],
-					optimizeDeps: { exclude: ['auth:config'] },
+					optimizeDeps: { exclude: ['coursebuilder:config'] },
 				},
 			})
 
-			config.prefix ??= '/api/auth'
+			config.prefix ??= '/api/coursebuilder'
 
 			if (config.injectEndpoints !== false) {
 				const currentDir = dirname(import.meta.url.replace('file://', ''))
-				const entrypoint = join(`${currentDir}/api/[...auth].ts`)
+				const entrypoint = join(`${currentDir}/api/[...coursebuilder].ts`)
 				injectRoute({
-					pattern: `${config.prefix}/[...auth]`,
+					pattern: `${config.prefix}/[...coursebuilder]`,
 					entrypoint,
 				})
 			}
 
-			if (!astroConfig.adapter) {
-				logger.error(
-					'No Adapter found, please make sure you provide one in your Astro config',
-				)
+			if (!coursebuilderConfig.adapter) {
+				logger.error('No Adapter found, please make sure you provide one in your Astro config')
 			}
 			const edge = ['@astrojs/vercel/edge', '@astrojs/cloudflare'].includes(
-				astroConfig.adapter.name,
+				coursebuilderConfig.adapter.name
 			)
 
 			if (
@@ -50,7 +49,7 @@ export default (config: AstroAuthConfig = {}): AstroIntegration => ({
 if (!globalThis.crypto) globalThis.crypto = crypto;
 if (typeof globalThis.crypto.subtle === "undefined") globalThis.crypto.subtle = crypto.webcrypto.subtle;
 if (typeof globalThis.crypto.randomUUID === "undefined") globalThis.crypto.randomUUID = crypto.randomUUID;
-`,
+`
 				)
 			}
 		},

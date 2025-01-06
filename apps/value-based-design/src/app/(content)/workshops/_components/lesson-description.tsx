@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
-import take from 'lodash/take'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { take } from '@coursebuilder/nodash'
 
 export async function LessonDescription({
 	lesson,

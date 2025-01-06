@@ -11,9 +11,9 @@ import { getPricingData } from '@/lib/pricing-query'
 import { propsForCommerce } from '@/lib/props-for-commerce'
 import { getServerAuthSession } from '@/server/auth'
 import { count, eq } from 'drizzle-orm'
-import { first } from 'lodash'
 
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
 import { EventPageProps } from './_components/event-page-props'
