@@ -6,22 +6,32 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
-		"astro": "astro"
+		"astro": "astro",
+		"db:push": "dotenv drizzle-kit push",
+		"db:studio": "dotenv drizzle-kit studio",
+		"db:seed": "dotenv tsx ./src/db/seed.ts",
+		"db:generate": "dotenv drizzle-kit generate"
 	},
 	"dependencies": {
 		"@astrojs/vercel": "^8.0.1",
 		"@auth/core": "0.37.2",
+		"@coursebuilder/adapter-drizzle": "workspace:*",
 		"@coursebuilder/astro": "workspace:*",
 		"@coursebuilder/core": "workspace:*",
 		"@coursebuilder/nodash": "workspace:^",
+		"@planetscale/database": "1.19.0",
 		"astro": "^5.1.2",
 		"auth-astro": "workspace:*",
+		"drizzle-orm": "0.36.0",
+		"mysql2": "^3.6.1",
 		"react": "19.0.0-rc-02c0e824-20241028",
 		"react-dom": "19.0.0-rc-02c0e824-20241028"
 	},
 	"devDependencies": {
 		"@types/react": "npm:types-react@19.0.0-rc.1",
-		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+		"dotenv-cli": "^7.3.0",
+		"drizzle-kit": "0.27.1"
 	},
 	"packageManager": "pnpm@8.15.5",
 	"pnpm": {
