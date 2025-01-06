@@ -1,6 +1,6 @@
 // https://github.com/code-hike/examples/blob/next-mdx-remote/with-next-mdx-remote-rsc/app/scrollycoding/page.tsx
 import React from 'react'
-import { tokenTransitions } from '@/components/codehike/code'
+import { tokenTransitions } from '@/components/codehike/token-transitions'
 import { cn } from '@/utils/cn'
 import { Block, CodeBlock, parseRoot } from 'codehike/blocks'
 import { highlight, Pre, RawCode } from 'codehike/code'
@@ -9,8 +9,7 @@ import {
 	Selection,
 	SelectionProvider,
 } from 'codehike/utils/selection'
-import { ArrowDown, ChevronDown } from 'lucide-react'
-import type { MDXContent } from 'mdx/types'
+import { ArrowDown } from 'lucide-react'
 import { z } from 'zod'
 
 const Schema = Block.extend({

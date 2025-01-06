@@ -6,8 +6,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
-import { callout } from '@/components/codehike/callout'
-import { fold } from '@/components/codehike/fold'
+import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
@@ -21,7 +20,6 @@ import { cn } from '@/utils/cn'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { highlight, Pre, RawCode } from 'codehike/code'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
@@ -295,16 +293,4 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			</section>
 		</Suspense>
 	) : resource ? null : null // spacer // <div className="pt-16" />
-}
-
-export async function Code({ codeblock }: { codeblock: RawCode }) {
-	const highlighted = await highlight(codeblock, 'github-dark')
-	return (
-		<Pre
-			code={highlighted}
-			className="bg-background text-xs sm:text-sm"
-			style={{ ...highlighted.style, padding: '1rem', borderRadius: '0.5rem' }}
-			handlers={[callout, fold]}
-		/>
-	)
 }
