@@ -172,9 +172,9 @@ export default async function PostPage(props: {
 		<main>
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
-				className={cn('container relative max-w-screen-xl', {
+				className={cn('container relative max-w-screen-xl pb-16 sm:pb-24', {
 					'pt-16': !hasVideo,
-					'pb-24': ckSubscriber,
+					// 'pb-24': ckSubscriber || hasVideo,
 				})}
 			>
 				<div
