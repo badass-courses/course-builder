@@ -69,7 +69,7 @@ export default function Scrollycoding(props: any) {
 					<div className="sticky top-10 overflow-auto lg:sticky lg:top-16">
 						<Selection
 							from={steps.map((step: any) => (
-								<Code codeblock={step.code} />
+								<Code key={step.code} codeblock={step.code} />
 							))}
 						/>
 					</div>
