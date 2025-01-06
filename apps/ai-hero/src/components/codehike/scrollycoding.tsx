@@ -87,6 +87,10 @@ async function Code({
 		lang: string
 	}
 }) {
+	if (!codeblock) {
+		return <div>codeblock error</div>
+	}
+
 	const highlighted = await highlight(codeblock, 'github-dark')
 	return (
 		<Pre
