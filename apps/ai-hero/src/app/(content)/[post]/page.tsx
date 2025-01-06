@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
+import { Code } from '@/components/codehike/code'
+import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
@@ -17,9 +19,9 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
+import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
@@ -86,38 +88,40 @@ async function Post({ post }: { post: Post | null }) {
 		return null
 	}
 
+	if (!post.fields.body) {
+		return null
+	}
+
+	const { content } = await compileMDX({
+		source: post.fields.body,
+		// @ts-expect-error
+		components: { Code, Scrollycoding },
+		options: {
+			mdxOptions: {
+				remarkPlugins: [
+					remarkGfm,
+					[
+						remarkCodeHike,
+						{
+							components: { code: 'Code' },
+						},
+					],
+				],
+				recmaPlugins: [
+					[
+						recmaCodeHike,
+						{
+							components: { code: 'Code' },
+						},
+					],
+				],
+			},
+		},
+	})
+
 	return (
-		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
-			{post.fields.body && (
-				<MDXRemote
-					source={post.fields.body}
-					options={{
-						mdxOptions: {
-							remarkPlugins: [remarkGfm],
-						},
-					}}
-					components={{
-						// @ts-expect-error
-						pre: async (props: any) => {
-							const children = props?.children.props.children
-							const language =
-								props?.children.props.className?.split('-')[1] || 'typescript'
-							try {
-								const html = await codeToHtml({ code: children, language })
-								return (
-									<div
-										className="before:via-foreground/10 relative rounded before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:to-transparent"
-										dangerouslySetInnerHTML={{ __html: html }}
-									/>
-								)
-							} catch (error) {
-								console.error(error)
-								return <pre {...props} />
-							}
-						},
-					}}
-				/>
-			)}
+		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 mt-10 max-w-none">
+			{content}
 		</article>
 	)
 }
@@ -168,8 +172,9 @@ export default async function PostPage(props: {
 		<main>
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
-				className={cn('container relative max-w-screen-xl pb-24', {
+				className={cn('container relative max-w-screen-xl pb-16 sm:pb-24', {
 					'pt-16': !hasVideo,
+					// 'pb-24': ckSubscriber || hasVideo,
 				})}
 			>
 				<div
@@ -208,13 +213,18 @@ export default async function PostPage(props: {
 					</div>
 				</div>
 				<div className="relative z-10">
-					<article className="flex h-full grid-cols-12 flex-col gap-5 md:grid">
-						<div className="col-span-8">
-							<PostTitle post={post} />
-							<Contributor className="flex md:hidden [&_img]:w-8" />
-							<Post post={post} />
+					<article className="flex h-full flex-col gap-5">
+						<PostTitle post={post} />
+						<Contributor className="flex [&_img]:w-8" />
+						<Post post={post} />
+						<div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-1">
+							<strong className="text-lg font-semibold">Share</strong>
+							<Share
+								className="bg-background w-full"
+								title={post?.fields.title}
+							/>
 						</div>
-						<aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
+						{/* <aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
 							<div className="top-20 md:sticky">
 								<Contributor className="hidden md:flex" />
 								<div className="mt-5 flex w-full flex-col gap-1">
@@ -224,18 +234,8 @@ export default async function PostPage(props: {
 										title={post?.fields.title}
 									/>
 								</div>
-								{/* <div className="relative">
-                  <img
-                    src={squareGridPattern}
-                    className="my-2 h-[30px] w-[289px] overflow-hidden object-cover object-left-top opacity-75 saturate-0"
-                  />
-                  <div
-                    className="to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r from-transparent"
-                    aria-hidden="true"
-                  />
-                </div> */}
 							</div>
-						</aside>
+						</aside> */}
 					</article>
 				</div>
 			</div>
