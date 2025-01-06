@@ -1294,6 +1294,9 @@ importers:
       '@auth/core':
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.9.11)
+      '@coursebuilder/adapter-drizzle':
+        specifier: workspace:*
+        version: link:../../packages/adapter-drizzle
       '@coursebuilder/astro':
         specifier: workspace:*
         version: link:../../packages/astro
@@ -1303,12 +1306,21 @@ importers:
       '@coursebuilder/nodash':
         specifier: workspace:^
         version: link:../../packages/nodash
+      '@planetscale/database':
+        specifier: 1.19.0
+        version: 1.19.0
       astro:
         specifier: ^5.1.2
-        version: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+        version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       auth-astro:
         specifier: workspace:*
         version: link:../../packages/auth-astro
+      drizzle-orm:
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
+      mysql2:
+        specifier: ^3.6.1
+        version: 3.9.2
       react:
         specifier: 19.0.0-rc-02c0e824-20241028
         version: 19.0.0-rc-02c0e824-20241028
@@ -1322,6 +1334,12 @@ importers:
       '@types/react-dom':
         specifier: npm:types-react-dom@19.0.0-rc.1
         version: /types-react-dom@19.0.0-rc.1
+      dotenv-cli:
+        specifier: ^7.3.0
+        version: 7.4.1
+      drizzle-kit:
+        specifier: 0.27.1
+        version: 0.27.1
 
   apps/course-builder-video-blog:
     dependencies:
@@ -5951,7 +5969,7 @@ importers:
         version: 5.1.0(astro@5.1.2)(tailwindcss@3.4.1)
       astro:
         specifier: ^5.1.2
-        version: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+        version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       bcp-47:
         specifier: ^2.1.0
         version: 2.1.0
@@ -6040,7 +6058,7 @@ importers:
         version: 2.4.10
       astro:
         specifier: ^5.1.2
-        version: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+        version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
@@ -6071,7 +6089,7 @@ importers:
         version: 2.4.10
       astro:
         specifier: ^5.1.2
-        version: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+        version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       next-auth:
         specifier: 5.0.0-beta.25
         version: 5.0.0-beta.25(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
@@ -6958,7 +6976,7 @@ packages:
       astro: ^3.0.0
     dependencies:
       '@astrojs/prism': 3.0.0
-      astro: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+      astro: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       github-slugger: 2.0.0
       import-meta-resolve: 3.1.1
       mdast-util-definitions: 6.0.0
@@ -7010,7 +7028,7 @@ packages:
       '@astrojs/markdown-remark': 3.5.0(astro@5.1.2)
       '@mdx-js/mdx': 2.3.0
       acorn: 8.14.0
-      astro: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+      astro: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       es-module-lexer: 1.4.1
       estree-util-visit: 1.2.1
       github-slugger: 2.0.0
@@ -7068,7 +7086,7 @@ packages:
       '@astrojs/sitemap': 3.1.1
       '@pagefind/default-ui': 1.0.4
       '@types/mdast': 3.0.15
-      astro: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+      astro: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       bcp-47: 2.1.0
       execa: 8.0.1
       hast-util-select: 5.0.5
@@ -7090,7 +7108,7 @@ packages:
       astro: ^3.0.0 || ^4.0.0
       tailwindcss: ^3.0.24
     dependencies:
-      astro: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+      astro: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       autoprefixer: 10.4.18(postcss@8.4.47)
       postcss: 8.4.47
       postcss-load-config: 4.0.2(postcss@8.4.47)
@@ -7122,7 +7140,7 @@ packages:
       '@vercel/analytics': 1.4.1(react@19.0.0-rc-02c0e824-20241028)
       '@vercel/edge': 1.2.0
       '@vercel/nft': 0.27.10
-      astro: 5.1.2(@types/node@20.12.5)(typescript@5.4.5)
+      astro: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       esbuild: 0.24.2
       fast-glob: 3.3.2
     transitivePeerDependencies:
@@ -21902,7 +21920,7 @@ packages:
     hasBin: true
     dev: false
 
-  /astro@5.1.2(@types/node@20.12.5)(typescript@5.4.5):
+  /astro@5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5):
     resolution: {integrity: sha512-+U5lXPEJZ6cQx0botGbPhzN6XGWRgDtXgy/RUkpTmUj18LW6pbzYo0O0k3hFWOazlI039bZ+4P2e/oSNlKzm0Q==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
@@ -21955,7 +21973,7 @@ packages:
       tsconfck: 3.1.4(typescript@5.4.5)
       ultrahtml: 1.5.3
       unist-util-visit: 5.0.0
-      unstorage: 1.14.4
+      unstorage: 1.14.4(@planetscale/database@1.19.0)
       vfile: 6.0.3
       vite: 6.0.7(@types/node@20.12.5)
       vitefu: 1.0.5(vite@6.0.7)
@@ -29186,10 +29204,6 @@ packages:
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dev: false
 
-  /lru-cache@10.2.0:
-    resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
-    engines: {node: 14 || >=16.14}
-
   /lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
@@ -32418,7 +32432,7 @@ packages:
     resolution: {integrity: sha512-MkhCqzzBEpPvxxQ71Md0b1Kk51W01lrYvlMzSUaIzNsODdd7mqhiimSZlr+VegAz5Z6Vzt9Xg2ttE//XBhH3EQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
-      lru-cache: 10.2.0
+      lru-cache: 10.4.3
       minipass: 7.0.4
     dev: false
 
@@ -32426,7 +32440,7 @@ packages:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
     dependencies:
-      lru-cache: 10.2.0
+      lru-cache: 10.4.3
       minipass: 7.1.2
 
   /path-to-regexp@0.1.7:
@@ -37290,7 +37304,7 @@ packages:
       webpack-virtual-modules: 0.6.1
     dev: false
 
-  /unstorage@1.14.4:
+  /unstorage@1.14.4(@planetscale/database@1.19.0):
     resolution: {integrity: sha512-1SYeamwuYeQJtJ/USE1x4l17LkmQBzg7deBJ+U9qOBoHo15d1cDxG4jM31zKRgF7pG0kirZy4wVMX6WL6Zoscg==}
     peerDependencies:
       '@azure/app-configuration': ^1.8.0
@@ -37349,6 +37363,7 @@ packages:
       uploadthing:
         optional: true
     dependencies:
+      '@planetscale/database': 1.19.0
       anymatch: 3.1.3
       chokidar: 3.6.0
       destr: 2.0.3
