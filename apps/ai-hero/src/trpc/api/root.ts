@@ -1,6 +1,7 @@
 import { abilityRouter } from '@/trpc/api/routers/ability'
 import { certificateRouter } from '@/trpc/api/routers/certificate'
 import { contentResourceRouter } from '@/trpc/api/routers/contentResources'
+import { deviceVerificationRouter } from '@/trpc/api/routers/device-verification'
 import { eventsRouter } from '@/trpc/api/routers/events'
 import { imageResourceRouter } from '@/trpc/api/routers/imageResource'
 import { lessonsRouter } from '@/trpc/api/routers/lessons'
@@ -26,6 +27,7 @@ export const appRouter = createTRPCRouter({
 	progress: progressRouter,
 	lessons: lessonsRouter,
 	certificate: certificateRouter,
+	deviceVerification: deviceVerificationRouter,
 })
 
 // export type definition of API
