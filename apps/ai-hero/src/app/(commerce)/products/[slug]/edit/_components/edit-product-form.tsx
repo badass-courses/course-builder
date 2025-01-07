@@ -149,7 +149,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				image: {
 					url: product.fields.image?.url ?? '',
 				},
-				visibility: product.fields.visibility || 'unlisted',
+				visibility: product.fields.visibility || 'public',
 				state: product.fields.state || 'draft',
 			},
 		},

@@ -31,7 +31,7 @@ export const PageSchema = ContentResourceSchema.merge(
 			description: z.string().optional(),
 			slug: z.string(),
 			state: PageStateSchema.default('draft'),
-			visibility: ResourceVisibilitySchema.default('unlisted'),
+			visibility: ResourceVisibilitySchema.default('public'),
 			socialImage: z
 				.object({
 					type: z.string(),
