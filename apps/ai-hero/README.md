@@ -209,7 +209,67 @@ AI-Hero exposes several REST APIs for external integrations. All endpoints requi
 
 ### Authentication
 
-The platform implements OAuth 2.0 device flow (RFC 8628) for secure authentication:
+The platform implements OAuth 2.0 device flow (RFC 8628) for secure authentication. Here's a working Node.js example using `openid-client`:
+
+```typescript
+import * as client from 'openid-client'
+
+const ISSUER = 'https://www.aihero.dev/oauth'
+
+async function registerDevice() {
+  try {
+    const config = await client.discovery(new URL(ISSUER), 'ai-hero')
+    const deviceResponse = await client.initiateDeviceAuthorization(config, {})
+
+    console.log('deviceResponse', deviceResponse)
+
+    const timeout = setTimeout(() => {
+      throw new Error('Device authorization timed out')
+    }, deviceResponse.expires_in * 1000)
+
+    try {
+      const tokenSet = await client.pollDeviceAuthorizationGrant(
+        config,
+        deviceResponse,
+      )
+      clearTimeout(timeout)
+
+      if (!tokenSet) {
+        console.log('AUTH_REJECTED, no token set')
+        return
+      }
+
+      const protectedResourceResponse = await client.fetchProtectedResource(
+        config,
+        tokenSet.access_token,
+        new URL(`${ISSUER}/userinfo`),
+        'GET',
+      )
+      const userinfo = await protectedResourceResponse.json()
+
+      console.dir({ tokenSet, userinfo }, { depth: null })
+      console.log('AUTH_RESOLVED')
+    } catch (error) {
+      clearTimeout(timeout)
+      throw error
+    }
+  } catch (error) {
+    console.log('error', error)
+    console.log('AUTH_REJECTED')
+  }
+}
+
+await registerDevice()
+```
+
+The flow includes:
+1. Discovery of OAuth endpoints
+2. Device authorization initiation
+3. Polling for user approval
+4. Token exchange
+5. Protected resource access
+
+Available endpoints:
 
 ```
 POST /oauth/device/code
