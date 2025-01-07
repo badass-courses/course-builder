@@ -16,6 +16,7 @@ export type PostAction = z.infer<typeof PostActionSchema>
 export const NewPostSchema = z.object({
 	title: z.string().min(2).max(90),
 	videoResourceId: z.string().min(4, 'Please upload a video'),
+	postType: z.enum(['lesson', 'podcast', 'tip']),
 })
 export type NewPost = z.infer<typeof NewPostSchema>
 
@@ -63,6 +64,7 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.default('unlisted'),
 		github: z.string().nullish(),
 	}),
+	videoResourceId: z.string().optional().nullable(),
 })
 
 export type PostUpdate = z.infer<typeof PostUpdateSchema>
