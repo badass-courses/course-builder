@@ -15,7 +15,7 @@ export default function ActivateSuccess() {
 				</h1>
 				<p className="py-4 text-gray-600 dark:text-gray-400">
 					<Balancer>
-						You're now logged in to the workshop app. You can close this page.
+						You're now logged in to the app. You can close this page.
 					</Balancer>
 				</p>
 			</div>

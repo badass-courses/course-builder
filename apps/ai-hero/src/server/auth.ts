@@ -1,5 +1,5 @@
 import { cookies, headers } from 'next/headers'
-import { getAbility } from '@/ability'
+import { getAbility, UserSchema } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { accounts } from '@/db/schema'
@@ -16,7 +16,7 @@ import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
 import { userSchema } from '@coursebuilder/core/schemas'
 
-type Role = 'admin' | 'user'
+type Role = 'admin' | 'user' | string
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -290,9 +290,12 @@ export const {
 export const getServerAuthSession = async () => {
 	const session = await auth()
 	const user = userSchema.optional().nullable().parse(session?.user)
-	const ability = getAbility({ user: session?.user })
+	const parsedUser = UserSchema.nullish().parse(session?.user)
+	const ability = getAbility({ user: parsedUser || undefined })
 
-	return { session: { ...session, user }, ability }
+	console.log('pfft', { session, parsedUser })
+
+	return { session: session ? { ...session, user } : null, ability }
 }
 
 export type Provider = {
