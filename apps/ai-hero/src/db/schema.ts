@@ -78,4 +78,8 @@ export const {
 	merchantSubscriptionRelations,
 	subscription,
 	subscriptionRelations,
+	deviceVerifications,
+	deviceVerificationRelations,
+	deviceAccessToken,
+	deviceAccessTokenRelations,
 } = getCourseBuilderSchema(mysqlTable)
