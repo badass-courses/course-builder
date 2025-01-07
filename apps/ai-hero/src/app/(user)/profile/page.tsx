@@ -14,6 +14,10 @@ export default async function ProfilePage() {
 		redirect('/')
 	}
 
+	if (!session) {
+		return redirect('/')
+	}
+
 	if (!session.user) {
 		notFound()
 	}

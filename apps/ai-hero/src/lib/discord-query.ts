@@ -16,7 +16,7 @@ export async function getDiscordAccount(userId: string) {
 
 export async function disconnectDiscord() {
 	const { session } = await getServerAuthSession()
-	if (!session.user) return false
+	if (!session?.user) return false
 
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, session.user.id),

@@ -28,7 +28,7 @@ export async function sendFeedbackFromUser({
 	try {
 		const { session } = await getServerAuthSession()
 		const user = (await db.query.users.findFirst({
-			where: eq(users.email, session.user?.email?.toLowerCase() || 'NO-EMAIL'),
+			where: eq(users.email, session?.user?.email?.toLowerCase() || 'NO-EMAIL'),
 		})) || { email: emailAddress, id: null, name: null }
 
 		if (!user.email) {
