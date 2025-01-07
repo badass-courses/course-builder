@@ -16,6 +16,10 @@ import {
 export default async function AlreadySubscribedPage() {
 	const { session, ability } = await getServerAuthSession()
 
+	if (!session) {
+		return redirect('/')
+	}
+
 	const { user } = session
 
 	const { hasActiveSubscription } = await getSubscriptionStatus(user?.id)

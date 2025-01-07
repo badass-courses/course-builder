@@ -2,7 +2,17 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
-import { TagFieldsSchema, TagSchema } from './tags'
+export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
+
+export const PostTypeSchema = z.union([
+	z.literal('article'),
+	z.literal('lesson'),
+	z.literal('podcast'),
+	z.literal('tip'),
+	z.literal('course'),
+])
+
+export type PostType = z.infer<typeof PostTypeSchema>
 
 export const PostActionSchema = z.union([
 	z.literal('publish'),

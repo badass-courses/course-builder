@@ -19,7 +19,7 @@ export const ourFileRouter = {
 
 			console.log({ input })
 
-			if (!session.user || !ability.can('create', 'Content')) {
+			if (!session?.user || !ability.can('create', 'Content')) {
 				throw new Error('Unauthorized')
 			}
 
