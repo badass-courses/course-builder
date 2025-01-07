@@ -18,7 +18,7 @@ export default function Verify({ userCode }: { userCode: string }) {
 				<Fingerprint animate={animate} />
 				<h1 className="text-2xl font-bold sm:text-3xl">Device Confirmation</h1>
 				<p className="py-4 text-gray-600 dark:text-gray-400">
-					Please confirm this is the code displayed in your Workshop App
+					Please confirm this is the code displayed in your app
 				</p>
 				<div className="w-full rounded-md border px-5 py-3 text-lg font-semibold dark:border-transparent dark:bg-black/75">
 					{userCode}

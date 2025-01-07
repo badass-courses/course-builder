@@ -5,9 +5,9 @@ export const userSchema = z.object({
 	name: z.string().max(255).optional().nullable(),
 	role: z.enum(['user', 'admin']).default('user'),
 	email: z.string().max(255).email(),
-	emailVerified: z.coerce.date().nullable(),
+	emailVerified: z.coerce.date().nullish(),
 	image: z.string().max(255).optional().nullable(),
-	createdAt: z.coerce.date().nullable(),
+	createdAt: z.coerce.date().nullish(),
 	memberships: z
 		.array(
 			z.object({
@@ -15,7 +15,7 @@ export const userSchema = z.object({
 				organizationId: z.string(),
 			}),
 		)
-		.optional()
+		.nullish()
 		.default([]),
 	roles: z
 		.array(

@@ -14,6 +14,8 @@ import {
 } from '@/db/schema'
 import {
 	NewPost,
+	NewPostInput,
+	NewPostInputSchema,
 	Post,
 	PostAction,
 	PostSchema,
@@ -30,6 +32,8 @@ import { z } from 'zod'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
+import { DatabaseError, PostCreationError } from './post-errors'
+import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -368,44 +372,6 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 		)
 }
 
-export class PostCreationError extends Error {
-	constructor(
-		message: string,
-		public readonly cause?: unknown,
-		public readonly context?: Record<string, unknown>,
-	) {
-		super(message)
-		this.name = 'PostCreationError'
-	}
-}
-
-export class DatabaseError extends PostCreationError {
-	constructor(
-		operation: string,
-		cause?: unknown,
-		context?: Record<string, unknown>,
-	) {
-		super(`Database operation failed: ${operation}`, cause, context)
-		this.name = 'DatabaseError'
-	}
-}
-
-const NewPostInputSchema = z.object({
-	title: z.string().min(1, 'Title is required'),
-	videoResourceId: z.string().optional(),
-	postType: z.enum([
-		'lesson',
-		'podcast',
-		'tip',
-		'course',
-		'playlist',
-		'article',
-	]),
-	createdById: z.string(),
-})
-
-export type NewPostInput = z.infer<typeof NewPostInputSchema>
-
 export async function writeNewPostToDatabase(
 	input: NewPostInput,
 ): Promise<Post> {
@@ -585,25 +551,6 @@ export async function getLatestVersionNumber(postId: string): Promise<number> {
 		orderBy: desc(contentResourceVersionTable.versionNumber),
 	})
 	return latestVersion ? latestVersion.versionNumber : 0
-}
-
-export function updatePostSlug(currentPost: Post, newTitle: string): string {
-	if (newTitle !== currentPost.fields.title) {
-		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
-		return `${slugify(newTitle)}~${splitSlug[1] || guid()}`
-	}
-	return currentPost.fields.slug
-}
-
-export function generateContentHash(post: Post): string {
-	const content = JSON.stringify({
-		title: post.fields.title,
-		body: post.fields.body,
-		description: post.fields.description,
-		slug: post.fields.slug,
-		// Add any other fields that should be considered for content changes
-	})
-	return crypto.createHash('sha256').update(content).digest('hex')
 }
 
 export async function writePostUpdateToDatabase(input: {
