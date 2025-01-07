@@ -24,6 +24,9 @@ export const userSchema = z.object({
 				name: z.string(),
 				description: z.string().nullable(),
 				active: z.boolean(),
+				createdAt: z.coerce.date().nullish(),
+				updatedAt: z.coerce.date().nullish(),
+				deletedAt: z.coerce.date().nullish(),
 			}),
 		)
 		.optional()
@@ -36,6 +39,9 @@ export const userSchema = z.object({
 				name: z.string(),
 				description: z.string().nullable(),
 				active: z.boolean(),
+				createdAt: z.coerce.date().nullish(),
+				updatedAt: z.coerce.date().nullish(),
+				deletedAt: z.coerce.date().nullish(),
 			}),
 		)
 		.optional()

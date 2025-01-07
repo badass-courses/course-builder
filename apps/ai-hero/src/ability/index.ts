@@ -61,29 +61,7 @@ export type AppAbility = MongoAbility<[Actions, Subjects]>
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
 type GetAbilityOptions = {
-	user?: {
-		id: string
-		role?: string
-		roles: {
-			id: string
-			name: string
-			description: string | null
-			active: boolean
-			createdAt: Date | null
-			updatedAt: Date | null
-			deletedAt: Date | null
-		}[]
-		organizationRoles?: {
-			organizationId: string | null
-			id: string
-			name: string
-			description: string | null
-			active: boolean
-			createdAt: Date | null
-			updatedAt: Date | null
-			deletedAt: Date | null
-		}[]
-	}
+	user?: User
 }
 
 /**
