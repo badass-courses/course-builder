@@ -1,4 +1,4 @@
-import crypto from 'node:crypto'
+import crypto from 'crypto'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 
