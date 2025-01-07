@@ -202,3 +202,127 @@ $ pnpm db:push
     3. Navigate to `https://local.drizzle.studio`
 2. Via Drizzle Studio (other flows are possible if you'd prefer, but this is the one we're documenting) find your new `user` record and change the `role` to `admin`. Make sure to save/apply the change.
 3. When you visit `/tips`, you'll see the form for creating a new Tip.
+
+## API Documentation
+
+AI-Hero exposes several REST APIs for external integrations. All endpoints require proper authentication using OAuth 2.0 device flow.
+
+### Authentication
+
+The platform implements OAuth 2.0 device flow (RFC 8628) for secure authentication:
+
+```
+POST /oauth/device/code
+- Generates device verification codes
+- Returns: { user_code, device_code, verification_uri, expires_in }
+
+POST /oauth/token
+- Exchanges device code for access token
+- Supports device flow grant type
+- Returns: { access_token, token_type, expires_in }
+
+GET /oauth/userinfo
+- Returns authenticated user information
+- Requires valid access token
+```
+
+### Content Management
+
+#### Posts API
+
+```
+GET /api/posts
+- Lists all accessible posts
+- Supports pagination and filtering
+- Returns: { posts: Post[], totalCount, pageCount }
+
+POST /api/posts
+- Creates new post
+- Body: { title, content, status, ... }
+- Returns: Created Post
+
+GET /api/posts/:id
+- Retrieves specific post
+- Returns: Post with version history
+
+PUT /api/posts/:id
+- Updates existing post
+- Body: { title, content, status, ... }
+- Returns: Updated Post
+
+DELETE /api/posts/:id
+- Deletes post
+- Requires appropriate permissions
+```
+
+#### Video Resources
+
+```
+GET /api/videos/:videoResourceId
+- Retrieves video resource metadata
+- Returns: { id, title, status, transcription, ... }
+
+PUT /api/videos/:videoResourceId
+- Updates video resource metadata
+- Body: { title, description, ... }
+- Returns: Updated VideoResource
+
+DELETE /api/videos/:videoResourceId
+- Deletes video resource
+- Cascades through related resources
+```
+
+### File Upload System
+
+The platform uses direct-to-S3 uploads for efficient file handling:
+
+```
+POST /api/uploads/signed-url
+- Generates pre-signed S3 URL for direct upload
+- Body: { filename, contentType, ... }
+- Returns: { uploadUrl, key }
+
+POST /api/uploads/new
+- Initializes new upload
+- Body: { filename, size, ... }
+- Returns: { id, status, uploadUrl }
+```
+
+### Best Practices
+
+1. **Rate Limiting**: Implement appropriate backoff strategies
+2. **Error Handling**: All endpoints return standard HTTP status codes
+3. **Authentication**: Always include Bearer token in Authorization header
+4. **Versioning**: API versions are embedded in the URL path
+5. **Content Types**: All requests should use application/json
+
+### Example Integration
+
+```typescript
+const AI_HERO_BASE = 'https://ai-hero.example.com'
+
+// Initialize device flow
+const deviceCode = await fetch(`${AI_HERO_BASE}/oauth/device/code`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' }
+})
+
+// Exchange for token
+const token = await fetch(`${AI_HERO_BASE}/oauth/token`, {
+  method: 'POST',
+  body: JSON.stringify({ 
+    grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+    device_code: deviceCode.device_code 
+  })
+})
+
+// Make authenticated requests
+const posts = await fetch(`${AI_HERO_BASE}/api/posts`, {
+  headers: {
+    'Authorization': `Bearer ${token.access_token}`,
+    'Content-Type': 'application/json'
+  }
+})
+```
+
+For detailed integration examples and SDKs, contact the AI-Hero team.
