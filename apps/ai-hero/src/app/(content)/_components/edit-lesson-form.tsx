@@ -55,7 +55,7 @@ export function EditLessonForm({
 			fields: {
 				title: lesson.fields?.title || '',
 				body: lesson.fields?.body || '',
-				visibility: lesson.fields?.visibility || 'unlisted',
+				visibility: lesson.fields?.visibility || 'public',
 				state: lesson.fields?.state || 'draft',
 				description: lesson.fields?.description || '',
 				github: lesson.fields?.github || '',

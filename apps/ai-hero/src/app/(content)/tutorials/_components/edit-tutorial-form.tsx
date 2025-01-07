@@ -75,7 +75,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 								.default('draft'),
 							visibility: z
 								.enum(['public', 'private', 'unlisted'])
-								.default('unlisted'),
+								.default('public'),
 							body: z.string().nullable().optional(),
 						}),
 					}),

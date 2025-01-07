@@ -55,7 +55,7 @@ export function EditPostForm({
 				title: post.fields?.title,
 				body: post.fields?.body,
 				slug: post.fields?.slug,
-				visibility: post.fields?.visibility || 'unlisted',
+				visibility: post.fields?.visibility || 'public',
 				state: post.fields?.state || 'draft',
 				description: post.fields?.description ?? '',
 				github: post.fields?.github ?? '',
