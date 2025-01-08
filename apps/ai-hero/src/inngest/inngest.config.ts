@@ -49,6 +49,5 @@ export const inngestConfig = {
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
 		createUserOrganizations,
-		,
 	],
 }
