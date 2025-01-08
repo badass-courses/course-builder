@@ -1,6 +1,6 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { addPurchasesConvertkit } from '@/inngest/functions/convertkit/add-purchased-convertkit'
-import { addPurchaseRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
+import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
@@ -38,7 +38,7 @@ export const inngestConfig = {
 		getOrCreateConcept,
 		computeVideoSplitPoints,
 		discordAccountLinked,
-		addPurchaseRoleDiscord,
+		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
 		postPurchaseWorkflow,
 		progressWasMade,
@@ -49,5 +49,6 @@ export const inngestConfig = {
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
 		createUserOrganizations,
+		,
 	],
 }

@@ -4,23 +4,23 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { DiscordError, DiscordMember } from '@/lib/discord'
 import { fetchAsDiscordBot, fetchJsonAsDiscordBot } from '@/lib/discord-query'
+import { getSubscriptionStatus } from '@/lib/subscriptions'
 import { and, eq } from 'drizzle-orm'
 
-import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
+import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 
-export const addPurchaseRoleDiscord = inngest.createFunction(
+export const addSubscriptionRoleDiscord = inngest.createFunction(
 	{
-		id: `add-purchase-role-discord`,
-		name: 'Add Purchase Role Discord',
+		id: `add-subscription-role-discord`,
+		name: 'Add Subscription Role Discord',
 	},
-	{ event: NEW_PURCHASE_CREATED_EVENT },
+	{ event: NEW_SUBSCRIPTION_CREATED_EVENT },
 	async ({ event, step }) => {
 		const user = await step.run('get user', async () => {
 			return db.query.users.findFirst({
 				where: eq(users.id, event.user.id),
 				with: {
 					accounts: true,
-					purchases: true,
 				},
 			})
 		})
@@ -48,8 +48,14 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 
 			await step.run('update basic discord roles for user', async () => {
 				if ('user' in discordMember) {
+					const { hasActiveSubscription } = await getSubscriptionStatus(user.id)
 					const roles = Array.from(
-						new Set([...discordMember.roles, env.DISCORD_MEMBER_ROLE_ID]),
+						new Set([
+							...discordMember.roles,
+							...(hasActiveSubscription
+								? [env.DISCORD_SUBSCRIBER_ROLE_ID]
+								: []),
+						]),
 					)
 
 					console.info('roles', { roles })
