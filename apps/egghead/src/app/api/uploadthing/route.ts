@@ -1,8 +1,8 @@
 import { withSkill } from '@/server/with-skill'
 import { ourFileRouter } from '@/uploadthing/core'
-import { createNextRouteHandler } from 'uploadthing/next'
+import { createRouteHandler } from 'uploadthing/next'
 
-const handlers = createNextRouteHandler({
+const handlers = createRouteHandler({
 	router: ourFileRouter,
 })
 
