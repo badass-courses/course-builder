@@ -1,3 +1,4 @@
+import { UserSchema } from '@/ability'
 import { db } from '@/db'
 import { accounts, users } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -5,6 +6,7 @@ import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-prov
 import { inngest } from '@/inngest/inngest.server'
 import { DiscordError, DiscordMember } from '@/lib/discord'
 import { fetchAsDiscordBot, fetchJsonAsDiscordBot } from '@/lib/discord-query'
+import { getSubscriptionStatus } from '@/lib/subscriptions'
 import { and, eq } from 'drizzle-orm'
 
 export const discordAccountLinked = inngest.createFunction(
@@ -20,13 +22,15 @@ export const discordAccountLinked = inngest.createFunction(
 		const { account, profile } = event.data
 
 		const user = await step.run('get user', async () => {
-			return db.query.users.findFirst({
-				where: eq(users.id, event.user.id),
-				with: {
-					accounts: true,
-					purchases: true,
-				},
-			})
+			return UserSchema.parse(
+				db.query.users.findFirst({
+					where: eq(users.id, event.user.id),
+					with: {
+						accounts: true,
+						purchases: true,
+					},
+				}),
+			)
 		})
 
 		if (!user) throw new Error('No user found')
@@ -75,21 +79,16 @@ export const discordAccountLinked = inngest.createFunction(
 
 			await step.run('update basic discord roles for user', async () => {
 				if ('user' in discordMember) {
-					const validPurchases = user.purchases.filter(
-						(purchase) =>
-							purchase.status === 'Valid' || purchase.status === 'Restricted',
-					)
-
-					const userHasPurchases = validPurchases.length > 0
+					const { hasActiveSubscription } = await getSubscriptionStatus(user.id)
 
 					const roles = Array.from(
 						new Set([
 							...discordMember.roles,
-							...(userHasPurchases ? [env.DISCORD_MEMBER_ROLE_ID] : []),
+							...(hasActiveSubscription
+								? [env.DISCORD_SUBSCRIBER_ROLE_ID]
+								: []),
 						]),
 					)
-
-					console.info('roles', { roles })
 
 					return await fetchAsDiscordBot(
 						`guilds/${env.DISCORD_GUILD_ID}/members/${discordAccount.providerAccountId}`,

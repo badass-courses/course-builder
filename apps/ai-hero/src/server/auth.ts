@@ -252,15 +252,6 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
-		...(env.TWITTER_CLIENT_ID && env.TWITTER_CLIENT_SECRET
-			? [
-					TwitterProvider({
-						clientId: env.TWITTER_CLIENT_ID,
-						clientSecret: env.TWITTER_CLIENT_SECRET,
-						allowDangerousEmailAccountLinking: true,
-					}),
-				]
-			: []),
 		...(env.DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET
 			? [
 					DiscordProvider({
