@@ -120,7 +120,7 @@ async function Post({ post }: { post: Post | null }) {
 	})
 
 	return (
-		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 mt-10 max-w-none">
+		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
 			{content}
 		</article>
 	)
