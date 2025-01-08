@@ -34,6 +34,7 @@ export function EditResourcesFormDesktop({
 	tools = [],
 	theme = 'light',
 	bodyPanelSlot,
+	mdxPreviewComponent,
 	onResourceBodyChange = () => {},
 	toggleMdxPreview,
 	isShowingMdxPreview,
@@ -72,6 +73,7 @@ export function EditResourcesFormDesktop({
 	tools?: ResourceTool[]
 	theme?: string
 	bodyPanelSlot?: React.ReactNode
+	mdxPreviewComponent?: React.ReactNode
 	onResourceBodyChange?: (value: string) => void
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
@@ -141,6 +143,7 @@ export function EditResourcesFormDesktop({
 					}}
 					toggleMdxPreview={toggleMdxPreview}
 					isShowingMdxPreview={isShowingMdxPreview}
+					mdxPreviewComponent={mdxPreviewComponent}
 				>
 					{bodyPanelSlot}
 				</EditResourcesBodyPanel>

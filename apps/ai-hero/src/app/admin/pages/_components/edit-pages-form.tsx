@@ -119,7 +119,7 @@ export function EditPagesForm({
 	return (
 		<ResourceForm
 			onResourceBodyChange={debouncedOnChange}
-			bodyPanelSlot={<MDXLivePreview />}
+			mdxPreviewComponent={<MDXLivePreview />}
 			resource={page}
 			form={form}
 			resourceSchema={PageSchema}

@@ -24,6 +24,7 @@ export function EditResourcesBodyPanel({
 	partykitUrl,
 	user,
 	children,
+	mdxPreviewComponent,
 	onResourceBodyChange,
 	toggleMdxPreview,
 	isShowingMdxPreview = false,
@@ -42,6 +43,7 @@ export function EditResourcesBodyPanel({
 	partykitUrl: string
 	user?: User | null
 	children?: React.ReactNode
+	mdxPreviewComponent?: React.ReactNode
 	onResourceBodyChange?: (value: string) => void
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
@@ -78,13 +80,13 @@ export function EditResourcesBodyPanel({
 			/>
 		),
 		execute: ({ state, view }) => {
-			if (!children) return
+			if (!mdxPreviewComponent) return
 			if (!state || !view) return
 			toggleMdxPreview && toggleMdxPreview()
 		},
 	}
 
-	const withMdxPreview = Boolean(children)
+	const withMdxPreview = Boolean(mdxPreviewComponent)
 
 	const defaultCommands = [
 		'undo',
@@ -117,7 +119,7 @@ export function EditResourcesBodyPanel({
 						order={2}
 						defaultSize={20}
 					>
-						{children}
+						{mdxPreviewComponent}
 					</ResizablePanel>
 					<ResizableHandle />
 				</>
@@ -129,6 +131,7 @@ export function EditResourcesBodyPanel({
 				className="flex min-h-[var(--pane-layout-height)] md:min-h-full"
 			>
 				<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+					{children}
 					{hasMounted && (
 						<MarkdownEditor
 							previewProps={{
