@@ -6,6 +6,7 @@ import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
+import type { List } from '@/lib/lists'
 import { Post, PostSchema } from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
@@ -31,6 +32,7 @@ import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metada
 import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 import { NewLessonVideoForm } from '../../_components/new-lesson-video-form'
+import { AddToList } from './add-to-list'
 import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
@@ -39,12 +41,14 @@ export const PostMetadataFormFields: React.FC<{
 	videoResourceId: string | null | undefined
 	post: Post
 	tagLoader: Promise<Tag[]>
+	listsLoader: Promise<List[]>
 }> = ({
 	form,
 	videoResourceLoader,
 	post,
 	videoResourceId: initialVideoResourceId,
 	tagLoader,
+	listsLoader,
 }) => {
 	const router = useRouter()
 
@@ -52,6 +56,8 @@ export const PostMetadataFormFields: React.FC<{
 		string | null | undefined
 	>(initialVideoResourceId)
 	const tags = tagLoader ? use(tagLoader) : []
+	const lists = listsLoader ? use(listsLoader) : []
+
 	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
 		videoResourceId: videoResourceId,
 	})
@@ -210,6 +216,7 @@ export const PostMetadataFormFields: React.FC<{
 				name="id"
 				render={({ field }) => <Input type="hidden" {...field} />}
 			/>
+
 			<FormField
 				control={form.control}
 				name="fields.title"
@@ -264,6 +271,7 @@ export const PostMetadataFormFields: React.FC<{
 					/>
 				</div>
 			)}
+			<AddToList lists={lists} post={post} />
 			<FormField
 				control={form.control}
 				name="fields.description"
