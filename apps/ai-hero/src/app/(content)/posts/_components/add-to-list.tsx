@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { List } from '@/lib/lists'
@@ -107,9 +107,8 @@ export function AddToList({ lists, post }: { lists: List[]; post: Post }) {
 							<CommandEmpty>No lists found.</CommandEmpty>
 							<CommandGroup>
 								{lists.map((list) => (
-									<div className="relative flex items-center">
+									<div key={list.id} className="relative flex items-center">
 										<CommandItem
-											key={list.id}
 											value={list.id}
 											onSelect={() => handleSelect(list.id)}
 										>
