@@ -293,8 +293,6 @@ export const getServerAuthSession = async () => {
 	const parsedUser = UserSchema.nullish().parse(session?.user)
 	const ability = getAbility({ user: parsedUser || undefined })
 
-	console.log('pfft', { session, parsedUser })
-
 	return { session: session ? { ...session, user } : null, ability }
 }
 

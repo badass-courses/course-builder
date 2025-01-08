@@ -324,8 +324,8 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2(@babel/runtime@7.26.0)(@codemirror/autocomplete@6.18.3)(@codemirror/language@6.10.7)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.35.3)(codemirror@6.0.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
+        specifier: 7.1.5
+        version: 7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -570,8 +570,8 @@ importers:
         specifier: ^11.0.5
         version: 11.0.5
       uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
+        specifier: 7.4.4
+        version: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -937,8 +937,8 @@ importers:
         specifier: ^4.21.24
         version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
       '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
+        specifier: 7.1.5
+        version: 7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1162,8 +1162,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.3
       uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
+        specifier: 7.4.4
+        version: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1346,274 +1346,6 @@ importers:
       drizzle-kit:
         specifier: 0.27.1
         version: 0.27.1
-
-  apps/course-builder-video-blog:
-    dependencies:
-      '@auth/core':
-        specifier: 0.37.2
-        version: 0.37.2(nodemailer@6.9.11)
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.441.0
-        version: 3.535.0
-      '@casl/ability':
-        specifier: ^6.5.0
-        version: 6.7.0
-      '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.0
-        version: link:../../packages/adapter-drizzle
-      '@coursebuilder/core':
-        specifier: 1.0.0
-        version: link:../../packages/core
-      '@coursebuilder/next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@coursebuilder/nodash':
-        specifier: workspace:^
-        version: link:../../packages/nodash
-      '@coursebuilder/ui':
-        specifier: ^2.0.0
-        version: link:../../packages/ui
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.1.1(react@19.0.0-rc-02c0e824-20241028)
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.3.4(react-hook-form@7.51.0)
-      '@mdx-js/loader':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)(webpack@5.97.1)
-      '@mdx-js/react':
-        specifier: ^3.1.0
-        version: 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@mux/mux-player-react':
-        specifier: ^2.6.0
-        version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@next/mdx':
-        specifier: 15.0.3
-        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
-      '@planetscale/database':
-        specifier: 1.19.0
-        version: 1.19.0
-      '@react-email/components':
-        specifier: 0.0.27
-        version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown':
-        specifier: ^0.0.11
-        version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/render':
-        specifier: 1.0.2
-        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
-      '@t3-oss/env-nextjs':
-        specifier: ^0.7.1
-        version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
-      '@tanstack/react-query':
-        specifier: 5.54.1
-        version: 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-query-devtools':
-        specifier: 5.54.1
-        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.390(@trpc/server@11.0.0-rc.390)
-      '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.390
-      '@types/axios':
-        specifier: ^0.14.0
-        version: 0.14.0
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
-      '@types/shortid':
-        specifier: ^0.0.31
-        version: 0.0.31
-      '@types/uuid':
-        specifier: 9.0.8
-        version: 9.0.8
-      '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
-      '@upstash/ratelimit':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@upstash/redis':
-        specifier: ^1.28.4
-        version: 1.28.4
-      ai:
-        specifier: 3.0.19
-        version: 3.0.19(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13)(zod@3.22.4)
-      axios:
-        specifier: ^1.5.1
-        version: 1.6.8
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.0
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      drizzle-orm:
-        specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      framer-motion:
-        specifier: ^12.0.0-alpha.1
-        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      human-readable-ids:
-        specifier: ^1.0.4
-        version: 1.0.4
-      inngest:
-        specifier: ^3.22.5
-        version: 3.22.5(next@15.0.3)(typescript@5.4.5)
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
-      nanoid:
-        specifier: ^5.0.2
-        version: 5.0.6
-      next:
-        specifier: 15.0.3
-        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
-      next-axiom:
-        specifier: ^1.1.1
-        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-themes:
-        specifier: ^0.3
-        version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      nodemailer:
-        specifier: ^6.7.2
-        version: 6.9.11
-      openai:
-        specifier: ^4.28.4
-        version: 4.29.1(encoding@0.1.13)
-      partysocket:
-        specifier: 1.0.1
-        version: 1.0.1
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      prism-react-renderer:
-        specifier: ^2.2.0
-        version: 2.3.1(react@19.0.0-rc-02c0e824-20241028)
-      react:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028
-      react-dom:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.4.1(csstype@3.1.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-markdown:
-        specifier: ^9.0.0
-        version: 9.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      react-wrap-balancer:
-        specifier: ^0.2.4
-        version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
-      shortid:
-        specifier: ^2.2.16
-        version: 2.2.16
-      srt-parser-2:
-        specifier: ^1.2.3
-        version: 1.2.3
-      styled-components:
-        specifier: ~5.2.3
-        version: 5.2.3(@babel/core@7.26.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react-is@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      superjson:
-        specifier: ^2.2.1
-        version: 2.2.1
-      tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
-      tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.1)
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
-      uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
-      uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
-      y-partykit:
-        specifier: ^0.0.28
-        version: 0.0.28
-      yjs:
-        specifier: ^13.6.10
-        version: 13.6.14
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-    devDependencies:
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.10(tailwindcss@3.4.1)
-      '@types/node':
-        specifier: ^20.12.5
-        version: 20.12.5
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
-        version: /types-react@19.0.0-rc.1
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
-      concurrently:
-        specifier: ^8.2.2
-        version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.1
-      drizzle-kit:
-        specifier: 0.27.1
-        version: 0.27.1
-      mysql2:
-        specifier: ^3.6.1
-        version: 3.9.2
-      partykit:
-        specifier: 0.0.104
-        version: 0.0.104
-      postcss:
-        specifier: ^8.4.27
-        version: 8.4.38
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.1(ts-node@10.9.2)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
 
   apps/course-builder-web:
     dependencies:
@@ -1843,8 +1575,8 @@ importers:
         specifier: ^4.21.24
         version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
       '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
+        specifier: 7.1.5
+        version: 7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2041,8 +1773,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.3
       uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
+        specifier: 7.4.4
+        version: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2288,8 +2020,8 @@ importers:
         specifier: 9.0.8
         version: 9.0.8
       '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
+        specifier: 7.1.5
+        version: 7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2441,8 +2173,8 @@ importers:
         specifier: ^2.8.0
         version: 2.8.0(@babel/runtime@7.26.0)
       uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
+        specifier: 7.4.4
+        version: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2598,8 +2330,8 @@ importers:
         specifier: 9.0.8
         version: 9.0.8
       '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
+        specifier: 7.1.5
+        version: 7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2709,8 +2441,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.1)
       uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
+        specifier: 7.4.4
+        version: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2766,613 +2498,6 @@ importers:
       tailwindcss:
         specifier: ^3.3.3
         version: 3.4.1(ts-node@10.9.2)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
-
-  apps/epic-web:
-    dependencies:
-      '@amplitude/analytics-browser':
-        specifier: ^2.6.1
-        version: 2.6.1
-      '@anthropic-ai/sdk':
-        specifier: ^0.17.1
-        version: 0.17.2(encoding@0.1.13)
-      '@atlaskit/button':
-        specifier: ^17.7.2
-        version: 17.7.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/form':
-        specifier: ^9.1.0
-        version: 9.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/modal-dialog':
-        specifier: ^12.10.10
-        version: 12.10.10(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop':
-        specifier: ^1.1.3
-        version: 1.1.3
-      '@atlaskit/pragmatic-drag-and-drop-flourish':
-        specifier: ^1.0.4
-        version: 1.0.4(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop-hitbox':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/pragmatic-drag-and-drop-live-region':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/select':
-        specifier: ^17.3.4
-        version: 17.3.4(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/tokens':
-        specifier: ^1.42.1
-        version: 1.42.1(react@19.0.0-rc-02c0e824-20241028)
-      '@auth/core':
-        specifier: 0.37.2
-        version: 0.37.2(nodemailer@6.9.11)
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/client-textract':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/credential-providers':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.441.0
-        version: 3.535.0
-      '@boiseitguru/cookie-cutter':
-        specifier: ^0.2.3
-        version: 0.2.3
-      '@casl/ability':
-        specifier: ^6.5.0
-        version: 6.7.0
-      '@code-hike/mdx':
-        specifier: ^0.9.0
-        version: 0.9.0(encoding@0.1.13)(react@19.0.0-rc-02c0e824-20241028)
-      '@codemirror/lang-markdown':
-        specifier: ^6.3.1
-        version: 6.3.1
-      '@codemirror/language-data':
-        specifier: ^6.5.1
-        version: 6.5.1(@codemirror/view@6.35.3)
-      '@codemirror/search':
-        specifier: ^6.5.8
-        version: 6.5.8
-      '@codemirror/state':
-        specifier: ^6.5.0
-        version: 6.5.0
-      '@codemirror/view':
-        specifier: ^6.35.3
-        version: 6.35.3
-      '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.0
-        version: link:../../packages/adapter-drizzle
-      '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
-        version: link:../../packages/commerce-next
-      '@coursebuilder/core':
-        specifier: 1.0.0
-        version: link:../../packages/core
-      '@coursebuilder/email-templates':
-        specifier: ^1.0.4
-        version: link:../../packages/email-templates
-      '@coursebuilder/next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@coursebuilder/nodash':
-        specifier: workspace:^
-        version: link:../../packages/nodash
-      '@coursebuilder/ui':
-        specifier: ^2.0.0
-        version: link:../../packages/ui
-      '@fontsource/inter':
-        specifier: ^5.0.16
-        version: 5.0.17
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.1.1(react@19.0.0-rc-02c0e824-20241028)
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.3.4(react-hook-form@7.51.0)
-      '@internationalized/date':
-        specifier: 3.5.6
-        version: 3.5.6
-      '@lezer/highlight':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@mdx-js/loader':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)(webpack@5.97.1)
-      '@mdx-js/mdx':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)
-      '@mdx-js/react':
-        specifier: ^3.1.0
-        version: 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@msgpack/msgpack':
-        specifier: 3.0.0-beta2
-        version: 3.0.0-beta2
-      '@mux/mux-player-react':
-        specifier: ^2.6.0
-        version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@next/mdx':
-        specifier: 15.0.3
-        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
-      '@pinecone-database/pinecone':
-        specifier: ^2.1.0
-        version: 2.1.0
-      '@planetscale/database':
-        specifier: 1.19.0
-        version: 1.19.0
-      '@radix-ui/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
-      '@radix-ui/react-alert-dialog':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-collapsible':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dialog':
-        specifier: 1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.2
-        version: 2.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-hover-card':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-icons':
-        specifier: ^1.3.1
-        version: 1.3.1(react@19.0.0-rc-02c0e824-20241028)
-      '@radix-ui/react-label':
-        specifier: ^2.1.0
-        version: 2.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-popover':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-progress':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-separator':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slider':
-        specifier: ^1.2.1
-        version: 1.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slot':
-        specifier: ^1.1.0
-        version: 1.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-switch':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tabs':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toast':
-        specifier: ^1.2.2
-        version: 1.2.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toggle-group':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tooltip':
-        specifier: ^1.1.3
-        version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@react-email/components':
-        specifier: 0.0.27
-        version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown':
-        specifier: ^0.0.11
-        version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/render':
-        specifier: 1.0.2
-        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@sanity/icons':
-        specifier: ^2.6.0
-        version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
-      '@skillrecordings/analytics':
-        specifier: ^1.0.1
-        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      '@skillrecordings/config':
-        specifier: ^0.0.3
-        version: 0.0.3
-      '@t3-oss/env-nextjs':
-        specifier: ^0.7.1
-        version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
-      '@tanstack/react-query':
-        specifier: 5.54.1
-        version: 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-query-devtools':
-        specifier: 5.54.1
-        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.377(@trpc/server@11.0.0-rc.377)
-      '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/react-query@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.377
-      '@tsparticles/engine':
-        specifier: 3.4.0
-        version: 3.4.0
-      '@tsparticles/preset-stars':
-        specifier: 3.1.0
-        version: 3.1.0
-      '@tsparticles/react':
-        specifier: 3.0.0
-        version: 3.0.0(@tsparticles/engine@3.4.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@tsparticles/slim':
-        specifier: 3.4.0
-        version: 3.4.0
-      '@types/js-cookie':
-        specifier: ^3.0.6
-        version: 3.0.6
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
-      '@types/shortid':
-        specifier: ^0.0.31
-        version: 0.0.31
-      '@types/uuid':
-        specifier: 9.0.8
-        version: 9.0.8
-      '@uiw/codemirror-themes':
-        specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
-      '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
-      '@upstash/ratelimit':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@upstash/redis':
-        specifier: ^1.28.4
-        version: 1.28.4
-      ai:
-        specifier: 3.0.19
-        version: 3.0.19(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13)(zod@3.22.4)
-      axios:
-        specifier: ^1.5.1
-        version: 1.6.8
-      base-64:
-        specifier: ^1.0.0
-        version: 1.0.0
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      cloudinary:
-        specifier: ^1.41.0
-        version: 1.41.3
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.0
-      cmdk:
-        specifier: ^0.2.0
-        version: 0.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      codemirror:
-        specifier: ^6.0.1
-        version: 6.0.1(@lezer/common@1.2.3)
-      crypto:
-        specifier: ^1.0.1
-        version: 1.0.1
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      drizzle-orm:
-        specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      formik:
-        specifier: 2.2.9
-        version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
-      framer-motion:
-        specifier: ^12.0.0-alpha.1
-        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      groq:
-        specifier: ^3.18.1
-        version: 3.34.0
-      i:
-        specifier: ^0.3.7
-        version: 0.3.7
-      inngest:
-        specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
-      intl-segmenter-polyfill:
-        specifier: ^0.4.4
-        version: 0.4.4
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
-      json-schema:
-        specifier: ^0.4.0
-        version: 0.4.0
-      liquidjs:
-        specifier: ^10.16.3
-        version: 10.16.3
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
-      memoize-one:
-        specifier: ^6.0.0
-        version: 6.0.0
-      mjml:
-        specifier: ^4.15.3
-        version: 4.15.3(encoding@0.1.13)
-      nanoid:
-        specifier: ^5.0.2
-        version: 5.0.6
-      next:
-        specifier: 15.0.3
-        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
-      next-axiom:
-        specifier: ^1.1.1
-        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      next-themes:
-        specifier: ^0.3
-        version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      nodemailer:
-        specifier: ^6.7.2
-        version: 6.9.11
-      nodemailer-postmark-transport:
-        specifier: ^5.2.1
-        version: 5.3.0(nodemailer@6.9.11)
-      npm:
-        specifier: ^10.2.1
-        version: 10.5.0
-      openai:
-        specifier: ^4.28.4
-        version: 4.29.1(encoding@0.1.13)
-      openai-edge:
-        specifier: ^1.2.2
-        version: 1.2.2
-      partysocket:
-        specifier: 1.0.1
-        version: 1.0.1
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      prism-react-renderer:
-        specifier: ^2.2.0
-        version: 2.3.1(react@19.0.0-rc-02c0e824-20241028)
-      query-string:
-        specifier: ^9.0.0
-        version: 9.0.0
-      react:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028
-      react-aria:
-        specifier: ^3.35.1
-        version: 3.35.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-countdown:
-        specifier: ^2.3.5
-        version: 2.3.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-dom:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-error-boundary:
-        specifier: ^4.1.2
-        version: 4.1.2(react@19.0.0-rc-02c0e824-20241028)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.4.1(csstype@3.1.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-icons:
-        specifier: ^4.11.0
-        version: 4.12.0(react@19.0.0-rc-02c0e824-20241028)
-      react-markdown:
-        specifier: ^9.0.0
-        version: 9.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      react-resizable-panels:
-        specifier: ^2.1.5
-        version: 2.1.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-stately:
-        specifier: ^3.33.0
-        version: 3.33.0(react@19.0.0-rc-02c0e824-20241028)
-      react-use:
-        specifier: ^17.5.0
-        version: 17.5.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-use-clipboard:
-        specifier: ^1.0.9
-        version: 1.0.9(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-wrap-balancer:
-        specifier: ^0.2.4
-        version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
-      reading-time:
-        specifier: ^1.5.0
-        version: 1.5.0
-      rehype-raw:
-        specifier: ^7.0.0
-        version: 7.0.0
-      rehype-slug:
-        specifier: ^6.0.0
-        version: 6.0.0
-      resend:
-        specifier: ^3.2.0
-        version: 3.2.0
-      satori:
-        specifier: ^0.10.9
-        version: 0.10.13
-      schema-dts:
-        specifier: ^1.1.2
-        version: 1.1.2(typescript@5.4.5)
-      serverless-mysql:
-        specifier: ^1.5.5
-        version: 1.5.5
-      shiki:
-        specifier: 1.1.7
-        version: 1.1.7
-      shortid:
-        specifier: ^2.2.16
-        version: 2.2.16
-      srt-parser-2:
-        specifier: ^1.2.3
-        version: 1.2.3
-      styled-components:
-        specifier: ~5.2.3
-        version: 5.2.3(@babel/core@7.26.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react-is@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      superjson:
-        specifier: ^2.2.1
-        version: 2.2.1
-      swr:
-        specifier: ^2.2.4
-        version: 2.2.5(react@19.0.0-rc-02c0e824-20241028)
-      tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.1)
-      tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
-      tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.1)
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
-      tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-      uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
-      uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
-      y-codemirror.jh:
-        specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(yjs@13.6.14)
-      y-partykit:
-        specifier: ^0.0.28
-        version: 0.0.28
-      y-prosemirror:
-        specifier: ^1.2.2
-        version: 1.2.3(prosemirror-model@1.24.1)(prosemirror-state@1.4.3)(prosemirror-view@1.37.1)(y-protocols@1.0.6)(yjs@13.6.14)
-      y-protocols:
-        specifier: ^1.0.6
-        version: 1.0.6(yjs@13.6.14)
-      yjs:
-        specifier: ^13.6.10
-        version: 13.6.14
-      yup:
-        specifier: ^0.32.11
-        version: 0.32.11
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-      zod-to-json-schema:
-        specifier: ^3.22.4
-        version: 3.22.5(zod@3.22.4)
-      zustand:
-        specifier: ^4.4.7
-        version: 4.5.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-    devDependencies:
-      '@mux/mux-node':
-        specifier: ^7.3.2
-        version: 7.3.5
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.10(tailwindcss@3.4.1)
-      '@types/base-64':
-        specifier: ^1.0.1
-        version: 1.0.2
-      '@types/eslint':
-        specifier: ^8.44.2
-        version: 8.56.5
-      '@types/json-schema':
-        specifier: ^7.0.14
-        version: 7.0.15
-      '@types/mjml':
-        specifier: ^4.7.4
-        version: 4.7.4
-      '@types/node':
-        specifier: ^20.12.5
-        version: 20.12.5
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
-        version: /types-react@19.0.0-rc.1
-      '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
-        version: /types-react-dom@19.0.0-rc.1
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
-      '@types/styled-components':
-        specifier: ^5.1.29
-        version: 5.1.34
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.18(postcss@8.4.38)
-      concurrently:
-        specifier: ^8.2.2
-        version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.1
-      drizzle-kit:
-        specifier: 0.27.1
-        version: 0.27.1
-      encoding:
-        specifier: ^0.1.13
-        version: 0.1.13
-      eslint:
-        specifier: ^8.47.0
-        version: 8.57.0
-      eslint-config-next:
-        specifier: 15.0.2
-        version: 15.0.2(eslint@8.57.0)(typescript@5.4.5)
-      mysql2:
-        specifier: ^3.6.1
-        version: 3.9.2
-      partykit:
-        specifier: 0.0.104
-        version: 0.0.104
-      postcss:
-        specifier: ^8.4.27
-        version: 8.4.38
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
-      stripe:
-        specifier: 16.9.0
-        version: 16.9.0
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.1(ts-node@10.9.2)
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -3668,8 +2793,8 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2(@babel/runtime@7.26.0)(@codemirror/autocomplete@6.18.3)(@codemirror/language@6.10.7)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.35.3)(codemirror@6.0.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
       '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
+        specifier: 7.1.5
+        version: 7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -3902,8 +3027,8 @@ importers:
         specifier: ^11.0.5
         version: 11.0.5
       uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
+        specifier: 7.4.4
+        version: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -4019,1818 +3144,6 @@ importers:
       tailwindcss:
         specifier: ^3.3.3
         version: 3.4.1(ts-node@10.9.2)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
-
-  apps/pro-aws:
-    dependencies:
-      '@amplitude/analytics-browser':
-        specifier: ^2.6.1
-        version: 2.6.1
-      '@anthropic-ai/sdk':
-        specifier: ^0.17.1
-        version: 0.17.2(encoding@0.1.13)
-      '@atlaskit/button':
-        specifier: ^17.7.2
-        version: 17.7.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/form':
-        specifier: ^9.1.0
-        version: 9.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/modal-dialog':
-        specifier: ^12.10.10
-        version: 12.10.10(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop':
-        specifier: ^1.1.3
-        version: 1.1.3
-      '@atlaskit/pragmatic-drag-and-drop-flourish':
-        specifier: ^1.0.4
-        version: 1.0.4(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop-hitbox':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/pragmatic-drag-and-drop-live-region':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/select':
-        specifier: ^17.3.4
-        version: 17.3.4(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/tokens':
-        specifier: ^1.42.1
-        version: 1.42.1(react@19.0.0-rc-02c0e824-20241028)
-      '@auth/core':
-        specifier: 0.37.2
-        version: 0.37.2(nodemailer@6.9.11)
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/client-textract':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/credential-providers':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.441.0
-        version: 3.535.0
-      '@casl/ability':
-        specifier: ^6.5.0
-        version: 6.7.0
-      '@code-hike/mdx':
-        specifier: ^0.9.0
-        version: 0.9.0(encoding@0.1.13)(react@19.0.0-rc-02c0e824-20241028)
-      '@codemirror/lang-markdown':
-        specifier: ^6.3.1
-        version: 6.3.1
-      '@codemirror/language-data':
-        specifier: ^6.5.1
-        version: 6.5.1(@codemirror/view@6.35.3)
-      '@codemirror/search':
-        specifier: ^6.5.8
-        version: 6.5.8
-      '@codemirror/state':
-        specifier: ^6.5.0
-        version: 6.5.0
-      '@codemirror/view':
-        specifier: ^6.35.3
-        version: 6.35.3
-      '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.0
-        version: link:../../packages/adapter-drizzle
-      '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
-        version: link:../../packages/commerce-next
-      '@coursebuilder/core':
-        specifier: 1.0.0
-        version: link:../../packages/core
-      '@coursebuilder/email-templates':
-        specifier: ^1.0.4
-        version: link:../../packages/email-templates
-      '@coursebuilder/next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@coursebuilder/nodash':
-        specifier: workspace:^
-        version: link:../../packages/nodash
-      '@coursebuilder/ui':
-        specifier: ^2.0.0
-        version: link:../../packages/ui
-      '@designbycode/tailwindcss-text-stroke':
-        specifier: ^1.2.1
-        version: 1.2.1(tailwindcss@3.4.1)
-      '@fontsource/inter':
-        specifier: ^5.0.16
-        version: 5.0.17
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.1.1(react@19.0.0-rc-02c0e824-20241028)
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.3.4(react-hook-form@7.51.0)
-      '@internationalized/date':
-        specifier: 3.5.6
-        version: 3.5.6
-      '@lezer/highlight':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@mdx-js/loader':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)(webpack@5.97.1)
-      '@mdx-js/mdx':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)
-      '@mdx-js/react':
-        specifier: ^3.1.0
-        version: 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@msgpack/msgpack':
-        specifier: 3.0.0-beta2
-        version: 3.0.0-beta2
-      '@mux/mux-player-react':
-        specifier: ^2.6.0
-        version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@next/mdx':
-        specifier: 15.0.3
-        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
-      '@next/third-parties':
-        specifier: 15.0.2
-        version: 15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      '@pinecone-database/pinecone':
-        specifier: ^2.1.0
-        version: 2.1.0
-      '@planetscale/database':
-        specifier: 1.19.0
-        version: 1.19.0
-      '@radix-ui/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
-      '@radix-ui/react-alert-dialog':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-collapsible':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dialog':
-        specifier: 1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.2
-        version: 2.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-hover-card':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-icons':
-        specifier: ^1.3.1
-        version: 1.3.1(react@19.0.0-rc-02c0e824-20241028)
-      '@radix-ui/react-label':
-        specifier: ^2.1.0
-        version: 2.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-popover':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-progress':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-separator':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slider':
-        specifier: ^1.2.1
-        version: 1.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slot':
-        specifier: ^1.1.0
-        version: 1.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-switch':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tabs':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toast':
-        specifier: ^1.2.2
-        version: 1.2.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toggle-group':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tooltip':
-        specifier: ^1.1.3
-        version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@react-email/components':
-        specifier: 0.0.27
-        version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown':
-        specifier: ^0.0.11
-        version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/render':
-        specifier: 1.0.2
-        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@sanity/icons':
-        specifier: ^2.6.0
-        version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
-      '@skillrecordings/analytics':
-        specifier: ^1.0.1
-        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      '@skillrecordings/config':
-        specifier: ^0.0.3
-        version: 0.0.3
-      '@skillrecordings/time':
-        specifier: ^0.0.13
-        version: 0.0.13
-      '@t3-oss/env-nextjs':
-        specifier: ^0.7.1
-        version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
-      '@tanstack/react-query':
-        specifier: 5.54.1
-        version: 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-query-devtools':
-        specifier: 5.54.1
-        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-table':
-        specifier: ^8.17.3
-        version: 8.17.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
-      '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.351
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
-      '@types/shortid':
-        specifier: ^0.0.31
-        version: 0.0.31
-      '@types/uuid':
-        specifier: 9.0.8
-        version: 9.0.8
-      '@uiw/codemirror-themes':
-        specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
-      '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
-      '@upstash/ratelimit':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@upstash/redis':
-        specifier: ^1.28.4
-        version: 1.28.4
-      add:
-        specifier: ^2.0.6
-        version: 2.0.6
-      ai:
-        specifier: 3.0.19
-        version: 3.0.19(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13)(zod@3.22.4)
-      axios:
-        specifier: ^1.5.1
-        version: 1.6.8
-      base-64:
-        specifier: ^1.0.0
-        version: 1.0.0
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      cloudinary:
-        specifier: ^1.41.0
-        version: 1.41.3
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.0
-      cmdk:
-        specifier: ^0.2.0
-        version: 0.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      codemirror:
-        specifier: ^6.0.1
-        version: 6.0.1(@lezer/common@1.2.3)
-      crypto:
-        specifier: ^1.0.1
-        version: 1.0.1
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      dotenv-flow:
-        specifier: ^4.1.0
-        version: 4.1.0
-      drizzle-orm:
-        specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      formik:
-        specifier: 2.2.9
-        version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
-      framer-motion:
-        specifier: ^12.0.0-alpha.1
-        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      groq:
-        specifier: ^3.18.1
-        version: 3.34.0
-      holy-loader:
-        specifier: ^2.2.10
-        version: 2.2.10(react@19.0.0-rc-02c0e824-20241028)
-      i:
-        specifier: ^0.3.7
-        version: 0.3.7
-      inngest:
-        specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
-      intl-segmenter-polyfill:
-        specifier: ^0.4.4
-        version: 0.4.4
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
-      json-schema:
-        specifier: ^0.4.0
-        version: 0.4.0
-      liquidjs:
-        specifier: ^10.16.3
-        version: 10.16.3
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
-      memoize-one:
-        specifier: ^6.0.0
-        version: 6.0.0
-      mjml:
-        specifier: ^4.15.3
-        version: 4.15.3(encoding@0.1.13)
-      nanoid:
-        specifier: ^5.0.2
-        version: 5.0.6
-      next:
-        specifier: 15.0.3
-        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
-      next-axiom:
-        specifier: ^1.1.1
-        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-cloudinary:
-        specifier: ^6.5.1
-        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      next-themes:
-        specifier: ^0.3
-        version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      nodemailer:
-        specifier: ^6.7.2
-        version: 6.9.11
-      nodemailer-postmark-transport:
-        specifier: ^5.2.1
-        version: 5.3.0(nodemailer@6.9.11)
-      npm:
-        specifier: ^10.2.1
-        version: 10.5.0
-      openai:
-        specifier: ^4.28.4
-        version: 4.29.1(encoding@0.1.13)
-      openai-edge:
-        specifier: ^1.2.2
-        version: 1.2.2
-      partysocket:
-        specifier: 1.0.1
-        version: 1.0.1
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      prism-react-renderer:
-        specifier: ^2.2.0
-        version: 2.3.1(react@19.0.0-rc-02c0e824-20241028)
-      query-string:
-        specifier: ^9.0.0
-        version: 9.0.0
-      react:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028
-      react-aria:
-        specifier: ^3.35.1
-        version: 3.35.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-dom:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-gravatar:
-        specifier: ^2.6.3
-        version: 2.6.3(react@19.0.0-rc-02c0e824-20241028)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.4.1(csstype@3.1.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-icons:
-        specifier: ^4.11.0
-        version: 4.12.0(react@19.0.0-rc-02c0e824-20241028)
-      react-markdown:
-        specifier: ^9.0.0
-        version: 9.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      react-resizable-panels:
-        specifier: ^2.1.5
-        version: 2.1.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-stately:
-        specifier: ^3.33.0
-        version: 3.33.0(react@19.0.0-rc-02c0e824-20241028)
-      react-wrap-balancer:
-        specifier: ^0.2.4
-        version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
-      rehype-raw:
-        specifier: ^7.0.0
-        version: 7.0.0
-      rehype-slug:
-        specifier: ^6.0.0
-        version: 6.0.0
-      resend:
-        specifier: ^3.2.0
-        version: 3.2.0
-      satori:
-        specifier: ^0.10.9
-        version: 0.10.13
-      schema-dts:
-        specifier: ^1.1.2
-        version: 1.1.2(typescript@5.4.5)
-      shortid:
-        specifier: ^2.2.16
-        version: 2.2.16
-      srt-parser-2:
-        specifier: ^1.2.3
-        version: 1.2.3
-      styled-components:
-        specifier: ~5.2.3
-        version: 5.2.3(@babel/core@7.26.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react-is@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      superjson:
-        specifier: ^2.2.1
-        version: 2.2.1
-      swr:
-        specifier: ^2.2.4
-        version: 2.2.5(react@19.0.0-rc-02c0e824-20241028)
-      tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
-      tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-      uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
-      uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
-      y-codemirror.jh:
-        specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(yjs@13.6.14)
-      y-partykit:
-        specifier: ^0.0.28
-        version: 0.0.28
-      y-prosemirror:
-        specifier: ^1.2.2
-        version: 1.2.3(prosemirror-model@1.24.1)(prosemirror-state@1.4.3)(prosemirror-view@1.37.1)(y-protocols@1.0.6)(yjs@13.6.14)
-      y-protocols:
-        specifier: ^1.0.6
-        version: 1.0.6(yjs@13.6.14)
-      yjs:
-        specifier: ^13.6.10
-        version: 13.6.14
-      yup:
-        specifier: ^0.32.11
-        version: 0.32.11
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-      zod-to-json-schema:
-        specifier: ^3.22.4
-        version: 3.22.4(zod@3.22.4)
-      zustand:
-        specifier: ^4.4.7
-        version: 4.5.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-    devDependencies:
-      '@mux/mux-node':
-        specifier: ^7.3.2
-        version: 7.3.5
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.10(tailwindcss@3.4.1)
-      '@types/base-64':
-        specifier: ^1.0.1
-        version: 1.0.2
-      '@types/eslint':
-        specifier: ^8.44.2
-        version: 8.56.5
-      '@types/js-cookie':
-        specifier: ^3.0.6
-        version: 3.0.6
-      '@types/json-schema':
-        specifier: ^7.0.14
-        version: 7.0.15
-      '@types/node':
-        specifier: ^20.12.5
-        version: 20.12.5
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
-        version: /types-react@19.0.0-rc.1
-      '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
-        version: /types-react-dom@19.0.0-rc.1
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
-      '@types/styled-components':
-        specifier: ^5.1.29
-        version: 5.1.34
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.18(postcss@8.4.38)
-      concurrently:
-        specifier: ^8.2.2
-        version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.1
-      drizzle-kit:
-        specifier: 0.27.1
-        version: 0.27.1
-      encoding:
-        specifier: ^0.1.13
-        version: 0.1.13
-      eslint:
-        specifier: ^8.47.0
-        version: 8.57.0
-      eslint-config-next:
-        specifier: 15.0.2
-        version: 15.0.2(eslint@8.57.0)(typescript@5.4.5)
-      mysql2:
-        specifier: ^3.6.1
-        version: 3.9.2
-      partykit:
-        specifier: 0.0.104
-        version: 0.0.104
-      postcss:
-        specifier: ^8.4.27
-        version: 8.4.38
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
-      shiki:
-        specifier: 1.1.7
-        version: 1.1.7
-      stripe:
-        specifier: 16.9.0
-        version: 16.9.0
-      tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.1)
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.1(ts-node@10.9.2)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
-
-  apps/pro-nextjs:
-    dependencies:
-      '@amplitude/analytics-browser':
-        specifier: ^2.6.1
-        version: 2.6.1
-      '@amplitude/analytics-node':
-        specifier: ^1.3.6
-        version: 1.3.6
-      '@anthropic-ai/sdk':
-        specifier: ^0.17.1
-        version: 0.17.2(encoding@0.1.13)
-      '@atlaskit/button':
-        specifier: ^17.7.2
-        version: 17.7.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/form':
-        specifier: ^9.1.0
-        version: 9.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/modal-dialog':
-        specifier: ^12.10.10
-        version: 12.10.10(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop':
-        specifier: ^1.1.3
-        version: 1.1.3
-      '@atlaskit/pragmatic-drag-and-drop-flourish':
-        specifier: ^1.0.4
-        version: 1.0.4(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop-hitbox':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/pragmatic-drag-and-drop-live-region':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/select':
-        specifier: ^17.3.4
-        version: 17.3.4(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/tokens':
-        specifier: ^1.42.1
-        version: 1.42.1(react@19.0.0-rc-02c0e824-20241028)
-      '@auth/core':
-        specifier: 0.37.2
-        version: 0.37.2(nodemailer@6.9.11)
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/client-textract':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/credential-providers':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.441.0
-        version: 3.535.0
-      '@casl/ability':
-        specifier: ^6.5.0
-        version: 6.7.0
-      '@code-hike/mdx':
-        specifier: ^0.9.0
-        version: 0.9.0(encoding@0.1.13)(react@19.0.0-rc-02c0e824-20241028)
-      '@codemirror/lang-markdown':
-        specifier: ^6.3.1
-        version: 6.3.1
-      '@codemirror/language-data':
-        specifier: ^6.5.1
-        version: 6.5.1(@codemirror/view@6.35.3)
-      '@codemirror/search':
-        specifier: ^6.5.8
-        version: 6.5.8
-      '@codemirror/state':
-        specifier: ^6.5.0
-        version: 6.5.0
-      '@codemirror/view':
-        specifier: ^6.35.3
-        version: 6.35.3
-      '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.0
-        version: link:../../packages/adapter-drizzle
-      '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
-        version: link:../../packages/commerce-next
-      '@coursebuilder/core':
-        specifier: 1.0.0
-        version: link:../../packages/core
-      '@coursebuilder/email-templates':
-        specifier: ^1.0.4
-        version: link:../../packages/email-templates
-      '@coursebuilder/next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@coursebuilder/nodash':
-        specifier: workspace:^
-        version: link:../../packages/nodash
-      '@coursebuilder/ui':
-        specifier: ^2.0.0
-        version: link:../../packages/ui
-      '@designbycode/tailwindcss-text-stroke':
-        specifier: ^1.2.1
-        version: 1.2.1(tailwindcss@3.4.1)
-      '@fontsource/inter':
-        specifier: ^5.0.16
-        version: 5.0.17
-      '@headlessui/react':
-        specifier: ^1.6.1
-        version: 1.7.19(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.1.1(react@19.0.0-rc-02c0e824-20241028)
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.3.4(react-hook-form@7.51.0)
-      '@internationalized/date':
-        specifier: 3.5.6
-        version: 3.5.6
-      '@lezer/highlight':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@mdx-js/loader':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)(webpack@5.97.1)
-      '@mdx-js/mdx':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)
-      '@mdx-js/react':
-        specifier: ^3.1.0
-        version: 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@msgpack/msgpack':
-        specifier: 3.0.0-beta2
-        version: 3.0.0-beta2
-      '@mux/mux-player-react':
-        specifier: ^2.6.0
-        version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@next/mdx':
-        specifier: 15.0.3
-        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
-      '@next/third-parties':
-        specifier: 15.0.2
-        version: 15.0.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      '@pinecone-database/pinecone':
-        specifier: ^2.1.0
-        version: 2.1.0
-      '@planetscale/database':
-        specifier: 1.19.0
-        version: 1.19.0
-      '@radix-ui/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
-      '@radix-ui/react-alert-dialog':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-collapsible':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dialog':
-        specifier: 1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.2
-        version: 2.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-hover-card':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-icons':
-        specifier: ^1.3.1
-        version: 1.3.1(react@19.0.0-rc-02c0e824-20241028)
-      '@radix-ui/react-label':
-        specifier: ^2.1.0
-        version: 2.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-popover':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-progress':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-separator':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slider':
-        specifier: ^1.2.1
-        version: 1.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slot':
-        specifier: ^1.1.0
-        version: 1.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-switch':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tabs':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toast':
-        specifier: ^1.2.2
-        version: 1.2.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toggle-group':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tooltip':
-        specifier: ^1.1.3
-        version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@react-email/components':
-        specifier: 0.0.27
-        version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown':
-        specifier: ^0.0.11
-        version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/render':
-        specifier: 1.0.2
-        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@sanity/icons':
-        specifier: ^2.6.0
-        version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
-      '@sentry/nextjs':
-        specifier: ^8
-        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.29.0)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.29.0)(encoding@0.1.13)(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(webpack@5.97.1)
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
-      '@skillrecordings/analytics':
-        specifier: ^1.0.1
-        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      '@skillrecordings/config':
-        specifier: ^0.0.3
-        version: 0.0.3
-      '@skillrecordings/time':
-        specifier: ^0.0.13
-        version: 0.0.13
-      '@t3-oss/env-nextjs':
-        specifier: ^0.7.1
-        version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
-      '@tanstack/react-query':
-        specifier: 5.54.1
-        version: 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-query-devtools':
-        specifier: 5.54.1
-        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-table':
-        specifier: ^8.17.3
-        version: 8.17.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@tiptap/extension-highlight':
-        specifier: 2.10.3
-        version: 2.10.3(@tiptap/core@2.10.3)
-      '@tiptap/extension-link':
-        specifier: 2.10.3
-        version: 2.10.3(@tiptap/core@2.10.3)(@tiptap/pm@2.10.3)
-      '@tiptap/extension-typography':
-        specifier: 2.10.3
-        version: 2.10.3(@tiptap/core@2.10.3)
-      '@tiptap/react':
-        specifier: 2.10.3
-        version: 2.10.3(@tiptap/core@2.10.3)(@tiptap/pm@2.10.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@tiptap/starter-kit':
-        specifier: 2.10.3
-        version: 2.10.3
-      '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.390(@trpc/server@11.0.0-rc.390)
-      '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/react-query@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.390
-      '@types/html-to-text':
-        specifier: ^9.0.4
-        version: 9.0.4
-      '@types/lodash':
-        specifier: ^4.14.200
-        version: 4.17.4
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
-      '@types/sanitize-html':
-        specifier: ^2.11.0
-        version: 2.11.0
-      '@types/shortid':
-        specifier: ^0.0.31
-        version: 0.0.31
-      '@types/uuid':
-        specifier: 9.0.8
-        version: 9.0.8
-      '@uiw/codemirror-themes':
-        specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
-      '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
-      '@upstash/ratelimit':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@upstash/redis':
-        specifier: ^1.28.4
-        version: 1.28.4
-      add:
-        specifier: ^2.0.6
-        version: 2.0.6
-      ai:
-        specifier: 3.0.19
-        version: 3.0.19(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13)(zod@3.22.4)
-      axios:
-        specifier: ^1.5.1
-        version: 1.6.8
-      base-64:
-        specifier: ^1.0.0
-        version: 1.0.0
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      cloudinary:
-        specifier: ^1.41.0
-        version: 1.41.3
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.0
-      cmdk:
-        specifier: ^0.2.0
-        version: 0.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      codemirror:
-        specifier: ^6.0.1
-        version: 6.0.1(@lezer/common@1.2.3)
-      crypto:
-        specifier: ^1.0.1
-        version: 1.0.1
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      dotenv-flow:
-        specifier: ^4.1.0
-        version: 4.1.0
-      drizzle-orm:
-        specifier: 0.36.0
-        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(mysql2@3.9.2)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      formik:
-        specifier: 2.2.9
-        version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
-      framer-motion:
-        specifier: ^12.0.0-alpha.1
-        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      groq:
-        specifier: ^3.18.1
-        version: 3.34.0
-      holy-loader:
-        specifier: ^2.2.10
-        version: 2.2.10(react@19.0.0-rc-02c0e824-20241028)
-      html-to-text:
-        specifier: ^9.0.5
-        version: 9.0.5
-      i:
-        specifier: ^0.3.7
-        version: 0.3.7
-      inngest:
-        specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
-      intl-segmenter-polyfill:
-        specifier: ^0.4.4
-        version: 0.4.4
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
-      json-schema:
-        specifier: ^0.4.0
-        version: 0.4.0
-      liquidjs:
-        specifier: ^10.16.3
-        version: 10.16.3
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
-      memoize-one:
-        specifier: ^6.0.0
-        version: 6.0.0
-      mjml:
-        specifier: ^4.15.3
-        version: 4.15.3(encoding@0.1.13)
-      nanoid:
-        specifier: ^5.0.2
-        version: 5.0.6
-      next:
-        specifier: 15.0.3
-        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
-      next-axiom:
-        specifier: ^1.1.1
-        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-cloudinary:
-        specifier: ^6.5.1
-        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      next-themes:
-        specifier: ^0.3
-        version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      node-html-markdown:
-        specifier: ^1.3.0
-        version: 1.3.0
-      nodemailer:
-        specifier: ^6.7.2
-        version: 6.9.11
-      nodemailer-postmark-transport:
-        specifier: ^5.2.1
-        version: 5.3.0(nodemailer@6.9.11)
-      npm:
-        specifier: ^10.2.1
-        version: 10.5.0
-      openai:
-        specifier: ^4.28.4
-        version: 4.29.1(encoding@0.1.13)
-      openai-edge:
-        specifier: ^1.2.2
-        version: 1.2.2
-      partysocket:
-        specifier: 1.0.1
-        version: 1.0.1
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      prism-react-renderer:
-        specifier: ^2.2.0
-        version: 2.3.1(react@19.0.0-rc-02c0e824-20241028)
-      query-string:
-        specifier: ^9.0.0
-        version: 9.0.0
-      react:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028
-      react-aria:
-        specifier: ^3.35.1
-        version: 3.35.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-countdown:
-        specifier: ^2.3.5
-        version: 2.3.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-dom:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.4.1(csstype@3.1.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-icons:
-        specifier: ^4.11.0
-        version: 4.12.0(react@19.0.0-rc-02c0e824-20241028)
-      react-markdown:
-        specifier: ^9.0.0
-        version: 9.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      react-resizable-panels:
-        specifier: ^2.1.5
-        version: 2.1.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-stately:
-        specifier: ^3.33.0
-        version: 3.33.0(react@19.0.0-rc-02c0e824-20241028)
-      react-use:
-        specifier: ^17.5.0
-        version: 17.5.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-wrap-balancer:
-        specifier: ^0.2.4
-        version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
-      rehype-raw:
-        specifier: ^7.0.0
-        version: 7.0.0
-      rehype-slug:
-        specifier: ^6.0.0
-        version: 6.0.0
-      resend:
-        specifier: ^3.2.0
-        version: 3.2.0
-      sanitize-html:
-        specifier: ^2.13.0
-        version: 2.13.0
-      satori:
-        specifier: ^0.10.9
-        version: 0.10.13
-      schema-dts:
-        specifier: ^1.1.2
-        version: 1.1.2(typescript@5.4.5)
-      shortid:
-        specifier: ^2.2.16
-        version: 2.2.16
-      srt-parser-2:
-        specifier: ^1.2.3
-        version: 1.2.3
-      styled-components:
-        specifier: ~5.2.3
-        version: 5.2.3(@babel/core@7.26.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react-is@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      superjson:
-        specifier: ^2.2.1
-        version: 2.2.1
-      swr:
-        specifier: ^2.2.4
-        version: 2.2.5(react@19.0.0-rc-02c0e824-20241028)
-      tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.1)
-      tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
-      tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-      uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
-      uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
-      y-codemirror.jh:
-        specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(yjs@13.6.14)
-      y-partykit:
-        specifier: ^0.0.28
-        version: 0.0.28
-      y-prosemirror:
-        specifier: ^1.2.2
-        version: 1.2.3(prosemirror-model@1.24.1)(prosemirror-state@1.4.3)(prosemirror-view@1.37.1)(y-protocols@1.0.6)(yjs@13.6.14)
-      y-protocols:
-        specifier: ^1.0.6
-        version: 1.0.6(yjs@13.6.14)
-      yjs:
-        specifier: ^13.6.10
-        version: 13.6.14
-      yup:
-        specifier: ^0.32.11
-        version: 0.32.11
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-      zod-to-json-schema:
-        specifier: ^3.22.4
-        version: 3.22.5(zod@3.22.4)
-      zustand:
-        specifier: ^4.4.7
-        version: 4.5.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-    devDependencies:
-      '@mux/mux-node':
-        specifier: ^7.3.2
-        version: 7.3.5
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.10(tailwindcss@3.4.1)
-      '@types/base-64':
-        specifier: ^1.0.1
-        version: 1.0.2
-      '@types/eslint':
-        specifier: ^8.44.2
-        version: 8.56.5
-      '@types/js-cookie':
-        specifier: ^3.0.6
-        version: 3.0.6
-      '@types/json-schema':
-        specifier: ^7.0.14
-        version: 7.0.15
-      '@types/node':
-        specifier: ^20.12.5
-        version: 20.12.5
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
-        version: /types-react@19.0.0-rc.1
-      '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
-        version: /types-react-dom@19.0.0-rc.1
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
-      '@types/styled-components':
-        specifier: ^5.1.29
-        version: 5.1.34
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.18(postcss@8.4.38)
-      concurrently:
-        specifier: ^8.2.2
-        version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.1
-      drizzle-kit:
-        specifier: 0.27.1
-        version: 0.27.1
-      encoding:
-        specifier: ^0.1.13
-        version: 0.1.13
-      eslint:
-        specifier: ^8.47.0
-        version: 8.57.0
-      eslint-config-next:
-        specifier: 15.0.2
-        version: 15.0.2(eslint@8.57.0)(typescript@5.4.5)
-      mysql2:
-        specifier: ^3.6.1
-        version: 3.9.2
-      partykit:
-        specifier: 0.0.104
-        version: 0.0.104
-      postcss:
-        specifier: ^8.4.27
-        version: 8.4.38
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
-      shiki:
-        specifier: 1.1.7
-        version: 1.1.7
-      stripe:
-        specifier: 16.9.0
-        version: 16.9.0
-      tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.1)
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.1(ts-node@10.9.2)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
-
-  apps/value-based-design:
-    dependencies:
-      '@amplitude/analytics-browser':
-        specifier: ^2.6.1
-        version: 2.6.1
-      '@anthropic-ai/sdk':
-        specifier: ^0.17.1
-        version: 0.17.2(encoding@0.1.13)
-      '@atlaskit/button':
-        specifier: ^17.7.2
-        version: 17.7.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/form':
-        specifier: ^9.1.0
-        version: 9.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/modal-dialog':
-        specifier: ^12.10.10
-        version: 12.10.10(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop':
-        specifier: ^1.1.3
-        version: 1.1.3
-      '@atlaskit/pragmatic-drag-and-drop-flourish':
-        specifier: ^1.0.4
-        version: 1.0.4(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/pragmatic-drag-and-drop-hitbox':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/pragmatic-drag-and-drop-live-region':
-        specifier: ^1.0.3
-        version: 1.0.3
-      '@atlaskit/select':
-        specifier: ^17.3.4
-        version: 17.3.4(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@atlaskit/tokens':
-        specifier: ^1.42.1
-        version: 1.42.1(react@19.0.0-rc-02c0e824-20241028)
-      '@auth/core':
-        specifier: 0.37.2
-        version: 0.37.2(nodemailer@6.9.11)
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/client-textract':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/credential-providers':
-        specifier: ^3.525.0
-        version: 3.535.0
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.441.0
-        version: 3.535.0
-      '@casl/ability':
-        specifier: ^6.5.0
-        version: 6.7.0
-      '@codemirror/lang-markdown':
-        specifier: ^6.3.1
-        version: 6.3.1
-      '@codemirror/language-data':
-        specifier: ^6.5.1
-        version: 6.5.1(@codemirror/view@6.35.3)
-      '@codemirror/search':
-        specifier: ^6.5.8
-        version: 6.5.8
-      '@codemirror/state':
-        specifier: ^6.5.0
-        version: 6.5.0
-      '@codemirror/view':
-        specifier: ^6.35.3
-        version: 6.35.3
-      '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.0
-        version: link:../../packages/adapter-drizzle
-      '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
-        version: link:../../packages/commerce-next
-      '@coursebuilder/core':
-        specifier: 1.0.0
-        version: link:../../packages/core
-      '@coursebuilder/email-templates':
-        specifier: ^1.0.4
-        version: link:../../packages/email-templates
-      '@coursebuilder/next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@coursebuilder/nodash':
-        specifier: workspace:^
-        version: link:../../packages/nodash
-      '@coursebuilder/ui':
-        specifier: ^2.0.0
-        version: link:../../packages/ui
-      '@fontsource/inter':
-        specifier: ^5.0.16
-        version: 5.0.17
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.1.1(react@19.0.0-rc-02c0e824-20241028)
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.3.4(react-hook-form@7.51.0)
-      '@internationalized/date':
-        specifier: 3.5.6
-        version: 3.5.6
-      '@lezer/highlight':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@mdx-js/loader':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)(webpack@5.97.1)
-      '@mdx-js/mdx':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.0)
-      '@mdx-js/react':
-        specifier: ^3.1.0
-        version: 3.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@msgpack/msgpack':
-        specifier: 3.0.0-beta2
-        version: 3.0.0-beta2
-      '@mux/mux-player-react':
-        specifier: ^2.6.0
-        version: 2.6.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@next/mdx':
-        specifier: 15.0.3
-        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
-      '@pinecone-database/pinecone':
-        specifier: ^2.1.0
-        version: 2.1.0
-      '@planetscale/database':
-        specifier: 1.19.0
-        version: 1.19.0
-      '@radix-ui/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
-      '@radix-ui/react-alert-dialog':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-collapsible':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dialog':
-        specifier: 1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.2
-        version: 2.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-hover-card':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-icons':
-        specifier: ^1.3.1
-        version: 1.3.1(react@19.0.0-rc-02c0e824-20241028)
-      '@radix-ui/react-label':
-        specifier: ^2.1.0
-        version: 2.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-popover':
-        specifier: ^1.1.2
-        version: 1.1.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-progress':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-separator':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slider':
-        specifier: ^1.2.1
-        version: 1.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-slot':
-        specifier: ^1.1.0
-        version: 1.1.0(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-switch':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tabs':
-        specifier: ^1.1.1
-        version: 1.1.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toast':
-        specifier: ^1.2.2
-        version: 1.2.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-toggle-group':
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@radix-ui/react-tooltip':
-        specifier: ^1.1.3
-        version: 1.1.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
-      '@react-email/components':
-        specifier: 0.0.27
-        version: 0.0.27(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown':
-        specifier: ^0.0.11
-        version: 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/render':
-        specifier: 1.0.2
-        version: 1.0.2(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@sanity/icons':
-        specifier: ^2.6.0
-        version: 2.11.2(react@19.0.0-rc-02c0e824-20241028)
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
-      '@skillrecordings/analytics':
-        specifier: ^1.0.1
-        version: 1.0.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      '@skillrecordings/config':
-        specifier: ^0.0.3
-        version: 0.0.3
-      '@t3-oss/env-nextjs':
-        specifier: ^0.7.1
-        version: 0.7.3(typescript@5.4.5)(zod@3.22.4)
-      '@tanstack/react-query':
-        specifier: 5.54.1
-        version: 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-query-devtools':
-        specifier: 5.54.1
-        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0-rc-02c0e824-20241028)
-      '@tanstack/react-table':
-        specifier: ^8.17.3
-        version: 8.17.3(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.366(@trpc/server@11.0.0-rc.366)
-      '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/react-query@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.366
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
-      '@types/shortid':
-        specifier: ^0.0.31
-        version: 0.0.31
-      '@types/uuid':
-        specifier: 9.0.8
-        version: 9.0.8
-      '@uiw/codemirror-themes':
-        specifier: ^4.21.24
-        version: 4.21.24(@codemirror/language@6.10.7)(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)
-      '@uploadthing/react':
-        specifier: 6.7.2
-        version: 6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13)
-      '@upstash/ratelimit':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@upstash/redis':
-        specifier: ^1.28.4
-        version: 1.28.4
-      ai:
-        specifier: 3.0.19
-        version: 3.0.19(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13)(zod@3.22.4)
-      axios:
-        specifier: ^1.5.1
-        version: 1.6.8
-      base-64:
-        specifier: ^1.0.0
-        version: 1.0.0
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      cloudinary:
-        specifier: ^1.41.0
-        version: 1.41.3
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.0
-      cmdk:
-        specifier: ^0.2.0
-        version: 0.2.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      codemirror:
-        specifier: ^6.0.1
-        version: 6.0.1(@lezer/common@1.2.3)
-      crypto:
-        specifier: ^1.0.1
-        version: 1.0.1
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      drizzle-orm:
-        specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      formik:
-        specifier: 2.2.9
-        version: 2.2.9(react@19.0.0-rc-02c0e824-20241028)
-      framer-motion:
-        specifier: ^12.0.0-alpha.1
-        version: 12.0.0-alpha.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      geist:
-        specifier: ^1.3.0
-        version: 1.3.0(next@15.0.3)
-      groq:
-        specifier: ^3.18.1
-        version: 3.34.0
-      i:
-        specifier: ^0.3.7
-        version: 0.3.7
-      inngest:
-        specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.0.3)(typescript@5.4.5)
-      intl-segmenter-polyfill:
-        specifier: ^0.4.4
-        version: 0.4.4
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
-      json-schema:
-        specifier: ^0.4.0
-        version: 0.4.0
-      liquidjs:
-        specifier: ^10.16.3
-        version: 10.16.3
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@19.0.0-rc-02c0e824-20241028)
-      memoize-one:
-        specifier: ^6.0.0
-        version: 6.0.0
-      mjml:
-        specifier: ^4.15.3
-        version: 4.15.3(encoding@0.1.13)
-      nanoid:
-        specifier: ^5.0.2
-        version: 5.0.6
-      next:
-        specifier: 15.0.3
-        version: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.3)(nodemailer@6.9.11)(react@19.0.0-rc-02c0e824-20241028)
-      next-axiom:
-        specifier: ^1.1.1
-        version: 1.1.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-cloudinary:
-        specifier: ^6.5.1
-        version: 6.5.1(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)
-      next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(acorn@8.14.0)(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      next-themes:
-        specifier: ^0.3
-        version: 0.3.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      nodemailer:
-        specifier: ^6.7.2
-        version: 6.9.11
-      nodemailer-postmark-transport:
-        specifier: ^5.2.1
-        version: 5.3.0(nodemailer@6.9.11)
-      npm:
-        specifier: ^10.2.1
-        version: 10.5.0
-      openai:
-        specifier: ^4.28.4
-        version: 4.29.1(encoding@0.1.13)
-      openai-edge:
-        specifier: ^1.2.2
-        version: 1.2.2
-      partysocket:
-        specifier: 1.0.1
-        version: 1.0.1
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      prism-react-renderer:
-        specifier: ^2.2.0
-        version: 2.3.1(react@19.0.0-rc-02c0e824-20241028)
-      query-string:
-        specifier: ^9.0.0
-        version: 9.0.0
-      react:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028
-      react-aria:
-        specifier: ^3.35.1
-        version: 3.35.1(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-countdown:
-        specifier: ^2.3.5
-        version: 2.3.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-dom:
-        specifier: 19.0.0-rc-02c0e824-20241028
-        version: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.51.0(react@19.0.0-rc-02c0e824-20241028)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.4.1(csstype@3.1.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-icons:
-        specifier: ^4.11.0
-        version: 4.12.0(react@19.0.0-rc-02c0e824-20241028)
-      react-markdown:
-        specifier: ^9.0.0
-        version: 9.0.1(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-      react-resizable-panels:
-        specifier: ^2.1.5
-        version: 2.1.5(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-stately:
-        specifier: ^3.33.0
-        version: 3.33.0(react@19.0.0-rc-02c0e824-20241028)
-      react-use:
-        specifier: ^17.5.0
-        version: 17.5.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react-wrap-balancer:
-        specifier: ^0.2.4
-        version: 0.2.4(react@19.0.0-rc-02c0e824-20241028)
-      resend:
-        specifier: ^3.2.0
-        version: 3.2.0
-      satori:
-        specifier: ^0.10.9
-        version: 0.10.13
-      schema-dts:
-        specifier: ^1.1.2
-        version: 1.1.2(typescript@5.4.5)
-      serverless-mysql:
-        specifier: ^1.5.5
-        version: 1.5.5
-      shortid:
-        specifier: ^2.2.16
-        version: 2.2.16
-      srt-parser-2:
-        specifier: ^1.2.3
-        version: 1.2.3
-      styled-components:
-        specifier: ~5.2.3
-        version: 5.2.3(@babel/core@7.26.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react-is@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      superjson:
-        specifier: ^2.2.1
-        version: 2.2.1
-      swr:
-        specifier: ^2.2.4
-        version: 2.2.5(react@19.0.0-rc-02c0e824-20241028)
-      tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.1)
-      tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
-      tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-      uploadthing:
-        specifier: 6.13.2
-        version: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
-      uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
-      y-codemirror.jh:
-        specifier: 0.3.2-joel-fork
-        version: 0.3.2-joel-fork(@codemirror/state@6.5.0)(@codemirror/view@6.35.3)(yjs@13.6.14)
-      y-partykit:
-        specifier: ^0.0.28
-        version: 0.0.28
-      y-prosemirror:
-        specifier: ^1.2.2
-        version: 1.2.3(prosemirror-model@1.24.1)(prosemirror-state@1.4.3)(prosemirror-view@1.37.1)(y-protocols@1.0.6)(yjs@13.6.14)
-      y-protocols:
-        specifier: ^1.0.6
-        version: 1.0.6(yjs@13.6.14)
-      yjs:
-        specifier: ^13.6.10
-        version: 13.6.14
-      yup:
-        specifier: ^0.32.11
-        version: 0.32.11
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-      zod-to-json-schema:
-        specifier: ^3.22.4
-        version: 3.22.5(zod@3.22.4)
-      zustand:
-        specifier: ^4.4.7
-        version: 4.5.2(react@19.0.0-rc-02c0e824-20241028)(types-react@19.0.0-rc.1)
-    devDependencies:
-      '@mux/mux-node':
-        specifier: ^7.3.2
-        version: 7.3.5
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.10(tailwindcss@3.4.1)
-      '@types/base-64':
-        specifier: ^1.0.1
-        version: 1.0.2
-      '@types/eslint':
-        specifier: ^8.44.2
-        version: 8.56.5
-      '@types/js-cookie':
-        specifier: ^3.0.6
-        version: 3.0.6
-      '@types/json-schema':
-        specifier: ^7.0.14
-        version: 7.0.15
-      '@types/mjml':
-        specifier: ^4.7.4
-        version: 4.7.4
-      '@types/node':
-        specifier: ^20.12.5
-        version: 20.12.5
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
-        version: /types-react@19.0.0-rc.1
-      '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
-        version: /types-react-dom@19.0.0-rc.1
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
-      '@types/styled-components':
-        specifier: ^5.1.29
-        version: 5.1.34
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.18(postcss@8.4.38)
-      concurrently:
-        specifier: ^8.2.2
-        version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.1
-      drizzle-kit:
-        specifier: 0.27.1
-        version: 0.27.1
-      encoding:
-        specifier: ^0.1.13
-        version: 0.1.13
-      eslint:
-        specifier: ^8.47.0
-        version: 8.57.0
-      eslint-config-next:
-        specifier: 15.0.2
-        version: 15.0.2(eslint@8.57.0)(typescript@5.4.5)
-      mysql2:
-        specifier: ^3.6.1
-        version: 3.9.2
-      partykit:
-        specifier: 0.0.104
-        version: 0.0.104
-      postcss:
-        specifier: ^8.4.27
-        version: 8.4.38
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
-      shiki:
-        specifier: 1.1.7
-        version: 1.1.7
-      stripe:
-        specifier: 16.9.0
-        version: 16.9.0
-      tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.1)
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.1(ts-node@10.9.2)
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -9127,10 +6440,6 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: false
 
-  /@boiseitguru/cookie-cutter@0.2.3:
-    resolution: {integrity: sha512-5Qc77XxPKZ3nQi+UZux31YdPZjNirrYYDTUUhmmHvvE8LqTgmwtXOdrOFCNhp4u+2O6uKFHg1s/B/AqiBQCDTA==}
-    dev: false
-
   /@casl/ability@6.7.0:
     resolution: {integrity: sha512-NC51ha1nnfCMy88Gdk7cTBipv6n3QNo1yZA68EklsUIzWVDhTs9jJ5y70c3LpT6sN1GcUnGBP/cF7M2I4TkQ3w==}
     dependencies:
@@ -9859,13 +7168,14 @@ packages:
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
     dev: true
 
-  /@effect/schema@0.68.12(effect@3.4.5):
-    resolution: {integrity: sha512-UWJsFXzeYTBQYnftwI1KR2uaxIZ8fk+kffDS7BnJwnGjPPgODq3/AzeoBDSu1MAlnwBKOz+QRdMuSMxrT/pHig==}
+  /@effect/platform@0.70.7(effect@3.11.5):
+    resolution: {integrity: sha512-TbNwj/mOJhycPygbmicGBS7CNtv5Z8WVheRbLUdP3oPAe/nbSOJVLc8ZPvOejhquF/1vJMKuqY5MWfkcBpvi/g==}
     peerDependencies:
-      effect: ^3.4.5
+      effect: ^3.11.5
     dependencies:
-      effect: 3.4.5
-      fast-check: 3.20.0
+      effect: 3.11.5
+      find-my-way-ts: 0.1.5
+      multipasta: 0.2.5
     dev: false
 
   /@emmetio/abbreviation@2.3.3:
@@ -17768,6 +15078,7 @@ packages:
 
   /@shikijs/core@1.1.7:
     resolution: {integrity: sha512-gTYLUIuD1UbZp/11qozD3fWpUTuMqPSf3svDMMrL0UmlGU7D9dPw/V1FonwAorCUJBltaaESxq90jrSjQyGixg==}
+    dev: true
 
   /@shikijs/core@1.22.2:
     resolution: {integrity: sha512-bvIQcd8BEeR1yFvOYv6HDiyta2FFVePbzeowf5pPS1avczrPK+cjmaxxh0nx5QzbON7+Sv0sQfQVciO7bN72sg==}
@@ -18405,6 +15716,10 @@ packages:
 
   /@socket.io/component-emitter@3.1.0:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
+    dev: false
+
+  /@standard-schema/spec@1.0.0-beta.3:
+    resolution: {integrity: sha512-0ifF3BjA1E8SY9C+nUew8RefNOIq0cDlYALPty4rhUm8Rrl6tCM8hBT4bhGhx7I7iXD0uAgt50lgo8dD73ACMw==}
     dev: false
 
   /@swc/core-darwin-arm64@1.10.1:
@@ -19166,30 +16481,6 @@ packages:
     dependencies:
       '@trpc/server': 11.0.0-rc.351
 
-  /@trpc/client@11.0.0-rc.366(@trpc/server@11.0.0-rc.366):
-    resolution: {integrity: sha512-bIbcF/UhCifU5i9hbbaMlmOS2NgnRq5W0pJH2SJhrp6jyIIaCF+uNAIZtkfO0GriBb0agBmGIXqvGLFEexiTKA==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.366+237dbb3f9
-    dependencies:
-      '@trpc/server': 11.0.0-rc.366
-    dev: false
-
-  /@trpc/client@11.0.0-rc.377(@trpc/server@11.0.0-rc.377):
-    resolution: {integrity: sha512-76l9naqQXtVDnkyDs12DrXhzD3fw1SMe7Fzcnc9mxYQlJpbQebGdXnN0sLn7IFodXp2hhfsTj5Azk6tIKBrqOw==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.377+4a672ddd6
-    dependencies:
-      '@trpc/server': 11.0.0-rc.377
-    dev: false
-
-  /@trpc/client@11.0.0-rc.390(@trpc/server@11.0.0-rc.390):
-    resolution: {integrity: sha512-IT/hEekDy+ZXLFv+3NeeqcT2ka80SDyn/Yit2G7bp0xNJPjzB3l2qJvNppc3j2DrJgXWoa4lWuhVmJQA93Yf6w==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.390+d846f1796
-    dependencies:
-      '@trpc/server': 11.0.0-rc.390
-    dev: false
-
   /@trpc/client@11.0.0-rc.477(@trpc/server@11.0.0-rc.477):
     resolution: {integrity: sha512-Ah/Er3vxTm2bIEUcIrike7Z/8Yc+DkFveU2ZHQQ0+zY7yxs931438+4OEJuY/Xl/0p5OTDeZTm6HBuZ1REFiyA==}
     peerDependencies:
@@ -19253,81 +16544,6 @@ packages:
       next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-
-  /@trpc/next@11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/react-query@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-RDWC87Y6pTDHZHSEvDYrBYA0x/+jXqc/qRDVAMSMsFUo+X+I74aNcsFNR9YBnMd5aENvD+To2KwnctYUsZ9R4w==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.366+237dbb3f9
-      '@trpc/react-query': 11.0.0-rc.366+237dbb3f9
-      '@trpc/server': 11.0.0-rc.366+237dbb3f9
-      next: '*'
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    peerDependenciesMeta:
-      '@tanstack/react-query':
-        optional: true
-      '@trpc/react-query':
-        optional: true
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client': 11.0.0-rc.366(@trpc/server@11.0.0-rc.366)
-      '@trpc/react-query': 11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server': 11.0.0-rc.366
-      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
-
-  /@trpc/next@11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/react-query@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-jd99QwnUi9/KKUO9MlS7yv00D9dNzuDE8mTjwMWMqZxAMkLkYPlL/2rDHLP9UrAwV/XeiUS3uP0FSXB69u+vNg==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.377+4a672ddd6
-      '@trpc/react-query': 11.0.0-rc.377+4a672ddd6
-      '@trpc/server': 11.0.0-rc.377+4a672ddd6
-      next: '*'
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    peerDependenciesMeta:
-      '@tanstack/react-query':
-        optional: true
-      '@trpc/react-query':
-        optional: true
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client': 11.0.0-rc.377(@trpc/server@11.0.0-rc.377)
-      '@trpc/react-query': 11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server': 11.0.0-rc.377
-      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
-
-  /@trpc/next@11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/react-query@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-8Evkb9LP1BgbP1wwxop4ZUgb51C923GqjAygMzNnWsKpIJ3kQWvbCYN8lxoO9nBe+X+YnjGZ7nEnA+r+q85hUQ==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.390+d846f1796
-      '@trpc/react-query': 11.0.0-rc.390+d846f1796
-      '@trpc/server': 11.0.0-rc.390+d846f1796
-      next: '*'
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    peerDependenciesMeta:
-      '@tanstack/react-query':
-        optional: true
-      '@trpc/react-query':
-        optional: true
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client': 11.0.0-rc.390(@trpc/server@11.0.0-rc.390)
-      '@trpc/react-query': 11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/server': 11.0.0-rc.390
-      next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
 
   /@trpc/next@11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.0.3)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-cijR4i0nvt9izzZkGoKtHj8CfIquuH1I/QN3c1/9eNi9VZvB6KPlCYuxpgctZBPTlzbpgagh0SmKC634tXnl/Q==}
@@ -19419,54 +16635,6 @@ packages:
       react: 19.0.0-rc-02c0e824-20241028
       react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
 
-  /@trpc/react-query@11.0.0-rc.366(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.366)(@trpc/server@11.0.0-rc.366)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-LCdJFymEdaKBBNRQPVAcEw9qNu3m+n9hH3qIPKDanLWYlo4h+8lQnj8JIhYpClD2G3gkvD0ZSZ+F54QvwrI3nA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.366+237dbb3f9
-      '@trpc/server': 11.0.0-rc.366+237dbb3f9
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client': 11.0.0-rc.366(@trpc/server@11.0.0-rc.366)
-      '@trpc/server': 11.0.0-rc.366
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.377(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.377)(@trpc/server@11.0.0-rc.377)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-ze8a4rSySRwx+3qP2L6Qrx5DsSwRTpDTL3jzHTcnVGEhGjKWc7/i9qGcoWmyxR/aSiPI6rG0LG+Kn73A437udA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.377+4a672ddd6
-      '@trpc/server': 11.0.0-rc.377+4a672ddd6
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client': 11.0.0-rc.377(@trpc/server@11.0.0-rc.377)
-      '@trpc/server': 11.0.0-rc.377
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.390(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.390)(@trpc/server@11.0.0-rc.390)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-SVty+Kx3C7CL357Q7QmI+8X/Elj4B3qtUOpP+NBpanoKpIbS9FbZHqm73rPYE0MrM+jukT8s3hLmwYnn16xQrA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.390+d846f1796
-      '@trpc/server': 11.0.0-rc.390+d846f1796
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0-rc-02c0e824-20241028)
-      '@trpc/client': 11.0.0-rc.390(@trpc/server@11.0.0-rc.390)
-      '@trpc/server': 11.0.0-rc.390
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
-
   /@trpc/react-query@11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
     resolution: {integrity: sha512-1ZCAm0wv7yLmb3muq+5DTRxdKXzI1KjTrcM2+QRKCFu6EherGM8x6zGI36P9ZmC6o+SCoedzxqazDNe+kkqVqA==}
     peerDependencies:
@@ -19550,18 +16718,6 @@ packages:
   /@trpc/server@11.0.0-rc.351:
     resolution: {integrity: sha512-Y1Iw9iiF9LCJ2ldS/af+2RXzIbgWvQ4DHVVgHYOGB+uINpAugsUmogoEkZ6rYOgusNz6qkRzY8JKOSR7FQ1aUg==}
 
-  /@trpc/server@11.0.0-rc.366:
-    resolution: {integrity: sha512-Pr7SdpIVrOGtIGt9vs7i3v0hqzlpXbi8/8RV7XfrXVJ5hlzKYOz5VE0AjckhHXuhrUlpTGTDm0/2nz0ywLcQ2g==}
-    dev: false
-
-  /@trpc/server@11.0.0-rc.377:
-    resolution: {integrity: sha512-Fzgvf6N03mZRA9F2uR8S20a36ferWD28uJ4OSP1Es+iEGGnvxmoLm31ECIDJcp7qffR/zEA1CLiKgylLaR4z8w==}
-    dev: false
-
-  /@trpc/server@11.0.0-rc.390:
-    resolution: {integrity: sha512-jDAG1atsGt9Uf6dv1x+JbAumCpHVHOmbezyogn8k68lgY9IlWHqvFSQXzF9Le9MH9sl7fh2sZ9u+LDO5oyraRw==}
-    dev: false
-
   /@trpc/server@11.0.0-rc.477:
     resolution: {integrity: sha512-K6zmjRv96fWilqm/ETehEK1DWsy5bSyrs2xbsNzCbjguMgamMhOClRHgYzJcwgLp2kasJ7QgD9YbahOhV1/u1w==}
     dev: false
@@ -19596,253 +16752,6 @@ packages:
 
   /@tsconfig/recommended@1.0.6:
     resolution: {integrity: sha512-0IKu9GHYF1NGTJiYgfWwqnOQSlnE9V9R7YohHNNf0/fj/SyOZWzdd06JFr0fLpg1Mqw0kGbYg8w5xdkSqLKM9g==}
-    dev: false
-
-  /@tsparticles/basic@3.4.0:
-    resolution: {integrity: sha512-a0HxG0GOhXof7NDqcqdyu9XpmCAQ0M402YECz/jsH4CkBpz3ut0BrgnyjT6Xcqna3pR1Kv1m516/sV2fwNnnQw==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-      '@tsparticles/move-base': 3.4.0
-      '@tsparticles/shape-circle': 3.4.0
-      '@tsparticles/updater-color': 3.4.0
-      '@tsparticles/updater-opacity': 3.4.0
-      '@tsparticles/updater-out-modes': 3.4.0
-      '@tsparticles/updater-size': 3.4.0
-    dev: false
-
-  /@tsparticles/engine@3.4.0:
-    resolution: {integrity: sha512-OqoMZYJCoiihNnexnnSmInEMNXr0Z8CmE1HSiFVeifgK1qUlonTFe2G09KdvNT8ZdvmIC513yTpFJNDbnMZYRQ==}
-    requiresBuild: true
-    dev: false
-
-  /@tsparticles/interaction-external-attract@3.4.0:
-    resolution: {integrity: sha512-6enSRkoXyK0JvW8bJuj2xAUuu9VzDiFvRCPaL+5dcLcDpjheh8nWpGzrgo8p9VxLL5VRYv7PxnYPMviBMQ7WzA==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-bounce@3.4.0:
-    resolution: {integrity: sha512-yiTJD8t+Uzpo9lyhHlaC+azu49dJtrFVhbVZdDaiTNm1L1stFQBrc+9NY63BfQDEkDmSz4uWvQXQMru2KY+40g==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-bubble@3.4.0:
-    resolution: {integrity: sha512-CQ1nC6Or8qAAkH7A2x3FkP473caM7UWQiiN4zR4JtSZu06+2Y0V09LXguQKx1RWDehgRvkylQ4Dgur4a5qNb8w==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-connect@3.4.0:
-    resolution: {integrity: sha512-UBzs0iV7wLbrL2VIuCT25asUjjXGCiVC/kCM5NtG7+gd6wDB8DbjZPjHviI7AnEnJdBPeZ2eeYIVuLiO1Xpd3A==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-grab@3.4.0:
-    resolution: {integrity: sha512-BsnwN1x+nYUCD7iSu/wLX//awAka1Vf5gnynBqgmz0odAlN3Wv2i9iR/JkzDQynmGLJPHffYgkXC8LWXgZZznQ==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-pause@3.4.0:
-    resolution: {integrity: sha512-B6xvHLLktN9BHPcIbAxc7F68aDOnieKAxPwqSuvRtQrEP0Q3xcvTkw1TBwzehr9mZH+0SVGzPfH8BMWI4EP1Xg==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-push@3.4.0:
-    resolution: {integrity: sha512-SriLK1X45CaLwzxjtDo5nCGtF8lwPwK5zYO6+UU+9djUzbh/dBlXQr63ovm/jYPE+yGPRxAhJLdiHpss6aaavQ==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-remove@3.4.0:
-    resolution: {integrity: sha512-9W4v8s3J+4l9AXpAvvAMbdG0G6y0HHA+/ZmP/9CtVc1fqVDDrMHL0ojXuVlGMxVjKgwuO28x8+jOAuM7PHiSsQ==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-repulse@3.4.0:
-    resolution: {integrity: sha512-5tM8uLGsKMUhZ2+Acy8XHrw1MN+apqNBhfVYoZ5UdH2soX1xAicSCrEpSObiS1xjCmkpRlkfls3Ygo4FHz3eSg==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-external-slow@3.4.0:
-    resolution: {integrity: sha512-bBlKG3VS8g64+HiDlu9RbWt/3bIepEu25w8G2zTB+GQMBqDpKsMioWWKNT66w/661U1BlvUZWHaJE/OdMCZTZw==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-particles-attract@3.4.0:
-    resolution: {integrity: sha512-Ye6f37AZYaMExjsZSoOEMsTSFIPs3ZZCxiQmiCeH+gNK8yGXJDLkWwZUN0S7S4GJDf24Nt4S+gunKJxO8C3qGQ==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-particles-collisions@3.4.0:
-    resolution: {integrity: sha512-JmDyXlGS6vSrUxvgMf/t6hsnsAS4YRc9rZM3CcmfyUM9UG9/+vef/cekNDSVRzszk5KcFF70w2FLJ6EhYs0ecA==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/interaction-particles-links@3.4.0:
-    resolution: {integrity: sha512-2UhzNsZCSF69L0PGwlJARNx3qrMdSrl5p/TgO5Q5w7iwBU1x/W27O+TDQvNdMHsOLPPUomUI+jJfRXY2snqp3Q==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/move-base@3.4.0:
-    resolution: {integrity: sha512-4P9CzgVN7INogAvqkg/cEA+6WKeGUAtsgljJ2rUADgNBiScW1oJZAw/004AZiOlonLRiUZujUCNS4zlAg62ZvQ==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/move-parallax@3.4.0:
-    resolution: {integrity: sha512-5GdTxro5y3+GFNabaHPFuJl2zOpiyDZJ0D96QAY/sRnI5NNASj7n9QgUeViPdAsOOIgrHgIMl43MqJSUbuK4tw==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/plugin-easing-quad@3.4.0:
-    resolution: {integrity: sha512-JgZDeoES8ONrt+pKdDRrUkTKJRfjgRpTlLgr2KqqadI+lSOQIw/QJuXfCu25/47wJLcPUxP1melclp6X/IhNog==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/preset-stars@3.1.0:
-    resolution: {integrity: sha512-fRXJ9fIUhLPFs23SbeRh+gaSRM5K8yNkh9YArbHHZG0HINVbNQa4U8yyMTHILGME5g9Pi2MlF9VeucjhPqm/Gg==}
-    dependencies:
-      '@tsparticles/basic': 3.4.0
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/react@3.0.0(@tsparticles/engine@3.4.0)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-hjGEtTT1cwv6BcjL+GcVgH++KYs52bIuQGW3PWv7z3tMa8g0bd6RI/vWSLj7p//NZ3uTjEIeilYIUPBh7Jfq/Q==}
-    peerDependencies:
-      '@tsparticles/engine': ^3.0.2
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
-    dev: false
-
-  /@tsparticles/shape-circle@3.4.0:
-    resolution: {integrity: sha512-X1ynt8h7bO+xep12Vkxeo2fImbKzLMEZr0qY3vKZzhHcy0/lxoo505pwyVL2+V98eZNOu9fmQM7vlIt/0FGTcg==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/shape-emoji@3.4.0:
-    resolution: {integrity: sha512-fzuRdwzikhiE7bgagNJVFccvipy7+bcG6PGvfGmJO3FQIwYSTRV2mJVsI/uPQkBUGJyzJPncp7FzEix/D3PDCA==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/shape-image@3.4.0:
-    resolution: {integrity: sha512-US7MYYFP0iMqWs9JiPNmqFSIxmsqkTF6gW6VvDDGtBEUxw3wubSEln3Gc3PQBpa/Tq0jwkUfd1/zkyahOrycUw==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/shape-line@3.4.0:
-    resolution: {integrity: sha512-pXItuUBtIatcQQLp+CS1HZjHtpGVqswFxDaFZv0b9Ulx+7I48i4T5r6LCF2ngo+3xcT+rDdAF/Ca/oCunztBBA==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/shape-polygon@3.4.0:
-    resolution: {integrity: sha512-qA7nXwWufVZLyS1CT9cFNqcjgLRQQnILc3w1gkH7B80uGYg4bLgQcOZiI7OwifOFkgyI6Mvb0XRntl+NQaDDRA==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/shape-square@3.4.0:
-    resolution: {integrity: sha512-pUXAbSnW5aTMFFjAP3GHMxqbah3ADibuQcEmIgts5tNUKY8Bl0Syx5pllpe81z2AMJCsQncC15/M19DU/H+YXw==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/shape-star@3.4.0:
-    resolution: {integrity: sha512-Gy4FLvVh0qBTVAZbBeV3MfsofYXycxO60/5HqNePsG3+sO/o5DKGZqf/Fw1Cacrb1QYg5A59P/122MZTMnLqEA==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/slim@3.4.0:
-    resolution: {integrity: sha512-ukQqSdTzBlZHnD6MwRCdJBWbfgWSRNa4BG+H8IVAU5ggdQ7AbnDsdMG/o49cvstguGsKSbjmHYFNkDYGeKasuw==}
-    dependencies:
-      '@tsparticles/basic': 3.4.0
-      '@tsparticles/engine': 3.4.0
-      '@tsparticles/interaction-external-attract': 3.4.0
-      '@tsparticles/interaction-external-bounce': 3.4.0
-      '@tsparticles/interaction-external-bubble': 3.4.0
-      '@tsparticles/interaction-external-connect': 3.4.0
-      '@tsparticles/interaction-external-grab': 3.4.0
-      '@tsparticles/interaction-external-pause': 3.4.0
-      '@tsparticles/interaction-external-push': 3.4.0
-      '@tsparticles/interaction-external-remove': 3.4.0
-      '@tsparticles/interaction-external-repulse': 3.4.0
-      '@tsparticles/interaction-external-slow': 3.4.0
-      '@tsparticles/interaction-particles-attract': 3.4.0
-      '@tsparticles/interaction-particles-collisions': 3.4.0
-      '@tsparticles/interaction-particles-links': 3.4.0
-      '@tsparticles/move-parallax': 3.4.0
-      '@tsparticles/plugin-easing-quad': 3.4.0
-      '@tsparticles/shape-emoji': 3.4.0
-      '@tsparticles/shape-image': 3.4.0
-      '@tsparticles/shape-line': 3.4.0
-      '@tsparticles/shape-polygon': 3.4.0
-      '@tsparticles/shape-square': 3.4.0
-      '@tsparticles/shape-star': 3.4.0
-      '@tsparticles/updater-life': 3.4.0
-      '@tsparticles/updater-rotate': 3.4.0
-      '@tsparticles/updater-stroke-color': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-color@3.4.0:
-    resolution: {integrity: sha512-joT5O/78p7n3jBq1aiFEp4wMevv8WtfjBJnODwEUO7aiHRozs9tA05djVLYZ7kjH0bLymJoPwxM46SEGSTsh+g==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-life@3.4.0:
-    resolution: {integrity: sha512-bFx/3TTNNnWVmHkrfwXVlLc7R8QfbeX+KQ6dy09n+i2Vs3HnQUF7/VITjt0erNzyHfnqh+q+80gCn6X4brvwEQ==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-opacity@3.4.0:
-    resolution: {integrity: sha512-OCWbebZykDh8ZbTiTQX+pBRXHfTMMJpNXbFps4lTSHXHMDsbEMl5a3/TEFeUk3rd0wkiRSCjPUSGKupoU5B14w==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-out-modes@3.4.0:
-    resolution: {integrity: sha512-i80MSXpnfivKlfA0FbAxk2CfZGNG3rPNtx5Pz/ZCDQ71j1YFjztdwfugp9oueu/sLfOSw4hIKfyR062zpgZp6Q==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-rotate@3.4.0:
-    resolution: {integrity: sha512-BKmzN8YLSUPe6OngmhmjPCBJ2RpBi88nfoNJekZnVJpbRses1pV632EaOIAEVT1xsUrwVhvsXYa9Sv5iZxfIRg==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-size@3.4.0:
-    resolution: {integrity: sha512-3z7INo2E7HR+ps8V490mOiLcCaFmUJFgObXBO3lF6uZ1xe6SfvVsX2r1HpQLwIpq7Ph2ZqQ4tj8tBPyKtada7g==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
-    dev: false
-
-  /@tsparticles/updater-stroke-color@3.4.0:
-    resolution: {integrity: sha512-5pe/777vPZgzlNBkh8GQ3fjT6273wcwlBeq4UkDA/q6bI867d8W+Fi8yUsqfdiS6B5tKSvVsI8rFrfwjEvW0pg==}
-    dependencies:
-      '@tsparticles/engine': 3.4.0
     dev: false
 
   /@types/acorn@4.0.6:
@@ -20062,6 +16971,7 @@ packages:
 
   /@types/js-cookie@3.0.6:
     resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
+    dev: true
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -20794,63 +17704,33 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  /@uploadthing/dropzone@0.4.1(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13):
-    resolution: {integrity: sha512-RHSpo/2kg/mrRSYQA4EKlyvkOCYWOeE2+QQYW9YiUvWCuawnTfD7DQvk8RN/nYXi1Sw7/v0NegmQpiVELVGtnA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      solid-js: ^1.7.11
-      svelte: ^4.2.12
-      vue: ^3.4.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      solid-js:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
-    dependencies:
-      file-selector: 0.6.0
-      react: 19.0.0-rc-02c0e824-20241028
-      solid-js: 1.9.3
-      svelte: 4.2.19
-      vue: 3.5.13(typescript@5.4.5)
+  /@uploadthing/mime-types@0.3.4:
+    resolution: {integrity: sha512-EB0o0a4y++UJFMLqS8LDVhSQgXUllG6t5fwl5cbmOM0Uay8YY5Nc/JjFwzJ8wccdIKz4oYwQW7EOSfUyaMPbfw==}
     dev: false
 
-  /@uploadthing/mime-types@0.2.10:
-    resolution: {integrity: sha512-kz3F0oEgAyts25NAGXlUBCWh3mXonbSOQJFGFMawHuIgbUbnzXbe4w5WI+0XdneCbjNmikfWrdWrs8m/7HATfQ==}
-    dev: false
-
-  /@uploadthing/react@6.7.2(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.2)(vue@3.5.13):
-    resolution: {integrity: sha512-9Mdslj1S24qbISA/LE3In5OFQ/U7OxdMbBlTPkJxKPkh+UW7BqZS0XuRTfkZYPkdBGDoXw5aH7VG3D/vGgpmxg==}
+  /@uploadthing/react@7.1.5(next@15.0.3)(react@19.0.0-rc-02c0e824-20241028)(uploadthing@7.4.4):
+    resolution: {integrity: sha512-D0lP4YnUWw5LFHrLuL+sq26wlul9dGE70G+oOQ+qkM1ZqSeKSGvIdAIOAQUBj2qQi4Re7o0VpF3+3qBF3svN6A==}
     peerDependencies:
       next: '*'
-      react: ^17.0.2 || ^18.0.0
-      uploadthing: 6.13.2
+      react: ^17.0.2 || ^18.0.0 || ^19.0.0
+      uploadthing: ^7.2.0
     peerDependenciesMeta:
       next:
         optional: true
     dependencies:
-      '@uploadthing/dropzone': 0.4.1(react@19.0.0-rc-02c0e824-20241028)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13)
-      '@uploadthing/shared': 6.7.8
+      '@uploadthing/shared': 7.1.5
       file-selector: 0.6.0
       next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
       react: 19.0.0-rc-02c0e824-20241028
-      tailwind-merge: 2.4.0
-      uploadthing: 6.13.2(next@15.0.3)(tailwindcss@3.4.1)
-    transitivePeerDependencies:
-      - solid-js
-      - svelte
-      - vue
+      uploadthing: 7.4.4(next@15.0.3)(tailwindcss@3.4.1)
     dev: false
 
-  /@uploadthing/shared@6.7.8:
-    resolution: {integrity: sha512-dLNa9GpdeiCHc/Nd0+BfaJ3wXvWIztBAaWIsNNPoaKiU3qhHoQd+5jDVx4oYKYVANqnv9s2CJW7di8Th5xy7Cw==}
+  /@uploadthing/shared@7.1.5:
+    resolution: {integrity: sha512-5ePSiR2CPA5a8gfPqsHpE/uPwGG9iPqhxcFpeLGnEuExPqIi5ZY7upZgpc+6T1gMxwfbP0O5X4043TTNk3q/pA==}
     dependencies:
-      '@uploadthing/mime-types': 0.2.10
-      effect: 3.4.5
-      std-env: 3.7.0
+      '@uploadthing/mime-types': 0.3.4
+      effect: 3.11.5
+      sqids: 0.3.0
     dev: false
 
   /@upstash/core-analytics@0.0.7:
@@ -22066,22 +18946,6 @@ packages:
       normalize-range: 0.1.2
       picocolors: 1.1.1
       postcss: 8.4.35
-      postcss-value-parser: 4.2.0
-    dev: true
-
-  /autoprefixer@10.4.18(postcss@8.4.38):
-    resolution: {integrity: sha512-1DKbDfsr6KUElM6wg+0zRNkB/Q7WcKYAaK+pzXn+Xqmszm/5Xa9coeNdtP88Vi+dPzZnMjhge8GIV49ZQkDa+g==}
-    engines: {node: ^10 || ^12 || >=14}
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.1.0
-    dependencies:
-      browserslist: 4.24.2
-      caniuse-lite: 1.0.30001676
-      fraction.js: 4.3.7
-      normalize-range: 0.1.2
-      picocolors: 1.1.1
-      postcss: 8.4.38
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -24318,8 +21182,10 @@ packages:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
     dev: false
 
-  /effect@3.4.5:
-    resolution: {integrity: sha512-aTonOH68tUttSdYwMkiuky3hjgn3pu7yInNaE8rU2EDKQ8zr9Me78WcvWBQKe4u1gvbBH77y9dAKqn98lNIfNQ==}
+  /effect@3.11.5:
+    resolution: {integrity: sha512-oSzaR/S/2A/qDTnDqMWxQUNSjCG2sRLB4NEvTu+l9RqE122MTgKXOWzw0x4MHsdovRTzAihfkpgBj2aLFnH2+w==}
+    dependencies:
+      fast-check: 3.23.2
     dev: false
 
   /electron-to-chromium@1.4.830:
@@ -25946,8 +22812,8 @@ packages:
       - supports-color
     dev: false
 
-  /fast-check@3.20.0:
-    resolution: {integrity: sha512-pZIjqLpOZgdSLecec4GKC3Zq5702MZ34upMKxojnNVSWA0K64V3pXOBT1Wdsrc3AphLtzRBbsi8bRWF4TUGmUg==}
+  /fast-check@3.23.2:
+    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
     engines: {node: '>=8.0.0'}
     dependencies:
       pure-rand: 6.1.0
@@ -26123,6 +22989,10 @@ packages:
       unpipe: 1.0.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /find-my-way-ts@0.1.5:
+    resolution: {integrity: sha512-4GOTMrpGQVzsCH2ruUn2vmwzV/02zF4q+ybhCIrw/Rkt3L8KWcycdC6aJMctJzwN4fXD4SD5F/4B9Sksh5rE0A==}
     dev: false
 
   /find-root@1.1.0:
@@ -31105,6 +27975,10 @@ packages:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
     dev: false
 
+  /multipasta@0.2.5:
+    resolution: {integrity: sha512-c8eMDb1WwZcE02WVjHoOmUVk7fnKU/RmUcosHACglrWAuPQsEJv+E8430sXj6jNc1jHw0zrS16aCjQh4BcEb4A==}
+    dev: false
+
   /mustache@4.2.0:
     resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
     hasBin: true
@@ -32784,15 +29658,6 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
-  /postcss@8.4.38:
-    resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.7
-      picocolors: 1.0.0
-      source-map-js: 1.2.0
-    dev: true
-
   /postcss@8.4.39:
     resolution: {integrity: sha512-0vzE+lAiG7hZl1/9I8yzKLx3aR9Xbof3fBHKunvMfOCYAtMhrsnccJY2iTURb9EZd5+pLuiNV9/c/GZJOHsgIw==}
     engines: {node: ^10 || ^12 || >=14}
@@ -33971,17 +30836,6 @@ packages:
     dependencies:
       react: 19.0.0-rc-02c0e824-20241028
       tslib: 2.8.1
-    dev: false
-
-  /react-use-clipboard@1.0.9(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-OcMzc14usXhqQnAkvzmhCXAbW5WBT2LSgscVh2vKHXZfg72jFsSOsEearqdeC/nUj8YxEfLnziqe7AE7YkWFwA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
-      react-dom: ^16.8.0 || ^17 || ^18
-    dependencies:
-      copy-to-clipboard: 3.3.3
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028)
     dev: false
 
   /react-use@17.5.0(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028):
@@ -35203,6 +32057,7 @@ packages:
     resolution: {integrity: sha512-9kUTMjZtcPH3i7vHunA6EraTPpPOITYTdA5uMrvsJRexktqP0s7P3s9HVK80b4pP42FRVe03D7fT3NmJv2yYhw==}
     dependencies:
       '@shikijs/core': 1.1.7
+    dev: true
 
   /shiki@1.22.2:
     resolution: {integrity: sha512-3IZau0NdGKXhH2bBlUk4w1IHNxPh6A5B2sUpyY+8utLu2j/h1QpFkAaUA1bAMxOWWGtTWcAh531vnS4NJKS/lA==}
@@ -35564,6 +32419,10 @@ packages:
 
   /sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
+
+  /sqids@0.3.0:
+    resolution: {integrity: sha512-lOQK1ucVg+W6n3FhRwwSeUijxe93b51Bfz5PMRMihVf1iVkl82ePQG7V5vwrhzB11v0NtsR25PSZRGiSomJaJw==}
+    dev: false
 
   /sqlstring@2.3.1:
     resolution: {integrity: sha512-ooAzh/7dxIG5+uDik1z/Rd1vli0+38izZhGzSa34FwR7IbelPWCCKSNIl8jlL/F7ERvy8CB2jNeM1E9i9mXMAQ==}
@@ -36181,10 +33040,6 @@ packages:
     resolution: {integrity: sha512-SqqhhaL0T06SW59+JVNfAqKdqLs0497esifRrZ7jOaefP3o64fdFNDMrAQWZFMxTLJPiHVjRLUywT8uFz1xNWQ==}
     dependencies:
       '@babel/runtime': 7.26.0
-    dev: false
-
-  /tailwind-merge@2.4.0:
-    resolution: {integrity: sha512-49AwoOQNKdqKPd9CViyH5wJoSKsCDjUlzL8DxuGp3P1FsGY36NJDAa18jLZcaHAUUuTj+JB8IAo8zWgBNvBF7A==}
     dev: false
 
   /tailwind-scrollbar@3.1.0(tailwindcss@3.4.1):
@@ -37410,19 +34265,16 @@ packages:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  /uploadthing@6.13.2(next@15.0.3)(tailwindcss@3.4.1):
-    resolution: {integrity: sha512-hrxwOgqKs8siczPloop72drRBiUYaFDHMp45OR/sSAaAbOPyGBmBL88Bi4UWCvgC+aBWCLRxtMEGeoqrfu+OMg==}
+  /uploadthing@7.4.4(next@15.0.3)(tailwindcss@3.4.1):
+    resolution: {integrity: sha512-dgV8LqaKrXSnpDkqzzLbVEmIubMPi8a5bRtIzM+rG5EbZpIZyOG0bByLxdSlkSbK5L6F+HbIGX5eDkLPFNL8dg==}
     engines: {node: '>=18.13.0'}
     peerDependencies:
-      '@effect/platform': '*'
       express: '*'
       fastify: '*'
       h3: '*'
       next: '*'
-      tailwindcss: '*'
+      tailwindcss: ^3.0.0 || ^4.0.0-beta.0
     peerDependenciesMeta:
-      '@effect/platform':
-        optional: true
       express:
         optional: true
       fastify:
@@ -37434,13 +34286,12 @@ packages:
       tailwindcss:
         optional: true
     dependencies:
-      '@effect/schema': 0.68.12(effect@3.4.5)
-      '@uploadthing/mime-types': 0.2.10
-      '@uploadthing/shared': 6.7.8
-      consola: 3.2.3
-      effect: 3.4.5
+      '@effect/platform': 0.70.7(effect@3.11.5)
+      '@standard-schema/spec': 1.0.0-beta.3
+      '@uploadthing/mime-types': 0.3.4
+      '@uploadthing/shared': 7.1.5
+      effect: 3.11.5
       next: 15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0-rc-02c0e824-20241028)(react@19.0.0-rc-02c0e824-20241028)
-      std-env: 3.7.0
       tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
