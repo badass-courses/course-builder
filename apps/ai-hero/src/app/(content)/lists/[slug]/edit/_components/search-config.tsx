@@ -7,6 +7,7 @@ export default function SearchConfig() {
 	const { excludedIds } = useSelection()
 	return (
 		<Configure
+			hitsPerPage={20}
 			filters={
 				excludedIds.length
 					? `type:post && ${excludedIds.map((id) => `id:!=${id}`).join(' && ')}`
