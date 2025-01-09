@@ -13,6 +13,7 @@ import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
+import { DynamicTitle } from './dynamic-title'
 import { getInitialTreeState, treeStateReducer } from './lesson-list/data/tree'
 import Tree from './lesson-list/tree'
 import { ResourcesInfiniteHits } from './resources-infinite-hits'
@@ -85,24 +86,14 @@ export default function ListResourcesEdit({ list }: { list: List }) {
 				/> */}
 
 				<div className="border-b text-sm font-medium">
-					{list.resources.length > 0 && (
-						<>
-							<span className="mb-3 flex px-5 pt-5 text-lg font-bold">
-								In the list
-							</span>
-							<Tree
-								rootResource={list as ContentResource}
-								rootResourceId={list.id}
-								state={state}
-								updateState={updateState}
-							/>
-						</>
-					)}
-					<div
-						className={cn('flex flex-col gap-1', {
-							'border-t': list.resources.length > 0,
-						})}
-					>
+					<DynamicTitle />
+					<Tree
+						rootResource={list as ContentResource}
+						rootResourceId={list.id}
+						state={state}
+						updateState={updateState}
+					/>
+					<div className={cn('flex flex-col gap-1 border-t', {})}>
 						<ResourcesInfiniteHits updateTreeState={updateState} list={list} />
 					</div>
 					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">
