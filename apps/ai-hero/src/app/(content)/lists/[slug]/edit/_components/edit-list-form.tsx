@@ -70,7 +70,7 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 		<EditResourcesFormDesktop
 			resource={list}
 			resourceSchema={ListSchema}
-			getResourcePath={(slug) => `/${slug}`}
+			getResourcePath={(slug) => `/lists`}
 			updateResource={updateList}
 			// autoUpdateResource={autoUpdatePost}
 			form={form}
