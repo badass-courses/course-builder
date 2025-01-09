@@ -5,6 +5,7 @@ import {
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
 import { useQueryState } from 'nuqs'
+import { Configure } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import { InfiniteHits } from './infinite-hits'
@@ -75,6 +76,7 @@ export default function Search() {
 			}
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
+			<Configure filters={'state:published'} />
 			<div className="mb-3 flex flex-row items-center gap-3">
 				<SearchBox />
 				{/* <RefinementList

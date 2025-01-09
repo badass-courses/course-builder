@@ -16,7 +16,7 @@ import {
 } from '@coursebuilder/core/schemas'
 
 import { ListSchema, type ListUpdate } from './lists'
-import { upsertPostToTypeSense } from './typesense-query'
+import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function createList(input: {
 	title: string
@@ -202,4 +202,44 @@ export async function updateList(
 			slug: listSlug,
 		},
 	})
+}
+
+export async function deleteList(id: string) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	const list = ListSchema.nullish().parse(
+		await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, id),
+			with: {
+				resources: true,
+			},
+		}),
+	)
+
+	if (!list) {
+		throw new Error(`Post with id ${id} not found.`)
+	}
+
+	if (!user || !ability.can('delete', subject('Content', list))) {
+		throw new Error('Unauthorized')
+	}
+
+	if (list.resources.length > 0) {
+		throw new Error('List has resources, please remove them first.')
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(eq(contentResourceResource.resourceOfId, id))
+
+	await db.delete(contentResource).where(eq(contentResource.id, id))
+
+	await deletePostInTypeSense(list.id)
+
+	revalidateTag('lists')
+	revalidateTag(id)
+	revalidatePath('/lists')
+
+	return true
 }
