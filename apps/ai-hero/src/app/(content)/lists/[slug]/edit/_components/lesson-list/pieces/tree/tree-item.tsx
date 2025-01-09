@@ -25,13 +25,14 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
-import { ChevronDown, ChevronUp, Trash } from 'lucide-react'
+import { ChevronDown, ChevronUp, ExternalLink, Trash } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
 
 import { Button } from '@coursebuilder/ui'
 
+import { useSelection } from '../../../selection-context'
 import { TreeItem as TreeItemType } from '../../data/tree'
 import { indentPerLevel } from './constants'
 import { DependencyContext, TreeContext } from './tree-context'
@@ -101,13 +102,15 @@ const TreeItem = memo(function TreeItem({
 	item,
 	mode,
 	level,
+	refresh,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
+	refresh: () => void
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
-
+	const { excludedIds, setExcludedIds } = useSelection()
 	const [state, setState] = useState<
 		'idle' | 'dragging' | 'preview' | 'parent-of-instruction'
 	>('idle')
@@ -331,34 +334,21 @@ const TreeItem = memo(function TreeItem({
 	return (
 		<Fragment>
 			<div
-				className={state === 'idle' ? `hover:bg-muted cursor-pointer` : ''}
-				style={{ position: 'relative' }}
+				className={cn('relative flex items-center', {
+					'cursor-move': state === 'idle',
+				})}
 			>
 				<button
 					{...aria}
 					className={cn(
-						'relative w-full cursor-pointer border-0 bg-transparent py-3',
+						'hover:bg-muted/50 relative w-full cursor-pointer border-0 bg-transparent py-3',
 						{
 							'border-primary border': instruction?.type === 'make-child',
+							'cursor-move': state === 'idle',
 						},
 					)}
 					id={`tree-item-${item.id}`}
-					onClick={
-						item.type === 'section'
-							? toggleOpen
-							: () => {
-									if (item.type === 'event') {
-										router.push(`/events/${item.id}/edit`)
-										return
-									}
-									if (rootResource) {
-										router.push(
-											// @ts-expect-error
-											`/${pluralize(Object.hasOwn(rootResource, 'type') ? rootResource?.type : rootResource.fields?.type)}/${rootResource?.fields?.slug}/${item.id}/edit`,
-										)
-									}
-								}
-					}
+					onClick={item.type === 'section' ? toggleOpen : () => {}}
 					ref={buttonRef}
 					type="button"
 					style={{ paddingLeft: level * indentPerLevel }}
@@ -382,7 +372,7 @@ const TreeItem = memo(function TreeItem({
 								{item.label ?? item.id}
 							</span>
 						</div>
-						<small className="text-ellipsis pr-16 opacity-50">
+						<small className="text-ellipsis opacity-50">
 							{item.type ? (
 								<span className="capitalize">{item.type}</span>
 							) : null}
@@ -399,37 +389,52 @@ const TreeItem = memo(function TreeItem({
 							})}
 						/>
 					) : null}
-					{/* {instruction ? (
-						<span
-							style={{
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								right: 0,
-								bottom: 0,
-							}}
-						>
-							◎ {instruction.type}
-						</span>
-					) : null} */}
 				</button>
-				<Button
-					className="absolute right-5"
-					type="button"
-					variant="outline"
-					size="icon"
-					onClick={async () => {
-						if (rootResourceId) {
-							dispatch({ type: 'remove-item', itemId: item.id })
-							await removePostFromList({
-								postId: item.id,
-								listId: rootResourceId,
-							})
-						}
-					}}
-				>
-					<Trash className="h-3 w-3" />
-				</Button>
+				<div className="itmes-center flex gap-2 px-3">
+					<Button
+						className="hover:bg-secondary h-6 w-6"
+						type="button"
+						variant="outline"
+						size="icon"
+						onClick={() => {
+							if (
+								item.itemData?.resource?.fields?.slug &&
+								item.type &&
+								item.type !== 'section'
+							) {
+								router.push(
+									`/${pluralize(item.type)}/${item.itemData.resource.fields.slug}/edit`,
+								)
+							}
+						}}
+					>
+						<ExternalLink className="h-3 w-3" />
+					</Button>
+					<Button
+						className="h-6 w-6"
+						type="button"
+						variant="outline"
+						size="icon"
+						onClick={async () => {
+							if (rootResourceId) {
+								dispatch({ type: 'remove-item', itemId: item.id })
+								const resourceId = item?.itemData?.resource?.id || item?.id // this is important because newly added items don't have itemData
+								if (resourceId && excludedIds.includes(resourceId)) {
+									setExcludedIds((prev) =>
+										prev.filter((id) => id !== resourceId),
+									)
+									refresh()
+								}
+								await removePostFromList({
+									postId: item.id,
+									listId: rootResourceId,
+								})
+							}
+						}}
+					>
+						<Trash className="h-3 w-3" />
+					</Button>
+				</div>
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>
@@ -447,6 +452,7 @@ const TreeItem = memo(function TreeItem({
 						})()
 						return (
 							<TreeItem
+								refresh={refresh}
 								item={child}
 								key={child.id}
 								level={level + 1}

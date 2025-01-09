@@ -111,8 +111,6 @@ export async function addPostToList({
 		position: list.resources.length,
 	})
 
-	revalidateTag('lists')
-
 	return db.query.contentResourceResource.findFirst({
 		where: and(
 			eq(contentResourceResource.resourceOfId, listId),
@@ -153,6 +151,4 @@ export async function removePostFromList({
 				eq(contentResourceResource.resourceId, postId),
 			),
 		)
-
-	revalidateTag('lists')
 }
