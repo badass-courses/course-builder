@@ -75,7 +75,13 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 			// autoUpdateResource={autoUpdatePost}
 			form={form}
 			bodyPanelSlot={<ListResoucesEdit list={list} />}
-			availableWorkflows={[]}
+			availableWorkflows={[
+				{
+					value: 'prompt_list1',
+					label: 'List Chat',
+					default: true,
+				},
+			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
