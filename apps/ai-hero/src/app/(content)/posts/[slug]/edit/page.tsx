@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
+import { getAllLists } from '@/lib/lists-query'
 import { getPost } from '@/lib/posts-query'
 import { getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -59,6 +60,7 @@ export default async function ArticleEditPage(props: {
 		? courseBuilderAdapter.getVideoResource(videoResource.id)
 		: Promise.resolve(null)
 	const tagLoader = getTags()
+	const listsLoader = getAllLists()
 
 	return (
 		<EditPostForm
@@ -66,6 +68,7 @@ export default async function ArticleEditPage(props: {
 			post={{ ...post }}
 			tagLoader={tagLoader}
 			videoResourceLoader={videoResourceLoader}
+			listsLoader={listsLoader}
 		/>
 	)
 }

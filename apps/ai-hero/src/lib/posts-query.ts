@@ -32,6 +32,7 @@ import { z } from 'zod'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
+import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
@@ -103,6 +104,21 @@ export async function getPostTags(postId: string): Promise<Tag[]> {
 	})
 
 	return z.array(TagSchema).parse(tags.map((tag) => tag.tag))
+}
+
+export async function getPostLists(postId: string): Promise<List[]> {
+	const lists = await db.query.contentResourceResource.findMany({
+		where: eq(contentResourceResource.resourceId, postId),
+		with: {
+			resourceOf: true,
+		},
+	})
+
+	const listResources = lists
+		.filter((list) => list.resourceOf.type === 'list')
+		.map((list) => list.resourceOf)
+
+	return z.array(ListSchema).parse(listResources)
 }
 
 export async function getPosts(): Promise<Post[]> {

@@ -21,8 +21,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		connectionTimeoutSeconds: 2,
 	})
 
-	const shouldIndex =
-		post.fields.state === 'published' && post.fields.visibility === 'public'
+	const shouldIndex = true // filter them from search results later so admins can use same index // post.fields.state === 'published' && post.fields.visibility === 'public'
 
 	if (!shouldIndex) {
 		await typesenseWriteClient

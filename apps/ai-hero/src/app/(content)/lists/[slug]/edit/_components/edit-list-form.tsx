@@ -6,7 +6,8 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import type { List } from '@/lib/lists'
+import { List, ListSchema } from '@/lib/lists'
+import { updateList } from '@/lib/lists-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { autoUpdatePost, updatePost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
@@ -17,10 +18,14 @@ import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
-import { MobileEditPostForm } from './edit-post-form-mobile'
+import { ListMetadataFormFields } from './edit-list-form-metadata'
+import ListResoucesEdit from './list-resources-edit'
+
+// import { MobileEditPostForm } from './edit-post-form-mobile'
 
 const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -31,67 +36,52 @@ const NewPostFormSchema = z.object({
 	gitpod: z.string().nullish(),
 })
 
-export type EditPostFormProps = {
-	post: Post
-	videoResourceLoader: Promise<VideoResource | null>
-	form: UseFormReturn<z.infer<typeof PostSchema>>
+export type EditListFormProps = {
+	list: List
+	form: UseFormReturn<z.infer<typeof ListSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
-	tagLoader: Promise<Tag[]>
-	listsLoader: Promise<List[]>
 }
 
-export function EditPostForm({
-	post,
-	videoResourceLoader,
-	tagLoader,
-	listsLoader,
-}: Omit<EditPostFormProps, 'form'>) {
+export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
-	const form = useForm<z.infer<typeof PostSchema>>({
+	const form = useForm<z.infer<typeof ListSchema>>({
 		resolver: zodResolver(NewPostFormSchema),
 		defaultValues: {
-			id: post.id,
+			id: list.id,
 			fields: {
-				title: post.fields?.title,
-				body: post.fields?.body,
-				slug: post.fields?.slug,
-				visibility: post.fields?.visibility || 'public',
-				state: post.fields?.state || 'draft',
-				description: post.fields?.description ?? '',
-				github: post.fields?.github ?? '',
-				gitpod: post.fields?.gitpod ?? '',
+				title: list.fields?.title,
+				body: list.fields?.body,
+				slug: list.fields?.slug,
+				type: list.fields?.type,
+				visibility: list.fields?.visibility || 'public',
+				state: list.fields?.state || 'draft',
+				description: list.fields?.description ?? '',
+				github: list.fields?.github ?? '',
+				gitpod: list.fields?.gitpod ?? '',
 			},
 		},
 	})
 	const isMobile = useIsMobile()
-	const videoResource = videoResourceLoader
-		? React.use(videoResourceLoader)
-		: null
 
-	return isMobile ? (
-		<MobileEditPostForm
-			listsLoader={listsLoader}
-			tagLoader={tagLoader}
-			post={post}
-			form={form}
-			videoResourceLoader={videoResourceLoader}
-			availableWorkflows={[
-				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
-			]}
-			theme={theme}
-		/>
-	) : (
+	return (
 		<EditResourcesFormDesktop
-			resource={post}
-			resourceSchema={PostSchema}
-			getResourcePath={(slug) => `/${slug}`}
-			updateResource={updatePost}
-			autoUpdateResource={autoUpdatePost}
+			resource={list}
+			resourceSchema={ListSchema}
+			getResourcePath={(slug) => `/lists`}
+			updateResource={updateList}
+			// autoUpdateResource={autoUpdatePost}
 			form={form}
-			availableWorkflows={[]}
+			bodyPanelSlot={<ListResoucesEdit list={list} />}
+			availableWorkflows={[
+				{
+					value: 'prompt_list1',
+					label: 'List Chat',
+					default: true,
+				},
+			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
@@ -107,7 +97,7 @@ export function EditPostForm({
 					toolComponent: (
 						<ImageResourceUploader
 							key={'image-uploader'}
-							belongsToResourceId={post.id}
+							belongsToResourceId={list.id}
 							uploadDirectory={`posts`}
 						/>
 					),
@@ -115,14 +105,7 @@ export function EditPostForm({
 			]}
 		>
 			<React.Suspense fallback={<div>loading</div>}>
-				<PostMetadataFormFields
-					listsLoader={listsLoader}
-					tagLoader={tagLoader}
-					form={form}
-					videoResourceLoader={videoResourceLoader}
-					videoResourceId={videoResource?.id}
-					post={post}
-				/>
+				<ListMetadataFormFields form={form} list={list} />
 			</React.Suspense>
 		</EditResourcesFormDesktop>
 	)
