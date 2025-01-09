@@ -33,6 +33,7 @@ export async function createList(input: {
 		fields: {
 			title: input.title,
 			description: input.description,
+			type: 'nextUp',
 			state: 'draft',
 			visibility: 'unlisted',
 			slug: `${slugify(input.title)}~${guid()}`,
