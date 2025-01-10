@@ -1,3 +1,5 @@
+'use client'
+
 import {
 	useCallback,
 	useContext,
@@ -7,8 +9,7 @@ import {
 	useRef,
 	useState,
 } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { courseBuilderConfig } from '@/coursebuilder/course-builder-config'
+import { useParams } from 'next/navigation'
 import { updateResourcePosition } from '@/lib/tutorials-query'
 import { triggerPostMoveFlash } from '@atlaskit/pragmatic-drag-and-drop-flourish/trigger-post-move-flash'
 import {
@@ -19,6 +20,7 @@ import * as liveRegion from '@atlaskit/pragmatic-drag-and-drop-live-region'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import memoizeOne from 'memoize-one'
+import { useInstantSearch } from 'react-instantsearch'
 import invariant from 'tiny-invariant'
 
 import { Product } from '@coursebuilder/core/schemas'
@@ -77,6 +79,7 @@ export default function Tree({
 	rootResource: ContentResource | Product
 }) {
 	const params = useParams<{ module: string }>()
+	const { refresh } = useInstantSearch()
 
 	const ref = useRef<HTMLDivElement>(null)
 	const { extractInstruction } = useContext(DependencyContext)
@@ -302,7 +305,15 @@ export default function Tree({
 							return 'standard'
 						})()
 
-						return <TreeItem item={item} level={0} key={item.id} mode={type} />
+						return (
+							<TreeItem
+								refresh={refresh}
+								item={item}
+								level={0}
+								key={item.id}
+								mode={type}
+							/>
+						)
 					})}
 				</div>
 			</div>

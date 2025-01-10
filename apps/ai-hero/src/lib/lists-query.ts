@@ -5,6 +5,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
+import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
@@ -14,7 +15,8 @@ import {
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas'
 
-import { ListSchema } from './lists'
+import { ListSchema, type ListUpdate } from './lists'
+import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function createList(input: {
 	title: string
@@ -31,6 +33,7 @@ export async function createList(input: {
 		fields: {
 			title: input.title,
 			description: input.description,
+			type: 'nextUp',
 			state: 'draft',
 			visibility: 'unlisted',
 			slug: `${slugify(input.title)}~${guid()}`,
@@ -111,8 +114,6 @@ export async function addPostToList({
 		position: list.resources.length,
 	})
 
-	revalidateTag('lists')
-
 	return db.query.contentResourceResource.findFirst({
 		where: and(
 			eq(contentResourceResource.resourceOfId, listId),
@@ -153,6 +154,92 @@ export async function removePostFromList({
 				eq(contentResourceResource.resourceId, postId),
 			),
 		)
+}
+
+export async function updateList(
+	input: ListUpdate,
+	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+	revalidate = true,
+) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	const currentList = await getList(input.id)
+
+	if (!currentList) {
+		throw new Error(`Post with id ${input.id} not found.`)
+	}
+
+	if (!user || !ability.can(action, subject('Content', currentList))) {
+		throw new Error('Unauthorized')
+	}
+
+	let listSlug = currentList.fields.slug
+
+	if (
+		input.fields.title !== currentList.fields.title &&
+		input.fields.slug.includes('~')
+	) {
+		const splitSlug = currentList?.fields.slug.split('~') || ['', guid()]
+		listSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	} else if (input.fields.slug !== currentList.fields.slug) {
+		listSlug = input.fields.slug
+	}
+
+	try {
+		await upsertPostToTypeSense(currentList, action)
+	} catch (e) {
+		console.error('Failed to update post in Typesense', e)
+	}
+
+	revalidate && revalidateTag('lists')
+
+	return courseBuilderAdapter.updateContentResourceFields({
+		id: currentList.id,
+		fields: {
+			...currentList.fields,
+			...input.fields,
+			slug: listSlug,
+		},
+	})
+}
+
+export async function deleteList(id: string) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	const list = ListSchema.nullish().parse(
+		await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, id),
+			with: {
+				resources: true,
+			},
+		}),
+	)
+
+	if (!list) {
+		throw new Error(`Post with id ${id} not found.`)
+	}
+
+	if (!user || !ability.can('delete', subject('Content', list))) {
+		throw new Error('Unauthorized')
+	}
+
+	if (list.resources.length > 0) {
+		throw new Error('List has resources, please remove them first.')
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(eq(contentResourceResource.resourceOfId, id))
+
+	await db.delete(contentResource).where(eq(contentResource.id, id))
+
+	await deletePostInTypeSense(list.id)
 
 	revalidateTag('lists')
+	revalidateTag(id)
+	revalidatePath('/lists')
+
+	return true
 }

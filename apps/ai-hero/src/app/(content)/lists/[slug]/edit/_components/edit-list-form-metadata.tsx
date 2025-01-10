@@ -7,12 +7,18 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
 	Button,
+	FormControl,
 	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 	Textarea,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
@@ -60,6 +66,31 @@ export const ListMetadataFormFields: React.FC<{
 						<FormMessage />
 					</FormItem>
 				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.type"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Type</FormLabel>
+							<Select
+								onValueChange={field.onChange}
+								defaultValue={field.value || 'nextUp'}
+							>
+								<FormControl>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Select product type..." />
+									</SelectTrigger>
+								</FormControl>
+								<SelectContent>
+									<SelectItem value="nextUp">Next Up</SelectItem>
+								</SelectContent>
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
 			/>
 			<FormField
 				control={form.control}

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
+import type { List } from '@/lib/lists'
 import type { TypesenseResource } from '@/lib/typesense'
 
 type SelectionContextType = {
@@ -6,6 +7,10 @@ type SelectionContextType = {
 	toggleSelection: (resource: TypesenseResource) => void
 	clearSelection: () => void
 	isSelected: (id: string) => boolean
+	isLoading: boolean
+	setIsLoading: (isLoading: boolean) => void
+	setExcludedIds: React.Dispatch<React.SetStateAction<string[]>>
+	excludedIds: string[]
 }
 
 const SelectionContext = createContext<SelectionContextType>({
@@ -13,9 +18,19 @@ const SelectionContext = createContext<SelectionContextType>({
 	toggleSelection: () => {},
 	clearSelection: () => {},
 	isSelected: () => false,
+	isLoading: false,
+	setIsLoading: () => {},
+	setExcludedIds: () => {},
+	excludedIds: [],
 })
 
-export function SelectionProvider({ children }: { children: React.ReactNode }) {
+export function SelectionProvider({
+	children,
+	list,
+}: {
+	children: React.ReactNode
+	list: List
+}) {
 	const [selectedResources, setSelectedResources] = useState<
 		TypesenseResource[]
 	>([])
@@ -27,11 +42,19 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
 				: [...current, resource],
 		)
 	}
+	const initialExcludedIds = list.resources
+		.map((r) => r.resource.id)
+		.filter(Boolean)
+
+	const [excludedIds, setExcludedIds] =
+		React.useState<string[]>(initialExcludedIds)
 
 	const clearSelection = () => setSelectedResources([])
 
 	const isSelected = (id: string) =>
 		selectedResources.some((item) => item.id === id)
+
+	const [isLoading, setIsLoading] = useState(false)
 
 	return (
 		<SelectionContext.Provider
@@ -40,6 +63,10 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
 				toggleSelection,
 				clearSelection,
 				isSelected,
+				isLoading,
+				setIsLoading,
+				excludedIds,
+				setExcludedIds,
 			}}
 		>
 			{children}

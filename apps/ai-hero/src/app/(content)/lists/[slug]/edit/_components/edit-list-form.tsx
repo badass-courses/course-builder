@@ -7,6 +7,7 @@ import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { List, ListSchema } from '@/lib/lists'
+import { updateList } from '@/lib/lists-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { autoUpdatePost, updatePost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
@@ -54,6 +55,7 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 				title: list.fields?.title,
 				body: list.fields?.body,
 				slug: list.fields?.slug,
+				type: list.fields?.type,
 				visibility: list.fields?.visibility || 'public',
 				state: list.fields?.state || 'draft',
 				description: list.fields?.description ?? '',
@@ -68,12 +70,18 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 		<EditResourcesFormDesktop
 			resource={list}
 			resourceSchema={ListSchema}
-			getResourcePath={(slug) => `/${slug}`}
-			updateResource={updatePost}
-			autoUpdateResource={autoUpdatePost}
+			getResourcePath={(slug) => `/lists`}
+			updateResource={updateList}
+			// autoUpdateResource={autoUpdatePost}
 			form={form}
 			bodyPanelSlot={<ListResoucesEdit list={list} />}
-			availableWorkflows={[]}
+			availableWorkflows={[
+				{
+					value: 'prompt_list1',
+					label: 'List Chat',
+					default: true,
+				},
+			]}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}

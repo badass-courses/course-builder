@@ -1,10 +1,12 @@
 'use client'
 
+import React from 'react'
 import { SearchBox } from '@/app/(search)/q/_components/instantsearch/searchbox'
+import Spinner from '@/components/spinner'
 import type { List } from '@/lib/lists'
 import { addPostToList } from '@/lib/lists-query'
 import type { TypesenseResource } from '@/lib/typesense'
-import { useInfiniteHits } from 'react-instantsearch'
+import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
@@ -21,9 +23,20 @@ export function ResourcesInfiniteHits({
 	updateTreeState: React.ActionDispatch<[action: TreeAction]>
 }) {
 	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>({})
-	const { selectedResources, clearSelection } = useSelection()
+	const { refresh } = useInstantSearch()
+
+	const {
+		selectedResources,
+		clearSelection,
+		setIsLoading,
+		isLoading,
+		setExcludedIds,
+	} = useSelection()
 
 	const handleBulkAdd = async () => {
+		// update the tree state right away
+		setExcludedIds((prev) => [...prev, ...selectedResources.map((r) => r.id)])
+
 		for (const resource of selectedResources) {
 			updateTreeState({
 				type: 'add-item',
@@ -36,13 +49,18 @@ export function ResourcesInfiniteHits({
 					itemData: resource as any,
 				},
 			})
-
+		}
+		// then await the API calls
+		for (const resource of selectedResources) {
+			setIsLoading(true)
 			await addPostToList({
 				postId: resource.id,
 				listId: list.id,
 			})
 		}
 		clearSelection()
+		refresh()
+		setIsLoading(false)
 	}
 
 	return (
@@ -51,12 +69,16 @@ export function ResourcesInfiniteHits({
 				{selectedResources.length > 0 ? (
 					<>
 						<span>{selectedResources.length} selected</span>
-						<div className="flex gap-2">
-							<Button variant="ghost" onClick={clearSelection}>
-								Cancel
-							</Button>
-							<Button onClick={handleBulkAdd}>Add Selected</Button>
-						</div>
+						{isLoading ? (
+							<Spinner className="h-4 w-4" />
+						) : (
+							<div className="flex gap-2">
+								<Button variant="ghost" onClick={clearSelection}>
+									Cancel
+								</Button>
+								<Button onClick={handleBulkAdd}>Add Selected</Button>
+							</div>
+						)}
 					</>
 				) : (
 					<span className="text-lg font-bold">Add to list</span>
@@ -66,21 +88,14 @@ export function ResourcesInfiniteHits({
 				<SearchBox className="mb-0 mt-1" />
 			</div>
 			<ul className="divide-y">
-				{items
-					.filter(
-						(item) =>
-							!list.resources.find(
-								(r) => r.resource.fields?.slug === item.slug,
-							),
-					)
-					.map((item) => (
-						<Hit
-							key={item.objectID}
-							updateTreeState={updateTreeState}
-							listId={list.id}
-							hit={item}
-						/>
-					))}
+				{items.map((item) => (
+					<Hit
+						key={item.id}
+						updateTreeState={updateTreeState}
+						listId={list.id}
+						hit={item}
+					/>
+				))}
 			</ul>
 			{!isLastPage && (
 				<Button
