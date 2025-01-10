@@ -14,7 +14,7 @@ import { Share } from '@/components/share'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { List } from '@/lib/lists'
-import { getListForPost } from '@/lib/lists-query'
+import { getAllLists, getListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
@@ -31,6 +31,7 @@ import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
+import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
@@ -41,11 +42,14 @@ type Props = {
 
 export async function generateStaticParams() {
 	const posts = await getAllPosts()
+	const lists = await getAllLists()
 
-	return posts
-		.filter((post) => Boolean(post.fields?.slug))
-		.map((post) => ({
-			post: post.fields?.slug,
+	const resources = [...posts, ...lists]
+
+	return resources
+		.filter((resource) => Boolean(resource.fields?.slug))
+		.map((resource) => ({
+			post: resource.fields?.slug,
 		}))
 }
 
@@ -146,6 +150,15 @@ export default async function PostPage(props: {
 	const searchParams = await props.searchParams
 	const params = await props.params
 	const post = await getPost(params.post)
+
+	if (!post) {
+		return (
+			<ListPage
+				params={{ slug: params.post } as any}
+				searchParams={searchParams as any}
+			/>
+		)
+	}
 
 	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)

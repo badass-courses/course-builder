@@ -1,3 +1,5 @@
+// Used for root route /[post]
+
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
@@ -136,10 +138,10 @@ export default async function ListPage(props: {
 									{list.resources.map(({ resource }, i) => (
 										<li key={resource.id}>
 											<Link
-												className="hover:bg-muted flex items-center gap-3 px-2 py-2 transition"
+												className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition"
 												href={`/${resource.fields.slug}`}
 											>
-												<small className="min-w-[2ch] text-right font-mono text-xs opacity-60">
+												<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
 													{i + 1}
 												</small>
 												{resource.fields.title}
