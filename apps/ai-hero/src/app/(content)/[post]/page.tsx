@@ -14,7 +14,7 @@ import { Share } from '@/components/share'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { List } from '@/lib/lists'
-import { getAllLists, getListForPost } from '@/lib/lists-query'
+import { getAllLists, getList, getListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
@@ -58,20 +58,27 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const post = await getPost(params.post)
+	let resource
 
-	if (!post) {
+	resource = await getPost(params.post)
+
+	if (!resource) {
+		resource = await getList(params.post)
+	}
+
+	if (!resource) {
 		return parent as Metadata
 	}
 
 	return {
-		title: post.fields.title,
+		title: resource.fields.title,
+		description: resource.fields.description,
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({
-					fields: { slug: post.fields.slug },
-					id: post.id,
-					updatedAt: post.updatedAt,
+					fields: { slug: resource.fields.slug },
+					id: resource.id,
+					updatedAt: resource.updatedAt,
 				}),
 			],
 		},
