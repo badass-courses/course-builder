@@ -10,6 +10,7 @@ import { Contributor } from '@/app/_components/contributor'
 import { Share } from '@/components/share'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
+import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { ArrowRight } from 'lucide-react'
@@ -17,6 +18,7 @@ import { compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 type Props = {
 	params: Promise<{ slug: string }>
@@ -104,7 +106,7 @@ export default async function ListPage(props: {
 	return (
 		<main className="min-h-screen w-full pb-16">
 			<header className="bg-muted/75 flex items-center justify-center px-5 pb-8 sm:px-8 sm:pb-0">
-				<div className="mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-between gap-5 lg:flex-row">
+				<div className="relative mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-between gap-5 lg:flex-row">
 					<div className="flex flex-shrink-0 flex-col items-center gap-3 py-16 sm:items-start">
 						<h1 className="fluid-3xl w-full text-center font-bold sm:text-left">
 							{list.fields.title}
@@ -116,6 +118,9 @@ export default async function ListPage(props: {
 						)}
 						<Contributor />
 					</div>
+					<Suspense fallback={null}>
+						<ListActionBar className="absolute right-0 top-5" list={list} />
+					</Suspense>
 					{firstResource && (
 						<Button className="w-full max-w-[180px]" asChild>
 							<Link href={`/${firstResource?.fields?.slug}`}>
@@ -156,5 +161,25 @@ export default async function ListPage(props: {
 				<Share className="bg-background relative z-10 mx-auto w-full max-w-[285px] translate-y-24" />
 			</div>
 		</main>
+	)
+}
+
+export async function ListActionBar({
+	list,
+	className,
+}: {
+	list: List | null
+	className?: string
+}) {
+	const { session, ability } = await getServerAuthSession()
+
+	return (
+		<>
+			{list && ability.can('update', 'Content') ? (
+				<Button className={cn(className)} asChild variant="outline" size="sm">
+					<Link href={`/lists/${list.fields?.slug || list.id}/edit`}>Edit</Link>
+				</Button>
+			) : null}
+		</>
 	)
 }
