@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Suspense, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
+import { SimplePostPlayer } from '@/app/(content)/posts/_components/post-player'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
@@ -155,7 +155,7 @@ export const PostMetadataFormFields: React.FC<{
 									<>
 										{videoResource && videoResource.state === 'ready' ? (
 											<div className="-mt-5 border-b">
-												<PostPlayer videoResource={videoResource} />
+												<SimplePostPlayer videoResource={videoResource} />
 												<div className="flex items-center gap-1 px-4 pb-2">
 													<Button
 														variant="secondary"

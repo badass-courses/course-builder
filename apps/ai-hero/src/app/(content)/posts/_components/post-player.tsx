@@ -86,27 +86,6 @@ export function PostPlayer({
 		},
 		onEnded: () => {
 			dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
-			React.startTransition(async () => {
-				console.log('video ended')
-				// await handleOnVideoEnded({
-				// 	canView,
-				// 	resource,
-				// 	nextResource,
-				// 	nextLessonPlaybackId,
-				// 	isFullscreen,
-				// 	playerRef,
-				// 	currentResource,
-				// 	dispatchVideoPlayerOverlay,
-				// 	setCurrentResource,
-				// 	handleSetLessonComplete,
-				// 	bingeMode,
-				// 	moduleSlug,
-				// 	moduleType,
-				// 	router,
-				// 	moduleProgress,
-				// 	addLessonProgress,
-				// })
-			})
 		},
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
@@ -154,27 +133,50 @@ export function PostPlayer({
 							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
 						</Link>
 					</Button>
-					{/* {currentResourceIndexFromList}
-					{nextUpList && (
-						<div>
-							{nextUpList.resources.map((r) => {
-								return <div key={r.id}>{r.resource.fields.title}</div>
-							})}
-						</div>
-					)} */}
 				</div>
 			)}
 		</div>
 	)
 }
 
-// function getNextUpResourceFromList(list: List, currentResourceId: string) {
-// 	if (list?.fields?.type !== 'nextUp') return null
+export function SimplePostPlayer({
+	muxPlaybackId,
+	className,
+	videoResource,
+}: {
+	muxPlaybackId?: string
+	videoResource: VideoResource
+	className?: string
+}) {
+	const playerProps = {
+		id: 'mux-player',
+		defaultHiddenCaptions: true,
+		streamType: 'on-demand',
+		thumbnailTime: 0,
+		accentColor: '#DD9637',
+		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
+		maxResolution: '2160p',
+		minResolution: '540p',
+	} as MuxPlayerProps
 
-// 	const currentResourceIndexFromList = list?.resources.findIndex(
-// 		(r) => r.resource.id === currentResourceId,
-// 	)
-// 	const nextUpIndex = currentResourceIndexFromList + 1
+	const playbackId =
+		videoResource?.state === 'ready'
+			? muxPlaybackId || videoResource?.muxPlaybackId
+			: null
 
-// 	return list?.resources[nextUpIndex]
-// }
+	return (
+		<>
+			{playbackId ? (
+				<MuxPlayer
+					playbackId={playbackId}
+					className={cn(className)}
+					{...playerProps}
+				/>
+			) : (
+				<div className="flex h-full w-full items-center justify-center bg-gray-300">
+					<Spinner />
+				</div>
+			)}
+		</>
+	)
+}
