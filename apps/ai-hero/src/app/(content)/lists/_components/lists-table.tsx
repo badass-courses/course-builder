@@ -29,7 +29,7 @@ export function ListsTable({
 	return (
 		<>
 			{error && <Alert variant={'destructive'}>{error}</Alert>}
-			<Table>
+			<Table className="min-w-[600px] overflow-x-scroll">
 				<TableHeader>
 					<TableRow>
 						<TableHead>Title</TableHead>
@@ -49,12 +49,14 @@ export function ListsTable({
 											? `/lists/${list.fields.slug}/edit`
 											: `/lists/${list.fields.slug}`
 									}
-									className="text-primary hover:underline"
+									className="text-primary text-lg font-medium hover:underline"
 								>
 									{list.fields.title}
 								</Link>
 							</TableCell>
-							<TableCell>{list.fields.description}</TableCell>
+							<TableCell className="max-w-[90px] truncate">
+								{list.fields.description}
+							</TableCell>
 							<TableCell>{list.fields.type}</TableCell>
 							<TableCell>{list.resources?.length || 0}</TableCell>
 							<TableCell>
