@@ -44,6 +44,7 @@ export async function generateMetadata(
 
 	return {
 		title: list.fields.title,
+		description: list.fields.description,
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({
