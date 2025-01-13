@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/commerce-next",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"description": "Commerce Functionality for Course Builder with Next.js",
 	"scripts": {
 		"clean": "rm -rf ./dist",
@@ -77,7 +77,7 @@
 		"@coursebuilder/core": "^1.0.0",
 		"@coursebuilder/email-templates": "^1.0.4",
 		"@coursebuilder/nodash": "workspace:*",
-		"@coursebuilder/ui": "^2.0.0",
+		"@coursebuilder/ui": "^2.0.1",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
 		"@mux/mux-player-react": "^2.6.0",
