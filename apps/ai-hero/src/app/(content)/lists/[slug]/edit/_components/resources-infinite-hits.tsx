@@ -9,7 +9,7 @@ import type { TypesenseResource } from '@/lib/typesense'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 import { z } from 'zod'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, DialogTrigger } from '@coursebuilder/ui'
 
 import Hit from './hit'
 import type { TreeAction } from './lesson-list/data/tree'
@@ -65,7 +65,7 @@ export function ResourcesInfiniteHits({
 
 	return (
 		<div>
-			<div className="bg-background sticky top-0 z-10 flex min-h-[57px] items-center justify-between px-5 py-2">
+			<div className="top-0 z-10 flex min-h-[57px] items-center justify-between px-5 py-2">
 				{selectedResources.length > 0 ? (
 					<>
 						<span>{selectedResources.length} selected</span>
@@ -76,7 +76,9 @@ export function ResourcesInfiniteHits({
 								<Button variant="ghost" onClick={clearSelection}>
 									Cancel
 								</Button>
-								<Button onClick={handleBulkAdd}>Add Selected</Button>
+								<DialogTrigger asChild>
+									<Button onClick={handleBulkAdd}>Add Selected</Button>
+								</DialogTrigger>
 							</div>
 						)}
 					</>

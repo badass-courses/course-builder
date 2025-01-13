@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useReducer } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { List } from '@/lib/lists'
 import { cn } from '@/utils/cn'
@@ -9,9 +10,17 @@ import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
+import { Plus } from 'lucide-react'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import {
+	Button,
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogTrigger,
+} from '@coursebuilder/ui'
 
 import { DynamicTitle } from './dynamic-title'
 import { getInitialTreeState, treeStateReducer } from './lesson-list/data/tree'
@@ -77,25 +86,37 @@ export default function ListResourcesEdit({ list }: { list: List }) {
 				future={{ preserveSharedStateOnUnmount: true }}
 			>
 				<SearchConfig />
-				{/* <Configure
-					filters={
-						excludedIds.length
-							? `type:post && ${excludedIds.map((id) => `id:!=${id}`).join(' && ')}`
-							: 'type:post'
-					}
-				/> */}
-
 				<div className="border-b text-sm font-medium">
-					<DynamicTitle />
+					<div className="mb-3 flex items-center justify-between px-5 pt-3">
+						<DynamicTitle />
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button variant="outline" className="gap-1">
+									<Plus className="text-primary w-4" /> Add Resources
+								</Button>
+							</DialogTrigger>
+							<DialogContent className="w-full max-w-3xl overflow-y-auto py-5 sm:max-h-[80vh]">
+								<ResourcesInfiniteHits
+									updateTreeState={updateState}
+									list={list}
+								/>
+								<DialogFooter>
+									<Button variant="outline" asChild>
+										<Link href="/posts/new">Create a new post</Link>
+									</Button>
+								</DialogFooter>
+							</DialogContent>
+						</Dialog>
+					</div>
 					<Tree
 						rootResource={list as ContentResource}
 						rootResourceId={list.id}
 						state={state}
 						updateState={updateState}
 					/>
-					<div className={cn('flex flex-col gap-1 border-t', {})}>
+					{/* <div className={cn('flex flex-col gap-1 border-t', {})}>
 						<ResourcesInfiniteHits updateTreeState={updateState} list={list} />
-					</div>
+					</div> */}
 					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">
 						Body
 					</div>

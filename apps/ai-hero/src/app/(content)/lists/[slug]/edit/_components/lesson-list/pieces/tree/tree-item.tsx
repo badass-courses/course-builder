@@ -25,7 +25,7 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
-import { ChevronDown, ChevronUp, ExternalLink, Trash } from 'lucide-react'
+import { ChevronDown, ChevronUp, Dot, ExternalLink, Trash } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
@@ -58,7 +58,7 @@ function GroupIcon({ isOpen }: { isOpen: boolean }) {
 
 function Icon({ item }: { item: TreeItemType }) {
 	if (!item.children.length) {
-		return null // <ChildIcon />
+		return <Dot className="mr-1 w-3 opacity-50" /> // <ChildIcon />
 	}
 	return <GroupIcon isOpen={item.isOpen ?? false} />
 }
@@ -362,7 +362,7 @@ const TreeItem = memo(function TreeItem({
 							},
 						)}
 					>
-						<div className="flex w-full flex-row">
+						<div className="flex w-full flex-row items-center">
 							<Icon item={item} />
 							<span
 								className={cn('text-left', {
