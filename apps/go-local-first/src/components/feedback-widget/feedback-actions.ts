@@ -4,20 +4,15 @@ import { db } from '@/db'
 import { users } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
 import { env } from '@/env.mjs'
-import { FeedbackContext } from '@/feedback-widget/form'
-import { getEmoji } from '@/feedback-widget/get-emoji'
 import { getServerAuthSession } from '@/server/auth'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { eq } from 'drizzle-orm'
 import sanitizeHtml from 'sanitize-html'
 
-import { CourseBuilderConfig } from '@coursebuilder/core'
-
-type SendFeedbackOptions = {
-	text: string
-	context: FeedbackContext
-	email?: string
-}
+import {
+	getEmoji,
+	type FeedbackContext,
+} from '@coursebuilder/ui/feedback-widget'
 
 export type SendFeedbackFromUserOptions = {
 	emailAddress?: string
@@ -33,7 +28,7 @@ export async function sendFeedbackFromUser({
 	try {
 		const { session } = await getServerAuthSession()
 		const user = (await db.query.users.findFirst({
-			where: eq(users.email, session.user?.email?.toLowerCase() || 'NO-EMAIL'),
+			where: eq(users.email, session?.user?.email?.toLowerCase() || 'NO-EMAIL'),
 		})) || { email: emailAddress, id: null, name: null }
 
 		if (!user.email) {
@@ -45,7 +40,7 @@ export async function sendFeedbackFromUser({
 		await sendAnEmail({
 			Component: BasicEmail,
 			componentProps: {
-				body: `${sanitizeHtml(feedbackText)} <i>${
+				body: `${sanitizeHtml(feedbackText)} <br/><br/><i>${
 					context?.url ? context.url : ''
 				}</i>`,
 				messageType: 'transactional',
