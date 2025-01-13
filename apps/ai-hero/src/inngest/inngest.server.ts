@@ -41,6 +41,10 @@ import {
 	RESOURCE_CHAT_REQUEST_EVENT,
 	ResourceChat,
 } from '@coursebuilder/core/inngest/co-gardener/resource-chat'
+import {
+	NEW_SUBSCRIPTION_CREATED_EVENT,
+	NewSubscriptionCreated,
+} from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
@@ -86,6 +90,7 @@ export type Events = {
 	[SYNC_PURCHASE_TAGS_EVENT]: SyncPurchaseTags
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
 	[CREATE_USER_ORGANIZATIONS_EVENT]: CreateUserOrganizations
+	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 }
 
 const callbackBase =
