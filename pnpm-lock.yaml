@@ -186,7 +186,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.0
@@ -201,7 +201,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -769,7 +769,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.0
@@ -784,7 +784,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -1416,7 +1416,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.0
@@ -1431,7 +1431,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -1936,7 +1936,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../../packages/ui
       '@heroicons/react':
         specifier: ^2.0.18
@@ -2264,7 +2264,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../../packages/ui
       '@heroicons/react':
         specifier: ^2.0.18
@@ -2583,7 +2583,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.9
+        specifier: ^0.0.10
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.0
@@ -2598,7 +2598,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../../packages/ui
       '@designbycode/tailwindcss-text-stroke':
         specifier: ^1.2.1
@@ -3416,7 +3416,7 @@ importers:
         specifier: workspace:*
         version: link:../nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../ui
       '@heroicons/react':
         specifier: ^2.0.18
