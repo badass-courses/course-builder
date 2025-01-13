@@ -65,7 +65,7 @@
 		"@types/uuid": "9.0.8",
 		"bunchee": "^5.1.2",
 		"esbuild-react18-useclient": "^1.0.7",
-		"next": "15.0.3",
+		"next": "15.2.0-canary.6",
 		"react": "19.0.0-rc-02c0e824-20241028"
 	},
 	"peerDependencies": {
