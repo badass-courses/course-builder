@@ -26,7 +26,11 @@ export function CreateListForm() {
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="space-y-4">
+		<form
+			onSubmit={handleSubmit}
+			className="w-full max-w-md flex-shrink-0 space-y-4"
+		>
+			<h2 className="fluid-xl">Create New List</h2>
 			<div>
 				<Label htmlFor="title" className="mb-1 block text-sm font-medium">
 					Title
@@ -36,7 +40,7 @@ export function CreateListForm() {
 					id="title"
 					value={title}
 					onChange={(e) => setTitle(e.target.value)}
-					className="block w-full rounded-md border border-gray-300 px-3 py-2"
+					// className="block w-full rounded-md border border-gray-300 px-3 py-2"
 					required
 				/>
 			</div>
@@ -48,7 +52,7 @@ export function CreateListForm() {
 					id="description"
 					value={description}
 					onChange={(e) => setDescription(e.target.value)}
-					className="block w-full rounded-md border border-gray-300 px-3 py-2"
+					// className="block w-full rounded-md border border-gray-300 px-3 py-2"
 					rows={3}
 				/>
 			</div>

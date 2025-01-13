@@ -67,10 +67,10 @@ export function EditResourcesActionBar({
 							onPublish()
 						}}
 						type="button"
-						variant="default"
+						variant="outline"
 						size="sm"
 						disabled={isDisabled}
-						className="h-7 disabled:cursor-wait"
+						className="border-primary h-7 disabled:cursor-wait"
 					>
 						Save & Publish
 					</Button>

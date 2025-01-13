@@ -10,11 +10,6 @@ import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
-import {
-	ContentResourceResourceSchema,
-	ContentResourceSchema,
-} from '@coursebuilder/core/schemas'
-
 import { ListSchema, type ListUpdate } from './lists'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -26,9 +21,11 @@ export async function createList(input: {
 	if (!session?.user?.id || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
+	const listGuid = guid()
+	const newListId = `list_${listGuid}`
 
-	const list = await courseBuilderAdapter.createContentResource({
-		id: `list-${guid()}`,
+	await courseBuilderAdapter.createContentResource({
+		id: newListId,
 		type: 'list',
 		fields: {
 			title: input.title,
@@ -40,6 +37,14 @@ export async function createList(input: {
 		},
 		createdById: session.user.id,
 	})
+
+	const list = await getList(newListId)
+
+	try {
+		await upsertPostToTypeSense(list, 'save')
+	} catch (e) {
+		console.error(`Failed to index ${newListId} in Typesense`, e)
+	}
 
 	revalidateTag('lists')
 	return list
@@ -83,6 +88,70 @@ export async function getList(listIdOrSlug: string) {
 			},
 		},
 	})
+
+	return ListSchema.parse(list)
+}
+
+export async function getListForPost(postId: string) {
+	// optimized query that skips body fields
+	const result = await db.execute(sql`
+		SELECT
+			list.id AS list_id,
+			list.type AS list_type,
+			list.fields AS list_fields,
+			list.createdAt AS list_createdAt,
+			list.updatedAt AS list_updatedAt,
+			list.deletedAt AS list_deletedAt,
+			list.createdById AS list_createdById,
+			list.organizationId AS list_organizationId,
+			list.createdByOrganizationMembershipId AS list_createdByOrganizationMembershipId,
+			resources.id AS resource_id,
+			resources.type AS resource_type,
+			JSON_REMOVE(resources.fields, '$.body') AS resource_fields,
+			relation.position AS resource_position
+		FROM ${contentResourceResource} AS relation
+		JOIN ${contentResource} AS list
+			ON list.id = relation.resourceOfId
+			AND list.type = 'list'
+		LEFT JOIN ${contentResourceResource} AS list_resources
+			ON list.id = list_resources.resourceOfId
+		LEFT JOIN ${contentResource} AS resources
+			ON resources.id = list_resources.resourceId
+		WHERE relation.resourceId = ${postId}
+		ORDER BY list_resources.position ASC
+	`)
+
+	if (result.rows.length === 0) {
+		console.debug('No list found for this post')
+		return null
+	}
+
+	const firstRow = result.rows[0] as any
+	const list = {
+		id: firstRow.list_id,
+		type: firstRow.list_type,
+		fields: firstRow.list_fields,
+		createdAt: firstRow.list_createdAt,
+		updatedAt: firstRow.list_updatedAt,
+		deletedAt: firstRow.list_deletedAt,
+		createdById: firstRow.list_createdById,
+		organizationId: firstRow.list_organizationId,
+		createdByOrganizationMembershipId:
+			firstRow.list_createdByOrganizationMembershipId,
+		resources: result.rows
+			.filter((row: any) => row.resource_id)
+			.map((row: any) => ({
+				resource: {
+					id: row.resource_id,
+					type: row.resource_type,
+					fields: row.resource_fields,
+				},
+				position: row.resource_position,
+				resourceId: row.resource_id,
+				resourceOfId: firstRow.list_id,
+			}))
+			.sort((a: any, b: any) => a.position - b.position),
+	}
 
 	return ListSchema.parse(list)
 }

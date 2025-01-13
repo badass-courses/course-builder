@@ -4,11 +4,15 @@ import Typesense from 'typesense'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
+import type { List } from './lists'
 import { Post, PostAction } from './posts'
 // import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
 
-export async function upsertPostToTypeSense(post: Post, action: PostAction) {
+export async function upsertPostToTypeSense(
+	post: Post | List,
+	action: PostAction,
+) {
 	let typesenseWriteClient = new Typesense.Client({
 		nodes: [
 			{
@@ -38,7 +42,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			id: post.id,
 			title: post.fields.title,
 			slug: post.fields.slug,
-			description: post.fields.body,
+			description: post.fields.body || post.fields.description,
 			type: post.type,
 			visibility: post.fields.visibility,
 			state: post.fields.state,

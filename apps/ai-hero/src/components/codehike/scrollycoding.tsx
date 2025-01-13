@@ -15,8 +15,8 @@ import { z } from 'zod'
 const Schema = Block.extend({
 	steps: z.array(Block.extend({ code: CodeBlock })),
 })
+
 export default function Scrollycoding(props: any) {
-	console.log('Scrollycoding props', props)
 	if (!props) return null
 
 	// const { steps } = parseRoot(props, Schema)
