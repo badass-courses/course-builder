@@ -19,6 +19,7 @@ import {
 	Dialog,
 	DialogContent,
 	DialogFooter,
+	DialogTitle,
 	DialogTrigger,
 } from '@coursebuilder/ui'
 
@@ -96,6 +97,7 @@ export default function ListResourcesEdit({ list }: { list: List }) {
 								</Button>
 							</DialogTrigger>
 							<DialogContent className="w-full max-w-3xl overflow-y-auto py-5 sm:max-h-[80vh]">
+								<DialogTitle className="sr-only">Add Resources</DialogTitle>
 								<ResourcesInfiniteHits
 									updateTreeState={updateState}
 									list={list}

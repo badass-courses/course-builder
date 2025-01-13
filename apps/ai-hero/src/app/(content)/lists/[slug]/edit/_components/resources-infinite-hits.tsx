@@ -65,7 +65,7 @@ export function ResourcesInfiniteHits({
 
 	return (
 		<div>
-			<div className="top-0 z-10 flex min-h-[57px] items-center justify-between px-5 py-2">
+			<div className="bg-background sticky top-0 flex min-h-[57px] items-center justify-between px-5 py-2">
 				{selectedResources.length > 0 ? (
 					<>
 						<span>{selectedResources.length} selected</span>

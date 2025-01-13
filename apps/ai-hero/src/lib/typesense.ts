@@ -5,7 +5,7 @@ export const TypesenseResourceSchema = z.object({
 	title: z.string(),
 	slug: z.string(),
 	state: z.string(),
-	description: z.string(),
+	description: z.string().optional(),
 	visibility: z.string(),
 	type: z.string(),
 	published_at_timestamp: z.number().optional(),

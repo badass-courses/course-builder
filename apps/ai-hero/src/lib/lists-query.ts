@@ -21,9 +21,11 @@ export async function createList(input: {
 	if (!session?.user?.id || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
+	const listGuid = guid()
+	const newListId = `list_${listGuid}`
 
-	const list = await courseBuilderAdapter.createContentResource({
-		id: `list-${guid()}`,
+	await courseBuilderAdapter.createContentResource({
+		id: newListId,
 		type: 'list',
 		fields: {
 			title: input.title,
@@ -35,6 +37,14 @@ export async function createList(input: {
 		},
 		createdById: session.user.id,
 	})
+
+	const list = await getList(newListId)
+
+	try {
+		await upsertPostToTypeSense(list, 'save')
+	} catch (e) {
+		console.error(`Failed to index ${newListId} in Typesense`, e)
+	}
 
 	revalidateTag('lists')
 	return list

@@ -104,7 +104,7 @@ export default async function ListPage(props: {
 	const firstResource = list.resources?.[0]?.resource
 
 	return (
-		<main className="min-h-screen w-full pb-16">
+		<main className="flex min-h-screen w-full flex-col pb-16">
 			<header className="bg-muted/75 flex items-center justify-center px-5 pb-8 sm:px-8 sm:pb-0">
 				<div className="relative mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-between gap-5 lg:flex-row">
 					<div className="flex flex-shrink-0 flex-col items-center gap-3 py-16 sm:items-start">
@@ -133,10 +133,10 @@ export default async function ListPage(props: {
 			<div className="px-5 sm:px-8">
 				<div className="mx-auto mt-10 flex w-full max-w-5xl flex-col gap-10 sm:grid md:grid-cols-5">
 					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
-						{body || 'No description found.'}
+						{body || 'No body found.'}
 					</article>
 					<aside className="col-span-2">
-						{list.resources && (
+						{list.resources.length > 0 && (
 							<>
 								<h3 className="fluid-xl mb-3 font-semibold">Content</h3>
 								<ol className="divide-border flex flex-col divide-y">
