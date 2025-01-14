@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
@@ -65,10 +66,15 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 		},
 	})
 	const isMobile = useIsMobile()
-
+	const router = useRouter()
 	return (
 		<EditResourcesFormDesktop
 			resource={list}
+			onSave={async () => {
+				if (form.getValues().fields.slug !== list?.fields?.slug) {
+					router.push(`/lists/${form.getValues().fields.slug}/edit`)
+				}
+			}}
 			resourceSchema={ListSchema}
 			getResourcePath={(slug) => `/lists`}
 			updateResource={updateList}
