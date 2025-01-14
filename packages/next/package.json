@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/next",
-	"version": "0.0.21",
+	"version": "0.0.22",
 	"description": "Next for Course Builder.",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib providers",
