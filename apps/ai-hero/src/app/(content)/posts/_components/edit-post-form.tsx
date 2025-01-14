@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
@@ -70,6 +71,7 @@ export function EditPostForm({
 	const videoResource = videoResourceLoader
 		? React.use(videoResourceLoader)
 		: null
+	const router = useRouter()
 
 	return isMobile ? (
 		<MobileEditPostForm
@@ -86,6 +88,11 @@ export function EditPostForm({
 	) : (
 		<EditResourcesFormDesktop
 			resource={post}
+			onSave={async () => {
+				if (form.getValues().fields.slug !== post?.fields?.slug) {
+					router.push(`/posts/${form.getValues().fields.slug}/edit`)
+				}
+			}}
 			resourceSchema={PostSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updatePost}
