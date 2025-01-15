@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
 import { env } from '@/env.mjs'
+import { getAllLists } from '@/lib/lists-query'
 import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -12,6 +13,7 @@ import { format } from 'date-fns'
 import { FilePlus2, Pencil } from 'lucide-react'
 
 import {
+	Badge,
 	Button,
 	Card,
 	CardContent,
@@ -38,13 +40,22 @@ export const metadata: Metadata = {
 export default async function PostsIndexPage() {
 	const { ability } = await getServerAuthSession()
 	const allPosts = await getAllPosts()
+	const allLists = await getAllLists()
 
-	const publishedPublicPosts = [...allPosts].filter(
-		(post) =>
-			post.fields.visibility === 'public' && post.fields.state === 'published',
-	)
+	const publishedPublicPosts = [...allPosts, ...allLists]
+		.filter(
+			(post) =>
+				post.fields.visibility === 'public' &&
+				post.fields.state === 'published',
+		)
+		.sort((a, b) => {
+			return b.createdAt && a.createdAt
+				? new Date(b.createdAt).getTime() - new Date(a?.createdAt).getTime()
+				: 0
+		})
+
 	const unpublishedPosts = allPosts.filter((post) => {
-		return !publishedPublicPosts.includes(post)
+		return !publishedPublicPosts.includes(post) && post.type === 'post'
 	})
 
 	const latestPost = publishedPublicPosts[0]
@@ -135,9 +146,24 @@ const PostTeaser: React.FC<{
 					<div>
 						<CardFooter
 							data-footer=""
-							className="mt-8 flex items-center gap-1.5 p-0 text-sm"
+							className="mt-8 flex items-center justify-between gap-1.5 p-0 text-sm"
 						>
 							<Contributor />
+							{post.tags && post.tags.length > 0 && (
+								<div className="flex items-center gap-1">
+									{post.tags.map((tag) => {
+										return tag?.tag?.fields?.label ? (
+											<Badge
+												key={tag.tagId}
+												variant="outline"
+												className="rounded-full"
+											>
+												# {tag.tag.fields.label}
+											</Badge>
+										) : null
+									})}
+								</div>
+							)}
 						</CardFooter>
 					</div>
 				</Card>

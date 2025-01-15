@@ -48,6 +48,14 @@ export async function getAllPosts(): Promise<Post[]> {
 	const posts = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'post'),
 		orderBy: desc(contentResource.createdAt),
+		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+		},
 	})
 
 	const postsParsed = z.array(PostSchema).safeParse(posts)
