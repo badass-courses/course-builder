@@ -182,6 +182,10 @@ export function AuthedVideoPlayer({
 	}, [playerRef, handleFullscreenChange])
 	return playbackId ? (
 		<MuxPlayer
+			metadata={{
+				video_id: currentResource.id,
+				video_title: currentResource.fields?.title,
+			}}
 			ref={playerRef}
 			playbackId={playbackId}
 			className={cn(className)}
