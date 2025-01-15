@@ -3,11 +3,20 @@ import {
 	getInvitesRelationsSchema,
 	getInvitesSchema,
 } from '@/db/schemas/invites'
+import {
+	getEggheadOrganizationMembershipsRelationsSchema,
+	getEggheadOrganizationMembershipsSchema,
+} from '@/db/schemas/organization-membership'
 
 import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
 
 export const invites = getInvitesSchema(mysqlTable)
 export const invitesRelations = getInvitesRelationsSchema(mysqlTable)
+
+export const organizationMemberships =
+	getEggheadOrganizationMembershipsSchema(mysqlTable)
+export const organizationMembershipsRelations =
+	getEggheadOrganizationMembershipsRelationsSchema(mysqlTable)
 
 export const {
 	accounts,
@@ -55,8 +64,6 @@ export const {
 	deviceAccessToken,
 	deviceAccessTokenRelations,
 	organization,
-	organizationRelations,
-	organizationMemberships,
 	organizationMembershipRelations,
 	organizationMembershipRoles,
 	organizationMembershipRolesRelations,

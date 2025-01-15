@@ -1,4 +1,4 @@
-import { users } from '@/db/schema'
+import { organization, users } from '@/db/schema'
 import { relations } from 'drizzle-orm'
 import {
 	int,
@@ -22,6 +22,7 @@ export const inviteSchema = z.object({
 	inviteEmail: z.string().max(191),
 	acceptedEmail: z.string().max(191),
 	userId: z.string().max(255),
+	organizationId: z.string().max(255),
 	createdAt: z.date().nullable(),
 	expiresAt: z.date().nullable(),
 	canceledAt: z.date().nullable(),
@@ -45,6 +46,7 @@ export function getInvitesSchema(mysqlTable: MySqlTableFn) {
 		inviteEmail: varchar('inviteEmail', { length: 191 }).notNull(),
 		acceptedEmail: varchar('acceptedEmail', { length: 191 }),
 		userId: varchar('userId', { length: 255 }),
+		organizationId: varchar('organizationId', { length: 255 }),
 		createdAt: timestamp('createdAt').defaultNow(),
 		expiresAt: timestamp('expiresAt').default(
 			sql`(CURRENT_TIMESTAMP + INTERVAL 7 DAY)`,
@@ -62,6 +64,10 @@ export function getInvitesRelationsSchema(mysqlTable: MySqlTableFn) {
 		user: one(users, {
 			fields: [invites.userId],
 			references: [users.id],
+		}),
+		organization: one(organization, {
+			fields: [invites.organizationId],
+			references: [organization.id],
 		}),
 	}))
 }
