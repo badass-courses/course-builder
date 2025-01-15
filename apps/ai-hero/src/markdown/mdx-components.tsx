@@ -107,11 +107,15 @@ const YouTube: React.FC<YouTubeProps> = ({ videoId }) => {
 
 type MuxVideoProps = {
 	playbackId: string
+	metadata?: {
+		video_id?: string
+		video_title?: string
+	}
 }
 
-const MuxVideo: React.FC<MuxVideoProps> = ({ playbackId }) => {
+const MuxVideo: React.FC<MuxVideoProps> = ({ playbackId, metadata }) => {
 	return playbackId ? (
-		<MuxPlayer data-body-video="" playbackId={playbackId} />
+		<MuxPlayer data-body-video="" playbackId={playbackId} metadata={metadata} />
 	) : null
 }
 
