@@ -90,6 +90,9 @@ export function WelcomePage({
 								Introduction
 							</h2>
 							<MuxPlayer
+								metadata={{
+									video_title: `${product?.name} Welcome Video`,
+								}}
 								poster={welcomeVideoPosterImageUrl}
 								className="overflow-hidden rounded-md shadow-2xl shadow-black/30"
 								playbackId={welcomeVideoPlaybackId}
