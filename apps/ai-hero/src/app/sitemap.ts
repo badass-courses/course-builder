@@ -100,23 +100,23 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 
 	// Add other content types (posts)
 	const otherContentItems = await db.execute(sql`
-    SELECT
-      cr.id,
-      cr.type,
-      cr.fields->>'$.slug' AS slug,
-			cr.fields->>'$.title' AS title,
-      cr.fields->>'$.description' AS description,
-      cr.updatedAt
-    FROM
-      ${contentResource} cr
-    WHERE
-      cr.type IN ('post')
-      AND cr.fields->>'$.state' = 'published'
-      AND cr.fields->>'$.visibility' = 'public'
-      AND cr.deletedAt IS NULL
-    ORDER BY
-      cr.type, cr.updatedAt DESC
-  `)
+	SELECT
+		cr.id,
+		cr.type,
+		cr.fields->>'$.slug' AS slug,
+		cr.fields->>'$.title' AS title,
+		cr.fields->>'$.description' AS description,
+		cr.updatedAt
+	FROM
+		${contentResource} cr
+	WHERE
+		cr.type IN ('post', 'list')
+		AND cr.fields->>'$.state' = 'published'
+		AND cr.fields->>'$.visibility' = 'public'
+		AND cr.deletedAt IS NULL
+	ORDER BY
+		cr.type, cr.updatedAt DESC
+	`)
 
 	otherContentItems.rows.forEach((item: any) => {
 		let url: string
@@ -132,6 +132,11 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 
 		switch (item.type) {
 			case 'post':
+				url = `${process.env.COURSEBUILDER_URL}/${item.slug}`
+				priority = 0.8
+				changeFrequency = 'weekly'
+				break
+			case 'list':
 				url = `${process.env.COURSEBUILDER_URL}/${item.slug}`
 				priority = 0.8
 				changeFrequency = 'weekly'
