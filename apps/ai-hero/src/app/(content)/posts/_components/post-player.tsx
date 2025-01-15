@@ -104,6 +104,10 @@ export function PostPlayer({
 		<div className={cn('relative h-full w-full', className)}>
 			{playbackId ? (
 				<MuxPlayer
+					metadata={{
+						video_id: videoResource?.id,
+						video_title: videoResource?.title,
+					}}
 					playbackId={playbackId}
 					className={cn(className)}
 					{...playerProps}
@@ -168,6 +172,10 @@ export function SimplePostPlayer({
 		<>
 			{playbackId ? (
 				<MuxPlayer
+					metadata={{
+						video_id: videoResource?.id,
+						video_title: videoResource?.title,
+					}}
 					playbackId={playbackId}
 					className={cn(className)}
 					{...playerProps}
