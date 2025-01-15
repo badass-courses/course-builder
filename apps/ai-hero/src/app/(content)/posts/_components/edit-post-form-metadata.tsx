@@ -114,6 +114,32 @@ export const PostMetadataFormFields: React.FC<{
 	const toggleTranscriptDialog = () =>
 		setIsOpenedTranscriptDialog((bool) => !bool)
 
+	const parsedTagsForUiPackage = z
+		.array(
+			z.object({
+				id: z.string(),
+				fields: z.object({
+					label: z.string(),
+					name: z.string(),
+				}),
+			}),
+		)
+		.parse(tags)
+
+	const parsedSelectedTagsForUiPackage = z
+		.array(
+			z.object({
+				tag: z.object({
+					id: z.string(),
+					fields: z.object({
+						label: z.string(),
+						name: z.string(),
+					}),
+				}),
+			}),
+		)
+		.parse(post.tags)
+
 	return (
 		<>
 			<div>
@@ -260,8 +286,10 @@ export const PostMetadataFormFields: React.FC<{
 						</Button>
 					</div>
 					<AdvancedTagSelector
-						availableTags={tags}
-						selectedTags={post?.tags?.map((tag) => tag.tag) ?? []}
+						availableTags={parsedTagsForUiPackage}
+						selectedTags={
+							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
+						}
 						onTagSelect={async (tag: { id: string }) => {
 							await addTagToPost(post.id, tag.id)
 						}}

@@ -48,10 +48,10 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 	const filteredTags = useCallback(() => {
 		return tags.filter(
 			(tag) =>
-				tag.fields.name
+				tag?.fields?.name
 					.toLowerCase()
 					.includes(debouncedSearchTerm.toLowerCase()) ||
-				tag.fields.label
+				tag?.fields?.label
 					.toLowerCase()
 					.includes(debouncedSearchTerm.toLowerCase()),
 		)
@@ -132,22 +132,22 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 									className="hover:bg-gray-50 dark:hover:bg-gray-900"
 								>
 									<td className="whitespace-nowrap px-6 py-4">
-										{tag.fields.label}
+										{tag?.fields?.label}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4">
-										{tag.fields.name}
+										{tag?.fields?.name}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4">
-										{tag.fields.slug}
+										{tag?.fields?.slug}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4">
-										{tag.fields.contexts.join(', ')}
+										{tag?.fields?.contexts?.join(', ')}
 									</td>
 									<td className="whitespace-nowrap px-6 py-4">
-										{tag.fields.image_url && (
+										{tag?.fields?.image_url && (
 											<Image
-												src={tag.fields.image_url}
-												alt={tag.fields.label}
+												src={tag?.fields?.image_url}
+												alt={tag?.fields?.label}
 												width={40}
 												height={40}
 												className="rounded object-cover"
@@ -183,7 +183,7 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 							<div className="border-b border-gray-200 px-4 py-5 sm:px-6">
 								<div className="flex items-center justify-between">
 									<h3 className="text-lg font-medium leading-6 text-gray-900">
-										{tag.fields.label}
+										{tag?.fields?.label}
 									</h3>
 									<div className="flex space-x-2">
 										<TagCrudDialog tag={tag} onSubmit={handleEdit}>
@@ -206,13 +206,13 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 									<div className="sm:col-span-1">
 										<dt className="text-sm font-medium text-gray-500">Name</dt>
 										<dd className="mt-1 text-sm text-gray-900">
-											{tag.fields.name}
+											{tag?.fields?.name}
 										</dd>
 									</div>
 									<div className="sm:col-span-1">
 										<dt className="text-sm font-medium text-gray-500">Slug</dt>
 										<dd className="mt-1 text-sm text-gray-900">
-											{tag.fields.slug}
+											{tag?.fields?.slug}
 										</dd>
 									</div>
 									<div className="sm:col-span-2">
@@ -220,10 +220,10 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 											Contexts
 										</dt>
 										<dd className="mt-1 text-sm text-gray-900">
-											{tag.fields.contexts.join(', ')}
+											{tag?.fields?.contexts?.join(', ')}
 										</dd>
 									</div>
-									{tag.fields.image_url && (
+									{tag?.fields?.image_url && (
 										<div className="sm:col-span-2">
 											<dt className="text-sm font-medium text-gray-500">
 												Image

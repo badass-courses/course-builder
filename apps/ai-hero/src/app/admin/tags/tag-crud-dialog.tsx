@@ -48,12 +48,12 @@ export default function TagCrudDialog({
 			image_url: null,
 			contexts: [],
 			url: null,
-			popularity_order: null,
+			popularity_order: 0,
 		},
 	})
 
 	useEffect(() => {
-		if (tag) {
+		if (tag?.fields) {
 			form.reset(tag.fields)
 		}
 	}, [tag, form])
@@ -169,7 +169,7 @@ export default function TagCrudDialog({
 										<Input
 											placeholder="libraries,frameworks"
 											{...field}
-											value={field.value.join(',')}
+											value={field.value ? field.value.join(',') : ''}
 											onChange={(e) =>
 												field.onChange(e.target.value.split(','))
 											}

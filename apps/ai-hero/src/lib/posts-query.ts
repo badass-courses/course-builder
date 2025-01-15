@@ -244,7 +244,18 @@ export async function updatePost(
 	}
 
 	try {
-		await upsertPostToTypeSense(currentPost, action)
+		await upsertPostToTypeSense(
+			{
+				...currentPost,
+				fields: {
+					...currentPost.fields,
+					...input.fields,
+					description: input.fields.description || '',
+					slug: postSlug,
+				},
+			},
+			action,
+		)
 	} catch (e) {
 		console.error('Failed to update post in Typesense', e)
 	}

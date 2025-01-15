@@ -6,6 +6,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import type { List } from './lists'
 import { Post, PostAction } from './posts'
+import { getPostTags } from './posts-query'
 // import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
 
@@ -36,8 +37,7 @@ export async function upsertPostToTypeSense(
 				console.error(err)
 			})
 	} else {
-		// const tags = await getPostTags(post.id)
-		const now = Date.now()
+		const tags = await getPostTags(post.id)
 		const resource = TypesenseResourceSchema.safeParse({
 			id: post.id,
 			title: post.fields.title,
@@ -47,7 +47,7 @@ export async function upsertPostToTypeSense(
 			visibility: post.fields.visibility,
 			state: post.fields.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
-			// _tags: tags.map((tag) => tag.fields.name),
+			...(tags && { tags: tags.map((tag) => tag) }),
 		})
 
 		if (!resource.success) {
@@ -126,11 +126,12 @@ export async function indexAllContentToTypeSense(
 
 	const indexableResources = resources.filter(
 		(resource) =>
-			resource?.fields?.state === 'published' &&
-			resource.fields.visibility === 'public' &&
-			(resource.type === 'post' ||
-				resource.type === 'tutorial' ||
-				resource.type === 'workshop'),
+			(resource?.fields?.state === 'published' &&
+				resource.fields.visibility === 'public' &&
+				(resource.type === 'post' ||
+					resource.type === 'tutorial' ||
+					resource.type === 'workshop')) ||
+			resource.type === 'list',
 	)
 
 	const documents = indexableResources
@@ -139,7 +140,7 @@ export async function indexAllContentToTypeSense(
 				id: resource.id,
 				title: resource?.fields?.title,
 				slug: resource?.fields?.slug,
-				description: resource?.fields?.description || '',
+				description: resource?.fields?.body || resource?.fields?.description,
 				type: resource.type,
 				visibility: resource?.fields?.visibility,
 				state: resource?.fields?.state,

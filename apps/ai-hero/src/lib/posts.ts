@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { TagSchema } from './tags'
+
 export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
 
 export const PostTypeSchema = z.union([
@@ -43,6 +45,25 @@ export const PostVisibilitySchema = z.union([
 	z.literal('unlisted'),
 ])
 
+export const PostTagsChema = z
+	.array(
+		z.object({
+			contentResourceId: z.string(),
+			organizationId: z.string().nullish(),
+			tagId: z.string(),
+			position: z.number(),
+			createdAt: z
+				.union([z.string(), z.date()])
+				.transform((val) => new Date(val)),
+			updatedAt: z
+				.union([z.string(), z.date()])
+				.transform((val) => new Date(val)),
+			deletedAt: z.any(),
+			tag: TagSchema,
+		}),
+	)
+	.nullish()
+
 export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
@@ -57,7 +78,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
 		}),
-		tags: z.array(z.any()).nullish(),
+		tags: PostTagsChema,
 	}),
 )
 
@@ -74,6 +95,7 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.default('unlisted'),
 		github: z.string().nullish(),
 	}),
+	tags: PostTagsChema,
 	videoResourceId: z.string().optional().nullable(),
 })
 

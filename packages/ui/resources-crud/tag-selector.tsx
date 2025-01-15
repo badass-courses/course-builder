@@ -71,7 +71,7 @@ export default function AdvancedTagSelector({
 	)
 
 	return (
-		<div className={cn('mt-1 w-full max-w-md space-y-2', className)}>
+		<div className={cn('mt-1 w-full space-y-2', className)}>
 			<div className="flex flex-wrap gap-2" aria-live="polite">
 				{selectedTags.map((tag) => (
 					<Badge key={tag.id} variant="secondary" className="text-sm">
