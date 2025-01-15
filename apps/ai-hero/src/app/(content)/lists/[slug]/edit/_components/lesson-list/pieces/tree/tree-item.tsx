@@ -103,11 +103,13 @@ const TreeItem = memo(function TreeItem({
 	mode,
 	level,
 	refresh,
+	index,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
 	refresh: () => void
+	index: number
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
 	const { excludedIds, setExcludedIds } = useSelection()
@@ -363,7 +365,10 @@ const TreeItem = memo(function TreeItem({
 						)}
 					>
 						<div className="flex w-full flex-row items-center">
-							<Icon item={item} />
+							{/* <Icon item={item} /> */}
+							<span className="mr-2 min-w-[15px] text-xs opacity-50">
+								{index + 1}
+							</span>
 							<span
 								className={cn('text-left', {
 									'font-semibold': item.type === 'section',
@@ -457,6 +462,7 @@ const TreeItem = memo(function TreeItem({
 								key={child.id}
 								level={level + 1}
 								mode={childType}
+								index={index}
 							/>
 						)
 					})}

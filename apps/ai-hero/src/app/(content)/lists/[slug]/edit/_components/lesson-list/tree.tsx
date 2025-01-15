@@ -312,6 +312,7 @@ export default function Tree({
 								level={0}
 								key={item.id}
 								mode={type}
+								index={index}
 							/>
 						)
 					})}
