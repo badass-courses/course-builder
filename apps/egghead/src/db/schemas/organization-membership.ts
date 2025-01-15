@@ -1,6 +1,6 @@
 import { mysqlTable } from '@/db/mysql-table'
 import { relations } from 'drizzle-orm'
-import { varchar, type MySqlTableFn } from 'drizzle-orm/mysql-core'
+import { MySqlColumn, varchar, type MySqlTableFn } from 'drizzle-orm/mysql-core'
 
 import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
 
@@ -12,14 +12,20 @@ const { organizationRelations, organizationMemberships } =
 export function getEggheadOrganizationMembershipsSchema(
 	mysqlTable: MySqlTableFn,
 ) {
-	const organizationMembershipsWithInvites = mysqlTable(
-		'OrganizationMembership',
-		{
-			inviteId: varchar('invite_id', { length: 255 }).notNull().unique(),
+	const columns = Object.entries(organizationMemberships).reduce(
+		(acc, [key, value]) => {
+			if (value instanceof MySqlColumn) {
+				acc[key] = value
+			}
+			return acc
 		},
+		{} as Record<string, MySqlColumn<any, any>>,
 	)
 
-	return { ...organizationMembershipsWithInvites, ...organizationMemberships }
+	return mysqlTable('OrganizationMembership', {
+		...columns,
+		inviteId: varchar('invite_id', { length: 255 }).notNull().unique(),
+	})
 }
 
 export function getEggheadOrganizationMembershipsRelationsSchema(
@@ -28,15 +34,18 @@ export function getEggheadOrganizationMembershipsRelationsSchema(
 	const organizationMembershipsWithInvites =
 		getEggheadOrganizationMembershipsSchema(mysqlTable)
 
-	const inviteRelation = relations(invites, ({ one }) => ({
-		invites: one(invites, {
-			fields: [organizationMembershipsWithInvites.inviteId],
-			references: [invites.id],
+	const membershipRelations = relations(
+		organizationMembershipsWithInvites,
+		({ one }) => ({
+			invite: one(invites, {
+				fields: [organizationMembershipsWithInvites.inviteId],
+				references: [invites.id],
+			}),
 		}),
-	}))
+	)
 
 	return {
 		...organizationRelations,
-		...inviteRelation,
+		organizationMemberships: membershipRelations,
 	}
 }
