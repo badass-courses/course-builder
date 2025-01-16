@@ -1,14 +1,18 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PostPlayer } from '@/app/(content)/posts/_components/post-player'
-import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
+import { SimplePostPlayer } from '@/app/(content)/posts/_components/post-player'
+import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
+import type { List } from '@/lib/lists'
 import { Post, PostSchema } from '@/lib/posts'
-import { RefreshCcw } from 'lucide-react'
+import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import type { Tag } from '@/lib/tags'
+import { api } from '@/trpc/react'
+import { Pencil } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
-import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
@@ -21,29 +25,55 @@ import {
 	FormMessage,
 	Input,
 	Textarea,
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
+import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
+import { NewLessonVideoForm } from '../../_components/new-lesson-video-form'
+import { AddToList } from './add-to-list'
 import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResourceLoader: Promise<VideoResource | null>
+	videoResourceId: string | null | undefined
 	post: Post
-}> = ({ form, videoResourceLoader, post }) => {
+	tagLoader: Promise<Tag[]>
+	listsLoader: Promise<List[]>
+}> = ({
+	form,
+	videoResourceLoader,
+	post,
+	videoResourceId: initialVideoResourceId,
+	tagLoader,
+	listsLoader,
+}) => {
 	const router = useRouter()
-	const videoResource = videoResourceLoader ? use(videoResourceLoader) : null
 
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
-	>(post.resources?.[0]?.resource.id)
-	const [transcript, setTranscript] = useTranscript({
+	>(initialVideoResourceId)
+	const tags = tagLoader ? use(tagLoader) : []
+	const lists = listsLoader ? use(listsLoader) : []
+
+	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
+		videoResourceId: videoResourceId,
+	})
+
+	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
+		'loading' | 'finalizing upload'
+	>('loading')
+
+	const [replacingVideo, setReplacingVideo] = React.useState(false)
+
+	const {
+		transcript,
+		setTranscript,
+		setIsProcessing: setIsTranscriptProcessing,
+		TranscriptDialog,
+	} = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
 	})
@@ -67,6 +97,7 @@ export const PostMetadataFormFields: React.FC<{
 						break
 					case 'transcript.ready':
 						setTranscript(data.body)
+						setIsTranscriptProcessing(false)
 						break
 					default:
 						break
@@ -76,40 +107,142 @@ export const PostMetadataFormFields: React.FC<{
 			}
 		},
 	})
+
+	const [isOpenedTranscriptDialog, setIsOpenedTranscriptDialog] =
+		React.useState(false)
+
+	const toggleTranscriptDialog = () =>
+		setIsOpenedTranscriptDialog((bool) => !bool)
+
+	const parsedTagsForUiPackage = z
+		.array(
+			z.object({
+				id: z.string(),
+				fields: z.object({
+					label: z.string(),
+					name: z.string(),
+				}),
+			}),
+		)
+		.parse(tags)
+
+	const parsedSelectedTagsForUiPackage = z
+		.array(
+			z.object({
+				tag: z.object({
+					id: z.string(),
+					fields: z.object({
+						label: z.string(),
+						name: z.string(),
+					}),
+				}),
+			}),
+		)
+		.parse(post.tags)
+
 	return (
 		<>
 			<div>
-				{videoResourceId && videoResource ? (
-					<Suspense
-						fallback={
-							<>
-								<div className="bg-muted flex aspect-video h-full w-full items-center justify-center p-5">
-									video is loading
-								</div>
-							</>
-						}
-					>
-						<PostPlayer videoResource={videoResource} />
-
-						<div className="text-muted-foreground px-5 text-xs">
-							video is {videoResource?.state}
+				<Suspense
+					fallback={
+						<>
+							<div className="bg-muted flex aspect-video h-full w-full flex-col items-center justify-center gap-2 p-5 text-sm">
+								<Spinner className="h-4 w-4" />
+								<span>video is loading</span>
+							</div>
+						</>
+					}
+				>
+					{videoResourceId ? (
+						<>
+							{videoResourceId ? (
+								replacingVideo ? (
+									<div>
+										<NewLessonVideoForm
+											parentResourceId={post.id}
+											onVideoUploadCompleted={(videoResourceId) => {
+												setReplacingVideo(false)
+												setVideoUploadStatus('finalizing upload')
+												setVideoResourceId(videoResourceId)
+											}}
+											onVideoResourceCreated={(videoResourceId) =>
+												setVideoResourceId(videoResourceId)
+											}
+										/>
+										<Button
+											variant="ghost"
+											type="button"
+											onClick={() => setReplacingVideo(false)}
+										>
+											Cancel Replace Video
+										</Button>
+									</div>
+								) : (
+									<>
+										{videoResource && videoResource.state === 'ready' ? (
+											<div className="-mt-5 border-b">
+												<SimplePostPlayer videoResource={videoResource} />
+												<div className="flex items-center gap-1 px-4 pb-2">
+													<Button
+														variant="secondary"
+														size={'sm'}
+														type="button"
+														onClick={() => setReplacingVideo(true)}
+													>
+														Replace Video
+													</Button>
+													{transcript ? (
+														TranscriptDialog
+													) : (
+														<span className="px-3 text-xs">
+															Processing transcript...
+														</span>
+													)}
+												</div>
+											</div>
+										) : videoResource ? (
+											<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+												<Spinner className="h-5 w-5" />
+												<span>video is {videoResource.state}</span>
+											</div>
+										) : (
+											<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+												<Spinner className="h-5 w-5" />
+												<span>video is {videoUploadStatus}</span>
+											</div>
+										)}
+									</>
+								)
+							) : (
+								<NewLessonVideoForm
+									parentResourceId={post.id}
+									onVideoUploadCompleted={(videoResourceId) => {
+										setVideoUploadStatus('finalizing upload')
+										setVideoResourceId(videoResourceId)
+									}}
+									onVideoResourceCreated={(videoResourceId) =>
+										setVideoResourceId(videoResourceId)
+									}
+								/>
+							)}
+						</>
+					) : (
+						<div className="px-5">
+							<FormLabel className="text-lg font-bold">Video</FormLabel>
+							<PostUploader
+								setVideoResourceId={setVideoResourceId}
+								parentResourceId={post.id}
+							/>
 						</div>
-					</Suspense>
-				) : (
-					<div className="px-5">
-						<FormLabel className="text-lg font-bold">Video</FormLabel>
-						<PostUploader
-							setVideoResourceId={setVideoResourceId}
-							parentResourceId={post.id}
-						/>
-					</div>
-				)}
+					)}
+				</Suspense>
 			</div>
 			<FormField
 				control={form.control}
 				name="id"
 				render={({ field }) => <Input type="hidden" {...field} />}
 			/>
+
 			<FormField
 				control={form.control}
 				name="fields.title"
@@ -125,6 +258,48 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.slug"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormDescription>Short with keywords is best.</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			{tags?.length > 0 && (
+				<div className="px-5">
+					<div className="flex w-full items-baseline justify-between">
+						<FormLabel className="text-lg font-bold">Tags</FormLabel>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="flex items-center gap-1 opacity-75 hover:opacity-100"
+							asChild
+						>
+							<Link href="/admin/tags">
+								<Pencil className="h-3 w-3" /> Edit
+							</Link>
+						</Button>
+					</div>
+					<AdvancedTagSelector
+						availableTags={parsedTagsForUiPackage}
+						selectedTags={
+							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
+						}
+						onTagSelect={async (tag: { id: string }) => {
+							await addTagToPost(post.id, tag.id)
+						}}
+						onTagRemove={async (tagId: string) => {
+							await removeTagFromPost(post.id, tagId)
+						}}
+					/>
+				</div>
+			)}
+			<AddToList lists={lists} post={post} />
 			<FormField
 				control={form.control}
 				name="fields.description"
@@ -177,39 +352,6 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			{videoResource && (
-				<div className="px-5">
-					<div className="flex items-center justify-between gap-2">
-						<label className="text-lg font-bold">Transcript</label>
-						{Boolean(videoResourceId) && (
-							<TooltipProvider delayDuration={0}>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<Button
-											variant="ghost"
-											size="icon"
-											type="button"
-											onClick={async (event) => {
-												event.preventDefault()
-												await reprocessTranscript({ videoResourceId })
-											}}
-											title="Reprocess"
-										>
-											<RefreshCcw className="w-3" />
-										</Button>
-									</TooltipTrigger>
-									<TooltipContent side="top">
-										Reprocess Transcript
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
-						)}
-					</div>
-					<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-						{transcript ? transcript : 'Transcript Processing'}
-					</ReactMarkdown>
-				</div>
-			)}
 		</>
 	)
 }
