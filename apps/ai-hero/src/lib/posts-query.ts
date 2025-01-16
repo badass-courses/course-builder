@@ -294,7 +294,7 @@ export async function getPost(slugOrId: string) {
 		'Content',
 	)
 		? ['public', 'private', 'unlisted']
-		: ['public']
+		: ['public', 'unlisted']
 	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
 		? ['draft', 'published']
 		: ['published']
