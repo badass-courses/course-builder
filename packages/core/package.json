@@ -153,7 +153,8 @@
 		"stripe": "16.9.0",
 		"unplugin-swc": "^1.4.4",
 		"uuid": "^9.0.1",
-		"xstate": "^5.13.0"
+		"xstate": "^5.13.0",
+		"@upstash/redis": "^1.28.4"
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",

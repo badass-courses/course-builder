@@ -1,0 +1,128 @@
+# Course Builder Monorepo Cursor Rules
+
+This .cursorrules file provides guidelines for the Cursor AI when working within the Course Builder monorepo, which includes Next.js applications and TypeScript packages.
+
+## General Guidelines
+-   Use Markdown for documentation and README files.
+-   Preserve existing code structures unless a compelling reason dictates otherwise.
+-   Provide concise, relevant, and technically accurate responses.
+-   Verify all information before implementing changes.
+-   Make changes file-by-file, testing each change thoroughly.
+-   Document changes clearly using conventional commit messages.
+-   Adhere to project-specific coding standards and best practices.
+-   Use descriptive names for files, directories, variables, and functions.
+-   Avoid using deprecated functions or libraries.
+-   Write unit tests for new and modified code.
+-   Ensure all tests pass before merging.
+-   Remove unnecessary files or code to avoid clutter.
+-   Prioritize project-specific instructions and context over general coding practices.
+-   When referencing Cursor AI, use the correct capitalization and spacing.
+-   Focus on practical use cases within the Course Builder project.
+-   Aim for a minimal diff for each code change.
+-   Include a one-line comment at the start of each file with the file's full path.
+
+## Code Principles
+-   Adhere to DRY (Don't Repeat Yourself) principles.
+-   Adhere to KISS (Keep It Simple, Stupid) principles.
+-   Implement functionality only when needed, following YAGNI (You Aren’t Gonna Need It).
+-   Each entity (class, function, variable) should have a single, clearly defined purpose (Curly's Law).
+-   Do the simplest thing that could possibly work and avoid over-engineering.
+-   Strive for code that is easy to read and understand without much thinking.
+-   Do not engage in premature optimization.
+-   Follow the Boy Scout Rule by always leaving code in a better state than you found it.
+-   Code for maintainability, considering someone else will have to modify the code even if it's you in the future.
+-   Adhere to the Principle of Least Astonishment.
+
+## TypeScript Specific Rules
+-   Use TypeScript for all code within the project.
+-   Use interfaces over types unless there's a specific need for type aliases.
+-   Avoid using enums; favor using const maps for better type safety and flexibility.
+-   All functions, methods, and class members must have explicit type annotations.
+-   Use the `function` keyword for pure functions.
+-   Omit unnecessary curly braces in conditional statements.
+-   Use concise, one-line syntax for simple conditional statements (e.g., `if (condition) doSomething();`).
+
+## React & Next.js Specific Rules
+-   Use functional React components.
+-   Favor React Server Components (RSC) where possible, minimizing `use client`.
+-   Implement Suspense for asynchronous operations.
+-   Use dynamic loading for non-critical components.
+-   Use named exports for components.
+-   Optimize images with WebP format, size data, and lazy loading.
+-   Use error boundaries to handle errors gracefully.
+-   Use `nuqs` for URL search parameter state management.
+-   Follow Next.js documentation for data fetching and routing.
+-   Use `next-safe-action` for all server actions.
+-   Always use `async` functions for database calls.
+-   Use React Query for any client-side data fetching.
+
+## UI and Styling Rules
+-   Use Tailwind CSS classes for all styling.
+-   Implement a consistent design system with the Tailwind configuration.
+-   Follow a mobile-first approach for responsive design.
+-   Utilize Shadcn UI components for common UI patterns.
+-   Implement dark mode functionality with Tailwind's dark variant.
+-   Use CSS variables for themes.
+
+## Testing Rules
+-   Implement unit tests for all utility functions and business logic using Jest or Vitest.
+-   Use component tests for UI components
+-   Implement E2E tests for critical workflows.
+-   Aim for high test coverage.
+-   Use mocked dependencies for unit tests.
+
+## Error Handling & Validation
+-   Prioritize error handling and edge cases, handling them at the beginning of functions.
+-   Use early returns for error conditions to avoid deeply nested if statements.
+-   Place the happy path last in the function for improved readability.
+-   Avoid unnecessary `else` statements.
+-   Use guard clauses to handle preconditions and invalid states early.
+-   Implement proper error logging and user-friendly error messages.
+-   Use custom error types for consistent error handling.
+-   Use Zod for schema validation.
+
+## API Rules
+- Use  `def` for synchronous operations and `async def` for asynchronous operations.
+-   Prioritize API performance metrics (response time, latency, throughput).
+-   Minimize blocking I/O operations, using dedicated async functions for database and external API calls.
+-   Implement caching strategies where necessary.
+-   Use Pydantic models for request and response schemas.
+-   Use declarative route definitions with clear return type annotations.
+-   Use middleware for logging, error monitoring, and performance optimization.
+-   Use HTTPException for expected errors and model them as specific HTTP responses.
+
+## Version Control Rules
+-   Use a branching strategy such as GitHub Flow.
+-   Use conventional commits for commit messages, including type, optional scope, and a concise description.
+-   Always commit and push all changes, not just code, to ensure all aspects of the project are tracked.
+
+## Deployment Rules
+-   Configure and use CI/CD pipelines for automated builds, tests, and deployments using GitHub Actions or GitLab CI.
+-   Use Docker for containerization.
+
+## Dependencies Rules
+-   Use pnpm for dependency management.
+-   Explicitly list all necessary dependencies in `package.json`.
+
+## Naming Conventions
+-   Use kebab-case for directory and file names (e.g., `auth-wizard.ts`, `user-profile/user-card.tsx`).
+-   Use PascalCase for class, type and interface names (e.g., `AuthWizard`, `UserProfileProps`).
+-   Use camelCase for function and variable names (e.g., `handleLogin`, `userProfile`).
+-   Use SCREAMING_SNAKE_CASE for constants.
+
+## Documentation Rules
+-   Include a one-line comment at the start of each file with its full path (e.g., `// src/components/auth/auth-form.tsx`).
+-   Use comments to describe the *purpose* of the code, not just the effect.
+-   Use Google Style Docstrings.
+-   Maintain up-to-date README files for the project and major components.
+-   Ensure all links in the README.md file are relative and correct.
+-   When updating the README.md, ensure the table of contents remains accurate.
+
+## Additional Insights
+-   `.cursorrules` files are repo-specific "Rules for AI".
+-   `.cursorrules` files should be placed in the root of the repository.
+-   The content of `.cursorrules` files will be appended to the global "Rules for AI" settings in Cursor.
+-   Focus on providing repo-level context and guidelines, not just general coding practices.
+-   `.cursorrules` can include information about project structure, architectural decisions, and commonly used libraries or methods.
+-   Consider including rules for handling specific file types or coding patterns unique to your project.
+-   Rules can cover both code generation and code understanding aspects for Cursor AI.

@@ -71,3 +71,4 @@ export interface CourseBuilderConfig {
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'
+export * from './lib/subscription/stripe-cache'

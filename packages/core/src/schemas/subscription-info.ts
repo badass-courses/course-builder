@@ -19,3 +19,13 @@ export const SubscriptionInfoSchema = z.object({
 })
 
 export type SubscriptionInfo = z.infer<typeof SubscriptionInfoSchema>
+
+export type SubscriptionStatus =
+	| 'active'
+	| 'past_due'
+	| 'canceled'
+	| 'incomplete'
+	| 'incomplete_expired'
+	| 'trialing'
+	| 'unpaid'
+	| 'paused'
