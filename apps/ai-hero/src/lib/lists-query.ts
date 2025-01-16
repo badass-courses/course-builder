@@ -2,7 +2,11 @@
 
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
+} from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
@@ -15,6 +19,7 @@ import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function createList(input: {
 	title: string
+	listType: string
 	description?: string
 }) {
 	const { session, ability } = await getServerAuthSession()
@@ -30,7 +35,7 @@ export async function createList(input: {
 		fields: {
 			title: input.title,
 			description: input.description,
-			type: 'nextUp',
+			type: input.listType,
 			state: 'draft',
 			visibility: 'unlisted',
 			slug: `${slugify(input.title)}~${guid()}`,
@@ -60,6 +65,12 @@ export async function getAllLists() {
 				},
 				orderBy: asc(contentResourceResource.position),
 			},
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 		},
 		orderBy: desc(contentResource.createdAt),
 	})
@@ -85,6 +96,12 @@ export async function getList(listIdOrSlug: string) {
 					resource: true,
 				},
 				orderBy: asc(contentResourceResource.position),
+			},
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
 			},
 		},
 	})

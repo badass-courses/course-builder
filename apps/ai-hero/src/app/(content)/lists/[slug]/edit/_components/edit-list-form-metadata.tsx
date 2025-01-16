@@ -1,10 +1,14 @@
 import * as React from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { List, ListSchema } from '@/lib/lists'
+import { ListTypeSchema } from '@/lib/lists'
+import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import type { Tag } from '@/lib/tags'
+import { Pencil } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
 	Button,
 	FormControl,
@@ -28,9 +32,40 @@ import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 export const ListMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof ListSchema>>
+	tagLoader: Promise<Tag[]>
 	list: List
-}> = ({ form, list }) => {
+}> = ({ form, list, tagLoader }) => {
 	const router = useRouter()
+	const tags = tagLoader ? React.use(tagLoader) : []
+
+	const parsedTagsForUiPackage = z
+		.array(
+			z.object({
+				id: z.string(),
+				fields: z.object({
+					label: z.string(),
+					name: z.string(),
+				}),
+			}),
+		)
+		.parse(tags)
+
+	const parsedSelectedTagsForUiPackage = z
+		.array(
+			z.object({
+				tag: z.object({
+					id: z.string(),
+					fields: z.object({
+						label: z.string(),
+						name: z.string(),
+					}),
+				}),
+			}),
+		)
+		.parse(list.tags)
+
+	// Get all possible values from the enum
+	const listTypeOptions = ListTypeSchema.options
 
 	return (
 		<>
@@ -39,7 +74,6 @@ export const ListMetadataFormFields: React.FC<{
 				name="id"
 				render={({ field }) => <Input type="hidden" {...field} />}
 			/>
-
 			<FormField
 				control={form.control}
 				name="fields.title"
@@ -84,7 +118,11 @@ export const ListMetadataFormFields: React.FC<{
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
-									<SelectItem value="nextUp">Next Up</SelectItem>
+									{listTypeOptions.map((type) => (
+										<SelectItem key={type} value={type}>
+											{type.charAt(0).toUpperCase() + type.slice(1)}
+										</SelectItem>
+									))}
 								</SelectContent>
 							</Select>
 							<FormMessage />
@@ -92,6 +130,35 @@ export const ListMetadataFormFields: React.FC<{
 					)
 				}}
 			/>
+			{tags?.length > 0 && (
+				<div className="px-5">
+					<div className="flex w-full items-baseline justify-between">
+						<FormLabel className="text-lg font-bold">Tags</FormLabel>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="flex items-center gap-1 opacity-75 hover:opacity-100"
+							asChild
+						>
+							<Link href="/admin/tags">
+								<Pencil className="h-3 w-3" /> Edit
+							</Link>
+						</Button>
+					</div>
+					<AdvancedTagSelector
+						availableTags={parsedTagsForUiPackage}
+						selectedTags={
+							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
+						}
+						onTagSelect={async (tag: { id: string }) => {
+							await addTagToPost(list.id, tag.id)
+						}}
+						onTagRemove={async (tagId: string) => {
+							await removeTagFromPost(list.id, tagId)
+						}}
+					/>
+				</div>
+			)}
 			<FormField
 				control={form.control}
 				name="fields.description"

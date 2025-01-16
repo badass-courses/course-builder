@@ -3,6 +3,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { getList } from '@/lib/lists-query'
 import { getPost } from '@/lib/posts-query'
+import { getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -35,7 +36,7 @@ export default async function ListEditPage(props: {
 	params: Promise<{ slug: string }>
 }) {
 	const params = await props.params
-
+	const tagLoader = getTags()
 	const { ability } = await getServerAuthSession()
 	const list = await getList(params.slug)
 
@@ -47,5 +48,11 @@ export default async function ListEditPage(props: {
 		redirect(`/${list?.fields?.slug}`)
 	}
 
-	return <EditListForm key={list.fields.slug} list={{ ...list }} />
+	return (
+		<EditListForm
+			tagLoader={tagLoader}
+			key={list.fields.slug}
+			list={{ ...list }}
+		/>
+	)
 }

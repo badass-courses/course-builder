@@ -4,7 +4,7 @@ export function getNextUpResourceFromList(
 	list: List,
 	currentResourceId: string,
 ) {
-	if (list?.fields?.type !== 'nextUp') return null
+	// if (list?.fields?.type !== 'nextUp') return null
 
 	const currentResourceIndexFromList = list?.resources.findIndex(
 		(r) => r.resource.id === currentResourceId,

@@ -2,13 +2,25 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { ListTypeSchema } from '@/lib/lists'
 import { createList } from '@/lib/lists-query'
 
-import { Button, Input, Label, Textarea } from '@coursebuilder/ui'
+import {
+	Button,
+	Input,
+	Label,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+	Textarea,
+} from '@coursebuilder/ui'
 
 export function CreateListForm() {
 	const [title, setTitle] = useState('')
 	const [description, setDescription] = useState('')
+	const [listType, setListType] = useState('nextUp')
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 
@@ -16,14 +28,16 @@ export function CreateListForm() {
 		e.preventDefault()
 		try {
 			setIsLoading(true)
-			await createList({ title, description })
+			await createList({ title, description, listType })
 			setTitle('')
 			setDescription('')
+			setListType('')
 			router.refresh()
 		} finally {
 			setIsLoading(false)
 		}
 	}
+	const listTypeOptions = ListTypeSchema.options
 
 	return (
 		<form
@@ -43,6 +57,29 @@ export function CreateListForm() {
 					// className="block w-full rounded-md border border-gray-300 px-3 py-2"
 					required
 				/>
+			</div>
+			<div>
+				<Label htmlFor="listType" className="mb-1 block text-sm font-medium">
+					Type
+				</Label>
+				<Select
+					name="listType"
+					onValueChange={(value) => {
+						setListType(value)
+					}}
+					defaultValue={listType || 'nextUp'}
+				>
+					<SelectTrigger className="w-full">
+						<SelectValue placeholder="Select list type..." />
+					</SelectTrigger>
+					<SelectContent>
+						{listTypeOptions.map((type) => (
+							<SelectItem key={type} value={type}>
+								{type.charAt(0).toUpperCase() + type.slice(1)}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</div>
 			<div>
 				<Label htmlFor="description" className="mb-1 block text-sm font-medium">

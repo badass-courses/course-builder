@@ -2,9 +2,9 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 
-import { PostSchema, PostStateSchema, PostVisibilitySchema } from './posts'
+import { PostStateSchema, PostTagsChema, PostVisibilitySchema } from './posts'
 
-export const ListTypeSchema = z.enum(['nextUp'])
+export const ListTypeSchema = z.enum(['nextUp', 'tutorial', 'workshop'])
 
 export const ListSchema = ContentResourceSchema.merge(
 	z.object({
@@ -21,6 +21,7 @@ export const ListSchema = ContentResourceSchema.merge(
 			gitpod: z.string().nullish(),
 		}),
 		resources: z.array(z.any()),
+		tags: PostTagsChema,
 	}),
 )
 
@@ -39,6 +40,7 @@ export const ListUpdateSchema = z.object({
 		github: z.string().nullish(),
 	}),
 	videoResourceId: z.string().optional().nullable(),
+	tags: PostTagsChema,
 })
 
 export type ListUpdate = z.infer<typeof ListUpdateSchema>

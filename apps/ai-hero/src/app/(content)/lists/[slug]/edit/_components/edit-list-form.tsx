@@ -19,8 +19,6 @@ import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas'
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 import { ListMetadataFormFields } from './edit-list-form-metadata'
@@ -43,9 +41,13 @@ export type EditListFormProps = {
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
+	tagLoader: Promise<Tag[]>
 }
 
-export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
+export function EditListForm({
+	list,
+	tagLoader,
+}: Omit<EditListFormProps, 'form'>) {
 	const { forcedTheme: theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof ListSchema>>({
@@ -76,7 +78,7 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 				}
 			}}
 			resourceSchema={ListSchema}
-			getResourcePath={(slug) => `/lists`}
+			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updateList}
 			// autoUpdateResource={autoUpdatePost}
 			form={form}
@@ -111,7 +113,7 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 			]}
 		>
 			<React.Suspense fallback={<div>loading</div>}>
-				<ListMetadataFormFields form={form} list={list} />
+				<ListMetadataFormFields tagLoader={tagLoader} form={form} list={list} />
 			</React.Suspense>
 		</EditResourcesFormDesktop>
 	)
