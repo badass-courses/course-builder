@@ -6,25 +6,36 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { PricingWidget } from '@/app/_components/home-pricing-widget'
+import { Code } from '@/components/codehike/code'
+import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
+import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
+import type { List } from '@/lib/lists'
+import { getAllLists, getList, getListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
+// import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { codeToHtml } from '@/utils/shiki'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
+import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
+import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
+import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
-import { Transcript } from '../_components/video-transcript-renderer'
+import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
+import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
+
+export const experimental_ppr = true
 
 type Props = {
 	params: Promise<{ post: string }>
@@ -33,11 +44,14 @@ type Props = {
 
 export async function generateStaticParams() {
 	const posts = await getAllPosts()
+	const lists = await getAllLists()
 
-	return posts
-		.filter((post) => Boolean(post.fields?.slug))
-		.map((post) => ({
-			post: post.fields?.slug,
+	const resources = [...posts, ...lists]
+
+	return resources
+		.filter((resource) => Boolean(resource.fields?.slug))
+		.map((resource) => ({
+			post: resource.fields?.slug,
 		}))
 }
 
@@ -46,20 +60,27 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const post = await getPost(params.post)
+	let resource
 
-	if (!post) {
+	resource = await getPost(params.post)
+
+	if (!resource) {
+		resource = await getList(params.post)
+	}
+
+	if (!resource) {
 		return parent as Metadata
 	}
 
 	return {
-		title: post.fields.title,
+		title: resource.fields.title,
+		description: resource.fields.description,
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({
-					fields: { slug: post.fields.slug },
-					id: post.id,
-					updatedAt: post.updatedAt,
+					fields: { slug: resource.fields.slug },
+					id: resource.id,
+					updatedAt: resource.updatedAt,
 				}),
 			],
 		},
@@ -85,45 +106,40 @@ async function Post({ post }: { post: Post | null }) {
 		return null
 	}
 
-	const transcript = post.resources?.[0]?.resource?.fields?.transcript
+	if (!post.fields.body) {
+		return null
+	}
+
+	const { content } = await compileMDX({
+		source: post.fields.body,
+		// @ts-expect-error
+		components: { Code, Scrollycoding },
+		options: {
+			mdxOptions: {
+				remarkPlugins: [
+					remarkGfm,
+					[
+						remarkCodeHike,
+						{
+							components: { code: 'Code' },
+						},
+					],
+				],
+				recmaPlugins: [
+					[
+						recmaCodeHike,
+						{
+							components: { code: 'Code' },
+						},
+					],
+				],
+			},
+		},
+	})
 
 	return (
-		<article className="prose sm:prose-lg lg:prose-xl prose-p:text-foreground/80 mt-10 max-w-none">
-			{post.fields.body && (
-				<MDXRemote
-					source={post.fields.body}
-					components={{
-						// @ts-expect-error
-						pre: async (props: any) => {
-							const children = props?.children.props.children
-							const language =
-								props?.children.props.className?.split('-')[1] || 'typescript'
-							try {
-								const html = await codeToHtml({ code: children, language })
-								return (
-									<div
-										className="before:via-foreground/10 relative rounded before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:to-transparent"
-										dangerouslySetInnerHTML={{ __html: html }}
-									/>
-								)
-							} catch (error) {
-								console.error(error)
-								return <pre {...props} />
-							}
-						},
-					}}
-				/>
-			)}
-			{transcript && (
-				<>
-					<div className="mt-16 border-t">
-						<h3 className="text-fluid-xl mb-8 font-bold leading-none">
-							Transcript
-						</h3>
-						<Transcript transcriptLoader={Promise.resolve(transcript)} />
-					</div>
-				</>
-			)}
+		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+			{content}
 		</article>
 	)
 }
@@ -143,6 +159,16 @@ export default async function PostPage(props: {
 	const searchParams = await props.searchParams
 	const params = await props.params
 	const post = await getPost(params.post)
+
+	if (!post) {
+		return (
+			<ListPage
+				params={{ slug: params.post } as any}
+				searchParams={searchParams as any}
+			/>
+		)
+	}
+
 	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 	const { allowPurchase, pricingDataLoader, product, commerceProps } =
@@ -158,15 +184,25 @@ export default async function PostPage(props: {
 		notFound()
 	}
 
+	const listLoader = getListForPost(post.id)
+
+	// const squareGridPattern = generateGridPattern(
+	// 	post.fields.title,
+	// 	1000,
+	// 	800,
+	// 	0.8,
+	// 	false,
+	// )
+
 	const hasVideo = post?.resources?.find(
 		({ resource }) => resource.type === 'videoResource',
 	)
 
 	return (
 		<main>
-			{hasVideo && <PlayerContainer post={post} />}
+			{hasVideo && <PlayerContainer listLoader={listLoader} post={post} />}
 			<div
-				className={cn('container relative max-w-screen-xl pb-24', {
+				className={cn('container relative max-w-screen-xl pb-16 sm:pb-24', {
 					'pt-16': !hasVideo,
 				})}
 			>
@@ -176,6 +212,10 @@ export default async function PostPage(props: {
 						'top-0': !hasVideo,
 					})}
 				>
+					{/* <img
+						src={squareGridPattern}
+						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+					/> */}
 					<div
 						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
 						aria-hidden="true"
@@ -196,41 +236,30 @@ export default async function PostPage(props: {
 					</div>
 				</div>
 				<div className="relative z-10">
-					<article className="flex h-full grid-cols-12 flex-col gap-5 md:grid">
-						<div className="col-span-8">
-							<PostTitle post={post} />
-							<Contributor className="flex md:hidden [&_img]:w-8" />
-							<Post post={post} />
+					<article className="flex h-full flex-col gap-5">
+						<PostTitle post={post} />
+						<Contributor className="flex [&_img]:w-8" />
+						<Post post={post} />
+						<React.Suspense fallback={<Spinner />}>
+							<PostNextUpFromListPagination
+								postId={post.id}
+								listLoader={listLoader}
+							/>
+						</React.Suspense>
+						<div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-1">
+							<strong className="text-lg font-semibold">Share</strong>
+							<Share
+								className="bg-background w-full"
+								title={post?.fields.title}
+							/>
 						</div>
-						<aside className="relative col-span-3 col-start-10 flex h-full flex-col pt-24">
-							<div className="top-20 md:sticky">
-								<Contributor className="hidden md:flex" />
-								<div className="mt-5 flex w-full flex-col gap-1">
-									<strong className="text-lg font-semibold">Share</strong>
-									<Share
-										className="bg-background w-full"
-										title={post?.fields.title}
-									/>
-								</div>
-								{/* <div className="relative">
-									<img
-										src={squareGridPattern}
-										className="my-2 h-[30px] w-[289px] overflow-hidden object-cover object-left-top opacity-75 saturate-0"
-									/>
-									<div
-										className="to-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-r from-transparent"
-										aria-hidden="true"
-									/>
-								</div> */}
-							</div>
-						</aside>
 					</article>
 				</div>
 			</div>
 			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 				<section id="buy">
 					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-						Get Really Good At Local First Development
+						Get Really Good At Node.js
 					</h2>
 					<div className="flex items-center justify-center border-y">
 						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
@@ -250,7 +279,13 @@ export default async function PostPage(props: {
 	)
 }
 
-async function PlayerContainer({ post }: { post: Post | null }) {
+async function PlayerContainer({
+	post,
+	listLoader,
+}: {
+	post: Post | null
+	listLoader: Promise<List | null>
+}) {
 	const displayOverlay = false
 
 	if (!post) {
@@ -264,21 +299,25 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return videoResource ? (
-		<Suspense
-			fallback={
-				<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />
-			}
-		>
-			<section
-				aria-label="video"
-				className="mb-10 flex flex-col items-center justify-center border-b bg-black"
+		<VideoPlayerOverlayProvider>
+			<Suspense
+				fallback={
+					<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />
+				}
 			>
-				<PostPlayer
-					className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
-					videoResource={videoResource}
-				/>
-				{!ckSubscriber && <PostNewsletterCta />}
-			</section>
-		</Suspense>
+				<section
+					aria-label="video"
+					className="mb-10 flex flex-col items-center justify-center border-b bg-black"
+				>
+					<PostPlayer
+						postId={post.id}
+						listLoader={listLoader}
+						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
+						videoResource={videoResource}
+					/>
+					{!ckSubscriber && <PostNewsletterCta />}
+				</section>
+			</Suspense>
+		</VideoPlayerOverlayProvider>
 	) : resource ? null : null // spacer // <div className="pt-16" />
 }
