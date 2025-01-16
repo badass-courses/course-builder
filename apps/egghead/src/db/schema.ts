@@ -5,7 +5,7 @@ import {
 } from '@/db/schemas/invites'
 import {
 	getEggheadOrganizationMembershipsRelationsSchema,
-	getEggheadOrganizationMembershipsSchema,
+	getOrganizationMembershipsSchema,
 } from '@/db/schemas/organization-membership'
 
 import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
@@ -14,7 +14,7 @@ export const invites = getInvitesSchema(mysqlTable)
 export const invitesRelations = getInvitesRelationsSchema(mysqlTable)
 
 export const organizationMemberships =
-	getEggheadOrganizationMembershipsSchema(mysqlTable)
+	getOrganizationMembershipsSchema(mysqlTable)
 export const organizationMembershipsRelations =
 	getEggheadOrganizationMembershipsRelationsSchema(mysqlTable)
 

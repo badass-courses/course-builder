@@ -1,38 +1,52 @@
 import { mysqlTable } from '@/db/mysql-table'
-import { relations } from 'drizzle-orm'
-import { MySqlColumn, varchar, type MySqlTableFn } from 'drizzle-orm/mysql-core'
+import { relations, sql } from 'drizzle-orm'
+import {
+	index,
+	json,
+	timestamp,
+	varchar,
+	type MySqlTableFn,
+} from 'drizzle-orm/mysql-core'
 
 import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
 
-import { invites, organization } from '../schema'
+import { invites } from '../schema'
 
-const { organizationRelations, organizationMemberships } =
-	getCourseBuilderSchema(mysqlTable)
+const { organizationRelations } = getCourseBuilderSchema(mysqlTable)
 
-export function getEggheadOrganizationMembershipsSchema(
-	mysqlTable: MySqlTableFn,
-) {
-	const columns = Object.entries(organizationMemberships).reduce(
-		(acc, [key, value]) => {
-			if (value instanceof MySqlColumn) {
-				acc[key] = value
-			}
-			return acc
+export function getOrganizationMembershipsSchema(mysqlTable: MySqlTableFn) {
+	return mysqlTable(
+		'OrganizationMembership',
+		{
+			id: varchar('id', { length: 255 }).notNull().primaryKey(),
+			organizationId: varchar('organizationId', { length: 191 }),
+			role: varchar('role', { length: 191 }).notNull().default('user'),
+			invitedById: varchar('invitedById', { length: 255 }).notNull(),
+			userId: varchar('userId', { length: 255 }).notNull(),
+			inviteId: varchar('inviteId', { length: 255 }),
+			fields: json('fields').$type<Record<string, any>>().default({}),
+			createdAt: timestamp('createdAt', {
+				mode: 'date',
+				fsp: 3,
+			}).default(sql`CURRENT_TIMESTAMP(3)`),
 		},
-		{} as Record<string, MySqlColumn<any, any>>,
+		(organizationMembership) => ({
+			roleIdx: index('role_idx').on(organizationMembership.role),
+			createdAtIdx: index('created_at_idx').on(
+				organizationMembership.createdAt,
+			),
+			organizationIdIdx: index('organizationId_idx').on(
+				organizationMembership.organizationId,
+			),
+		}),
 	)
-
-	return mysqlTable('OrganizationMembership', {
-		...columns,
-		inviteId: varchar('invite_id', { length: 255 }).notNull().unique(),
-	})
 }
 
 export function getEggheadOrganizationMembershipsRelationsSchema(
 	mysqlTable: MySqlTableFn,
 ) {
 	const organizationMembershipsWithInvites =
-		getEggheadOrganizationMembershipsSchema(mysqlTable)
+		getOrganizationMembershipsSchema(mysqlTable)
 
 	const membershipRelations = relations(
 		organizationMembershipsWithInvites,
