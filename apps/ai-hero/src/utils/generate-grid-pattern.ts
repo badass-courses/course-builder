@@ -61,7 +61,7 @@ export function generateGridPattern(
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="ripple">
-          <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="50" result="noise" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="50" result="noise" />
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
         </filter>
       </defs>

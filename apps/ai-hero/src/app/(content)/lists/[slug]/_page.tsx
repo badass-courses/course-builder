@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import { cookies } from 'next/headers'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
@@ -13,13 +14,22 @@ import { Share } from '@/components/share'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
+import { track } from '@/utils/analytics'
+import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { PlayIcon } from '@heroicons/react/24/solid'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
-import { ArrowRight } from 'lucide-react'
+import { ChevronRight, Github, Play, Share2 } from 'lucide-react'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
-import { Button } from '@coursebuilder/ui'
+import {
+	Button,
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogTrigger,
+} from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 type Props = {
@@ -105,47 +115,117 @@ export default async function ListPage(props: {
 
 	const firstResource = list.resources?.[0]?.resource
 
+	const squareGridPattern = generateGridPattern(
+		list.fields.title,
+		1000,
+		800,
+		0.8,
+		true,
+	)
+
 	return (
 		<main className="flex min-h-screen w-full flex-col pb-16">
-			<header className="bg-muted/75 flex items-center justify-center px-5 pb-8 sm:px-8 sm:pb-0">
-				<div className="relative mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-between gap-5 lg:flex-row">
-					<div className="flex flex-shrink-0 flex-col items-center gap-3 py-16 sm:items-start">
-						<h1 className="fluid-3xl w-full text-center font-bold sm:text-left">
+			<header className="relative flex items-center justify-center px-5 pb-8 sm:px-8 sm:pb-0">
+				<div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col-reverse items-center justify-between gap-10 py-5 md:grid md:grid-cols-5 md:py-16 lg:gap-16">
+					<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 md:items-start">
+						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left">
 							{list.fields.title}
 						</h1>
 						{list.fields.description && (
-							<div className="prose sm:prose-lg opacity-75">
+							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center sm:prose-lg opacity-75">
 								<p>{list.fields.description}</p>
 							</div>
 						)}
 						<Contributor />
+						<div className="mt-5 flex w-full flex-col flex-wrap items-center justify-center gap-1.5 sm:flex-row sm:gap-2 md:justify-start">
+							{firstResource?.fields?.slug && (
+								<Button size="lg" className="w-full sm:max-w-[180px]" asChild>
+									<Link href={`/${firstResource?.fields?.slug}`}>
+										Start Learning <ChevronRight className="ml-2 w-4" />
+									</Link>
+								</Button>
+							)}
+							{list?.fields?.github && (
+								<Button
+									className="w-full px-5 sm:w-auto"
+									variant="outline"
+									size="lg"
+									asChild
+								>
+									<Link href={list.fields.github} target="_blank">
+										<Github className="mr-2 w-3" /> Code
+									</Link>
+								</Button>
+							)}
+							<Dialog>
+								<DialogTrigger asChild>
+									<Button
+										className="w-full px-5 sm:w-auto"
+										variant="outline"
+										size="lg"
+									>
+										<Share2 className="mr-2 w-3" /> Share
+									</Button>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogTitle>Share {list.fields.title}</DialogTitle>
+									<Share className="" />
+								</DialogContent>
+							</Dialog>
+						</div>
+					</div>
+					<div className="col-span-2">
+						{firstResource && list.fields?.image && (
+							<Link
+								className="group relative flex items-center justify-center"
+								href={`/${firstResource?.fields?.slug}`}
+							>
+								<Image
+									priority
+									alt={list.fields.title}
+									src={list.fields.image}
+									width={1920 / 4}
+									height={1080 / 4}
+									className="rounded brightness-90 transition duration-300 ease-in-out group-hover:brightness-100"
+								/>
+								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
+									<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
+									<span className="sr-only">Start Learning</span>
+								</div>
+							</Link>
+						)}
 					</div>
 					<Suspense fallback={null}>
 						<ListActionBar className="absolute right-0 top-5" list={list} />
 					</Suspense>
-					{firstResource && (
-						<Button className="w-full max-w-[180px]" asChild>
-							<Link href={`/${firstResource?.fields?.slug}`}>
-								Start Learning <ArrowRight className="ml-1 h-4 w-4" />
-							</Link>
-						</Button>
-					)}
+				</div>
+				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
+					<img
+						src={squareGridPattern}
+						className="h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+					/>
+					<div
+						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						aria-hidden="true"
+					/>
 				</div>
 			</header>
 			<div className="px-5 sm:px-8">
-				<div className="mx-auto mt-10 flex w-full max-w-5xl flex-col gap-10 sm:grid md:grid-cols-5">
+				<div className="mx-auto mt-10 flex w-full max-w-5xl flex-col gap-10 sm:grid md:grid-cols-5 lg:gap-16">
 					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
 						{body || 'No body found.'}
 					</article>
 					<aside className="col-span-2">
 						{list.resources.length > 0 && (
 							<>
-								<h3 className="fluid-xl mb-3 font-semibold">Content</h3>
-								<ol className="divide-border flex flex-col divide-y">
+								<h3 className="fluid-lg mb-3 font-sans font-semibold tracking-tight">
+									Content
+								</h3>
+								<ol className="divide-border flex flex-col divide-y rounded border">
 									{list.resources.map(({ resource }, i) => (
 										<li key={resource.id}>
 											<Link
-												className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition"
+												className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition sm:py-3"
 												href={`/${resource.fields.slug}`}
 											>
 												<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
@@ -160,7 +240,6 @@ export default async function ListPage(props: {
 						)}
 					</aside>
 				</div>
-				<Share className="bg-background relative z-10 mx-auto w-full max-w-[285px] translate-y-24" />
 			</div>
 		</main>
 	)

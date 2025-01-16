@@ -62,6 +62,7 @@ export function EditListForm({
 				visibility: list.fields?.visibility || 'public',
 				state: list.fields?.state || 'draft',
 				description: list.fields?.description ?? '',
+				image: list.fields?.image ?? '',
 				github: list.fields?.github ?? '',
 				gitpod: list.fields?.gitpod ?? '',
 			},

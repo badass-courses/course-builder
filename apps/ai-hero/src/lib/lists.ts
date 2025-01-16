@@ -17,6 +17,7 @@ export const ListSchema = ContentResourceSchema.merge(
 			summary: z.string().optional().nullable(),
 			state: PostStateSchema.default('draft'),
 			visibility: PostVisibilitySchema.default('unlisted'),
+			image: z.string().nullish(),
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
 		}),
@@ -37,9 +38,11 @@ export const ListUpdateSchema = z.object({
 		description: z.string().nullish(),
 		state: PostStateSchema.default('draft'),
 		visibility: PostVisibilitySchema.default('unlisted'),
+		image: z.string().nullish(),
 		github: z.string().nullish(),
+		gitpod: z.string().nullish(),
 	}),
-	videoResourceId: z.string().optional().nullable(),
+	resources: z.array(z.any()),
 	tags: PostTagsChema,
 })
 

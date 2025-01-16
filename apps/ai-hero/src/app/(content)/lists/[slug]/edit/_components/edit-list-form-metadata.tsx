@@ -181,6 +181,28 @@ export const ListMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.image"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Image URL</FormLabel>
+						<Input
+							{...field}
+							onDrop={(e) => {
+								console.log(e)
+								const result = e.dataTransfer.getData('text/plain')
+								const parsedResult = result.match(/\(([^)]+)\)/)
+								if (parsedResult) {
+									field.onChange(parsedResult[1])
+								}
+							}}
+							value={field.value || ''}
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
 			<FormField
