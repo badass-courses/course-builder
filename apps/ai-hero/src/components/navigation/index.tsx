@@ -92,7 +92,7 @@ const Navigation = () => {
 								{links.map((link) => {
 									return (
 										<NavLinkItem
-											className=""
+											className="pr-5 text-base font-medium"
 											key={link.href || link.label}
 											{...link}
 										/>

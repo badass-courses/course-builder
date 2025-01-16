@@ -60,7 +60,7 @@ export const PostNewsletterCta: React.FC<
 					className="via-muted-foreground/20 absolute -bottom-px left-0 z-10 h-px w-full bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
 				/>
-				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-16 sm:text-left md:flex-col md:items-start md:gap-0 md:pt-0">
+				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-5 sm:text-left md:flex-col md:items-start md:gap-0 md:pt-0">
 					<div className="flex items-center gap-2">
 						<svg
 							width="20"
@@ -77,11 +77,11 @@ export const PostNewsletterCta: React.FC<
 								strokeDasharray="3 3"
 							/>
 						</svg>
-						<div className="fluid-xl font-heading font-semibold">
+						<div className="xl:fluid-xl fluid-lg font-heading font-semibold">
 							AI Engineering Tips
 						</div>
 					</div>
-					<div className="text-primary fluid-lg font-heading">
+					<div className="text-primary xl:fluid-lg fluid-base font-heading">
 						Delivered to your inbox
 					</div>
 				</div>

@@ -133,7 +133,9 @@ export function PostPlayer({
 						asChild
 						variant="link"
 					>
-						<Link href={`/${nextUp.resource.fields?.slug}`}>
+						<Link
+							href={`/${nextUp.resource.fields?.slug}?list=${list.fields.slug}`}
+						>
 							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
 						</Link>
 					</Button>

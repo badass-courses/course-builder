@@ -173,6 +173,70 @@ export async function getListForPost(postId: string) {
 	return ListSchema.parse(list)
 }
 
+export async function getMinimalListForNavigation(listIdOrSlug: string) {
+	const result = await db.execute(sql`
+        SELECT
+            list.id,
+            list.type,
+            list.fields,
+            list.createdAt,
+            list.updatedAt,
+            list.deletedAt,
+            list.createdById,
+            list.organizationId,
+            list.createdByOrganizationMembershipId,
+            resources.id AS resource_id,
+            resources.type AS resource_type,
+            JSON_OBJECT(
+                'title', JSON_EXTRACT(resources.fields, '$.title'),
+                'slug', JSON_EXTRACT(resources.fields, '$.slug'),
+                'state', JSON_EXTRACT(resources.fields, '$.state')
+            ) AS resource_fields,
+            relation.position
+        FROM ${contentResource} AS list
+        LEFT JOIN ${contentResourceResource} AS relation
+            ON list.id = relation.resourceOfId
+        LEFT JOIN ${contentResource} AS resources
+            ON resources.id = relation.resourceId
+        WHERE (list.id = ${listIdOrSlug} OR JSON_EXTRACT(list.fields, '$.slug') = ${listIdOrSlug})
+            AND list.type = 'list'
+        ORDER BY relation.position ASC
+    `)
+
+	if (result.rows.length === 0) {
+		return null
+	}
+
+	const firstRow = result.rows[0] as any
+	const list = {
+		id: firstRow.id,
+		type: firstRow.type,
+		fields: firstRow.fields,
+		createdAt: firstRow.createdAt,
+		updatedAt: firstRow.updatedAt,
+		deletedAt: firstRow.deletedAt,
+		createdById: firstRow.createdById,
+		organizationId: firstRow.organizationId,
+		createdByOrganizationMembershipId:
+			firstRow.createdByOrganizationMembershipId,
+		resources: result.rows
+			.filter((row: any) => row.resource_id)
+			.map((row: any) => ({
+				resource: {
+					id: row.resource_id,
+					type: row.resource_type,
+					fields: row.resource_fields,
+				},
+				position: row.position,
+				resourceId: row.resource_id,
+				resourceOfId: firstRow.id,
+			})),
+		tags: [], // Include empty tags array to satisfy ListSchema
+	}
+
+	return ListSchema.parse(list)
+}
+
 export async function addPostToList({
 	postId,
 	listId,

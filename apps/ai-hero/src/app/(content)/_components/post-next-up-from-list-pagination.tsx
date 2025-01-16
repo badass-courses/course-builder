@@ -14,7 +14,9 @@ export default function PostNextUpFromListPagination({
 	postId: string
 }) {
 	const list = React.use(listLoader)
+	if (!list) return null
 	const nextUp = list && getNextUpResourceFromList(list, postId)
+
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
 			className="mt-8 flex w-full flex-col items-center rounded bg-gray-950 px-5 py-10 text-center"
@@ -28,7 +30,9 @@ export default function PostNextUpFromListPagination({
 						asChild
 						variant="link"
 					>
-						<Link href={`/${nextUp.resource.fields?.slug}`}>
+						<Link
+							href={`/${nextUp.resource.fields?.slug}?list=${list.fields.slug}`}
+						>
 							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
 						</Link>
 					</Button>

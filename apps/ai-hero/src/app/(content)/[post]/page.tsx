@@ -14,7 +14,12 @@ import { Share } from '@/components/share'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import type { List } from '@/lib/lists'
-import { getAllLists, getList, getListForPost } from '@/lib/lists-query'
+import {
+	getAllLists,
+	getList,
+	getListForPost,
+	getMinimalListForNavigation,
+} from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getPost } from '@/lib/posts-query'
 import { getPricingProps } from '@/lib/pricing-query'
@@ -30,6 +35,7 @@ import remarkGfm from 'remark-gfm'
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import ListResourceNavigation from '../_components/list-resource-navigation'
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
@@ -65,7 +71,7 @@ export async function generateMetadata(
 	resource = await getPost(params.post)
 
 	if (!resource) {
-		resource = await getList(params.post)
+		resource = await getMinimalListForNavigation(params.post)
 	}
 
 	if (!resource) {
@@ -93,7 +99,7 @@ async function PostActionBar({ post }: { post: Post | null }) {
 	return (
 		<>
 			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm">
+				<Button asChild size="sm" className="absolute right-0 top-0 z-50">
 					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
 				</Button>
 			) : null}
@@ -158,6 +164,9 @@ export default async function PostPage(props: {
 }) {
 	const searchParams = await props.searchParams
 	const params = await props.params
+
+	const listSlugFromParam = searchParams.list
+
 	const post = await getPost(params.post)
 
 	if (!post) {
@@ -168,6 +177,10 @@ export default async function PostPage(props: {
 			/>
 		)
 	}
+
+	const listLoader = listSlugFromParam
+		? getMinimalListForNavigation(listSlugFromParam)
+		: getListForPost(post.id)
 
 	const cookieStore = await cookies()
 	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
@@ -184,8 +197,6 @@ export default async function PostPage(props: {
 		notFound()
 	}
 
-	const listLoader = getListForPost(post.id)
-
 	const squareGridPattern = generateGridPattern(
 		post.fields.title,
 		1000,
@@ -199,83 +210,102 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<main>
-			{hasVideo && <PlayerContainer listLoader={listLoader} post={post} />}
-			<div
-				className={cn('container relative max-w-screen-xl pb-16 sm:pb-24', {
-					'pt-16': !hasVideo,
-				})}
-			>
-				<div
-					className={cn('absolute right-0 w-full', {
-						'-top-10': hasVideo,
-						'top-0': !hasVideo,
-					})}
+		<div className="flex">
+			{listSlugFromParam && (
+				<Suspense
+					fallback={
+						<div className="bg-muted/50 flex h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] items-center justify-center p-5">
+							<Spinner className="h-5 w-5" />
+						</div>
+					}
 				>
-					<img
-						src={squareGridPattern}
-						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
-					/>
-					<div
-						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
-						aria-hidden="true"
-					/>
-				</div>
-
-				<div className="relative z-10 flex w-full items-center justify-between">
-					<Link
-						href="/posts"
-						className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
-					>
-						← Posts
-					</Link>
-					<div>
-						<Suspense fallback={null}>
-							<PostActionBar post={post} />
-						</Suspense>
-					</div>
-				</div>
-				<div className="relative z-10">
-					<article className="flex h-full flex-col gap-5">
-						<PostTitle post={post} />
-						<Contributor className="flex [&_img]:w-8" />
-						<Post post={post} />
-						<React.Suspense fallback={<Spinner />}>
-							<PostNextUpFromListPagination
-								postId={post.id}
-								listLoader={listLoader}
-							/>
-						</React.Suspense>
-						<div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-1">
-							<strong className="text-lg font-semibold">Share</strong>
-							<Share
-								className="bg-background w-full"
-								title={post?.fields.title}
-							/>
-						</div>
-					</article>
-				</div>
-			</div>
-			{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
-				<section id="buy">
-					<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-						Get Really Good At Node.js
-					</h2>
-					<div className="flex items-center justify-center border-y">
-						<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
-							<PricingWidget
-								quantityAvailable={-1}
-								pricingDataLoader={pricingDataLoader}
-								commerceProps={{ ...commerceProps }}
-								product={product}
-							/>
-						</div>
-					</div>
-				</section>
-			) : hasVideo ? null : (
-				<PrimaryNewsletterCta className="pt-20" />
+					<ListResourceNavigation listLoader={listLoader} />
+				</Suspense>
 			)}
-		</main>
+			<main className="w-full">
+				{hasVideo && <PlayerContainer listLoader={listLoader} post={post} />}
+				<div
+					className={cn(
+						'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
+						{
+							'pt-16': !hasVideo,
+						},
+					)}
+				>
+					<div
+						className={cn('absolute right-0 w-full', {
+							'-top-10': hasVideo,
+							'top-0': !hasVideo,
+						})}
+					>
+						<img
+							src={squareGridPattern}
+							className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+						/>
+						<div
+							className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+							aria-hidden="true"
+						/>
+					</div>
+					<div className="relative z-50 flex w-full items-center justify-between">
+						{!listSlugFromParam ? (
+							<Link
+								href="/posts"
+								className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
+							>
+								← Posts
+							</Link>
+						) : (
+							<div />
+						)}
+						<div>
+							<Suspense fallback={null}>
+								<PostActionBar post={post} />
+							</Suspense>
+						</div>
+					</div>
+					<div className="relative z-10">
+						<article className="flex h-full flex-col gap-5">
+							<PostTitle post={post} />
+							<Contributor className="flex [&_img]:w-8" />
+							<Post post={post} />
+							<React.Suspense fallback={<Spinner />}>
+								<PostNextUpFromListPagination
+									postId={post.id}
+									listLoader={listLoader}
+								/>
+							</React.Suspense>
+							<div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-1">
+								<strong className="text-lg font-semibold">Share</strong>
+								<Share
+									className="bg-background w-full"
+									title={post?.fields.title}
+								/>
+							</div>
+						</article>
+					</div>
+				</div>
+				{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
+					<section id="buy">
+						<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+							Get Really Good At Node.js
+						</h2>
+						<div className="flex items-center justify-center border-y">
+							<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
+								<PricingWidget
+									quantityAvailable={-1}
+									pricingDataLoader={pricingDataLoader}
+									commerceProps={{ ...commerceProps }}
+									product={product}
+								/>
+							</div>
+						</div>
+					</section>
+				) : hasVideo ? null : (
+					<PrimaryNewsletterCta className="pt-20" />
+				)}
+			</main>
+		</div>
 	)
 }
 
