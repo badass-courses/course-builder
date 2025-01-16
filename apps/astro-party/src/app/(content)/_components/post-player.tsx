@@ -35,6 +35,10 @@ export function PostPlayer({
 		<>
 			{playbackId ? (
 				<MuxPlayer
+					metadata={{
+						video_id: videoResource?.id,
+						video_title: videoResource?.title,
+					}}
 					playbackId={playbackId}
 					className={cn(className)}
 					{...playerProps}
