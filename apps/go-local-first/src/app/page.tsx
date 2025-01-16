@@ -101,7 +101,7 @@ const Home = async (props: Props) => {
 					</h2>
 				</div>
 			</header>
-			<main className="container flex w-full flex-col justify-start pt-10 sm:pt-16">
+			<main className="container flex w-fit flex-col justify-start pt-10 sm:pt-16">
 				<article className="prose sm:prose-lg lg:prose-xl max-w-4xl">
 					{page?.fields?.body ? (
 						<MDXRemote
