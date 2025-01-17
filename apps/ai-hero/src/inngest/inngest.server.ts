@@ -33,6 +33,7 @@ import {
 	SyncPurchaseTags,
 } from '@/inngest/functions/sync-purchase-tags'
 import { authOptions } from '@/server/auth'
+import { redis } from '@/server/redis-client'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
 
@@ -115,6 +116,7 @@ const middleware = createInngestMiddleware({
 	emailProvider,
 	notificationProvider: slackProvider,
 	getAuthConfig: () => authOptions,
+	redis: redis,
 })
 
 export const inngest = new Inngest({

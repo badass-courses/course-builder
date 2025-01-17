@@ -125,6 +125,16 @@
 			"types": "./dist/inngest/*.d.ts",
 			"import": "./dist/inngest/*.js",
 			"require": "./dist/inngest/*.js"
+		},
+		"./lib/subscription/*": {
+			"types": "./dist/lib/subscription/*.d.ts",
+			"import": "./dist/lib/subscription/*.js",
+			"require": "./dist/lib/subscription/*.js"
+		},
+		"./lib/subscription/sync-stripe-data": {
+			"types": "./dist/lib/subscription/sync-stripe-data.d.ts",
+			"import": "./dist/lib/subscription/sync-stripe-data.js",
+			"require": "./dist/lib/subscription/sync-stripe-data.js"
 		}
 	},
 	"private": false,

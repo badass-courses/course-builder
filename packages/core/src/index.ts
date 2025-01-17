@@ -1,4 +1,5 @@
 import { AuthConfig } from '@auth/core'
+import { Redis } from '@upstash/redis'
 import { Inngest } from 'inngest'
 
 import type { CourseBuilderAdapter } from './adapters'
@@ -68,6 +69,7 @@ export interface CourseBuilderConfig {
 	getCurrentUser?: () => Promise<User | null>
 	authConfig: AuthConfig
 	baseUrl: string
+	redis?: Redis
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'

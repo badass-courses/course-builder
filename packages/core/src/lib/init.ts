@@ -56,6 +56,7 @@ export async function init({
 		callbacks: { ...defaultCallbacks, ...courseBuilderOptions.callbacks },
 		logger,
 		getCurrentUser: courseBuilderOptions.getCurrentUser,
+		redis: courseBuilderOptions.redis,
 	}
 
 	const cookies: cookie.Cookie[] = []

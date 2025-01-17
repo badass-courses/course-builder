@@ -7,8 +7,8 @@
   - `MerchantSubscription`: Stripe data
   - `Subscription`: Platform data
 - Strong subscription type safety:
-  - `SubscriptionInfo` schema
-  - Proper metadata validation
+  - `SubscriptionInfo` schema (`packages/core/src/schemas/subscription-info.ts`)
+  - Proper metadata validation (`packages/core/src/schemas/stripe/checkout-session-metadata.ts`)
   - Permission determination
 - Checkout flow safeguards:
   - Pre-checkout login verification
@@ -43,70 +43,40 @@
 1. Redis Integration
    - [x] Set up Upstash Redis
    - [x] Add subscription-specific keys:
-     - Created `StripeCacheClient` in core package
-     - Type-safe Redis operations
-     - 24h TTL on subscription state
-     - Sync attempt tracking
+     - [x] Created `StripeCacheClient` in core package (`packages/core/src/lib/subscription/stripe-cache.ts`)
+     - [x] Type-safe Redis operations
+     - [x] 24h TTL on subscription state
+     - [x] Sync attempt tracking
    - [ ] Add monitoring wrapper
    - [ ] Add health checks
 
 2. Core Sync Function
-   - [ ] Implement `syncStripeDataToKV`
-   - [ ] Reuse existing `SubscriptionInfo` type
-   - [ ] Add proper error boundaries
-   - [ ] Handle all subscription states
-   - [ ] Add structured logging:
-     ```ts
-     type SyncLog = {
-       customerId: string
-       operation: 'sync' | 'retry' | 'recovery'
-       duration: number
-       status: 'success' | 'failure'
-       errorCode?: string
-       retryCount: number
-       source: 'webhook' | 'success-page' | 'manual'
-     }
-     ```
+   - [x] Implement `syncStripeDataToKV` (`packages/core/src/lib/subscription/sync-stripe-data.ts`)
+   - [x] Reuse existing `SubscriptionInfo` type
+   - [x] Add proper error boundaries
+   - [x] Handle all subscription states
+   - [x] Add structured logging
    - [ ] Add performance metrics
    - [ ] Set up error alerting
 
 3. Webhook Handler
-   - [ ] Update to use sync function
-   - [ ] Handle core events only:
-     ```ts
-     const CORE_EVENTS = [
-       'checkout.session.completed',
-       'customer.subscription.created',
-       'customer.subscription.updated',
-       'customer.subscription.deleted',
-       'invoice.paid',
-       'invoice.payment_failed'
-     ]
-     ```
-   - [ ] Add retry mechanism
-   - [ ] Leverage existing metadata parsing
+   - [x] Update to use sync function (`packages/core/src/lib/pricing/process-stripe-webhook.ts`)
+   - [x] Handle core events only
+   - [x] Add retry mechanism
+   - [x] Leverage existing metadata parsing
    - [ ] Track webhook processing times
    - [ ] Monitor event ordering
    - [ ] Alert on critical failures
 
-4. Observability Setup
-   - [ ] Set up Axiom structured logging
-   - [ ] Configure error tracking in Sentry
-   - [ ] Add key metrics to Grafana:
-     - Sync success/failure rates
-     - Cache performance
-     - Webhook processing times
-     - State transition latency
-   - [ ] Create operational dashboards:
-     - Subscription health overview
-     - Webhook processing status
-     - Cache performance metrics
-     - Error rate tracking
-   - [ ] Configure alerts:
-     - Sync failures > 3 attempts
-     - Webhook processing delays
-     - Cache miss spikes
-     - Critical path errors
+4. Next Steps (Phase 1 Completion):
+   - [ ] Add monitoring wrapper for Redis operations
+   - [ ] Set up health checks for Redis and Stripe
+   - [ ] Configure performance metrics in Axiom
+   - [ ] Set up error alerting in Sentry
+   - [ ] Add webhook processing time tracking
+   - [ ] Test all subscription state transitions
+   - [ ] Document Redis key schema
+   - [ ] Add recovery procedures for common failures
 
 ### Phase 2: Checkout Flow
 1. Customer Management
@@ -130,7 +100,7 @@
 
 ### Phase 3: Status Management
 1. Core States
-   - [ ] Use existing `SubscriptionInfo` type
+   - [x] Use existing `SubscriptionInfo` type (`packages/core/src/schemas/subscription-info.ts`)
    - [ ] Add status transitions
    - [ ] Handle edge cases
    - [ ] Sync with merchant subscription
@@ -237,4 +207,35 @@ Once subscriptions are rock solid, we'll tackle:
 
 ## References
 - [Stripe Implementation Guide](https://github.com/t3dotgg/stripe-recommendations)
-- [Multi-tenant Guide](https://www.flightcontrol.dev/blog/ultimate-guide-to-multi-tenant-saas-data-modeling) 
+- [Multi-tenant Guide](https://www.flightcontrol.dev/blog/ultimate-guide-to-multi-tenant-saas-data-modeling)
+
+## File Structure
+```
+packages/core/
+├── src/
+│   ├── lib/
+│   │   ├── pricing/
+│   │   │   ├── process-stripe-webhook.ts
+│   │   │   └── stripe-subscription-utils.ts
+│   │   └── subscription/
+│   │       ├── stripe-cache.ts
+│   │       └── sync-stripe-data.ts
+│   ├── providers/
+│   │   └── stripe.ts
+│   └── schemas/
+│       ├── stripe/
+│       │   ├── checkout-session-completed.ts
+│       │   └── checkout-session-metadata.ts
+│       └── subscription-info.ts
+apps/ai-hero/
+├── plans/
+│   └── 001-org-subscription-implementation.md
+└── src/
+    ├── coursebuilder/
+    │   └── stripe-provider.ts
+    └── inngest/
+        ├── inngest.server.ts
+        └── functions/
+            └── stripe/
+                └── event-subscription-checkout-session-completed.ts
+``` 

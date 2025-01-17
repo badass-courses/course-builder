@@ -1,8 +1,10 @@
+import { stripePaymentAdapter } from '@/coursebuilder/stripe-provider'
 import { inngest } from '@/inngest/inngest.server'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
 import { parseSubscriptionInfoFromCheckoutSession } from '@coursebuilder/core/lib/pricing/stripe-subscription-utils'
+import { syncStripeDataToKV } from '@coursebuilder/core/lib/subscription/sync-stripe-data'
 import { User } from '@coursebuilder/core/schemas'
 import { checkoutSessionCompletedEvent } from '@coursebuilder/core/schemas/stripe/checkout-session-completed'
 
@@ -15,12 +17,24 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 		event: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 		if: "event.data.stripeEvent.data.object.mode == 'subscription'",
 	},
-	async ({ event, step, db, paymentProvider }) => {
+	async ({ event, step, db, paymentProvider, redis }) => {
 		const stripeEvent = checkoutSessionCompletedEvent.parse(
 			event.data.stripeEvent,
 		)
 		const paymentsAdapter = paymentProvider.options.paymentsAdapter
 		const stripeCheckoutSession = stripeEvent.data.object
+
+		const { log, subscriptionInfo } = await step.run(
+			'sync subscription state',
+			async () => {
+				return await syncStripeDataToKV({
+					stripe: paymentsAdapter,
+					redis,
+					customerId: stripeCheckoutSession.customer,
+					source: 'inngest:stripe-subscription-checkout-session-completed',
+				})
+			},
+		)
 
 		const merchantAccount = await step.run(
 			'load the merchant account',

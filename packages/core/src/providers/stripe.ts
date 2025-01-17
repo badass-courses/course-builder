@@ -166,8 +166,12 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		})
 		return stripeCustomer.id
 	}
-	async getCustomer(customerId: string) {
-		return (await this.stripe.customers.retrieve(customerId)) as Stripe.Customer
+	async getCustomer(customerId: string, expand: string[] = []) {
+		const customer = (await this.stripe.customers.retrieve(
+			customerId,
+			expand ? { expand } : {},
+		)) as Stripe.Customer
+		return customer
 	}
 	async updateCustomer(
 		customerId: string,

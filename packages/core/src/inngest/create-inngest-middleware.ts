@@ -1,5 +1,6 @@
 import { AuthConfig } from '@auth/core'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+import { Redis } from '@upstash/redis'
 import {
 	EventSchemas,
 	GetEvents,
@@ -44,6 +45,7 @@ export interface CoreInngestContext {
 	mediaUploadProvider: {
 		deleteFiles: (fileKey: string) => Promise<{ success: boolean }>
 	}
+	redis?: Redis
 }
 
 export type CoreInngestFunctionInput = GetFunctionInput<CoreInngest>

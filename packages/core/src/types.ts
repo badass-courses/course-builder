@@ -1,5 +1,6 @@
 import { AuthConfig } from '@auth/core'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+import { Redis } from '@upstash/redis'
 import { CookieSerializeOptions } from 'cookie'
 import { Inngest } from 'inngest'
 import { type ChatCompletionRequestMessage } from 'openai-edge'
@@ -162,7 +163,7 @@ export interface PaymentsAdapter {
 
 	createCustomer(params: Stripe.CustomerCreateParams): Promise<string>
 	verifyWebhookSignature(rawBody: string, sig: string): Promise<boolean>
-	getCustomer(customerId: string): Promise<Stripe.Customer>
+	getCustomer(customerId: string, expand?: string[]): Promise<Stripe.Customer>
 	updateCustomer(
 		customerId: string,
 		customer: { name: string; email: string; metadata?: Record<string, any> },
@@ -213,6 +214,7 @@ export interface InternalOptions<TProviderType = ProviderType> {
 	getCurrentUser?: () => Promise<User | null>
 	authConfig: AuthConfig
 	baseUrl: string
+	redis?: Redis
 }
 
 export interface CookieOption {

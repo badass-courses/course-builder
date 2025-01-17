@@ -9,6 +9,21 @@ import {
 	PaymentsProviderConfig,
 } from '../../types'
 import { sendServerEmail } from '../send-server-email'
+import { syncStripeDataToKV } from '../subscription/sync-stripe-data'
+
+const CORE_SUBSCRIPTION_EVENTS = [
+	'checkout.session.completed',
+	'customer.subscription.created',
+	'customer.subscription.updated',
+	'customer.subscription.deleted',
+	'customer.subscription.paused',
+	'customer.subscription.resumed',
+	'invoice.paid',
+	'invoice.payment_failed',
+	'invoice.payment_action_required',
+	'payment_intent.succeeded',
+	'payment_intent.payment_failed',
+] as const
 
 const exampleEvent = {
 	id: 'evt_1P6e0gAclagrtXef9ybQkT50',
@@ -249,18 +264,27 @@ export async function processStripeWebhook(
 	const stripeProvider: InternalProvider<'payment'> = options.provider
 	const stripeAdapter = stripeProvider.options.paymentsAdapter
 	const courseBuilderAdapter = options.adapter
+	const redis = options.redis
 
-	// charge.dispute.created
-	// charge.dispute.funds_withdrawn
-	// charge.refunded
-	// charge.succeeded
-	// checkout.session.async_payment_failed
-	// checkout.session.async_payment_succeeded
-	// checkout.session.completed
-	// customer.subscription.created
-	// customer.subscription.deleted
-	// customer.subscription.updated
-	// customer.updated
+	if (!CORE_SUBSCRIPTION_EVENTS.includes(event.type)) {
+		return
+	}
+
+	const { customer: customerId } = event?.data?.object as { customer: string }
+	if (typeof customerId !== 'string') {
+		throw new Error(
+			`[STRIPE HOOK] Invalid customerId for event type: ${event.type}`,
+		)
+	}
+
+	if (redis) {
+		await syncStripeDataToKV({
+			stripe: stripeAdapter,
+			redis,
+			customerId,
+			source: 'webhook',
+		})
+	}
 
 	switch (event.type) {
 		case 'charge.dispute.funds_withdrawn':
