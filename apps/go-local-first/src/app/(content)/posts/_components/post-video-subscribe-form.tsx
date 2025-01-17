@@ -2,7 +2,10 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import {
+	redirectUrlBuilder,
+	SubscribeToCoursebuilderForm,
+} from '@/convertkit/coursebuilder-subscribe-form'
 import { Subscriber } from '@/schemas/subscriber'
 import common from '@/text/common'
 import { track } from '@/utils/analytics'
@@ -86,7 +89,7 @@ export const PostNewsletterCta: React.FC<
 					</div>
 				</div>
 				<div id={id} className="w-full md:w-auto">
-					<SubscribeToConvertkitForm
+					<SubscribeToCoursebuilderForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
 						className="[&_input]:border-0"

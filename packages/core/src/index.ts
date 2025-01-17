@@ -13,6 +13,14 @@ import type { CallbacksOptions, CookiesOptions } from './types'
 
 export { createActionURL, setEnvDefaults }
 
+/**
+ * this handles the request and builds up the internal state
+ * for routing/handling the request with the appropriate action+provider
+ *
+ * @param request
+ * @param config
+ * @returns
+ */
 export async function CourseBuilder(
 	request: Request,
 	config: CourseBuilderConfig,

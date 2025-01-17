@@ -1,15 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import { redirectUrlBuilder, SubscribeToCoursebuilderForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
+import common from '@/text/common'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import { ShieldCheckIcon } from 'lucide-react'
-
-import common from '../text/common'
 
 type PrimaryNewsletterCtaProps = {
 	onSuccess?: () => void
@@ -56,13 +54,14 @@ export const PrimaryNewsletterCta: React.FC<
 				children
 			) : (
 				<div className="relative z-10 flex max-w-2xl flex-col items-center justify-center pb-10">
-					<h2 className="font-heading fluid-2xl text-center font-semibold ">
+					<h2 className="font-heading fluid-2xl text-center font-semibold">
 						{title}
 					</h2>
 					<h3 className="fluid-lg pt-4 text-center opacity-90">{byline}</h3>
 				</div>
 			)}
-			<SubscribeToConvertkitForm
+
+			<SubscribeToCoursebuilderForm
 				onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 				actionLabel={actionLabel}
 				className="relative z-10 [&_input]:h-16"

@@ -11,6 +11,15 @@ import { userLookup } from './actions/user-lookup'
 import { init } from './init'
 import { UnknownAction } from './utils/web'
 
+/**
+ * this is essentially a "router" for the coursebuilder api that
+ * routes the request to the appropriate action based on the action
+ * and providerId
+ *
+ * @param request
+ * @param courseBuilderOptions
+ * @returns
+ */
 export async function CourseBuilderInternal(
 	request: RequestInternal,
 	courseBuilderOptions: CourseBuilderConfig,
