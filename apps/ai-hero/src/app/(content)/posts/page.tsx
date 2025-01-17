@@ -98,7 +98,11 @@ export default async function PostsIndexPage() {
 					<aside className="hidden w-full max-w-xs border-r lg:block" />
 				}
 			>
-				<PostListActions posts={unpublishedPosts} lists={allLists} />
+				<PostListActions
+					publishedPosts={publishedPublicPosts}
+					unpublishedPosts={unpublishedPosts}
+					lists={allLists}
+				/>
 			</React.Suspense>
 		</main>
 	)
@@ -175,34 +179,43 @@ const PostTeaser: React.FC<{
 }
 
 async function PostListActions({
-	posts,
+	unpublishedPosts,
+	publishedPosts,
 	lists,
 }: {
-	posts?: Post[]
+	publishedPosts: Post[]
+	unpublishedPosts?: Post[]
 	lists?: List[]
 }) {
 	const { ability, session } = await getServerAuthSession()
-	const drafts = posts?.filter(
+	const drafts = unpublishedPosts?.filter(
 		({ fields }) =>
 			fields.state === 'draft' && fields.visibility !== 'unlisted',
 	)
-	const unlisted = posts?.filter(
+	const unlisted = unpublishedPosts?.filter(
 		({ fields }) => fields.visibility === 'unlisted',
 	)
 
 	return ability.can('create', 'Content') ? (
-		<aside className="w-full border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
-			<div className="border-b p-5">
+		<aside className="divide-border w-full gap-3 divide-y border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
+			<div className="p-5">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>
-				<p className="opacity-75">
-					You have <strong className="font-semibold">{drafts?.length}</strong>{' '}
-					unpublished{' '}
-					{drafts?.length ? pluralize('post', drafts.length) : 'post'}.
-				</p>
+
+				{drafts && drafts?.length > 0 ? (
+					<p className="opacity-75">
+						You have <strong className="font-semibold">{drafts?.length}</strong>{' '}
+						unpublished{' '}
+						{drafts?.length ? pluralize('post', drafts.length) : 'post'}.
+					</p>
+				) : (
+					<p className="opacity-75">
+						You've published {publishedPosts.length} posts.
+					</p>
+				)}
 			</div>
-			{drafts ? (
+			{drafts && drafts.length > 0 ? (
 				<ul className="flex flex-col px-5 pt-4">
 					<strong>Drafts</strong>
 					{drafts.map((post) => {
@@ -222,8 +235,8 @@ async function PostListActions({
 					})}
 				</ul>
 			) : null}
-			{unlisted ? (
-				<ul className="mt-3 flex flex-col border-t px-5 pt-4">
+			{unlisted && unlisted.length > 0 ? (
+				<ul className=" flex flex-col px-5 pt-4">
 					<strong>Unlisted</strong>
 					{unlisted.map((post) => {
 						const postLists =
