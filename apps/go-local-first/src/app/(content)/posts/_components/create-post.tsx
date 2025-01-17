@@ -46,7 +46,7 @@ export function CreatePostModal() {
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
-				<DialogHeader className="fluid-3xl font-heading font-semibold">
+				<DialogHeader className="fluid-xl font-heading font-bold">
 					New Post
 				</DialogHeader>
 				<CreatePost />

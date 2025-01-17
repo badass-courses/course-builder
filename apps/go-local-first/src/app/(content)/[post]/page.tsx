@@ -202,7 +202,7 @@ export default async function PostPage(props: {
 		<main>
 			{hasVideo && <PlayerContainer listLoader={listLoader} post={post} />}
 			<div
-				className={cn('container relative max-w-screen-xl pb-16 sm:pb-24', {
+				className={cn('container relative pb-16 sm:pb-24', {
 					'pt-16': !hasVideo,
 				})}
 			>

@@ -81,27 +81,14 @@ const Home = async (props: Props) => {
 
 	return (
 		<div className="">
-			<header className="bg-primary text-primary-foreground relative mx-auto flex w-full flex-col items-start justify-end pb-8 pt-48">
-				<div className="container flex flex-col items-baseline justify-between gap-0 md:flex-row md:gap-10">
-					<h1 className="leading-0 font-heading sm:fluid-3xl fluid-2xl w-full font-bold">
+			<header className="relative mx-auto flex w-full flex-col items-start justify-end py-16">
+				<div className="container flex flex-col items-center justify-center text-center">
+					<h1 className="font-heading sm:fluid-3xl lg:fluid-4xl fluid-2xl w-full text-balance font-bold">
 						{page?.fields?.title || 'Build apps you can use anywhere'}
 					</h1>
-					<h2 className="flex-shrink-0">
-						Professional Course by{' '}
-						<Image
-							src={'/nik-graf.jpeg'}
-							alt={config.author}
-							priority
-							className="ml-2 mr-1 inline-block rounded-full"
-							width={32}
-							quality={100}
-							height={32}
-						/>{' '}
-						Nik Graf
-					</h2>
 				</div>
 			</header>
-			<main className="container flex w-fit flex-col justify-start pt-10 sm:pt-16">
+			<main className="container flex w-fit flex-col justify-start pt-5">
 				<article className="prose sm:prose-lg lg:prose-xl max-w-4xl">
 					{page?.fields?.body ? (
 						<MDXRemote

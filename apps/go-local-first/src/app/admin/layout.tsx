@@ -47,7 +47,7 @@ const AdminLayout = async ({
 					</nav>
 				</div>
 			</div>
-			<div className="flex flex-col pt-10">{children}</div>
+			<div className="flex flex-col">{children}</div>
 		</div>
 	)
 }

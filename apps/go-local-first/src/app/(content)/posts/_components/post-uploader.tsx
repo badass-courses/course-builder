@@ -39,8 +39,9 @@ export function PostUploader({
 					},
 					label({}) {
 						return {
-							color: 'white',
-							fontWeight: 'normal',
+							color: 'hsl(var(--foreground))',
+							fontSize: '1.1rem',
+							fontWeight: 500,
 						}
 					},
 					button() {
