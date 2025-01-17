@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import { redirectUrlBuilder, SubscribeToCoursebuilderForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
 import {
@@ -63,7 +63,7 @@ export const VideoBlockNewsletterCta: React.FC<
 				<strong className="text-balance text-center text-xl font-semibold lg:text-2xl">
 					{common['video-block-newsletter-tittle'](moduleTitle)}
 				</strong>
-				<SubscribeToConvertkitForm
+				<SubscribeToCoursebuilderForm
 					onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 					actionLabel={actionLabel}
 				/>
