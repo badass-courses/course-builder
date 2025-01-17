@@ -16,7 +16,7 @@ export const ListSchema = ContentResourceSchema.merge(
 			body: z.string().nullable().optional(),
 			summary: z.string().optional().nullable(),
 			state: PostStateSchema.default('draft'),
-			visibility: PostVisibilitySchema.default('unlisted'),
+			visibility: PostVisibilitySchema.default('public'),
 			image: z.string().nullish(),
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
