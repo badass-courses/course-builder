@@ -2,6 +2,7 @@ import { Axiom } from '@axiomhq/js'
 import { Redis } from '@upstash/redis'
 
 import { SubscriptionStatus } from '../../schemas/subscription-info'
+import { logger } from '../utils/logger'
 
 export type StripeCache = {
 	// Customer mapping
@@ -47,8 +48,8 @@ export class StripeCacheMetrics {
 			})
 		}
 
-		// Log for development
-		console.log('[StripeCacheMetrics]', {
+		// Log operation details
+		logger.debug('Cache operation', {
 			event_type: 'stripe_cache_operation',
 			latency_ms,
 			...tags,
@@ -72,22 +73,48 @@ export class StripeCacheClient {
 		fn: () => Promise<T>,
 	): Promise<T> {
 		const start = Date.now()
+		logger.debug('Starting cache operation', {
+			operation,
+			key,
+		})
+
 		try {
 			const result = await fn()
+			const duration = Date.now() - start
+
+			logger.debug('Cache operation completed', {
+				operation,
+				key,
+				duration,
+				cache_result: result === null ? 'miss' : 'hit',
+			})
+
 			await this.metrics.trackOperation({
 				operation,
 				status: 'success',
 				key_pattern: key.split(':')[0],
-				latency_ms: Date.now() - start,
+				latency_ms: duration,
 				cache_result: result === null ? 'miss' : 'hit',
 			})
 			return result
 		} catch (error) {
+			const duration = Date.now() - start
+
+			logger.error(
+				error instanceof Error ? error : new Error('Cache operation failed'),
+			)
+			logger.debug('Cache operation failed', {
+				operation,
+				key,
+				duration,
+				error: error instanceof Error ? error.message : 'Unknown error',
+			})
+
 			await this.metrics.trackOperation({
 				operation,
 				status: 'failure',
 				key_pattern: key.split(':')[0],
-				latency_ms: Date.now() - start,
+				latency_ms: duration,
 			})
 			throw error
 		}
@@ -102,45 +129,69 @@ export class StripeCacheClient {
 	}
 
 	async getStripeCustomerId(userId: string) {
-		return this.redis.get<string>(this.buildCustomerKey(userId))
-	}
-
-	async setStripeCustomerId(userId: string, stripeCustomerId: string) {
-		return this.redis.set(this.buildCustomerKey(userId), stripeCustomerId)
-	}
-
-	async getSubscriptionState(customerId: string) {
+		logger.debug('Getting Stripe customer ID', { userId })
 		return this.trackOperation(
-			'get_subscription_state',
-			`stripe:customer:${customerId}`,
-			() => this.redis.get(`stripe:customer:${customerId}`),
+			'get_customer_id',
+			this.buildCustomerKey(userId),
+			() => this.redis.get<string>(this.buildCustomerKey(userId)),
 		)
 	}
 
-	async setSubscriptionState(customerId: string, state: any) {
+	async setStripeCustomerId(userId: string, stripeCustomerId: string) {
+		logger.debug('Setting Stripe customer ID', { userId, stripeCustomerId })
+		return this.trackOperation(
+			'set_customer_id',
+			this.buildCustomerKey(userId),
+			() => this.redis.set(this.buildCustomerKey(userId), stripeCustomerId),
+		)
+	}
+
+	async getSubscriptionState(customerId: string) {
+		logger.debug('Getting subscription state', { customerId })
+		return this.trackOperation(
+			'get_subscription_state',
+			this.buildSubscriptionKey(customerId),
+			() => this.redis.get(this.buildSubscriptionKey(customerId)),
+		)
+	}
+
+	async setSubscriptionState(
+		customerId: string,
+		state: StripeCache['stripe:customer:{customerId}'],
+	) {
+		logger.debug('Setting subscription state', {
+			customerId,
+			subscriptionId: state.subscriptionId,
+			status: state.status,
+		})
 		return this.trackOperation(
 			'set_subscription_state',
-			`stripe:customer:${customerId}`,
+			this.buildSubscriptionKey(customerId),
 			() =>
-				this.redis.set(`stripe:customer:${customerId}`, state, {
+				this.redis.set(this.buildSubscriptionKey(customerId), state, {
 					ex: 24 * 60 * 60, // 24 hours
 				}),
 		)
 	}
 
 	async deleteSubscriptionState(customerId: string) {
+		logger.debug('Deleting subscription state', { customerId })
 		return this.trackOperation(
 			'delete_subscription_state',
-			`stripe:customer:${customerId}`,
-			() => this.redis.del(`stripe:customer:${customerId}`),
+			this.buildSubscriptionKey(customerId),
+			() => this.redis.del(this.buildSubscriptionKey(customerId)),
 		)
 	}
 
 	async incrementSyncAttempts(customerId: string) {
+		logger.debug('Incrementing sync attempts', { customerId })
 		return this.trackOperation(
 			'increment_sync_attempts',
-			`stripe:customer:${customerId}:sync_attempts`,
-			() => this.redis.incr(`stripe:customer:${customerId}:sync_attempts`),
+			`${this.buildSubscriptionKey(customerId)}:sync_attempts`,
+			() =>
+				this.redis.incr(
+					`${this.buildSubscriptionKey(customerId)}:sync_attempts`,
+				),
 		)
 	}
 
@@ -150,27 +201,47 @@ export class StripeCacheClient {
 		latency_ms: number
 	}> {
 		const start = Date.now()
+		logger.debug('Starting health check')
+
 		try {
 			await this.redis.ping()
 			const latency = Date.now() - start
+
+			logger.debug('Health check completed', {
+				status: 'healthy',
+				latency_ms: latency,
+			})
+
 			await this.metrics.trackOperation({
 				operation: 'health_check',
 				status: 'success',
 				key_pattern: 'health',
 				latency_ms: latency,
 			})
+
 			return {
 				status: 'healthy',
 				latency_ms: latency,
 			}
 		} catch (error) {
 			const latency = Date.now() - start
+
+			logger.error(
+				error instanceof Error ? error : new Error('Health check failed'),
+			)
+			logger.debug('Health check failed', {
+				status: 'unhealthy',
+				latency_ms: latency,
+				error: error instanceof Error ? error.message : 'Unknown error',
+			})
+
 			await this.metrics.trackOperation({
 				operation: 'health_check',
 				status: 'failure',
 				key_pattern: 'health',
 				latency_ms: latency,
 			})
+
 			return {
 				status: 'unhealthy',
 				latency_ms: latency,
