@@ -13,6 +13,7 @@ module.exports = withUt({
 		'./node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/primitives/**/*.{ts,tsx,mdx}',
+		'./node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/resources-crud/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/index.tsx',
