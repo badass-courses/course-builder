@@ -6,6 +6,26 @@ import { TagSchema } from './tags'
 
 export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
 
+export const PostCreatorSchema = z
+	.object({
+		id: z.string(),
+		name: z.string(),
+		role: z.string(),
+		email: z.string().email(),
+		fields: z.object({}).optional(),
+		emailVerified: z
+			.union([z.string(), z.date()])
+			.transform((val) => new Date(val)),
+		image: z.string().nullable(),
+		createdAt: z
+			.union([z.string(), z.date()])
+			.transform((val) => new Date(val)),
+		contributions: z.array(z.any()).default([]),
+	})
+	.nullish()
+
+export type PostCreator = z.infer<typeof PostCreatorSchema>
+
 export const PostTypeSchema = z.union([
 	z.literal('article'),
 	z.literal('lesson'),
@@ -79,6 +99,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			gitpod: z.string().nullish(),
 		}),
 		tags: PostTagsSchema,
+		createdBy: PostCreatorSchema,
 	}),
 )
 

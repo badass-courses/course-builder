@@ -55,9 +55,14 @@ export async function getAllPosts(): Promise<Post[]> {
 				},
 				orderBy: asc(contentResourceTagTable.position),
 			},
+			createdBy: {
+				with: {
+					contributions: true,
+				},
+			},
 		},
 	})
-
+	// return posts
 	const postsParsed = z.array(PostSchema).safeParse(posts)
 	if (!postsParsed.success) {
 		console.error('Error parsing posts', postsParsed.error)

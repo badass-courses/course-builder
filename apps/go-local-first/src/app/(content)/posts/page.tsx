@@ -130,7 +130,7 @@ const PostTeaser: React.FC<{
 							data-footer=""
 							className="mt-8 flex items-center justify-between gap-1.5 p-0 text-sm"
 						>
-							<Contributor />
+							<Contributor contributor={post.createdBy} />
 							<div className="flex items-center gap-1.5">
 								<p className="text-muted-foreground text-sm opacity-60">
 									{createdAt && format(new Date(createdAt), 'MMMM do, y')}
@@ -179,7 +179,7 @@ async function PostListActions({
 
 	return ability.can('create', 'Content') ? (
 		<aside className="w-full gap-3 lg:max-w-xs">
-			<div className="p-5 pt-0">
+			<div className="p-5 px-0 lg:px-5 lg:pt-0">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>
@@ -192,12 +192,13 @@ async function PostListActions({
 					</p>
 				) : (
 					<p className="opacity-75">
-						You've published {publishedPosts.length} posts.
+						You've published {publishedPosts.length}{' '}
+						{pluralize('post', publishedPosts.length)}.
 					</p>
 				)}
 			</div>
 			{drafts && drafts.length > 0 ? (
-				<ul className="flex flex-col px-5 pt-4">
+				<ul className="flex flex-col pt-4 lg:px-5">
 					<strong>Drafts</strong>
 					{drafts.map((post) => {
 						return (
@@ -217,7 +218,7 @@ async function PostListActions({
 				</ul>
 			) : null}
 			{unlisted && unlisted.length > 0 ? (
-				<ul className=" flex flex-col px-5 pt-4">
+				<ul className=" flex flex-col pt-4 lg:px-5">
 					<strong>Unlisted</strong>
 					{unlisted.map((post) => {
 						const postLists =
@@ -257,8 +258,11 @@ async function PostListActions({
 				</ul>
 			) : null}
 			{ability.can('update', 'Content') ? (
-				<div className="mt-5 p-5">
+				<div className="mt-5 flex flex-col gap-2 py-5 lg:px-5">
 					<CreatePostModal />
+					<Button variant="outline" asChild>
+						<Link href="/lists">Manage Lists</Link>
+					</Button>
 				</div>
 			) : null}
 		</aside>

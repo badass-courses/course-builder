@@ -26,7 +26,7 @@ export default async function ListsPage() {
 	return (
 		<div className="container flex flex-col gap-4 py-8">
 			<h1 className="fluid-2xl font-bold">Lists</h1>
-			<div className="flex flex-col gap-5 lg:flex-row">
+			<div className="flex flex-col gap-8 lg:flex-col">
 				<ListsTable canCreateContent={canCreateContent} lists={lists} />
 				{canCreateContent && <CreateListForm />}
 			</div>
