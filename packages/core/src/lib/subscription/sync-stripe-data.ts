@@ -8,6 +8,7 @@ import {
 	SubscriptionInfo,
 	SubscriptionStatus,
 } from '../../schemas/subscription-info'
+import { logger } from '../utils/logger'
 import { StripeCacheClient } from './stripe-cache'
 
 export type SyncLog = {
@@ -39,12 +40,19 @@ export async function syncStripeDataToKV(params: {
 	const cache = new StripeCacheClient(params.redis, params.axiom)
 	const retryCount = params.retryCount || 0
 
+	logger.debug('Starting subscription sync', {
+		customerId: params.customerId,
+		source: params.source,
+		retryCount,
+	})
+
 	try {
+		// 1. Get customer and subscription data
+		logger.debug('Fetching customer data', { customerId: params.customerId })
 		const customer = await params.stripe.getCustomer(params.customerId, [
 			'subscriptions.data.items.data.price.product',
 		])
 
-		// 1. Get customer and active subscription
 		if (!('subscriptions' in customer)) {
 			throw new Error('Invalid customer object')
 		}
@@ -54,6 +62,13 @@ export async function syncStripeDataToKV(params: {
 			| undefined
 		const item = subscription?.items.data[0]
 		const product = item?.price?.product as Stripe.Product | undefined
+
+		logger.debug('Retrieved customer data', {
+			customerId: params.customerId,
+			hasSubscription: !!subscription,
+			subscriptionId: subscription?.id,
+			productId: product?.id,
+		})
 
 		// 2. Build subscription info
 		const subscriptionInfo =
@@ -92,8 +107,20 @@ export async function syncStripeDataToKV(params: {
 					}
 				: null
 
+		logger.debug('Built subscription info', {
+			customerId: params.customerId,
+			subscriptionId: subscriptionInfo?.subscriptionIdentifier,
+			status: subscriptionInfo?.status,
+			metadata: subscriptionInfo?.metadata,
+		})
+
 		// 3. Update Redis cache
 		if (subscriptionInfo && subscription) {
+			logger.debug('Updating Redis cache', {
+				customerId: params.customerId,
+				subscriptionId: subscriptionInfo.subscriptionIdentifier,
+			})
+
 			await cache.setSubscriptionState(params.customerId, {
 				subscriptionId: subscriptionInfo.subscriptionIdentifier,
 				status: subscriptionInfo.status,
@@ -104,15 +131,30 @@ export async function syncStripeDataToKV(params: {
 				lastSyncedAt: Date.now(),
 				syncAttempts: retryCount,
 			})
+
+			logger.debug('Redis cache updated', {
+				customerId: params.customerId,
+				duration: Date.now() - startTime,
+			})
 		} else {
+			logger.debug('Deleting subscription state', {
+				customerId: params.customerId,
+			})
 			await cache.deleteSubscriptionState(params.customerId)
 		}
+
+		const duration = Date.now() - startTime
+		logger.debug('Sync completed successfully', {
+			customerId: params.customerId,
+			duration,
+			source: params.source,
+		})
 
 		return {
 			log: {
 				customerId: params.customerId,
 				operation: retryCount > 0 ? 'retry' : 'sync',
-				duration: Date.now() - startTime,
+				duration,
 				status: 'success',
 				retryCount,
 				source: params.source,
@@ -121,6 +163,15 @@ export async function syncStripeDataToKV(params: {
 		}
 	} catch (error) {
 		const errorCode = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
+		const duration = Date.now() - startTime
+
+		logger.error(error instanceof Error ? error : new Error(errorCode))
+		logger.debug('Sync failed', {
+			customerId: params.customerId,
+			duration,
+			errorCode,
+			source: params.source,
+		})
 
 		// Increment sync attempts on failure
 		await cache.incrementSyncAttempts(params.customerId)
@@ -129,7 +180,7 @@ export async function syncStripeDataToKV(params: {
 			log: {
 				customerId: params.customerId,
 				operation: retryCount > 0 ? 'retry' : 'sync',
-				duration: Date.now() - startTime,
+				duration,
 				status: 'failure',
 				errorCode,
 				retryCount,
