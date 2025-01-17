@@ -92,7 +92,7 @@
 	}
 
 	body {
-		@apply bg-background text-foreground font-normal antialiased;
+		@apply bg-background text-foreground flex min-h-screen flex-col font-normal antialiased;
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;

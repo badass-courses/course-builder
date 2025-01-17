@@ -36,7 +36,7 @@ export default async function ProfilePage() {
 
 	if (ability.can('read', 'User', session?.user?.id)) {
 		return (
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
+			<div className="container mx-auto flex w-full flex-grow flex-col items-start gap-8 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
 				<header className="w-full md:max-w-[230px]">
 					<h1 className="fluid-xl text-center font-bold md:text-left">
 						Your Profile

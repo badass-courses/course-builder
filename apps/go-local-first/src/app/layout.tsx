@@ -62,7 +62,7 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning>
-				<HolyLoader color="#DEC09D" height="0.1rem" speed={250} />
+				<HolyLoader color="hsl(var(--primary))" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
 				<body
 					id="layout"

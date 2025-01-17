@@ -63,7 +63,7 @@ export default async function PostsIndexPage() {
 	const latestPost = publishedPublicPosts[0]
 
 	return (
-		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 py-5 lg:flex-row">
+		<main className="container flex flex-grow flex-col px-5 py-5 lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
 				<div className="flex w-full flex-col items-center">
 					{latestPost ? null : (
