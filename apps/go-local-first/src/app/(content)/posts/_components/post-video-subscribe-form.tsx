@@ -63,7 +63,7 @@ export const PostNewsletterCta: React.FC<
 					className="via-muted-foreground/20 absolute -bottom-px left-0 z-10 h-px w-full bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
 				/>
-				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-16 sm:text-left md:flex-col md:items-start md:gap-0 md:pt-0">
+				<div className="flex flex-col items-center justify-center pt-5 text-center md:flex-col md:items-start md:gap-0 md:pr-16 md:pt-0 md:text-left">
 					<div className="flex items-center gap-2">
 						<svg
 							width="20"
@@ -80,11 +80,11 @@ export const PostNewsletterCta: React.FC<
 								strokeDasharray="3 3"
 							/>
 						</svg>
-						<div className="fluid-xl font-heading font-semibold">
+						<div className="fluid-lg font-heading whitespace-nowrap font-semibold">
 							Local First Tips
 						</div>
 					</div>
-					<div className="text-primary fluid-lg font-heading">
+					<div className="text-primary fluid-md font-heading whitespace-nowrap">
 						Delivered to your inbox
 					</div>
 				</div>
