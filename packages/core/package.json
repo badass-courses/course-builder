@@ -143,12 +143,14 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.17.1",
+		"@axiomhq/js": "^1.3.1",
 		"@coursebuilder/email-templates": "^1.0.4",
 		"@coursebuilder/nodash": "workspace:^",
 		"@react-email/components": "0.0.27",
 		"@slack/web-api": "^7.0.4",
 		"@types/cookie": "0.6.0",
 		"@types/uuid": "9.0.8",
+		"@upstash/redis": "^1.28.4",
 		"ai": "3.0.19",
 		"cookie": "0.6.0",
 		"date-fns": "^2.30.0",
@@ -163,8 +165,7 @@
 		"stripe": "16.9.0",
 		"unplugin-swc": "^1.4.4",
 		"uuid": "^9.0.1",
-		"xstate": "^5.13.0",
-		"@upstash/redis": "^1.28.4"
+		"xstate": "^5.13.0"
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",

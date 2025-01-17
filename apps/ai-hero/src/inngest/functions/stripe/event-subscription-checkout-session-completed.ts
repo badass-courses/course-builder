@@ -1,5 +1,6 @@
 import { stripePaymentAdapter } from '@/coursebuilder/stripe-provider'
 import { inngest } from '@/inngest/inngest.server'
+import { axiom } from '@/server/axiom-client'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
@@ -32,6 +33,7 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 					redis,
 					customerId: stripeCheckoutSession.customer,
 					source: 'inngest:stripe-subscription-checkout-session-completed',
+					axiom,
 				})
 			},
 		)

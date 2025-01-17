@@ -1,4 +1,5 @@
 import { AuthConfig } from '@auth/core'
+import { Axiom } from '@axiomhq/js'
 import { Redis } from '@upstash/redis'
 import { Inngest } from 'inngest'
 
@@ -70,6 +71,7 @@ export interface CourseBuilderConfig {
 	authConfig: AuthConfig
 	baseUrl: string
 	redis?: Redis
+	axiom?: Axiom
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'

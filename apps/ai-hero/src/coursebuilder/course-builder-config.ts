@@ -7,6 +7,8 @@ import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { authOptions } from '@/server/auth'
+import { axiom } from '@/server/axiom-client'
+import { redis } from '@/server/redis-client'
 
 import NextCourseBuilder, {
 	type NextCourseBuilderConfig,
@@ -31,6 +33,8 @@ export const courseBuilderConfig: NextCourseBuilderConfig = {
 		},
 	},
 	authConfig: authOptions,
+	redis: redis,
+	axiom,
 }
 
 export const {

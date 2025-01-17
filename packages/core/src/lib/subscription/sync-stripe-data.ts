@@ -1,3 +1,4 @@
+import { Axiom } from '@axiomhq/js'
 import { Redis } from '@upstash/redis'
 import { PaymentsAdapter } from 'src/types'
 import { Stripe } from 'stripe'
@@ -25,6 +26,7 @@ export async function syncStripeDataToKV(params: {
 	customerId: string
 	source: SyncLog['source']
 	retryCount?: number
+	axiom?: Axiom
 }): Promise<{
 	log: SyncLog
 	subscriptionInfo: SubscriptionInfo | null
@@ -34,7 +36,7 @@ export async function syncStripeDataToKV(params: {
 	}
 
 	const startTime = Date.now()
-	const cache = new StripeCacheClient(params.redis)
+	const cache = new StripeCacheClient(params.redis, params.axiom)
 	const retryCount = params.retryCount || 0
 
 	try {
