@@ -179,7 +179,7 @@ async function PostListActions({
 
 	return ability.can('create', 'Content') ? (
 		<aside className="w-full gap-3 lg:max-w-xs">
-			<div className="p-5">
+			<div className="p-5 pt-0">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>

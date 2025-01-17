@@ -75,7 +75,7 @@ export async function GET(request: Request) {
 					tw="flex h-full w-full bg-white flex-col"
 					style={{
 						fontFamily: 'Gabarito',
-						background: '#3A86EF',
+						background: '#B4C7E0',
 						// background: '#f5f5f5',
 						width: 1200,
 						height: 630,

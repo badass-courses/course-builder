@@ -109,15 +109,15 @@ export default function RootLayout({
 					{isGoogleAnalyticsAvailable && (
 						<GoogleAnalytics gaId={env.NEXT_PUBLIC_GOOGLE_ANALYTICS!} />
 					)}
-					<div
-						className="pointer-events-none fixed inset-0 z-50 h-full w-full"
+					{/* <div
+						className="pointer-events-none fixed inset-0 z-10 h-full w-full"
 						style={{
 							backgroundImage: 'url(/assets/noise.png)',
 							opacity: 0.06,
 							backgroundRepeat: 'repeat',
 							backgroundSize: 109,
 						}}
-					/>
+					/> */}
 				</body>
 			</html>
 		</Providers>
