@@ -71,7 +71,7 @@ export function CreateResourceForm({
 								is about clearly.
 							</FormDescription>
 							<FormControl>
-								<Input className="dark:text-white" {...field} />
+								<Input {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
