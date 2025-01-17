@@ -1,3 +1,4 @@
+import { color } from 'framer-motion'
 import colors from 'tailwindcss/colors'
 import { fontFamily } from 'tailwindcss/defaultTheme'
 
@@ -42,7 +43,6 @@ module.exports = {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					// DEFAULT: 'oklch(var(--primary) / <alpha-value>)',
 					foreground: 'hsl(var(--primary-foreground))',
 				},
 				secondary: {
@@ -111,11 +111,23 @@ module.exports = {
 							fontWeight: 700,
 							color: theme('colors.foreground'),
 						},
+						ul: {
+							listStylePosition: 'outside',
+							listStyleImage:
+								'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDEwIDEwIj4KICA8cGF0aCBzdHJva2U9IiNmZmYiIGQ9Ik0xLjE3IDIuNzg5IDUgLjU3NyA4LjgzIDIuNzl2NC40Mkw1IDkuNDIzIDEuMTcgNy4yMVYyLjc5WiIvPgo8L3N2Zz4K")',
+						},
+						'ul > li': {
+							color: theme('colors.foreground'),
+							'&::marker': {
+								listStyleImage:
+									'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDEwIDEwIj4KICA8cGF0aCBmaWxsPSIjRDlEOUQ5IiBkPSJtNSAwIDQuMzMgMi41djVMNSAxMCAuNjcgNy41di01TDUgMFoiLz4KPC9zdmc+Cg==")',
+							},
+						},
 						blockquote: {
 							borderLeftColor: theme('colors.muted.DEFAULT'),
 							color: theme('colors.foreground'),
 						},
-						'li, strong': {
+						'ul, ol, li, strong': {
 							color: theme('colors.foreground'),
 						},
 						a: {

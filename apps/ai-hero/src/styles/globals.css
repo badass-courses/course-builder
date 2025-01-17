@@ -59,7 +59,7 @@
 	.dark {
 		/* golden color scheme */
 		--background: 0 0% 0%;
-		--foreground: 32 5% 93%;
+		--foreground: 32 5% 87%;
 		--card: 32 8% 0%;
 		--card-foreground: 32 5% 90%;
 		--popover: 32 10% 5%;
@@ -143,4 +143,9 @@
 
 .md-editor-toolbar-warp {
 	@apply bg-background border-border border-b !important;
+}
+
+[data-checklist] {
+	@apply list-outside !pl-4;
+	list-style-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8cGF0aCBmaWxsPSIjRjNBRDVCIiBkPSJtMTQgMy4xNS0uNy0xLjRjLTYuMDM4IDEuNzUtOS4xIDUuNi05LjEgNS42bC0yLjgtMi4xTDAgNi42NWw0LjIgNS42YzMuMjM3LTYuMDM3IDkuOC05LjEgOS44LTkuMVoiLz4KPC9zdmc+Cg==');
 }
