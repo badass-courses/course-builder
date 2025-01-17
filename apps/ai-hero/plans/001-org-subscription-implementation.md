@@ -40,26 +40,59 @@ Single source of truth using Redis + single sync function to avoid split brain i
      ] as const
      ```
 
+4. **Business Logic Handler**
+   - [x] Inngest function (`apps/ai-hero/src/inngest/functions/stripe/event-subscription-checkout-session-completed.ts`)
+   - [x] User creation/lookup
+   - [x] Organization setup
+   - [x] Role management
+   - [x] Event emission
+
+5. **Success Page**
+   - [x] Route setup (`apps/ai-hero/src/app/(commerce)/thanks/subscription/page.tsx`)
+   - [x] Loading states (Suspense)
+   - [x] Error handling
+   - [x] Login link component
+   - [x] Redirect if logged in
+   - [x] Direct Redis sync using `stripePaymentAdapter`
+
 ## Next Steps
 
-### 1. Success Page Implementation [NEXT]
-- [ ] Add `/checkout/success` route (`apps/ai-hero/src/app/checkout/success/page.tsx`)
-- [ ] Get customer ID from session
-- [ ] Eager sync before redirect
-- [ ] Handle error states
-- [ ] Add loading state
+### 1. Manual Testing [NEXT]
+Test the full subscription flow:
+1. **Checkout Flow**
+   - [ ] Start checkout session
+   - [ ] Complete payment
+   - [ ] Verify redirect to success page
+
+2. **Success Page**
+   - [ ] Verify subscription info loads
+   - [ ] Test login link
+   - [ ] Test redirect if logged in
+   - [ ] Verify Redis state
+
+3. **Webhook Processing**
+   - [ ] Use Stripe CLI to trigger events
+   - [ ] Verify Redis updates
+   - [ ] Check Inngest function execution
+   - [ ] Verify organization setup
+
+4. **Error Cases**
+   - [ ] Invalid session ID
+   - [ ] Missing customer
+   - [ ] Failed payment
+   - [ ] Network issues
 
 ### 2. Cleanup [PENDING]
-- [ ] Delete old Inngest webhook handler (`apps/ai-hero/src/inngest/functions/stripe/event-subscription-checkout-session-completed.ts`)
 - [ ] Remove unused subscription types
 - [ ] Clean up old event handlers
 - [ ] Update tests
 
-### 3. Customer Management [PENDING]
-- [ ] Ensure customer creation before checkout
-- [ ] Store user <-> customer mapping
-- [ ] Handle existing customers
-- [ ] Add metadata validation
+### 3. Future Automation [OPTIONAL]
+Consider adding:
+- [ ] Integration tests using Stripe test mode
+- [ ] Webhook event replay tests
+- [ ] Redis state verification
+- [ ] Organization state checks
 
 ## File Structure
 ```
@@ -85,13 +118,14 @@ apps/ai-hero/
     │   ├── api/
     │   │   └── stripe/
     │   │       └── route.ts         # New webhook handler
-    │   └── checkout/
-    │       └── success/
-    │           └── page.tsx         # Success page (to implement)
+    │   └── (commerce)/
+    │       └── thanks/
+    │           └── subscription/
+    │               └── page.tsx     # Success page
     └── inngest/
         └── functions/
             └── stripe/
-                └── event-subscription-checkout-session-completed.ts  # Old handler (to delete)
+                └── event-subscription-checkout-session-completed.ts  # Business logic handler
 ```
 
 ## Reference Implementation
