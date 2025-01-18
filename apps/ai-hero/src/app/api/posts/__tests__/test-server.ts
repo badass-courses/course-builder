@@ -1,10 +1,31 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
+import { TEST_ADMIN, TEST_TOKEN, TEST_USER } from './test-utils'
+
 const BASE_URL = 'http://localhost:3000'
+
+// Map tokens to users for our test auth system
+const AUTH_MAP = {
+	[TEST_TOKEN]: TEST_USER,
+	'admin-token': TEST_ADMIN,
+}
+
+function getAuthUser(request: Request) {
+	const authHeader = request.headers.get('Authorization')
+	if (!authHeader) return null
+
+	const token = authHeader.split(' ')[1]
+	return AUTH_MAP[token] || null
+}
 
 const defaultHandlers = [
 	http.post(`${BASE_URL}/api/posts`, async ({ request }) => {
+		const user = getAuthUser(request)
+		if (!user) {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
+
 		const body = await request.json()
 
 		if (!body.title || body.title.trim() === '') {
@@ -25,7 +46,12 @@ const defaultHandlers = [
 		)
 	}),
 
-	http.get(`${BASE_URL}/api/posts`, () => {
+	http.get(`${BASE_URL}/api/posts`, async ({ request }) => {
+		const user = getAuthUser(request)
+		if (!user) {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
+
 		return HttpResponse.json([])
 	}),
 ]

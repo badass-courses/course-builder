@@ -2,11 +2,32 @@ import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { server } from './test-server'
+import { createAuthHeaders } from './test-utils'
 
 const BASE_URL = 'http://localhost:3000'
 
 describe('Posts API', () => {
 	describe('POST /api/posts', () => {
+		it('requires authentication', async () => {
+			const mockPost = {
+				title: 'Test Post',
+				description: 'Test Description',
+				content: 'Test Content',
+				type: 'article',
+				status: 'draft',
+			}
+
+			const response = await fetch(`${BASE_URL}/api/posts`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(mockPost),
+			})
+
+			expect(response.status).toBe(401)
+		})
+
 		it('creates a new post with valid input', async () => {
 			const mockPost = {
 				title: 'Test Post',
@@ -20,6 +41,7 @@ describe('Posts API', () => {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					...createAuthHeaders(),
 				},
 				body: JSON.stringify(mockPost),
 			})
@@ -44,6 +66,7 @@ describe('Posts API', () => {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					...createAuthHeaders(),
 				},
 				body: JSON.stringify(invalidPost),
 			})
@@ -58,6 +81,11 @@ describe('Posts API', () => {
 		beforeEach(() => {
 			// Reset handlers before each test
 			server.resetHandlers()
+		})
+
+		it('requires authentication', async () => {
+			const response = await fetch(`${BASE_URL}/api/posts`)
+			expect(response.status).toBe(401)
 		})
 
 		it('returns a list of posts', async () => {
@@ -90,7 +118,9 @@ describe('Posts API', () => {
 				}),
 			)
 
-			const response = await fetch(`${BASE_URL}/api/posts`)
+			const response = await fetch(`${BASE_URL}/api/posts`, {
+				headers: createAuthHeaders(),
+			})
 			expect(response.status).toBe(200)
 
 			const data = await response.json()
@@ -120,7 +150,9 @@ describe('Posts API', () => {
 				}),
 			)
 
-			const response = await fetch(`${BASE_URL}/api/posts?status=published`)
+			const response = await fetch(`${BASE_URL}/api/posts?status=published`, {
+				headers: createAuthHeaders(),
+			})
 			expect(response.status).toBe(200)
 
 			const data = await response.json()
