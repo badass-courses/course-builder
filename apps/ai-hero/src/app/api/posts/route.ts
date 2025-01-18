@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { courseBuilderAdapter } from '@/db'
 import {
-	NewPostInputSchema,
-	PostActionSchema,
-	PostUpdateSchema,
-} from '@/lib/posts'
-import {
-	deletePostFromDatabase,
-	getAllPostsForUser,
-	getPost,
-	writeNewPostToDatabase,
-	writePostUpdateToDatabase,
-} from '@/lib/posts-query'
+	createPost,
+	deletePost,
+	getPosts,
+	PostError,
+	updatePost,
+} from '@/lib/posts/posts.service'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
-import { subject } from '@casl/ability'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -26,187 +19,115 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: NextRequest) {
-	const { ability, user } = await getUserAbilityForRequest(request)
-	const { searchParams } = new URL(request.url)
-	const slug = searchParams.get('slug')
+	try {
+		const { ability, user } = await getUserAbilityForRequest(request)
+		const { searchParams } = new URL(request.url)
+		const slug = searchParams.get('slug')
 
-	if (slug) {
-		const post = await getPost(slug)
-		if (!post) {
+		const result = await getPosts({ userId: user?.id, ability, slug })
+		return NextResponse.json(result, { headers: corsHeaders })
+	} catch (error) {
+		if (error instanceof PostError) {
 			return NextResponse.json(
-				{ error: 'Post not found' },
-				{ status: 404, headers: corsHeaders },
+				{ error: error.message, details: error.details },
+				{ status: error.statusCode, headers: corsHeaders },
 			)
 		}
-		if (ability.can('read', subject('Content', post))) {
-			return NextResponse.json(post, { headers: corsHeaders })
-		}
 		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
+			{ error: 'Internal server error' },
+			{ status: 500, headers: corsHeaders },
 		)
 	}
-
-	if (ability.cannot('read', 'Content')) {
-		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
-	const posts = await getAllPostsForUser(user?.id)
-	return NextResponse.json(posts, { headers: corsHeaders })
 }
 
 export async function POST(request: NextRequest) {
-	const { ability, user } = await getUserAbilityForRequest(request)
-
-	if (ability.cannot('create', 'Content')) {
-		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
-	if (!user) {
-		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
-	const body = await request.json()
-	const validatedData = NewPostInputSchema.safeParse({
-		...body,
-		createdById: user.id,
-	})
-
-	if (!validatedData.success) {
-		return NextResponse.json(
-			{ error: validatedData.error },
-			{ status: 400, headers: corsHeaders },
-		)
-	}
-
 	try {
-		const newPost = await writeNewPostToDatabase({
-			title: validatedData.data.title,
-			videoResourceId: validatedData.data.videoResourceId || undefined,
-			postType: validatedData.data.postType,
-			createdById: user.id,
-		})
-		return NextResponse.json(newPost, { status: 201, headers: corsHeaders })
+		const { ability, user } = await getUserAbilityForRequest(request)
+		if (!user) {
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401, headers: corsHeaders },
+			)
+		}
+
+		const body = await request.json()
+		const result = await createPost({ data: body, userId: user.id, ability })
+		return NextResponse.json(result, { status: 201, headers: corsHeaders })
 	} catch (error) {
+		if (error instanceof PostError) {
+			return NextResponse.json(
+				{ error: error.message, details: error.details },
+				{ status: error.statusCode, headers: corsHeaders },
+			)
+		}
 		return NextResponse.json(
-			{ error: 'Failed to create post' },
+			{ error: 'Internal server error' },
 			{ status: 500, headers: corsHeaders },
 		)
 	}
 }
 
 export async function PUT(request: NextRequest) {
-	const body = await request.json()
-	const { searchParams } = new URL(request.url)
-	const actionInput = PostActionSchema.safeParse(
-		searchParams.get('action') || 'save',
-	)
-
-	if (!actionInput.success) {
-		return NextResponse.json(
-			{ error: 'Invalid action' },
-			{ status: 400, headers: corsHeaders },
-		)
-	}
-
-	const action = actionInput.data
-
-	const { ability, user } = await getUserAbilityForRequest(request)
-
-	if (!user) {
-		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
-	const validatedData = PostUpdateSchema.safeParse(body)
-
-	if (!validatedData.success) {
-		return NextResponse.json(
-			{ error: validatedData.error },
-			{ status: 400, headers: corsHeaders },
-		)
-	}
-
-	const originalPost = await getPost(validatedData.data.id)
-
-	if (!originalPost) {
-		return NextResponse.json(
-			{ error: 'Post not found' },
-			{ status: 404, headers: corsHeaders },
-		)
-	}
-
-	if (ability.cannot('manage', subject('Content', originalPost))) {
-		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
 	try {
-		const updatedPost = await writePostUpdateToDatabase({
-			currentPost: originalPost,
-			postUpdate: validatedData.data,
+		const { ability, user } = await getUserAbilityForRequest(request)
+		if (!user) {
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401, headers: corsHeaders },
+			)
+		}
+
+		const body = await request.json()
+		const { searchParams } = new URL(request.url)
+		const action = searchParams.get('action')
+		const id = searchParams.get('id')
+
+		if (!id) {
+			return NextResponse.json(
+				{ error: 'Missing post ID' },
+				{ status: 400, headers: corsHeaders },
+			)
+		}
+
+		const result = await updatePost({
+			id,
+			data: body,
 			action,
-			updatedById: user.id,
+			userId: user.id,
+			ability,
 		})
-		return NextResponse.json(updatedPost, { headers: corsHeaders })
+		return NextResponse.json(result, { headers: corsHeaders })
 	} catch (error) {
-		console.error('Failed to update post', error)
+		if (error instanceof PostError) {
+			return NextResponse.json(
+				{ error: error.message, details: error.details },
+				{ status: error.statusCode, headers: corsHeaders },
+			)
+		}
 		return NextResponse.json(
-			{ error: 'Failed to update post' },
+			{ error: 'Internal server error' },
 			{ status: 500, headers: corsHeaders },
 		)
 	}
 }
 
 export async function DELETE(request: NextRequest) {
-	const { ability } = await getUserAbilityForRequest(request)
-	const { searchParams } = new URL(request.url)
-	const id = searchParams.get('id')
-
-	if (!id) {
-		return NextResponse.json(
-			{ error: 'Missing post ID' },
-			{ status: 400, headers: corsHeaders },
-		)
-	}
-	const postToDelete = await courseBuilderAdapter.getContentResource(id)
-
-	if (!postToDelete) {
-		return NextResponse.json(
-			{ error: 'Post not found' },
-			{ status: 404, headers: corsHeaders },
-		)
-	}
-
-	if (ability.cannot('delete', subject('Content', postToDelete))) {
-		return NextResponse.json(
-			{ error: 'Unauthorized' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
 	try {
-		await deletePostFromDatabase(id)
-		return NextResponse.json(
-			{ message: 'Post deleted successfully' },
-			{ headers: corsHeaders },
-		)
+		const { ability } = await getUserAbilityForRequest(request)
+		const { searchParams } = new URL(request.url)
+		const id = searchParams.get('id')
+
+		const result = await deletePost({ id: id || '', ability })
+		return NextResponse.json(result, { headers: corsHeaders })
 	} catch (error) {
+		if (error instanceof PostError) {
+			return NextResponse.json(
+				{ error: error.message, details: error.details },
+				{ status: error.statusCode, headers: corsHeaders },
+			)
+		}
 		return NextResponse.json(
-			{ error: 'Failed to delete post' },
+			{ error: 'Internal server error' },
 			{ status: 500, headers: corsHeaders },
 		)
 	}
