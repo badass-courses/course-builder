@@ -80,7 +80,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			yDoc: z.string().nullable().optional(),
 			title: z.string(),
 			summary: z.string().optional().nullable(),
-			description: z.string().optional(),
+			description: z.string().nullish(),
 			slug: z.string(),
 			state: PostStateSchema.default('draft'),
 			visibility: PostVisibilitySchema.default('public'),

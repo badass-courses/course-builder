@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
 	createPost,
 	deletePost,
+	getPostById,
 	getPosts,
 	PostError,
 	updatePost,
@@ -22,9 +23,9 @@ export async function GET(request: NextRequest) {
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
 		const { searchParams } = new URL(request.url)
-		const slug = searchParams.get('slug')
+		const slugOrId = searchParams.get('slugOrId')
 
-		const result = await getPosts({ userId: user?.id, ability, slug })
+		const result = await getPosts({ userId: user?.id, ability, slug: slugOrId })
 		return NextResponse.json(result, { headers: corsHeaders })
 	} catch (error) {
 		if (error instanceof PostError) {
