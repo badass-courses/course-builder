@@ -25,12 +25,21 @@ export const PostActionSchema = z.union([
 
 export type PostAction = z.infer<typeof PostActionSchema>
 
-export const NewPostSchema = z.object({
-	title: z.string().min(2).max(90),
-	videoResourceId: z.string().min(4, 'Please upload a video'),
-	postType: z.enum(['lesson', 'podcast', 'tip']),
+export const NewPostInputSchema = z.object({
+	title: z.string().min(1, 'Title is required'),
+	videoResourceId: z.string().optional(),
+	postType: z.enum([
+		'lesson',
+		'podcast',
+		'tip',
+		'course',
+		'playlist',
+		'article',
+	]),
+	createdById: z.string(),
 })
-export type NewPost = z.infer<typeof NewPostSchema>
+
+export type NewPostInput = z.infer<typeof NewPostInputSchema>
 
 export const PostStateSchema = z.union([
 	z.literal('draft'),
@@ -100,19 +109,3 @@ export const PostUpdateSchema = z.object({
 })
 
 export type PostUpdate = z.infer<typeof PostUpdateSchema>
-
-export const NewPostInputSchema = z.object({
-	title: z.string().min(1, 'Title is required'),
-	videoResourceId: z.string().optional(),
-	postType: z.enum([
-		'lesson',
-		'podcast',
-		'tip',
-		'course',
-		'playlist',
-		'article',
-	]),
-	createdById: z.string(),
-})
-
-export type NewPostInput = z.infer<typeof NewPostInputSchema>

@@ -13,7 +13,6 @@ import {
 	contributionTypes,
 } from '@/db/schema'
 import {
-	NewPost,
 	NewPostInput,
 	NewPostInputSchema,
 	Post,
@@ -163,7 +162,7 @@ export async function getPosts(): Promise<Post[]> {
 	return postsParsed.data
 }
 
-export async function createPost(input: NewPost) {
+export async function createPost(input: NewPostInput) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
@@ -176,7 +175,7 @@ export async function createPost(input: NewPost) {
 	const postValues = {
 		id: newPostId,
 		type: 'post',
-		createdById: user.id,
+		createdById: input.createdById || user.id,
 		fields: {
 			title: input.title,
 			state: 'draft',

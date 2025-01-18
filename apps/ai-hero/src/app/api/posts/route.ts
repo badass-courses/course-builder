@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { courseBuilderAdapter } from '@/db'
-import { NewPostSchema, PostActionSchema, PostUpdateSchema } from '@/lib/posts'
+import {
+	NewPostInputSchema,
+	PostActionSchema,
+	PostUpdateSchema,
+} from '@/lib/posts'
 import {
 	deletePostFromDatabase,
 	getAllPostsForUser,
@@ -72,7 +76,10 @@ export async function POST(request: NextRequest) {
 	}
 
 	const body = await request.json()
-	const validatedData = NewPostSchema.safeParse(body)
+	const validatedData = NewPostInputSchema.safeParse({
+		...body,
+		createdById: user.id,
+	})
 
 	if (!validatedData.success) {
 		return NextResponse.json(

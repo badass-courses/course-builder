@@ -209,6 +209,7 @@
 		"encoding": "^0.1.13",
 		"eslint": "^8.47.0",
 		"eslint-config-next": "15.0.2",
+		"msw": "^2.7.0",
 		"mysql2": "^3.6.1",
 		"partykit": "0.0.104",
 		"postcss": "^8.4.27",
