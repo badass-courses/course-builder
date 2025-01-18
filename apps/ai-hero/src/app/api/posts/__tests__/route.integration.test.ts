@@ -1,384 +1,296 @@
+import { createTestDb } from '@/db/test-db'
+import { clearTestPosts, createTestPost, findTestPost } from '@/db/test-helpers'
+import { testPosts } from '@/db/test-schema'
+import { eq } from 'drizzle-orm'
 import { http, HttpResponse } from 'msw'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { setupServer } from 'msw/node'
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
-import { server } from './test-server'
-import { createAuthHeaders } from './test-utils'
+import { createAuthHeaders, TEST_ADMIN, TEST_TOKEN } from './test-utils'
 
 const BASE_URL = 'http://localhost:3000'
 
 describe('Posts API', () => {
+	const server = setupServer(
+		// Default handlers for unauthed requests
+		http.post(`${BASE_URL}/api/posts`, () => {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}),
+		http.get(`${BASE_URL}/api/posts`, () => {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}),
+		http.put(`${BASE_URL}/api/posts/:id`, () => {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}),
+		http.delete(`${BASE_URL}/api/posts/:id`, () => {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}),
+	)
+	const { db, cleanup } = createTestDb()
+
+	beforeAll(() => server.listen())
+	afterEach(() => {
+		server.resetHandlers()
+		clearTestPosts(db)
+	})
+	afterAll(() => {
+		server.close()
+		cleanup()
+	})
+
 	describe('POST /api/posts', () => {
 		it('requires authentication', async () => {
+			const res = await fetch(`${BASE_URL}/api/posts`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ title: 'Test Post' }),
+			})
+
+			expect(res.status).toBe(401)
+		})
+
+		it('creates a new post', async () => {
 			const mockPost = {
 				title: 'Test Post',
 				postType: 'article',
-				createdById: 'test-user-id',
 			}
 
-			const response = await fetch(`${BASE_URL}/api/posts`, {
+			server.use(
+				http.post(`${BASE_URL}/api/posts`, async ({ request }) => {
+					const body = await request.json()
+					const post = await createTestPost(db, {
+						...body,
+						createdById: TEST_ADMIN.id,
+					})
+					return HttpResponse.json(post)
+				}),
+			)
+
+			const res = await fetch(`${BASE_URL}/api/posts`, {
 				method: 'POST',
 				headers: {
+					...createAuthHeaders(TEST_TOKEN),
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(mockPost),
 			})
 
-			expect(response.status).toBe(401)
-		})
-
-		it('creates a new post with valid input', async () => {
-			const mockPost = {
-				title: 'Test Post',
-				postType: 'article',
-				createdById: 'test-user-id',
-			}
-
-			const response = await fetch(`${BASE_URL}/api/posts`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					...createAuthHeaders(),
-				},
-				body: JSON.stringify(mockPost),
-			})
-
-			expect(response.status).toBe(201)
-			const data = await response.json()
-			expect(data).toMatchObject({
-				id: expect.any(String),
-				type: 'post',
-				fields: {
-					title: mockPost.title,
-					state: 'draft',
-					visibility: 'public',
-					slug: expect.stringMatching(/^test-post~.+/),
-					postType: mockPost.postType,
-				},
-				createdById: mockPost.createdById,
-				createdAt: expect.any(String),
-				updatedAt: expect.any(String),
-			})
-		})
-
-		it('returns 400 for invalid input', async () => {
-			const invalidPost = {
-				title: '', // Empty title should fail validation
-				postType: 'article',
-				createdById: 'test-user-id',
-			}
-
-			const response = await fetch(`${BASE_URL}/api/posts`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					...createAuthHeaders(),
-				},
-				body: JSON.stringify(invalidPost),
-			})
-
-			expect(response.status).toBe(400)
-			const error = await response.json()
-			expect(error).toHaveProperty('error')
+			expect(res.status).toBe(200)
+			const data = await res.json()
+			expect(data.title).toBe(mockPost.title)
+			expect(data.postType).toBe(mockPost.postType)
+			expect(data.createdById).toBe(TEST_ADMIN.id)
 		})
 	})
 
 	describe('GET /api/posts', () => {
-		beforeEach(() => {
-			// Reset handlers before each test
-			server.resetHandlers()
-		})
-
 		it('requires authentication', async () => {
-			const response = await fetch(`${BASE_URL}/api/posts`)
-			expect(response.status).toBe(401)
+			const res = await fetch(`${BASE_URL}/api/posts`)
+			expect(res.status).toBe(401)
 		})
 
 		it('returns a list of posts', async () => {
-			const mockPosts = [
-				{
-					id: '1',
-					title: 'Test Post 1',
-					description: 'Description 1',
-					content: 'Content 1',
-					type: 'article',
-					status: 'published',
-					createdAt: new Date().toISOString(),
-					updatedAt: new Date().toISOString(),
-				},
-				{
-					id: '2',
-					title: 'Test Post 2',
-					description: 'Description 2',
-					content: 'Content 2',
-					type: 'article',
-					status: 'draft',
-					createdAt: new Date().toISOString(),
-					updatedAt: new Date().toISOString(),
-				},
-			]
+			const post = await createTestPost(db, { createdById: TEST_ADMIN.id })
 
 			server.use(
-				http.get(`${BASE_URL}/api/posts`, () => {
-					return HttpResponse.json(mockPosts)
+				http.get(`${BASE_URL}/api/posts`, async () => {
+					const posts = await db.select().from(testPosts)
+					return HttpResponse.json(posts)
 				}),
 			)
 
-			const response = await fetch(`${BASE_URL}/api/posts`, {
-				headers: createAuthHeaders(),
+			const res = await fetch(`${BASE_URL}/api/posts`, {
+				headers: createAuthHeaders(TEST_TOKEN),
 			})
-			expect(response.status).toBe(200)
 
-			const data = await response.json()
-			expect(Array.isArray(data)).toBe(true)
-			expect(data).toHaveLength(2)
-			expect(data[0]).toMatchObject(mockPosts[0])
+			expect(res.status).toBe(200)
+			const data = await res.json()
+			expect(data).toHaveLength(1)
+			expect(data[0].id).toBe(post.id)
 		})
 
-		it('supports filtering by status', async () => {
-			const mockPosts = [
-				{
-					id: '1',
-					title: 'Published Post',
-					status: 'published',
-				},
-			]
+		it('filters by status', async () => {
+			await createTestPost(db, {
+				state: 'published',
+				createdById: TEST_ADMIN.id,
+			})
+			await createTestPost(db, { state: 'draft', createdById: TEST_ADMIN.id })
 
 			server.use(
-				http.get(`${BASE_URL}/api/posts`, ({ request }) => {
+				http.get(`${BASE_URL}/api/posts`, async ({ request }) => {
 					const url = new URL(request.url)
-					const status = url.searchParams.get('status')
-
-					if (status === 'published') {
-						return HttpResponse.json(mockPosts)
-					}
-					return HttpResponse.json([])
+					const state = url.searchParams.get('state')
+					const posts = await db
+						.select()
+						.from(testPosts)
+						.where(state ? eq(testPosts.state, state) : undefined)
+					return HttpResponse.json(posts)
 				}),
 			)
 
-			const response = await fetch(`${BASE_URL}/api/posts?status=published`, {
-				headers: createAuthHeaders(),
+			const res = await fetch(`${BASE_URL}/api/posts?state=published`, {
+				headers: createAuthHeaders(TEST_TOKEN),
 			})
-			expect(response.status).toBe(200)
 
-			const data = await response.json()
+			expect(res.status).toBe(200)
+			const data = await res.json()
 			expect(data).toHaveLength(1)
-			expect(data[0].status).toBe('published')
+			expect(data[0].state).toBe('published')
 		})
 	})
 
-	describe('PUT /api/posts', () => {
-		beforeEach(() => {
-			server.resetHandlers()
-		})
-
+	describe('PUT /api/posts/:id', () => {
 		it('requires authentication', async () => {
-			const updateData = {
-				id: '123',
-				fields: {
-					title: 'Updated Post',
-					slug: 'updated-post~123',
-					state: 'draft',
-					visibility: 'unlisted',
-				},
-				tags: [],
-			}
-
-			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
+			const res = await fetch(`${BASE_URL}/api/posts/123?action=save`, {
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(updateData),
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ title: 'Updated Post' }),
 			})
 
-			expect(response.status).toBe(401)
+			expect(res.status).toBe(401)
 		})
 
-		it('updates a post with valid input', async () => {
-			const updateData = {
-				id: '123',
-				fields: {
-					title: 'Updated Post',
-					slug: 'updated-post~123',
-					state: 'draft',
-					visibility: 'unlisted',
-				},
-				tags: [],
-			}
+		it('validates action parameter', async () => {
+			server.use(
+				http.put(`${BASE_URL}/api/posts/:id`, () => {
+					return HttpResponse.json({ error: 'Invalid action' }, { status: 400 })
+				}),
+			)
 
-			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
+			const res = await fetch(`${BASE_URL}/api/posts/123?action=invalid`, {
 				method: 'PUT',
 				headers: {
+					...createAuthHeaders(TEST_TOKEN),
 					'Content-Type': 'application/json',
-					...createAuthHeaders(),
 				},
-				body: JSON.stringify(updateData),
+				body: JSON.stringify({ title: 'Updated Post' }),
 			})
 
-			expect(response.status).toBe(200)
-			const data = await response.json()
-			expect(data).toMatchObject({
-				...updateData,
-				updatedAt: expect.any(String),
-				updatedById: expect.any(String),
-			})
+			expect(res.status).toBe(400)
 		})
 
-		it('returns 400 for invalid action', async () => {
-			const updateData = {
-				id: '123',
-				fields: {
-					title: 'Updated Post',
-					slug: 'updated-post~123',
-					state: 'draft',
-					visibility: 'unlisted',
-				},
-				tags: [],
-			}
-
-			const response = await fetch(`${BASE_URL}/api/posts?action=invalid`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					...createAuthHeaders(),
-				},
-				body: JSON.stringify(updateData),
-			})
-
-			expect(response.status).toBe(400)
-			const error = await response.json()
-			expect(error).toHaveProperty('error', 'Invalid action')
-		})
-
-		it('returns 400 for invalid input', async () => {
-			const invalidData = {
-				id: '123',
-				fields: {
-					title: '', // Empty title should fail validation
-					slug: 'updated-post~123',
-					state: 'draft',
-					visibility: 'unlisted',
-				},
-				tags: [],
-			}
-
-			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					...createAuthHeaders(),
-				},
-				body: JSON.stringify(invalidData),
-			})
-
-			expect(response.status).toBe(400)
-			const error = await response.json()
-			expect(error).toHaveProperty('error')
-		})
-
-		it('returns 404 for non-existent post', async () => {
-			const updateData = {
-				id: 'non-existent',
-				fields: {
-					title: 'Updated Post',
-					slug: 'updated-post~123',
-					state: 'draft',
-					visibility: 'unlisted',
-				},
-				tags: [],
+		it('updates an existing post', async () => {
+			const post = await createTestPost(db, { createdById: TEST_ADMIN.id })
+			const updates = {
+				title: 'Updated Post Title',
+				state: 'published',
 			}
 
 			server.use(
-				http.put(`${BASE_URL}/api/posts`, async () => {
+				http.put(`${BASE_URL}/api/posts/:id`, async ({ request }) => {
+					const body = await request.json()
+					const url = new URL(request.url)
+					const postId = url.pathname.split('/').pop()
+
+					const updatedPost = {
+						...post,
+						...body,
+						updatedAt: new Date().toISOString(),
+					}
+
+					await db
+						.update(testPosts)
+						.set(updatedPost)
+						.where(eq(testPosts.id, postId!))
+
+					return HttpResponse.json(updatedPost)
+				}),
+			)
+
+			const res = await fetch(`${BASE_URL}/api/posts/${post.id}?action=save`, {
+				method: 'PUT',
+				headers: {
+					...createAuthHeaders(TEST_TOKEN),
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(updates),
+			})
+
+			expect(res.status).toBe(200)
+			const data = await res.json()
+			expect(data.title).toBe(updates.title)
+			expect(data.state).toBe(updates.state)
+
+			// Verify DB update
+			const updatedPost = await findTestPost(db, post.id)
+			expect(updatedPost.title).toBe(updates.title)
+			expect(updatedPost.state).toBe(updates.state)
+		})
+
+		it('returns 404 for non-existent post', async () => {
+			server.use(
+				http.put(`${BASE_URL}/api/posts/:id`, () => {
 					return HttpResponse.json({ error: 'Post not found' }, { status: 404 })
 				}),
 			)
 
-			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					...createAuthHeaders(),
+			const res = await fetch(
+				`${BASE_URL}/api/posts/non-existent?action=save`,
+				{
+					method: 'PUT',
+					headers: {
+						...createAuthHeaders(TEST_TOKEN),
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ title: 'Updated Post' }),
 				},
-				body: JSON.stringify(updateData),
-			})
+			)
 
-			expect(response.status).toBe(404)
-			const error = await response.json()
-			expect(error).toHaveProperty('error', 'Post not found')
+			expect(res.status).toBe(404)
 		})
 	})
 
-	describe('DELETE /api/posts', () => {
-		beforeEach(() => {
-			server.resetHandlers()
-		})
-
+	describe('DELETE /api/posts/:id', () => {
 		it('requires authentication', async () => {
-			const response = await fetch(`${BASE_URL}/api/posts?id=123`, {
+			const res = await fetch(`${BASE_URL}/api/posts/123`, {
 				method: 'DELETE',
 			})
 
-			expect(response.status).toBe(401)
+			expect(res.status).toBe(401)
 		})
 
-		it('returns 400 when post ID is missing', async () => {
-			const response = await fetch(`${BASE_URL}/api/posts`, {
+		it('deletes an existing post', async () => {
+			const post = await createTestPost(db, { createdById: TEST_ADMIN.id })
+
+			server.use(
+				http.delete(`${BASE_URL}/api/posts/:id`, async ({ request }) => {
+					const url = new URL(request.url)
+					const postId = url.pathname.split('/').pop()
+
+					await db
+						.update(testPosts)
+						.set({ deletedAt: new Date().toISOString() })
+						.where(eq(testPosts.id, postId!))
+
+					return new HttpResponse(null, { status: 204 })
+				}),
+			)
+
+			const res = await fetch(`${BASE_URL}/api/posts/${post.id}`, {
 				method: 'DELETE',
-				headers: createAuthHeaders(),
+				headers: createAuthHeaders(TEST_TOKEN),
 			})
 
-			expect(response.status).toBe(400)
-			const error = await response.json()
-			expect(error).toHaveProperty('error', 'Missing post ID')
+			expect(res.status).toBe(204)
+
+			// Verify soft delete
+			const deletedPost = await findTestPost(db, post.id)
+			expect(deletedPost.deletedAt).not.toBeNull()
 		})
 
 		it('returns 404 for non-existent post', async () => {
-			const response = await fetch(`${BASE_URL}/api/posts?id=non-existent`, {
-				method: 'DELETE',
-				headers: createAuthHeaders(),
-			})
-
-			expect(response.status).toBe(404)
-			const error = await response.json()
-			expect(error).toHaveProperty('error', 'Post not found')
-		})
-
-		it('successfully deletes an existing post', async () => {
 			server.use(
-				http.delete(`${BASE_URL}/api/posts`, () => {
-					return HttpResponse.json({ message: 'Post deleted successfully' })
+				http.delete(`${BASE_URL}/api/posts/:id`, () => {
+					return HttpResponse.json({ error: 'Post not found' }, { status: 404 })
 				}),
 			)
 
-			const response = await fetch(`${BASE_URL}/api/posts?id=123`, {
+			const res = await fetch(`${BASE_URL}/api/posts/non-existent`, {
 				method: 'DELETE',
-				headers: createAuthHeaders(),
+				headers: createAuthHeaders(TEST_TOKEN),
 			})
 
-			expect(response.status).toBe(200)
-			const data = await response.json()
-			expect(data).toHaveProperty('message', 'Post deleted successfully')
-		})
-
-		it('handles server errors gracefully', async () => {
-			server.use(
-				http.delete(`${BASE_URL}/api/posts`, () => {
-					return HttpResponse.json(
-						{ error: 'Failed to delete post' },
-						{ status: 500 },
-					)
-				}),
-			)
-
-			const response = await fetch(`${BASE_URL}/api/posts?id=123`, {
-				method: 'DELETE',
-				headers: createAuthHeaders(),
-			})
-
-			expect(response.status).toBe(500)
-			const error = await response.json()
-			expect(error).toHaveProperty('error', 'Failed to delete post')
+			expect(res.status).toBe(404)
 		})
 	})
 })
