@@ -31,7 +31,7 @@ function isValidateEmailServerConfig(server: any) {
 
 export interface SendVerificationRequestParams {
 	identifier: string
-	name: string
+	name?: string
 	url: string
 	expires: Date
 	provider: any
