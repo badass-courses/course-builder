@@ -1,3 +1,5 @@
+import { Inngest } from 'inngest'
+
 import { AdapterError } from '../errors'
 import { CourseBuilderConfig } from '../index'
 import { CallbacksOptions, InternalOptions, RequestInternal } from '../types'
@@ -33,15 +35,21 @@ export async function init({
 		options: courseBuilderOptions,
 	})
 
+	if (!provider) {
+		throw new Error('Provider not found')
+	}
+
+	if (!courseBuilderOptions.inngest) {
+		throw new Error('Inngest not found')
+	}
+
 	const maxAge = 30 * 24 * 60 * 60
 
 	const options: InternalOptions = {
 		debug: false,
-		pages: {},
 		...courseBuilderOptions,
 		url,
 		action,
-		// @ts-expect-errors
 		provider,
 		cookies: merge(
 			{},
@@ -57,6 +65,8 @@ export async function init({
 		logger,
 		getCurrentUser: courseBuilderOptions.getCurrentUser,
 		redis: courseBuilderOptions.redis,
+		basePath: courseBuilderOptions.basePath ?? '',
+		inngest: courseBuilderOptions.inngest,
 	}
 
 	const cookies: cookie.Cookie[] = []

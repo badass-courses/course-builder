@@ -6,6 +6,7 @@ import { checkoutSessionCompletedEvent } from '../../schemas/stripe/checkout-ses
 import {
 	InternalOptions,
 	InternalProvider,
+	PaymentsAdapter,
 	PaymentsProviderConfig,
 } from '../../types'
 import { sendServerEmail } from '../send-server-email'

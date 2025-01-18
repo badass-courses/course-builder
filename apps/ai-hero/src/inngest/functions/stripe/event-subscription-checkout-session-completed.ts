@@ -28,12 +28,22 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 		const { log, subscriptionInfo } = await step.run(
 			'sync subscription state',
 			async () => {
+				const cacheClient = {
+					setSubscriptionState: async (customerId: string, state: any) => {
+						await redis.set(`stripe:customer:${customerId}`, state, {
+							ex: 24 * 60 * 60, // 24 hours
+						})
+					},
+					incrementSyncAttempts: async (customerId: string) => {
+						return redis.incr(`stripe:customer:${customerId}:sync_attempts`)
+					},
+				}
+
 				return await syncStripeDataToKV({
-					stripe: paymentsAdapter,
+					stripe: stripePaymentAdapter,
 					redis,
 					customerId: stripeCheckoutSession.customer,
 					source: 'inngest:stripe-subscription-checkout-session-completed',
-					axiom,
 				})
 			},
 		)

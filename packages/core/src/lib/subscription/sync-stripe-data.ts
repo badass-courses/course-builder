@@ -46,20 +46,26 @@ export async function syncStripeDataToKV(params: {
 		retryCount,
 	})
 
+	// stripe is undefined
+	console.log({
+		stripe: params.stripe,
+	})
+
 	try {
 		// 1. Get customer and subscription data
 		logger.debug('Fetching customer data', { customerId: params.customerId })
-		const customer = await params.stripe.getCustomer(params.customerId, [
-			'subscriptions.data.items.data.price.product',
-		])
+		const customer = await params.stripe.getCustomer(params.customerId)
+
+		console.log({ customer })
 
 		if (!('subscriptions' in customer)) {
 			throw new Error('Invalid customer object')
 		}
 
-		const subscription = customer.subscriptions?.data[0] as
-			| Stripe.Subscription
-			| undefined
+		const subscription = await params.stripe.getSubscription(
+			customer.subscriptions.data[0].id,
+		)
+
 		const item = subscription?.items.data[0]
 		const product = item?.price?.product as Stripe.Product | undefined
 

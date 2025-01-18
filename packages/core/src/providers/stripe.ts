@@ -166,10 +166,14 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		})
 		return stripeCustomer.id
 	}
-	async getCustomer(customerId: string, expand: string[] = []) {
+	async getCustomer(customerId: string, expand?: string[]) {
 		const customer = (await this.stripe.customers.retrieve(
 			customerId,
-			expand ? { expand } : {},
+			expand
+				? { expand }
+				: {
+						expand: ['subscriptions'],
+					},
 		)) as Stripe.Customer
 		return customer
 	}
@@ -221,7 +225,9 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		return this.stripe.products.create(product)
 	}
 	async getSubscription(subscriptionId: string) {
-		return this.stripe.subscriptions.retrieve(subscriptionId)
+		return this.stripe.subscriptions.retrieve(subscriptionId, {
+			expand: ['items.data.price.product'],
+		})
 	}
 	async getBillingPortalUrl(customerId: string, returnUrl: string) {
 		return this.stripe.billingPortal.sessions
