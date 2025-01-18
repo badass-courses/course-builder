@@ -11,10 +11,8 @@ describe('Posts API', () => {
 		it('requires authentication', async () => {
 			const mockPost = {
 				title: 'Test Post',
-				description: 'Test Description',
-				content: 'Test Content',
-				type: 'article',
-				status: 'draft',
+				postType: 'article',
+				createdById: 'test-user-id',
 			}
 
 			const response = await fetch(`${BASE_URL}/api/posts`, {
@@ -31,10 +29,8 @@ describe('Posts API', () => {
 		it('creates a new post with valid input', async () => {
 			const mockPost = {
 				title: 'Test Post',
-				description: 'Test Description',
-				content: 'Test Content',
-				type: 'article',
-				status: 'draft',
+				postType: 'article',
+				createdById: 'test-user-id',
 			}
 
 			const response = await fetch(`${BASE_URL}/api/posts`, {
@@ -49,8 +45,16 @@ describe('Posts API', () => {
 			expect(response.status).toBe(201)
 			const data = await response.json()
 			expect(data).toMatchObject({
-				...mockPost,
 				id: expect.any(String),
+				type: 'post',
+				fields: {
+					title: mockPost.title,
+					state: 'draft',
+					visibility: 'public',
+					slug: expect.stringMatching(/^test-post~.+/),
+					postType: mockPost.postType,
+				},
+				createdById: mockPost.createdById,
 				createdAt: expect.any(String),
 				updatedAt: expect.any(String),
 			})
@@ -59,7 +63,8 @@ describe('Posts API', () => {
 		it('returns 400 for invalid input', async () => {
 			const invalidPost = {
 				title: '', // Empty title should fail validation
-				description: 'Test Description',
+				postType: 'article',
+				createdById: 'test-user-id',
 			}
 
 			const response = await fetch(`${BASE_URL}/api/posts`, {
@@ -73,7 +78,7 @@ describe('Posts API', () => {
 
 			expect(response.status).toBe(400)
 			const error = await response.json()
-			expect(error).toHaveProperty('message')
+			expect(error).toHaveProperty('error')
 		})
 	})
 
@@ -158,6 +163,222 @@ describe('Posts API', () => {
 			const data = await response.json()
 			expect(data).toHaveLength(1)
 			expect(data[0].status).toBe('published')
+		})
+	})
+
+	describe('PUT /api/posts', () => {
+		beforeEach(() => {
+			server.resetHandlers()
+		})
+
+		it('requires authentication', async () => {
+			const updateData = {
+				id: '123',
+				fields: {
+					title: 'Updated Post',
+					slug: 'updated-post~123',
+					state: 'draft',
+					visibility: 'unlisted',
+				},
+				tags: [],
+			}
+
+			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(updateData),
+			})
+
+			expect(response.status).toBe(401)
+		})
+
+		it('updates a post with valid input', async () => {
+			const updateData = {
+				id: '123',
+				fields: {
+					title: 'Updated Post',
+					slug: 'updated-post~123',
+					state: 'draft',
+					visibility: 'unlisted',
+				},
+				tags: [],
+			}
+
+			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					...createAuthHeaders(),
+				},
+				body: JSON.stringify(updateData),
+			})
+
+			expect(response.status).toBe(200)
+			const data = await response.json()
+			expect(data).toMatchObject({
+				...updateData,
+				updatedAt: expect.any(String),
+				updatedById: expect.any(String),
+			})
+		})
+
+		it('returns 400 for invalid action', async () => {
+			const updateData = {
+				id: '123',
+				fields: {
+					title: 'Updated Post',
+					slug: 'updated-post~123',
+					state: 'draft',
+					visibility: 'unlisted',
+				},
+				tags: [],
+			}
+
+			const response = await fetch(`${BASE_URL}/api/posts?action=invalid`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					...createAuthHeaders(),
+				},
+				body: JSON.stringify(updateData),
+			})
+
+			expect(response.status).toBe(400)
+			const error = await response.json()
+			expect(error).toHaveProperty('error', 'Invalid action')
+		})
+
+		it('returns 400 for invalid input', async () => {
+			const invalidData = {
+				id: '123',
+				fields: {
+					title: '', // Empty title should fail validation
+					slug: 'updated-post~123',
+					state: 'draft',
+					visibility: 'unlisted',
+				},
+				tags: [],
+			}
+
+			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					...createAuthHeaders(),
+				},
+				body: JSON.stringify(invalidData),
+			})
+
+			expect(response.status).toBe(400)
+			const error = await response.json()
+			expect(error).toHaveProperty('error')
+		})
+
+		it('returns 404 for non-existent post', async () => {
+			const updateData = {
+				id: 'non-existent',
+				fields: {
+					title: 'Updated Post',
+					slug: 'updated-post~123',
+					state: 'draft',
+					visibility: 'unlisted',
+				},
+				tags: [],
+			}
+
+			server.use(
+				http.put(`${BASE_URL}/api/posts`, async () => {
+					return HttpResponse.json({ error: 'Post not found' }, { status: 404 })
+				}),
+			)
+
+			const response = await fetch(`${BASE_URL}/api/posts?action=save`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					...createAuthHeaders(),
+				},
+				body: JSON.stringify(updateData),
+			})
+
+			expect(response.status).toBe(404)
+			const error = await response.json()
+			expect(error).toHaveProperty('error', 'Post not found')
+		})
+	})
+
+	describe('DELETE /api/posts', () => {
+		beforeEach(() => {
+			server.resetHandlers()
+		})
+
+		it('requires authentication', async () => {
+			const response = await fetch(`${BASE_URL}/api/posts?id=123`, {
+				method: 'DELETE',
+			})
+
+			expect(response.status).toBe(401)
+		})
+
+		it('returns 400 when post ID is missing', async () => {
+			const response = await fetch(`${BASE_URL}/api/posts`, {
+				method: 'DELETE',
+				headers: createAuthHeaders(),
+			})
+
+			expect(response.status).toBe(400)
+			const error = await response.json()
+			expect(error).toHaveProperty('error', 'Missing post ID')
+		})
+
+		it('returns 404 for non-existent post', async () => {
+			const response = await fetch(`${BASE_URL}/api/posts?id=non-existent`, {
+				method: 'DELETE',
+				headers: createAuthHeaders(),
+			})
+
+			expect(response.status).toBe(404)
+			const error = await response.json()
+			expect(error).toHaveProperty('error', 'Post not found')
+		})
+
+		it('successfully deletes an existing post', async () => {
+			server.use(
+				http.delete(`${BASE_URL}/api/posts`, () => {
+					return HttpResponse.json({ message: 'Post deleted successfully' })
+				}),
+			)
+
+			const response = await fetch(`${BASE_URL}/api/posts?id=123`, {
+				method: 'DELETE',
+				headers: createAuthHeaders(),
+			})
+
+			expect(response.status).toBe(200)
+			const data = await response.json()
+			expect(data).toHaveProperty('message', 'Post deleted successfully')
+		})
+
+		it('handles server errors gracefully', async () => {
+			server.use(
+				http.delete(`${BASE_URL}/api/posts`, () => {
+					return HttpResponse.json(
+						{ error: 'Failed to delete post' },
+						{ status: 500 },
+					)
+				}),
+			)
+
+			const response = await fetch(`${BASE_URL}/api/posts?id=123`, {
+				method: 'DELETE',
+				headers: createAuthHeaders(),
+			})
+
+			expect(response.status).toBe(500)
+			const error = await response.json()
+			expect(error).toHaveProperty('error', 'Failed to delete post')
 		})
 	})
 })

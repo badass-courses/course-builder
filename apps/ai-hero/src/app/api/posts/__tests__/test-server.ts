@@ -28,17 +28,33 @@ const defaultHandlers = [
 
 		const body = await request.json()
 
+		// Validate required fields
 		if (!body.title || body.title.trim() === '') {
 			return HttpResponse.json(
-				{ message: 'Title is required' },
+				{ error: { issues: [{ message: 'Title is required' }] } },
+				{ status: 400 },
+			)
+		}
+
+		if (!body.postType) {
+			return HttpResponse.json(
+				{ error: { issues: [{ message: 'Post type is required' }] } },
 				{ status: 400 },
 			)
 		}
 
 		return HttpResponse.json(
 			{
-				...body,
 				id: '123',
+				type: 'post',
+				fields: {
+					title: body.title,
+					state: 'draft',
+					visibility: 'public',
+					slug: `${body.title.toLowerCase().replace(/\s+/g, '-')}~123`,
+					postType: body.postType,
+				},
+				createdById: body.createdById || user.id,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			},
@@ -53,6 +69,66 @@ const defaultHandlers = [
 		}
 
 		return HttpResponse.json([])
+	}),
+
+	http.put(`${BASE_URL}/api/posts`, async ({ request }) => {
+		const user = getAuthUser(request)
+		if (!user) {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
+
+		const url = new URL(request.url)
+		const action = url.searchParams.get('action') || 'save'
+		if (!['save', 'publish', 'unpublish', 'archive'].includes(action)) {
+			return HttpResponse.json({ error: 'Invalid action' }, { status: 400 })
+		}
+
+		const body = await request.json()
+
+		// Validate required fields
+		if (!body.fields?.title || body.fields.title.length < 2) {
+			return HttpResponse.json(
+				{
+					error: {
+						issues: [{ message: 'Title must be at least 2 characters' }],
+					},
+				},
+				{ status: 400 },
+			)
+		}
+
+		if (!body.id) {
+			return HttpResponse.json(
+				{ error: { issues: [{ message: 'Post ID is required' }] } },
+				{ status: 400 },
+			)
+		}
+
+		return HttpResponse.json({
+			...body,
+			updatedAt: new Date().toISOString(),
+			updatedById: user.id,
+		})
+	}),
+
+	http.delete(`${BASE_URL}/api/posts`, async ({ request }) => {
+		const user = getAuthUser(request)
+		if (!user) {
+			return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
+
+		const url = new URL(request.url)
+		const id = url.searchParams.get('id')
+
+		if (!id) {
+			return HttpResponse.json({ error: 'Missing post ID' }, { status: 400 })
+		}
+
+		if (id === 'non-existent') {
+			return HttpResponse.json({ error: 'Post not found' }, { status: 404 })
+		}
+
+		return HttpResponse.json({ message: 'Post deleted successfully' })
 	}),
 ]
 
