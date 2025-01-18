@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function ConfirmSubscriptionPage() {
 	return (
-		<main className="container flex min-h-[var(--pane-layout-height)] flex-grow flex-col items-center justify-center px-5 py-24">
+		<main className="container flex flex-grow flex-col items-center justify-center px-5 py-16">
 			<div className="flex w-full max-w-4xl flex-col items-center justify-center text-center font-light">
 				<h1 className="font-text font-heading mx-auto w-full max-w-lg py-8 text-3xl font-extrabold sm:text-5xl">
 					Confirm your email address
@@ -35,13 +35,6 @@ export default async function ConfirmSubscriptionPage() {
 					</p>
 				</div>
 			</div>
-			<Image
-				src={require('../../../../public/assets/bg-text-1@2x.jpg')}
-				fill
-				alt=""
-				aria-hidden="true"
-				className="-z-10 object-cover object-center md:object-contain"
-			/>
 		</main>
 	)
 }

@@ -43,6 +43,13 @@ async function getBody(
 	}
 }
 
+/**
+ * takes a `Request` object and converts it into an internal request object
+ * that we use throughout the system
+ * @param req
+ * @param config
+ * @returns
+ */
 export async function toInternalRequest(
 	req: Request,
 	config: CourseBuilderConfig,
@@ -56,6 +63,12 @@ export async function toInternalRequest(
 			url.pathname,
 			config.basePath,
 		)
+
+		console.debug({
+			url,
+			action,
+			providerId,
+		})
 
 		return {
 			url,

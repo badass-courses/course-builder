@@ -4,13 +4,15 @@ import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import config from '@/config'
 import { env } from '@/env.mjs'
+import type { List } from '@/lib/lists'
 import { getAllLists } from '@/lib/lists-query'
 import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
-import { FilePlus2, Pencil } from 'lucide-react'
+import { ListOrderedIcon, Pencil } from 'lucide-react'
+import pluralize from 'pluralize'
 
 import {
 	Badge,
@@ -96,7 +98,11 @@ export default async function PostsIndexPage() {
 					<aside className="hidden w-full max-w-xs border-r lg:block" />
 				}
 			>
-				<PostListActions posts={unpublishedPosts} />
+				<PostListActions
+					publishedPosts={publishedPublicPosts}
+					unpublishedPosts={unpublishedPosts}
+					lists={allLists}
+				/>
 			</React.Suspense>
 		</main>
 	)
@@ -172,22 +178,47 @@ const PostTeaser: React.FC<{
 	)
 }
 
-async function PostListActions({ posts }: { posts?: Post[] }) {
+async function PostListActions({
+	unpublishedPosts,
+	publishedPosts,
+	lists,
+}: {
+	publishedPosts: Post[]
+	unpublishedPosts?: Post[]
+	lists?: List[]
+}) {
 	const { ability, session } = await getServerAuthSession()
+	const drafts = unpublishedPosts?.filter(
+		({ fields }) =>
+			fields.state === 'draft' && fields.visibility !== 'unlisted',
+	)
+	const unlisted = unpublishedPosts?.filter(
+		({ fields }) => fields.visibility === 'unlisted',
+	)
+
 	return ability.can('create', 'Content') ? (
-		<aside className="w-full border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
-			<div className="border-b p-5">
+		<aside className="divide-border w-full gap-3 divide-y border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
+			<div className="p-5">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>
-				<p>
-					You have <strong className="font-semibold">{posts?.length}</strong>{' '}
-					unpublished posts.
-				</p>
+
+				{drafts && drafts?.length > 0 ? (
+					<p className="opacity-75">
+						You have <strong className="font-semibold">{drafts?.length}</strong>{' '}
+						unpublished{' '}
+						{drafts?.length ? pluralize('post', drafts.length) : 'post'}.
+					</p>
+				) : (
+					<p className="opacity-75">
+						You've published {publishedPosts.length} posts.
+					</p>
+				)}
 			</div>
-			{posts ? (
-				<ul className="flex flex-col px-5 pt-5">
-					{posts.map((post) => {
+			{drafts && drafts.length > 0 ? (
+				<ul className="flex flex-col px-5 pt-4">
+					<strong>Drafts</strong>
+					{drafts.map((post) => {
 						return (
 							<li key={post.id}>
 								<Link
@@ -198,19 +229,54 @@ async function PostListActions({ posts }: { posts?: Post[] }) {
 										<Pencil className="text-muted-foreground h-3 w-3 flex-shrink-0" />
 										<span>{post.fields.title}</span>
 									</strong>
-									<div className="text-muted-foreground pl-4 text-sm">
-										{post.fields.state}
-										{post.fields.state === 'published' &&
-											` - ${post.fields.visibility}`}
-									</div>
 								</Link>
 							</li>
 						)
 					})}
 				</ul>
 			) : null}
+			{unlisted && unlisted.length > 0 ? (
+				<ul className=" flex flex-col px-5 pt-4">
+					<strong>Unlisted</strong>
+					{unlisted.map((post) => {
+						const postLists =
+							lists &&
+							lists.filter((list) =>
+								list.resources.filter(
+									({ resource }) => resource.id === post.id,
+								),
+							)
+
+						return (
+							<li key={post.id}>
+								<Link
+									className="group flex flex-col pt-2"
+									href={`/posts/${post.fields.slug}/edit`}
+								>
+									<strong className="group-hover:text-primary inline-flex items-baseline gap-1 font-semibold leading-tight transition">
+										<span>{post.fields.title}</span>
+									</strong>
+								</Link>
+								<div className="text-muted-foreground flex flex-col gap-1 pb-2 text-sm">
+									{postLists &&
+										postLists.map((postList) => (
+											<Link
+												key={postList.id}
+												href={`/lists/${postList?.fields.slug}/edit`}
+												className="text-muted-foreground hover:text-primary flex items-center gap-1 "
+											>
+												<ListOrderedIcon className="w-3" />
+												{postList && postList.fields.title}
+											</Link>
+										))}
+								</div>
+							</li>
+						)
+					})}
+				</ul>
+			) : null}
 			{ability.can('update', 'Content') ? (
-				<div className="p-5">
+				<div className="mt-5 border-t p-5">
 					<CreatePostModal />
 				</div>
 			) : null}

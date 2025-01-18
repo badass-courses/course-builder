@@ -212,7 +212,7 @@ export default async function ListPage(props: {
 			</header>
 			<div className="px-5 sm:px-8">
 				<div className="mx-auto mt-10 flex w-full max-w-5xl flex-col gap-10 sm:grid md:grid-cols-5 lg:gap-16">
-					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
+					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
 						{body || 'No body found.'}
 					</article>
 					<aside className="col-span-2">

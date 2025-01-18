@@ -9,17 +9,16 @@ import { withAxiom } from 'next-axiom'
 await import('./src/env.mjs')
 
 const withMDX = createMDX({
-	options: {
-		remarkPlugins: [],
-		rehypePlugins: [],
-	},
+	options: {},
 })
 
 /** @type {import("next").NextConfig} */
 const config = {
 	experimental: {
 		mdxRs: true,
+		ppr: 'incremental',
 	},
+	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
 	images: {
 		remotePatterns: [
 			{

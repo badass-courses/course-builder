@@ -74,7 +74,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			description: z.string().optional(),
 			slug: z.string(),
 			state: PostStateSchema.default('draft'),
-			visibility: PostVisibilitySchema.default('unlisted'),
+			visibility: PostVisibilitySchema.default('public'),
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
 		}),

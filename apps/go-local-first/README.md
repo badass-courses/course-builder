@@ -202,3 +202,59 @@ $ pnpm db:push
     3. Navigate to `https://local.drizzle.studio`
 2. Via Drizzle Studio (other flows are possible if you'd prefer, but this is the one we're documenting) find your new `user` record and change the `role` to `admin`. Make sure to save/apply the change.
 3. When you visit `/tips`, you'll see the form for creating a new Tip.
+
+## Forms
+
+### Newsletter Subscription
+
+A database-backed form component with validation and analytics:
+
+```tsx
+import { SubscribeToCoursebuilderForm } from '@/convertkit'
+
+<SubscribeToCoursebuilderForm
+  onSuccess={(subscriber) => {
+    track('subscribed', { source: 'newsletter' })
+    router.push(redirectUrlBuilder(subscriber, '/confirm'))
+  }}
+  actionLabel="Subscribe"
+  className="[&_input]:h-16"
+/>
+```
+
+Props:
+- `onSuccess(subscriber)`: Subscription success callback
+- `actionLabel`: Button text
+- `className`: Styling overrides
+- `formId`: Optional form ID
+- `fields`: Additional form fields
+- `validationSchema`: Custom Yup validation
+
+Includes first name and email fields with loading states and error handling. Stores contacts directly in the coursebuilder database.
+
+### Email List Provider
+
+The form is backed by a local database provider that handles subscriber management:
+
+```ts
+// coursebuilder/email-list-provider.ts
+export const emailListProvider = EmailListProvider({
+  apiKey: '',
+  apiSecret: '',
+  defaultListType: 'Newsletter',
+})
+```
+
+Integrated in the coursebuilder config:
+
+```ts
+// coursebuilder/course-builder-config.ts
+export const courseBuilderConfig: NextCourseBuilderConfig = {
+  providers: [
+    emailListProvider,
+    // ... other providers
+  ],
+}
+```
+
+The provider handles subscriber lookup, creation, and preference management using the local database schema. No external email service required.

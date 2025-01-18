@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import { redirectUrlBuilder, SubscribeToCoursebuilderForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
 import { twMerge } from 'tailwind-merge'
@@ -52,7 +52,7 @@ export const TipNewsletterCta: React.FC<
 			)}
 		>
 			<p className="flex-shrink-0 pt-5 md:pt-0">{title}</p>
-			<SubscribeToConvertkitForm
+			<SubscribeToCoursebuilderForm
 				onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 				actionLabel={actionLabel}
 			/>

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { FilePlus2 } from 'lucide-react'
@@ -15,7 +16,6 @@ import {
 	DialogHeader,
 	DialogTrigger,
 } from '@coursebuilder/ui'
-import { NewResourceWithVideoForm } from '@coursebuilder/ui/resources-crud/new-resource-with-video-form'
 
 export function CreatePost() {
 	const router = useRouter()
@@ -41,12 +41,12 @@ export function CreatePostModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="outline" type="button" className="w-full gap-1">
+				<Button variant="secondary" type="button" className="w-full gap-1">
 					<FilePlus2 className="h-4 w-4" /> New Post
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
-				<DialogHeader className="fluid-3xl font-heading font-semibold">
+				<DialogHeader className="fluid-xl font-heading font-bold">
 					New Post
 				</DialogHeader>
 				<CreatePost />

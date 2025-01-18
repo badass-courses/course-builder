@@ -21,7 +21,8 @@ export const NavItem = ({
 			className={cn(
 				'ease-in-ou flex items-center gap-3 border-l-2 px-5 py-5 text-sm font-medium transition duration-300',
 				{
-					'[&_svg]:text-primary text-foreground border-primary': isActive,
+					'[&_svg]:text-primary text-foreground bg-muted border-primary':
+						isActive,
 					'hover:text-foreground text-muted-foreground border-transparent':
 						!isActive,
 				},

@@ -30,7 +30,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 				className={cn(
 					'text-foreground-muted relative flex h-full items-center px-4 text-sm transition',
 					{
-						'font-semibold brightness-125': isActive,
+						'font-semibold underline': isActive,
 					},
 					className,
 				)}

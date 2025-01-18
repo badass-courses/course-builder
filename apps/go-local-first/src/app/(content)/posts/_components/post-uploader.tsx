@@ -32,21 +32,25 @@ export function PostUploader({
 				appearance={{
 					container() {
 						return {
+							cursor: 'pointer',
 							background: 'hsl(var(--muted))',
 							border: '1px dashed hsl(var(--input))',
 						}
 					},
 					label({}) {
 						return {
-							color: 'white',
-							fontWeight: 'normal',
+							color: 'hsl(var(--foreground))',
+							fontSize: '1.1rem',
+							fontWeight: 500,
 						}
 					},
 					button() {
 						return {
 							background: 'hsl(var(--background))',
 							color: 'hsl(var(--foreground))',
-							border: '1px solid hsl(var(--foreground))',
+							border: 'none',
+							padding: '0.5rem 1rem',
+							fontSize: '0.875rem',
 						}
 					},
 				}}
