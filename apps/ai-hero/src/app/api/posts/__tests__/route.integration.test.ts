@@ -57,7 +57,7 @@ describe('Posts API', () => {
 
 			server.use(
 				http.post(`${BASE_URL}/api/posts`, async ({ request }) => {
-					const body = await request.json()
+					const body = (await request.json()) as Record<string, unknown>
 					const post = await createTestPost(db, {
 						...body,
 						createdById: TEST_ADMIN.id,
@@ -178,7 +178,7 @@ describe('Posts API', () => {
 
 			server.use(
 				http.put(`${BASE_URL}/api/posts/:id`, async ({ request }) => {
-					const body = await request.json()
+					const body = (await request.json()) as Record<string, unknown>
 					const url = new URL(request.url)
 					const postId = url.pathname.split('/').pop()
 
@@ -213,6 +213,9 @@ describe('Posts API', () => {
 
 			// Verify DB update
 			const updatedPost = await findTestPost(db, post.id)
+			if (!updatedPost) {
+				throw new Error('Post not found after update')
+			}
 			expect(updatedPost.title).toBe(updates.title)
 			expect(updatedPost.state).toBe(updates.state)
 		})
@@ -275,6 +278,9 @@ describe('Posts API', () => {
 
 			// Verify soft delete
 			const deletedPost = await findTestPost(db, post.id)
+			if (!deletedPost) {
+				throw new Error('Post not found after delete')
+			}
 			expect(deletedPost.deletedAt).not.toBeNull()
 		})
 

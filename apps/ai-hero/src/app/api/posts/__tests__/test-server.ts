@@ -1,3 +1,4 @@
+import { CreatePostRequestSchema, UpdatePostRequestSchema } from '@/lib/posts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -16,7 +17,7 @@ function getAuthUser(request: Request) {
 	if (!authHeader) return null
 
 	const token = authHeader.split(' ')[1]
-	return AUTH_MAP[token] || null
+	return AUTH_MAP[token as keyof typeof AUTH_MAP] || null
 }
 
 const defaultHandlers = [
@@ -27,34 +28,29 @@ const defaultHandlers = [
 		}
 
 		const body = await request.json()
+		const result = CreatePostRequestSchema.safeParse(body)
 
-		// Validate required fields
-		if (!body.title || body.title.trim() === '') {
+		if (!result.success) {
 			return HttpResponse.json(
-				{ error: { issues: [{ message: 'Title is required' }] } },
+				{ error: { issues: result.error.issues } },
 				{ status: 400 },
 			)
 		}
 
-		if (!body.postType) {
-			return HttpResponse.json(
-				{ error: { issues: [{ message: 'Post type is required' }] } },
-				{ status: 400 },
-			)
-		}
+		const { title, postType, createdById } = result.data
 
 		return HttpResponse.json(
 			{
 				id: '123',
 				type: 'post',
 				fields: {
-					title: body.title,
+					title,
 					state: 'draft',
 					visibility: 'public',
-					slug: `${body.title.toLowerCase().replace(/\s+/g, '-')}~123`,
-					postType: body.postType,
+					slug: `${title.toLowerCase().replace(/\s+/g, '-')}~123`,
+					postType,
 				},
-				createdById: body.createdById || user.id,
+				createdById: createdById || user.id,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			},
@@ -84,28 +80,17 @@ const defaultHandlers = [
 		}
 
 		const body = await request.json()
+		const result = UpdatePostRequestSchema.safeParse(body)
 
-		// Validate required fields
-		if (!body.fields?.title || body.fields.title.length < 2) {
+		if (!result.success) {
 			return HttpResponse.json(
-				{
-					error: {
-						issues: [{ message: 'Title must be at least 2 characters' }],
-					},
-				},
-				{ status: 400 },
-			)
-		}
-
-		if (!body.id) {
-			return HttpResponse.json(
-				{ error: { issues: [{ message: 'Post ID is required' }] } },
+				{ error: { issues: result.error.issues } },
 				{ status: 400 },
 			)
 		}
 
 		return HttpResponse.json({
-			...body,
+			...result.data,
 			updatedAt: new Date().toISOString(),
 			updatedById: user.id,
 		})

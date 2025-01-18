@@ -109,3 +109,26 @@ export const PostUpdateSchema = z.object({
 })
 
 export type PostUpdate = z.infer<typeof PostUpdateSchema>
+
+export const CreatePostRequestSchema = z.object({
+	title: z.string().min(1, 'Title is required'),
+	postType: PostTypeSchema,
+	createdById: z.string().optional(),
+})
+
+export type CreatePostRequest = z.infer<typeof CreatePostRequestSchema>
+
+export const UpdatePostRequestSchema = z.object({
+	id: z.string(),
+	fields: z.object({
+		title: z.string().min(2, 'Title must be at least 2 characters'),
+		body: z.string().optional(),
+		slug: z.string(),
+		description: z.string().nullish(),
+		state: PostStateSchema.default('draft'),
+		visibility: PostVisibilitySchema.default('unlisted'),
+		github: z.string().nullish(),
+	}),
+})
+
+export type UpdatePostRequest = z.infer<typeof UpdatePostRequestSchema>

@@ -202,7 +202,10 @@ export async function createPost(input: NewPostInput) {
 		try {
 			await upsertPostToTypeSense(post, 'save')
 		} catch (e) {
-			console.error('Failed to create post in Typesense', e)
+			console.error('Failed to create post in Typesense', {
+				error: getErrorMessage(e),
+				stack: getErrorStack(e),
+			})
 		}
 
 		revalidateTag('posts')
@@ -264,7 +267,10 @@ export async function updatePost(
 			action,
 		)
 	} catch (e) {
-		console.error('Failed to update post in Typesense', e)
+		console.error('Failed to update post in Typesense', {
+			error: getErrorMessage(e),
+			stack: getErrorStack(e),
+		})
 	}
 
 	revalidate && revalidateTag('posts')
@@ -722,8 +728,8 @@ export async function writePostUpdateToDatabase(input: {
 		console.log('✅ Post fields updated successfully')
 	} catch (error) {
 		console.error('❌ Error updating post fields:', {
-			error: error.message || error,
-			stack: error.stack,
+			error: getErrorMessage(error),
+			stack: (error as Error).stack,
 		})
 		throw error
 	}
@@ -794,7 +800,7 @@ export async function writePostUpdateToDatabase(input: {
 				error,
 				postId: updatedPost.data.id,
 				action,
-				stack: error.stack,
+				stack: (error as Error).stack,
 			},
 		)
 		// Don't rethrow - let the post update succeed even if TypeSense fails
@@ -878,7 +884,7 @@ export async function deletePostFromDatabase(id: string) {
 		} catch (error) {
 			console.error('⚠️ Failed to remove from TypeSense (non-fatal):', {
 				id,
-				error: error.message || error,
+				error: getErrorMessage(error),
 			})
 		}
 
@@ -887,9 +893,37 @@ export async function deletePostFromDatabase(id: string) {
 	} catch (error) {
 		console.error('❌ Post deletion failed:', {
 			id,
-			error: error.message || error,
-			stack: error.stack,
+			error: getErrorMessage(error),
+			stack: (error as Error).stack,
 		})
 		throw error
 	}
+}
+
+function isErrorWithMessage(error: unknown): error is { message: string } {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'message' in error &&
+		typeof (error as { message: string }).message === 'string'
+	)
+}
+
+function isErrorWithStack(error: unknown): error is { stack: string } {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'stack' in error &&
+		typeof (error as { stack: string }).stack === 'string'
+	)
+}
+
+function getErrorMessage(error: unknown) {
+	if (isErrorWithMessage(error)) return error.message
+	return String(error)
+}
+
+function getErrorStack(error: unknown) {
+	if (isErrorWithStack(error)) return error.stack
+	return undefined
 }

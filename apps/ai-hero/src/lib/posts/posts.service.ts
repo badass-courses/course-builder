@@ -231,7 +231,7 @@ export async function updatePost({
 	// Handle state transitions for all actions
 	const getNewState = (
 		action: PostAction,
-	): 'draft' | 'published' | 'archived' => {
+	): 'draft' | 'published' | 'archived' | 'deleted' => {
 		switch (action) {
 			case 'publish':
 				return 'published'
