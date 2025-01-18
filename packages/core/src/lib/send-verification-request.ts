@@ -31,6 +31,7 @@ function isValidateEmailServerConfig(server: any) {
 
 export interface SendVerificationRequestParams {
 	identifier: string
+	name: string
 	url: string
 	expires: Date
 	provider: any
@@ -49,6 +50,7 @@ export const sendVerificationRequest = async (
 ) => {
 	const {
 		identifier: email,
+		name,
 		url,
 		provider,
 		theme,
@@ -96,7 +98,7 @@ export const sendVerificationRequest = async (
 	}
 
 	const user = process.env.CREATE_USER_ON_LOGIN
-		? await findOrCreateUser(email)
+		? await findOrCreateUser(email, name)
 		: await getUserByEmail?.(email)
 
 	if (!user) return
