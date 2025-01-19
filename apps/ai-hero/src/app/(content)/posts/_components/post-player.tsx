@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
@@ -12,6 +13,8 @@ import {
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
 import type { List } from '@/lib/lists'
+import { setProgressForResource } from '@/lib/progress'
+import { api } from '@/trpc/react'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
 import {
 	type MuxPlayerProps,
@@ -24,6 +27,8 @@ import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
+
+import { useProgress } from '../../[post]/_components/progress-provider'
 
 export function PostPlayer({
 	muxPlaybackId,
@@ -41,12 +46,17 @@ export function PostPlayer({
 	// const ability = abilityLoader ? use(abilityLoader) : null
 	// const canView = ability?.canView
 	// const playbackId = muxPlaybackId
+
 	const { dispatch: dispatchVideoPlayerOverlay, state } =
 		useVideoPlayerOverlay()
 	const { setMuxPlayerRef } = useMuxPlayer()
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
+	const listSlug = searchParams.get('list')
+
+	const { addLessonProgress: addOptimisticLessonProgress } = useProgress()
+
 	const {
 		playbackRate,
 		volume,
@@ -84,8 +94,13 @@ export function PostPlayer({
 				playerRef?.current?.play()
 			}
 		},
-		onEnded: () => {
+		onEnded: async () => {
 			dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
+			addOptimisticLessonProgress(postId)
+			await setProgressForResource({
+				resourceId: postId,
+				isCompleted: true,
+			})
 		},
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
@@ -134,7 +149,7 @@ export function PostPlayer({
 						variant="link"
 					>
 						<Link
-							href={`/${nextUp.resource.fields?.slug}?list=${list.fields.slug}`}
+							href={`/${nextUp.resource.fields?.slug}${listSlug ? `?list=${list.fields.slug}` : ''}`}
 						>
 							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
 						</Link>

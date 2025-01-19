@@ -108,10 +108,24 @@ export async function getList(listIdOrSlug: string) {
 
 	return ListSchema.parse(list)
 }
-
-export async function getListForPost(postId: string) {
+export async function getListForPost(postIdOrSlug: string) {
 	// optimized query that skips body fields
 	const result = await db.execute(sql`
+		WITH oldest_list AS (
+			SELECT relation.resourceOfId
+			FROM ${contentResourceResource} AS relation
+			JOIN ${contentResource} AS list
+				ON list.id = relation.resourceOfId
+				AND list.type = 'list'
+			WHERE relation.resourceId = (
+				SELECT id FROM ${contentResource}
+				WHERE id = ${postIdOrSlug}
+				OR JSON_EXTRACT(fields, '$.slug') = ${postIdOrSlug}
+				LIMIT 1
+			)
+			ORDER BY list.createdAt ASC
+			LIMIT 1
+		)
 		SELECT
 			list.id AS list_id,
 			list.type AS list_type,
@@ -126,16 +140,14 @@ export async function getListForPost(postId: string) {
 			resources.type AS resource_type,
 			JSON_REMOVE(resources.fields, '$.body') AS resource_fields,
 			relation.position AS resource_position
-		FROM ${contentResourceResource} AS relation
+		FROM oldest_list
 		JOIN ${contentResource} AS list
+			ON list.id = oldest_list.resourceOfId
+		LEFT JOIN ${contentResourceResource} AS relation
 			ON list.id = relation.resourceOfId
-			AND list.type = 'list'
-		LEFT JOIN ${contentResourceResource} AS list_resources
-			ON list.id = list_resources.resourceOfId
 		LEFT JOIN ${contentResource} AS resources
-			ON resources.id = list_resources.resourceId
-		WHERE relation.resourceId = ${postId}
-		ORDER BY list_resources.position ASC
+			ON resources.id = relation.resourceId
+		ORDER BY relation.position ASC
 	`)
 
 	if (result.rows.length === 0) {

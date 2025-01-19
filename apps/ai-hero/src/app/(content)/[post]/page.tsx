@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
-import { cookies } from 'next/headers'
+// import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
-import { PricingWidget } from '@/app/_components/home-pricing-widget'
+// import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
@@ -16,7 +16,6 @@ import { courseBuilderAdapter } from '@/db'
 import type { List } from '@/lib/lists'
 import {
 	getAllLists,
-	getList,
 	getListForPost,
 	getMinimalListForNavigation,
 } from '@/lib/lists-query'
@@ -35,11 +34,11 @@ import remarkGfm from 'remark-gfm'
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
-import ListResourceNavigation from '../_components/list-resource-navigation'
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
+import PostProgressToggle from './_components/post-progress-toggle'
 
 export const experimental_ppr = true
 
@@ -182,17 +181,17 @@ export default async function PostPage(props: {
 		? getMinimalListForNavigation(listSlugFromParam)
 		: getListForPost(post.id)
 
-	const cookieStore = await cookies()
-	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
-	const { allowPurchase, pricingDataLoader, product, commerceProps } =
-		ckSubscriber
-			? await getPricingProps({ searchParams })
-			: {
-					allowPurchase: false,
-					pricingDataLoader: null,
-					product: null,
-					commerceProps: null,
-				}
+	// const cookieStore = await cookies()
+	const ckSubscriber = true // cookieStore.has(CK_SUBSCRIBER_KEY)
+	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
+	// 	ckSubscriber
+	// 		? await getPricingProps({ searchParams })
+	// 		: {
+	// 				allowPurchase: false,
+	// 				pricingDataLoader: null,
+	// 				product: null,
+	// 				commerceProps: null,
+	// 			}
 	if (!post) {
 		notFound()
 	}
@@ -210,8 +209,8 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<div className="flex">
-			{listSlugFromParam && (
+		<div className="flex w-full">
+			{/* {listSlugFromParam && (
 				<Suspense
 					fallback={
 						<div className="bg-muted/50 flex h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] items-center justify-center p-5">
@@ -221,7 +220,7 @@ export default async function PostPage(props: {
 				>
 					<ListResourceNavigation listLoader={listLoader} />
 				</Suspense>
-			)}
+			)} */}
 			<main className="w-full">
 				{hasVideo && <PlayerContainer listLoader={listLoader} post={post} />}
 				<div
@@ -266,6 +265,7 @@ export default async function PostPage(props: {
 					</div>
 					<div className="relative z-10">
 						<article className="flex h-full flex-col gap-5">
+							<PostProgressToggle postId={post.id} />
 							<PostTitle post={post} />
 							<Contributor className="flex [&_img]:w-8" />
 							<Post post={post} />
@@ -285,7 +285,7 @@ export default async function PostPage(props: {
 						</article>
 					</div>
 				</div>
-				{ckSubscriber && product && allowPurchase && pricingDataLoader ? (
+				{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 					<section id="buy">
 						<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
 							Get Really Good At Node.js
@@ -301,9 +301,9 @@ export default async function PostPage(props: {
 							</div>
 						</div>
 					</section>
-				) : hasVideo ? null : (
-					<PrimaryNewsletterCta className="pt-20" />
-				)}
+				) : hasVideo ? null : ( */}
+				<PrimaryNewsletterCta className="pt-20" />
+				{/* )} */}
 			</main>
 		</div>
 	)
@@ -325,8 +325,8 @@ async function PlayerContainer({
 	const resource = post.resources?.[0]?.resource.id
 
 	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
-	const cookieStore = await cookies()
-	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
+	// const cookieStore = await cookies()
+	const ckSubscriber = false // cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return videoResource ? (
 		<VideoPlayerOverlayProvider>

@@ -57,7 +57,7 @@ const Navigation = () => {
 				className={cn(
 					'flex w-full items-stretch justify-between px-3 sm:px-5',
 					{
-						container: !isEditRoute,
+						// container: !isEditRoute,
 					},
 				)}
 			>

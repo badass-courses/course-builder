@@ -5,8 +5,14 @@ import { useRouter } from 'next/navigation'
 import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import common from '@/text/common'
+import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
+import cookieUtil from '@/utils/cookies'
+import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
+import { getCookie } from 'cookies-next/client'
+import cookies from 'js-cookie'
+import { useSession } from 'next-auth/react'
 import { twMerge } from 'tailwind-merge'
 
 type PrimaryNewsletterCtaProps = {
@@ -35,6 +41,17 @@ export const PostNewsletterCta: React.FC<
 	onSuccess,
 }) => {
 	const router = useRouter()
+	const { data: subscriber, status } =
+		api.ability.getCurrentSubscriberFromCookie.useQuery()
+
+	if (status === 'pending') {
+		return null
+	}
+
+	if (subscriber) {
+		return null
+	}
+
 	const handleOnSuccess = (subscriber: Subscriber | undefined) => {
 		if (subscriber) {
 			track(trackProps.event as string, trackProps.params)
