@@ -15,8 +15,8 @@ export default function Footer() {
 	}
 
 	return (
-		<footer className="w-full border-t pb-16 pt-20">
-			<div className="container mx-auto flex w-full items-center justify-center sm:justify-between">
+		<footer className="w-full border-t px-5 pb-16 pt-20 lg:px-16">
+			<div className="mx-auto flex w-full items-center justify-center sm:justify-between">
 				<Link
 					tabIndex={isRoot ? -1 : 0}
 					href="/"
@@ -28,7 +28,7 @@ export default function Footer() {
 					</span> */}
 				</Link>
 			</div>
-			<div className="container mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light sm:justify-start">
+			<div className="mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light sm:justify-start">
 				<span className="opacity-75">© AIHero.dev</span>
 				<Link
 					className="opacity-75 transition hover:opacity-100"

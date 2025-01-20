@@ -1,11 +1,25 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
+import { getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
-import { createTRPCRouter, protectedProcedure } from '@/trpc/api/trpc'
-import { inArray } from 'drizzle-orm'
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from '@/trpc/api/trpc'
+import { inArray, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const contentResourceRouter = createTRPCRouter({
+	getList: publicProcedure
+		.input(
+			z.object({
+				slugOrId: z.string(),
+			}),
+		)
+		.query(async ({ input }) => {
+			return await getList(input.slugOrId)
+		}),
 	getAll: protectedProcedure
 		.input(
 			z
@@ -28,4 +42,21 @@ export const contentResourceRouter = createTRPCRouter({
 				},
 			})
 		}),
+	getPublishedResourcesLength: publicProcedure.query(async () => {
+		const result = await db.execute(sql`
+			SELECT
+				type,
+				COUNT(*) as count
+			FROM ${contentResource}
+			WHERE type IN ('post', 'list')
+			AND JSON_EXTRACT(fields, '$.state') = 'published'
+			GROUP BY type
+		`)
+
+		const total = (result.rows as any[]).reduce(
+			(sum, row) => sum + Number(row.count),
+			0,
+		)
+		return total
+	}),
 })

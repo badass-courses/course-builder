@@ -57,7 +57,7 @@ const Navigation = () => {
 				className={cn(
 					'flex w-full items-stretch justify-between px-3 sm:px-5',
 					{
-						container: !isEditRoute,
+						// container: !isEditRoute,
 					},
 				)}
 			>
@@ -92,7 +92,7 @@ const Navigation = () => {
 								{links.map((link) => {
 									return (
 										<NavLinkItem
-											className=""
+											className="pr-5 text-base font-medium"
 											key={link.href || link.label}
 											{...link}
 										/>

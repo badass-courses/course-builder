@@ -32,6 +32,8 @@ import {
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import ListResources from '../_components/list-resources'
+
 type Props = {
 	params: Promise<{ slug: string }>
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -215,7 +217,8 @@ export default async function ListPage(props: {
 					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
 						{body || 'No body found.'}
 					</article>
-					<aside className="col-span-2">
+					<ListResources list={list} />
+					{/* <aside className="col-span-2">
 						{list.resources.length > 0 && (
 							<>
 								<h3 className="fluid-lg mb-3 font-sans font-semibold tracking-tight">
@@ -226,7 +229,7 @@ export default async function ListPage(props: {
 										<li key={resource.id}>
 											<Link
 												className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition sm:py-3"
-												href={`/${resource.fields.slug}`}
+												href={`/${resource.fields.slug}?list=${list.fields.slug}`}
 											>
 												<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
 													{i + 1}
@@ -238,7 +241,7 @@ export default async function ListPage(props: {
 								</ol>
 							</>
 						)}
-					</aside>
+					</aside> */}
 				</div>
 			</div>
 		</main>

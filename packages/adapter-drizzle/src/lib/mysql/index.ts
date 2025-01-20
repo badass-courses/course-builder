@@ -1132,7 +1132,7 @@ export function mySqlDrizzleAdapter(
 
 			const ResultRowSchema = z.object({
 				resource_id: z.string(),
-				resource_type: z.enum(['lesson', 'exercise']),
+				resource_type: z.enum(['lesson', 'exercise', 'post']),
 				resource_slug: z.string().nullable(),
 				completed_at: z
 					.string()
@@ -1172,10 +1172,10 @@ export function mySqlDrizzleAdapter(
 				LEFT JOIN ${resourceProgress} rp ON rp.resourceId = cr.id
 						AND rp.userId = ${user.id}
 				WHERE
-						cr.type IN ('lesson', 'exercise')
+						cr.type IN ('lesson', 'exercise', 'post')
 
     `)
-
+			console.log('results', { results })
 			// Process the results
 			const completedLessons: ResourceProgress[] = []
 			let nextResource: Partial<ContentResource> | null = null

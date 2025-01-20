@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
@@ -12,6 +13,8 @@ import {
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
 import type { List } from '@/lib/lists'
+import { setProgressForResource } from '@/lib/progress'
+import { api } from '@/trpc/react'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
 import {
 	type MuxPlayerProps,
@@ -19,34 +22,41 @@ import {
 } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 import { ArrowRight } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { useList } from '../../[post]/_components/list-provider'
+import { useProgress } from '../../[post]/_components/progress-provider'
+
 export function PostPlayer({
 	muxPlaybackId,
 	className,
 	videoResource,
-	listLoader,
 	postId,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
-	listLoader: Promise<List | null>
 	postId: string
 }) {
 	// const ability = abilityLoader ? use(abilityLoader) : null
 	// const canView = ability?.canView
 	// const playbackId = muxPlaybackId
+
 	const { dispatch: dispatchVideoPlayerOverlay, state } =
 		useVideoPlayerOverlay()
 	const { setMuxPlayerRef } = useMuxPlayer()
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
+	const listSlug = searchParams.get('list')
+
+	const { addLessonProgress: addOptimisticLessonProgress } = useProgress()
+
 	const {
 		playbackRate,
 		volume,
@@ -84,8 +94,13 @@ export function PostPlayer({
 				playerRef?.current?.play()
 			}
 		},
-		onEnded: () => {
+		onEnded: async () => {
 			dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
+			addOptimisticLessonProgress(postId)
+			await setProgressForResource({
+				resourceId: postId,
+				isCompleted: true,
+			})
 		},
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
@@ -97,8 +112,9 @@ export function PostPlayer({
 			? muxPlaybackId || videoResource?.muxPlaybackId
 			: null
 
-	const list = use(listLoader)
-	const nextUp = list && getNextUpResourceFromList(list, postId)
+	const { list } = useList()
+	const nextUp = getNextUpResourceFromList(list, postId)
+	const { data: session } = useSession()
 
 	return (
 		<div className={cn('relative h-full w-full', className)}>
@@ -133,10 +149,24 @@ export function PostPlayer({
 						asChild
 						variant="link"
 					>
-						<Link href={`/${nextUp.resource.fields?.slug}`}>
+						<Link
+							href={`/${nextUp.resource.fields?.slug}${listSlug && list ? `?list=${list.fields.slug}` : ''}`}
+						>
 							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
 						</Link>
 					</Button>
+					{!session?.user && (
+						<span className="text-muted-foreground mt-4">
+							<Link
+								href="/login"
+								target="_blank"
+								className="hover:text-foreground text-center underline"
+							>
+								Log in
+							</Link>{' '}
+							to save progress
+						</span>
+					)}
 				</div>
 			)}
 		</div>

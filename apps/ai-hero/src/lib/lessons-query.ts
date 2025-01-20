@@ -186,6 +186,7 @@ export async function getLesson(lessonSlugOrId: string) {
 						eq(contentResource.type, 'lesson'),
 						eq(contentResource.type, 'exercise'),
 						eq(contentResource.type, 'solution'),
+						eq(contentResource.type, 'post'),
 					),
 				),
 			})
