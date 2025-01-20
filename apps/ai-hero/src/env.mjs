@@ -82,6 +82,7 @@ export const env = createEnv({
 		CLOUDINARY_API_KEY: z.string(),
 		CLOUDINARY_API_SECRET: z.string(),
 		PINECONE_API_KEY: z.string().optional(),
+		AXIOM_TOKEN: z.string(),
 	},
 
 	/**
@@ -101,6 +102,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().optional(),
+		NEXT_PUBLIC_AXIOM_DATASET: z.string(),
 	},
 
 	/**
@@ -169,6 +171,8 @@ export const env = createEnv({
 		CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
 		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 		PINECONE_API_KEY: process.env.PINECONE_API_KEY,
+		AXIOM_TOKEN: process.env.AXIOM_TOKEN,
+		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
