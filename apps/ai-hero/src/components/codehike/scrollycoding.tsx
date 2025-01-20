@@ -43,15 +43,18 @@ export default function Scrollycoding(props: any) {
 				Scrollycoding
 				<ArrowDown size={12} />
 			</p>
-			<SelectionProvider className="relative mb-10 flex-col gap-5 sm:mb-24 lg:flex lg:flex-row">
-				<div className="mb-10 flex flex-col gap-10 lg:flex-1">
+			<SelectionProvider className="relative mb-10 flex flex-col gap-5 sm:mb-24 lg:flex-row">
+				<div className="mb-10 flex flex-1 flex-col">
 					{steps.map((step: any, i: number) => (
 						<Selectable
 							key={i}
 							index={i}
 							selectOn={['click', 'scroll']}
-							className="data-[selected=true]:border-primary hover:bg-secondary first-of-type:prose-headings:mt-5 -mx-5 cursor-pointer rounded border-l-4 px-5 transition duration-100 ease-in-out data-[selected=false]:hover:border-gray-700 sm:mx-0"
+							className="data-[selected=true]:border-primary hover:bg-secondary first-of-type:prose-headings:mt-5 group relative -mx-5 flex cursor-pointer items-start border-l-4 pl-9 pr-5 transition duration-100 ease-in-out hover:rounded data-[selected=false]:hover:border-gray-700 sm:mx-0 sm:pl-5 lg:pl-8"
 						>
+							<div className="bg-secondary group-data-[selected=true]:bg-background group-data-[selected=true]:border-primary group-data-[selected=true]:text-primary absolute left-1 top-5 flex size-7 flex-shrink-0 origin-center scale-90 items-center justify-center rounded-full border-2 text-xs font-bold shadow-xl sm:-left-5 sm:top-6 sm:size-9 sm:text-sm lg:scale-100">
+								{i + 1}
+							</div>
 							{step._data?.header && renderHeading(step._data.header)}
 							<div>{step.children}</div>
 						</Selectable>
