@@ -41,28 +41,6 @@ export const metadata: Metadata = {
 }
 
 export default async function PostsIndexPage() {
-	const { ability } = await getServerAuthSession()
-	const allPosts = await getAllPosts()
-	const allLists = await getAllLists()
-
-	const publishedPublicPosts = [...allPosts, ...allLists]
-		.filter(
-			(post) =>
-				post.fields.visibility === 'public' &&
-				post.fields.state === 'published',
-		)
-		.sort((a, b) => {
-			return b.createdAt && a.createdAt
-				? new Date(b.createdAt).getTime() - new Date(a?.createdAt).getTime()
-				: 0
-		})
-
-	const unpublishedPosts = allPosts.filter((post) => {
-		return !publishedPublicPosts.includes(post) && post.type === 'post'
-	})
-
-	const latestPost = publishedPublicPosts[0]
-
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
 			<div className="mx-auto flex w-full max-w-screen-lg flex-col pt-[4.5]">
@@ -101,11 +79,7 @@ export default async function PostsIndexPage() {
 					<aside className="hidden w-full max-w-xs border-r lg:block" />
 				}
 			>
-				<PostListActions
-					publishedPosts={publishedPublicPosts}
-					unpublishedPosts={unpublishedPosts}
-					lists={allLists}
-				/>
+				<PostListActions />
 			</React.Suspense>
 		</main>
 	)
@@ -181,16 +155,30 @@ const PostTeaser: React.FC<{
 	)
 }
 
-async function PostListActions({
-	unpublishedPosts,
-	publishedPosts,
-	lists,
-}: {
-	publishedPosts: Post[]
-	unpublishedPosts?: Post[]
-	lists?: List[]
-}) {
+async function PostListActions({}: {}) {
 	const { ability, session } = await getServerAuthSession()
+	if (!ability.can('create', 'Content')) {
+		return <aside className="hidden w-full max-w-xs border-r lg:block" />
+	}
+	const allPosts = await getAllPosts()
+	const allLists = await getAllLists()
+
+	const publishedPublicPosts = [...allPosts, ...allLists]
+		.filter(
+			(post) =>
+				post.fields.visibility === 'public' &&
+				post.fields.state === 'published',
+		)
+		.sort((a, b) => {
+			return b.createdAt && a.createdAt
+				? new Date(b.createdAt).getTime() - new Date(a?.createdAt).getTime()
+				: 0
+		})
+
+	const unpublishedPosts = allPosts.filter((post) => {
+		return !publishedPublicPosts.includes(post) && post.type === 'post'
+	})
+
 	const drafts = unpublishedPosts?.filter(
 		({ fields }) =>
 			fields.state === 'draft' && fields.visibility !== 'unlisted',
@@ -199,7 +187,7 @@ async function PostListActions({
 		({ fields }) => fields.visibility === 'unlisted',
 	)
 
-	return ability.can('create', 'Content') ? (
+	return (
 		<aside className="divide-border w-full gap-3 divide-y border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
 			<div className="p-5">
 				<p className="font-semibold">
@@ -214,7 +202,7 @@ async function PostListActions({
 					</p>
 				) : (
 					<p className="opacity-75">
-						You've published {publishedPosts.length} posts.
+						You've published {publishedPublicPosts.length} posts.
 					</p>
 				)}
 			</div>
@@ -243,8 +231,8 @@ async function PostListActions({
 					<strong>Unlisted</strong>
 					{unlisted.map((post) => {
 						const postLists =
-							lists &&
-							lists.filter((list) =>
+							allLists &&
+							allLists.filter((list) =>
 								list.resources.filter(
 									({ resource }) => resource.id === post.id,
 								),
@@ -284,7 +272,5 @@ async function PostListActions({
 				</div>
 			) : null}
 		</aside>
-	) : (
-		<aside className="hidden w-full max-w-xs border-r lg:block" />
 	)
 }
