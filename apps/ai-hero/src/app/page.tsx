@@ -1,5 +1,7 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { PricingWidgetServer } from '@/app/_components/pricing-widget-server'
+import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
 // import Image from 'next/image'
 // import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import LandingCopy from '@/components/landing-copy'
@@ -11,7 +13,10 @@ import { getPage } from '@/lib/pages-query'
 import MuxPlayer from '@mux/mux-player-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
+import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+import { Button } from '@coursebuilder/ui'
 
 import {
 	BlueSection,
@@ -91,35 +96,21 @@ const Home = async (props: Props) => {
 						<LandingCopy />
 					)}
 				</article>
-				{/* {product && allowPurchase && pricingDataLoader ? (
-					<>
-						<section id="buy" className="mt-10 sm:mt-24">
-							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-								Get Really Good At AI
-							</h2>
-							<div className="flex items-center justify-center border-y">
-								<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
-									<PricingWidget
-										quantityAvailable={-1}
-										pricingDataLoader={pricingDataLoader}
-										commerceProps={{ ...commerceProps }}
-										product={product}
-									/>
-								</div>
+				<section id="buy" className="mt-10 sm:mt-24">
+					<div className="mx-auto grid max-w-[1400px] grid-cols-1 items-stretch gap-8 border-y px-5 py-16 md:grid-cols-2 md:gap-16">
+						<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
+							<div className="flex flex-1 flex-col justify-end">
+								<PricingWidgetServer />
 							</div>
-						</section>
-						<section className="flex items-center justify-center py-10">
-							<img
-								src={'/assets/money-back-guarantee-badge.svg'}
-								width={100}
-								height={100}
-								alt="30-day money back guarantee"
-							/>
-						</section>
-					</>
-				) : ( */}
+						</div>
+						<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
+							<div className="flex flex-1 flex-col justify-end">
+								<TeamPricingWidget />
+							</div>
+						</div>
+					</div>
+				</section>
 				<PrimaryNewsletterCta className="px-5 pt-10" />
-				{/* )} */}
 			</main>
 		</div>
 	)
