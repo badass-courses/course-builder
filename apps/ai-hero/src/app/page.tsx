@@ -1,17 +1,14 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { cookies } from 'next/headers'
-import Image from 'next/image'
-import { PricingWidget } from '@/app/_components/home-pricing-widget'
+// import Image from 'next/image'
+// import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import LandingCopy from '@/components/landing-copy'
-import { LandingHeroParallax } from '@/components/landing-hero-parallax'
+// import { LandingHeroParallax } from '@/components/landing-hero-parallax'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
-import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { getPage } from '@/lib/pages-query'
-import { getPricingProps } from '@/lib/pricing-query'
+// import { getPricingProps } from '@/lib/pricing-query'
 import MuxPlayer from '@mux/mux-player-react'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
@@ -67,12 +64,10 @@ type Props = {
 }
 
 const Home = async (props: Props) => {
-	const searchParams = await props.searchParams
-	const { allowPurchase, pricingDataLoader, product, commerceProps } =
-		await getPricingProps({ searchParams })
-	const page = await getPage(allowPurchase ? 'home-6z2ir' : 'home-6z2ir')
-	const cookieStore = await cookies()
-	const ckSubscriber = cookieStore.has(CK_SUBSCRIBER_KEY)
+	// const searchParams = await props.searchParams
+	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
+	// 	await getPricingProps({ searchParams })
+	const page = await getPage('home-6z2ir')
 
 	return (
 		<div className="">
@@ -96,7 +91,7 @@ const Home = async (props: Props) => {
 						<LandingCopy />
 					)}
 				</article>
-				{product && allowPurchase && pricingDataLoader ? (
+				{/* {product && allowPurchase && pricingDataLoader ? (
 					<>
 						<section id="buy" className="mt-10 sm:mt-24">
 							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
@@ -122,9 +117,9 @@ const Home = async (props: Props) => {
 							/>
 						</section>
 					</>
-				) : ckSubscriber ? null : (
-					<PrimaryNewsletterCta className="px-5 pt-10" />
-				)}
+				) : ( */}
+				<PrimaryNewsletterCta className="px-5 pt-10" />
+				{/* )} */}
 			</main>
 		</div>
 	)

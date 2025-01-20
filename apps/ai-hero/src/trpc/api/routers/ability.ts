@@ -81,4 +81,7 @@ export const abilityRouter = createTRPCRouter({
 				moduleId: input?.moduleId,
 			})
 		}),
+	getCurrentSubscriberFromCookie: publicProcedure.query(async ({ ctx }) => {
+		return getSubscriberFromCookie()
+	}),
 })

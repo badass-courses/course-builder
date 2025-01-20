@@ -108,6 +108,7 @@
 		"cmdk": "^0.2.0",
 		"codehike": "^1.0.4",
 		"codemirror": "^6.0.1",
+		"cookies-next": "^5.1.0",
 		"crypto": "^1.0.1",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
