@@ -2,7 +2,7 @@ import { env } from '@/env.mjs'
 import { Axiom } from '@axiomhq/js'
 
 const axiom = new Axiom({
-	token: env.AXIOM_TOKEN,
+	token: process.env.AXIOM_TOKEN!,
 	orgId: 'ai-hero',
 	onError: (err) => {
 		if (env.NODE_ENV === 'development') {
