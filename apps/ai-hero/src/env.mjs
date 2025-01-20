@@ -82,7 +82,7 @@ export const env = createEnv({
 		CLOUDINARY_API_KEY: z.string(),
 		CLOUDINARY_API_SECRET: z.string(),
 		PINECONE_API_KEY: z.string().optional(),
-		AXIOM_TOKEN: z.string(),
+		AXIOM_TOKEN: z.string().optional(),
 	},
 
 	/**
