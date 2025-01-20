@@ -104,6 +104,14 @@ import {
 	SelectValue,
 } from './primitives/select'
 import { Separator } from './primitives/separator'
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from './primitives/sheet'
 import { Skeleton } from './primitives/skeleton'
 import { Switch } from './primitives/switch'
 import {
@@ -254,4 +262,10 @@ export {
 	Gravatar,
 	RadioGroup,
 	RadioGroupItem,
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
 }

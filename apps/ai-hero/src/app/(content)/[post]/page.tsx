@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
-// import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
@@ -21,12 +20,11 @@ import {
 } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getPost } from '@/lib/posts-query'
-import { getPricingProps } from '@/lib/pricing-query'
+// import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
@@ -177,21 +175,10 @@ export default async function PostPage(props: {
 		)
 	}
 
-	const listLoader = listSlugFromParam
-		? getMinimalListForNavigation(listSlugFromParam)
-		: getListForPost(post.id)
+	// const listLoader = listSlugFromParam
+	// 	? getMinimalListForNavigation(listSlugFromParam)
+	// 	: getListForPost(post.id)
 
-	// const cookieStore = await cookies()
-	const ckSubscriber = true // cookieStore.has(CK_SUBSCRIBER_KEY)
-	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
-	// 	ckSubscriber
-	// 		? await getPricingProps({ searchParams })
-	// 		: {
-	// 				allowPurchase: false,
-	// 				pricingDataLoader: null,
-	// 				product: null,
-	// 				commerceProps: null,
-	// 			}
 	if (!post) {
 		notFound()
 	}
@@ -210,19 +197,8 @@ export default async function PostPage(props: {
 
 	return (
 		<div className="flex w-full">
-			{/* {listSlugFromParam && (
-				<Suspense
-					fallback={
-						<div className="bg-muted/50 flex h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] items-center justify-center p-5">
-							<Spinner className="h-5 w-5" />
-						</div>
-					}
-				>
-					<ListResourceNavigation listLoader={listLoader} />
-				</Suspense>
-			)} */}
 			<main className="w-full">
-				{hasVideo && <PlayerContainer listLoader={listLoader} post={post} />}
+				{hasVideo && <PlayerContainer post={post} />}
 				<div
 					className={cn(
 						'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
@@ -257,7 +233,7 @@ export default async function PostPage(props: {
 						) : (
 							<div />
 						)}
-						<div>
+						<div className="flex items-center gap-3">
 							<Suspense fallback={null}>
 								<PostActionBar post={post} />
 							</Suspense>
@@ -265,18 +241,20 @@ export default async function PostPage(props: {
 					</div>
 					<div className="relative z-10">
 						<article className="flex h-full flex-col gap-5">
-							<PostProgressToggle postId={post.id} />
 							<PostTitle post={post} />
 							<Contributor className="flex [&_img]:w-8" />
 							<Post post={post} />
-							<React.Suspense fallback={<Spinner />}>
-								<PostNextUpFromListPagination
+							{/* {listSlugFromParam && (
+								<PostProgressToggle
+									className="flex w-full items-center justify-center"
 									postId={post.id}
-									listLoader={listLoader}
 								/>
-							</React.Suspense>
-							<div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-1">
-								<strong className="text-lg font-semibold">Share</strong>
+							)} */}
+							<PostNextUpFromListPagination postId={post.id} />
+							<div className="mx-auto mt-10 flex w-full max-w-[290px] flex-col gap-1">
+								<strong className="w-full text-center text-lg font-semibold">
+									Share
+								</strong>
 								<Share
 									className="bg-background w-full"
 									title={post?.fields.title}
@@ -302,22 +280,14 @@ export default async function PostPage(props: {
 						</div>
 					</section>
 				) : hasVideo ? null : ( */}
-				<PrimaryNewsletterCta className="pt-20" />
+				{!hasVideo && <PrimaryNewsletterCta className="pt-20" />}
 				{/* )} */}
 			</main>
 		</div>
 	)
 }
 
-async function PlayerContainer({
-	post,
-	listLoader,
-}: {
-	post: Post | null
-	listLoader: Promise<List | null>
-}) {
-	const displayOverlay = false
-
+async function PlayerContainer({ post }: { post: Post | null }) {
 	if (!post) {
 		notFound()
 	}
@@ -325,8 +295,6 @@ async function PlayerContainer({
 	const resource = post.resources?.[0]?.resource.id
 
 	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
-	// const cookieStore = await cookies()
-	const ckSubscriber = false // cookieStore.has(CK_SUBSCRIBER_KEY)
 
 	return videoResource ? (
 		<VideoPlayerOverlayProvider>
@@ -341,13 +309,12 @@ async function PlayerContainer({
 				>
 					<PostPlayer
 						postId={post.id}
-						listLoader={listLoader}
 						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
 						videoResource={videoResource}
 					/>
-					{!ckSubscriber && <PostNewsletterCta />}
+					<PostNewsletterCta />
 				</section>
 			</Suspense>
 		</VideoPlayerOverlayProvider>
-	) : resource ? null : null // spacer // <div className="pt-16" />
+	) : null
 }

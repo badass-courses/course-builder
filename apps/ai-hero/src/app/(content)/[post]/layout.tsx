@@ -2,7 +2,9 @@ import { getListForPost } from '@/lib/lists-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 
 import { ListProvider } from './_components/list-provider'
-import ListResourceNavigation from './_components/list-resource-navigation'
+import ListResourceNavigation, {
+	MobileListResourceNavigation,
+} from './_components/list-resource-navigation'
 import { ProgressProvider } from './_components/progress-provider'
 
 export default async function Layout(props: {
@@ -20,6 +22,7 @@ export default async function Layout(props: {
 			<ProgressProvider initialProgress={initialProgress}>
 				<div className="flex w-full justify-center">
 					<ListResourceNavigation />
+					<MobileListResourceNavigation />
 					{props.children}
 				</div>
 			</ProgressProvider>

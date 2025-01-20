@@ -22,25 +22,25 @@ import {
 } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 import { ArrowRight } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { useList } from '../../[post]/_components/list-provider'
 import { useProgress } from '../../[post]/_components/progress-provider'
 
 export function PostPlayer({
 	muxPlaybackId,
 	className,
 	videoResource,
-	listLoader,
 	postId,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
-	listLoader: Promise<List | null>
 	postId: string
 }) {
 	// const ability = abilityLoader ? use(abilityLoader) : null
@@ -112,8 +112,9 @@ export function PostPlayer({
 			? muxPlaybackId || videoResource?.muxPlaybackId
 			: null
 
-	const list = use(listLoader)
-	const nextUp = list && getNextUpResourceFromList(list, postId)
+	const { list } = useList()
+	const nextUp = getNextUpResourceFromList(list, postId)
+	const { data: session } = useSession()
 
 	return (
 		<div className={cn('relative h-full w-full', className)}>
@@ -149,11 +150,23 @@ export function PostPlayer({
 						variant="link"
 					>
 						<Link
-							href={`/${nextUp.resource.fields?.slug}${listSlug ? `?list=${list.fields.slug}` : ''}`}
+							href={`/${nextUp.resource.fields?.slug}${listSlug && list ? `?list=${list.fields.slug}` : ''}`}
 						>
 							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
 						</Link>
 					</Button>
+					{!session?.user && (
+						<span className="text-muted-foreground mt-4">
+							<Link
+								href="/login"
+								target="_blank"
+								className="hover:text-foreground text-center underline"
+							>
+								Log in
+							</Link>{' '}
+							to save progress
+						</span>
+					)}
 				</div>
 			)}
 		</div>

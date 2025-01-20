@@ -24,7 +24,7 @@ export function ListProvider({
 }) {
 	const searchParams = useSearchParams()
 	const listSlug = searchParams.get('list')
-	console.log({ initialList })
+
 	const mismatch =
 		searchParams.has('list') && listSlug !== initialList?.fields.slug
 

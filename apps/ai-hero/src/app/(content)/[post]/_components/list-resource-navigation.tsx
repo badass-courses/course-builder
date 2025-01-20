@@ -4,9 +4,16 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
-import { Check, ExpandIcon, ListIcon } from 'lucide-react'
+import { Check, MenuIcon } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
-import { Button } from '@coursebuilder/ui'
+import {
+	Button,
+	Sheet,
+	SheetContent,
+	SheetTitle,
+	SheetTrigger,
+} from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { useList } from './list-provider'
@@ -14,14 +21,17 @@ import { useProgress } from './progress-provider'
 
 export default function ListResourceNavigation({
 	className,
+	withHeader = true,
 }: {
 	className?: string
+	withHeader?: boolean
 }) {
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const [isExpanded, setIsExpanded] = React.useState(true)
 	const { list, isLoading: isListLoading } = useList()
 	const { progress } = useProgress()
+	const { data: session } = useSession()
 
 	if (isListLoading) {
 		return (
@@ -47,7 +57,7 @@ export default function ListResourceNavigation({
 		<>
 			<aside
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r',
+					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r xl:block',
 					className,
 					{
 						'w-0': !isExpanded,
@@ -77,16 +87,17 @@ export default function ListResourceNavigation({
 				}}
 			>
 				{/* List header with title */}
-				<div className="bg-muted/50 relative border-b p-5">
-					<Link
-						className="relative z-10 text-lg font-semibold"
-						href={`/${list.fields.slug}`}
-					>
-						✨ {list.fields.title}
-					</Link>
-					<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:16px_16px]" />
-				</div>
-
+				{withHeader && (
+					<div className="bg-muted/50 relative border-b p-5">
+						<Link
+							className="relative z-10 text-lg font-semibold"
+							href={`/${list.fields.slug}`}
+						>
+							✨ {list.fields.title}
+						</Link>
+						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:16px_16px]" />
+					</div>
+				)}
 				{/* Resource navigation list */}
 				<nav>
 					<ol className="divide-border flex flex-col divide-y">
@@ -102,22 +113,28 @@ export default function ListResourceNavigation({
 									key={`${list.id}_${resource.id}_${i}`}
 								>
 									<Link
+										aria-current={isActive ? 'page' : undefined}
 										className={cn(
-											'hover:bg-muted flex items-baseline gap-2 border-l-2 border-transparent py-2 pl-2 pr-4 font-medium transition sm:py-3',
+											'hover:bg-muted flex items-baseline gap-2 py-2 pl-2 pr-4 font-medium transition sm:py-3',
 											{
-												'bg-muted border-primary': isActive,
+												'text-primary-foreground bg-primary hover:bg-primary/80':
+													isActive,
 												'items-center': isCompleted,
 											},
 										)}
 										href={`/${resource.fields.slug}?list=${list.fields.slug}`}
 									>
-										{isCompleted ? (
-											<Check className="text-primary w-2.5" />
-										) : (
-											<small className="min-w-[2ch] text-right font-mono text-[9px] font-normal opacity-60">
-												{i + 1}
-											</small>
-										)}
+										<div className="min-w-[2ch] text-right font-mono text-[9px] font-normal">
+											{isCompleted ? (
+												<Check
+													className={cn('text-primary w-[2ch]', {
+														'text-primary-foreground': isActive,
+													})}
+												/>
+											) : (
+												<small className="opacity-60">{i + 1}</small>
+											)}
+										</div>
 										{resource.fields.title}
 									</Link>
 								</li>
@@ -126,20 +143,43 @@ export default function ListResourceNavigation({
 					</ol>
 				</nav>
 			</aside>
+		</>
+	)
+}
 
-			{/* Toggle button for expanding/collapsing the navigation */}
-			<Button
-				variant="outline"
-				size="icon"
-				className={cn('fixed bottom-5 left-5 z-50')}
-				onClick={() => setIsExpanded(!isExpanded)}
-			>
-				{isExpanded ? (
-					<ListIcon className="w-5" />
-				) : (
-					<ExpandIcon className="w-5" />
-				)}
-			</Button>
+export function MobileListResourceNavigation() {
+	const { list } = useList()
+	const [isOpen, setIsOpen] = React.useState(false)
+	if (!list) return null
+	return (
+		<>
+			{/* {!isOpen && ( */}
+			<div className="bg-card fixed left-0 top-2 z-50 flex scale-90 items-center gap-4 rounded-full border py-1 pl-1 pr-6 shadow-xl xl:hidden">
+				<Button
+					className="rounded-full"
+					onClick={() => {
+						setIsOpen((prev) => !prev)
+					}}
+					variant="default"
+					size="icon"
+				>
+					<MenuIcon className="w-4" />
+				</Button>
+				<Link href={`/${list?.fields?.slug}`} className="text-base font-medium">
+					{list?.fields?.title}
+				</Link>
+			</div>
+			{/* )} */}
+			<Sheet onOpenChange={setIsOpen} open={isOpen}>
+				<SheetContent className="p-0 pb-10 pt-3">
+					<SheetTitle className="px-5">{list?.fields?.title}</SheetTitle>
+					<ListResourceNavigation
+						withHeader={false}
+						className="relative top-0 block h-full w-full max-w-full border-r-0 bg-transparent xl:hidden"
+					/>
+					{/* 'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r xl:block', */}
+				</SheetContent>
+			</Sheet>
 		</>
 	)
 }
