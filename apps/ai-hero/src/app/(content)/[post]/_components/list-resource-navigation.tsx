@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
-import { Check, MenuIcon } from 'lucide-react'
+import { Book, Check, ListChecks, MenuIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import {
@@ -90,12 +90,12 @@ export default function ListResourceNavigation({
 				{withHeader && (
 					<div className="bg-muted/50 relative border-b p-5">
 						<Link
-							className="relative z-10 text-lg font-semibold"
+							className="font-heading relative z-10 inline-flex items-center gap-2 text-xl font-bold hover:underline"
 							href={`/${list.fields.slug}`}
 						>
-							✨ {list.fields.title}
+							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
-						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:16px_16px]" />
+						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:14px_14px]" />
 					</div>
 				)}
 				{/* Resource navigation list */}
@@ -150,7 +150,10 @@ export default function ListResourceNavigation({
 export function MobileListResourceNavigation() {
 	const { list } = useList()
 	const [isOpen, setIsOpen] = React.useState(false)
+	const searchParams = useSearchParams()
 	if (!list) return null
+	if (!searchParams.has('list')) return null
+
 	return (
 		<>
 			{/* {!isOpen && ( */}
@@ -171,11 +174,11 @@ export function MobileListResourceNavigation() {
 			</div>
 			{/* )} */}
 			<Sheet onOpenChange={setIsOpen} open={isOpen}>
-				<SheetContent className="p-0 pb-10 pt-3">
-					<SheetTitle className="px-5">{list?.fields?.title}</SheetTitle>
+				<SheetContent className="p-0 pt-3">
+					{/* <SheetTitle className="px-5">{list?.fields?.title}</SheetTitle> */}
 					<ListResourceNavigation
 						withHeader={false}
-						className="relative top-0 block h-full w-full max-w-full border-r-0 bg-transparent xl:hidden"
+						className="relative top-0 block h-full w-full max-w-full border-r-0 bg-transparent text-sm xl:hidden"
 					/>
 					{/* 'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r xl:block', */}
 				</SheetContent>

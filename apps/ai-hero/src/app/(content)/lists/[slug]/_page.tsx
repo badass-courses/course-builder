@@ -116,6 +116,7 @@ export default async function ListPage(props: {
 	}
 
 	const firstResource = list.resources?.[0]?.resource
+	const firstResourceHref = `/${firstResource?.fields?.slug}?list=${list.fields.slug}`
 
 	const squareGridPattern = generateGridPattern(
 		list.fields.title,
@@ -142,7 +143,7 @@ export default async function ListPage(props: {
 						<div className="mt-5 flex w-full flex-col flex-wrap items-center justify-center gap-1.5 sm:flex-row sm:gap-2 md:justify-start">
 							{firstResource?.fields?.slug && (
 								<Button size="lg" className="w-full sm:max-w-[180px]" asChild>
-									<Link href={`/${firstResource?.fields?.slug}`}>
+									<Link href={firstResourceHref}>
 										Start Learning <ChevronRight className="ml-2 w-4" />
 									</Link>
 								</Button>
@@ -180,7 +181,7 @@ export default async function ListPage(props: {
 						{firstResource && list.fields?.image && (
 							<Link
 								className="group relative flex items-center justify-center"
-								href={`/${firstResource?.fields?.slug}`}
+								href={firstResourceHref}
 							>
 								<Image
 									priority
@@ -218,30 +219,6 @@ export default async function ListPage(props: {
 						{body || 'No body found.'}
 					</article>
 					<ListResources list={list} />
-					{/* <aside className="col-span-2">
-						{list.resources.length > 0 && (
-							<>
-								<h3 className="fluid-lg mb-3 font-sans font-semibold tracking-tight">
-									Content
-								</h3>
-								<ol className="divide-border flex flex-col divide-y rounded border">
-									{list.resources.map(({ resource }, i) => (
-										<li key={resource.id}>
-											<Link
-												className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition sm:py-3"
-												href={`/${resource.fields.slug}?list=${list.fields.slug}`}
-											>
-												<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
-													{i + 1}
-												</small>
-												{resource.fields.title}
-											</Link>
-										</li>
-									))}
-								</ol>
-							</>
-						)}
-					</aside> */}
 				</div>
 			</div>
 		</main>
