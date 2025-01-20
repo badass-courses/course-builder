@@ -92,25 +92,39 @@ export default function Tree({
 	const saveTreeData = useCallback(async () => {
 		const currentData = lastStateRef.current
 
-		for (const item of currentData) {
-			if (!item.itemData) continue
-			if (item.children.length > 0) {
-				for (const childItem of item.children) {
-					if (!childItem.itemData) continue
-					await updateResourcePosition({
-						currentParentResourceId: childItem.itemData.resourceOfId,
-						parentResourceId: item.itemData.resourceId,
-						resourceId: childItem.itemData.resourceId,
-						position: item.children.indexOf(childItem),
+		try {
+			const updateOperations = currentData.flatMap((item, index) => {
+				if (!item.itemData) return []
+
+				const operations = []
+
+				operations.push({
+					currentParentResourceId: item.itemData.resourceOfId,
+					parentResourceId: rootResourceId,
+					resourceId: item.itemData.resourceId,
+					position: index,
+				})
+
+				if (item.children.length > 0) {
+					item.children.forEach((childItem, childIndex) => {
+						if (!childItem.itemData) return
+						operations.push({
+							currentParentResourceId: childItem.itemData.resourceOfId,
+							parentResourceId: item?.itemData?.resourceId,
+							resourceId: childItem.itemData.resourceId,
+							position: childIndex,
+						})
 					})
 				}
-			}
-			await updateResourcePosition({
-				currentParentResourceId: item.itemData.resourceOfId,
-				parentResourceId: rootResourceId,
-				resourceId: item.itemData.resourceId,
-				position: currentData.indexOf(item),
+
+				return operations
 			})
+
+			await Promise.all(
+				updateOperations.map((operation) => updateResourcePosition(operation)),
+			)
+		} catch (error) {
+			console.error('Error saving tree data:', error)
 		}
 	}, [rootResourceId])
 
