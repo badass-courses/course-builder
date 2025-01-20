@@ -1,73 +1,53 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { FLAGS, getEnvironment } from '@/lib/flags'
-import { getFlagKey } from '@/lib/flags-adapter'
-import { getServerAuthSession } from '@/server/auth'
+import { FLAG_PREFIX, FLAGS, getEnvironment } from '@/flags'
+import { getFlagKey } from '@/flags/flags-adapter'
+import { auth, getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 
 export async function toggleFlag(key: string, value: boolean) {
-	const { ability, session } = await getServerAuthSession()
-	if (!ability.can('manage', 'all')) {
+	console.log(`[toggleFlag] Starting toggle for ${key} to ${value}`)
+
+	const { session, ability } = await getServerAuthSession()
+	if (!session?.user) {
+		console.error('[toggleFlag] Unauthorized: No user ID')
 		throw new Error('Unauthorized')
 	}
 
-	if (!session?.user) {
-		throw new Error('No authenticated user')
+	if (!ability.can('manage', 'all')) {
+		console.error('[toggleFlag] Unauthorized')
+		throw new Error('Unauthorized')
 	}
 
-	// Validate that the flag exists in our registry
-	if (!(key in FLAGS)) {
-		throw new Error(`Invalid flag key: ${key}`)
+	const flag = FLAGS[key as keyof typeof FLAGS]
+	if (!flag) {
+		console.error(`[toggleFlag] Invalid flag key: ${key}`)
+		throw new Error('Invalid flag key')
 	}
 
-	// Validate the value is boolean
 	if (typeof value !== 'boolean') {
-		throw new Error('Flag value must be boolean')
+		console.error(`[toggleFlag] Invalid value type: ${typeof value}`)
+		throw new Error('Value must be a boolean')
 	}
 
-	const env = getEnvironment()
 	const redisKey = getFlagKey(key)
-	const user = session.user
+	console.log(`[toggleFlag] Redis key: ${redisKey}`)
 
 	try {
-		// Get previous value for audit log
 		const previousValue = await redis.get(redisKey)
+		console.log(`[toggleFlag] Previous value: ${previousValue}`)
 
-		// Use the centralized key management
-		await redis.set(redisKey, value)
-
-		// Log the change
-		await log.info('feature_flag_change', {
-			flag: key,
-			environment: env,
-			previous: previousValue,
-			new: value,
-			user: {
-				id: user.id,
-				email: user.email,
-			},
-			metadata: {
-				name: FLAGS[key as keyof typeof FLAGS].name,
-				description: FLAGS[key as keyof typeof FLAGS].description,
-			},
-		})
+		await redis.set(redisKey, value.toString())
+		console.log(`[toggleFlag] New value set: ${value}`)
 
 		revalidatePath('/admin/flags')
+		console.log('[toggleFlag] Page revalidated')
+
 		return value
 	} catch (error) {
-		// Log the error
-		await log.error('feature_flag_change_failed', {
-			flag: key,
-			environment: env,
-			intended_value: value,
-			error: error instanceof Error ? error.message : 'Unknown error',
-			user: {
-				id: user.id,
-				email: user.email,
-			},
-		})
+		console.error('[toggleFlag] Error:', error)
 		throw error
 	}
 }

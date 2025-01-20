@@ -5,7 +5,7 @@ import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
 import LandingCopy from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
-import { commerceEnabled } from '@/lib/flags'
+import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import MuxPlayer from '@mux/mux-player-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -96,7 +96,10 @@ const Home = async (props: Props) => {
 						<div className="mx-auto grid max-w-[1400px] grid-cols-1 items-stretch gap-8 border-y px-5 py-16 md:grid-cols-2 md:gap-16">
 							<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
 								<div className="flex flex-1 flex-col justify-end">
-									<PricingWidgetServer />
+									<PricingWidgetServer
+										productId="ai-hero-pro-membership-7564c"
+										searchParams={await props.searchParams}
+									/>
 								</div>
 							</div>
 							<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">

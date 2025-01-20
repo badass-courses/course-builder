@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { Button } from '@coursebuilder/ui'
 
 export const TeamPricingWidget = () => {
@@ -17,12 +19,12 @@ export const TeamPricingWidget = () => {
 				Get custom pricing, dedicated support, and enterprise features tailored
 				to your organization's needs.
 			</div>
-			<Button
-				asChild
+			<Link
+				href="/for-your-team"
 				className="bg-primary text-primary-foreground mt-6 flex h-14 w-full max-w-md items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-wait"
 			>
-				<a href="/for-your-team">Contact Sales</a>
-			</Button>
+				Contact Sales
+			</Link>
 		</div>
 	)
 }
