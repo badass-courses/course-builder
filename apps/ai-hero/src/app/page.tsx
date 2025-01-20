@@ -18,6 +18,7 @@ import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widg
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Button } from '@coursebuilder/ui'
 
+import { showTeamPricingFlag } from './_lib/flags'
 import {
 	BlueSection,
 	CenteredTitle,
@@ -105,7 +106,7 @@ const Home = async (props: Props) => {
 						</div>
 						<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
 							<div className="flex flex-1 flex-col justify-end">
-								<TeamPricingWidget />
+								{showTeamPricingFlag() && <TeamPricingWidget />}
 							</div>
 						</div>
 					</div>
