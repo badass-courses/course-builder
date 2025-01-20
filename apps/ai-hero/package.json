@@ -22,7 +22,8 @@
 		"typecheck": "tsc --noEmit",
 		"index-typesense": "tsx ./scripts/index-content.ts",
 		"test": "vitest run -c vitest.config.ts",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"posts": "tsx scripts/posts-cli.ts"
 	},
 	"dependencies": {
 		"@amplitude/analytics-browser": "^2.6.1",
@@ -112,7 +113,6 @@
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
 		"dotenv-flow": "^4.1.0",
-		"drizzle-orm": "0.36.0",
 		"feed": "^4.2.2",
 		"formik": "2.2.9",
 		"framer-motion": "^12.0.0-alpha.1",
@@ -191,6 +191,7 @@
 		"zod-to-json-schema": "^3.22.4"
 	},
 	"devDependencies": {
+		"@clack/prompts": "^0.6.3",
 		"@mux/mux-node": "^7.3.2",
 		"@tailwindcss/typography": "^0.5.10",
 		"@types/base-64": "^1.0.1",
@@ -204,14 +205,18 @@
 		"@types/react-gravatar": "^2.6.13",
 		"@types/styled-components": "^5.1.29",
 		"autoprefixer": "^10.4.14",
+		"better-sqlite3": "9.4.3",
 		"concurrently": "^8.2.2",
 		"dotenv-cli": "^7.3.0",
 		"drizzle-kit": "0.27.1",
+		"drizzle-orm": "0.36.0",
 		"encoding": "^0.1.13",
 		"eslint": "^8.47.0",
 		"eslint-config-next": "15.0.2",
+		"msw": "^2.7.0",
 		"mysql2": "^3.6.1",
 		"partykit": "0.0.104",
+		"picocolors": "^1.1.1",
 		"postcss": "^8.4.27",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.12",
