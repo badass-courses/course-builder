@@ -1,5 +1,6 @@
 import * as z from 'zod'
 
+import { ListTypeSchema } from './lists'
 import { TagSchema } from './tags'
 
 export const TypesenseResourceSchema = z.object({
@@ -8,6 +9,7 @@ export const TypesenseResourceSchema = z.object({
 	slug: z.string(),
 	state: z.string(),
 	description: z.string().optional(),
+	summary: z.string().optional(),
 	visibility: z.string(),
 	type: z.string(),
 	published_at_timestamp: z.number().optional(),
@@ -20,6 +22,7 @@ export const attributeLabelMap: {
 	[K in keyof z.infer<typeof TypesenseResourceSchema>]: string
 } = {
 	description: 'Description',
+	summary: 'Summary',
 	title: 'Title',
 	type: 'Type',
 	state: 'State',

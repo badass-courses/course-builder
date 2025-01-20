@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
+import Search from '@/app/(search)/q/_components/search'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
@@ -64,8 +65,10 @@ export default async function PostsIndexPage() {
 
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
-				<div className="flex w-full flex-col items-center border-x">
+			<div className="mx-auto flex w-full max-w-screen-lg flex-col pt-[4.5]">
+				<h1 className="fluid-2xl mt-3 w-full font-bold sm:sr-only">Posts</h1>
+				<Search />
+				{/* <div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
 						<div className="relative flex w-full">
 							<PostTeaser
@@ -91,7 +94,7 @@ export default async function PostsIndexPage() {
 								)
 							})}
 					</ul>
-				</div>
+				</div> */}
 			</div>
 			<React.Suspense
 				fallback={

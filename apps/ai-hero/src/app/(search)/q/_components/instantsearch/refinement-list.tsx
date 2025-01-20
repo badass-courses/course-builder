@@ -30,6 +30,8 @@ export function RefinementList(
 		attribute: props.attribute,
 		limit: 100,
 		operator: 'or',
+		transformItems: props.transformItems,
+		escapeFacetValues: props.escapeFacetValues,
 	})
 	const [queryParam] = useQueryState<string[]>(
 		props.queryKey || props.attribute,
@@ -76,7 +78,7 @@ export function RefinementList(
 						className="w-full justify-between sm:w-[200px]"
 					>
 						<span
-							className={cn('truncate text-base font-normal', {
+							className={cn('truncate text-base font-normal capitalize', {
 								'text-muted-foreground': !queryParam.length,
 							})}
 						>
@@ -103,6 +105,7 @@ export function RefinementList(
 
 									return (
 										<CommandItem
+											className="capitalize"
 											key={item.value}
 											value={item.value}
 											id={item.value}
