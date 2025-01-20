@@ -20,13 +20,14 @@ export default function PostNextUpFromListPagination({
 }) {
 	const { list } = useList()
 
-	if (!list) return null
 	const nextUp = list && getNextUpResourceFromList(list, postId)
 	const { progress, addLessonProgress } = useProgress()
 	const isCompleted = progress?.completedLessons.some(
 		(lesson) => lesson.resourceId === postId,
 	)
 	const { data: session } = useSession()
+
+	if (!list) return null
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
