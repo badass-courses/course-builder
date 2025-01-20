@@ -2,23 +2,16 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { PricingWidgetServer } from '@/app/_components/pricing-widget-server'
 import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
-// import Image from 'next/image'
-// import { PricingWidget } from '@/app/_components/home-pricing-widget'
 import LandingCopy from '@/components/landing-copy'
-// import { LandingHeroParallax } from '@/components/landing-hero-parallax'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
+import { commerceEnabled } from '@/lib/flags'
 import { getPage } from '@/lib/pages-query'
-// import { getPricingProps } from '@/lib/pricing-query'
 import MuxPlayer from '@mux/mux-player-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
-import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
-import { PricingWidget } from '@coursebuilder/commerce-next/pricing/pricing-widget'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Button } from '@coursebuilder/ui'
 
-import { showTeamPricingFlag } from './_lib/flags'
 import {
 	BlueSection,
 	CenteredTitle,
@@ -74,6 +67,7 @@ const Home = async (props: Props) => {
 	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
 	// 	await getPricingProps({ searchParams })
 	const page = await getPage('home-6z2ir')
+	const isCommerceEnabled = await commerceEnabled()
 
 	return (
 		<div className="">
@@ -97,20 +91,22 @@ const Home = async (props: Props) => {
 						<LandingCopy />
 					)}
 				</article>
-				<section id="buy" className="mt-10 sm:mt-24">
-					<div className="mx-auto grid max-w-[1400px] grid-cols-1 items-stretch gap-8 border-y px-5 py-16 md:grid-cols-2 md:gap-16">
-						<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
-							<div className="flex flex-1 flex-col justify-end">
-								<PricingWidgetServer />
+				{isCommerceEnabled && (
+					<section id="buy" className="mt-10 sm:mt-24">
+						<div className="mx-auto grid max-w-[1400px] grid-cols-1 items-stretch gap-8 border-y px-5 py-16 md:grid-cols-2 md:gap-16">
+							<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
+								<div className="flex flex-1 flex-col justify-end">
+									<PricingWidgetServer />
+								</div>
+							</div>
+							<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
+								<div className="flex flex-1 flex-col justify-end">
+									<TeamPricingWidget />
+								</div>
 							</div>
 						</div>
-						<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
-							<div className="flex flex-1 flex-col justify-end">
-								{showTeamPricingFlag() && <TeamPricingWidget />}
-							</div>
-						</div>
-					</div>
-				</section>
+					</section>
+				)}
 				<PrimaryNewsletterCta className="px-5 pt-10" />
 			</main>
 		</div>
