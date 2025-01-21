@@ -1,6 +1,7 @@
 import { redis } from '@/server/redis-client'
 import type { Adapter } from '@vercel/flags'
 
+import { env } from '../env.mjs'
 import { FLAG_PREFIX } from './flags'
 import { getEnvironment } from './flags-env'
 
@@ -15,7 +16,7 @@ function createRedisAdapter() {
 	return function redisAdapter(): Adapter<boolean, any> {
 		return {
 			origin(key: string) {
-				return `/admin/flags/${key}`
+				return `${env.COURSEBUILDER_URL}/admin/flags/${key}`
 			},
 			async decide({ key }: { key: string }): Promise<boolean> {
 				// Strip environment prefix if present since getFlagKey will add it
