@@ -64,6 +64,7 @@ export function EditPostForm({
 				description: post.fields?.description ?? '',
 				github: post.fields?.github ?? '',
 				gitpod: post.fields?.gitpod ?? '',
+				thumbnailTime: post.fields?.thumbnailTime ?? 0,
 			},
 		},
 	})

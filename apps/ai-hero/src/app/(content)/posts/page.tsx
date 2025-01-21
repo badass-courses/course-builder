@@ -12,7 +12,7 @@ import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
-import { ListOrderedIcon, Pencil } from 'lucide-react'
+import { Book, ListOrderedIcon, Pencil } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import {
@@ -42,11 +42,30 @@ export const metadata: Metadata = {
 }
 
 export default async function PostsIndexPage() {
+	// const [hideRecommendedPosts, setHideRecommendedPosts] = React.useState(false)
+	const lists = await getAllLists()
+	const tutorials = lists.filter((list) => {
+		return list.fields.type === 'tutorial'
+	})
+
+	const latestTutorial = tutorials[0]
+
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
 			<div className="mx-auto flex w-full flex-col">
-				<h1 className="fluid-2xl my-3 w-full font-bold sm:sr-only">Posts</h1>
+				{/* <h1 className="fluid-2xl my-3 w-full font-bold sm:sr-only">Posts</h1> */}
+				<div className="relative flex w-full">
+					<PostTeaser
+						post={latestTutorial}
+						className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full border-x md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+					/>
+					<div
+						className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
+						aria-hidden="true"
+					/>
+				</div>
 				<Search />
+
 				{/* <div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
 						<div className="relative flex w-full">
@@ -81,10 +100,11 @@ export default async function PostsIndexPage() {
 }
 
 const PostTeaser: React.FC<{
-	post: Post
+	post?: List
 	i?: number
 	className?: string
 }> = ({ post, className, i }) => {
+	if (!post) return null
 	const title = post.fields.title
 	const description = post.fields.description
 	const createdAt = post.createdAt
@@ -103,8 +123,9 @@ const PostTeaser: React.FC<{
 				>
 					<div className="">
 						<CardHeader className="p-0">
-							<p className="text-muted-foreground pb-1.5 text-sm opacity-60">
-								{createdAt && format(new Date(createdAt), 'MMMM do, y')}
+							<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
+								<Book className="w-3" /> Free Tutorial
+								{/* {createdAt && format(new Date(createdAt), 'MMMM do, y')} */}
 							</p>
 							<CardTitle
 								data-title=""

@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { PricingWidgetServer } from '@/app/_components/pricing-widget-server'
 import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
+import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import LandingCopy from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
@@ -83,6 +84,7 @@ const Home = async (props: Props) => {
 								Spacer,
 								Section,
 								CheckList,
+								Testimonial,
 								// @ts-expect-error
 								MuxPlayer,
 							}}

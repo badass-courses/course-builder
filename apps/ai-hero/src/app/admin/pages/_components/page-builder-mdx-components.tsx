@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { CldImage } from '@/app/_components/cld-image'
 import config from '@/config'
 import MuxPlayer from '@mux/mux-player-react'
 import { GripVertical } from 'lucide-react'
@@ -83,39 +84,68 @@ const BlueSection = ({
 	)
 }
 
-const Instructor = ({ className }: { className?: string }) => {
+const Instructor = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
 	return (
 		<section
 			className={cn(
-				'not-prose relative mx-auto my-8 flex w-full max-w-screen-md items-center gap-5 sm:flex-row',
+				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-center gap-10 py-5 sm:py-10',
 				className,
 			)}
 		>
 			<Image
-				src={'/matt-pocock.jpg'}
+				src={'/assets/matt-in-new-studio@2x.jpg'}
 				alt={config.author}
-				width={200}
-				height={200}
-				className="rounded"
+				width={1458 / 2}
+				height={820 / 2}
+				className="flex-shrink-0 rounded"
+				quality={100}
 			/>
 
 			<div className="">
-				<h3 className="text-2xl font-bold">Your Instructor</h3>
-				<div
-				// className="flex flex-col gap-4 text-lg leading-relaxed"
-				>
-					<p>TODO</p>
-				</div>
+				<h3 className="fluid-xl mb-5 font-bold">Hi, I'm {config.author}</h3>
+				<div className="flex flex-col gap-3">{children}</div>
 			</div>
 		</section>
 	)
 }
 
 const CheckList = ({ children }: { children: React.ReactNode }) => {
+	return <ul data-checklist="">{children}</ul>
+}
+
+const Testimonial = ({
+	children,
+	authorName,
+	authorAvatar,
+}: {
+	children: React.ReactNode
+	authorName: string
+	authorAvatar: string
+}) => {
 	return (
-		<div className="[&_li]:list-none [&_li]:pl-0 [&_li]:before:mr-3 [&_li]:before:content-['✓'] [&_ul]:list-inside [&_ul]:pl-0">
+		<blockquote className="border-primary">
 			{children}
-		</div>
+			{authorName && (
+				<div className="text-muted-foreground mt-3 flex items-center gap-2 text-[80%] font-normal not-italic">
+					{authorAvatar && authorAvatar.includes('res.cloudinary') && (
+						<CldImage
+							alt={authorName}
+							width={40}
+							className="!m-0 rounded-full"
+							height={40}
+							src={authorAvatar}
+						/>
+					)}
+					{authorName}
+				</div>
+			)}
+		</blockquote>
 	)
 }
 
@@ -169,6 +199,17 @@ const data = {
 			name: 'CheckList',
 			component: CheckList,
 			props: {},
+		},
+	],
+	testimonial: [
+		{
+			name: 'Testimonial',
+			component: Testimonial,
+			props: {
+				authorName: 'John Doe',
+				authorAvatar: 'http://res.cloudinary.com/TODO',
+				children: 'This is my feedback',
+			},
 		},
 	],
 }
@@ -241,11 +282,11 @@ const PageBlocks = () => {
 								e.dataTransfer.setData(
 									'text/plain',
 									`
-<${item.name}>
+<ul data-checklist="">
 - List Item 1
 - List Item 2
 - List Item 3
-</${item.name}>
+</ul>
 `,
 								)
 							}
@@ -278,7 +319,37 @@ const PageBlocks = () => {
 							key={item.name}
 							item={item}
 							onDragStart={(e) =>
-								e.dataTransfer.setData('text/plain', `<${item.name} />`)
+								e.dataTransfer.setData(
+									'text/plain',
+									`
+<${item.name}>
+
+Before creating AI Hero, I created Total TypeScript - the industry standard course for learning TS.
+
+I was a member of the XState core team, and was a developer advocate at Vercel.
+
+I'm building AI Hero to make the secrets of the AI Engineer available to everyone.
+
+</${item.name}>
+`,
+								)
+							}
+						/>
+					)
+				})}
+			</div>
+			<div className="flex flex-wrap items-center gap-1">
+				<strong className="mb-1">Testimonials</strong>
+				{data.testimonial.map((item, index) => {
+					return (
+						<BlockItem
+							key={item.name}
+							item={item}
+							onDragStart={(e) =>
+								e.dataTransfer.setData(
+									'text/plain',
+									`<${item.name} authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
+								)
 							}
 						/>
 					)
@@ -298,6 +369,7 @@ const allMdxPageBuilderComponents = {
 	Section,
 	CheckList,
 	MuxPlayer,
+	Testimonial,
 }
 
 export {
@@ -309,4 +381,5 @@ export {
 	CheckList,
 	allMdxPageBuilderComponents,
 	PageBlocks,
+	Testimonial,
 }
