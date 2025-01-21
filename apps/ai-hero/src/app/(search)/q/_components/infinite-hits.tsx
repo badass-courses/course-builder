@@ -15,7 +15,10 @@ export function InfiniteHits() {
 
 	if (status === 'loading') {
 		return (
-			<div className="flex items-center justify-center p-5" aria-live="polite">
+			<div
+				className="flex w-full items-center justify-center border-x border-b border-t p-5 py-8"
+				aria-live="polite"
+			>
 				<Spinner />
 				<p className="sr-only">Loading...</p>
 			</div>
@@ -23,7 +26,10 @@ export function InfiniteHits() {
 	}
 
 	return items.length === 0 ? (
-		<div>
+		<div
+			className="text-muted-foreground flex w-full items-center justify-center border-x border-b border-t p-5 py-8"
+			aria-live="polite"
+		>
 			<p>No results found</p>
 		</div>
 	) : (
