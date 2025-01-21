@@ -84,11 +84,17 @@ const BlueSection = ({
 	)
 }
 
-const Instructor = ({ className }: { className?: string }) => {
+const Instructor = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
 	return (
 		<section
 			className={cn(
-				'not-prose relative mx-auto my-8 flex w-full max-w-screen-md items-center gap-5 sm:flex-row',
+				'not-prose relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10 pt-16 md:flex-row md:items-start',
 				className,
 			)}
 		>
@@ -97,16 +103,14 @@ const Instructor = ({ className }: { className?: string }) => {
 				alt={config.author}
 				width={200}
 				height={200}
-				className="rounded"
+				className="flex-shrink-0 rounded"
 			/>
 
 			<div className="">
-				<h3 className="text-2xl font-bold">Your Instructor</h3>
-				<div
-				// className="flex flex-col gap-4 text-lg leading-relaxed"
-				>
-					<p>TODO</p>
-				</div>
+				<h3 className="fluid-xl mb-5 font-sans font-bold">
+					Hi, I'm {config.author}
+				</h3>
+				<div className="flex flex-col gap-3">{children}</div>
 			</div>
 		</section>
 	)
@@ -316,7 +320,20 @@ const PageBlocks = () => {
 							key={item.name}
 							item={item}
 							onDragStart={(e) =>
-								e.dataTransfer.setData('text/plain', `<${item.name} />`)
+								e.dataTransfer.setData(
+									'text/plain',
+									`
+<${item.name}>
+
+Before creating AI Hero, I created Total TypeScript - the industry standard course for learning TS.
+
+I was a member of the XState core team, and was a developer advocate at Vercel.
+
+I'm building AI Hero to make the secrets of the AI Engineer available to everyone.
+
+</${item.name}>
+`,
+								)
 							}
 						/>
 					)

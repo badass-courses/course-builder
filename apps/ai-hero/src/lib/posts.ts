@@ -86,6 +86,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			visibility: PostVisibilitySchema.default('public'),
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
+			thumbnailTime: z.number().nullish(),
 		}),
 		tags: PostTagsChema,
 	}),
@@ -103,6 +104,7 @@ export const PostUpdateSchema = z.object({
 		state: PostStateSchema.default('draft'),
 		visibility: PostVisibilitySchema.default('unlisted'),
 		github: z.string().nullish(),
+		thumbnailTime: z.number().nullish(),
 	}),
 	tags: PostTagsChema,
 	videoResourceId: z.string().optional().nullable(),
@@ -128,6 +130,7 @@ export const UpdatePostRequestSchema = z.object({
 		state: PostStateSchema.default('draft'),
 		visibility: PostVisibilitySchema.default('unlisted'),
 		github: z.string().nullish(),
+		thumbnailTime: z.number().nullish(),
 	}),
 })
 
