@@ -12,6 +12,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
+import { Testimonial } from '../components/mdx-components'
 import {
 	BlueSection,
 	CenteredTitle,
@@ -83,6 +84,7 @@ const Home = async (props: Props) => {
 								Spacer,
 								Section,
 								CheckList,
+								Testimonial,
 								// @ts-expect-error
 								MuxPlayer,
 							}}
