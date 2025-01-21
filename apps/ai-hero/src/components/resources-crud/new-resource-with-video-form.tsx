@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { NewPost, PostType, PostTypeSchema } from '@/lib/posts'
+import { NewPostInput, PostType, PostTypeSchema } from '@/lib/posts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -54,7 +54,7 @@ export function NewResourceWithVideoForm({
 	uploadEnabled = true,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
-	createResource: (values: NewPost) => Promise<ContentResource>
+	createResource: (values: NewPostInput) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
 	availableResourceTypes?: PostType[] | undefined
 	className?: string

@@ -13,7 +13,6 @@ import {
 	contributionTypes,
 } from '@/db/schema'
 import {
-	NewPost,
 	NewPostInput,
 	NewPostInputSchema,
 	Post,
@@ -156,14 +155,14 @@ export async function getPosts(): Promise<Post[]> {
 
 	const postsParsed = z.array(PostSchema).safeParse(posts)
 	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed)
+		console.error('Error parsing posts', postsParsed.error)
 		return []
 	}
 
 	return postsParsed.data
 }
 
-export async function createPost(input: NewPost) {
+export async function createPost(input: NewPostInput) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
@@ -176,7 +175,7 @@ export async function createPost(input: NewPost) {
 	const postValues = {
 		id: newPostId,
 		type: 'post',
-		createdById: user.id,
+		createdById: input.createdById || user.id,
 		fields: {
 			title: input.title,
 			state: 'draft',
@@ -203,7 +202,10 @@ export async function createPost(input: NewPost) {
 		try {
 			await upsertPostToTypeSense(post, 'save')
 		} catch (e) {
-			console.error('Failed to create post in Typesense', e)
+			console.error('Failed to create post in Typesense', {
+				error: getErrorMessage(e),
+				stack: getErrorStack(e),
+			})
 		}
 
 		revalidateTag('posts')
@@ -265,7 +267,10 @@ export async function updatePost(
 			action,
 		)
 	} catch (e) {
-		console.error('Failed to update post in Typesense', e)
+		console.error('Failed to update post in Typesense', {
+			error: getErrorMessage(e),
+			stack: getErrorStack(e),
+		})
 	}
 
 	revalidate && revalidateTag('posts')
@@ -331,7 +336,7 @@ export async function getPost(slugOrId: string) {
 
 	const postParsed = PostSchema.safeParse(post)
 	if (!postParsed.success) {
-		console.debug('Error parsing post', postParsed)
+		console.debug('Error parsing post', postParsed.error)
 		return null
 	}
 
@@ -411,21 +416,27 @@ export async function writeNewPostToDatabase(
 	input: NewPostInput,
 ): Promise<Post> {
 	try {
+		console.log('🔍 Validating input:', input)
 		const validatedInput = NewPostInputSchema.parse(input)
 		const { title, videoResourceId, postType, createdById } = validatedInput
+		console.log('✅ Input validated:', validatedInput)
 
 		const postGuid = guid()
 		const newPostId = `post_${postGuid}`
+		console.log('📝 Generated post ID:', newPostId)
 
 		// Step 1: Get video resource if needed
 		let videoResource = null
 		if (videoResourceId) {
+			console.log('🎥 Fetching video resource:', videoResourceId)
 			videoResource =
 				await courseBuilderAdapter.getVideoResource(videoResourceId)
+			console.log('✅ Video resource fetched:', videoResource)
 		}
 
 		try {
 			// Step 3: Create the core post
+			console.log('📝 Creating core post...')
 			const post = await createCorePost({
 				newPostId,
 				title,
@@ -433,19 +444,25 @@ export async function writeNewPostToDatabase(
 				postType,
 				createdById,
 			})
+			console.log('✅ Core post created:', post)
 
 			// Step 4: Handle contributions
+			console.log('👥 Handling contributions...')
 			await handleContributions({
 				createdById,
 				postId: post.id,
 				postGuid,
 			})
+			console.log('✅ Contributions handled')
 
 			// Step 6: Create version
+			console.log('📄 Creating post version...')
 			await createNewPostVersion(post)
+			console.log('✅ Post version created')
 
 			return post
 		} catch (error) {
+			console.log('❌ Error in post creation flow:', error)
 			if (error instanceof PostCreationError) {
 				throw error
 			}
@@ -455,6 +472,7 @@ export async function writeNewPostToDatabase(
 			})
 		}
 	} catch (error) {
+		console.log('❌ Error in input validation:', error)
 		if (error instanceof z.ZodError) {
 			throw new PostCreationError('Invalid input for post creation', error, {
 				input,
@@ -478,6 +496,14 @@ async function createCorePost({
 	createdById: string
 }): Promise<Post> {
 	try {
+		console.log('📝 Creating core post with:', {
+			newPostId,
+			title,
+			postGuid,
+			postType,
+			createdById,
+		})
+
 		await db.insert(contentResource).values({
 			id: newPostId,
 			type: 'post',
@@ -491,15 +517,42 @@ async function createCorePost({
 				access: 'pro',
 			},
 		})
+		console.log('✅ Post inserted into database')
 
-		const post = await getPost(newPostId)
+		// Direct query by ID without filters
+		const post = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, newPostId),
+			with: {
+				resources: {
+					with: {
+						resource: true,
+					},
+					orderBy: asc(contentResourceResource.position),
+				},
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
+				},
+			},
+		})
+		console.log('🔍 Retrieved post after creation:', post)
 
 		if (!post) {
+			console.log('❌ Post not found after creation')
 			throw new Error('Post not found after creation')
 		}
 
-		return post
+		const postParsed = PostSchema.safeParse(post)
+		if (!postParsed.success) {
+			console.log('❌ Error parsing post:', postParsed.error)
+			throw new Error('Invalid post data')
+		}
+
+		return postParsed.data
 	} catch (error) {
+		console.log('❌ Error in createCorePost:', error)
 		throw new DatabaseError('create core post', error, { newPostId, title })
 	}
 }
@@ -601,11 +654,21 @@ export async function writePostUpdateToDatabase(input: {
 		updatedById,
 	} = input
 
+	console.log('📝 Starting post update:', {
+		postId: postUpdate.id,
+		action,
+		updatedById,
+		hasCurrentPost: !!currentPost,
+		updateFields: Object.keys(postUpdate.fields),
+	})
+
 	if (!currentPost) {
+		console.error('❌ Current post not found:', postUpdate.id)
 		throw new Error(`Post with id ${input.postUpdate.id} not found.`)
 	}
 
 	if (!postUpdate.fields.title) {
+		console.error('❌ Title is required for update')
 		throw new Error('Title is required')
 	}
 
@@ -615,7 +678,18 @@ export async function writePostUpdateToDatabase(input: {
 
 	if (postUpdate.fields.title !== currentPost.fields.title) {
 		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${postGuid}`
+		console.log('🔄 Updating slug:', {
+			oldSlug: currentPost.fields.slug,
+			newSlug: postSlug,
+		})
 	}
+
+	console.log('🔄 Calculating metadata:', {
+		currentTitle: currentPost.fields.title,
+		newTitle: postUpdate.fields.title,
+		currentSlug: currentPost.fields.slug,
+		newSlug: postSlug,
+	})
 
 	const duration = await getVideoDuration(currentPost.resources)
 	const timeToRead = Math.floor(
@@ -632,34 +706,107 @@ export async function writePostUpdateToDatabase(input: {
 		? await courseBuilderAdapter.getVideoResource(videoResourceId)
 		: null
 
-	await courseBuilderAdapter.updateContentResourceFields({
-		id: currentPost.id,
-		fields: {
-			...currentPost.fields,
-			...postUpdate.fields,
-			duration,
-			timeToRead,
-			slug: postSlug,
+	console.log('📊 Post metadata:', {
+		duration,
+		timeToRead,
+		videoResourceId,
+		hasVideoResource: !!videoResource,
+	})
+
+	try {
+		console.log('🔄 Updating post fields in database')
+		await courseBuilderAdapter.updateContentResourceFields({
+			id: currentPost.id,
+			fields: {
+				...currentPost.fields,
+				...postUpdate.fields,
+				duration,
+				timeToRead,
+				slug: postSlug,
+			},
+		})
+		console.log('✅ Post fields updated successfully')
+	} catch (error) {
+		console.error('❌ Error updating post fields:', {
+			error: getErrorMessage(error),
+			stack: (error as Error).stack,
+		})
+		throw error
+	}
+
+	console.log('🔍 Fetching updated post')
+	const updatedPostRaw = await db.query.contentResource.findFirst({
+		where: and(
+			or(eq(contentResource.id, currentPost.id)),
+			eq(contentResource.type, 'post'),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 		},
 	})
 
-	const updatedPost = await getPost(currentPost.id)
+	console.log('🔄 Validating updated post')
+	const updatedPost = PostSchema.safeParse(updatedPostRaw)
 
-	if (!updatedPost) {
-		throw new Error(`Post with id ${currentPost.id} not found.`)
+	if (!updatedPost.success) {
+		console.error('❌ Failed to validate updated post:', {
+			error: updatedPost.error.format(),
+			raw: updatedPostRaw,
+		})
+		throw new Error(`Invalid post data after update for ${currentPost.id}`)
 	}
 
-	const newContentHash = generateContentHash(updatedPost)
+	if (!updatedPost.data) {
+		console.error('❌ Updated post not found:', currentPost.id)
+		throw new Error(`Post with id ${currentPost.id} not found after update.`)
+	}
 
+	const newContentHash = generateContentHash(updatedPost.data)
 	const currentContentHash = currentPost.currentVersionId?.split('~')[1]
 
 	if (newContentHash !== currentContentHash) {
-		await createNewPostVersion(updatedPost, updatedById)
+		console.log('📝 Content hash changed, creating new version:', {
+			currentHash: currentContentHash,
+			newHash: newContentHash,
+		})
+		await createNewPostVersion(updatedPost.data, updatedById)
 	}
 
-	await upsertPostToTypeSense(updatedPost, action)
+	console.log('🔄 Attempting to upsert post to TypeSense:', {
+		postId: updatedPost.data.id,
+		action,
+		title: updatedPost.data.fields.title,
+		slug: updatedPost.data.fields.slug,
+	})
 
-	return updatedPost
+	try {
+		await upsertPostToTypeSense(updatedPost.data, action)
+		console.log('✅ Successfully upserted post to TypeSense')
+	} catch (error) {
+		console.error(
+			'⚠️ TypeSense indexing failed but continuing with post update:',
+			{
+				error,
+				postId: updatedPost.data.id,
+				action,
+				stack: (error as Error).stack,
+			},
+		)
+		// Don't rethrow - let the post update succeed even if TypeSense fails
+	}
+
+	return updatedPost.data
 }
 
 export async function getVideoDuration(
@@ -676,17 +823,107 @@ export async function getVideoDuration(
 }
 
 export async function deletePostFromDatabase(id: string) {
-	const post = PostSchema.nullish().parse(await getPost(id))
+	console.log('🗑️ Attempting to delete post:', id)
 
-	if (!post) {
-		throw new Error(`Post with id ${id} not found.`)
+	try {
+		const rawPost = await db.query.contentResource.findFirst({
+			where: and(
+				or(eq(contentResource.id, id)),
+				eq(contentResource.type, 'post'),
+			),
+			with: {
+				resources: {
+					with: {
+						resource: true,
+					},
+					orderBy: asc(contentResourceResource.position),
+				},
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
+				},
+			},
+		})
+		console.log('🔍 Retrieved post for deletion:', {
+			found: !!rawPost,
+			id,
+			type: rawPost?.type,
+			title: rawPost?.fields?.title,
+		})
+
+		const post = PostSchema.nullish().safeParse(rawPost)
+
+		if (!post.success) {
+			console.error('❌ Failed to parse post for deletion:', {
+				id,
+				error: post.error.format(),
+				raw: rawPost,
+			})
+			throw new Error(`Invalid post data for ${id}`)
+		}
+
+		if (!post.data) {
+			console.error('❌ Post not found for deletion:', id)
+			throw new Error(`Post with id ${id} not found.`)
+		}
+
+		console.log('🗑️ Deleting post resources:', id)
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceOfId, id))
+
+		console.log('🗑️ Deleting post record:', id)
+		await db.delete(contentResource).where(eq(contentResource.id, id))
+
+		try {
+			console.log('🗑️ Removing from TypeSense:', id)
+			await deletePostInTypeSense(id)
+			console.log('✅ Successfully removed from TypeSense:', id)
+		} catch (error) {
+			console.error('⚠️ Failed to remove from TypeSense (non-fatal):', {
+				id,
+				error: getErrorMessage(error),
+			})
+		}
+
+		console.log('✅ Post deletion completed:', id)
+		return true
+	} catch (error) {
+		console.error('❌ Post deletion failed:', {
+			id,
+			error: getErrorMessage(error),
+			stack: (error as Error).stack,
+		})
+		throw error
 	}
+}
 
-	await db
-		.delete(contentResourceResource)
-		.where(eq(contentResourceResource.resourceOfId, id))
+function isErrorWithMessage(error: unknown): error is { message: string } {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'message' in error &&
+		typeof (error as { message: string }).message === 'string'
+	)
+}
 
-	await db.delete(contentResource).where(eq(contentResource.id, id))
+function isErrorWithStack(error: unknown): error is { stack: string } {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'stack' in error &&
+		typeof (error as { stack: string }).stack === 'string'
+	)
+}
 
-	return true
+function getErrorMessage(error: unknown) {
+	if (isErrorWithMessage(error)) return error.message
+	return String(error)
+}
+
+function getErrorStack(error: unknown) {
+	if (isErrorWithStack(error)) return error.stack
+	return undefined
 }
