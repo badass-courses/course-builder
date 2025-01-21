@@ -3,17 +3,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, XCircleIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { useFeedbackForm } from '../../../apps/ai-hero/src/components/feedback-widget/use-feedback-form'
 import { Button, Form, Textarea } from '../index'
 import Spinner from '../primitives/spinner'
 import { cn } from '../utils/cn'
 import { useFeedback } from './feedback-context'
 import { CategoryField, EmotionField } from './feedback-fields'
 import { feedbackFormSchema, FeedbackFormValues } from './feedback-schema'
+import { useFeedbackForm, type SendFeedbackOptions } from './use-feedback-form'
 
-export const FeedbackForm: React.FC<{ location: string }> = ({ location }) => {
+export const FeedbackForm: React.FC<{
+	location: string
+	sendFeedback: (options: SendFeedbackOptions) => Promise<void>
+}> = ({ location, sendFeedback }) => {
 	const { initialValues, submitFeedbackForm, isSubmitted, error } =
-		useFeedbackForm({ location })
+		useFeedbackForm({ location, sendFeedback })
 	const form = useForm<FeedbackFormValues>({
 		resolver: zodResolver(feedbackFormSchema),
 		defaultValues: initialValues,

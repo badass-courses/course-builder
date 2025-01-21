@@ -8,14 +8,12 @@ import { FlagToggle } from '../_components/flag-toggle'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-type PageProps = {
-	params: Promise<{ key: string }>
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}
-
-export default async function SingleFlagPage({ params }: PageProps) {
-	const { key: paramKey } = await params
-	const key = paramKey.replace('preview:', '')
+export default async function SingleFlagPage({
+	params,
+}: {
+	params: { key: string }
+}) {
+	const key = params.key.replace('preview:', '')
 	const flag = FLAGS[key as keyof typeof FLAGS]
 
 	if (!flag) {
