@@ -27,7 +27,8 @@ import {
 
 import { CreatePost, CreatePostModal } from './_components/create-post'
 
-export const experimental_ppr = true
+// export const experimental_ppr = true
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
 	title: `AI Engineering Posts by ${config.author}`,
