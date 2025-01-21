@@ -10,8 +10,6 @@ export const getFlagKey = (key: string): string => {
 	return `${FLAG_PREFIX}${env}:${key}`
 }
 
-let defaultRedisAdapter: ReturnType<typeof createRedisAdapter>
-
 function createRedisAdapter() {
 	return function redisAdapter(): Adapter<boolean, any> {
 		return {
@@ -35,6 +33,8 @@ function createRedisAdapter() {
  * A default Redis adapter that can be used directly
  */
 export function redisAdapter(): Adapter<boolean, any> {
+	let defaultRedisAdapter: ReturnType<typeof createRedisAdapter>
+
 	if (!defaultRedisAdapter) {
 		defaultRedisAdapter = createRedisAdapter()
 	}
