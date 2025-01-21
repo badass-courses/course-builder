@@ -44,8 +44,8 @@ export const metadata: Metadata = {
 export default async function PostsIndexPage() {
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
-			<div className="mx-auto flex w-full flex-col pt-[4.5]">
-				<h1 className="fluid-2xl mt-3 w-full font-bold sm:sr-only">Posts</h1>
+			<div className="mx-auto flex w-full flex-col">
+				<h1 className="fluid-2xl my-3 w-full font-bold sm:sr-only">Posts</h1>
 				<Search />
 				{/* <div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
@@ -184,7 +184,7 @@ async function PostListActions({}: {}) {
 
 	return (
 		<aside className="divide-border w-full gap-3 divide-y border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
-			<div className="p-5">
+			<div className="p-5 py-3">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>

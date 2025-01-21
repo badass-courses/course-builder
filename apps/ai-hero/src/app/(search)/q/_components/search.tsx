@@ -83,7 +83,7 @@ export default function Search() {
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
 			<Configure filters={'state:published'} hitsPerPage={40} />
-			<div className="mb-3 flex flex-col items-end gap-x-3 sm:flex-row sm:items-center">
+			<div className="flex flex-col items-end gap-x-3 border-x border-t px-4 pb-4 sm:flex-row sm:items-center sm:border-t-0 sm:pb-0">
 				<SearchBox />
 				{/* <RefinementList
 					attribute="instructor_name"
