@@ -11,10 +11,12 @@ export function LessonPlayer({
 	muxPlaybackId,
 	className,
 	videoResource,
+	title,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource | null | undefined
 	className?: string
+	title?: string
 }) {
 	const playerProps = {
 		id: 'mux-player',
@@ -34,7 +36,7 @@ export function LessonPlayer({
 				<MuxPlayer
 					metadata={{
 						video_id: videoResource?.id,
-						video_title: videoResource?.title,
+						video_title: title || videoResource?.id,
 					}}
 					playbackId={playbackId}
 					className={cn(className)}

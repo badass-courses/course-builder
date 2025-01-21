@@ -38,12 +38,14 @@ export function PostPlayer({
 	videoResource,
 	postId,
 	thumbnailTime,
+	title,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
 	postId: string
 	thumbnailTime?: number
+	title?: string
 }) {
 	// const ability = abilityLoader ? use(abilityLoader) : null
 	// const canView = ability?.canView
@@ -124,7 +126,7 @@ export function PostPlayer({
 				<MuxPlayer
 					metadata={{
 						video_id: videoResource?.id,
-						video_title: videoResource?.title,
+						video_title: title || videoResource?.id,
 					}}
 					playbackId={playbackId}
 					className={cn(className)}
