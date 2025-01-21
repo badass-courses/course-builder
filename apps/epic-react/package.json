@@ -103,7 +103,7 @@
 		"dotenv-cli": "^7.3.0",
 		"drizzle-kit": "0.27.1",
 		"partykit": "0.0.104",
-		"postcss": "^8.4.27",
+		"postcss": "^8.4.47",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.12",
 		"tailwindcss": "^3.3.3",
