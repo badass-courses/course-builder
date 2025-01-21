@@ -94,22 +94,21 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'not-prose relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10 pb-5 pt-10 sm:pb-16 sm:pt-16 md:flex-row md:items-start',
+				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-center gap-10 py-5 sm:py-10',
 				className,
 			)}
 		>
 			<Image
-				src={'/matt-pocock.jpg'}
+				src={'/assets/matt-in-new-studio@2x.jpg'}
 				alt={config.author}
-				width={200}
-				height={200}
+				width={1458 / 2}
+				height={820 / 2}
 				className="flex-shrink-0 rounded"
+				quality={100}
 			/>
 
 			<div className="">
-				<h3 className="fluid-xl mb-5 font-sans font-bold">
-					Hi, I'm {config.author}
-				</h3>
+				<h3 className="fluid-xl mb-5 font-bold">Hi, I'm {config.author}</h3>
 				<div className="flex flex-col gap-3">{children}</div>
 			</div>
 		</section>
