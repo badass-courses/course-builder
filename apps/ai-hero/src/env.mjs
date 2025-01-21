@@ -102,7 +102,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().optional(),
-		NEXT_PUBLIC_AXIOM_DATASET: z.string(),
+		NEXT_PUBLIC_AXIOM_DATASET: z.string().optional(),
 	},
 
 	/**
