@@ -193,7 +193,7 @@ export function SimplePostPlayer({
 		id: 'mux-player',
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: 0,
+		thumbnailTime: thumbnailTime,
 		accentColor: '#DD9637',
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
@@ -220,7 +220,6 @@ export function SimplePostPlayer({
 						}}
 						playbackId={playbackId}
 						className={cn(className)}
-						thumbnailTime={thumbnailTime}
 						{...playerProps}
 					/>
 				</>

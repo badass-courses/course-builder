@@ -190,7 +190,9 @@ export const PostMetadataFormFields: React.FC<{
 										{videoResource && videoResource.state === 'ready' ? (
 											<div className="-mt-5 border-b">
 												<SimplePostPlayer
-													thumbnailTime={thumbnailTime}
+													thumbnailTime={
+														form.watch('fields.thumbnailTime') || 0
+													}
 													handleVideoTimeUpdate={(e) => {
 														const currentTime = (e.target as HTMLMediaElement)
 															.currentTime
