@@ -138,6 +138,7 @@ export function EditResourcesBodyPanel({
 								components: {
 									// @ts-expect-error
 									scrollycoding: ({ children }: any) => children,
+									testimonial: ({ children }: any) => children,
 								},
 							}}
 							height="var(--code-editor-layout-height)"

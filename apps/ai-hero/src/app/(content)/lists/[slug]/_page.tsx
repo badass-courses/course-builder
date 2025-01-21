@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
+import { Testimonial } from '@/components/mdx-components'
 import { Share } from '@/components/share'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
@@ -89,7 +90,7 @@ export default async function ListPage(props: {
 		const { content } = await compileMDX({
 			source: list.fields.body,
 			// @ts-expect-error
-			components: { Code, Scrollycoding },
+			components: { Code, Scrollycoding, Testimonial },
 			options: {
 				mdxOptions: {
 					remarkPlugins: [
