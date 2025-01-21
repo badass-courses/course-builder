@@ -21,7 +21,7 @@ export const typsenseAdapterConfig: {
 	//  So you can pass any parameters supported by the search endpoint below.
 	//  query_by is required.
 	additionalSearchParameters: {
-		query_by: 'title,description',
+		query_by: 'title,description,summary',
 		preset: 'updated_at_timestamp',
 	},
 }

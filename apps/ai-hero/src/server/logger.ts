@@ -16,7 +16,7 @@ type LogLevel = 'info' | 'error' | 'warn' | 'debug'
 export const log = {
 	async write(level: LogLevel, dataset: string, data: Record<string, any>) {
 		try {
-			await axiom.ingest(env.NEXT_PUBLIC_AXIOM_DATASET, [
+			await axiom.ingest(env.NEXT_PUBLIC_AXIOM_DATASET!, [
 				{
 					_time: new Date().toISOString(),
 					level,

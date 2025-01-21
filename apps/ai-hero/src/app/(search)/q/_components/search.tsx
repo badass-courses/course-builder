@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
@@ -30,6 +31,7 @@ export default function Search() {
 	const [type, setType] = useQueryState('type')
 	const [instructor, setInstructor] = useQueryState('instructor')
 	const [query, setQuery] = useQueryState('q')
+	const [tagsValue, setTagsValue] = useQueryState('tags')
 
 	return (
 		<InstantSearchNext
@@ -54,6 +56,7 @@ export default function Search() {
 				setQuery(query || null)
 
 				handleRefinementListChange('type', setType)
+				handleRefinementListChange('tags.fields.label', setTagsValue)
 				// handleRefinementListChange('instructor_name', setInstructor)
 
 				// IMPORTANT: always call setUiState to sync the state
@@ -67,6 +70,9 @@ export default function Search() {
 							...(typeof type === 'string' && {
 								type: type.split(','),
 							}),
+							...(typeof tagsValue === 'string' && {
+								'tags.fields.label': tagsValue.split(','),
+							}),
 							// ...(typeof instructor === 'string' && {
 							// 	instructor_name: instructor.split(','),
 							// }),
@@ -76,17 +82,24 @@ export default function Search() {
 			}
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
-			<Configure filters={'state:published'} />
-			<div className="mb-3 flex flex-row items-center gap-3">
+			<Configure filters={'state:published'} hitsPerPage={40} />
+			<div className="flex flex-col items-end gap-x-3 border-x border-t px-4 pb-4 sm:flex-row sm:items-center sm:border-t-0 sm:pb-0">
 				<SearchBox />
 				{/* <RefinementList
 					attribute="instructor_name"
 					queryKey="instructor"
 					label="Instructor"
 				/> */}
-				<RefinementList attribute="type" label="Type" />
+				<div className="flex w-full flex-row items-center gap-3">
+					<RefinementList attribute="type" label="Type" />
+					<RefinementList
+						attribute="tags.fields.label"
+						label="Tags"
+						queryKey="tags"
+					/>
+				</div>
 				{/* <HitsPerPageSelect items={hitsPerPageItems} /> */}
-				<ClearRefinements />
+				<ClearRefinements className="mt-2 sm:mt-0" />
 			</div>
 			<InfiniteHits />
 		</InstantSearchNext>

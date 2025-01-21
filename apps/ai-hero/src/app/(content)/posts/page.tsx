@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
+import Search from '@/app/(search)/q/_components/search'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
@@ -26,7 +27,8 @@ import {
 
 import { CreatePost, CreatePostModal } from './_components/create-post'
 
-export const experimental_ppr = true
+// export const experimental_ppr = true
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
 	title: `AI Engineering Posts by ${config.author}`,
@@ -40,32 +42,12 @@ export const metadata: Metadata = {
 }
 
 export default async function PostsIndexPage() {
-	const { ability } = await getServerAuthSession()
-	const allPosts = await getAllPosts()
-	const allLists = await getAllLists()
-
-	const publishedPublicPosts = [...allPosts, ...allLists]
-		.filter(
-			(post) =>
-				post.fields.visibility === 'public' &&
-				post.fields.state === 'published',
-		)
-		.sort((a, b) => {
-			return b.createdAt && a.createdAt
-				? new Date(b.createdAt).getTime() - new Date(a?.createdAt).getTime()
-				: 0
-		})
-
-	const unpublishedPosts = allPosts.filter((post) => {
-		return !publishedPublicPosts.includes(post) && post.type === 'post'
-	})
-
-	const latestPost = publishedPublicPosts[0]
-
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
-				<div className="flex w-full flex-col items-center border-x">
+			<div className="mx-auto flex w-full flex-col">
+				<h1 className="fluid-2xl my-3 w-full font-bold sm:sr-only">Posts</h1>
+				<Search />
+				{/* <div className="flex w-full flex-col items-center border-x">
 					{latestPost ? (
 						<div className="relative flex w-full">
 							<PostTeaser
@@ -91,19 +73,9 @@ export default async function PostsIndexPage() {
 								)
 							})}
 					</ul>
-				</div>
+				</div> */}
 			</div>
-			<React.Suspense
-				fallback={
-					<aside className="hidden w-full max-w-xs border-r lg:block" />
-				}
-			>
-				<PostListActions
-					publishedPosts={publishedPublicPosts}
-					unpublishedPosts={unpublishedPosts}
-					lists={allLists}
-				/>
-			</React.Suspense>
+			<PostListActions />
 		</main>
 	)
 }
@@ -178,16 +150,30 @@ const PostTeaser: React.FC<{
 	)
 }
 
-async function PostListActions({
-	unpublishedPosts,
-	publishedPosts,
-	lists,
-}: {
-	publishedPosts: Post[]
-	unpublishedPosts?: Post[]
-	lists?: List[]
-}) {
+async function PostListActions({}: {}) {
 	const { ability, session } = await getServerAuthSession()
+	if (!ability.can('create', 'Content')) {
+		return null // <aside className="hidden w-full max-w-xs border-r lg:block" />
+	}
+	const allPosts = await getAllPosts()
+	const allLists = await getAllLists()
+
+	const publishedPublicPosts = [...allPosts, ...allLists]
+		.filter(
+			(post) =>
+				post.fields.visibility === 'public' &&
+				post.fields.state === 'published',
+		)
+		.sort((a, b) => {
+			return b.createdAt && a.createdAt
+				? new Date(b.createdAt).getTime() - new Date(a?.createdAt).getTime()
+				: 0
+		})
+
+	const unpublishedPosts = allPosts.filter((post) => {
+		return !publishedPublicPosts.includes(post) && post.type === 'post'
+	})
+
 	const drafts = unpublishedPosts?.filter(
 		({ fields }) =>
 			fields.state === 'draft' && fields.visibility !== 'unlisted',
@@ -196,9 +182,9 @@ async function PostListActions({
 		({ fields }) => fields.visibility === 'unlisted',
 	)
 
-	return ability.can('create', 'Content') ? (
+	return (
 		<aside className="divide-border w-full gap-3 divide-y border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
-			<div className="p-5">
+			<div className="p-5 py-3">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>
@@ -211,7 +197,7 @@ async function PostListActions({
 					</p>
 				) : (
 					<p className="opacity-75">
-						You've published {publishedPosts.length} posts.
+						You've published {publishedPublicPosts.length} posts.
 					</p>
 				)}
 			</div>
@@ -240,8 +226,8 @@ async function PostListActions({
 					<strong>Unlisted</strong>
 					{unlisted.map((post) => {
 						const postLists =
-							lists &&
-							lists.filter((list) =>
+							allLists &&
+							allLists.filter((list) =>
 								list.resources.filter(
 									({ resource }) => resource.id === post.id,
 								),
@@ -281,7 +267,5 @@ async function PostListActions({
 				</div>
 			) : null}
 		</aside>
-	) : (
-		<aside className="hidden w-full max-w-xs border-r lg:block" />
 	)
 }
