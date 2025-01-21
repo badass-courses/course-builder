@@ -94,7 +94,7 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'not-prose relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10 pt-16 md:flex-row md:items-start',
+				'not-prose relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10 pb-5 pt-10 sm:pb-16 sm:pt-16 md:flex-row md:items-start',
 				className,
 			)}
 		>
