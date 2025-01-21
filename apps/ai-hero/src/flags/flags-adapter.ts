@@ -10,22 +10,20 @@ export const getFlagKey = (key: string): string => {
 	return `${FLAG_PREFIX}${env}:${key}`
 }
 
-function createRedisAdapter() {
-	return function redisAdapter(): Adapter<boolean, any> {
-		return {
-			origin(key: string) {
-				return `${env.COURSEBUILDER_URL}/admin/flags/${key}`
-			},
-			async decide({ key }: { key: string }): Promise<boolean> {
-				// Strip environment prefix if present since getFlagKey will add it
-				const [, baseKey = key] = key.split(':')
-				const redisKey = getFlagKey(baseKey)
-				const value = await redis.get(redisKey)
+function createRedisAdapter(): Adapter<boolean, any> {
+	return {
+		origin(key: string) {
+			return `${env.COURSEBUILDER_URL}/admin/flags/${key}`
+		},
+		async decide({ key }: { key: string }): Promise<boolean> {
+			// Strip environment prefix if present since getFlagKey will add it
+			const [, baseKey = key] = key.split(':')
+			const redisKey = getFlagKey(baseKey)
+			const value = await redis.get(redisKey)
 
-				// Handle both string and boolean values
-				return value === true || value === 'true' || value === '1'
-			},
-		}
+			// Handle both string and boolean values
+			return value === true || value === 'true' || value === '1'
+		},
 	}
 }
 
