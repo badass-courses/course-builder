@@ -75,7 +75,7 @@ export function RefinementList(
 						variant="outline"
 						role="combobox"
 						aria-expanded={open}
-						className="w-full justify-between sm:w-[200px]"
+						className="w-full justify-between"
 					>
 						<span
 							className={cn('truncate text-base font-normal capitalize', {

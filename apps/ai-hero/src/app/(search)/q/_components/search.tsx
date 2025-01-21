@@ -82,7 +82,7 @@ export default function Search() {
 			}
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
-			<Configure filters={'state:published'} hitsPerPage={50} />
+			<Configure filters={'state:published'} hitsPerPage={40} />
 			<div className="mb-3 flex flex-col items-end gap-x-3 sm:flex-row sm:items-center">
 				<SearchBox />
 				{/* <RefinementList

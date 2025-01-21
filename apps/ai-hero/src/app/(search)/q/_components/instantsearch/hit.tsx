@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Contributor } from '@/app/_components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
 import { format } from 'date-fns'
 import { Highlight } from 'react-instantsearch'
@@ -30,8 +31,10 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							className="[&_mark]:bg-primary text-muted-foreground"
 						/>
 					)}
+					<Contributor className="mt-3 hidden text-sm md:flex [&_img]:w-7" />
 				</div>
-				<div className="flex flex-shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:gap-10 md:pl-7">
+				<div className="mt-3 flex flex-shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:mt-0 md:gap-10 md:pl-7">
+					<Contributor className="flex text-sm md:hidden [&_img]:w-7" />
 					{hit?.tags && hit.tags.length > 0 && (
 						<div className="flex flex-wrap items-center gap-1">
 							{hit.tags.map((tag) => {

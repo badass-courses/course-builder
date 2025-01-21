@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 export default async function PostsIndexPage() {
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col pt-[4.5]">
+			<div className="mx-auto flex w-full flex-col pt-[4.5]">
 				<h1 className="fluid-2xl mt-3 w-full font-bold sm:sr-only">Posts</h1>
 				<Search />
 				{/* <div className="flex w-full flex-col items-center border-x">
@@ -75,13 +75,7 @@ export default async function PostsIndexPage() {
 					</ul>
 				</div> */}
 			</div>
-			<React.Suspense
-				fallback={
-					<aside className="hidden w-full max-w-xs border-r lg:block" />
-				}
-			>
-				<PostListActions />
-			</React.Suspense>
+			<PostListActions />
 		</main>
 	)
 }
@@ -159,7 +153,7 @@ const PostTeaser: React.FC<{
 async function PostListActions({}: {}) {
 	const { ability, session } = await getServerAuthSession()
 	if (!ability.can('create', 'Content')) {
-		return <aside className="hidden w-full max-w-xs border-r lg:block" />
+		return null // <aside className="hidden w-full max-w-xs border-r lg:block" />
 	}
 	const allPosts = await getAllPosts()
 	const allLists = await getAllLists()
