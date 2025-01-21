@@ -33,6 +33,7 @@ import { revalidateModuleLesson } from '../actions'
 import { useModuleProgress } from './module-progress-provider'
 
 export function AuthedVideoPlayer({
+	title,
 	muxPlaybackId,
 	className,
 	playbackIdLoader,
@@ -43,6 +44,7 @@ export function AuthedVideoPlayer({
 	...props
 }: {
 	muxPlaybackId?: string
+	title?: string
 	playbackIdLoader: Promise<string | null | undefined>
 	className?: string
 	abilityLoader?: Promise<AbilityForResource>
@@ -184,7 +186,7 @@ export function AuthedVideoPlayer({
 		<MuxPlayer
 			metadata={{
 				video_id: currentResource.id,
-				video_title: currentResource.fields?.title,
+				video_title: title || currentResource.fields?.title,
 			}}
 			ref={playerRef}
 			playbackId={playbackId}

@@ -148,7 +148,10 @@ export const LessonMetadataFormFields: React.FC<{
 							<>
 								{videoResource && videoResource.state === 'ready' ? (
 									<div>
-										<LessonPlayer videoResource={videoResource} />
+										<LessonPlayer
+											title={lesson.fields?.title}
+											videoResource={videoResource}
+										/>
 										<Button
 											variant="ghost"
 											type="button"
