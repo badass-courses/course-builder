@@ -33,11 +33,5 @@ function createRedisAdapter() {
  * A default Redis adapter that can be used directly
  */
 export function redisAdapter(): Adapter<boolean, any> {
-	let defaultRedisAdapter: ReturnType<typeof createRedisAdapter>
-
-	if (!defaultRedisAdapter) {
-		defaultRedisAdapter = createRedisAdapter()
-	}
-
-	return defaultRedisAdapter()
+	return createRedisAdapter()
 }
