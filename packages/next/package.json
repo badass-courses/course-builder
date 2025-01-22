@@ -39,7 +39,7 @@
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",
-		"next": "15.2.0-canary.6",
+		"next": "15.2.0-canary.19",
 		"next-auth": "5.0.0-beta.25",
 		"react": "19.0.0-rc-02c0e824-20241028"
 	},
