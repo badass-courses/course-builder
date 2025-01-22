@@ -69,8 +69,8 @@
 		"react": "19.1.0-canary-18eaf51b-20250118"
 	},
 	"peerDependencies": {
-		"next": "^15",
-		"react": "19.0.0-rc-02c0e824-20241028"
+		"next": "15.2.0-canary.19",
+		"react": "19.1.0-canary-18eaf51b-20250118"
 	},
 	"dependencies": {
 		"@auth/core": "0.37.2",
@@ -113,8 +113,8 @@
 	},
 	"pnpm": {
 		"overrides": {
-			"@types/react": "npm:types-react@19.0.0-rc.1",
-			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+			"@types/react": "19.0.7",
+			"@types/react-dom": "19.0.3"
 		}
 	}
 }
