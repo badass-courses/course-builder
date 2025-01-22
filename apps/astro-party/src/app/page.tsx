@@ -65,7 +65,6 @@ export default async function Home() {
 						{page?.fields?.body ? (
 							<MDXRemote
 								components={{
-									// @ts-expect-error
 									Image,
 								}}
 								source={page.fields.body}

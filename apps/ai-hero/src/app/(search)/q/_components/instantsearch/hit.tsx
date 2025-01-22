@@ -20,15 +20,19 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						{/* {hit.title} */}
 						<Highlight
 							attribute="title"
-							className="[&_mark]:bg-primary"
 							hit={hit as any}
+							classNames={{
+								highlighted: 'bg-primary text-muted-foreground',
+							}}
 						/>
 					</span>
 					{hit.summary && (
 						<Highlight
 							attribute="summary"
 							hit={hit as any}
-							className="[&_mark]:bg-primary text-muted-foreground"
+							classNames={{
+								highlighted: 'bg-primary text-muted-foreground',
+							}}
 						/>
 					)}
 					<Contributor className="mt-3 hidden text-sm md:flex [&_img]:w-7" />

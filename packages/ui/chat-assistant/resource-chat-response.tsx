@@ -135,7 +135,6 @@ export function ResourceChatResponse({
 					<ReactMarkdown
 						className="prose prose-sm dark:prose-invert"
 						components={{
-							// @ts-expect-error
 							pre: ({ children }) => <PreWithCopy children={children} />,
 						}}
 					>

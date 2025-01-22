@@ -81,19 +81,13 @@
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.12",
 		"prisma": "^5.6.0",
-		"react": "19.0.0-rc-02c0e824-20241028",
-		"react-dom": "19.0.0-rc-02c0e824-20241028",
+		"react": "19.0.0",
+		"react-dom": "19.0.0",
 		"superjson": "^2.2.1",
 		"tailwindcss": "^3.3.3",
 		"tsup": "8.0.2",
 		"type-fest": "^3.7.0",
 		"typescript": "5.4.5",
 		"zod": "^3.22.4"
-	},
-	"pnpm": {
-		"overrides": {
-			"@types/react": "npm:types-react@19.0.0-rc.1",
-			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
-		}
 	}
 }
