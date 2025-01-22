@@ -160,7 +160,6 @@
 		"openai-edge": "^1.2.2",
 		"partysocket": "1.0.1",
 		"pluralize": "^8.0.0",
-		"postcss": "8.4.47",
 		"prism-react-renderer": "^2.2.0",
 		"query-string": "^9.0.0",
 		"react": "19.0.0-rc-02c0e824-20241028",
