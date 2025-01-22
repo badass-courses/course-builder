@@ -334,9 +334,21 @@ export async function getPost(slugOrId: string) {
 		},
 	})
 
+	if (!post) {
+		console.debug('Post not found or not accessible', {
+			slugOrId,
+			visibility,
+			states,
+		})
+		return null
+	}
+
 	const postParsed = PostSchema.safeParse(post)
 	if (!postParsed.success) {
-		console.debug('Error parsing post', postParsed)
+		console.debug('Error parsing post schema', {
+			slugOrId,
+			error: postParsed.error,
+		})
 		return null
 	}
 
