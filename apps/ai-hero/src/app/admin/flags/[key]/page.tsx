@@ -1,3 +1,4 @@
+import { ParsedUrlQuery } from 'querystring'
 import { notFound } from 'next/navigation'
 import { flagInstances, FLAGS } from '@/flags'
 
@@ -9,14 +10,12 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 type PageProps = {
-	params: {
-		key: string
-	}
-	searchParams?: { [key: string]: string | string[] | undefined }
+	params: Promise<{ key: string }>
 }
 
 export default async function SingleFlagPage({ params }: PageProps) {
-	const key = params.key.replace('preview:', '')
+	const { key: paramKey } = await params
+	const key = paramKey.replace('preview:', '')
 	const flag = FLAGS[key as keyof typeof FLAGS]
 
 	if (!flag) {
