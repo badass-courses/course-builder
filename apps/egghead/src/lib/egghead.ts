@@ -282,10 +282,9 @@ export const eggheadLessonSchema = z.object({
 	state: z.string(),
 	instructor: z.object({
 		id: z.number(),
-		name: z.string(),
-		url: z.string().url(),
-		avatar_url: z.string().url(),
-		avatar_file_name: z.string(),
+		full_name: z.string().nullish(),
+		url: z.string().url().nullish(),
+		avatar_url: z.string().url().nullish(),
 	}),
 })
 
