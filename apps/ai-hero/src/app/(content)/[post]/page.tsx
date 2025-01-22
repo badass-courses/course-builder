@@ -308,6 +308,8 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 					className="mb-10 flex flex-col items-center justify-center border-b bg-black"
 				>
 					<PostPlayer
+						title={post.fields?.title}
+						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
 						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
 						videoResource={videoResource}

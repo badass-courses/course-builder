@@ -207,19 +207,33 @@ export default async function ListPage(props: {
 									Content
 								</h3>
 								<ol className="divide-border flex flex-col divide-y rounded border">
-									{list.resources.map(({ resource }, i) => (
-										<li key={resource.id}>
-											<Link
-												className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition sm:py-3"
-												href={`/${resource.fields.slug}`}
+									{list.resources.map(({ resource }, i) =>
+										resource?.fields?.slug ? (
+											<li key={resource.id}>
+												<Link
+													className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition sm:py-3"
+													href={`/${resource.fields.slug}`}
+												>
+													<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
+														{i + 1}
+													</small>
+													{resource.fields.title || 'Untitled'}
+												</Link>
+											</li>
+										) : (
+											<li
+												key={i}
+												className="text-muted-foreground px-2 py-2 sm:py-3"
 											>
 												<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
 													{i + 1}
 												</small>
-												{resource.fields.title}
-											</Link>
-										</li>
-									))}
+												<span className="ml-3">
+													Content not available ({JSON.stringify(resource)})
+												</span>
+											</li>
+										),
+									)}
 								</ol>
 							</>
 						)}

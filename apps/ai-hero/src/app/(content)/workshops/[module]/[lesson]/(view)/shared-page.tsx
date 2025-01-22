@@ -186,6 +186,7 @@ async function PlayerContainer({
 						abilityLoader={abilityLoader}
 						moduleSlug={params.module}
 						moduleType="workshop"
+						title={lesson.fields?.title}
 					/>
 				</Suspense>
 			</div>

@@ -37,11 +37,15 @@ export function PostPlayer({
 	className,
 	videoResource,
 	postId,
+	thumbnailTime,
+	title,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
 	postId: string
+	thumbnailTime?: number
+	title?: string
 }) {
 	// const ability = abilityLoader ? use(abilityLoader) : null
 	// const canView = ability?.canView
@@ -66,7 +70,7 @@ export function PostPlayer({
 	const playerProps = {
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: 0,
+		thumbnailTime: thumbnailTime || 0,
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
@@ -122,7 +126,7 @@ export function PostPlayer({
 				<MuxPlayer
 					metadata={{
 						video_id: videoResource?.id,
-						video_title: videoResource?.title,
+						video_title: title || videoResource?.id,
 					}}
 					playbackId={playbackId}
 					className={cn(className)}
@@ -177,16 +181,21 @@ export function SimplePostPlayer({
 	muxPlaybackId,
 	className,
 	videoResource,
+	handleVideoTimeUpdate,
+	thumbnailTime,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
+	handleVideoTimeUpdate?: (e: Event) => void
+	thumbnailTime?: number
 }) {
+	const ref = React.useRef<MuxPlayerRefAttributes>(null)
 	const playerProps = {
 		id: 'mux-player',
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: 0,
+		thumbnailTime: thumbnailTime,
 		accentColor: '#DD9637',
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
@@ -201,15 +210,21 @@ export function SimplePostPlayer({
 	return (
 		<>
 			{playbackId ? (
-				<MuxPlayer
-					metadata={{
-						video_id: videoResource?.id,
-						video_title: videoResource?.title,
-					}}
-					playbackId={playbackId}
-					className={cn(className)}
-					{...playerProps}
-				/>
+				<>
+					<MuxPlayer
+						ref={ref}
+						metadata={{
+							video_id: videoResource?.id,
+							video_title: videoResource?.title,
+						}}
+						onTimeUpdate={(e) => {
+							handleVideoTimeUpdate && handleVideoTimeUpdate(e)
+						}}
+						playbackId={playbackId}
+						className={cn(className)}
+						{...playerProps}
+					/>
+				</>
 			) : (
 				<div className="flex h-full w-full items-center justify-center bg-gray-300">
 					<Spinner />

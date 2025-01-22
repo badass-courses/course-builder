@@ -14,85 +14,181 @@ export async function upsertPostToTypeSense(
 	post: Post | List,
 	action: PostAction,
 ) {
-	let typesenseWriteClient = new Typesense.Client({
-		nodes: [
-			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-				port: 443,
-				protocol: 'https',
-			},
-		],
-		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-		connectionTimeoutSeconds: 2,
-	})
+	try {
+		console.log('🔄 Initializing TypeSense client for upsert:', {
+			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+			hasWriteKey: !!process.env.TYPESENSE_WRITE_API_KEY,
+			collection: process.env.TYPESENSE_COLLECTION_NAME,
+		})
 
-	const shouldIndex = true // filter them from search results later so admins can use same index // post.fields.state === 'published' && post.fields.visibility === 'public'
+		if (
+			!process.env.TYPESENSE_WRITE_API_KEY ||
+			!process.env.NEXT_PUBLIC_TYPESENSE_HOST
+		) {
+			console.error(
+				'⚠️ Missing TypeSense configuration, skipping index operation',
+			)
+			return
+		}
 
-	if (!shouldIndex) {
-		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents(String(post.id))
-			.delete()
-			.catch((err: any) => {
-				console.error(err)
-			})
-	} else {
-		const tags = await getPostTags(post.id)
+		let typesenseWriteClient = new Typesense.Client({
+			nodes: [
+				{
+					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+					port: 443,
+					protocol: 'https',
+				},
+			],
+			apiKey: process.env.TYPESENSE_WRITE_API_KEY,
+			connectionTimeoutSeconds: 2,
+		})
+
+		const shouldIndex = true
+
+		if (!shouldIndex) {
+			console.log(
+				'⚠️ Post not eligible for indexing, attempting deletion:',
+				post.id,
+			)
+			try {
+				await typesenseWriteClient
+					.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+					.documents(String(post.id))
+					.delete()
+				console.log('✅ Successfully deleted post from TypeSense:', post.id)
+			} catch (err: any) {
+				console.error('⚠️ Failed to delete post from TypeSense (non-fatal):', {
+					postId: post.id,
+					error: err.message || err,
+				})
+			}
+			return
+		}
+
+		console.log('🔍 Fetching tags for post:', post.id)
+		const tags = await getPostTags(post.id).catch((err) => {
+			console.error('⚠️ Failed to fetch tags (continuing without tags):', err)
+			return []
+		})
+		console.log('✅ Retrieved tags:', tags.length)
+
+		console.log('🔄 Validating resource schema')
 		const resource = TypesenseResourceSchema.safeParse({
 			id: post.id,
 			title: post.fields.title,
 			slug: post.fields.slug,
-			description: post.fields.body || post.fields.description,
-			type: post.type,
+			description: post.fields.body,
+			summary: post.fields.description,
+			type: 'type' in post.fields ? post.fields.type : post.type,
 			visibility: post.fields.visibility,
 			state: post.fields.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
-			...(tags && { tags: tags.map((tag) => tag) }),
+			...(tags.length > 0 && { tags: tags.map((tag) => tag) }),
 		})
 
 		if (!resource.success) {
-			console.error('Schema validation error:', resource.error)
+			console.error('⚠️ Schema validation failed (skipping index):', {
+				postId: post.id,
+				error: resource.error.format(),
+			})
 			return
 		}
 
-		console.log('resource', resource.data)
+		console.log('📝 Preparing document for upsert:', {
+			id: resource.data.id,
+			title: resource.data.title,
+			slug: resource.data.slug,
+			type: resource.data.type,
+			action,
+		})
 
-		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-			.documents()
-			.upsert({
-				...resource.data,
-				...(action === 'publish' && {
-					published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-				}),
-				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+		try {
+			await typesenseWriteClient
+				.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+				.documents()
+				.upsert({
+					...resource.data,
+					...(action === 'publish' && {
+						published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+					}),
+					updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+				})
+			console.log('✅ Successfully upserted document to TypeSense:', post.id)
+		} catch (err: any) {
+			console.error('⚠️ Failed to upsert document to TypeSense (non-fatal):', {
+				postId: post.id,
+				error: err.message || err,
+				action,
 			})
-			.catch((err: any) => {
-				console.error(err)
-			})
+		}
+	} catch (error: any) {
+		// Catch any unexpected errors but don't throw
+		console.error('⚠️ Unexpected error in TypeSense operation (non-fatal):', {
+			error: error.message || error,
+			stack: error.stack,
+			postId: post.id,
+		})
 	}
 }
 
 export async function deletePostInTypeSense(postId: string) {
-	let typesenseWriteClient = new Typesense.Client({
-		nodes: [
-			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-				port: 443,
-				protocol: 'https',
-			},
-		],
-		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-		connectionTimeoutSeconds: 2,
-	})
-
-	await typesenseWriteClient
-		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-		.documents(postId)
-		.delete()
-		.catch((err: any) => {
-			console.error(err)
+	try {
+		console.log('🔄 Initializing TypeSense client for deletion:', {
+			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+			hasWriteKey: !!process.env.TYPESENSE_WRITE_API_KEY,
+			collection: process.env.TYPESENSE_COLLECTION_NAME,
 		})
+
+		if (
+			!process.env.TYPESENSE_WRITE_API_KEY ||
+			!process.env.NEXT_PUBLIC_TYPESENSE_HOST
+		) {
+			console.error('⚠️ Missing TypeSense configuration, skipping deletion')
+			return
+		}
+
+		let typesenseWriteClient = new Typesense.Client({
+			nodes: [
+				{
+					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+					port: 443,
+					protocol: 'https',
+				},
+			],
+			apiKey: process.env.TYPESENSE_WRITE_API_KEY,
+			connectionTimeoutSeconds: 2,
+		})
+
+		try {
+			await typesenseWriteClient
+				.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+				.documents(postId)
+				.delete()
+			console.log('✅ Successfully deleted document from TypeSense:', postId)
+		} catch (err: any) {
+			// Check if error is "Document not found" - that's actually fine
+			if (err.message?.includes('Not Found') || err.httpStatus === 404) {
+				console.log(
+					'ℹ️ Document not found in TypeSense (already deleted):',
+					postId,
+				)
+				return
+			}
+			console.error('⚠️ Failed to delete document from TypeSense:', {
+				postId,
+				error: err.message || err,
+				httpStatus: err.httpStatus,
+			})
+			throw err
+		}
+	} catch (error: any) {
+		console.error('⚠️ Unexpected error in TypeSense deletion:', {
+			error: error.message || error,
+			stack: error.stack,
+			postId,
+		})
+		throw error
+	}
 }
 
 export async function indexAllContentToTypeSense(

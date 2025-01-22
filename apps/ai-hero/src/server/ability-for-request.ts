@@ -42,7 +42,11 @@ export async function getUserAbilityForRequest(request: NextRequest) {
 	const user = userParsed.data
 	const ability = getAbility({ user })
 
-	console.log({ user })
+	console.log('User authenticated:', {
+		id: user.id,
+		email: user.email,
+		roles: user.roles.map((r) => r.name),
+	})
 
 	return { user, ability }
 }

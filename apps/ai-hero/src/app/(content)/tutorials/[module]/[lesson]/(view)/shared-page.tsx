@@ -221,6 +221,7 @@ async function PlayerContainer({
 						playbackIdLoader={playbackIdLoader}
 						resource={lesson}
 						abilityLoader={abilityLoader}
+						title={lesson.fields?.title}
 					/>
 				</Suspense>
 			</div>

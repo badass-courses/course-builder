@@ -3,12 +3,15 @@
 import React from 'react'
 
 import FeedbackDialog from './feedback-dialog'
+import { SendFeedbackOptions } from './use-feedback-form'
 
 export type FeedbackContextType = {
 	isFeedbackDialogOpen: boolean
 	setIsFeedbackDialogOpen: (value: boolean, location?: string) => void
 	feedbackComponent: React.ReactElement | null
 	location: string
+	currentUrl?: string
+	sendFeedback: (options: SendFeedbackOptions) => Promise<void>
 }
 
 const defaultFeedbackContext: FeedbackContextType = {
@@ -16,6 +19,8 @@ const defaultFeedbackContext: FeedbackContextType = {
 	setIsFeedbackDialogOpen: () => {},
 	feedbackComponent: <></>,
 	location: '',
+	currentUrl: '',
+	sendFeedback: async () => {},
 }
 
 export function useFeedback() {
@@ -27,8 +32,15 @@ export const FeedbackContext = React.createContext(defaultFeedbackContext)
 export const FeedbackProvider: React.FC<
 	React.PropsWithChildren<{
 		feedbackComponent?: React.ReactElement
+		currentUrl?: string
+		sendFeedback: (options: SendFeedbackOptions) => Promise<void>
 	}>
-> = ({ children, feedbackComponent = <FeedbackDialog /> }) => {
+> = ({
+	children,
+	feedbackComponent = <FeedbackDialog />,
+	sendFeedback,
+	currentUrl,
+}) => {
 	const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] =
 		React.useState<boolean>(false)
 	const [location, setLocation] = React.useState<string>('navigation')
@@ -43,6 +55,8 @@ export const FeedbackProvider: React.FC<
 				},
 				feedbackComponent: isFeedbackDialogOpen ? feedbackComponent : null,
 				location,
+				currentUrl,
+				sendFeedback,
 			}}
 		>
 			{children}

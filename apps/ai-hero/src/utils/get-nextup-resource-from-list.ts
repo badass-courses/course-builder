@@ -10,9 +10,9 @@ export function getNextUpResourceFromList(
 		(r) => r.resource.id === currentResourceId,
 	)
 
-	if (!currentResourceIndexFromList) return null
-
-	const nextUpIndex = currentResourceIndexFromList + 1
+	const nextUpIndex = currentResourceIndexFromList
+		? currentResourceIndexFromList + 1
+		: 1
 	const nextUpResource = list?.resources?.[nextUpIndex]
 
 	return nextUpResource || null

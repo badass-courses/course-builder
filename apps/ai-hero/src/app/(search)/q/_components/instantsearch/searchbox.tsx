@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { cn } from '@/utils/cn'
+import { Search } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 import type { SearchBoxProps } from 'react-instantsearch'
 import { useSearchBox } from 'react-instantsearch'
@@ -17,12 +18,15 @@ export const SearchBox = (
 	const [queryParam] = useQueryState('q')
 
 	return (
-		<Input
-			className={cn('bg-background my-4 text-base', props.className)}
-			onChange={(event) => refine(event.currentTarget.value)}
-			defaultValue={queryParam || ''}
-			placeholder="Search..."
-			{...rest}
-		/>
+		<div className="relative flex w-full items-center">
+			<Input
+				className={cn('bg-background my-4 pl-8 text-base', props.className)}
+				onChange={(event) => refine(event.currentTarget.value)}
+				defaultValue={queryParam || ''}
+				placeholder="Search..."
+				{...rest}
+			/>
+			<Search className="text-muted-foreground absolute left-3 w-4" />
+		</div>
 	)
 }

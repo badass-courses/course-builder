@@ -1,0 +1,22 @@
+We are using Next.js 15+, which means server components (RSC) and server actions.
+
+This is a turborepo monorepo.
+
+- `/packages/*` contains our libraries. we use tsup regularly.
+- `/apps/*` contains the apps we are building, mostly in nextjs but also astro
+
+@coursebuilder/ui is our shadcn/ui style library of components
+
+always:
+
+- check in sensibly instead of running in circles
+- work in steps, think through them
+- evaluate the full context of the work to understand what exists
+- use the logger and think about observability
+
+you should:
+
+- always check the plan, if there isn't a plan ask for one
+- run tests in the package/app not the root
+- ask questions
+- don't over engineer everything, we can be pragmatic

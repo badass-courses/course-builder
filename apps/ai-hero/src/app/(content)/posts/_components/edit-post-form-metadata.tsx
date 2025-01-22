@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Suspense, use } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { SimplePostPlayer } from '@/app/(content)/posts/_components/post-player'
@@ -11,6 +12,7 @@ import { Post, PostSchema } from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
+import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import { Pencil } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -25,6 +27,10 @@ import {
 	FormMessage,
 	Input,
 	Textarea,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
@@ -140,6 +146,8 @@ export const PostMetadataFormFields: React.FC<{
 		)
 		.parse(post.tags)
 
+	const [thumbnailTime, setThumbnailTime] = React.useState(0)
+
 	return (
 		<>
 			<div>
@@ -181,7 +189,20 @@ export const PostMetadataFormFields: React.FC<{
 									<>
 										{videoResource && videoResource.state === 'ready' ? (
 											<div className="-mt-5 border-b">
-												<SimplePostPlayer videoResource={videoResource} />
+												<SimplePostPlayer
+													thumbnailTime={
+														form.watch('fields.thumbnailTime') || 0
+													}
+													handleVideoTimeUpdate={(e) => {
+														const currentTime = (e.target as HTMLMediaElement)
+															.currentTime
+														if (currentTime) {
+															setThumbnailTime(currentTime)
+														}
+													}}
+													videoResource={videoResource}
+												/>
+
 												<div className="flex items-center gap-1 px-4 pb-2">
 													<Button
 														variant="secondary"
@@ -191,6 +212,37 @@ export const PostMetadataFormFields: React.FC<{
 													>
 														Replace Video
 													</Button>
+													<TooltipProvider>
+														<Tooltip delayDuration={0}>
+															<TooltipTrigger asChild>
+																<Button
+																	disabled={thumbnailTime === 0}
+																	onClick={() => {
+																		form.setValue(
+																			'fields.thumbnailTime',
+																			thumbnailTime,
+																		)
+																	}}
+																	variant="secondary"
+																	size={'sm'}
+																>
+																	<span>Set Thumbnail</span>
+																</Button>
+															</TooltipTrigger>
+															<TooltipContent side="bottom">
+																<div className="text-xs">
+																	current thumbnail:
+																	<Image
+																		src={`https://image.mux.com/${videoResource.muxPlaybackId}/thumbnail.webp?time=${form.watch('fields.thumbnailTime')}`}
+																		className="aspect-video"
+																		width={192}
+																		height={108}
+																		alt="Thumbnail"
+																	/>
+																</div>
+															</TooltipContent>
+														</Tooltip>
+													</TooltipProvider>
 													{transcript ? (
 														TranscriptDialog
 													) : (
