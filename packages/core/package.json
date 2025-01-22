@@ -160,15 +160,9 @@
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "npm:types-react@19.0.0-rc.1",
-		"react": "19.0.0-rc-02c0e824-20241028",
+		"@types/react": "19.0.7",
+		"react": "19.0.0",
 		"tsup": "8.0.2",
 		"zod": "^3.22.4"
-	},
-	"pnpm": {
-		"overrides": {
-			"@types/react": "npm:types-react@19.0.0-rc.1",
-			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
-		}
 	}
 }

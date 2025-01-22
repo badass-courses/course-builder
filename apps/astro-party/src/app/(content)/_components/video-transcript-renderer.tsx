@@ -21,7 +21,6 @@ export function Transcript({
 			components={{
 				p: ({ children }) =>
 					paragraphWithTimestampButtons({
-						// @ts-expect-error
 						children,
 						canShowVideo,
 						muxPlayerRef,

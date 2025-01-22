@@ -12,7 +12,7 @@ type PurchaseSummaryContextType = {
 	email: string
 	product: Product
 	title: string
-	description?: JSX.Element | null
+	description?: React.JSX.Element | null
 }
 
 type RootProps = PurchaseSummaryContextType & {

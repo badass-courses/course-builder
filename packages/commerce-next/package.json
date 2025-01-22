@@ -60,17 +60,17 @@
 	},
 	"devDependencies": {
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "npm:types-react@19.0.0-rc.1",
-		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+		"@types/react": "19.0.7",
+		"@types/react-dom": "19.0.3",
 		"@types/uuid": "9.0.8",
 		"bunchee": "^5.1.2",
 		"esbuild-react18-useclient": "^1.0.7",
 		"next": "15.2.0-canary.19",
-		"react": "19.0.0-rc-02c0e824-20241028"
+		"react": "19.0.0"
 	},
 	"peerDependencies": {
 		"next": "^15",
-		"react": "19.0.0-rc-02c0e824-20241028"
+		"react": "19.0.0"
 	},
 	"dependencies": {
 		"@auth/core": "0.37.2",
@@ -101,7 +101,7 @@
 		"react-countdown": "^2.3.5",
 		"react-hook-form": "^7.48.0",
 		"react-hot-toast": "^2.4.1",
-		"react-markdown": "^9.0.0",
+		"react-markdown": "9.0.3",
 		"react-use": "^17.5.0",
 		"react-wrap-balancer": "^0.2.4",
 		"tailwind-merge": "^1.14.0",
@@ -110,11 +110,5 @@
 		"xstate": "^5.13.0",
 		"yup": "^0.32.11",
 		"zod": "^3.22.4"
-	},
-	"pnpm": {
-		"overrides": {
-			"@types/react": "npm:types-react@19.0.0-rc.1",
-			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
-		}
 	}
 }
