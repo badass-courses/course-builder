@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import Link from 'next/link'
 import { PricingWidgetServer } from '@/app/_components/pricing-widget-server'
 import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
 import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
@@ -7,11 +8,14 @@ import LandingCopy from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
+import { getList } from '@/lib/lists-query'
 import { getPage } from '@/lib/pages-query'
 import MuxPlayer from '@mux/mux-player-react'
+import { ChevronRight } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+import { Badge } from '@coursebuilder/ui'
 
 import {
 	BlueSection,
@@ -72,8 +76,19 @@ const Home = async (props: Props) => {
 
 	return (
 		<div className="">
-			<main className="w-full pt-5 sm:pt-16">
-				<article className="prose prose-h1:text-center sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
+			<main className="flex w-full flex-col justify-center pt-10 sm:pt-16">
+				<Link
+					className="mx-auto mb-5 flex items-center justify-center"
+					href="/vercel-ai-sdk-tutorial"
+				>
+					<Badge className="mx-auto flex items-center gap-1 overflow-hidden rounded-full p-0">
+						<span className="bg-background/10 flex px-2 py-1">Out Now</span>
+						<span className="flex items-center gap-1 px-2 pr-3">
+							Free Vercel AI SDK Tutorial <ChevronRight className="w-3" />
+						</span>
+					</Badge>
+				</Link>
+				<article className="prose prose-h1:text-center sm:prose-h1:fluid-4xl prose-h1:fluid-2xl sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
@@ -94,21 +109,18 @@ const Home = async (props: Props) => {
 					)}
 				</article>
 				{isCommerceEnabled && (
-					<section id="buy" className="mt-10 sm:mt-24">
-						<div className="mx-auto grid max-w-[1400px] grid-cols-1 items-stretch gap-8 border-y px-5 py-16 md:grid-cols-2 md:gap-16">
-							<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
-								<div className="flex flex-1 flex-col justify-end">
-									<PricingWidgetServer
-										productId="ai-hero-pro-membership-7564c"
-										searchParams={await props.searchParams}
-									/>
-								</div>
-							</div>
-							<div className="bg-background flex flex-col rounded-xl border p-8 shadow-sm">
-								<div className="flex flex-1 flex-col justify-end">
-									<TeamPricingWidget />
-								</div>
-							</div>
+					<section
+						id="buy"
+						className="container mx-auto flex w-full flex-wrap justify-center gap-16 rounded py-16 sm:border"
+					>
+						<div className="w-full max-w-sm">
+							<PricingWidgetServer
+								productId="ai-hero-pro-membership-7564c"
+								searchParams={await props.searchParams}
+							/>
+						</div>
+						<div className="w-full max-w-sm">
+							<TeamPricingWidget />
 						</div>
 					</section>
 				)}

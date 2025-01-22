@@ -44,12 +44,15 @@ export const PricingWidget: React.FC<{
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
 		>
-			<Pricing.Product>
-				<Pricing.ProductImage />
-				<Pricing.Details>
+			<Pricing.Product className="w-full">
+				{/* <Pricing.ProductImage /> */}
+				<Pricing.Details className="pt-0">
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
-					<Pricing.Price />
+					<div className="flex items-center gap-1">
+						<Pricing.Price />
+						<span className="text-xl opacity-80">/ year</span>
+					</div>
 					{pricingWidgetOptions?.allowTeamPurchase && (
 						<>
 							<Pricing.TeamToggle />

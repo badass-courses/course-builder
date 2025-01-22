@@ -26,7 +26,7 @@ export default function PostNextUpFromListPagination({
 		(lesson) => lesson.resourceId === postId,
 	)
 	const { data: session } = useSession()
-
+	console.log({ nextUp })
 	if (!list) return null
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
