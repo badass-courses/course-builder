@@ -123,12 +123,14 @@ export async function GET(request: Request) {
 						width: 1200,
 						height: 630,
 						backgroundImage:
-							resource && resource.type === 'post' ? `url(${image})` : '',
+							resource && resource.type === 'post' && image
+								? `url(${image})`
+								: '',
 						backgroundSize: 'contain',
 						backgroundPosition: 'center',
 					}}
 				>
-					{resource && resource.type !== 'post' ? (
+					{(resource && resource.type !== 'post') || !image ? (
 						<>
 							<img
 								src={squareGridPattern}
