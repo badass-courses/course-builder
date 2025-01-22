@@ -12,7 +12,6 @@ import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import { InfiniteHits } from './infinite-hits'
 import ClearRefinements from './instantsearch/clear-refinements'
-import { HitsPerPageSelect } from './instantsearch/hits-per-page-select'
 import { RefinementList } from './instantsearch/refinement-list'
 import { SearchBox } from './instantsearch/searchbox'
 
@@ -31,7 +30,15 @@ const hitsPerPageItems = [
 const ErrorFallback = ({ error }: FallbackProps) => (
 	<div className="rounded-lg border border-red-200 bg-red-50 p-4">
 		<h3 className="font-semibold text-red-800">Search Error</h3>
-		<p className="text-red-600">{error.message}</p>
+		<p className="text-red-600">
+			{error.message || 'An error occurred while loading search'}
+		</p>
+		<button
+			onClick={() => window.location.reload()}
+			className="mt-2 rounded bg-red-100 px-4 py-2 text-red-800 hover:bg-red-200"
+		>
+			Try Again
+		</button>
 	</div>
 )
 
@@ -58,6 +65,32 @@ function Search() {
 	const [instructor, setInstructor] = useQueryState('instructor')
 	const [query, setQuery] = useQueryState('q')
 	const [tagsValue, setTagsValue] = useQueryState('tags')
+	const [isReady, setIsReady] = React.useState(false)
+
+	React.useEffect(() => {
+		// Ensure all query params are initialized
+		if (type !== undefined && query !== undefined && tagsValue !== undefined) {
+			setIsReady(true)
+		}
+	}, [type, query, tagsValue])
+
+	if (!isReady) {
+		return <div>Initializing search...</div>
+	}
+
+	const initialUiState = {
+		[TYPESENSE_COLLECTION_NAME]: {
+			query: query || '',
+			refinementList: {
+				...(typeof type === 'string' && {
+					type: type.split(','),
+				}),
+				...(typeof tagsValue === 'string' && {
+					'tags.fields.label': tagsValue.split(','),
+				}),
+			},
+		},
+	}
 
 	return (
 		<InstantSearchNext
@@ -65,47 +98,32 @@ function Search() {
 			indexName={TYPESENSE_COLLECTION_NAME}
 			routing={false}
 			onStateChange={({ uiState, setUiState }) => {
-				function handleRefinementListChange(
-					attribute: string,
-					setState: (value: any) => void,
-				) {
-					const refinementList =
-						uiState[TYPESENSE_COLLECTION_NAME]?.refinementList?.[attribute]
-					if (refinementList && refinementList.length > 0) {
-						setState(refinementList)
-					} else {
-						setState(null)
+				try {
+					function handleRefinementListChange(
+						attribute: string,
+						setState: (value: any) => void,
+					) {
+						const refinementList =
+							uiState[TYPESENSE_COLLECTION_NAME]?.refinementList?.[attribute]
+						if (refinementList && refinementList.length > 0) {
+							setState(refinementList)
+						} else {
+							setState(null)
+						}
 					}
+
+					const searchQuery = uiState[TYPESENSE_COLLECTION_NAME]?.query
+					setQuery(searchQuery || null)
+
+					handleRefinementListChange('type', setType)
+					handleRefinementListChange('tags.fields.label', setTagsValue)
+
+					setUiState(uiState)
+				} catch (error) {
+					console.error('Search state update error:', error)
 				}
-
-				const query = uiState[TYPESENSE_COLLECTION_NAME]?.query
-				setQuery(query || null)
-
-				handleRefinementListChange('type', setType)
-				handleRefinementListChange('tags.fields.label', setTagsValue)
-				// handleRefinementListChange('instructor_name', setInstructor)
-
-				// IMPORTANT: always call setUiState to sync the state
-				setUiState(uiState)
 			}}
-			initialUiState={
-				{
-					[TYPESENSE_COLLECTION_NAME]: {
-						query,
-						refinementList: {
-							...(typeof type === 'string' && {
-								type: type.split(','),
-							}),
-							...(typeof tagsValue === 'string' && {
-								'tags.fields.label': tagsValue.split(','),
-							}),
-							// ...(typeof instructor === 'string' && {
-							// 	instructor_name: instructor.split(','),
-							// }),
-						},
-					},
-				} as any
-			}
+			initialUiState={initialUiState}
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
 			<Configure filters={'state:published'} hitsPerPage={40} />

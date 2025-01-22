@@ -498,11 +498,11 @@ importers:
         specifier: ^4.11.0
         version: 4.12.0(react@19.0.0)
       react-instantsearch:
-        specifier: 7.15.1
+        specifier: ^7.13.9
         version: 7.15.1(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-nextjs:
-        specifier: 0.4.2
-        version: 0.4.2(next@15.2.0-canary.19)(react-instantsearch@7.15.1)
+        specifier: ^0.3.20
+        version: 0.3.21(next@15.2.0-canary.19)(react-instantsearch@7.15.1)
       react-markdown:
         specifier: 9.0.3
         version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
@@ -2137,11 +2137,11 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1(csstype@3.1.3)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch:
-        specifier: 7.15.1
+        specifier: ^7.13.9
         version: 7.15.1(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-nextjs:
-        specifier: 0.4.2
-        version: 0.4.2(next@15.2.0-canary.19)(react-instantsearch@7.15.1)
+        specifier: ^0.3.20
+        version: 0.3.21(next@15.2.0-canary.19)(react-instantsearch@7.15.1)
       react-instantsearch-router-nextjs:
         specifier: ^7.13.9
         version: 7.13.9(algoliasearch@5.19.0)(next@15.2.0-canary.19)(react@19.0.0)
@@ -2973,11 +2973,11 @@ importers:
         specifier: ^4.11.0
         version: 4.12.0(react@19.0.0)
       react-instantsearch:
-        specifier: 7.15.1
+        specifier: ^7.13.9
         version: 7.15.1(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-nextjs:
-        specifier: 0.4.2
-        version: 0.4.2(next@15.2.0-canary.19)(react-instantsearch@7.15.1)
+        specifier: ^0.3.20
+        version: 0.3.21(next@15.2.0-canary.19)(react-instantsearch@7.15.1)
       react-markdown:
         specifier: 9.0.3
         version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
@@ -29146,10 +29146,10 @@ packages:
       use-sync-external-store: 1.4.0(react@19.0.0)
     dev: false
 
-  /react-instantsearch-nextjs@0.4.2(next@15.2.0-canary.19)(react-instantsearch@7.15.1):
-    resolution: {integrity: sha512-J9olFtioBDoODWcT9m+H+2KLN0LaZRQBo/k3vK6JBkwXXawX07P0gMsU8MMSYIJwxQwHCUvgkdajOMmf8JkSVg==}
+  /react-instantsearch-nextjs@0.3.21(next@15.2.0-canary.19)(react-instantsearch@7.15.1):
+    resolution: {integrity: sha512-GDhi7jabacahXjqkkwQN0Lq3FaW3pwIMz6ac5GeOqJkqqfEFAluUuNHgkjGOT+MVPnVmpnbQyRgOxUSL8SXYVQ==}
     peerDependencies:
-      next: '>= 13.4 < 16'
+      next: '>= 13.4 < 15'
       react-instantsearch: '>= 7.1.0 < 8'
     dependencies:
       next: 15.2.0-canary.19(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
