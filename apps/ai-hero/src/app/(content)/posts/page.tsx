@@ -6,7 +6,7 @@ import Search from '@/app/(search)/q/_components/search'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
-import { getAllLists } from '@/lib/lists-query'
+import { getAllLists, getList } from '@/lib/lists-query'
 import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -42,27 +42,54 @@ export const metadata: Metadata = {
 }
 
 export default async function PostsIndexPage() {
-	// const [hideRecommendedPosts, setHideRecommendedPosts] = React.useState(false)
-	const lists = await getAllLists()
-	const tutorials = lists.filter((list) => {
-		return list.fields.type === 'tutorial'
-	})
+	const latestTutorial = await getList('vercel-ai-sdk-tutorial')
 
-	const latestTutorial = tutorials[0]
+	const featured = [
+		{
+			fields: {
+				title: "Build an Alt Text Generator With Vercel's AI SDK",
+				slug: 'describe-images-with-vercel-ai-sdk',
+				description:
+					"Learn how to use Vercel's AI SDK to generate alt text for images using both local files and URLs with a simple guide.",
+			},
+		},
+		{
+			fields: {
+				title: "Build Your First Agent With Vercel's AI SDK",
+				slug: 'agents-with-vercel-ai-sdk',
+				description:
+					"Let's build an AI agent. Learn how LLM's can respond to the results of tool calls with Vercel's AI SDK.",
+			},
+		},
+		{
+			fields: {
+				title: 'Evalite - an Early Preview',
+				slug: 'evalite-an-early-preview',
+				description:
+					'An early preview of Evalite, a local-first, TypeScript-native tool for testing LLM-powered apps, based on Vitest.',
+			},
+		},
+	]
 
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
 			<div className="mx-auto flex w-full flex-col">
 				{/* <h1 className="fluid-2xl my-3 w-full font-bold sm:sr-only">Posts</h1> */}
-				<div className="relative flex w-full">
-					<PostTeaser
-						post={latestTutorial}
-						className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full border-x md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
-					/>
-					<div
-						className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
-						aria-hidden="true"
-					/>
+				<div className="flex flex-col lg:flex-row">
+					<div className="relative flex w-full">
+						<PostTeaser
+							post={latestTutorial}
+							className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full border-x  [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+						/>
+						<div
+							className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
+							aria-hidden="true"
+						/>
+					</div>
+					<div className="flex flex-col border-l lg:border-l-0 lg:border-r">
+						<PostTeaser post={featured[0] as unknown as List} />
+						<PostTeaser post={featured[1] as unknown as List} />
+					</div>
 				</div>
 				<Search />
 
@@ -94,7 +121,9 @@ export default async function PostsIndexPage() {
 					</ul>
 				</div> */}
 			</div>
-			<PostListActions />
+			<React.Suspense fallback={null}>
+				<PostListActions />
+			</React.Suspense>
 		</main>
 	)
 }
@@ -123,10 +152,12 @@ const PostTeaser: React.FC<{
 				>
 					<div className="">
 						<CardHeader className="p-0">
-							<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
-								<Book className="w-3" /> Free Tutorial
-								{/* {createdAt && format(new Date(createdAt), 'MMMM do, y')} */}
-							</p>
+							{post.type === 'list' && (
+								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
+									<Book className="w-3" /> Free Tutorial
+									{/* {createdAt && format(new Date(createdAt), 'MMMM do, y')} */}
+								</p>
+							)}
 							<CardTitle
 								data-title=""
 								className="fluid-xl font-semibold leading-tight"
@@ -136,7 +167,7 @@ const PostTeaser: React.FC<{
 						</CardHeader>
 						{description && (
 							<CardContent className="p-0">
-								<p className="text-balance pt-4 text-sm opacity-75">
+								<p className="text-balance pt-4 text-sm opacity-75 sm:text-base">
 									{description}
 								</p>
 							</CardContent>
@@ -204,14 +235,14 @@ async function PostListActions({}: {}) {
 	)
 
 	return (
-		<aside className="divide-border w-full gap-3 divide-y border-x border-b md:border-b-0 lg:max-w-xs lg:border-l-0 lg:border-r">
+		<aside className="divide-border bg-background bottom-5 right-5 my-5 w-full gap-3 divide-y border  lg:fixed lg:my-0 lg:w-64">
 			<div className="p-5 py-3">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
 				</p>
 
 				{drafts && drafts?.length > 0 ? (
-					<p className="opacity-75">
+					<p className="text-sm opacity-75">
 						You have <strong className="font-semibold">{drafts?.length}</strong>{' '}
 						unpublished{' '}
 						{drafts?.length ? pluralize('post', drafts.length) : 'post'}.
