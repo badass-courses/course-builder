@@ -1,26 +1,24 @@
 import React from 'react'
-import { usePathname } from 'next/navigation'
 
-import { type FeedbackFormValues } from './feedback-schema'
+import {
+	type FeedbackContext,
+	type FeedbackFormValues,
+} from './feedback-schema'
 
 export type SendFeedbackOptions = {
 	feedbackText: string
-	context?: {
-		category: string
-		emotion: string
-		url: string
-		location: string
-	}
+	context?: FeedbackContext
 }
 
 export const useFeedbackForm = ({
 	location,
 	sendFeedback,
+	currentUrl,
 }: {
 	location: string
 	sendFeedback: (options: SendFeedbackOptions) => Promise<void>
+	currentUrl?: string
 }) => {
-	const pathname = usePathname()
 	const [isSubmitted, setIsSubmitted] = React.useState(false)
 	const [error, setError] = React.useState<string>()
 
@@ -45,7 +43,7 @@ export const useFeedbackForm = ({
 		context: {
 			category: 'general',
 			emotion: ':wave:',
-			url: `${process.env.NEXT_PUBLIC_URL}${pathname}`,
+			url: currentUrl,
 			location,
 		},
 	}

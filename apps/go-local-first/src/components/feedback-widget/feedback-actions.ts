@@ -24,7 +24,7 @@ export async function sendFeedbackFromUser({
 	emailAddress,
 	feedbackText,
 	context,
-}: SendFeedbackFromUserOptions) {
+}: SendFeedbackFromUserOptions): Promise<void> {
 	try {
 		const { session } = await getServerAuthSession()
 		const user = (await db.query.users.findFirst({
@@ -32,9 +32,7 @@ export async function sendFeedbackFromUser({
 		})) || { email: emailAddress, id: null, name: null }
 
 		if (!user.email) {
-			return {
-				error: 'Error: Not Authorized',
-			}
+			throw new Error('Not Authorized')
 		}
 
 		await sendAnEmail({
@@ -52,13 +50,7 @@ export async function sendFeedbackFromUser({
 			ReplyTo: user.email,
 			type: 'transactional',
 		})
-
-		return {
-			success: true,
-		}
 	} catch (error: any) {
-		return {
-			error: `Error: ${error.message}`,
-		}
+		throw new Error(`Error: ${error.message}`)
 	}
 }

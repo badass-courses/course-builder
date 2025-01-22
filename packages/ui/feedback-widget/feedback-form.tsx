@@ -15,8 +15,9 @@ export const FeedbackForm: React.FC<{
 	location: string
 	sendFeedback: (options: SendFeedbackOptions) => Promise<void>
 }> = ({ location, sendFeedback }) => {
+	const { currentUrl } = useFeedback()
 	const { initialValues, submitFeedbackForm, isSubmitted, error } =
-		useFeedbackForm({ location, sendFeedback })
+		useFeedbackForm({ location, sendFeedback, currentUrl })
 	const form = useForm<FeedbackFormValues>({
 		resolver: zodResolver(feedbackFormSchema),
 		defaultValues: initialValues,
