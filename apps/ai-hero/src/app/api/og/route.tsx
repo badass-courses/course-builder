@@ -4,9 +4,11 @@
 
 import { ImageResponse } from 'next/og'
 import { db } from '@/db'
-import { contentResource, products } from '@/db/schema'
+import { contentResource, contentResourceResource, products } from '@/db/schema'
+import { getVideoResourceForLesson } from '@/lib/lessons-query'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
-import { and, eq, or, sql } from 'drizzle-orm'
+import { PlayIcon } from '@heroicons/react/24/solid'
+import { and, asc, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 export const revalidate = 60
@@ -15,14 +17,30 @@ export const revalidate = 60
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
-		const resourceTypesWithImages = ['workshop', 'tutorial', 'self-paced']
+		const resourceTypesWithImages = [
+			'post',
+			'list',
+			'workshop',
+			'tutorial',
+			'self-paced',
+		]
 		const hasResource = searchParams.has('resource')
 		const resourceSlugOrID = hasResource ? searchParams.get('resource') : null
 		const hasTitle = searchParams.has('title')
+		const hasImage = searchParams.has('image')
 		let title
-		let image
+		let image = hasImage ? searchParams.get('image') : null
+		let muxPlaybackId
+		let resource
+
 		if (resourceSlugOrID && !hasTitle) {
-			let resource = await db.query.contentResource.findFirst({
+			resource = await db.query.contentResource.findFirst({
+				extras: {
+					fields:
+						sql<string>`JSON_REMOVE(${contentResource.fields}, '$.body')`.as(
+							'fields',
+						),
+				},
 				where: and(
 					or(
 						eq(
@@ -32,7 +50,25 @@ export async function GET(request: Request) {
 						eq(contentResource.id, resourceSlugOrID),
 					),
 				),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								extras: {
+									fields:
+										sql<string>`JSON_REMOVE(${contentResource.fields}, '$.srt', '$.wordLevelSrt', '$.transcript', '$.muxAssetId', '$.originalMediaUrl')`.as(
+											'fields',
+										),
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
 			})
+
+			muxPlaybackId = resource?.resources?.[0]?.resource?.fields?.muxPlaybackId
+
 			let product
 			if (!resource) {
 				product = await db.query.products.findFirst({
@@ -51,13 +87,18 @@ export async function GET(request: Request) {
 			title = resource?.fields?.title || product?.name
 
 			if (resource && resourceTypesWithImages.includes(resource.type)) {
-				image = resource?.fields?.coverImage?.url || product?.fields?.image?.url
+				image =
+					resource?.fields?.coverImage?.url ||
+					resource.fields?.image ||
+					product?.fields?.image?.url ||
+					(muxPlaybackId &&
+						`https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${resource?.fields.thumbnailTime || 0}&width=1200`)
 			}
 		} else {
 			if (hasTitle) {
 				title = searchParams.get('title')?.slice(0, 100)
 			} else {
-				title = 'The No-BS Solution for Enterprise-Ready Next.js Applications'
+				title = 'From Zero to AI Hero'
 			}
 		}
 
@@ -81,22 +122,30 @@ export async function GET(request: Request) {
 						background: '#0D0D0D',
 						width: 1200,
 						height: 630,
+						backgroundImage:
+							resource && resource.type === 'post' ? `url(${image})` : '',
+						backgroundSize: 'contain',
+						backgroundPosition: 'center',
 					}}
 				>
-					<img
-						src={squareGridPattern}
-						style={{
-							position: 'absolute',
-							width: 1200,
-							height: 800,
-							// objectFit: 'cover',
-							zIndex: 0,
-							transform:
-								'skewY(10deg) skewX(-20deg) translateX(20%) translateY(-15%)',
-							perspective: '1000px',
-							transformStyle: 'preserve-3d',
-						}}
-					/>
+					{resource && resource.type !== 'post' ? (
+						<>
+							<img
+								src={squareGridPattern}
+								style={{
+									position: 'absolute',
+									width: 1200,
+									height: 800,
+									// objectFit: 'cover',
+									zIndex: 0,
+									transform:
+										'skewY(10deg) skewX(-20deg) translateX(20%) translateY(-15%)',
+									perspective: '1000px',
+									transformStyle: 'preserve-3d',
+								}}
+							/>
+						</>
+					) : null}
 					<div
 						style={{
 							position: 'absolute',
@@ -108,6 +157,23 @@ export async function GET(request: Request) {
 							zIndex: 1,
 						}}
 					/>
+					{resource && resource.type === 'post' && image && (
+						<div tw="absolute right-40 top-28 z-10 flex">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width={72}
+								height={72}
+								viewBox="0 0 12 12"
+							>
+								<g fill="#fff">
+									<path
+										d="M11.741,5.562l-10-5.5a.5.5,0,0,0-.5.008A.5.5,0,0,0,1,.5v11a.5.5,0,0,0,.246.43A.491.491,0,0,0,1.5,12a.5.5,0,0,0,.241-.062l10-5.5a.5.5,0,0,0,0-.876Z"
+										fill="#fff"
+									/>
+								</g>
+							</svg>
+						</div>
+					)}
 					<div tw="flex items-center justify-center absolute left-26 top-26">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -148,12 +214,31 @@ export async function GET(request: Request) {
 						</svg>
 					</div>
 					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
-						<div tw="text-[62px] text-[#EAEAEA] leading-tight pr-24">
+						<div
+							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[62px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-24`}
+						>
 							{title}
 						</div>
-						{image && (
-							<div tw="flex -mb-10 -mr-5">
-								<img src={image} width={450} height={450} />
+						{image && resource && resource?.type !== 'post' && (
+							<div tw={`flex items-start -mr-32 justify-start h-full`}>
+								<div tw="relative flex items-center justify-center">
+									<img src={image} width={700} />
+									<div tw="absolute z-10 flex">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width={80}
+											height={80}
+											viewBox="0 0 12 12"
+										>
+											<g fill="#fff">
+												<path
+													d="M11.741,5.562l-10-5.5a.5.5,0,0,0-.5.008A.5.5,0,0,0,1,.5v11a.5.5,0,0,0,.246.43A.491.491,0,0,0,1.5,12a.5.5,0,0,0,.241-.062l10-5.5a.5.5,0,0,0,0-.876Z"
+													fill="#fff"
+												/>
+											</g>
+										</svg>
+									</div>
+								</div>
 							</div>
 						)}
 					</main>
@@ -167,6 +252,7 @@ export async function GET(request: Request) {
 						style: 'normal',
 					},
 				],
+				debug: false,
 			},
 		)
 	} catch (e: any) {
