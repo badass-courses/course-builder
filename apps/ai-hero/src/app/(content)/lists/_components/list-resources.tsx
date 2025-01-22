@@ -30,7 +30,9 @@ export default function ListResources({ list }: { list: List }) {
 										<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
 											{i + 1}
 										</small>
-										{isComplete && <Check className="w-4" />}
+										{isComplete && (
+											<Check className="text-muted-foreground w-4 flex-shrink-0" />
+										)}
 										{resource.fields.title}
 									</Link>
 								</li>

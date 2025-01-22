@@ -48,7 +48,7 @@ export default async function PostsIndexPage() {
 		{
 			fields: {
 				title: "Build an Alt Text Generator With Vercel's AI SDK",
-				slug: 'describe-images-with-vercel-ai-sdk',
+				slug: 'describe-images-with-vercel-ai-sdk?list=vercel-ai-sdk-tutorial',
 				description:
 					"Learn how to use Vercel's AI SDK to generate alt text for images using both local files and URLs with a simple guide.",
 			},
@@ -56,7 +56,7 @@ export default async function PostsIndexPage() {
 		{
 			fields: {
 				title: "Build Your First Agent With Vercel's AI SDK",
-				slug: 'agents-with-vercel-ai-sdk',
+				slug: 'agents-with-vercel-ai-sdk?list=vercel-ai-sdk-tutorial',
 				description:
 					"Let's build an AI agent. Learn how LLM's can respond to the results of tool calls with Vercel's AI SDK.",
 			},
