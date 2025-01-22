@@ -47,18 +47,18 @@ export default async function PostsIndexPage() {
 	const featured = [
 		{
 			fields: {
-				title: "Build an Alt Text Generator With Vercel's AI SDK",
-				slug: 'describe-images-with-vercel-ai-sdk?list=vercel-ai-sdk-tutorial',
+				title: "Here's 2024's best resource on prompt engineering",
+				slug: 'the-prompt-report',
 				description:
-					"Learn how to use Vercel's AI SDK to generate alt text for images using both local files and URLs with a simple guide.",
+					"The Prompt Report is an extraordinary piece of work. It's a meta-analysis of the entire literature of prompt engineering.",
 			},
 		},
 		{
 			fields: {
-				title: "Build Your First Agent With Vercel's AI SDK",
+				title: 'Anthropic thinks you should build agents like this',
 				slug: 'agents-with-vercel-ai-sdk?list=vercel-ai-sdk-tutorial',
 				description:
-					"Let's build an AI agent. Learn how LLM's can respond to the results of tool calls with Vercel's AI SDK.",
+					'Anthropic guide contrasts workflows vs agents, recommends direct LLM APIs over frameworks, defines agents as LLMs using tools with feedback loops.',
 			},
 		},
 		{
