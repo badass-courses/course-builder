@@ -6,6 +6,7 @@ import {
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
 import { useQueryState } from 'nuqs'
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import { Configure } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
@@ -27,7 +28,32 @@ const hitsPerPageItems = [
 	},
 ]
 
-export default function Search() {
+const ErrorFallback = ({ error }: FallbackProps) => (
+	<div className="rounded-lg border border-red-200 bg-red-50 p-4">
+		<h3 className="font-semibold text-red-800">Search Error</h3>
+		<p className="text-red-600">{error.message}</p>
+	</div>
+)
+
+function SearchErrorBoundary({ children }: { children: React.ReactNode }) {
+	return (
+		<React.Suspense fallback={<div>Loading search...</div>}>
+			<ErrorBoundary FallbackComponent={ErrorFallback}>
+				{children}
+			</ErrorBoundary>
+		</React.Suspense>
+	)
+}
+
+export default function SearchWithErrorBoundary() {
+	return (
+		<SearchErrorBoundary>
+			<Search />
+		</SearchErrorBoundary>
+	)
+}
+
+function Search() {
 	const [type, setType] = useQueryState('type')
 	const [instructor, setInstructor] = useQueryState('instructor')
 	const [query, setQuery] = useQueryState('q')
