@@ -6,17 +6,6 @@ import { PostStateSchema, PostTagsSchema, PostVisibilitySchema } from './posts'
 
 export const ListTypeSchema = z.enum(['nextUp', 'tutorial', 'workshop'])
 
-const ListResourceSchema = z.object({
-	resourceId: z.string(),
-	resourceOfId: z.string(),
-	position: z.number().default(0),
-	metadata: z.record(z.string(), z.any()).default({}).nullable(),
-	createdAt: z.coerce.date().nullable(),
-	updatedAt: z.coerce.date().nullable(),
-	deletedAt: z.coerce.date().nullable(),
-	resource: ContentResourceSchema.nullable(),
-})
-
 export const ListSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
@@ -32,7 +21,7 @@ export const ListSchema = ContentResourceSchema.merge(
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
 		}),
-		resources: z.array(ListResourceSchema),
+		resources: z.array(z.any()),
 		tags: PostTagsSchema,
 	}),
 )
@@ -53,7 +42,7 @@ export const ListUpdateSchema = z.object({
 		github: z.string().nullish(),
 		gitpod: z.string().nullish(),
 	}),
-	resources: z.array(ListResourceSchema),
+	resources: z.array(z.any()),
 	tags: PostTagsSchema,
 })
 
