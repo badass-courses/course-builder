@@ -258,3 +258,21 @@ export const courseBuilderConfig: NextCourseBuilderConfig = {
 ```
 
 The provider handles subscriber lookup, creation, and preference management using the local database schema. No external email service required.
+
+
+## Typesense Setup
+
+When working on a separate database branch in planetscale (e.g. dev, or a personal branch), you'll need to set up a typesense collection for that branch so that your local changes won't conflict with the production collection.
+
+run:
+
+```
+$ pnpm typesense:setup
+```
+
+This will create a new collection in typesense for the current branch and set the `TYPESENSE_COLLECTION_NAME` environment variable in the `.env.development.local` file.
+
+Before running this command, make sure you have `HASHED_PRODUCTION_DATABASE_URL` set which you can get from running `vercel env pull`.
+
+### TODO clean-up typesense script
+
