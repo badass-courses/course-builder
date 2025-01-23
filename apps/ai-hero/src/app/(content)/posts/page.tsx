@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import Search from '@/app/(search)/q/_components/search'
@@ -54,38 +55,34 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 		)
 
 	return (
-		<div className="grid gap-6">
-			{/* Primary hero */}
-			{primary && (
-				<div className="relative col-span-full overflow-hidden">
-					<PostTeaser
-						post={primary}
-						className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full border-x [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
-					/>
-					{'image' in primary.fields && primary.fields.image && (
-						<>
-							<div
-								className="absolute inset-0 -z-20 bg-cover opacity-20 blur-sm"
-								style={{
-									backgroundImage: `url(${primary.fields.image})`,
-									backgroundPositionY: '400px',
-									backgroundPositionX: '400px',
-								}}
-							/>
-							<div className="from-background via-background/80 absolute inset-0 -z-10 bg-gradient-to-t to-transparent" />
-						</>
-					)}
-				</div>
-			)}
+		<div className="">
+			<div className="grid grid-cols-1 border-x md:grid-cols-2 md:divide-x">
+				{/* Primary hero */}
+				{primary && (
+					<div className="relative overflow-hidden">
+						<PostTeaser
+							post={primary}
+							className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+						/>
+					</div>
+				)}
 
-			{/* Secondary posts */}
-			{secondary.length > 0 && (
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-					{secondary.map((post) => (
+				{/* Secondary posts */}
+				{secondary.length > 0 && (
+					<div className="flex flex-col">
+						{secondary.slice(0, 2).map((post) => (
+							<PostTeaser key={post.fields.slug} post={post} className="" />
+						))}
+					</div>
+				)}
+			</div>
+			{secondary.length > 2 && (
+				<div className="grid grid-cols-1 border-x md:grid-cols-2 md:divide-x">
+					{secondary.slice(2, 4).map((post) => (
 						<PostTeaser
 							key={post.fields.slug}
 							post={post}
-							className="[&_[data-card='']]:bg-foreground/5"
+							className=" w-full"
 						/>
 					))}
 				</div>
@@ -185,7 +182,7 @@ const PostTeaser: React.FC<{
 				>
 					<div className="">
 						<CardHeader className="p-0">
-							{post.type === 'tutorial' && (
+							{post.fields.type === 'tutorial' && (
 								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
 									<Book className="w-3" /> Free Tutorial
 								</p>
