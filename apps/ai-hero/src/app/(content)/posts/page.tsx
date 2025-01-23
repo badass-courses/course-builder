@@ -52,48 +52,36 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 			(a, b) =>
 				(a.fields.featured?.priority || 0) - (b.fields.featured?.priority || 0),
 		)
-	const tertiary = posts
-		.filter((p) => p.fields.featured?.layout === 'tertiary')
-		.sort(
-			(a, b) =>
-				(a.fields.featured?.priority || 0) - (b.fields.featured?.priority || 0),
-		)
 
 	return (
 		<div className="grid gap-6">
 			{/* Primary hero */}
 			{primary && (
-				<div className="relative col-span-full">
+				<div className="relative col-span-full overflow-hidden">
 					<PostTeaser
 						post={primary}
-						className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+						className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full border-x [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
 					/>
 					{'image' in primary.fields && primary.fields.image && (
-						<div
-							className="absolute inset-0 -z-10 bg-cover bg-center opacity-10"
-							style={{ backgroundImage: `url(${primary.fields.image})` }}
-						/>
+						<>
+							<div
+								className="absolute inset-0 -z-20 bg-cover opacity-20 blur-sm"
+								style={{
+									backgroundImage: `url(${primary.fields.image})`,
+									backgroundPositionY: '400px',
+									backgroundPositionX: '400px',
+								}}
+							/>
+							<div className="from-background via-background/80 absolute inset-0 -z-10 bg-gradient-to-t to-transparent" />
+						</>
 					)}
 				</div>
 			)}
 
-			{/* Secondary 2-up */}
+			{/* Secondary posts */}
 			{secondary.length > 0 && (
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 					{secondary.map((post) => (
-						<PostTeaser
-							key={post.fields.slug}
-							post={post}
-							className="[&_[data-card='']]:bg-foreground/5"
-						/>
-					))}
-				</div>
-			)}
-
-			{/* Tertiary smaller features */}
-			{tertiary.length > 0 && (
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
-					{tertiary.map((post) => (
 						<PostTeaser
 							key={post.fields.slug}
 							post={post}
@@ -136,18 +124,6 @@ export default async function PostsIndexPage() {
 		},
 	})
 
-	const otherPosts: any[] = posts.map((post, index) => {
-		return {
-			fields: {
-				...post.fields,
-				featured: {
-					priority: index + 1,
-					layout: 'secondary',
-				},
-			},
-		}
-	})
-
 	const featuredContent: any[] = [
 		{
 			...latestTutorial,
@@ -159,7 +135,17 @@ export default async function PostsIndexPage() {
 				},
 			},
 		},
-		...otherPosts,
+		...posts.map((post, index) => {
+			return {
+				fields: {
+					...post.fields,
+					featured: {
+						priority: index + 1,
+						layout: 'secondary',
+					},
+				},
+			}
+		}),
 	]
 
 	return (
