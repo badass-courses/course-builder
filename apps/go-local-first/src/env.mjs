@@ -80,8 +80,8 @@ export const env = createEnv({
 		DISCORD_CLIENT_ID: z.string().optional(),
 		CLOUDINARY_API_KEY: z.string(),
 		CLOUDINARY_API_SECRET: z.string(),
-		TYPESENSE_WRITE_API_KEY: z.string(),
-		TYPESENSE_COLLECTION_NAME: z.string(),
+		TYPESENSE_WRITE_API_KEY: z.string().optional(),
+		TYPESENSE_COLLECTION_NAME: z.string().optional(),
 		HASHED_PRODUCTION_DATABASE_URL: z.string().optional(),
 	},
 
@@ -102,9 +102,9 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().optional(),
-		NEXT_PUBLIC_TYPESENSE_HOST: z.string(),
-		NEXT_PUBLIC_TYPESENSE_PORT: z.string(),
-		NEXT_PUBLIC_TYPESENSE_API_KEY: z.string(),
+		NEXT_PUBLIC_TYPESENSE_HOST: z.string().optional(),
+		NEXT_PUBLIC_TYPESENSE_PORT: z.string().optional(),
+		NEXT_PUBLIC_TYPESENSE_API_KEY: z.string().optional(),
 	},
 
 	/**
