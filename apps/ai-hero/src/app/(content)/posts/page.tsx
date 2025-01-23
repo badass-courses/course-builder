@@ -182,7 +182,7 @@ const PostTeaser: React.FC<{
 				>
 					<div className="">
 						<CardHeader className="p-0">
-							{post.fields.type === 'tutorial' && (
+							{post?.fields?.type === 'tutorial' && (
 								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
 									<Book className="w-3" /> Free Tutorial
 								</p>
