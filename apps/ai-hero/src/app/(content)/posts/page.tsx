@@ -1,9 +1,12 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import Search from '@/app/(search)/q/_components/search'
 import config from '@/config'
+import { db } from '@/db'
+import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
@@ -12,6 +15,7 @@ import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
+import { asc, desc, eq, inArray, sql } from 'drizzle-orm'
 import { Book, ListOrderedIcon, Pencil } from 'lucide-react'
 import pluralize from 'pluralize'
 
@@ -41,85 +45,111 @@ export const metadata: Metadata = {
 	},
 }
 
+const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
+	const primary = posts.find((p) => p.fields.featured?.layout === 'primary')
+	const secondary = posts
+		.filter((p) => p.fields.featured?.layout === 'secondary')
+		.sort(
+			(a, b) =>
+				(a.fields.featured?.priority || 0) - (b.fields.featured?.priority || 0),
+		)
+
+	return (
+		<div className="">
+			<div className="grid grid-cols-1 border-x md:grid-cols-2 md:divide-x">
+				{/* Primary hero */}
+				{primary && (
+					<div className="relative overflow-hidden">
+						<PostTeaser
+							post={primary}
+							className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+						/>
+					</div>
+				)}
+
+				{/* Secondary posts */}
+				{secondary.length > 0 && (
+					<div className="flex flex-col">
+						{secondary.slice(0, 2).map((post) => (
+							<PostTeaser key={post.fields.slug} post={post} className="" />
+						))}
+					</div>
+				)}
+			</div>
+			{secondary.length > 2 && (
+				<div className="grid grid-cols-1 border-x md:grid-cols-2 md:divide-x">
+					{secondary.slice(2, 4).map((post) => (
+						<PostTeaser
+							key={post.fields.slug}
+							post={post}
+							className=" w-full"
+						/>
+					))}
+				</div>
+			)}
+		</div>
+	)
+}
+
 export default async function PostsIndexPage() {
 	const latestTutorial = await getList('vercel-ai-sdk-tutorial')
 
-	const featured = [
-		{
-			fields: {
-				title: "Build an Alt Text Generator With Vercel's AI SDK",
-				slug: 'describe-images-with-vercel-ai-sdk?list=vercel-ai-sdk-tutorial',
-				description:
-					"Learn how to use Vercel's AI SDK to generate alt text for images using both local files and URLs with a simple guide.",
+	const featuredSlugs = [
+		'the-prompt-report',
+		'three-types-of-evals',
+		'building-effective-agents',
+		'evalite-an-early-preview',
+	]
+
+	const posts = await db.query.contentResource.findMany({
+		where: inArray(
+			sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+			featuredSlugs,
+		),
+		orderBy: desc(contentResource.createdAt),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+			},
+			tags: {
+				with: {
+					tag: true,
+				},
 			},
 		},
+	})
+
+	const featuredContent: any[] = [
 		{
+			...latestTutorial,
 			fields: {
-				title: "Build Your First Agent With Vercel's AI SDK",
-				slug: 'agents-with-vercel-ai-sdk?list=vercel-ai-sdk-tutorial',
-				description:
-					"Let's build an AI agent. Learn how LLM's can respond to the results of tool calls with Vercel's AI SDK.",
+				...latestTutorial.fields,
+				featured: {
+					priority: 1,
+					layout: 'primary',
+				},
 			},
 		},
-		{
-			fields: {
-				title: 'Evalite - an Early Preview',
-				slug: 'evalite-an-early-preview',
-				description:
-					'An early preview of Evalite, a local-first, TypeScript-native tool for testing LLM-powered apps, based on Vitest.',
-			},
-		},
+		...posts.map((post, index) => {
+			return {
+				fields: {
+					...post.fields,
+					featured: {
+						priority: index + 1,
+						layout: 'secondary',
+					},
+				},
+			}
+		}),
 	]
 
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
 			<div className="mx-auto flex w-full flex-col">
-				{/* <h1 className="fluid-2xl my-3 w-full font-bold sm:sr-only">Posts</h1> */}
-				<div className="flex flex-col lg:flex-row">
-					<div className="relative flex w-full">
-						<PostTeaser
-							post={latestTutorial}
-							className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full border-x  [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
-						/>
-						<div
-							className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
-							aria-hidden="true"
-						/>
-					</div>
-					<div className="flex flex-col border-l lg:border-l-0 lg:border-r">
-						<PostTeaser post={featured[0] as unknown as List} />
-						<PostTeaser post={featured[1] as unknown as List} />
-					</div>
-				</div>
+				<FeaturedGrid posts={featuredContent} />
 				<Search />
-
-				{/* <div className="flex w-full flex-col items-center border-x">
-					{latestPost ? (
-						<div className="relative flex w-full">
-							<PostTeaser
-								post={latestPost}
-								className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground h-full w-full md:aspect-[16/7] [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
-							/>
-							<div
-								className="via-primary/20 absolute bottom-0 left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
-								aria-hidden="true"
-							/>
-						</div>
-					) : (
-						<h1 className="flex w-full py-16 text-center text-2xl">
-							No posts found.
-						</h1>
-					)}
-					<ul className="divide-border relative grid w-full grid-cols-1 justify-center sm:grid-cols-2">
-						{publishedPublicPosts
-							.slice(1, publishedPublicPosts.length)
-							.map((post, i) => {
-								return (
-									<PostTeaser i={i} post={post} key={post.id} className="" />
-								)
-							})}
-					</ul>
-				</div> */}
 			</div>
 			<React.Suspense fallback={null}>
 				<PostListActions />
@@ -129,7 +159,7 @@ export default async function PostsIndexPage() {
 }
 
 const PostTeaser: React.FC<{
-	post?: List
+	post?: Post | List
 	i?: number
 	className?: string
 }> = ({ post, className, i }) => {
@@ -152,12 +182,13 @@ const PostTeaser: React.FC<{
 				>
 					<div className="">
 						<CardHeader className="p-0">
-							{post.type === 'list' && (
-								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
-									<Book className="w-3" /> Free Tutorial
-									{/* {createdAt && format(new Date(createdAt), 'MMMM do, y')} */}
-								</p>
-							)}
+							{post?.fields &&
+								'type' in post.fields &&
+								post.fields.type === 'tutorial' && (
+									<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
+										<Book className="w-3" /> Free Tutorial
+									</p>
+								)}
 							<CardTitle
 								data-title=""
 								className="fluid-xl font-semibold leading-tight"
