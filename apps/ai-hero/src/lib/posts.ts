@@ -73,6 +73,17 @@ export const PostTagsChema = z
 	)
 	.nullish()
 
+export const FeaturedLayoutSchema = z.union([
+	z.literal('primary'),
+	z.literal('secondary'),
+	z.literal('tertiary'),
+])
+
+export const FeaturedSchema = z.object({
+	priority: z.number(),
+	layout: FeaturedLayoutSchema,
+})
+
 export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
@@ -87,6 +98,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
 			thumbnailTime: z.number().nullish(),
+			featured: FeaturedSchema.optional(),
 		}),
 		tags: PostTagsChema,
 	}),

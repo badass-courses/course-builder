@@ -2,7 +2,12 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 
-import { PostStateSchema, PostTagsChema, PostVisibilitySchema } from './posts'
+import {
+	FeaturedSchema,
+	PostStateSchema,
+	PostTagsChema,
+	PostVisibilitySchema,
+} from './posts'
 
 export const ListTypeSchema = z.enum(['nextUp', 'tutorial', 'workshop'])
 
@@ -20,6 +25,7 @@ export const ListSchema = ContentResourceSchema.merge(
 			image: z.string().nullish(),
 			github: z.string().nullish(),
 			gitpod: z.string().nullish(),
+			featured: FeaturedSchema.optional(),
 		}),
 		resources: z.array(z.any()),
 		tags: PostTagsChema,

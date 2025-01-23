@@ -42,41 +42,21 @@ const ErrorFallback = ({ error }: FallbackProps) => (
 	</div>
 )
 
-function SearchErrorBoundary({ children }: { children: React.ReactNode }) {
+function SearchWithErrorBoundary() {
 	return (
-		<React.Suspense fallback={<div>Loading search...</div>}>
-			<ErrorBoundary FallbackComponent={ErrorFallback}>
-				{children}
-			</ErrorBoundary>
-		</React.Suspense>
+		<ErrorBoundary FallbackComponent={ErrorFallback}>
+			<Search />
+		</ErrorBoundary>
 	)
 }
 
-export default function SearchWithErrorBoundary() {
-	return (
-		<SearchErrorBoundary>
-			<Search />
-		</SearchErrorBoundary>
-	)
-}
+export default SearchWithErrorBoundary
 
 function Search() {
 	const [type, setType] = useQueryState('type')
 	const [instructor, setInstructor] = useQueryState('instructor')
 	const [query, setQuery] = useQueryState('q')
 	const [tagsValue, setTagsValue] = useQueryState('tags')
-	const [isReady, setIsReady] = React.useState(false)
-
-	React.useEffect(() => {
-		// Ensure all query params are initialized
-		if (type !== undefined && query !== undefined && tagsValue !== undefined) {
-			setIsReady(true)
-		}
-	}, [type, query, tagsValue])
-
-	if (!isReady) {
-		return <div>Initializing search...</div>
-	}
 
 	const initialUiState = {
 		[TYPESENSE_COLLECTION_NAME]: {
