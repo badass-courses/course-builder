@@ -80,6 +80,9 @@ export const env = createEnv({
 		DISCORD_CLIENT_ID: z.string().optional(),
 		CLOUDINARY_API_KEY: z.string(),
 		CLOUDINARY_API_SECRET: z.string(),
+		TYPESENSE_WRITE_API_KEY: z.string(),
+		TYPESENSE_COLLECTION_NAME: z.string(),
+		HASHED_PRODUCTION_DATABASE_URL: z.string().optional(),
 	},
 
 	/**
@@ -99,6 +102,9 @@ export const env = createEnv({
 		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().optional(),
+		NEXT_PUBLIC_TYPESENSE_HOST: z.string(),
+		NEXT_PUBLIC_TYPESENSE_PORT: z.string(),
+		NEXT_PUBLIC_TYPESENSE_API_KEY: z.string(),
 	},
 
 	/**
@@ -165,6 +171,12 @@ export const env = createEnv({
 		DISCORD_PURCHASER_ROLE_ID: process.env.DISCORD_PURCHASER_ROLE_ID,
 		CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
 		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+		TYPESENSE_WRITE_API_KEY: process.env.TYPESENSE_WRITE_API_KEY,
+		TYPESENSE_COLLECTION_NAME: process.env.TYPESENSE_COLLECTION_NAME,
+		NEXT_PUBLIC_TYPESENSE_HOST: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+		NEXT_PUBLIC_TYPESENSE_PORT: process.env.NEXT_PUBLIC_TYPESENSE_PORT,
+		NEXT_PUBLIC_TYPESENSE_API_KEY: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY,
+		HASHED_PRODUCTION_DATABASE_URL: process.env.HASHED_PRODUCTION_DATABASE_URL,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

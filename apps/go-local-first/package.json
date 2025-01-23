@@ -4,7 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
+		"setup-dev": "npx tsx ./src/scripts/bootstrap-typesense.ts",
+		"dev": "pnpm setup-dev && concurrently --kill-others-on-fail \"npm:dev:*\"",
 		"dev:next": "next dev --turbo",
 		"dev:inngest": "pnpx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest",
 		"dev:party": "pnpx partykit dev",
