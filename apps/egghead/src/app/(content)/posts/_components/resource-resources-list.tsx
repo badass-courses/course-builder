@@ -10,7 +10,11 @@ import {
 import Tree from '@/components/lesson-list/tree'
 import { CreatePostForm } from '@/components/resources-crud/create-post-form'
 import { SearchExistingLessons } from '@/components/resources-crud/search-existing-lessons'
-import { addResourceToResource, createPost } from '@/lib/posts-query'
+import {
+	addEggheadLessonToPlaylist,
+	addResourceToResource,
+	createPost,
+} from '@/lib/posts-query'
 import { createResource } from '@/lib/resources/create-resources'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -93,6 +97,11 @@ export function ResourceResourcesList({
 		})
 
 		if (resourceItem) {
+			await addEggheadLessonToPlaylist({
+				eggheadLessonId: resourceItem.resource.fields?.eggheadLessonId,
+				eggheadPlaylistId: resource.fields?.eggheadPlaylistId,
+			})
+
 			updateState({
 				type: 'add-item',
 				itemId: resourceItem.resource.id,

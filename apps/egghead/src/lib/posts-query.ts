@@ -29,6 +29,7 @@ import { z } from 'zod'
 
 import 'server-only'
 
+import { EggheadApiError } from '@/errors/egghead-api-error'
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -44,6 +45,8 @@ import {
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
+	EGGHEAD_API_V1_BASE_URL,
+	getEggheadToken,
 	getEggheadUserProfile,
 	setPublishedAt,
 	updateEggheadLesson,
@@ -562,6 +565,63 @@ export async function getVideoDuration(
 		return muxAsset?.duration ? Math.floor(muxAsset.duration) : 0
 	}
 	return 0
+}
+
+export async function addEggheadLessonToPlaylist({
+	eggheadPlaylistId,
+	eggheadLessonId,
+	position,
+}: {
+	eggheadPlaylistId: string
+	eggheadLessonId: string
+	position?: string
+}) {
+	try {
+		const { session, ability } = await getServerAuthSession()
+
+		if (!session?.user?.id || !ability.can('create', 'Content')) {
+			throw new Error('Unauthorized')
+		}
+
+		const eggheadToken = await getEggheadToken(session.user.id)
+
+		const response = await fetch(
+			`${EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/add`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+						row_order_position: position || 'last',
+					},
+				}),
+			},
+		).then(async (res) => {
+			if (!res.ok) {
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		if (error instanceof Error && 'status' in error) {
+			if (error.status === 304) {
+				// Item already exists in playlist
+				console.log('Lesson already exists in playlist')
+			} else if (error.status === 403) {
+				// Not authorized
+				console.log('Not authorized to modify this playlist')
+			}
+		}
+		throw error
+	}
 }
 
 export const addResourceToResource = async ({

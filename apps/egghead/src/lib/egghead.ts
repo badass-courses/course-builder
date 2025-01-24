@@ -17,7 +17,9 @@ import slugify from '@sindresorhus/slugify'
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
 
-export async function getEggheadUserProfile(userId: string) {
+export const EGGHEAD_API_V1_BASE_URL = 'https://app.egghead.io/api/v1'
+
+export async function getEggheadToken(userId: string) {
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
 		with: {
@@ -47,6 +49,12 @@ export async function getEggheadUserProfile(userId: string) {
 	if (eggheadExpiresAt && new Date(eggheadExpiresAt * 1000) < new Date()) {
 		throw new Error('token-expired')
 	}
+
+	return eggheadToken
+}
+
+export async function getEggheadUserProfile(userId: string) {
+	const eggheadToken = await getEggheadToken(userId)
 
 	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
 
