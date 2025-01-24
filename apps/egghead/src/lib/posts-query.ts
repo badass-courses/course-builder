@@ -44,6 +44,7 @@ import {
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
+	getEggheadUserId,
 	getEggheadUserProfile,
 	setPublishedAt,
 	updateEggheadLesson,
@@ -248,20 +249,7 @@ export async function createPost(input: NewPost) {
 	}
 
 	const profile = await getEggheadUserProfile(session.user.id)
-	const user = await db.query.users.findFirst({
-		where: eq(users.id, session.user.id),
-		with: {
-			accounts: true,
-		},
-	})
-	const eggheadAccount = user?.accounts.find(
-		(account) => account.provider === 'egghead',
-	)
-	const eggheadUserId = Number(eggheadAccount?.providerAccountId)
-
-	if (!eggheadUserId) {
-		throw new Error(`No egghead user id found for user ${session.user.id}`)
-	}
+	const eggheadUserId = await getEggheadUserId(session.user.id)
 
 	const post = await writeNewPostToDatabase({
 		title: input.title,
