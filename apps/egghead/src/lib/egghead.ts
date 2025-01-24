@@ -65,6 +65,25 @@ export async function getEggheadUserProfile(userId: string) {
 	return profile
 }
 
+export async function getEggheadUserId(userId: string) {
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, userId),
+		with: {
+			accounts: true,
+		},
+	})
+	const eggheadAccount = user?.accounts.find(
+		(account) => account.provider === 'egghead',
+	)
+	const eggheadUserId = Number(eggheadAccount?.providerAccountId)
+
+	if (!eggheadUserId) {
+		throw new Error(`No egghead user id found for user ${userId}`)
+	}
+
+	return eggheadUserId
+}
+
 const EGGHEAD_LESSON_TYPE = 'lesson'
 const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
