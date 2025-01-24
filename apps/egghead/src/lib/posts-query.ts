@@ -44,7 +44,6 @@ import {
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
-	getEggheadUserId,
 	getEggheadUserProfile,
 	setPublishedAt,
 	updateEggheadLesson,
@@ -249,14 +248,17 @@ export async function createPost(input: NewPost) {
 	}
 
 	const profile = await getEggheadUserProfile(session.user.id)
-	const eggheadUserId = await getEggheadUserId(session.user.id)
+
+	if (!profile?.instructor?.id) {
+		throw new Error('No egghead instructor id found for user')
+	}
 
 	const post = await writeNewPostToDatabase({
 		title: input.title,
 		videoResourceId: input.videoResourceId || undefined,
 		postType: input.postType,
 		eggheadInstructorId: profile.instructor.id,
-		eggheadUserId,
+		eggheadUserId: profile.id,
 		createdById: session.user.id,
 	})
 
