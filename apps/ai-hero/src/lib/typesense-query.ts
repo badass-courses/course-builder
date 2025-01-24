@@ -17,18 +17,6 @@ import { getPostTags } from './posts-query'
 // import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
 
-const typesenseWriteClient = new Typesense.Client({
-	nodes: [
-		{
-			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-			port: 443,
-			protocol: 'https',
-		},
-	],
-	apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-	connectionTimeoutSeconds: 2,
-})
-
 export async function upsertPostToTypeSense(
 	post: Post | List,
 	action: PostAction,
@@ -49,6 +37,17 @@ export async function upsertPostToTypeSense(
 			)
 			return
 		}
+		const typesenseWriteClient = new Typesense.Client({
+			nodes: [
+				{
+					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+					port: 443,
+					protocol: 'https',
+				},
+			],
+			apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+			connectionTimeoutSeconds: 2,
+		})
 
 		const shouldIndex = true
 
@@ -296,7 +295,17 @@ export async function getNearestNeighbour(
 		)
 		return
 	}
-
+	const typesenseWriteClient = new Typesense.Client({
+		nodes: [
+			{
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
 	let completedItemIds: string[] = []
 	const { session } = await getServerAuthSession()
 	if (session?.user?.id) {
