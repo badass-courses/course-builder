@@ -297,7 +297,6 @@ export async function getNearestNeighbour(
 		return
 	}
 
-	// If we have a userId, get their completed items
 	let completedItemIds: string[] = []
 	const { session } = await getServerAuthSession()
 	if (session?.user?.id) {
@@ -317,7 +316,6 @@ export async function getNearestNeighbour(
 			console.error('Failed to fetch user progress:', error)
 		}
 	}
-	console.log('completedItemIds', completedItemIds)
 
 	const document: any = await typesenseWriteClient
 		.collections(TYPESENSE_COLLECTION_NAME)
@@ -329,13 +327,11 @@ export async function getNearestNeighbour(
 		return null
 	}
 
-	// Build the filter string to exclude completed items
 	const completedFilter =
 		completedItemIds.length > 0
-			? ` && id:!=[${documentId},${completedItemIds.join(',')}]`
-			: // ? ` && !(id:=[${completedItemIds.join(',')}])`
-				''
-	console.log('completedFilter', completedFilter)
+			? ` && id:!=[${completedItemIds.join(',')}]`
+			: ''
+
 	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
 		searches: [
 			{
@@ -354,9 +350,7 @@ export async function getNearestNeighbour(
 			searchRequests,
 			commonSearchParams,
 		)
-		const randomIndex = Math.floor(
-			Math.random() * numberOfNearestNeighborsToReturn,
-		)
+
 		const parsedResults = z
 			.object({
 				hits: z.array(
@@ -375,6 +369,9 @@ export async function getNearestNeighbour(
 			.array()
 			.parse(results)
 
+		const randomIndex = Math.floor(
+			Math.random() * (parsedResults[0]?.hits?.length ?? 0),
+		)
 		return parsedResults[0]?.hits[randomIndex]?.document
 	} catch (e) {
 		console.debug(e)
