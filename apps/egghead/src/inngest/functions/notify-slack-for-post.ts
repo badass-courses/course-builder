@@ -32,8 +32,8 @@ export const notifySlack = inngest.createFunction(
 				text: `New ${post?.fields?.postType} created: ${post?.fields?.title}`,
 				attachments: [
 					{
-						author_name: instructor.name ?? '',
-						author_icon: instructor.image ?? '',
+						author_name: instructor?.full_name ?? '',
+						author_icon: instructor?.avatar_url ?? '',
 						mrkdwn_in: ['text'],
 						title: post?.fields?.title ?? '',
 						title_link: `${process.env.NEXT_PUBLIC_URL}/${post?.fields?.slug}`,
