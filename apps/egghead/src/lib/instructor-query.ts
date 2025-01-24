@@ -1,9 +1,9 @@
-import { InstructorProfile } from '@/lib/instructor'
+import { EggheadCurrentUser } from '@/lib/egghead'
 import { sanityWriteClient } from '@/server/sanity-write-client'
 import { guid } from '@/utils/guid'
 
-export const syncInstructorToSanity = async (profile: InstructorProfile) => {
-	if (!profile.instructor) return
+export const syncInstructorToSanity = async (profile: EggheadCurrentUser) => {
+	if (!profile?.instructor) return
 	const existingPerson = await sanityWriteClient.fetch(
 		`*[_type == "person" && slug.current == "${profile.instructor.slug}"][0]`,
 	)
@@ -40,11 +40,13 @@ export const syncInstructorToSanity = async (profile: InstructorProfile) => {
 			await sanityWriteClient.create({
 				_id: personId,
 				_type: 'person',
-				name: `${profile.instructor.first_name || profile.first_name} ${profile.instructor.last_name || profile.last_name}`,
+				name: `${profile.instructor.first_name || profile?.name} ${profile.instructor.last_name}`,
 				slug: { current: profile.instructor.slug },
 				image: {
 					label: 'avatar',
-					url: profile.instructor.avatar_480_url || profile.avatar_480_url,
+					url:
+						profile.instructor.avatar_480_url ||
+						profile.instructor?.avatar_480_url,
 				},
 			})
 
