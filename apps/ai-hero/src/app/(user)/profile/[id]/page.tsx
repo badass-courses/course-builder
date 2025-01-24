@@ -11,10 +11,9 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { achievements } from '../_components/achievements'
 
-interface ProfilePageProps {
-	params: {
-		id: string
-	}
+type Props = {
+	params: Promise<{ id: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 async function getPublicProfile(shortId: string) {
@@ -44,9 +43,10 @@ async function getResources(resourceIds: string[]) {
 	})
 }
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
+export default async function ProfilePage({ params }: Props) {
+	const id = (await params).id
 	// We can use first 8 characters of the UUID
-	const profile = await getPublicProfile(params.id)
+	const profile = await getPublicProfile(id)
 
 	if (!profile) {
 		notFound()
