@@ -8,6 +8,7 @@ import {
 	contentResource,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
+	users,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -247,11 +248,27 @@ export async function createPost(input: NewPost) {
 	}
 
 	const profile = await getEggheadUserProfile(session.user.id)
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, session.user.id),
+		with: {
+			accounts: true,
+		},
+	})
+	const eggheadAccount = user?.accounts.find(
+		(account) => account.provider === 'egghead',
+	)
+	const eggheadUserId = Number(eggheadAccount?.providerAccountId)
+
+	if (!eggheadUserId) {
+		throw new Error(`No egghead user id found for user ${session.user.id}`)
+	}
+
 	const post = await writeNewPostToDatabase({
 		title: input.title,
 		videoResourceId: input.videoResourceId || undefined,
 		postType: input.postType,
 		eggheadInstructorId: profile.instructor.id,
+		eggheadUserId,
 		createdById: session.user.id,
 	})
 
