@@ -29,6 +29,7 @@ import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import PostNextUpFromListPagination from '../../_components/post-next-up-from-list-pagination'
 import { useList } from '../../[post]/_components/list-provider'
 import { useProgress } from '../../[post]/_components/progress-provider'
 
@@ -138,7 +139,7 @@ export function PostPlayer({
 				</div>
 			)}
 
-			{state.action?.type === 'COMPLETED' && nextUp && (
+			{/* {state.action?.type === 'COMPLETED' && nextUp && (
 				<div
 					className={cn(
 						'bg-background/85 absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
@@ -171,6 +172,19 @@ export function PostPlayer({
 							to save progress
 						</span>
 					)}
+				</div>
+			)} */}
+			{state.action?.type === 'COMPLETED' && (
+				<div
+					className={cn(
+						'bg-background/85 absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
+						className,
+					)}
+				>
+					<PostNextUpFromListPagination
+						postId={postId}
+						className="mt-0 bg-transparent px-0 py-0"
+					/>
 				</div>
 			)}
 		</div>

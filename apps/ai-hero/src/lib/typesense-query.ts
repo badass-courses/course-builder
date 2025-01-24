@@ -1,6 +1,9 @@
 'use server'
 
+import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
 import Typesense from 'typesense'
+import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'
+import { array, z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -9,6 +12,18 @@ import { Post, PostAction } from './posts'
 import { getPostTags } from './posts-query'
 // import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
+
+const typesenseWriteClient = new Typesense.Client({
+	nodes: [
+		{
+			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+			port: 443,
+			protocol: 'https',
+		},
+	],
+	apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+	connectionTimeoutSeconds: 2,
+})
 
 export async function upsertPostToTypeSense(
 	post: Post | List,
@@ -30,18 +45,6 @@ export async function upsertPostToTypeSense(
 			)
 			return
 		}
-
-		let typesenseWriteClient = new Typesense.Client({
-			nodes: [
-				{
-					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
-					port: 443,
-					protocol: 'https',
-				},
-			],
-			apiKey: process.env.TYPESENSE_WRITE_API_KEY,
-			connectionTimeoutSeconds: 2,
-		})
 
 		const shouldIndex = true
 
@@ -272,5 +275,74 @@ export async function indexAllContentToTypeSense(
 		console.log(`Successfully indexed ${documents.length} documents`)
 	} catch (error) {
 		console.error('Failed to index documents:', error)
+	}
+}
+
+export async function getNearestNeighbour(
+	documentId: string,
+	numberOfNearestNeighborsToReturn: number = 1,
+	distanceThreshold: number = 1,
+) {
+	if (
+		!process.env.TYPESENSE_WRITE_API_KEY ||
+		!process.env.NEXT_PUBLIC_TYPESENSE_HOST
+	) {
+		console.error(
+			'⚠️ Missing TypeSense configuration, skipping retrieval operation',
+		)
+		return
+	}
+
+	const document: any = await typesenseWriteClient
+		.collections(TYPESENSE_COLLECTION_NAME)
+		.documents(documentId)
+		.retrieve()
+
+	if (!document) {
+		console.debug(`Document ${documentId} not found in Typesense`)
+		return null
+	}
+
+	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
+		searches: [
+			{
+				collection: TYPESENSE_COLLECTION_NAME,
+				q: '*',
+				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
+				exclude_fields: 'embedding', // <=== Don't return the raw floating point numbers in the vector field in the search API response, to save on network bandwidth.
+				filter_by: `id:!=${documentId} && state:=published`,
+			},
+		],
+	}
+	const commonSearchParams: Partial<MultiSearchRequestSchema> = {}
+
+	try {
+		const { results } = await typesenseWriteClient.multiSearch.perform(
+			searchRequests,
+			commonSearchParams,
+		)
+
+		const parsedResults = z
+			.object({
+				hits: z.array(
+					z.object({
+						document: TypesenseResourceSchema,
+					}),
+				),
+				facetCounts: z.array(z.number()).optional(),
+				found: z.number().optional(),
+				outOf: z.number().optional(),
+				page: z.number().optional(),
+				requestParams: z.any().optional(),
+				searchCutoff: z.boolean().optional(),
+				searchTimeMs: z.number().optional(),
+			})
+			.array()
+			.parse(results)
+
+		return parsedResults[0]?.hits[0]?.document
+	} catch (e) {
+		console.debug(e)
+		return null
 	}
 }
