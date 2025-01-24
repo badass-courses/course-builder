@@ -1,6 +1,13 @@
 'use server'
 
+import { db } from '@/db'
+import { resourceProgress } from '@/db/schema'
+import { getServerAuthSession } from '@/server/auth'
+import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
+import { and, desc, eq, isNotNull, isNull, not } from 'drizzle-orm'
 import Typesense from 'typesense'
+import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'
+import { array, z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -30,16 +37,15 @@ export async function upsertPostToTypeSense(
 			)
 			return
 		}
-
-		let typesenseWriteClient = new Typesense.Client({
+		const typesenseWriteClient = new Typesense.Client({
 			nodes: [
 				{
-					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
 					port: 443,
 					protocol: 'https',
 				},
 			],
-			apiKey: process.env.TYPESENSE_WRITE_API_KEY,
+			apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 			connectionTimeoutSeconds: 2,
 		})
 
@@ -272,5 +278,112 @@ export async function indexAllContentToTypeSense(
 		console.log(`Successfully indexed ${documents.length} documents`)
 	} catch (error) {
 		console.error('Failed to index documents:', error)
+	}
+}
+
+export async function getNearestNeighbour(
+	documentId: string,
+	numberOfNearestNeighborsToReturn: number,
+	distanceThreshold: number,
+) {
+	if (
+		!process.env.TYPESENSE_WRITE_API_KEY ||
+		!process.env.NEXT_PUBLIC_TYPESENSE_HOST
+	) {
+		console.error(
+			'⚠️ Missing TypeSense configuration, skipping retrieval operation',
+		)
+		return
+	}
+	const typesenseWriteClient = new Typesense.Client({
+		nodes: [
+			{
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
+				port: 443,
+				protocol: 'https',
+			},
+		],
+		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
+		connectionTimeoutSeconds: 2,
+	})
+	let completedItemIds: string[] = []
+	const { session } = await getServerAuthSession()
+	if (session?.user?.id) {
+		try {
+			const progress = await db.query.resourceProgress.findMany({
+				where: and(
+					eq(resourceProgress.userId, session.user.id),
+					isNotNull(resourceProgress.completedAt),
+				),
+				orderBy: desc(resourceProgress.completedAt),
+				columns: {
+					resourceId: true,
+				},
+			})
+			completedItemIds = progress?.map((p: any) => p.resourceId) ?? []
+		} catch (error) {
+			console.error('Failed to fetch user progress:', error)
+		}
+	}
+
+	const document: any = await typesenseWriteClient
+		.collections(TYPESENSE_COLLECTION_NAME)
+		.documents(documentId)
+		.retrieve()
+
+	if (!document) {
+		console.debug(`Document ${documentId} not found in Typesense`)
+		return null
+	}
+
+	const completedFilter =
+		completedItemIds.length > 0
+			? ` && id:!=[${completedItemIds.join(',')}]`
+			: ''
+
+	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
+		searches: [
+			{
+				collection: TYPESENSE_COLLECTION_NAME,
+				q: '*',
+				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
+				exclude_fields: 'embedding',
+				filter_by: `id:!=${documentId} && state:=published${completedFilter}`,
+			},
+		],
+	}
+	const commonSearchParams: Partial<MultiSearchRequestSchema> = {}
+
+	try {
+		const { results } = await typesenseWriteClient.multiSearch.perform(
+			searchRequests,
+			commonSearchParams,
+		)
+
+		const parsedResults = z
+			.object({
+				hits: z.array(
+					z.object({
+						document: TypesenseResourceSchema,
+					}),
+				),
+				facetCounts: z.array(z.number()).optional(),
+				found: z.number().optional(),
+				outOf: z.number().optional(),
+				page: z.number().optional(),
+				requestParams: z.any().optional(),
+				searchCutoff: z.boolean().optional(),
+				searchTimeMs: z.number().optional(),
+			})
+			.array()
+			.parse(results)
+
+		const randomIndex = Math.floor(
+			Math.random() * (parsedResults[0]?.hits?.length ?? 0),
+		)
+		return parsedResults[0]?.hits[randomIndex]?.document
+	} catch (e) {
+		console.debug(e)
+		return null
 	}
 }

@@ -11,6 +11,8 @@ import { usersRouter } from '@/trpc/api/routers/users'
 import { videoResourceRouter } from '@/trpc/api/routers/videoResource'
 import { createTRPCRouter } from '@/trpc/api/trpc'
 
+import { typesenseRouter } from './routers/typesense'
+
 /**
  * This is the primary router for your server.
  *
@@ -28,6 +30,7 @@ export const appRouter = createTRPCRouter({
 	lessons: lessonsRouter,
 	certificate: certificateRouter,
 	deviceVerification: deviceVerificationRouter,
+	typesense: typesenseRouter,
 })
 
 // export type definition of API
