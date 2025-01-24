@@ -5,7 +5,7 @@ import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRight } from 'lucide-react'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, Skeleton } from '@coursebuilder/ui'
 
 export default function Recommendations({
 	postId,
@@ -14,12 +14,16 @@ export default function Recommendations({
 	postId: string
 	className?: string
 }) {
-	const { data: post, status } = api.typesense.getNearestNeighbor.useQuery({
-		documentId: postId,
-	})
+	const { data: post, status } = api.typesense.getNearestNeighbor.useQuery(
+		{
+			documentId: postId,
+		},
+		{
+			refetchOnWindowFocus: false,
+		},
+	)
 
-	if (status === 'pending') return null
-	if (!post) return null
+	if (!post && status !== 'pending') return null
 
 	return (
 		<nav
@@ -30,16 +34,20 @@ export default function Recommendations({
 			aria-label="Recommendations"
 		>
 			<h2 className="fluid-2xl mb-3 font-semibold">Recommended Next</h2>
-			<ul>
-				<li className="flex flex-col">
+			<ul className="w-full">
+				<li className="flex w-full flex-col">
 					<Button
-						className="text-primary inline-flex items-center gap-2 text-lg lg:text-xl"
+						className="text-primary flex w-full items-center gap-2 text-lg lg:text-xl"
 						asChild
 						variant="link"
 					>
-						<Link href={`/${post.slug}`}>
-							{post.title} <ArrowRight className="w-4" />
-						</Link>
+						{status === 'pending' ? (
+							<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
+						) : post ? (
+							<Link href={`/${post.slug}`}>
+								{post.title} <ArrowRight className="w-4" />
+							</Link>
+						) : null}
 					</Button>
 				</li>
 			</ul>

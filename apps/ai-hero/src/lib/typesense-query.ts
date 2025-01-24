@@ -1,6 +1,10 @@
 'use server'
 
+import { db } from '@/db'
+import { resourceProgress } from '@/db/schema'
+import { getServerAuthSession } from '@/server/auth'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
+import { and, desc, eq, isNotNull, isNull, not } from 'drizzle-orm'
 import Typesense from 'typesense'
 import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'
 import { array, z } from 'zod'
@@ -280,8 +284,8 @@ export async function indexAllContentToTypeSense(
 
 export async function getNearestNeighbour(
 	documentId: string,
-	numberOfNearestNeighborsToReturn: number = 1,
-	distanceThreshold: number = 1,
+	numberOfNearestNeighborsToReturn: number,
+	distanceThreshold: number,
 ) {
 	if (
 		!process.env.TYPESENSE_WRITE_API_KEY ||
@@ -293,6 +297,28 @@ export async function getNearestNeighbour(
 		return
 	}
 
+	// If we have a userId, get their completed items
+	let completedItemIds: string[] = []
+	const { session } = await getServerAuthSession()
+	if (session?.user?.id) {
+		try {
+			const progress = await db.query.resourceProgress.findMany({
+				where: and(
+					eq(resourceProgress.userId, session.user.id),
+					isNotNull(resourceProgress.completedAt),
+				),
+				orderBy: desc(resourceProgress.completedAt),
+				columns: {
+					resourceId: true,
+				},
+			})
+			completedItemIds = progress?.map((p: any) => p.resourceId) ?? []
+		} catch (error) {
+			console.error('Failed to fetch user progress:', error)
+		}
+	}
+	console.log('completedItemIds', completedItemIds)
+
 	const document: any = await typesenseWriteClient
 		.collections(TYPESENSE_COLLECTION_NAME)
 		.documents(documentId)
@@ -303,14 +329,21 @@ export async function getNearestNeighbour(
 		return null
 	}
 
+	// Build the filter string to exclude completed items
+	const completedFilter =
+		completedItemIds.length > 0
+			? ` && id:!=[${documentId},${completedItemIds.join(',')}]`
+			: // ? ` && !(id:=[${completedItemIds.join(',')}])`
+				''
+	console.log('completedFilter', completedFilter)
 	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
 		searches: [
 			{
 				collection: TYPESENSE_COLLECTION_NAME,
 				q: '*',
 				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
-				exclude_fields: 'embedding', // <=== Don't return the raw floating point numbers in the vector field in the search API response, to save on network bandwidth.
-				filter_by: `id:!=${documentId} && state:=published`,
+				exclude_fields: 'embedding',
+				filter_by: `id:!=${documentId} && state:=published${completedFilter}`,
 			},
 		],
 	}
@@ -321,7 +354,9 @@ export async function getNearestNeighbour(
 			searchRequests,
 			commonSearchParams,
 		)
-
+		const randomIndex = Math.floor(
+			Math.random() * numberOfNearestNeighborsToReturn,
+		)
 		const parsedResults = z
 			.object({
 				hits: z.array(
@@ -340,7 +375,7 @@ export async function getNearestNeighbour(
 			.array()
 			.parse(results)
 
-		return parsedResults[0]?.hits[0]?.document
+		return parsedResults[0]?.hits[randomIndex]?.document
 	} catch (e) {
 		console.debug(e)
 		return null

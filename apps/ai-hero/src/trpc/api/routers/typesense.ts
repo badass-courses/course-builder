@@ -7,7 +7,7 @@ export const typesenseRouter = createTRPCRouter({
 		.input(
 			z.object({
 				documentId: z.string(),
-				numberOfNearestNeighborsToReturn: z.number().optional().default(1),
+				numberOfNearestNeighborsToReturn: z.number().optional().default(5),
 				distanceThreshold: z.number().optional().default(1),
 			}),
 		)
