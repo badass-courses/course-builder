@@ -566,21 +566,22 @@ export async function getVideoDuration(
 
 export const addResourceToResource = async ({
 	resource,
-	resourceId,
+	parentResourceId,
 }: {
 	resource: ContentResource
-	resourceId: string
+	parentResourceId: string
 }) => {
 	const parentResource = await db.query.contentResource.findFirst({
-		where: like(contentResource.id, `%${last(resourceId.split('-'))}%`),
+		where: like(contentResource.id, `%${last(parentResourceId.split('-'))}%`),
 		with: {
 			resources: true,
 		},
 	})
 
 	if (!parentResource) {
-		throw new Error(`Workshop with id ${resourceId} not found`)
+		throw new Error(`Workshop with id ${parentResourceId} not found`)
 	}
+
 	await db.insert(contentResourceResource).values({
 		resourceOfId: parentResource.id,
 		resourceId: resource.id,

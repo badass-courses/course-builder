@@ -86,10 +86,10 @@ export function ResourceResourcesList({
 	)
 	const router = useRouter()
 
-	const handleResourceCreated = async (resource: ContentResource) => {
+	const handleResourceCreated = async (createdResource: ContentResource) => {
 		const resourceItem = await addResourceToResource({
-			resource,
-			resourceId: resource.id,
+			resource: createdResource,
+			parentResourceId: resource.id,
 		})
 
 		if (resourceItem) {
