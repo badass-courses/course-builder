@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { courseBuilderAdapter } from '@/db'
-import { getEggheadUserProfile } from '@/lib/egghead'
+import { getEggheadUserId, getEggheadUserProfile } from '@/lib/egghead'
 import { NewPostSchema, PostActionSchema, PostUpdateSchema } from '@/lib/posts'
 import { writeNewPostToDatabase } from '@/lib/posts-new-query'
 import {
@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
 	}
 
 	const profile = await getEggheadUserProfile(user.id)
+	const eggheadUserId = await getEggheadUserId(user.id)
 
 	if (!profile.instructor.id) {
 		return NextResponse.json(
@@ -97,6 +98,7 @@ export async function POST(request: NextRequest) {
 			videoResourceId: validatedData.data.videoResourceId || undefined,
 			postType: validatedData.data.postType,
 			eggheadInstructorId: profile.instructor.id,
+			eggheadUserId,
 			createdById: user.id,
 		})
 		return NextResponse.json(newPost, { status: 201, headers: corsHeaders })
