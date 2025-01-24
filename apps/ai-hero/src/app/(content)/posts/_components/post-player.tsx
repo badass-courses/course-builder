@@ -138,42 +138,6 @@ export function PostPlayer({
 					<Spinner />
 				</div>
 			)}
-
-			{/* {state.action?.type === 'COMPLETED' && nextUp && (
-				<div
-					className={cn(
-						'bg-background/85 absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
-						className,
-					)}
-				>
-					<h2 className="sm:fluid-2xl fluid-xl font-semibold sm:mb-3">
-						Continue
-					</h2>
-					<Button
-						className="text-primary inline-flex items-center gap-2 sm:text-lg lg:text-xl"
-						asChild
-						variant="link"
-					>
-						<Link
-							href={`/${nextUp.resource.fields?.slug}${listSlug && list ? `?list=${list.fields.slug}` : ''}`}
-						>
-							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
-						</Link>
-					</Button>
-					{!session?.user && (
-						<span className="text-muted-foreground mt-4">
-							<Link
-								href="/login"
-								target="_blank"
-								className="hover:text-foreground text-center underline"
-							>
-								Log in
-							</Link>{' '}
-							to save progress
-						</span>
-					)}
-				</div>
-			)} */}
 			{state.action?.type === 'COMPLETED' && (
 				<div
 					className={cn(
