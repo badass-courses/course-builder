@@ -336,6 +336,9 @@ Reply in a markdown code fence.`,
 				body: messages,
 				requestId: resourceId,
 				name: 'resource.chat.completed',
+				metadata: {
+					workflow: workflowTrigger,
+				},
 			},
 			roomId: resourceId,
 		})
