@@ -12,8 +12,7 @@ import { Post, PostSchema } from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
-import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { Pencil } from 'lucide-react'
+import { Pencil, Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -48,6 +47,11 @@ export const PostMetadataFormFields: React.FC<{
 	post: Post
 	tagLoader: Promise<Tag[]>
 	listsLoader: Promise<List[]>
+	sendResourceChatMessage: (options: {
+		resourceId: string
+		messages: any[]
+		selectedWorkflow?: string
+	}) => Promise<void>
 }> = ({
 	form,
 	videoResourceLoader,
@@ -55,6 +59,7 @@ export const PostMetadataFormFields: React.FC<{
 	videoResourceId: initialVideoResourceId,
 	tagLoader,
 	listsLoader,
+	sendResourceChatMessage,
 }) => {
 	const router = useRouter()
 
@@ -114,6 +119,37 @@ export const PostMetadataFormFields: React.FC<{
 		},
 	})
 
+	const [isGeneratingDescription, setIsGeneratingDescription] =
+		React.useState(false)
+
+	useSocket({
+		room: post.id,
+		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		onMessage: async (messageEvent) => {
+			try {
+				const data = JSON.parse(messageEvent.data)
+
+				if (
+					data.name === 'resource.chat.completed' &&
+					data.requestId === post.id &&
+					data.metadata?.workflow === 'prompt-0541t'
+				) {
+					const lastMessage = data.body[data.body.length - 1]
+					if (lastMessage?.content) {
+						const description = lastMessage.content.replace(
+							/```.*\n(.*)\n```/s,
+							'$1',
+						)
+						form.setValue('fields.description', description)
+					}
+					setIsGeneratingDescription(false)
+				}
+			} catch (error) {
+				setIsGeneratingDescription(false)
+			}
+		},
+	})
+
 	const [isOpenedTranscriptDialog, setIsOpenedTranscriptDialog] =
 		React.useState(false)
 
@@ -147,6 +183,21 @@ export const PostMetadataFormFields: React.FC<{
 		.parse(post.tags)
 
 	const [thumbnailTime, setThumbnailTime] = React.useState(0)
+
+	const handleGenerateDescription = async () => {
+		setIsGeneratingDescription(true)
+
+		await sendResourceChatMessage({
+			resourceId: post.id,
+			messages: [
+				{
+					role: 'user',
+					content: `Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
+				},
+			],
+			selectedWorkflow: 'prompt-0541t',
+		})
+	}
 
 	return (
 		<>
@@ -357,14 +408,35 @@ export const PostMetadataFormFields: React.FC<{
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">
-							SEO Description ({`${field.value?.length ?? '0'} / 160`})
-						</FormLabel>
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold leading-none">
+								SEO Description
+								<br />
+								<span className="text-muted-foreground text-sm tabular-nums">
+									({`${field.value?.length ?? '0'} / 160`})
+								</span>
+							</FormLabel>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="flex items-center gap-1"
+								disabled={isGeneratingDescription}
+								onClick={handleGenerateDescription}
+							>
+								{isGeneratingDescription ? (
+									<Spinner className="h-4 w-4" />
+								) : (
+									<Sparkles className="h-4 w-4" />
+								)}
+								Generate
+							</Button>
+						</div>
 						<FormDescription>
 							A short snippet that summarizes the post in under 160 characters.
 							Keywords should be included to support SEO.
 						</FormDescription>
-						<Textarea {...field} value={field.value ?? ''} />
+						<Textarea rows={4} {...field} value={field.value ?? ''} />
 						{field.value && field.value.length > 160 && (
 							<FormMessage>
 								Your description is longer than 160 characters
