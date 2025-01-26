@@ -41,7 +41,7 @@ export default function Recommendations({
 			)}
 			aria-label="Recommendations"
 		>
-			<h2 className="fluid-2xl mb-3 font-semibold">Recommended Next</h2>
+			<h2 className="fluid-2xl mb-3 font-semibold">Up Next</h2>
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
