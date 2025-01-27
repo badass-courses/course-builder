@@ -624,6 +624,52 @@ export async function addEggheadLessonToPlaylist({
 	}
 }
 
+export async function removeEggheadLessonFromPlaylist({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: string
+}) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const eggheadToken = await getEggheadToken(session.user.id)
+
+	try {
+		const response = await fetch(
+			`${EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/remove`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+					},
+				}),
+			},
+		).then(async (res) => {
+			if (!res.ok) {
+				console.log('Error removing lesson from playlist', res)
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		throw error
+	}
+}
+
 export const addResourceToResource = async ({
 	resource,
 	parentResourceId,

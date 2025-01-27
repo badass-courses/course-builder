@@ -14,12 +14,15 @@ import {
 	addEggheadLessonToPlaylist,
 	addResourceToResource,
 	createPost,
+	getPost,
+	removeEggheadLessonFromPlaylist,
 } from '@/lib/posts-query'
 import { createResource } from '@/lib/resources/create-resources'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
-import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
+
+import { removePostFromCoursePost } from '../actions'
 
 type FormState = {
 	activeForm: 'lesson' | 'section' | 'existing_lesson' | null
@@ -127,6 +130,23 @@ export function ResourceResourcesList({
 				rootResourceId={resource.id}
 				state={state}
 				updateState={updateState}
+				onDelete={async ({ itemId }: { itemId: string }) => {
+					const post = await getPost(itemId)
+
+					if (!post || !post.fields?.eggheadLessonId) {
+						throw new Error('eggheadLessonId is required')
+					}
+
+					await removePostFromCoursePost({
+						postId: itemId,
+						resourceOfId: resource.id,
+					})
+
+					await removeEggheadLessonFromPlaylist({
+						eggheadLessonId: post.fields?.eggheadLessonId,
+						eggheadPlaylistId: resource.fields?.eggheadPlaylistId,
+					})
+				}}
 			/>
 			<div className="flex flex-col gap-1">
 				{formState.activeForm === 'lesson' && (
