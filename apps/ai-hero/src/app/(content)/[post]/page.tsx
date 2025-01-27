@@ -63,6 +63,8 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
+	const searchParams = await props.searchParams
+
 	let resource
 
 	resource = await getPost(params.post)
@@ -78,6 +80,12 @@ export async function generateMetadata(
 	return {
 		title: resource.fields.title,
 		description: resource.fields.description,
+		alternates: {
+			canonical:
+				searchParams && searchParams.list
+					? `/${resource.fields.slug}`
+					: undefined,
+		},
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({
