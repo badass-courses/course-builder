@@ -12,7 +12,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (
 		<li className="">
 			<Link
-				className="to-secondary group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out hover:bg-gradient-to-l sm:py-5 md:flex-row"
+				className="to-secondary group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out hover:bg-gradient-to-l sm:py-5 md:flex-row lg:px-6"
 				href={`/${hit.slug}`}
 			>
 				<div className="flex flex-col gap-2 md:w-4/6">
@@ -22,7 +22,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							attribute="title"
 							hit={hit as any}
 							classNames={{
-								highlighted: 'bg-primary text-muted-foreground',
+								highlighted: 'bg-primary text-primary-foreground',
 							}}
 						/>
 					</span>
@@ -31,7 +31,8 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							attribute="summary"
 							hit={hit as any}
 							classNames={{
-								highlighted: 'bg-primary text-muted-foreground',
+								highlighted: 'bg-primary text-primary-foreground',
+								nonHighlighted: 'text-muted-foreground',
 							}}
 						/>
 					)}

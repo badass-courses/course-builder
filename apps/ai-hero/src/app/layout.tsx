@@ -15,12 +15,12 @@ import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import {
-	ceaserDressingFont,
-	dalekFont,
-	ffMetaFont,
 	maisonNeue,
 	maisonNeueMono,
-	quadorFont,
+	// ceaserDressingFont,
+	// dalekFont,
+	// ffMetaFont,
+	// quadorFont,
 } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
@@ -68,7 +68,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${maisonNeue.variable} ${ffMetaFont.variable} ${quadorFont.variable} ${ceaserDressingFont.variable} ${maisonNeueMono.variable} ${dalekFont.variable} antialised font-sans`}
+					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
@@ -77,7 +77,7 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
-								forcedTheme="dark"
+								// forcedTheme="dark"
 								defaultTheme="dark"
 								enableSystem={false}
 								disableTransitionOnChange
