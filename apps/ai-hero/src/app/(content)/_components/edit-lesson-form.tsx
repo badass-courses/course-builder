@@ -40,7 +40,7 @@ export function EditLessonForm({
 	videoResource,
 	moduleType,
 }: Omit<EditLessonFormProps, 'form'>) {
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 
 	const { module: moduleSlug } = useParams()
 	const onLessonSaveWithModule = onLessonSave.bind(

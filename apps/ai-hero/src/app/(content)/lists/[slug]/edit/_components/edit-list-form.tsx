@@ -48,7 +48,7 @@ export function EditListForm({
 	list,
 	tagLoader,
 }: Omit<EditListFormProps, 'form'>) {
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof ListSchema>>({
 		resolver: zodResolver(NewPostFormSchema),

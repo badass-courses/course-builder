@@ -24,7 +24,7 @@ export function PostUploader({
 						<div className="bg-muted aspect-square rounded-full p-2">
 							<YoutubeIcon
 								strokeWidth={1}
-								className="text-muted-foreground h-8 w-8"
+								className="dark:text-muted-foreground text-foreground h-8 w-8"
 							/>
 						</div>
 					),
@@ -39,7 +39,7 @@ export function PostUploader({
 					},
 					label({}) {
 						return {
-							color: 'white',
+							color: 'hsl(var(--foreground))',
 							fontWeight: 'normal',
 						}
 					},

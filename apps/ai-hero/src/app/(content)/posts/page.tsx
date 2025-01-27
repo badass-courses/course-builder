@@ -266,7 +266,7 @@ async function PostListActions({}: {}) {
 	)
 
 	return (
-		<aside className="divide-border bg-background bottom-5 right-5 my-5 w-full gap-3 divide-y border  lg:fixed lg:my-0 lg:w-64">
+		<aside className="divide-border bg-card bottom-5 right-5 my-5 w-full gap-3 divide-y border  lg:fixed lg:my-0 lg:w-64">
 			<div className="p-5 py-3">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
