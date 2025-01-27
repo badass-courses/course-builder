@@ -1,33 +1,5 @@
 import localFont from 'next/font/local'
 
-export const headingFont = localFont({
-	preload: true,
-	display: 'block',
-	variable: '--font-heading',
-	src: [
-		{
-			path: '../styles/fonts/Heading-Light.woff2',
-			weight: '300',
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/Heading-Regular.woff2',
-			weight: '400',
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/Heading-Medium.woff2',
-			weight: '500',
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/Heading-Bold.woff2',
-			weight: '700',
-			style: 'normal',
-		},
-	],
-})
-
 export const maisonNeue = localFont({
 	preload: true,
 	display: 'block',
@@ -120,73 +92,4 @@ export const maisonNeueMono = localFont({
 		},
 	],
 	variable: '--font-maison-neue-mono',
-})
-
-export const ffNortHeadline = localFont({
-	src: [
-		{
-			path: '../styles/fonts/01014c8b-da7d-49ab-a0c3-76f7de7ba336.woff2',
-			weight: '400',
-			style: 'normal',
-		},
-	],
-	variable: '--font-heading',
-})
-
-export const ffNort = localFont({
-	preload: true,
-	display: 'block',
-	src: [
-		{
-			path: '../styles/fonts/a5f309ff-aa84-4aa6-9fd8-ca3feedb9265.woff2',
-			weight: '300', // light
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/44ae4887-8a35-45d6-b028-7516f3841c00.woff2',
-			weight: '300', // light
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/7b3ac33d-e084-4112-9256-a658b46fd6d2.woff2',
-			weight: '400', // regular
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/e905a5b7-87ed-4c15-9f2b-5be5f7f61a2a.woff2',
-			weight: '400', // regular
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/034a240e-f841-4345-959f-cf75a47c0116.woff2',
-			weight: '500', // medium
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/e446908b-705f-4bf8-8d3a-ad71a1ceebdf.woff2',
-			weight: '500', // medium
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/42c249a8-2cd5-4153-bc57-d3b48f1ea489.woff2',
-			weight: '600', // bold
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/f7ead13e-b410-4a9d-9c46-5b748bf9684f.woff2',
-			weight: '600', // bold
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/5a128de3-9adf-4965-9593-eb12c999db47.woff2',
-			weight: '700', // black
-			style: 'normal',
-		},
-		{
-			path: '../styles/fonts/9126e06d-5332-4336-9419-4ba4b0e23796.woff2',
-			weight: '700', // black
-			style: 'italic',
-		},
-	],
-	variable: '--font-sans',
 })

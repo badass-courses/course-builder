@@ -78,9 +78,6 @@ module.exports = {
 			fontFamily: {
 				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
 				heading: ['var(--font-maison-neue)', ...fontFamily.sans],
-				// heading: ['var(--font-meta)', ...fontFamily.sans],
-				// display: ['var(--font-quador)', ...fontFamily.sans],
-				// greek: ['var(--font-ceaser)', ...fontFamily.sans],
 				mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
 			},
 			keyframes: {

@@ -14,14 +14,7 @@ import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import {
-	maisonNeue,
-	maisonNeueMono,
-	// ceaserDressingFont,
-	// dalekFont,
-	// ffMetaFont,
-	// quadorFont,
-} from '@/utils/load-fonts'
+import { maisonNeue, maisonNeueMono } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
