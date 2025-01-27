@@ -100,10 +100,12 @@ const TreeItem = memo(function TreeItem({
 	item,
 	mode,
 	level,
+	onDelete,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
+	onDelete: ({ itemId }: { itemId: string }) => Promise<void>
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -324,7 +326,7 @@ const TreeItem = memo(function TreeItem({
 	const pathname = usePathname()
 
 	return (
-		<Fragment>
+		<div className="px-2">
 			<div className="relative flex items-center">
 				<button
 					{...aria}
@@ -404,12 +406,12 @@ const TreeItem = memo(function TreeItem({
 						</span>
 					) : null} */}
 				</button>
-				{item.type === 'section' && item.children.length === 0 && (
+				{item.type === 'post' && (
 					<Button
 						size="icon"
 						variant="destructive"
 						onClick={async () => {
-							await removeSection(item.id, pathname)
+							await onDelete({ itemId: item.id })
 							return dispatch({ type: 'remove-item', itemId: item.id })
 						}}
 					>
@@ -437,12 +439,13 @@ const TreeItem = memo(function TreeItem({
 								key={child.id}
 								level={level + 1}
 								mode={childType}
+								onDelete={onDelete}
 							/>
 						)
 					})}
 				</div>
 			) : null}
-		</Fragment>
+		</div>
 	)
 })
 
