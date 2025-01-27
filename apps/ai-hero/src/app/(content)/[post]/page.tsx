@@ -27,6 +27,7 @@ import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
+import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
@@ -157,8 +158,19 @@ async function Post({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="fluid-3xl mb-4 inline-flex font-bold">
-			{post?.fields?.title}
+		<h1 className="fluid-3xl mb-4 font-bold">
+			<ReactMarkdown
+				components={{
+					p: ({ children }) => children,
+					code: ({ children }) => (
+						<code className="bg-muted/80 rounded px-1 text-[85%]">
+							{children}
+						</code>
+					),
+				}}
+			>
+				{post?.fields?.title}
+			</ReactMarkdown>
 		</h1>
 	)
 }
