@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { type List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
+import { cn } from '@/utils/cn'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
 import { ArrowRight, ChevronRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -12,11 +13,14 @@ import { Button } from '@coursebuilder/ui'
 
 import { useList } from '../[post]/_components/list-provider'
 import { useProgress } from '../[post]/_components/progress-provider'
+import Recommendations from '../[post]/_components/recommendations'
 
 export default function PostNextUpFromListPagination({
 	postId,
+	className,
 }: {
 	postId: string
+	className?: string
 }) {
 	const { list } = useList()
 
@@ -26,19 +30,22 @@ export default function PostNextUpFromListPagination({
 		(lesson) => lesson.resourceId === postId,
 	)
 	const { data: session } = useSession()
-	console.log({ nextUp })
-	if (!list) return null
+
+	if (!list) return <Recommendations postId={postId} className={className} />
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
-			className="mt-8 flex w-full flex-col items-center rounded bg-gray-950 px-5 py-10 text-center"
+			className={cn(
+				'mt-8 flex w-full flex-col items-center rounded bg-gray-100 px-5 py-10 text-center dark:bg-gray-950',
+				className,
+			)}
 			aria-label="List navigation"
 		>
 			<h2 className="fluid-2xl mb-3 font-semibold">Continue</h2>
 			<ul>
 				<li className="flex flex-col">
 					<Button
-						className="text-primary inline-flex items-center gap-2 text-lg lg:text-xl"
+						className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 lg:text-xl"
 						asChild
 						variant="link"
 						onClick={async () => {

@@ -68,7 +68,7 @@ export default function Scrollycoding(props: any) {
 						},
 					)}
 				>
-					<div className="sticky top-10 overflow-auto lg:sticky lg:top-16">
+					<div className="sticky top-10 lg:sticky lg:top-16">
 						<Selection
 							from={steps.map((step: any) => (
 								<Code key={step.code} codeblock={step.code} />
@@ -94,12 +94,17 @@ async function Code({
 		return <div>codeblock error</div>
 	}
 
-	const highlighted = await highlight(codeblock, 'github-dark')
+	const highlighted = await highlight(codeblock, 'github-from-css')
 	return (
 		<Pre
 			code={highlighted}
 			handlers={[tokenTransitions]}
-			className="mb-0 mt-0 h-full max-h-[300px] rounded-none bg-[#0d1117] p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
+			className="bg-card mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
+			style={{
+				...highlighted.style,
+				padding: '1rem',
+				borderRadius: '0.5rem',
+			}}
 		/>
 	)
 }

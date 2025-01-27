@@ -22,7 +22,7 @@ export function ThemeToggle() {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="flex h-full items-stretch rounded-none"
+					className="flex h-full items-stretch rounded-none py-2 sm:py-0"
 				>
 					<div className="text-muted-foreground flex h-full w-full items-center justify-center">
 						<Sun className="h-3 w-3 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -45,9 +45,12 @@ export function ThemeToggle() {
 				>
 					Dark {theme === 'dark' && <Check className="h-4 w-4" />}
 				</DropdownMenuItem>
-				{/* <DropdownMenuItem onClick={() => setTheme('system')}>
-					System
-				</DropdownMenuItem> */}
+				<DropdownMenuItem
+					onClick={() => setTheme('system')}
+					className="flex items-center justify-between gap-2"
+				>
+					System {theme === 'system' && <Check className="h-4 w-4" />}
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

@@ -29,6 +29,7 @@ import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import PostNextUpFromListPagination from '../../_components/post-next-up-from-list-pagination'
 import { useList } from '../../[post]/_components/list-provider'
 import { useProgress } from '../../[post]/_components/progress-provider'
 
@@ -137,40 +138,17 @@ export function PostPlayer({
 					<Spinner />
 				</div>
 			)}
-
-			{state.action?.type === 'COMPLETED' && nextUp && (
+			{state.action?.type === 'COMPLETED' && (
 				<div
 					className={cn(
 						'bg-background/85 absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
 						className,
 					)}
 				>
-					<h2 className="sm:fluid-2xl fluid-xl font-semibold sm:mb-3">
-						Continue
-					</h2>
-					<Button
-						className="text-primary inline-flex items-center gap-2 sm:text-lg lg:text-xl"
-						asChild
-						variant="link"
-					>
-						<Link
-							href={`/${nextUp.resource.fields?.slug}${listSlug && list ? `?list=${list.fields.slug}` : ''}`}
-						>
-							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
-						</Link>
-					</Button>
-					{!session?.user && (
-						<span className="text-muted-foreground mt-4">
-							<Link
-								href="/login"
-								target="_blank"
-								className="hover:text-foreground text-center underline"
-							>
-								Log in
-							</Link>{' '}
-							to save progress
-						</span>
-					)}
+					<PostNextUpFromListPagination
+						postId={postId}
+						className="mt-0 bg-transparent px-0 py-0"
+					/>
 				</div>
 			)}
 		</div>
@@ -178,19 +156,20 @@ export function PostPlayer({
 }
 
 export function SimplePostPlayer({
+	ref,
 	muxPlaybackId,
 	className,
 	videoResource,
 	handleVideoTimeUpdate,
 	thumbnailTime,
 }: {
+	ref?: React.RefObject<MuxPlayerRefAttributes | null>
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
 	handleVideoTimeUpdate?: (e: Event) => void
 	thumbnailTime?: number
 }) {
-	const ref = React.useRef<MuxPlayerRefAttributes>(null)
 	const playerProps = {
 		id: 'mux-player',
 		defaultHiddenCaptions: true,

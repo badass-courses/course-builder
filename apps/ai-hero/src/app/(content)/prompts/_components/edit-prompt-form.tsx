@@ -22,7 +22,7 @@ type EditPromptFormProps = {
 }
 
 export function EditPromptForm({ prompt }: EditPromptFormProps) {
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof PromptSchema>>({
 		resolver: zodResolver(PromptSchema),

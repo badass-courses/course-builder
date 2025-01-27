@@ -54,7 +54,7 @@ export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
 	})
 
 	const session = useSession()
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 
 	const isMobile = useIsMobile()
 

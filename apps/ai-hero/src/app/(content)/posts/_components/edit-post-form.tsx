@@ -41,6 +41,11 @@ export type EditPostFormProps = {
 	theme?: string
 	tagLoader: Promise<Tag[]>
 	listsLoader: Promise<List[]>
+	sendResourceChatMessage: (options: {
+		resourceId: string
+		messages: any[]
+		selectedWorkflow?: string
+	}) => Promise<void>
 }
 
 export function EditPostForm({
@@ -49,7 +54,7 @@ export function EditPostForm({
 	tagLoader,
 	listsLoader,
 }: Omit<EditPostFormProps, 'form'>) {
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof PostSchema>>({
 		resolver: zodResolver(NewPostFormSchema),
@@ -85,6 +90,7 @@ export function EditPostForm({
 				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
 			]}
 			theme={theme}
+			sendResourceChatMessage={sendResourceChatMessage}
 		/>
 	) : (
 		<EditResourcesFormDesktop
@@ -130,6 +136,7 @@ export function EditPostForm({
 					videoResourceLoader={videoResourceLoader}
 					videoResourceId={videoResource?.id}
 					post={post}
+					sendResourceChatMessage={sendResourceChatMessage}
 				/>
 			</React.Suspense>
 		</EditResourcesFormDesktop>

@@ -47,7 +47,7 @@ export function EditEmailsForm({
 }: EditArticleFormProps) {
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(email)
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 	const form = useForm<z.infer<typeof EmailSchema>>({
 		resolver: zodResolver(EmailSchema),
 		defaultValues: {

@@ -17,7 +17,9 @@ import slugify from '@sindresorhus/slugify'
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
 
-export async function getEggheadUserProfile(userId: string) {
+export const EGGHEAD_API_V1_BASE_URL = 'https://app.egghead.io/api/v1'
+
+export async function getEggheadToken(userId: string) {
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
 		with: {
@@ -48,6 +50,11 @@ export async function getEggheadUserProfile(userId: string) {
 		throw new Error('token-expired')
 	}
 
+	return eggheadToken
+}
+
+export async function getEggheadUserProfile(userId: string) {
+	const eggheadToken = await getEggheadToken(userId)
 	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
 
 	const profile = await fetch(eggheadUserUrl, {
@@ -62,7 +69,15 @@ export async function getEggheadUserProfile(userId: string) {
 		return await res.json()
 	})
 
-	return profile
+	const parsedProfile = EggheadCurrentUserSchema.safeParse(profile)
+
+	if (!parsedProfile.success) {
+		throw new Error('Failed to parse egghead profile', {
+			cause: parsedProfile.error.flatten().fieldErrors,
+		})
+	}
+
+	return parsedProfile.data
 }
 
 const EGGHEAD_LESSON_TYPE = 'lesson'
@@ -388,3 +403,116 @@ export async function createEggheadCourse(input: {
 
 	return eggheadCourse.data
 }
+
+export const EggheadCurrentUserInstructorSchema = z.object({
+	id: z.number(),
+	slug: z.string().optional(),
+	full_name: z.string().optional(),
+	first_name: z.string().optional(),
+	last_name: z.string().optional(),
+	twitter: z.string().optional(),
+	website: z.string().url().optional(),
+	bio_short: z.string().optional(),
+	state: z.string().optional(),
+	http_url: z.string().url().optional(),
+	path: z.string().optional(),
+	avatar_url: z.string().url().optional(),
+	avatar_480_url: z.string().url().optional(),
+	lessons_url: z.string().url().optional(),
+	lesson_tags: z.array(z.any()).optional(),
+	published_lessons: z.number().optional(),
+	published_courses: z.number().optional(),
+	rss_url: z.string().url().optional(),
+	slack_id: z.string().optional(),
+	slack_group_id: z.string().optional(),
+	email: z.string().email().optional(),
+	pending_courses: z.number().optional(),
+	pending_lessons: z.number().optional(),
+	claimed_lessons: z.number().optional(),
+	submitted_lessons: z.number().optional(),
+	approved_lessons: z.number().optional(),
+	reviewing_lessons: z.number().optional(),
+	updated_lessons: z.number().optional(),
+	revenue_url: z.string().url().optional(),
+	affiliate_http_url: z.string().url().optional(),
+	stats_url: z.string().url().optional(),
+	playlists_url: z.string().url().optional(),
+})
+export type EggheadCurrentUserInstructor = z.infer<
+	typeof EggheadCurrentUserInstructorSchema
+>
+
+export const EggheadCurrentUserSchema = z.object({
+	name: z.string().optional(),
+	id: z.number(),
+	lessons_completed: z.number().optional(),
+	series_completed: z.number().optional(),
+	email: z.string().optional(),
+	is_unverified_email: z.boolean().optional(),
+	full_name: z.string().optional(),
+	discord_id: z.string().optional(),
+	avatar_url: z.string().optional(),
+	contact_id: z.string().optional(),
+	roles: z.array(z.string()).optional(),
+	accounts: z.array(z.any()).optional(),
+	can_comment: z.boolean().optional(),
+	providers: z.array(z.string()).optional(),
+	created_at: z.number().optional(),
+	opted_out: z.boolean().optional(),
+	stripeKey: z.string().optional(),
+	is_pro: z.boolean().optional(),
+	is_instructor: z.boolean().optional(),
+	instructor_id: z.number().optional(),
+	is_cancelled: z.boolean().nullish(),
+	is_community_member: z.boolean().optional(),
+	user_profile_url: z.string().optional(),
+	username: z.string().optional(),
+	user_url: z.string().optional(),
+	watch_later_bookmarks_url: z.string().optional(),
+	lessons_url: z.string().optional(),
+	series_url: z.string().optional(),
+	answer_quiz_url: z.string().optional(),
+	recommended_lessons_url: z.string().optional(),
+	recommended_series_url: z.string().optional(),
+	in_progress_series_url: z.string().optional(),
+	timezone: z.string().optional(),
+	last_lesson_completed_at: z.coerce.date().optional(),
+	current_course_url: z.string().optional(),
+	current_course: z.any(),
+	tags: z.array(z.any()).optional(),
+	subscription: z.any(),
+	purchased: z.array(z.any()).optional(),
+	deals: z.array(z.any()).optional(),
+	instructor: EggheadCurrentUserInstructorSchema.optional(),
+	new_lesson_http_url: z.string().optional(),
+	new_lesson_url: z.string().optional(),
+	production_board_path: z.string().optional(),
+	production_board_url: z.string().optional(),
+	playlists_url: z.string().optional(),
+	watch_later_url: z.string().optional(),
+	collections_http_url: z.string().optional(),
+	edit_user_url: z.string().optional(),
+	edit_user_password_url: z.string().optional(),
+	membership_url: z.string().optional(),
+	favorites: z.array(z.string()).optional(),
+	favorite_topic: z.string().optional(),
+	managed_subscription_url: z.string().optional(),
+	search_api_v1_users: z.string().optional(),
+	api_v1_users: z.string().optional(),
+	become_user_url: z.string().optional(),
+	events_url: z.string().optional(),
+	view_egghead_apex_as_user_url: z.string().optional(),
+	last_sign_in_at: z.coerce.date().optional(),
+	is_banned: z.boolean().optional(),
+	has_random_password: z.null().optional(),
+	new_playlist_url: z.string().optional(),
+	new_playlist_http_url: z.string().optional(),
+	new_resource_files_url: z.string().optional(),
+	new_resource_urls_url: z.string().optional(),
+	reorder_course_publication_queue_url: z.string().optional(),
+	new_tag_url: z.string().optional(),
+	s3_signing_url: z.string().optional(),
+	api_v1_podcast_shows_url: z.string().optional(),
+	api_v1_responses_url: z.string().optional(),
+})
+export type EggheadCurrentUser = z.infer<typeof EggheadCurrentUserSchema>

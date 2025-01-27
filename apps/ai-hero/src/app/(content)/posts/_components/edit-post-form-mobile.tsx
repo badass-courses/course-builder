@@ -48,6 +48,7 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 	theme = 'light',
 	tagLoader,
 	listsLoader,
+	sendResourceChatMessage,
 }) => {
 	const session = useSession()
 	const videoResource = use(videoResourceLoader)
@@ -175,6 +176,7 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 					>
 						<div className="flex flex-col gap-8">
 							<PostMetadataFormFields
+								sendResourceChatMessage={sendResourceChatMessage}
 								listsLoader={listsLoader}
 								tagLoader={tagLoader}
 								form={form}

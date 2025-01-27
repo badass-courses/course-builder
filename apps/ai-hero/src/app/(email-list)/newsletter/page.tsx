@@ -13,7 +13,7 @@ export default async function NewsletterPage() {
 		<main>
 			<PrimaryNewsletterCta className="min-h-screen pt-20">
 				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-10">
-					<h1 className="font-heading fluid-2xl text-muted-foreground text-center font-extrabold">
+					<h1 className="font-heading fluid-2xl text-center font-extrabold text-white">
 						{`Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.`}
 					</h1>
 					<h2 className="fluid-base text-secondary pt-8 text-center font-sans font-normal">
