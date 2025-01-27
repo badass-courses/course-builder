@@ -631,6 +631,12 @@ export async function removePostFromCoursePost({
 	postId: string
 	resourceOfId: string
 }) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
 	await db
 		.delete(contentResourceResource)
 		.where(
