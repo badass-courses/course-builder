@@ -77,9 +77,7 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: ['var(--font-maison-neue)', ...fontFamily.sans],
-				heading: ['var(--font-meta)', ...fontFamily.sans],
-				display: ['var(--font-quador)', ...fontFamily.sans],
-				greek: ['var(--font-ceaser)', ...fontFamily.sans],
+				heading: ['var(--font-maison-neue)', ...fontFamily.sans],
 				mono: ['var(--font-maison-neue-mono)', ...fontFamily.mono],
 			},
 			keyframes: {
@@ -113,15 +111,10 @@ module.exports = {
 						},
 						ul: {
 							listStylePosition: 'outside',
-							listStyleImage:
-								'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDEwIDEwIj4KICA8cGF0aCBzdHJva2U9IiNmZmYiIGQ9Ik0xLjE3IDIuNzg5IDUgLjU3NyA4LjgzIDIuNzl2NC40Mkw1IDkuNDIzIDEuMTcgNy4yMVYyLjc5WiIvPgo8L3N2Zz4K")',
+							listStyleType: 'square',
 						},
 						'ul > li': {
 							color: theme('colors.foreground'),
-							'&::marker': {
-								listStyleImage:
-									'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDEwIDEwIj4KICA8cGF0aCBmaWxsPSIjRDlEOUQ5IiBkPSJtNSAwIDQuMzMgMi41djVMNSAxMCAuNjcgNy41di01TDUgMFoiLz4KPC9zdmc+Cg==")',
-							},
 						},
 						blockquote: {
 							borderLeftColor: theme('colors.muted.DEFAULT'),

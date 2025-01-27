@@ -70,7 +70,7 @@ export function EditPagesForm({
 }: EditArticleFormProps) {
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(page)
-	const { forcedTheme: theme } = useTheme()
+	const { theme } = useTheme()
 	const form = useForm<z.infer<typeof PageSchema>>({
 		resolver: zodResolver(PageSchema),
 		defaultValues: {

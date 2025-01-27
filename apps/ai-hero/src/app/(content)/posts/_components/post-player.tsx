@@ -156,19 +156,20 @@ export function PostPlayer({
 }
 
 export function SimplePostPlayer({
+	ref,
 	muxPlaybackId,
 	className,
 	videoResource,
 	handleVideoTimeUpdate,
 	thumbnailTime,
 }: {
+	ref?: React.RefObject<MuxPlayerRefAttributes | null>
 	muxPlaybackId?: string
 	videoResource: VideoResource
 	className?: string
 	handleVideoTimeUpdate?: (e: Event) => void
 	thumbnailTime?: number
 }) {
-	const ref = React.useRef<MuxPlayerRefAttributes>(null)
 	const playerProps = {
 		id: 'mux-player',
 		defaultHiddenCaptions: true,

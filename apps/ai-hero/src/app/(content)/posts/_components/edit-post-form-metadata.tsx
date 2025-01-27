@@ -9,10 +9,11 @@ import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import type { List } from '@/lib/lists'
 import { Post, PostSchema } from '@/lib/posts'
-import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import { addTagToPost, removeTagFromPost, updatePost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
-import { Pencil, Sparkles } from 'lucide-react'
+import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
+import { Pencil, Shuffle, Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -199,6 +200,8 @@ export const PostMetadataFormFields: React.FC<{
 		})
 	}
 
+	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
+
 	return (
 		<>
 			<div>
@@ -241,6 +244,7 @@ export const PostMetadataFormFields: React.FC<{
 										{videoResource && videoResource.state === 'ready' ? (
 											<div className="-mt-5 border-b">
 												<SimplePostPlayer
+													ref={playerRef}
 													thumbnailTime={
 														form.watch('fields.thumbnailTime') || 0
 													}
@@ -265,21 +269,57 @@ export const PostMetadataFormFields: React.FC<{
 													</Button>
 													<TooltipProvider>
 														<Tooltip delayDuration={0}>
-															<TooltipTrigger asChild>
+															<div className="flex items-center">
+																<TooltipTrigger asChild>
+																	<Button
+																		type="button"
+																		className="rounded-r-none"
+																		disabled={thumbnailTime === 0}
+																		onClick={async () => {
+																			form.setValue(
+																				'fields.thumbnailTime',
+																				thumbnailTime,
+																			)
+
+																			await updatePost(
+																				{
+																					id: post.id,
+																					fields: {
+																						...post.fields,
+																						thumbnailTime: thumbnailTime,
+																					},
+																				},
+																				'save',
+																			)
+																		}}
+																		variant="secondary"
+																		size={'sm'}
+																	>
+																		<span>Set Thumbnail</span>
+																	</Button>
+																</TooltipTrigger>
 																<Button
-																	disabled={thumbnailTime === 0}
-																	onClick={() => {
-																		form.setValue(
-																			'fields.thumbnailTime',
-																			thumbnailTime,
-																		)
-																	}}
+																	type="button"
+																	className="border-secondary rounded-l-none border bg-transparent px-2"
 																	variant="secondary"
 																	size={'sm'}
+																	onClick={() => {
+																		if (playerRef.current?.seekable) {
+																			const seekableEnd =
+																				playerRef.current.seekable.end(0)
+																			// Generate a random time between 0 and the end of the video
+																			const randomTime = Math.floor(
+																				Math.random() * seekableEnd,
+																			)
+																			playerRef.current.currentTime = randomTime
+																			playerRef.current.thumbnailTime =
+																				randomTime
+																		}
+																	}}
 																>
-																	<span>Set Thumbnail</span>
+																	<Shuffle className="h-3 w-3" />
 																</Button>
-															</TooltipTrigger>
+															</div>
 															<TooltipContent side="bottom">
 																<div className="text-xs">
 																	current thumbnail:

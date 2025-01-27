@@ -17,7 +17,7 @@ export default function PostNextUpFromListPagination({
 	const nextUp = list && getNextUpResourceFromList(list, postId)
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
-			className="mt-8 flex w-full flex-col items-center rounded bg-gray-950 px-5 py-10 text-center"
+			className="mt-8 flex w-full flex-col items-center rounded bg-gray-100 px-5 py-10 text-center dark:bg-gray-950"
 			aria-label="List navigation"
 		>
 			<h2 className="fluid-2xl mb-3 font-semibold">Continue</h2>

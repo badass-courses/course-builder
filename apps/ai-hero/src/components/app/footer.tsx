@@ -22,7 +22,7 @@ export default function Footer() {
 					href="/"
 					className="font-heading flex items-center justify-center gap-2 font-semibold leading-none saturate-0"
 				>
-					<LogoMark className="h-16 w-16" />
+					<LogoMark className="h-12 w-12" />
 					{/* <span className="text-muted-foreground text-3xl font-bold !leading-none">
 						AI Hero
 					</span> */}

@@ -81,7 +81,7 @@ const Home = async (props: Props) => {
 					className="mx-auto mb-5 flex items-center justify-center"
 					href="/vercel-ai-sdk-tutorial"
 				>
-					<Badge className="mx-auto flex items-center gap-1 overflow-hidden rounded-full p-0">
+					<Badge className="dark:bg-primary mx-auto flex items-center gap-1 overflow-hidden rounded-full bg-orange-600 p-0">
 						<span className="bg-background/10 flex px-2 py-1">Out Now</span>
 						<span className="flex items-center gap-1 px-2 pr-3">
 							Free Vercel AI SDK Tutorial <ChevronRight className="w-3" />
