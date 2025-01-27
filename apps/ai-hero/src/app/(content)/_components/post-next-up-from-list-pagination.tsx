@@ -45,7 +45,7 @@ export default function PostNextUpFromListPagination({
 			<ul>
 				<li className="flex flex-col">
 					<Button
-						className="text-primary inline-flex items-center gap-2 text-lg lg:text-xl"
+						className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 lg:text-xl"
 						asChild
 						variant="link"
 						onClick={async () => {

@@ -157,7 +157,7 @@ export function MobileListResourceNavigation() {
 	return (
 		<>
 			{/* {!isOpen && ( */}
-			<div className="bg-card fixed left-0 top-2 z-50 flex scale-90 items-center gap-4 rounded-full border py-1 pl-1 pr-6 shadow-xl xl:hidden">
+			<div className="bg-card fixed -left-2 top-1 z-50 flex scale-90 items-center gap-4 rounded-full border py-1 pl-1 pr-6 shadow-xl xl:hidden">
 				<Button
 					className="rounded-full"
 					onClick={() => {

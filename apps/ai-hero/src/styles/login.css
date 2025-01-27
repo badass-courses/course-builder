@@ -1,9 +1,9 @@
 [data-login-template] {
 	@apply container relative mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full flex-grow flex-col items-center justify-start border-x p-5 pb-10 pt-10 sm:p-5 sm:pt-32;
 	[data-title] {
-		@apply font-heading fluid-5xl text-muted-foreground text-balance pt-3 text-center font-extrabold capitalize;
+		@apply font-heading fluid-3xl text-balance pt-3 text-center font-extrabold capitalize;
 		span {
-			@apply fluid-lg text-primary block pt-2 text-center font-sans font-light;
+			@apply fluid-lg text-muted-foreground block pt-2 text-center font-sans font-normal;
 		}
 	}
 	[data-verification-error] {
