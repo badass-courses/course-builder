@@ -70,9 +70,8 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
-								// forcedTheme="dark"
-								defaultTheme="dark"
-								enableSystem={false}
+								defaultTheme="system"
+								enableSystem={true}
 								disableTransitionOnChange
 							>
 								<NextSSRPlugin
