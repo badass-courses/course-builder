@@ -624,12 +624,58 @@ export async function addEggheadLessonToPlaylist({
 	}
 }
 
+export async function removePostFromCoursePost({
+	postId,
+	resourceOfId,
+}: {
+	postId: string
+	resourceOfId: string
+}) {
+	await db
+		.delete(contentResourceResource)
+		.where(
+			and(
+				eq(contentResourceResource.resourceOfId, resourceOfId),
+				eq(contentResourceResource.resourceId, postId),
+			),
+		)
+
+	const post = await getPost(postId)
+	const resourceOf = await getPost(resourceOfId)
+
+	if (
+		!post ||
+		!post.fields?.eggheadLessonId ||
+		!resourceOf?.fields?.eggheadPlaylistId
+	) {
+		throw new Error('eggheadLessonId is required')
+	}
+
+	// sync with egghead
+	try {
+		await removeEggheadLessonFromPlaylist({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
+		})
+	} catch (error) {
+		// rollback the database if egghead sync fails to stay in sync
+		await addResourceToResource({
+			resource: post,
+			parentResourceId: resourceOfId,
+		})
+
+		throw new Error('Error removing lesson from playlist')
+	}
+
+	//! TODO sync with sanity
+}
+
 export async function removeEggheadLessonFromPlaylist({
 	eggheadLessonId,
 	eggheadPlaylistId,
 }: {
 	eggheadLessonId: number
-	eggheadPlaylistId: string
+	eggheadPlaylistId: number
 }) {
 	const { session, ability } = await getServerAuthSession()
 
