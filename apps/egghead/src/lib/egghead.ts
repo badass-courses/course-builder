@@ -55,7 +55,6 @@ export async function getEggheadToken(userId: string) {
 
 export async function getEggheadUserProfile(userId: string) {
 	const eggheadToken = await getEggheadToken(userId)
-
 	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
 
 	const profile = await fetch(eggheadUserUrl, {
@@ -412,29 +411,21 @@ export const EggheadCurrentUserInstructorSchema = z.object({
 	first_name: z.string().optional(),
 	last_name: z.string().optional(),
 	twitter: z.string().optional(),
-	website: z.string().optional(),
+	website: z.string().url().optional(),
 	bio_short: z.string().optional(),
 	state: z.string().optional(),
-	http_url: z.string().optional(),
+	http_url: z.string().url().optional(),
 	path: z.string().optional(),
-	avatar_url: z.string().optional(),
-	avatar_480_url: z.string().optional(),
-	avatar_280_url: z.string().optional(),
-	avatar_256_url: z.string().optional(),
-	avatar_128_url: z.string().optional(),
-	avatar_64_url: z.string().optional(),
-	avatar_32_url: z.string().optional(),
-	lessons_url: z.string().optional(),
+	avatar_url: z.string().url().optional(),
+	avatar_480_url: z.string().url().optional(),
+	lessons_url: z.string().url().optional(),
 	lesson_tags: z.array(z.any()).optional(),
 	published_lessons: z.number().optional(),
 	published_courses: z.number().optional(),
-	edit_instructor_http_url: z.string().optional(),
-	api_v1_update_instructor_url: z.string().optional(),
-	rss_url: z.string().optional(),
+	rss_url: z.string().url().optional(),
 	slack_id: z.string().optional(),
 	slack_group_id: z.string().optional(),
-	email: z.string().optional(),
-	gear_tracking_number: z.null().optional(),
+	email: z.string().email().optional(),
 	pending_courses: z.number().optional(),
 	pending_lessons: z.number().optional(),
 	claimed_lessons: z.number().optional(),
@@ -442,10 +433,10 @@ export const EggheadCurrentUserInstructorSchema = z.object({
 	approved_lessons: z.number().optional(),
 	reviewing_lessons: z.number().optional(),
 	updated_lessons: z.number().optional(),
-	revenue_url: z.string().optional(),
-	affiliate_http_url: z.string().optional(),
-	stats_url: z.string().optional(),
-	playlists_url: z.string().optional(),
+	revenue_url: z.string().url().optional(),
+	affiliate_http_url: z.string().url().optional(),
+	stats_url: z.string().url().optional(),
+	playlists_url: z.string().url().optional(),
 })
 export type EggheadCurrentUserInstructor = z.infer<
 	typeof EggheadCurrentUserInstructorSchema
@@ -472,7 +463,7 @@ export const EggheadCurrentUserSchema = z.object({
 	is_pro: z.boolean().optional(),
 	is_instructor: z.boolean().optional(),
 	instructor_id: z.number().optional(),
-	is_cancelled: z.boolean().optional(),
+	is_cancelled: z.boolean().nullish(),
 	is_community_member: z.boolean().optional(),
 	user_profile_url: z.string().optional(),
 	username: z.string().optional(),
@@ -492,7 +483,6 @@ export const EggheadCurrentUserSchema = z.object({
 	subscription: z.any(),
 	purchased: z.array(z.any()).optional(),
 	deals: z.array(z.any()).optional(),
-	instructor_url: z.string().optional(),
 	instructor: EggheadCurrentUserInstructorSchema.optional(),
 	new_lesson_http_url: z.string().optional(),
 	new_lesson_url: z.string().optional(),
