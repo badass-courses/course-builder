@@ -411,8 +411,8 @@ const TreeItem = memo(function TreeItem({
 						size="icon"
 						variant="destructive"
 						onClick={async () => {
+							dispatch({ type: 'remove-item', itemId: item.id })
 							await onDelete({ itemId: item.id })
-							return dispatch({ type: 'remove-item', itemId: item.id })
 						}}
 					>
 						<Trash size={12} />
