@@ -55,6 +55,19 @@
 		--radius: 0.3rem;
 		color-scheme: light;
 
+		[data-theme='elysium'] {
+			/* blue-ish color scheme */
+			--primary: 241.2 43.4% 76.5%;
+			--primary-foreground: 0 0% 0%;
+			--secondary: 176.5 37.6% 54.2%;
+			--secondary-foreground: 0 0% 0%;
+			--muted: 231 20% 19%;
+			--muted-foreground: 235 100% 95%;
+			--border: 230.8 20.7% 18.8%;
+			--input: 230.8 20.7% 18.8%;
+			--ring: 241.2 43.4% 76.5%;
+		}
+
 		/* codehike theme */
 		--ch-0: light;
 		--ch-1: #6e7781;
