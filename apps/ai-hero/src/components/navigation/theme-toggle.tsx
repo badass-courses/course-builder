@@ -16,6 +16,13 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function ThemeToggle({ className }: { className?: string }) {
 	const { setTheme, theme } = useTheme()
+	const [mounted, setMounted] = React.useState(false)
+
+	React.useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	// if (!mounted) return null
 
 	return (
 		<DropdownMenu>
@@ -31,7 +38,9 @@ export function ThemeToggle({ className }: { className?: string }) {
 						<Sun className="h-3.5 w-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
 						<Moon className="absolute h-3.5 w-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 					</div>
-					<span className="capitalize sm:sr-only">{theme} Theme</span>
+					<span className="capitalize sm:sr-only">
+						{mounted && theme} Theme
+					</span>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
