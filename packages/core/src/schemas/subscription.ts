@@ -7,7 +7,7 @@ export const SubscriptionSchema = z.object({
 	id: z.string(),
 	organizationId: z.string().optional(),
 	productId: z.string(),
-	createdAt: z.date(),
+	createdAt: z.coerce.date(),
 	merchantSubscriptionId: z.string(),
 	status: z
 		.enum([

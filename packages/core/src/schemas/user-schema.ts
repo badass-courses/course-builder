@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { SubscriptionSchema } from './subscription'
+
 export const userSchema = z.object({
 	id: z.string().max(255),
 	name: z.string().max(255).optional().nullable(),
@@ -46,6 +48,7 @@ export const userSchema = z.object({
 		)
 		.optional()
 		.default([]),
+	subscriptions: z.array(SubscriptionSchema.partial()).optional().default([]),
 })
 
 export type User = z.infer<typeof userSchema>

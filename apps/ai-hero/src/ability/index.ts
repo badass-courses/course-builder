@@ -94,6 +94,8 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 			options.user.organizationRoles.forEach(({ organizationId, name }) => {
 				// Base permissions for all roles
 				can('read', 'Organization', { organizationId: { $eq: organizationId } })
+				const hasSubscription =
+					options.user?.subscriptions && options.user.subscriptions.length > 0
 
 				if (name === 'owner') {
 					can('manage', 'Organization', {
@@ -102,9 +104,11 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 					can('manage', 'OrganizationMember', {
 						organizationId: { $eq: organizationId },
 					})
-					can('manage', 'OrganizationBilling', {
-						organizationId: { $eq: organizationId },
-					})
+					if (hasSubscription) {
+						can('manage', 'OrganizationBilling', {
+							organizationId: { $eq: organizationId },
+						})
+					}
 					can('transfer', 'Organization', {
 						organizationId: { $eq: organizationId },
 					})

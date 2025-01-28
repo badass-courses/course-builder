@@ -5,7 +5,7 @@ export const MerchantSubscriptionSchema = z.object({
 	organizationId: z.string().nullable(),
 	merchantAccountId: z.string(),
 	status: z.number().default(0),
-	createdAt: z.date().default(() => new Date()),
+	createdAt: z.coerce.date().default(() => new Date()),
 	label: z.string().nullable(),
 	identifier: z.string().nullable(),
 	merchantCustomerId: z.string(),

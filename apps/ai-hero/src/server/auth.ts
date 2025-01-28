@@ -220,6 +220,19 @@ export const authOptions: NextAuthConfig = {
 					membership.organizationMembershipRoles.map((role) => role.role),
 				) || []
 
+			const organizationSubscriptions = await db.query.subscription.findMany({
+				where: (subscription, { eq }) =>
+					organizationRoles[0]?.organizationId
+						? eq(
+								subscription.organizationId,
+								organizationRoles[0].organizationId,
+							)
+						: undefined,
+				with: {
+					merchantSubscription: true,
+				},
+			})
+
 			return {
 				...session,
 				user: {
@@ -228,6 +241,7 @@ export const authOptions: NextAuthConfig = {
 					role: role as Role,
 					roles: userRoles.map((userRole) => userRole.role),
 					organizationRoles,
+					subscriptions: organizationSubscriptions,
 				},
 			}
 		},
