@@ -624,6 +624,104 @@ export async function addEggheadLessonToPlaylist({
 	}
 }
 
+export async function removePostFromCoursePost({
+	postId,
+	resourceOfId,
+}: {
+	postId: string
+	resourceOfId: string
+}) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(
+			and(
+				eq(contentResourceResource.resourceOfId, resourceOfId),
+				eq(contentResourceResource.resourceId, postId),
+			),
+		)
+
+	const post = await getPost(postId)
+	const resourceOf = await getPost(resourceOfId)
+
+	if (
+		!post ||
+		!post.fields?.eggheadLessonId ||
+		!resourceOf?.fields?.eggheadPlaylistId
+	) {
+		throw new Error('eggheadLessonId is required')
+	}
+
+	// sync with egghead
+	try {
+		await removeEggheadLessonFromPlaylist({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
+		})
+	} catch (error) {
+		// rollback the database if egghead sync fails to stay in sync
+		await addResourceToResource({
+			resource: post,
+			parentResourceId: resourceOfId,
+		})
+
+		throw new Error('Error removing lesson from playlist')
+	}
+
+	//! TODO sync with sanity
+}
+
+export async function removeEggheadLessonFromPlaylist({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const eggheadToken = await getEggheadToken(session.user.id)
+
+	try {
+		const response = await fetch(
+			`${EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/remove`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+					},
+				}),
+			},
+		).then(async (res) => {
+			if (!res.ok) {
+				console.log('Error removing lesson from playlist', res)
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		throw error
+	}
+}
+
 export const addResourceToResource = async ({
 	resource,
 	parentResourceId,

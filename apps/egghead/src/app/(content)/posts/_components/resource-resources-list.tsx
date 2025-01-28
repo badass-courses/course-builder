@@ -14,12 +14,14 @@ import {
 	addEggheadLessonToPlaylist,
 	addResourceToResource,
 	createPost,
+	getPost,
+	removeEggheadLessonFromPlaylist,
+	removePostFromCoursePost,
 } from '@/lib/posts-query'
 import { createResource } from '@/lib/resources/create-resources'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
-import { Button } from '@coursebuilder/ui'
-import { CreateResourceForm } from '@coursebuilder/ui/resources-crud/create-resource-form'
+import { Button, useToast } from '@coursebuilder/ui'
 
 type FormState = {
 	activeForm: 'lesson' | 'section' | 'existing_lesson' | null
@@ -89,6 +91,7 @@ export function ResourceResourcesList({
 		getInitialTreeState,
 	)
 	const router = useRouter()
+	const { toast } = useToast()
 
 	const handleResourceCreated = async (createdResource: ContentResource) => {
 		const resourceItem = await addResourceToResource({
@@ -127,6 +130,21 @@ export function ResourceResourcesList({
 				rootResourceId={resource.id}
 				state={state}
 				updateState={updateState}
+				onItemDelete={async ({ itemId }: { itemId: string }) => {
+					try {
+						await removePostFromCoursePost({
+							postId: itemId,
+							resourceOfId: resource.id,
+						})
+					} catch (error) {
+						console.error('Error removing lesson from playlist', error)
+						toast({
+							title: 'Error removing lesson from playlist',
+							description: 'Please refresh the page and try again.',
+							variant: 'destructive',
+						})
+					}
+				}}
 			/>
 			<div className="flex flex-col gap-1">
 				{formState.activeForm === 'lesson' && (
