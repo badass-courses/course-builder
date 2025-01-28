@@ -117,7 +117,7 @@ export default async function AdminDashboardPage() {
 													<span>•</span>
 													<span>{totalResources} resources</span>
 												</div>
-												<div className="mt-2 h-1 rounded-full bg-gray-900">
+												<div className="bg-muted mt-2 h-1 rounded-full">
 													<div
 														className="h-full rounded-full bg-emerald-500 transition-all"
 														style={{

@@ -57,7 +57,6 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning>
-				<HolyLoader color="#DEC09D" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
 				<body
 					id="layout"
@@ -74,6 +73,11 @@ export default function RootLayout({
 								enableSystem={true}
 								disableTransitionOnChange
 							>
+								<HolyLoader
+									color="hsl(var(--primary))"
+									height="0.15rem"
+									speed={250}
+								/>
 								<NextSSRPlugin
 									/**
 									 * The `extractRouterConfig` will extract **only** the route configs from the

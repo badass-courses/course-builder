@@ -10,13 +10,14 @@ import { cn } from '@/utils/cn'
 import { Menu, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { useLiveEventToastNotifier } from '../app/use-live-event-toast-notifier'
 import { useNavLinks } from '../app/use-nav-links'
 import { LogoMark } from '../logo'
 import { NavLinkItem } from './nav-link-item'
+import { ThemeToggle } from './theme-toggle'
 import { User } from './user'
 
 const Navigation = () => {
@@ -54,12 +55,9 @@ const Navigation = () => {
 			)}
 		>
 			<div
-				className={cn(
-					'flex w-full items-stretch justify-between px-3 sm:px-5',
-					{
-						// container: !isEditRoute,
-					},
-				)}
+				className={cn('flex w-full items-stretch justify-between', {
+					// container: !isEditRoute,
+				})}
 			>
 				<div className="flex items-stretch">
 					<span
@@ -71,7 +69,7 @@ const Navigation = () => {
 						<Link
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
-							className="font-heading flex h-[var(--nav-height)] w-full items-center justify-center gap-2 pr-4 text-lg font-semibold leading-none transition"
+							className="font-heading hover:bg-muted flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-5 text-lg font-semibold leading-none transition"
 						>
 							<LogoMark className="w-7" />
 							<span className="text-foreground text-xl font-semibold !leading-none">
@@ -81,18 +79,20 @@ const Navigation = () => {
 					</span>
 					<hr
 						aria-hidden="true"
-						className="bg-muted-foreground/50 mx-2 my-auto hidden h-2 w-px sm:flex"
+						className="bg-border my-auto flex h-full w-px"
 					/>
 					{links.length > 0 && (
 						<nav
-							className="hidden items-stretch sm:flex"
+							className={cn('flex items-stretch', {
+								'hidden sm:flex': links.length > 3,
+							})}
 							aria-label={`Navigation header with ${links.length} links`}
 						>
 							<ul className="flex items-stretch">
 								{links.map((link) => {
 									return (
 										<NavLinkItem
-											className="pr-5 text-base font-medium"
+											className="text-base font-medium"
 											key={link.href || link.label}
 											{...link}
 										/>
@@ -122,6 +122,7 @@ const Navigation = () => {
 					)}
 					<div className="hidden items-stretch sm:flex">
 						<User />
+						<ThemeToggle className="hover:bg-muted border-l px-5" />
 					</div>
 				</div>
 				<div className="flex items-stretch sm:hidden">
@@ -152,28 +153,56 @@ const MobileNav = ({
 		<div className="flex items-stretch">
 			<Button
 				variant="ghost"
-				className="flex h-full items-center justify-center px-5"
+				className="flex h-full items-center justify-center border-l px-5"
 				type="button"
 				onClick={() => {
 					setIsMobileMenuOpen(!isMobileMenuOpen)
 				}}
 			>
 				{!isMobileMenuOpen ? (
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 16 16"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<line y1="4.5" x2="16" y2="4.5" stroke="currentColor" />
-						<line y1="11.5" x2="16" y2="11.5" stroke="currentColor" />
-					</svg>
+					<Menu className="h-5 w-5" />
 				) : (
 					<X className="h-5 w-5" />
 				)}
 			</Button>
-			{isMobileMenuOpen && (
+			<Sheet onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
+				<SheetContent
+					side="right"
+					className="bg-card px-2 py-10 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"
+				>
+					<nav className="flex h-full flex-col items-start justify-between gap-2">
+						<div className="flex flex-col gap-2">
+							{links.length > 0 &&
+								links.map((link) => {
+									return (
+										<NavLinkItem
+											className="text-xl"
+											key={link.href || link.label}
+											{...link}
+										/>
+									)
+								})}
+							{sessionStatus === 'authenticated' && (
+								<NavLinkItem
+									className="text-xl"
+									label="Send Feedback"
+									onClick={() => {
+										setIsFeedbackDialogOpen(true)
+									}}
+								/>
+							)}
+							<User
+								loginClassName="text-xl"
+								className="border-l-0 py-5 [&_span]:text-xl"
+							/>
+						</div>
+						<div className="flex items-center justify-center">
+							<ThemeToggle className="[&_svg]:h-5 [&_svg]:w-5" />
+						</div>
+					</nav>
+				</SheetContent>
+			</Sheet>
+			{/* {isMobileMenuOpen && (
 				<nav className="bg-background absolute left-0 top-[var(--nav-height)] z-10 w-full border-b px-2 py-3">
 					{links.length > 0 &&
 						links.map((link) => {
@@ -199,7 +228,7 @@ const MobileNav = ({
 						className="flex w-full rounded px-2 py-2 text-base"
 					/>
 				</nav>
-			)}
+			)} */}
 		</div>
 	)
 }

@@ -95,7 +95,7 @@ export default function ListResourceNavigation({
 						>
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
-						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:14px_14px]" />
+						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:14px_14px] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 					</div>
 				)}
 				{/* Resource navigation list */}
@@ -174,7 +174,7 @@ export function MobileListResourceNavigation() {
 			</div>
 			{/* )} */}
 			<Sheet onOpenChange={setIsOpen} open={isOpen}>
-				<SheetContent className="p-0 pt-3">
+				<SheetContent side="left" className="p-0 pt-3">
 					{/* <SheetTitle className="px-5">{list?.fields?.title}</SheetTitle> */}
 					<ListResourceNavigation
 						withHeader={false}
