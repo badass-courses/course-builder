@@ -787,15 +787,59 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-type positionInputIten = {
+type positionInputItem = {
 	currentParentResourceId: string
 	parentResourceId: string
 	resourceId: string
 	position: number
-	children?: positionInputIten[]
+	children?: positionInputItem[]
 }
 
-export const updateResourcePositions = async (input: positionInputIten[]) => {
+async function reorderEggheadPlaylistItems(
+	input: { resourceId: string; position: number }[],
+	currentParentResourceId: string,
+) {
+	const currentParentResourcePost = await getPost(currentParentResourceId)
+	const eggheadPlaylistId = currentParentResourcePost?.fields?.eggheadPlaylistId
+
+	if (!eggheadPlaylistId) {
+		return null
+	}
+
+	const tracklistAttributes = await Promise.all(
+		input.map(async (item) => {
+			const resource = await db.query.contentResource.findFirst({
+				where: eq(contentResource.id, item.resourceId),
+			})
+			return {
+				tracklistable_type: resource?.fields?.postType,
+				tracklistable_id: resource?.fields?.eggheadLessonId,
+				row_order_position: item.position,
+			}
+		}),
+	)
+
+	// Update each tracklist item's position in the playlist
+	await Promise.all(
+		tracklistAttributes.map((item) =>
+			eggheadPgQuery(
+				`UPDATE tracklists SET row_order = ${item.row_order_position} 
+				WHERE tracklistable_id = ${item.tracklistable_id}
+				AND playlist_id = ${eggheadPlaylistId}`,
+			),
+		),
+	)
+
+	return true
+}
+
+export const updateResourcePositions = async (input: positionInputItem[]) => {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
 	const result = await db.transaction(async (trx) => {
 		for (const {
 			currentParentResourceId,
@@ -833,7 +877,12 @@ export const updateResourcePositions = async (input: positionInputIten[]) => {
 		}
 	})
 
-	return result
+	const response = await reorderEggheadPlaylistItems(
+		input,
+		input?.[0]?.currentParentResourceId ?? '',
+	)
+
+	return response
 }
 
 export async function removeSection(
