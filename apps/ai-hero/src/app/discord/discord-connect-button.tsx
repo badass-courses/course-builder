@@ -15,7 +15,8 @@ export function DiscordConnectButton({
 	return (
 		<Button
 			data-button=""
-			variant="outline"
+			variant="ghost"
+			className="bg-black text-white"
 			onClick={() =>
 				signIn(discordProvider.id, {
 					callbackUrl: env.NEXT_PUBLIC_DISCORD_INVITE_URL,
