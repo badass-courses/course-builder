@@ -14,7 +14,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			{isTerminalCode && (
 				<div
 					aria-hidden="true"
-					className="bg-background mt-8 flex items-center gap-1 rounded-t-[0.5rem] border-x border-t p-4"
+					className="bg-background mt-8 flex items-center gap-1 rounded-t-[0.5rem] border-x border-b border-t p-3"
 				>
 					{new Array(3).fill({}).map((_, index) => (
 						<div

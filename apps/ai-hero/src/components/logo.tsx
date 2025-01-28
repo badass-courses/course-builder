@@ -14,7 +14,7 @@ export const Logo: React.FC<{ className?: string; onDark?: boolean }> = ({
 				fill="none"
 				viewBox="0 0 280 280"
 			>
-				<g clip-path="url(#a)">
+				<g clipPath="url(#a)">
 					<path
 						fill="currentColor"
 						fillRule="evenodd"
@@ -48,7 +48,7 @@ export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 			fill="none"
 			viewBox="0 0 280 280"
 		>
-			<g clip-path="url(#a)">
+			<g clipPath="url(#a)">
 				<path
 					fill="currentColor"
 					fillRule="evenodd"

@@ -12,23 +12,35 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
 	const { setTheme, theme } = useTheme()
+	const [mounted, setMounted] = React.useState(false)
+
+	React.useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	// if (!mounted) return null
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button
-					variant="ghost"
-					size="icon"
-					className="flex h-full items-stretch rounded-none py-2 sm:py-0"
+					variant="link"
+					className={cn(
+						'text-foreground flex h-full items-stretch gap-2 rounded-none py-2 sm:py-0',
+						className,
+					)}
 				>
 					<div className="text-muted-foreground flex h-full w-full items-center justify-center">
-						<Sun className="h-3 w-3 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-						<Moon className="absolute h-3 w-3 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+						<Sun className="h-3.5 w-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+						<Moon className="absolute h-3.5 w-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 					</div>
-					<span className="sr-only">Toggle theme</span>
+					<span className="capitalize sm:sr-only">
+						{mounted && theme} Theme
+					</span>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">

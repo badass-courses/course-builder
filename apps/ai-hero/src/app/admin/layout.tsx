@@ -17,7 +17,7 @@ const AdminLayout = async ({
 					<nav className="">
 						<ul>
 							<li className="divide-border flex flex-col divide-y">
-								<NavItem href="/admin">
+								<NavItem href="/admin/dashboard">
 									<HomeIcon className="h-4 w-4" />
 									Dashboard
 								</NavItem>

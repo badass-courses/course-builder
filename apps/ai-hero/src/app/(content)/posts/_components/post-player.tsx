@@ -147,7 +147,7 @@ export function PostPlayer({
 				>
 					<PostNextUpFromListPagination
 						postId={postId}
-						className="mt-0 bg-transparent px-0 py-0"
+						className="mt-0 border-0 bg-transparent px-0 py-0"
 					/>
 				</div>
 			)}

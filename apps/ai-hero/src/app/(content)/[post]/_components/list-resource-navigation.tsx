@@ -95,7 +95,7 @@ export default function ListResourceNavigation({
 						>
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
-						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:14px_14px]" />
+						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:14px_14px] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 					</div>
 				)}
 				{/* Resource navigation list */}
@@ -157,16 +157,16 @@ export function MobileListResourceNavigation() {
 	return (
 		<>
 			{/* {!isOpen && ( */}
-			<div className="bg-card fixed -left-2 top-1 z-50 flex scale-90 items-center gap-4 rounded-full border py-1 pl-1 pr-6 shadow-xl xl:hidden">
+			<div className="bg-card fixed -left-2 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow xl:hidden">
 				<Button
-					className="rounded-full"
+					className="rounded"
 					onClick={() => {
 						setIsOpen((prev) => !prev)
 					}}
 					variant="default"
 					size="icon"
 				>
-					<MenuIcon className="w-4" />
+					<ListChecks className="w-5" />
 				</Button>
 				<Link href={`/${list?.fields?.slug}`} className="text-base font-medium">
 					{list?.fields?.title}
@@ -174,8 +174,14 @@ export function MobileListResourceNavigation() {
 			</div>
 			{/* )} */}
 			<Sheet onOpenChange={setIsOpen} open={isOpen}>
-				<SheetContent className="p-0 pt-3">
+				<SheetContent side="left" className="overflow-y-auto px-0">
 					{/* <SheetTitle className="px-5">{list?.fields?.title}</SheetTitle> */}
+					<Link
+						href={`/${list?.fields?.slug}`}
+						className="fluid-lg inline-flex px-5 pb-5 pt-10 font-bold"
+					>
+						{list?.fields?.title}
+					</Link>
 					<ListResourceNavigation
 						withHeader={false}
 						className="relative top-0 block h-full w-full max-w-full border-r-0 bg-transparent text-sm xl:hidden"

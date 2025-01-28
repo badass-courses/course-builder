@@ -61,7 +61,7 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'border-border/50 relative flex flex-col items-center overflow-x-hidden border-b pb-[180px] sm:pb-[450px]',
+				'border-border/50 dark relative flex flex-col items-center overflow-x-hidden border-b bg-black pb-[0] sm:pb-[450px]',
 				className,
 			)}
 		>
@@ -77,11 +77,11 @@ export const PrimaryNewsletterCta: React.FC<
 			{children ? (
 				children
 			) : (
-				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-10 pt-16 dark:pt-0">
-					<h2 className="font-heading fluid-2xl text-center font-extrabold text-white">
+				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-10 pt-10 text-white">
+					<h2 className="font-heading fluid-2xl text-center font-extrabold">
 						{title}
 					</h2>
-					<h3 className="fluid-base text-secondary pt-8 text-center font-sans font-normal">
+					<h3 className="fluid-base pt-8 text-center font-sans font-normal">
 						{byline}
 					</h3>
 				</div>
