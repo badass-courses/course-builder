@@ -39,7 +39,7 @@ export function InfiniteHits() {
 
 	return items.length === 0 && status !== 'idle' ? (
 		<div
-			className="text-muted-foreground flex w-full items-center justify-center border-x border-b border-t p-5 py-8"
+			className="text-muted-foreground flex w-full items-center justify-center border-x border-b p-5 py-8"
 			aria-live="polite"
 		>
 			<p>No results found</p>

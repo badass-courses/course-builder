@@ -14,6 +14,7 @@ import { InfiniteHits } from './infinite-hits'
 import ClearRefinements from './instantsearch/clear-refinements'
 import { RefinementList } from './instantsearch/refinement-list'
 import { SearchBox } from './instantsearch/searchbox'
+import { SortBy } from './instantsearch/sort-by'
 
 const hitsPerPageItems = [
 	{
@@ -107,23 +108,24 @@ function Search() {
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
 			<Configure filters={'state:published'} hitsPerPage={40} />
-			<div className="flex flex-col items-end gap-x-3 border-x border-t px-4 pb-4 sm:flex-row sm:items-center sm:border-t-0 sm:pb-0">
+			<div className="bg-background top-[var(--nav-height)] z-10 flex flex-col items-end gap-x-3 border-x border-b border-t px-4 pb-4 sm:sticky sm:flex-row sm:items-center sm:border-t-0 sm:pb-0">
 				<SearchBox />
 				{/* <RefinementList
 					attribute="instructor_name"
 					queryKey="instructor"
 					label="Instructor"
 				/> */}
-				<div className="flex w-full flex-row items-center gap-3">
+				<div className="grid w-full grid-cols-3 flex-row items-center gap-3">
 					<RefinementList attribute="type" label="Type" />
 					<RefinementList
 						attribute="tags.fields.label"
 						label="Tags"
 						queryKey="tags"
 					/>
+					<SortBy />
 				</div>
 				{/* <HitsPerPageSelect items={hitsPerPageItems} /> */}
-				<ClearRefinements className="mt-2 sm:mt-0" />
+				{/* <ClearRefinements className="mt-2 sm:mt-0" /> */}
 			</div>
 			<InfiniteHits />
 		</InstantSearchNext>
