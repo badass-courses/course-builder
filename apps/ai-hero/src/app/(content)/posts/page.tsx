@@ -302,7 +302,7 @@ async function PostListActions({}: {}) {
 	)
 
 	return (
-		<aside className="divide-border bg-card bottom-5 right-5 my-5 w-full gap-3 divide-y border  lg:fixed lg:my-0 lg:w-64">
+		<aside className="divide-border bg-card bottom-5 right-5 z-20 my-5 w-full gap-3 divide-y border lg:fixed lg:my-0 lg:w-64">
 			<div className="p-5 py-3">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
@@ -321,7 +321,7 @@ async function PostListActions({}: {}) {
 				)}
 			</div>
 			{drafts && drafts.length > 0 ? (
-				<ul className="flex flex-col px-5 pt-4">
+				<ul className="flex max-h-[300px] flex-col overflow-y-auto px-5 pt-4">
 					<strong>Drafts</strong>
 					{drafts.map((post) => {
 						return (

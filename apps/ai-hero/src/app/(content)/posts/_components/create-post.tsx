@@ -41,7 +41,7 @@ export function CreatePostModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="outline" type="button" className="w-full gap-1">
+				<Button variant="default" type="button" className="w-full gap-1">
 					<FilePlus2 className="h-4 w-4" /> New Post
 				</Button>
 			</DialogTrigger>
