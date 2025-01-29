@@ -93,7 +93,7 @@ const Home = async (props: Props) => {
 						<MDXRemote
 							source={page?.fields?.body}
 							components={{
-								AnimateWordChange: (props) => <AnimatedTitle {...props} />,
+								AnimatedTitle: (props) => <AnimatedTitle {...props} />,
 								CenteredTitle,
 								Instructor,
 								BlueSection,
