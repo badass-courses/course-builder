@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import ListResoucesEdit from '@/app/_components/list-editor/list-resources-edit'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
@@ -22,7 +23,6 @@ import { z } from 'zod'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 import { ListMetadataFormFields } from './edit-list-form-metadata'
-import ListResoucesEdit from './list-resources-edit'
 
 // import { MobileEditPostForm } from './edit-post-form-mobile'
 

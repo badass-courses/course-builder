@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { CldImage } from '@/app/_components/cld-image'
+import { AnimatedTitle } from '@/components/animated-word'
 import config from '@/config'
 import MuxPlayer from '@mux/mux-player-react'
 import { GripVertical } from 'lucide-react'
@@ -370,6 +371,7 @@ const allMdxPageBuilderComponents = {
 	CheckList,
 	MuxPlayer,
 	Testimonial,
+	AnimatedTitle,
 }
 
 export {

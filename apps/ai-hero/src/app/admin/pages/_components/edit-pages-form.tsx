@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import ListResourcesEdit from '@/app/_components/list-editor/list-resources-edit'
 import {
 	onPageSave,
 	serializeForPreview,
@@ -29,6 +30,7 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 import MDXLivePreview from './mdx-live-preview'
 import { useMDXPreview } from './mdx-preview-provider'
 import { PageBlocks } from './page-builder-mdx-components'
+import SearchConfig from './search-config'
 
 type EditArticleFormProps = {
 	page: Page
@@ -122,6 +124,21 @@ export function EditPagesForm({
 			mdxPreviewComponent={<MDXLivePreview />}
 			resource={page}
 			form={form}
+			bodyPanelSlot={
+				<ListResourcesEdit
+					title={
+						<div>
+							<span className="flex text-lg font-bold">Resources</span>
+							<span className="text-muted-foreground mt-2 font-normal">
+								You can attach resources to this page and then use them in any
+								way you want.
+							</span>
+						</div>
+					}
+					searchConfig={<SearchConfig />}
+					list={page}
+				/>
+			}
 			resourceSchema={PageSchema}
 			getResourcePath={(slug) => `/${slug}`}
 			updateResource={updatePage}
