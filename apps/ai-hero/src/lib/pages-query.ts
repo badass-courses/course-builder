@@ -132,7 +132,15 @@ export async function getPage(slugOrId: string) {
 		with: {
 			resources: {
 				with: {
-					resource: true,
+					resource: {
+						with: {
+							tags: {
+								with: {
+									tag: true,
+								},
+							},
+						},
+					},
 				},
 				orderBy: asc(contentResourceResource.position),
 			},

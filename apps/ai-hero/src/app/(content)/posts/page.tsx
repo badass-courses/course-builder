@@ -10,6 +10,7 @@ import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
+import { getPage } from '@/lib/pages-query'
 import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -46,13 +47,16 @@ export const metadata: Metadata = {
 }
 
 const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
-	const primary = posts.find((p) => p.fields.featured?.layout === 'primary')
+	const primary = posts?.find((p) => p?.fields?.featured?.layout === 'primary')
 	const secondary = posts
-		.filter((p) => p.fields.featured?.layout === 'secondary')
+		?.filter((p) => p?.fields?.featured?.layout === 'secondary')
 		.sort(
 			(a, b) =>
-				(a.fields.featured?.priority || 0) - (b.fields.featured?.priority || 0),
+				(a?.fields?.featured?.priority || 0) -
+				(b?.fields?.featured?.priority || 0),
 		)
+
+	if (!posts?.length) return null
 
 	return (
 		<div className="">
@@ -77,8 +81,8 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 				)}
 			</div>
 			{secondary.length > 2 && (
-				<div className="grid grid-cols-1 border-x md:grid-cols-2 md:divide-x">
-					{secondary.slice(2, 4).map((post) => (
+				<div className="grid grid-cols-1 divide-x border-x md:grid-cols-2">
+					{secondary.slice(2).map((post, i) => (
 						<PostTeaser
 							key={post.fields.slug}
 							post={post}
@@ -92,58 +96,90 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 }
 
 export default async function PostsIndexPage() {
-	const latestTutorial = await getList('vercel-ai-sdk-tutorial')
+	const page = await getPage('posts-vhq68')
 
-	const featuredSlugs = [
-		'the-prompt-report',
-		'three-types-of-evals',
-		'building-effective-agents',
-		'evalite-an-early-preview',
-	]
-
-	const posts = await db.query.contentResource.findMany({
-		where: inArray(
-			sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-			featuredSlugs,
-		),
-		orderBy: desc(contentResource.createdAt),
-		with: {
-			resources: {
-				with: {
-					resource: true,
-				},
-			},
-			tags: {
-				with: {
-					tag: true,
-				},
-			},
-		},
-	})
-
-	const featuredContent: any[] = [
-		{
-			...latestTutorial,
+	let featuredContent: any[] = [
+		// First featured item
+		page?.resources?.[0]?.resource
+			? {
+					...page?.resources[0].resource,
+					fields: {
+						...page?.resources[0].resource.fields,
+						featured: {
+							priority: 1,
+							layout: 'primary',
+						},
+					},
+				}
+			: null,
+		// Rest of the featured items
+		...(page?.resources?.slice(1)?.map((contentResource, index) => ({
+			...contentResource.resource,
 			fields: {
-				...latestTutorial.fields,
+				...contentResource.resource.fields,
 				featured: {
-					priority: 1,
-					layout: 'primary',
+					priority: index + 1,
+					layout: 'secondary',
 				},
 			},
-		},
-		...posts.map((post, index) => {
-			return {
-				fields: {
-					...post.fields,
-					featured: {
-						priority: index + 1,
-						layout: 'secondary',
+		})) || []),
+	].filter(Boolean)
+
+	if (featuredContent.length < 4) {
+		const latestTutorial = await getList('vercel-ai-sdk-tutorial')
+
+		const featuredSlugs = [
+			'the-prompt-report',
+			'three-types-of-evals',
+			'building-effective-agents',
+			'evalite-an-early-preview',
+		]
+
+		const posts = await db.query.contentResource.findMany({
+			where: inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+				featuredSlugs,
+			),
+			orderBy: desc(contentResource.createdAt),
+			with: {
+				resources: {
+					with: {
+						resource: true,
 					},
 				},
-			}
-		}),
-	]
+				tags: {
+					with: {
+						tag: true,
+					},
+				},
+			},
+		})
+
+		// Fallback featured content
+		featuredContent = [
+			{
+				...latestTutorial,
+				fields: {
+					...latestTutorial.fields,
+					featured: {
+						priority: 1,
+						layout: 'primary',
+					},
+				},
+			},
+			...posts.map((post, index) => {
+				return {
+					fields: {
+						...post.fields,
+						featured: {
+							priority: index + 1,
+							layout: 'secondary',
+						},
+					},
+				}
+			}),
+		]
+	}
 
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
