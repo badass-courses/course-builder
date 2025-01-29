@@ -4,8 +4,6 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { List } from '@/lib/lists'
-import { cn } from '@/utils/cn'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
@@ -30,7 +28,13 @@ import { ResourcesInfiniteHits } from './resources-infinite-hits'
 import SearchConfig from './search-config'
 import { SelectionProvider } from './selection-context'
 
-export default function ListResourcesEdit({ list }: { list: List }) {
+export default function ListResourcesEdit({
+	list,
+	searchConfig = <SearchConfig />,
+}: {
+	list: ContentResource
+	searchConfig?: React.ReactNode
+}) {
 	const initialData = [
 		...(list.resources
 			? list.resources.map((resourceItem) => {
@@ -86,7 +90,7 @@ export default function ListResourcesEdit({ list }: { list: List }) {
 				}}
 				future={{ preserveSharedStateOnUnmount: true }}
 			>
-				<SearchConfig />
+				{searchConfig}
 				<div className="border-b text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
 						<DynamicTitle />
