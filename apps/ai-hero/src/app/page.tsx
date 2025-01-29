@@ -88,7 +88,7 @@ const Home = async (props: Props) => {
 						</span>
 					</Badge>
 				</Link>
-				<article className="prose prose-h1:text-center prose-h1:max-w-5xl sm:prose-h1:fluid-4xl prose-h1:fluid-2xl sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
+				<article className="prose prose-h1:text-center lg:prose-h1:max-w-6xl prose-h1:max-w-4xl xl:prose-h1:text-6xl lg:prose-h1:text-5xl sm:prose-h1:text-4xl prose-h1:text-3xl sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}

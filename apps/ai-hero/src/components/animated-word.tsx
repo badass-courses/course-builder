@@ -74,7 +74,7 @@ export const AnimatedTitle = ({
 					</motion.span>
 				))}
 				<span
-					className="relative inline-block overflow-hidden py-0.5 sm:py-1"
+					className="relative inline-block overflow-hidden py-2.5 text-[150%] sm:py-2 sm:text-[100%]"
 					aria-hidden="true"
 				>
 					<AnimatePresence
@@ -120,6 +120,7 @@ export const AnimatedTitle = ({
 					</AnimatePresence>
 					<div className="opacity-0">{words[currentIndex]}</div>
 				</span>
+				<div className="flex w-full" />
 				{afterWords.map((part, i) => (
 					<motion.span
 						aria-hidden="true"
