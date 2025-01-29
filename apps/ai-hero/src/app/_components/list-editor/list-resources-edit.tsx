@@ -30,9 +30,11 @@ import { SelectionProvider } from './selection-context'
 
 export default function ListResourcesEdit({
 	list,
+	title = <DynamicTitle />,
 	searchConfig = <SearchConfig />,
 }: {
 	list: ContentResource
+	title?: React.ReactNode | string
 	searchConfig?: React.ReactNode
 }) {
 	const initialData = [
@@ -93,7 +95,7 @@ export default function ListResourcesEdit({
 				{searchConfig}
 				<div className="border-b text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
-						<DynamicTitle />
+						{title}
 						<Dialog>
 							<DialogTrigger asChild>
 								<Button variant="outline" className="gap-1">

@@ -125,7 +125,19 @@ export function EditPagesForm({
 			resource={page}
 			form={form}
 			bodyPanelSlot={
-				<ListResourcesEdit searchConfig={<SearchConfig />} list={page} />
+				<ListResourcesEdit
+					title={
+						<div>
+							<span className="flex text-lg font-bold">Resources</span>
+							<span className="text-muted-foreground mt-2 font-normal">
+								You can attach resources to this page and then use them in any
+								way you want.
+							</span>
+						</div>
+					}
+					searchConfig={<SearchConfig />}
+					list={page}
+				/>
 			}
 			resourceSchema={PageSchema}
 			getResourcePath={(slug) => `/${slug}`}
