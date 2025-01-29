@@ -130,8 +130,8 @@ export function EditPagesForm({
 						<div>
 							<span className="flex text-lg font-bold">Resources</span>
 							<span className="text-muted-foreground mt-2 font-normal">
-								You can attach resources to this page and then use them in any
-								way you want.
+								Attach resources to this page to create a curated collection
+								that can be displayed in any order.
 							</span>
 						</div>
 					}
