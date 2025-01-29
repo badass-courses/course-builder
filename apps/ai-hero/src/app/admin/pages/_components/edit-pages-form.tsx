@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import ListResourcesEdit from '@/app/(content)/lists/[slug]/edit/_components/list-resources-edit'
+import ListResourcesEdit from '@/app/_components/list-editor/list-resources-edit'
 import {
 	onPageSave,
 	serializeForPreview,

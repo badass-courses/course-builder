@@ -4,15 +4,6 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { DynamicTitle } from '@/app/_components/list-editor/dynamic-title'
-import {
-	getInitialTreeState,
-	treeStateReducer,
-} from '@/app/_components/list-editor/lesson-list/data/tree'
-import Tree from '@/app/_components/list-editor/lesson-list/tree'
-import { ResourcesInfiniteHits } from '@/app/_components/list-editor/resources-infinite-hits'
-import SearchConfig from '@/app/_components/list-editor/search-config'
-import { SelectionProvider } from '@/app/_components/list-editor/selection-context'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
@@ -29,6 +20,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@coursebuilder/ui'
+
+import { DynamicTitle } from './dynamic-title'
+import { getInitialTreeState, treeStateReducer } from './lesson-list/data/tree'
+import Tree from './lesson-list/tree'
+import { ResourcesInfiniteHits } from './resources-infinite-hits'
+import SearchConfig from './search-config'
+import { SelectionProvider } from './selection-context'
 
 export default function ListResourcesEdit({
 	list,
