@@ -14,14 +14,7 @@ import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import {
-	ceaserDressingFont,
-	dalekFont,
-	ffMetaFont,
-	maisonNeue,
-	maisonNeueMono,
-	quadorFont,
-} from '@/utils/load-fonts'
+import { maisonNeue, maisonNeueMono } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -64,11 +57,10 @@ export default function RootLayout({
 	return (
 		<Providers>
 			<html lang="en" suppressHydrationWarning>
-				<HolyLoader color="#DEC09D" height="0.1rem" speed={250} />
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${maisonNeue.variable} ${ffMetaFont.variable} ${quadorFont.variable} ${ceaserDressingFont.variable} ${maisonNeueMono.variable} ${dalekFont.variable} antialised font-sans`}
+					className={`relative ${maisonNeue.variable} ${maisonNeueMono.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
@@ -77,11 +69,15 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
-								forcedTheme="dark"
-								defaultTheme="dark"
-								enableSystem={false}
+								defaultTheme="system"
+								enableSystem={true}
 								disableTransitionOnChange
 							>
+								<HolyLoader
+									color="hsl(var(--primary))"
+									height="0.15rem"
+									speed={250}
+								/>
 								<NextSSRPlugin
 									/**
 									 * The `extractRouterConfig` will extract **only** the route configs from the

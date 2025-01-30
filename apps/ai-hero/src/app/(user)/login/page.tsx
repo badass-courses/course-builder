@@ -17,7 +17,7 @@ export default async function LoginPage() {
 		<Login
 			csrfToken={csrfToken}
 			providers={providers}
-			subtitle={`to ${config.defaultTitle}`}
+			subtitle={`to start learning`}
 		/>
 	)
 }

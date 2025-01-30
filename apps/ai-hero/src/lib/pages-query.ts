@@ -2,12 +2,12 @@
 
 import { revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { NewPage, Page, PageSchema } from '@/lib/pages'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { and, desc, eq, inArray, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -129,6 +129,22 @@ export async function getPage(slugOrId: string) {
 			),
 			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							tags: {
+								with: {
+									tag: true,
+								},
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
 	})
 
 	const pageParsed = PageSchema.safeParse(page)

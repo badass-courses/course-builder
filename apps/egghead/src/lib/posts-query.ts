@@ -8,6 +8,7 @@ import {
 	contentResource,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
+	users,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -28,6 +29,7 @@ import { z } from 'zod'
 
 import 'server-only'
 
+import { EggheadApiError } from '@/errors/egghead-api-error'
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -43,6 +45,8 @@ import {
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
+	EGGHEAD_API_V1_BASE_URL,
+	getEggheadToken,
 	getEggheadUserProfile,
 	setPublishedAt,
 	updateEggheadLesson,
@@ -247,11 +251,17 @@ export async function createPost(input: NewPost) {
 	}
 
 	const profile = await getEggheadUserProfile(session.user.id)
+
+	if (!profile?.instructor?.id) {
+		throw new Error('No egghead instructor id found for user')
+	}
+
 	const post = await writeNewPostToDatabase({
 		title: input.title,
 		videoResourceId: input.videoResourceId || undefined,
 		postType: input.postType,
 		eggheadInstructorId: profile.instructor.id,
+		eggheadUserId: profile.id,
 		createdById: session.user.id,
 	})
 
@@ -557,23 +567,179 @@ export async function getVideoDuration(
 	return 0
 }
 
+export async function addEggheadLessonToPlaylist({
+	eggheadPlaylistId,
+	eggheadLessonId,
+	position,
+}: {
+	eggheadPlaylistId: string
+	eggheadLessonId: string
+	position?: string
+}) {
+	try {
+		const { session, ability } = await getServerAuthSession()
+
+		if (!session?.user?.id || !ability.can('create', 'Content')) {
+			throw new Error('Unauthorized')
+		}
+
+		const eggheadToken = await getEggheadToken(session.user.id)
+
+		const response = await fetch(
+			`${EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/add`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+						row_order_position: position || 'last',
+					},
+				}),
+			},
+		).then(async (res) => {
+			if (!res.ok) {
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		if (error instanceof Error && 'status' in error) {
+			if (error.status === 304) {
+				// Item already exists in playlist
+				console.log('Lesson already exists in playlist')
+			} else if (error.status === 403) {
+				// Not authorized
+				console.log('Not authorized to modify this playlist')
+			}
+		}
+		throw error
+	}
+}
+
+export async function removePostFromCoursePost({
+	postId,
+	resourceOfId,
+}: {
+	postId: string
+	resourceOfId: string
+}) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	await db
+		.delete(contentResourceResource)
+		.where(
+			and(
+				eq(contentResourceResource.resourceOfId, resourceOfId),
+				eq(contentResourceResource.resourceId, postId),
+			),
+		)
+
+	const post = await getPost(postId)
+	const resourceOf = await getPost(resourceOfId)
+
+	if (
+		!post ||
+		!post.fields?.eggheadLessonId ||
+		!resourceOf?.fields?.eggheadPlaylistId
+	) {
+		throw new Error('eggheadLessonId is required')
+	}
+
+	// sync with egghead
+	try {
+		await removeEggheadLessonFromPlaylist({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
+		})
+	} catch (error) {
+		// rollback the database if egghead sync fails to stay in sync
+		await addResourceToResource({
+			resource: post,
+			parentResourceId: resourceOfId,
+		})
+
+		throw new Error('Error removing lesson from playlist')
+	}
+
+	//! TODO sync with sanity
+}
+
+export async function removeEggheadLessonFromPlaylist({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user?.id || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const eggheadToken = await getEggheadToken(session.user.id)
+
+	try {
+		const response = await fetch(
+			`${EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/remove`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+					},
+				}),
+			},
+		).then(async (res) => {
+			if (!res.ok) {
+				console.log('Error removing lesson from playlist', res)
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		throw error
+	}
+}
+
 export const addResourceToResource = async ({
 	resource,
-	resourceId,
+	parentResourceId,
 }: {
 	resource: ContentResource
-	resourceId: string
+	parentResourceId: string
 }) => {
 	const parentResource = await db.query.contentResource.findFirst({
-		where: like(contentResource.id, `%${last(resourceId.split('-'))}%`),
+		where: like(contentResource.id, `%${last(parentResourceId.split('-'))}%`),
 		with: {
 			resources: true,
 		},
 	})
 
 	if (!parentResource) {
-		throw new Error(`Workshop with id ${resourceId} not found`)
+		throw new Error(`Workshop with id ${parentResourceId} not found`)
 	}
+
 	await db.insert(contentResourceResource).values({
 		resourceOfId: parentResource.id,
 		resourceId: resource.id,

@@ -78,7 +78,7 @@ export const PostNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row">
+			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0">
 				<div
 					className="via-muted-foreground/20 absolute -top-px left-0 z-10 h-px w-1/2 bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
@@ -87,14 +87,14 @@ export const PostNewsletterCta: React.FC<
 					className="via-muted-foreground/20 absolute -bottom-px left-0 z-10 h-px w-full bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
 				/>
-				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-5 sm:text-left md:flex-col md:items-start md:gap-0 md:pt-0">
+				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-5 sm:text-left md:flex-col md:items-start md:gap-1 md:pt-0">
 					<div className="flex items-center gap-2">
-						<div className="xl:fluid-xl fluid-lg font-heading font-semibold">
-							AI Engineering Tips
+						<div className="xl:fluid-xl fluid-xl font-heading font-semibold">
+							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="text-primary xl:fluid-lg fluid-base font-heading">
-						Delivered to your inbox
+					<div className="dark:text-primary xl:fluid-lg fluid-base font-heading text-gray-600">
+						{common['video-newsletter-subtitle']}
 					</div>
 				</div>
 				<div id={id} className="w-full md:w-auto">

@@ -57,7 +57,7 @@ export const User: React.FC<{
 							href="/team"
 						/>
 					)}
-					{/* <ThemeToggle /> */}
+
 					{!sessionData?.user?.email ? (
 						<NavLinkItem
 							className={loginClassName}
@@ -68,7 +68,7 @@ export const User: React.FC<{
 						<DropdownMenu>
 							<DropdownMenuTrigger
 								className={cn(
-									'hover:bg-muted -mr-3 flex items-center space-x-1 px-4',
+									'hover:bg-muted flex items-center space-x-1 border-l px-5',
 									className,
 								)}
 							>
@@ -138,7 +138,7 @@ export const User: React.FC<{
 											asChild
 										>
 											<Link
-												href="/admin"
+												href="/admin/dashboard"
 												className={cx({
 													underline: pathname.includes('/admin'),
 												})}

@@ -23,6 +23,7 @@ export const typsenseAdapterConfig: {
 	additionalSearchParameters: {
 		query_by: 'title,description,summary',
 		preset: 'updated_at_timestamp',
+		sort_by: '_text_match:desc', // default sort
 	},
 }
 

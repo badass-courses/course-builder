@@ -4,11 +4,11 @@ import Link from 'next/link'
 import { PricingWidgetServer } from '@/app/_components/pricing-widget-server'
 import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
 import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import { AnimatedTitle } from '@/components/animated-word'
 import LandingCopy from '@/components/landing-copy'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
-import { getList } from '@/lib/lists-query'
 import { getPage } from '@/lib/pages-query'
 import MuxPlayer from '@mux/mux-player-react'
 import { ChevronRight } from 'lucide-react'
@@ -81,18 +81,19 @@ const Home = async (props: Props) => {
 					className="mx-auto mb-5 flex items-center justify-center"
 					href="/vercel-ai-sdk-tutorial"
 				>
-					<Badge className="mx-auto flex items-center gap-1 overflow-hidden rounded-full p-0">
+					<Badge className="dark:bg-primary mx-auto flex items-center gap-1 overflow-hidden rounded-full bg-orange-600 p-0">
 						<span className="bg-background/10 flex px-2 py-1">Out Now</span>
 						<span className="flex items-center gap-1 px-2 pr-3">
 							Free Vercel AI SDK Tutorial <ChevronRight className="w-3" />
 						</span>
 					</Badge>
 				</Link>
-				<article className="prose prose-h1:text-center sm:prose-h1:fluid-4xl prose-h1:fluid-2xl sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
+				<article className="prose prose-h1:text-center lg:prose-h1:max-w-6xl prose-h1:max-w-4xl xl:prose-h1:text-6xl lg:prose-h1:text-5xl sm:prose-h1:text-4xl prose-h1:text-3xl sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
 							components={{
+								AnimatedTitle: (props) => <AnimatedTitle {...props} />,
 								CenteredTitle,
 								Instructor,
 								BlueSection,

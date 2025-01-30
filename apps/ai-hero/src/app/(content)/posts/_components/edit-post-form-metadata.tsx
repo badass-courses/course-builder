@@ -9,11 +9,11 @@ import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import type { List } from '@/lib/lists'
 import { Post, PostSchema } from '@/lib/posts'
-import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
+import { addTagToPost, removeTagFromPost, updatePost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { Pencil } from 'lucide-react'
+import { Pencil, Shuffle, Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -48,6 +48,11 @@ export const PostMetadataFormFields: React.FC<{
 	post: Post
 	tagLoader: Promise<Tag[]>
 	listsLoader: Promise<List[]>
+	sendResourceChatMessage: (options: {
+		resourceId: string
+		messages: any[]
+		selectedWorkflow?: string
+	}) => Promise<void>
 }> = ({
 	form,
 	videoResourceLoader,
@@ -55,6 +60,7 @@ export const PostMetadataFormFields: React.FC<{
 	videoResourceId: initialVideoResourceId,
 	tagLoader,
 	listsLoader,
+	sendResourceChatMessage,
 }) => {
 	const router = useRouter()
 
@@ -114,6 +120,37 @@ export const PostMetadataFormFields: React.FC<{
 		},
 	})
 
+	const [isGeneratingDescription, setIsGeneratingDescription] =
+		React.useState(false)
+
+	useSocket({
+		room: post.id,
+		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		onMessage: async (messageEvent) => {
+			try {
+				const data = JSON.parse(messageEvent.data)
+
+				if (
+					data.name === 'resource.chat.completed' &&
+					data.requestId === post.id &&
+					data.metadata?.workflow === 'prompt-0541t'
+				) {
+					const lastMessage = data.body[data.body.length - 1]
+					if (lastMessage?.content) {
+						const description = lastMessage.content.replace(
+							/```.*\n(.*)\n```/s,
+							'$1',
+						)
+						form.setValue('fields.description', description)
+					}
+					setIsGeneratingDescription(false)
+				}
+			} catch (error) {
+				setIsGeneratingDescription(false)
+			}
+		},
+	})
+
 	const [isOpenedTranscriptDialog, setIsOpenedTranscriptDialog] =
 		React.useState(false)
 
@@ -147,6 +184,23 @@ export const PostMetadataFormFields: React.FC<{
 		.parse(post.tags)
 
 	const [thumbnailTime, setThumbnailTime] = React.useState(0)
+
+	const handleGenerateDescription = async () => {
+		setIsGeneratingDescription(true)
+
+		await sendResourceChatMessage({
+			resourceId: post.id,
+			messages: [
+				{
+					role: 'user',
+					content: `Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
+				},
+			],
+			selectedWorkflow: 'prompt-0541t',
+		})
+	}
+
+	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 
 	return (
 		<>
@@ -190,6 +244,7 @@ export const PostMetadataFormFields: React.FC<{
 										{videoResource && videoResource.state === 'ready' ? (
 											<div className="-mt-5 border-b">
 												<SimplePostPlayer
+													ref={playerRef}
 													thumbnailTime={
 														form.watch('fields.thumbnailTime') || 0
 													}
@@ -214,21 +269,57 @@ export const PostMetadataFormFields: React.FC<{
 													</Button>
 													<TooltipProvider>
 														<Tooltip delayDuration={0}>
-															<TooltipTrigger asChild>
+															<div className="flex items-center">
+																<TooltipTrigger asChild>
+																	<Button
+																		type="button"
+																		className="rounded-r-none"
+																		disabled={thumbnailTime === 0}
+																		onClick={async () => {
+																			form.setValue(
+																				'fields.thumbnailTime',
+																				thumbnailTime,
+																			)
+
+																			await updatePost(
+																				{
+																					id: post.id,
+																					fields: {
+																						...post.fields,
+																						thumbnailTime: thumbnailTime,
+																					},
+																				},
+																				'save',
+																			)
+																		}}
+																		variant="secondary"
+																		size={'sm'}
+																	>
+																		<span>Set Thumbnail</span>
+																	</Button>
+																</TooltipTrigger>
 																<Button
-																	disabled={thumbnailTime === 0}
-																	onClick={() => {
-																		form.setValue(
-																			'fields.thumbnailTime',
-																			thumbnailTime,
-																		)
-																	}}
+																	type="button"
+																	className="border-secondary rounded-l-none border bg-transparent px-2"
 																	variant="secondary"
 																	size={'sm'}
+																	onClick={() => {
+																		if (playerRef.current?.seekable) {
+																			const seekableEnd =
+																				playerRef.current.seekable.end(0)
+																			// Generate a random time between 0 and the end of the video
+																			const randomTime = Math.floor(
+																				Math.random() * seekableEnd,
+																			)
+																			playerRef.current.currentTime = randomTime
+																			playerRef.current.thumbnailTime =
+																				randomTime
+																		}
+																	}}
 																>
-																	<span>Set Thumbnail</span>
+																	<Shuffle className="h-3 w-3" />
 																</Button>
-															</TooltipTrigger>
+															</div>
 															<TooltipContent side="bottom">
 																<div className="text-xs">
 																	current thumbnail:
@@ -357,14 +448,35 @@ export const PostMetadataFormFields: React.FC<{
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">
-							SEO Description ({`${field.value?.length ?? '0'} / 160`})
-						</FormLabel>
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold leading-none">
+								SEO Description
+								<br />
+								<span className="text-muted-foreground text-sm tabular-nums">
+									({`${field.value?.length ?? '0'} / 160`})
+								</span>
+							</FormLabel>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="flex items-center gap-1"
+								disabled={isGeneratingDescription}
+								onClick={handleGenerateDescription}
+							>
+								{isGeneratingDescription ? (
+									<Spinner className="h-4 w-4" />
+								) : (
+									<Sparkles className="h-4 w-4" />
+								)}
+								Generate
+							</Button>
+						</div>
 						<FormDescription>
 							A short snippet that summarizes the post in under 160 characters.
 							Keywords should be included to support SEO.
 						</FormDescription>
-						<Textarea {...field} value={field.value ?? ''} />
+						<Textarea rows={4} {...field} value={field.value ?? ''} />
 						{field.value && field.value.length > 160 && (
 							<FormMessage>
 								Your description is longer than 160 characters

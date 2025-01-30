@@ -206,7 +206,7 @@ export default async function ListPage(props: {
 				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
 					<img
 						src={squareGridPattern}
-						className="h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+						className="h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 dark:opacity-[0.15]"
 					/>
 					<div
 						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"

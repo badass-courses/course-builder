@@ -33,34 +33,76 @@
 			100vh - var(--nav-height) - var(--command-bar-height) - 30px
 		);
 
-		--background: 32 8% 99%;
-		--foreground: 32 5% 10%;
-		--card: 32 8% 99%;
-		--card-foreground: 32 5% 15%;
+		--background: 0 0% 98%;
+		--foreground: 0 0% 10%;
+		--card: 0 0% 100%;
+		--card-foreground: 0 0% 10%;
 		--popover: 32 8% 99%;
 		--popover-foreground: 32 95% 10%;
-		--primary: 32 100% 64.3%;
-		--primary-foreground: 0 0% 0%;
-		--secondary: 32 10% 90%;
+		--primary: 0 0% 0%;
+		--primary-foreground: 0 0% 100%;
+		--secondary: 0 0% 91%;
 		--secondary-foreground: 0 0% 0%;
-		--muted: -6 10% 95%;
-		--muted-foreground: 32 5% 40%;
-		--accent: -6 10% 90%;
-		--accent-foreground: 32 5% 15%;
+		--muted: 0 0% 95%;
+		--muted-foreground: 0 0% 30%;
+		--accent: 0 0% 92%;
+		--accent-foreground: 0 0% 5%;
 		--destructive: 0 50% 50%;
 		--destructive-foreground: 32 5% 99%;
-		--border: 32 20% 82%;
-		--input: 32 20% 50%;
-		--ring: 32 100% 64.3%;
+		--border: 0 0% 93%;
+		--input: 0 0% 90%;
+		--ring: 0 0% 80%;
 		--radius: 0.3rem;
 		color-scheme: light;
+
+		[data-theme='elysium'] {
+			/* blue-ish color scheme */
+			--primary: 241.2 43.4% 76.5%;
+			--primary-foreground: 0 0% 0%;
+			--secondary: 176.5 37.6% 54.2%;
+			--secondary-foreground: 0 0% 0%;
+			--muted: 231 20% 19%;
+			--muted-foreground: 235 100% 95%;
+			--border: 230.8 20.7% 18.8%;
+			--input: 230.8 20.7% 18.8%;
+			--ring: 241.2 43.4% 76.5%;
+		}
+
+		/* codehike theme */
+		--ch-0: light;
+		--ch-1: #6e7781;
+		--ch-2: #0550ae;
+		--ch-3: #953800;
+		--ch-4: #24292f;
+		--ch-5: #8250df;
+		--ch-6: #116329;
+		--ch-7: #cf222e;
+		--ch-8: #0a3069;
+		--ch-9: #82071e;
+		--ch-10: #f6f8fa;
+		--ch-11: #ffebe9;
+		--ch-12: #dafbe1;
+		--ch-13: #ffd8b5;
+		--ch-14: #eaeef2;
+		--ch-15: #57606a;
+		--ch-16: #ffffff;
+		--ch-17: #eaeef280;
+		--ch-18: #fdff0033;
+		--ch-19: #1a85ff;
+		--ch-20: #add6ff;
+		--ch-21: #0969da;
+		--ch-22: #f6f8fa;
+		--ch-23: #d0d7de;
+		--ch-24: #8c959f;
+		--ch-25: #afb8c133;
+		--ch-26: #ffffffe6;
 	}
 
 	.dark {
 		/* golden color scheme */
-		--background: 0 0% 0%;
+		--background: 0 0% 2%;
 		--foreground: 32 5% 87%;
-		--card: 32 8% 0%;
+		--card: 0 0% 5%;
 		--card-foreground: 32 5% 90%;
 		--popover: 32 10% 5%;
 		--popover-foreground: 32 5% 90%;
@@ -78,7 +120,7 @@
 		--muted: 0 0% 10%;
 		--muted-foreground: 0 0% 70%;
 
-		--accent: 0 0% 5%;
+		--accent: 0 0% 10%;
 		--accent-foreground: 32 5% 90%;
 
 		--destructive: 0 50% 30%;
@@ -106,6 +148,36 @@
 		[data-theme='erebus'] {
 			/* green-ish color scheme */
 		}
+	}
+	/* codehike theme */
+	.dark {
+		--ch-0: dark;
+		--ch-1: #8b949e;
+		--ch-2: #79c0ff;
+		--ch-3: #ffa657;
+		--ch-4: #c9d1d9;
+		--ch-5: #d2a8ff;
+		--ch-6: #7ee787;
+		--ch-7: #ff7b72;
+		--ch-8: #a5d6ff;
+		--ch-9: #ffa198;
+		--ch-10: #f0f6fc;
+		--ch-11: #490202;
+		--ch-12: #04260f;
+		--ch-13: #5a1e02;
+		--ch-14: #161b22;
+		--ch-15: #8b949e;
+		--ch-16: #0d1117;
+		--ch-17: #6e76811a;
+		--ch-18: #ffffff0b;
+		--ch-19: #3794ff;
+		--ch-20: #264f78;
+		--ch-21: #1f6feb;
+		--ch-22: #010409;
+		--ch-23: #30363d;
+		--ch-24: #6e7681;
+		--ch-25: #6e768166;
+		--ch-26: #0d1117e6;
 	}
 }
 

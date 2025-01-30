@@ -27,6 +27,7 @@ import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
+import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
@@ -63,6 +64,8 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
+	const searchParams = await props.searchParams
+
 	let resource
 
 	resource = await getPost(params.post)
@@ -78,6 +81,12 @@ export async function generateMetadata(
 	return {
 		title: resource.fields.title,
 		description: resource.fields.description,
+		alternates: {
+			canonical:
+				searchParams && searchParams.list
+					? `/${resource.fields.slug}`
+					: undefined,
+		},
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({
@@ -141,7 +150,7 @@ async function Post({ post }: { post: Post | null }) {
 	})
 
 	return (
-		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
 			{content}
 		</article>
 	)
@@ -149,8 +158,19 @@ async function Post({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="fluid-3xl mb-4 inline-flex font-bold">
-			{post?.fields?.title}
+		<h1 className="fluid-3xl mb-4 font-bold">
+			<ReactMarkdown
+				components={{
+					p: ({ children }) => children,
+					code: ({ children }) => (
+						<code className="bg-muted/80 rounded px-1 text-[85%]">
+							{children}
+						</code>
+					),
+				}}
+			>
+				{post?.fields?.title}
+			</ReactMarkdown>
 		</h1>
 	)
 }
@@ -215,7 +235,7 @@ export default async function PostPage(props: {
 					>
 						<img
 							src={squareGridPattern}
-							className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+							className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 dark:opacity-[0.15]"
 						/>
 						<div
 							className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"

@@ -44,6 +44,7 @@ const NewPostInputSchema = z.object({
 		'article',
 	]),
 	eggheadInstructorId: z.number(),
+	eggheadUserId: z.number(),
 	createdById: z.string(),
 })
 
@@ -62,6 +63,7 @@ export async function writeNewPostToDatabase(
 			videoResourceId,
 			postType,
 			eggheadInstructorId,
+			eggheadUserId,
 			createdById,
 		} = validatedInput
 
@@ -91,6 +93,7 @@ export async function writeNewPostToDatabase(
 				postGuid,
 				postType,
 				eggheadInstructorId,
+				eggheadUserId,
 				videoResource,
 			})
 
@@ -160,12 +163,14 @@ async function createExternalResources({
 	postGuid,
 	postType,
 	eggheadInstructorId,
+	eggheadUserId,
 	videoResource,
 }: {
 	title: string
 	postGuid: string
 	postType: string
 	eggheadInstructorId: number
+	eggheadUserId: number
 	videoResource: any
 }) {
 	const isLessonType = TYPES_WITH_LESSONS.includes(postType as any)
@@ -216,7 +221,7 @@ async function createExternalResources({
 			const playlist = await createEggheadCourse({
 				title,
 				guid: postGuid,
-				ownerId: eggheadInstructorId,
+				ownerId: eggheadUserId,
 			})
 
 			if (!playlist) {

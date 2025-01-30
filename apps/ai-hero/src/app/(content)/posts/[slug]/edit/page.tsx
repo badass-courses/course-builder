@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { getAllLists } from '@/lib/lists-query'
 import { getPost } from '@/lib/posts-query'
 import { getTags } from '@/lib/tags-query'
@@ -69,6 +70,7 @@ export default async function ArticleEditPage(props: {
 			tagLoader={tagLoader}
 			videoResourceLoader={videoResourceLoader}
 			listsLoader={listsLoader}
+			sendResourceChatMessage={sendResourceChatMessage}
 		/>
 	)
 }

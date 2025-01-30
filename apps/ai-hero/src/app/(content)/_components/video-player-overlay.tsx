@@ -60,7 +60,7 @@ export const CompletedLessonOverlay: React.FC<{
 				className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 			>
 				<div className="flex flex-col items-center text-center">
-					<p className="pb-2 opacity-80">Next Up:</p>
+					<p className="pb-2 opacity-80">Up Next:</p>
 					<p className="font-heading fluid-2xl font-bold">
 						{nextLesson?.fields?.title}
 					</p>

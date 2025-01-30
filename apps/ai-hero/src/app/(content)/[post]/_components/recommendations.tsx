@@ -36,19 +36,19 @@ export default function Recommendations({
 	return (
 		<nav
 			className={cn(
-				'mt-8 flex w-full flex-col items-center rounded bg-gray-950 px-5 py-10 text-center',
+				'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
 				className,
 			)}
 			aria-label="Recommendations"
 		>
-			<h2 className="fluid-2xl mb-3 font-semibold">Recommended Next</h2>
+			<h2 className="fluid-2xl mb-3 font-semibold">Up Next</h2>
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
 						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
 					) : post ? (
 						<Button
-							className="text-primary flex w-full items-center gap-2 text-lg lg:text-xl"
+							className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 lg:text-xl"
 							asChild
 							variant="link"
 							onClick={async () => {

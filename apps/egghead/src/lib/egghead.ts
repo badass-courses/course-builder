@@ -17,7 +17,9 @@ import slugify from '@sindresorhus/slugify'
 export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
 
-export async function getEggheadUserProfile(userId: string) {
+export const EGGHEAD_API_V1_BASE_URL = 'https://app.egghead.io/api/v1'
+
+export async function getEggheadToken(userId: string) {
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
 		with: {
@@ -48,6 +50,11 @@ export async function getEggheadUserProfile(userId: string) {
 		throw new Error('token-expired')
 	}
 
+	return eggheadToken
+}
+
+export async function getEggheadUserProfile(userId: string) {
+	const eggheadToken = await getEggheadToken(userId)
 	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
 
 	const profile = await fetch(eggheadUserUrl, {
@@ -62,7 +69,15 @@ export async function getEggheadUserProfile(userId: string) {
 		return await res.json()
 	})
 
-	return profile
+	const parsedProfile = EggheadCurrentUserSchema.safeParse(profile)
+
+	if (!parsedProfile.success) {
+		throw new Error('Failed to parse egghead profile', {
+			cause: parsedProfile.error.flatten().fieldErrors,
+		})
+	}
+
+	return parsedProfile.data
 }
 
 const EGGHEAD_LESSON_TYPE = 'lesson'
@@ -388,3 +403,62 @@ export async function createEggheadCourse(input: {
 
 	return eggheadCourse.data
 }
+
+export const EggheadCurrentUserInstructorSchema = z.object({
+	id: z.number(),
+	email: z.string().email().optional(),
+	slug: z.string().optional(),
+	full_name: z.string().optional(),
+	first_name: z.string().optional(),
+	last_name: z.string().optional(),
+	twitter: z.string().optional(),
+	website: z.string().url().optional(),
+	bio_short: z.string().optional(),
+	state: z.string().optional(),
+	http_url: z.string().url().optional(),
+	path: z.string().optional(),
+	avatar_url: z.string().url().optional(),
+	avatar_480_url: z.string().url().optional(),
+	lessons_url: z.string().url().optional(),
+	lesson_tags: z.array(z.any()).optional(),
+	published_lessons: z.number().nullish(),
+	published_courses: z.number().nullish(),
+	rss_url: z.string().url().nullish(),
+	slack_id: z.string().optional(),
+	slack_group_id: z.string().optional(),
+	pending_courses: z.number().nullish(),
+	pending_lessons: z.number().nullish(),
+	claimed_lessons: z.number().nullish(),
+	submitted_lessons: z.number().nullish(),
+	approved_lessons: z.number().nullish(),
+	reviewing_lessons: z.number().nullish(),
+	updated_lessons: z.number().nullish(),
+	revenue_url: z.string().url().nullish(),
+	affiliate_http_url: z.string().url().nullish(),
+	stats_url: z.string().url().nullish(),
+	playlists_url: z.string().url().nullish(),
+})
+export type EggheadCurrentUserInstructor = z.infer<
+	typeof EggheadCurrentUserInstructorSchema
+>
+
+export const EggheadCurrentUserSchema = z.object({
+	name: z.string().optional(),
+	id: z.number(),
+	email: z.string().optional(),
+	full_name: z.string().optional(),
+	avatar_url: z.string().nullish(),
+	contact_id: z.string().nullish(),
+	roles: z.array(z.string()).nullish(),
+	providers: z.array(z.string()).nullish(),
+	created_at: z.number().optional(),
+	is_pro: z.boolean().optional(),
+	is_instructor: z.boolean().optional(),
+	instructor_id: z.number().optional(),
+	username: z.string().optional(),
+	timezone: z.string().nullish(),
+	tags: z.array(z.any()).nullish(),
+	instructor: EggheadCurrentUserInstructorSchema.optional(),
+	become_user_url: z.string().nullish(),
+})
+export type EggheadCurrentUser = z.infer<typeof EggheadCurrentUserSchema>
