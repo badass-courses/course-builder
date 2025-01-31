@@ -1,6 +1,5 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Contributor } from '@/app/_components/contributor'
 import Search from '@/app/(search)/q/_components/search'
@@ -15,14 +14,12 @@ import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { format } from 'date-fns'
-import { asc, desc, eq, inArray, sql } from 'drizzle-orm'
+import { desc, inArray, sql } from 'drizzle-orm'
 import { Book, ListOrderedIcon, Pencil } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import {
 	Badge,
-	Button,
 	Card,
 	CardContent,
 	CardFooter,
@@ -30,7 +27,7 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
-import { CreatePost, CreatePostModal } from './_components/create-post'
+import { CreatePostModal } from './_components/create-post'
 
 // export const experimental_ppr = true
 export const dynamic = 'force-dynamic'
@@ -202,7 +199,6 @@ const PostTeaser: React.FC<{
 	if (!post) return null
 	const title = post.fields.title
 	const description = post.fields.description
-	const createdAt = post.createdAt
 
 	return (
 		<li className={cn('flex h-full', className)}>

@@ -125,7 +125,15 @@ const Home = async (props: Props) => {
 						</div>
 					</section>
 				)}
-				<PrimaryNewsletterCta className="px-5 pt-10" />
+				<PrimaryNewsletterCta
+					className="px-5 pt-10"
+					trackProps={{
+						event: 'subscribed',
+						params: {
+							location: 'home',
+						},
+					}}
+				/>
 			</main>
 		</div>
 	)
