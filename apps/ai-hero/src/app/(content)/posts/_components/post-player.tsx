@@ -1,9 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { use } from 'react'
-import { revalidatePath } from 'next/cache'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
@@ -12,20 +9,17 @@ import {
 	setPreferredTextTrack,
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
-import type { List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
-import { api } from '@/trpc/react'
+import { track } from '@/utils/analytics'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
 import {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
-import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
-import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -105,6 +99,10 @@ export function PostPlayer({
 			await setProgressForResource({
 				resourceId: postId,
 				isCompleted: true,
+			})
+			await track('video_completed', {
+				video_id: videoResource?.id,
+				video_title: title || videoResource?.id,
 			})
 		},
 		onPlay: () => {

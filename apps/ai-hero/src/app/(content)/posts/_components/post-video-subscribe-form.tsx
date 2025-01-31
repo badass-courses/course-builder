@@ -8,12 +8,6 @@ import common from '@/text/common'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import cookieUtil from '@/utils/cookies'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { getCookie } from 'cookies-next/client'
-import cookies from 'js-cookie'
-import { useSession } from 'next-auth/react'
-import { twMerge } from 'tailwind-merge'
 
 type PrimaryNewsletterCtaProps = {
 	onSuccess?: () => void
