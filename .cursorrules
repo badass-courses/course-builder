@@ -13,6 +13,7 @@ always:
 - work in steps, think through them
 - evaluate the full context of the work to understand what exists
 - use the logger and think about observability
+- add JS Doc comments to functions and React components
 
 you should:
 
