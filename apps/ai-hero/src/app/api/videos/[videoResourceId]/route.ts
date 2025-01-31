@@ -55,7 +55,7 @@ export async function GET(
 			await log.info('api.video.get.success', {
 				userId: user?.id,
 				videoResourceId: params.videoResourceId,
-				muxAssetId: videoResource.fields?.muxAssetId,
+				muxAssetId: videoResource.muxAssetId,
 			})
 			return NextResponse.json(videoResource, {
 				headers: corsHeaders,
