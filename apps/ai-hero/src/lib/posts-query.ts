@@ -21,6 +21,7 @@ import {
 	type PostUpdate,
 } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
@@ -44,26 +45,40 @@ export const getCachedAllPosts = unstable_cache(
 )
 
 export async function getAllPosts(): Promise<Post[]> {
-	const posts = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'post'),
-		orderBy: desc(contentResource.createdAt),
-		with: {
-			tags: {
-				with: {
-					tag: true,
+	try {
+		const posts = await db.query.contentResource.findMany({
+			where: eq(contentResource.type, 'post'),
+			orderBy: desc(contentResource.createdAt),
+			with: {
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
 				},
-				orderBy: asc(contentResourceTagTable.position),
 			},
-		},
-	})
+		})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
+		const postsParsed = z.array(PostSchema).safeParse(posts)
+		if (!postsParsed.success) {
+			await log.error('posts.parse.failed', {
+				error: postsParsed.error.format(),
+			})
+			return []
+		}
+
+		await log.info('posts.fetch.success', {
+			count: postsParsed.data.length,
+		})
+
+		return postsParsed.data
+	} catch (error) {
+		await log.error('posts.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+		})
 		return []
 	}
-
-	return postsParsed.data
 }
 
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
@@ -166,6 +181,10 @@ export async function createPost(input: NewPostInput) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
+		await log.error('post.create.unauthorized', {
+			userId: user?.id,
+			input,
+		})
 		throw new Error('Unauthorized')
 	}
 
@@ -183,35 +202,66 @@ export async function createPost(input: NewPostInput) {
 			slug: slugify(`${input.title}~${postGuid}`),
 		},
 	}
-	await db
-		.insert(contentResource)
-		.values(postValues)
-		.catch((error) => {
-			console.error('🚨 Error creating post', error)
-			throw error
+
+	try {
+		await db.insert(contentResource).values(postValues)
+		await log.info('post.create.success', {
+			postId: newPostId,
+			userId: user.id,
+			title: input.title,
 		})
+	} catch (error) {
+		await log.error('post.create.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+			postValues,
+			userId: user.id,
+		})
+		throw error
+	}
 
 	const post = await getPost(newPostId)
 	if (post) {
 		if (input?.videoResourceId) {
-			await db
-				.insert(contentResourceResource)
-				.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
+			try {
+				await db
+					.insert(contentResourceResource)
+					.values({ resourceOfId: post.id, resourceId: input.videoResourceId })
+				await log.info('post.video.attached', {
+					postId: post.id,
+					videoResourceId: input.videoResourceId,
+				})
+			} catch (error) {
+				await log.error('post.video.attach.failed', {
+					error: getErrorMessage(error),
+					stack: getErrorStack(error),
+					postId: post.id,
+					videoResourceId: input.videoResourceId,
+				})
+			}
 		}
 
 		try {
 			await upsertPostToTypeSense(post, 'save')
+			await log.info('post.typesense.indexed', {
+				postId: post.id,
+				action: 'save',
+			})
 		} catch (e) {
-			console.error('Failed to create post in Typesense', {
+			await log.error('post.typesense.index.failed', {
 				error: getErrorMessage(e),
 				stack: getErrorStack(e),
+				postId: post.id,
 			})
 		}
 
 		revalidateTag('posts')
-
 		return post
 	} else {
+		await log.error('post.create.notfound', {
+			postId: newPostId,
+			userId: user.id,
+		})
 		throw new Error('🚨 Error creating post: Post not found')
 	}
 }
@@ -234,10 +284,20 @@ export async function updatePost(
 	const currentPost = await getPost(input.id)
 
 	if (!currentPost) {
+		await log.error('post.update.notfound', {
+			postId: input.id,
+			userId: user?.id,
+			action,
+		})
 		throw new Error(`Post with id ${input.id} not found.`)
 	}
 
 	if (!user || !ability.can(action, subject('Content', currentPost))) {
+		await log.error('post.update.unauthorized', {
+			postId: input.id,
+			userId: user?.id,
+			action,
+		})
 		throw new Error('Unauthorized')
 	}
 
@@ -249,8 +309,20 @@ export async function updatePost(
 	) {
 		const splitSlug = currentPost?.fields.slug.split('~') || ['', guid()]
 		postSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		await log.info('post.update.slug.changed', {
+			postId: input.id,
+			oldSlug: currentPost.fields.slug,
+			newSlug: postSlug,
+			userId: user.id,
+		})
 	} else if (input.fields.slug !== currentPost.fields.slug) {
 		postSlug = input.fields.slug
+		await log.info('post.update.slug.manual', {
+			postId: input.id,
+			oldSlug: currentPost.fields.slug,
+			newSlug: postSlug,
+			userId: user.id,
+		})
 	}
 
 	try {
@@ -266,23 +338,50 @@ export async function updatePost(
 			},
 			action,
 		)
-	} catch (e) {
-		console.error('Failed to update post in Typesense', {
-			error: getErrorMessage(e),
-			stack: getErrorStack(e),
+		await log.info('post.update.typesense.success', {
+			postId: input.id,
+			action,
+			userId: user.id,
+		})
+	} catch (error) {
+		await log.error('post.update.typesense.failed', {
+			postId: input.id,
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+			action,
+			userId: user.id,
 		})
 	}
 
-	revalidate && revalidateTag('posts')
+	try {
+		const result = await courseBuilderAdapter.updateContentResourceFields({
+			id: currentPost.id,
+			fields: {
+				...currentPost.fields,
+				...input.fields,
+				slug: postSlug,
+			},
+		})
 
-	return courseBuilderAdapter.updateContentResourceFields({
-		id: currentPost.id,
-		fields: {
-			...currentPost.fields,
-			...input.fields,
-			slug: postSlug,
-		},
-	})
+		await log.info('post.update.success', {
+			postId: input.id,
+			action,
+			userId: user.id,
+			changes: Object.keys(input.fields),
+		})
+
+		revalidate && revalidateTag('posts')
+		return result
+	} catch (error) {
+		await log.error('post.update.failed', {
+			postId: input.id,
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+			action,
+			userId: user.id,
+		})
+		throw error
+	}
 }
 
 export const getCachedPost = unstable_cache(
@@ -823,7 +922,7 @@ export async function getVideoDuration(
 }
 
 export async function deletePostFromDatabase(id: string) {
-	console.log('🗑️ Attempting to delete post:', id)
+	await log.info('post.delete.started', { postId: id })
 
 	try {
 		const rawPost = await db.query.contentResource.findFirst({
@@ -846,55 +945,47 @@ export async function deletePostFromDatabase(id: string) {
 				},
 			},
 		})
-		console.log('🔍 Retrieved post for deletion:', {
-			found: !!rawPost,
-			id,
-			type: rawPost?.type,
-			title: rawPost?.fields?.title,
-		})
 
 		const post = PostSchema.nullish().safeParse(rawPost)
 
-		if (!post.success) {
-			console.error('❌ Failed to parse post for deletion:', {
-				id,
-				error: post.error.format(),
-				raw: rawPost,
+		if (!post.success || !post.data) {
+			await log.error('post.delete.notfound', {
+				postId: id,
+				parseError: post.success ? undefined : post.error.format(),
 			})
-			throw new Error(`Invalid post data for ${id}`)
+			throw new Error(`Post with id ${id} not found or invalid.`)
 		}
 
-		if (!post.data) {
-			console.error('❌ Post not found for deletion:', id)
-			throw new Error(`Post with id ${id} not found.`)
-		}
+		await log.info('post.delete.resources.started', {
+			postId: id,
+			resourceCount: post.data.resources?.length,
+		})
 
-		console.log('🗑️ Deleting post resources:', id)
 		await db
 			.delete(contentResourceResource)
 			.where(eq(contentResourceResource.resourceOfId, id))
 
-		console.log('🗑️ Deleting post record:', id)
+		await log.info('post.delete.content.started', { postId: id })
 		await db.delete(contentResource).where(eq(contentResource.id, id))
 
 		try {
-			console.log('🗑️ Removing from TypeSense:', id)
 			await deletePostInTypeSense(id)
-			console.log('✅ Successfully removed from TypeSense:', id)
+			await log.info('post.delete.typesense.success', { postId: id })
 		} catch (error) {
-			console.error('⚠️ Failed to remove from TypeSense (non-fatal):', {
-				id,
+			await log.error('post.delete.typesense.failed', {
+				postId: id,
 				error: getErrorMessage(error),
+				stack: getErrorStack(error),
 			})
 		}
 
-		console.log('✅ Post deletion completed:', id)
+		await log.info('post.delete.completed', { postId: id })
 		return true
 	} catch (error) {
-		console.error('❌ Post deletion failed:', {
-			id,
+		await log.error('post.delete.failed', {
+			postId: id,
 			error: getErrorMessage(error),
-			stack: (error as Error).stack,
+			stack: getErrorStack(error),
 		})
 		throw error
 	}
