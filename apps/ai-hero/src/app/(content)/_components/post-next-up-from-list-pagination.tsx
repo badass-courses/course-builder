@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { type List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
 import { cn } from '@/utils/cn'
@@ -23,13 +24,21 @@ export default function PostNextUpFromListPagination({
 	className?: string
 }) {
 	const { list } = useList()
-
+	const router = useRouter()
 	const nextUp = list && getNextUpResourceFromList(list, postId)
 	const { progress, addLessonProgress } = useProgress()
 	const isCompleted = progress?.completedLessons.some(
 		(lesson) => lesson.resourceId === postId,
 	)
 	const { data: session } = useSession()
+
+	React.useEffect(() => {
+		if (nextUp) {
+			router.prefetch(
+				`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`,
+			)
+		}
+	}, [nextUp, list, router])
 
 	if (!list) return <Recommendations postId={postId} className={className} />
 
