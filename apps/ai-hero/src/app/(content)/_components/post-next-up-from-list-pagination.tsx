@@ -33,7 +33,7 @@ export default function PostNextUpFromListPagination({
 	const { data: session } = useSession()
 
 	React.useEffect(() => {
-		if (nextUp) {
+		if (nextUp && list) {
 			router.prefetch(
 				`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`,
 			)
