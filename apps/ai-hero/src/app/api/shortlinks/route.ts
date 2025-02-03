@@ -20,7 +20,16 @@ const validateBearerToken = (request: NextRequest): boolean => {
 	}
 
 	const token = authHeader.split(' ')[1]
-	return token === process.env.SHORTLINKS_BEARER_TOKEN
+	const validToken = process.env.SHORTLINKS_BEARER_TOKEN
+
+	if (!validToken) {
+		log.error('api.shortlinks.auth.configuration_error', {
+			error: 'SHORTLINKS_BEARER_TOKEN environment variable is not set',
+		})
+		return false
+	}
+
+	return token === validToken
 }
 
 export async function OPTIONS() {
