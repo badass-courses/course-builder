@@ -3,6 +3,8 @@ import { env } from '@/env.mjs'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 
+const URL_PREFIX = 'https://github.com/ai-hero-dev/ai-hero/tree/main/'
+
 interface ShortlinkPayload {
 	key: string
 	url: string
@@ -38,16 +40,6 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: NextRequest) {
-	if (!validateBearerToken(request)) {
-		await log.warn('api.shortlinks.get.unauthorized', {
-			headers: Object.fromEntries(request.headers),
-		})
-		return NextResponse.json(
-			{ error: 'Unauthorized: Invalid or missing Bearer token.' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
 	const { searchParams } = new URL(request.url)
 	const key = searchParams.get('key')
 
@@ -62,6 +54,8 @@ export async function GET(request: NextRequest) {
 		}
 
 		const url = await redis.get(`shortlink:${key}`)
+		const fullUrl = `${URL_PREFIX}${url}`
+
 		if (!url) {
 			return NextResponse.json(
 				{ error: 'Shortlink not found.' },
@@ -69,8 +63,11 @@ export async function GET(request: NextRequest) {
 			)
 		}
 
-		await log.info('api.shortlinks.get.success', { key })
-		return NextResponse.json({ key, url }, { headers: corsHeaders })
+		await log.info('api.shortlinks.get.success', {
+			key,
+			redirectTo: fullUrl,
+		})
+		return NextResponse.redirect(fullUrl, { headers: corsHeaders })
 	} catch (error) {
 		await log.error('api.shortlinks.get.failed', {
 			error: error instanceof Error ? error.message : 'Unknown error',
