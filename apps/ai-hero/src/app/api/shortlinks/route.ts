@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { env } from '@/env.mjs'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 
@@ -20,7 +21,7 @@ const validateBearerToken = (request: NextRequest): boolean => {
 	}
 
 	const token = authHeader.split(' ')[1]
-	const validToken = process.env.SHORTLINKS_BEARER_TOKEN
+	const validToken = env.SHORTLINKS_BEARER_TOKEN
 
 	if (!validToken) {
 		log.error('api.shortlinks.auth.configuration_error', {
