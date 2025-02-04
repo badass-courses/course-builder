@@ -1,3 +1,6 @@
+// Add caching for grid patterns
+const patternCache = new Map<string, string>()
+
 export function generateGridPattern(
 	seed: string,
 	width = 1200,
@@ -69,7 +72,15 @@ export function generateGridPattern(
       ${svgElements}
     </svg>
   `
-	return `data:image/svg+xml;base64,${btoa(svgContent)}`
+	const cacheKey = `${seed}-${width}-${height}-${SCALE}-${withEffect}`
+
+	if (patternCache.has(cacheKey)) {
+		return patternCache.get(cacheKey)!
+	}
+
+	const pattern = `data:image/svg+xml;base64,${btoa(svgContent)}`
+	patternCache.set(cacheKey, pattern)
+	return pattern
 }
 
 function generateSquarePath(x: number, y: number, size: number) {

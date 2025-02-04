@@ -77,13 +77,11 @@ export async function generateMetadata(
 }
 
 export default async function ListPage(props: {
+	list: List
 	params: Promise<{ slug: string }>
 	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
-	const searchParams = await props.searchParams
-	const params = await props.params
-	const list = await getList(params.slug).catch(() => notFound())
-
+	const list = props.list
 	let body
 
 	if (list.fields.body) {
@@ -188,9 +186,10 @@ export default async function ListPage(props: {
 									priority
 									alt={list.fields.title}
 									src={list.fields.image}
-									width={1920 / 4}
-									height={1080 / 4}
+									width={480}
+									height={270}
 									className="rounded brightness-90 transition duration-300 ease-in-out group-hover:brightness-100"
+									sizes="(max-width: 768px) 100vw, 480px"
 								/>
 								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
 									<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
@@ -206,6 +205,8 @@ export default async function ListPage(props: {
 				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
 					<img
 						src={squareGridPattern}
+						alt=""
+						aria-hidden="true"
 						className="h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 dark:opacity-[0.15]"
 					/>
 					<div

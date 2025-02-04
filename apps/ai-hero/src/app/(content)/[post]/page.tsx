@@ -5,30 +5,22 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
 // import { PricingWidget } from '@/app/_components/home-pricing-widget'
-import { Code } from '@/components/codehike/code'
-import Scrollycoding from '@/components/codehike/scrollycoding'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import type { List } from '@/lib/lists'
-import {
-	getAllLists,
-	getListForPost,
-	getMinimalListForNavigation,
-} from '@/lib/lists-query'
+import { ListSchema, type List } from '@/lib/lists'
+import { getAllLists, getMinimalListForNavigation } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
-import { getAllPosts, getPost } from '@/lib/posts-query'
+import { getAllPosts, getCachedPostOrList, getPost } from '@/lib/posts-query'
 // import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
+import { compileMDX } from '@/utils/compile-mdx'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
-import { compileMDX, MDXRemote } from 'next-mdx-remote/rsc'
 import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -46,135 +38,6 @@ type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export async function generateStaticParams() {
-	const posts = await getAllPosts()
-	const lists = await getAllLists()
-
-	const resources = [...posts, ...lists]
-
-	return resources
-		.filter((resource) => Boolean(resource.fields?.slug))
-		.map((resource) => ({
-			post: resource.fields?.slug,
-		}))
-}
-
-export async function generateMetadata(
-	props: Props,
-	parent: ResolvingMetadata,
-): Promise<Metadata> {
-	const params = await props.params
-	const searchParams = await props.searchParams
-
-	let resource
-
-	resource = await getPost(params.post)
-
-	if (!resource) {
-		resource = await getMinimalListForNavigation(params.post)
-	}
-
-	if (!resource) {
-		return parent as Metadata
-	}
-
-	return {
-		title: resource.fields.title,
-		description: resource.fields.description,
-		alternates: {
-			canonical:
-				searchParams && searchParams.list
-					? `/${resource.fields.slug}`
-					: undefined,
-		},
-		openGraph: {
-			images: [
-				getOGImageUrlForResource({
-					fields: { slug: resource.fields.slug },
-					id: resource.id,
-					updatedAt: resource.updatedAt,
-				}),
-			],
-		},
-	}
-}
-
-async function PostActionBar({ post }: { post: Post | null }) {
-	const { session, ability } = await getServerAuthSession()
-
-	return (
-		<>
-			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm" className="absolute right-0 top-0 z-50">
-					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
-				</Button>
-			) : null}
-		</>
-	)
-}
-
-async function Post({ post }: { post: Post | null }) {
-	if (!post) {
-		return null
-	}
-
-	if (!post.fields.body) {
-		return null
-	}
-
-	const { content } = await compileMDX({
-		source: post.fields.body,
-		// @ts-expect-error
-		components: { Code, Scrollycoding },
-		options: {
-			mdxOptions: {
-				remarkPlugins: [
-					remarkGfm,
-					[
-						remarkCodeHike,
-						{
-							components: { code: 'Code' },
-						},
-					],
-				],
-				recmaPlugins: [
-					[
-						recmaCodeHike,
-						{
-							components: { code: 'Code' },
-						},
-					],
-				],
-			},
-		},
-	})
-
-	return (
-		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-			{content}
-		</article>
-	)
-}
-
-async function PostTitle({ post }: { post: Post | null }) {
-	return (
-		<h1 className="fluid-3xl mb-4 font-bold">
-			<ReactMarkdown
-				components={{
-					p: ({ children }) => children,
-					code: ({ children }) => (
-						<code className="bg-muted/80 rounded px-1 text-[85%]">
-							{children}
-						</code>
-					),
-				}}
-			>
-				{post?.fields?.title}
-			</ReactMarkdown>
-		</h1>
-	)
-}
-
 export default async function PostPage(props: {
 	params: Promise<{ post: string }>
 	searchParams: Promise<{ [key: string]: string | undefined }>
@@ -184,23 +47,26 @@ export default async function PostPage(props: {
 
 	const listSlugFromParam = searchParams.list
 
-	const post = await getPost(params.post)
+	const post = await getCachedPostOrList(params.post)
 
 	if (!post) {
+		notFound()
+	}
+
+	if (post?.type === 'list') {
+		const list = ListSchema.safeParse(post)
+
+		if (!list.success) {
+			notFound()
+		}
+
 		return (
 			<ListPage
+				list={list.data}
 				params={{ slug: params.post } as any}
 				searchParams={searchParams as any}
 			/>
 		)
-	}
-
-	// const listLoader = listSlugFromParam
-	// 	? getMinimalListForNavigation(listSlugFromParam)
-	// 	: getListForPost(post.id)
-
-	if (!post) {
-		notFound()
 	}
 
 	const squareGridPattern = generateGridPattern(
@@ -263,7 +129,7 @@ export default async function PostPage(props: {
 						<article className="flex h-full flex-col gap-5">
 							<PostTitle post={post} />
 							<Contributor className="flex [&_img]:w-8" />
-							<Post post={post} />
+							<PostBody post={post} />
 							{/* {listSlugFromParam && (
 								<PostProgressToggle
 									className="flex w-full items-center justify-center"
@@ -317,6 +183,43 @@ export default async function PostPage(props: {
 	)
 }
 
+async function PostBody({ post }: { post: Post | null }) {
+	if (!post) {
+		return null
+	}
+
+	if (!post.fields.body) {
+		return null
+	}
+
+	const { content } = await compileMDX(post.fields.body)
+
+	return (
+		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+			{content}
+		</article>
+	)
+}
+
+async function PostTitle({ post }: { post: Post | null }) {
+	return (
+		<h1 className="fluid-3xl mb-4 font-bold">
+			<ReactMarkdown
+				components={{
+					p: ({ children }) => children,
+					code: ({ children }) => (
+						<code className="bg-muted/80 rounded px-1 text-[85%]">
+							{children}
+						</code>
+					),
+				}}
+			>
+				{post?.fields?.title}
+			</ReactMarkdown>
+		</h1>
+	)
+}
+
 async function PlayerContainer({ post }: { post: Post | null }) {
 	if (!post) {
 		notFound()
@@ -357,4 +260,65 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			</Suspense>
 		</VideoPlayerOverlayProvider>
 	) : null
+}
+
+export async function generateStaticParams() {
+	const posts = await getAllPosts()
+	const lists = await getAllLists()
+
+	const resources = [...posts, ...lists]
+
+	return resources
+		.filter((resource) => Boolean(resource.fields?.slug))
+		.map((resource) => ({
+			post: resource.fields?.slug,
+		}))
+}
+
+export async function generateMetadata(
+	props: Props,
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const params = await props.params
+	const searchParams = await props.searchParams
+
+	const resource = await getCachedPostOrList(params.post)
+
+	if (!resource) {
+		return parent as Metadata
+	}
+
+	return {
+		title: resource.fields.title,
+		description: resource.fields.description,
+		alternates: {
+			canonical:
+				searchParams && searchParams.list
+					? `/${resource.fields.slug}`
+					: undefined,
+		},
+		openGraph: {
+			images: [
+				getOGImageUrlForResource({
+					fields: { slug: resource.fields.slug },
+					id: resource.id,
+					updatedAt: resource.updatedAt,
+				}),
+			],
+		},
+	}
+}
+
+async function PostActionBar({ post }: { post: Post | null }) {
+	const { session, ability } = await getServerAuthSession()
+
+	return (
+		<>
+			{post && ability.can('update', 'Content') ? (
+				<Button asChild size="sm" className="absolute right-0 top-0 z-50">
+					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
+				</Button>
+			) : null}
+		</>
+	)
 }

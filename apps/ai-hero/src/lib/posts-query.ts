@@ -1018,3 +1018,77 @@ function getErrorStack(error: unknown) {
 	if (isErrorWithStack(error)) return error.stack
 	return undefined
 }
+
+export const getCachedPostOrList = unstable_cache(
+	async (slugOrId: string) => getPostOrList(slugOrId),
+	['posts', 'lists'],
+	{ revalidate: 3600, tags: ['posts', 'lists'] },
+)
+
+export async function getPostOrList(slugOrId: string) {
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'unlisted',
+	]
+	const states = ['draft', 'published']
+
+	const postOrList = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+				eq(contentResource.id, slugOrId),
+				eq(contentResource.id, `post_${slugOrId.split('~')[1]}`),
+				eq(contentResource.id, `list_${slugOrId.split('~')[1]}`),
+			),
+			or(eq(contentResource.type, 'post'), eq(contentResource.type, 'list')),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+		},
+	})
+
+	if (!postOrList) {
+		return null
+	}
+
+	// Parse based on content type
+	if (postOrList.type === 'post') {
+		const postParsed = PostSchema.safeParse(postOrList)
+		if (!postParsed.success) {
+			await log.error('post.parse.failed', {
+				error: postParsed.error.format(),
+				slugOrId,
+			})
+			return null
+		}
+		return postParsed.data
+	} else if (postOrList.type === 'list') {
+		const listParsed = ListSchema.safeParse(postOrList)
+		if (!listParsed.success) {
+			await log.error('list.parse.failed', {
+				error: listParsed.error.format(),
+				slugOrId,
+			})
+			return null
+		}
+		return listParsed.data
+	}
+
+	return null
+}
