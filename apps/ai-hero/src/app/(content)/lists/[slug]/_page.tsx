@@ -207,7 +207,7 @@ export default async function ListPage(props: {
 						src={squareGridPattern}
 						alt=""
 						aria-hidden="true"
-						className="h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 dark:opacity-[0.15]"
+						className="hidden h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
 					/>
 					<div
 						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"

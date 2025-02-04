@@ -101,14 +101,14 @@ export default async function PostPage(props: {
 					>
 						<img
 							src={squareGridPattern}
-							className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 dark:opacity-[0.15]"
+							className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
 						/>
 						<div
 							className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
 							aria-hidden="true"
 						/>
 					</div>
-					<div className="relative z-50 flex w-full items-center justify-between">
+					<div className="relative flex w-full items-center justify-between">
 						{!listSlugFromParam ? (
 							<Link
 								href="/posts"
@@ -119,16 +119,17 @@ export default async function PostPage(props: {
 						) : (
 							<div />
 						)}
-						<div className="flex items-center gap-3">
-							<Suspense fallback={null}>
-								<PostActionBar post={post} />
-							</Suspense>
-						</div>
 					</div>
 					<div className="relative z-10">
 						<article className="flex h-full flex-col gap-5">
 							<PostTitle post={post} />
-							<Contributor className="flex [&_img]:w-8" />
+
+							<div className="relative flex w-full items-center justify-between gap-3">
+								<Contributor className="flex [&_img]:w-8" />
+								<Suspense fallback={null}>
+									<PostActionBar post={post} />
+								</Suspense>
+							</div>
 							<PostBody post={post} />
 							{/* {listSlugFromParam && (
 								<PostProgressToggle
