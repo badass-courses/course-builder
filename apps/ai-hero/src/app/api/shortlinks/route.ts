@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { env } from '@/env.mjs'
+import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 
@@ -16,25 +16,6 @@ const corsHeaders = {
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
-const validateBearerToken = (request: NextRequest): boolean => {
-	const authHeader = request.headers.get('authorization')
-	if (!authHeader?.startsWith('Bearer ')) {
-		return false
-	}
-
-	const token = authHeader.split(' ')[1]
-	const validToken = env.SHORTLINKS_BEARER_TOKEN
-
-	if (!validToken) {
-		log.error('api.shortlinks.auth.configuration_error', {
-			error: 'SHORTLINKS_BEARER_TOKEN environment variable is not set',
-		})
-		return false
-	}
-
-	return token === validToken
-}
-
 export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
@@ -44,7 +25,11 @@ export async function GET(request: NextRequest) {
 	const key = searchParams.get('key')
 
 	try {
-		await log.info('api.shortlinks.get.started', { key })
+		const { user } = await getUserAbilityForRequest(request)
+		await log.info('api.shortlinks.get.started', {
+			key,
+			userId: user?.id,
+		})
 
 		if (!key) {
 			return NextResponse.json(
@@ -82,20 +67,33 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-	if (!validateBearerToken(request)) {
-		await log.warn('api.shortlinks.post.unauthorized', {
-			headers: Object.fromEntries(request.headers),
-		})
-		return NextResponse.json(
-			{ error: 'Unauthorized: Invalid or missing Bearer token.' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
 	try {
+		const { ability, user } = await getUserAbilityForRequest(request)
+		if (!user) {
+			await log.warn('api.shortlinks.post.unauthorized', {
+				headers: Object.fromEntries(request.headers),
+			})
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401, headers: corsHeaders },
+			)
+		}
+
+		// Check if user has ability to create content
+		if (!ability.can('create', 'Content')) {
+			await log.warn('api.shortlinks.post.forbidden', {
+				userId: user.id,
+			})
+			return NextResponse.json(
+				{ error: 'Forbidden: Insufficient permissions' },
+				{ status: 403, headers: corsHeaders },
+			)
+		}
+
 		const body: ShortlinkPayload = await request.json()
 		await log.info('api.shortlinks.post.started', {
 			key: body.key,
+			userId: user.id,
 		})
 
 		if (!body.key || !body.url) {
@@ -128,21 +126,36 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-	if (!validateBearerToken(request)) {
-		await log.warn('api.shortlinks.delete.unauthorized', {
-			headers: Object.fromEntries(request.headers),
-		})
-		return NextResponse.json(
-			{ error: 'Unauthorized: Invalid or missing Bearer token.' },
-			{ status: 401, headers: corsHeaders },
-		)
-	}
-
-	const { searchParams } = new URL(request.url)
-	const key = searchParams.get('key')
-
 	try {
-		await log.info('api.shortlinks.delete.started', { key })
+		const { ability, user } = await getUserAbilityForRequest(request)
+		if (!user) {
+			await log.warn('api.shortlinks.delete.unauthorized', {
+				headers: Object.fromEntries(request.headers),
+			})
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401, headers: corsHeaders },
+			)
+		}
+
+		// Check if user has ability to delete content
+		if (!ability.can('delete', 'Content')) {
+			await log.warn('api.shortlinks.delete.forbidden', {
+				userId: user.id,
+			})
+			return NextResponse.json(
+				{ error: 'Forbidden: Insufficient permissions' },
+				{ status: 403, headers: corsHeaders },
+			)
+		}
+
+		const { searchParams } = new URL(request.url)
+		const key = searchParams.get('key')
+
+		await log.info('api.shortlinks.delete.started', {
+			key,
+			userId: user.id,
+		})
 
 		if (!key) {
 			return NextResponse.json(
@@ -162,7 +175,6 @@ export async function DELETE(request: NextRequest) {
 		await log.error('api.shortlinks.delete.failed', {
 			error: error instanceof Error ? error.message : 'Unknown error',
 			stack: error instanceof Error ? error.stack : undefined,
-			key,
 		})
 		return NextResponse.json(
 			{ error: 'Internal server error' },
