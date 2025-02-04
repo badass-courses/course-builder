@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
-
-const URL_PREFIX = 'https://github.com/ai-hero-dev/ai-hero/tree/main/'
+import { getShortlinkUrl } from '@/server/shortlinks'
 
 interface ShortlinkPayload {
 	key: string
@@ -26,10 +25,6 @@ export async function GET(request: NextRequest) {
 
 	try {
 		const { user } = await getUserAbilityForRequest(request)
-		await log.info('api.shortlinks.get.started', {
-			key,
-			userId: user?.id,
-		})
 
 		if (!key) {
 			return NextResponse.json(
@@ -38,8 +33,7 @@ export async function GET(request: NextRequest) {
 			)
 		}
 
-		const url = await redis.get(`shortlink:${key}`)
-		const fullUrl = `${URL_PREFIX}${url}`
+		const url = await getShortlinkUrl(key, user?.id)
 
 		if (!url) {
 			return NextResponse.json(
@@ -48,11 +42,7 @@ export async function GET(request: NextRequest) {
 			)
 		}
 
-		await log.info('api.shortlinks.get.success', {
-			key,
-			redirectTo: fullUrl,
-		})
-		return NextResponse.redirect(fullUrl, { headers: corsHeaders })
+		return NextResponse.redirect(url, { headers: corsHeaders })
 	} catch (error) {
 		await log.error('api.shortlinks.get.failed', {
 			error: error instanceof Error ? error.message : 'Unknown error',
