@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
-import { redis } from '@/server/redis-client'
 import { getShortlinkUrl } from '@/server/shortlinks'
 
 /**
@@ -11,11 +10,11 @@ import { getShortlinkUrl } from '@/server/shortlinks'
  */
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { slug: string } },
-) {
+	{ params }: { params: Promise<{ slug: string }> },
+): Promise<NextResponse> {
 	try {
 		const { user } = await getUserAbilityForRequest(request)
-		const url = await getShortlinkUrl(params.slug, user?.id)
+		const url = await getShortlinkUrl((await params).slug, user?.id)
 
 		if (!url) {
 			return new NextResponse('Shortlink not found', { status: 404 })
@@ -26,7 +25,7 @@ export async function GET(
 		await log.error('shortlink.redirect.failed', {
 			error: error instanceof Error ? error.message : 'Unknown error',
 			stack: error instanceof Error ? error.stack : undefined,
-			key: params.slug,
+			key: (await params).slug,
 		})
 		return new NextResponse('Internal Server Error', { status: 500 })
 	}
