@@ -40,7 +40,8 @@ export default function PostNextUpFromListPagination({
 		}
 	}, [nextUp, list, router])
 
-	if (!list) return <Recommendations postId={postId} className={className} />
+	if (!list || !nextUp)
+		return <Recommendations postId={postId} className={className} />
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
