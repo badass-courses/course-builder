@@ -100,6 +100,8 @@ export default async function PostPage(props: {
 						})}
 					>
 						<img
+							alt=""
+							aria-hidden="true"
 							src={squareGridPattern}
 							className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
 						/>
@@ -108,7 +110,7 @@ export default async function PostPage(props: {
 							aria-hidden="true"
 						/>
 					</div>
-					<div className="relative flex w-full items-center justify-between">
+					<div className="relative z-10 flex w-full items-center justify-between">
 						{!listSlugFromParam ? (
 							<Link
 								href="/posts"
