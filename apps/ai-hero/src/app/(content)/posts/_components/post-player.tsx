@@ -67,7 +67,7 @@ export function PostPlayer({
 		playsInline: true,
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: thumbnailTime || 0,
+		thumbnailTime: autoplay ? 0 : thumbnailTime || 0,
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
