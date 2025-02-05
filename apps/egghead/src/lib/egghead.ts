@@ -7,7 +7,13 @@ import { inngest } from '@/inngest/inngest.server'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { PostAccess, PostAction, PostState, PostVisibility } from './posts'
+import {
+	Post,
+	PostAccess,
+	PostAction,
+	PostState,
+	PostVisibility,
+} from './posts'
 import { getPost } from './posts-query'
 
 import 'server-only'
@@ -265,6 +271,41 @@ export async function removeLegacyTaggingsOnEgghead(postId: string) {
 	)
 }
 
+function getResourceInfo(post: Post) {
+	if (post.fields.eggheadLessonId) {
+		return {
+			id: post.fields.eggheadLessonId,
+			type: 'Lesson',
+		}
+	}
+
+	if (post.fields.eggheadPlaylistId) {
+		return {
+			id: post.fields.eggheadPlaylistId,
+			type: 'Playlist',
+		}
+	}
+
+	return undefined
+}
+
+function buildTaggingQuery(post: Post) {
+	const eggheadResource = getResourceInfo(post)
+	if (!eggheadResource) {
+		throw new Error('No egghead resource found')
+	}
+
+	let query = ``
+	for (const tag of post?.tags?.map((tag) => tag.tag) || []) {
+		const tagId = Number(tag.id.split('_')[1])
+		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
+					VALUES (${tagId}, ${eggheadResource.id}, '${eggheadResource.type}', 'topics', NOW(), NOW());
+		`
+	}
+
+	return query
+}
+
 export async function writeLegacyTaggingsToEgghead(postId: string) {
 	const post = await getPost(postId)
 
@@ -275,27 +316,10 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 	// just wipe them and rewrite, no need to be smart
 	await removeLegacyTaggingsOnEgghead(postId)
 
-	let query = ``
-
 	if (!post?.tags) return
 
-	if (post.fields.eggheadLessonId) {
-		for (const tag of post.tags.map((tag) => tag.tag)) {
-			const tagId = Number(tag.id.split('_')[1])
-			query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
-						VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'topics', NOW(), NOW());
-			`
-		}
-		Boolean(query) && (await eggheadPgQuery(query))
-	} else if (post.fields.eggheadPlaylistId) {
-		for (const tag of post.tags.map((tag) => tag.tag)) {
-			const tagId = Number(tag.id.split('_')[1])
-			query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
-						VALUES (${tagId}, ${post.fields.eggheadPlaylistId}, 'Playlist', 'topics', NOW(), NOW());
-			`
-		}
-		Boolean(query) && (await eggheadPgQuery(query))
-	}
+	const query = buildTaggingQuery(post)
+	Boolean(query) && (await eggheadPgQuery(query))
 }
 
 export const eggheadLessonSchema = z.object({
