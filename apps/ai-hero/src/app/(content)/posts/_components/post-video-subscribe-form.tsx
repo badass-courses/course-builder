@@ -83,11 +83,11 @@ export const PostNewsletterCta: React.FC<
 				/>
 				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-5 sm:text-left md:flex-col md:items-start md:gap-1 md:pt-0">
 					<div className="flex items-center gap-2">
-						<div className="xl:fluid-xl fluid-xl font-heading font-semibold">
+						<div className="2xl:fluid-xl sm:fluid-lg font-heading text-balance text-2xl font-semibold">
 							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="dark:text-primary xl:fluid-lg fluid-base font-heading text-gray-600">
+					<div className="dark:text-primary 2xl:fluid-lg fluid-base font-heading text-gray-600">
 						{common['video-newsletter-subtitle']}
 					</div>
 				</div>

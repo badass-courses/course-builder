@@ -4,18 +4,22 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
+import { useMuxPlayerPrefs } from '@/hooks/use-mux-player-prefs'
 import { Book, Check, ListChecks, MenuIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import {
 	Button,
+	Label,
 	Sheet,
 	SheetContent,
 	SheetTitle,
 	SheetTrigger,
+	Switch,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { AutoPlayToggle } from '../../_components/autoplay-toggle'
 import { useList } from './list-provider'
 import { useProgress } from './progress-provider'
 
@@ -32,12 +36,13 @@ export default function ListResourceNavigation({
 	const { list, isLoading: isListLoading } = useList()
 	const { progress } = useProgress()
 	const { data: session } = useSession()
+	const { setPlayerPrefs } = useMuxPlayerPrefs()
 
 	if (isListLoading) {
 		return (
 			<div
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] flex h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] items-start justify-start overflow-y-auto border-r p-5',
+					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] flex h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] flex-shrink-0 items-start justify-start overflow-y-auto border-r p-5',
 					className,
 					{ 'w-0': !isExpanded },
 				)}
@@ -57,7 +62,7 @@ export default function ListResourceNavigation({
 		<>
 			<aside
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r xl:block',
+					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] flex-shrink-0 overflow-y-auto border-r xl:block',
 					className,
 					{
 						'w-0': !isExpanded,
@@ -88,14 +93,15 @@ export default function ListResourceNavigation({
 			>
 				{/* List header with title */}
 				{withHeader && (
-					<div className="bg-muted/50 relative border-b p-5">
+					<div className="bg-muted/50 relative flex flex-col border-b p-5">
 						<Link
 							className="font-heading relative z-10 inline-flex items-center gap-2 text-xl font-bold hover:underline"
 							href={`/${list.fields.slug}`}
 						>
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
-						<div className="absolute inset-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:14px_14px] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
+						<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+						<div className="absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:14px_14px] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 					</div>
 				)}
 				{/* Resource navigation list */}
@@ -157,7 +163,7 @@ export function MobileListResourceNavigation() {
 	return (
 		<>
 			{/* {!isOpen && ( */}
-			<div className="bg-card fixed -left-2 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow xl:hidden">
+			<div className="bg-card fixed -left-2 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow xl:sr-only xl:hidden">
 				<Button
 					className="rounded"
 					onClick={() => {

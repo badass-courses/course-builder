@@ -47,10 +47,9 @@ export default function Recommendations({
 					{status === 'pending' ? (
 						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
 					) : post ? (
-						<Button
-							className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 lg:text-xl"
-							asChild
-							variant="link"
+						<Link
+							className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 hover:underline lg:text-xl"
+							href={`/${post.slug}`}
 							onClick={async () => {
 								if (!isCompleted) {
 									addLessonProgress(postId)
@@ -61,10 +60,8 @@ export default function Recommendations({
 								}
 							}}
 						>
-							<Link href={`/${post.slug}`}>
-								{post.title} <ArrowRight className="w-4" />
-							</Link>
-						</Button>
+							{post.title} <ArrowRight className="hidden w-4 sm:block" />
+						</Link>
 					) : null}
 					{!session?.user && (
 						<span className="text-muted-foreground mt-4">

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
@@ -48,21 +48,23 @@ export function PostPlayer({
 
 	const { dispatch: dispatchVideoPlayerOverlay, state } =
 		useVideoPlayerOverlay()
-	const { setMuxPlayerRef } = useMuxPlayer()
+	const { setMuxPlayerRef, muxPlayerRef } = useMuxPlayer()
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
-	const listSlug = searchParams.get('list')
 
+	const { playbackRate, volume, setPlayerPrefs, autoplay } = useMuxPlayerPrefs()
 	const { addLessonProgress: addOptimisticLessonProgress } = useProgress()
+	const { list } = useList()
+	const nextUp = list && getNextUpResourceFromList(list, postId)
+	const router = useRouter()
 
-	const {
-		playbackRate,
-		volume,
-		setPlayerPrefs,
-		autoplay: bingeMode,
-	} = useMuxPlayerPrefs()
+	React.useEffect(() => {
+		setMuxPlayerRef(playerRef)
+	}, [playerRef])
+
 	const playerProps = {
+		playsInline: true,
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
 		thumbnailTime: thumbnailTime || 0,
@@ -87,14 +89,21 @@ export function PostPlayer({
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 			handleTextTrackChange(playerRef, setPlayerPrefs)
 			setPreferredTextTrack(playerRef)
-			setMuxPlayerRef(playerRef)
 
-			if (bingeMode) {
-				playerRef?.current?.play()
+			if (autoplay) {
+				playerRef.current?.play().catch(console.warn)
 			}
 		},
 		onEnded: async () => {
-			dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
+			if (autoplay) {
+				router.push(
+					`/${nextUp?.resource.fields?.slug}${
+						list ? `?list=${list.fields.slug}` : ''
+					}`,
+				)
+			} else {
+				dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
+			}
 			addOptimisticLessonProgress(postId)
 			await setProgressForResource({
 				resourceId: postId,
@@ -115,10 +124,6 @@ export function PostPlayer({
 			? muxPlaybackId || videoResource?.muxPlaybackId
 			: null
 
-	const { list } = useList()
-	const nextUp = getNextUpResourceFromList(list, postId)
-	const { data: session } = useSession()
-
 	return (
 		<div className={cn('relative h-full w-full', className)}>
 			{playbackId ? (
@@ -129,6 +134,7 @@ export function PostPlayer({
 					}}
 					playbackId={playbackId}
 					className={cn(className)}
+					ref={playerRef}
 					{...playerProps}
 				/>
 			) : (

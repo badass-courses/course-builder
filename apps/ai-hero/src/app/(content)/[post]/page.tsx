@@ -82,77 +82,75 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<div className="flex w-full">
-			<main className="w-full">
-				{hasVideo && <PlayerContainer post={post} />}
+		<main className="w-full">
+			{hasVideo && <PlayerContainer post={post} />}
+			<div
+				className={cn(
+					'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
+					{
+						'pt-16': !hasVideo,
+					},
+				)}
+			>
 				<div
-					className={cn(
-						'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
-						{
-							'pt-16': !hasVideo,
-						},
-					)}
+					className={cn('absolute right-0 w-full', {
+						'-top-10': hasVideo,
+						'top-0': !hasVideo,
+					})}
 				>
+					<img
+						alt=""
+						aria-hidden="true"
+						src={squareGridPattern}
+						className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
+					/>
 					<div
-						className={cn('absolute right-0 w-full', {
-							'-top-10': hasVideo,
-							'top-0': !hasVideo,
-						})}
-					>
-						<img
-							alt=""
-							aria-hidden="true"
-							src={squareGridPattern}
-							className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
-						/>
-						<div
-							className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
-							aria-hidden="true"
-						/>
-					</div>
-					<div className="relative z-10 flex w-full items-center justify-between">
-						{!listSlugFromParam ? (
-							<Link
-								href="/posts"
-								className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
-							>
-								← Posts
-							</Link>
-						) : (
-							<div />
-						)}
-					</div>
-					<div className="relative z-10">
-						<article className="flex h-full flex-col gap-5">
-							<PostTitle post={post} />
-
-							<div className="relative flex w-full items-center justify-between gap-3">
-								<Contributor className="flex [&_img]:w-8" />
-								<Suspense fallback={null}>
-									<PostActionBar post={post} />
-								</Suspense>
-							</div>
-							<PostBody post={post} />
-							{/* {listSlugFromParam && (
+						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						aria-hidden="true"
+					/>
+				</div>
+				<div className="relative z-10 flex w-full items-center justify-between">
+					{!listSlugFromParam ? (
+						<Link
+							href="/posts"
+							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
+						>
+							← Posts
+						</Link>
+					) : (
+						<div />
+					)}
+				</div>
+				<div className="relative z-10">
+					<article className="flex h-full flex-col gap-5">
+						<PostTitle post={post} />
+						<div className="relative flex w-full items-center justify-between gap-3">
+							<Contributor className="flex [&_img]:w-8" />
+							<Suspense fallback={null}>
+								<PostActionBar post={post} />
+							</Suspense>
+						</div>
+						<PostBody post={post} />
+						{/* {listSlugFromParam && (
 								<PostProgressToggle
 									className="flex w-full items-center justify-center"
 									postId={post.id}
 								/>
 							)} */}
-							<PostNextUpFromListPagination postId={post.id} />
-							<div className="mx-auto mt-10 flex w-full max-w-[290px] flex-col gap-1">
-								<strong className="w-full text-center text-lg font-semibold">
-									Share
-								</strong>
-								<Share
-									className="bg-background w-full"
-									title={post?.fields.title}
-								/>
-							</div>
-						</article>
-					</div>
+						<PostNextUpFromListPagination postId={post.id} />
+						<div className="mx-auto mt-10 flex w-full max-w-[290px] flex-col gap-1">
+							<strong className="w-full text-center text-lg font-semibold">
+								Share
+							</strong>
+							<Share
+								className="bg-background w-full"
+								title={post?.fields.title}
+							/>
+						</div>
+					</article>
 				</div>
-				{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
+			</div>
+			{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 					<section id="buy">
 						<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
 							Get Really Good At Node.js
@@ -169,20 +167,19 @@ export default async function PostPage(props: {
 						</div>
 					</section>
 				) : hasVideo ? null : ( */}
-				{!hasVideo && (
-					<PrimaryNewsletterCta
-						className="pt-20"
-						trackProps={{
-							event: 'subscribed',
-							params: {
-								post: post.fields.slug,
-								location: 'post',
-							},
-						}}
-					/>
-				)}
-			</main>
-		</div>
+			{!hasVideo && (
+				<PrimaryNewsletterCta
+					className="pt-20"
+					trackProps={{
+						event: 'subscribed',
+						params: {
+							post: post.fields.slug,
+							location: 'post',
+						},
+					}}
+				/>
+			)}
+		</main>
 	)
 }
 
@@ -247,10 +244,10 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
-						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
+						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
 						videoResource={videoResource}
 					/>
-					<PostNewsletterCta
+					{/* <PostNewsletterCta
 						trackProps={{
 							event: 'subscribed',
 							params: {
@@ -258,7 +255,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 								post: post.fields.slug,
 							},
 						}}
-					/>
+					/> */}
 				</section>
 			</Suspense>
 		</VideoPlayerOverlayProvider>
