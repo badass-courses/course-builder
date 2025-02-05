@@ -56,6 +56,7 @@ import { writeNewPostToDatabase } from './posts-new-query'
 import { createNewPostVersion } from './posts-version-query'
 import {
 	removeLessonFromSanityCourse,
+	reorderResourcesInSanityCourse,
 	replaceSanityLessonResources,
 	updateSanityLesson,
 } from './sanity-content-query'
@@ -791,15 +792,15 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-type positionInputIten = {
+export type positionInputItem = {
 	currentParentResourceId: string
 	parentResourceId: string
 	resourceId: string
 	position: number
-	children?: positionInputIten[]
+	children?: positionInputItem[]
 }
 
-export const updateResourcePositions = async (input: positionInputIten[]) => {
+export const updateResourcePositions = async (input: positionInputItem[]) => {
 	const result = await db.transaction(async (trx) => {
 		for (const {
 			currentParentResourceId,
@@ -835,6 +836,11 @@ export const updateResourcePositions = async (input: positionInputIten[]) => {
 					)
 			}
 		}
+	})
+
+	await reorderResourcesInSanityCourse({
+		resources: input,
+		parentResourceId: input?.[0]?.currentParentResourceId ?? '',
 	})
 
 	return result

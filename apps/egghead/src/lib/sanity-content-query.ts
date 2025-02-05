@@ -37,6 +37,7 @@ import type { VideoResource } from '@coursebuilder/core/schemas'
 
 import { syncInstructorToSanity } from './instructor-query'
 import { Post, PostSchema } from './posts'
+import { getPost, positionInputItem } from './posts-query'
 
 export async function createSanityVideoResource(videoResource: VideoResource) {
 	const { muxPlaybackId, muxAssetId, transcript, srt, id } = videoResource
@@ -483,6 +484,56 @@ export async function removeLessonFromSanityCourse({
 		.patch(sanityCourse?._id)
 		.set({
 			resources: filteredResources,
+		})
+		.commit()
+}
+
+export async function reorderResourcesInSanityCourse({
+	parentResourceId,
+	resources,
+}: {
+	parentResourceId: string
+	resources: positionInputItem[]
+}) {
+	const currentParentResourcePost = await getPost(parentResourceId)
+	const eggheadPlaylistId = currentParentResourcePost?.fields?.eggheadPlaylistId
+
+	if (!eggheadPlaylistId) {
+		throw new Error(
+			`Egghead playlist id not found for resource ${parentResourceId}.`,
+		)
+	}
+
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	const eggheadLessonIds = await Promise.all(
+		resources.map(async (item) => {
+			const resource = await db.query.contentResource.findFirst({
+				where: eq(contentResource.id, item.resourceId),
+			})
+			return resource?.fields?.eggheadLessonId
+		}),
+	)
+
+	const sanityLessons = await Promise.all(
+		eggheadLessonIds.map(async (lessonId) => {
+			return await getSanityLessonForEggheadLessonId(lessonId)
+		}),
+	)
+
+	const newSanityLessonReferences = sanityLessons.map((lesson) => {
+		return createSanityReference(lesson._id)
+	})
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			resources: newSanityLessonReferences,
 		})
 		.commit()
 }
