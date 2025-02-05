@@ -257,8 +257,11 @@ export async function removeLegacyTaggingsOnEgghead(postId: string) {
 		throw new Error(`Post with id ${postId} not found.`)
 	}
 
+	const eggheadResourceId =
+		post.fields.eggheadLessonId || post.fields.eggheadPlaylistId
+
 	return eggheadPgQuery(
-		`DELETE FROM taggings WHERE taggings.taggable_id = ${post.fields.eggheadLessonId}`,
+		`DELETE FROM taggings WHERE taggings.taggable_id = ${eggheadResourceId}`,
 	)
 }
 
@@ -276,13 +279,23 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 
 	if (!post?.tags) return
 
-	for (const tag of post.tags.map((tag) => tag.tag)) {
-		const tagId = Number(tag.id.split('_')[1])
-		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
-					VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'topics', NOW(), NOW());
-		`
+	if (post.fields.eggheadLessonId) {
+		for (const tag of post.tags.map((tag) => tag.tag)) {
+			const tagId = Number(tag.id.split('_')[1])
+			query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
+						VALUES (${tagId}, ${post.fields.eggheadLessonId}, 'Lesson', 'topics', NOW(), NOW());
+			`
+		}
+		Boolean(query) && (await eggheadPgQuery(query))
+	} else if (post.fields.eggheadPlaylistId) {
+		for (const tag of post.tags.map((tag) => tag.tag)) {
+			const tagId = Number(tag.id.split('_')[1])
+			query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
+						VALUES (${tagId}, ${post.fields.eggheadPlaylistId}, 'Playlist', 'topics', NOW(), NOW());
+			`
+		}
+		Boolean(query) && (await eggheadPgQuery(query))
 	}
-	Boolean(query) && (await eggheadPgQuery(query))
 }
 
 export const eggheadLessonSchema = z.object({
