@@ -537,3 +537,47 @@ export async function reorderResourcesInSanityCourse({
 		})
 		.commit()
 }
+
+export async function updateSanityCourseMetadata({
+	eggheadPlaylistId,
+	title,
+	slug,
+	sharedId,
+	description,
+	productionProcessState,
+	accessLevel,
+	searchIndexingState,
+}: {
+	eggheadPlaylistId: number
+	title: string
+	slug: string
+	sharedId: string
+	description: string
+	productionProcessState: string
+	accessLevel: string
+	searchIndexingState: string
+}) {
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			title,
+			slug: {
+				current: slug,
+			},
+			sharedId,
+			description,
+			productionProcessState:
+				productionProcessState === 'published' ? 'published' : 'drafting',
+			accessLevel,
+			searchIndexingState:
+				searchIndexingState === 'public' ? 'indexed' : 'hidden',
+		})
+		.commit()
+}

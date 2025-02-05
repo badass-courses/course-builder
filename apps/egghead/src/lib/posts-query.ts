@@ -58,6 +58,7 @@ import {
 	removeLessonFromSanityCourse,
 	reorderResourcesInSanityCourse,
 	replaceSanityLessonResources,
+	updateSanityCourseMetadata,
 	updateSanityLesson,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
@@ -497,6 +498,17 @@ export async function writePostUpdateToDatabase(input: {
 		if (action === 'unpublish') {
 			await clearPublishedAt(currentPost.fields.eggheadLessonId)
 		}
+	} else if (currentPost.fields.eggheadPlaylistId) {
+		await updateSanityCourseMetadata({
+			eggheadPlaylistId: currentPost.fields.eggheadPlaylistId,
+			title: postUpdate.fields.title,
+			slug: postSlug,
+			sharedId: postGuid,
+			description: postUpdate.fields.body ?? '',
+			productionProcessState: postUpdate.fields.state,
+			accessLevel: postUpdate.fields.access,
+			searchIndexingState: postUpdate.fields.visibility,
+		})
 	}
 
 	await courseBuilderAdapter.updateContentResourceFields({
