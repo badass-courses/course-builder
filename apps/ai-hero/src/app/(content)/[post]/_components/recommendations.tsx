@@ -48,7 +48,7 @@ export default function Recommendations({
 						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
 					) : post ? (
 						<Link
-							className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 hover:underline lg:text-xl"
+							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-orange-600 hover:underline lg:text-xl"
 							href={`/${post.slug}`}
 							onClick={async () => {
 								if (!isCompleted) {

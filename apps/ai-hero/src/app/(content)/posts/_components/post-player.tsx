@@ -95,7 +95,7 @@ export function PostPlayer({
 			}
 		},
 		onEnded: async () => {
-			if (autoplay) {
+			if (autoplay && nextUp) {
 				router.push(
 					`/${nextUp?.resource.fields?.slug}${
 						list ? `?list=${list.fields.slug}` : ''
