@@ -166,6 +166,9 @@ export function ResourceResourcesList({
 					<SearchExistingLessons
 						onSelect={handleResourceCreated}
 						onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
+						existingResourceIds={
+							resource.resources?.map((item) => item.resource?.id) ?? []
+						}
 					/>
 				)}
 				<div className="flex gap-1 px-5">

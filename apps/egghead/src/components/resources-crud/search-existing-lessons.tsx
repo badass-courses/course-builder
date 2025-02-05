@@ -20,11 +20,13 @@ import {
 type SearchExistingLessonsProps = {
 	onSelect: (resource: ContentResource) => void
 	onCancel: () => void
+	existingResourceIds: string[]
 }
 
 export function SearchExistingLessons({
 	onSelect,
 	onCancel,
+	existingResourceIds,
 }: SearchExistingLessonsProps) {
 	const [open, setOpen] = React.useState(false)
 	const [searchTerm, setSearchTerm] = React.useState('')
@@ -42,7 +44,10 @@ export function SearchExistingLessons({
 			setIsSearching(true)
 			try {
 				const searchResults = await searchLessons(debouncedSearchTerm)
-				setResults(searchResults)
+				const filteredResults = searchResults.filter(
+					(result) => !existingResourceIds.includes(result.id),
+				)
+				setResults(filteredResults)
 			} catch (error) {
 				console.error('Search error:', error)
 				setResults([])
@@ -52,7 +57,7 @@ export function SearchExistingLessons({
 		}
 
 		search()
-	}, [debouncedSearchTerm])
+	}, [debouncedSearchTerm, existingResourceIds])
 
 	return (
 		<div className="w-full space-y-4">
