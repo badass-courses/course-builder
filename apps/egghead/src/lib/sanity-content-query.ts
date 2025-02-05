@@ -38,6 +38,7 @@ import type { VideoResource } from '@coursebuilder/core/schemas'
 import { syncInstructorToSanity } from './instructor-query'
 import { Post, PostSchema } from './posts'
 import { getPost, positionInputItem } from './posts-query'
+import { EggheadTag } from './tags'
 
 export async function createSanityVideoResource(videoResource: VideoResource) {
 	const { muxPlaybackId, muxAssetId, transcript, srt, id } = videoResource
@@ -417,8 +418,9 @@ export const createSanityCourse = async (course: Partial<SanityCourse>) => {
 	})
 }
 export async function getSanityCourseForEggheadCourseId(
-	eggheadCourseId: number,
+	eggheadCourseId: number | null | undefined,
 ) {
+	if (!eggheadCourseId) return null
 	const sanityCourse = await sanityWriteClient.fetch(
 		`*[_type == "course" && railsCourseId == ${eggheadCourseId}][0]`,
 	)
@@ -578,6 +580,44 @@ export async function updateSanityCourseMetadata({
 			accessLevel,
 			searchIndexingState:
 				searchIndexingState === 'public' ? 'indexed' : 'hidden',
+		})
+		.commit()
+}
+
+export async function writeTagsToSanityResource(postId: string) {
+	const post = await getPost(postId)
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	let sanityResource
+	if (post.fields.postType === 'lesson') {
+		sanityResource = await getSanityLessonForEggheadLessonId(
+			post.fields.eggheadLessonId,
+		)
+	} else if (post.fields.postType === 'course') {
+		sanityResource = await getSanityCourseForEggheadCourseId(
+			post.fields.eggheadPlaylistId,
+		)
+	}
+
+	if (!sanityResource) {
+		throw new Error(`Sanity resource for post with id ${postId} not found.`)
+	}
+
+	const softwareLibraries = post?.tags
+		? await Promise.all(
+				post?.tags?.map(async ({ tag }: { tag: EggheadTag }) => {
+					return await getSanitySoftwareLibrary(tag.fields.slug)
+				}),
+			)
+		: []
+
+	return await sanityWriteClient
+		.patch(sanityResource._id)
+		.set({
+			softwareLibraries,
 		})
 		.commit()
 }

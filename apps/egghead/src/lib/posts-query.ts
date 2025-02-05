@@ -60,6 +60,7 @@ import {
 	replaceSanityLessonResources,
 	updateSanityCourseMetadata,
 	updateSanityLesson,
+	writeTagsToSanityResource,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense-query'
@@ -330,6 +331,7 @@ export async function addTagToPost(postId: string, tagId: string) {
 		tagId,
 	})
 	await writeLegacyTaggingsToEgghead(postId)
+	await writeTagsToSanityResource(postId)
 
 	const post = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, postId),
@@ -402,6 +404,7 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 			),
 		)
 	await writeLegacyTaggingsToEgghead(postId)
+	await writeTagsToSanityResource(postId)
 
 	if (post?.fields?.primaryTagId === tagId) {
 		await db
