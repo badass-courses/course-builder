@@ -16,6 +16,7 @@ import {
 	createSanityReference,
 	keyGenerator,
 	SanityCollaboratorSchema,
+	SanityCourseSchema,
 	SanityLessonDocumentSchema,
 	SanityReferenceSchema,
 	sanitySoftwareLibraryDocumentSchema,
@@ -413,4 +414,43 @@ export const createSanityCourse = async (course: Partial<SanityCourse>) => {
 		_type: 'course',
 		...course,
 	})
+}
+export async function getSanityCourseForEggheadCourseId(
+	eggheadCourseId: number,
+) {
+	const sanityCourse = await sanityWriteClient.fetch(
+		`*[_type == "course" && railsCourseId == ${eggheadCourseId}][0]`,
+	)
+
+	return SanityCourseSchema.nullable().parse(sanityCourse)
+}
+
+export async function addLessonToSanityCourse({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	const sanityLesson = await getSanityLessonForEggheadLessonId(eggheadLessonId)
+
+	if (!sanityLesson) {
+		throw new Error(`Sanity lesson with id ${eggheadLessonId} not found.`)
+	}
+
+	const sanityLessonReference = createSanityReference(sanityLesson._id)
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			resources: [...(sanityCourse.resources || []), sanityLessonReference],
+		})
+		.commit()
 }
