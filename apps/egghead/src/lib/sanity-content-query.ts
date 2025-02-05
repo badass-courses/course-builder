@@ -454,3 +454,35 @@ export async function addLessonToSanityCourse({
 		})
 		.commit()
 }
+
+export async function removeLessonFromSanityCourse({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	const sanityLesson = await getSanityLessonForEggheadLessonId(eggheadLessonId)
+
+	if (!sanityLesson) {
+		throw new Error(`Sanity lesson with id ${eggheadLessonId} not found.`)
+	}
+	const resources = sanityCourse.resources || []
+	const filteredResources = resources.filter(
+		(resource) => resource._ref !== sanityLesson._id,
+	)
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			resources: filteredResources,
+		})
+		.commit()
+}

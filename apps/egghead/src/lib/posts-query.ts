@@ -55,6 +55,7 @@ import {
 import { writeNewPostToDatabase } from './posts-new-query'
 import { createNewPostVersion } from './posts-version-query'
 import {
+	removeLessonFromSanityCourse,
 	replaceSanityLessonResources,
 	updateSanityLesson,
 } from './sanity-content-query'
@@ -657,9 +658,14 @@ export async function removePostFromCoursePost({
 		throw new Error('eggheadLessonId is required')
 	}
 
-	// sync with egghead
+	// sync with egghead and sanity
 	try {
 		await removeEggheadLessonFromPlaylist({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
+		})
+
+		await removeLessonFromSanityCourse({
 			eggheadLessonId: post.fields.eggheadLessonId,
 			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
 		})
@@ -672,8 +678,6 @@ export async function removePostFromCoursePost({
 
 		throw new Error('Error removing lesson from playlist')
 	}
-
-	//! TODO sync with sanity
 }
 
 export async function removeEggheadLessonFromPlaylist({
