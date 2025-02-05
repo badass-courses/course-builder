@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { type List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
 import { cn } from '@/utils/cn'
@@ -33,15 +33,17 @@ export default function PostNextUpFromListPagination({
 	const { data: session } = useSession()
 
 	React.useEffect(() => {
-		if (nextUp && list) {
+		if (nextUp) {
 			router.prefetch(
 				`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`,
 			)
 		}
 	}, [nextUp, list, router])
 
-	if (!list || !nextUp)
-		return <Recommendations postId={postId} className={className} />
+	if (!nextUp)
+		return (
+			<Recommendations postId={list ? list.id : postId} className={className} />
+		)
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
