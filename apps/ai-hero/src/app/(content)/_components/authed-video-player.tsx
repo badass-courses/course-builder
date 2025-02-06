@@ -7,7 +7,6 @@ import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
 	handleTextTrackChange,
 	setPreferredTextTrack,
-	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
 import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
@@ -58,12 +57,10 @@ export function AuthedVideoPlayer({
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const {
-		playbackRate,
-		volume,
+		playerPrefs: { playbackRate, volume, autoplay: bingeMode },
 		setPlayerPrefs,
-		autoplay: bingeMode,
-	} = useMuxPlayerPrefs()
-	const { setMuxPlayerRef } = useMuxPlayer()
+		setMuxPlayerRef,
+	} = useMuxPlayer()
 	const router = useRouter()
 	const [currentResource, setCurrentResource] =
 		React.useState<ContentResource>(resource)

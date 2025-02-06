@@ -1,5 +1,15 @@
 # @coursebuilder/commerce-next
 
+## 0.0.11
+
+### Patch Changes
+
+- [#387](https://github.com/badass-courses/course-builder/pull/387) [`b4a7856`](https://github.com/badass-courses/course-builder/commit/b4a785689b12c89be317f10b013aed21f445f8f2) Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next
+
+- Updated dependencies [[`c6eda5e`](https://github.com/badass-courses/course-builder/commit/c6eda5e2fd9159146c8bb35620dee96e0f45395d), [`24e1eae`](https://github.com/badass-courses/course-builder/commit/24e1eae80e189bb58644cb8e94b2143293ad5142), [`9cacf5d`](https://github.com/badass-courses/course-builder/commit/9cacf5d3901799cc0dff55766af48d611d4fc821), [`63a204b`](https://github.com/badass-courses/course-builder/commit/63a204ba5232c0dadaf2072e5c64e6716c56614c), [`0870b47`](https://github.com/badass-courses/course-builder/commit/0870b47402a95ccf7fdc216b10f3f0cd5c998b2d)]:
+  - @coursebuilder/core@1.0.1
+  - @coursebuilder/ui@2.0.2
+
 ## 0.0.10
 
 ### Patch Changes
