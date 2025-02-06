@@ -1,5 +1,5 @@
 {
-	"name": "auth-astro",
+	"name": "@coursebuilder/auth-astro",
 	"description": "The easiest way to add authentication to your Astro project!",
 	"version": "4.2.0",
 	"main": "./index.ts",
