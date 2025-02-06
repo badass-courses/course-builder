@@ -55,8 +55,12 @@ import {
 import { writeNewPostToDatabase } from './posts-new-query'
 import { createNewPostVersion } from './posts-version-query'
 import {
+	removeLessonFromSanityCourse,
+	reorderResourcesInSanityCourse,
 	replaceSanityLessonResources,
+	updateSanityCourseMetadata,
 	updateSanityLesson,
+	writeTagsToSanityResource,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
 import { upsertPostToTypeSense } from './typesense-query'
@@ -327,6 +331,7 @@ export async function addTagToPost(postId: string, tagId: string) {
 		tagId,
 	})
 	await writeLegacyTaggingsToEgghead(postId)
+	await writeTagsToSanityResource(postId)
 
 	const post = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, postId),
@@ -399,6 +404,7 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 			),
 		)
 	await writeLegacyTaggingsToEgghead(postId)
+	await writeTagsToSanityResource(postId)
 
 	if (post?.fields?.primaryTagId === tagId) {
 		await db
@@ -495,6 +501,17 @@ export async function writePostUpdateToDatabase(input: {
 		if (action === 'unpublish') {
 			await clearPublishedAt(currentPost.fields.eggheadLessonId)
 		}
+	} else if (currentPost.fields.eggheadPlaylistId) {
+		await updateSanityCourseMetadata({
+			eggheadPlaylistId: currentPost.fields.eggheadPlaylistId,
+			title: postUpdate.fields.title,
+			slug: postSlug,
+			sharedId: postGuid,
+			description: postUpdate.fields.body ?? '',
+			productionProcessState: postUpdate.fields.state,
+			accessLevel: postUpdate.fields.access,
+			searchIndexingState: postUpdate.fields.visibility,
+		})
 	}
 
 	await courseBuilderAdapter.updateContentResourceFields({
@@ -657,9 +674,14 @@ export async function removePostFromCoursePost({
 		throw new Error('eggheadLessonId is required')
 	}
 
-	// sync with egghead
+	// sync with egghead and sanity
 	try {
 		await removeEggheadLessonFromPlaylist({
+			eggheadLessonId: post.fields.eggheadLessonId,
+			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
+		})
+
+		await removeLessonFromSanityCourse({
 			eggheadLessonId: post.fields.eggheadLessonId,
 			eggheadPlaylistId: resourceOf.fields.eggheadPlaylistId,
 		})
@@ -672,8 +694,6 @@ export async function removePostFromCoursePost({
 
 		throw new Error('Error removing lesson from playlist')
 	}
-
-	//! TODO sync with sanity
 }
 
 export async function removeEggheadLessonFromPlaylist({
@@ -787,7 +807,7 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-type positionInputItem = {
+export type positionInputItem = {
 	currentParentResourceId: string
 	parentResourceId: string
 	resourceId: string
@@ -875,6 +895,11 @@ export const updateResourcePositions = async (input: positionInputItem[]) => {
 					)
 			}
 		}
+	})
+
+	await reorderResourcesInSanityCourse({
+		resources: input,
+		parentResourceId: input?.[0]?.currentParentResourceId ?? '',
 	})
 
 	const response = await reorderEggheadPlaylistItems(

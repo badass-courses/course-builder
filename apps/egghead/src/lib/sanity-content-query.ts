@@ -16,6 +16,7 @@ import {
 	createSanityReference,
 	keyGenerator,
 	SanityCollaboratorSchema,
+	SanityCourseSchema,
 	SanityLessonDocumentSchema,
 	SanityReferenceSchema,
 	sanitySoftwareLibraryDocumentSchema,
@@ -36,6 +37,8 @@ import type { VideoResource } from '@coursebuilder/core/schemas'
 
 import { syncInstructorToSanity } from './instructor-query'
 import { Post, PostSchema } from './posts'
+import { getPost, positionInputItem } from './posts-query'
+import { EggheadTag } from './tags'
 
 export async function createSanityVideoResource(videoResource: VideoResource) {
 	const { muxPlaybackId, muxAssetId, transcript, srt, id } = videoResource
@@ -413,4 +416,208 @@ export const createSanityCourse = async (course: Partial<SanityCourse>) => {
 		_type: 'course',
 		...course,
 	})
+}
+export async function getSanityCourseForEggheadCourseId(
+	eggheadCourseId: number | null | undefined,
+) {
+	if (!eggheadCourseId) return null
+	const sanityCourse = await sanityWriteClient.fetch(
+		`*[_type == "course" && railsCourseId == ${eggheadCourseId}][0]`,
+	)
+
+	return SanityCourseSchema.nullable().parse(sanityCourse)
+}
+
+export async function addLessonToSanityCourse({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	const sanityLesson = await getSanityLessonForEggheadLessonId(eggheadLessonId)
+
+	if (!sanityLesson) {
+		throw new Error(`Sanity lesson with id ${eggheadLessonId} not found.`)
+	}
+
+	const sanityLessonReference = createSanityReference(sanityLesson._id)
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			resources: [...(sanityCourse.resources || []), sanityLessonReference],
+		})
+		.commit()
+}
+
+export async function removeLessonFromSanityCourse({
+	eggheadLessonId,
+	eggheadPlaylistId,
+}: {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	const sanityLesson = await getSanityLessonForEggheadLessonId(eggheadLessonId)
+
+	if (!sanityLesson) {
+		throw new Error(`Sanity lesson with id ${eggheadLessonId} not found.`)
+	}
+	const resources = sanityCourse.resources || []
+	const filteredResources = resources.filter(
+		(resource) => resource._ref !== sanityLesson._id,
+	)
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			resources: filteredResources,
+		})
+		.commit()
+}
+
+export async function reorderResourcesInSanityCourse({
+	parentResourceId,
+	resources,
+}: {
+	parentResourceId: string
+	resources: positionInputItem[]
+}) {
+	const currentParentResourcePost = await getPost(parentResourceId)
+	const eggheadPlaylistId = currentParentResourcePost?.fields?.eggheadPlaylistId
+
+	if (!eggheadPlaylistId) {
+		throw new Error(
+			`Egghead playlist id not found for resource ${parentResourceId}.`,
+		)
+	}
+
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	const eggheadLessonIds = await Promise.all(
+		resources.map(async (item) => {
+			const resource = await db.query.contentResource.findFirst({
+				where: eq(contentResource.id, item.resourceId),
+			})
+			return resource?.fields?.eggheadLessonId
+		}),
+	)
+
+	const sanityLessons = await Promise.all(
+		eggheadLessonIds.map(async (lessonId) => {
+			return await getSanityLessonForEggheadLessonId(lessonId)
+		}),
+	)
+
+	const newSanityLessonReferences = sanityLessons.map((lesson) => {
+		return createSanityReference(lesson._id)
+	})
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			resources: newSanityLessonReferences,
+		})
+		.commit()
+}
+
+export async function updateSanityCourseMetadata({
+	eggheadPlaylistId,
+	title,
+	slug,
+	sharedId,
+	description,
+	productionProcessState,
+	accessLevel,
+	searchIndexingState,
+}: {
+	eggheadPlaylistId: number
+	title: string
+	slug: string
+	sharedId: string
+	description: string
+	productionProcessState: string
+	accessLevel: string
+	searchIndexingState: string
+}) {
+	const sanityCourse =
+		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
+
+	if (!sanityCourse || !sanityCourse._id) {
+		throw new Error(`Sanity course with id ${eggheadPlaylistId} not found.`)
+	}
+
+	return await sanityWriteClient
+		.patch(sanityCourse?._id)
+		.set({
+			title,
+			slug: {
+				current: slug,
+			},
+			sharedId,
+			description,
+			productionProcessState:
+				productionProcessState === 'published' ? 'published' : 'drafting',
+			accessLevel,
+			searchIndexingState:
+				searchIndexingState === 'public' ? 'indexed' : 'hidden',
+		})
+		.commit()
+}
+
+export async function writeTagsToSanityResource(postId: string) {
+	const post = await getPost(postId)
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	let sanityResource
+	if (post.fields.postType === 'lesson') {
+		sanityResource = await getSanityLessonForEggheadLessonId(
+			post.fields.eggheadLessonId,
+		)
+	} else if (post.fields.postType === 'course') {
+		sanityResource = await getSanityCourseForEggheadCourseId(
+			post.fields.eggheadPlaylistId,
+		)
+	}
+
+	if (!sanityResource) {
+		throw new Error(`Sanity resource for post with id ${postId} not found.`)
+	}
+
+	const softwareLibraries = post?.tags
+		? await Promise.all(
+				post?.tags?.map(async ({ tag }: { tag: EggheadTag }) => {
+					return await getSanitySoftwareLibrary(tag.fields.slug)
+				}),
+			)
+		: []
+
+	return await sanityWriteClient
+		.patch(sanityResource._id)
+		.set({
+			softwareLibraries,
+		})
+		.commit()
 }
