@@ -48,12 +48,16 @@ export function PostPlayer({
 
 	const { dispatch: dispatchVideoPlayerOverlay, state } =
 		useVideoPlayerOverlay()
-	const { setMuxPlayerRef, muxPlayerRef } = useMuxPlayer()
+	const {
+		setMuxPlayerRef,
+		muxPlayerRef,
+		setPlayerPrefs,
+		playerPrefs: { playbackRate, volume, autoplay },
+	} = useMuxPlayer()
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
 
-	const { playbackRate, volume, setPlayerPrefs, autoplay } = useMuxPlayerPrefs()
 	const { addLessonProgress: addOptimisticLessonProgress } = useProgress()
 	const { list } = useList()
 	const nextUp = list && getNextUpResourceFromList(list, postId)

@@ -4,7 +4,6 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
-import { useMuxPlayerPrefs } from '@/hooks/use-mux-player-prefs'
 import { Book, Check, ListChecks, MenuIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
@@ -36,7 +35,6 @@ export default function ListResourceNavigation({
 	const { list, isLoading: isListLoading } = useList()
 	const { progress } = useProgress()
 	const { data: session } = useSession()
-	const { setPlayerPrefs } = useMuxPlayerPrefs()
 
 	if (isListLoading) {
 		return (

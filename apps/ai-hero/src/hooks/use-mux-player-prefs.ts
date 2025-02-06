@@ -1,82 +1,28 @@
 import * as React from 'react'
-import cookies from '@/utils/cookies'
-import { type MuxPlayerRefAttributes } from '@mux/mux-player-react'
+import {
+	getPlayerPrefs,
+	savePlayerPrefs,
+	type PlayerPrefs,
+	type Subtitle,
+} from '@/lib/mux-player-prefs'
+import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 
-const MUX_PLAYER_PREFS_KEY = 'muxplayer-react-prefs'
-
-export const defaultSubtitlePreference = {
-	id: null,
-	kind: null,
-	label: null,
-	language: null,
-	mode: 'disabled',
-}
-
-export type Subtitle = {
-	id: string | null
-	kind: string | null
-	label: string | null
-	language: string | null
-	mode: string
-}
-
-export type PlayerPrefs = {
-	volume: number
-	playbackRate: number
-	autoplay: boolean
-	videoQuality: {
-		bitrate: any
-		height: any
-		id: string
-		width: any
-	}
-	subtitle: Subtitle
-}
-
-const defaultPlayerPreferences: PlayerPrefs = {
-	volume: 1,
-	playbackRate: 1,
-	autoplay: false,
-	videoQuality: {
-		bitrate: null,
-		height: null,
-		id: 'auto',
-		width: null,
-	},
-	subtitle: defaultSubtitlePreference,
-}
-
-export const getPlayerPrefs = () => {
-	if (typeof window === 'undefined') {
-		return defaultPlayerPreferences
-	}
-	return (
-		cookies.get(MUX_PLAYER_PREFS_KEY) ||
-		cookies.set(MUX_PLAYER_PREFS_KEY, defaultPlayerPreferences)
-	)
-}
-
-export const savePlayerPrefs = (options: any) => {
-	return cookies.set(
-		MUX_PLAYER_PREFS_KEY,
-		{
-			...defaultPlayerPreferences,
-			...getPlayerPrefs(),
-			...options,
-		},
-		{ sameSite: 'None', secure: true },
-	)
-}
-
+/**
+ * Hook for managing Mux Player preferences
+ * @returns Object containing player preferences and methods to update them
+ */
 export const useMuxPlayerPrefs = () => {
 	const [playerPrefs, setPlayerPrefs] =
 		React.useState<PlayerPrefs>(getPlayerPrefs())
 
-	const setPlayerPrefsOptions = React.useCallback((options: any) => {
-		console.debug('setting player prefs', { options })
-		const newPrefs = savePlayerPrefs(options)
-		setPlayerPrefs(newPrefs)
-	}, [])
+	const setPlayerPrefsOptions = React.useCallback(
+		(options: Partial<PlayerPrefs>) => {
+			console.debug('setting player prefs', { options })
+			const newPrefs = savePlayerPrefs(options)
+			setPlayerPrefs(newPrefs)
+		},
+		[],
+	)
 
 	return {
 		setPlayerPrefs: setPlayerPrefsOptions,
@@ -85,13 +31,16 @@ export const useMuxPlayerPrefs = () => {
 	}
 }
 
+/**
+ * Sets the preferred text track on the Mux Player
+ */
 export const setPreferredTextTrack = (
 	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes | null>,
 ) => {
 	if (muxPlayerRef.current) {
-		let player = muxPlayerRef.current
-		let preferredTextTrack = player.textTracks?.getTrackById(
-			getPlayerPrefs().subtitle.id,
+		const player = muxPlayerRef.current
+		const preferredTextTrack = player.textTracks?.getTrackById(
+			getPlayerPrefs().subtitle.id ?? '',
 		)
 		if (preferredTextTrack && getPlayerPrefs().subtitle.mode === 'showing') {
 			preferredTextTrack.mode = 'showing'
@@ -99,12 +48,15 @@ export const setPreferredTextTrack = (
 	}
 }
 
+/**
+ * Handles text track changes and updates player preferences
+ */
 export const handleTextTrackChange = (
 	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes | null>,
 	setPlayerPrefs: (e: { subtitle: Subtitle }) => void,
 ) => {
 	if (muxPlayerRef.current) {
-		let player = muxPlayerRef.current
+		const player = muxPlayerRef.current
 		player?.textTracks?.addEventListener('change', () => {
 			const subtitles = Array.from(player.textTracks || []).filter((track) => {
 				return ['subtitles'].includes(track.kind)
