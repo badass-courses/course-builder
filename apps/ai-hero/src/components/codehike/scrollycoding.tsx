@@ -62,13 +62,13 @@ export default function Scrollycoding(props: any) {
 				</div>
 				<div
 					className={cn(
-						'sticky bottom-0 -mx-6 lg:mx-0 lg:w-[40vw] lg:max-w-xl',
+						'sticky bottom-5 w-full lg:mx-0 lg:w-[40vw] lg:max-w-xl',
 						{
 							// padding top dynamic based on height of the first selectable item
 						},
 					)}
 				>
-					<div className="sticky top-10 lg:sticky lg:top-16">
+					<div className="sticky top-10 w-full lg:sticky lg:top-16">
 						<Selection
 							from={steps.map((step: any) => (
 								<Code key={step.code} codeblock={step.code} />

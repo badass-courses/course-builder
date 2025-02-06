@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
-import type { List } from '@/lib/lists'
 import type { TypesenseResource } from '@/lib/typesense'
+
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 type SelectionContextType = {
 	selectedResources: TypesenseResource[]
@@ -29,7 +30,7 @@ export function SelectionProvider({
 	list,
 }: {
 	children: React.ReactNode
-	list: List
+	list: ContentResource
 }) {
 	const [selectedResources, setSelectedResources] = useState<
 		TypesenseResource[]
@@ -42,9 +43,8 @@ export function SelectionProvider({
 				: [...current, resource],
 		)
 	}
-	const initialExcludedIds = list.resources
-		.map((r) => r.resource.id)
-		.filter(Boolean)
+	const initialExcludedIds =
+		list?.resources?.map((r) => r.resource.id).filter(Boolean) ?? []
 
 	const [excludedIds, setExcludedIds] =
 		React.useState<string[]>(initialExcludedIds)

@@ -19,7 +19,8 @@ export function DiscordConnectButton({
 			className="bg-black text-white"
 			onClick={() =>
 				signIn(discordProvider.id, {
-					callbackUrl: env.NEXT_PUBLIC_DISCORD_INVITE_URL,
+					callbackUrl: `${env.NEXT_PUBLIC_URL}/discord/redirect`,
+					redirect: true,
 				})
 			}
 		>

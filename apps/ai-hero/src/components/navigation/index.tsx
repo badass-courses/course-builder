@@ -16,9 +16,11 @@ import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 import { useLiveEventToastNotifier } from '../app/use-live-event-toast-notifier'
 import { useNavLinks } from '../app/use-nav-links'
 import { LogoMark } from '../logo'
+import { MobileNavigation } from './mobile-navigation'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
-import { User } from './user'
+import { UserNavigation } from './user'
+import { UserMenu } from './user-menu'
 
 const Navigation = () => {
 	const links = useNavLinks()
@@ -102,7 +104,7 @@ const Navigation = () => {
 						</nav>
 					)}
 				</div>
-				<div className="flex items-stretch">
+				<nav className="flex items-stretch" aria-label={`User navigation`}>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
 					<div className="flex items-center pr-5">
 						<Button asChild size="sm" className="h-8">
@@ -110,125 +112,26 @@ const Navigation = () => {
 						</Button>
 					</div>
 				)} */}
-					{sessionStatus === 'authenticated' && (
-						<div className="hidden items-stretch sm:flex">
+					<ul className="hidden items-stretch sm:flex">
+						{sessionStatus === 'authenticated' && (
 							<NavLinkItem
 								label="Feedback"
 								onClick={() => {
 									setIsFeedbackDialogOpen(true)
 								}}
 							/>
-						</div>
-					)}
-					<div className="hidden items-stretch sm:flex">
-						<User />
+						)}
+						<UserMenu />
 						<ThemeToggle className="hover:bg-muted border-l px-5" />
-					</div>
-				</div>
-				<div className="flex items-stretch sm:hidden">
-					<MobileNav
-						isMobileMenuOpen={isMobileMenuOpen}
-						setIsMobileMenuOpen={setIsMobileMenuOpen}
-					/>
-				</div>
+					</ul>
+				</nav>
+				<MobileNavigation
+					isMobileMenuOpen={isMobileMenuOpen}
+					setIsMobileMenuOpen={setIsMobileMenuOpen}
+				/>
 			</div>
 		</header>
 	)
 }
 
 export default Navigation
-
-const MobileNav = ({
-	isMobileMenuOpen,
-	setIsMobileMenuOpen,
-}: {
-	isMobileMenuOpen: boolean
-	setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
-	const links = useNavLinks()
-	const { data: sessionData, status: sessionStatus } = useSession()
-	const { setIsFeedbackDialogOpen } = useFeedback()
-
-	return (
-		<div className="flex items-stretch">
-			<Button
-				variant="ghost"
-				className="flex h-full items-center justify-center border-l px-5"
-				type="button"
-				onClick={() => {
-					setIsMobileMenuOpen(!isMobileMenuOpen)
-				}}
-			>
-				{!isMobileMenuOpen ? (
-					<Menu className="h-5 w-5" />
-				) : (
-					<X className="h-5 w-5" />
-				)}
-			</Button>
-			<Sheet onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
-				<SheetContent
-					side="right"
-					className="bg-card px-2 py-10 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"
-				>
-					<nav className="flex h-full flex-col items-start justify-between gap-2">
-						<div className="flex flex-col gap-2">
-							{links.length > 0 &&
-								links.map((link) => {
-									return (
-										<NavLinkItem
-											className="text-xl"
-											key={link.href || link.label}
-											{...link}
-										/>
-									)
-								})}
-							{sessionStatus === 'authenticated' && (
-								<NavLinkItem
-									className="text-xl"
-									label="Send Feedback"
-									onClick={() => {
-										setIsFeedbackDialogOpen(true)
-									}}
-								/>
-							)}
-							<User
-								loginClassName="text-xl"
-								className="border-l-0 py-5 [&_span]:text-xl"
-							/>
-						</div>
-						<div className="flex items-center justify-center">
-							<ThemeToggle className="[&_svg]:h-5 [&_svg]:w-5" />
-						</div>
-					</nav>
-				</SheetContent>
-			</Sheet>
-			{/* {isMobileMenuOpen && (
-				<nav className="bg-background absolute left-0 top-[var(--nav-height)] z-10 w-full border-b px-2 py-3">
-					{links.length > 0 &&
-						links.map((link) => {
-							return (
-								<NavLinkItem
-									className="flex w-full rounded px-2 py-2 text-base"
-									key={link.href || link.label}
-									{...link}
-								/>
-							)
-						})}
-					{sessionStatus === 'authenticated' && (
-						<NavLinkItem
-							className="flex w-full rounded px-2 py-2 text-base"
-							label="Send Feedback"
-							onClick={() => {
-								setIsFeedbackDialogOpen(true)
-							}}
-						/>
-					)}
-					<User
-						loginClassName="px-2 rounded py-2 text-base flex w-full"
-						className="flex w-full rounded px-2 py-2 text-base"
-					/>
-				</nav>
-			)} */}
-		</div>
-	)
-}

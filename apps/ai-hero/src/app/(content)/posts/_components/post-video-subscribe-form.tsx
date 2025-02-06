@@ -8,12 +8,6 @@ import common from '@/text/common'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import cookieUtil from '@/utils/cookies'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { getCookie } from 'cookies-next/client'
-import cookies from 'js-cookie'
-import { useSession } from 'next-auth/react'
-import { twMerge } from 'tailwind-merge'
 
 type PrimaryNewsletterCtaProps = {
 	onSuccess?: () => void
@@ -78,7 +72,7 @@ export const PostNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0">
+			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0 lg:pl-16">
 				<div
 					className="via-muted-foreground/20 absolute -top-px left-0 z-10 h-px w-1/2 bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
@@ -89,11 +83,11 @@ export const PostNewsletterCta: React.FC<
 				/>
 				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-5 sm:text-left md:flex-col md:items-start md:gap-1 md:pt-0">
 					<div className="flex items-center gap-2">
-						<div className="xl:fluid-xl fluid-xl font-heading font-semibold">
+						<div className="2xl:fluid-xl sm:fluid-lg font-heading text-balance text-2xl font-semibold">
 							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="dark:text-primary xl:fluid-lg fluid-base font-heading text-gray-600">
+					<div className="dark:text-primary 2xl:fluid-lg fluid-base font-heading text-gray-600">
 						{common['video-newsletter-subtitle']}
 					</div>
 				</div>

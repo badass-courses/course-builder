@@ -4,8 +4,15 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { List } from '@/lib/lists'
-import { cn } from '@/utils/cn'
+import { DynamicTitle } from '@/app/_components/list-editor/dynamic-title'
+import {
+	getInitialTreeState,
+	treeStateReducer,
+} from '@/app/_components/list-editor/lesson-list/data/tree'
+import Tree from '@/app/_components/list-editor/lesson-list/tree'
+import { ResourcesInfiniteHits } from '@/app/_components/list-editor/resources-infinite-hits'
+import SearchConfig from '@/app/_components/list-editor/search-config'
+import { SelectionProvider } from '@/app/_components/list-editor/selection-context'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
@@ -23,14 +30,13 @@ import {
 	DialogTrigger,
 } from '@coursebuilder/ui'
 
-import { DynamicTitle } from './dynamic-title'
-import { getInitialTreeState, treeStateReducer } from './lesson-list/data/tree'
-import Tree from './lesson-list/tree'
-import { ResourcesInfiniteHits } from './resources-infinite-hits'
-import SearchConfig from './search-config'
-import { SelectionProvider } from './selection-context'
-
-export default function ListResourcesEdit({ list }: { list: List }) {
+export default function ListResourcesEdit({
+	list,
+	searchConfig = <SearchConfig />,
+}: {
+	list: ContentResource
+	searchConfig?: React.ReactNode
+}) {
 	const initialData = [
 		...(list.resources
 			? list.resources.map((resourceItem) => {
@@ -86,7 +92,7 @@ export default function ListResourcesEdit({ list }: { list: List }) {
 				}}
 				future={{ preserveSharedStateOnUnmount: true }}
 			>
-				<SearchConfig />
+				{searchConfig}
 				<div className="border-b text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
 						<DynamicTitle />

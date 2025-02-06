@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { type List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
 import { cn } from '@/utils/cn'
@@ -22,8 +23,8 @@ export default function PostNextUpFromListPagination({
 	postId: string
 	className?: string
 }) {
+	const router = useRouter()
 	const { list } = useList()
-
 	const nextUp = list && getNextUpResourceFromList(list, postId)
 	const { progress, addLessonProgress } = useProgress()
 	const isCompleted = progress?.completedLessons.some(
@@ -31,7 +32,15 @@ export default function PostNextUpFromListPagination({
 	)
 	const { data: session } = useSession()
 
-	if (!list) return <Recommendations postId={postId} className={className} />
+	React.useEffect(() => {
+		if (nextUp) {
+			router.prefetch(
+				`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`,
+			)
+		}
+	}, [nextUp, list, router])
+
+	if (!nextUp) return <Recommendations postId={postId} className={className} />
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
@@ -44,10 +53,9 @@ export default function PostNextUpFromListPagination({
 			<h2 className="fluid-2xl mb-3 font-semibold">Continue</h2>
 			<ul>
 				<li className="flex flex-col">
-					<Button
-						className="dark:text-primary flex w-full items-center gap-2 text-lg text-orange-600 lg:text-xl"
-						asChild
-						variant="link"
+					<Link
+						href={`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`}
+						className="dark:text-primary flex w-full items-center gap-2 text-balance text-lg text-orange-600 hover:underline lg:text-xl"
 						onClick={async () => {
 							if (!isCompleted) {
 								addLessonProgress(postId)
@@ -58,12 +66,9 @@ export default function PostNextUpFromListPagination({
 							}
 						}}
 					>
-						<Link
-							href={`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`}
-						>
-							{nextUp.resource.fields?.title} <ArrowRight className="w-4" />
-						</Link>
-					</Button>
+						{nextUp.resource.fields?.title}{' '}
+						<ArrowRight className="hidden w-4 sm:block" />
+					</Link>
 					{!session?.user && (
 						<span className="text-muted-foreground mt-4">
 							<Link

@@ -1,10 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { use } from 'react'
-import { revalidatePath } from 'next/cache'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
@@ -12,20 +9,17 @@ import {
 	setPreferredTextTrack,
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
-import type { List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
-import { api } from '@/trpc/react'
+import { track } from '@/utils/analytics'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
 import {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
-import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
-import { Button } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -54,24 +48,30 @@ export function PostPlayer({
 
 	const { dispatch: dispatchVideoPlayerOverlay, state } =
 		useVideoPlayerOverlay()
-	const { setMuxPlayerRef } = useMuxPlayer()
+	const {
+		setMuxPlayerRef,
+		muxPlayerRef,
+		setPlayerPrefs,
+		playerPrefs: { playbackRate, volume, autoplay },
+	} = useMuxPlayer()
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const searchParams = useSearchParams()
 	const time = searchParams.get('t')
-	const listSlug = searchParams.get('list')
 
 	const { addLessonProgress: addOptimisticLessonProgress } = useProgress()
+	const { list } = useList()
+	const nextUp = list && getNextUpResourceFromList(list, postId)
+	const router = useRouter()
 
-	const {
-		playbackRate,
-		volume,
-		setPlayerPrefs,
-		autoplay: bingeMode,
-	} = useMuxPlayerPrefs()
+	React.useEffect(() => {
+		setMuxPlayerRef(playerRef)
+	}, [playerRef])
+
 	const playerProps = {
+		playsInline: true,
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: thumbnailTime || 0,
+		thumbnailTime: autoplay ? 0 : thumbnailTime || 0,
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
@@ -93,18 +93,29 @@ export function PostPlayer({
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 			handleTextTrackChange(playerRef, setPlayerPrefs)
 			setPreferredTextTrack(playerRef)
-			setMuxPlayerRef(playerRef)
 
-			if (bingeMode) {
-				playerRef?.current?.play()
+			if (autoplay) {
+				playerRef.current?.play().catch(console.warn)
 			}
 		},
 		onEnded: async () => {
-			dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
+			if (autoplay && nextUp) {
+				router.push(
+					`/${nextUp?.resource.fields?.slug}${
+						list ? `?list=${list.fields.slug}` : ''
+					}`,
+				)
+			} else {
+				dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
+			}
 			addOptimisticLessonProgress(postId)
 			await setProgressForResource({
 				resourceId: postId,
 				isCompleted: true,
+			})
+			await track('video_completed', {
+				video_id: videoResource?.id,
+				video_title: title || videoResource?.id,
 			})
 		},
 		onPlay: () => {
@@ -117,10 +128,6 @@ export function PostPlayer({
 			? muxPlaybackId || videoResource?.muxPlaybackId
 			: null
 
-	const { list } = useList()
-	const nextUp = getNextUpResourceFromList(list, postId)
-	const { data: session } = useSession()
-
 	return (
 		<div className={cn('relative h-full w-full', className)}>
 			{playbackId ? (
@@ -131,6 +138,7 @@ export function PostPlayer({
 					}}
 					playbackId={playbackId}
 					className={cn(className)}
+					ref={playerRef}
 					{...playerProps}
 				/>
 			) : (

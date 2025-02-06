@@ -1,0 +1,2 @@
+apps/ai-hero/src/utils/analytics.ts - use the `track` function for critical clientside analytics
+apps/ai-hero/src/server/logger.ts - use log for server side logging and metrics

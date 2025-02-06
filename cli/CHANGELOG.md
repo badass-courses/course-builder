@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.1.3
+
+### Patch Changes
+
+- [#387](https://github.com/badass-courses/course-builder/pull/387) [`b4a7856`](https://github.com/badass-courses/course-builder/commit/b4a785689b12c89be317f10b013aed21f445f8f2) Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next
+
 ## 8.1.2
 
 ### Patch Changes

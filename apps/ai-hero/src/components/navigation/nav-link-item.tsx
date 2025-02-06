@@ -12,14 +12,23 @@ const NavLinkItemSchema = z.object({
 	label: z.union([z.string(), z.any()]),
 	onClick: z.function().optional(),
 	className: z.string().optional(),
+	icon: z.any().optional(),
+	variant: z.enum(['nav', 'menu']).default('nav').optional(),
 })
 
 export type NavLinkItem = z.infer<typeof NavLinkItemSchema>
+
+/**
+ * NavLinkItem component that can be used in both navigation and menu contexts
+ * @param variant 'nav' for main navigation, 'menu' for dropdown/sheet menus
+ */
 export const NavLinkItem: React.FC<NavLinkItem> = ({
 	href,
 	label,
 	onClick,
 	className,
+	icon,
+	variant = 'nav',
 }) => {
 	const pathname = usePathname()
 	const isActive = href && pathname === href.replace(/\/$/, '')
@@ -29,41 +38,41 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 		onClick && onClick()
 	}
 
-	const content = <>{label}</>
+	const content = (
+		<>
+			{icon && icon}
+			<span>{label}</span>
+		</>
+	)
+
+	const styles = {
+		nav: 'text-foreground hover:bg-muted relative flex h-full items-center px-5 w-full justify-start text-lg sm:text-sm transition hover:no-underline sm:px-5',
+		menu: 'text-foreground hover:bg-muted flex w-full items-center justify-start text-xl hover:no-underline px-3 sm:text-sm',
+	}
 
 	return (
 		<li className="flex items-stretch">
-			{href ? (
-				<Button
-					className={cn(
-						' text-foreground hover:bg-muted relative flex h-full items-center px-5 text-sm transition hover:no-underline',
-						{
-							underline: isActive,
-						},
-						className,
-					)}
-					asChild
-					variant="link"
-				>
-					<Link href={href} onClick={handleClick}>
+			<Button
+				className={cn(
+					styles[variant],
+					{
+						underline: isActive,
+						'bg-muted': isActive && variant === 'menu',
+					},
+					className,
+				)}
+				asChild={!onClick}
+				variant="link"
+				onClick={onClick}
+			>
+				{onClick ? (
+					content
+				) : (
+					<Link href={href!} onClick={handleClick}>
 						{content}
 					</Link>
-				</Button>
-			) : (
-				<Button
-					onClick={handleClick}
-					className={cn(
-						' text-foreground hover:bg-muted relative flex h-full items-center px-5 text-sm transition hover:no-underline',
-						{
-							underline: isActive,
-						},
-						className,
-					)}
-					variant="link"
-				>
-					{content}
-				</Button>
-			)}
+				)}
+			</Button>
 		</li>
 	)
 }

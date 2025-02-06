@@ -1,38 +1,38 @@
 'use client'
 
 import * as React from 'react'
-import { useMuxPlayerPrefs } from '@/hooks/use-mux-player-prefs'
+import { useMuxPlayer } from '@/hooks/use-mux-player'
 
 import { Label, Switch } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function AutoPlayToggle({ className }: { className?: string }) {
-	const { getPlayerPrefs, setPlayerPrefs } = useMuxPlayerPrefs()
-	const playerPrefs = getPlayerPrefs()
-	const bingeMode = playerPrefs.autoplay
-	const [mounted, setMounted] = React.useState(false)
-	React.useEffect(() => {
-		setMounted(true)
-	}, [])
+	const { muxPlayerRef, playerPrefs, setPlayerPrefs } = useMuxPlayer()
 
-	return mounted ? (
+	const handleAutoplayChange = React.useCallback(
+		(checked: boolean) => {
+			if (checked) {
+				muxPlayerRef?.current?.play()
+			} else {
+				muxPlayerRef?.current?.pause()
+			}
+			setPlayerPrefs({
+				autoplay: checked,
+			})
+		},
+		[muxPlayerRef, setPlayerPrefs],
+	)
+
+	return (
 		<div className={cn('flex items-center gap-2', className)}>
-			<Label htmlFor="binge-mode-toggle">Autoplay</Label>
 			<Switch
-				className={cn('', {
-					// 'cursor-wait disabled:cursor-wait disabled:opacity-100': isPending,
-				})}
-				// disabled={isPending}
-				aria-label={`Turn Autoplay ${bingeMode ? 'off' : 'on'}`}
-				id="binge-mode-toggle"
-				checked={bingeMode}
-				defaultChecked={bingeMode}
-				onCheckedChange={(checked) => {
-					setPlayerPrefs({
-						autoplay: checked,
-					})
-				}}
+				className={cn('')}
+				aria-label={`Turn Autoplay ${playerPrefs.autoplay ? 'off' : 'on'}`}
+				id="autoplay-toggle"
+				checked={playerPrefs.autoplay}
+				onCheckedChange={handleAutoplayChange}
 			/>
+			<Label htmlFor="autoplay-toggle">Autoplay</Label>
 		</div>
-	) : null
+	)
 }

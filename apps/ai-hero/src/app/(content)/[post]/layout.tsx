@@ -20,7 +20,7 @@ export default async function Layout(props: {
 	return (
 		<ListProvider initialList={list}>
 			<ProgressProvider initialProgress={initialProgress}>
-				<div className="flex w-full justify-center">
+				<div className="flex flex-1">
 					<ListResourceNavigation />
 					<MobileListResourceNavigation />
 					{props.children}

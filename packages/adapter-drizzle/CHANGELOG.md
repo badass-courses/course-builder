@@ -1,5 +1,15 @@
 # @coursebuilder/adapter-drizzle
 
+## 1.0.1
+
+### Patch Changes
+
+- [#381](https://github.com/badass-courses/course-builder/pull/381) [`24e1eae`](https://github.com/badass-courses/course-builder/commit/24e1eae80e189bb58644cb8e94b2143293ad5142) Thanks [@vojtaholik](https://github.com/vojtaholik)! - export sheet component
+
+- [#381](https://github.com/badass-courses/course-builder/pull/381) [`24e1eae`](https://github.com/badass-courses/course-builder/commit/24e1eae80e189bb58644cb8e94b2143293ad5142) Thanks [@vojtaholik](https://github.com/vojtaholik)! - include post type in progress getter
+
+- [`650ef29`](https://github.com/badass-courses/course-builder/commit/650ef298fa7f17eeb621fb0210b2d738f11c0e72) Thanks [@vojtaholik](https://github.com/vojtaholik)! - remove console log
+
 ## 1.0.0
 
 ### Major Changes

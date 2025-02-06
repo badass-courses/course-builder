@@ -1175,7 +1175,6 @@ export function mySqlDrizzleAdapter(
 						cr.type IN ('lesson', 'exercise', 'post')
 
     `)
-			console.log('results', { results })
 			// Process the results
 			const completedLessons: ResourceProgress[] = []
 			let nextResource: Partial<ContentResource> | null = null

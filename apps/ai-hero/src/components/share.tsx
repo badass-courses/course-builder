@@ -4,6 +4,7 @@ import React from 'react'
 import { usePathname } from 'next/navigation'
 import config from '@/config'
 import { env } from '@/env.mjs'
+import { track } from '@/utils/analytics'
 
 import { useToast } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -18,6 +19,17 @@ export const Share = ({
 	const pathname = usePathname()
 	const url = env.NEXT_PUBLIC_URL + pathname
 	const { toast } = useToast()
+
+	const handleShare = async (
+		platform: 'bluesky' | 'x' | 'linkedin' | 'copy',
+	) => {
+		await track('share_content', {
+			platform,
+			url,
+			title,
+			pathname,
+		})
+	}
 
 	return (
 		<div
@@ -40,6 +52,7 @@ export const Share = ({
         ${url}`)}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => handleShare('bluesky')}
 			>
 				<svg
 					width="20"
@@ -58,6 +71,7 @@ export const Share = ({
 				href={`https://x.com/intent/tweet?text=${encodeURIComponent(url + `${title ? `${title} ` : ''} by ${config.twitter.handle}`)}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => handleShare('x')}
 			>
 				<svg
 					width="16"
@@ -76,6 +90,7 @@ export const Share = ({
 				href={`https://linkedin.com/shareArticle?mini=true&url=${url}?author=${config.author}`}
 				target="_blank"
 				rel="noopener noreferrer"
+				onClick={() => handleShare('linkedin')}
 			>
 				<svg
 					width="20"
@@ -92,8 +107,9 @@ export const Share = ({
 			</a>
 			<button
 				type="button"
-				onClick={() => {
-					navigator.clipboard.writeText(url)
+				onClick={async () => {
+					await navigator.clipboard.writeText(url)
+					await handleShare('copy')
 					toast({
 						title: 'Copied URL',
 					})
