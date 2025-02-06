@@ -258,7 +258,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
 						videoResource={videoResource}
 					/>
-					{/* <PostNewsletterCta
+					<PostNewsletterCta
 						trackProps={{
 							event: 'subscribed',
 							params: {
@@ -266,7 +266,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 								post: post.fields.slug,
 							},
 						}}
-					/> */}
+					/>
 				</section>
 			</Suspense>
 		</VideoPlayerOverlayProvider>
