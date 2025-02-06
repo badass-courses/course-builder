@@ -1,5 +1,18 @@
 # @coursebuilder/ui
 
+## 2.0.2
+
+### Patch Changes
+
+- [#381](https://github.com/badass-courses/course-builder/pull/381) [`24e1eae`](https://github.com/badass-courses/course-builder/commit/24e1eae80e189bb58644cb8e94b2143293ad5142) Thanks [@vojtaholik](https://github.com/vojtaholik)! - export sheet component
+
+- [#386](https://github.com/badass-courses/course-builder/pull/386) [`9cacf5d`](https://github.com/badass-courses/course-builder/commit/9cacf5d3901799cc0dff55766af48d611d4fc821) Thanks [@vojtaholik](https://github.com/vojtaholik)! - add instructor mdx component
+
+- [`63a204b`](https://github.com/badass-courses/course-builder/commit/63a204ba5232c0dadaf2072e5c64e6716c56614c) Thanks [@vojtaholik](https://github.com/vojtaholik)! - add testimonial mdx component
+
+- Updated dependencies [[`c6eda5e`](https://github.com/badass-courses/course-builder/commit/c6eda5e2fd9159146c8bb35620dee96e0f45395d), [`0870b47`](https://github.com/badass-courses/course-builder/commit/0870b47402a95ccf7fdc216b10f3f0cd5c998b2d)]:
+  - @coursebuilder/core@1.0.1
+
 ## 2.0.1
 
 ### Patch Changes
