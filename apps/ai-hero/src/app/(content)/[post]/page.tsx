@@ -20,6 +20,7 @@ import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { Button } from '@coursebuilder/ui'
@@ -125,7 +126,17 @@ export default async function PostPage(props: {
 					<article className="flex h-full flex-col gap-5">
 						<PostTitle post={post} />
 						<div className="relative flex w-full items-center justify-between gap-3">
-							<Contributor className="flex [&_img]:w-8" />
+							<div className="flex items-center gap-8">
+								<Contributor className="flex [&_img]:w-8" />
+								{post.fields?.github && (
+									<Button asChild variant="outline" className="h-11 text-base">
+										<Link href={post.fields?.github} target="_blank">
+											<Github className="text-muted-foreground mr-2 h-4 w-4" />
+											Source Code
+										</Link>
+									</Button>
+								)}
+							</div>
 							<Suspense fallback={null}>
 								<PostActionBar post={post} />
 							</Suspense>
