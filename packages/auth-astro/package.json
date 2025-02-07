@@ -3,24 +3,7 @@
 	"description": "The easiest way to add authentication to your Astro project!",
 	"version": "4.2.0",
 	"main": "./index.ts",
-	"types": "module.d.ts",
-	"exports": {
-		".": {
-			"types": "./index.ts",
-			"default": "./index.ts"
-		},
-		"./client": {
-			"types": "./client.ts",
-			"default": "./client.ts"
-		},
-		"./server": {
-			"types": "./server.ts",
-			"default": "./server.ts"
-		},
-		"./components/*": {
-			"default": "./src/components/*.astro"
-		}
-	},
+	"types": "./module.d.ts",
 	"engines": {
 		"node": ">=17.4"
 	},

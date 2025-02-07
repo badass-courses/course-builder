@@ -1327,6 +1327,9 @@ importers:
       '@coursebuilder/astro':
         specifier: workspace:*
         version: link:../../packages/astro
+      '@coursebuilder/auth-astro':
+        specifier: workspace:*
+        version: link:../../packages/auth-astro
       '@coursebuilder/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -1339,9 +1342,6 @@ importers:
       astro:
         specifier: ^5.1.2
         version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
-      auth-astro:
-        specifier: workspace:*
-        version: link:../../packages/auth-astro
       drizzle-orm:
         specifier: 0.36.0
         version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
