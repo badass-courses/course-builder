@@ -4,6 +4,23 @@
 	"version": "4.2.0",
 	"main": "./index.ts",
 	"types": "module.d.ts",
+	"exports": {
+		".": {
+			"types": "./index.ts",
+			"default": "./index.ts"
+		},
+		"./client": {
+			"types": "./client.ts",
+			"default": "./client.ts"
+		},
+		"./server": {
+			"types": "./server.ts",
+			"default": "./server.ts"
+		},
+		"./components/*": {
+			"default": "./src/components/*.astro"
+		}
+	},
 	"engines": {
 		"node": ">=17.4"
 	},
