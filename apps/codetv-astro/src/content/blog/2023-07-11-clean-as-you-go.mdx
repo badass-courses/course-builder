@@ -1,0 +1,101 @@
+---
+slug: clean-as-you-go
+pubDate: 2023-07-10
+
+title: Clean as you go
+description: >
+  A story about a habit I picked up working in restaurants, and how the lesson I learned still helps me write better software to this day.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/clean-as-you-go.jpg
+  title: Clean as you go (a life hack)
+  text: A story about a habit I picked up working in restaurants, and how the lesson I learned still helps me write better software to this day.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="a7_kghlRfeI" />
+
+I learned to cook in a restaurant. I was a prep cook.
+
+Every morning, I clocked in to stacks of produce I needed to have ready before the lunch rush. Every morning, I grabbed a cutting board and a knife, opened the first box of romaine lettuce, and got to chopping. And every morning, I'd make an _enormous_ mess.
+
+As I chopped, I pushed the scraps aside into a pile to deal with them later. Cleaning, after all, happened _after_ I finished prep.
+
+## Big messes require big efforts to clean
+
+But the scraps piled up, and my workspace got tighter and tighter. Onion skins stuck to the tomatoes; remnants of diced parsley speckled the cucumbers. My scrap pile got so out of control that I'd occasionally end up dumping handfuls of veggie waste onto the floor by mistake.
+
+Working around my mess made prep stressful, but that paled in comparison to the cleanup. My prep technique left the kitchen looking like the aftermath of a food fight. It took me so long to clean up that I had to rush to avoid delaying the lunch shift from getting started. (There should have been an hour or so of downtime.)
+
+The more experienced staff was horrified by this.
+
+And, fortunately for me, they decided to help me instead of just firing me immediately.
+
+## Clean as you go to avoid big messes
+
+One of the cooks very patiently introduced me to the concept of cleaning as you go. They had a bench scraper and a bleach bucket standing by, and positioned the trash can right next to the table. As I chopped, they encouraged me to move the scraps directly to the trash instead of making a pile. When I finished an ingredient, I grabbed the bench scraper to clear away all the left behind bits, then gave a quick wipe with a rag to reset my station to clean before starting the next one.
+
+<Aside>
+  If you cook, I can't recommend getting a [bench
+  scraper](https://www.amazon.com/OXO-Multi-purpose-Stainless-Scraper-Chopper/dp/B00004OCNJ/)
+  enough. Use it to scoop ingredients off the cutting board instead of using
+  your knife (and potentially dulling it), get all the bits off your flat
+  surfaces, cut and measure dough — it's a versatile tool that I've noticed
+  people don't tend to know about unless they've worked in restaurant kitchens
+  before.
+</Aside>
+
+At first, I resisted this. Cleaning at each step _had_ to be slower, right? After all, [context switching is a terrible idea](https://www.jason.energy/context-switching/), and this was clearly going to make me even slower for sure.
+
+But my options were to do it their way or get fired, so I stuck to it. And a few things happened:
+
+1. The quality of my work went up. No more bits of the previous veggie showing up in the next one. And because my workspace was less cramped, I could see what I was doing and make fine adjustments more easily.
+2. The prep itself went faster. Starting with a clean station made it faster to do the prep because I wasn't working around previous mess.
+3. Cleanup went faster. By cleaning as I went, cleaning was as simple as a few swipes with a bench scraper and a quick wipe-down with a rag. Nothing piled up, so my last veggie was as easy to clean up after as the first one.
+
+I wasn't rushing to get everything done and cleaned anymore. Instead of the cooks worrying about me, they started giving me additional training and opportunities.
+
+**It felt counterintuitive, but cleaning as I went had made me both _better_ and _faster_ at my job.**
+
+## Isn't stopping to clean slower?
+
+My knee-jerk reaction to cleaning as I went was to condemn it as multitasking, which makes work slower. But... was it?
+
+<Aside>
+  **NOTE:** I'm taking a bit of artistic license with timelines to connect this
+  story. I learned about cleaning as you go in my teens; context switching
+  didn't formally enter my awareness until a decade or so later. With the
+  benefit of hindsight, I _think_ my initial distaste for cleaning as you go was
+  some vague sense of "it'll take longer!" — but honestly I was a teenager so I
+  may have just been against it because I was acting like a sulky prick.
+</Aside>
+
+**Cleaning as you go _seems_ like multitasking, but it's actually an efficient way of sequentially tackling work.**
+
+## Small messes clean up fast
+
+By _not_ cleaning as we go, multiple messes compound on each other. A small mess is fast to clean, but a dozen or more small messes become a much bigger mess that's harder to clean up.
+
+In food prep, the scrap pile might spill off the table. Wet scraps might dry to the table, making them far more difficult to clean up. A large pile has a tendency to spread out and get additional dishes and utensils dirty.
+
+By contrast, a small mess is almost always a couple quick wipes away from being clean.
+
+## "Clean as you go" as a guiding principle for everything
+
+This lesson didn't just save my high school job — it made a huge impression on my outlook on life. I try to clean as I go wherever I can these days, whether I'm cooking dinner at home or writing code at work.
+
+In a codebase, we always make small messes as we work. We're solving problems, and until we hit a solution that works our code is full of small choices based on educated guesses that are _directionally_ correct, but that probably wander a bit since they lack the full context of the working solution.
+
+If we ship the code as-is, everything will be fine. The code works, and that's ultimately the point.
+
+But we left a small mess. And if we do that every time we build a new feature, the small messes start to build into a big mess — this is how we end up with tech debt that's so overwhelming that we start to argue that the only reasonable solution is to start over from scratch.
+
+If, instead, we choose to clean as we go — to do an immediate small refactor as part of submitting the PR, for example — we'll clean up those small messes _before_ they can pile up into big ones. And because the messes are being continually addressed, we have cleaner, easier to manage code, and that makes us faster.
+
+## Building new habits is hard, but worth it
+
+Cleaning as you go is a tricky habit to build. It requires a concentrated effort to change the way you work, and if you're in a team it's even trickier because you're trying to shift the team culture.
+
+However, if you put in the work to build the habit, it pays dividends in every area of your life where you choose to adopt it.

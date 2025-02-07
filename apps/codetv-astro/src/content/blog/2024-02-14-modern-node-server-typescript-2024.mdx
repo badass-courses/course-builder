@@ -1,0 +1,108 @@
+---
+slug: modern-node-server-typescript-2024
+pubDate: 2024-02-14
+title: How to set up a Node server with TypeScript in 2024
+description: >
+  A quick tutorial on how to set up a Node project in 2024. Includes TypeScript, live reload, and environment variable support.
+---
+
+import Aside from '../../components/aside.astro';
+
+I've had to look up how to create a new Node server enough times that I'm writing it down to make it easier for me to find in the future. This is a quick and dirty post without much context or explanation. Feel free to [ask me for details](https://lwj.dev/discord) if something I said isn't clear.
+
+This is the fastest way I know of to get a Node server running with TypeScript as of 2024. If you know a better way, please do let me know!
+
+<Aside>
+  **Heads up!** Make sure you're using Node >=20.6 — it's required for some of the flags used in this setup.
+</Aside>
+
+## Set up the project
+
+```sh
+# create a new project
+mkdir my-node-app
+cd my-node-app/
+
+# initialize the project
+git init
+npm init -y
+
+# install dev dependencies
+npm i -D typescript ts-node @types/node
+
+# initialize TypeScript
+npx tsc --init
+```
+
+Next, open `package.json` and add the following:
+
+```json title="package.json" mark={2-4,10-11}
+{
+	"engines": {
+		"node": ">=20.6.0"
+	},
+	"name": "my-node-app",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc",
+		"dev": "node --env-file=.env --watch -r ts-node/register src/index.ts",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Jason Lengstorf <jason@learnwithjason.dev>",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^20.11.17",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.3.3"
+	}
+}
+```
+
+<Aside>
+  **Heads up!** The [`--watch` flag](https://nodejs.org/docs/latest/api/cli.html#--watch) was added in Node v18.11.0. The [`--env-file=config` flag](https://nodejs.org/docs/latest/api/cli.html#--env-fileconfig) was added in Node v20.6.0.
+</Aside>
+
+## Add environment variables, if needed
+
+Create `.env` and put any secrets inside:
+
+```sh title=".env"
+TEST_VALUE=hello
+```
+
+## Create the main Node app file
+
+Create `src/index.ts` and put something inside:
+
+```ts title="src/index.ts"
+function test(): void {
+	console.log(process.env.TEST_VALUE);
+}
+
+test();
+```
+
+## Start the Node server and test live reload
+
+Start the server with `npm run dev` and you'll see the following output:
+
+```sh
+❯ npm run dev
+
+> my-node-app@1.0.0 dev
+> node --env-file=.env --watch -r ts-node/register src/index.ts
+
+(node:29702) ExperimentalWarning: Watch mode is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+hello
+Completed running 'src/index.ts'
+```
+
+Make a change to `src/index.ts` or `.env` and the server will automatically restart and show your changes in the console.
+
+And that's it — now you've got a Node app with TypeScript running with live reloading and environment variables, using as few dependencies as possible, modernized for building apps in 2024.
+
+Happy building!
+

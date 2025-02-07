@@ -1,0 +1,11 @@
+---
+import { SearchBox } from '../components/search';
+import Layout from '../layouts/default.astro';
+---
+
+<Layout
+	title="Search CodeTV"
+	description="Search the catalog of CodeTV content, inlucing Learn With Jason, Web Dev Challenge, Leet Heat, and more."
+>
+	<SearchBox open={true} client:only />
+</Layout>

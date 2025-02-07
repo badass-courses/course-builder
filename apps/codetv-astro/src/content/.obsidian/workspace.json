@@ -1,0 +1,204 @@
+{
+  "main": {
+    "id": "acb651738d601a3c",
+    "type": "split",
+    "children": [
+      {
+        "id": "60520c8357009257",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cd5bb630b2c8ce35",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "blog/2024-08-06-web-dev-challenge-hackathon-algolia.mdx",
+                "mode": "source",
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "a93adf34780ddbf7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "blog/2024-08-06-web-dev-challenge-hackathon-algolia.mdx",
+                "mode": "source",
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "d3382234be0dd6ca",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "blog/2024-08-27-web-dev-challenge-hackathon-monsters.mdx",
+                "mode": "source",
+                "source": true
+              }
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "2443ed31bc9dd8ce",
+    "type": "split",
+    "children": [
+      {
+        "id": "9882c0750d37dbb6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5d724bb72f5c7bb6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "9e78d38f5208f1a0",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "46e639298fe16853",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 315.5,
+    "collapsed": true
+  },
+  "right": {
+    "id": "4bdc2ac4896511b2",
+    "type": "split",
+    "children": [
+      {
+        "id": "51cfff73fa772889",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5d925456c1206d87",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "blog/2024-08-06-web-dev-challenge-hackathon-algolia.mdx",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "b654cec1bbfe6292",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "blog/2024-08-06-web-dev-challenge-hackathon-algolia.mdx",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "771f53031487e2f5",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "3c315e54f677c23e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "blog/2024-08-06-web-dev-challenge-hackathon-algolia.mdx"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "5d724bb72f5c7bb6",
+  "lastOpenFiles": [
+    "blog/2024-08-06-web-dev-challenge-hackathon-algolia.mdx",
+    "blog/2024-08-27-web-dev-challenge-hackathon-monsters.mdx",
+    "blog/2024-08-11-extend-types-for-modules-in-astro.mdx",
+    "untitled folder",
+    "astro-clerk-custom-typescript-definitions-01-unknown-error.png",
+    "astro-clerk-custom-typescript-definitions-02-correct-types.png",
+    "blog/2024-02-17-drizzle-orm-sqlite-create-tables.mdx",
+    "blog/2024-06-24-web-dev-challenge-giveaway-full-stack-amplify.mdx",
+    "blog/2024-07-08-businesses-hate-fun-other-lies-salma-alam-naylor.mdx",
+    "blog/2024-04-28-4d1a-not-another-chatbot-giveaway.mdx",
+    "blog/2024-07-01-inside-figma-hq-jake-albaugh-creative-communities.mdx",
+    "blog/2024-03-08-death-and-rebirth-of-devrel.mdx",
+    "blog/2024-05-31-work-archetype-explorer-villager-town-planner.mdx",
+    "_obsidian/templates/blog-post.md",
+    "Clerk React Miami.md",
+    "Screenshot 2024-02-17 at 15.15.59.png",
+    "blog/2024-02-14-modern-node-server-with-typescript-2024.mdx.md",
+    "blog/2024-01-15-test.md",
+    "_obsidian/_templates/blog-post.md",
+    "blog/2024-01-15-test3.md",
+    "_templates/blog-post.md",
+    "blog/2024-01-15-test-blogmdx.md",
+    "blog/2024-01-15-test-blog.md",
+    "blog/2024-01-15-A Test Blog.md",
+    "_templates/blog-post.mdx.md",
+    "_obsidian/Untitled.md"
+  ]
+}

@@ -1,0 +1,54 @@
+---
+import { Image } from '@unpic/astro';
+import { createImageUrl } from '../util/cloudinary';
+import { getUpcomingEpisodeBySeries } from '../util/sanity';
+
+export interface Props {
+	seriesSlug: string;
+	collectionSlug: string;
+}
+
+const { seriesSlug, collectionSlug } = Astro.props;
+
+const episodes = await getUpcomingEpisodeBySeries({ seriesSlug });
+---
+
+{
+	episodes && episodes.length > 0 ? (
+		<div class="schedule">
+			{episodes.map((episode) => {
+				if (!episode.thumbnail || !episode.thumbnail.src) {
+					return;
+				}
+
+				const thumbnailSrc = createImageUrl(episode.thumbnail.src);
+
+				return (
+					<div class="upcoming-episode">
+						<a href={`/${seriesSlug}/${collectionSlug}/${episode.slug}`}>
+							<Image
+								src={thumbnailSrc}
+								alt={episode.thumbnail.alt}
+								width={150}
+								aspectRatio={16 / 9}
+							/>
+						</a>
+						<h3>
+							<a href={`/${seriesSlug}/${collectionSlug}/${episode.slug}`}>
+								{episode.title}
+							</a>
+						</h3>
+					</div>
+				);
+			})}
+		</div>
+	) : null
+}
+
+<style>
+	.upcoming-episode {
+		img {
+			inline-size: 150px;
+		}
+	}
+</style>

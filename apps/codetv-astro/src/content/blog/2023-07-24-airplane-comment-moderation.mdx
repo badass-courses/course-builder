@@ -1,0 +1,941 @@
+---
+slug: comment-moderation-ai-airplane
+pubDate: 2023-07-24
+
+title: Use AI to moderate abusive and vulgar comments (full tutorial)
+description: >
+  Build an internal dashboard to view and moderate comments in this full tutorial. Plus, learn how to use OpenAI to automatically flag the worst comments.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/airplane-openai-comment-moderation-dashboard.jpg
+  title: Use AI to moderate abusive and vulgar comments (full tutorial)
+  text: >
+    Build an internal dashboard to view and moderate comments in this full tutorial. Plus, learn how to use OpenAI to automatically flag the worst comments.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="cdgj96bFXhs" />
+
+<Aside>
+  **Want to jump to the end?** [Check out the source code on
+  GitHub.](https://github.com/learnwithjason/airplane-content-moderation)
+</Aside>
+
+Internal tools don't get prioritized. That's why so many developers have horror stories of teams running superadmin commands against the production database that they copy-pasted from a doc somewhere.
+
+In this tutorial, you'll **learn how to build an internal dashboard to moderate a custom comments database.** You won't have to write much code, but everything you create will be stored as human-readable code that can be checked into source control and edited manually without breaking the low-code workflow.
+
+As an added bonus, we'll also look at how we can **integrate AI (using OpenAI/Chat-GPT integrated into Airplane) to automatically flag the most abusive and vulgar comments**, decreasing the psychic damage taken by human moderators.
+
+<Aside>
+  Thanks to [Airplane](https://lwj.dev/airplane) for sponsoring this tutorial.
+  Go get a free account so you can follow along with this tutorial and start
+  using their developer platform for building internal tools quickly and with
+  minimal code.
+</Aside>
+
+## Create a new Airplane project
+
+To start, [register for or sign into your Airplane account](https://lwj.dev/airplane).
+
+Next, [install the Airplane CLI](https://docs.airplane.dev/platform/airplane-cli?utm_source=learnwithjason&utm_medium=tutorial&utm_campaign=content-moderation-dashboard) so you can develop locally:
+
+```bash
+brew install airplanedev/tap/airplane
+```
+
+Clone the starter repo, then move into it and start Airplane
+
+```bash
+# clone the start branch of the repo
+gh repo clone learnwithjason/airplane-content-moderation -- -b start
+
+# move into the cloned app directory
+cd airplane-content-moderation/
+```
+
+Inside, this app contains the boilerplate for a project — such as a `tsconfig.json` and a `package.json` — as well as a file called `airplane.yaml`. The only thing inside this file is a note about the Node version (set to Node 18). This is a pretty cool feature of Airplane: there's very little boilerplate required.
+
+There's also an example app folder, which you can ignore for now. We'll come back to that after we've got the Airplane tasks and views built.
+
+Inside the project folder, use the Airplane CLI to start the project.
+
+```bash
+# start Airplane in dev mode (will prompt for login on first run)
+airplane dev
+```
+
+The first time you run this command, you'll be asked to log in.
+
+Next, the CLI will start the dev server and give you the option to press enter to open the Airplane Studio, which is a UI for local development that updates your local files in real time. Press enter to open the studio.
+
+## Set up the database and initial queries
+
+Our first step will be to make sure we have data to work with and that we're able to read it out of our database in Airplane.
+
+<Aside>
+  **NOTE:** Airplane provides a demo database we can use for this tutorial. In a
+  real project, you'll need to [connect your own database as a
+  resource](https://docs.airplane.dev/resources/overview).
+</Aside>
+
+### Create a task to initialize the comments table
+
+To begin, let's create a table to store comments and add a few entries so we can verify things are working as expected.
+
+To get the work done that our tutorial requires, we'll be using [Airplane tasks](https://docs.airplane.dev/tasks/overview). These can take a few forms, but we'll [start with a SQL task](https://docs.airplane.dev/getting-started/sql).
+
+Create a new task in the Studio called "comments_db_reset" and choose the SQL option.
+
+<Aside>
+  **NOTE:** You can call your tasks whatever you want. I've chosen the format of
+  placing the affected data (comments) first, followed by what the task does.
+</Aside>
+
+Once you create the task, two new files will be created in your working directory:
+
+- `comments_db_reset.sql`
+- `comments_db_reset.task.yaml`
+
+It's possible to edit these files directly — we'll do that for a future task — but in many cases it's much more convenient to use the Studio UI.
+
+<Figure caption="Airplane’s UI lets you configure tasks quickly.">
+  ![the Airplane dashboard showing config for the reset comments database
+  task](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-01-studio-reset-db.jpg)
+</Figure>
+
+In the Studio, update the details in the "Define" section:
+
+- Name: Reset comments database
+- Description: Deletes the current comments table, including all comment entries, then creates a new comments table with a few seed entries.
+
+The local files will update as you type.
+
+Next, scroll down to the "Build" section and choose "[Demo DB]" from the "Database Resource" dropdown.
+
+Under "Query", add the following:
+
+```sql
+DROP TABLE comments;
+
+CREATE TABLE IF NOT EXISTS
+  comments (
+    id      SERIAL PRIMARY KEY,
+    comment TEXT NOT NULL,
+    flagged BOOLEAN
+  );
+
+INSERT INTO
+  comments (comment, flagged)
+VALUES
+  ('this looks so delicious omg', false),
+  ('I think you suck', true),
+  ('I do not want to eat this', false),
+  ('eat poop', true)
+;
+```
+
+This is a set of SQL instructions that removes the comments table, creates a new one with the necessary fields, and then inserts example entries into it that we can use to build out the rest of our dashboard.
+
+Our changes save as we type, so once everything is entered, we can click the "Execute Task" button in the top panel.
+
+<Figure caption="Tasks can be executed with a click in the UI">
+  ![the Airplane dashboard showing the result of the reset comments database
+  task
+  execution](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-02-executed-successfully.jpg)
+</Figure>
+
+That's the whole process for setting up Airplane and modifying a database. I love this flow because it feels magical, but nothing that happens is "magic" or hidden from me — everything I entered in the UI is stored in my code base now.
+
+<Figure caption="All Airplane tasks and views are stored as code that you can edit.">
+  ![the generated YAML and SQL that makes up the reset comments database task
+  shown in VS
+  Code](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-03-task-code-output.jpg)
+</Figure>
+
+The UI is a convenience, not a requirement — I can choose not to use it if I prefer.
+
+### Create a task to list all comments
+
+Next, let's add another task to list all of our comments. Create a new task in the Studio, choose SQL, and name it "comments_list_all". Add the following details in the "Define" section:
+
+- Name: List all comments
+- Description: Lists all comments in the database, regardless of `flagged` status
+
+Choose the demo DB from the database dropdown and add the following query:
+
+```sql
+SELECT
+  id,
+  comment,
+  flagged
+FROM
+  comments
+ORDER BY
+  flagged
+;
+```
+
+Click the "Execute Task" button and you'll see the seed comments listed on the screen.
+
+<Figure caption="Results are automatically displayed in tables">
+  ![the airplane dashboard showing results of the list all comments task in a
+  table](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-04-list-all-comments.jpg)
+</Figure>
+
+### Create a task to list flagged comments
+
+Next, repeat this process to create a task called "comments_list_flagged" to list only flagged comments using the following details:
+
+- Name: List flagged comments
+- Description: List all comments that have been flagged as abusive or otherwise problematic.
+
+Choose the demo DB and add the following query:
+
+```sql
+SELECT
+  id,
+  comment,
+  flagged
+FROM
+  comments
+WHERE
+  flagged = true
+;
+```
+
+### Create a task to list approved comments
+
+We'll also need to be able to select all the unflagged (approved) comments. For these, we can copy-paste the `comments_list_flagged` files and make small adjustments right in the code.
+
+Rename both files to `comments_list_approved`, keeping their respective extensions. In `comments_list_approved.task.yaml`, make the following edits:
+
+```yaml
+	slug: comments_list_approved
+	name: List approved comments
+	description: List all comments that have been approved.
+	sql:
+	  resource: demo_db
+	  entrypoint: comments_list_approved.sql
+```
+
+Next, replace the contents of `comments_list_approved.sql` with the following:
+
+```sql
+SELECT
+  id,
+  comment,
+  flagged
+FROM
+  comments
+WHERE
+  flagged = false
+;
+```
+
+## Build a comment moderation dashboard view
+
+So far, we've only looked at tasks in Airplane. Next, let's dig into how [Airplane views](https://docs.airplane.dev/views/overview) work.
+
+### Create an Airplane view
+
+In the Studio, create a new view by clicking the `+` at the top of the explorer. Give it the following details:
+
+- Name: Comment Moderation Dashboard
+- Description: Allows admins to see all approved comments, and optionally see flagged comments. They're also able to change the approved/flagged state of a comment and delete comments permanently.
+
+This will create a new file in your local directory called `CommentModerationDashboard.airplane.tsx` — you can rename this if you want, but we'll leave it as-is for this project.
+
+### Update the view with a table to display approved comments
+
+Inside, you'll see an example component. Replace the file contents with the following:
+
+```tsx
+import { Heading, Stack, Table } from '@airplane/views';
+import airplane from 'airplane';
+
+const CommentModerationDashboard = () => {
+  return (
+    <Stack>
+      <Heading>Comment Moderation Dashboard</Heading>
+
+      <Table
+        title="Approved Comments"
+        task="comments_list_approved"
+        defaultPageSize={20}
+        hiddenColumns={['flagged']}
+      />
+    </Stack>
+  );
+};
+
+export default airplane.view(
+  {
+    slug: 'comment_moderation_dashboard',
+    name: 'Comment Moderation Dashboard',
+    description:
+      "Allows admins to see all approved comments, and optionally see flagged comments. They're also able to change the approved/flagged state of a comment and delete comments permanently.",
+  },
+  CommentModerationDashboard
+);
+```
+
+[Airplane provides a suite of React UI components](https://docs.airplane.dev/views/components) to make building dashboards as straightforward as snapping together components.
+
+A `Stack` is a container for content, and inside we've added a `Heading` to let the viewer know what this dashboard is for, followed by a `Table` to display approved comments.
+
+The `Table` accepts a few props. The `title` is displayed at the top, the `defaultPageSize` tells the table how many rows to show before paginating, and `hiddenColumns` lets us leave out columns from the table that we don't need.
+
+The really interesting prop here is the `task` prop. [Many Airplane components can be task-backed](https://docs.airplane.dev/views/task-backed-components), which means we can perform tasks (such as loading data or performing a query) using their slugs. This is a great productivity boost, because we don't have to mess with calling APIs to load data, then looping through them to build table views — we just say, "Give me a table with the result of the task called `comments_list_approved`" and Airplane does the rest. Neat!
+
+Once we've saved this component, we'll see a new icon pop up in the explorer for a view called "Comment Moderation Dashboard". Click on it and you'll see the layout you just built, including the approved comment entries displayed in the table.
+
+<Figure caption="A dashboard view in Airplane using their built-in component library">
+  ![the comment moderation dashboard in Airplane
+  Studio](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-05-comment-moderation-step-1.jpg)
+</Figure>
+
+### Add another table to display flagged comments
+
+We also need a way to see flagged comments, so add another `Table` that uses the `comments_list_flagged` task:
+
+```diff
+	import { Heading, Stack, Table } from '@airplane/views';
+	import airplane from 'airplane';
+
+	const CommentModerationDashboard = () => {
+		return (
+			<Stack>
+				<Heading>Comment Moderation Dashboard</Heading>
+
+				<Table
+					title="Approved Comments"
+					task="comments_list_approved"
+					defaultPageSize={20}
+					hiddenColumns={['flagged']}
+				/>
++
++				<Table
++					title="Flagged Comments"
++					task="comments_list_flagged"
++					defaultPageSize={20}
++					hiddenColumns={['flagged']}
++				/>
+			</Stack>
+		);
+	};
+
+	export default airplane.view(
+		{
+			slug: 'comment_moderation_dashboard',
+			name: 'Comment Moderation Dashboard',
+			description:
+				"Allows admins to see all approved comments, and optionally see flagged comments. They're also able to change the approved/flagged state of a comment and delete comments permanently.",
+		},
+		CommentModerationDashboard,
+	);
+```
+
+Save and the flagged comments appear, but this isn't ideal — we don't want to subject our admins to potentially abusive comments every time they load the dashboard. Instead, let's hide the flagged comments by default and only show them if the admin clicks a checkbox to confirm that they want to review flagged comments.
+
+Inside the view, let's add a `Checkbox` from the Airplane component library, as well as the `useComponentState` hook that will let us check whether it's checked or not:
+
+```diff
+	import {
++		type CheckboxState,
+		Heading,
+		Stack,
+		Table,
++		Checkbox,
++		useComponentState,
+	} from '@airplane/views';
+	import airplane from 'airplane';
+
+	const CommentModerationDashboard = () => {
++		const { id, checked } = useComponentState<CheckboxState>();
+
+		return (
+			<Stack>
+				<Heading>Comment Moderation Dashboard</Heading>
+
+				<Table
+					title="Approved Comments"
+					task="comments_list_approved"
+					defaultPageSize={20}
+					hiddenColumns={['flagged']}
+				/>
+
++				<Checkbox
++					id={id}
++					label="Show flagged comments (view at your own risk!)"
++				/>
++
++				{checked ? (
+					<Table
+						title="Flagged Comments"
+						task="comments_list_flagged"
+						defaultPageSize={20}
+						hiddenColumns={['flagged']}
+					/>
++				) : null}
+			</Stack>
+		);
+	};
+
+	export default airplane.view(
+		{
+			slug: 'comment_moderation_dashboard',
+			name: 'Comment Moderation Dashboard',
+			description:
+				"Allows admins to see all approved comments, and optionally see flagged comments. They're also able to change the approved/flagged state of a comment and delete comments permanently.",
+		},
+		CommentModerationDashboard,
+	);
+```
+
+Now the dashboard hides the comments that could ruin someone's day by default, and they only have to be viewed if it becomes necessary to review them.
+
+<Figure caption="Avoid showing unpleasant stuff to moderators who don’t need to see it">
+  ![the comment moderation dashboard with the checkbox unchecked and flagged
+  comments
+  hidden](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-06-dashboard-flagged-hidden.jpg)
+</Figure>
+
+<Figure caption="Opt-in visibility of the worst comments">
+  ![the comment moderation dashboard with the checkbox checked and flagged
+  comments
+  visible](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-07-dashboard-flagged-visible.jpg)
+</Figure>
+
+### Add a task to flag comments as abusive
+
+If a comment is approved by mistake, we need the ability to manually flag it. To do that, create a new task called "comment_flag" with the following details:
+
+- Name: Flag comment as abusive
+
+Under parameters, click the "Add parameter" button and add the following values:
+
+- Name: id
+- Description: The ID of the comment to flag.
+- Type: Integer
+- Required: true
+
+All the other values can remain unchanged.
+
+Click Update to save.
+
+Next, choose the demo DB as the database resource and add the following query:
+
+```sql
+UPDATE
+  comments
+SET
+  flagged = true
+WHERE
+  id = :id
+;
+```
+
+Finally, set the query argument to be "id" and the value to be `{{params.id}}`, which connects the parameter of the task to the query argument of this query.
+
+To test, grab an ID from one of the approved comments on the dashboard, enter it into the ID field of the "Flag comment as abusive" task, and click the "Execute task" button.
+
+The previously approved comment will now be flagged, which you can verify by visiting the dashboard again.
+
+<Figure caption="Manually flagged comments get moved into the correct table">
+  ![the comment moderation dashboard showing a manually flagged comment
+  correctly moved to the flagged
+  table](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-08-dashboard-flagged-comment.jpg)
+</Figure>
+
+### Add a task to unflag comments
+
+Now, it's not against our site rules to dislike something, so that comment should be approved. Let's add another task to allow us to do that.
+
+Create a task called "comment_approve" with the following details:
+
+- Name: Approve comment
+- Description: Approve a comment for public display.
+
+Add a parameter called `id` as an integer with the description, "The ID of the comment to approve".
+
+Next, set the demo DB as the database resource and add this query:
+
+```sql
+UPDATE
+  comments
+SET
+  flagged = false
+WHERE
+  id = :id
+;
+```
+
+For query arguments, add a new one called `id` with the value of `{{params.id}}`.
+
+Use the same comment ID that you just flagged and execute the task. It will now be back on the approved list in the dashboard.
+
+<Figure caption="Manual approvals mean mods now have full control">
+  ![the comment moderation dashboard showing the previously flagged comment back
+  in the approved table after manual
+  approval](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-09-dashboard-comment-approved.jpg)
+</Figure>
+
+### Create a SQL task to delete comments
+
+After an admin has reviewed a flagged comment to confirm that, yep, this comment is terrible, we want to let them delete it permanently — no reason for anyone else to have to see that trash.
+
+To do that, create a new task called "comment_delete" with the following details:
+
+- Name: Delete comment permanently
+- Description: Removes a comment permanently. There is no undo for this action!
+
+Add a parameter called `id` as an integer with the description, "The ID of the comment to delete".
+
+Next, set the demo DB as the database resource and add this query:
+
+```sql
+DELETE FROM
+  comments
+WHERE
+  id = :id
+;
+```
+
+For query arguments, add a new one called `id` with the value of `{{params.id}}`.
+
+Test this by adding a comment ID in the field and clicking "execute task".
+
+<Aside>
+  **NOTE:** Remember that you can always run the "Reset comments database" task
+  to revert the comments table to its starting state, so don't worry about
+  deleting things.
+</Aside>
+
+## Call tasks from table rows in Airplane
+
+At this point, what we've built is already pretty useful. We can:
+
+1. View comments (both flagged and approved)
+2. Toggle the flagged status of comments
+3. Delete comments
+
+This _could_ be considered good enough. But we can make this much more user friendly with only a few more lines of code thanks to a built-in Airplane feature called [row actions](https://docs.airplane.dev/views/table#row-actions).
+
+### Add a row action to flag or approve a comment
+
+In Airplane `Table` components, we can add a `rowActions` prop that adds a button in each row and performs the specified action for the current row when clicked.
+
+There are a few ways to do this, up to and including fully custom solutions. For our needs, the [task-backed row actions](https://docs.airplane.dev/views/table#task-backed-row-actions) are perfect: they will automatically pass through the current comment's ID — we only need to provide the task to be performed and label for it!
+
+In `CommentModerationDashboard.airplane.ts`, make the following changes:
+
+```diff
+	import {
+		type CheckboxState,
+		Heading,
+		Stack,
+		Table,
+		Checkbox,
+		useComponentState,
+	} from '@airplane/views';
+	import airplane from 'airplane';
+
+	const CommentModerationDashboard = () => {
+		const { id, checked } = useComponentState<CheckboxState>();
+
+		return (
+			<Stack>
+				<Heading>Comment Moderation Dashboard</Heading>
+
+				<Table
+					title="Approved Comments"
+					task="comments_list_approved"
+					defaultPageSize={20}
+					hiddenColumns={['flagged']}
++					rowActions={{
++						slug: 'comment_flag',
++						label: 'flag',
++					}}
+				/>
+
+				<Checkbox
+					id={id}
+					label="Show flagged comments (view at your own risk!)"
+				/>
+
+				{checked ? (
+					<Table
+						title="Flagged Comments"
+						task="comments_list_flagged"
+						defaultPageSize={20}
+						hiddenColumns={['flagged']}
++						rowActions={[
++							{
++								slug: 'comment_approve',
++								label: 'approve',
++							},
++							{
++								slug: 'comment_delete',
++								label: 'delete',
++							},
++						]}
+					/>
+				) : null}
+			</Stack>
+		);
+	};
+
+	export default airplane.view(
+		{
+			slug: 'comment_moderation_dashboard',
+			name: 'Comment Moderation Dashboard',
+			description:
+				"Allows admins to see all approved comments, and optionally see flagged comments. They're also able to change the approved/flagged state of a comment and delete comments permanently.",
+		},
+		CommentModerationDashboard,
+	);
+```
+
+Save, refresh the studio, and your dashboard will now show the "flag" option on approved comments, and the "approve" and "delete" options on flagged comments.
+
+<Figure caption="Row actions let mods perform any task right from the dashboard view">
+  ![the comment moderation dashboard with row actions added to allow flagging,
+  approving, and deleting
+  comments](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-10-row-actions.jpg)
+</Figure>
+
+Test out the buttons to see row actions in, uh, action!
+
+### Refresh other tables when row actions are performed
+
+You may have noticed that right now, the table that contains the updated row updates, but other tables require a page refresh to show the changes.
+
+Let's fix that.
+
+Airplane [provides a hook called `useTaskQuery`](https://docs.airplane.dev/views/calling-tasks-with-react-hooks#usetaskquery) that lets us, among other things, force a refetch of the given task, causing all components using it to update.
+
+Make the following changes in `CommentModerationDashboard.airplane.ts` to refetch all tables whenever a comment is modified:
+
+```diff
+	import {
+		type CheckboxState,
+		Heading,
+		Stack,
+		Table,
+		Checkbox,
+		useComponentState,
++		useTaskQuery,
+	} from '@airplane/views';
+	import airplane from 'airplane';
+
+	const CommentModerationDashboard = () => {
+		const { id, checked } = useComponentState<CheckboxState>();
++		const flagged = useTaskQuery('comments_list_flagged');
++		const approved = useTaskQuery('comments_list_approved');
+
+		return (
+			<Stack>
+				<Heading>Comment Moderation Dashboard</Heading>
+
+				<Table
+					title="Approved Comments"
+					task="comments_list_approved"
+					defaultPageSize={20}
+					hiddenColumns={['flagged']}
+					rowActions={{
+						slug: 'comment_flag',
+						label: 'flag',
++						onSuccess: () => flagged.refetch(),
+					}}
+				/>
+
+				<Checkbox
+					id={id}
+					label="Show flagged comments (view at your own risk!)"
+				/>
+
+				{checked ? (
+					<Table
+						title="Flagged Comments"
+						task="comments_list_flagged"
+						defaultPageSize={20}
+						hiddenColumns={['flagged']}
+						rowActions={[
+							{
+								slug: 'comment_approve',
+								label: 'approve',
++								onSuccess: () => approved.refetch(),
+							},
+							{
+								slug: 'comment_delete',
+								label: 'delete',
+							},
+						]}
+					/>
+				) : null}
+			</Stack>
+		);
+	};
+
+	export default airplane.view(
+		{
+			slug: 'comment_moderation_dashboard',
+			name: 'Comment Moderation Dashboard',
+			description:
+				"Allows admins to see all approved comments, and optionally see flagged comments. They're also able to change the approved/flagged state of a comment and delete comments permanently.",
+		},
+		CommentModerationDashboard,
+	);
+```
+
+Save, then try again. Now both tables update whenever a comment is modified.
+
+## Create a TypeScript task to add a new comment
+
+To this point, we've been using only SQL tasks, but [Airplane also supports tasks written in JavaScript, Python, and more](https://docs.airplane.dev/tasks/overview).
+
+Create a new task and choose JavaScript as the type. Give it the name "comment_add" and leave TypeScript selected. Use the following details:
+
+- Name: Add a comment
+- Description: Save a new comment in the database. Includes a step to check for abusive comments and flag them to limit problematic content from becoming visible.
+- Parameters: `comment`, type "Long text"
+
+Add the demo DB as a resource, then open `comment_add.airplane.ts` in your editor. The second argument to `airplane.task` is an async function, which contains everything you want the task to do when called.
+
+Replace the boilerplate function with the following:
+
+```ts
+import airplane from 'airplane';
+
+export default airplane.task(
+  {
+    slug: 'comment_add',
+    name: 'Add a comment',
+    description:
+      'Save a new comment in the database. Includes a step to check for abusive comments and flag them to limit problematic content from becoming visible.',
+    parameters: {
+      comment: {
+        name: 'comment',
+        type: 'shorttext',
+      },
+    },
+    resources: ['demo_db'],
+  },
+  async (params) => {
+    const { comment } = params;
+
+    // TODO add check for abusive content
+    const output = { flagged: false };
+
+    const res = await airplane.sql.query(
+      'demo_db',
+      'INSERT INTO comments (comment, flagged) VALUES (:comment, :flagged);',
+      { args: { comment, flagged: output.flagged } }
+    );
+
+    console.log(res);
+
+    let message = `Your comment was saved.`;
+
+    return { message, flagged: output.flagged };
+  }
+);
+```
+
+Here's what this code does:
+
+- Get the `comment` out of the `params` so we can work with it
+- For now, temporarily hard-code the output, which we'll build for real in the next section
+- Use the built-in `airplane.sql.query` method to run an `INSERT` in our demo database to save the new comment along with its `flagged` status
+- Return a message and whether the comment was flagged
+
+Save, then write a new comment in the task's input in the Studio and execute the task. Check the dashboard to see your new comment saved.
+
+<Figure caption="New, unflagged comments go live immediately">
+  ![the comment moderation dashboard showing a newly created comment in the
+  approved
+  table](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-11-add-comment.jpg)
+</Figure>
+
+### Use AI to automatically flag abusive comments
+
+Moderation is not optional when we're opening up spaces for public comments. Flagging abusive content is a must if you want to have a space free of harassment and other unacceptable behavior.
+
+The challenges with moderation are enormous and complicated. We won't cover all of them in this post, but we will look at two:
+
+1. The people who moderate content prevent us from seeing the most terrible things that are said in the comments section — but for them to do their jobs, they have to read that awful content. A moderator is forced to confront the absolute worst the web has to offer every day, and that takes its toll.
+2. Good moderation means not showing comments until they've been checked. This adds a significant delay between posting a comment and seeing the comment live, which can prevent conversations from happening because it takes too long to see responses.
+
+To address these two challenges, one possible solution is using a [large language model (LLM)](https://en.wikipedia.org/wiki/Large_language_model) as a kind of "first line defense" for comment moderation.
+
+<Aside>
+  **NOTE:** Before we continue, let me add a giant, flashing asterisk to this
+  section. **AI is cool, but it has _huge_ unanswered ethical questions.** We
+  haven't figured out how to control for the bias of the people training the
+  models yet, and that means **we need to be _extremely_ careful about how we
+  use AI** — and we need to make sure we're checking its work thoroughly.
+</Aside>
+
+For this use case, we're attempting to catch abusive and hateful comments. We're also saving all comments for a final human review before deletion, which will allow us to adjust the instructions we're providing the LLM if it's incorrectly flagging comments.
+
+### Use Airplane's built-in AI functions to moderate user input
+
+Airplane provides several built-in operations, including [AI support for both OpenAI and Anthropic](https://docs.airplane.dev/tasks/builtin-ai).
+
+For our app, we'll use [OpenAI](https://openai.com/), which currently provides $5 in credit to new accounts, which is more than enough to build and test this feature.
+
+Sign up or log in to your OpenAI account and [create an API key](https://platform.openai.com/account/api-keys).
+
+Next, head to the the Airplane Studio and create a config var (the icon that looks like `(x)` in the left-hand sidebar). Name the config `OPENAI_API_KEY` and paste in your OpenAI key.
+
+<Aside>
+  **NOTE:** This value will be added to `airplane.dev.yaml`! Remember not to
+  commit this file to avoid leaking your API key.
+</Aside>
+
+Go back to your "Add a comment" task in the explorer and scroll down to the "build" section of the config. Under "Environment variables", click "add variable". Name it `OPENAI_API_KEY`, then choose "From config var" from the dropdown. In the new dropdown that appears, choose the `OPENAI_API_KEY` config.
+
+This will update the task file with a reference to the config var, which makes it safe to commit the task file (but, again, _do not_ commit `airplane.dev.yaml`).
+
+With the API key available, modify `comment_add.airplane.ts` to add the AI moderation step:
+
+```diff
+	import airplane from 'airplane';
+
+	export default airplane.task(
+		{
+			slug: 'comment_add',
+			name: 'Add a comment',
+			description:
+				'Save a new comment in the database. Includes a step to check for abusive comments and flag them to limit problematic content from becoming visible.',
+			parameters: {
+				comment: {
+					name: 'comment',
+					type: 'shorttext',
+				},
+			},
+			resources: ['demo_db'],
+			envVars: {
+				OPENAI_API_KEY: {
+					config: 'OPENAI_API_KEY',
+				},
+			},
+		},
+		async (params) => {
+			const { comment } = params;
+
+-			// TODO add check for abusive content
+-			const output = { flagged: false };
++			const getSentiment = airplane.ai.func(
++				'Identify abusive and vulgar comments. Negative opinions are allowed but personal attacks are not.',
++				[
++					{
++						input: 'This is the shit!',
++						output: { flagged: false, sentiment: 'positive' },
++					},
++					{
++						input: 'You are stupid!',
++						output: { flagged: true, sentiment: 'negative' },
++					},
++					{
++						input: 'Burgers are gross',
++						output: { flagged: false, sentiment: 'negative' },
++					},
++				],
++			);
++
++			const { output, confidence } = await getSentiment(comment);
++
++			if (typeof output === 'string') {
++				return { message: 'unparseable input' };
++			}
+
+			const res = await airplane.sql.query(
+				'demo_db',
+				'INSERT INTO comments (comment, flagged) VALUES (:comment, :flagged);',
+				{ args: { comment, flagged: output.flagged } },
+			);
+
+			console.log(res);
+
+-			let message = `Your comment was saved.`;
++			let message = `Your comment was saved. The sentiment was read as ${output.sentiment}.`;
++			if (output.flagged === true && confidence >= 0.75) {
++				message = 'Wow, you kiss your mother with that mouth?';
++			}
+
+			return { message, flagged: output.flagged };
+		},
+	);
+```
+
+Save, then add an abusive comment to make sure it'll get caught (I recommend trying, "you're a doofus").
+
+<Figure caption="Many abusive and vulgar comments will now be automatically flagged by OpenAI">
+  ![the add a comment task showing a result that was flagged, including the
+  custom message we coded
+  earlier](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-12-openai-content-moderation.jpg)
+</Figure>
+
+Less than 25 lines of code, and we've got a pretty okay auto-moderation flow in place — that's pretty impressive!
+
+And again: remember that this is not a _replacement_ for human moderation. It's a tool that can help the moderators work more effectively.
+
+## Deploy your Airplane dashboard
+
+So far we've only been working locally. To make this dashboard available to your team, you'll need to deploy it.
+
+### Add config vars for production
+
+For your tasks to work properly, you'll need to [add a production config var](https://app.airplane.dev/settings/config-vars) with your OpenAI API key. Name it `OPENAI_API_KEY` — save it and you're all set.
+
+### Deploy Airplane tasks and views to production
+
+To deploy, open the terminal and run the following command:
+
+```bash
+airplane deploy
+```
+
+Once the deployment completes, head to https://app.airplane.dev and check the library to see your deployed tasks and views.
+
+## Try the demo app to see the comment moderation flow in action
+
+To provide a way to test the moderation workflow, the demo app for this project [executes Airplane tasks directly via API](https://docs.airplane.dev/api/tasks). You could also set up a [webhook](https://docs.airplane.dev/tasks/webhooks) to run the moderation flow in the background after a comment is added to your production database.
+
+We won't go through exactly how to build this demo app, but the overview is:
+
+- It's an Astro site
+- The site runs in hybrid mode so it can process form submissions
+- Approved comments are loaded by [executing](https://docs.airplane.dev/api/tasks#tasks-execute) the `comments_list_approved` task and [getting its outputs](https://docs.airplane.dev/api/runs#runs-getOutputs)
+- New comments are created by executing the `comment_add` task and returning its outputs
+
+To see the source code, [check out the GitHub repo](https://github.com/learnwithjason/airplane-content-moderation/tree/main/example-app).
+
+For a user on the site, submitting a comment will take a few seconds and then immediate feedback will be sent: either the comment is approved and visible immediately, or it's flagged and the comment form will chide the user for posting abusive or vulgar comments.
+
+<Figure caption="Comments that aren’t flagged can be displayed immediately">
+  ![two frame flow of an acceptable comment being posted and receiving a
+  confirmation
+  message](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-13-comment-approved.jpg)
+</Figure>
+
+<Figure caption="Flagged comments are not displayed and the user is notified">
+  ![two frame flow of an unacceptable comment that is submitted, but not
+  displayed. instead, the user sees a message letting them know the comment was
+  not
+  posted](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/airplane-14-comment-flagged.jpg)
+</Figure>
+
+Congratulations! You've built a complete comment moderation dashboard, including a first line of defense against the most vulgar and abusive comments powered by OpenAI.
+
+## Links and additional resources
+
+- Source code: https://github.com/learnwithjason/airplane-content-moderation
+- [Get started with Airplane](https://github.com/learnwithjason/airplane-content-moderation)
+- More information on the [ethical concerns around AI](https://hai.stanford.edu/news/timnit-gebru-ethical-ai-requires-institutional-and-structural-change)
+- A reminder that [biases in AI can quite literally kill people](https://www.scientificamerican.com/article/racial-bias-found-in-a-major-health-care-risk-algorithm/) if we don’t actively check the results

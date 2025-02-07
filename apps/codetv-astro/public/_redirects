@@ -1,0 +1,11 @@
+# series shortlinks
+/wdc                        /series/web-dev-challenge
+/series/web-dev-challenge   /series/web-dev-challenge/s1
+
+# LWJ episode redirects
+/let-s-learn-minecraft      /series/learn-with-jason/s3
+
+# Old pages
+/partners                   https://partners.lwj.dev
+
+/what-s-new-in-redux-toolkit-2-0  /series/learn-with-jason/s7/what-s-new-in-redux-toolkit-2-0

@@ -1,0 +1,82 @@
+---
+import Search from './search/search.astro';
+---
+
+<footer>
+	<div class="mini-bio">
+		<p>
+			CodeTV is a place for developers to watch programming designed for them.
+			Watch original shows featuring professional developers across all skill
+			levels and career paths.
+		</p>
+		<p>
+			Our mission is to remind developers everywhere that learning, building,
+			and growing a technical skill set can be fun — and it's even more fun if
+			you're doing it with friends.
+		</p>
+	</div>
+
+	<div class="middle">
+		<Search />
+	</div>
+
+	<nav class="links">
+		<a href="https://partners.codetv.dev">Become a partner / sponsor</a>
+		<a href="/newsletter">Get news & updates</a>
+		<a href="https://codetv.link/uses">Gear, software, & more we use</a>
+		<a href="/code-of-conduct">Code of conduct</a>
+		<a href="mailto:info@codetv.dev">info@codetv.dev</a>
+		<a href="https://github.com/codetv-dev/codetv.dev">Source code</a>
+	</nav>
+</footer>
+
+<style>
+	footer {
+		align-items: center;
+		background: var(--gray-800);
+		color: var(--gray-200);
+		display: flex;
+		flex-direction: column;
+		font-size: 0.75rem;
+		gap: 2rem;
+		justify-content: center;
+		padding: 2rem max(calc((100cqw - 1024px) / 2), 5cqw);
+
+		@media (min-width: 800px) {
+			display: grid;
+			grid-template-columns: min(90dvi, 400px) auto max-content;
+		}
+
+		.mini-bio {
+			p + p {
+				margin-block-start: 1rem;
+			}
+		}
+
+		.middle {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+
+		.links {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+
+			@media (min-width: 800px) {
+				align-items: end;
+			}
+
+			a {
+				color: inherit;
+
+				&:is(:hover, :focus, :active) {
+					color: var(--gray-100);
+				}
+			}
+		}
+	}
+</style>

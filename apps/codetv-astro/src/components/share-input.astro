@@ -1,0 +1,61 @@
+---
+export interface Props {
+	label: string;
+	url: string;
+}
+
+const { label, url } = Astro.props;
+---
+
+<label>
+	{label} (click to copy)
+	<input class="share-input" type="text" readonly value={url} />
+	<div class="confirmation">copied!</div>
+</label>
+
+<script>
+	const shareInput = document.querySelector('.share-input') as HTMLInputElement;
+	const confirmation = document.querySelector(
+		'.confirmation',
+	) as HTMLDivElement;
+
+	shareInput.addEventListener('click', async () => {
+		const text = shareInput.value;
+		await navigator.clipboard.writeText(text);
+
+		confirmation.classList.add('clicked');
+		setTimeout(() => {
+			confirmation.classList.remove('clicked');
+		}, 3000);
+	});
+</script>
+
+<style>
+	label {
+		position: relative;
+
+		.confirmation {
+			background: color-mix(in oklch, var(--green-500), var(--white) 35%);
+			border: 1px solid var(--green-600);
+			border-radius: 0.25rem;
+			font-size: 0.75rem;
+			inset: 0;
+			align-content: center;
+			opacity: 0;
+			padding: 0.5rem;
+			position: absolute;
+			text-align: center;
+			transition: all ease-out 500ms;
+			z-index: 10;
+
+			&.clicked {
+				opacity: 1;
+			}
+		}
+
+		input {
+			border: 1px solid var(--gray-200);
+			border-radius: 0.25rem;
+		}
+	}
+</style>

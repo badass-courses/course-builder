@@ -1,0 +1,84 @@
+---
+slug: tech-debt-vs-features
+pubDate: 2023-06-13
+
+title: How I balance tech debt vs. feature development
+description: >
+  Treating velocity and maintainability as separate concerns is a mistake. Your shipping velocity is directly correlated to how maintainable your code is.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/v1683734135/lwj/blog/tech-debt-vs-features.jpg
+  title: How I balance tech debt vs. feature development
+  text: Treating velocity and maintainability as separate concerns is a mistake. Your shipping velocity is directly correlated to how maintainable your code is.
+---
+
+import YouTube from '../../components/youtube.astro';
+
+<YouTube id="VWCWZO62FUw" />
+
+We should treat maintainability as an upstream factor that improves velocity as a downstream effect.
+
+### If we build code that’s easy to understand and maintain, velocity stays high.
+
+I’ve worked on dozens of codebases throughout my career. In some cases, changes took weeks (or even months) and were full of frustration, chasing down other teams to address issues our changes would cause in their code, and other complex shenanigans. In others, changes shipped in hours, with minimum hassle and very little stress or cross-team challenges.
+
+**The specific architecture didn’t matter. What always made the difference was clear, strongly enforced API boundaries.**
+
+The benefit came from:
+
+1. Extremely clear contracts establishing how the tool could be used (the API)
+2. Architectural enforcement that prevented working around those API boundaries (e.g. no way to reach into the internals to create hard-to-track dependencies)
+
+A clear API contract means changes only have to account for the internal code and the API contract itself. As long as the API surface is unchanged, the team only had to think about the internal code instead of reasoning through the entire company codebase for every update.
+
+This meant the code was separated into independent, reasonably sized, fully understandable chunks. Teams could deliver new features quickly because they needed far less context to feel confident and test their work.
+
+## Build for maintainability to boost shipping velocity.
+
+Maintainable code should be easy to delete. [Optimizing for deletion](https://www.netlify.com/blog/2020/10/28/optimize-for-deletion-speed-up-development-without-adding-risk/) makes code easier to refactor, or even fully replace — and it can be hot-swapped without other systems ever noticing or needing to care.
+
+**Reducing the external surface area of the codebase starts as building for maintainability, but it results in much higher velocity.**
+
+For example, your team might have an API written in Node. Later, you may decide to rebuild in Go or Rust to solve a performance bottleneck. As long as the rebuilt API has the same endpoints, arguments, and return values, none of the services consuming that API don’t even need to be made aware of the change — they’ll just see a performance boost once the new version rolls out.
+
+Nothing can reach its internals and touch things if the API stays accurate. You don't have to worry that changing a line of code will break the whole codebase. There's no way for some other piece of code to reach beyond the API boundary.
+
+## Maintainability should be considered a feature of velocity.
+
+By treating maintainability and velocity as separate concerns, it opens the door for the team to say, “We’re going to build fast and not worry about code quality. We’ll come back later and clean up tech debt.”
+
+But later never comes — **it is _extremely_ challenging to halt feature work for long enough to tackle a large-scale refactor solely for tech debt cleanup.** So instead, tech debt piles up, and every additional mess adds drag to the team’s ability to ship.
+
+The team loses momentum. And momentum is everything. Lost momentum can drain morale, which further decreases velocity as well as care for maintainability (”the app’s already a mess, so why worry about clean code?”) — and that’s a vicious cycle that grinds teams to a halt.
+
+## Treat maintainability as a facet of velocity instead of a separate component of the codebase.
+
+In restaurants, cooks are trained to clean as they go. Wipe down surfaces in between steps; wash dishes while waiting for a pot to boil; put equipment away instead of to the side.
+
+All of this reduces clutter and means the kitchen never becomes a giant mess, because the restaurant can’t afford to keep customers waiting while the kitchen shuts down for cleaning mid-service.
+
+When I first started cooking, I struggled with this and pushed back. I’d ask, “Doesn’t this make us way slower?” And the chef would patiently explain that cleaning as part of cooking is what makes us fast. Clean stations reduce mistakes, waste, stress, and much more. We just have to build the habit.
+
+Coding on a team is much the same. **It might _feel_ like fixing tech debt and building features are entirely separate tasks, but if we build the habit of cleaning as we go, we can use every pull request as an opportunity to handle a small amount of tech debt and avoid creating more.**
+
+It’s not easy, but it can be done.
+
+## Change the way you talk about the codebase.
+
+If maintainability and velocity are treated as two sides of the same coin (as opposed to a separate concern), it tends to change the discussion about how we build.
+
+We stop asking, “When will we come back to clean this up?”
+
+Instead, we start asking, “Are we willing to take the velocity hit required to rush this out the door now?”
+
+What used to be a vague “later” becomes a pretty clear “no”.
+
+## Companies that ignore this run into compounding slowdowns.
+
+When a company chooses to ignore maintainability under the false assumption that it will make them faster, the tech debt starts to accumulate. At first, it’s not that noticeable — the features are shipping, the codebase is still small, the team still has all the context because it’s relatively new.
+
+But as time continues, as original team members leave and new team members join, as new tech debt stacks on top of old tech debt, things start to slow down. It’s more and more difficult to build things without breaking other things, and velocity grinds to a halt.
+
+**Momentum is everything in a company. If you have momentum, it allows for faster learning, quicker adjustment, tighter feedback loops, and overall healthier companies and products.**
+
+Maintainability enables velocity, and velocity creates momentum. If you want to build a culture of shipping fast, architect for maintainability and build the habit of cleaning as you go.

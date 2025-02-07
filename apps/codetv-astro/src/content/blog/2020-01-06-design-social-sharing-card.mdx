@@ -1,0 +1,130 @@
+---
+slug: design-social-sharing-card
+pubDate: 2020-01-06
+
+title: Design a Flexible Social Card Template for Sharing Content
+description: >
+  Creating eye-catching social sharing images doesn’t have to take a ton of time. In this post, learn how to create a reusable template for sharing your posts.
+
+share:
+  title: Design Your Own Social Sharing Image
+  text: Use this Figma template to create eye-catching social sharing images!
+---
+
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+When sharing content on Twitter, Facebook, and other social media platforms, adding an eye-catching image is critical to making sure your content doesn't get lost in the timeline. In this post, we'll look at a strategy for **designing a flexible, reusable template for sharing posts** that helps brand your content without requiring you to create a bespoke image for each post.
+
+<Aside>
+
+**Heads up!** I’ve turned the template in this article into a [Figma template](https://res.cloudinary.com/jlengstorf/raw/upload/v1578342420/social-sharing-cards/learnwithjason-social-card-template.fig). Download it to create your own custom social sharing card!
+
+</Aside>
+
+## Define a template for social media sharing images
+
+In order to **create a reusable template for our social sharing images**, we need to create a template that will work for any post we create.
+
+For our template, we want to include:
+
+1. **Our logo** (or photo) — showing our brand helps associate us with our content.
+2. **Post title** — this should be limited by the length that Google will show in search results. We can use an [SEO snippet generator](https://app.sistrix.com/en/serp-snippet-generator) to check the length of our post titles.
+3. **Tagline** — this can be any additional text we want to show on the sharing image. In this example, we'll use the post tags.
+
+Our template will put the branding on the left, with the title and tagline on the right, like this:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Template with areas for a logo at the left, title at the top-right, and tagline at the bottom-right.](/images/template.jpg)
+
+</Figure>
+
+This means that we need _two_ text overlays — and it needs to look good with any length of title and tagline.
+
+## Position the heading on the image
+
+Let's start by getting the heading in the right place on our image.
+
+**Because the title needs to be near the tagline no matter what the length of either, we want the title to always be positioned at the bottom of its available area.** We'll do this using the gravity transform, setting it to south (for "bottom") and west (for left).
+
+Cloudinary does alignment using directions (i.e. north, south, west, east) instead of calling it top, bottom, left, right — this can be a little confusing the first time you use it if you're not ready for it.
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Arrows showing the alignment of the title area.](/images/template-title-long.jpg)
+
+</Figure>
+
+This means that the title will still align well with the tagline, even when the title is short:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Arrows showing the aligment of the title area with a shorter title.](/images/template-title-short.jpg)
+
+</Figure>
+
+Next, we'll set up the tagline.
+
+## Position the tagline on the image
+
+The tagline should be near the title no matter its length, so we'll use north (for "top") and west (for "left") as the gravity settings.
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Arrows showing the alignment of the tagline area.](/images/template-tagline-long.jpg)
+
+</Figure>
+
+This means that even short titles and taglines still look right in the image:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Arrows showing the aligment of the tagline area with a shorter tagline.](/images/template-tagline-short.jpg)
+
+</Figure>
+
+With this setup, we can use any combination of title and tagline that fits within their respective areas and it'll appear properly aligned on the card.
+
+## The image template can be anything as long as it leaves the text area clear
+
+Now that we have our text overlays positioned, our sharing image can look any way we want — the only requirement is that the text areas stay clear and have [enough contrast](https://webaim.org/resources/contrastchecker/) to be legible.
+
+The simplest possible image might just be a white background with our logo:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Template showing placeholder title and tagline with a box around the logo area.](/images/template-simple-short.jpg)
+
+</Figure>
+
+For my site, adding the logo looks like this:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Template replacing the logo area with the Learn With Jason logo.](/images/template-logo-short.jpg)
+
+</Figure>
+
+This already looks pretty good! However, I wanted to add a little something extra to make it look more branded, so I put in top and bottom borders and a subtle background pattern, which ended up here:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![The template with additional styles applied.](/images/template-complete-short.jpg)
+
+</Figure>
+
+A longer title and tagline still looks right in this template:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![The template with additional styles using a longer title and tagline.](/images/template-complete-long.jpg)
+
+</Figure>
+
+This looks pretty good, if I do say so myself. 😎
+
+## What to do next
+
+- Use the Figma template to [design your own social sharing card](https://res.cloudinary.com/jlengstorf/raw/upload/v1578342420/social-sharing-cards/learnwithjason-social-card-template.fig)
+- Use Cloudinary to [automatically generate your social sharing cards](/blog/auto-generate-social-image/)

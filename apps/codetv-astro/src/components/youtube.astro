@@ -1,0 +1,14 @@
+---
+import Figure from './figure.astro';
+import YoutubeVideoPlayer from './youtube-video-player.astro';
+
+export interface Props {
+	id: string;
+}
+
+const { id, ...props } = Astro.props;
+---
+
+<Figure aspectRatio={9 / 16} {...props}>
+	<YoutubeVideoPlayer youtube_id={id} />
+</Figure>

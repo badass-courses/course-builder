@@ -1,0 +1,340 @@
+---
+slug: auto-generate-social-image
+pubDate: 2020-01-06
+
+title: Automatically Generate Social Images for Blog Posts
+description: >
+  Make sure your content stands out in social media timelines by automatically generating social media sharing cards for your blog posts.
+
+share:
+  title: Automatic Social Images With JavaScript
+  text: Custom images for sharing on Twitter, Facebook, and more!
+---
+
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+Creating sharing images for social media is critical if you want your content to stand out, but a lot of content — for example, code-related blog posts — don't always have great visuals to share. If our Twitter cards don't have images, they get lost in the noise — but at the same time, a random image from [Unsplash](https://unsplash.com/) doesn't really communicate what the post contains, either.
+
+The need to create a social media image creates extra chores before publishing: in addition to writing the post, you now need to go find (or create) an image for sharing. It may not be a ton of work, but it's still one more hurdle between you and a published post.
+
+Fortunately, tools exist that allow us to **automatically generate social media images**. In this post, we'll use [Cloudinary](https://jason.energy/cloudinary), which combines asset hosting with APIs to modify media. This requires a Cloudinary account — the free tier should be more than enough for most personal sites.
+
+<Aside>
+
+**Heads up!** The code in this article is now [available as an npm package](https://www.npmjs.com/package/@jlengstorf/get-share-image).
+
+</Aside>
+
+## Prior art and alternatives.
+
+Before we start, there are a few other options for generating social sharing images out there. These require a little more setup, but they're built completely from open source tools.
+
+- [Chris Biscardi](https://twitter.com/chrisbiscardi) created [`gatsby-plugin-printer`](https://www.npmjs.com/package/gatsby-plugin-printer), which can be used to generate social media images as part of the build process if you're using Gatsby. (The docs are limited, so you'll probably want to look at the [source of Chris's website](https://github.com/ChristopherBiscardi/christopherbiscardi.github.com) for how this works.)
+- [Shawn Wang](https://twitter.com/swyx) wrote a [post detailing options for creating social media images](https://www.swyx.io/writing/jamstack-og-images/), including a DIY solution at the bottom.
+
+For me, this was more than I wanted to take on and maintain, so I opted for a (free) hosted service — Cloudinary — that lets me forget about it entirely after setting it up the first time.
+
+<Aside>
+
+**Heads up!** If this article helps you, you can [sign up for Cloudinary with this link](https://jason.energy/cloudinary) — you’ll get a free Cloudinary account, and I get a little bonus cash to help cover the costs of running this site.
+
+</Aside>
+
+## Make a plan: what is the desired outcome?
+
+Before we get started, we need to know where we're headed — so let's [make a plan](https://lengstorf.com/mise-en-place/) and identify our outcomes. By the end of this article, we want to have a utility function that we can call to generate a social media-friendly image URL that will be unique to our post and help it stand out on people's timelines.
+
+It should look something like this:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![Social sharing card with the title “Deploy Your First Serverless Function Using JavaScript” and the tagline “#front-end #serverless #jamstack”.](https://res.cloudinary.com/jlengstorf/image/upload/w_1280,h_669,c_fill,q_auto,f_auto/w_760,c_fit,co_rgb:232129,g_south_west,x_480,y_254,l_text:lwj-title.otf_64_line_spacing_-10:Deploy%20Your%20First%20Serverless%20Function%20Using%20JavaScript/w_760,c_fit,co_rgb:232129,g_north_west,x_480,y_445,l_text:lwj-tagline.otf_48:%23front-end%20%23serverless%20%23jamstack/lwj/blog-post-card)
+
+</Figure>
+
+<Aside>
+
+**Heads up!** I wrote a post about [how to design a social sharing card](/blog/design-social-sharing-card/) that goes over the choices made in this design to make it flexible enough to handle auto-generated text. Give it a read if you're interested in the design process or want to create your own social sharing card.
+
+</Aside>
+
+## Write a function to dynamically generate cards
+
+Now that we know how to build the Cloudinary URLs to create custom social sharing cards, we can write a utility function that builds them for us.
+
+To start, create a new file and add a simple function declaration:
+
+```js
+export default function generateSocialImage() {
+  // TODO write our function
+}
+```
+
+Our image URL has four major components:
+
+1. The image transforms
+2. The title text overlay configuration
+3. The tagline text overlay configuration
+4. The sharing image template's public ID
+
+Each of those configuration options should have good defaults, but allow us to customize if we want.
+
+## Set up the base dimensions and configuration for the social card template
+
+Our first step is to create a configuration object that will be passed to the function. We'll set defaults where possible to give a good outcome without needing to tweak the settings.
+
+Then we'll create our first transformation block, which are the [Cloudinary transforms](https://cloudinary.com/documentation/image_transformation_reference?ap=lwj) that set the dimensions, cropping, quality, and format of the final image:
+
+```js
+export default function generateSocialImage({
+  imageWidth = 1280,
+  imageHeight = 669,
+}: Config): string {
+  // configure social media image dimensions, quality, and format
+  const imageConfig = [
+    `w_${imageWidth}`,
+    `h_${imageHeight}`,
+    'c_fill',
+    'q_auto',
+    'f_auto',
+  ].join(',');
+
+  // TODO finish the function
+}
+```
+
+This places each transform option for the sharing image template into an array, allowing the width and height to optionally be set through the config, and then joined using commas to create a URL-ready transformation.
+
+<Aside>
+
+**NOTE:** We could also do this by creating a single string, but it gets hard to read with more complex transformations. This is a stylistic choice, so feel free to refactor this code however you like.
+
+</Aside>
+
+We can repeat that process for the title and tagline transformation blocks, adding the transformation configurations and the config arguments to make them customizable.
+
+```diff
+  export default function generateSocialImage({
++   title,
++   tagline,
++   titleFont = 'arial',
++   titleExtraConfig = '',
++   taglineExtraConfig = '',
++   taglineFont = 'arial',
+    imageWidth = 1280,
+    imageHeight = 669,
++   textAreaWidth = 760,
++   textLeftOffset = 480,
++   titleBottomOffset = 254,
++   taglineTopOffset = 445,
++   textColor = '000000',
++   titleFontSize = 64,
++   taglineFontSize = 48,
+  }) {
+    // configure social media image dimensions, quality, and format
+    const imageConfig = [
+      `w_${imageWidth}`,
+      `h_${imageHeight}`,
+      'c_fill',
+      'q_auto',
+      'f_auto',
+    ].join(',');
+
++   // configure the title text
++   const titleConfig = [
++     `w_${textAreaWidth}`,
++     'c_fit',
++     `co_rgb:${textColor}`,
++     'g_south_west',
++     `x_${textLeftOffset}`,
++     `y_${titleBottomOffset}`,
++     `l_text:${titleFont}_${titleFontSize}${titleExtraConfig}:${encodeURIComponent(
++       title,
++     )}`,
++   ].join(',');
++
++   // configure the tagline text
++   const taglineConfig = [
++     `w_${textAreaWidth}`,
++     'c_fit',
++     `co_rgb:${textColor}`,
++     'g_north_west',
++     `x_${textLeftOffset}`,
++     `y_${taglineTopOffset}`,
++     `l_text:${taglineFont}_${taglineFontSize}${taglineExtraConfig}:${encodeURIComponent(
++       tagline,
++     )}`,
++   ].join(',');
++
+    // TODO finish the function
+  }
+```
+
+Only the `title` and `tagline` config options are required — everything else has defaults set to match the [social sharing card template](https://res.cloudinary.com/jlengstorf/raw/upload/v1578342420/social-sharing-cards/learnwithjason-social-card-template.fig) designed in a [companion post](/blog/design-social-sharing-card/).
+
+<Aside>
+
+**Heads up!** If you’ve never seen text overlays before, I wrote a post with more information on [how text overlays work in Cloudinary](/blog/add-text-overlay-cloudinary/). Give that a read if the configuration code is confusing.
+
+</Aside>
+
+Next, we need to add these three configuration blocks into a valid Cloudinary URL and add the version (if one is provided) and the image public ID:
+
+```diff
+  export default function generateSocialImage({
+    title,
+    tagline,
++   cloudName,
++   imagePublicID,
++   cloudinaryUrlBase = 'https://res.cloudinary.com',
++   version = null,
+    titleFont = 'arial',
+    titleExtraConfig = '',
+    taglineExtraConfig = '',
+    taglineFont = 'arial',
+    imageWidth = 1280,
+    imageHeight = 669,
+    textAreaWidth = 760,
+    textLeftOffset = 480,
+    titleBottomOffset = 254,
+    taglineTopOffset = 445,
+    textColor = '000000',
+    titleFontSize = 64,
+    taglineFontSize = 48,
+  }: Config): string {
+    // configure social media image dimensions, quality, and format
+    const imageConfig = [
+      `w_${imageWidth}`,
+      `h_${imageHeight}`,
+      'c_fill',
+      'q_auto',
+      'f_auto',
+    ].join(',');
+
+    // configure the title text
+    const titleConfig = [
+      `w_${textAreaWidth}`,
+      'c_fit',
+      `co_rgb:${textColor}`,
+      'g_south_west',
+      `x_${textLeftOffset}`,
+      `y_${titleBottomOffset}`,
+      `l_text:${titleFont}_${titleFontSize}${titleExtraConfig}:${encodeURIComponent(
+        title,
+      )}`,
+    ].join(',');
+
+    // configure the tagline text
+    const taglineConfig = [
+      `w_${textAreaWidth}`,
+      'c_fit',
+      `co_rgb:${textColor}`,
+      'g_north_west',
+      `x_${textLeftOffset}`,
+      `y_${taglineTopOffset}`,
+      `l_text:${taglineFont}_${taglineFontSize}${taglineExtraConfig}:${encodeURIComponent(
+        tagline,
+      )}`,
+    ].join(',');
+
++   // combine all the pieces required to generate a Cloudinary URL
++   const urlParts = [
++     cloudinaryUrlBase,
++     cloudName,
++     'image',
++     'upload',
++     imageConfig,
++     titleConfig,
++     taglineConfig,
++     version,
++     imagePublicID,
++   ];
++
++   // remove any falsy sections of the URL (e.g. an undefined version)
++   const validParts = urlParts.filter(Boolean);
++
++   // join all the parts into a valid URL to the generated image
++   return validParts.join('/');
+  }
+```
+
+Because the `version` might be null, we run a quick filter to remove any falsy values (like `null`) from the array, then join all parts using a forward slash (`/`) to combine everything into a valid URL.
+
+Now we can use our template to create custom title cards!
+
+## Create custom sharing cards using the helper function
+
+I've uploaded my template to Cloudinary, and the URL I got back is:
+
+```md
+https://res.cloudinary.com/jlengstorf/image/upload/v1578253116/lwj/blog-post-card.jpg
+```
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![The social sharing card template with no text.](https://res.cloudinary.com/jlengstorf/image/upload/v1578253116/lwj/blog-post-card.jpg)
+
+</Figure>
+
+The defaults in our function are based on the template we designed earlier, so with no changes we should end up pretty close to the desired outcome. Let's start by plugging in our cloud name, image public ID, and the title and tagline we want to display:
+
+```js
+const socialImage = getShareImage({
+  title: 'This Is a Post With an Automatically Generated Social Sharing Card',
+  tagline: 'Writing blog posts is fun when the robots do some of the work!',
+  cloudName: 'jlengstorf',
+  imagePublicID: 'lwj/blog-post-card',
+});
+
+console.log(socialImage);
+```
+
+If we visit the URL this produces, we'll see the social card generated with the defaults:
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![The social sharing card with the defined title and tagline using default settings.](https://res.cloudinary.com/jlengstorf/image/upload/w_1280,h_669,c_fill,q_auto,f_auto/w_760,c_fit,co_rgb:000000,g_south_west,x_480,y_254,l_text:arial_64:This%20Is%20a%20Post%20With%20an%20Automatically%20Generated%20Social%20Sharing%20Card/w_760,c_fit,co_rgb:000000,g_north_west,x_480,y_445,l_text:arial_48:Writing%20blog%20posts%20is%20fun%20when%20the%20robots%20do%20some%20of%20the%20work!/lwj/blog-post-card)
+
+</Figure>
+
+Not bad!
+
+However, I want to use a custom font, tweak the color a bit, and — because I can’t help myself — make a minor adjustment to the line-height of the title. To do that, let's add a few more thing to the config:
+
+```diff
+  const socialImage = getShareImage({
+    title: 'This Is a Post With an Automatically Generated Social Sharing Card',
+    tagline: 'Writing blog posts is fun when the robots do some of the work!',
+    cloudName: 'jlengstorf',
+    imagePublicID: 'lwj/blog-post-card',
++   titleFont: 'lwj-title.otf',
++   titleExtraConfig: '_line_spacing_-10',
++   taglineFont: 'lwj-tagline.otf',
++   textColor: '232129',
+  });
+
+  console.log(socialImage);
+```
+
+Now the URL shows us a more customized-looking sharing card!
+
+<Figure credit="Jason Lengstorf" creditType="Design">
+
+![The social sharing card with the defined title and tagline using custom fonts and other settings.](https://res.cloudinary.com/jlengstorf/image/upload/w_1280,h_669,c_fill,q_auto,f_auto/w_760,c_fit,co_rgb:232129,g_south_west,x_480,y_254,l_text:lwj-title.otf_64_line_spacing_-10:This%20Is%20a%20Post%20With%20an%20Automatically%20Generated%20Social%20Sharing%20Card/w_760,c_fit,co_rgb:232129,g_north_west,x_480,y_445,l_text:lwj-tagline.otf_48:Writing%20blog%20posts%20is%20fun%20when%20the%20robots%20do%20some%20of%20the%20work!/lwj/blog-post-card)
+
+</Figure>
+
+That's more like it! We now get an automatically generated social card that has my branding on it — this will save me a lot of time as I write more content, and it looks the same as it would if I opened Figma and filled out the template manually.
+
+## What to do next
+
+At this point, you have all the tools you need to add automatically generated social media sharing cards to your own blog!
+
+- Learn how to [design a social media sharing card](/blog/design-social-sharing-card/)
+- Read the [Cloudinary docs on text overlays](https://cloudinary.com/documentation/image_transformations?ap=lwj#adding_text_captions)
+- Use [the Figma template](https://res.cloudinary.com/jlengstorf/raw/upload/v1578342420/social-sharing-cards/learnwithjason-social-card-template.fig) to create your own design
+- Install the [npm package for automatically generating social sharing images](https://www.npmjs.com/package/@jlengstorf/get-share-image) to add this function to your site
+- See the [source code for this site](https://github.com/jlengstorf/learnwithjason.dev/blob/070468828e8c758d150a8d573fd471d786278243/packages/%40jlengstorf/gatsby-theme-code-blog/src/gatsby-theme-blog-core/components/post.js#L55-L64) to see how to use the package in production
+
+After you’ve implemented this, [send me a note on Twitter](https://twitter.com/jlengstorf) so I can see what you come up with!

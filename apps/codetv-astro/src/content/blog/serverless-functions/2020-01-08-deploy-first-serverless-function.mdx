@@ -1,0 +1,143 @@
+---
+slug: serverless-functions/deploy-first-serverless-function
+pubDate: 2020-01-08
+
+title: Deploy Your First Serverless Function Using JavaScript
+description: >
+  With serverless functions, the JavaScript powering our front-ends enables us to add back-end logic. Deploy your first serverless function in this tutorial!
+
+share:
+  title: Deploy Your First Serverless Function Using JavaScript
+  text: Add more power to your web apps quickly and with less complexity.
+---
+
+import Aside from '../../../components/aside.astro';
+import Figure from '../../../components/figure.astro';
+
+**Serverless functions are a powerful solution for adding additional functionality to Jamstack sites.** In this post, we'll step through creating and deploying your first serverless function using [Netlify Functions](https://www.netlify.com/products/functions/?utm_source=learnwithjason&utm_medium=first-serverless-function-jl&utm_campaign=devex).
+
+## Write your first serverless function
+
+Our first step is to write the serverless function itself. In an empty folder, create a folder called `functions`, and create a new file called `my-first-function.js` inside with the following code:
+
+```js
+exports.handler = async () => ({
+  statusCode: 200,
+  body: 'boop',
+});
+```
+
+That's all there is to it — you've just written your first serverless function! 🎉 The rest of this article is about getting this function online; we're done coding now.
+
+### What are the requirements of a serverless function?
+
+There are three required components in a serverless function:
+
+1. The file needs to export a function named `handler` — this is what `exports.handler` is doing on line 1 above
+2. The function needs to return an object with a `statusCode` matching a valid HTTP response code
+3. The response object also needs to include a `body` value, which is plain text by default
+
+## Configure your project for deployment to Netlify
+
+With Netlify Functions, we only need two lines of configuration, which we need to save in `netlify.toml` at the root of the folder:
+
+```toml
+[build]
+  functions = "functions"
+```
+
+This tells Netlify that our functions live in the `functions` folder.
+
+<Aside>
+
+**Heads up!** Check the docs for details on [how Netlify config files work](https://docs.netlify.com/configure-builds/file-based-configuration/?utm_source=learnwithjason&utm_medium=first-serverless-function-jl&utm_campaign=devex#continuous-deployment).
+
+</Aside>
+
+### Create the repo and push to GitHub
+
+At this point, we‘re ready to get this function on the internet!
+
+Create a new repo on GitHub, then add and push our code to it:
+
+```bash
+# add your new repo as an origin
+# IMPORTANT: make sure to use your own username/repo name!
+git remote add origin git@github.com:yourusername/yourreponame.git
+
+# add all the files
+git add -A
+
+# commit the files
+git commit -m 'my first serverless function'
+
+# push the changes to GitHub
+git push -u origin master
+```
+
+<Aside warning>
+
+**IMPORTANT:** make sure to use your own username and repo name when you add the origin above!
+
+</Aside>
+
+### Create a new Netlify site
+
+You can create your site through the Netlify dashboard or through the CLI. The CLI is really convenient and powerful, so let's use that for this site.
+
+```bash
+# install the Netlify CLI globally
+npm install --global netlify-cli
+
+# log into your Netlify account
+netlify login
+
+# initialize a new site
+netlify init
+```
+
+This command will set up a new Netlify site in your account connected to the GitHub repo we just created.
+
+It will ask several questions:
+
+1. **What would you like to do?** — choose "Create & configure a new site"
+2. **Team** — choose which Netlify team you want to add this site to
+3. **Site name (optional)** — choose a name for your site, or press enter to get a randomly-generated name
+4. **Your build command** — press enter to leave this blank; we don't need it for running functions
+5. **Directory to deploy** — hit backspace to remove the suggested value, then press enter to leave it blank
+
+<Figure
+  caption="The Netlify init command guides us through taking a new site live."
+  border={false}
+>
+
+![Screenshot of terminal output from running netlify init with the above settings.](/images/netlify-init.png)
+
+</Figure>
+
+Once the site has been created, we can grab the URL from the terminal output. In the above screenshot, the generated site name was:
+
+```md
+https://confident-nightingale-4e5a0b.netlify.com/
+```
+
+By default, Netlify functions live at the URL endpoint `/.netlify/functions/<function-name>` — this is to minimize the chances that the route will conflict with other routes on your site. (We can [customize our function URLs with redirects](https://docs.netlify.com/routing/redirects/?utm_source=learnwithjason&utm_medium=first-serverless-function-jl&utm_campaign=devex#continuous-deployment), if we want to.)
+
+Our function file is called `my-first-function.js`, so it will be accessible on the web at [https://confident-nightingale-4e5a0b.netlify.com/.netlify/functions/my-first-function](https://confident-nightingale-4e5a0b.netlify.com/.netlify/functions/my-first-function). Go ahead and click that link — it works!
+
+<Figure
+  caption="Browser showing “boop” returned from our serverless function."
+  border={false}
+>
+
+![Browser showing the “boop” returned by the serverless function.](/images/serverless-boop-function.png)
+
+</Figure>
+
+That's all there is to it! You've successfully deployed your first serverless function to Netlify.
+
+## What to do next
+
+- [See the full collection of serverless function examples](/blog/serverless-functions/overview/)
+- Read the [Netlify CLI docs on setting up continuous deployment](https://docs.netlify.com/cli/get-started/?utm_source=learnwithjason&utm_medium=first-serverless-function-jl&utm_campaign=devex#continuous-deployment)
+- Learn how to [use redirects in Netlify](https://docs.netlify.com/routing/redirects/?utm_source=learnwithjason&utm_medium=first-serverless-function-jl&utm_campaign=devex#continuous-deployment)

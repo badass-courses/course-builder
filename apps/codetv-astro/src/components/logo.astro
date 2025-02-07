@@ -1,0 +1,78 @@
+---
+
+---
+
+<svg
+	viewBox="0 0 109 28"
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
+	class="drift-glitch"
+>
+	<use class="logo-c" href="#codetv-logo"></use>
+	<use class="logo-m" href="#codetv-logo"></use>
+	<use class="logo-y" href="#codetv-logo"></use>
+</svg>
+
+<style>
+	svg {
+		inline-size: min(90dvi, 180px);
+	}
+
+	.drift-glitch {
+		opacity: 0.8;
+
+		.logo-c {
+			animation: 7s c steps(2, jump-end) infinite;
+			fill: #0ff;
+			x: 1;
+			y: 0;
+		}
+
+		.logo-m {
+			animation: 13s m steps(2, jump-end) infinite;
+			fill: #ff0;
+			x: 0;
+			y: 1;
+		}
+
+		.logo-y {
+			animation: 11s y steps(2, jump-end) infinite;
+			fill: #f0f;
+			x: 1;
+			y: 2;
+		}
+	}
+
+	@keyframes c {
+		98% {
+			x: 1;
+			y: 0;
+		}
+		100% {
+			x: 0;
+			y: 0;
+		}
+	}
+
+	@keyframes m {
+		98% {
+			x: 0;
+			y: 1;
+		}
+		100% {
+			x: 1;
+			y: 2;
+		}
+	}
+
+	@keyframes y {
+		98% {
+			x: 1;
+			y: 2;
+		}
+		100% {
+			x: 0;
+			y: 1;
+		}
+	}
+</style>

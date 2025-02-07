@@ -1,0 +1,26 @@
+---
+export interface Props {
+	youtube_id: string;
+	title?: string;
+}
+
+const { youtube_id, title } = Astro.props;
+---
+
+<lite-youtube
+	videoid={youtube_id}
+	playlabel={title ? `Play: ${title}` : undefined}></lite-youtube>
+
+<script>
+	import 'lite-youtube-embed';
+	import 'lite-youtube-embed/src/lite-yt-embed.css';
+</script>
+
+<style>
+	lite-youtube {
+		aspect-ratio: 16 / 9;
+		block-size: 100cqb;
+		margin-inline: auto;
+		max-inline-size: 100dvi;
+	}
+</style>

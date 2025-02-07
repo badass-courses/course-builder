@@ -1,0 +1,842 @@
+---
+slug: react-sms-to-database-convex-twilio-clerk
+pubDate: 2023-08-22
+
+title: Handle webhooks, user auth, database, & file storage with Convex
+description: >
+  What does it take to process incoming SMS with auth, image storage, and a real-time database? With Convex, you can add it to your app with < 200 lines of code.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/convex-http-actions-v2.jpg
+  title: Handle webhooks, user auth, database, & file storage with Convex
+  text: >
+    What does it take to process incoming SMS with auth, image storage, and a real-time database? With Convex, add it to your app with < 200 lines of code.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="gR9ghXOyIQ4" />
+
+<Aside>
+  **Want to jump to the end?** [Check out the source code on
+  GitHub.](https://github.com/learnwithjason/convex-twilio-text-log)
+</Aside>
+
+I had a wild idea recently: what if I wanted to send a text message to my app and have it show up on the web? Could I send images, too? How hard would that be to build?
+
+My gut instinct was that it's possible, but it would be really complicated. I'd need to:
+
+- Have a way to turn incoming SMS messages into code
+- Set up a webhook to handle those incoming SMS messages
+- Validate them to make sure they're real
+- Set up user auth on the app
+- Set up a database to store the messages
+- Set up file storage for incoming images
+
+That feels like a lot, right?
+
+But modern dev tooling is, like, _good_ good. [Twilio](https://www.twilio.com/) makes handling incoming SMS extremely approachable. [Clerk](https://clerk.com/) makes user auth so fast to set up that it feels like cheating. And [Convex](https://lwj.dev/convex) handles literally everything else on the requirement list, from storing data to exposing webhooks to storing images.
+
+So let's build it. **Today we'll build a React + TypeScript app that you can send text and images to via SMS, and we'll power it all with Convex, Twilio, and Clerk.**
+
+<Aside variant="heart">
+  Huge thanks to [Convex](https://lwj.dev/convex) for sponsoring this tutorial.
+</Aside>
+
+## Set up your dev environment
+
+For this app, we'll focus on the database specifically. Clone the `start` branch of the demo app's repo to get an app that's working except for data.
+
+```bash
+# clone the start branch of the repo using the GitHub CLI
+gh repo clone learnwithjason/convex-twilio-text-log -- -b start
+
+# move into the repo
+cd convex-twilio-text-log/
+
+# install dependencies
+npm i
+```
+
+<Aside>
+  **NOTE:** This app is built on [Vite's React + TypeScript
+  template](https://vitejs.dev/guide/).
+</Aside>
+
+### Set up Clerk
+
+This app uses [Clerk](https://clerk.com) to allow users to create accounts and log in, so before we can start developing we'll need a Clerk account and a publishable key.
+
+1. Sign up or sign in at https://clerk.com
+2. Click the "add application" button
+3. Give your new application a name (e.g. "Snack Tracker")
+4. Under "how will your users sign in?", choose _only_ "phone number" — our whole app is built around texting, so this is important!
+5. Click create application
+6. On the next screen, copy your publishable key
+
+Back in your code, rename `.env.local.EXAMPLE` to `.env.local` and paste the publishable key as the value of `VITE_CLERK_PUBLISHABLE_KEY`.
+
+### Start the dev server
+
+Once the Clerk publishable key is saved, start the dev server.
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser to see the app.
+
+<Figure caption="the login screen of the demo app">
+  ![the login screen of the demo app. it displays a "sign up" and "sign in"
+  button as well as a description of why an account is
+  needed](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-01-local-dev.jpg)
+</Figure>
+
+Sign up with your phone number and you'll see the logged-in view of the app dashboard.
+
+<Figure caption="the empty state dashboard after creating an account">
+  ![the demo app dashboard with no messages. it displays instructions on how to
+  create
+  entries](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-02-logged-in.jpg)
+</Figure>
+
+### Get a Twilio phone number to accept incoming SMS messages
+
+For this app to work, we need a way to relay incoming SMS messages to our code. Twilio makes this possible. If you've never used Twilio before, you can get a [free trial and a trial number for testing](https://www.twilio.com/try-twilio). If you already use Twilio, setting up a new phone number costs $1.15/month (in the US at the time of writing).
+
+To set up your Twilio number:
+
+- Go to the [Twilio console](https://console.twilio.com)
+- Find "phone numbers" either in the left-hand sidebar or by searching
+- Create a new number
+  - If you're in a free trial, click "get a trial number"
+  - If you're not, click "buy a number"
+- On the next screen, choose your country, make sure "SMS" and "MMS" are checked under Capabilities, and choose any number.
+- Buy the number and copy it
+
+Open `.env.local` in your code and add the phone number, including country code, as the value of `VITE_TWILIO_PHONE_NUMBER`. It should be formatted like this:
+
+```bash
+VITE_TWILIO_PHONE_NUMBER="+1 555-555-5555"
+```
+
+<Aside>
+  **NOTE:** This format isn't _strictly_ required, but I tested that it works in
+  links, so if you want to play it safe and avoid errors, match this format.
+</Aside>
+
+Save and you'll see your Twilio number displayed in the app.
+
+<Figure caption="after adding the Twilio number, the instructions are complete">
+  ![the same app dashboard screenshot as above, except now the Twilio phone
+  number is prominently
+  displayed](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-03-twilio-phone-number.jpg)
+</Figure>
+
+At this point, you're ready to add a database!
+
+## Set up Convex
+
+Now that the app is up and running, let's add a database to store messages sent by users and the webhook that will handle new incoming messages.
+
+Install Convex in the app by adding the `convex` package:
+
+```shell
+npm i convex
+```
+
+Next, start the Convex dev process in a second terminal window (the app's dev process should still be running) to initialize Convex for your app:
+
+```bash
+npx convex dev
+```
+
+- Choose "create a new project"
+- If necessary, you'll be prompted to create an account or log in
+- Choose which team the project belongs to
+- Give the project a name (e.g. `snack-tracker`)
+
+This creates a new folder called `convex` in the app, which is where all of the schema, data access, and HTTP actions for the app will be created and managed.
+
+## Create a database table to store messages
+
+Before we do anything else, let's define a schema for our messages. Create a new file at `convex/schema.ts` and add the following code:
+
+```ts
+import { defineSchema, defineTable } from 'convex/server';
+import { v } from 'convex/values';
+
+export const MessageFields = {
+  text: v.string(),
+  sender: v.string(),
+  image: v.union(
+    v.object({
+      id: v.string(),
+      url: v.union(v.string(), v.null()),
+    }),
+    v.null()
+  ),
+};
+
+export default defineSchema({
+  messages: defineTable(MessageFields).index('by_sender', ['sender']),
+});
+```
+
+<Aside>
+  **NOTE:** Creating a schema is optional in Convex, but recommended. Adding a
+  schema gives the app TypeScript checks, as well as runtime type checking.
+</Aside>
+
+Exporting `MessageFields` separately means we can import that to use as a TypeScript type anywhere we need it in our app.
+
+Using `defineSchema`, we pass in an object that describes all the tables in our app. We pass `MessageFields` to the `defineTable` function to use that schema for our messages, and to speed up searching by sender (which will be how we query for messages), we add an index to the `messages` table on the `sender` field.
+
+After saving, Convex will automatically update and create the `messages` table, which you can view in [the Convex dashboard](https://dashboard.convex.dev).
+
+<Figure caption="the Convex dashboard allows viewing and editing entries in your database via UI">
+  ![the Data tab of the Convex dashboard showing an empty messages
+  table](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-04-messages-table.jpg)
+</Figure>
+
+## Connect Convex to Clerk auth
+
+This app requires a user to be logged in to view posts, and they're only able to see their own posts. How this translates to code is that we need to get the currently logged in user from Clerk and use that as part of our query to Convex.
+
+<Aside>
+  **NOTE:** The reason we only allow seeing your own posts in this tutorial is
+  that everything coming in is unmoderated, so this protects people from seeing
+  anything problematic uploaded by others. If you intend to make posts visible
+  to other users, make sure you've got a moderation plan in place!
+</Aside>
+
+Fortunately, [Clerk and Convex have a first-class integration](https://docs.convex.dev/auth/clerk), so we're able to do this with a few clicks and a few lines of code.
+
+### Configure Clerk to integrate with Convex
+
+Head to the [Clerk dashboard](https://dashboard.clerk.com/) and choose your app.
+
+- Click "JWT Templates" from the left-hand nav
+- Click "New template"
+- Choose Convex
+- Copy the "Issuer" URL that appears on the next screen
+- Click "apply changes"
+
+### Add auth config to Convex
+
+With the issuer URL copied, create a new file at `convex/auth.config.js` and add the following:
+
+```ts
+export default {
+  providers: [
+    {
+      domain: 'YOUR_CLERK_ISSUER_URL',
+      applicationID: 'convex',
+    },
+  ],
+};
+```
+
+Save and Convex will auto-detect the new config and update.
+
+This tells Convex to use Clerk's configuration for auth, and will give us access to the currently logged in user within our Convex calls.
+
+## Add a Convex provider to the app
+
+To use Convex in the app UI, we need to add a provider. Since we're using Clerk for auth, we'll use a special provider from Convex called `ConvexProviderWithClerk`.
+
+The provider accepts a `client`, which we need to configure with our Convex URL. To get this, go to the Convex dashboard, choose your project, and navigate to settings. Click the toggle to show your development credentials and copy the Deployment URL.
+
+<Figure caption="the deployment URL is initially hidden behind a toggle">
+  ![the deployment settings screen on the Convex dashboard with a red arrow
+  pointing to where the deployment URL is
+  displayed](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-05-convex-url.jpg)
+</Figure>
+
+Store the deployment URL as `VITE_CONVEX_URL` in `.env.local`.
+
+Next, open `src/main.tsx` and make the following changes:
+
+```diff
+	import React from 'react';
+	import ReactDOM from 'react-dom/client';
++	import { ConvexProviderWithClerk } from 'convex/react-clerk';
++	import { ConvexReactClient } from 'convex/react';
+-	import { ClerkProvider } from '@clerk/clerk-react';
++	import { ClerkProvider, useAuth } from '@clerk/clerk-react';
+	import { App } from './components/app';
+
+	import './styles/global.css';
+
++	const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+
+	ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+		<React.StrictMode>
+			<ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
++				<ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+					<App />
++				</ConvexProviderWithClerk>
+			</ClerkProvider>
+		</React.StrictMode>,
+	);
+```
+
+This change allows Clerk to provide auth data to the Convex provider via the `useAuth` hook — and that's all the setup that's required to integrate Convex and Clerk.
+
+## Add a query to load messages by user
+
+Now that we have access to Convex and the current user in our app, we need a way to query for the messages they're authorized to see.
+
+To do that, we'll define our first Convex query. Create a new file at `convex/messages.ts` and add the following code:
+
+```ts
+import { query } from './_generated/server';
+
+export const get = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || !identity.phoneNumberVerified) {
+      return [];
+    }
+
+    const messages = await ctx.db
+      .query('messages')
+      .withIndex('by_sender', (q) => q.eq('sender', identity.phoneNumber!))
+      .collect();
+
+    return messages;
+  },
+});
+```
+
+The `query` helper from Convex is loaded from the `_generated` directory, which Convex uses to provide us with autocompletion and other quality-of-life enhancements as we write our apps.
+
+Inside we define a handler that receives a context object (`ctx`) from Convex. This object contains multiple helpful utilities, including `auth`, which has a method for loading the current user's details, and `db`, which has methods for querying our database tables.
+
+After loading the current user (and returning an empty result set if no user is found), this code queries the `messages` table using that `by_sender` index we defined earlier, and uses the `q` helper to filter down results to only those where the sender of the stored message matches the phone number of the current user.
+
+## Run the query in the React UI
+
+To use this query in the app, make the following changes in `src/components/messages.tsx`:
+
+```diff
++	import { useQuery } from 'convex/react';
++	import { api } from '../../convex/_generated/api';
++
+	import styles from './messages.module.css';
+
+	const Empty = () => {
+		const phone = import.meta.env.VITE_TWILIO_PHONE_NUMBER;
+
+		return (
+			<div className={styles.empty}>
+				<h1>Ready to start logging?</h1>
+				<p>
+					Text a photo and any details or description you want to include about it
+					to:
+					<a href={`sms:${phone}`}>{phone}</a>
+					Send your first text to see it logged here!
+				</p>
+			</div>
+		);
+	};
+
+	export const Messages = () => {
+-		// TODO: load all messages from the currently logged in user
+-		const messages = [];
++		// load all messages from the currently logged in user
++		const messages = useQuery(api.messages.get) || [];
+
+		return (
+			<section className={styles.wrapper}>
+				{messages.length > 0 ? (
+					<ul className={styles.messages}>
+-						{/* TODO: display messages */}
++						{messages.map(({ _id, _creationTime, text, image }) => {
++							return (
++								<li key={_id} className={styles.message}>
++									{image && image.url ? (
++										<img className={styles.image} src={image.url} alt={text} />
++									) : null}
++									<p className={styles.text}>{text}</p>
++									<p className={styles.meta}>
++										Posted {new Date(_creationTime).toLocaleString()}
++									</p>
++								</li>
++							);
++						})}
+					</ul>
+				) : (
+					<Empty />
+				)}
+			</section>
+		);
+	};
+```
+
+Convex generates an `api` object that will autocomplete with all available tables and their related queries, mutations, and actions. The `useQuery` hook runs the `get` query we just defined and returns an array of messages.
+
+To display the messages, we loop over them and destructure out the fields we need. We also use two system-generated fields: `_id`, which is an auto-generated unique identifier for each entry, and `_creationTime`, which is the timestamp at which the entry was created.
+
+Right now our table is empty. You can create an entry or two manually through the Convex dashboard to test this if you'd like. This has the bonus effect of showing the automatic real-time nature of working with Convex: as soon as you save an entry, it will show up in the app UI in real time.
+
+## Create new messages from incoming SMS messages
+
+To allow our users to create messages, we need a way to process SMS messages sent to our Twilio number. To do this, we'll use [Convex HTTP actions](https://docs.convex.dev/functions/http-actions), which are similar to queries and mutations, but are exposed as HTTP endpoints so they can interact with third-party systems.
+
+This makes Convex HTTP actions an ideal solution for building webhooks.
+
+### Create a Convex HTTP action
+
+A Convex HTTP action receives a [standard `Request` object](https://developer.mozilla.org/en-US/docs/Web/API/Request) in addition to the Convex context, and it needs to return a [standard `Response` object](https://developer.mozilla.org/en-US/docs/Web/API/Response).
+
+Export a new method called `save` from `convex/messages.ts` with the following code:
+
+```ts
+import type { WithoutSystemFields } from 'convex/server';
+import type { Doc } from './_generated/dataModel';
+import { httpAction, query } from './_generated/server';
+
+type Message = WithoutSystemFields<Doc<'messages'>>;
+
+export const get = query({
+  /* unchanged */
+});
+
+/*
+ * An HTTP action exposes an endpoint, which we’ll add as the webhook URL for
+ * incoming Twilio SMS messages. This will be called every time someone texts
+ * the phone number provided by our app.
+ */
+export const save = httpAction(async (ctx, req) => {
+  const body = await req.text();
+
+  // Twilio params: https://www.twilio.com/docs/messaging/guides/webhook-request
+  const message = new URLSearchParams(body);
+
+  // TODO: validate the webhook for security
+
+  const text = message.get('Body') ?? '';
+  const sender = message.get('From');
+  const imageUrl = message.get('MediaUrl0');
+
+  if (!sender) {
+    return new Response(null, {
+      status: 400,
+    });
+  }
+
+  const msg: Message = {
+    text,
+    sender,
+    image: null,
+  };
+
+  if (imageUrl) {
+    // TODO: store any images sent by the user
+  }
+
+  // TODO: save the message
+  console.log(JSON.stringify(msg, null, 2));
+
+  return new Response(null, {
+    status: 200,
+  });
+});
+```
+
+At the top, we import the `httpAction` helper, as well as two types: `WithoutSystemFields` and `Doc`.
+
+The two types allow us to create a `Message` type that matches our message table schema but leaves out fields that are generated by Convex, such as `_id`. This lets us add type checking without having to worry about missing system fields before saving.
+
+In the `save` function, we get the body of the request as text because Twilio sends the body as query parameters (e.g. `key1=val1&key2=val2`).
+
+Our function needs the sender's phone number, the text from the message, and the URL of the first image, if any were sent.
+
+Organize those details in to an object that matches the `Message` type and it's ready for saving! We'll add the mutation to actually save entries in a moment, but for now this is good enough to test that it's working once we integrate with Twilio.
+
+### Expose the HTTP action in a URL endpoint
+
+To make our HTTP action callable, we need to give it a public URL. To do this, create a new file at `convex/http.ts` and add the following code:
+
+```ts
+import { httpRouter } from 'convex/server';
+import { save } from './messages';
+
+const http = httpRouter();
+
+http.route({
+  path: '/messages',
+  method: 'POST',
+  handler: save,
+});
+
+export default http;
+```
+
+We define a new route at `/messages`, then add our `save` function as the handler for requests sent to that endpoint via `POST` requests. Once we save, our HTTP action is now usable by a third-party service.
+
+HTTP actions are exposed at `https://<your deployment name>.convex.site`. Grab the value you stored in `VITE_CONVEX_URL` and replace `.cloud` with `.site`, then append `/messages` for the full URL to your HTTP action (e.g. `https://energized-rooster-480.convex.site/messages`).
+
+### Register the Convex HTTP action as a webhook for incoming Twilio messages
+
+In the [Twilio console](https://console.twilio.com/), navigate to your active numbers and choose the one you purchased earlier.
+
+- Under the "Configure" tab, scroll down to "Messaging Configuration"
+- In the section for "A message comes in", make sure "Webhook" is selected
+- Add your HTTP action endpoint as the webhook URL
+- Make sure "HTTP POST" is selected
+- Click "Save configuration"
+
+<Figure caption="the Twilio console allows us to set a webhook for handling incoming messages">
+  ![the Twilio console configuration screen for an active
+  number](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-06-configure-twilio-webhook.jpg)
+</Figure>
+
+Once this is saved, send a text message to your Twilio number, then look at the logs in Convex. You'll see your number and the contents of your text message logged there, which means the webhook is configured properly.
+
+<Figure caption="sending a text will now log the text details in Convex">
+  ![composite image of an iPhone text message sent to the Twilio number with an
+  arrow drawn from the text to the entry in the Convex dashboard
+  log](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-07-incoming-webhook.jpg)
+</Figure>
+
+### Validate Twilio webhook requests
+
+To make sure some mischief-maker out there doesn't spam or otherwise abuse the app, let's make sure every request received by our HTTP action is a [valid Twilio request](https://www.twilio.com/docs/usage/webhooks/webhooks-security) before taking any action.
+
+Validation will be handled in a Convex [internal function](https://docs.convex.dev/functions/internal-functions). To do that, we'll use [Twilio's Node SDK](https://github.com/twilio/twilio-node), which we can install by running the following in our terminal:
+
+```bash
+npm i twilio
+```
+
+<Aside>
+  **NOTE:** Using a Node package requires Convex to run in Node (Convex uses a
+  [custom JavaScript runtime](https://docs.convex.dev/functions/runtimes) by
+  default). Fortunately, we can do this with a one-liner at the top of the file.
+  We only need Node for this one step, so we'll pull it out into its own file so
+  the rest of our Convex code can execute in the optimized environment.
+</Aside>
+
+Create a new file at `convex/validate.ts` with the following code inside:
+
+```ts
+'use node';
+
+import { v } from 'convex/values';
+import twilio from 'twilio';
+import { internalAction } from './_generated/server';
+
+export const twilioWebhook = internalAction({
+  args: {
+    signature: v.string(),
+    url: v.string(),
+    params: v.any(), // Twilio sends a lot of fields that might vary
+  },
+  handler: async (_, args) => {
+    return twilio.validateRequest(
+      process.env.TWILIO_AUTH_TOKEN!,
+      args.signature,
+      args.url,
+      args.params
+    );
+  },
+});
+```
+
+To run this code, we'll need our Twilio auth token:
+
+- Navigate to https://console.twilio.com
+- Copy the "Auth token" field
+- Open the Convex dashboard
+- Choose your project
+- Click "Settings" in the left-hand nav
+- Add `TWILIO_AUTH_TOKEN` as the key of a new environment variable
+- Add your copied auth token as the value
+
+To actually call the validation action, make the following changes to `convex/messages.ts`:
+
+```diff
+	import type { WithoutSystemFields } from 'convex/server';
+	import type { Doc } from './_generated/dataModel';
+	import { httpAction, query } from './_generated/server';
++	import { internal } from './_generated/api';
+
+	type Message = WithoutSystemFields<Doc<'messages'>>;
+
+	export const get = query({
+		handler: async (ctx) => {
+			const identity = await ctx.auth.getUserIdentity();
+			if (!identity || !identity.phoneNumberVerified) {
+				return [];
+			}
+
+			const messages = await ctx.db
+				.query('messages')
+				.withIndex('by_sender', (q) => q.eq('sender', identity.phoneNumber!))
+				.collect();
+
+			return messages;
+		},
+	});
+
+	/*
+	 * An HTTP action exposes an endpoint, which we’ll add as the webhook URL for
+	 * incoming Twilio SMS messages. This will be called every time someone texts
+	 * the phone number provided by our app.
+	 */
+	export const save = httpAction(async (ctx, req) => {
+		const body = await req.text();
+
+		// Twilio params: https://www.twilio.com/docs/messaging/guides/webhook-request
+		const message = new URLSearchParams(body);
+
+-		// TODO: validate the webhook for security
++		const isValidWebhook = await ctx.runAction(internal.validate.twilioWebhook, {
++			url: req.url,
++			signature: req.headers.get('x-twilio-signature') ?? '',
++			params: Object.fromEntries(message.entries()),
++		});
++
++		if (!isValidWebhook) {
++			return new Response(null, {
++				status: 422,
++			});
++		}
+
+		const text = message.get('Body') ?? '';
+		const sender = message.get('From');
+		const imageUrl = message.get('MediaUrl0');
+
+		/* unchanged below this point */
+```
+
+This code grabs the URL, request signature, and parameters sent by Twilio, then passes them to our internal validation action. If the request is valid, the code continues to run as usual, but if the signatures don't match our HTTP action will now return a [422 HTTP response code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) ("unprocessable content").
+
+Send another text to your Twilio number to validate that it still works as expected with valid requests. If you want to test invalid requests, you can use something like Postman to send a POST request to the HTTP action — you'll now receive a 422 response.
+
+<Figure caption="webhook validation makes mischief far harder">
+  ![a screenshot of the Postman UI making a POST call to the webhook. a red
+  arrow points to the 422 response that was
+  received](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-08-422-response.jpg)
+</Figure>
+
+### Save new messages in Convex
+
+Now that we're receiving messages from Twilio and we're confident that the requests are valid, let's save them in the database.
+
+To do that, we'll use another internal function, but this time it'll be a mutation. Make the following changes to `convex/messages.ts`:
+
+```diff
+	import type { WithoutSystemFields } from 'convex/server';
+	import type { Doc } from './_generated/dataModel';
+-	import { httpAction, query } from './_generated/server';
++	import { httpAction, query, internalMutation } from './_generated/server';
+	import { internal } from './_generated/api';
++	import { MessageFields } from './schema';
+
+	type Message = WithoutSystemFields<Doc<'messages'>>;
+
+	export const get = query({ /* unchanged */ });
+
+	/*
+	* An HTTP action exposes an endpoint, which we’ll add as the webhook URL for
+	* incoming Twilio SMS messages. This will be called every time someone texts
+	* the phone number provided by our app.
+	*/
+	export const save = httpAction(async (ctx, req) => {
+		const body = await req.text();
+
+		// Twilio params: https://www.twilio.com/docs/messaging/guides/webhook-request
+		const message = new URLSearchParams(body);
+
+		// TODO: validate the webhook for security
+		const isValidWebhook = await ctx.runAction(internal.validate.twilioWebhook, {
+			url: req.url,
+			signature: req.headers.get('x-twilio-signature') ?? '',
+			params: Object.fromEntries(message.entries()),
+		});
+
+		if (!isValidWebhook) {
+			return new Response(null, {
+				status: 422,
+			});
+		}
+
+		const text = message.get('Body') ?? '';
+		const sender = message.get('From');
+		const imageUrl = message.get('MediaUrl0');
+
+		if (!sender) {
+			return new Response(null, {
+				status: 400,
+			});
+		}
+
+		const msg: Message = {
+			text,
+			sender,
+			image: null,
+		};
+
+		if (imageUrl) {
+			// TODO: store any images sent by the user
+		}
+
+-		// TODO: save the message
+-		console.log(JSON.stringify(msg, null, 2));
++		ctx.runMutation(internal.messages.saveMessage, msg);
+
+		return new Response(null, {
+			status: 200,
+		});
+	});
++
++	export const saveMessage = internalMutation({
++		args: MessageFields,
++		handler: async (ctx, args) => {
++			await ctx.db.insert('messages', args);
++		},
++	});
+```
+
+Save, then send a text message to your Twilio number. After a few seconds it will appear in your app UI.
+
+<Figure caption="text messages to the app are saved and displayed in real time">
+  ![screenshot of the app dashboard with a message
+  displayed](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-09-saved-message.jpg)
+</Figure>
+
+This is already pretty dang cool, but we want to make it better: let's add support for sending and saving images as well.
+
+## Save incoming images in messages to Convex
+
+Twilio automatically sends along images in webhook requests. In our app, we want to save those images to the same place as the rest of our data, so we'll be using [Convex file storage](https://docs.convex.dev/file-storage) to download and deliver them.
+
+And before you wave this off as too complicated: this will take about 20 lines of code to implement!
+
+Make the following changes in `convex/messages.ts`:
+
+```diff
+	import type { WithoutSystemFields } from 'convex/server';
+	import type { Doc } from './_generated/dataModel';
+	import {
++		type ActionCtx,
+		httpAction,
+		query,
+		internalMutation,
+	} from './_generated/server';
+	import { internal } from './_generated/api';
+	import { MessageFields } from './schema';
+
+	type Message = WithoutSystemFields<Doc<'messages'>>;
+
+	export const get = query({ /* unchanged */ });
+
+	/*
+	* An HTTP action exposes an endpoint, which we’ll add as the webhook URL for
+	* incoming Twilio SMS messages. This will be called every time someone texts
+	* the phone number provided by our app.
+	*/
+	export const save = httpAction(async (ctx, req) => {
+		const body = await req.text();
+
+		// Twilio params: https://www.twilio.com/docs/messaging/guides/webhook-request
+		const message = new URLSearchParams(body);
+
+		// TODO: validate the webhook for security
+		const isValidWebhook = await ctx.runAction(internal.validate.twilioWebhook, {
+			url: req.url,
+			signature: req.headers.get('x-twilio-signature') ?? '',
+			params: Object.fromEntries(message.entries()),
+		});
+
+		if (!isValidWebhook) {
+			return new Response(null, {
+				status: 422,
+			});
+		}
+
+		const text = message.get('Body') ?? '';
+		const sender = message.get('From');
+		const imageUrl = message.get('MediaUrl0');
+
+		if (!sender) {
+			return new Response(null, {
+				status: 400,
+			});
+		}
+
+		const msg: Message = {
+			text,
+			sender,
+			image: null,
+		};
+
+		if (imageUrl) {
++			try {
++				msg.image = await storeImage(ctx, imageUrl);
++			} catch (err) {
++				console.error(`failed to store image (url: ${imageUrl})`);
++			}
+		}
+
+		ctx.runMutation(internal.messages.saveMessage, msg);
+
+		return new Response(null, {
+			status: 200,
+		});
+	});
+
+	export const saveMessage = internalMutation({
+		args: MessageFields,
+		handler: async (ctx, args) => {
+			await ctx.db.insert('messages', args);
+		},
+	});
+
++	export const storeImage = async (ctx: ActionCtx, imageUrl: string) => {
++		const res = await fetch(imageUrl);
++
++		if (!res.ok) {
++			console.error(res);
++			return null;
++		}
++
++		const blob = await res.blob();
++		const id = await ctx.storage.store(blob);
++		const url = await ctx.storage.getUrl(id);
++
++		return { id, url };
++	};
+```
+
+The `storeImage` function loads the provided image from its Twilio URL, then sends it to Convex's storage as a blob. The returned ID of the stored file is then used to generate its public URL, and both the ID and URL are returned.
+
+The `save` action runs `storeImage` if there's an image in the message and wraps it in a `try ... catch` block just in case the file is incompatible or otherwise unusable.
+
+And... that's it. Save this and send an image to your app's phone number to see it show up in the dashboard.
+
+<Figure caption="sending images via MMS results in those images stored in the database and displayed in the app">
+  ![the app dashboard showing six entries with images, all of food and
+  beverages](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/convex-actions-10-images-saving.jpg)
+</Figure>
+
+## Stop worrying that databases are too hard and go build cool stuff
+
+I've let a lot of good ideas die because I didn't want to deal with setting up or managing a database. These days, though, tools like Convex make it so dang easy that I can't make excuses — it's _fun_ to put together a database like this. It's _fun_ to hook up different third-party APIs.
+
+I really love the web today, because these tools are here to let me just go build my ideas instead of having to spend all my time creating the boilerplate that makes my ideas function.
+
+I'm excited for what this unlocks for the web. I hope you're excited, too. I hope you show me what you build.
+
+## Resources and further reading
+
+- [Review the source code for this app](https://github.com/learnwithjason/convex-twilio-text-log)
+- [Learn more about Convex](https://lwj.dev/convex)
+- [Convex HTTP actions](https://docs.convex.dev/functions/http-actions)
+- [Clerk integration with Convex](https://docs.convex.dev/auth/clerk)
+- [Validating Twilio webhooks](https://www.twilio.com/docs/usage/webhooks/webhooks-security)

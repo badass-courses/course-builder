@@ -1,0 +1,212 @@
+---
+import { join } from 'node:path';
+import Mux from '@mux/mux-node';
+import { CacheHeaders } from 'cdn-cache-control';
+import {
+	MUX_TOKEN_ID,
+	MUX_TOKEN_SECRET,
+	MUX_JWT_SIGNING_KEY,
+} from 'astro:env/server';
+import { decrypt } from '@tka85/dotenvenc';
+import { createImageUrl } from '../util/cloudinary';
+import Heart from './heart.astro';
+
+export const prerender = false;
+
+const env = await decrypt({
+	passwd: process.env.DOTENVENC_PASS,
+	encryptedFile: join(process.cwd(), '.env.enc'),
+});
+
+export interface Props {
+	playback_ids: Array<{ id: string; policy: 'public' | 'signed' }>;
+	thumbnail?: {
+		public_id: string | null;
+		alt: string | null;
+		height: number | null;
+		width: number | null;
+	} | null;
+	title: string;
+	publish_date: string | null;
+}
+
+const mux = new Mux({
+	// for API access
+	tokenId: MUX_TOKEN_ID,
+	tokenSecret: MUX_TOKEN_SECRET,
+
+	// for signed asset access
+	jwtSigningKey: MUX_JWT_SIGNING_KEY,
+	jwtPrivateKey: env.MUX_JWT_PRIVATE_KEY!,
+});
+
+const user = await Astro.locals.currentUser();
+// @ts-ignore
+const isSubscriber = user && user?.publicMetadata?.stripe?.status === 'active';
+
+const { playback_ids, thumbnail, title, publish_date } = Astro.props;
+
+const signedPlayback = playback_ids.find((pid) => pid.policy === 'signed');
+const publicPlayback = playback_ids.find((pid) => pid.policy === 'public');
+
+let videoPlaybackToken, thumbnailPlaybackToken, storyboardPlaybackToken;
+if (isSubscriber && signedPlayback) {
+	// generate signing key
+	videoPlaybackToken = await mux.jwt.signPlaybackId(signedPlayback.id, {
+		type: 'video',
+		expiration: '1d',
+	});
+	thumbnailPlaybackToken = await mux.jwt.signPlaybackId(signedPlayback.id, {
+		type: 'thumbnail',
+		expiration: '1d',
+	});
+	storyboardPlaybackToken = await mux.jwt.signPlaybackId(signedPlayback.id, {
+		type: 'storyboard',
+		expiration: '1d',
+	});
+}
+
+const headers = new CacheHeaders()
+	.swr()
+	.ttl(86_400)
+	.tag([
+		'video',
+		`video-${publicPlayback?.id}${signedPlayback?.id}-${user?.id}`,
+	]);
+
+headers.forEach((value, key) => {
+	Astro.response.headers.set(key, value);
+});
+
+let thumbnailSrc;
+
+if (thumbnail && thumbnail.public_id) {
+	thumbnailSrc = createImageUrl(thumbnail.public_id, {
+		aspect_ratio: '16:9',
+		width: 1280,
+		crop: 'fill',
+	});
+}
+
+if (!publish_date) {
+	throw new Error('videos must have publish dates');
+}
+
+const date = new Date(publish_date);
+const isPrerelease = date >= new Date();
+
+const dateString = new Intl.DateTimeFormat('en-US', {
+	month: 'long',
+	day: 'numeric',
+	year: 'numeric',
+	hour: 'numeric',
+	minute: '2-digit',
+	timeZoneName: 'longGeneric',
+}).format(date);
+---
+
+{
+	isPrerelease && isSubscriber && signedPlayback ? (
+		<mux-player
+			theme="classic"
+			playback-id={signedPlayback.id}
+			playback-token={videoPlaybackToken}
+			thumbnail-token={thumbnailPlaybackToken}
+			storyboard-token={storyboardPlaybackToken}
+			metadata-video-title={title}
+			title={title}
+		/>
+	) : null
+}
+
+{
+	isPrerelease && !isSubscriber && thumbnailSrc ? (
+		<div class="subscription-required" style={`--bg-img: url(${thumbnailSrc})`}>
+			<div class="notice">
+				<p>
+					This video is members-only until{' '}
+					<time datetime={publish_date}>{dateString}</time>
+				</p>
+				<a href="/dashboard" class="button">
+					<Heart />
+					Become a Supporter to Watch Now
+				</a>
+			</div>
+		</div>
+	) : null
+}
+
+{
+	!isPrerelease && publicPlayback ? (
+		<mux-player
+			theme="classic"
+			playback-id={publicPlayback.id}
+			metadata-video-title={title}
+			title={title}
+		/>
+	) : null
+}
+
+<script>
+	import '@mux/mux-player';
+	import '@mux/mux-player/themes/classic';
+</script>
+
+<style>
+	mux-player {
+		aspect-ratio: 16 / 9;
+		block-size: 100cqb;
+		margin-inline: auto;
+		max-inline-size: 100dvi;
+	}
+
+	.subscription-required {
+		aspect-ratio: 16 / 9;
+		background-blend-mode: multiply, normal;
+		background-image: linear-gradient(
+				color-mix(in oklch, var(--gray-500) 40%, transparent),
+				color-mix(in oklch, var(--gray-700) 80%, transparent)
+			),
+			var(--bg-img);
+		background-size: cover, cover;
+		display: flex;
+		place-content: center;
+
+		.notice {
+			align-items: center;
+			backdrop-filter: blur(2rem) saturate(150%);
+			background: color-mix(in oklch, var(--white) 60%, transparent);
+			border-radius: 0.25rem;
+			box-shadow: 0 1px 2px
+				color-mix(in oklch, var(--gray-500) 80%, transparent);
+			color: var(--text-strong);
+			display: flex;
+			flex-direction: column;
+			font-size: 0.875rem;
+			justify-content: center;
+			margin: auto;
+			padding: 3rem;
+			text-align: center;
+			z-index: 10;
+
+			time {
+				display: block;
+				font-size: 1.125rem;
+				font-weight: 600;
+				margin-block: 0.25rem 1.5rem;
+			}
+		}
+	}
+
+	.button {
+		background: var(--yellow-500);
+		border: 1px solid var(--gray-300);
+		block-size: min-content;
+		color: var(--black);
+		display: flex;
+		font-size: 1.25rem;
+		gap: 0.5rem;
+		margin: 0;
+		text-decoration: none;
+	}
+</style>

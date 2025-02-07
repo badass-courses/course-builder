@@ -1,0 +1,524 @@
+---
+slug: notifications-in-app-sms-email-courier
+pubDate: 2023-09-19
+
+title: Add notifications to a Node app (app inbox, SMS, and email)
+description: >
+  Notifications can be a huge value add to your app users, but if you get them wrong, they're hugely annoying. Learn how to add smart app notifications in this tutorial.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/courier-notifications.jpg
+  title: Add a notification inbox plus email and SMS notifications using Courier
+  text: >
+    Notifications can be a huge value add to your app users, but if you get them wrong, they're hugely annoying. Learn how to add smart app notifications in this tutorial.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="5qZCaK6s7Kw" />
+
+<Aside>
+  **Want to jump to the end?** [Check out the source code on
+  GitHub.](https://github.com/learnwithjason/courier-notifications)
+</Aside>
+
+## Configure Courier for your app
+
+First, log in or create an account at [courier.com](https://www.courier.com/)
+
+On the dashboard, at the bottom of the left-hand sidebar, there's a toggle that lets you choose either test or production data. For this tutorial, we'll work with test data.
+
+Our first step is to add the notification channels we want our app to support. [Courier has built-in integrations](https://www.courier.com/integrations/) with dozens of tools, plus ways to add your own with webhooks and SDKs.
+
+This tutorial will set up in-app notifications, email, and SMS.
+
+<Aside variant="heart">
+  Thanks to Courier for making this tutorial possible. [Create a free
+  account](https://lwj.dev/courier) today and add notifications to your apps!
+</Aside>
+
+### Add support for in-app notifications
+
+A notification inbox in an app is a great way to unobtrusively let users know what's happening. Courier provides everything you need to add one, including React components (which we'll look at later in this tutorial).
+
+To set it up, go to [your channels](https://app.courier.com/channels) and choose Courier under the Inbox section. On the next screen, scroll all the way down and click "install provider".
+
+Head back to your channels and it'll show up under your configured providers as well as in your routing settings.
+
+<Figure caption="Courier integrates with a ton of notification providers.">
+  ![The Courier channels dashboard in test
+  mode.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-01-channel-courier.jpg)
+</Figure>
+
+### Add support for SMS and email
+
+To send notifications to users who aren't actively viewing your app dashboard, you'll need additional channels.
+
+First, add email by choosing Gmail from the Email providers and authorizing with any of your Gmail accounts. (If you don't have one, you can skip this or use a different provider.)
+
+<Aside>
+  **Important!** Make sure to authorize the email for the test environment as
+  well!
+</Aside>
+
+Next, add SMS using Twilio. You'll need your account SID and auth token, which are available at [on your Twilio console home page](https://console.twilio.com), and any active Twilio phone number on your account.
+
+<Aside>
+  **Important!** Again, make sure to add the details to the test configuration
+  so we can use our test keys.
+</Aside>
+
+Once this is done, both email and SMS will be available under configured providers.
+
+### Add channels to your default routing
+
+Courier allows you to choose whether a given channel should _always_ be notified, or if only the best available option out of a set of channels should be used.
+
+This is a great way to allow you to reach your users without being too overbearing about it. No one likes to get the same notification duplicated across every account and device they own.
+
+<Figure caption="Always notify the in-app inbox, plus EITHER SMS or email.">
+  ![The Courier channels screen showing routing set up with Courier in the
+  "always send to" group and Twilio and Gmail in the "send to the best of"
+  group.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-02-configured-channels.jpg)
+</Figure>
+
+How this works in practice is that Courier will _always_ deliver a notification to the in-app inbox, and will choose _one_ of either SMS or email, using SMS first if both are available. These are only defaults, though — you can also allow your users to choose which platforms they want to get notified on, and if they want an alert on every device and account they have, you can make that happen!
+
+## Set up the app for local development
+
+For this tutorial, the app we're working with is a React-powered app dashboard. The dashboard itself doesn't do anything — it's only there so we have a plausible app to work with.
+
+Under the hood, this demo uses a couple things to make our lives easier with setup:
+
+1. Notifications themselves are managed by Courier. We'll spend most of this tutorial on how to configure, display, and send notifications in a React app.
+1. User auth is handled by [Clerk](https://clerk.com/). Having a logged-in user is important because it means we have a unique ID for each person viewing the dashboard, which allows Courier to route notifications to people properly.
+1. This app uses a webhook to sync users between Clerk and Courier. The webhook will be built on [Netlify Functions](https://www.netlify.com/products/functions/) both so we don't have to think about how to deploy a server and also because we get a way to expose our local dev environment as a live URL for testing.
+1. To send notifications, we'll use a Netlify Function to keep secret credentials secure.
+
+<Aside>
+  **Heads up!** The steps to display notifications in a React app will be the
+  same for any React codebase. If you already have an auth solution or don't
+  care about the auth part, you can skip the demo app and add this directly to
+  any React app you have handy.
+</Aside>
+
+To grab [the tutorial repo](https://github.com/learnwithjason/courier-notifications/tree/start) at the starting point, clone the `start` branch:
+
+```bash
+# clone the start branch of the repo using the GitHub CLI (https://cli.github.com)
+gh repo clone learnwithjason/courier-notifications -- -b start
+
+# move into the folder
+cd courier-notifications/
+
+# install dependencies
+npm i
+```
+
+### Get Clerk credentials
+
+To use the auth, you'll need a free Clerk account. This will take less than five minutes to set up.
+
+1. Log in or create an account at [clerk.com](https://clerk.com)
+2. Create a new app and choose any auth provider that you want to use to log in with — this tutorial uses GitHub
+3. Go to API Keys in the left-hand nav
+4. Copy your publishable key and your secret key
+
+In your code, rename `.env.EXAMPLE` to `.env` and add your publishable key as `VITE_CLERK_PUBLISHABLE_KEY` and your secret key as `CLERK_SECRET_KEY`.
+
+### Start the dev server
+
+With the credentials saved, you're able to start the app and log in.
+
+```bash
+# start the dev server
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser and you'll be redirected to the login page
+
+<Figure caption="For this app, we only use GitHub’s OAuth">
+  ![The Clerk login screen showing GitHub as the login
+  option.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-03-app-login.jpg)
+</Figure>
+
+Use your GitHub account to log in and you'll see the dashboard.
+
+<Figure caption="This app doesn’t do anything — it’s just more fun adding features to an app that feels real.">
+  ![The example app dashboard, including the logged in user’s avatar shown at
+  the top
+  right.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-04-app-logged-in.jpg)
+</Figure>
+
+Now that we're able to log in, we want to add a notifications inbox up in the right side of the header next to our user info.
+
+## Display notifications in the app
+
+To add a notifications inbox to our app, we'll take advantage of Courier's ready-made React components.
+
+### Get your Courier credentials
+
+First, we need our client key from Courier. To find this, head to [the settings for your Courier inbox channel](https://app.courier.com/channels/courier), scroll down to the "Test Configuration" section, and copy the "Client Key (Public)". Add it to your `.env` file as the value of `VITE_COURIER_CLIENT_KEY`.
+
+### Install Courier npm packages
+
+The demo repo already has dependencies installed. For posterity, you can install everything you need to run Courier notifications in a React app by installing these npm packages:
+
+```bash
+npm i @trycourier/courier @trycourier/react-inbox @trycourier/react-provider
+```
+
+### Create a Notifications component
+
+In your code, create a new file at `src/components/notifications.tsx` and add the following code inside:
+
+```tsx
+import { CourierProvider } from '@trycourier/react-provider';
+import { Inbox } from '@trycourier/react-inbox';
+import { useUser } from '@clerk/clerk-react';
+
+export function Notifications() {
+  const { user } = useUser();
+
+  console.log(user?.id);
+
+  return (
+    <CourierProvider
+      userId={user?.id}
+      clientKey={import.meta.env.VITE_COURIER_CLIENT_KEY}
+    >
+      <div className="notifications-wrapper">
+        <Inbox />
+      </div>
+    </CourierProvider>
+  );
+}
+```
+
+This component places the `Inbox` component inside a `CourierProvider` that receives the client key from Courier and the user ID from Clerk.
+
+We also log the user ID so it's easy to find for testing.
+
+To put this into our app, add the `Notifications` component to `src/components/dashboard.tsx`:
+
+```diff
+	import {
+		RedirectToSignIn,
+		SignedIn,
+		SignedOut,
+		UserButton,
+	} from '@clerk/clerk-react';
++	import { Notifications } from './notifications';
+
+	import styles from './dashboard.module.css';
+
+	export const Dashboard = () => {
+		return (
+			<>
+				<header className={styles.header}>
+					<a className={styles.homeLink} href="/" rel="home">
+						Toofshine
+					</a>
+
+					<nav className={styles.nav}>
+						<SignedIn>
++							<Notifications />
+							<UserButton
+	// ...unchanged below this point...
+```
+
+Save and look at your app dashboard. You'll see the inbox at the top right and the user ID logged in the console.
+
+<Figure caption="The default inbox component. You can style this however you want later.">
+  ![The example app with the notifications icon showing in the header and the
+  empty inbox
+  displayed.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-05-inbox-added.jpg)
+</Figure>
+
+## Send a notification manually
+
+To send a notification manually, copy the user ID and head to the [Courier users page](https://app.courier.com/users). (As always, make sure you're still in test mode.) Create a new user — all you'll need is the ID, which should match the ID from Clerk.
+
+Save this, then click the "Home" option, then the "send a message" button on the home page.
+
+You'll see a form. On the right-hand side of the screen, choose "Push" from the channel dropdown, then Courier from the provider dropdown.
+
+In the "To" field, add the same user ID, then click "send now".
+
+<Figure caption="Courier’s testing UI is nice for quickly making sure the app is hooked up properly.">
+  ![The Courier dashboard on the “send a message”
+  screen.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-06-manual-send.jpg)
+</Figure>
+
+Back in the app, you'll see a new notification in the inbox.
+
+<Figure caption="Notifications show up without requiring a page refresh.">
+  ![The example app dashboard showing the notification sent manually in the
+  previous
+  step.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-07-first-notification.jpg)
+</Figure>
+
+## Automatically sync users to Courier
+
+To make it possible to send notifications without manually creating each user, you'll need a way to sync users from your user management tool into Courier. In Clerk, this can be done using a webhook that will be called whenever a user is created, updated, or deleted.
+
+### Get a Courier API key
+
+To set this up, go to your [Courier API keys page](https://app.courier.com/settings/api-keys) and copy the key with "Published" scope. Set it as the value of `COURIER_API_KEY` in `.env`.
+
+### Configure Clerk with a webhook and get the signing secret
+
+Next, head to your [Clerk dashboard](https://dashboard.clerk.com/), choose your app, and click the "Webhooks" option in the left-hand nav.
+
+Inside, set any URL to start (we'll change this in a later step) and check the "user" box so the webhook is called for all user events.
+
+<Figure caption="Clerk webhooks are delightfully straightforward to work with.">
+  ![The Clerk dashboard in the webhook creation flow. All user events are
+  checked.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-08-clerk-webhook.jpg)
+</Figure>
+
+On the next screen, look for the "Signing Secret" toward the bottom of the right-hand column. Copy that value and set it as `CLERK_WEBHOOK_SECRET`.
+
+### Set up a live URL for testing local dev with Netlify Dev
+
+To make debugging easier, we'll be using Netlify Dev, which will set up a live tunnel and allow us to create a public URL that can access our local code while we're developing. This is extremely helpful for debugging things like webhooks because it removes the need to deploy every change to see if it works.
+
+In your terminal, install the Netlify CLI if you don't have it, make sure you're logged in, and then create a new project.
+
+```bash
+# if you don't already have it, install the Netlify CLI globally
+npm i -g netlify-cli
+
+# make sure you're logged in
+ntl login
+
+# create a new project
+ntl init
+```
+
+You can keep the defaults during initialization.
+
+Once the project is hooked up to Netlify, run Netlify Dev with the `--live` flag to get a public URL:
+
+```bash
+ntl dev --live dev
+```
+
+This will create a live URL that looks like `https://dev--<your_site_name>.netlify.live`.
+
+Back in the Clerk webhook configuration, edit the webhook URL to be your live dev URL from Netlify and add the path `/api/user-sync` to the end. We'll build this endpoint in the next step.
+
+<Figure caption="Netlify Dev’s live mode will use the same link each session, so you can set this once during development">
+  ![The Courier dashboard showing the Netlify Dev live URL as the webhook
+  endpoint.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-09-updated-webhook.jpg)
+</Figure>
+
+### Build the user sync webhook
+
+Open `netlify/functions/user-sync.ts` in your code and replace the contents with the following:
+
+```ts
+import type { Handler } from '@netlify/functions';
+import type { WebhookEvent } from '@clerk/clerk-sdk-node';
+import { Webhook } from 'svix';
+import { CourierClient } from '@trycourier/courier';
+
+const courier = CourierClient({
+  authorizationToken: process.env.COURIER_API_KEY,
+});
+
+type ProfileData = {
+  email?: string;
+  phone_number?: string;
+};
+
+function validateWebhook(req) {
+  try {
+    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
+    wh.verify(req.body ?? '', req.headers as any);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+}
+
+function getProfileDetails({ email_addresses, phone_numbers }): ProfileData {
+  const profile: ProfileData = {};
+
+  if (email_addresses.length > 0 && email_addresses[0].email_address) {
+    profile.email = email_addresses[0].email_address;
+  }
+
+  if (phone_numbers.length > 0 && phone_numbers[0].phone_number) {
+    profile.phone_number = phone_numbers[0].phone_number;
+  }
+
+  return profile;
+}
+
+export const handler: Handler = async (req) => {
+  if (!validateWebhook(req)) {
+    return {
+      statusCode: 400,
+      body: 'Bad Request',
+    };
+  }
+
+  const event = JSON.parse(req.body ?? '') as WebhookEvent;
+
+  switch (event.type) {
+    case 'user.created':
+    case 'user.updated':
+      await courier.replaceProfile({
+        recipientId: event.data.id,
+        profile: getProfileDetails(event.data),
+      });
+      break;
+
+    case 'user.deleted':
+      if (!event.data.id) {
+        break;
+      }
+
+      await courier.deleteProfile({
+        recipientId: event.data.id,
+      });
+      break;
+
+    default:
+      return {
+        statusCode: 400,
+        body: 'Bad Request',
+      };
+  }
+
+  return {
+    statusCode: 200,
+    body: 'OK',
+  };
+};
+```
+
+At the top, we create a new instance of the Courier Node SDK with our API key. This provides methods for us to handle all the Courier-related tasks we need to accomplish.
+
+Next we define a couple helper functions:
+
+1. `validateWebhook` uses the signing secret from Clerk to ensure that the webhook is legitimate to prevent someone from impersonating Clerk and messing with user data
+2. `getProfileDetails` pulls the primary email address and phone number out of the Clerk user data and drops everything else since Courier won't need it
+
+In the actual exported handler, the incoming request is validated, and then we set up a switch on the event type.
+
+- When a user is created or updated, we want to sync their user ID, phone number, and email to Courier to make sure they're getting notifications properly
+- When a user is deleted, we want to remove them from Courier entirely
+
+Finally, we return a 200 status to let Clerk know the webhook was processed successfully.
+
+To test this, Clerk has a "Testing" tab in the webhook config. Choose "user.created" from the dropdown and then click "Send Example". You'll see a successful call in the dev console, and the [Courier users page](https://app.courier.com/test/users) will update with the example user.
+
+Now, whenever a user is created, updated, or deleted, the necessary information required by Courier to send notifications will be automatically synced to Courier.
+
+## Create a custom audience in Courier
+
+Sending notifications to individual users can be done using their IDs, but what if you want to send a notification to every active user — for instance, when a new feature launches?
+
+In the Courier users page, click the "+ Audience" button, name the audience "Active Members", and save. The ID will automatically generate as `active-members`.
+
+Inside, click "+Add Condition" and choose email, then scroll down to "exists" and choose "True".
+
+Next, click the "+" at the end of email and choose phone_number, then set "exists" to "True".
+
+Use the "Calculate Audience" button to see the users that will be targeted. This should include your user ID from Clerk.
+
+<Figure caption="Audiences are automatically updated as users are modified.">
+  ![The Courier dashboard showing the audience details page for the
+  active-members
+  audience.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-10-custom-audience.jpg)
+</Figure>
+
+Now you're able to send a notification to everyone in this audience, which greatly simplifies the process of sending notifications.
+
+## Send a notification using the Courier Node SDK
+
+Now that users are properly synced and our notification channels are configured, let's take a look at how the Courier Node SDK allows you to send notifications.
+
+Open `netlify/functions/send-notification.ts` and replace the contents with the following:
+
+```ts
+import type { Handler } from '@netlify/functions';
+import { CourierClient } from '@trycourier/courier';
+
+const courier = CourierClient({
+  authorizationToken: process.env.COURIER_API_KEY,
+});
+
+export const handler: Handler = async (req) => {
+  const { title, body } = JSON.parse(req.body ?? '');
+
+  if (req.httpMethod !== 'POST' || !title || !body) {
+    return {
+      statusCode: 400,
+      body: 'Bad Request',
+    };
+  }
+
+  const res = await courier.send({
+    message: {
+      to: {
+        audience_id: 'active-members',
+      },
+      content: {
+        title,
+        body,
+      },
+    },
+  });
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(res),
+  };
+};
+```
+
+This is a Netlify Function that sets up the Courier Node SDK, pulls the `title` and `body` out of the `POST` request, and then uses the `send` method of the SDK to deliver the notification to everyone in the `active-members` audience.
+
+It then returns a 200 to let you know the function ran successfully.
+
+With your Netlify Dev process still running, use a tool like Postman or a cURL command to send a `POST` request to the `/api/send-notification` endpoint of your live URL.
+
+<Figure caption="Postman makes testing endpoints easy.">
+  ![The Postman app interface showing a notification sent via
+  API.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-11-postman-send-notification.jpg)
+</Figure>
+
+The notification will show up in your in-app inbox.
+
+<Figure caption="Notifications are sent to the app inbox every time based on our settings.">
+  ![The example app dashboard showing the API-sent notification displayed in the
+  inbox.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-12-in-app-notification.jpg)
+</Figure>
+
+If you look at the [Courier logs](https://app.courier.com/test/logs/messages), you'll see that the notification was sent to the inbox _and also_ to the best of either SMS or email. If you registered using GitHub, it's likely that you only have an email on your account, so you'll get an email from Clerk with your notification.
+
+<Figure caption="The Courier logs show details on which channels a given notification was sent to.">
+  ![The Courier dashboard showing the logs for the API-sent
+  notification.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:211e2abf/lwj/blog/courier-notifications-13-log.jpg)
+</Figure>
+
+If you update Clerk to use phone numbers for registration and create a new account, sending notifications will now hit the inbox and SMS for that user.
+
+## Notifications don't have to be hard or annoying
+
+Courier has made it possible to get notifications running within an app in a few minutes and without much additional code at all, all while making it less complicated to send notifications in a way that won't overwhelm or annoy your app's users.
+
+Thanks again to Courier for making this tutorial possible.
+
+Go build something cool (with notifications)!
+
+## Resources and further reading
+
+- [Review the source code for this app](https://github.com/learnwithjason/courier-notifications)
+- [Learn more about Courier](https://lwj.dev/courier)

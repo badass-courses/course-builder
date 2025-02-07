@@ -1,0 +1,259 @@
+---
+slug: drizzle-orm-sqlite-create-tables
+pubDate: 2024-02-17
+
+title: >
+  Fix Drizzle "SqliteError: no such table" error — how to create tables
+description: >
+  I tried Drizzle ORM with SQLite but got stuck on "SqliteError: no such table". Here's how I solved the error and created SQLite tables from a Drizzle schema.
+---
+
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+I was trying to build something with [Drizzle](https://orm.drizzle.team/) but I couldn't figure out how to actually create tables in my SQLite database. Here are the docs I wish I'd had that would have saved me an hour of Googling things.
+
+## Create a new Node project
+
+If you don't already have one, create a new Node project.
+
+```sh
+# create a folder 
+mkdir my-drizzle-project
+cd my-drizzle-project/
+
+# initialize
+npm init -y
+git init
+
+# install the required deps
+npm i drizzle-orm better-sqlite3
+npm i -D @types/better-sqlite3 @types/node drizzle-kit ts-node typescript
+```
+
+### Update `package.json`
+
+In `package.json`, make the highlighted changes. More on the command prefixed with `db:`  later in this tutorial.
+
+```json title="package.json" mark={2-5,11-13}
+{
+	"engines": {
+		"node": ">=20.6.0"
+	},
+	"type": "module",
+	"name": "drizzle-sqlite-basic-example",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"db:studio": "drizzle-kit studio",
+		"build": "npx tsc",
+		"dev": "node --env-file=.env --watch --loader ts-node/esm index.ts",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Jason Lengstorf <jason@learnwithjason.dev>",
+	"license": "ISC",
+	"dependencies": {
+		"better-sqlite3": "^9.4.1",
+		"drizzle-orm": "^0.29.3"
+	},
+	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.9",
+		"@types/node": "^20.11.19",
+		"drizzle-kit": "^0.20.14",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.3.3"
+	}
+}
+```
+
+<Aside>
+  **NOTE:** These settings are my preferences for new Node projects. You can use whatever you like. Be aware that if you use CommonJS some of the code that follows in this tutorial may need to be tweaked a bit — I didn't test for CJS compatibility.
+</Aside>
+
+### Add `tsconfig.json`
+
+You can use any TypeScript setup you prefer, but here's the one I tested with.
+
+```json title="tsconfig.json"
+{
+	"compilerOptions": {
+		"strict": true,
+		"target": "ESNext",
+		"module": "NodeNext",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true
+	}
+}
+```
+
+## Create a Drizzle config file
+
+```ts title="drizzle.config.ts"
+import type { Config } from 'drizzle-kit';
+
+export default {
+	schema: './db/schema.ts',
+	out: './db/migrations',
+	driver: 'better-sqlite',
+	dbCredentials: {
+		url: './db/demo.db',
+	},
+} satisfies Config;
+```
+
+## Create a SQLite database schema
+
+Your schema can define any tables you need for your app. Here's what mine looks like:
+
+```ts title="db/schema.ts"
+import { integer, text, sqliteTable } from 'drizzle-orm/sqlite-core';
+
+export const users = sqliteTable('users', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	name: text('name'),
+});
+
+export const ideas = sqliteTable('ideas', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+	text: text('text'),
+	status: text('status', { enum: ['approved', 'rejected', 'pending'] }),
+	creator: integer('creator_id').references(() => users.id),
+});
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type Idea = typeof ideas.$inferSelect;
+export type NewIdea = typeof ideas.$inferInsert;
+```
+
+## Create the SQLite database tables from your Drizzle schema
+
+Right now, the schema is defined but the tables haven't been created in the SQLite database yet.
+
+This is where I got stuck. I tried to run my app, but I kept getting a `SqliteError: no such table: users` error. I couldn't find any reference to how to actually create the database tables in the Drizzle docs.
+
+After searching around, I figured out two ways to get the SQLite tables created using Drizzle:
+
+1. [Generate a migration](https://orm.drizzle.team/kit-docs/commands#generate-migrations) (the SQL query to create the tables as defined in your schema), which can be applied manually, using Drizzle's `migrate` helper, or with third-party tools — this is a production-friendly approach
+2. Push the schema changes directly, which is exactly what I was looking for to set up my local database and is what I'll cover in this tutorial.
+
+Both generating migrations and pushing schemas can be done using Drizzle's CLI helper, [Drizzle Kit](https://orm.drizzle.team/kit-docs/overview).
+
+### Push the SQLite database changes using Drizzle Kit
+
+For prototyping, local dev, or initializing a new database, the [`push` command](https://orm.drizzle.team/kit-docs/commands#prototype--push) will use the defined schema to update the database — which, in our case, will create the missing tables.
+
+```sh
+npx drizzle-kit push:sqlite
+```
+
+## View the SQLite database in Drizzle Studio
+
+To verify that the tables were created, you can use [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), which gives you a browser-based interface for viewing and working with your SQLite data.
+
+```sh
+npm run db:studio
+```
+
+This runs `drizzle-kit studio` under the hood and will start up Drizzle Studio at `https://local.drizzle.studio/`.
+
+<Figure caption="Drizzle Studio showing the newly created SQLite tables">
+	![Drizzle Studio screenshot showing the tables created in this tutorial](https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto,w_1270,b_rgb:a8fffb/v1708212151/lwj/blog/drizzle-studio.png)
+</Figure>
+
+## Test CRUD in SQLite using Drizzle ORM
+
+Now the tables exist, you can actually insert and select data from the database.
+
+<Aside>
+  **NOTE:** At this point, if you already know how to use Drizzle and are ready to build, you can stop reading here. I'm including this section for anyone who's brand new to Drizzle and wants to go from zero to writing and reading data from a SQLite database.
+</Aside>
+
+To try this out, create `index.ts` at the root of the project and add the following:
+
+```ts
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
+import {
+	users,
+	ideas,
+	type NewIdea,
+	type NewUser,
+	type User,
+} from './db/schema.js';
+import { eq } from 'drizzle-orm';
+
+const sqlite = new Database('./db/demo.db');
+const db = drizzle(sqlite);
+
+// inserts a new user and returns the newly created entry
+async function addUser(user: NewUser): Promise<User> {
+	return (await db.insert(users).values(user).returning()).at(0)!;
+}
+
+async function addIdea(idea: NewIdea): void {
+	await db.insert(ideas).values(idea);
+}
+
+// joins the ideas and users tables to select ideas with creator name
+async function getIdeas() {
+	return await db
+		.select({
+			id: ideas.id,
+			text: ideas.text,
+			status: ideas.status,
+			creator: users.name, // <= use the creator's name instead of ID
+		})
+		.from(ideas)
+		.leftJoin(users, eq(ideas.creator, users.id));
+}
+
+const user = await addUser({ name: 'Jason Lengstorf' });
+
+await addIdea({
+	text: 'Learn how ORMs work',
+	status: 'pending',
+	creator: user.id, // <= use the new user's ID as the creator
+});
+
+const allIdeas = await getIdeas();
+
+console.log(allIdeas);
+```
+
+After saving this, start the dev server by running `npm run dev` and you'll see output similar to the following:
+
+```sh
+❯ npm run dev
+
+> drizzle-sqlite-basic-example@1.0.0 dev
+> node --env-file=.env --watch --loader ts-node/esm index.ts
+
+(node:82803) ExperimentalWarning: Watch mode is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82808) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("ts-node/esm", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+[
+  {
+    id: 1,
+    text: 'Learn how ORMs work',
+    status: 'pending',
+    creator: 'Jason Lengstorf'
+  },
+]
+Completed running 'index.ts'
+```
+
+This creates both a user and an idea, then does a [partial select](https://orm.drizzle.team/docs/joins#partial-select) to create a combined view of the idea and user.
+
+If you're like me and this is your first time using Drizzle and SQLite: congratulations! You just created and interacted with a database in a Node and TypeScript project, and you're ready to build your data-powered app.
+
+Happy building!
+
+<Aside>
+  **NOTE:** A previous version of this article incorrectly stated that it was necessary to use both generate and push together. The [Drizzle team clarified how generate and push work](https://twitter.com/DrizzleORM/status/1759037941182042527) and this post has been updated accordingly.
+</Aside>

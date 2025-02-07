@@ -1,0 +1,49 @@
+---
+slug: hardware-acceleration-ffmpeg-apple-silicon
+pubDate: 2023-01-19
+
+title: Hardware Accelerated Video Encoding on Apple Silicon (M1 Max, etc.) With FFmpeg
+description: >
+  If you have an M1, M2, or other Apple Silicon chip in your computer, you can use hardware acceleration to speed up FFmpeg video encoding.
+
+share:
+  title: Hardware Accelerated Video Encoding on Apple Silicon (M1 Max, etc.) With FFmpeg
+  text: If you have an M1, M2, or other Apple Silicon chip in your computer, you can use hardware acceleration to speed up FFmpeg video encoding.
+---
+
+import Aside from '../../components/aside.astro';
+
+I [make a lot of video](https://www.codetv.dev), and I work with [an editor](https://lemonproductions.ca) to polish things up before they go out into the world. My cameras' recordings are huge, though (upwards of 50GB each), so we were running into time and storage issues trying to sync these huge files back and forth.
+
+To fix it, I use [FFmpeg](https://ffmpeg.org/) to transcode the videos at a smaller size. When I first started doing this, it took _forever_. My recordings are hours long, and running FFmpeg with a software encoder was taking nearly as long as the video itself to encode — when I need to send over 3 camera angles of a 3-hour video, that's a full day of monitoring FFmpeg!
+
+## Use your Apple Silicon (M1 / M2 Max, etc.) to run FFmpeg on multiple cores with hardware acceleration
+
+Fortunately, I have a computer with the M1 Max chip in it, so I can use hardware acceleration and the chip's multiple cores to drastically speed up FFmpeg on my MacBook Pro.
+
+Here's the command I use (pulled together from [helpful answers like this one](https://superuser.com/questions/1671831/parallel-transcoding-with-ffmpeg-on-m1-mac)) broken up by option with a comment explaining what each one does:
+
+```bash
+# command for easy copy-paste (replace filenames!)
+ffmpeg -i original-file.mp4 -an -c:v h264_videotoolbox -q:v 50 output-file.mp4
+
+# same command, broken up for legibility with comments:
+ffmpeg \
+  -i original-file.mp4 \   # the input file name
+  -an \                    # this drops the audio entirely
+  -c:v h264_videotoolbox \ # use Apple Silicon hardware acceleration
+  -q:v 50 \                # quality (0 is worst, 100 is best)
+  output-file.mp4          # output file name
+```
+
+<Aside>
+  **HEADS UP:** I record audio and video separately, so this command _removes_
+  audio entirely using `-an` to save time and space. If you don't want to remove
+  audio, remove the `-an` option and use `-acodec copy` instead.
+</Aside>
+
+Switching to the Video Toolbox hardware encoder sped things up to roughly 8.5x speed, meaning a 10-minute video will finish encoding in about 1.2 minutes. Encoding a full 3-hour video took just 21 minutes 34 seconds and dropped the file size from 54.83GB to 2.23GB.
+
+For comparison, using software encoding was closer to 1.5x speed.
+
+Now I can get all camera angles encoded in a couple hours and send less than 20GB of video to my editor. A huge win for a small change to my FFmpeg command setup!

@@ -1,0 +1,465 @@
+---
+slug: audit-logging-node-express
+pubDate: 2023-11-14
+
+title: Add audit logging and log streams to a Node Express app
+description: >
+  Building a SaaS product is no small feat. And when you start selling to large customers, the list of requirements gets even longer — but if you want to land those six-figure (and beyond) contracts, you'll need to land enterprise-level features.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/audit_logs_node_express.jpg
+  title: Add audit logging and log streams to a Node Express app
+  text: >
+    Landing large customers for your SaaS app means adding enterprise-level features. Learn how to add audit logging & log streams to a Node/Express app.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+In this tutorial, we're going to learn how to add audit logging and log streams to an existing Node app built with Express using WorkOS.
+
+<Aside variant="heart">
+  **NOTE:** Thanks to WorkOS for sponsoring this tutorial! Get your app ready for enterprise-level customers by [signing up for WorkOS today](https://lwj.dev/workos).
+</Aside>
+
+<YouTube id="7FHrfo3iHZo" />
+
+<Aside>
+  **Want to jump to the end?** [Check out the source code on
+  GitHub.](https://github.com/learnwithjason/node-express-audit-log-event-stream-workos)
+</Aside>
+
+## Get the project cloned and running
+
+This demo adds audit logging to an existing Node app built using Express. We'll focus exclusively on how to configure and send audit logging events via Node middleware using the WorkOS audit logging functionality.
+
+<Aside>
+  **NOTE:** This tutorial assumes you have a WorkOS account and have configured an organization for both SSO and SCIM. It’s not necessary to have these set up to use audit logging, but this app builds on previous tutorials for [configuring SSO in a Node app](/blog/workos-sso-okta-idp/) and [SCIM provisioning in Express apps](/blog/scim-directory-sync).
+</Aside>
+
+To get started, clone the app:
+
+```bash
+# clone the repo
+gh repo clone learnwithjason/node-express-audit-log-event-stream-workos
+
+# move into the directory
+cd node-express-audit-log-event-stream-workos/
+
+# install dependencies
+npm i
+```
+
+Next, get the required environment variables:
+
+```
+WORKOS_API_KEY=""
+WORKOS_CLIENT_ID=""
+WORKOS_REDIRECT_URI="http://localhost:3000/auth/callback"
+WORKOS_ORG_ID=""
+WORKOS_DIRECTORY_ID=""
+WORKOS_WEBHOOK_SECRET=""
+
+SESSION_SECRET=""
+```
+
+These environment variables are all part of getting the SSO and SCIM integrations running. Once these are in place, there are no additional credentials required to add audit logging.
+
+<Aside>
+  **NOTE:** For full instructions on getting the environment variable values, see the [“get environment variables” section of the SCIM tutorial](/blog/scim-directory-sync#get-environment-variables).
+</Aside>
+
+With the environment variables saved, start the app locally:
+
+```bash
+npm run dev
+```
+
+This will open the app at `http://localhost:3000`. Open it in your browser and log in with your SSO credentials to see the dashboard.
+
+## What is audit logging?
+
+On bigger teams, knowing who did what inside the app is a big deal. It creates accountability and makes sure the company is confident that every action can be attributed to one of their team members.
+
+That's what [audit logging](https://workos.com/docs/audit-logs) is designed to solve: provide a uniform API for keeping track of who did what inside the app to ensure there's a paper trail.
+
+Practically speaking, an audit log is a JSON object with data about who did what to which parts of the app that gets sent as an event. These events are stored somewhere (in our case, in WorkOS), and can be further sent (via log streams) to destinations like Amazon S3, Datadog, or Splunk.
+
+In WorkOS, an [audit logging event](https://workos.com/docs/reference/audit-logs/create-event) looks something like this:
+
+```json
+{
+  "actor": {
+    "id": "00ua...",
+    "type": "user"
+  },
+  "action": "user.login",
+  "context": {
+    "location": "0.0.0.0",
+    "user_agent": "Mozilla/5.0 ..."
+  },
+  "targets": [
+    {
+      "id": "00ua...",
+      "type": "user"
+    },
+    {
+      "id": "directory_group_01...",
+      "type": "team"
+    }
+  ],
+  "occurred_at": "2023-11-07T00:21:32.898Z"
+}
+```
+
+There are 5 parts to it:
+
+1. `actor` — who is taking the action? Providing a type (e.g. `user` or `system`) along with an identifier provides auditors with the ability to identify who did the thing.
+2. `action` — what was done? This is a unique identifier chosen by whoever sets up audit logging for the team.
+3. `context` — location and browser information about the actor
+4. `targets` — an array of what was acted upon. For example, an event might include the post that was affected, along with the user's team. These targets can be used to group events during audits (e.g. “show me everything that’s happened to this post”).
+5. `occurred_at` — a timestamp for when the action happened.
+
+The good news is that after a bit of initial setup, audit logging is as straightforward as console logging in an Express app. Let's build it!
+
+## Create a new file for audit logging middleware
+
+Usually, audit logging is being added to an already existing app. Because of that, it's likely that we already have most of the information we need configured: the user's information, the actions they can take, and so on.
+
+In Express, this information can be added to session storage, and since much of what we'll need is going to be the same for every event (e.g. the user's ID), we can use [Express middleware](https://expressjs.com/en/guide/using-middleware.html) to provide a helper function for logging that will have most of the work already done for the dev — it makes the right thing the easy thing, which (hopefully) means it will actually get used without someone needing to hound the dev team to implement it.
+
+Set up this middleware by creating a new file at `src/middleware/audit-logging.js` and add the following code inside:
+
+```js
+const { WorkOS } = require('@workos-inc/node');
+
+const workos = new WorkOS(process.env.WORKOS_API_KEY);
+
+exports.auditLoggingMiddleware = (req, res, next) => {
+	// get the IP and user agent of the request, if available
+	const ip = req.headers['x-forwarded-for'] ?? '';
+	const userAgent = req.headers['user-agent'] ?? '';
+
+	req.log = async ({ action, targets = [] }) => {
+		if (!req.session.user || !req.session.user.idpId) {
+			console.error('unable to send audit log events without a valid user');
+			return;
+		}
+
+		const userId = req.session.user.idpId;
+		const groups = req.session.user.groups ?? ['missing'];
+
+		// all events get attached to the user and team(s) they’re part of
+		const defaultTargets = [
+			{ type: 'user', id: userId },
+			...groups.map((groupId) => ({ type: 'team', id: groupId })),
+		];
+
+		await workos.auditLogs.createEvent(process.env.WORKOS_ORG_ID, {
+			action,
+			actor: {
+				type: 'user',
+				id: userId,
+			},
+			occurredAt: new Date(),
+			targets: defaultTargets.concat(targets),
+			context: {
+				location: ip,
+				userAgent,
+			},
+		});
+	};
+
+	next();
+};
+```
+
+After getting a new instance of the [WorkOS Node SDK](https://workos.com/docs/sdks/node), this file exports a new middleware function called `auditLoggingMiddleware`.
+
+Inside, it tries to grab the IP address and user agent from the current request, then attaches a new function called `log` to the request before continuing the request with `next()`. This middleware will run before all routes, which means every route will now have access to `req.log()` for sending audit logging events.
+
+The `req.log` function accepts an options argument with the name of the action and an optional array of targets. Everything else required will already be present in the session thanks to the auth middleware. (We'll look at specifically what's needed in the next section.)
+
+Inside `req.log`, the function will:
+
+- Check for a logged in user and bail if none is found
+- Grab the user's ID and group(s) from the session
+- Create default targets for the user and each group the user belongs to
+- Call the WorkOS SDK's `createEvent` method to send an audit logging event
+
+`createEvent` requires two arguments:
+
+1. The organization ID to attach the event to
+2. The event to log
+
+The event itself is mostly populated from existing data. The only things that the developer needs to provide are the action type and an optional array of additional targets to attach the event to.
+
+This setup makes it far less cumbersome to send an audit logging event. In the minimum use case, all the developer needs to do is something like this in a route:
+
+```js
+req.log({ action: 'some.action' });
+```
+
+This will create an event that's properly associated with the user and their group(s), along with additional information to help auditors.
+
+To add additional targets, the developer only needs the ID to send along:
+
+```js
+req.log({
+	action: 'some.action',
+	targets: [
+		{
+			type: 'document',
+			id: documentId,
+		},
+	],
+});
+```
+
+Now that we've got this set up, let's add it to the app.
+
+## Use the custom Express middleware for audit logging
+
+In `src/index.js`, add the following code:
+
+```diff lang="js"
+	const { join } = require('node:path');
+	const express = require('express');
+	const session = require('express-session');
+	const pgSimple = require('connect-pg-simple');
+
+	const app = express();
+	const sessionStore = pgSimple(session);
++	const { auditLoggingMiddleware } = require('./middleware/audit-logging');
+
+	app.set('view engine', 'ejs');
+	app.set('views', join(__dirname, 'views'));
+
+	app.use(
+		session({
+			secret: process.env.SESSION_SECRET,
+			resave: false,
+			saveUninitialized: false,
+			store: new sessionStore({
+				createTableIfMissing: true,
+				conObject: {
+					database: 'postgres',
+				},
+			}),
+		}),
+	);
+	app.use(express.static(join(__dirname, 'static')));
+	app.use(express.json());
+	app.use(express.urlencoded({ extended: true }));
+
++	app.use(auditLoggingMiddleware);
+
+	app.use('/', require('./routes/public'));
+	app.use('/auth', require('./routes/auth'));
+	app.use('/dashboard', require('./routes/dashboard'));
+	app.use('/api', require('./routes/api'));
+
+	const port = 3000;
+	app.listen(port, () => {
+		console.log(`app listening at http://localhost:${port}`);
+	});
+
+```
+
+Once this is added, every route in the app will have access to the `req.log` method!
+
+## Make sure the required data is available in the session
+
+Because we want to attach audit logging events to both the user _and_ the user's teams, we need to make sure the appropriate data is added to the user session.
+
+Inside `src/routes/auth.js`, find the `req.get('/callback', ...)` route and make the following changes:
+
+```diff lang="js"
+	router.get('/callback', async (req, res) => {
+		const { code } = req.query;
+
+		const { profile } = await workos.sso.getProfileAndToken({
+			code,
+			clientID: process.env.WORKOS_CLIENT_ID,
+		});
+
+		// store the user in the app database
+		const user = await db.getUserByEmail(profile.email);
++		const dirUser = await workos.directorySync
++			.listUsers({
++				directory: process.env.WORKOS_DIRECTORY_ID,
++			})
++			.then(({ data }) => data.find((u) => u.idpId === profile.idpId));
+
+		req.session.user = profile;
+		req.session.user.id = user.id;
++		req.session.user.idpId = profile.idpId;
+		req.session.user.roles = user.roles;
++		req.session.user.groups = dirUser.groups.map((g) => g.id);
+
+		res.redirect('/dashboard');
+	});
+```
+
+Users in this app log in with SSO and are synced with a user directory using SCIM, so we use WorkOS's directory sync to look up all the users and match the current user to get access to all their current groups.
+
+Next, we attach the identity provider ID and an array of group IDs to the user's session object.
+
+<Aside>
+  **NOTE:** The identity provider ID is used as a preference based on the assumption that the IT admin will be using that ID as their source of truth for linking data to users. You can use any unique identifier you prefer.
+</Aside>
+
+## Define audit logging events in WorkOS
+
+Next, head over to your WorkOS dashboard, navigate to Configuration > Audit Logs, and click "+ Create an event" to add all the events required for this app. This demo uses 5 event types:
+
+- `user.login`, with target types of `user` and `team`
+- `user.logout`, with target types of `user` and `team`
+- `user.invite`, with target types of `user` and `team`
+- `post.create`, with target types of `post`, `user` and `team`
+- `post.delete`, with target types of `post`, `user` and `team`
+
+Once these are created, we can add the audit log calls inside our app.
+
+## Add audit logging to an Express app
+
+In any route that should be logged, add a new call to the `req.log` method.
+
+In `src/routes/api.js`, update the `/delete-post/:post_id` route:
+
+```diff lang="js"
+	router.get('/invite/:id', async (req, res) => {
+		// TODO implement invite system
+		console.log(`Invited user: ${req.params.id}`);
++		req.log({
++			action: 'user.invite',
++			targets: [{ type: 'user', id: String(req.params.id) }],
++		});
++
+		res.redirect('/dashboard/team');
+	});
+
+	 router.get('/delete-post/:post_id', async (req, res) => {
++		req.log({
++			action: 'post.delete',
++			targets: [{ type: 'post', id: String(req.params.post_id) }],
++		});
++
+		await db.query(
+			db.sql`
+				DELETE FROM posts
+				WHERE id = $1
+			`,
+			[req.params.post_id],
+		);
+
+		res.redirect('/dashboard');
+	});
+```
+
+In `src/routes/auth.js`, update the `/callback` and `/logout` routes:
+
+```diff lang="js"
+	router.get('/callback', async (req, res) => {
+		const { code } = req.query;
+
+		const { profile } = await workos.sso.getProfileAndToken({
+			code,
+			clientID: process.env.WORKOS_CLIENT_ID,
+		});
+
+		// store the user in the app database
+		const user = await db.getUserByEmail(profile.email);
+		const dirUser = await workos.directorySync
+			.listUsers({
+				directory: process.env.WORKOS_DIRECTORY_ID,
+			})
+			.then(({ data }) => data.find((u) => u.idpId === profile.idpId));
+
+		req.session.user = profile;
+		req.session.user.id = user.id;
+		req.session.user.idpId = profile.idpId;
+		req.session.user.roles = user.roles;
+		req.session.user.groups = dirUser.groups.map((g) => g.id);
+
++		await req.log({ action: 'user.login' });
++
+		res.redirect('/dashboard');
+	});
+
+-	router.get('/logout', (req, res) => {
++	router.get('/logout', async (req, res) => {
++		await req.log({ action: 'user.logout' });
++
+		req.session.user = null;
+		req.session.save();
+
+		res.redirect('/');
+	});
+```
+
+And finally, in `src/routes/dashboard.js`, update the `/new` route for `POST` requests:
+
+```diff lang="js"
+	router.post('/new', async (req, res) => {
+		const { title, content } = req.body;
+		const user_id = req.session.user.id;
+
+		try {
+			const result = await db.query(
+				db.sql`
+					INSERT INTO posts (user_id, title, content)
+						VALUES ($1, $2, $3)
++						RETURNING id;
+				`,
+				[user_id, title, content],
+			);
+
+			console.log(result);
++			await req.log({
++				action: 'post.create',
++				targets: [{ type: 'post', id: String(result.rows.at(0).id) }],
++			});
+		} catch (err) {
+			console.error(err);
+		}
+
+		res.redirect('/dashboard');
+	});
+```
+
+## Perform actions and check the log in WorkOS
+
+After saving, try logging in, logging out, creating and deleting posts, or inviting a team member. After the actions have been performed, head to your WorkOS dashboard and view the log for your organization. You'll see audit logging events showing up in real time!
+
+<Figure caption="Audit logging events are visible in the WorkOS dashboard.">
+  ![the WorkOS audit logs dashboard showing recent events](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:c10b84/lwj/blog/workos-audit-logging-01-log-view.jpg)
+</Figure>
+
+## Add log streams to integrate with your Security Incident and Event Management (SIEM) provider
+
+No team wants to open a bunch of different dashboards to monitor the dozens of tools used by the company. [Setting up log streams](https://workos.com/docs/audit-logs/log-streams) allows them to bring all the logs together into a central SIEM provider, and it all happens without any code changes required.
+
+Inside WorkOS, go to your organization and click "Configure manually" under Log Streams, then choose your SIEM provider (currently supported: Amazon S3, Datadog, and Splunk), then add the configuration details on the next screen to get logs streaming to your provider.
+
+<Figure caption="Log streams are available to Amazon S3, Datadog, and Splunk.">
+  ![the WorkOS dashboard showing the log streams destination options of Amazon S3, Datadog, and Splunk](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:ffde38/lwj/blog/workos-audit-logging-02-log-streams.jpg)
+</Figure>
+
+And that's it! Log streams are handled and your teams don't need to add another dashboard to their list.
+
+## Audit logging and log streaming are important to larger customers
+
+Remember: as companies grow, features like audit logging and log streams start to become critical factors in their decision to adopt a new product.
+
+These kinds of features maybe don't feel exciting to implement, but you know what _is_ exciting? Closing a six-figure deal with a huge new customer.
+
+Thanks again to WorkOS for sponsoring this tutorial. Happy building, friends!
+
+## Resources & further reading
+
+- [WorkOS audit logging](https://workos.com/docs/audit-logs)
+- [Express middleware](https://expressjs.com/en/guide/using-middleware.html)
+- [WorkOS Node SDK](https://workos.com/docs/sdks/node)
+- [API reference for audit log events](https://workos.com/docs/reference/audit-logs/create-event)

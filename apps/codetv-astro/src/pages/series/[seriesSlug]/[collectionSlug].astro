@@ -1,0 +1,395 @@
+---
+import { Image } from '@unpic/astro'
+import { format, parseISO } from 'date-fns'
+
+import EpisodePreview from '../../../components/episode-preview.astro'
+import Layout from '../../../layouts/default.astro'
+import { createImageUrl } from '../../../util/cloudinary'
+import { getAllSeries, getSeriesBySlug } from '../../../util/sanity'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+	const allSeries = await getAllSeries()
+
+	return allSeries.flatMap((s) => {
+		return s.collections!.map((c) => ({
+			params: { seriesSlug: s.slug, collectionSlug: c.slug },
+		}))
+	})
+}
+
+const { seriesSlug, collectionSlug } = Astro.params
+
+if (!seriesSlug || !collectionSlug) {
+	throw new Error('Invalid series and/or collection provided.')
+}
+
+const series = await getSeriesBySlug({
+	series: seriesSlug,
+	collection: collectionSlug,
+})
+
+if (!series) {
+	throw new Error(`Invalid series for ${seriesSlug}`)
+}
+
+if (!series.image || !series.image.public_id) {
+	throw new Error('Missing series image')
+}
+
+const seriesImage = createImageUrl(series.image.public_id, {
+	width: 1280,
+	aspect_ratio: '16:9',
+	crop: 'fill',
+})
+
+const sponsors = series.sponsors ?? []
+
+const url = Astro.site!
+url.pathname = `/series/${series.slug}/${series.collection?.slug}`
+---
+
+<Layout title={`${series.title} ${series.collection?.title}`}>
+	<Fragment slot="head">
+		<link rel="canonical" href={url.toString()} />
+
+		<meta property="og:type" content="video.tv_show" />
+		<meta property="og:url" content={url.toString()} />
+		<meta property="og:site_name" content="LWJ Productions" />
+		<meta
+			property="og:title"
+			content={`${series.title} ${series.collection?.title}`}
+		/>
+		<meta property="og:description" content={series.description} />
+
+		<meta property="og:image" content={seriesImage} />
+		<meta property="og:image:width" content="1280" />
+		<meta property="og:image:height" content="720" />
+		<meta property="og:image:alt" content={series.title} />
+	</Fragment>
+
+	<main>
+		<div class="header">
+			<div class="series-info">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 57 30"
+					class="production-co"
+					><title>LWJ Original</title><path
+						fill="color(display-p3 .9804 .9765 .9922)"
+						fill-rule="evenodd"
+						d="M2.17391 0C.973294 0 0 .973294 0 2.17391V27.8261C0 29.0267.973296 30 2.17391 30H54.3478c1.2007 0 2.1739-.9733 2.1739-2.1739V2.17391C56.5217.973294 55.5485 0 54.3478 0H2.17391ZM46.8906 12.5881c0 1.3826-.9652 2.3479-2.4 2.3479-1.1739 0-2.1913-.3131-3.4173-1.0435l-.0783.0522.6522 5.713c1.4348.7043 2.8956 1.0435 4.6434 1.0435 2.1913 0 3.9392-.6 5.2174-1.8 1.2783-1.2 1.9044-2.8435 1.9044-4.9044V2.23162h-6.5218V12.5881ZM28.8777 14.675l-3 5.9478h-6.0261L14.6864 2.23154h6.9391l2.2956 9.52176 4.8783-9.75654h.3391l4.8522 9.75654 2.2957-9.52176h6.7565L37.8777 20.6228h-6.0261l-2.9739-5.9478Zm-12.1486 5.8175v-5.8174H9.94645V2.23162H3.42471V20.4925H16.7291Zm36.5877 6.2886v.8843h-3.2635v-5.4782h.9861v4.5939h2.2774Zm-9.6793-1.229 1.0173-2.3087.9783 2.3087h-1.9956Zm3.9443 2.113-2.4104-5.5017h-.9783l-2.4887 5.5017h1.0174l.5635-1.2756h2.6922l.5399 1.2756h1.0644Zm-8.345-5.4779v5.5095h-.4852l-3.5765-4.0617.0078 4.0304h-.9548v-5.4782h.9313l3.1305 3.553-.0079-3.553h.9548Zm-8.04 5.4782v-5.4782h-.9861v5.4782h.9861Zm-6.316-2.9195h2.3478v2.3322c-.7278.4617-1.44.6652-2.2774.6652-.8452 0-1.5261-.2582-2.0504-.7669-.5244-.5087-.7826-1.1896-.7826-2.027 0-.8296.2895-1.5104.8609-2.0426.5713-.5322 1.2991-.7983 2.1834-.7983.6966 0 1.2913.1331 1.9252.4461v1.0409c-.7278-.407-1.3069-.5713-1.9252-.5713-.5791 0-1.0643.18-1.4478.5478-.3913.3678-.587.8218-.587 1.3618 0 .5713.18 1.033.5322 1.3852.3522.3522.8139.5322 1.3852.5322.4774 0 .8687-.0783 1.2444-.2661V25.552h-1.4087v-.8061Zm-5.4733 2.9195v-5.4782h-.9861v5.4782h.9861Zm-5.9897-4.6408h-.72v1.7452h.6887c.6026 0 1.0252-.36 1.0252-.8922 0-.5087-.3991-.853-.9939-.853Zm.7982 2.3791 1.9566 2.2617h-1.2053l-1.7765-2.0974h-.4774v2.0974h-.9861v-5.4782h1.7374c1.1896 0 1.9409.626 1.9409 1.6591 0 .72-.4461 1.3069-1.1896 1.5574ZM4.12085 26.9531c.54783.5478 1.2287.8217 2.05044.8217.82173 0 1.51043-.2739 2.06608-.8295.55565-.5479.82957-1.2209.82957-2.027s-.27392-1.4791-.82174-2.0269c-.55565-.54-1.23652-.814-2.05826-.814-.81392 0-1.49479.274-2.05044.8218-.55565.5556-.83739 1.2287-.83739 2.0348 0 .8061.27391 1.4791.82174 2.0191Zm.72783-3.4122c.35217-.3678.79043-.5556 1.30695-.5556.52435 0 .97826.1878 1.34609.5634.36783.3835.54783.8453.54783 1.3853 0 .54-.18.9939-.54783 1.3695-.36783.3757-.80609.5635-1.33043.5635-.52435 0-.96261-.1878-1.32261-.5635-.36-.3756-.54-.8374-.54-1.3852 0-.54.18-1.0017.54-1.3774Z"
+						clip-rule="evenodd"></path></svg
+				>
+				<h1>{series.title}</h1>
+				<p>{series.description}</p>
+				<a
+					href={`/series/${series.slug}/${series.collection?.slug}/${series.collection?.episodes?.at(0)?.slug}`}
+					class="play-episode button"
+					>Start Watching {series.collection?.title}</a
+				>
+			</div>
+			<div class="sponsors">
+				{
+					sponsors && sponsors.length > 0 ? (
+						<>
+							<h3>Presented by</h3>
+
+							<div class="sponsor-logos">
+								{sponsors.map((sponsor) => {
+									if (
+										!sponsor.logo ||
+										!sponsor.logo.public_id ||
+										!sponsor.logo.width ||
+										!sponsor.logo.height
+									) {
+										return
+									}
+
+									const src = createImageUrl(sponsor.logo.public_id, {
+										height: sponsor.logo.height * 2,
+										width: sponsor.logo.width * 2,
+										crop: 'fill',
+									})
+
+									return (
+										<a href={sponsor.link}>
+											<Image
+												src={src}
+												alt={sponsor.title}
+												height={70}
+												aspectRatio={sponsor.logo.width / sponsor.logo.height}
+											/>
+										</a>
+									)
+								})}
+							</div>
+						</>
+					) : null
+				}
+			</div>
+			<Image
+				src={seriesImage}
+				alt={series.title}
+				aspectRatio={16 / 9}
+				width={1280}
+				loading="eager"
+			/>
+		</div>
+
+		<section id="episodes" class="collection">
+			<div class="collection-info">
+				<select id="collection-selector">
+					{
+						series.collections
+							? series.collections.map((c) => {
+									const pathname = `/series/${series.slug}/${c.slug}#episodes`
+									const selected = c.slug === series.collection?.slug
+
+									return (
+										<option value={pathname} {selected}>
+											{c.title}
+										</option>
+									)
+								})
+							: null
+					}
+				</select>
+				<p class="count">
+					{series.collection?.episodes?.length} episodes
+				</p>
+				<p class="year">
+					Release year: {
+						format(
+							series.collection?.release_year
+								? parseISO(series.collection.release_year)
+								: new Date(),
+							'yyyy',
+						)
+					}
+				</p>
+			</div>
+			<div class="episodes">
+				{
+					series.collection?.episodes?.map((episode, index) => {
+						if (!episode || !episode.slug) {
+							return null
+						}
+
+						return (
+							<EpisodePreview
+								episode={episode}
+								episodeNumber={`${series.collection?.slug}E${index + 1}`.toUpperCase()}
+								episodeUrl={`/series/${series.slug}/${series.collection?.slug}/${episode.slug}`}
+							>
+								<div slot="fallback" class="episode-preview-placeholder">
+									<div class="img" />
+									<div class="meta" />
+									<div class="title" />
+									<div class="description" />
+								</div>
+							</EpisodePreview>
+						)
+					})
+				}
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import { navigate } from 'astro:transitions/client'
+
+	const select = document.querySelector(
+		'#collection-selector',
+	) as HTMLSelectElement
+
+	select.addEventListener('change', (event) => {
+		const option = event.target as HTMLOptionElement
+		navigate(option.value)
+	})
+</script>
+
+<style define:vars={{ bg: `url(${seriesImage})` }}>
+	.header {
+		background: var(--black);
+		display: grid;
+		gap: 1rem;
+		grid-template:
+			'image' 180px
+			'info'
+			'sponsors';
+		padding-block-end: 0.5rem;
+
+		> img {
+			aspect-ratio: 16 / 9;
+			display: block;
+			grid-area: image;
+			object-fit: cover;
+		}
+
+		:is(.series-info, .sponsors) {
+			padding: 0 1rem;
+		}
+
+		.series-info {
+			color: var(--gray-100);
+			font-size: 0.875rem;
+			font-weight: 200;
+			grid-area: info;
+			line-height: 1.45;
+
+			h1 {
+				color: var(--white);
+				font-size: 1.5rem;
+				line-height: 1.1;
+				padding-block: 0.5rem;
+			}
+		}
+
+		.sponsors {
+			align-items: center;
+			display: flex;
+			gap: 0.75rem;
+			grid-area: sponsors;
+			justify-content: center;
+
+			h3 {
+				color: var(--gray-100);
+				font-size: 0.75rem;
+				font-weight: 600;
+				text-transform: uppercase;
+			}
+		}
+
+		.sponsor-logos {
+			align-items: center;
+			display: flex;
+			gap: 1rem;
+
+			img {
+				block-size: 2.5rem;
+				opacity: 80%;
+			}
+		}
+
+		@media (min-width: 720px) {
+			align-items: end;
+			aspect-ratio: 16 / 9;
+			display: flex;
+			inline-size: 100cqw;
+			justify-content: space-between;
+			max-block-size: min(60dvb, 720px);
+			min-block-size: 600px;
+			overflow: hidden;
+			padding: 4rem max(calc((100cqw - 1024px) / 2), 5cqw);
+			position: relative;
+
+			/**
+		   * This is required to avoid a Chrome bug related to mix-blend-mode.
+		   * @see https://stackoverflow.com/a/69273410
+		   */
+			backdrop-filter: opacity(1);
+
+			&::before {
+				background-image: linear-gradient(
+						to bottom,
+						color-mix(in oklch, var(--gray-900), transparent) 0%,
+						color-mix(in oklch, var(--gray-900), transparent) 100%
+					),
+					var(--bg);
+				background-position: center;
+				background-size: 100%;
+				content: '';
+				filter: blur(1rem);
+				inset: -2rem;
+				position: absolute;
+				z-index: 1;
+			}
+
+			&::after {
+				background-image: linear-gradient(
+					10deg in oklch,
+					oklch(16.13% 0.08 291.17 / 0.95),
+					oklch(16.13% 0.08 291.17 / 0.95) 30%,
+					oklch(16.13% 0.08 291.17 / 0.75) 43%,
+					oklch(16.13% 0.08 291.17 / 0) 65%
+				);
+				mix-blend-mode: multiply;
+				content: '';
+				display: block;
+				inset: 0;
+				position: absolute;
+				z-index: 2;
+			}
+
+			:is(.series-info, .sponsors) {
+				padding: 0;
+				position: relative;
+				z-index: 10;
+			}
+
+			.series-info {
+				line-height: 1.25;
+				max-inline-size: 40ch;
+
+				h1 {
+					font-size: 2rem;
+				}
+			}
+
+			.sponsors {
+				justify-content: start;
+			}
+
+			> img {
+				box-shadow: 0 0 5rem
+					color-mix(in oklch, var(--gray-900) 75%, transparent);
+				display: block;
+				inset: 0;
+				inset-block-start: auto;
+				margin-inline: auto;
+				position: absolute;
+				z-index: 1;
+			}
+		}
+	}
+
+	.production-co {
+		inline-size: 3.5rem;
+		opacity: 0.75;
+	}
+
+	.collection {
+		padding: 4rem max(calc((100cqw - 1024px) / 2), 5cqw);
+	}
+
+	.collection-info {
+		display: flex;
+		font-weight: 200;
+		gap: 1rem;
+
+		& select {
+			background: var(--white);
+			border: none;
+			font-size: 1rem;
+			font-weight: 500;
+		}
+	}
+
+	.episodes {
+		container-name: episodes;
+		container-type: inline-size;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		justify-content: center;
+		padding-block-start: 2rem;
+
+		@media (min-width: 800px) {
+			justify-content: start;
+		}
+	}
+</style>

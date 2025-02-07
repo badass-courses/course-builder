@@ -1,0 +1,256 @@
+---
+slug: wix-custom-code
+pubDate: 2023-10-23
+
+title: The killer tool for devs who don't want to touch design is... Wix?
+description: >
+  If you're a developer who focuses on data & APIs and doesn't want to touch the design of a site, Wix might be exactly what you need. Hear me out.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/wix-studio.jpg
+  title: The killer tool for devs who don't want to touch design is... Wix?
+  text: >
+    If you're a developer who focuses on data & APIs and doesn't want to touch the design of a site, Wix might be exactly what you need. Hear me out.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="BUApR8vFW6k" />
+
+A lot of developers I've spoken to really enjoy working with the data layer of web apps, but wish they never had to touch UI code. If you're one of those developers, Wix might actually be an excellent fit for your dev stack.
+
+## Wait, you mean THAT Wix?
+
+If you thought Wix was only for no-code sites, you're not alone. Up until the team at Wix hit me up and asked if I'd be interested in trying out their developer tools, I thought the same thing.
+
+Wix Studio, which Wix describes as "a new end-to-end web creation platform for freelancers and agencies", gives us access to a new tools and a library of developer APIs that let us handle the backend of our client sites while letting our clients continue managing their site's look and feel in a visual, no-code interface.
+
+<Aside variant="heart">
+  Disclosure: Wix Studio sponsored this tutorial, but they don't have any
+  control over what I built or what I say about the tools.
+</Aside>
+
+## What does Wix Studio offer developers?
+
+When I started looking through the developer-focused tools Wix Studio offers, two things caught my eye:
+
+1. There's a [VS Code-based Wix IDE](https://dev.wix.com/docs/develop-websites/articles/coding-with-wix-studio/wix-studio-about-the-wix-ide) that lets you work on you Wix site code in a familiar interface (if you're a VS Code user).
+2. There's a set of APIs called [Velo](https://www.wix.com/velo/reference/api-overview) that provides JavaScript APIs for modifying Wix element data, handling animation, auth, and all sorts of other advanced controls I wasn't expecting to see.
+
+I'm not going to get into all the details during this build, so if you're interested go hit up their docs to see all the things you're able to do.
+
+What we'll cover in this tutorial is a first look at how a developer can manage the data layer of a client's Wix site using an IDE and APIs that are familiar and surprisingly nice to work with.
+
+## The setup: create a Wix site with a Pro Gallery element
+
+To get started, we need a Wix site we can add custom code to. For my demo, I created a new site with the "start from a blank canvas" option, then added a Pro Gallery element to the page.
+
+That's really all we need. You can play with it a bit, but really the point here is that we don't need to worry about what it looks like. The client will do whatever they want to on the presentation side; we only need to worry about getting the right image data into the gallery.
+
+<Figure caption="The Pro Gallery element is the only bit of editing in the Wix UI for this tutorial.">
+  ![the Pro Gallery component displayed in Wix Studio's
+  editor](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:585760/lwj/blog/wix-studio-01-new-site.jpg)
+</Figure>
+
+## Enable the Wix Studio developer tools
+
+To get started with coding, click the curly bois (`{}`) in the left-hand nav and click the "Start Coding" button.
+
+<Figure caption="The first time you use the code tools, Wix Studio asks for an opt in.">
+  ![Code tab in Wix Studio on first use showing a confirmation for enabling dev
+  tools.](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:585760/lwj/blog/wix-studio-02-enable-dev-tools.jpg)
+</Figure>
+
+This opens up the Wix Studio code tools, which are fine, but what I really want is that VS Code-based IDE — so click the "Code in Wix IDE" button at the top of the Page Code section.
+
+<Figure caption="The “Code in Wix IDE” link is at the top of the code pane.">
+  ![the code tab in Wix Studio with a link to "Code in Wix IDE" shown at the top
+  of the
+  pane](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:585760/lwj/blog/wix-studio-03-page-code-view.jpg)
+</Figure>
+
+This opens the familiar VS Code UI right in the browser, which is pretty slick.
+
+<Figure caption="">
+  ![Wix IDE's home screen in the
+  browser](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:585760/lwj/blog/wix-studio-04-wix-ide.jpg)
+</Figure>
+
+## Use code to set Wix gallery element images
+
+Now that we've got a site and we're in the Wix IDE, let's use the [Wix Editor Elements Velo API](https://www.wix.com/velo/reference/$w) to tell the page which images should be displayed in the gallery.
+
+In the explorer, go into the `src/pages/` directory and look for the file called `Home` with a random-looking suffix and a `.js` extension. In my site, the file is `src/pages/Home.c1dmp.js`.
+
+Inside, replace the contents with the following code:
+
+```js
+// docs: https://www.wix.com/velo/reference/$w/gallery
+$w.onReady(function () {
+  // @ts-expect-error known issue where IFrame type is inferred incorrectly
+  $w('#gallery1').items = [
+    {
+      type: 'image',
+      title: 'Yellow Tracksuit',
+      description: 'Photo by Dom Hill',
+      alt: 'woman in yellow tracksuit standing on basketball court side',
+      src: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/nimElTcTNyY',
+    },
+    {
+      type: 'image',
+      title: 'Striped V-Neck Tee',
+      description: 'Photo by Ayo Ogunseinde',
+      alt: 'black haired man making face',
+      src: 'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8YmxhY2slMjBtYW58ZW58MHwwfDB8fHww&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/sibVwORYqs0',
+    },
+    {
+      type: 'image',
+      title: 'Coral Blouse',
+      description: 'Photo by Eye for Ebony',
+      alt: 'woman standing in front of red brick wall',
+      src: 'https://images.unsplash.com/photo-1502764613149-7f1d229e230f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGJsYWNrJTIwd29tYW58ZW58MHwwfDB8fHww&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/OExQjtxbIpE',
+    },
+    {
+      type: 'image',
+      title: 'Pinstripe Parachute Pants',
+      description: 'Photo by Ahmed Carter',
+      alt: 'posing woman in white sleeveless top',
+      src: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGZhc2hpb258ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/posing-woman-in-white-sleeveless-top-tiWcNvpQF4E',
+    },
+    {
+      type: 'image',
+      title: 'White Dress',
+      description: 'Photo by Vladimir Yelizarov',
+      alt: 'woman in white dress sitting on white textile',
+      src: 'https://images.unsplash.com/photo-1617551307578-7f5160d6615e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGJsYWNrJTIwd29tYW58ZW58MHwwfDB8fHww&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/PfbItsR8Gqo',
+    },
+    {
+      type: 'image',
+      title: 'Wool Overcoat',
+      description: 'Photo by Alexandru Zdrobău',
+      alt: 'woman holding brown leather bag in bokeh photography',
+      src: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fGZhc2hpb258ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/juESZxMhtXk',
+    },
+    {
+      type: 'image',
+      title: 'Gray Jumper',
+      description: 'Photo by Judeus Samson',
+      alt: 'woman standing in the middle of the road',
+      src: 'https://images.unsplash.com/photo-1545291730-faff8ca1d4b0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fGZhc2hpb258ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/0UECcInuCR4',
+    },
+    {
+      type: 'image',
+      title: 'Leather Jacket',
+      description: 'Photo by Dami Adebayo',
+      alt: 'man in brown leather coat',
+      src: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fGZhc2hpb258ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/k6aQzmIbR1s',
+    },
+    {
+      type: 'image',
+      title: 'Wool Sweater',
+      description: 'Photo by Maia Habegger',
+      alt: 'woman wearing brown sweater standing on forest',
+      src: 'https://images.unsplash.com/photo-1520508358701-63027028d924?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d29tYW4lMjBzd2VhdGVyfGVufDB8MHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=60',
+      link: 'https://unsplash.com/photos/mAg7Dz1IQQU',
+    },
+  ];
+});
+```
+
+If you've ever used jQuery or the browser's built-in `querySelector` API, this might look familiar.
+
+The `$w()` function accepts a CSS selector as an argument, and in the Wix IDE the available elements will autocomplete once you type the quotes. Every Wix element automatically gets an ID that matches its type, so if you create your first gallery element, the ID will be `#gallery1`.
+
+<Aside>
+  **NOTE:** It's possible to change this ID through the Wix Studio if you
+  prefer, but be aware that if the client deletes and re-adds the gallery, it
+  will revert to the default ID name.
+</Aside>
+
+After selecting the gallery, we can set the items to be displayed by providing an array to the `.items` property.
+
+Each item in the array is an object containing either image or video information. In this example we're only providing images.
+
+<Aside>
+  **NOTE:** It's not listed in the docs, but you can provide an `alt` property
+  and it will be used as the image's alt tag — make sure to add this for
+  accessibility!
+</Aside>
+
+The nice thing about this API is that there's barely any code required to insert our images — nearly all of this code is the image data itself.
+
+## See the custom-coded images in the site
+
+To test that the images are loading as expected, go back to the Wix Studio and click the eye icon at the very top right of the UI, next to the "Publish" button.
+
+<Figure caption="">
+  ![preview of the Wix site showing custom-coded images in the
+  gallery](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:585760/lwj/blog/wix-studio-05-gallery-preview.jpg)
+</Figure>
+
+Assuming you used the same images from the code sample above, your gallery will look similar to the one in the screenshot above. (The specific layout will depend on options you selected for the gallery element.)
+
+With that, you've successfully custom coded images into your client's Wix site. They can change all the settings, move the layout around, and whatever else they want to do, and you as the developer only need to worry about setting this one call to `$w()` up.
+
+## Going beyond hard-coded images
+
+You're not limited to hard-coded image data, either — you can grab images from any API and display them in your Wix gallery elements.
+
+For example, here's how you would display a list of [corgi images from the Dog API](https://dog.ceo/dog-api/documentation/breed) using the web standard [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API):
+
+```js
+// docs: https://www.wix.com/velo/reference/$w/gallery
+$w.onReady(async function () {
+  const res = await fetch('https://dog.ceo/api/breed/corgi/images');
+
+  if (!res.ok) {
+    console.error('something went wrong loading the images');
+    return;
+  }
+
+  const data = await res.json();
+  const images = data.message.map((image, i) => {
+    return {
+      type: 'image',
+      title: `Corgi ${i}`,
+      description: 'Images from the Dog API',
+      alt: 'a corgi',
+      src: image,
+      link: 'https://dog.ceo/dog-api/documentation/breed',
+    };
+  });
+
+  // @ts-expect-error known issue where IFrame type is inferred incorrectly
+  $w('#gallery1').items = images;
+});
+```
+
+After saving, preview the site to see the gallery images update.
+
+<Figure caption="">
+  ![the image gallery showing photos of
+  corgis](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:585760/lwj/blog/wix-studio-06-images-from-api.jpg)
+</Figure>
+
+## No-code for clients doesn't mean no-code for devs
+
+We only looked at a single workflow in this tutorial, but the fact that we can work in a VS Code-based IDE, with autocomplete and a familiar, selector-based API, is a welcome surprise to devs like me who thought choosing Wix mean it was impossible to make code changes to client sites.
+
+And, for those devs who never want to touch the design parts of web dev, Wix might actually be a welcome addition to the way they work with clients.
+
+## Resources & Further Reading
+
+- [Wix Studio](https://www.wix.com/studio/development)
+- [Velo API Reference](https://www.wix.com/velo/reference/api-overview)
+- [Wix IDE](https://dev.wix.com/docs/develop-websites/articles/coding-with-wix-studio/wix-studio-about-the-wix-ide)
+- [Dog API](https://dog.ceo/dog-api/)

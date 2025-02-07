@@ -1,0 +1,44 @@
+{
+  "name": "lwj-sanity",
+  "private": true,
+  "version": "1.0.0",
+  "main": "package.json",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "sanity dev",
+    "predev": "npm run typegen",
+    "start": "sanity start",
+    "build": "sanity build",
+    "prebuild": "npm run typegen",
+    "typegen": "sanity schema extract && sanity typegen generate",
+    "deploy": "sanity deploy",
+    "deploy-graphql": "sanity graphql deploy"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/vision": "^3.48.1",
+    "easymde": "^2.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sanity": "^3.48.1",
+    "sanity-plugin-cloudinary": "^1.1.3",
+    "sanity-plugin-markdown": "^5.0.0",
+    "sanity-plugin-mux-input": "^2.3.6",
+    "styled-components": "^6.1.8"
+  },
+  "devDependencies": {
+    "@sanity/eslint-config-studio": "^5.0.1",
+    "@types/react": "^19.0.8",
+    "eslint": "^9.9.0",
+    "prettier": "^3.0.2",
+    "typescript": "^5.1.6"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 100,
+    "bracketSpacing": false,
+    "singleQuote": true
+  }
+}

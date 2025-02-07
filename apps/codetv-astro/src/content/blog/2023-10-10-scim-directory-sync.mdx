@@ -1,0 +1,584 @@
+---
+slug: scim-directory-sync
+pubDate: 2023-10-10
+
+title: SCIM Provisioning in Node Express Using WorkOS and Okta
+description: >
+  If you're building a SaaS app, landing the largest customers means supporting large-scale needs like provisioning user accounts and managing permissions based on their central directory. In this tutorial, you'll learn how to add SCIM support to your Node-based app using WorkOS.
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/lwj/blog/workos-scim.jpg
+  title: SCIM Provisioning in Node Express Using WorkOS and Okta
+  text: >
+    Support the largest customers in your SaaS app with directory sync. Learn how to add SCIM support to your Node app using WorkOS in this tutorial.
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="cFr7GfOng1o" />
+
+<Aside>
+  **Want to jump to the end?** [Check out the source code on
+  GitHub.](https://github.com/learnwithjason/node-express-scim-workos-example)
+</Aside>
+
+## Prerequisites
+
+This tutorial extends an app that uses Single Sign-On (SSO) for user auth. If you're not familiar with SSO or how to implement it, you can see the implementation in the source code or learn how to [implement SSO in a Node app in this tutorial](https://www.codetv.dev/blog/workos-sso-okta-idp/).
+
+If you want to build along with this tutorial, you'll need:
+
+- Node v20.6.0 or later
+- PostgreSQL available in your development environment (I used v14.9)
+- A [WorkOS account](https://lwj.dev/workos) (you can sign up without a credit card and build in dev mode for free)
+- An [Okta account](https://developer.okta.com/signup/) to use as your identity provider (a dev account is free while you build)
+- [ngrok](https://ngrok.com/) or a similar tool for exposing your dev environment via URL (for webhook testing)
+
+<Aside variant="heart">
+  **Disclosure:** this tutorial was sponsored by
+  [WorkOS](https://lwj.dev/workos). Thanks, friends!
+</Aside>
+
+## Add SCIM support to a Node Express app
+
+WorkOS calls this [Directory Sync](https://workos.com/docs/directory-sync). Quote:
+
+> System for Cross-domain Identity Management (or SCIM) is an open standard for managing automated user and group provisioning.
+
+## Set up your development environment
+
+### Clone the repo
+
+```bash
+# clone the repo on the start branch (using the GitHub CLI: https://cli.github.com)
+gh repo clone learnwithjason/node-express-scim-workos-example -- -b start
+
+# move into it and install dependencies
+cd node-express-scim-workos-example/
+npm i
+```
+
+### Get environment variables
+
+For WorkOS SSO to work, you'll need to have your identity provider linked to your WorkOS account for single sign-on. If you're not sure how to do this, I have a [Node SSO with WorkOS tutorial](https://www.codetv.dev/blog/workos-sso-okta-idp/) that walks though how to set up SSO using Okta as your identity provider.
+
+This app already has the SSO flow set up, so all you'll need are your WorkOS credentials and redirect URI.
+
+Rename `.env.EXAMPLE` to `.env`, then update the following values:
+
+```diff
++	WORKOS_API_KEY="sk_test_..."
++	WORKOS_CLIENT_ID="client_..."
++	WORKOS_REDIRECT_URI="http://localhost:3000/auth/callback"
++	WORKOS_ORG_ID="org_..."
+	WORKOS_DIRECTORY_ID=""
+	WORKOS_WEBHOOK_SECRET=""
+
++	SESSION_SECRET="secret sauce"
+```
+
+- `WORKOS_API_KEY` is found on your [WorkOS Dashboard](https://dashboard.workos.com) under the API keys section
+- `WORKOS_CLIENT_ID` is found on the Configuration section of your dashboard
+- `WORKOS_REDIRECT_URI` is also found in the Configuration section
+  - Note that you can make this any path you prefer, but if you change it from the value shown above you'll need to update the route in `src/routes/auth.js` to match
+- `WORKOS_ORG_ID` can be found in the Organizations tab at the top of the org you set up for SSO
+- `SESSION_SECRET` is any string value — this is used by the session middleware to protect user sessions from tampering
+
+We'll add both `WORKOS_DIRECTORY_ID` and `WORKOS_WEBHOOK_SECRET` as part of this tutorial, so leave them blank for now.
+
+### Start the app locally
+
+With the environment variables updated, start the app:
+
+```bash
+npm run dev
+```
+
+<Aside>
+  **NOTE:** This app takes advantage of the [`--env-file`
+  flag](https://nodejs.org/api/cli.html#--env-fileconfig), which was added in
+  v20.6.0. If you get an error when starting the app, make sure you're on Node
+  \>= v20.6.0! (Or, if you prefer, add the `dotenv` package and set it up at the
+  top of `src/index.js` and remove the flag to support older versions of Node.)
+</Aside>
+
+The app will start, and you'll be able to access it at `http://localhost:3000`. Open it in your browser and log in via SSO.
+
+<Figure caption="">
+  ![the dashboard of the local
+  app](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-01-app-dashboard.jpg)
+</Figure>
+
+## Add Directory Sync using SCIM
+
+### Add a new directory in WorkOS
+
+In your WorkOS dashboard, find the organization you want to set up Directory Sync for, then open the Actions dropdown and choose "Add Directory".
+
+Choose Okta as your provider, then choose a display name (I chose "Okta").
+
+On the next screen, the "Directory Details" panel will show you the custom endpoint and bearer token that you'll need to configure Okta.
+
+<Figure caption="">
+  ![WorkOS directory configuration page for
+  Okta](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-01.1-directory-set-up.jpg)
+</Figure>
+
+Grab the "Directory ID" from the top of this page — this is what you'll need in the `.env.` as the value of `WORKOS_DIRECTORY_ID`.
+
+```diff
+	WORKOS_API_KEY="sk_test_..."
+	WORKOS_CLIENT_ID="client_..."
+	WORKOS_REDIRECT_URI="http://localhost:3000/auth/callback"
+	WORKOS_ORG_ID="org_..."
++	WORKOS_DIRECTORY_ID="directory_..."
+	WORKOS_WEBHOOK_SECRET=""
+
+	SESSION_SECRET="secret sauce"
+```
+
+### Enable SCIM provisioning in Okta
+
+Next, open your Okta dashboard and choose the application you've configured for SSO. (Or, if you prefer, create a new application.)
+
+On the General tab of your app's home page, click the "Edit" option in App Settings, then check the box to "Enable SCIM provisioning".
+
+### Configure SCIM provisioning in Okta
+
+The app will now have a Provisioning tab. Click that, then click the Edit option for the SCIM connection. And set the following options:
+
+- For the "SCIM connector base URL", use the endpoint from the WorkOS directory details from earlier
+- For "Unique identifier field for users", use "email"
+- Check the boxes for "Push New Users", "Push Profile Updates", and "Push Groups"
+- Change the "Authentication Mode" to "HTTP Header"
+- Add the Bearer Token from the WorkOS directory details to the "Authorization" field
+
+<Figure caption="">
+  ![Okta configuration for
+  SCIM](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-02-scim-connection.jpg)
+</Figure>
+
+On the next page, click the Edit option for "Provisioning to App" and check the boxes for:
+
+- Create Users
+- Update User Attributes
+- Deactivate Users
+
+<Figure caption="">
+  ![Okta configuration for what should be
+  synced](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-03-provisioning-to-app.jpg)
+</Figure>
+
+### Assign the app to people in your company
+
+Next, navigate to your Okta app's Assignments tab. Open the "Assign" dropdown, then choose "Assign to Groups" (you can also manually assign to each person if you prefer). Since my Okta account is a test instance, I assigned the app to everyone, but you can do whatever makes the most sense for your testing.
+
+For this app specifically, create a new group called "Authors" and assign at least one person to that group for testing. Assign this group to the app as well.
+
+<Figure caption="">
+  ![assigning groups in
+  Okta](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-04-assign-groups.jpg)
+</Figure>
+
+### Push groups to WorkOS
+
+With the groups assigned, it's time to try things out. Go to the "Push Groups" tab in your Okta app's dashboard, then open the "Push Groups" dropdown and choose "Find groups by name". Find "Authors" in the dropdown, ensure the "Push group memberships immediately" box is checked, and click save.
+
+<Figure caption="">
+  ![pushing the Authors group to WorkOS from
+  Okta](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-05-push-groups.jpg)
+</Figure>
+
+Once the push status changes to "Active", check your WorkOS directory and you'll see that the group and its users have been synced to WorkOS. That means SCIM is set up properly and Directory Sync is working!
+
+<Figure caption="">
+  ![the group in WorkOS after being pushed from
+  Okta](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-06-group-synced.jpg)
+</Figure>
+
+Any changes in your Okta directory will now update WorkOS as well. In the next section we'll set up a webhook so our app is also updated to stay in sync with user permissions.
+
+## Set up a webhook to sync directory changes to a Node app
+
+Now that Okta events are syncing to WorkOS, we need to ensure that our app updates whenever users or groups change.
+
+In our app, we rely on WorkOS for user login, so if a user's account is deactivated, we need our app to make sure they're logged out immediately (i.e. their next request will bounce them out to the login screen).
+
+We're also going to rely on groups for permissions in the app (i.e. authors can create and delete their own posts, but not delete the posts of others, but admins can delete anyone's posts). This means that we need to immediately sync group changes so that a user's membership in a permission group is up-to-date on every request.
+
+To do that, we need to set up a webhook endpoint in our app, then tell WorkOS to send all directory sync events to that endpoint.
+
+### Set up a webhook endpoint in the Node app
+
+In the example app, a stubbed out endpoint already exists at `/api/directory-sync` (defined in `src/routes/api.js`). This is good enough for testing, so our only task at this point is to make sure it's accessible to WorkOS for testing.
+
+To do that, we'll use [ngrok](https://ngrok.com/) in this tutorial. This avoids the need to deploy the app to the web for testing webhooks by allowing us to expose our own localhost as a public URL for as long as we keep the ngrok command running.
+
+With your app still running, open a new terminal and run:
+
+```bash
+ngrok http 3000
+```
+
+This will give you a "Forwarding" URL that looks similar to this:
+
+```
+https://56cd-2603-3004-6e3-8100-7429-8493-1862-fbb8.ngrok-free.app
+```
+
+If you visit the URL, you'll get a notice from ngrok, and if you click "Visit Site" you'll see your local app.
+
+Copy this URL and keep both your dev command and ngrok running — this is the URL we'll use to test the webhook.
+
+### Register a webhook with WorkOS
+
+In the WorkOS dashboard, click the Webhooks section, then create a new webhook. In the "Endpoint URL" field, add your ngrok URL with the path `/api/directory-sync` appended. It should look similar to this:
+
+```
+https://56cd-2603-3004-6e3-8100-7429-8493-1862-fbb8.ngrok-free.app/api/directory-sync
+```
+
+Check the boxes for "Directory Events", "Directory Group Events", and "Directory User Events" (this will select all the boxes below each of these event categories), then save.
+
+### Store the webhook secret as an environment variable
+
+After creating the webhook, copy the Signing Secret value from the top of the new webhook's dashboard and store it in `.env` as `WORKOS_WEBHOOK_SECRET`:
+
+```diff
+	WORKOS_API_KEY="sk_test_..."
+	WORKOS_CLIENT_ID="client_..."
+	WORKOS_REDIRECT_URI="http://localhost:3000/auth/callback"
+	WORKOS_ORG_ID="org_..."
+	WORKOS_DIRECTORY_ID="directory_..."
++	WORKOS_WEBHOOK_SECRET="abc..."
+
+	SESSION_SECRET="secret sauce"
+```
+
+### Validate that webhooks are sending
+
+To make sure your webhook events are sending, make a change in your Okta directory: add a user to a group, create a new group, or otherwise modify your users and groups in a way that will trigger a sync with WorkOS.
+
+Once you've made a change, the console of your dev process will show the incoming webhook. The data will look something like this:
+
+```js
+{
+  id: 'event_01HBF492M21X1QYD1TKCQK7GSE',
+  data: {
+    id: 'directory_group_01HBF491X5ECAHXQ0J13KXGEH6',
+    name: 'Authors',
+    idp_id: 'Authors',
+    object: 'directory_group',
+    created_at: '2023-09-29T00:09:07.748Z',
+    updated_at: '2023-09-29T00:09:08.479Z',
+    directory_id: 'directory_01HBF1A4XRKNJDVSX1NJW5TGJ5',
+    raw_attributes: {},
+    organization_id: 'org_01HBF10W8ZVRY2VG96HZ6KHX72',
+    previous_attributes: {}
+  },
+  event: 'dsync.group.updated',
+  created_at: '2023-09-29T00:09:08.482Z'
+}
+```
+
+## Update the app in response to webhook events
+
+Now that the app is receiving webhook events, we need to write the code to update our app in response to those events.
+
+### Validate that incoming webhook requests are valid
+
+To ensure that only requests sent from WorkOS's Directory Sync updates are able to modify our app, we need to start by validating every request that's made to our endpoint.
+
+To do this, make the following changes to the `/directory-sync` route in `src/routes/api.js`:
+
+```diff
+	const Router = require('express-promise-router');
++	const { WorkOS } = require('@workos-inc/node');
+	const db = require('../db');
+
+	const router = new Router();
++	const workos = new WorkOS(process.env.WORKOS_API_KEY);
+
+	router.post('/directory-sync', async (req, res) => {
+-		console.log(req.body);
+-
+-		// TODO implement directory sync
++		const payload = req.body;
++		const sigHeader = req.headers['workos-signature'];
++
++		// validate the event and get the data
++		const webhook = workos.webhooks.constructEvent({
++			payload,
++			sigHeader,
++			secret: process.env.WORKOS_WEBHOOK_SECRET,
++		});
++
+		res.send('ok');
+	});
+```
+
+WorkOS requests include a `workos-signature` header, which is the result of hashing the request payload with the webhook secret. If the signature matches, it's a valid webhook and the event data is returned from the `constructEvent` method.
+
+### Handle changes in group membership
+
+The first group of events our app needs to handle are group membership updates. These are how our app knows which permissions each user has. In this example, we store the group names as part of their user data, but this could also map to roles, permissions, or any other approach you prefer.
+
+Set up a switch on the `event` value of the webhook payload, then handle the `dsync.group.user_added` and `dsync.group.user_removed` events by adding the following code to the `/directory-sync` route in `src/routes/api.js`:
+
+```diff
+	router.post('/directory-sync', async (req, res) => {
+		const payload = req.body;
+		const sigHeader = req.headers['workos-signature'];
+
+		// validate the event and get the data
+		const webhook = workos.webhooks.constructEvent({
+			payload,
+			sigHeader,
+			secret: process.env.WORKOS_WEBHOOK_SECRET,
+		});
++
++		switch (webhook.event) {
++			case 'dsync.group.user_added':
++			case 'dsync.group.user_removed':
++				const { user, group } = webhook.data;
++				const roles = await db.getUserRolesByEmail(user.username);
++
++				if (webhook.event === 'dsync.group.user_added') {
++					roles.add(group.name.toUpperCase());
++				} else {
++					roles.delete(group.name.toUpperCase());
++				}
++
++				await db.createOrUpdateUser({
++					email: user.username,
++					firstName: user.firstName,
++					lastName: user.lastName,
++					roles: [...roles.values()],
++					active: user.state === 'active',
++				});
++				break;
++
++			default:
++				console.log(`TODO: handle ${webhook.event} events`);
++		}
+
+		res.send('ok');
+	});
+```
+
+When a user is added to or removed from a group, this code loads the affected user's profile, adds or removes the group according to the event type, then updates the user in the app's database with a new set of roles.
+
+### Add new users
+
+Next, your app needs to create new users when they're added to the app. Update the `/directory-sync` endpoint in `src/routes/api.js` with the following:
+
+```diff
+	router.post('/directory-sync', async (req, res) => {
+		const payload = req.body;
+		const sigHeader = req.headers['workos-signature'];
+
+		// validate the event and get the data
+		const webhook = workos.webhooks.constructEvent({
+			payload,
+			sigHeader,
+			secret: process.env.WORKOS_WEBHOOK_SECRET,
+		});
+
+		switch (webhook.event) {
+			case 'dsync.group.user_added':
+			case 'dsync.group.user_removed':
+				const { user, group } = webhook.data;
+				const roles = await db.getUserRolesByEmail(user.username);
+
+				if (webhook.event === 'dsync.group.user_added') {
+					roles.add(group.name.toUpperCase());
+				} else {
+					roles.delete(group.name.toUpperCase());
+				}
+
+				await db.createOrUpdateUser({
+					email: user.username,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [...roles.values()],
+					active: user.state === 'active',
+				});
+				break;
++
++			case 'dsync.user.created':
++				await db.createOrUpdateUser({
++					email: webhook.data.username,
++					firstName: webhook.data.firstName,
++					lastName: webhook.data.lastName,
++					roles: [],
++					active: webhook.data.state === 'active',
++				});
++				break;
+
+			default:
+				console.log(`TODO: handle ${webhook.event} events`);
+		}
+
+		res.send('ok');
+	});
+```
+
+To do this, we directly insert the necessary details into our user database.
+
+### Deactivate deleted users
+
+Finally, if a user's account is disabled — whether that means it's set to inactive or suspended, or deleted altogether — we need to make sure that user is immediately logged out. The SSO auth flow will already make sure they're unable to log back in again.
+
+To do this, make one last set of changes in the `/directory-sync` endpoint in `src/routes/api.js`:
+
+```diff
+	router.post('/directory-sync', async (req, res) => {
+		const payload = req.body;
+		const sigHeader = req.headers['workos-signature'];
+
+		// validate the event and get the data
+		const webhook = workos.webhooks.constructEvent({
+			payload,
+			sigHeader,
+			secret: process.env.WORKOS_WEBHOOK_SECRET,
+		});
+
+		switch (webhook.event) {
+			case 'dsync.group.user_added':
+			case 'dsync.group.user_removed':
+				const { user, group } = webhook.data;
+				const roles = await db.getUserRolesByEmail(user.username);
+
+				if (webhook.event === 'dsync.group.user_added') {
+					roles.add(group.name.toUpperCase());
+				} else {
+					roles.delete(group.name.toUpperCase());
+				}
+
+				await db.createOrUpdateUser({
+					email: user.username,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [...roles.values()],
+					active: user.state === 'active',
+				});
+				break;
+
+			case 'dsync.user.created':
+				await db.createOrUpdateUser({
+					email: webhook.data.username,
+					firstName: webhook.data.firstName,
+					lastName: webhook.data.lastName,
+					roles: [],
+					active: webhook.data.state === 'active',
+				});
+				break;
++
++			case 'dsync.user.updated':
++				if (
++					webhook.data.state === 'inactive' ||
++					webhook.data.state === 'suspended'
++				) {
++					await db.deactivateUserByEmail(webhook.data.username);
++				}
++				break;
++
++			case 'dsync.user.deleted':
++				await db.deactivateUserByEmail(webhook.data.username);
++				break;
+
+			default:
+				console.log(`TODO: handle ${webhook.event} events`);
+		}
+
+		res.send('ok');
+	});
+```
+
+This code listens for both updated and deleted users, and deactivates the user's account if any of the conditions are met. Once deactivated, any active sessions are destroyed for that user, meaning they'll be logged out on their next request.
+
+<Aside>
+  **NOTE:** The reason users are _deactivated_ and not _deleted_ is to preserve
+  a record of authorship on posts. In a production app, an option to permanently
+  delete a user and all their posts will be necessary to meet some regulatory
+  compliance audits.
+</Aside>
+
+## Test the sync
+
+To see this in action, try any of the following actions:
+
+1. Create a group called "Admins" and add a user to it. Note that users in the Admins group will have a "delete" option for all posts, not just those they created.
+2. Change a user's groups and watch the permissions update on each page refresh.
+3. Remove a user from the app while logged in as that user. Note that a removed user is immediately moved back to the home page (logged out) on their next request.
+
+The tutorial app is stripped down for the sake of clarity. In a production app, you can do much more with Directory Sync to keep your app synced with the customer's team as it grows and changes.
+
+## Bonus tip: use Directory Sync to expand your adoption
+
+Many SaaS apps today charge based on user seats, so another interesting way to use SCIM and Directory Sync is to build an "invite your teammates" flow into the app.
+
+This is a win-win, because for your customer, their team has a fast path to find and invite the people they need to collaborate with, and for your company, there's an organic growth loop where each employee of your customer that starts using your app is another opportunity to add more users as they bring their team along.
+
+To see the simplest implementation, add the following code to `src/routes/dashboard.js` at the top of the file and in the `/team` route:
+
+```diff
+	const Router = require('express-promise-router');
++	const { WorkOS } = require('@workos-inc/node');
+	const db = require('../db');
+
+	const router = new Router();
++	const workos = new WorkOS(process.env.WORKOS_API_KEY);
+
+	/* unchanged code omitted for brevity */
+
+	router.get('/team', async (req, res) => {
+-		const teammates = [];
++		const users = await workos.directorySync.listUsers({
++			directory: process.env.WORKOS_DIRECTORY_ID,
++		});
++
++		const teammates = users.list.data
++			.filter((user) => {
++				return !user.emails.some((e) => e.value === req.session.user.email);
++			})
++			.map(({ id, emails, firstName, lastName, groups }) => {
++				console.log(groups);
++				return {
++					firstName,
++					lastName,
++					email: emails.at(0).value,
++					groups: groups.map((g) => g.name).join(', '),
++					inviteLink: `/api/invite/${id}`,
++				};
++			});
+
+		res.render('dashboard/team', { teammates, user: req.session.user });
+	});
+```
+
+This code pulls a list of all the users that _could_ create an account in your app and shows them to the logged-in user with an invite link.
+
+Save, then visit `http://localhost:3000/dashboard/team` to see the teammates listed.
+
+<Figure caption="">
+  ![teammates displayed in the app, pulled from the synced
+  directory](https://res.cloudinary.com/jlengstorf/image/upload/w_1800,q_auto,f_auto,b_rgb:a8fffb/lwj/blog/workos-scim-07-invite-flow.jpg)
+</Figure>
+
+To take this further, you could get only the employees that are on the current user's team or who are in their department, depending on the metadata supplied by the customer.
+
+## SCIM means your biggest customers feel comfortable signing bigger contracts
+
+From admin overhead to security risks, third-party SaaS products cause a lot of stress for large companies' IT teams. By adding support for SCIM, your SaaS product leverages the customer's already-vetted directory and user management software, so the customer doesn't have to manually provision user accounts or worry that a terminated employee will still have access to things for a period after being removed from the central system.
+
+As the size of the companies you're pursuing for deals increases, these types of concerns become more and more of a blocker to finalizing a signed contract. Adding SCIM support alongside your SSO gives even the largest potential customer confidence that your app can handle their scale and pass their security and compliance audits.
+
+## Resources and further reading
+
+- [Source code](https://github.com/learnwithjason/node-express-scim-workos-example)
+- [WorkOS Directory Sync](https://workos.com/docs/directory-sync?utm_source=learnwithjason&utm_medium=tutorial-scim&utm_campaign=six-figure-saas)
+- [Okta Developer Account](https://developer.okta.com/signup/)
+- [Add SSO to a Node app](https://www.codetv.dev/blog/workos-sso-okta-idp/)

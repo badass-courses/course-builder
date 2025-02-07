@@ -1,0 +1,180 @@
+/* @font-face {
+	font-family: 'jwf-light';
+	src: url('/fonts/jwf-light.woff2') format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-light';
+	src: url('/fonts/jwf-light-italic.woff2') format('woff2');
+	font-weight: 300;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-book';
+	src: url('/fonts/jwf-book.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-book';
+	src: url('/fonts/jwf-book-italic.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-medium';
+	src: url('/fonts/jwf-medium.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-medium';
+	src: url('/fonts/jwf-medium-italic.woff2') format('woff2');
+	font-weight: 500;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-bold';
+	src: url('/fonts/jwf-bold.woff2') format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'jwf-bold';
+	src: url('/fonts/jwf-bold-italic.woff2') format('woff2');
+	font-weight: 600;
+	font-style: italic;
+	font-display: swap;
+} */
+
+@font-face {
+	font-display: swap;
+	font-family: 'monaspace-argon';
+	font-style: oblique 0deg 11deg;
+	font-weight: 200 800;
+	src: url('./fonts/MonaspaceArgonVarVF[wght,wdth,slnt].woff2')
+		format('woff2-variations');
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+}
+
+:root {
+	--gray-000: oklch(98.42% 0.006 299.37);
+	--gray-100: oklch(93.16% 0.009 303.44);
+	--gray-200: oklch(67.72% 0.052 299.79);
+	--gray-300: oklch(48.02% 0.086 298.25);
+	--gray-400: oklch(37.69% 0.072 297.8);
+	--gray-500: oklch(30.92% 0.055 298.28);
+	--gray-600: oklch(26.63% 0.043 298.59);
+	--gray-700: oklch(22.1% 0.028 300.34);
+	--gray-800: oklch(18.2% 0.021 301.9);
+	--gray-900: oklch(13.82% 0.01 299.12);
+
+	--green-500: oklch(79.17% 0.2297 158.55);
+
+	--orange-500: oklch(72.96% 0.127 36.93);
+
+	--indigo-100: oklch(93.56% 0.175 289.2);
+	--indigo-500: oklch(35.56% 0.175 289.2);
+
+	--yellow-500: oklch(90.64% 0.17 106.57);
+
+	--purple-100: oklch(92.63% 0.116 309.73);
+	--purple-500: oklch(62.12% 0.259 305.9);
+	--purple-600: oklch(56.68% 0.281 302.97);
+
+	--blue-500: oklch(56.81% 0.154 252.65);
+	--blue-600: oklch(46.53% 0.155 255.48);
+
+	--white: var(--gray-000);
+	--black: var(--gray-900);
+	--text: var(--gray-400);
+	--text-muted: var(--gray-300);
+	--text-strong: var(--gray-600);
+	--text-link: var(--blue-500);
+
+	--font-family: system-ui, sans-serif;
+	--font-family-medium: system-ui, sans-serif;
+	--font-family-bold: system-ui, sans-serif;
+
+	color: var(--text);
+	font-family: var(--font-family);
+	font-size: 18px;
+	line-height: 1.45;
+}
+
+body {
+	background: var(--white);
+	margin: 0;
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+	color: var(--text-strong);
+	font-family: var(--font-family-bold);
+	font-weight: normal;
+	letter-spacing: -0.02em;
+}
+
+.button {
+	background: var(--white);
+	border: 0;
+	border-radius: 0.25rem;
+	color: var(--black);
+	display: inline-block;
+	font-family: var(--font-family-medium);
+	font-size: 1.125rem;
+	line-height: 1;
+	margin-block-start: 1rem;
+	padding: 0.75rem 1rem;
+	text-decoration: none;
+
+	&:is(:active, :hover, :focus) {
+		background: var(--yellow-500);
+	}
+}
+
+:is(input, select, textarea, button) {
+	font-family: var(--font-family);
+	font-size: 1rem;
+	font-weight: 400;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+	white-space: nowrap; /* Prevents wrapping */
+}
+
+.cl-rootBox {
+	margin: 4rem auto;
+}
+
+@keyframes pulse {
+	to {
+		opacity: 0.5;
+	}
+}

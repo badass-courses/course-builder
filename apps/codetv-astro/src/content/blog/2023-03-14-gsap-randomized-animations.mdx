@@ -1,0 +1,293 @@
+---
+slug: gsap-randomized-animations
+pubDate: 2023-03-14
+
+title: Animations that feel alive using GSAP randomization
+description: >
+  Animations can make web apps feel more fun and alive. In this tutorial, learn how to use GSAP, randomization, and the MotionPath plugin to make your animations feel more lively.
+
+share:
+  title: Animations that feel alive using GSAP randomization
+  text: Animations can make web apps feel more fun and alive. In this tutorial, learn how to use GSAP, randomization, and the MotionPath plugin to make your animations feel more lively.
+  # image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/v1677567785/lwj/blog/convex/convex-database-fun.jpg
+---
+
+import YouTube from '../../components/youtube.astro';
+import Figure from '../../components/figure.astro';
+
+Animations are more fun — and more engaging — when they feel "alive". Let’s build a hero section to learn how to take animations from stiff and robotic to something much more natural-feeling with just a few lines of code using GreenSock.
+
+- [Source code for this tutorial](https://github.com/learnwithjason/gsap-randomized-animations)
+- [Demo of this tutorial](https://gsap-randomized-animations.netlify.app/)
+
+## Rather watch along than read? No problem!
+
+A video version of this tutorial is available on YouTube. Don't forget to subscribe!
+
+<YouTube id="DIK5R04eqeM" />
+
+## Set up the project with HTML and CSS
+
+For our animation to work, we need four components:
+
+1. A cutout image to be in the foreground
+2. A container with a background image that will hold our animations
+3. A button to trigger new animations
+4. A template that contains the markup we want to animate on each button click
+
+To get the starter code that contains the styles and markup used in this tutorial, clone the `start` branch of the repo:
+
+```bash
+# clone the start branch of the tutorial repo
+git clone git@github.com:learnwithjason/gsap-randomized-animations.git -b start
+
+# move into the cloned repo
+cd gsap-randomized-animations/
+
+# install dependencies
+npm i
+```
+
+## Start the dev server
+
+To start the site in local dev mode, run the following command:
+
+```shell
+npm run dev
+```
+
+The server will start up the site running at `http://localhost:5173`. Open it in your browser and you should see a hero banner extolling the virtues of donuts:
+
+## Animate an image whenever the button is clicked
+
+First, let's get a basic animation in place. We'll be using [GreenSock](https://greensock.com/) — also known as GSAP — because it's extremely powerful, free, and compatible with any framework (or no framework at all).
+
+To do that, we will:
+
+1. Get the template, container, and button using `document.querySelector` so we can work with them
+2. Create a variable called `endY` that will tell the heart where it should be at the end of the animation
+3. Add an event listener to the button for click events and prevent the default behavior
+4. Create a copy of the heart image
+5. Add the cloned heart inside the container
+6. Use GSAP to animate the heart using [`.to()`](<https://greensock.com/docs/v3/GSAP/gsap.to()>), from its starting position at the bottom of the container to the `endY` value, which is out of view at the top
+7. At the end of the animation, remove the heart
+
+Removing the heart at the end is important with an animation like this. Since someone can click the button an unlimited number of times, we need to make sure we're not continuously increasing the number of DOM nodes on the page.
+
+```ts
+import { gsap } from 'gsap';
+
+import './style.css';
+
+const heartTemplate: HTMLTemplateElement = document.querySelector('#heart')!;
+const container = document.querySelector('.container')!;
+const button = document.querySelector('.button')!;
+
+// move hearts to a position 20% beyond the top of the container so they disappear
+const endY = container.clientHeight * -1.2;
+
+button?.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  // create a new node from the img element in the template
+  const heart = heartTemplate.content.firstElementChild!.cloneNode(true);
+
+  // add the new node to the DOM inside the container
+  container.appendChild(heart);
+
+  // animate the heart from its starting position to the endY we defined above
+  gsap.to(heart, {
+    duration: 2,
+    y: endY,
+    onComplete: () => {
+      container.removeChild(heart);
+    },
+  });
+});
+```
+
+Save these changes, then click the button in your browser. The heart will animate in exactly the same way every time you click.
+
+<Figure aspectRatio={9 / 16}>
+  <video muted autoplay playsinline loop>
+    <source src="https://res.cloudinary.com/jlengstorf/video/upload/f_auto,q_auto/v1677737662/lwj/blog/gsap/gsap-animation-step-1.mp4" />
+  </video>
+</Figure>
+
+This is good, but we can make it better. Let's add some randomness to make the animation feel less robotic.
+
+## Start the animation from a random position in the container
+
+To make the animation feel a little more alive, we'll have each heart generate from a random position along the bottom of the container. To do that, we'll need to:
+
+1. Figure out the width of the container
+2. Set the width of the heart
+3. Get a random value between 0 and the width of the container, minus the width of the heart
+
+GSAP provides a helpful set of utility classes, including [a `random` helper](<https://greensock.com/docs/v3/GSAP/UtilityMethods/random()>). We'll use that to randomize the start position.
+
+Add the following changes to `src/main.ts`:
+
+```diff
+	import { gsap } from "gsap";
+
+	import "./style.css";
+
+	const heartTemplate: HTMLTemplateElement = document.querySelector("#heart")!;
+	const container = document.querySelector(".container")!;
+	const button = document.querySelector(".button")!;
+
+	// move hearts to a position 20% beyond the top of the container so they disappear
+	const endY = container.clientHeight * -1.2;
++	const w = container.clientWidth;
+
+	button?.addEventListener("click", (event) => {
+		event.preventDefault();
+
+		// create a new node from the img element in the template
+		const heart = heartTemplate.content.firstElementChild!.cloneNode(true);
+
++		// vary the size of the hearts a bit
++		const width = gsap.utils.random(40, 70);
+
++		// choose a random starting point along the width of the container
++		const initialX = gsap.utils.random(0, w - width);
+
++		// set initial values for the heart
++		gsap.set(heart, {
++			width,
++			x: initialX,
++		});
+
+		// add the new node to the DOM inside the container
+		container.appendChild(heart);
+
+		// animate the heart from its starting position to the endY we defined above
+		gsap.to(heart, {
+			duration: 2,
+			y: endY,
+			onComplete: () => {
+				container.removeChild(heart);
+			},
+		});
+	});
+
+```
+
+Save and click the button in your browser a few times. The hearts now show up at different sizes and from different positions.
+
+<Figure aspectRatio={9 / 16}>
+  <video muted autoplay playsinline loop>
+    <source src="https://res.cloudinary.com/jlengstorf/video/upload/f_auto,q_auto/v1677738274/lwj/blog/gsap/gsap-animation-step-2.mp4" />
+  </video>
+</Figure>
+
+By randomizing the starting position and size, the animation feels more fun and "alive". But we can do better!
+
+## Add a "floating" effect to the animation path
+
+To polish off the animation, we'll bring in GSAP's [MotionPathPlugin](https://greensock.com/motionpath/), which will allow us to make the hearts "float" as they animate upward. Combined with some randomization, we can make the hearts look like they're floating bubbles, drifting upward organically as we click.
+
+To accomplish this, we need to:
+
+1. Import and register the MotionPathPlugin
+2. Create a `floatDirection` variables to hold `-1` or `1`, which we'll use to determine if the heart should float left or right
+3. A function called `getNextX()` to determine the distance each heart should drift (using the `floatDirection` to determine to which side it drifts)
+4. Replace the `y` value in `gsap.to()` with `motionPath` config.
+   1. The hearts should turn to match their path direction. `autoRotate: 90` sets the top of the image (default is right side) as the part that should face the path
+   2. Setting `curviness: 1.25` "softens" the float. Try setting it to `0` to see the hearts follow a jagged path
+5. Finally, add an [easing function](https://greensock.com/docs/v3/Eases) to give the float a bit more dynamism.
+
+Make the following changes to `src/main.ts` to update the animation:
+
+```diff
+	import { gsap } from "gsap";
++	import { MotionPathPlugin } from "gsap/all";
+
+	import "./style.css";
+
++	gsap.registerPlugin(MotionPathPlugin);
+
+	const heartTemplate: HTMLTemplateElement = document.querySelector("#heart")!;
+	const container = document.querySelector(".container")!;
+	const button = document.querySelector(".button")!;
+
+	// move hearts to a position 20% beyond the top of the container so they disappear
+	const endY = container.clientHeight * -1.2;
+	const w = container.clientWidth;
+
+	button?.addEventListener("click", (event) => {
+		event.preventDefault();
+
+		// create a new node from the img element in the template
+		const heart = heartTemplate.content.firstElementChild!.cloneNode(true);
+
+		// vary the size of the hearts a bit
+		const width = gsap.utils.random(40, 70);
+
+		// choose a random starting point along the width of the container
+		const initialX = gsap.utils.random(0, w - width);
+
++		// randomize the initial direction of the float
++		const floatDirection = gsap.utils.random([-1, 1]);
+
++		// get a distance between the starting point & 200px in the given direction
++		const getNextX = (dir: number): number => {
++			return gsap.utils.random(initialX, initialX + 200 * dir);
++		};
+
+		// set initial values for the heart
+		gsap.set(heart, {
+			width,
+			x: initialX,
+		});
+
+		// add the new node to the DOM inside the container
+		container.appendChild(heart);
+
+		// animate the heart from its starting position to the endY we defined above
+		gsap.to(heart, {
+			duration: 2,
+-			y: endY,
++			motionPath: {
++				autoRotate: 90,
++				curviness: 1.25,
++				path: [
++					{
++						x: getNextX(floatDirection),
++						y: endY / gsap.utils.random(2, 4), // switch up the turning point
++					},
++					{
++						x: getNextX(floatDirection * -1), // reverse float direction
++						y: endY,
++					},
++				],
++			},
++			ease: "power1.in",
+			onComplete: () => {
+				container.removeChild(heart);
+			},
+		});
+	});
+```
+
+Save and click the button in your browser. You'll see floaty animated hearts!
+
+<Figure aspectRatio={9 / 16}>
+  <video autoplay muted playsinline loop>
+    <source src="https://res.cloudinary.com/jlengstorf/video/upload/v1677774863/lwj/blog/gsap/gsap-animation-step-3.mp4" />
+  </video>
+</Figure>
+
+## Give your animations a little more life with randomized values
+
+Adding animation makes apps more engaging, more interactive, and more likely to be shared. And now that you know how to use randomization to make your animations feel a little more alive, you're well on your way to building engaging, interactive, and shareable apps of your own!
+
+Share what you build in the comments! Don't forget to like and subscribe. If you want to learn more about animation, check out the recommended video. See you next time.
+
+## Resources
+
+- [Source code for this tutorial](https://github.com/learnwithjason/gsap-randomized-animations)
+- [Demo of this tutorial](https://gsap-randomized-animations.netlify.app/)
+- [GreenSock documentation](https://greensock.com/docs/)
+- [Episodes about GSAP](https://www.codetv.dev/topic/greensock)

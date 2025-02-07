@@ -1,0 +1,175 @@
+---
+import { Image } from '@unpic/astro';
+import { createImageUrl } from '../util/cloudinary';
+import type { AllSeriesQueryResult } from '../types/sanity';
+
+export const prerender = true;
+
+export interface Props {
+	series: AllSeriesQueryResult;
+	short?: boolean;
+}
+
+const { series, short = false } = Astro.props;
+---
+
+<section class="series-container">
+	<div class="series-list">
+		{
+			series.map((series) => {
+				if (!series.image || !series.image.public_id) {
+					console.error(`Series "${series.slug}" is missing an image.`);
+					return null;
+				}
+
+				if (!series.collections || series.collections.length < 1) {
+					console.error(`Series "${series.slug}" has no collections.`);
+					return null;
+				}
+
+				const collection = series.collections.at(0);
+
+				if (!collection || !collection.slug) {
+					console.error(`Series "${series.slug}" has an invalid collection.`);
+					return null;
+				}
+
+				const imgUrl = createImageUrl(series.image.public_id, {
+					width: 600,
+					aspect_ratio: '16:9',
+					crop: 'fill',
+				});
+
+				const seasons =
+					series.collections.length === 1
+						? '1 season'
+						: series.collections.length + ' seasons';
+
+				const episodes =
+					series.total_episode_count === 1
+						? '1 episode'
+						: series.total_episode_count + ' episodes';
+
+				return (
+					<div class="series">
+						<a href={`/series/${series.slug}/${collection.slug}`}>
+							<Image
+								src={imgUrl}
+								alt={series.title}
+								aspectRatio={16 / 9}
+								width={600}
+							/>
+						</a>
+						<div class="details">
+							<div class="title-bar">
+								<h2>
+									<a href={`/series/${series.slug}/${collection.slug}`}>
+										{series.title}
+									</a>
+								</h2>
+								<span class="season-count">{seasons}</span>
+								<span class="episode-count">{episodes}</span>
+							</div>
+							<p>{series.description}</p>
+						</div>
+					</div>
+				);
+			})
+		}
+	</div>
+	{
+		short ? (
+			<p class="see-all">
+				<a href="/watch" class="button">
+					See all series &rarr;
+				</a>
+			</p>
+		) : null
+	}
+</section>
+
+<style>
+	.series-container {
+		margin-block: 2rem;
+
+		@media (min-width: 800px) {
+			margin-block: 4rem;
+		}
+	}
+
+	.series-list {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		margin-block-start: 1rem;
+
+		@media (min-width: 800px) {
+			display: grid;
+			gap: 0.125rem;
+			grid-template-columns: repeat(auto-fit, calc(100% / 3 - 0.25rem / 3));
+			justify-content: start;
+		}
+
+		.series {
+			background: var(--white);
+			border-radius: 0.125rem;
+			transition: 200ms linear background;
+
+			&:is(:focus-within, :hover) {
+				background: var(--gray-100);
+			}
+		}
+
+		img {
+			border-radius: 0.125rem;
+		}
+
+		.details {
+			padding: 0 1rem 0.75rem;
+		}
+
+		.title-bar {
+			align-items: baseline;
+			display: flex;
+			flex-wrap: wrap;
+			font-size: 0.75rem;
+			font-weight: 200;
+			gap: 0.5rem;
+			line-height: 1.1;
+			margin-block: 0.25rem;
+		}
+
+		h2 {
+			font-size: 1rem;
+			font-weight: 500;
+			line-height: 1.1;
+			margin-inline-end: auto;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+
+				&:focus-visible,
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		& p {
+			font-size: 0.75rem;
+			line-height: 1.25;
+		}
+	}
+
+	.see-all {
+		margin: 1rem 0 0;
+		text-align: center;
+
+		a {
+			border: 1px solid var(--gray-600);
+			font-size: 0.875rem;
+			padding: 0.5rem 0.75rem;
+		}
+	}
+</style>

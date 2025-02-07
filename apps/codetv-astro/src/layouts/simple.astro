@@ -1,0 +1,57 @@
+---
+import Layout from './default.astro';
+
+const { frontmatter } = Astro.props;
+---
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+	<div class="container page">
+		<h1>{frontmatter.title}</h1>
+		<p class="lede">{frontmatter.description}</p>
+		<slot />
+	</div>
+</Layout>
+
+<style>
+	.container {
+		max-inline-size: min(90dvi, 54ch);
+		margin: 5rem auto;
+		word-wrap: break-word;
+
+		:is(h1, h2, h3, h4, h5, h6) {
+			line-height: 1.1;
+
+			&:not(:first-child) {
+				margin-block-start: 2rem;
+			}
+		}
+
+		:is(p, ul, ol) {
+			&:not(:first-child) {
+				margin-block-start: 1rem;
+			}
+
+			&.lede {
+				font-size: 1.25rem;
+				margin-block-start: 0.75rem;
+
+				& + p {
+					margin-block-start: 1.5rem;
+				}
+			}
+		}
+
+		h1 {
+			font-size: 1.5rem;
+			font-weight: 600;
+		}
+
+		h2 {
+			font-size: 1.25rem;
+		}
+
+		li {
+			margin-block-start: 0.375rem;
+		}
+	}
+</style>

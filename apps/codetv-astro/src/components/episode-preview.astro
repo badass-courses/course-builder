@@ -1,0 +1,276 @@
+---
+import { Image } from '@unpic/astro';
+import { format, parseISO } from 'date-fns';
+import {
+	createImageUrl,
+	generateEpisodePoster,
+	getYouTubeThumbnail,
+} from '../util/cloudinary';
+
+export interface Props {
+	episode: any;
+	episodeUrl: string;
+	episodeNumber: string;
+	class?: string;
+}
+
+const { class: className, episode, episodeUrl, episodeNumber } = Astro.props;
+
+let episodeImage;
+if (episode.thumbnail.public_id) {
+	episodeImage = createImageUrl(episode.thumbnail.public_id, {
+		width: 340,
+		aspect_ratio: '340:190',
+		crop: 'fill',
+	});
+} else if (episode.video.youtube_id) {
+	episodeImage = getYouTubeThumbnail(episode.video.youtube_id);
+} else {
+	episodeImage = generateEpisodePoster();
+}
+
+// if there's a YouTube ID, it's public
+// if there's no YouTube ID and a Mux ID AND the video is marked public, it's public
+// if there's no YouTube ID and a Mux ID AND the video is marked members-only, it's members-only
+// if there's no YouTube ID or Mux ID, it's scheduled
+const date = new Date(episode.publish_date);
+const isPrerelease = date >= new Date();
+
+let episode_status = 'unknown';
+let status_text = '';
+if (!isPrerelease && episode.video.youtube_id) {
+	episode_status = 'public';
+} else if (!episode.video.youtube_id && episode.video.mux) {
+	if (!episode.video.members_only && !isPrerelease) {
+		episode_status = 'public';
+	}
+
+	if (!episode.video.members_only && isPrerelease) {
+		episode_status = 'members-first';
+		status_text = `Members only until ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+	}
+
+	if (episode.video.members_only) {
+		episode_status = 'members-only';
+		status_text = `Members only content`;
+	}
+} else if (isPrerelease) {
+	episode_status = 'scheduled';
+	status_text = `New episode coming ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+} else {
+	console.log(`Episode ${episode.slug} is in an unknown state`);
+	console.log(episode);
+}
+
+if (episode.slug === 'sqlite-and-turso') {
+	console.log({
+		episode_status,
+		isPrerelease,
+	});
+}
+
+const MAX_DESC_LENGTH = 18;
+const desc_words = episode.short_description.split(' ');
+const description =
+	desc_words.length <= MAX_DESC_LENGTH
+		? episode.short_description
+		: episode.short_description.split(' ').slice(0, MAX_DESC_LENGTH).join(' ') +
+			'&hellip;';
+---
+
+{
+	['scheduled', 'public', 'members-first', 'members-only'].includes(
+		episode_status,
+	) ? (
+		<div class:list={['episode', className, episode_status]}>
+			<a href={episodeUrl} class="image-link" data-overlay-text={status_text}>
+				<Image
+					src={episodeImage}
+					alt={episode.title}
+					width={340}
+					height={190}
+				/>
+			</a>
+			<div class="info">
+				<div class="episode-meta">
+					<span class="episode-number">{episodeNumber}</span>
+					<span class="episode-date">
+						{format(parseISO(episode.publish_date), 'MMM d, yyyy')}
+					</span>
+				</div>
+				<h2>
+					<a href={episodeUrl}>{episode.title}</a>
+				</h2>
+				<p set:html={description} />
+			</div>
+		</div>
+	) : null
+}
+
+<style>
+	.episode,
+	:global(.episode-preview-placeholder) {
+		border-radius: 0.125rem;
+		display: block;
+		inline-size: min(100cqi, 320px);
+
+		@container episodes (min-width: 500px) {
+			inline-size: calc((100cqi - 0.25rem) / 2);
+		}
+
+		@container episodes (min-width: 700px) {
+			inline-size: calc((100cqi - 0.25rem * 2) / 3);
+		}
+
+		@container episodes (min-width: 900px) {
+			inline-size: calc((100cqi - 0.25rem * 3) / 4);
+		}
+	}
+
+	.episode {
+		background: var(--white);
+		transition: 200ms linear background;
+
+		&:is(:focus-within, :hover) {
+			background: var(--gray-100);
+		}
+
+		& img {
+			border-radius: 0.125rem;
+			inline-size: 100%;
+			display: block;
+		}
+
+		.info {
+			padding: 0.25rem 1rem 0.75rem;
+		}
+
+		& h2 {
+			font-family: var(--font-family);
+			font-size: 0.875rem;
+			font-weight: 600;
+			line-height: 1.1;
+			margin-block: 0.25rem;
+
+			.compact & {
+				font-size: 0.75rem;
+			}
+
+			& a {
+				color: inherit;
+				text-decoration: none;
+
+				&:focus-visible,
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		& p {
+			font-size: 0.75rem;
+			line-height: 1.25;
+		}
+
+		&:is(.members-first, .members-only, .scheduled) {
+			.image-link {
+				--bg-color: var(--gray-000);
+				--transparency-amount: 85%;
+				position: relative;
+
+				&::before,
+				&::after {
+					background: color-mix(
+						in oklch,
+						var(--bg-color) var(--transparency-amount),
+						transparent
+					);
+					content: '';
+					display: block;
+					inset-inline: 0;
+					position: absolute;
+				}
+
+				&::after {
+					color: var(--text-strong);
+					content: attr(data-overlay-text);
+					font-size: 0.6rem;
+					font-weight: 800;
+					inset-block-end: 0;
+					letter-spacing: 0.1em;
+					padding: 0.325rem 0;
+					text-align: center;
+					text-transform: uppercase;
+				}
+			}
+
+			&:is(.members-first, .members-only) .image-link {
+				--bg-color: var(--yellow-500);
+
+				&::before {
+					block-size: 0.875rem;
+					inset-block-start: 0;
+				}
+			}
+
+			&:is(.scheduled) .image-link {
+				&::before {
+					--transparency-amount: 60%;
+
+					inset: 0;
+				}
+			}
+		}
+	}
+
+	.episode-meta {
+		display: flex;
+		flex-wrap: wrap;
+		font-size: 0.75rem;
+		font-weight: 200;
+		gap: 0.5rem;
+		margin-block-start: 0.25rem;
+	}
+
+	.episode-number {
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	.episode-date {
+		margin-inline-start: auto;
+	}
+
+	:global(.episode-preview-placeholder) {
+		animation: 1s pulse infinite alternate linear;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+
+		.img,
+		.meta,
+		.title,
+		.description {
+			background: var(--gray-100);
+			border-radius: 0.125rem;
+			display: block;
+			inline-size: 100%;
+		}
+
+		.img {
+			aspect-ratio: 16 / 9;
+		}
+
+		.meta {
+			block-size: 0.75rem;
+		}
+
+		.title {
+			block-size: 1rem;
+		}
+
+		.description {
+			block-size: 3rem;
+		}
+	}
+</style>

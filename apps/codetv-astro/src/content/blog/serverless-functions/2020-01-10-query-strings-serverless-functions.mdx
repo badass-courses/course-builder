@@ -1,0 +1,153 @@
+---
+slug: serverless-functions/query-strings-serverless-functions
+pubDate: 2020-01-10
+
+title: Access Query String Parameters in Serverless Functions
+description: >
+  How do you use query parameter arguments in a serverless function? This quick tutorial will show you how to get values from query string parameters.
+
+share:
+  title: Access Query String Parameters in Serverless Functions
+  text: A tutorial to teach you how query parameters work and how to use them.
+---
+
+import Aside from '../../../components/aside.astro';
+import Figure from '../../../components/figure.astro';
+
+Serverless functions really start to show their potential when we can accept user input and respond to it. The most straightforward way to do this is with query parameters in the browser using `GET` requests. In this article, we'll look at how to retrieve query parameters in a serverless function and use them to affect the output of our function.
+
+<Aside>
+
+**Heads up!** This tutorial uses [Netlify Functions](https://www.netlify.com/products/functions/?utm_source=learnwithjason&utm_medium=sls-query-string-jl&utm_campaign=devex) for development and deployment. If you'd like more information, I've written a [primer on how to deploy serverless functions to Netlify](/blog/serverless-functions/deploy-first-serverless-function/).
+
+</Aside>
+
+## Create your dev environment
+
+If you've been following along with the [full series on serverless functions](/blog/serverless-functions/overview/), you can use the same codebase you originally set up. If you're starting fresh, you can clone [the starter repo](https://github.com/jlengstorf/serverless-functions/tree/starter):
+
+```bash
+# clone the starter branch of the repo
+git clone --single-branch --branch starter https://github.com/jlengstorf/serverless-functions.git
+
+# move into the project
+cd serverless-functions/
+
+# install dependencies (can also use `npm install`)
+yarn
+
+# install the Netlify CLI (can also use npm i -g netlify-cli)
+yarn global add netlify-cli
+```
+
+<Aside>
+
+**NOTE:** check out the [Netlify CLI docs](https://docs.netlify.com/cli/get-started/?utm_source=learnwithjason&utm_medium=sls-query-string-jl&utm_campaign=devex) for more details.
+
+</Aside>
+
+## Write the serverless function
+
+To start, let’s create a serverless function that will allow us to boop our friends. Create a file called `boop-a-friend.js` in the `functions` folder of your project and write the following code inside:
+
+```js
+exports.handler = async () => {
+  // TODO get this value from the query string
+  const boopee = 'Jason';
+
+  return {
+    statusCode: 200,
+    body: `You booped ${boopee} on the nose. Boop!`,
+  };
+};
+```
+
+Run `netlify dev` and visit `http://localhost:9999/.netlify/functions/boop-a-friend` and we see the return text, "You booped Jason on the nose. Boop!"
+
+We want to be able to choose who we boop, though, and we want to do that from the browser — meaning we'll be using the `GET` method to call our serverless function. In practice, it will look like this:
+
+```bash
+http://localhost:9999/.netlify/functions/boop-a-friend?boopee=Marisa
+```
+
+We're using a [query string](https://en.wikipedia.org/wiki/Query_string) (the `?boopee=Marisa` part) to set our `boopee` value to "Marisa", because that's who we want to boop.
+
+Next, we need to use the query string value in our serverless function.
+
+## Retrieve values from query strings in serverless functions
+
+Because we're using [Netlify Functions](https://www.netlify.com/products/functions/?utm_source=learnwithjason&utm_medium=sls-query-string-jl&utm_campaign=devex), we receive the `event` as the first argument to our serverless function, and it contains a property called `queryStringParameters`, which contains any query string values as an object.
+
+What this looks like in practice is that if we call our serverless function using the query string above:
+
+```bash
+http://localhost:9999/.netlify/functions/boop-a-friend?boopee=Marisa
+```
+
+We can access query parameters in our serverless function by making the following changes:
+
+```diff
+- exports.handler = async () => {
++ exports.handler = async event => {
++   console.log(event.queryStringParameters);
+
+    // TODO get this value from the query string
+    const boopee = 'Jason';
+
+    return {
+      statusCode: 200,
+      body: `You booped ${boopee} on the nose. Boop!`,
+    };
+  };
+```
+
+When we run `netlify dev` and call our function, the logs will show us the following output:
+
+```bash
+Request from ::1: GET /.netlify/functions/boop-a-friend?boopee=Marisa
+[Object: null prototype] { boopee: 'Marisa' }
+Response with status 200 in 0 ms.
+```
+
+Our `boopee` is there!
+
+Now we can use it by making a few more adjustments to our code:
+
+```diff
+  exports.handler = async event => {
+-   console.log(event.queryStringParameters);
+-
+-   // TODO get this value from the query string
+-   const boopee = 'Jason';
++   const querystring = event.queryStringParameters;
++   const boopee = querystring.boopee || 'a friend';
+
+    return {
+      statusCode: 200,
+      body: `You booped ${boopee} on the nose. Boop!`,
+    };
+  };
+```
+
+Now we can call our function by visiting `http://localhost:9999/.netlify/functions/boop-a-friend?boopee=Marisa` and we'll see that we're booping Marisa, just like we wanted to!
+
+<Figure>
+
+![Browser showing output with a query parameter: “You booped Marisa on the nose. Boop!”](/images/boop-marisa.png)
+
+</Figure>
+
+If we don't add a query string, we fall back to the default text:
+
+<Figure>
+
+![Browser showing output without a query parameter: “You booped a friend on the nose. Boop!”](/images/boop-default.png)
+
+</Figure>
+
+We did it! We can now send, parse, and use query string parameters in our serverless functions!
+
+## What to do next
+
+- [See the full collection of serverless function examples](/blog/serverless-functions/overview/)
+- Read the [Netlify CLI docs on setting up continuous deployment](https://docs.netlify.com/cli/get-started/?utm_source=learnwithjason&utm_medium=first-serverless-function-jl&utm_campaign=devex#continuous-deployment)

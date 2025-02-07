@@ -1,0 +1,151 @@
+---
+slug: add-text-overlay-cloudinary
+pubDate: 2020-01-04
+
+title: Add Text Overlays to Images Using Cloudinary
+description: >
+  In this post, learn how to use Cloudinary to add text overlays to images using URL-based APIs.
+
+share:
+  title: Add Text Overlays to Images Using Cloudinary
+  text: Use URL-based APIs to add custom text overlays to your images.
+---
+
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+In many cases, it's helpful to add text overlays to images. Sharing content on social media, for example, can be more effective with a sharing image including information about the content.
+
+In this post, we'll look at how we can use [Cloudinary](https://jason.energy/cloudinary) to add text overlays to images using URL-based APIs.
+
+<Aside>
+
+**Heads up!** If this article helps you, you can [sign up for Cloudinary with this link](https://jason.energy/cloudinary) — you’ll get a free Cloudinary account, and I get a little bonus cash to help cover the costs of running this site.
+
+</Aside>
+
+## How do text overlays work with Cloudinary?
+
+Cloudinary has a whole set of [APIs to add overlays to images](https://cloudinary.com/documentation/image_transformation_reference?ap=lwj#overlay_parameter). We can combine those with other transforms to place text anywhere on an image. All of these transformations are added in the URL of our image.
+
+As a simplified example, let's add some text to a picture of a corgi:
+
+<Figure credit="ipet photo" creditLink="https://unsplash.com/photos/wehqRK6J6eo">
+
+![corgi](https://res.cloudinary.com/jlengstorf/image/upload/w_800/corgi.jpg)
+
+</Figure>
+
+The URL for this image is:
+
+```html
+https://res.cloudinary.com/jlengstorf/image/upload/w_800/corgi.jpg
+```
+
+This will display the corgi image at 800px wide because we use the `w_800` transform in the URL.
+
+## Add a text overlay to an image using Cloudinary
+
+To add text, we're going to add a second transform — transforms in Cloudinary are separated by forward slashes (`/`) — that tells Cloudinary to add a text overlay using the font Arial at 64pt size:
+
+```html
+https://res.cloudinary.com/jlengstorf/image/upload/w_800/l_text:arial_64:Ready%20to%20party/corgi.jpg
+```
+
+The change here is this string:
+
+```html
+/l_text:arial_64:Ready%20to%20Party
+```
+
+- `l_text:` tells Cloudinary that we're going to do a text overlay
+- `arial_64:` configures the text overlay to use Arial at 64pt
+- `Ready%20to%20party` is the URL-encoded text we want to display
+
+<Aside>
+
+**Heads up!** Cloudinary supports several fonts by default — there’s no list available, so you’ll have to just try a font out and see if it works. If the font you’d like to use isn’t available by default, you can [upload custom fonts for use with Cloudinary text overlays](/blog/upload-custom-font-cloudinary-media-library/) as well.
+
+</Aside>
+
+If we open this URL in a browser, we’ll see the text overlaid on the image:
+
+<Figure credit="ipet photo" creditLink="https://unsplash.com/photos/wehqRK6J6eo">
+
+![Corgi with the text “Ready to party” overlaid.](https://res.cloudinary.com/jlengstorf/image/upload/w_800/l_text:arial_64:Ready%20to%20party/corgi.jpg)
+
+</Figure>
+
+## Position the text overlay on an image using Cloudinary
+
+Our image looks okay, but it would be better if the text wasn't on top of our doggo. Fortunately, Cloudinary allows us to position text using additional transforms.
+
+First, let's [set the "gravity"](https://cloudinary.com/documentation/image_transformation_reference?ap=lwj#gravity_parameter) of the text so it's anchored to the bottom-left corner. This is done using directions for whatever reason, so bottom and left are considered south and west.
+
+Add `g_south_west` to the text overlay transformation section of the URL, separating it with a comma:
+
+```html
+https://res.cloudinary.com/jlengstorf/image/upload/w_800/g_south_west,l_text:arial_64:Ready%20to%20party/corgi.jpg
+```
+
+Now the image looks like this:
+
+<Figure credit="ipet photo" creditLink="https://unsplash.com/photos/wehqRK6J6eo">
+
+![Corgi with the text “Ready to party” overlaid.](https://res.cloudinary.com/jlengstorf/image/upload/w_800/g_south_west,l_text:arial_64:Ready%20to%20party/corgi.jpg)
+
+</Figure>
+
+This is better, but now the text is crammed against the edge of the photo — not great.
+
+## Add X and Y offsets to text overlays in Cloudinary
+
+We can adjust this by changing the X and Y offsets, though. The offsets start from wherever the gravity is set, so in this case our X offset will be from the left edge and the Y offset will be from the bottom.
+
+These are set as `x_40,y_40` in the text overlay transformation section:
+
+```html
+https://res.cloudinary.com/jlengstorf/image/upload/w_800/g_south_west,x_40,y_40,l_text:arial_64:Ready%20to%20party/corgi.jpg
+```
+
+Now the image is offset from the edge of the image by 40px at the left and bottom:
+
+<Figure credit="ipet photo" creditLink="https://unsplash.com/photos/wehqRK6J6eo">
+
+![Corgi with the text “Ready to party” overlaid.](https://res.cloudinary.com/jlengstorf/image/upload/w_800/g_south_west,x_40,y_40,l_text:arial_64:Ready%20to%20party/corgi.jpg)
+
+</Figure>
+
+Almost there!
+
+## Set text overlays to wrap at a specified width in Cloudinary
+
+Now let's get the text to wrap so it doesn't overlay the corgi at all. We can do this by setting a width and telling the text to "fit" using the crop settings.
+
+These are set as `w_250,c_fit` in the transformation section:
+
+```html
+https://res.cloudinary.com/jlengstorf/image/upload/w_800/g_south_west,x_40,y_40,w_250,c_fit,l_text:arial_64:Ready%20to%20party/corgi.jpg
+```
+
+Now it looks pretty good!
+
+<Figure credit="ipet photo" creditLink="https://unsplash.com/photos/wehqRK6J6eo">
+
+![Corgi with the text “Ready to party” overlaid.](https://res.cloudinary.com/jlengstorf/image/upload/w_800/g_south_west,x_40,y_40,w_250,c_fit,l_text:arial_64:Ready%20to%20party/corgi.jpg)
+
+</Figure>
+
+<Aside>
+
+**NOTE:** because we set the gravity to "south", the text will wrap so that the bottom-most line of text is at our given Y offset. This will be helpful for keeping two separate blocks of text together in our template.
+
+</Aside>
+
+## What to do next
+
+To take your text overlays to the next level, try:
+
+- [using a custom font for Cloudinary text overlays](/blog/upload-custom-font-cloudinary-media-library/)
+- [creating custom social media cards automatically using text overlays](/blog/auto-generate-social-image/)
+- reading the [Cloudinary docs on text overlays](https://cloudinary.com/documentation/image_transformations?ap=lwj#adding_text_captions)

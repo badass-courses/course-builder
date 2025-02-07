@@ -1,0 +1,923 @@
+---
+slug: get-form-values-as-json
+pubDate: 2016-08-07
+updated: 2020-12-28
+
+title: How to Convert HTML Form Field Values to a JSON Object
+description: >
+  Use built-in browser APIs to get form values as JSON. Zero dependencies and only a few lines of code!
+
+share:
+  title: Get Form Data as JSON
+  text: Use built-in APIs for zero-dependency form handling!
+---
+
+import Aside from '../../components/aside.astro';
+import CodePen from '../../components/codepen.astro';
+
+Getting form values as a JSON object can be a little confusing, but there’s good news! Browsers have implemented a built-in API for getting form values that makes this straightforward and approachable!
+
+## Use the FormData API to access form values in JavaScript
+
+Before I learned about the [FormData API](https://developer.mozilla.org/en-US/docs/Web/API/FormData), I thought accessing form values in JavaScript was a pain. But after [Suz Hinton](https://twitter.com/noopkat) made me aware of it, that all changed.
+
+In a nutshell, the FormData API lets us access any field value in a submitted form using a straightforward API.
+
+For a quick example, let's assume we have this form:
+
+```html
+<form>
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" />
+
+  <button type="submit">Submit</button>
+</form>
+```
+
+To handle submissions in JavaScript, we can use the FormData API like this:
+
+```js
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const data = new FormData(event.target);
+
+  const value = data.get('email');
+
+  console.log({ value });
+}
+
+const form = document.querySelector('form');
+form.addEventListener('submit', handleSubmit);
+```
+
+If we run this code and submit the form, the value we enter into the email input will be logged. I don’t know about you, but the first time I tried this I wept happy tears — this is _so much simpler_ than what I used to do! (My previous, more complicated approach is still at the bottom of this article if you want to compare.)
+
+## How to get all values from a form as a JSON object using the FormData API
+
+If we want to get _all_ of the values from a form, there’s an extra step. Let’s expand our form with a name field:
+
+```html ins={2-4}
+<form>
+  <label for="name">Name</label>
+  <input type="text" name="name" id="name" />
+
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" />
+
+  <button type="submit">Submit</button>
+</form>
+```
+
+To access all entries,
+
+```js mark={6-7}
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const data = new FormData(event.target);
+
+  // Do a bit of work to convert the entries to a plain JS object
+  const value = Object.fromEntries(data.entries());
+
+  console.log({ value });
+}
+
+const form = document.querySelector('form');
+form.addEventListener('submit', handleSubmit);
+```
+
+The FormData API doesn’t directly convert form values to JSON, but we can get there by using the [`entries`](https://developer.mozilla.org/en-US/docs/Web/API/FormData/entries) method and passing its return value to [`Object.fromEntries`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries), which returns a plain JavaScript object.
+
+This is compatible with `JSON.stringify`, so we can use it for sending JSON-encoded data to APIs or any other thing we might want to do with a JavaScript object.
+
+## Get multi-select values like checkboxes as JSON with the FormData API
+
+The `fromEntries` approach in the previous section works great for most form inputs, but if the input allows multiple values — such as a checkbox — we'd only see one value in the resulting object.
+
+Fortunately, the workaround for this only requires one more line of JavaScript for each multi-value input.
+
+Let's add a field with multiple potential values to our form:
+
+```html ins={7-17}
+<form>
+  <label for="name">Name</label>
+  <input type="text" name="name" id="name" />
+
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" />
+
+  <p>
+    <input type="checkbox" name="topics" id="javascript" value="javascript" />
+    <label for="javascript">JavaScript</label>
+
+    <input type="checkbox" name="topics" id="html" value="html" />
+    <label for="html">HTML</label>
+
+    <input type="checkbox" name="topics" id="css" value="css" />
+    <label for="css">CSS</label>
+  </p>
+
+  <button type="submit">Submit</button>
+</form>
+```
+
+Getting all the topics requires using the `.getAll()` method:
+
+```js ins={7-8}
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const data = new FormData(event.target);
+
+  const value = Object.fromEntries(data.entries());
+
+  value.topics = data.getAll("topics");
+
+  console.log({ value });
+}
+
+const form = document.querySelector("form");
+form.addEventListener("submit", handleSubmit);
+```
+
+Now the object contains an array in `topics` that contains all checked values!
+
+## A full example of multiple input types with the FormData API
+
+For a full example of using the FormData API with lots of different input types, check out [this CodePen](https://codepen.io/jlengstorf/pen/rNMpJNy) (the form values get printed below the form on submission).
+
+<CodePen
+  slug="rNMpJNy"
+  title="[UPDATED] How to Get Form Field Data as JSON Using Plain JavaScript"
+  height={1000}
+/>
+
+<Aside>
+
+**Heads up!** The original version of this article used a more manual approach to getting form values. The FormData API makes this largely obsolete, but I’ve included the original article below so you can see how the approach has evolved.
+
+</Aside>
+
+## Original Article Text
+
+Using AJAX is really common, but it’s still tricky to get the values out of a form without using a library.
+
+And that’s because it seems pretty intimidating to set up all the loops and checks required to deal with parsing a form and all its child elements. You get into [heavy discussions of whether you should use `for`, `for...in`, `for...of`, or `forEach`](http://stackoverflow.com/a/9329476/463471), and after trying to keep up with the various performance, semantic, and stylistic reasons for making those choices, your brain starts to liquefy and drip out your ears — at which point it’s easy to just say, "Forget it; let’s just use jQuery."
+
+**But for simple sites that don’t need much beyond grabbing form data as an object to use with JSON**, jQuery (or any big library or framework) includes a lot of overhead for only one or two functions that you’ll be using.
+
+(Even if it’s not something we’d ever use in production, writing our own utility scripts is a fantastic way to increase our understanding of how things work. If we rely too much on a tool’s "magic" to make our apps work, it becomes _really_ hard to debug them when we find a problem that falls outside of the tool’s scope.)
+
+So in this walkthrough, we’ll be writing our own script — in plain JavaScript — to pull the values of a form’s fields into an object, which we could then use for AJAX, updating information on other parts of the page, and anything else you might want to do with a form’s data.
+
+### What We’ll Be Building
+
+At the end of this walkthrough, we’ll have built the form shown in this pen:
+
+
+<CodePen
+  slug="YWJLwz"
+  title="Finished code on Codepen."
+  height={990}
+/>
+
+If you fill the form and hit the “Send It!” button, the form data will be output as JSON in the “Form Data” section below.
+
+<Aside warning>
+
+**NOTE:** To show that `hidden` inputs will be included, an input called `secret` has been included in this form. Its value is a random GUID.
+
+</Aside>
+
+### Before We Get Started: Goals and Plans
+
+To save ourselves a lot of headache and heartache, we’re going to [start our project with an clear plan](https://lengstorf.com/effective-project-planning/). This’ll keep our goals clear, and helps define the structure and purpose of the code before we ever write a line.
+
+#### Start with a goal: what should we end up with?
+
+Before we write any JavaScript, let’s start by deciding how we want the output to look.
+
+If I’ve filled out the form above completely, we’d want the resulting object to look like this:
+
+```json
+{
+  "salutation": "Mr.",
+  "name": "Jason Lengstorf",
+  "email": "jason@lengstorf.com",
+  "subject": "I have a general question.",
+  "message": "Is this thing on?",
+  "snacks": ["pizza"],
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```
+
+Each field’s `name` attribute is used as the object’s key, and the field’s `value` is set as the object’s value.
+
+This is ideal, because it means that we can do something like this:
+
+```javascript
+// Find our form in the DOM using its class name.
+const form = document.getElementByClassName('.contact-form')[0];
+
+// Get the form data with our (yet to be defined) function.
+const data = getFormDataAsJSON(form);
+
+// Do something with the email address.
+doSomething(data.email);
+```
+
+This is straightforward, easy to read as a human, and also easy to send to APIs that accept `application/json` data in requests (which is most of them these days).
+
+So let’s shoot for that.
+
+#### Make a plan: how can we convert form fields to JSON?
+
+When we’re finished, our JavaScript should accomplish the following goals:
+
+1. Capture the form’s `submit` event and prevent the default submission.
+2. Convert the form’s child elements to JSON.
+3. Check to make sure only form field elements are added to the object.
+4. Add a safeguard to only store checkable fields if the `checked` attribute is set.
+5. Handle inputs that allow multiple values, like checkboxes.
+
+**Ready to flex that big-ass brain of yours?** Create a fork of the [markup-and-styles-only pen](http://codepen.io/jlengstorf/pen/GqYZra), and let’s jump in and start writing some JavaScript.
+
+### Getting Started: Create a Form for Testing
+
+To avoid the hassle of setting up front-end tooling (we’re using Babel to transpile the newer features of JavaScript, such as [fat-arrow functions](https://github.com/getify/You-Dont-Know-JS/blob/master/scope%20%26%20closures/apC.md#appendix-c-lexical-this)), we’re going to work through this project on Codepen.
+
+To start, create a fork of [this pen](http://codepen.io/jlengstorf/pen/GqYZra/), which contains form markup with common inputs, and some styles to make it display nicely.
+
+
+<CodePen
+  slug="GqYZra"
+  title="Starting code on Codepen."
+  height={1000}
+/>
+
+<Aside>
+
+**NOTE:** The markup is written in Jade (which was recently renamed to [Pug](https://github.com/pugjs/pug)) because I find it faster and easier to read. If you prefer to look at plain HTML, you can hit the "view compiled" button at the bottom right of the Jade pane in the pen above.
+
+</Aside>
+
+<Aside>
+
+**NOTE:** The styles for the form use [BEM-style naming conventions](http://getbem.com/naming/), and I’m using [PostCSS](http://postcss.org/) to make it easy to group my styles together without _actually_ creating nested CSS. For me, this is _far_ easier to read than other ways of writing CSS, but if you prefer regular CSS, click the "view compiled" button at the bottom-right of the PostCSS pane in the pen above.
+
+</Aside>
+
+### Step 1: Add a Listener to the `submit` Event for the Form
+
+Before we do anything else, we need to listen for the `submit` event on our form, and prevent it from doing its usual thing.
+
+To do this, let’s create a function called `handleSubmit()`, then use `getElementsByClassName()` to find our form, and attach the function to the form’s `submit` event.
+
+#### Create a `handleSubmit()` function.
+
+At the moment, this function isn’t going to do much. To start, we’ll prevent the default `submit` action, create a variable called `data` to store the output (which we’ll be building in a moment), then find our output container and print out the `data` variable as JSON.
+
+In order to prevent the default action, this function needs to accept one argument: the `event` that’s created when the user clicks the submit button on the form. We can stop the form from submitting the usual way (which triggers the browser to go somewhere else) using [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault).
+
+```javascript
+/**
+ * A handler function to prevent default submission and run our custom script.
+ * @param  {Event} event  the submit event triggered by the user
+ * @return {void}
+ */
+const handleFormSubmit = (event) => {
+  // Stop the form from submitting since we’re handling that with AJAX.
+  event.preventDefault();
+
+  // TODO: Call our function to get the form data.
+  const data = {};
+
+  // Demo only: print the form data onscreen as a formatted JSON object.
+  const dataContainer = document.getElementsByClassName('results__display')[0];
+
+  // Use `JSON.stringify()` to make the output valid, human-readable JSON.
+  dataContainer.textContent = JSON.stringify(data, null, '  ');
+
+  // ...this is where we’d actually do something with the form data...
+};
+```
+
+<Aside>
+
+**NOTE:** The `data` variable is not JSON _yet_. This is kind of confusing at first, but it’s a matter of nuance. Typically, a function that converts "to JSON" is _actually_ converting to an [object literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types#Object_literals). This allows us to access the data using JavaScript. In order to convert that data to a valid JSON string, we need to use [`JSON.stringify()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
+
+</Aside>
+
+#### Attach an event listener to the form.
+
+With the event handler created, we need to add a listener to the form so we can actually handle the event.
+
+To do this, we use [`getElementsByClassName()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName) to target the form, then store the first item in the resulting collection as `form`.
+
+Next, using [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener), we hook `handleSubmit()` to the `submit` event, which will allow it to run whenever the user clicks to submit the form.
+
+```javascript
+const handleFormSubmit = (event) => {
+  /* omitted for brevity */
+};
+
+/*
+ * This is where things actually get started. We find the form element using
+ * its class name, then attach the `handleFormSubmit()` function to the
+ * `submit` event.
+ */
+const form = document.getElementsByClassName('contact-form')[0];
+form.addEventListener('submit', handleFormSubmit);
+```
+
+At this point we can test that things are working properly by clicking the "Send It!" button on the form. We should see `{}` in the "Form Data" output box.
+
+### Step 2: Extract the Values of Form Fields As JSON
+
+Next up, we need to actually grab values from the form fields.
+
+To do this, we’ll use something that — at first — might look scary as shit: [`reduce()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) combined with [`call()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call).
+
+We’ll dive into the dirty details of what `reduce()` is actually doing in the next section, but for now let’s focus on how we’re actually using it.
+
+```javascript
+/**
+ * Retrieves input data from a form and returns it as a JSON object.
+ * @param  {HTMLFormControlsCollection} elements  the form elements
+ * @return {Object}                               form data as an object literal
+ */
+const formToJSON = (elements) =>
+  [].reduce.call(
+    elements,
+    (data, element) => {
+      data[element.name] = element.value;
+      return data;
+    },
+    {}
+  );
+
+const handleFormSubmit = (event) => {
+  // Stop the form from submitting since we’re handling that with AJAX.
+  event.preventDefault();
+
+  // Call our function to get the form data.
+  const data = formToJSON(form.elements);
+
+  // Demo only: print the form data onscreen as a formatted JSON object.
+  const dataContainer = document.getElementsByClassName('results__display')[0];
+
+  // Use `JSON.stringify()` to make the output valid, human-readable JSON.
+  dataContainer.textContent = JSON.stringify(data, null, '  ');
+
+  // ...this is where we’d actually do something with the form data...
+};
+
+const form = document.getElementsByClassName('contact-form')[0];
+form.addEventListener('submit', handleFormSubmit);
+```
+
+I know. _I know._ It looks hairy. But let’s dig in and see what this is doing.
+
+First, let’s break this into its component parts:
+
+1. We have a function called `formToJSON()`, which accepts one argument: `form`
+2. Inside that function, we return the value of `[].reduce.call()`, which accepts three arguments: a form, a function, and an empty object literal (`{}`)
+3. The function argument accepts the arguments `data` and `child`, and adds a new property with the key of `child.name` and the value `child.value`, finally returning the `data` object
+
+**After we’ve added that code to our pen, we need to call the function from `handleSubmit()`.** Find `const data = {};` inside the function and replace it with `const data = formToJSON(form.elements);`.
+
+Now we can run it by clicking the "Send It!" button will now output this:
+
+```json
+{
+  "salutation": "Ms.",
+  "name": "",
+  "email": "",
+  "subject": "I have a problem.",
+  "message": "",
+  "snacks": "cake",
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7",
+  "": ""
+}
+```
+
+There are some issues here — for example, neither "Ms." nor "Cake" was actually selected on the form, and there’s an empty entry at the bottom (which is our button) — but this isn’t too bad for a first step.
+
+So how did that just happen? Let’s go step by step to figure it out.
+
+<Aside>
+
+**NOTE:** Using [`form.elements`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/elements), we get pretty decent access to the form. For example, we can get the email using `form.elements.email.value`. However, if we need to convert this to JSON for use with AJAX, it’s a disaster due to its inclusion of numerical indexes, IDs, and names. You can see this for yourself by adding `console.log( JSON.stringify(form.elements) );` to `handleSubmit()`. That’s why we’re building our own function instead of just using this built-in access.
+
+</Aside>
+
+#### Step 2.1 — Understand how `reduce()` works.
+
+The simplest explanation for `reduce()` is this:
+
+> The `reduce()` method uses a function to convert an array into a single value.
+
+This method is part of the `Array` prototype, so it can be applied to any array value.
+
+It takes two arguments:
+
+1. A reducer function, which is required.
+2. An initial value, which is optional (defaults to `0`).
+
+The reducer function is applied to each element of the array. This function accepts four arguments:
+
+1. The value returned by the reducer function when it ran on the previous element (or the initial value, if this is the first element).
+2. The current array element.
+3. The current array index.
+4. The whole array, in case the reducer needs a reference to it.
+
+For our reducer, we only need the first two arguments.
+
+#### A really simple example of reducing an array.
+
+Let’s say we have an array of numbers, which represent sales for the day:
+
+```javascript
+const sales = [100.12, 19.49, 10, 42.18, 99.62];
+```
+
+We need to determine total sales for the day, so we set up this simple function to add up sales:
+
+```javascript
+function getTotalSales(previousTotal, currentSaleAmount) {
+  return previousTotal + currentSaleAmount;
+}
+```
+
+Then we use `reduce()` to apply the function to the array of sales:
+
+```javascript
+const sales = [100.12, 19.49, 10, 42.18, 99.62];
+
+function getTotalSales(previousTotal, currentSaleAmount) {
+  return previousTotal + currentSaleAmount;
+}
+
+sales.reduce(getTotalSales);
+// result: 271.41
+```
+
+<Aside>
+
+**TIP:** You can run these examples in your browser’s console to see the results for yourself.
+
+</Aside>
+
+Now, if we want to condense this code a little, we can actually write the whole thing like this:
+
+```javascript
+const sales = [100.12, 19.49, 10, 42.18, 99.62];
+sales.reduce((prev, curr) => prev + curr);
+// result: 271.41
+```
+
+When this is called, `reduce()` starts with `0` as the value of `prev`, and takes the first element of the array, `100.12`, as the value of `curr`. It adds those together and returns them.
+
+Now `reduce()` moves to the second element in the array, `19.49`, and this time the value of `prev` is the value returned last time: `100.12`.
+
+This process is repeated until all of the elements have been added together, and we end up with our total sales for the day: `271.41`.
+
+#### Step 2.2 — Deconstruct the function.
+
+As it stands, `formToJSON()` is actually made of three parts:
+
+1. A _reducer function_ to combine our form elements into a single object.
+2. An initial value of `{}` to hold our form data.
+3. A call to `reduce()` using `call()`, which allows us to force `reduce()` to work with `elements`, even though it’s _technically_ not an array.
+
+<Aside>
+
+**NOTE:** The form elements are actually what’s called an [`HTMLFormControlsCollection`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormControlsCollection), which is "array-like", meaning it’s basically an array, but it’s missing some of the array methods, and has some of its own special properties and methods.
+
+</Aside>
+
+#### Step 2.3 — Write the reducer function.
+
+First up, we need to have our reducer function. In the simple example of reducing an array, we used single values, which won’t work in this case. Instead, we want to add each field to an object with a format like this:
+
+```javascript
+{
+    field_name: "field_value",
+}
+```
+
+So our reducer function works like this:
+
+```javascript
+// This is the function that is called on each element of the array.
+const reducerFunction = (data, element) => {
+  // Add the current field to the object.
+  data[element.name] = element.value;
+
+  // For the demo only: show each step in the reducer’s progress.
+  console.log(JSON.stringify(data));
+
+  return data;
+};
+```
+
+The `data` object is the previous value of the reducer, and `element` is the current form element in the array. We then add a new property to the object using the element’s `name` property — this is the input’s `name` attribute in the HTML — and store its `value` there.
+
+When we return `data`, we make the updated object available to the next call of the funciton, which allows us to add each field to the object, one by one.
+
+#### Step 2.4 — Call the reducer.
+
+To make it a little more obvious what’s happening in the `formToJSON()` function, here’s what it looks like if we break it up into more verbose code:
+
+```javascript
+const formToJSON_deconstructed = (elements) => {
+  // This is the function that is called on each element of the array.
+  const reducerFunction = (data, element) => {
+    // Add the current field to the object.
+    data[element.name] = element.value;
+
+    // For the demo only: show each step in the reducer’s progress.
+    console.log(JSON.stringify(data));
+
+    return data;
+  };
+
+  // This is used as the initial value of `data` in `reducerFunction()`.
+  const reducerInitialValue = {};
+
+  // To help visualize what happens, log the inital value.
+  console.log('Initial `data` value:', JSON.stringify(reducerInitialValue));
+
+  // Now we reduce by `call`-ing `Array.prototype.reduce()` on `elements`.
+  const formData = [].reduce.call(
+    elements,
+    reducerFunction,
+    reducerInitialValue
+  );
+
+  // The result is then returned for use elsewhere.
+  return formData;
+};
+```
+
+In the above example, we do exactly the same thing as in `formToJSON()`, but we’ve broken it down into its component parts.
+
+We can see the output if we update `handleSubmit()` and change the call to `formToJSON(form.elements)` to `formToJSON_deconstructed(form.elements)`. Check the console to see this output:
+
+```md
+Initial `data` value: {}
+{"salutation":"Mr."}
+{"salutation":"Mrs."}
+{"salutation":"Ms."}
+{"salutation":"Ms.","name":""}
+{"salutation":"Ms.","name":"","email":""}
+{"salutation":"Ms.","name":"","email":"","subject":"I have a problem."}
+{"salutation":"Ms.","name":"","email":"","subject":"I have a problem.","message":""}
+{"salutation":"Ms.","name":"","email":"","subject":"I have a problem.","message":"","snacks":"pizza"}
+{"salutation":"Ms.","name":"","email":"","subject":"I have a problem.","message":"","snacks":"cake"}
+{"salutation":"Ms.","name":"","email":"","subject":"I have a problem.","message":"","snacks":"cake","secret":"1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"}
+{"salutation":"Ms.","name":"","email":"","subject":"I have a problem.","message":"","snacks":"cake","secret":"1b3a9374-1a8e-434e-90ab-21aa7b9b80e7","":""}
+```
+
+We can see here that the reducer is called for every form element, and the object grows with each subsequent call until we’ve got an entry for every `name` value in the form.
+
+**Change `handleSubmit()` back to using `formToJSON(form.elements)`**, and let’s move on to cleaning up this output to only include fields it _should_ include.
+
+### Step 3: Add a Check to Make Sure Only the Fields We Want Are Collected
+
+The first problem we can see in the output is that fields with both empty `name` and empty `value` attributes have been added to the array. This isn’t what we want in this case, so we need to add a quick check to verify that fields have both a `name` and a `value` before we add them.
+
+#### Step 3.1 — Create a function to check for valid elements.
+
+First, let’s add a new function to our pen called `isValidElement()`. This function will accept one argument — the `element` — and return either `true` or `false`.
+
+To return `true`, the element must have:
+
+1. A non-empty `name` property.
+2. A non-empty `value` property.
+
+Implement this check like so:
+
+```javascript
+/**
+ * Checks that an element has a non-empty `name` and `value` property.
+ * @param  {Element} element  the element to check
+ * @return {Bool}             true if the element is an input, false if not
+ */
+const isValidElement = (element) => {
+  return element.name && element.value;
+};
+```
+
+Pretty simple, right?
+
+This gives us a flag that lets us avoid unused elements (like the button) and unfilled fields (such as an empty Email field) from being added to the form data object.
+
+#### Step 3.2 — Add the check to `formToJSON()`.
+
+Next, we need to add an `if` check for whether or not our `element` is valid in `formToJSON()`. Since we don’t want to add anything if the element is _not_ valid, we can simply do the following:
+
+```javascript
+const formToJSON = (elements) =>
+  [].reduce.call(
+    elements,
+    (data, element) => {
+      // Make sure the element has the required properties.
+      if (isValidElement(element)) {
+        data[element.name] = element.value;
+      }
+
+      return data;
+    },
+    {}
+  );
+```
+
+Now when we submit our form, the output is much cleaner:
+
+```json
+{
+  "salutation": "Ms.",
+  "subject": "I have a problem.",
+  "snacks": "cake",
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```
+
+However, we’re still not there yet. In the next step, we’ll deal with checkable elements like radio inputs and checkboxes.
+
+### Step 4: Only Store Checkable Fields If a Field Is In `checked` State
+
+Now we need another check to identify whether or not an element should be added to the array. For instance, right now the `salutation` field is being stored with the value `Ms.`, even though that value _is not selected_ in the form.
+
+Obviously, this is bad news. So let’s fix it.
+
+#### Step 4.1 — Create a function to check for checkable elements.
+
+First, let’s add a new function to check whether or not an element’s value should be considered valid for inclusion in the object.
+
+Our criteria for determining a "valid" element are:
+
+1. The element is _not_ a checkbox or radio input.
+2. If the element _is_ a checkbox or radio input, it has the `checked` attribute.
+
+Add the following to create this check:
+
+```javascript
+/**
+ * Checks if an element’s value can be saved (e.g. not an unselected checkbox).
+ * @param  {Element} element  the element to check
+ * @return {Boolean}          true if the value should be added, false if not
+ */
+const isValidValue = (element) => {
+  return !['checkbox', 'radio'].includes(element.type) || element.checked;
+};
+```
+
+<Aside>
+
+**NOTE:** The [`includes()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes) method is an easy way to see if a value is present in an array. I prefer this to multiple `if` checks, switch statements, or other ways of matching a value against an array.
+
+</Aside>
+
+#### Step 4.2 — Add the check to `formToJSON()`.
+
+Now we can add this check to `formToJSON()`, which is as simple as adding a second condition to our existing `if` check:
+
+```javascript
+const formToJSON = (elements) =>
+  [].reduce.call(
+    elements,
+    (data, element) => {
+      // Make sure the element has the required properties and should be added.
+      if (isValidElement(element) && isValidValue(element)) {
+        data[element.name] = element.value;
+      }
+
+      return data;
+    },
+    {}
+  );
+```
+
+Now we can run our code and see that the output is much cleaner:
+
+```json
+{
+  "subject": "I have a problem.",
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```
+
+This is much better — now we only get elements that actually have a value set.
+
+### Step 5: If a Field Allows Multiple Values, Store Them In an Array
+
+But we’re not quite done yet, because the form is still messing up the `snacks` field — which is _clearly_ the most important field.
+
+Try selecting both "Pizza" and "Cake" to see the problem:
+
+```json
+{
+  "subject": "I have a problem.",
+  "snacks": "cake",
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```
+
+Nope. This is a disaster. We need both pizza AND cake. So let’s make sure that can happen.
+
+#### Step 5.1 — Create checks for elements that accept multiple values.
+
+The check for whether or not multiple values are allowed has two parts, because there are two elements that allow multiple values.
+
+First, we need to add a check for any checkboxes. This is simple enough: we just check if the `type` is `checkbox`:
+
+```javascript
+/**
+ * Checks if an input is a checkbox, because checkboxes allow multiple values.
+ * @param  {Element} element  the element to check
+ * @return {Boolean}          true if the element is a checkbox, false if not
+ */
+const isCheckbox = (element) => element.type === 'checkbox';
+```
+
+Second, we need to add a check for a `select` element with the `multiple` attribute.
+
+This is a bit trickier, but still pretty straightforward. A `select` has a property called `options`, so we’ll check for that first. Next, we check for the `multiple` property. If both exist, our check will return `true`:
+
+```javascript
+/**
+ * Checks if an input is a `select` with the `multiple` attribute.
+ * @param  {Element} element  the element to check
+ * @return {Boolean}          true if the element is a multiselect, false if not
+ */
+const isMultiSelect = (element) => element.options && element.multiple;
+```
+
+#### Step 5.2 — Handle checkboxes in `formToJSON()`.
+
+Inside `formToJSON()`, we need to add another `if` block for our `isCheckbox()` function.
+
+If the current element is a checkbox, we need to store its value(s) in an array. Let’s take a look at the code first, and then we’ll talk about how it works.
+
+```javascript
+const formToJSON = (elements) =>
+  [].reduce.call(
+    elements,
+    (data, element) => {
+      // Make sure the element has the required properties and should be added.
+      if (isValidElement(element) && isValidValue(element)) {
+        /*
+         * Some fields allow for more than one value, so we need to check if this
+         * is one of those fields and, if so, store the values as an array.
+         */
+        if (isCheckbox(element)) {
+          data[element.name] = (data[element.name] || []).concat(element.value);
+        } else {
+          data[element.name] = element.value;
+        }
+      }
+
+      return data;
+    },
+    {}
+  );
+```
+
+Since we need to get the element’s values into an array, we use a bit of shorthand in `(data[element.name] || [])`, which means, "use the existing array, or a new, empty one".
+
+Then we use [`concat()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) to add the current value to the array.
+
+Now if we check the options for both pizza and cake, we see the following:
+
+```json
+{
+  "subject": "I have a problem.",
+  "snacks": ["pizza", "cake"],
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```
+
+Much better. Crisis averted, everyone!
+
+#### Step 5.3 — Write a function to retrieve values from multi-selects.
+
+Our very last step before we can call this sucker done is to add a check for `select` fields that support multiple selected options. I’m not a big fan of this input type, because I think it’s a confusing input for people to use — one that’s easily replaced with checkboxes — but for the sake of covering bases we’ll plug it in.
+
+The selected options from a multi-select are stored in their own array-like object, called an [`HTMLOptionsCollection`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionsCollection), so we need to run `reduce()` on this as well.
+
+Let’s keep things clean by moving this out into its own function.
+
+This function will accept each options, check if the `selected` property is `true`, then add its value to an array called `values`, which will ultimately be returned containing the values of all selected options.
+
+Add the following to the pen:
+
+```javascript
+/**
+ * Retrieves the selected options from a multi-select as an array.
+ * @param  {HTMLOptionsCollection} options  the options for the select
+ * @return {Array}                          an array of selected option values
+ */
+const getSelectValues = (options) =>
+  [].reduce.call(
+    options,
+    (values, option) => {
+      return option.selected ? values.concat(option.value) : values;
+    },
+    []
+  );
+```
+
+#### Step 5.4 — Handle multi-select values in `formToJSON()`.
+
+To put a bow on all this, we need to add an `else if` block in our `formToJSON()` function.
+
+After the `isCheckbox()` check, we’ll add a `isMultiSelect()` check. If that returns `true`, we’ll add the select’s values to the object as an array using `getSelectValues()`.
+
+Make the following updates to the pen:
+
+```javascript
+const formToJSON = (elements) =>
+  [].reduce.call(
+    elements,
+    (data, element) => {
+      // Make sure the element has the required properties and should be added.
+      if (isValidElement(element) && isValidValue(element)) {
+        /*
+         * Some fields allow for more than one value, so we need to check if this
+         * is one of those fields and, if so, store the values as an array.
+         */
+        if (isCheckbox(element)) {
+          data[element.name] = (data[element.name] || []).concat(element.value);
+        } else if (isMultiSelect(element)) {
+          data[element.name] = getSelectValues(element);
+        } else {
+          data[element.name] = element.value;
+        }
+      }
+
+      return data;
+    },
+    {}
+  );
+```
+
+#### Run a quick test of multi-select values.
+
+Since our current form doesn't have a select with the `multiple` attribute, so let's quickly add that to the `subject` field in our pen.
+
+Look for the `select` in the HTML pane and add the `multiple` attribute like so:
+
+```pug
+      select#subject.contact-form__input.contact-form__input--select(
+        name="subject"
+        multiple
+      )
+```
+
+Now we can actually test. Click on both options and submit the form. The out put will now be:
+
+```json
+{
+  "subject": ["I have a problem.", "I have a general question."],
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```
+
+After we’ve tested, we can remove the `multiple` attribute from the `select` input.
+
+<Aside>
+
+**NOTE:** Reading values from a multi-select isn’t supported in IE11 and below using this script. Personally, I would recommend just using checkboxes — I think multi-selects are a confusing user experience for many people — but if you need to support them in older browsers you’ll need to modify this code.
+
+</Aside>
+
+### The Final Result: Form Field Values Are Collected in an Object for Use as JSON
+
+At this point, we’ve built a small script that will extract the values from a form as an object literal, which can easily be converted to JSON using `JSON.stringify()`.
+
+We can test by filling out our form with dummy data and submitting it.
+
+Use your own fork of the pen, or enter dummy data in the form below:
+
+<CodePen
+  slug="YWJLwz"
+  title="Work in progress on Codepen."
+  height={1000}
+/>
+
+After submitting, we’ll see the info we entered, and it’ll look something like the following:
+
+```json
+{
+  "salutation": "Ms.",
+  "name": "Pac-Man",
+  "email": "mspacman@example.com",
+  "subject": "I have a problem.",
+  "message": "These ghosts keep chasing me!",
+  "snacks": ["pizza", "cake"],
+  "secret": "1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"
+}
+```

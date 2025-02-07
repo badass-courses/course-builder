@@ -1,0 +1,176 @@
+---
+slug: upload-custom-font-cloudinary-node
+pubDate: 2020-01-05
+
+title: Upload a Custom Font to Cloudinary Using the Node SDK
+description: >
+  A tutorial on how to upload and use custom fonts in text overlays with Cloudinary to generate images with custom text.
+
+share:
+  title: Upload a Custom Font to Cloudinary Using the Node SDK
+  text: Use your own fonts to create text overlays by uploading them to Cloudinary using the Node SDK.
+---
+
+import Figure from '../../components/figure.astro';
+import Aside from '../../components/aside.astro';
+
+If you want to use custom fonts with Cloudinary, you need to upload them as authenticated assets. This script will allow you to upload an OTF or TTF to use when adding text overlays to images.
+
+<Aside warning>
+
+**IMPORTANT:** only upload fonts if you have the appropriate licenses.
+
+</Aside>
+
+## Create a project and install dependencies
+
+Make sure you've created a folder, initialized the Node project, and installed the `cloudinary` Node SDK:
+
+```md
+mkdir upload-fonts
+
+cd upload-fonts/
+
+npm init -y
+
+npm install --save cloudinary
+```
+
+## Upload the custom font to Cloudinary
+
+Create a file in this folder called `upload.js` and add the following inside:
+
+```js
+const cloudinary = require('cloudinary').v2;
+
+// this is shown at the top right of https://cloudinary.com/console
+const CLOUDINARY_CLOUD_NAME = '<YOUR CLOUD NAME>';
+
+// find these at https://cloudinary.com/console/settings/security
+const CLOUDINARY_API_KEY = '<YOUR CLOUDINARY API KEY>';
+const CLOUDINARY_API_SECRET = '<YOUR CLOUDINARY API SECRET>';
+
+// path to the custom font (TTF or OTF only), relative to this file
+const PATH_TO_FILE = 'my-font.ttf';
+
+// used in Cloudinary URLs — no underscores allowed!
+const PUBLIC_ID = 'my-font.ttf';
+
+const uploadToCloudinary = async () => {
+  cloudinary.config({
+    cloud_name: CLOUDINARY_CLOUD_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
+  });
+
+  const result = await cloudinary.uploader.upload(PATH_TO_FILE, {
+    resource_type: 'raw',
+    type: 'authenticated',
+    public_id: PUBLIC_ID,
+  });
+
+  console.log(result);
+};
+
+uploadToCloudinary();
+```
+
+Update the information at the top with your own Cloudinary and font info, then run the script:
+
+```bash
+node upload.js
+```
+
+You will see the output of the script showing the upload details (or an error, if one occurred). It will look something like this (some details masked):
+
+```js
+{ public_id: 'Tahu!.ttf',
+  version: 1578268616,
+  signature: '342a1f68ea8815b2894dadf8ecc65935ca7daade',
+  resource_type: 'raw',
+  created_at: '2020-01-05T23:56:56Z',
+  tags: [],
+  bytes: 39972,
+  type: 'authenticated',
+  etag: '98c36c6da792d6726ffdba9e6d6989ab',
+  placeholder: false,
+  url:
+    '<http://res.cloudinary.com/jlengstorf/raw/authenticated/[redacted]/v1578268616/Tahu%21.ttf>',
+  secure_url:
+    '<https://res.cloudinary.com/jlengstorf/raw/authenticated/[redacted]/v1578268616/Tahu%21.ttf>',
+  access_mode: 'public',
+  original_filename: 'Tahu!' }
+```
+
+**NOTE:** this example uses the [free Tahu! font](https://www.behance.net/gallery/63159677/TAHU-FREE-SCRIPT-FONT).
+
+## Use the custom font in a Cloudinary image
+
+Now that we've uploaded the font, we can use it for image overlays.
+
+Let's start with this image of a llama:
+
+<Figure
+  credit="Kimmy Williams"
+  creditLink="https://unsplash.com/photos/IivEbEd_vQ4"
+>
+
+![a llama](https://res.cloudinary.com/jlengstorf/image/upload/w_800,q_auto,f_auto/v1578269094/llama-kimmy-williams.jpg)
+
+</Figure>
+
+The URL to display this image is:
+
+```md
+https://res.cloudinary.com/jlengstorf/image/upload/w_800,q_auto,f_auto/v1578269094/llama-kimmy-williams.jpg
+```
+
+We can break this URL into four pieces:
+
+1. **`https://res.cloudinary.com/jlengstorf/image/upload`** — this is the **URL base**, which is going to be the same for all images in my Cloudinary account
+2. **`/w_800,q_auto,f_auto`** — these are **image transforms** tells Cloudinary that I want the image at 800 pixels wide and that the format and quality should be set automatically to best suit this browser
+3. **`/v1578269094`** — this is teh **version**, an optional piece that allows Cloudinary to cache the image aggressively to cut down on bandwidth and processing
+4. **`/llama-kimmy-williams.jpg`** — this is the **public ID** of the image we want to display and an optional extension telling Cloudinary what format should be used (this will be overridden by `f_auto`, though)
+
+To insert our custom text overlay, we'll add a new piece in between the image transforms and the version, which will configure text:
+
+```md
+/g_south,y_20,co_white,l_text:Tahu!.ttf_70:Have%20you%20been%20to%20Machu%20Picchu%3F
+```
+
+This sets a few things for our text:
+
+- **`g_south`** — put the text at the bottom-center of the image
+- **`y_20`** — move the text 20px away from the bottom of the image
+- **`co_white`** — set the text color to white
+- **`l_text:Tahu!.ttf_70`** — `l_text` is the overlay config, then we use the custom font's public ID, then `_70` to set the font size
+- **`:Have%20you%20been%20to%20Machu%20Picchu%3F`** — we can set any text we want here — the text needs to be URI-encoded
+
+<Aside>
+
+**Heads up!** If you want more details on what’s going on here, I wrote a full post on [how text overlays work in Cloudinary](/blog/add-text-overlay-cloudinary/).
+
+</Aside>
+
+Once we've added this to the URL, it looks like this:
+
+```md
+https://res.cloudinary.com/jlengstorf/image/upload/w_800,q_auto,f_auto/g_south,y_20,co_white,l_text:Tahu!.ttf_70:Have%20you%20been%20to%20Machu%20Picchu%3F/v1578269094/llama-kimmy-williams.jpg
+```
+
+And the image now includes our text overlay using the custom font!
+
+<Figure>
+
+![llama with text overlay saying, “Have you been to Machu Picchu?”](https://res.cloudinary.com/jlengstorf/image/upload/w_800,q_auto,f_auto/g_south,y_20,co_white,l_text:Tahu!.ttf_70:Have%20you%20been%20to%20Machu%20Picchu%3F/v1578269094/llama-kimmy-williams.jpg)
+
+</Figure>
+
+## What to do next
+
+For next steps:
+
+- Learn how to use text overlays to [automatically generate social sharing cards for blog posts](/blog/auto-generate-social-image/)
+- Get more detail on [how text overlays work](/blog/add-text-overlay-cloudinary/)
+- Use the [media library to upload custom fonts via UI](/blog/upload-custom-font-cloudinary-media-library/)
+- Read the [Cloudinary docs on text overlays](https://cloudinary.com/documentation/image_transformations?ap=lwj#adding_text_captions)

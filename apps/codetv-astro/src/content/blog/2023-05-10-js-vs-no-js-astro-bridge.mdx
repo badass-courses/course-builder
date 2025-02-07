@@ -1,0 +1,107 @@
+---
+slug: js-vs-no-js-astro-bridge
+pubDate: 2023-05-10
+
+title: JS vs. No-JS for Websites & How Astro Bridges the Gap
+description: >
+  There’s a heated debate over JS vs. no-JS. Astro rejects it as a false choice and says, “Let’s just build great websites!”
+
+share:
+  image: https://res.cloudinary.com/jlengstorf/image/upload/f_auto,q_auto/v1683734135/lwj/blog/astro-why-not-both.jpg
+  title: JS vs. No-JS for Websites & How Astro Bridges the Gap
+  text: There’s a heated debate over JS vs. no-JS. Astro rejects it as a false choice and says, “Let’s just build great websites!”
+---
+
+import YouTube from '../../components/youtube.astro';
+import Aside from '../../components/aside.astro';
+
+<YouTube id="28TEWzieygU" />
+
+## Why am I so excited about Astro?
+
+In a field that tends toward absolutes, I’ve really loved that Astro has identified a specific set of use cases, embraced that there’s no one-size-fits-all approach to building for the web, and given us smart defaults to start with, plus full control of how far we can choose to go with our apps.
+
+By default, Astro ships HTML and CSS. No JavaScript at all. This is ideal for a substantial portion of the sites on the internet — most of these sites show us text and images without much interactivity or state.
+
+However, unlike previous tools that are — implicitly or otherwise — _against_ JavaScript, Astro fully embraces it. You can add any JavaScript you want, using any framework you want (or no framework), and opt-in to shipping JS on the client side. Astro’s got you covered.
+
+And no matter which approach you choose, you get to keep the modern, component-based workflow that makes the developer experience so pleasant in all our favorite frameworks.
+
+## There is a big push right now to recenter on simplicity.
+
+More and more people seem to be questioning why we’re spending so much time on complex solutions to problems that most of don’t have, and I’m extremely here for it.
+
+Web standards have made massive leaps forward since the last wave of JS frameworks rose to popularity. Many things that made something like React necessary in the first place have been implemented natively, and if you keep an eye on the spec discussions, it’s pretty clear that these working groups have no intention of slowing down.
+
+## The web is ready to evolve to its next, simpler iteration.
+
+We moved to tools like React because they simplified the mental model of building web apps.
+
+But over time — as any successful tool will do — JavaScript frameworks have expanded.
+
+**The cost of success is complexity**: more use cases, more edge cases, backward compatibility, a Cambrian explosion of ecosystem tools, and devs using these frameworks to do things they were never intended for.
+
+All of this has led to commentary like Andrew Clark saying, “If you use React, you should be using a meta-framework.” This makes me wonder if we’ve reached the apex of React’s dominance (and maybe the all-in JS framework approach?), and the coming years will see a new approach move in as the “default modern approach” to building for the web.
+
+<blockquote class="twitter-tweet" data-dnt="true">
+  <p lang="en" dir="ltr">
+    If you use React, you should be using a React framework. If your existing
+    app doesn&#39;t use a framework, you should incrementally migrate to one. If
+    you&#39;re creating a new React project, you should use a framework from the
+    beginning.
+  </p>
+  &mdash; Andrew Clark (@acdlite)
+  <a href="https://twitter.com/acdlite/status/1617611126514266112?ref_src=twsrc%5Etfw">
+    January 23, 2023
+  </a>
+</blockquote>
+<script
+  async
+  src="https://platform.twitter.com/widgets.js"
+  charset="utf-8"
+></script>
+
+<Aside>
+  And to be clear, I don’t think React is going anywhere. We’ll be using it for
+  decades to come, most likely. I just think we’re witnessing the moment where
+  it becomes more like jQuery, which is [in use on 77.7% of all
+  websites](https://w3techs.com/technologies/details/js-jquery) but almost never
+  gets recommended anymore. (React is [used on 3.4% of all
+  websites](https://w3techs.com/technologies/details/js-react), for comparison.)
+</Aside>
+
+## We've started applying some very high-complexity app approaches to very low-complexity websites.
+
+When I’m lucky enough to get into a deeper conversation about how we build for the web with people who have been doing it for a long time, one of the more common pain points we talk about is how easy it is to go overboard with our projects “just in case” (or worse, “because it’s fun”).
+
+The assignment might be to build a marketing home page, newsletter capture, and blog for our company. Somehow, we end up shipping a server-side rendered behemoth that clocks in at 1.2 MB of JavaScript, and the only interactivity is a fun little easter egg we hid in the hero 🤡
+
+React was built to power Facebook, arguably the _most_ complex app on the internet at the time.
+
+It excels at building highly complex applications. And if we find ourselves building one of those, we should absolutely choose the right tool for the job. But if we’re **\***not**\*** building something monstrously complex, well… we should still choose the right tool for the job, which might just be shipping only HTML and CSS.
+
+## There are no “sides” in building for the web.
+
+This all brings me back to why I think what Astro is doing is so smart.
+
+They’re telling us to rely on the platform as a default, then giving us a clear, flexible API to add any frameworks and abstractions we need on top of it _as part of the Astro authoring experience_.
+
+**They’re giving us a bridge where other frameworks appear to draw lines in the sand.**
+
+On one side, we have a raft of excellent tools like Eleventy, Hugo, and others that excel at producing plain HTML and CSS. However, they actively discourage JavaScript through a complete lack of API support.
+
+The guidance is, effectively: “We can’t stop you from using JS, but we won’t help you either.”
+
+On the other side, JS meta frameworks are pushing an all-JavaScript approach where every bit of the DOM has to be rehydrated into a JS-powered layout, even if there’s no interactivity on the page.
+
+Both sides have strong arguments for why their approach is correct (and, in many cases, it starts to sound like there’s an argument for which side is more “morally correct” which worries me quite a bit). Depending on the project, where I land in the argument will change.
+
+## What if the “JS vs. no-JS” argument didn’t have to exist?
+
+Astro takes a completely different approach. “There’s nothing to argue about,” they seem to be saying. “If you don’t need JS, don’t ship it. (We’ll help.) And if you need JS, use whatever you need. (We’ll help with that, too.)”
+
+Astro embraces the experience of building with our favorite frameworks without the trade-off of shipping a pile of unnecessary JavaScript at the end.
+
+In many ways, we get to have our cake and eat it, too.
+
+Rather than accepting the false premise that everyone needs to “choose a side” in the JS wars, Astro just… builds websites. And I love that.
