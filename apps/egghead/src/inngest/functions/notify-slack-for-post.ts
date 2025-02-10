@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getEggheadUserProfile } from '@/lib/egghead'
 import { NonRetriableError } from 'inngest'
@@ -24,11 +25,12 @@ export const notifySlack = inngest.createFunction(
 
 		const instructor = eggheadUser?.instructor
 
-		if (!instructor) throw new NonRetriableError('No instructor found')
+		if (!instructor || !instructor?.slack_group_id)
+			throw new NonRetriableError('No instructor found')
 
 		await step.run('Notify slack', async () => {
 			await notificationProvider.sendNotification({
-				channel: instructor.slack_group_id,
+				channel: instructor.slack_group_id ?? env.SLACK_DEFAULT_CHANNEL_ID,
 				text: `New ${post?.fields?.postType} created: ${post?.fields?.title}`,
 				attachments: [
 					{
