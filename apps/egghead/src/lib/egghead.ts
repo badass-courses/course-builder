@@ -89,12 +89,41 @@ export async function getEggheadUserProfile(userId: string) {
 const EGGHEAD_LESSON_TYPE = 'lesson'
 const EGGHEAD_INITIAL_LESSON_STATE = 'approved'
 
+export async function getEggheadResource(post: Post) {
+	switch (post.fields.postType) {
+		case 'lesson':
+			if (!post.fields.eggheadLessonId) {
+				throw new Error(
+					`eggheadLessonId is required on ${post.id} to get egghead resource`,
+				)
+			}
+			return getEggheadLesson(post.fields.eggheadLessonId)
+		case 'course':
+			if (!post.fields.eggheadPlaylistId) {
+				throw new Error(
+					`eggheadPlaylistId is required on ${post.id} to get egghead resource`,
+				)
+			}
+			return getEggheadPlaylist(post.fields.eggheadPlaylistId)
+		default:
+			throw new Error('Unsupported post type')
+	}
+}
+
 export async function getEggheadLesson(eggheadLessonId: number) {
 	const lesson = await fetch(
 		`https://app.egghead.io/api/v1/lessons/${eggheadLessonId}`,
 	).then((res) => res.json())
 
 	return lesson
+}
+
+export async function getEggheadPlaylist(eggheadPlaylistId: number) {
+	const playlist = await fetch(
+		`https://app.egghead.io/api/v1/playlists/${eggheadPlaylistId}`,
+	).then((res) => res.json())
+
+	return playlist
 }
 
 export async function createEggheadLesson(input: {

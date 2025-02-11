@@ -2,7 +2,7 @@ import * as z from 'zod'
 
 import { EggheadTagSchema } from './tags'
 
-export const InstructorSchema = z.object({
+export const TypesenseInstructorSchema = z.object({
 	id: z.number().optional(),
 	name: z.string().optional(),
 	first_name: z.string().optional(),
@@ -24,7 +24,7 @@ export const TypesensePostSchema = z.object({
 	_tags: z.array(z.string()).optional(),
 	primary_tag: EggheadTagSchema.optional(),
 	primary_tag_image_url: z.string().optional(),
-	instructor: InstructorSchema.optional(),
+	instructor: TypesenseInstructorSchema.optional(),
 	instructor_name: z.string().optional(),
 	instructor_url: z.string().url().optional(),
 	path: z.string().optional(),
