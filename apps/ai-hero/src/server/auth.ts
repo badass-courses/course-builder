@@ -2,16 +2,17 @@ import { cookies, headers } from 'next/headers'
 import { getAbility, UserSchema } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
-import { accounts } from '@/db/schema'
+import { accounts, entitlements, organizationMemberships } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import { getActiveEntitlements } from '@/lib/entitlements'
 import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
 import { userSchema } from '@coursebuilder/core/schemas'
@@ -220,6 +221,27 @@ export const authOptions: NextAuthConfig = {
 					membership.organizationMembershipRoles.map((role) => role.role),
 				) || []
 
+			const currentMembership = organizationId
+				? await db.query.organizationMemberships.findFirst({
+						where: and(
+							eq(organizationMemberships.organizationId, organizationId),
+							eq(organizationMemberships.userId, user.id),
+						),
+					})
+				: null
+
+			const activeEntitlements = currentMembership
+				? await db.query.entitlements.findMany({
+						where: and(
+							eq(entitlements.organizationMembershipId, currentMembership.id),
+							or(
+								isNull(entitlements.expiresAt),
+								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
+							),
+						),
+					})
+				: []
+
 			return {
 				...session,
 				user: {
@@ -228,6 +250,11 @@ export const authOptions: NextAuthConfig = {
 					role: role as Role,
 					roles: userRoles.map((userRole) => userRole.role),
 					organizationRoles,
+					entitlements: activeEntitlements.map((e) => ({
+						type: e.entitlementType,
+						expires: e.expiresAt || undefined,
+						metadata: e.metadata,
+					})),
 				},
 			}
 		},
