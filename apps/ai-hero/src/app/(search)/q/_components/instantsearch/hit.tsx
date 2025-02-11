@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Contributor } from '@/app/_components/contributor'
+import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
 import { format } from 'date-fns'
 import { Highlight } from 'react-instantsearch'

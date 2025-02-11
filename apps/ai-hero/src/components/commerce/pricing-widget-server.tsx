@@ -1,5 +1,6 @@
 import { ParsedUrlQuery } from 'querystring'
 import { headers } from 'next/headers'
+import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
@@ -10,8 +11,6 @@ import { count, eq } from 'drizzle-orm'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
-
-import { ProductPricing } from '../(commerce)/products/[slug]/_components/product-pricing'
 
 export async function PricingWidgetServer({
 	productId,

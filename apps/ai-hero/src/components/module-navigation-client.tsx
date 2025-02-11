@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { createAppAbility, type AppAbility } from '@/ability'
+import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import {
 	findSectionIdForLessonSlug,
@@ -14,8 +15,6 @@ import pluralize from 'pluralize'
 
 import { Button, ModuleNavigation } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
-
-import { useModuleProgress } from '../(content)/_components/module-progress-provider'
 
 export const ModuleNavigationClient = (props: ModuleNavigation.RootProps) => {
 	const { moduleType, moduleSlug, currentResourceSlug } = props

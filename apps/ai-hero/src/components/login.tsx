@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Icon } from '@/components/icons'
+import { Icon } from '@/components/brand/icons'
 import { env } from '@/env.mjs'
 import { Provider } from '@/server/auth'
 import { signIn } from 'next-auth/react'

@@ -1,9 +1,6 @@
 import { cn } from '@/utils/cn'
 
-export const Logo: React.FC<{ className?: string; onDark?: boolean }> = ({
-	className = '',
-	onDark = false,
-}) => {
+export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 	return (
 		<div className={cn('flex items-center gap-2', className)}>
 			<svg
@@ -28,7 +25,7 @@ export const Logo: React.FC<{ className?: string; onDark?: boolean }> = ({
 					</clipPath>
 				</defs>
 			</svg>
-			<span className="text-foreground text-xl font-semibold !leading-none">
+			<span className={cn('text-xl font-semibold !leading-none', {})}>
 				<span className="font-mono">AI</span>hero
 			</span>
 		</div>
@@ -37,7 +34,6 @@ export const Logo: React.FC<{ className?: string; onDark?: boolean }> = ({
 
 export const LogoMark: React.FC<{ className?: string; onDark?: boolean }> = ({
 	className = 'w-8',
-	onDark = false,
 }) => {
 	return (
 		<svg

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
-import TutorialResourcesList from '@/components/tutorial-resources-edit'
+import TutorialResourcesList from '@/components/resources-crud/tutorial-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'

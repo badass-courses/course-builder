@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSelection } from '@/app/_components/list-editor/selection-context'
+import { useSelection } from '@/components/list-editor/selection-context'
 import { Configure } from 'react-instantsearch'
 
 export default function SearchConfig() {

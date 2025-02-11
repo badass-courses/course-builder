@@ -68,7 +68,7 @@ const PageTeaser: React.FC<{
 			<Link
 				href={`/admin/pages/${article.fields.slug}/edit`}
 				passHref
-				className="fluid-lg flex w-full items-center gap-3"
+				className="fluid-lg flex w-full items-center gap-3 py-5"
 			>
 				<FileText className="text-muted-foreground h-4 w-4" /> {title}
 			</Link>
