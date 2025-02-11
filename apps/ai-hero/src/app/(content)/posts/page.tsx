@@ -94,7 +94,6 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 
 export default async function PostsIndexPage() {
 	const page = await getPage('posts-vhq68')
-	console.log('page', page)
 
 	let featuredContent: any[] = [
 		// First featured item
