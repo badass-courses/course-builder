@@ -149,13 +149,13 @@ export function PostPlayer({
 			{state.action?.type === 'COMPLETED' && (
 				<div
 					className={cn(
-						'bg-background/85 absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
+						'bg-background/85 dark absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
 						className,
 					)}
 				>
 					<PostNextUpFromListPagination
 						postId={postId}
-						className="mt-0 border-0 bg-transparent px-0 py-0"
+						className="mt-0 border-0 bg-transparent px-0 py-0 !text-white"
 					/>
 				</div>
 			)}
