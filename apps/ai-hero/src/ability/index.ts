@@ -20,7 +20,17 @@ import {
 	hasChargesForPurchases,
 } from './purchase-validators'
 
-export const UserSchema = userSchema
+export const UserSchema = userSchema.merge(
+	z.object({
+		entitlements: z.array(
+			z.object({
+				type: z.string(),
+				expires: z.date().nullable(),
+				metadata: z.record(z.any()),
+			}),
+		),
+	}),
+)
 
 export type User = z.infer<typeof UserSchema>
 
@@ -55,6 +65,8 @@ type Subjects =
 	| 'OrganizationMember'
 	| OrganizationBilling
 	| 'OrganizationBilling'
+	| 'Discord'
+	| 'Entitlement'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -136,6 +148,20 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 				}
 			})
 		}
+
+		// Entitlement-based permissions
+		options.user.entitlements?.forEach((entitlement) => {
+			if (entitlement.type === 'cohort_content_access') {
+				can('read', 'Content', {
+					id: { $in: entitlement.metadata.contentIds },
+					status: 'published',
+				})
+			}
+
+			if (entitlement.type === 'cohort_discord_role') {
+				can('invite', 'Discord')
+			}
+		})
 	}
 
 	can('read', 'Content', {
