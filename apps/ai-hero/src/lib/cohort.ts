@@ -18,6 +18,13 @@ export type CohortAccess = {
 	discordRoleId?: string
 }
 
+/**
+ * Check if a user has access to a cohort
+ * @param organizationId - The ID of the organization to check cohort access for
+ * @param userId - The ID of the user to check cohort access for
+ * @param cohortSlug - The slug of the cohort to check access for
+ * @returns The cohort access information if the user has access, null otherwise
+ */
 export async function checkCohortAccess(
 	organizationId: string,
 	userId: string,
@@ -60,6 +67,11 @@ export async function checkCohortAccess(
 	}
 }
 
+/**
+ * Sync the Discord roles for a user
+ * @param organizationId - The ID of the organization to sync the Discord roles for
+ * @param user - The user to sync the Discord roles for
+ */
 export async function syncDiscordRoles(organizationId: string, user: User) {
 	const accounts = await db.query.accounts.findMany({
 		where: and(
@@ -120,6 +132,11 @@ async function fetchDiscordRoles(accessToken: string): Promise<string[]> {
 	return guilds.flatMap((g: any) => g.roles || [])
 }
 
+/**
+ * Add a Discord role to a user
+ * @param accessToken - The access token for the user
+ * @param roleId - The ID of the role to add
+ */
 async function addDiscordRole(accessToken: string, roleId: string) {
 	await fetch(
 		`https://discord.com/api/guilds/${env.DISCORD_GUILD_ID}/members/@me/roles/${roleId}`,
