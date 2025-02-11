@@ -208,6 +208,11 @@ import {
 	getTagTagSchema,
 } from './schemas/content/tag-tag.js'
 import { getTagRelationsSchema, getTagSchema } from './schemas/content/tag.js'
+import { getEntitlementTypesSchema } from './schemas/entitlements/entitlement-type.js'
+import {
+	getEntitlementRelationsSchema,
+	getEntitlementsSchema,
+} from './schemas/entitlements/entitlement.js'
 import {
 	getOrganizationMembershipRolesRelationsSchema,
 	getOrganizationMembershipRolesSchema,
@@ -319,6 +324,9 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		subscriptionRelations: getSubscriptionRelationsSchema(mysqlTable),
 		profiles: getProfilesSchema(mysqlTable),
 		profilesRelations: getProfilesRelationsSchema(mysqlTable),
+		entitlementTypes: getEntitlementTypesSchema(mysqlTable),
+		entitlements: getEntitlementsSchema(mysqlTable),
+		entitlementsRelations: getEntitlementRelationsSchema(mysqlTable),
 	} as const
 }
 

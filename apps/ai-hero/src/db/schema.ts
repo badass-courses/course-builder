@@ -82,4 +82,7 @@ export const {
 	deviceVerificationRelations,
 	deviceAccessToken,
 	deviceAccessTokenRelations,
+	entitlements,
+	entitlementsRelations,
+	entitlementTypes,
 } = getCourseBuilderSchema(mysqlTable)
