@@ -104,18 +104,6 @@ export async function updatePage(input: Page) {
 }
 
 export async function getPage(slugOrId: string) {
-	const { ability } = await getServerAuthSession()
-
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
-
 	const page = await db.query.contentResource.findFirst({
 		where: and(
 			or(
@@ -123,11 +111,6 @@ export async function getPage(slugOrId: string) {
 				eq(contentResource.id, slugOrId),
 			),
 			eq(contentResource.type, 'page'),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
-			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 		with: {
 			resources: {

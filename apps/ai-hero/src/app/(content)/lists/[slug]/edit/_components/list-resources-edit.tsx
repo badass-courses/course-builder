@@ -4,15 +4,15 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { DynamicTitle } from '@/app/_components/list-editor/dynamic-title'
+import { DynamicTitle } from '@/components/list-editor/dynamic-title'
 import {
 	getInitialTreeState,
 	treeStateReducer,
-} from '@/app/_components/list-editor/lesson-list/data/tree'
-import Tree from '@/app/_components/list-editor/lesson-list/tree'
-import { ResourcesInfiniteHits } from '@/app/_components/list-editor/resources-infinite-hits'
-import SearchConfig from '@/app/_components/list-editor/search-config'
-import { SelectionProvider } from '@/app/_components/list-editor/selection-context'
+} from '@/components/list-editor/lesson-list/data/tree'
+import Tree from '@/components/list-editor/lesson-list/tree'
+import { ResourcesInfiniteHits } from '@/components/list-editor/resources-infinite-hits'
+import SearchConfig from '@/components/list-editor/search-config'
+import { SelectionProvider } from '@/components/list-editor/selection-context'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,

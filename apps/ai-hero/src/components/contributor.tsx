@@ -1,9 +1,10 @@
 'use client'
 
 import React from 'react'
-import Image from 'next/image'
 import config from '@/config'
 import { cn } from '@/utils/cn'
+
+import { CldImage } from './cld-image'
 
 export const Contributor: React.FC<{ className?: string }> = ({
 	className,
@@ -24,7 +25,7 @@ export const ContributorImage = ({
 	className?: string
 }) => {
 	return (
-		<Image
+		<CldImage
 			src={
 				'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
 			}

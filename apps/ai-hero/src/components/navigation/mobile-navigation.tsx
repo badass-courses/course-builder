@@ -12,9 +12,9 @@ import { signOut, useSession } from 'next-auth/react'
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
-import { useNavLinks } from '../app/use-nav-links'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
+import { useNavLinks } from './use-nav-links'
 
 type MobileNavigationProps = {
 	isMobileMenuOpen: boolean

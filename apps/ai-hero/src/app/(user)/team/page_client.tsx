@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { CldImage } from '@/app/_components/cld-image'
 import { TeamPageData } from '@/app/(user)/team/page'
+import { CldImage } from '@/components/cld-image'
 
 import { BuyMoreSeats } from '@coursebuilder/commerce-next/post-purchase/buy-more-seats'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'

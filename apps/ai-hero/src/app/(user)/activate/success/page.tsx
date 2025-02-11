@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Icon } from '@/components/icons'
+import { Icon } from '@/components/brand/icons'
 import Balancer from 'react-wrap-balancer'
 
 export default function ActivateSuccess() {

@@ -1,9 +1,9 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
+import { ContributorImage } from '@/components/contributor'
 import { getProviders } from '@/server/auth'
 
-import { ContributorImage } from '../_components/contributor'
 import { DiscordConnectButton } from './discord-connect-button'
 
 export const metadata: Metadata = {

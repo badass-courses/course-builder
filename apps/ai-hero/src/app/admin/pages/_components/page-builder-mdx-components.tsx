@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { CldImage } from '@/app/_components/cld-image'
-import { AnimatedTitle } from '@/components/animated-word'
+import { AnimatedTitle } from '@/components/brand/animated-word'
+import { CldImage } from '@/components/cld-image'
 import config from '@/config'
 import MuxPlayer from '@mux/mux-player-react'
 import { GripVertical } from 'lucide-react'

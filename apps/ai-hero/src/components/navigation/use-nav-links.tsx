@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { api } from '@/trpc/react'
 
-import type { NavLinkItem } from '../navigation/nav-link-item'
+import type { NavLinkItem } from './nav-link-item'
 
 export function useNavLinks() {
 	// const { data: availableEvents, status } = api.events.get.useQuery()

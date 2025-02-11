@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Icon } from '@/components/icons'
+import { Icon } from '@/components/brand/icons'
 import { env } from '@/env.mjs'
 import { signIn } from 'next-auth/react'
 

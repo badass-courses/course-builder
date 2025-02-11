@@ -2,9 +2,9 @@
 
 import React, { use } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { CldImage } from '@/app/_components/cld-image'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
+import { CldImage } from '@/components/cld-image'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import { usePrefetchNextResource } from '@/hooks/use-prefetch-next-resource'

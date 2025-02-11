@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Logo } from '@/components/logo'
+import { Logo } from '@/components/brand/logo'
 import { cn } from '@/utils/cn'
 import { renderToString } from 'react-dom/server'
 

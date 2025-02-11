@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ProductPricingFeatures } from '@/components/commerce/product-pricing-features'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -8,8 +9,6 @@ import type {
 	FormattedPrice,
 	PricingOptions,
 } from '@coursebuilder/core/types'
-
-import { ProductPricingFeatures } from '../../../_components/product-pricing-features'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null

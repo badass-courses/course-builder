@@ -1,12 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import ListResourcesEdit from '@/app/_components/list-editor/list-resources-edit'
 import {
 	onPageSave,
 	serializeForPreview,
 } from '@/app/admin/pages/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'

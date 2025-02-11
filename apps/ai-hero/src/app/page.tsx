@@ -1,11 +1,10 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
-import { PricingWidgetServer } from '@/app/_components/pricing-widget-server'
-import { TeamPricingWidget } from '@/app/_components/team-pricing-widget'
 import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { AnimatedTitle } from '@/components/animated-word'
-import LandingCopy from '@/components/landing-copy'
+import { AnimatedTitle } from '@/components/brand/animated-word'
+import { PricingWidgetServer } from '@/components/commerce/pricing-widget-server'
+import { TeamPricingWidget } from '@/components/commerce/team-pricing-widget'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
@@ -106,7 +105,7 @@ const Home = async (props: Props) => {
 							}}
 						/>
 					) : (
-						<LandingCopy />
+						<>Page body not found</>
 					)}
 				</article>
 				{isCommerceEnabled && (

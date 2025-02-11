@@ -2,9 +2,9 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import ListResoucesEdit from '@/app/_components/list-editor/list-resources-edit'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import ListResoucesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'

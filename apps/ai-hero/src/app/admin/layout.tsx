@@ -18,8 +18,8 @@ const AdminLayout = async ({
 	params: Promise<{ module: string }>
 }) => {
 	return (
-		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-			<div className="bg-muted/40 hidden border-r md:block">
+		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
+			<div className="hidden border-r md:block">
 				<div className="flex h-full max-h-screen flex-col gap-2">
 					<nav className="">
 						<ul>

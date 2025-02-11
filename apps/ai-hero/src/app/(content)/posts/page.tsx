@@ -1,8 +1,8 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Contributor } from '@/app/_components/contributor'
 import Search from '@/app/(search)/q/_components/search'
+import { Contributor } from '@/components/contributor'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
@@ -94,6 +94,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 
 export default async function PostsIndexPage() {
 	const page = await getPage('posts-vhq68')
+	console.log('page', page)
 
 	let featuredContent: any[] = [
 		// First featured item
