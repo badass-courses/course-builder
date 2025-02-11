@@ -12,10 +12,15 @@ export type EntitlementSource =
 	| { type: 'SUBSCRIPTION'; id: string }
 	| { type: 'MANUAL'; id: string }
 
-export async function getActiveEntitlements(organizationId: string) {
+/**
+ * Get all active entitlements for an organization member
+ * @param organizationMembershipId - The ID of the organization membership to get entitlements for
+ * @returns An array of entitlements
+ */
+export async function getActiveEntitlements(organizationMembershipId: string) {
 	return db.query.entitlements.findMany({
 		where: and(
-			eq(entitlements.organizationId, organizationId),
+			eq(entitlements.organizationMembershipId, organizationMembershipId),
 			or(
 				isNull(entitlements.expiresAt),
 				gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
@@ -30,6 +35,13 @@ export async function getActiveEntitlements(organizationId: string) {
 	})
 }
 
+/**
+ * Allocate an entitlement to an organization member
+ * @param organizationId - The ID of the organization to allocate the entitlement to
+ * @param memberId - The ID of the organization member to allocate the entitlement to
+ * @param entitlementType - The type of entitlement to allocate
+ * @param source - The source of the entitlement
+ */
 export async function allocateEntitlementToMember(
 	organizationId: string,
 	memberId: string,
@@ -91,6 +103,12 @@ export async function allocateEntitlementToMember(
 	})
 }
 
+/**
+ * Validate that a membership has an entitlement
+ * @param membershipId - The ID of the organization membership to validate the entitlement for
+ * @param type - The type of entitlement to validate
+ * @returns True if the membership has the entitlement, false otherwise
+ */
 export async function validateMembershipEntitlement(
 	membershipId: string,
 	type: EntitlementType,
@@ -107,6 +125,17 @@ export async function validateMembershipEntitlement(
 	})
 }
 
+/**
+ * Validate that a purchase has available seats
+ *
+ * TODO: this isn't something we have modeled. It uses seats below but that
+ * isn't actually stored.
+ *
+ * @param organizationId - The ID of the organization to validate the entitlement for
+ * @param purchaseId - The ID of the purchase to validate the entitlement for
+ * @param entitlementType - The type of entitlement to validate
+ * @returns True if the purchase has available seats, false otherwise
+ */
 export async function hasAvailableSeatsForPurchase(
 	organizationId: string,
 	purchaseId: string,
