@@ -45,7 +45,7 @@ export async function getUserAbilityForRequest(request: NextRequest) {
 	console.log('User authenticated:', {
 		id: user.id,
 		email: user.email,
-		roles: user.roles.map((r) => r.name),
+		roles: user.roles?.map((r) => r.name),
 	})
 
 	return { user, ability }
