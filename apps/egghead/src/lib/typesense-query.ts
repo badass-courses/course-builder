@@ -1,9 +1,8 @@
-import Typesense, { type Client } from 'typesense'
+import Typesense from 'typesense'
 
-import { getEggheadLesson } from './egghead'
+import { getEggheadResource, getEggheadUserProfile } from './egghead'
 import { Post, PostAction } from './posts'
-import { getPostTags } from './posts-query'
-import { InstructorSchema, TypesensePostSchema } from './typesense'
+import { TypesenseInstructorSchema, TypesensePostSchema } from './typesense'
 
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 	let client = new Typesense.Client({
@@ -30,81 +29,72 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 				console.error(err)
 			})
 	} else {
-		if (post.fields.postType === 'lesson') {
-			await upsertLessonPostToTypeSense(post, action, client)
+		// eggheadResource is either a lesson or a playlist
+		const eggheadResource = await getEggheadResource(post)
+		const eggheadUser = await getEggheadUserProfile(post.createdById)
+		const typeSenseInstructor = TypesenseInstructorSchema.parse({
+			id: eggheadUser.id,
+			name: eggheadUser.full_name,
+			first_name: eggheadUser.instructor?.first_name,
+			last_name: eggheadUser.instructor?.last_name,
+			url: eggheadUser.instructor?.website,
+			avatar_url: eggheadUser.instructor?.avatar_url,
+		})
+
+		const primaryTagDbRow = post?.tags?.find(
+			(tagRow) => post?.fields?.primaryTagId === tagRow.tagId,
+		)
+		const postGuid = post.id.split('_').pop()
+		// typesense expects playlist for courses
+		const postType =
+			post.fields.postType === 'course' ? 'playlist' : post.fields.postType
+
+		const resource = TypesensePostSchema.safeParse({
+			id: String(eggheadResource.id),
+			externalId: postGuid,
+			title: post.fields.title,
+			slug: post.fields.slug,
+			summary: post.fields.description,
+			description: post.fields.body,
+			name: post.fields.title,
+			path: `/${post.fields.slug}`,
+			type: postType,
+			_tags: post.tags?.map(({ tag }) => tag.fields?.name),
+			...(primaryTagDbRow && {
+				primary_tag: primaryTagDbRow.tag,
+				...(primaryTagDbRow.tag.fields?.image_url && {
+					primary_tag_image_url: primaryTagDbRow.tag.fields.image_url,
+				}),
+			}),
+			...(eggheadUser && {
+				instructor_name: eggheadUser.instructor?.full_name,
+				instructor: typeSenseInstructor,
+				image: eggheadUser.instructor?.avatar_url,
+			}),
+			...(eggheadResource.published_at && {
+				published_at_timestamp: eggheadResource.published_at
+					? new Date(eggheadResource.published_at).getTime()
+					: null,
+			}),
+		})
+
+		if (!resource.success) {
+			console.error(resource.error)
+			throw new Error('Failed to parse lesson post for TypesensePostSchema')
 		}
+
+		await client
+			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.documents()
+			.upsert({
+				...resource.data,
+				...(action === 'publish' && {
+					published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+				}),
+				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+			})
+			.catch((err) => {
+				console.error(err)
+			})
 	}
-}
-
-async function upsertLessonPostToTypeSense(
-	post: Post,
-	action: PostAction,
-	client: Client,
-) {
-	if (!post.fields.eggheadLessonId) {
-		return
-	}
-
-	const lesson = await getEggheadLesson(post.fields.eggheadLessonId)
-
-	const instructor = InstructorSchema.parse({
-		id: lesson.instructor?.id,
-		name: lesson.instructor?.full_name,
-		first_name: lesson.instructor?.first_name,
-		last_name: lesson.instructor?.last_name,
-		url: lesson.instructor?.url,
-		avatar_url: lesson.instructor?.avatar_url,
-	})
-
-	const tags = await getPostTags(post.id)
-	const primaryTag = tags.find((tag) => post?.fields?.primaryTagId === tag.id)
-	const postGuid = post.id.split('_').pop()
-
-	const resource = TypesensePostSchema.safeParse({
-		id: `${post.fields.eggheadLessonId}`,
-		externalId: postGuid,
-		title: post.fields.title,
-		slug: post.fields.slug,
-		summary: post.fields.description,
-		description: post.fields.body,
-		name: post.fields.title,
-		path: `/${post.fields.slug}`,
-		type: post.fields.postType,
-		_tags: tags.map((tag) => tag.fields.name),
-		...(primaryTag && {
-			primary_tag: primaryTag,
-			...(primaryTag.fields?.image_url && {
-				primary_tag_image_url: primaryTag.fields.image_url,
-			}),
-		}),
-		...(lesson && {
-			instructor_name: lesson.instructor?.full_name,
-			instructor,
-			image: lesson.image_480_url,
-			published_at_timestamp: lesson.published_at
-				? new Date(lesson.published_at).getTime()
-				: null,
-		}),
-	})
-
-	if (!resource.success) {
-		console.error(resource.error)
-		return
-	}
-
-	console.log('resource', resource.data)
-
-	await client
-		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
-		.documents()
-		.upsert({
-			...resource.data,
-			...(action === 'publish' && {
-				published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-			}),
-			updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-		})
-		.catch((err) => {
-			console.error(err)
-		})
 }
