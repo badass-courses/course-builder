@@ -1,5 +1,0 @@
-[[plugins]]
-package = "./plugins/inject-env-vars"
-
-[[plugins]]
-package = "netlify-plugin-inngest"
