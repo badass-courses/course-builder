@@ -1,11 +1,13 @@
 import { headers } from 'next/headers'
 import { createAppAbility, defineRulesForPurchases } from '@/ability'
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
+import { entitlements, organizationMemberships } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
 import { Module } from '@/lib/module'
 import { getModule } from '@/lib/modules-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
+import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
 import { getResourceSection } from './get-resource-section'
 
@@ -21,6 +23,8 @@ export async function getCurrentAbilityRules({
 		headerStore.get('x-vercel-ip-country') ||
 		process.env.DEFAULT_COUNTRY ||
 		'US'
+
+	const organizationId = headerStore.get('x-organization-id')
 
 	const convertkitSubscriber = await getSubscriberFromCookie()
 
@@ -38,8 +42,38 @@ export async function getCurrentAbilityRules({
 		session?.user?.id,
 	)
 
+	const currentMembership =
+		session?.user && organizationId
+			? await db.query.organizationMemberships.findFirst({
+					where: and(
+						eq(organizationMemberships.organizationId, organizationId),
+						eq(organizationMemberships.userId, session.user.id),
+					),
+				})
+			: null
+
+	const activeEntitlements = currentMembership
+		? await db.query.entitlements.findMany({
+				where: and(
+					eq(entitlements.organizationMembershipId, currentMembership.id),
+					or(
+						isNull(entitlements.expiresAt),
+						gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
+					),
+				),
+			})
+		: []
+
 	return defineRulesForPurchases({
-		user: session?.user,
+		user: {
+			...session?.user,
+			id: session?.user?.id || '',
+			entitlements: activeEntitlements.map((e) => ({
+				type: e.entitlementType,
+				expires: e.expiresAt,
+				metadata: e.metadata || {},
+			})),
+		},
 		country,
 		isSolution: false,
 		...(convertkitSubscriber && {

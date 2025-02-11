@@ -34,6 +34,8 @@ declare module 'next-auth' {
 
 	interface User {
 		// ...other properties
+		id?: string
+		email?: string | null
 		role?: Role
 		roles: {
 			id: string
@@ -44,7 +46,24 @@ declare module 'next-auth' {
 			updatedAt: Date | null
 			deletedAt: Date | null
 		}[]
-		organizationRoles: {
+		entitlements: {
+			type: string
+			expires?: Date | null
+			metadata: Record<string, any> | null
+		}[]
+		memberships?:
+			| {
+					organizationId: string | null
+					id: string
+					name: string
+					description: string | null
+					active: boolean
+					createdAt: Date | null
+					updatedAt: Date | null
+					deletedAt: Date | null
+			  }[]
+			| null
+		organizationRoles?: {
 			organizationId: string | null
 			id: string
 			name: string
@@ -251,8 +270,8 @@ export const authOptions: NextAuthConfig = {
 					organizationRoles,
 					entitlements: activeEntitlements.map((e) => ({
 						type: e.entitlementType,
-						expires: e.expiresAt || undefined,
-						metadata: e.metadata,
+						expires: e.expiresAt,
+						metadata: e.metadata || null,
 					})),
 				},
 			}
