@@ -20,7 +20,43 @@ import {
 	hasChargesForPurchases,
 } from './purchase-validators'
 
-export const UserSchema = userSchema
+export const UserSchema = userSchema.merge(
+	z.object({
+		role: z.enum(['admin', 'user']).nullish(),
+		email: z.string().nullish(),
+		fields: z.any(),
+		entitlements: z.array(
+			z.object({
+				type: z.string(),
+				expires: z.date().nullish(),
+				metadata: z.record(z.any()),
+			}),
+		),
+		organizationRoles: z
+			.array(
+				z.object({
+					organizationId: z.string(),
+					name: z.string(),
+				}),
+			)
+			.nullish(),
+		memberships: z
+			.array(
+				z.object({
+					id: z.string(),
+					organizationId: z.string(),
+				}),
+			)
+			.nullish(),
+		roles: z
+			.array(
+				z.object({
+					name: z.string(),
+				}),
+			)
+			.nullish(),
+	}),
+)
 
 export type User = z.infer<typeof UserSchema>
 
@@ -55,6 +91,8 @@ type Subjects =
 	| 'OrganizationMember'
 	| OrganizationBilling
 	| 'OrganizationBilling'
+	| 'Discord'
+	| 'Entitlement'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -74,11 +112,11 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
 
 	if (options.user) {
-		if (options.user.roles.map((role) => role.name).includes('admin')) {
+		if (options.user.roles?.map((role) => role.name).includes('admin')) {
 			can('manage', 'all')
 		}
 
-		if (options.user.roles.map((role) => role.name).includes('contributor')) {
+		if (options.user.roles?.map((role) => role.name).includes('contributor')) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: options.user.id } })
 			can('save', 'Content', { createdById: { $eq: options.user.id } })
@@ -136,6 +174,20 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 				}
 			})
 		}
+
+		// Entitlement-based permissions
+		options.user.entitlements?.forEach((entitlement) => {
+			if (entitlement.type === 'cohort_content_access') {
+				can('read', 'Content', {
+					id: { $in: entitlement.metadata.contentIds },
+					status: 'published',
+				})
+			}
+
+			if (entitlement.type === 'cohort_discord_role') {
+				can('invite', 'Discord')
+			}
+		})
 	}
 
 	can('read', 'Content', {
@@ -170,11 +222,11 @@ export function defineRulesForPurchases(
 	}
 
 	if (user) {
-		if (user.roles.map((role) => role.name).includes('admin')) {
+		if (user.roles?.map((role) => role.name).includes('admin')) {
 			can('manage', 'all')
 		}
 
-		if (user.roles.map((role) => role.name).includes('contributor')) {
+		if (user.roles?.map((role) => role.name).includes('contributor')) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: user.id } })
 		}
@@ -252,7 +304,7 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
-	if (user?.roles.map((role) => role.name).includes('admin')) {
+	if (user?.roles?.map((role) => role.name).includes('admin')) {
 		can('manage', 'all')
 		can('create', 'Content')
 		can('read', 'Content')
