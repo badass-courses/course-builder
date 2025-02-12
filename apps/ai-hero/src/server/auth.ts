@@ -326,7 +326,7 @@ export const {
 export const getServerAuthSession = async () => {
 	const session = await auth()
 	const user = userSchema.optional().nullable().parse(session?.user)
-	const parsedUser = UserSchema.nullish().parse(session?.user)
+	const parsedUser = userSchema.nullish().parse(session?.user)
 	const ability = getAbility({ user: parsedUser || undefined })
 
 	return { session: session ? { ...session, user } : null, ability }
