@@ -116,6 +116,13 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			},
 		)
 
+		const product = await step.run('load the product', async () => {
+			if (!merchantProduct?.productId) {
+				throw new Error('merchantProduct.productId is null')
+			}
+			return await db.getProduct(merchantProduct.productId)
+		})
+
 		const purchase = await step.run(
 			'create a merchant charge and purchase',
 			async () => {
@@ -151,6 +158,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			data: {
 				purchaseId: purchase.id,
 				checkoutSessionId: stripeCheckoutSession.id,
+				productType: product?.type || 'self-paced',
 			},
 			user,
 		})

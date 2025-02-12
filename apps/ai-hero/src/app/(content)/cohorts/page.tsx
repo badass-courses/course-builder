@@ -5,7 +5,7 @@ import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { EventSchema } from '@/lib/events'
+import { CohortSchema } from '@/lib/cohort'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
 import { eq } from 'drizzle-orm'
@@ -21,7 +21,7 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: 'Live Events & Workshops hosted by Matt Pocock',
+	title: 'Cohorts hosted by Matt Pocock',
 }
 
 export default async function EventIndexPage() {
@@ -35,14 +35,14 @@ export default async function EventIndexPage() {
 						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 							Live
 						</span>{' '}
-						<span className="text-gray-100">Events & Workshops</span>
+						<span className="text-gray-100">Cohorts</span>
 					</h1>
 				</div>
-				<EventsList />
+				<CohortsList />
 				{ability.can('update', 'Content') ? (
 					<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center border-t border-dashed py-10">
 						<Button asChild variant="secondary">
-							<Link href={`/events/new`}>New Event</Link>
+							<Link href={`/cohorts/new`}>New Cohort</Link>
 						</Button>
 					</div>
 				) : null}
@@ -55,10 +55,10 @@ export default async function EventIndexPage() {
 	)
 }
 
-async function EventsList() {
+async function CohortsList() {
 	const { ability } = await getServerAuthSession()
-	const eventsModule = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'event'),
+	const cohortsModule = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'cohort'),
 		with: {
 			resources: true,
 			resourceProducts: {
@@ -72,28 +72,28 @@ async function EventsList() {
 			},
 		},
 	})
-	const parsedEventsModule = z.array(EventSchema).parse(eventsModule)
+	const parsedCohortsModule = z.array(CohortSchema).parse(cohortsModule)
 
-	const events = [...parsedEventsModule].filter((event) => {
+	const cohorts = [...parsedCohortsModule].filter((cohort) => {
 		if (ability.can('create', 'Content')) {
-			return event
+			return cohort
 		} else {
-			return event?.fields?.visibility === 'public'
+			return cohort?.fields?.visibility === 'public'
 		}
 	})
 
-	const publicEvents = [...eventsModule].filter(
-		(event) => event?.fields?.visibility === 'public',
+	const publicCohorts = [...cohortsModule].filter(
+		(cohort) => cohort?.fields?.visibility === 'public',
 	)
 
 	return (
 		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 px-8 md:px-8">
-			{publicEvents.length === 0 && <p>There are no public events.</p>}
-			{events.map((event) => {
-				const { fields } = event
+			{publicCohorts.length === 0 && <p>There are no public cohorts.</p>}
+			{cohorts.map((cohort) => {
+				const { fields } = cohort
 				const { startsAt, endsAt } = fields
 				const PT = fields.timezone || 'America/Los_Angeles'
-				const eventDate =
+				const cohortDate =
 					startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 				const eventTime =
 					startsAt &&
@@ -105,19 +105,19 @@ async function EventsList() {
 					)}`
 
 				return (
-					<li key={event.id}>
+					<li key={cohort.id}>
 						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
-							{event?.fields?.image && (
+							{cohort?.fields?.image && (
 								<Link
 									className="flex-shrink-0"
-									href={`/events/${event.fields.slug || event.id}`}
+									href={`/cohorts/${cohort.fields.slug || cohort.id}`}
 								>
 									<CldImage
 										className="flex-shrink-0"
 										width={200}
 										height={200}
-										src={event.fields.image}
-										alt={event.fields.title}
+										src={cohort.fields.image}
+										alt={cohort.fields.title}
 									/>
 								</Link>
 							)}
@@ -125,22 +125,21 @@ async function EventsList() {
 								<CardHeader className="mb-2 p-0">
 									<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
 										<Link
-											href={`/events/${event?.fields?.slug || event.id}`}
+											href={`/cohorts/${cohort.fields.slug || cohort.id}`}
 											className="w-full text-balance hover:underline"
 										>
-											{event?.fields?.title}
+											{cohort?.fields?.title}
 										</Link>
 									</CardTitle>
 									<div className="flex items-center gap-1 text-sm">
-										<p>{eventDate}</p>
+										<p>{cohortDate}</p>
 										<span className="opacity-50">・</span>
-										<p>{eventTime} (PT)</p>
 									</div>
 								</CardHeader>
-								{event?.fields?.description && (
+								{cohort?.fields?.description && (
 									<CardContent className="px-0 py-3">
 										<p className="text-muted-foreground text-base">
-											{event?.fields?.description}
+											{cohort?.fields?.description}
 										</p>
 									</CardContent>
 								)}
@@ -150,11 +149,11 @@ async function EventsList() {
 										{ability.can('create', 'Content') && (
 											<>
 												<span className="text-sm">
-													{event?.fields?.visibility}
+													{cohort?.fields?.visibility}
 												</span>
 												<Button asChild variant="outline" size="sm">
 													<Link
-														href={`/events/${event?.fields?.slug || event.id}/edit`}
+														href={`/cohorts/${cohort?.fields?.slug || cohort.id}/edit`}
 													>
 														Edit
 													</Link>

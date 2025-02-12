@@ -76,7 +76,7 @@ function ComboboxDemo({
 	const [open, setOpen] = React.useState(false)
 
 	const { data = [] } = api.contentResources.getAll.useQuery({
-		contentTypes: ['event', 'workshop'],
+		contentTypes: ['event', 'workshop', 'cohort'],
 	})
 
 	const filteredResources = data
@@ -273,6 +273,7 @@ export function EditProductForm({ product }: { product: Product }) {
 									<SelectItem value="live">Live</SelectItem>
 									<SelectItem value="self-paced">Self-paced</SelectItem>
 									<SelectItem value="membership">Membership</SelectItem>
+									<SelectItem value="cohort">Cohort</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

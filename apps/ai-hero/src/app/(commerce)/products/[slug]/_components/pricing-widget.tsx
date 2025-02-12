@@ -35,6 +35,8 @@ export const PricingWidget: React.FC<{
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
+	console.log({ product })
+
 	return (
 		<Pricing.Root
 			className="relative w-full"
@@ -51,7 +53,9 @@ export const PricingWidget: React.FC<{
 					<Pricing.LiveQuantity />
 					<div className="flex items-center gap-1">
 						<Pricing.Price />
-						<span className="text-xl opacity-80">/ year</span>
+						{product.type === 'membership' && (
+							<span className="text-xl opacity-80">/ year</span>
+						)}
 					</div>
 					{pricingWidgetOptions?.allowTeamPurchase && (
 						<>

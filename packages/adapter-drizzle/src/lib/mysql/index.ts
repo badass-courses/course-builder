@@ -1512,6 +1512,7 @@ export function mySqlDrizzleAdapter(
 						...fieldsNoImage,
 						...(image?.url && { image }),
 					},
+					type: input.type,
 				})
 				.where(eq(products.id, currentProduct.id))
 

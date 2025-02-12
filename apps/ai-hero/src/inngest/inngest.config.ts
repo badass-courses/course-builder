@@ -9,7 +9,6 @@ import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-si
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postPurchaseNoProgress } from '@/inngest/functions/post-purchase-no-progress'
 import { postPurchaseWaitForProgress } from '@/inngest/functions/post-purchase-wait-for-progress'
-import { postPurchaseWorkflow } from '@/inngest/functions/post-purchase-workflow'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { progressWasMade } from '@/inngest/functions/progress-was-made'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
@@ -20,6 +19,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
+import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 
@@ -40,7 +40,7 @@ export const inngestConfig = {
 		discordAccountLinked,
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
-		postPurchaseWorkflow,
+		postCohortPurchaseWorkflow,
 		progressWasMade,
 		postPurchaseWaitForProgress,
 		postPurchaseNoProgress,
