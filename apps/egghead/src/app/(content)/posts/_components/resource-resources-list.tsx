@@ -113,6 +113,8 @@ export function ResourceResourcesList({
 				},
 			})
 
+			formDispatch({ type: 'HIDE_FORM' })
+
 			await addEggheadLessonToPlaylist({
 				eggheadLessonId: resourceItem.resource.fields?.eggheadLessonId,
 				eggheadPlaylistId: resource.fields?.eggheadPlaylistId,
@@ -124,7 +126,6 @@ export function ResourceResourcesList({
 			})
 		}
 
-		formDispatch({ type: 'HIDE_FORM' })
 		router.refresh()
 	}
 
