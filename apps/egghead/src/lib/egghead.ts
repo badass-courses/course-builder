@@ -240,7 +240,10 @@ export async function updateEggheadLesson(input: {
 	)
 }
 
-export function setPublishedAt(eggheadLessonId: number, publishedAt: string) {
+export function setLessonPublishedAt(
+	eggheadLessonId: number,
+	publishedAt: string,
+) {
 	return eggheadPgQuery(`UPDATE lessons SET published_at = $1 WHERE id = $2`, [
 		publishedAt,
 		eggheadLessonId,
@@ -468,6 +471,16 @@ export async function createEggheadCourse(input: {
 	}
 
 	return eggheadCourse.data
+}
+
+export function setPlaylistPublishedAt(
+	eggheadPlaylistId: number,
+	publishedAt: string,
+) {
+	return eggheadPgQuery(
+		`UPDATE playlists SET published_at = $1 WHERE id = $2`,
+		[publishedAt, eggheadPlaylistId],
+	)
 }
 
 export const EggheadCurrentUserInstructorSchema = z.object({

@@ -48,7 +48,8 @@ import {
 	EGGHEAD_API_V1_BASE_URL,
 	getEggheadToken,
 	getEggheadUserProfile,
-	setPublishedAt,
+	setLessonPublishedAt,
+	setPlaylistPublishedAt,
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
@@ -492,7 +493,7 @@ export async function writePostUpdateToDatabase(input: {
 		})
 
 		if (action === 'publish') {
-			await setPublishedAt(
+			await setLessonPublishedAt(
 				currentPost.fields.eggheadLessonId,
 				new Date().toISOString(),
 			)
@@ -512,6 +513,13 @@ export async function writePostUpdateToDatabase(input: {
 			accessLevel: postUpdate.fields.access,
 			searchIndexingState: postUpdate.fields.visibility,
 		})
+
+		if (action === 'publish') {
+			await setPlaylistPublishedAt(
+				currentPost.fields.eggheadPlaylistId,
+				new Date().toISOString(),
+			)
+		}
 	}
 
 	await courseBuilderAdapter.updateContentResourceFields({
