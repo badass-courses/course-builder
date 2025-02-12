@@ -17,6 +17,13 @@ export const TEST_USER = {
 		},
 	],
 	organizationRoles: [],
+	entitlements: [
+		{
+			type: 'post',
+			expires: null,
+			metadata: {},
+		},
+	],
 }
 
 export const TEST_ADMIN = {
