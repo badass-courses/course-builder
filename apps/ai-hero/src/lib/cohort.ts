@@ -1,151 +1,118 @@
-import { db } from '@/db'
+import { z } from 'zod'
+
+import { productSchema } from '@coursebuilder/core/schemas'
 import {
-	accounts as accountsTable,
-	entitlements as entitlementsTable,
-	organizationMemberships,
-} from '@/db/schema'
-import { env } from '@/env.mjs'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+	ContentResourceSchema,
+	ResourceStateSchema,
+	ResourceVisibilitySchema,
+} from '@coursebuilder/core/schemas/content-resource-schema'
 
-import type { User } from '@coursebuilder/core/schemas'
+/**
+ * @description Schema for cohort-based learning experiences
+ */
+export const CohortSchema = ContentResourceSchema.merge(
+	z.object({
+		resourceProducts: z.array(
+			z.object({
+				resourceId: z.string(),
+				productId: z.string(),
+				product: productSchema,
+			}),
+		),
+		fields: z.object({
+			title: z.string().min(2).max(90),
+			description: z.string().optional(),
+			slug: z.string(),
+			body: z.string().optional(),
+			state: ResourceStateSchema.default('draft'),
+			visibility: ResourceVisibilitySchema.default('unlisted'),
+			startsAt: z.string().datetime().optional(),
+			endsAt: z.string().datetime().optional(),
+			timezone: z.string().default('America/Los_Angeles'),
+			cohortTier: z.enum(['standard', 'premium', 'vip']).optional(),
+			maxSeats: z.number().int().positive().optional(),
+			discordRoleId: z.string().optional(),
+			image: z.string().url().optional(),
+			socialImage: z
+				.object({
+					type: z.string(),
+					url: z.string().url(),
+				})
+				.optional(),
+		}),
+	}),
+)
 
-export type CohortTier = 'basic' | 'premium'
+export type Cohort = z.infer<typeof CohortSchema>
+
+/**
+ * @description Schema for validating a cohort before publishing
+ */
+export const PublishableCohortSchema = CohortSchema.extend({
+	fields: z.object({
+		title: z.string().min(2).max(90),
+		description: z.string(),
+		slug: z.string(),
+		body: z.string(),
+		state: z.literal('published'),
+		visibility: ResourceVisibilitySchema,
+		startsAt: z.string().datetime(),
+		endsAt: z.string().datetime(),
+		timezone: z.string(),
+		cohortTier: z.enum(['standard', 'premium', 'vip']),
+		maxSeats: z.number().int().positive(),
+		discordRoleId: z.string().optional(),
+		image: z.string().url(),
+		socialImage: z
+			.object({
+				type: z.string(),
+				url: z.string().url(),
+			})
+			.optional(),
+	}),
+})
+
+/**
+ * @description Type guard to check if a resource is a cohort
+ */
+export const isCohort = (resource: { type: string }): boolean => {
+	return resource.type === 'cohort'
+}
+
+/**
+ * @description Helper to create a new cohort with default values
+ */
+export const createCohort = (input: Partial<Cohort>): Cohort => {
+	return {
+		...input,
+		type: 'cohort',
+		fields: {
+			...input.fields,
+			state: input.fields?.state ?? 'draft',
+			visibility: input.fields?.visibility ?? 'unlisted',
+			timezone: input.fields?.timezone ?? 'America/Los_Angeles',
+		},
+	} as Cohort
+}
+
+/**
+ * @description Validates if a cohort can be published
+ * @throws {Error} if validation fails
+ */
+export const validateCohortForPublishing = (cohort: Cohort): void => {
+	const result = PublishableCohortSchema.safeParse(cohort)
+	if (!result.success) {
+		throw new Error(
+			`Cohort cannot be published. Missing required fields: ${result.error.message}`,
+		)
+	}
+}
+
+export type CohortTier = 'standard' | 'premium' | 'vip'
 
 export type CohortAccess = {
 	tier: CohortTier
 	contentIds: string[]
 	expiresAt: Date | null
 	discordRoleId?: string
-}
-
-/**
- * Check if a user has access to a cohort
- * @param organizationId - The ID of the organization to check cohort access for
- * @param userId - The ID of the user to check cohort access for
- * @param cohortSlug - The slug of the cohort to check access for
- * @returns The cohort access information if the user has access, null otherwise
- */
-export async function checkCohortAccess(
-	organizationId: string,
-	userId: string,
-	cohortSlug: string,
-): Promise<CohortAccess | null> {
-	// First, get the user's membership in the organization
-	const membership = await db.query.organizationMemberships.findFirst({
-		where: and(
-			eq(organizationMemberships.organizationId, organizationId),
-			eq(organizationMemberships.userId, userId),
-		),
-	})
-
-	if (!membership) {
-		return null // User is not a member of the organization
-	}
-	const validEntitlements = await db.query.entitlements.findMany({
-		where: and(
-			eq(entitlementsTable.organizationMembershipId, membership.id), // Use membershipId
-			eq(entitlementsTable.entitlementType, 'cohort_content_access'),
-			or(
-				isNull(entitlementsTable.expiresAt),
-				gt(entitlementsTable.expiresAt, sql`CURRENT_TIMESTAMP`),
-			),
-			isNull(entitlementsTable.deletedAt),
-		),
-	})
-
-	const cohortEntitlement = validEntitlements.find(
-		(e) => e.metadata?.cohortSlug === cohortSlug,
-	)
-
-	if (!cohortEntitlement || !cohortEntitlement.metadata) return null
-
-	return {
-		tier: cohortEntitlement.metadata.tier,
-		contentIds: cohortEntitlement.metadata.contentIds,
-		expiresAt: cohortEntitlement.expiresAt,
-		discordRoleId: cohortEntitlement.metadata.discordRoleId,
-	}
-}
-
-/**
- * Sync the Discord roles for a user
- * @param organizationId - The ID of the organization to sync the Discord roles for
- * @param user - The user to sync the Discord roles for
- */
-export async function syncDiscordRoles(organizationId: string, user: User) {
-	const accounts = await db.query.accounts.findMany({
-		where: and(
-			eq(accountsTable.userId, user.id),
-			eq(accountsTable.provider, 'discord'),
-		),
-	})
-
-	const discordAccount = accounts[0]
-	if (!discordAccount?.access_token) return
-
-	// Get the user's membership in the specified organization
-	const membership = await db.query.organizationMemberships.findFirst({
-		where: and(
-			eq(organizationMemberships.organizationId, organizationId),
-			eq(organizationMemberships.userId, user.id),
-		),
-	})
-
-	if (!membership) {
-		return // User is not a member of this organization
-	}
-
-	const entitlements = await db.query.entitlements.findMany({
-		where: and(
-			eq(entitlementsTable.organizationMembershipId, membership.id),
-			eq(entitlementsTable.entitlementType, 'cohort_discord_role'),
-			or(
-				isNull(entitlementsTable.expiresAt),
-				gt(entitlementsTable.expiresAt, sql`CURRENT_TIMESTAMP`),
-			),
-			isNull(entitlementsTable.deletedAt),
-		),
-	})
-
-	try {
-		const currentRoles = await fetchDiscordRoles(discordAccount.access_token)
-		const requiredRoles = entitlements.flatMap((e) => e.metadata?.roleIds || [])
-
-		for (const roleId of requiredRoles) {
-			if (!currentRoles.includes(roleId)) {
-				await addDiscordRole(discordAccount.access_token, roleId)
-			}
-		}
-	} catch (error) {
-		console.error('Failed to sync Discord roles:', error)
-		throw new Error('Discord role sync failed')
-	}
-}
-
-async function fetchDiscordRoles(accessToken: string): Promise<string[]> {
-	const response = await fetch('https://discord.com/api/users/@me/guilds', {
-		headers: { Authorization: `Bearer ${accessToken}` },
-	})
-
-	if (!response.ok) return []
-	const guilds = await response.json()
-	return guilds.flatMap((g: any) => g.roles || [])
-}
-
-/**
- * Add a Discord role to a user
- * @param accessToken - The access token for the user
- * @param roleId - The ID of the role to add
- */
-async function addDiscordRole(accessToken: string, roleId: string) {
-	await fetch(
-		`https://discord.com/api/guilds/${env.DISCORD_GUILD_ID}/members/@me/roles/${roleId}`,
-		{
-			method: 'PUT',
-			headers: {
-				Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-		},
-	)
 }

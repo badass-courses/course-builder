@@ -7,6 +7,9 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+/**
+ * @description Schema for time-bound events like workshops, webinars, and live sessions
+ */
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
 		resourceProducts: z.array(
@@ -38,3 +41,19 @@ export const EventSchema = ContentResourceSchema.merge(
 )
 
 export type Event = z.infer<typeof EventSchema>
+
+/**
+ * @description Helper to create a new event with default values
+ */
+export const createEvent = (input: Partial<Event>): Event => {
+	return {
+		...input,
+		type: 'event',
+		fields: {
+			...input.fields,
+			state: input.fields?.state ?? 'draft',
+			visibility: input.fields?.visibility ?? 'unlisted',
+			timezone: input.fields?.timezone ?? 'America/Los_Angeles',
+		},
+	} as Event
+}
