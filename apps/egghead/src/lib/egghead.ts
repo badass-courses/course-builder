@@ -383,16 +383,6 @@ export async function syncEggheadResourceInstructor(
 				)
 			}
 
-			console.log(
-				'[egghead]: sending instructor id',
-				eggheadUser.instructor.id,
-				`${EGGHEAD_API_V1_BASE_URL}/lessons/${post.fields.slug}`,
-				JSON.stringify({
-					lesson: {
-						instructor_id: eggheadUser.instructor.id,
-					},
-				}),
-			)
 			await fetch(
 				`${EGGHEAD_API_V1_BASE_URL}/lessons/${post.fields.eggheadLessonId}`,
 				{
@@ -414,7 +404,6 @@ export async function syncEggheadResourceInstructor(
 						`Failed to sync egghead instructor for ${post.id}, status: ${res.status}, text: ${res.statusText}`,
 					)
 				}
-				console.log('[egghead]: synced instructor id', res)
 
 				return res.json()
 			})
@@ -443,8 +432,6 @@ export async function syncEggheadResourceInstructor(
 				},
 			)
 				.catch((e) => {
-					console.error(`Error syncing egghead instructor for ${post.id}`, e)
-
 					throw new EggheadApiError(
 						`Failed to sync egghead instructor for ${post.id}`,
 					)
