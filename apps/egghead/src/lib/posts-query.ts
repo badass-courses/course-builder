@@ -48,9 +48,9 @@ import {
 	EGGHEAD_API_V1_BASE_URL,
 	getEggheadToken,
 	getEggheadUserProfile,
-	syncEggheadResourceInstructor,
 	setLessonPublishedAt,
 	setPlaylistPublishedAt,
+	syncEggheadResourceInstructor,
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
