@@ -59,6 +59,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			name: post.fields.title,
 			path: `/${post.fields.slug}`,
 			type: postType,
+			image: post.tags?.[0]?.tag?.fields?.image_url,
 			_tags: post.tags?.map(({ tag }) => tag.fields?.name),
 			...(primaryTagDbRow && {
 				primary_tag: primaryTagDbRow.tag,
@@ -69,7 +70,6 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			...(eggheadUser && {
 				instructor_name: eggheadUser.instructor?.full_name,
 				instructor: typeSenseInstructor,
-				image: eggheadUser.instructor?.avatar_url,
 			}),
 			...(eggheadResource.published_at && {
 				published_at_timestamp: eggheadResource.published_at
