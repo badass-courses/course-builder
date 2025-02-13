@@ -11,7 +11,9 @@ export const productSchema = z.object({
 	organizationId: z.string().max(191).optional().nullable(),
 	name: z.string().max(191),
 	key: z.string().max(191).optional().nullable(),
-	type: z.enum(['live', 'self-paced', 'membership']).default('self-paced'),
+	type: z
+		.enum(['live', 'self-paced', 'membership', 'cohort'])
+		.default('self-paced'),
 	fields: z.object({
 		body: z.string().nullable().optional(),
 		description: z.string().nullish(),

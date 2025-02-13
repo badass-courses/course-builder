@@ -4,14 +4,9 @@ import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purc
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
-import { noProgressContinued } from '@/inngest/functions/no-progress-continued'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
-import { postPurchaseNoProgress } from '@/inngest/functions/post-purchase-no-progress'
-import { postPurchaseWaitForProgress } from '@/inngest/functions/post-purchase-wait-for-progress'
-import { postPurchaseWorkflow } from '@/inngest/functions/post-purchase-workflow'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
-import { progressWasMade } from '@/inngest/functions/progress-was-made'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
@@ -20,6 +15,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
+import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 
@@ -40,11 +36,7 @@ export const inngestConfig = {
 		discordAccountLinked,
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
-		postPurchaseWorkflow,
-		progressWasMade,
-		postPurchaseWaitForProgress,
-		postPurchaseNoProgress,
-		noProgressContinued,
+		postCohortPurchaseWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,

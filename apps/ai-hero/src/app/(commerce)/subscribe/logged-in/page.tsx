@@ -19,6 +19,13 @@ export default async function LoginPage({
 	const checkoutParams = CheckoutParamsSchema.parse(await searchParams)
 	const { session } = await getServerAuthSession()
 	const user = session?.user
+	const headersList = await headers()
+	const countryCode =
+		headersList.get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
+
+	const organizationId = headersList.get('x-organization-id') ?? undefined
 
 	if (!user) {
 		return redirect('/login')
@@ -31,7 +38,7 @@ export default async function LoginPage({
 	}
 
 	const stripe = await stripeProvider.createCheckoutSession(
-		{ ...checkoutParams, userId: user?.id },
+		{ ...checkoutParams, userId: user?.id, organizationId },
 		courseBuilderAdapter,
 	)
 	return redirect(stripe.redirect)

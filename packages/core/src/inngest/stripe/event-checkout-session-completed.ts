@@ -80,6 +80,9 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 				)
 			},
 		)
+
+		const organizationId = checkoutSession.metadata?.organizationId
+
 		// this could be a separate function that gets invoked here
 		const purchaseInfo = await step.run('parse checkout session', async () => {
 			return await parsePurchaseInfoFromCheckoutSession(checkoutSession, db)
@@ -116,6 +119,13 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			},
 		)
 
+		const product = await step.run('load the product', async () => {
+			if (!merchantProduct?.productId) {
+				throw new Error('merchantProduct.productId is null')
+			}
+			return await db.getProduct(merchantProduct.productId)
+		})
+
 		const purchase = await step.run(
 			'create a merchant charge and purchase',
 			async () => {
@@ -128,6 +138,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 
 				return await db.createMerchantChargeAndPurchase({
 					userId: user.id,
+					organizationId,
 					productId: merchantProduct.productId,
 					stripeChargeId: purchaseInfo.chargeIdentifier,
 					stripeCouponId: purchaseInfo.couponIdentifier,
@@ -151,6 +162,7 @@ export const stripeCheckoutSessionCompletedHandler: CoreInngestHandler =
 			data: {
 				purchaseId: purchase.id,
 				checkoutSessionId: stripeCheckoutSession.id,
+				productType: product?.type || 'self-paced',
 			},
 			user,
 		})

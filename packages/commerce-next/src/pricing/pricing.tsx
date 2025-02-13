@@ -69,27 +69,28 @@ const PricingProduct = ({
 		quantity,
 		formattedPrice,
 		userId,
-
+		organizationId,
 		options: { cancelUrl },
 	} = usePricing()
 
 	const isMembership = product.type === 'membership'
 
+	const checkoutPath = buildStripeCheckoutPath({
+		productId: formattedPrice?.id,
+		couponId: formattedPrice?.appliedMerchantCoupon?.id,
+		bulk: isTeamPurchaseActive,
+		quantity,
+		userId,
+		upgradeFromPurchaseId: formattedPrice?.upgradeFromPurchaseId,
+		cancelUrl,
+		usedCouponId: formattedPrice?.usedCouponId,
+		organizationId,
+	})
+
+	console.log({ checkoutPath })
+
 	return (
-		<form
-			className={cn('', className)}
-			action={buildStripeCheckoutPath({
-				productId: formattedPrice?.id,
-				couponId: formattedPrice?.appliedMerchantCoupon?.id,
-				bulk: isTeamPurchaseActive,
-				quantity,
-				userId,
-				upgradeFromPurchaseId: formattedPrice?.upgradeFromPurchaseId,
-				cancelUrl,
-				usedCouponId: formattedPrice?.usedCouponId,
-			})}
-			method="POST"
-		>
+		<form className={cn('', className)} action={checkoutPath} method="POST">
 			{children}
 		</form>
 	)

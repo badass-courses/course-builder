@@ -718,6 +718,7 @@ export function mySqlDrizzleAdapter(
 						upgradedFromPurchaseId,
 						country,
 						usedCouponId,
+						organizationId,
 					} = options
 
 					const existingMerchantCharge = merchantChargeSchema.nullable().parse(
@@ -806,6 +807,7 @@ export function mySqlDrizzleAdapter(
 								.update(coupon)
 								.set({
 									maxUses: (existingBulkCoupon?.maxUses || 0) + quantity,
+									...(organizationId ? { organizationId } : {}),
 								})
 								.where(eq(coupon.id, bulkCouponId))
 						} else {
@@ -823,6 +825,7 @@ export function mySqlDrizzleAdapter(
 								restrictedToProductId: productId,
 								maxUses: quantity,
 								status: 1,
+								...(organizationId ? { organizationId } : {}),
 								...(merchantCouponToUse
 									? {
 											merchantCouponId: merchantCouponToUse.id,
@@ -873,6 +876,7 @@ export function mySqlDrizzleAdapter(
 						country,
 						upgradedFromId: upgradedFromPurchaseId || null,
 						couponId: usedCouponId || null,
+						...(organizationId ? { organizationId } : {}),
 					})
 
 					const oneWeekInMilliseconds = 1000 * 60 * 60 * 24 * 7
@@ -884,6 +888,7 @@ export function mySqlDrizzleAdapter(
 							? new Date()
 							: new Date(Date.now() + oneWeekInMilliseconds),
 						sourceUserId: userId,
+						...(organizationId ? { organizationId } : {}),
 					})
 
 					// const result = await Promise.all([
@@ -1512,6 +1517,7 @@ export function mySqlDrizzleAdapter(
 						...fieldsNoImage,
 						...(image?.url && { image }),
 					},
+					type: input.type,
 				})
 				.where(eq(products.id, currentProduct.id))
 
