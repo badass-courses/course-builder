@@ -324,6 +324,7 @@ export type PricingOptions = {
 	withTitle: boolean
 	withGuaranteeBadge: boolean
 	isLiveEvent: boolean
+	isCohort: boolean
 	isPPPEnabled: boolean
 	teamQuantityLimit: number
 	allowTeamPurchase: boolean

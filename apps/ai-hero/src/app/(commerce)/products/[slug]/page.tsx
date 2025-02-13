@@ -118,10 +118,14 @@ async function ProductCommerce({
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
+	const headersList = await headers()
 	const countryCode =
-		(await headers()).get('x-vercel-ip-country') ||
+		headersList.get('x-vercel-ip-country') ||
 		process.env.DEFAULT_COUNTRY ||
 		'US'
+
+	const currentOrganization = headersList.get('x-organization-id')
+
 	let commerceProps = await propsForCommerce(
 		{
 			query: {
@@ -192,6 +196,7 @@ async function ProductCommerce({
 						existingPurchase: existingPurchase,
 					}
 				: {}),
+			organizationId: currentOrganization,
 		}
 	}
 

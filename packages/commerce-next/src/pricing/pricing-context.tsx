@@ -19,6 +19,7 @@ const PricingContext = React.createContext<
 			setMerchantCoupon: (merchantCoupon: MerchantCoupon | undefined) => void
 			userId: string | undefined
 			pricingData: PricingData
+			organizationId: string | undefined
 	  })
 	| undefined
 >(undefined)
@@ -71,6 +72,7 @@ export const PricingProvider = ({
 				updateQuantity,
 				setMerchantCoupon,
 				pricingData,
+				organizationId: props.organizationId,
 			}}
 		>
 			{children}

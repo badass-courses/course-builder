@@ -35,8 +35,6 @@ export const PricingWidget: React.FC<{
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
-	console.log({ product })
-
 	return (
 		<Pricing.Root
 			className="relative w-full"

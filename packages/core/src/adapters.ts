@@ -225,6 +225,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 		upgradedFromPurchaseId?: string
 		usedCouponId?: string
 		country?: string
+		organizationId?: string
 	}): Promise<Purchase> {
 		throw new Error('Method not implemented.')
 	},
@@ -551,6 +552,7 @@ interface SkillProductsCommerceSdk {
 		upgradedFromPurchaseId: string | undefined
 		usedCouponId: string | undefined
 		country?: string
+		organizationId?: string
 	}): Promise<Purchase>
 	findOrCreateMerchantCustomer(options: {
 		user: User

@@ -5,6 +5,7 @@ import { getCsrf } from '@/app/(user)/login/actions'
 import { Login } from '@/components/login'
 import config from '@/config'
 import { env } from '@/env.mjs'
+import { getProduct } from '@/lib/products-query'
 import { getSubscriptionStatus } from '@/lib/subscriptions'
 import { getProviders, getServerAuthSession } from '@/server/auth'
 
@@ -12,7 +13,14 @@ import { CheckoutParamsSchema } from '@coursebuilder/core/types'
 
 export const dynamic = 'force-dynamic'
 
-export default async function LoginPage({
+/**
+ * This page is used to verify that the user is logged in and has an active subscription.
+ * It is used to redirect the user to the login page if they are not logged in.
+ * It is also used to redirect the user to the checkout page if they are logged in and have an active subscription.
+ * @param param0
+ * @returns
+ */
+export default async function VerifyLoginPage({
 	searchParams,
 }: {
 	searchParams: Promise<ParsedUrlQuery>
@@ -23,21 +31,34 @@ export default async function LoginPage({
 	const user = session?.user
 	const providers = getProviders()
 	const csrfToken = await getCsrf()
+	const product = await getProduct(checkoutParams.productId as string)
 
-	if (user) {
-		const { hasActiveSubscription } = await getSubscriptionStatus(user?.id)
+	let callbackUrl = `${env.COURSEBUILDER_URL}/subscribe/logged-in`
 
-		if (!hasActiveSubscription) {
-			return redirect(checkoutUrl as string)
-		} else {
-			return redirect(`/subscribe/already-subscribed`)
-		}
-	}
+	console.log({ checkoutUrl, checkoutParams, product })
 
 	const parsedCheckoutParams = CheckoutParamsSchema.safeParse(checkoutParams)
 
+	console.dir({ parsedCheckoutParams }, { depth: null })
+
 	if (!parsedCheckoutParams.success) {
 		return redirect('/login')
+	}
+
+	if (product?.type === 'cohort') {
+		// TODO: check if user is already actively in cohort
+	}
+
+	if (product?.type === 'membership') {
+		if (user) {
+			const { hasActiveSubscription } = await getSubscriptionStatus(user?.id)
+
+			if (!hasActiveSubscription) {
+				return redirect(checkoutUrl as string)
+			} else {
+				return redirect(`/subscribe/already-subscribed`)
+			}
+		}
 	}
 
 	const checkoutSearchParams = new URLSearchParams(
@@ -50,7 +71,7 @@ export default async function LoginPage({
 			csrfToken={csrfToken}
 			providers={providers}
 			subtitle={`to ${config.defaultTitle}`}
-			callbackUrl={`${env.COURSEBUILDER_URL}/subscribe/logged-in?${checkoutSearchParams.toString()}`}
+			callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
 		/>
 	)
 }

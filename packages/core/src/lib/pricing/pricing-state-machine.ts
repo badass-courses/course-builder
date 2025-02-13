@@ -9,6 +9,7 @@ export type PricingContextType = {
 	quantity: number
 	isPPPActive: boolean
 	isTeamPurchaseActive: boolean
+	isCohort: boolean
 	couponId: string | null | undefined
 	activeMerchantCoupon: MerchantCoupon | null | undefined
 	autoApplyPPP: boolean
@@ -19,6 +20,7 @@ export type PricingContextType = {
 	purchases?: Purchase[] | null
 	allowPurchase: boolean
 	pricingData: PricingData
+	organizationId?: string | undefined
 }
 
 export type PricingMachineInput = {
@@ -32,6 +34,7 @@ export type PricingMachineInput = {
 	allowPurchase?: boolean
 	quantityAvailable?: number
 	pricingData?: PricingData
+	organizationId?: string | undefined
 }
 
 export const defaultPricingOptions = {
@@ -39,6 +42,7 @@ export const defaultPricingOptions = {
 	withTitle: true,
 	withGuaranteeBadge: true,
 	isLiveEvent: false,
+	isCohort: false,
 	isPPPEnabled: true,
 	teamQuantityLimit: 100,
 	allowTeamPurchase: true,
@@ -162,6 +166,7 @@ export const pricingMachine = setup({
 		quantity: input.quantity || 1,
 		isPPPActive: false,
 		isTeamPurchaseActive: false,
+		isCohort: input.product.type === 'cohort',
 		couponId: input.couponId || null,
 		activeMerchantCoupon: null,
 		autoApplyPPP: input.autoApplyPPP || false,
@@ -178,6 +183,7 @@ export const pricingMachine = setup({
 			quantityAvailable: -1,
 		},
 		purchases: null,
+		organizationId: input.organizationId,
 	}),
 	id: 'Pricing Display',
 	initial: 'Loading Pricing Data',
