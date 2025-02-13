@@ -30,6 +30,7 @@ import type {
 	SanitySoftwareLibraryDocument,
 	SoftwareLibraryArrayObject,
 } from '@/lib/sanity-content'
+import { getServerAuthSession } from '@/server/auth'
 import { sanityWriteClient } from '@/server/sanity-write-client'
 import { asc, eq, sql } from 'drizzle-orm'
 
@@ -620,4 +621,75 @@ export async function writeTagsToSanityResource(postId: string) {
 			softwareLibraries,
 		})
 		.commit()
+}
+
+export async function syncSanityResourceInstructor(
+	postId: string,
+	userId: string,
+) {
+	const { ability, session } = await getServerAuthSession()
+
+	if (!session?.user?.id || ability.cannot('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	const post = await getPost(postId)
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	const eggheadUser = await getEggheadUserProfile(userId)
+
+	if (!eggheadUser || !eggheadUser.instructor?.id) {
+		throw new Error(`egghead instructor for user ${userId} not found.`)
+	}
+
+	const sanityInstructorReference = await getSanityCollaborator(
+		eggheadUser.instructor.id,
+	)
+
+	if (!sanityInstructorReference) {
+		throw new Error(
+			`Sanity instructor with id ${eggheadUser.instructor.id} not found.`,
+		)
+	}
+
+	switch (post.fields.postType) {
+		case 'lesson':
+			const sanityLesson = await getSanityLessonForEggheadLessonId(
+				post.fields.eggheadLessonId,
+			)
+
+			if (!sanityLesson || !sanityLesson._id) {
+				throw new Error(
+					`Sanity lesson with id ${post.fields.eggheadLessonId} not found.`,
+				)
+			}
+
+			return await sanityWriteClient
+				.patch(sanityLesson?._id)
+				.set({
+					collaborators: [sanityInstructorReference],
+				})
+				.commit()
+
+		case 'course':
+			const sanityCourse = await getSanityCourseForEggheadCourseId(
+				post.fields.eggheadPlaylistId,
+			)
+
+			if (!sanityCourse || !sanityCourse._id) {
+				throw new Error(
+					`Sanity course with id ${post.fields.eggheadPlaylistId} not found.`,
+				)
+			}
+
+			return await sanityWriteClient
+				.patch(sanityCourse?._id)
+				.set({
+					collaborators: [sanityInstructorReference],
+				})
+				.commit()
+	}
 }

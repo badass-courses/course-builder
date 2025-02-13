@@ -50,6 +50,7 @@ import {
 	getEggheadUserProfile,
 	setLessonPublishedAt,
 	setPlaylistPublishedAt,
+	syncEggheadResourceInstructor,
 	updateEggheadLesson,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
@@ -59,6 +60,7 @@ import {
 	removeLessonFromSanityCourse,
 	reorderResourcesInSanityCourse,
 	replaceSanityLessonResources,
+	syncSanityResourceInstructor,
 	updateSanityCourseMetadata,
 	updateSanityLesson,
 	writeTagsToSanityResource,
@@ -415,6 +417,43 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 					...post.fields,
 					primaryTagId: null,
 				},
+			})
+			.where(eq(contentResource.id, postId))
+	}
+}
+
+export async function updatePostInstructor(
+	postId: string,
+	instructorId: string,
+) {
+	const { ability, session } = await getServerAuthSession()
+
+	if (!session?.user?.id || ability.cannot('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	const originalPost = await getPost(postId)
+
+	await db
+		.update(contentResource)
+		.set({
+			createdById: instructorId,
+		})
+		.where(eq(contentResource.id, postId))
+
+	try {
+		await syncEggheadResourceInstructor(postId, instructorId)
+		await syncSanityResourceInstructor(postId, instructorId)
+	} catch (error) {
+		console.error(
+			`Error syncing egghead resource instructor with id ${instructorId} for post ${postId}, rolling db back to id ${originalPost?.createdById}`,
+			error,
+		)
+
+		await db
+			.update(contentResource)
+			.set({
+				createdById: originalPost?.createdById,
 			})
 			.where(eq(contentResource.id, postId))
 	}
@@ -783,8 +822,6 @@ export const addResourceToResource = async ({
 			resource: true,
 		},
 	})
-
-	revalidateTag('posts')
 
 	return resourceResource
 }

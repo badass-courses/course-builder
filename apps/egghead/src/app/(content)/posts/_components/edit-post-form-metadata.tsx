@@ -17,8 +17,10 @@ import {
 	addTagToPost,
 	removeTagFromPost,
 	setPrimaryTagToPost,
+	updatePostInstructor,
 } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
+import { CompactInstructor } from '@/lib/users'
 import { api } from '@/trpc/react'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -51,8 +53,8 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 import AdvancedTagSelectorWithPrimary from '@coursebuilder/ui/resources-crud/tag-selector-with-primary'
 
+import InstructorSelector from './instructor-selector'
 import { MetadataFieldAccess } from './metadata-field-access'
-import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
@@ -60,12 +62,16 @@ export const PostMetadataFormFields: React.FC<{
 	videoResourceId: string | null | undefined
 	post: Post
 	tagLoader: Promise<EggheadTag[]>
+	instructorLoader: Promise<CompactInstructor[]>
+	isAdmin: boolean
 }> = ({
 	form,
 	videoResourceLoader,
 	videoResourceId: initialVideoResourceId,
 	post,
 	tagLoader,
+	instructorLoader,
+	isAdmin,
 }) => {
 	const router = useRouter()
 	const tags = tagLoader ? use(tagLoader) : []
@@ -203,7 +209,11 @@ export const PostMetadataFormFields: React.FC<{
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<FormLabel className="text-lg font-bold">Type</FormLabel>
-						<Select onValueChange={field.onChange} defaultValue={field.value}>
+						<Select
+							onValueChange={field.onChange}
+							defaultValue={field.value}
+							disabled={!isAdmin}
+						>
 							<FormControl>
 								<SelectTrigger>
 									<SelectValue placeholder="Choose state" />
@@ -300,6 +310,21 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+
+			{isAdmin && (
+				<div className="px-5">
+					<FormLabel className="text-lg font-bold">Instructor</FormLabel>
+					<FormDescription>Instructor who created the post.</FormDescription>
+					<InstructorSelector
+						instructorLoader={instructorLoader}
+						selectedInstructorId={post.createdById}
+						onInstructorSelect={async (instructor) => {
+							await updatePostInstructor(post.id, instructor.id)
+							router.refresh()
+						}}
+					/>
+				</div>
+			)}
 
 			{videoResource && (
 				<div className="px-5">

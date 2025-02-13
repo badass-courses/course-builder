@@ -3,9 +3,9 @@ import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { Post } from '@/lib/posts'
-import { getPost, getPostTags } from '@/lib/posts-query'
+import { getPost } from '@/lib/posts-query'
 import { getAllEggheadTagsCached, getTags } from '@/lib/tags-query'
+import { getCachedEggheadInstructors } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -28,6 +28,7 @@ export default async function PostPage(props: {
 	const params = await props.params
 	const { ability } = await getServerAuthSession()
 	const post = await getPost(params.slug)
+	const isAdmin = ability.can('manage', 'all')
 
 	if (!post || !ability.can('create', 'Content')) {
 		notFound()
@@ -50,6 +51,7 @@ export default async function PostPage(props: {
 
 	await getAllEggheadTagsCached()
 	const tagLoader = getTags()
+	const instructorLoader = getCachedEggheadInstructors()
 
 	return (
 		<Layout>
@@ -62,6 +64,8 @@ export default async function PostPage(props: {
 					videoResourceLoader={videoResourceLoader}
 					videoResourceId={videoResource?.id}
 					tagLoader={tagLoader}
+					instructorLoader={instructorLoader}
+					isAdmin={isAdmin}
 				/>
 			</React.Suspense>
 		</Layout>

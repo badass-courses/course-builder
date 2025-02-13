@@ -16,6 +16,14 @@ export const getCachedEggheadInstructors = unstable_cache(
 	{ revalidate: 3600, tags: ['users'] },
 )
 
+export const CompactInstructorSchema = z.object({
+	id: z.string(),
+	name: z.string().nullable(),
+	email: z.string(),
+	image: z.string().nullable(),
+})
+export type CompactInstructor = z.infer<typeof CompactInstructorSchema>
+
 export const loadEggheadInstructors = async () => {
 	const instructors = await db
 		.select({
