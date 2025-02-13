@@ -13,6 +13,7 @@ const ParamsSchema = z
 		cancelUrl: z.string().optional(),
 		usedCouponId: z.string().optional(),
 		errorRedirectUrl: z.string().optional(),
+		organizationId: z.string().optional(),
 	})
 	.transform((params) => {
 		return {
@@ -27,6 +28,7 @@ type Params = z.input<typeof ParamsSchema>
 
 export const buildStripeCheckoutPath = (params: Params) => {
 	const result = ParamsSchema.safeParse(params)
+	console.log({ result })
 	if (result.success) {
 		const queryParams = omitBy(result.data, isNil)
 		const queryParamString = new URLSearchParams(queryParams).toString()

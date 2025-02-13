@@ -47,7 +47,9 @@ export async function checkout(
 
 		const product = await options.adapter?.getProduct(checkoutParams.productId)
 
-		if (product?.type === 'membership') {
+		// if the product is a membership or cohort, we need to redirect to the login page
+		// if the user isn't logged in. we want to ensure an org id is set.
+		if (product?.type && ['membership', 'cohort'].includes(product.type)) {
 			return Response.redirect(
 				`${options.baseUrl}/subscribe/verify-login?${new URLSearchParams({
 					...request.query,
@@ -61,6 +63,7 @@ export async function checkout(
 						request.headers?.['x-forwarded-for'] ||
 						'0.0.0.0',
 					organizationId: request.query?.organizationId,
+					productId: checkoutParams.productId,
 				})}&checkoutUrl=${encodeURIComponent(stripe.redirect)}`,
 			)
 		}

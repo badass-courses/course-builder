@@ -18,7 +18,7 @@ export type EntitlementSource =
  * @returns An array of entitlements
  */
 export async function getActiveEntitlements(organizationMembershipId: string) {
-	return db.query.entitlements.findMany({
+	return await db.query.entitlements.findMany({
 		where: and(
 			eq(entitlements.organizationMembershipId, organizationMembershipId),
 			or(
@@ -48,7 +48,7 @@ export async function allocateEntitlementToMember(
 	entitlementType: EntitlementType,
 	source: EntitlementSource,
 ) {
-	return db.transaction(async (tx) => {
+	await db.transaction(async (tx) => {
 		const membership = await tx.query.organizationMemberships.findFirst({
 			where: and(
 				eq(organizationMemberships.organizationId, organizationId),
@@ -101,6 +101,7 @@ export async function allocateEntitlementToMember(
 			},
 		})
 	})
+	return await getActiveEntitlements(memberId)
 }
 
 /**

@@ -15,6 +15,7 @@ export function ProductPricing({
 	commerceProps,
 	purchasedProductIds,
 	hasPurchasedCurrentProduct,
+	organizationId,
 }: {
 	product: any
 	quantityAvailable: number
@@ -22,6 +23,7 @@ export function ProductPricing({
 	pricingDataLoader: Promise<PricingData>
 	purchasedProductIds: string[]
 	hasPurchasedCurrentProduct?: boolean
+	organizationId?: string
 }) {
 	const teamQuantityLimit =
 		product.type === 'live'
@@ -33,7 +35,10 @@ export function ProductPricing({
 	const cancelUrl = `${env.NEXT_PUBLIC_URL}/products/${product.fields?.slug || product.id}`
 
 	return product ? (
-		<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
+		<PriceCheckProvider
+			purchasedProductIds={purchasedProductIds}
+			organizationId={organizationId}
+		>
 			<PricingWidget
 				commerceProps={{ ...commerceProps, products: [product] }}
 				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
@@ -45,9 +50,10 @@ export function ProductPricing({
 					withGuaranteeBadge: product.type !== 'live',
 					isLiveEvent: product.type === 'live',
 					teamQuantityLimit,
-					isPPPEnabled: product.type !== 'live',
+					isCohort: product.type === 'cohort',
+					isPPPEnabled: !['live', 'cohort'].includes(product.type),
 					cancelUrl: cancelUrl,
-					allowTeamPurchase: false,
+					allowTeamPurchase: product.type !== 'membership',
 				}}
 			/>
 		</PriceCheckProvider>
