@@ -209,7 +209,11 @@ export const PostMetadataFormFields: React.FC<{
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<FormLabel className="text-lg font-bold">Type</FormLabel>
-						<Select onValueChange={field.onChange} defaultValue={field.value}>
+						<Select
+							onValueChange={field.onChange}
+							defaultValue={field.value}
+							disabled={!isAdmin}
+						>
 							<FormControl>
 								<SelectTrigger>
 									<SelectValue placeholder="Choose state" />
