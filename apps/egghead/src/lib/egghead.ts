@@ -4,6 +4,7 @@ import { users } from '@/db/schema'
 import { EggheadApiError } from '@/errors/egghead-api-error'
 import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
 import { inngest } from '@/inngest/inngest.server'
+import { getServerAuthSession } from '@/server/auth'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -351,6 +352,109 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 	Boolean(query) && (await eggheadPgQuery(query))
 }
 
+export async function syncEggheadResourceInstructor(
+	postId: string,
+	userId: string,
+) {
+	const { ability, session } = await getServerAuthSession()
+
+	if (!session?.user?.id || ability.cannot('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+	const eggheadToken = await getEggheadToken(session.user.id)
+
+	const post = await getPost(postId)
+
+	if (!post) {
+		throw new Error(`Post with id ${postId} not found.`)
+	}
+
+	const eggheadUser = await getEggheadUserProfile(userId)
+
+	if (!eggheadUser || !eggheadUser.instructor?.id) {
+		throw new Error(`egghead instructor for user ${userId} not found.`)
+	}
+
+	switch (post.fields.postType) {
+		case 'lesson':
+			if (!post.fields.eggheadLessonId) {
+				throw new Error(
+					`eggheadLessonId is required on ${post.id} to sync egghead instructor`,
+				)
+			}
+
+			console.log(
+				'[egghead]: sending instructor id',
+				eggheadUser.instructor.id,
+				`${EGGHEAD_API_V1_BASE_URL}/lessons/${post.fields.slug}`,
+				JSON.stringify({
+					lesson: {
+						instructor_id: eggheadUser.instructor.id,
+					},
+				}),
+			)
+			await fetch(
+				`${EGGHEAD_API_V1_BASE_URL}/lessons/${post.fields.eggheadLessonId}`,
+				{
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${eggheadToken}`,
+						'User-Agent': 'authjs',
+					},
+					body: JSON.stringify({
+						lesson: {
+							instructor_id: eggheadUser.instructor.id,
+						},
+					}),
+				},
+			).then((res) => {
+				if (!res.ok) {
+					throw new EggheadApiError(
+						`Failed to sync egghead instructor for ${post.id}, status: ${res.status}, text: ${res.statusText}`,
+					)
+				}
+				console.log('[egghead]: synced instructor id', res)
+
+				return res.json()
+			})
+			break
+		case 'course':
+			if (!post.fields.eggheadPlaylistId) {
+				throw new Error(
+					`eggheadPlaylistId is required on ${post.id} to sync egghead instructor`,
+				)
+			}
+
+			return await fetch(
+				`${EGGHEAD_API_V1_BASE_URL}/playlists/${post.fields.eggheadPlaylistId}`,
+				{
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${eggheadToken}`,
+						'User-Agent': 'authjs',
+					},
+					body: JSON.stringify({
+						playlist: {
+							instructor_id: eggheadUser.instructor.id,
+						},
+					}),
+				},
+			)
+				.catch((e) => {
+					console.error(`Error syncing egghead instructor for ${post.id}`, e)
+
+					throw new EggheadApiError(
+						`Failed to sync egghead instructor for ${post.id}`,
+					)
+				})
+				.then((res) => {
+					return res.json()
+				})
+	}
+}
+
 export const eggheadLessonSchema = z.object({
 	id: z.number(),
 	title: z.string(),
@@ -412,7 +516,7 @@ export const EggheadDbCourseSchema = z.object({
 })
 export type EggheadDbCourse = z.infer<typeof EggheadDbCourseSchema>
 
-const EGGHEAD_INITIAL_COURSE_STATE = 'draft'
+const EGGHEAD_INITIAL_COURSE_STATE = 'new'
 
 export async function createEggheadCourse(input: {
 	title: string

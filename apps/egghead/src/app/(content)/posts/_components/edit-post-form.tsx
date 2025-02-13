@@ -13,6 +13,7 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
+import { CompactInstructor } from '@/lib/users'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, ListOrderedIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -42,10 +43,12 @@ export type EditPostFormProps = {
 	videoResourceLoader: Promise<VideoResource | null>
 	videoResourceId: string | null | undefined
 	tagLoader: Promise<EggheadTag[]>
+	instructorLoader: Promise<CompactInstructor[]>
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
+	isAdmin: boolean
 }
 
 export function EditPostForm({
@@ -53,6 +56,8 @@ export function EditPostForm({
 	videoResourceLoader,
 	videoResourceId,
 	tagLoader,
+	instructorLoader,
+	isAdmin,
 }: Omit<EditPostFormProps, 'form'>) {
 	const { theme } = useTheme()
 	const session = useSession()
@@ -86,6 +91,8 @@ export function EditPostForm({
 				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
 			]}
 			theme={theme}
+			instructorLoader={instructorLoader}
+			isAdmin={isAdmin}
 		/>
 	) : (
 		<EditResourcesFormDesktop
@@ -134,7 +141,9 @@ export function EditPostForm({
 				videoResourceLoader={videoResourceLoader}
 				videoResourceId={videoResourceId}
 				tagLoader={tagLoader}
+				instructorLoader={instructorLoader}
 				post={post}
+				isAdmin={isAdmin}
 			/>
 		</EditResourcesFormDesktop>
 	)
