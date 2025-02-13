@@ -815,8 +815,6 @@ export const addResourceToResource = async ({
 		},
 	})
 
-	revalidateTag('posts')
-
 	return resourceResource
 }
 
