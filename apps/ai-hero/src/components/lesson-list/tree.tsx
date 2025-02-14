@@ -73,11 +73,13 @@ export default function Tree({
 	updateState,
 	rootResourceId,
 	rootResource,
+	showTierSelector = false,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
 	rootResource: ContentResource | Product
+	showTierSelector?: boolean
 }) {
 	const params = useParams<{ module: string }>()
 
@@ -91,6 +93,27 @@ export default function Tree({
 	useEffect(() => {
 		lastStateRef.current = data
 	}, [data])
+
+	// Memoize the rendered tree items to prevent inline recalculations and side-effects
+	const renderedTreeItems = useMemo(() => {
+		return data.map((item, index, array) => {
+			const type =
+				item.children.length && item.isOpen
+					? 'expanded'
+					: index === array.length - 1
+						? 'last-in-group'
+						: 'standard'
+			return (
+				<TreeItem
+					key={item.id}
+					item={item}
+					level={0}
+					mode={type}
+					showTierSelector={showTierSelector}
+				/>
+			)
+		})
+	}, [data, showTierSelector])
 
 	const saveTreeData = useCallback(async () => {
 		const currentData = lastStateRef.current
@@ -302,21 +325,7 @@ export default function Tree({
 		<TreeContext.Provider value={context}>
 			<div>
 				<div className="flex flex-col" id="tree" ref={ref}>
-					{data.map((item, index, array) => {
-						const type: ItemMode = (() => {
-							if (item.children.length && item.isOpen) {
-								return 'expanded'
-							}
-
-							if (index === array.length - 1) {
-								return 'last-in-group'
-							}
-
-							return 'standard'
-						})()
-
-						return <TreeItem item={item} level={0} key={item.id} mode={type} />
-					})}
+					{renderedTreeItems}
 				</div>
 			</div>
 		</TreeContext.Provider>

@@ -25,7 +25,7 @@ export async function upsertPostToTypeSense(
 		console.log('🔄 Initializing TypeSense client for upsert:', {
 			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
 			hasWriteKey: !!process.env.TYPESENSE_WRITE_API_KEY,
-			collection: process.env.TYPESENSE_COLLECTION_NAME,
+			collection: process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME,
 		})
 
 		if (
@@ -58,7 +58,7 @@ export async function upsertPostToTypeSense(
 			)
 			try {
 				await typesenseWriteClient
-					.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+					.collections(TYPESENSE_COLLECTION_NAME)
 					.documents(String(post.id))
 					.delete()
 				console.log('✅ Successfully deleted post from TypeSense:', post.id)
@@ -110,7 +110,7 @@ export async function upsertPostToTypeSense(
 
 		try {
 			await typesenseWriteClient
-				.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+				.collections(TYPESENSE_COLLECTION_NAME)
 				.documents()
 				.upsert({
 					...resource.data,
@@ -142,7 +142,7 @@ export async function deletePostInTypeSense(postId: string) {
 		console.log('🔄 Initializing TypeSense client for deletion:', {
 			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
 			hasWriteKey: !!process.env.TYPESENSE_WRITE_API_KEY,
-			collection: process.env.TYPESENSE_COLLECTION_NAME,
+			collection: process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME,
 		})
 
 		if (
@@ -167,7 +167,7 @@ export async function deletePostInTypeSense(postId: string) {
 
 		try {
 			await typesenseWriteClient
-				.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+				.collections(TYPESENSE_COLLECTION_NAME)
 				.documents(postId)
 				.delete()
 			console.log('✅ Successfully deleted document from TypeSense:', postId)
@@ -216,7 +216,7 @@ export async function indexAllContentToTypeSense(
 	if (deleteFirst) {
 		console.log('Deleting all documents')
 		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(TYPESENSE_COLLECTION_NAME)
 			.documents()
 			.delete({
 				filter_by: 'visibility:public',
@@ -271,7 +271,7 @@ export async function indexAllContentToTypeSense(
 
 	try {
 		await typesenseWriteClient
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(TYPESENSE_COLLECTION_NAME)
 			.documents()
 			.import(documents, { action: 'upsert' })
 

@@ -46,7 +46,7 @@ export async function createList(input: {
 	const list = await getList(newListId)
 
 	try {
-		await upsertPostToTypeSense(list, 'save')
+		list && (await upsertPostToTypeSense(list, 'save'))
 	} catch (e) {
 		console.error(`Failed to index ${newListId} in Typesense`, e)
 	}
@@ -106,7 +106,13 @@ export async function getList(listIdOrSlug: string) {
 		},
 	})
 
-	return ListSchema.parse(list)
+	const listParsed = ListSchema.safeParse(list)
+	if (!listParsed.success) {
+		console.error('Error parsing list', listParsed)
+		return null
+	}
+
+	return listParsed.data
 }
 export async function getListForPost(postIdOrSlug: string) {
 	// optimized query that skips body fields
