@@ -40,7 +40,10 @@ export async function getCohort(cohortIdOrSlug: string) {
 
 	const parsedCohort = CohortSchema.safeParse(cohortData)
 	if (!parsedCohort.success) {
-		console.error('Error parsing cohort', cohortData)
+		console.error('Error parsing cohort:', {
+			errors: parsedCohort.error.errors,
+			data: cohortData,
+		})
 		return null
 	}
 

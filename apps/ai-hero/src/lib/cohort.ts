@@ -62,7 +62,7 @@ export const PublishableCohortSchema = CohortSchema.extend({
 		cohortTier: z.enum(['standard', 'premium', 'vip']),
 		maxSeats: z.number().int().positive(),
 		discordRoleId: z.string().optional(),
-		image: z.string().url(),
+		image: z.string().url().optional(),
 		socialImage: z
 			.object({
 				type: z.string(),

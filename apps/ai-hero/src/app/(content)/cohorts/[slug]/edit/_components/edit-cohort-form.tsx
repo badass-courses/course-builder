@@ -47,7 +47,7 @@ export function EditCohortForm({ cohort }: { cohort: Cohort }) {
 				}),
 				title: cohort.fields.title || '',
 				visibility: cohort.fields.visibility || 'public',
-				image: cohort.fields.image || '',
+				image: cohort.fields.image,
 				description: cohort.fields.description ?? '',
 				slug: cohort.fields.slug ?? '',
 				timezone: cohort.fields.timezone || 'America/Los_Angeles',
@@ -130,7 +130,7 @@ const CohortMetadataFormFields = ({
 									field.onChange(parsedResult[1])
 								}
 							}}
-							value={field.value || ''}
+							value={field.value}
 						/>
 						<FormMessage />
 					</FormItem>
