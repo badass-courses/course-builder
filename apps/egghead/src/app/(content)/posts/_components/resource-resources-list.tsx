@@ -95,24 +95,26 @@ export function ResourceResourcesList({
 	const { toast } = useToast()
 
 	const handleResourceCreated = async (createdResource: ContentResource) => {
+		updateState({
+			type: 'add-item',
+			itemId: createdResource.id,
+			item: {
+				id: createdResource.id,
+				label: createdResource.fields?.title,
+				type: createdResource.type,
+				children: [],
+				itemData: createdResource as any,
+			},
+		})
+
+		formDispatch({ type: 'HIDE_FORM' })
+
 		const resourceItem = await addResourceToResource({
 			resource: createdResource,
 			parentResourceId: resource.id,
 		})
 
 		if (resourceItem) {
-			updateState({
-				type: 'add-item',
-				itemId: resourceItem.resource.id,
-				item: {
-					id: resourceItem.resource.id,
-					label: resourceItem.resource.fields?.title,
-					type: resourceItem.resource.type,
-					children: [],
-					itemData: resourceItem as any,
-				},
-			})
-
 			await addEggheadLessonToPlaylist({
 				eggheadLessonId: resourceItem.resource.fields?.eggheadLessonId,
 				eggheadPlaylistId: resource.fields?.eggheadPlaylistId,
@@ -123,9 +125,6 @@ export function ResourceResourcesList({
 				eggheadPlaylistId: resource.fields?.eggheadPlaylistId,
 			})
 		}
-
-		formDispatch({ type: 'HIDE_FORM' })
-		router.refresh()
 	}
 
 	return (

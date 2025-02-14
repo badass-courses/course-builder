@@ -19,9 +19,11 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 	post,
 	form,
 	videoResourceLoader,
+	instructorLoader,
 	availableWorkflows,
 	theme = 'light',
 	tagLoader,
+	isAdmin,
 }) => {
 	const session = useSession()
 	const videoResource = use(videoResourceLoader)
@@ -127,6 +129,8 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 								videoResourceId={videoResourceId}
 								post={post}
 								tagLoader={tagLoader}
+								instructorLoader={instructorLoader}
+								isAdmin={isAdmin}
 							/>
 						</div>
 					</form>
