@@ -2727,15 +2727,16 @@ export function mySqlDrizzleAdapter(
 			userId: string
 			invitedById: string
 		}) => {
-			const currentMembership = client.query.organizationMemberships.findFirst({
-				where: and(
-					eq(
-						organizationMembershipTable.organizationId,
-						options.organizationId,
+			const currentMembership =
+				await client.query.organizationMemberships.findFirst({
+					where: and(
+						eq(
+							organizationMembershipTable.organizationId,
+							options.organizationId,
+						),
+						eq(organizationMembershipTable.userId, options.userId),
 					),
-					eq(organizationMembershipTable.userId, options.userId),
-				),
-			})
+				})
 
 			if (currentMembership) {
 				return OrganizationMemberSchema.parse(currentMembership)
