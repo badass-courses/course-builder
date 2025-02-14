@@ -51,9 +51,7 @@ export function EditResourcesToolPanel({
 	user?: User | null
 	tools?: ResourceTool[]
 }) {
-	const [activeToolId, setActiveToolId] = React.useState<string | null>(
-		tools?.[0]?.id || 'assistant',
-	)
+	const [activeToolId, setActiveToolId] = React.useState<string | null>(null)
 	return (
 		<>
 			{activeToolId !== null && (
