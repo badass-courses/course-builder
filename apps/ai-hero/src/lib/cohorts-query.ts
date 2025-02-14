@@ -25,7 +25,11 @@ export async function getCohort(cohortIdOrSlug: string) {
 			),
 		),
 		with: {
-			resources: true,
+			resources: {
+				with: {
+					resource: true,
+				},
+			},
 			resourceProducts: {
 				with: {
 					product: {
