@@ -10,11 +10,15 @@ export type TreeItem = {
 	type?: string
 	children: TreeItem[]
 	isOpen?: boolean
+	tier?: 'standard' | 'premium' | 'vip'
 	itemData?: {
 		position: number
 		resource: ContentResource
 		resourceId: string
 		resourceOfId: string
+		metadata?: {
+			tier?: 'standard' | 'premium' | 'vip'
+		}
 	}
 }
 
@@ -106,6 +110,11 @@ export type TreeAction =
 			itemId: string
 	  }
 	| { type: 'modal-move'; itemId: string; targetId: string; index: number }
+	| {
+			type: 'update-tier'
+			itemId: string
+			tier: 'standard' | 'premium' | 'vip'
+	  }
 
 export const tree = {
 	remove(data: TreeItem[], id: string): TreeItem[] {
@@ -238,6 +247,12 @@ export function treeStateReducer(
 }
 
 const dataReducer = (data: TreeItem[], action: TreeAction) => {
+	if (action.type === 'update-tier') {
+		return data.map((item) =>
+			item.id === action.itemId ? { ...item, tier: action.tier } : item,
+		)
+	}
+
 	if (action.type === 'add-item') {
 		return [...data, action.item]
 	}

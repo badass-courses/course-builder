@@ -1,13 +1,8 @@
 import { db } from '@/db'
-import { organizationMemberships } from '@/db/schema'
-import BasicEmail from '@/emails/basic-email'
-import { env } from '@/env.mjs'
+import { contentResourceResource, entitlementTypes } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
-import { CohortSchema } from '@/lib/cohort'
 import { getCohort } from '@/lib/cohorts-query'
-import { sendAnEmail } from '@/utils/send-an-email'
 import { and, eq } from 'drizzle-orm'
-import { Liquid } from 'liquidjs'
 
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
 
@@ -60,11 +55,45 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			// send an email to the purchaser explaining next steps
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
-				// send an email to the purchaser explaining next steps
+				const cohortContentAccessEntitlementType = await step.run(
+					`get cohort content access entitlement type`,
+					async () => {
+						return await db.query.entitlementTypes.findFirst({
+							where: eq(entitlementTypes.name, 'cohort_content_access'),
+						})
+					},
+				)
+
+				const cohortDiscordRoleEntitlementType = await step.run(
+					`get cohort discord role entitlement type`,
+					async () => {
+						return await db.query.entitlementTypes.findFirst({
+							where: eq(entitlementTypes.name, 'cohort_discord_role'),
+						})
+					},
+				)
+
 				const orgMembership = await step.run(`get org membership`, async () => {
-					return await db.query.organizationMemberships.findFirst({
-						where: and(eq(organizationMemberships.userId, user.id)),
+					if (!purchase.organizationId) {
+						throw new Error(`purchase.organizationId is required`)
+					}
+					const orgMembership = await adapter.addMemberToOrganization({
+						organizationId: purchase.organizationId,
+						userId: user.id,
+						invitedById: user.id,
 					})
+
+					if (!orgMembership) {
+						throw new Error(`orgMembership is required`)
+					}
+
+					await adapter.addRoleForMember({
+						organizationId: purchase.organizationId,
+						memberId: orgMembership.id,
+						role: 'learner',
+					})
+
+					return orgMembership
 				})
 			} else {
 				// send a slack message or something because it seems broken
@@ -80,3 +109,31 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 		}
 	},
 )
+
+const getContentIdsForTier = async (
+	cohortResourceId: string,
+	purchasedTier: 'standard' | 'premium' | 'vip',
+) => {
+	const allowedTiers = {
+		standard: ['standard'],
+		premium: ['standard', 'premium'],
+		vip: ['standard', 'premium', 'vip'],
+	}
+	// Determine which tiers are allowed based on the purchased tier
+	const allowedTierList = allowedTiers[purchasedTier] || ['standard'] // Default to standard
+
+	const accessibleContent = await db.query.contentResourceResource.findMany({
+		where: and(eq(contentResourceResource.resourceOfId, cohortResourceId)),
+		with: {
+			resource: true, // Fetch the related content resource
+		},
+	})
+
+	// Filter based on metadata.tier
+	const filteredContent = accessibleContent.filter((entry) => {
+		const resourceTier = entry.metadata?.tier || 'standard' // Default to 'standard' if not set
+		return allowedTierList.includes(resourceTier)
+	})
+
+	return filteredContent.map((entry) => entry.resource.id)
+}

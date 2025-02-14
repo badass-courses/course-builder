@@ -2727,21 +2727,35 @@ export function mySqlDrizzleAdapter(
 			userId: string
 			invitedById: string
 		}) => {
-			const id = crypto.randomUUID()
-			await client.insert(organizationMembershipTable).values({
-				...options,
-				id,
+			const currentMembership = client.query.organizationMemberships.findFirst({
+				where: and(
+					eq(
+						organizationMembershipTable.organizationId,
+						options.organizationId,
+					),
+					eq(organizationMembershipTable.userId, options.userId),
+				),
 			})
 
-			return OrganizationMemberSchema.parse(
-				await client.query.organizationMemberships.findFirst({
-					where: eq(organizationMembershipTable.id, id),
-					with: {
-						organization: true,
-						user: true,
-					},
-				}),
-			)
+			if (currentMembership) {
+				return OrganizationMemberSchema.parse(currentMembership)
+			} else {
+				const id = crypto.randomUUID()
+				await client.insert(organizationMembershipTable).values({
+					...options,
+					id,
+				})
+
+				return OrganizationMemberSchema.parse(
+					await client.query.organizationMemberships.findFirst({
+						where: eq(organizationMembershipTable.id, id),
+						with: {
+							organization: true,
+							user: true,
+						},
+					}),
+				)
+			}
 		},
 		removeMemberFromOrganization: async (options: {
 			organizationId: string

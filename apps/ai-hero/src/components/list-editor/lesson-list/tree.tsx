@@ -72,11 +72,13 @@ export default function Tree({
 	updateState,
 	rootResourceId,
 	rootResource,
+	showTierSelector = false,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
 	rootResource: ContentResource | Product
+	showTierSelector?: boolean
 }) {
 	const params = useParams<{ module: string }>()
 	const { refresh } = useInstantSearch()
@@ -111,8 +113,13 @@ export default function Tree({
 			await updateResourcePosition({
 				currentParentResourceId: item.itemData.resourceOfId,
 				parentResourceId: rootResourceId,
-				resourceId: item.itemData.resourceId,
+				// @ts-expect-error
+				resourceId: item.itemData.resourceId ?? item.itemData.id,
 				position: currentData.indexOf(item),
+				metadata: {
+					...(item.itemData?.metadata ?? {}),
+					tier: item.tier,
+				},
 			})
 		}
 	}, [rootResourceId])
@@ -313,6 +320,7 @@ export default function Tree({
 								key={item.id}
 								mode={type}
 								index={index}
+								showTierSelector={showTierSelector}
 							/>
 						)
 					})}
