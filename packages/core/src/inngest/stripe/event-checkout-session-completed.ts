@@ -1,4 +1,4 @@
-import { PROVIDERS, ROLES } from 'src/constants'
+import { PROVIDERS } from 'src/constants'
 
 import { parsePurchaseInfoFromCheckoutSession } from '../../lib/pricing/stripe-purchase-utils'
 import { User } from '../../schemas'
@@ -7,7 +7,6 @@ import {
 	checkoutSessionCompletedEvent,
 } from '../../schemas/stripe/checkout-session-completed'
 import { NEW_PURCHASE_CREATED_EVENT } from '../commerce/event-new-purchase-created'
-import { NEW_SUBSCRIPTION_CREATED_EVENT } from '../commerce/event-new-subscription-created'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,

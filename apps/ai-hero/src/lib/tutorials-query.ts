@@ -211,18 +211,21 @@ export const updateResourcePosition = async ({
 	parentResourceId,
 	resourceId,
 	position,
+	metadata,
 }: {
 	currentParentResourceId: string
 	parentResourceId: string
 	resourceId: string
 	position: number
+	metadata?: any
 }) => {
+	const parentIdToLookup = currentParentResourceId ?? parentResourceId
 	const result = await db
 		.update(contentResourceResource)
-		.set({ position, resourceOfId: parentResourceId })
+		.set({ position, resourceOfId: parentResourceId, metadata })
 		.where(
 			and(
-				eq(contentResourceResource.resourceOfId, currentParentResourceId),
+				eq(contentResourceResource.resourceOfId, parentIdToLookup),
 				eq(contentResourceResource.resourceId, resourceId),
 			),
 		)

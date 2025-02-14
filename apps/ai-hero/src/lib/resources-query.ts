@@ -39,6 +39,9 @@ export async function updateResource(input: {
 			...currentResource.fields,
 			...input.fields,
 			slug: resourceSlug,
+			...(input.fields.image && {
+				image: input.fields.image,
+			}),
 		},
 	})
 }

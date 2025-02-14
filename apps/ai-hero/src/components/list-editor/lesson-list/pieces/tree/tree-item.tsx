@@ -30,7 +30,14 @@ import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
 
-import { Button } from '@coursebuilder/ui'
+import {
+	Button,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@coursebuilder/ui'
 
 import { useSelection } from '../../../selection-context'
 import { TreeItem as TreeItemType } from '../../data/tree'
@@ -104,12 +111,14 @@ const TreeItem = memo(function TreeItem({
 	level,
 	refresh,
 	index,
+	showTierSelector = false,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
 	refresh: () => void
 	index: number
+	showTierSelector?: boolean
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
 	const { excludedIds, setExcludedIds } = useSelection()
@@ -396,6 +405,27 @@ const TreeItem = memo(function TreeItem({
 					) : null}
 				</button>
 				<div className="itmes-center flex gap-2 px-3">
+					{showTierSelector && item.type !== 'section' && (
+						<Select
+							defaultValue={item.itemData?.metadata?.tier || 'standard'}
+							onValueChange={(value) => {
+								dispatch({
+									type: 'update-tier',
+									itemId: item.id,
+									tier: value as 'standard' | 'premium' | 'vip',
+								})
+							}}
+						>
+							<SelectTrigger className="h-6 w-[100px]">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="standard">Standard</SelectItem>
+								<SelectItem value="premium">Premium</SelectItem>
+								<SelectItem value="vip">VIP</SelectItem>
+							</SelectContent>
+						</Select>
+					)}
 					<Button
 						className="hover:bg-secondary h-6 w-6"
 						type="button"
@@ -463,6 +493,7 @@ const TreeItem = memo(function TreeItem({
 								level={level + 1}
 								mode={childType}
 								index={index}
+								showTierSelector={showTierSelector}
 							/>
 						)
 					})}

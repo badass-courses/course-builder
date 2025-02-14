@@ -32,10 +32,12 @@ export default function ListResourcesEdit({
 	list,
 	title = <DynamicTitle />,
 	searchConfig = <SearchConfig />,
+	showTierSelector = false,
 }: {
 	list: ContentResource
 	title?: React.ReactNode | string
 	searchConfig?: React.ReactNode
+	showTierSelector?: boolean
 }) {
 	const initialData = [
 		...(list.resources
@@ -121,6 +123,7 @@ export default function ListResourcesEdit({
 						rootResourceId={list.id}
 						state={state}
 						updateState={updateState}
+						showTierSelector={showTierSelector}
 					/>
 					{/* <div className={cn('flex flex-col gap-1 border-t', {})}>
 						<ResourcesInfiniteHits updateTreeState={updateState} list={list} />

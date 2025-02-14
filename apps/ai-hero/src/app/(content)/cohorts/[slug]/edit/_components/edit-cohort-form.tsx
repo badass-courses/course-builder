@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import ListResoucesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -75,6 +76,7 @@ export function EditCohortForm({ cohort }: { cohort: Cohort }) {
 					default: true,
 				},
 			]}
+			bodyPanelSlot={<ListResoucesEdit list={cohort} showTierSelector />}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}

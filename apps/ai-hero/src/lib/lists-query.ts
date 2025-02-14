@@ -252,9 +252,13 @@ export async function getMinimalListForNavigation(listIdOrSlug: string) {
 export async function addPostToList({
 	postId,
 	listId,
+	metadata,
 }: {
 	postId: string
 	listId: string
+	metadata?: {
+		tier?: 'standard' | 'premium' | 'vip'
+	}
 }) {
 	const { ability } = await getServerAuthSession()
 	if (!ability.can('update', 'Content')) {
@@ -274,6 +278,7 @@ export async function addPostToList({
 		resourceOfId: list.id,
 		resourceId: postId,
 		position: list.resources.length,
+		metadata,
 	})
 
 	return db.query.contentResourceResource.findFirst({

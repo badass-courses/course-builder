@@ -45,7 +45,16 @@ export function ResourcesInfiniteHits({
 					label: resource.title,
 					type: resource.type,
 					children: [],
-					itemData: resource as any,
+					tier: 'standard',
+					itemData: {
+						resourceId: resource.id,
+						resourceOfId: list.id,
+						position: 0,
+						metadata: {
+							tier: 'standard',
+						},
+						resource: resource as any,
+					},
 				},
 			})
 		}
@@ -55,6 +64,9 @@ export function ResourcesInfiniteHits({
 			await addPostToList({
 				postId: resource.id,
 				listId: list.id,
+				metadata: {
+					tier: 'standard',
+				},
 			})
 		}
 		clearSelection()
