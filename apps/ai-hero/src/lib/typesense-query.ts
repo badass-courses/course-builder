@@ -25,7 +25,7 @@ export async function upsertPostToTypeSense(
 		console.log('🔄 Initializing TypeSense client for upsert:', {
 			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
 			hasWriteKey: !!process.env.TYPESENSE_WRITE_API_KEY,
-			collection: process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME,
+			collection: TYPESENSE_COLLECTION_NAME,
 		})
 
 		if (
@@ -142,7 +142,7 @@ export async function deletePostInTypeSense(postId: string) {
 		console.log('🔄 Initializing TypeSense client for deletion:', {
 			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
 			hasWriteKey: !!process.env.TYPESENSE_WRITE_API_KEY,
-			collection: process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME,
+			collection: TYPESENSE_COLLECTION_NAME,
 		})
 
 		if (
