@@ -113,12 +113,11 @@ export default function Tree({
 			await updateResourcePosition({
 				currentParentResourceId: item.itemData.resourceOfId,
 				parentResourceId: rootResourceId,
-				// @ts-expect-error
-				resourceId: item.itemData.resourceId ?? item.itemData.id,
+				resourceId: item.itemData.resourceId,
 				position: currentData.indexOf(item),
 				metadata: {
-					...(item.itemData?.metadata ?? {}),
-					tier: item.tier,
+					...(item.itemData?.metadata || {}),
+					tier: item.itemData?.metadata?.tier || 'standard',
 				},
 			})
 		}

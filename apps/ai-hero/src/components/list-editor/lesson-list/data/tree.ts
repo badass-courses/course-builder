@@ -248,9 +248,20 @@ export function treeStateReducer(
 
 const dataReducer = (data: TreeItem[], action: TreeAction) => {
 	if (action.type === 'update-tier') {
-		return data.map((item) =>
-			item.id === action.itemId ? { ...item, tier: action.tier } : item,
-		)
+		return data.map((item) => {
+			if (item.id !== action.itemId) return item
+			if (!item.itemData) return item
+			return {
+				...item,
+				itemData: {
+					...item.itemData,
+					metadata: {
+						...(item.itemData.metadata || {}),
+						tier: action.tier,
+					},
+				},
+			}
+		})
 	}
 
 	if (action.type === 'add-item') {

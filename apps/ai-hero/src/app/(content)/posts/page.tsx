@@ -154,16 +154,20 @@ export default async function PostsIndexPage() {
 
 		// Fallback featured content
 		featuredContent = [
-			{
-				...latestTutorial,
-				fields: {
-					...latestTutorial.fields,
-					featured: {
-						priority: 1,
-						layout: 'primary',
-					},
-				},
-			},
+			...(latestTutorial
+				? [
+						{
+							...latestTutorial,
+							fields: {
+								...latestTutorial.fields,
+								featured: {
+									priority: 1,
+									layout: 'primary',
+								},
+							},
+						},
+					]
+				: []),
 			...posts.map((post, index) => {
 				return {
 					fields: {

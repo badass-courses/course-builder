@@ -100,10 +100,12 @@ const TreeItem = memo(function TreeItem({
 	item,
 	mode,
 	level,
+	showTierSelector = false,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
+	showTierSelector?: boolean
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -440,6 +442,7 @@ const TreeItem = memo(function TreeItem({
 								key={child.id}
 								level={level + 1}
 								mode={childType}
+								showTierSelector={showTierSelector}
 							/>
 						)
 					})}

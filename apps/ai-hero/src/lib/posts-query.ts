@@ -343,6 +343,7 @@ export async function updatePost(
 			action,
 			userId: user.id,
 		})
+		console.log('🔍 Post updated in Typesense')
 	} catch (error) {
 		await log.error('post.update.typesense.failed', {
 			postId: input.id,
@@ -351,6 +352,7 @@ export async function updatePost(
 			action,
 			userId: user.id,
 		})
+		console.log('❌ Error updating post in Typesense', error)
 	}
 
 	try {
