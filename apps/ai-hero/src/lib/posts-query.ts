@@ -17,6 +17,7 @@ import {
 	NewPostInputSchema,
 	Post,
 	PostAction,
+	PostOrListSchema,
 	PostSchema,
 	type PostUpdate,
 } from '@/lib/posts'
@@ -1071,28 +1072,15 @@ export async function getPostOrList(slugOrId: string) {
 		return null
 	}
 
-	// Parse based on content type
-	if (postOrList.type === 'post') {
-		const postParsed = PostSchema.safeParse(postOrList)
-		if (!postParsed.success) {
-			await log.error('post.parse.failed', {
-				error: postParsed.error.format(),
-				slugOrId,
-			})
-			return null
-		}
-		return postParsed.data
-	} else if (postOrList.type === 'list') {
-		const listParsed = ListSchema.safeParse(postOrList)
-		if (!listParsed.success) {
-			await log.error('list.parse.failed', {
-				error: listParsed.error.format(),
-				slugOrId,
-			})
-			return null
-		}
-		return listParsed.data
+	const parsed = PostOrListSchema.safeParse(postOrList)
+	if (!parsed.success) {
+		await log.error('content.parse.failed', {
+			error: parsed.error.format(),
+			slugOrId,
+			type: postOrList.type,
+		})
+		return null
 	}
 
-	return null
+	return parsed.data
 }

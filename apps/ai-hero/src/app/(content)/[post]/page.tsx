@@ -54,16 +54,10 @@ export default async function PostPage(props: {
 		notFound()
 	}
 
-	if (post?.type === 'list') {
-		const list = ListSchema.safeParse(post)
-
-		if (!list.success) {
-			notFound()
-		}
-
+	if (post.type === 'list') {
 		return (
 			<ListPage
-				list={list.data}
+				list={post}
 				params={{ slug: params.post } as any}
 				searchParams={searchParams as any}
 			/>
