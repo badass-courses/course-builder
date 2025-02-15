@@ -12,6 +12,7 @@ export const PostTypeSchema = z.union([
 	z.literal('podcast'),
 	z.literal('tip'),
 	z.literal('course'),
+	z.literal('solution'),
 ])
 
 export type PostType = z.infer<typeof PostTypeSchema>
@@ -35,6 +36,7 @@ export const NewPostInputSchema = z.object({
 		'course',
 		'playlist',
 		'article',
+		'solution',
 	]),
 	createdById: z.string(),
 })
@@ -87,6 +89,7 @@ export const FeaturedSchema = z.object({
 export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
+			postType: PostTypeSchema.default('article'),
 			body: z.string().nullable().optional(),
 			yDoc: z.string().nullable().optional(),
 			title: z.string(),
@@ -109,6 +112,7 @@ export type Post = z.infer<typeof PostSchema>
 export const PostUpdateSchema = z.object({
 	id: z.string(),
 	fields: z.object({
+		postType: PostTypeSchema.default('article'),
 		title: z.string().min(2).max(90),
 		body: z.string().optional().nullable(),
 		slug: z.string(),

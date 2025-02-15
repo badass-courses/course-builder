@@ -29,6 +29,8 @@ export function CreatePost() {
 			}}
 			createResource={createPost}
 			getVideoResource={getVideoResource}
+			availableResourceTypes={['article']}
+			uploadEnabled={false}
 		>
 			{(handleSetVideoResourceId: (id: string) => void) => {
 				return <PostUploader setVideoResourceId={handleSetVideoResourceId} />

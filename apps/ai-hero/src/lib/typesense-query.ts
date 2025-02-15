@@ -85,7 +85,7 @@ export async function upsertPostToTypeSense(
 			slug: post.fields.slug,
 			description: post.fields.body,
 			summary: post.fields.description,
-			type: 'type' in post.fields ? post.fields.type : post.type,
+			type: 'postType' in post.fields ? post.fields.postType : post.type,
 			visibility: post.fields.visibility,
 			state: post.fields.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),

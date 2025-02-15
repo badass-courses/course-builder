@@ -197,6 +197,7 @@ export async function createPost(input: NewPostInput) {
 		createdById: input.createdById || user.id,
 		fields: {
 			title: input.title,
+			postType: input.postType || 'article',
 			state: 'draft',
 			visibility: 'public',
 			slug: slugify(`${input.title}~${postGuid}`),
@@ -587,7 +588,7 @@ async function createCorePost({
 	newPostId,
 	title,
 	postGuid,
-	postType,
+	postType = 'article',
 	createdById,
 }: {
 	newPostId: string
@@ -821,6 +822,7 @@ export async function writePostUpdateToDatabase(input: {
 			fields: {
 				...currentPost.fields,
 				...postUpdate.fields,
+				postType: postUpdate.fields.postType ?? 'article',
 				duration,
 				timeToRead,
 				slug: postSlug,
