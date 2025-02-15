@@ -34,6 +34,7 @@ import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
+import { PostOrListSchema } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
@@ -197,6 +198,7 @@ export async function createPost(input: NewPostInput) {
 		createdById: input.createdById || user.id,
 		fields: {
 			title: input.title,
+			postType: input.postType || 'article',
 			state: 'draft',
 			visibility: 'public',
 			slug: slugify(`${input.title}~${postGuid}`),
@@ -587,7 +589,7 @@ async function createCorePost({
 	newPostId,
 	title,
 	postGuid,
-	postType,
+	postType = 'article',
 	createdById,
 }: {
 	newPostId: string
@@ -821,6 +823,7 @@ export async function writePostUpdateToDatabase(input: {
 			fields: {
 				...currentPost.fields,
 				...postUpdate.fields,
+				postType: postUpdate.fields.postType ?? 'article',
 				duration,
 				timeToRead,
 				slug: postSlug,
@@ -1069,28 +1072,15 @@ export async function getPostOrList(slugOrId: string) {
 		return null
 	}
 
-	// Parse based on content type
-	if (postOrList.type === 'post') {
-		const postParsed = PostSchema.safeParse(postOrList)
-		if (!postParsed.success) {
-			await log.error('post.parse.failed', {
-				error: postParsed.error.format(),
-				slugOrId,
-			})
-			return null
-		}
-		return postParsed.data
-	} else if (postOrList.type === 'list') {
-		const listParsed = ListSchema.safeParse(postOrList)
-		if (!listParsed.success) {
-			await log.error('list.parse.failed', {
-				error: listParsed.error.format(),
-				slugOrId,
-			})
-			return null
-		}
-		return listParsed.data
+	const parsed = PostOrListSchema.safeParse(postOrList)
+	if (!parsed.success) {
+		await log.error('content.parse.failed', {
+			error: parsed.error.format(),
+			slugOrId,
+			type: postOrList.type,
+		})
+		return null
 	}
 
-	return null
+	return parsed.data
 }

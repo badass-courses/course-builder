@@ -23,6 +23,7 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
+import { ContentResourceResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
@@ -54,16 +55,10 @@ export default async function PostPage(props: {
 		notFound()
 	}
 
-	if (post?.type === 'list') {
-		const list = ListSchema.safeParse(post)
-
-		if (!list.success) {
-			notFound()
-		}
-
+	if (post.type === 'list') {
 		return (
 			<ListPage
-				list={list.data}
+				list={post}
 				params={{ slug: params.post } as any}
 				searchParams={searchParams as any}
 			/>
@@ -79,7 +74,8 @@ export default async function PostPage(props: {
 	)
 
 	const hasVideo = post?.resources?.find(
-		({ resource }) => resource.type === 'videoResource',
+		({ resource }: ContentResourceResource) =>
+			resource.type === 'videoResource',
 	)
 
 	return (

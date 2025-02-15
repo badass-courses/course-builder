@@ -76,7 +76,7 @@ export function NewResourceWithVideoForm({
 		defaultValues: {
 			title: '',
 			videoResourceId: undefined,
-			postType: availableResourceTypes?.[0] || 'lesson',
+			postType: availableResourceTypes?.[0] || 'article',
 		},
 	})
 
