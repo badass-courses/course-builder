@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
-import { ListSchema } from './lists'
 import { TagSchema } from './tags'
 
 export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
@@ -152,10 +151,3 @@ export const UpdatePostRequestSchema = z.object({
 })
 
 export type UpdatePostRequest = z.infer<typeof UpdatePostRequestSchema>
-
-export const PostOrListSchema = z.discriminatedUnion('type', [
-	PostSchema.extend({ type: z.literal('post') }),
-	ListSchema.extend({ type: z.literal('list') }),
-])
-
-export type PostOrList = z.infer<typeof PostOrListSchema>

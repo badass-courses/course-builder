@@ -4,17 +4,16 @@ import { db } from '@/db'
 import { resourceProgress } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
-import { and, desc, eq, isNotNull, isNull, not } from 'drizzle-orm'
+import { and, desc, eq, isNotNull } from 'drizzle-orm'
 import Typesense from 'typesense'
 import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'
-import { array, z } from 'zod'
+import { z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import type { List } from './lists'
-import { Post, PostAction } from './posts'
+import type { Post, PostAction } from './posts'
 import { getPostTags } from './posts-query'
-// import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
 
 export async function upsertPostToTypeSense(

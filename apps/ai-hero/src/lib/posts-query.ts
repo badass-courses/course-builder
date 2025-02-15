@@ -17,7 +17,6 @@ import {
 	NewPostInputSchema,
 	Post,
 	PostAction,
-	PostOrListSchema,
 	PostSchema,
 	type PostUpdate,
 } from '@/lib/posts'
@@ -35,6 +34,7 @@ import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
+import { PostOrListSchema } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
