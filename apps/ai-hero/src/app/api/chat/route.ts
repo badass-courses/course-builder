@@ -1,12 +1,8 @@
 // ./app/api/chat/route.js
 import { redis } from '@/server/redis-client'
+import { openai } from '@ai-sdk/openai'
 import { Ratelimit } from '@upstash/ratelimit'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY,
-})
+import { streamText } from 'ai'
 
 export async function POST(req: Request) {
 	// Use a constant string to limit all requests with a single ratelimit
@@ -34,11 +30,10 @@ export async function POST(req: Request) {
 	}
 
 	const { messages } = await req.json()
-	const response = await openai.chat.completions.create({
-		model: 'gpt-4',
-		stream: true,
+
+	const result = streamText({
+		model: openai('gpt-4'),
 		messages,
 	})
-	const stream = OpenAIStream(response)
-	return new StreamingTextResponse(stream)
+	return result.toDataStreamResponse()
 }

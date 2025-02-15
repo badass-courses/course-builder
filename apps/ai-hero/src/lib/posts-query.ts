@@ -191,6 +191,7 @@ export async function createPost(input: NewPostInput) {
 
 	const postGuid = guid()
 	const newPostId = `post_${postGuid}`
+	const slug = slugify(`${input.title}~${postGuid}`)
 
 	const postValues = {
 		id: newPostId,
@@ -201,7 +202,7 @@ export async function createPost(input: NewPostInput) {
 			postType: input.postType || 'article',
 			state: 'draft',
 			visibility: 'public',
-			slug: slugify(`${input.title}~${postGuid}`),
+			slug,
 		},
 	}
 

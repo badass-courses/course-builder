@@ -5,6 +5,7 @@ import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
+import { cn } from '@/utils/cn'
 import { FilePlus2 } from 'lucide-react'
 import pluralize from 'pluralize'
 
@@ -17,11 +18,14 @@ import {
 	DialogTrigger,
 } from '@coursebuilder/ui'
 
-export function CreatePost() {
+export function CreatePost({ className }: { className?: string }) {
 	const router = useRouter()
 	return (
 		<NewResourceWithVideoForm
-			className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
+			className={cn(
+				'[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold',
+				className,
+			)}
 			onResourceCreated={async (resource: ContentResource) => {
 				router.push(
 					`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
