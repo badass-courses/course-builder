@@ -9,6 +9,7 @@ import {
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
 import { Plus } from 'lucide-react'
+import { useInstantSearch } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -74,6 +75,20 @@ export default function ListResourcesEdit({
 	)
 	const router = useRouter()
 
+	function TreeWithSearch() {
+		const { refresh } = useInstantSearch()
+		return (
+			<Tree
+				state={state}
+				updateState={updateState}
+				rootResourceId={list.id}
+				rootResource={list}
+				onRefresh={() => refresh()}
+				showTierSelector={showTierSelector}
+			/>
+		)
+	}
+
 	return (
 		<SelectionProvider list={list}>
 			<InstantSearchNext
@@ -118,16 +133,7 @@ export default function ListResourcesEdit({
 							</DialogContent>
 						</Dialog>
 					</div>
-					<Tree
-						rootResource={list as ContentResource}
-						rootResourceId={list.id}
-						state={state}
-						updateState={updateState}
-						showTierSelector={showTierSelector}
-					/>
-					{/* <div className={cn('flex flex-col gap-1 border-t', {})}>
-						<ResourcesInfiniteHits updateTreeState={updateState} list={list} />
-					</div> */}
+					<TreeWithSearch />
 					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">
 						Body
 					</div>

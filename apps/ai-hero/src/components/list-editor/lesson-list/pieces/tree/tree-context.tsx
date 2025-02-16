@@ -22,17 +22,21 @@ export type TreeContextValue = {
 		element: HTMLElement
 		actionMenuTrigger: HTMLElement
 	}) => void
+	/**
+	 * Optional refresh mechanism, e.g. for search re-fetches.
+	 */
+	onRefresh?: () => void
 }
 
 export const TreeContext = createContext<TreeContextValue>({
 	dispatch: () => {},
-	uniqueContextId: Symbol('uniqueId'),
+	uniqueContextId: Symbol('default'),
 	getPathToItem: () => [],
 	getMoveTargets: () => [],
 	getChildrenOfItem: () => [],
-	registerTreeItem: () => {},
 	rootResourceId: null,
 	rootResource: null,
+	registerTreeItem: () => {},
 })
 
 export type DependencyContext = {
