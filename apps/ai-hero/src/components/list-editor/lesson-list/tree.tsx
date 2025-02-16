@@ -5,7 +5,6 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
-	useReducer,
 	useRef,
 	useState,
 } from 'react'
@@ -20,19 +19,16 @@ import * as liveRegion from '@atlaskit/pragmatic-drag-and-drop-live-region'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import memoizeOne from 'memoize-one'
-import { useInstantSearch } from 'react-instantsearch'
 import invariant from 'tiny-invariant'
 
 import { Product } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import {
-	getInitialTreeState,
 	tree,
 	TreeAction,
 	TreeItem as TreeItemType,
 	TreeState,
-	treeStateReducer,
 } from './data/tree'
 import {
 	DependencyContext,
@@ -72,16 +68,17 @@ export default function Tree({
 	updateState,
 	rootResourceId,
 	rootResource,
+	onRefresh,
 	showTierSelector = false,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
 	rootResource: ContentResource | Product
+	onRefresh?: () => void
 	showTierSelector?: boolean
 }) {
 	const params = useParams<{ module: string }>()
-	const { refresh } = useInstantSearch()
 
 	const ref = useRef<HTMLDivElement>(null)
 	const { extractInstruction } = useContext(DependencyContext)
@@ -241,6 +238,7 @@ export default function Tree({
 			registerTreeItem,
 			rootResourceId,
 			rootResource,
+			onRefresh,
 		}),
 		[
 			getChildrenOfItem,
@@ -249,6 +247,7 @@ export default function Tree({
 			updateState,
 			rootResourceId,
 			rootResource,
+			onRefresh,
 		],
 	)
 
@@ -313,7 +312,7 @@ export default function Tree({
 
 						return (
 							<TreeItem
-								refresh={refresh}
+								refresh={onRefresh}
 								item={item}
 								level={0}
 								key={item.id}

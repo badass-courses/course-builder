@@ -102,14 +102,14 @@ const TreeItem = memo(function TreeItem({
 	item,
 	mode,
 	level,
-	refresh,
+	refresh = () => {},
 	index,
 	showTierSelector = false,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
-	refresh: () => void
+	refresh?: () => void
 	index: number
 	showTierSelector?: boolean
 }) {
