@@ -24,6 +24,8 @@ import invariant from 'tiny-invariant'
 import { Product } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
+import { DraggableItemRenderer } from '../draggable-item-renderer'
+import { ResourceList } from '../resource-list'
 import {
 	tree,
 	TreeAction,
@@ -257,7 +259,7 @@ export default function Tree({
 			monitorForElements({
 				canMonitor: ({ source }) =>
 					source.data.uniqueContextId === context.uniqueContextId,
-				onDrop(args) {
+				async onDrop(args) {
 					const { location, source } = args
 					// didn't drop on anything
 					if (!location.current.dropTargets.length) {
@@ -295,34 +297,35 @@ export default function Tree({
 
 	return (
 		<TreeContext.Provider value={context}>
-			<div>
-				<div className="flex flex-col divide-y border-t" id="tree" ref={ref}>
-					{data.map((item, index, array) => {
-						const type: ItemMode = (() => {
-							if (item.children.length && item.isOpen) {
-								return 'expanded'
-							}
-
-							if (index === array.length - 1) {
-								return 'last-in-group'
-							}
-
-							return 'standard'
-						})()
-
+			<div ref={ref}>
+				<ResourceList
+					resources={state.data}
+					onRemove={(id) => updateState({ type: 'remove-item', itemId: id })}
+					itemRenderer={(item, index) => {
+						let type: ItemMode = 'standard'
+						switch (true) {
+							case item.children.length && item.isOpen:
+								type = 'expanded'
+								break
+							case index === state.data.length - 1:
+								type = 'last-in-group'
+								break
+						}
 						return (
-							<TreeItem
-								refresh={onRefresh}
-								item={item}
-								level={0}
-								key={item.id}
-								mode={type}
-								index={index}
-								showTierSelector={showTierSelector}
-							/>
+							<div className="relative border-b transition-colors">
+								<TreeItem
+									refresh={onRefresh}
+									item={item}
+									level={0}
+									key={item.id}
+									mode={type}
+									index={index}
+									showTierSelector={showTierSelector}
+								/>
+							</div>
 						)
-					})}
-				</div>
+					}}
+				/>
 			</div>
 		</TreeContext.Provider>
 	)
