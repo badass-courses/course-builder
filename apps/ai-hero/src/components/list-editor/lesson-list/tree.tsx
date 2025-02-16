@@ -1,5 +1,3 @@
-'use client'
-
 import {
 	useCallback,
 	useContext,
@@ -24,7 +22,6 @@ import invariant from 'tiny-invariant'
 import { Product } from '@coursebuilder/core/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
-import { DraggableItemRenderer } from '../draggable-item-renderer'
 import { ResourceList } from '../resource-list'
 import {
 	tree,
