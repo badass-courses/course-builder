@@ -22,6 +22,24 @@ interface ResourceListContextValue {
 const ResourceListContext = createContext<ResourceListContextValue>({})
 
 /**
+ * ResourceListSlots
+ *
+ * This collects the "slots" or render props you can pass into ResourceList.
+ */
+interface ResourceListSlots {
+	beforeAllItems?: () => React.ReactNode
+	afterAllItems?: () => React.ReactNode
+	beforeEachItem?: (item: TreeItem, index: number) => React.ReactNode
+	itemRenderer?: (
+		item: TreeItem,
+		index: number,
+		ctx: ResourceListContextValue,
+	) => React.ReactNode
+	afterEachItem?: (item: TreeItem, index: number) => React.ReactNode
+	emptyStateRenderer?: () => React.ReactNode
+}
+
+/**
  * ResourceListProps
  *
  * @param {TreeItem[]} resources - The data you want to render as a list (could be anything: lessons, sections, etc.)
@@ -29,13 +47,8 @@ const ResourceListContext = createContext<ResourceListContextValue>({})
  * @param {Function} [onRemove] - Optional callback if users remove an item.
  * @param {Function} [onExpand] - Optional callback if users expand/collapse an item.
  */
-interface ResourceListProps {
+interface ResourceListProps extends ResourceListSlots {
 	resources: TreeItem[]
-	itemRenderer?: (
-		item: TreeItem,
-		index: number,
-		ctx: ResourceListContextValue,
-	) => React.ReactNode
 	onRemove?: (id: string) => void
 	onExpand?: (id: string) => void
 }
@@ -43,31 +56,48 @@ interface ResourceListProps {
 /**
  * ResourceList
  *
- * Creates a flexible list of resources. The "itemRenderer" prop determines
- * how each resource is displayed. Other props, like "onRemove" or "onExpand,"
- * are provided via context to each item if needed.
+ * Creates a flexible list of resources with multiple injection points (slots)
+ * that let you add stuff before/after the entire list, or before/after each item.
  */
 export function ResourceList({
 	resources,
+	beforeAllItems,
+	afterAllItems,
+	beforeEachItem,
 	itemRenderer,
+	afterEachItem,
+	emptyStateRenderer,
 	onRemove,
 	onExpand,
 }: ResourceListProps) {
 	const contextValue = { onRemove, onExpand }
 
+	// If there are no items and a custom empty state slot is provided
+	if (!resources.length && emptyStateRenderer) {
+		return <>{emptyStateRenderer()}</>
+	}
+
 	return (
 		<ResourceListContext.Provider value={contextValue}>
 			<div className="space-y-2">
-				{resources.map((item, index) => {
-					if (itemRenderer) {
-						// Give the itemRenderer everything it needs
-						return (
-							<div key={item.id}>{itemRenderer(item, index, contextValue)}</div>
-						)
-					}
-					// Otherwise, use our fallback
-					return <DefaultResourceItem key={item.id} item={item} />
-				})}
+				{/* Optional slot before all items */}
+				{beforeAllItems?.()}
+
+				{/* Render each item */}
+				{resources.map((item, index) => (
+					<div key={item.id}>
+						{beforeEachItem?.(item, index)}
+						{itemRenderer ? (
+							itemRenderer(item, index, contextValue)
+						) : (
+							<DefaultResourceItem item={item} />
+						)}
+						{afterEachItem?.(item, index)}
+					</div>
+				))}
+
+				{/* Optional slot after all items */}
+				{afterAllItems?.()}
 			</div>
 		</ResourceListContext.Provider>
 	)
@@ -100,4 +130,11 @@ function DefaultResourceItem({ item }: { item: TreeItem }) {
 			</div>
 		</div>
 	)
+}
+
+/**
+ * Custom hook to consume resource list context if you need it in child components.
+ */
+export function useResourceListContext() {
+	return useContext(ResourceListContext)
 }
