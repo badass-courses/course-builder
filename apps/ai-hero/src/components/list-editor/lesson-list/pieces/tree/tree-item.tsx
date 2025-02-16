@@ -31,6 +31,7 @@ import invariant from 'tiny-invariant'
 
 import { Button } from '@coursebuilder/ui'
 
+import { DraggableItemRenderer } from '../../../draggable-item-renderer'
 import { useSelection } from '../../../selection-context'
 import { TreeItem as TreeItemType } from '../../data/tree'
 import { TierSelect } from '../tier-select'
@@ -113,7 +114,7 @@ const TreeItem = memo(function TreeItem({
 	index: number
 	showTierSelector?: boolean
 }) {
-	const buttonRef = useRef<HTMLButtonElement>(null)
+	const buttonRef = useRef<HTMLDivElement>(null)
 	const { excludedIds, setExcludedIds } = useSelection()
 	const [state, setState] = useState<
 		'idle' | 'dragging' | 'preview' | 'parent-of-instruction'
@@ -335,69 +336,50 @@ const TreeItem = memo(function TreeItem({
 
 	const router = useRouter()
 
+	console.log('item', item)
+
+	// “Custom label” node that includes index, item.label, and postType
+	const labelNode = (
+		<span
+			className={cn(
+				'flex flex-col items-center justify-between gap-3 bg-transparent px-5 sm:flex-row',
+				{
+					'opacity-40': state === 'dragging',
+					transparent: state === 'parent-of-instruction',
+				},
+			)}
+		>
+			<div className="flex w-full flex-row items-center">
+				<span className="mr-2 min-w-[15px] text-xs opacity-50">
+					{index + 1}
+				</span>
+				<span
+					className={cn('text-left', {
+						'font-semibold': item.type === 'section',
+					})}
+				>
+					{item.label ?? item.id}
+				</span>
+			</div>
+			<small className="text-ellipsis opacity-50">
+				{item.itemData?.resource?.fields?.postType ? (
+					<span className="capitalize">
+						{item.itemData.resource.fields.postType}
+					</span>
+				) : null}
+			</small>
+		</span>
+	)
+
 	return (
 		<Fragment>
-			<div
-				className={cn('relative flex items-center', {
-					'cursor-move': state === 'idle',
-				})}
-			>
-				<button
-					{...aria}
-					className={cn(
-						'hover:bg-muted/50 relative w-full cursor-pointer border-0 bg-transparent py-3',
-						{
-							'border-primary border': instruction?.type === 'make-child',
-							'cursor-move': state === 'idle',
-						},
-					)}
-					id={`tree-item-${item.id}`}
-					onClick={item.type === 'section' ? toggleOpen : () => {}}
+			<div className="relative border-b transition-colors">
+				<DraggableItemRenderer
 					ref={buttonRef}
-					type="button"
-					style={{ paddingLeft: level * indentPerLevel }}
+					item={item}
+					label={labelNode}
+					className="w-full text-left"
 				>
-					<span
-						className={cn(
-							'flex flex-col items-center justify-between gap-3 bg-transparent px-5 sm:flex-row',
-							{
-								'opacity-40': state === 'dragging',
-								transparent: state === 'parent-of-instruction',
-							},
-						)}
-					>
-						<div className="flex w-full flex-row items-center">
-							{/* <Icon item={item} /> */}
-							<span className="mr-2 min-w-[15px] text-xs opacity-50">
-								{index + 1}
-							</span>
-							<span
-								className={cn('text-left', {
-									'font-semibold': item.type === 'section',
-								})}
-							>
-								{item.label ?? item.id}
-							</span>
-						</div>
-						<small className="text-ellipsis opacity-50">
-							{item.type ? (
-								<span className="capitalize">{item.type}</span>
-							) : null}
-
-							{/* <span className="text-xs opacity-50">({mode})</span> */}
-						</small>
-					</span>
-					{instruction ? (
-						<div
-							className={cn('bg-primary absolute left-0 h-px w-full', {
-								'top-0': instruction.type === 'reorder-above',
-								'bottom-0': instruction.type === 'reorder-below',
-								'opacity-0': instruction.type === 'instruction-blocked',
-							})}
-						/>
-					) : null}
-				</button>
-				<div className="flex items-center gap-2 px-3">
 					{showTierSelector && item.type !== 'section' && (
 						<TierSelect item={item} dispatch={dispatch} />
 					)}
@@ -444,7 +426,17 @@ const TreeItem = memo(function TreeItem({
 					>
 						<Trash className="h-3 w-3" />
 					</Button>
-				</div>
+				</DraggableItemRenderer>
+
+				{instruction ? (
+					<div
+						className={cn('bg-primary absolute left-0 h-px w-full', {
+							'top-0': instruction.type === 'reorder-above',
+							'bottom-0': instruction.type === 'reorder-below',
+							'opacity-0': instruction.type === 'instruction-blocked',
+						})}
+					/>
+				) : null}
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>
