@@ -116,7 +116,7 @@ export default function ListResourcesEdit({
 				future={{ preserveSharedStateOnUnmount: true }}
 			>
 				{searchConfig}
-				<div className="border-b text-sm font-medium">
+				<div className="border-b pr-2 text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
 						{title}
 						<Dialog

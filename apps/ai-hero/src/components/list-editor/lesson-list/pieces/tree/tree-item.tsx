@@ -40,6 +40,31 @@ import { DependencyContext, TreeContext } from './tree-context'
 
 const iconColor = token('color.icon', '#44546F')
 
+// Debug styles for drag states with dark mode support
+const debugStyles = {
+	dragging:
+		'outline-dashed outline-2 outline-orange-500/50 dark:outline-orange-400/50',
+	preview:
+		'outline-dashed outline-2 outline-blue-500/50 dark:outline-blue-400/50',
+	'parent-of-instruction':
+		'outline-dashed outline-2 outline-green-500/50 dark:outline-green-400/50',
+	idle: '',
+}
+
+// Performance monitoring
+const dragPerf = {
+	startTime: 0,
+	dragCount: 0,
+	logPerformance: () => {
+		if (dragPerf.startTime) {
+			const duration = performance.now() - dragPerf.startTime
+			console.log(
+				`Drag operation took ${duration.toFixed(2)}ms (${dragPerf.dragCount} updates)`,
+			)
+		}
+	},
+}
+
 function ChildIcon() {
 	return (
 		<svg aria-hidden={true} width={24} height={24} viewBox="0 0 24 24">
@@ -321,6 +346,16 @@ const TreeItem = memo(function TreeItem({
 		[cancelExpand],
 	)
 
+	useEffect(() => {
+		if (state === 'dragging') {
+			dragPerf.startTime = performance.now()
+			dragPerf.dragCount = 0
+		} else if (state === 'idle' && dragPerf.startTime) {
+			dragPerf.logPerformance()
+			dragPerf.startTime = 0
+		}
+	}, [state])
+
 	const aria = (() => {
 		// if there are no children, we don't need to set aria attributes
 
@@ -336,7 +371,7 @@ const TreeItem = memo(function TreeItem({
 
 	const router = useRouter()
 
-	// “Custom label” node that includes index, item.label, and postType
+	// "Custom label" node that includes index, item.label, and postType
 	const labelNode = (
 		<span
 			className={cn(
@@ -371,13 +406,25 @@ const TreeItem = memo(function TreeItem({
 
 	return (
 		<Fragment>
-			<div className="relative border-b transition-colors">
+			<div className="relative border-b transition-colors dark:border-neutral-700">
 				<DraggableItemRenderer
 					ref={buttonRef}
 					item={item}
 					label={labelNode}
-					className="w-full text-left"
+					className={cn('w-full text-left', debugStyles[state], {
+						'opacity-40': state === 'dragging',
+						'bg-yellow-50/20 dark:bg-yellow-500/10': shouldHighlightParent,
+					})}
+					data-drag-state={state}
+					data-item-id={item.id}
+					data-item-level={level}
 				>
+					{/* Debug info */}
+					{process.env.NODE_ENV === 'development' && (
+						<div className="absolute right-0 top-0 text-xs text-neutral-500 dark:text-neutral-400">
+							{state !== 'idle' && `State: ${state}`}
+						</div>
+					)}
 					{showTierSelector && item.type !== 'section' && (
 						<TierSelect item={item} dispatch={dispatch} />
 					)}
@@ -428,11 +475,14 @@ const TreeItem = memo(function TreeItem({
 
 				{instruction ? (
 					<div
-						className={cn('bg-primary absolute left-0 h-px w-full', {
-							'top-0': instruction.type === 'reorder-above',
-							'bottom-0': instruction.type === 'reorder-below',
-							'opacity-0': instruction.type === 'instruction-blocked',
-						})}
+						className={cn(
+							'bg-primary/50 dark:bg-primary/30 absolute left-0 h-px w-full',
+							{
+								'top-0': instruction.type === 'reorder-above',
+								'bottom-0': instruction.type === 'reorder-below',
+								'opacity-0': instruction.type === 'instruction-blocked',
+							},
+						)}
 					/>
 				) : null}
 			</div>
