@@ -26,7 +26,7 @@ export interface CreatePostModalProps {
 	/**
 	 * If provided, overrides the default router.push on resource creation.
 	 */
-	onResourceCreated?: (resource: ContentResource) => void
+	onResourceCreated?: (resource: ContentResource) => Promise<void>
 	showTrigger?: boolean
 	open?: boolean
 }

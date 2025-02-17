@@ -5,6 +5,7 @@ import { useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
+import { addPostToList } from '@/lib/lists-query'
 import { track } from '@/utils/analytics'
 import {
 	TYPESENSE_COLLECTION_NAME,
@@ -160,29 +161,49 @@ export default function ListResourcesEdit({
 			<CreatePostModal
 				open={isCreatePostModalOpen}
 				onOpenChange={setIsCreatePostModalOpen}
-				onResourceCreated={(resource) => {
+				onResourceCreated={async (resource) => {
 					track('post_created', {
 						source: 'search_modal',
 						resourceId: resource.id,
 						resourceType: resource.type,
 						listId: list.id,
 					})
+
+					// Add to database first to get accurate position
+					const result = await addPostToList({
+						postId: resource.id,
+						listId: list.id,
+						metadata: {
+							tier: 'standard',
+						},
+					})
+
+					if (!result) {
+						throw new Error('Failed to add post to list')
+					}
+
+					// Update UI with server data
 					updateState({
 						type: 'add-item',
+						itemId: resource.id,
 						item: {
 							id: resource.id,
 							label: resource.fields?.title,
 							type: resource.type,
 							children: [],
+							tier: 'standard',
 							itemData: {
-								position: 0,
-								resource,
 								resourceId: resource.id,
 								resourceOfId: list.id,
+								position: result.position,
+								metadata: {
+									tier: 'standard',
+								},
+								resource: resource as any,
 							},
 						},
-						itemId: '',
 					})
+
 					setIsCreatePostModalOpen(false)
 				}}
 				showTrigger={false}
