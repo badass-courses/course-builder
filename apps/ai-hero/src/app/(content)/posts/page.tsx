@@ -27,7 +27,7 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
-import { CreatePostModal } from './_components/create-post'
+import { CreatePostModal } from './_components/create-post-modal'
 
 // export const experimental_ppr = true
 export const dynamic = 'force-dynamic'

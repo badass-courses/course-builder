@@ -72,7 +72,7 @@ export function EditCohortForm({ cohort }: { cohort: Cohort }) {
 			availableWorkflows={[
 				{
 					value: 'article-chat-default-5aj1o',
-					label: 'Article Chatzz',
+					label: 'Article Chat',
 					default: true,
 				},
 			]}

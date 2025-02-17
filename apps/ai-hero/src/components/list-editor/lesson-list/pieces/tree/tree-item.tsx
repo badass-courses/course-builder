@@ -336,8 +336,6 @@ const TreeItem = memo(function TreeItem({
 
 	const router = useRouter()
 
-	console.log('item', item)
-
 	// “Custom label” node that includes index, item.label, and postType
 	const labelNode = (
 		<span

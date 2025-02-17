@@ -4,6 +4,8 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
+import { track } from '@/utils/analytics'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
@@ -40,6 +42,9 @@ export default function ListResourcesEdit({
 	searchConfig?: React.ReactNode
 	showTierSelector?: boolean
 }) {
+	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
+	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
+		React.useState(false)
 	const initialData = [
 		...(list.resources
 			? list.resources.map((resourceItem) => {
@@ -113,7 +118,10 @@ export default function ListResourcesEdit({
 				<div className="border-b text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
 						{title}
-						<Dialog>
+						<Dialog
+							open={isSearchModalOpen}
+							onOpenChange={setIsSearchModalOpen}
+						>
 							<DialogTrigger asChild>
 								<Button variant="outline" className="gap-1">
 									<Plus className="text-primary w-4" /> Add Resources
@@ -126,8 +134,18 @@ export default function ListResourcesEdit({
 									list={list}
 								/>
 								<DialogFooter>
-									<Button variant="outline" asChild>
-										<Link href="/posts/new">Create a new post</Link>
+									<Button
+										variant="outline"
+										onClick={() => {
+											track('create_post_button_clicked', {
+												source: 'search_modal',
+												listId: list.id,
+											})
+											setIsSearchModalOpen(false)
+											setIsCreatePostModalOpen(true)
+										}}
+									>
+										Create a new post
 									</Button>
 								</DialogFooter>
 							</DialogContent>
@@ -139,6 +157,36 @@ export default function ListResourcesEdit({
 					</div>
 				</div>
 			</InstantSearchNext>
+			<CreatePostModal
+				open={isCreatePostModalOpen}
+				onOpenChange={setIsCreatePostModalOpen}
+				onResourceCreated={(resource) => {
+					track('post_created', {
+						source: 'search_modal',
+						resourceId: resource.id,
+						resourceType: resource.type,
+						listId: list.id,
+					})
+					updateState({
+						type: 'add-item',
+						item: {
+							id: resource.id,
+							label: resource.fields?.title,
+							type: resource.type,
+							children: [],
+							itemData: {
+								position: 0,
+								resource,
+								resourceId: resource.id,
+								resourceOfId: list.id,
+							},
+						},
+						itemId: '',
+					})
+					setIsCreatePostModalOpen(false)
+				}}
+				showTrigger={false}
+			/>
 		</SelectionProvider>
 	)
 }
