@@ -9,7 +9,7 @@ export const NavigationResultSchema = z.object({
 	section_slug: z.string().nullable(),
 	section_title: z.string().nullable(),
 	section_position: z.number().nullable(),
-	item_type: z.enum(['workshop', 'section', 'lesson']),
+	item_type: z.enum(['workshop', 'section', 'lesson']).nullable(),
 	lesson_id: z.string().nullable(),
 	lesson_slug: z.string().nullable(),
 	lesson_title: z.string().nullable(),

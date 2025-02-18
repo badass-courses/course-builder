@@ -17,7 +17,6 @@ import { Pencil, Shuffle, Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
 	Button,
 	FormDescription,
@@ -43,8 +42,7 @@ import { PostUploader } from './post-uploader'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
-	videoResourceLoader: Promise<VideoResource | null>
-	videoResourceId: string | null | undefined
+	videoResourceId?: string | null | undefined
 	post: Post
 	tagLoader: Promise<Tag[]>
 	listsLoader: Promise<List[]>
@@ -55,7 +53,6 @@ export const PostMetadataFormFields: React.FC<{
 	}) => Promise<void>
 }> = ({
 	form,
-	videoResourceLoader,
 	post,
 	videoResourceId: initialVideoResourceId,
 	tagLoader,
