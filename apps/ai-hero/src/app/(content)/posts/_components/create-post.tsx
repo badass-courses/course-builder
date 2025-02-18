@@ -3,9 +3,9 @@
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
+import { PostType } from '@/lib/posts'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
-import { FilePlus2 } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -19,6 +19,8 @@ export interface CreatePostProps {
 	 * If provided, called instead of the default router.push to the resource’s edit page.
 	 */
 	onResourceCreated?: (resource: ContentResource) => void
+	defaultResourceType?: PostType
+	availableResourceTypes?: PostType[]
 }
 
 /**
@@ -27,6 +29,8 @@ export interface CreatePostProps {
  */
 export function CreatePost({
 	onResourceCreated,
+	defaultResourceType = 'article',
+	availableResourceTypes = ['article', 'lesson'],
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 
@@ -44,7 +48,8 @@ export function CreatePost({
 			}}
 			createResource={createPost}
 			getVideoResource={getVideoResource}
-			availableResourceTypes={['article', 'lesson']}
+			availableResourceTypes={availableResourceTypes}
+			defaultPostType={defaultResourceType}
 			uploadEnabled={false}
 		>
 			{(handleSetVideoResourceId: (id: string) => void) => (

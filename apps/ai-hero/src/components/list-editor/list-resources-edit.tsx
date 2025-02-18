@@ -1,9 +1,5 @@
-'use client'
-
 import * as React from 'react'
 import { useReducer } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
 import { addPostToList } from '@/lib/lists-query'
 import { track } from '@/utils/analytics'
@@ -79,7 +75,6 @@ export default function ListResourcesEdit({
 		initialData,
 		getInitialTreeState,
 	)
-	const router = useRouter()
 
 	function TreeWithSearch() {
 		const { refresh } = useInstantSearch()
@@ -146,7 +141,7 @@ export default function ListResourcesEdit({
 											setIsCreatePostModalOpen(true)
 										}}
 									>
-										Create a new post
+										Create a Resource
 									</Button>
 								</DialogFooter>
 							</DialogContent>
@@ -159,8 +154,10 @@ export default function ListResourcesEdit({
 				</div>
 			</InstantSearchNext>
 			<CreatePostModal
+				title="Create a Lesson"
 				open={isCreatePostModalOpen}
 				onOpenChange={setIsCreatePostModalOpen}
+				defaultResourceType="lesson"
 				onResourceCreated={async (resource) => {
 					track('post_created', {
 						source: 'search_modal',

@@ -49,6 +49,7 @@ interface ResourceListSlots {
  */
 interface ResourceListProps extends ResourceListSlots {
 	resources: TreeItem[]
+	className?: string
 	onRemove?: (id: string) => void
 	onExpand?: (id: string) => void
 }
@@ -61,6 +62,7 @@ interface ResourceListProps extends ResourceListSlots {
  */
 export function ResourceList({
 	resources,
+	className,
 	beforeAllItems,
 	afterAllItems,
 	beforeEachItem,
@@ -79,7 +81,7 @@ export function ResourceList({
 
 	return (
 		<ResourceListContext.Provider value={contextValue}>
-			<div className="space-y-2">
+			<div className={className}>
 				{/* Optional slot before all items */}
 				{beforeAllItems?.()}
 

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { PostType } from '@/lib/posts'
 import { FilePlus2 } from 'lucide-react'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
@@ -29,6 +30,9 @@ export interface CreatePostModalProps {
 	onResourceCreated?: (resource: ContentResource) => Promise<void>
 	showTrigger?: boolean
 	open?: boolean
+	defaultResourceType?: PostType
+	availableResourceTypes?: PostType[]
+	title?: string
 }
 
 /**
@@ -41,6 +45,9 @@ export function CreatePostModal({
 	onResourceCreated,
 	showTrigger = true,
 	open = false,
+	defaultResourceType = 'article',
+	availableResourceTypes = ['article', 'lesson'],
+	title = 'New Post',
 }: CreatePostModalProps) {
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -53,9 +60,13 @@ export function CreatePostModal({
 			)}
 			<DialogContent>
 				<DialogHeader className="fluid-3xl font-heading font-semibold">
-					New Post
+					{title}
 				</DialogHeader>
-				<CreatePost onResourceCreated={onResourceCreated} />
+				<CreatePost
+					onResourceCreated={onResourceCreated}
+					defaultResourceType={defaultResourceType}
+					availableResourceTypes={availableResourceTypes}
+				/>
 			</DialogContent>
 		</Dialog>
 	)
