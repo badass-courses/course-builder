@@ -203,6 +203,36 @@ export const PostMetadataFormFields: React.FC<{
 				name="id"
 				render={({ field }) => <Input type="hidden" {...field} />}
 			/>
+			<div className="px-5">
+				<FormLabel>Cover Image</FormLabel>
+				{form.watch('fields.image') && <img src={form.watch('fields.image')} />}
+			</div>
+			<FormField
+				control={form.control}
+				name="fields.image"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Image URL</FormLabel>
+						<Input
+							{...field}
+							onDrop={(e) => {
+								e.preventDefault()
+								const result = e.dataTransfer.getData('text/plain')
+								// Check if it's a markdown image format
+								const markdownMatch = result.match(/\(([^)]+)\)/)
+								if (markdownMatch) {
+									field.onChange(markdownMatch[1])
+								} else {
+									// If not markdown, use the plain text URL
+									field.onChange(result)
+								}
+							}}
+							value={field.value || ''}
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<FormField
 				control={form.control}
 				name="fields.postType"
