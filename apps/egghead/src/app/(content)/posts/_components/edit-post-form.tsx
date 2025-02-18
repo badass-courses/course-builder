@@ -7,6 +7,7 @@ import {
 	onPostPublish,
 	onPostSave,
 } from '@/app/(content)/posts/[slug]/edit/actions'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -15,7 +16,12 @@ import { updatePost } from '@/lib/posts-query'
 import { EggheadTag } from '@/lib/tags'
 import { CompactInstructor } from '@/lib/users'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CheckIcon, ListOrderedIcon } from 'lucide-react'
+import {
+	CheckIcon,
+	ImageIcon,
+	ImagePlusIcon,
+	ListOrderedIcon,
+} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -134,6 +140,19 @@ export function EditPostForm({
 					toolComponent: <PublishPostChecklist key={'post-checklist'} />,
 				},
 				{ id: 'assistant' },
+				{
+					id: 'media',
+					icon: () => (
+						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<ImageResourceUploader
+							key={'image-uploader'}
+							belongsToResourceId={post.id}
+							uploadDirectory={`posts`}
+						/>
+					),
+				},
 			]}
 		>
 			<PostMetadataFormFields
