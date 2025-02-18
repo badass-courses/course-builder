@@ -51,9 +51,9 @@ export const getLessonVideoTranscript = async (
 
 export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
 	const query = sql`SELECT *
-		FROM ContentResource cr_lesson
-		JOIN ContentResourceResource crr ON cr_lesson.id = crr.resourceOfId
-		JOIN ContentResource cr_video ON crr.resourceId = cr_video.id
+		FROM ${contentResource} AS cr_lesson
+		JOIN ${contentResourceResource} AS crr ON cr_lesson.id = crr.resourceOfId
+		JOIN ${contentResource} AS cr_video ON crr.resourceId = cr_video.id
 		WHERE (cr_lesson.id = ${lessonIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonIdOrSlug})
 			AND cr_video.type = 'videoResource'
 		LIMIT 1;`
