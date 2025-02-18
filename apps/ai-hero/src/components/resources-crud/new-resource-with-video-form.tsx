@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import { NewPostInput, PostType, PostTypeSchema } from '@/lib/posts'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -49,6 +47,7 @@ export function NewResourceWithVideoForm({
 	createResource,
 	onResourceCreated,
 	availableResourceTypes,
+	defaultPostType = 'article',
 	className,
 	children,
 	uploadEnabled = true,
@@ -57,6 +56,7 @@ export function NewResourceWithVideoForm({
 	createResource: (values: NewPostInput) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
 	availableResourceTypes?: PostType[] | undefined
+	defaultPostType?: PostType
 	className?: string
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
@@ -76,7 +76,7 @@ export function NewResourceWithVideoForm({
 		defaultValues: {
 			title: '',
 			videoResourceId: undefined,
-			postType: availableResourceTypes?.[0] || 'article',
+			postType: defaultPostType,
 		},
 	})
 

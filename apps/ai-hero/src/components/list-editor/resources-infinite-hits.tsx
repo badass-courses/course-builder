@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 import { SearchBox } from '@/app/(search)/q/_components/instantsearch/searchbox'
 import Spinner from '@/components/spinner'

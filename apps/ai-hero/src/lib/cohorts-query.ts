@@ -2,11 +2,12 @@ import { db } from '@/db'
 import {
 	accounts as accountsTable,
 	contentResource,
+	contentResourceResource,
 	entitlements as entitlementsTable,
 	organizationMemberships,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
 import type { User } from '@coursebuilder/core/schemas'
 
@@ -29,6 +30,7 @@ export async function getCohort(cohortIdOrSlug: string) {
 				with: {
 					resource: true,
 				},
+				orderBy: [asc(contentResourceResource.position)],
 			},
 			resourceProducts: {
 				with: {

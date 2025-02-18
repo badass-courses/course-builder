@@ -7,7 +7,7 @@ import {
 	useState,
 } from 'react'
 import { useParams } from 'next/navigation'
-import { updateResourcePosition } from '@/lib/tutorials-query'
+import { batchUpdateResourcePositions } from '@/lib/tutorials-query'
 import { triggerPostMoveFlash } from '@atlaskit/pragmatic-drag-and-drop-flourish/trigger-post-move-flash'
 import {
 	Instruction,
@@ -62,6 +62,44 @@ function createTreeItemRegistry() {
 	return { registry, registerTreeItem }
 }
 
+// Debug utilities
+const DEBUG = process.env.NODE_ENV === 'development'
+
+interface PerformanceMetrics {
+	dragOperations: number
+	lastDragDuration: number
+	averageDragDuration: number
+	totalDragTime: number
+	lastSaveTime: number
+	saveDuration: number
+	saveOperations: number
+}
+
+const perfMetrics: PerformanceMetrics = {
+	dragOperations: 0,
+	lastDragDuration: 0,
+	averageDragDuration: 0,
+	totalDragTime: 0,
+	lastSaveTime: 0,
+	saveDuration: 0,
+	saveOperations: 0,
+}
+
+// Add a debounce utility at the top
+function debounce<T extends (...args: any[]) => any>(
+	func: T,
+	wait: number,
+): (...args: Parameters<T>) => void {
+	let timeout: NodeJS.Timeout | null = null
+	return (...args: Parameters<T>) => {
+		if (timeout) clearTimeout(timeout)
+		timeout = setTimeout(() => {
+			timeout = null
+			func(...args)
+		}, wait)
+	}
+}
+
 export default function Tree({
 	state,
 	updateState,
@@ -81,6 +119,7 @@ export default function Tree({
 
 	const ref = useRef<HTMLDivElement>(null)
 	const { extractInstruction } = useContext(DependencyContext)
+	const dragStartTimeRef = useRef<number>(0)
 
 	const [{ registry, registerTreeItem }] = useState(createTreeItemRegistry)
 
@@ -90,41 +129,170 @@ export default function Tree({
 		lastStateRef.current = data
 	}, [data])
 
-	const saveTreeData = useCallback(async () => {
-		const currentData = lastStateRef.current
+	// Performance monitoring
+	useEffect(() => {
+		if (!DEBUG) return
 
-		for (const item of currentData) {
-			if (!item.itemData) continue
-			if (item.children.length > 0) {
-				for (const childItem of item.children) {
-					if (!childItem.itemData) continue
-					await updateResourcePosition({
-						currentParentResourceId: childItem.itemData.resourceOfId,
-						parentResourceId: item.itemData.resourceId,
-						resourceId: childItem.itemData.resourceId,
-						position: item.children.indexOf(childItem),
+		const observer = new PerformanceObserver((list) => {
+			for (const entry of list.getEntries()) {
+				if (entry.entryType === 'measure' && entry.name === 'drag-operation') {
+					perfMetrics.dragOperations++
+					perfMetrics.lastDragDuration = entry.duration
+					perfMetrics.totalDragTime += entry.duration
+					perfMetrics.averageDragDuration =
+						perfMetrics.totalDragTime / perfMetrics.dragOperations
+
+					console.log('Drag Performance Metrics:', {
+						operations: perfMetrics.dragOperations,
+						lastDuration: perfMetrics.lastDragDuration.toFixed(2) + 'ms',
+						avgDuration: perfMetrics.averageDragDuration.toFixed(2) + 'ms',
+						totalTime: perfMetrics.totalDragTime.toFixed(2) + 'ms',
 					})
 				}
 			}
-			await updateResourcePosition({
-				currentParentResourceId: item.itemData.resourceOfId,
-				parentResourceId: rootResourceId,
-				resourceId: item.itemData.resourceId,
-				position: currentData.indexOf(item),
-				metadata: {
-					...(item.itemData?.metadata || {}),
-					tier: item.itemData?.metadata?.tier || 'standard',
-				},
-			})
+		})
+
+		observer.observe({ entryTypes: ['measure'] })
+		return () => observer.disconnect()
+	}, [])
+
+	const [isSaving, setIsSaving] = useState(false)
+	const [lastSaveError, setLastSaveError] = useState<string | null>(null)
+	const saveInProgressRef = useRef(false)
+
+	const saveTreeData = useCallback(async () => {
+		// Prevent concurrent saves
+		if (saveInProgressRef.current) {
+			if (DEBUG) console.log('Save already in progress, skipping...')
+			return
+		}
+
+		if (DEBUG) {
+			console.group('Saving Tree Data')
+			perfMetrics.lastSaveTime = performance.now()
+			perfMetrics.saveOperations++
+			console.log('Current Tree State:', lastStateRef.current)
+		}
+
+		setIsSaving(true)
+		setLastSaveError(null)
+		saveInProgressRef.current = true
+		const currentData = lastStateRef.current
+
+		try {
+			// Collect all position updates into a single array
+			const updates: {
+				resourceId: string
+				resourceOfId: string
+				currentParentResourceId: string
+				position: number
+				metadata?: any
+			}[] = []
+
+			for (const [itemIndex, item] of currentData.entries()) {
+				if (!item.itemData) {
+					if (DEBUG) console.warn('Skipping item without itemData:', item)
+					continue
+				}
+
+				if (item.children.length > 0) {
+					if (DEBUG) console.group(`Processing children of ${item.id}`)
+
+					for (const [childIndex, childItem] of item.children.entries()) {
+						if (!childItem.itemData) {
+							if (DEBUG)
+								console.warn('Skipping child without itemData:', childItem)
+							continue
+						}
+
+						if (DEBUG) {
+							console.log('Queueing child position update:', {
+								childId: childItem.id,
+								parentId: item.itemData.resourceId,
+								position: childIndex,
+								currentParent: childItem.itemData.resourceOfId,
+							})
+						}
+
+						updates.push({
+							resourceId: childItem.itemData.resourceId,
+							resourceOfId: item.itemData.resourceId,
+							currentParentResourceId: childItem.itemData.resourceOfId,
+							position: childIndex,
+						})
+					}
+					if (DEBUG) console.groupEnd()
+				}
+
+				if (DEBUG) {
+					console.log('Queueing root item position update:', {
+						itemId: item.id,
+						position: itemIndex,
+						metadata: {
+							...(item.itemData?.metadata || {}),
+							tier: item.itemData?.metadata?.tier || 'standard',
+						},
+					})
+				}
+
+				updates.push({
+					resourceId: item.itemData.resourceId,
+					resourceOfId: rootResourceId,
+					currentParentResourceId: item.itemData.resourceOfId,
+					position: itemIndex,
+					metadata: {
+						...(item.itemData?.metadata || {}),
+						tier: item.itemData?.metadata?.tier || 'standard',
+					},
+				})
+			}
+
+			// Execute single batch update
+			if (DEBUG)
+				console.log(`Executing batch update for ${updates.length} items`)
+			await batchUpdateResourcePositions(updates)
+
+			if (DEBUG) {
+				perfMetrics.saveDuration = performance.now() - perfMetrics.lastSaveTime
+				console.log(
+					'Save completed in',
+					perfMetrics.saveDuration.toFixed(2),
+					'ms',
+				)
+				console.groupEnd()
+			}
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error during save'
+			setLastSaveError(errorMessage)
+			if (DEBUG) {
+				console.error('Save failed:', errorMessage)
+				console.groupEnd()
+			}
+		} finally {
+			setIsSaving(false)
+			saveInProgressRef.current = false
 		}
 	}, [rootResourceId])
+
+	// Debounce the save operation
+	const debouncedSaveTreeData = useMemo(
+		() => debounce(saveTreeData, 500),
+		[saveTreeData],
+	)
 
 	useEffect(() => {
 		if (lastAction === null) {
 			return
 		}
 
-		saveTreeData()
+		// Use the debounced save for instruction-type actions
+		if (lastAction.type === 'instruction') {
+			debouncedSaveTreeData()
+		} else {
+			// For other actions like modal-move, save immediately
+			saveTreeData()
+		}
 
 		if (lastAction.type === 'modal-move') {
 			const parentName =
@@ -140,12 +308,7 @@ export default function Tree({
 				triggerPostMoveFlash(element)
 			}
 
-			/**
-			 * Only moves triggered by the modal will result in focus being
-			 * returned to the trigger.
-			 */
 			actionMenuTrigger?.focus()
-
 			return
 		}
 
@@ -154,10 +317,8 @@ export default function Tree({
 			if (element) {
 				triggerPostMoveFlash(element)
 			}
-
-			return
 		}
-	}, [lastAction, registry, saveTreeData])
+	}, [lastAction, registry, saveTreeData, debouncedSaveTreeData])
 
 	useEffect(() => {
 		return () => {
@@ -295,6 +456,29 @@ export default function Tree({
 	return (
 		<TreeContext.Provider value={context}>
 			<div ref={ref}>
+				{DEBUG && (
+					<div className="mb-2 rounded border border-neutral-200 bg-neutral-50 p-2 text-xs text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/50 dark:text-neutral-300">
+						<div>Active Items: {registry.size}</div>
+						<div>Last Action: {lastAction?.type || 'none'}</div>
+						<div>
+							Performance: {perfMetrics.averageDragDuration.toFixed(2)}ms avg
+						</div>
+						<div className="mt-1 border-t border-neutral-200 pt-1 dark:border-neutral-700">
+							<div>Save Operations: {perfMetrics.saveOperations}</div>
+							<div>Last Save: {perfMetrics.saveDuration.toFixed(2)}ms</div>
+							{isSaving && (
+								<div className="text-blue-600 dark:text-blue-400">
+									Saving...
+								</div>
+							)}
+							{lastSaveError && (
+								<div className="text-red-600 dark:text-red-400">
+									Error: {lastSaveError}
+								</div>
+							)}
+						</div>
+					</div>
+				)}
 				<ResourceList
 					resources={state.data}
 					onRemove={(id) => updateState({ type: 'remove-item', itemId: id })}

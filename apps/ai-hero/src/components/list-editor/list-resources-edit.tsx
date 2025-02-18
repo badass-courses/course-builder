@@ -1,9 +1,8 @@
-'use client'
-
 import * as React from 'react'
 import { useReducer } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
+import { addPostToList } from '@/lib/lists-query'
+import { track } from '@/utils/analytics'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
@@ -40,6 +39,9 @@ export default function ListResourcesEdit({
 	searchConfig?: React.ReactNode
 	showTierSelector?: boolean
 }) {
+	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
+	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
+		React.useState(false)
 	const initialData = [
 		...(list.resources
 			? list.resources.map((resourceItem) => {
@@ -73,7 +75,6 @@ export default function ListResourcesEdit({
 		initialData,
 		getInitialTreeState,
 	)
-	const router = useRouter()
 
 	function TreeWithSearch() {
 		const { refresh } = useInstantSearch()
@@ -110,10 +111,13 @@ export default function ListResourcesEdit({
 				future={{ preserveSharedStateOnUnmount: true }}
 			>
 				{searchConfig}
-				<div className="border-b text-sm font-medium">
+				<div className="border-b pr-2 text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
 						{title}
-						<Dialog>
+						<Dialog
+							open={isSearchModalOpen}
+							onOpenChange={setIsSearchModalOpen}
+						>
 							<DialogTrigger asChild>
 								<Button variant="outline" className="gap-1">
 									<Plus className="text-primary w-4" /> Add Resources
@@ -126,8 +130,18 @@ export default function ListResourcesEdit({
 									list={list}
 								/>
 								<DialogFooter>
-									<Button variant="outline" asChild>
-										<Link href="/posts/new">Create a new post</Link>
+									<Button
+										variant="outline"
+										onClick={() => {
+											track('create_post_button_clicked', {
+												source: 'search_modal',
+												listId: list.id,
+											})
+											setIsSearchModalOpen(false)
+											setIsCreatePostModalOpen(true)
+										}}
+									>
+										Create a Resource
 									</Button>
 								</DialogFooter>
 							</DialogContent>
@@ -139,6 +153,58 @@ export default function ListResourcesEdit({
 					</div>
 				</div>
 			</InstantSearchNext>
+			<CreatePostModal
+				title="Create a Lesson"
+				open={isCreatePostModalOpen}
+				onOpenChange={setIsCreatePostModalOpen}
+				defaultResourceType="lesson"
+				onResourceCreated={async (resource) => {
+					track('post_created', {
+						source: 'search_modal',
+						resourceId: resource.id,
+						resourceType: resource.type,
+						listId: list.id,
+					})
+
+					// Add to database first to get accurate position
+					const result = await addPostToList({
+						postId: resource.id,
+						listId: list.id,
+						metadata: {
+							tier: 'standard',
+						},
+					})
+
+					if (!result) {
+						throw new Error('Failed to add post to list')
+					}
+
+					// Update UI with server data
+					updateState({
+						type: 'add-item',
+						itemId: resource.id,
+						item: {
+							id: resource.id,
+							label: resource.fields?.title,
+							type: resource.type,
+							children: [],
+							tier: 'standard',
+							itemData: {
+								resourceId: resource.id,
+								resourceOfId: list.id,
+								position: result.position,
+								metadata: {
+									tier: 'standard',
+								},
+								resource: resource as any,
+							},
+						},
+					})
+
+					setIsCreatePostModalOpen(false)
+				}}
+				showTrigger={false}
+			/>
 		</SelectionProvider>
 	)
 }

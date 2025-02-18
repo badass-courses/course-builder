@@ -45,17 +45,8 @@ export async function getTutorial(moduleSlugOrId: string) {
 						with: {
 							resources: {
 								with: {
-									resource: {
-										with: {
-											resources: {
-												with: {
-													resource: true,
-												},
-											},
-										},
-									},
+									resource: true,
 								},
-								orderBy: asc(contentResourceResource.position),
 							},
 						},
 					},
@@ -204,6 +195,62 @@ export const updateResourcePositions = async (input: positionInputIten[]) => {
 	})
 
 	return result
+}
+
+export const batchUpdateResourcePositions = async (
+	updates: {
+		resourceId: string
+		resourceOfId: string
+		currentParentResourceId: string
+		position: number
+		metadata?: any
+	}[],
+) => {
+	if (!updates.length) return
+
+	try {
+		if (process.env.NODE_ENV === 'development') {
+			console.log(`Batch updating ${updates.length} items...`)
+		}
+
+		const startTime = performance.now()
+
+		const result = await db.transaction(async (trx) => {
+			for (const update of updates) {
+				await trx
+					.update(contentResourceResource)
+					.set({
+						position: update.position,
+						resourceOfId: update.resourceOfId,
+						metadata: update.metadata,
+					})
+					.where(
+						and(
+							eq(contentResourceResource.resourceId, update.resourceId),
+							eq(
+								contentResourceResource.resourceOfId,
+								update.currentParentResourceId,
+							),
+						),
+					)
+			}
+		})
+
+		const duration = performance.now() - startTime
+
+		if (process.env.NODE_ENV === 'development') {
+			console.log(`Batch update completed in ${duration.toFixed(2)}ms`)
+			console.log('Updates:', updates)
+			console.log('Result:', result)
+		}
+
+		return result
+	} catch (error) {
+		console.error('Error in batchUpdateResourcePositions:', error)
+		throw new Error(
+			`Failed to update resource positions: ${error instanceof Error ? error.message : 'Unknown error'}`,
+		)
+	}
 }
 
 export const updateResourcePosition = async ({
