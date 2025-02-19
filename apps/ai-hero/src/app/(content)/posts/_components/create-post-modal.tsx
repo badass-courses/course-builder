@@ -68,10 +68,10 @@ export interface CreatePostModalProps {
  * ```
  */
 export function CreatePostModal({
-	onOpenChange = () => {},
+	onOpenChange,
 	onResourceCreated,
 	showTrigger = true,
-	open = false,
+	open,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article', 'lesson'],
 	title = 'New Post',
@@ -100,9 +100,11 @@ export function CreatePostModal({
 				</DialogTrigger>
 			)}
 			<DialogContent>
-				<DialogHeader className="fluid-3xl font-heading font-semibold">
-					{title}
-				</DialogHeader>
+				{title && (
+					<DialogHeader className="fluid-xl font-heading mb-3 font-semibold">
+						{title}
+					</DialogHeader>
+				)}
 				<CreatePost
 					onResourceCreated={onResourceCreated}
 					defaultResourceType={defaultResourceType}

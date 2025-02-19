@@ -272,13 +272,11 @@ const PostTeaser: React.FC<{
 
 async function PostListActions({}: {}) {
 	const { ability } = await getServerAuthSession()
-	if (!ability.can('create', 'Content')) {
-		return null // <aside className="hidden w-full max-w-xs border-r lg:block" />
+	if (!ability.can('create', 'Content') || !ability.can('update', 'Content')) {
+		return null
 	}
 	const allPosts = await getAllPosts()
 	const allLists = await getAllLists()
 
-	return ability.can('update', 'Content') ? (
-		<PostActions allPosts={allPosts} allLists={allLists} />
-	) : null
+	return <PostActions allPosts={allPosts} allLists={allLists} />
 }
