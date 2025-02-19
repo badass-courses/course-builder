@@ -79,10 +79,10 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 					? new Date(eggheadResource.published_at).getTime()
 					: null,
 			}),
-			belongs_to_course:
+			belongs_to_resource:
 				courses.length > 0 ? courses[0]?.eggheadPlaylistId : null,
 			...(courses.length > 0 && {
-				courses: courses.map((course) => ({
+				resources: courses.map((course) => ({
 					id: course.courseId,
 					title: course.courseTitle,
 					slug: course.courseSlug,
