@@ -689,6 +689,27 @@ export async function addEggheadLessonToPlaylist({
 	}
 }
 
+export async function getCoursesForPost(postId: string) {
+	return await db
+		.select({
+			courseId: contentResource.id,
+			courseTitle: sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
+			courseSlug: sql`JSON_EXTRACT(${contentResource.fields}, '$.slug')`,
+			eggheadPlaylistId: sql`JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId')`,
+		})
+		.from(contentResource)
+		.innerJoin(
+			contentResourceResource,
+			eq(contentResource.id, contentResourceResource.resourceOfId),
+		)
+		.where(
+			and(
+				eq(contentResourceResource.resourceId, postId),
+				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'course'`,
+			),
+		)
+}
+
 export async function removePostFromCoursePost({
 	postId,
 	resourceOfId,
