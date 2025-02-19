@@ -380,11 +380,9 @@ async function PostListActions({}: {}) {
 					})}
 				</ul>
 			) : null}
-			{ability.can('update', 'Content') ? (
-				<div className="mt-5 border-t p-5">
-					<CreatePostModal />
-				</div>
-			) : null}
+			<div className="mt-5 border-t p-5">
+				<CreatePostModal />
+			</div>
 		</aside>
 	)
 }
