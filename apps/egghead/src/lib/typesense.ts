@@ -29,8 +29,8 @@ export const TypesensePostSchema = z.object({
 	instructor_url: z.string().url().optional(),
 	path: z.string().optional(),
 	published_at_timestamp: z.number().nullish(),
-	belongs_to_course: z.number().nullish(),
-	courses: z
+	belongs_to_resource: z.number().nullish(),
+	resources: z
 		.array(
 			z.object({
 				id: z.string(),
