@@ -41,7 +41,8 @@ import {
 import { last } from '@coursebuilder/nodash'
 
 import {
-	clearPublishedAt,
+	clearLessonPublishedAt,
+	clearPlaylistPublishedAt,
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
@@ -52,6 +53,7 @@ import {
 	setPlaylistPublishedAt,
 	syncEggheadResourceInstructor,
 	updateEggheadLesson,
+	updateEggheadPlaylist,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
 import { writeNewPostToDatabase } from './posts-new-query'
@@ -539,9 +541,20 @@ export async function writePostUpdateToDatabase(input: {
 		}
 
 		if (action === 'unpublish') {
-			await clearPublishedAt(currentPost.fields.eggheadLessonId)
+			await clearLessonPublishedAt(currentPost.fields.eggheadLessonId)
 		}
 	} else if (currentPost.fields.eggheadPlaylistId) {
+		await updateEggheadPlaylist({
+			title: postUpdate.fields.title,
+			slug: postSlug,
+			guid: postGuid,
+			body: postUpdate.fields.body ?? '',
+			eggheadPlaylistId: currentPost.fields.eggheadPlaylistId,
+			state: lessonState,
+			visibilityState: lessonVisibilityState,
+			accessState: access ? 'pro' : 'free',
+		})
+
 		await updateSanityCourseMetadata({
 			eggheadPlaylistId: currentPost.fields.eggheadPlaylistId,
 			title: postUpdate.fields.title,
@@ -558,6 +571,10 @@ export async function writePostUpdateToDatabase(input: {
 				currentPost.fields.eggheadPlaylistId,
 				new Date().toISOString(),
 			)
+		}
+
+		if (action === 'unpublish') {
+			await clearPlaylistPublishedAt(currentPost.fields.eggheadPlaylistId)
 		}
 	}
 
