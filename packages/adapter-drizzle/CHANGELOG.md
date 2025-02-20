@@ -1,5 +1,11 @@
 # @coursebuilder/adapter-drizzle
 
+## 1.0.3
+
+### Patch Changes
+
+- [#411](https://github.com/badass-courses/course-builder/pull/411) [`8aeb7d8`](https://github.com/badass-courses/course-builder/commit/8aeb7d8cd2dca32189a23aa4c61df29cf95fa5af) Thanks [@joelhooks](https://github.com/joelhooks)! - tier stuff for cohorts
+
 ## 1.0.2
 
 ### Patch Changes
