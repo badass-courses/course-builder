@@ -14,54 +14,97 @@ import {
 import { CreatePost } from './create-post'
 
 /**
- * Props for the CreatePostModal component,
- * allowing a custom onOpenChange callback for controlling
- * the dialog state from outside, and a custom onResourceCreated callback
- * that overrides the default post-creation navigation.
+ * Props for the CreatePostModal component.
+ * Provides configuration for dialog behavior and post creation handling.
  */
 export interface CreatePostModalProps {
 	/**
-	 * Called whenever the dialog is opened or closed.
+	 * Callback fired when the dialog's open state changes
 	 */
 	onOpenChange?: (isOpen: boolean) => void
 	/**
-	 * If provided, overrides the default router.push on resource creation.
+	 * Override default navigation behavior after resource creation
 	 */
 	onResourceCreated?: (resource: ContentResource) => Promise<void>
+	/**
+	 * Whether to show the default trigger button
+	 * @default true
+	 */
 	showTrigger?: boolean
+	/**
+	 * Control the dialog's open state
+	 * @default false
+	 */
 	open?: boolean
+	/**
+	 * The default type of resource to create
+	 * @default 'article'
+	 */
 	defaultResourceType?: PostType
+	/**
+	 * List of allowed resource types that can be created
+	 * @default ['article', 'lesson']
+	 */
 	availableResourceTypes?: PostType[]
+	/**
+	 * Custom title for the dialog header
+	 * @default 'New Post'
+	 */
 	title?: string
 }
 
 /**
- * Creates a "New Post" modal using our CreatePost component.
- * The modal's open state is controlled by the parent component.
- * If `onResourceCreated` is provided, it overrides the default router-based nav.
+ * A modal dialog component for creating new posts or lessons.
+ * Provides a form interface wrapped in a dialog with optional trigger button.
+ *
+ * @example
+ * ```tsx
+ * <CreatePostModal
+ *   onResourceCreated={async (resource) => {
+ *     // Custom handling after creation
+ *   }}
+ *   defaultResourceType="lesson"
+ * />
+ * ```
  */
 export function CreatePostModal({
-	onOpenChange = () => {},
+	onOpenChange,
 	onResourceCreated,
 	showTrigger = true,
-	open = false,
+	open,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article', 'lesson'],
 	title = 'New Post',
 }: CreatePostModalProps) {
+	const [isOpen, setIsOpen] = React.useState(open)
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog
+			open={isOpen}
+			onOpenChange={(open) => {
+				if (onOpenChange) {
+					onOpenChange(open)
+				}
+				setIsOpen(open)
+			}}
+		>
 			{showTrigger && (
 				<DialogTrigger asChild>
-					<Button variant="default" type="button" className="w-full gap-1">
+					<Button
+						variant="default"
+						type="button"
+						className="w-full gap-1"
+						onClick={() => setIsOpen(true)}
+					>
 						<FilePlus2 className="h-4 w-4" /> New Post
 					</Button>
 				</DialogTrigger>
 			)}
 			<DialogContent>
-				<DialogHeader className="fluid-3xl font-heading font-semibold">
-					{title}
-				</DialogHeader>
+				{title && (
+					<DialogHeader className="fluid-xl font-heading mb-3 font-semibold">
+						{title}
+					</DialogHeader>
+				)}
 				<CreatePost
 					onResourceCreated={onResourceCreated}
 					defaultResourceType={defaultResourceType}

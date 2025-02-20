@@ -214,7 +214,7 @@ export function NewResourceWithVideoForm({
 										</Select>
 									</FormControl>
 									{field.value && (
-										<div className="bg-muted text-muted-foreground mx-auto mt-2 max-w-[300px] whitespace-normal break-words rounded-md p-3 py-2 text-sm">
+										<div className="text-muted-foreground w-full text-right text-sm italic">
 											{descriptions[field.value as keyof typeof descriptions]}
 										</div>
 									)}

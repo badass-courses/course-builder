@@ -65,6 +65,23 @@ function progressReducer(
 	return newProgress
 }
 
+/**
+ * ProgressProvider manages the completion state of lessons within a module/list.
+ * It handles both optimistic updates and server-synced progress state.
+ *
+ * The provider handles two scenarios:
+ * 1. Direct post progress: Uses initialProgress from server
+ * 2. List-based progress: When viewing a post within a different list (mismatchedList),
+ *    it fetches the progress for that specific list
+ *
+ * Progress state includes:
+ * - Completed lessons
+ * - Progress statistics (percentCompleted, completedLessonsCount, etc.)
+ * - Optimistic updates for immediate UI feedback
+ *
+ * @param initialProgress - The progress data fetched server-side during initial page load
+ * @param children - React child components that will have access to progress context
+ */
 export function ProgressProvider({
 	initialProgress,
 	children,

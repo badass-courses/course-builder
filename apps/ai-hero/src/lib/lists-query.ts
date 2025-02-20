@@ -108,7 +108,7 @@ export async function getList(listIdOrSlug: string) {
 
 	const listParsed = ListSchema.safeParse(list)
 	if (!listParsed.success) {
-		console.error('Error parsing list', listParsed)
+		console.debug('Error parsing list', listParsed)
 		return null
 	}
 
