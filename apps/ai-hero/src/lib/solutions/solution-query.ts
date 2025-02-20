@@ -1,3 +1,5 @@
+'use server'
+
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { log } from '@/server/logger'
@@ -11,6 +13,8 @@ import type {
 	Solution,
 	UpdateSolutionInput,
 } from './solution'
+
+import 'server-only'
 
 /**
  * Get a solution by its ID, including its parent lesson data

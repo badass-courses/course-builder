@@ -202,6 +202,9 @@ export async function createPost(input: NewPostInput) {
 			state: 'draft',
 			visibility: 'public',
 			slug: slugify(`${input.title}~${postGuid}`),
+			...(input.postType === 'solution' && input.parentLessonId
+				? { parentLessonId: input.parentLessonId }
+				: {}),
 		},
 	}
 
@@ -211,6 +214,9 @@ export async function createPost(input: NewPostInput) {
 			postId: newPostId,
 			userId: user.id,
 			title: input.title,
+			...(input.postType === 'solution'
+				? { parentLessonId: input.parentLessonId }
+				: {}),
 		})
 	} catch (error) {
 		await log.error('post.create.failed', {
@@ -249,10 +255,10 @@ export async function createPost(input: NewPostInput) {
 				postId: post.id,
 				action: 'save',
 			})
-		} catch (e) {
+		} catch (error) {
 			await log.error('post.typesense.index.failed', {
-				error: getErrorMessage(e),
-				stack: getErrorStack(e),
+				error: getErrorMessage(error),
+				stack: getErrorStack(error),
 				postId: post.id,
 			})
 		}

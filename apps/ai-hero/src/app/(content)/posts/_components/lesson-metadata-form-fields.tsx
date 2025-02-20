@@ -4,12 +4,27 @@ import { useRouter } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { useTranscript } from '@/hooks/use-transcript'
 import type { Post, PostSchema } from '@/lib/posts'
+import type { Solution } from '@/lib/solutions/solution'
+import {
+	deleteSolution,
+	getSolutionForLesson,
+} from '@/lib/solutions/solution-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
+import { ExternalLink, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
 	Button,
 	FormDescription,
 	FormField,
@@ -74,6 +89,25 @@ export const LessonMetadataFormFields: React.FC<{
 
 	// Omit SEO description generation for lessons
 	const [thumbnailTime, setThumbnailTime] = React.useState(0)
+
+	// Solution handling
+	const [solution, setSolution] = React.useState<Solution | null>(null)
+	const solutionLoader = React.useCallback(async () => {
+		const data = await getSolutionForLesson(post.id)
+		setSolution(data)
+	}, [post.id])
+
+	React.useEffect(() => {
+		solutionLoader()
+	}, [solutionLoader])
+
+	const handleDeleteSolution = React.useCallback(async () => {
+		if (solution) {
+			await deleteSolution(solution.id)
+			setSolution(null)
+			router.refresh()
+		}
+	}, [solution, router])
 
 	const parsedTagsForUiPackage = z
 		.array(
@@ -216,6 +250,79 @@ export const LessonMetadataFormFields: React.FC<{
 					/>
 				</div>
 			)}
+
+			{/* Solution Section */}
+			<div className="border-muted bg-muted/50 mx-5 mb-6 mt-4 rounded-lg border p-4">
+				<div className="flex items-center justify-between">
+					<div>
+						<h3 className="text-lg font-bold">Solution</h3>
+						<p className="text-muted-foreground text-sm">
+							{solution
+								? 'This lesson has a solution attached:'
+								: 'Add a solution to this lesson'}
+						</p>
+					</div>
+				</div>
+
+				{solution ? (
+					<div className="mt-4 flex items-center justify-between">
+						<div className="font-medium">{solution.fields.title}</div>
+						<div className="flex gap-2">
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<Button
+											variant="ghost"
+											size="icon"
+											onClick={() => router.push(`/posts/${solution.id}`)}
+											className="h-8 w-8"
+										>
+											<ExternalLink className="h-4 w-4" />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent side="left">
+										<p className="text-xs">Edit solution</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+
+							<AlertDialog>
+								<AlertDialogTrigger asChild>
+									<Button variant="ghost" size="icon" className="h-8 w-8">
+										<Trash className="h-4 w-4" />
+									</Button>
+								</AlertDialogTrigger>
+								<AlertDialogContent>
+									<AlertDialogHeader>
+										<AlertDialogTitle>Delete Solution</AlertDialogTitle>
+										<AlertDialogDescription>
+											Are you sure you want to delete this solution? This action
+											cannot be undone.
+										</AlertDialogDescription>
+									</AlertDialogHeader>
+									<AlertDialogFooter>
+										<AlertDialogCancel>Cancel</AlertDialogCancel>
+										<AlertDialogAction onClick={handleDeleteSolution}>
+											Delete
+										</AlertDialogAction>
+									</AlertDialogFooter>
+								</AlertDialogContent>
+							</AlertDialog>
+						</div>
+					</div>
+				) : (
+					<Button
+						variant="secondary"
+						className="mt-2"
+						onClick={() => {
+							// TODO: Open create solution modal
+							// This will be handled by the parent component
+						}}
+					>
+						Add Solution
+					</Button>
+				)}
+			</div>
 
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
