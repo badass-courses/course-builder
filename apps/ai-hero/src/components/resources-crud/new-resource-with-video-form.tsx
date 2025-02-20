@@ -172,7 +172,7 @@ export function NewResourceWithVideoForm({
 						</FormItem>
 					)}
 				/>
-				{availableResourceTypes && (
+				{availableResourceTypes && availableResourceTypes.length > 1 && (
 					<FormField
 						control={form.control}
 						name="postType"
@@ -244,7 +244,9 @@ export function NewResourceWithVideoForm({
 						(videoResourceId ? !videoResourceValid : false) || isSubmitting
 					}
 				>
-					{isSubmitting ? 'Creating...' : 'Create Draft Resource'}
+					{isSubmitting
+						? 'Creating...'
+						: `Create ${selectedPostType.charAt(0).toUpperCase() + selectedPostType.slice(1)}`}
 				</Button>
 			</form>
 		</Form>

@@ -9,6 +9,7 @@ import type { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
 import { ArticleMetadataFormFields } from './article-metadata-form-fields'
 import { LessonMetadataFormFields } from './lesson-metadata-form-fields'
+import { SolutionMetadataFormFields } from './solution-metadata-form-fields'
 
 interface MetadataFormFieldsSwitcherProps {
 	post: Post
@@ -35,6 +36,10 @@ export function MetadataFormFieldsSwitcher(
 
 	if (post.fields.postType === 'lesson') {
 		return <LessonMetadataFormFields post={post} {...rest} />
+	}
+
+	if (post.fields.postType === 'solution') {
+		return <SolutionMetadataFormFields post={post} {...rest} />
 	}
 
 	return <ArticleMetadataFormFields post={post} {...rest} />
