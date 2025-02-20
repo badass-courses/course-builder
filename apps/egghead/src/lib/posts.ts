@@ -91,6 +91,7 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional().default('public'),
 		access: PostAccessSchema.optional().default('pro'),
 		state: PostStateSchema.optional().default('draft'),
+		image: z.string().nullish(),
 	}),
 	videoResourceId: z.string().optional().nullable(),
 })
