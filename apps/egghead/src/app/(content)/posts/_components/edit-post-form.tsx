@@ -141,19 +141,28 @@ export function EditPostForm({
 					toolComponent: <PublishPostChecklist key={'post-checklist'} />,
 				},
 				{ id: 'assistant' },
-				{
-					id: 'media',
-					icon: () => (
-						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
-					),
-					toolComponent: (
-						<ImageResourceUploader
-							key={'image-uploader'}
-							belongsToResourceId={post.id}
-							uploadDirectory={`posts`}
-						/>
-					),
-				},
+				...(isAdmin
+					? [
+							{
+								id: 'media',
+								icon: () => (
+									<ImagePlusIcon
+										strokeWidth={1.5}
+										size={24}
+										width={18}
+										height={18}
+									/>
+								),
+								toolComponent: (
+									<ImageResourceUploader
+										key={'image-uploader'}
+										belongsToResourceId={post.id}
+										uploadDirectory={`posts`}
+									/>
+								),
+							},
+						]
+					: []),
 			]}
 		>
 			<PostMetadataFormFields
