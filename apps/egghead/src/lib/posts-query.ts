@@ -551,6 +551,7 @@ export async function writePostUpdateToDatabase(input: {
 			productionProcessState: postUpdate.fields.state,
 			accessLevel: postUpdate.fields.access,
 			searchIndexingState: postUpdate.fields.visibility,
+			image: postUpdate.fields.image || '',
 		})
 
 		if (action === 'publish') {

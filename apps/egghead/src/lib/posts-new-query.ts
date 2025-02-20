@@ -378,6 +378,7 @@ async function updateExternalSystems({
 				productionProcessState: 'new',
 				sharedId: postGuid,
 				railsCourseId: eggheadPlaylistId,
+				image: fields?.image,
 			})
 
 			if (!coursePayload.success) {

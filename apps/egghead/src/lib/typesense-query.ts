@@ -59,7 +59,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			name: post.fields.title,
 			path: `/${post.fields.slug}`,
 			type: postType,
-			image: post.tags?.[0]?.tag?.fields?.image_url,
+			image: post.fields.image || post.tags?.[0]?.tag?.fields?.image_url,
 			_tags: post.tags?.map(({ tag }) => tag.fields?.name),
 			...(primaryTagDbRow && {
 				primary_tag: primaryTagDbRow.tag,
