@@ -18,7 +18,8 @@ export function createTestDb() {
 		created_by_id TEXT NOT NULL,
 		created_at TEXT NOT NULL,
 		updated_at TEXT NOT NULL,
-		deleted_at TEXT
+		deleted_at TEXT,
+		parent_lesson_id TEXT
 	)`)
 
 	return {
