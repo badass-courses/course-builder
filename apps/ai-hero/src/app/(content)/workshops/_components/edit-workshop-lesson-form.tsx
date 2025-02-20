@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { useParams } from 'next/navigation'
-import { LessonMetadataFormFields } from '@/app/(content)/_components/edit-lesson-form-metadata'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
+import { LessonMetadataFormFields } from '@/app/(content)/workshops/_components/edit-workshop-lesson-form-metadata'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -35,7 +35,7 @@ export type EditLessonFormProps = {
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 }
 
-export function EditLessonForm({
+export function EditWorkshopLessonForm({
 	lesson,
 	videoResource,
 	moduleType,

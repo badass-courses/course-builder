@@ -132,7 +132,7 @@ export async function getPage(slugOrId: string) {
 
 	const pageParsed = PageSchema.safeParse(page)
 	if (!pageParsed.success) {
-		console.error('Error parsing page', pageParsed)
+		console.debug('Error parsing page', pageParsed)
 		return null
 	}
 

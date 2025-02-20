@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
@@ -15,13 +14,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
-import { useForm, type UseFormReturn } from 'react-hook-form'
+import { useForm, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 
 import { MobileEditPostForm } from './edit-post-form-mobile'
+import { MetadataFormFieldsSwitcher } from './metadata-form-fields-switcher'
 
 const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -35,6 +35,7 @@ const NewPostFormSchema = z.object({
 export type EditPostFormProps = {
 	post: Post
 	videoResourceLoader: Promise<VideoResource | null>
+	videoResourceId?: string | null | undefined
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
@@ -51,6 +52,7 @@ export type EditPostFormProps = {
 export function EditPostForm({
 	post,
 	videoResourceLoader,
+	videoResourceId,
 	tagLoader,
 	listsLoader,
 }: Omit<EditPostFormProps, 'form'>) {
@@ -85,6 +87,7 @@ export function EditPostForm({
 			tagLoader={tagLoader}
 			post={post}
 			form={form}
+			videoResourceId={videoResource?.id}
 			videoResourceLoader={videoResourceLoader}
 			availableWorkflows={[
 				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
@@ -129,13 +132,12 @@ export function EditPostForm({
 			]}
 		>
 			<React.Suspense fallback={<div>loading</div>}>
-				<PostMetadataFormFields
-					listsLoader={listsLoader}
-					tagLoader={tagLoader}
-					form={form}
-					videoResourceLoader={videoResourceLoader}
-					videoResourceId={videoResource?.id}
+				<MetadataFormFieldsSwitcher
 					post={post}
+					form={form}
+					videoResourceId={videoResource?.id}
+					tagLoader={tagLoader}
+					listsLoader={listsLoader}
 					sendResourceChatMessage={sendResourceChatMessage}
 				/>
 			</React.Suspense>

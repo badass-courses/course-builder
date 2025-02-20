@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
-import { EditLessonForm } from '@/app/(content)/_components/edit-lesson-form'
+import { EditWorkshopLessonForm } from '@/app/(content)/workshops/_components/edit-workshop-lesson-form'
 import { getLesson, getVideoResourceForLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -20,7 +20,7 @@ export default async function LessonEditPage(props: {
 	const videoResource = await getVideoResourceForLesson(params.lesson)
 
 	return (
-		<EditLessonForm
+		<EditWorkshopLessonForm
 			key={lesson.id}
 			lesson={lesson}
 			videoResource={videoResource}

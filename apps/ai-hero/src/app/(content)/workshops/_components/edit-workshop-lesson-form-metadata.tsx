@@ -33,7 +33,7 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
-import { reprocessTranscript } from '../posts/[slug]/edit/actions'
+import { reprocessTranscript } from '../../posts/[slug]/edit/actions'
 
 export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof LessonSchema>>
