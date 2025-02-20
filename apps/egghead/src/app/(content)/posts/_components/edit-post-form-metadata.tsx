@@ -124,6 +124,10 @@ export const PostMetadataFormFields: React.FC<{
 			}
 		},
 	})
+
+	const primaryTagImageUrl = post.tags?.find(
+		(tagRow) => tagRow.tagId === post.fields.primaryTagId,
+	).tag.fields.image_url
 	return (
 		<>
 			{POST_TYPES_WITH_VIDEO.includes(post.fields.postType) && (
@@ -203,6 +207,53 @@ export const PostMetadataFormFields: React.FC<{
 				name="id"
 				render={({ field }) => <Input type="hidden" {...field} />}
 			/>
+			{post.fields.postType === 'course' && (
+				<>
+					<div className="max-w-xs px-5">
+						<FormLabel className="text-lg font-bold peer-disabled:cursor-not-allowed">
+							Cover Image
+						</FormLabel>
+						{form.watch('fields.image') ? (
+							<img src={form.watch('fields.image') as string} />
+						) : (
+							<div className="flex aspect-square flex-col items-center justify-center p-5 text-center">
+								<img src={primaryTagImageUrl} />
+								<span className="text-muted-foreground mt-2 text-sm">
+									Defaulting to primary tag image
+								</span>
+							</div>
+						)}
+					</div>
+				</>
+			)}
+			{isAdmin && post.fields.postType === 'course' && (
+				<FormField
+					control={form.control}
+					name="fields.image"
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel>Image URL</FormLabel>
+							<Input
+								{...field}
+								onDrop={(e) => {
+									e.preventDefault()
+									const result = e.dataTransfer.getData('text/plain')
+									// Check if it's a markdown image format
+									const markdownMatch = result.match(/\(([^)]+)\)/)
+									if (markdownMatch) {
+										field.onChange(markdownMatch[1])
+									} else {
+										// If not markdown, use the plain text URL
+										field.onChange(result)
+									}
+								}}
+								value={field.value || ''}
+							/>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			)}
 			<FormField
 				control={form.control}
 				name="fields.postType"

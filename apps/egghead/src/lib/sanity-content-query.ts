@@ -550,6 +550,7 @@ export async function updateSanityCourseMetadata({
 	productionProcessState,
 	accessLevel,
 	searchIndexingState,
+	image,
 }: {
 	eggheadPlaylistId: number
 	title: string
@@ -559,6 +560,7 @@ export async function updateSanityCourseMetadata({
 	productionProcessState: string
 	accessLevel: string
 	searchIndexingState: string
+	image: string
 }) {
 	const sanityCourse =
 		await getSanityCourseForEggheadCourseId(eggheadPlaylistId)
@@ -581,6 +583,7 @@ export async function updateSanityCourseMetadata({
 			accessLevel,
 			searchIndexingState:
 				searchIndexingState === 'public' ? 'indexed' : 'hidden',
+			image,
 		})
 		.commit()
 }

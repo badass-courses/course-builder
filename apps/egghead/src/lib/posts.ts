@@ -51,6 +51,7 @@ export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			title: z.string(),
+			image: z.string().nullish(),
 			postType: PostTypeSchema.default('lesson'),
 			summary: z.string().optional().nullable(),
 			body: z.string().nullable().optional(),
@@ -90,6 +91,7 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional().default('public'),
 		access: PostAccessSchema.optional().default('pro'),
 		state: PostStateSchema.optional().default('draft'),
+		image: z.string().nullish(),
 	}),
 	videoResourceId: z.string().optional().nullable(),
 })
