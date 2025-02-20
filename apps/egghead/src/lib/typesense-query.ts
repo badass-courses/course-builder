@@ -2,6 +2,7 @@ import Typesense from 'typesense'
 
 import { getEggheadResource, getEggheadUserProfile } from './egghead'
 import { Post, PostAction } from './posts'
+import { getCoursesForPost } from './posts-query'
 import { TypesenseInstructorSchema, TypesensePostSchema } from './typesense'
 
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
@@ -49,6 +50,8 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		const postType =
 			post.fields.postType === 'course' ? 'playlist' : post.fields.postType
 
+		const courses = await getCoursesForPost(post.id)
+
 		const resource = TypesensePostSchema.safeParse({
 			id: String(eggheadResource.id),
 			externalId: postGuid,
@@ -75,6 +78,16 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 				published_at_timestamp: eggheadResource.published_at
 					? new Date(eggheadResource.published_at).getTime()
 					: null,
+			}),
+			belongs_to_resource:
+				courses.length > 0 ? courses[0]?.eggheadPlaylistId : null,
+			...(courses.length > 0 && {
+				resources: courses.map((course) => ({
+					id: course.courseId,
+					title: course.courseTitle,
+					slug: course.courseSlug,
+					eggheadPlaylistId: course.eggheadPlaylistId,
+				})),
 			}),
 		})
 

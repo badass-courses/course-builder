@@ -41,7 +41,8 @@ import {
 import { last } from '@coursebuilder/nodash'
 
 import {
-	clearPublishedAt,
+	clearLessonPublishedAt,
+	clearPlaylistPublishedAt,
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
@@ -52,6 +53,7 @@ import {
 	setPlaylistPublishedAt,
 	syncEggheadResourceInstructor,
 	updateEggheadLesson,
+	updateEggheadPlaylist,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
 import { writeNewPostToDatabase } from './posts-new-query'
@@ -539,9 +541,20 @@ export async function writePostUpdateToDatabase(input: {
 		}
 
 		if (action === 'unpublish') {
-			await clearPublishedAt(currentPost.fields.eggheadLessonId)
+			await clearLessonPublishedAt(currentPost.fields.eggheadLessonId)
 		}
 	} else if (currentPost.fields.eggheadPlaylistId) {
+		await updateEggheadPlaylist({
+			title: postUpdate.fields.title,
+			slug: postSlug,
+			guid: postGuid,
+			body: postUpdate.fields.body ?? '',
+			eggheadPlaylistId: currentPost.fields.eggheadPlaylistId,
+			state: lessonState,
+			visibilityState: lessonVisibilityState,
+			accessState: access ? 'pro' : 'free',
+		})
+
 		await updateSanityCourseMetadata({
 			eggheadPlaylistId: currentPost.fields.eggheadPlaylistId,
 			title: postUpdate.fields.title,
@@ -559,6 +572,10 @@ export async function writePostUpdateToDatabase(input: {
 				currentPost.fields.eggheadPlaylistId,
 				new Date().toISOString(),
 			)
+		}
+
+		if (action === 'unpublish') {
+			await clearPlaylistPublishedAt(currentPost.fields.eggheadPlaylistId)
 		}
 	}
 
@@ -687,6 +704,27 @@ export async function addEggheadLessonToPlaylist({
 		}
 		throw error
 	}
+}
+
+export async function getCoursesForPost(postId: string) {
+	return await db
+		.select({
+			courseId: contentResource.id,
+			courseTitle: sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
+			courseSlug: sql`JSON_EXTRACT(${contentResource.fields}, '$.slug')`,
+			eggheadPlaylistId: sql`JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId')`,
+		})
+		.from(contentResource)
+		.innerJoin(
+			contentResourceResource,
+			eq(contentResource.id, contentResourceResource.resourceOfId),
+		)
+		.where(
+			and(
+				eq(contentResourceResource.resourceId, postId),
+				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'course'`,
+			),
+		)
 }
 
 export async function removePostFromCoursePost({

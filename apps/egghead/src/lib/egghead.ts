@@ -241,6 +241,50 @@ export async function updateEggheadLesson(input: {
 	)
 }
 
+export async function updateEggheadPlaylist(input: {
+	eggheadPlaylistId: number
+	title: string
+	slug: string
+	guid: string
+	state: string
+	visibilityState: string
+	accessState: string
+	body?: string
+}) {
+	const {
+		eggheadPlaylistId,
+		state,
+		visibilityState,
+		accessState,
+		title,
+		slug,
+		guid,
+		body = '',
+	} = input
+	await eggheadPgQuery(
+		`UPDATE playlists SET
+			state = $1,
+			updated_at = NOW(),
+			visibility_state = $2,
+			title = $3,
+			slug = $4,
+			guid = $5,
+			summary = $6,
+			access_state = $8
+		WHERE id = $7`,
+		[
+			state,
+			visibilityState,
+			title,
+			slug,
+			guid,
+			body,
+			eggheadPlaylistId,
+			accessState,
+		],
+	)
+}
+
 export function setLessonPublishedAt(
 	eggheadLessonId: number,
 	publishedAt: string,
@@ -251,7 +295,7 @@ export function setLessonPublishedAt(
 	])
 }
 
-export function clearPublishedAt(eggheadLessonId: number) {
+export function clearLessonPublishedAt(eggheadLessonId: number) {
 	return eggheadPgQuery(
 		`UPDATE lessons SET published_at = NULL WHERE id = $1`,
 		[eggheadLessonId],
@@ -571,6 +615,13 @@ export function setPlaylistPublishedAt(
 	return eggheadPgQuery(
 		`UPDATE playlists SET published_at = $1 WHERE id = $2`,
 		[publishedAt, eggheadPlaylistId],
+	)
+}
+
+export function clearPlaylistPublishedAt(eggheadPlaylistId: number) {
+	return eggheadPgQuery(
+		`UPDATE playlists SET published_at = NULL WHERE id = $1`,
+		[eggheadPlaylistId],
 	)
 }
 
