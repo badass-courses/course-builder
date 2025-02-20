@@ -205,7 +205,9 @@ export const PostMetadataFormFields: React.FC<{
 			/>
 			<div className="px-5">
 				<FormLabel>Cover Image</FormLabel>
-				{form.watch('fields.image') && <img src={form.watch('fields.image')} />}
+				{form.watch('fields.image') && (
+					<img src={form.watch('fields.image') as string} />
+				)}
 			</div>
 			<FormField
 				control={form.control}
