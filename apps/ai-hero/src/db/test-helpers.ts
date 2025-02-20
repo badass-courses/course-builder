@@ -20,6 +20,7 @@ export async function createTestPost(
 		createdAt: now,
 		updatedAt: now,
 		deletedAt: null,
+		parentLessonId: null,
 		...overrides,
 	}
 

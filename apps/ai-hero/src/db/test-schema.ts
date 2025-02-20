@@ -10,4 +10,5 @@ export const testPosts = sqliteTable('posts', {
 	createdAt: text('created_at').notNull(),
 	updatedAt: text('updated_at').notNull(),
 	deletedAt: text('deleted_at'),
+	parentLessonId: text('parent_lesson_id'),
 })
