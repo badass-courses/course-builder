@@ -15,8 +15,7 @@ import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { desc, inArray, sql } from 'drizzle-orm'
-import { Book, ListOrderedIcon, Pencil } from 'lucide-react'
-import pluralize from 'pluralize'
+import { Book } from 'lucide-react'
 
 import {
 	Badge,
@@ -27,7 +26,6 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
-import { CreatePostModal } from './_components/create-post-modal'
 import { PostActions } from './_components/post-actions'
 
 // export const experimental_ppr = true

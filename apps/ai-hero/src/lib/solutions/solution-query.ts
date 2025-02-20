@@ -1,11 +1,11 @@
 'use server'
 
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 import { SolutionSchema } from './solution'
 import type {
@@ -16,6 +16,12 @@ import type {
 
 import 'server-only'
 
+import { getServerAuthSession } from '@/server/auth'
+
+import { ContentResourceSchema } from '@coursebuilder/core/schemas'
+
+import { Post, PostSchema } from '../posts'
+
 /**
  * Get a solution by its ID, including its parent lesson data
  */
@@ -23,7 +29,7 @@ export async function getSolution(id: string): Promise<Solution | null> {
 	const solution = await db.query.contentResource.findFirst({
 		where: sql`
 			${contentResource.id} = ${id} AND
-			${contentResource.type} = 'solution'
+			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'solution'
 		`,
 	})
 
@@ -47,25 +53,77 @@ export async function getSolution(id: string): Promise<Solution | null> {
 export async function getSolutionForLesson(
 	lessonId: string,
 ): Promise<Solution | null> {
-	const solution = await db.query.contentResource.findFirst({
-		where: sql`
-			${contentResource.type} = 'solution' AND
-			JSON_EXTRACT(${contentResource.fields}, "$.parentLessonId") = ${lessonId}
-		`,
-	})
+	const query = sql`SELECT *
+		FROM ${contentResource} AS cr_lesson
+		JOIN ${contentResourceResource} AS crr ON cr_lesson.id = crr.resourceOfId
+		JOIN ${contentResource} AS cr_video ON crr.resourceId = cr_video.id
+		WHERE (cr_lesson.id = ${lessonId} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonId})
+			AND JSON_EXTRACT(cr_video.fields, "$.postType") = 'solution'
+		LIMIT 1;`
 
-	if (!solution) return null
+	const result = await db.execute(query)
 
-	const parsed = SolutionSchema.safeParse(solution)
-	if (!parsed.success) {
-		log.error('invalid_solution_data', {
-			lessonId,
-			error: parsed.error,
-		})
-		return null
+	if (!result.rows.length) return null
+
+	const solutionResourceRow = ContentResourceSchema.parse(result.rows[0])
+
+	return SolutionSchema.parse(solutionResourceRow)
+}
+
+export const addSolutionResourceToLesson = async ({
+	solutionResourceId,
+	lessonId,
+}: {
+	solutionResourceId: string
+	lessonId: string
+}) => {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
 	}
 
-	return parsed.data
+	const solutionResource = await db.query.contentResource.findFirst({
+		where: sql`
+			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'solution' AND
+			${contentResource.id} = ${solutionResourceId}
+		`,
+		with: {
+			resources: true,
+		},
+	})
+
+	const lesson = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, lessonId),
+		with: {
+			resources: true,
+		},
+	})
+
+	if (!lesson) {
+		throw new Error(`Lesson with id ${lessonId} not found`)
+	}
+
+	if (!solutionResource) {
+		throw new Error(`Solution Resource with id ${solutionResource} not found`)
+	}
+
+	await db.insert(contentResourceResource).values({
+		resourceOfId: lesson.id,
+		resourceId: solutionResource.id,
+		position: lesson.resources.length,
+	})
+
+	return db.query.contentResourceResource.findFirst({
+		where: and(
+			eq(contentResourceResource.resourceOfId, lesson.id),
+			eq(contentResourceResource.resourceId, solutionResource.id),
+		),
+		with: {
+			resource: true,
+		},
+	})
 }
 
 /**
@@ -78,7 +136,7 @@ export async function createSolution(
 	const lesson = await db.query.contentResource.findFirst({
 		where: sql`
 			${contentResource.id} = ${input.parentLessonId} AND
-			${contentResource.type} = 'lesson'
+			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'lesson'
 		`,
 	})
 
@@ -128,6 +186,19 @@ export async function createSolution(
 	})
 
 	return parsed.data
+}
+
+export const getParentLesson = async (
+	solutionId: string,
+): Promise<Post | null> => {
+	const solutionLessonJoin = await db.query.contentResourceResource.findFirst({
+		where: eq(contentResourceResource.resourceId, solutionId),
+		with: {
+			resourceOf: true,
+		},
+	})
+
+	return PostSchema.nullable().parse(solutionLessonJoin?.resourceOf || null)
 }
 
 /**

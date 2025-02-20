@@ -88,13 +88,11 @@ export function CreatePostModal({
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
 
-	// Override available types and default type for solution context
-	const effectiveResourceTypes: PostType[] = isSolutionContext
-		? ['solution']
-		: availableResourceTypes
-	const effectiveDefaultType: PostType = isSolutionContext
-		? 'solution'
-		: defaultResourceType
+	console.log('isOpen', isOpen, open)
+
+	React.useEffect(() => {
+		setIsOpen(open)
+	}, [open])
 
 	return (
 		<Dialog
@@ -127,8 +125,8 @@ export function CreatePostModal({
 				)}
 				<CreatePost
 					onResourceCreated={onResourceCreated}
-					defaultResourceType={effectiveDefaultType}
-					availableResourceTypes={effectiveResourceTypes}
+					defaultResourceType={defaultResourceType}
+					availableResourceTypes={availableResourceTypes}
 					parentLessonId={parentLessonId}
 				/>
 			</DialogContent>
