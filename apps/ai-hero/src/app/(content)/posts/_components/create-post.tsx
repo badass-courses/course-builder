@@ -16,11 +16,23 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
  */
 export interface CreatePostProps {
 	/**
-	 * If provided, called instead of the default router.push to the resource’s edit page.
+	 * If provided, called instead of the default router.push to the resource's edit page.
 	 */
 	onResourceCreated?: (resource: ContentResource) => void
+	/**
+	 * The default type of resource to create
+	 * @default 'article'
+	 */
 	defaultResourceType?: PostType
+	/**
+	 * List of allowed resource types that can be created
+	 * @default ['article', 'lesson']
+	 */
 	availableResourceTypes?: PostType[]
+	/**
+	 * Parent lesson ID when creating a solution
+	 */
+	parentLessonId?: string
 }
 
 /**
@@ -31,6 +43,7 @@ export function CreatePost({
 	onResourceCreated,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article', 'lesson'],
+	parentLessonId,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 
@@ -46,7 +59,16 @@ export function CreatePost({
 					)
 				}
 			}}
-			createResource={createPost}
+			createResource={async (input) => {
+				// Add parentLessonId to input when creating a solution
+				if (input.postType === 'solution' && parentLessonId) {
+					return createPost({
+						...input,
+						parentLessonId,
+					})
+				}
+				return createPost(input)
+			}}
 			getVideoResource={getVideoResource}
 			availableResourceTypes={availableResourceTypes}
 			defaultPostType={defaultResourceType}

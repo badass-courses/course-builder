@@ -39,6 +39,7 @@ export const NewPostInputSchema = z.object({
 		'solution',
 	]),
 	createdById: z.string(),
+	parentLessonId: z.string().optional(),
 })
 
 export type NewPostInput = z.infer<typeof NewPostInputSchema>
