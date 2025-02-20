@@ -1,17 +1,15 @@
 import * as React from 'react'
-import { use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { EditPostFormProps } from '@/app/(content)/posts/_components/edit-post-form'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { env } from '@/env.mjs'
-import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { PostUpdate } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
+import { api } from '@/trpc/react'
 import { EditorView } from '@codemirror/view'
 import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
 import { useSession } from 'next-auth/react'
-import { yCollab } from 'y-codemirror.jh'
 import YPartyKitProvider from 'y-partykit/provider'
 import * as Y from 'yjs'
 
@@ -43,24 +41,24 @@ const defaultCommands = [
 export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 	post,
 	form,
-	videoResourceLoader,
 	availableWorkflows,
+	videoResourceId,
 	theme = 'light',
 	tagLoader,
 	listsLoader,
 	sendResourceChatMessage,
 }) => {
 	const session = useSession()
-	const videoResource = use(videoResourceLoader)
+	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
+		videoResourceId: videoResourceId,
+	})
 	const [updatePostStatus, setUpdatePostStatus] = React.useState<
 		'idle' | 'loading' | 'success' | 'error'
 	>('idle')
 	const [transcript, setTranscript] = React.useState<string | null>(
 		videoResource?.transcript || null,
 	)
-	const [videoResourceId, setVideoResourceId] = React.useState<
-		string | null | undefined
-	>(post.resources?.[0]?.resource.id)
+
 	const router = useRouter()
 
 	useSocket({
@@ -73,10 +71,6 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 				switch (data.name) {
 					case 'video.asset.ready':
 					case 'videoResource.created':
-						if (data.body.id) {
-							setVideoResourceId(data.body.id)
-						}
-
 						router.refresh()
 
 						break
@@ -180,7 +174,6 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 								listsLoader={listsLoader}
 								tagLoader={tagLoader}
 								form={form}
-								videoResourceLoader={videoResourceLoader}
 								post={post}
 								videoResourceId={videoResourceId}
 							/>

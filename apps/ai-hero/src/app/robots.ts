@@ -28,6 +28,6 @@ export default function robots(): MetadataRoute.Robots {
 				disallow: path,
 			})),
 		],
-		sitemap: env.NEXT_PUBLIC_URL + 'sitemap.xml',
+		sitemap: env.NEXT_PUBLIC_URL + '/sitemap.xml',
 	}
 }
