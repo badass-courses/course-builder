@@ -72,6 +72,7 @@ export function EditPostForm({
 		defaultValues: {
 			id: post.id,
 			fields: {
+				image: post.fields?.image ?? '',
 				title: post.fields?.title,
 				postType: post.fields?.postType || 'lesson',
 				body: post.fields?.body,
