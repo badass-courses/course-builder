@@ -216,7 +216,7 @@ export const LessonMetadataFormFields: React.FC<{
 					/>
 				</div>
 			)}
-			<AddToList lists={lists} post={post} />
+
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
 		</>

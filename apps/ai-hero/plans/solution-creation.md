@@ -24,14 +24,39 @@ Add the ability to create and associate solution resources with lesson posts. So
 - Advanced validation rules
 - Custom visibility rules
 
-## Technical Details
+## Current Status
 
-### New Resource Type
-- Add `solution` to the `PostType` enum in the posts schema
-- Solutions will inherit most metadata fields from lessons
-- Solutions cannot have nested solutions (prevent infinite nesting)
-- Initially limit to one solution per lesson
-- Solutions are deleted when parent lesson is deleted
+### ✅ Completed
+1. Schema Updates
+   - [x] Create `solution.ts`:
+     - [x] Define solution schema
+     - [x] Add validation rules
+     - [x] Create types and interfaces
+   - [x] Create `solution-query.ts`:
+     - [x] Implement CRUD operations
+     - [x] Add relationship queries
+     - [x] Add one-to-one validation
+     - [x] Add proper zod validation
+     - [x] Add server-side logging
+   - [x] Update analytics rules to clarify tracking vs logging
+
+### 🏗️ Next Up
+1. UI Components (Week 2)
+   - [ ] Create `solution-metadata-form-fields.tsx`:
+     - [ ] Base form structure from lesson metadata
+     - [ ] Parent lesson navigation section
+     - [ ] External link to parent lesson
+     - [ ] Visual solution indicator
+   - [ ] Add solution section to lesson metadata:
+     - [ ] Solution preview component
+     - [ ] External link and trash icons
+     - [ ] Confirmation dialog for deletion
+   - [ ] Modify `create-post-modal.tsx`:
+     - [ ] Remove solution from default types
+     - [ ] Add lesson context handling
+     - [ ] Pass parent lesson ID
+
+## Technical Details
 
 ### File Changes Required
 
@@ -41,7 +66,7 @@ Add the ability to create and associate solution resources with lesson posts. So
 - Add validation to prevent solutions from having solutions
 - Add validation to enforce one solution per lesson limit
 
-#### 2. New: `@/lib/solutions/solution.ts`
+#### 2. `@/lib/solutions/solution.ts`
 - Create solution schema extending base post schema
 - Add fields:
   - `parentLessonId: string` - required reference to parent lesson
@@ -55,7 +80,7 @@ Add the ability to create and associate solution resources with lesson posts. So
   - `SolutionSchema` - zod schema for validation
   - `CreateSolutionInput` - input type for creating solutions
 
-#### 3. New: `@/lib/solutions/solution-query.ts`
+#### 3. `@/lib/solutions/solution-query.ts`
 - Add query functions:
   - `getSolution(id: string)` - get solution by ID with parent lesson data
   - `getSolutionForLesson(lessonId: string)` - get solution for a lesson
@@ -97,80 +122,82 @@ Add the ability to create and associate solution resources with lesson posts. So
   - External link button to navigate to parent lesson
   - Visual distinction to make it clear this is a solution view
 
-### Implementation Steps
+### UI Component Structure
 
-1. Schema Updates
-   - [ ] Create `solution.ts`:
-     - [ ] Define solution schema (using base post schema)
-     - [ ] Add parentLessonId field
-     - [ ] Add cascade delete trigger
-     - [ ] Create types and interfaces
-   - [ ] Create `solution-query.ts`:
-     - [ ] Implement CRUD operations
-     - [ ] Add relationship queries
-     - [ ] Add one-to-one validation
-     - [ ] Exclude from general post queries
-   - [ ] Update `PostType` enum
-   - [ ] Add parent lesson reference
-   - [ ] Ensure parent lesson data is included in solution queries
+#### 1. `solution-metadata-form-fields.tsx`
+```tsx
+export const SolutionMetadataFormFields: React.FC<{
+  form: UseFormReturn<Solution>
+  post: Solution
+  parentLesson: Post
+}> = ({ form, post, parentLesson }) => {
+  return (
+    <>
+      {/* Parent Lesson Section */}
+      <div className="border-muted bg-muted mb-4 rounded-lg border p-4">
+        <h3>Parent Lesson</h3>
+        <div className="flex items-center gap-2">
+          <span>{parentLesson.fields.title}</span>
+          <ExternalLink />
+        </div>
+      </div>
 
-2. UI Components
-   - [ ] Create `SolutionMetadataFormFields` component with:
-     - [ ] Parent lesson navigation section
-     - [ ] External link to parent lesson
-     - [ ] Visual solution indicator
-   - [ ] Create solution section in lesson metadata with:
-     - [ ] Solution preview component
-     - [ ] External link and trash icons from tree-item
-     - [ ] Confirmation dialog for deletion
-   - [ ] Modify `CreatePostModal` to handle solutions in lesson context only
-   - [ ] Add solution preview/edit capabilities in lesson view
+      {/* Solution Fields */}
+      <FormField name="title" />
+      <FormField name="description" />
+      {/* ... other fields ... */}
+    </>
+  )
+}
+```
 
-3. API/Backend
-   - [ ] Add solution relationship handling
-   - [ ] Add solution deletion/replacement logic
-   - [ ] Update post queries to include solution data
-   - [ ] Add validation for one-to-one relationship
-   - [ ] Add solution-specific validation
-
-4. Testing
-   - [ ] Test solution creation flow from lesson context
-   - [ ] Test solution deletion/replacement flow
-   - [ ] Verify one-to-one relationship constraint
-   - [ ] Test UI interactions
-   - [ ] Verify solution type is not available outside lesson context
+#### 2. Lesson Solution Section
+```tsx
+{/* In lesson-metadata-form-fields.tsx */}
+<div className="border-muted bg-muted rounded-lg border p-4">
+  <h3>Solution</h3>
+  {solution ? (
+    <div className="flex items-center justify-between">
+      <div>{solution.fields.title}</div>
+      <div className="flex gap-2">
+        <ExternalLink />
+        <Trash onClick={handleDelete} />
+      </div>
+    </div>
+  ) : (
+    <Button onClick={() => setShowCreateModal(true)}>
+      Add Solution
+    </Button>
+  )}
+</div>
+```
 
 ## Acceptance Criteria
 
-- [ ] Users can create ONE solution from lesson metadata
-- [ ] Solutions can ONLY be created from within a lesson
-- [ ] Solutions inherit appropriate metadata fields from lessons (no custom fields)
-- [ ] Solutions cannot have nested solutions
-- [ ] Solutions are properly associated with parent lessons
-- [ ] Solutions are automatically deleted when parent lesson is deleted
-- [ ] Solutions do not appear in general post listings
-- [ ] UI clearly shows solution relationship with:
-  - [ ] Solution preview
-  - [ ] External link to edit
-  - [ ] Remove/Replace functionality
-- [ ] All validation rules are enforced
-- [ ] Solution creation is not available from general post creation flow
-- [ ] Solution deletion has confirmation dialog
-- [ ] Solutions have clear navigation back to parent lesson
-- [ ] Parent lesson relationship is visually prominent in solution view
+### Core Functionality
+- [x] Solutions can ONLY be created from within a lesson
+- [x] One solution per lesson (enforced in schema)
+- [x] Solutions inherit base post schema
+- [x] Proper validation and error handling
+- [x] Server-side logging for operations
+
+### UI/UX Requirements
+- [ ] Clear parent-child relationship display
+- [ ] Easy navigation between lesson and solution
+- [ ] Intuitive solution management
+- [ ] Proper error messaging
+- [ ] Confirmation for destructive actions
 
 ## Technical Constraints
 
-- Solutions must be tied to exactly one lesson
-- Solutions cannot have their own solutions
-- Only one solution per lesson (initially)
-- Solution type is only available in lesson context
-- Maintain existing metadata field structure where appropriate
-- Use existing UI components and patterns
-- Reuse tree-item icons for consistency
-- Follow existing schema patterns from posts/lessons
-- Use zod for schema validation
-- Cascade deletes from lesson to solution
+- [x] Solutions tied to exactly one lesson
+- [x] Solutions cannot have nested solutions
+- [x] Solution type only available in lesson context
+- [x] Follow existing schema patterns
+- [x] Use zod for validation
+- [x] Cascade deletes from lesson to solution
+- [ ] Reuse existing UI components
+- [ ] Follow existing form patterns
 
 ## Future Considerations (v2+)
 
@@ -186,12 +213,12 @@ Add the ability to create and associate solution resources with lesson posts. So
 This is structured as a 2-week bet with clear boundaries:
 
 Week 1:
-- Schema and data model implementation
-- Basic CRUD operations
-- Core validation rules
+- Schema and data model implementation ✅
+- Basic CRUD operations ✅
+- Core validation rules ✅
 
 Week 2:
-- UI implementation
+- UI implementation 🏗️
 - Navigation and relationship management
 - Testing and refinement
 
