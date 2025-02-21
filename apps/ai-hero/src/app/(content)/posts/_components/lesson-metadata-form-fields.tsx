@@ -52,6 +52,7 @@ import { AddToList } from './add-to-list'
 import { CreatePostModal } from './create-post-modal'
 import { SimplePostPlayer } from './post-player'
 import { PostUploader } from './post-uploader'
+import { VideoResourceField } from './video-resource-field'
 
 /**
  * Metadata form fields for lesson posts.
@@ -185,180 +186,12 @@ export const LessonMetadataFormFields: React.FC<{
 
 	return (
 		<>
-			<div>
-				<Suspense
-					fallback={
-						<div className="bg-muted flex aspect-video h-full w-full flex-col items-center justify-center gap-2 p-5 text-sm">
-							<Spinner className="h-4 w-4" />
-							<span>video is loading</span>
-						</div>
-					}
-				>
-					{videoResourceId ? (
-						<>
-							{videoResourceId ? (
-								replacingVideo ? (
-									<div>
-										<NewLessonVideoForm
-											parentResourceId={post.id}
-											onVideoUploadCompleted={(videoResourceId) => {
-												setReplacingVideo(false)
-												setVideoUploadStatus('finalizing upload')
-												setVideoResourceId(videoResourceId)
-											}}
-											onVideoResourceCreated={(videoResourceId) =>
-												setVideoResourceId(videoResourceId)
-											}
-										/>
-										<Button
-											variant="ghost"
-											type="button"
-											onClick={() => setReplacingVideo(false)}
-										>
-											Cancel Replace Video
-										</Button>
-									</div>
-								) : (
-									<>
-										{videoResource && videoResource.state === 'ready' ? (
-											<div className="-mt-5 border-b">
-												<SimplePostPlayer
-													ref={playerRef}
-													thumbnailTime={
-														form.watch('fields.thumbnailTime') || 0
-													}
-													handleVideoTimeUpdate={(e: Event) => {
-														const currentTime = (e.target as HTMLMediaElement)
-															.currentTime
-														if (currentTime) {
-															setThumbnailTime(currentTime)
-														}
-													}}
-													videoResource={videoResource}
-												/>
-
-												<div className="flex items-center gap-1 px-4 pb-2">
-													<Button
-														variant="secondary"
-														size={'sm'}
-														type="button"
-														onClick={() => setReplacingVideo(true)}
-													>
-														Replace Video
-													</Button>
-													<TooltipProvider>
-														<Tooltip delayDuration={0}>
-															<div className="flex items-center">
-																<TooltipTrigger asChild>
-																	<Button
-																		type="button"
-																		className="rounded-r-none"
-																		disabled={thumbnailTime === 0}
-																		onClick={async () => {
-																			form.setValue(
-																				'fields.thumbnailTime',
-																				thumbnailTime,
-																			)
-
-																			await updatePost(
-																				{
-																					id: post.id,
-																					fields: {
-																						...post.fields,
-																						thumbnailTime: thumbnailTime,
-																					},
-																				},
-																				'save',
-																			)
-																		}}
-																		variant="secondary"
-																		size={'sm'}
-																	>
-																		<span>Set Thumbnail</span>
-																	</Button>
-																</TooltipTrigger>
-																<Button
-																	type="button"
-																	className="border-secondary rounded-l-none border bg-transparent px-2"
-																	variant="secondary"
-																	size={'sm'}
-																	onClick={() => {
-																		if (playerRef.current?.seekable) {
-																			const seekableEnd =
-																				playerRef.current.seekable.end(0)
-																			// Generate a random time between 0 and the end of the video
-																			const randomTime = Math.floor(
-																				Math.random() * seekableEnd,
-																			)
-																			playerRef.current.currentTime = randomTime
-																			playerRef.current.thumbnailTime =
-																				randomTime
-																		}
-																	}}
-																>
-																	<Shuffle className="h-3 w-3" />
-																</Button>
-															</div>
-															<TooltipContent side="bottom">
-																<div className="text-xs">
-																	current thumbnail:
-																	<Image
-																		src={`https://image.mux.com/${videoResource.muxPlaybackId}/thumbnail.webp?time=${form.watch('fields.thumbnailTime')}`}
-																		className="aspect-video"
-																		width={192}
-																		height={108}
-																		alt="Thumbnail"
-																	/>
-																</div>
-															</TooltipContent>
-														</Tooltip>
-													</TooltipProvider>
-													{transcript ? (
-														TranscriptDialog
-													) : (
-														<span className="px-3 text-xs">
-															Processing transcript...
-														</span>
-													)}
-												</div>
-											</div>
-										) : videoResource ? (
-											<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-												<Spinner className="h-5 w-5" />
-												<span>video is {videoResource.state}</span>
-											</div>
-										) : (
-											<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-												<Spinner className="h-5 w-5" />
-												<span>video is {videoUploadStatus}</span>
-											</div>
-										)}
-									</>
-								)
-							) : (
-								<NewLessonVideoForm
-									parentResourceId={post.id}
-									onVideoUploadCompleted={(videoResourceId) => {
-										setVideoUploadStatus('finalizing upload')
-										setVideoResourceId(videoResourceId)
-									}}
-									onVideoResourceCreated={(videoResourceId) =>
-										setVideoResourceId(videoResourceId)
-									}
-								/>
-							)}
-						</>
-					) : (
-						<div className="px-5">
-							<FormLabel className="text-lg font-bold">Video</FormLabel>
-							<PostUploader
-								setVideoResourceId={setVideoResourceId}
-								parentResourceId={post.id}
-							/>
-						</div>
-					)}
-				</Suspense>
-			</div>
+			<VideoResourceField
+				form={form}
+				post={post}
+				initialVideoResourceId={initialVideoResourceId}
+				label="Lesson Video"
+			/>
 			<FormField
 				control={form.control}
 				name="id"
