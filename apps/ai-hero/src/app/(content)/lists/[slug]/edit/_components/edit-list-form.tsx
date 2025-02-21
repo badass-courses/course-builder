@@ -2,17 +2,12 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import ListResoucesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { List, ListSchema } from '@/lib/lists'
 import { updateList } from '@/lib/lists-query'
-import { Post, PostSchema } from '@/lib/posts'
-import { autoUpdatePost, updatePost } from '@/lib/posts-query'
-import type { Tag } from '@/lib/tags'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -41,13 +36,9 @@ export type EditListFormProps = {
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
-	tagLoader: Promise<Tag[]>
 }
 
-export function EditListForm({
-	list,
-	tagLoader,
-}: Omit<EditListFormProps, 'form'>) {
+export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 	const { theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof ListSchema>>({
@@ -68,7 +59,6 @@ export function EditListForm({
 			},
 		},
 	})
-	const isMobile = useIsMobile()
 	const router = useRouter()
 	return (
 		<EditResourcesFormDesktop
@@ -114,7 +104,7 @@ export function EditListForm({
 			]}
 		>
 			<React.Suspense fallback={<div>loading</div>}>
-				<ListMetadataFormFields tagLoader={tagLoader} form={form} list={list} />
+				<ListMetadataFormFields form={form} list={list} />
 			</React.Suspense>
 		</EditResourcesFormDesktop>
 	)

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import type { List, ListSchema } from '@/lib/lists'
 import { ListTypeSchema } from '@/lib/lists'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
-import type { Tag } from '@/lib/tags'
+import { api } from '@/trpc/react'
 import { Pencil } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -25,18 +25,16 @@ import {
 	SelectValue,
 	Textarea,
 } from '@coursebuilder/ui'
-import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 export const ListMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof ListSchema>>
-	tagLoader: Promise<Tag[]>
 	list: List
-}> = ({ form, list, tagLoader }) => {
+}> = ({ form, list }) => {
 	const router = useRouter()
-	const tags = tagLoader ? React.use(tagLoader) : []
+	const { data: tags = [] } = api.tags.getTags.useQuery()
 
 	const parsedTagsForUiPackage = z
 		.array(

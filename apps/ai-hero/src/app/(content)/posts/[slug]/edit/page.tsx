@@ -1,11 +1,9 @@
-import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { getAllLists } from '@/lib/lists-query'
 import { getPost } from '@/lib/posts-query'
-import { getTags } from '@/lib/tags-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -60,14 +58,12 @@ export default async function ArticleEditPage(props: {
 	const videoResourceLoader = videoResource
 		? courseBuilderAdapter.getVideoResource(videoResource.id)
 		: Promise.resolve(null)
-	const tagLoader = getTags()
 	const listsLoader = getAllLists()
 
 	return (
 		<EditPostForm
 			key={post.fields.slug}
 			post={{ ...post }}
-			tagLoader={tagLoader}
 			videoResourceLoader={videoResourceLoader}
 			listsLoader={listsLoader}
 			sendResourceChatMessage={sendResourceChatMessage}

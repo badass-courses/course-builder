@@ -1,4 +1,6 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"cSpell.words": ["coursebuilder"]
+	"cSpell.words": [
+		"coursebuilder"
+	]
 }

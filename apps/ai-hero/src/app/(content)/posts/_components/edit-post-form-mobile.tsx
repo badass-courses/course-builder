@@ -41,10 +41,8 @@ const defaultCommands = [
 export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 	post,
 	form,
-	availableWorkflows,
 	videoResourceId,
 	theme = 'light',
-	tagLoader,
 	listsLoader,
 	sendResourceChatMessage,
 }) => {
@@ -172,7 +170,6 @@ export const MobileEditPostForm: React.FC<EditPostFormProps> = ({
 							<PostMetadataFormFields
 								sendResourceChatMessage={sendResourceChatMessage}
 								listsLoader={listsLoader}
-								tagLoader={tagLoader}
 								form={form}
 								post={post}
 								videoResourceId={videoResourceId}
