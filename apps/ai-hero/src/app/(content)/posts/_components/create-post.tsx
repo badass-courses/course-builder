@@ -42,7 +42,7 @@ export interface CreatePostProps {
 export function CreatePost({
 	onResourceCreated,
 	defaultResourceType = 'article',
-	availableResourceTypes = ['article', 'lesson'],
+	availableResourceTypes = ['article'],
 	parentLessonId,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()

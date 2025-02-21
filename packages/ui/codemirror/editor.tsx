@@ -2,10 +2,19 @@ import { useCallback, useEffect, useState } from 'react'
 import { User } from '@auth/core/types'
 import { markdown } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
-import { EditorState, Extension } from '@codemirror/state'
+import {
+	EditorState,
+	Extension,
+	Range,
+	StateEffect,
+	StateField,
+} from '@codemirror/state'
+import { Decoration } from '@codemirror/view'
 import { tags as t } from '@lezer/highlight'
 import { createTheme } from '@uiw/codemirror-themes'
 import { basicSetup, EditorView } from 'codemirror'
+import { yCollab } from 'y-codemirror.jh'
+import YPartyKitProvider from 'y-partykit/provider'
 import * as Y from 'yjs'
 
 async function generateHash(message: string) {
@@ -184,12 +193,12 @@ export const CourseBuilderEditorThemeLight = createTheme({
 		backgroundImage: '',
 		foreground: 'hsl(var(--foreground))',
 		caret: '#000',
-		selection: 'hsla(1, 100%, 100%, 0.35)',
-		selectionMatch: 'hsla(50, 100%, 80%, 0.3)',
-		lineHighlight: 'hsla(1, 100%, 100%, 0.05)',
+		selection: 'hsla(0, 0%, 0%, 0.35)',
+		selectionMatch: 'hsla(0, 0%, 0%, 0.35)',
+		lineHighlight: 'hsla(0, 0%, 0%, 0.05)',
 		gutterBorder: '1px solid hsl(var(--border))',
 		gutterBackground: 'hsl(var(--background))',
-		gutterForeground: 'hsla(1, 100%, 100%, 0.3)',
+		gutterForeground: 'hsla(0, 0%, 0%, 0.3)',
 	},
 	styles: [
 		{ tag: t.heading1, class: 'cm-heading-1' },
@@ -216,6 +225,7 @@ export const CourseBuilderEditorThemeLight = createTheme({
 		{
 			tag: [t.variableName, t.attributeName, t.number, t.operator],
 			color: '#005cc5',
+			fontFamily: 'monospace',
 		},
 		{
 			tag: [t.keyword, t.typeName, t.typeOperator, t.typeName],
@@ -224,11 +234,11 @@ export const CourseBuilderEditorThemeLight = createTheme({
 		},
 		{
 			tag: [t.string, t.meta, t.regexp],
-			color: '#0080ff',
+			color: '#032f62',
 			fontFamily: 'monospace',
 		},
 		{ tag: [t.name, t.quote], color: '#22863a', fontFamily: 'monospace' },
-		{ tag: [t.heading, t.strong], color: '#ffffff', fontWeight: 'bold' },
+		{ tag: [t.heading, t.strong], color: '#24292e', fontWeight: 'bold' },
 		{ tag: [t.emphasis], color: '#24292e', fontStyle: 'italic' },
 		{
 			tag: [t.deleted],
@@ -237,7 +247,7 @@ export const CourseBuilderEditorThemeLight = createTheme({
 			fontFamily: 'monospace',
 		},
 		{ tag: [t.atom, t.bool, t.special(t.variableName)], color: '#e36209' },
-		{ tag: [t.url, t.escape, t.regexp, t.link], color: '#0071ff' },
+		{ tag: [t.url, t.escape, t.regexp, t.link], color: '#0080ff' },
 		{ tag: t.link, textDecoration: 'underline' },
 		{ tag: t.strikethrough, textDecoration: 'line-through' },
 		{ tag: t.invalid, color: '#cb2431', fontFamily: 'monospace' },
