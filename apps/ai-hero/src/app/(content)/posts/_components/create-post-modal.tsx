@@ -42,8 +42,8 @@ export interface CreatePostModalProps {
 	 */
 	defaultResourceType?: PostType
 	/**
-	 * List of allowed resource types that can be created
-	 * @default ['article', 'lesson']
+	 * List of allowed resource types that can be created in this context
+	 * @default ['article']
 	 */
 	availableResourceTypes?: PostType[]
 	/**
@@ -72,6 +72,7 @@ export interface CreatePostModalProps {
  *     // Custom handling after creation
  *   }}
  *   defaultResourceType="cohort-lesson"
+ *   availableResourceTypes={['cohort-lesson', 'article']}
  * />
  * ```
  */
@@ -81,7 +82,7 @@ export function CreatePostModal({
 	showTrigger = true,
 	open,
 	defaultResourceType = 'article',
-	availableResourceTypes = ['article', 'cohort-lesson'],
+	availableResourceTypes = ['article'],
 	title = 'New Post',
 	parentLessonId,
 	isSolutionContext = false,

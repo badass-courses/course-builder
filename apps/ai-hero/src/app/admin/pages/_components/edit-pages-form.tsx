@@ -137,6 +137,11 @@ export function EditPagesForm({
 					}
 					searchConfig={<SearchConfig />}
 					list={page}
+					createPostConfig={{
+						title: 'Create a Resource',
+						defaultResourceType: 'article',
+						availableResourceTypes: ['article'],
+					}}
 				/>
 			}
 			resourceSchema={PageSchema}

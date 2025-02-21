@@ -73,7 +73,16 @@ export function EditListForm({ list }: Omit<EditListFormProps, 'form'>) {
 			updateResource={updateList}
 			// autoUpdateResource={autoUpdatePost}
 			form={form}
-			bodyPanelSlot={<ListResoucesEdit list={list} />}
+			bodyPanelSlot={
+				<ListResoucesEdit
+					list={list}
+					createPostConfig={{
+						title: 'Create a Resource',
+						defaultResourceType: 'article',
+						availableResourceTypes: ['article'],
+					}}
+				/>
+			}
 			availableWorkflows={[
 				{
 					value: 'prompt_list1',
