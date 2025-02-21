@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
 import { addPostToList } from '@/lib/lists-query'
+import { PostType } from '@/lib/posts'
 import { track } from '@/utils/analytics'
 import {
 	TYPESENSE_COLLECTION_NAME,
@@ -28,16 +29,37 @@ import { ResourcesInfiniteHits } from './resources-infinite-hits'
 import SearchConfig from './search-config'
 import { SelectionProvider } from './selection-context'
 
+export interface CreatePostConfig {
+	/**
+	 * Title for the create post modal
+	 */
+	title?: string
+	/**
+	 * Default resource type to create
+	 */
+	defaultResourceType?: PostType
+	/**
+	 * Available resource types that can be created
+	 */
+	availableResourceTypes?: PostType[]
+}
+
 export default function ListResourcesEdit({
 	list,
 	title = <DynamicTitle />,
 	searchConfig = <SearchConfig />,
 	showTierSelector = false,
+	createPostConfig = {
+		title: 'Create a Resource',
+		defaultResourceType: 'article',
+		availableResourceTypes: ['article'],
+	},
 }: {
 	list: ContentResource
 	title?: React.ReactNode | string
 	searchConfig?: React.ReactNode
 	showTierSelector?: boolean
+	createPostConfig?: CreatePostConfig
 }) {
 	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
 	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
@@ -154,10 +176,11 @@ export default function ListResourcesEdit({
 				</div>
 			</InstantSearchNext>
 			<CreatePostModal
-				title="Create a Lesson"
+				title={createPostConfig.title}
 				open={isCreatePostModalOpen}
 				onOpenChange={setIsCreatePostModalOpen}
-				defaultResourceType="cohort-lesson"
+				defaultResourceType={createPostConfig.defaultResourceType}
+				availableResourceTypes={createPostConfig.availableResourceTypes}
 				onResourceCreated={async (resource) => {
 					track('post_created', {
 						source: 'search_modal',

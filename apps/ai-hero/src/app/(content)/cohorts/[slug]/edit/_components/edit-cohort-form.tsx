@@ -76,7 +76,17 @@ export function EditCohortForm({ cohort }: { cohort: Cohort }) {
 					default: true,
 				},
 			]}
-			bodyPanelSlot={<ListResoucesEdit list={cohort} showTierSelector />}
+			bodyPanelSlot={
+				<ListResoucesEdit
+					list={cohort}
+					showTierSelector
+					createPostConfig={{
+						title: 'Create a Lesson',
+						defaultResourceType: 'cohort-lesson',
+						availableResourceTypes: ['cohort-lesson'],
+					}}
+				/>
+			}
 			sendResourceChatMessage={sendResourceChatMessage}
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.user}
