@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { TagField } from '@/app/(content)/posts/_components/tag-field'
 import type { List, ListSchema } from '@/lib/lists'
 import { ListTypeSchema } from '@/lib/lists'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
@@ -27,7 +28,6 @@ import {
 } from '@coursebuilder/ui'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
-import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 export const ListMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof ListSchema>>
@@ -128,35 +128,7 @@ export const ListMetadataFormFields: React.FC<{
 					)
 				}}
 			/>
-			{tags?.length > 0 && (
-				<div className="px-5">
-					<div className="flex w-full items-baseline justify-between">
-						<FormLabel className="text-lg font-bold">Tags</FormLabel>
-						<Button
-							variant="ghost"
-							size="sm"
-							className="flex items-center gap-1 opacity-75 hover:opacity-100"
-							asChild
-						>
-							<Link href="/admin/tags">
-								<Pencil className="h-3 w-3" /> Edit
-							</Link>
-						</Button>
-					</div>
-					<AdvancedTagSelector
-						availableTags={parsedTagsForUiPackage}
-						selectedTags={
-							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
-						}
-						onTagSelect={async (tag: { id: string }) => {
-							await addTagToPost(list.id, tag.id)
-						}}
-						onTagRemove={async (tagId: string) => {
-							await removeTagFromPost(list.id, tagId)
-						}}
-					/>
-				</div>
-			)}
+			<TagField resource={list} showEditButton />
 			<FormField
 				control={form.control}
 				name="fields.description"

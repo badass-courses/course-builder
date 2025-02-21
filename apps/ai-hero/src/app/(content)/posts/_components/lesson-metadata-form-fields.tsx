@@ -1,8 +1,5 @@
 import * as React from 'react'
-import { use } from 'react'
 import { useRouter } from 'next/navigation'
-import { env } from '@/env.mjs'
-import { useTranscript } from '@/hooks/use-transcript'
 import type { Post, PostSchema } from '@/lib/posts'
 import type { Solution } from '@/lib/solutions/solution'
 import {
@@ -10,7 +7,6 @@ import {
 	deleteSolution,
 	getSolutionForLesson,
 } from '@/lib/solutions/solution-query'
-import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
 import { ExternalLink, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -38,7 +34,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@coursebuilder/ui'
-import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
@@ -59,50 +54,6 @@ export const LessonMetadataFormFields: React.FC<{
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
 	>(initialVideoResourceId)
-
-	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
-		videoResourceId: videoResourceId,
-	})
-
-	const {
-		transcript,
-		setTranscript,
-		setIsProcessing: setIsTranscriptProcessing,
-		TranscriptDialog,
-	} = useTranscript({
-		videoResourceId,
-		initialTranscript: videoResource?.transcript,
-	})
-
-	useSocket({
-		room: videoResourceId,
-		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
-		onMessage: async (messageEvent) => {
-			try {
-				const data = JSON.parse(messageEvent.data)
-
-				switch (data.name) {
-					case 'video.asset.ready':
-					case 'videoResource.created':
-						if (data.body.id) {
-							setVideoResourceId(data.body.id)
-						}
-
-						router.refresh()
-
-						break
-					case 'transcript.ready':
-						setTranscript(data.body)
-						setIsTranscriptProcessing(false)
-						break
-					default:
-						break
-				}
-			} catch (error) {
-				// nothing to do
-			}
-		},
-	})
 
 	// Solution handling
 	const [solution, setSolution] = React.useState<Solution | null>(null)
@@ -166,7 +117,7 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<TagField post={post} />
+			<TagField resource={post} />
 
 			{/* Solution Section */}
 			<div className="border-muted bg-muted/50 mx-5 mb-6 mt-4 rounded-lg border p-4">

@@ -132,6 +132,12 @@ export const addSolutionResourceToLesson = async ({
 export async function createSolution(
 	input: CreateSolutionInput,
 ): Promise<Solution> {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 	// Check if lesson exists
 	const lesson = await db.query.contentResource.findFirst({
 		where: sql`
@@ -208,6 +214,12 @@ export async function updateSolution(
 	id: string,
 	input: UpdateSolutionInput,
 ): Promise<Solution> {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	if (!user || !ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 	const solution = await courseBuilderAdapter.updateContentResourceFields({
 		id,
 		fields: input.fields,
@@ -237,6 +249,12 @@ export async function updateSolution(
  * Delete a solution
  */
 export async function deleteSolution(id: string): Promise<void> {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	if (!user || !ability.can('delete', 'Content')) {
+		throw new Error('Unauthorized')
+	}
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
 	log.info('solution_deleted', {

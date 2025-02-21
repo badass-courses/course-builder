@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
 import TagCrudDialog from '@/app/admin/tags/tag-crud-dialog'
-import type { Post } from '@/lib/posts'
 import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
@@ -13,17 +12,44 @@ import { Button, FormDescription, FormLabel, Skeleton } from '@coursebuilder/ui'
 import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 /**
- * A shared component for handling tag selection and management in posts.
+ * A shared component for handling tag selection and management in resources.
  * Includes tag parsing, selection, and optional edit button.
  */
 export interface TagFieldProps {
-	post: Post
+	/**
+	 * The resource (post, list, etc) that has tags
+	 */
+	resource: {
+		id: string
+		tags?:
+			| {
+					contentResourceId: string
+					tagId: string
+					position: number
+					createdAt: Date
+					updatedAt: Date
+					tag: {
+						type: 'topic'
+						createdAt: Date
+						updatedAt: Date
+						id: string
+						fields: {
+							label: string
+							name: string
+						}
+						organizationId?: string | null
+						deleteAt?: Date | null
+					}
+					organizationId?: string | null
+			  }[]
+			| null
+	}
 	label?: string
 	showEditButton?: boolean
 }
 
 export const TagField: React.FC<TagFieldProps> = ({
-	post,
+	resource,
 	label = 'Tags',
 	showEditButton = false,
 }) => {
@@ -59,7 +85,7 @@ export const TagField: React.FC<TagFieldProps> = ({
 				}),
 			}),
 		)
-		.parse(post.tags)
+		.parse(resource.tags || [])
 
 	const handleCreateTag = (tag: Tag) => {
 		createTag({
@@ -101,10 +127,10 @@ export const TagField: React.FC<TagFieldProps> = ({
 							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
 						}
 						onTagSelect={async (tag: { id: string }) => {
-							await addTagToPost(post.id, tag.id)
+							await addTagToPost(resource.id, tag.id)
 						}}
 						onTagRemove={async (tagId: string) => {
-							await removeTagFromPost(post.id, tagId)
+							await removeTagFromPost(resource.id, tagId)
 						}}
 					/>
 					<TagCrudDialog onSubmit={handleCreateTag}>

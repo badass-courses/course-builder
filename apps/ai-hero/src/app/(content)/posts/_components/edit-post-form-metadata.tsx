@@ -131,7 +131,7 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<TagField post={post} showEditButton />
+			<TagField resource={post} showEditButton />
 			<AddToList lists={lists} post={post} />
 			<FormField
 				control={form.control}
