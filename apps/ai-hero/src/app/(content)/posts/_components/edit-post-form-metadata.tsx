@@ -1,14 +1,10 @@
 import * as React from 'react'
 import { use } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
 import { Post, PostSchema } from '@/lib/posts'
-import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
-import type { Tag } from '@/lib/tags'
-import { Pencil, Sparkles } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -25,16 +21,15 @@ import {
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
-import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 import { AddToList } from './add-to-list'
+import { TagField } from './tag-field'
 import { VideoResourceField } from './video-resource-field'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResourceId?: string | null | undefined
 	post: Post
-	tagLoader: Promise<Tag[]>
 	listsLoader: Promise<List[]>
 	sendResourceChatMessage: (options: {
 		resourceId: string
@@ -45,12 +40,9 @@ export const PostMetadataFormFields: React.FC<{
 	form,
 	post,
 	videoResourceId: initialVideoResourceId,
-	tagLoader,
 	listsLoader,
 	sendResourceChatMessage,
 }) => {
-	const router = useRouter()
-	const tags = tagLoader ? use(tagLoader) : []
 	const lists = listsLoader ? use(listsLoader) : []
 
 	const [isGeneratingDescription, setIsGeneratingDescription] =
@@ -83,32 +75,6 @@ export const PostMetadataFormFields: React.FC<{
 			}
 		},
 	})
-
-	const parsedTagsForUiPackage = z
-		.array(
-			z.object({
-				id: z.string(),
-				fields: z.object({
-					label: z.string(),
-					name: z.string(),
-				}),
-			}),
-		)
-		.parse(tags)
-
-	const parsedSelectedTagsForUiPackage = z
-		.array(
-			z.object({
-				tag: z.object({
-					id: z.string(),
-					fields: z.object({
-						label: z.string(),
-						name: z.string(),
-					}),
-				}),
-			}),
-		)
-		.parse(post.tags)
 
 	const handleGenerateDescription = async () => {
 		setIsGeneratingDescription(true)
@@ -165,35 +131,7 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			{tags?.length > 0 && (
-				<div className="px-5">
-					<div className="flex w-full items-baseline justify-between">
-						<FormLabel className="text-lg font-bold">Tags</FormLabel>
-						<Button
-							variant="ghost"
-							size="sm"
-							className="flex items-center gap-1 opacity-75 hover:opacity-100"
-							asChild
-						>
-							<Link href="/admin/tags">
-								<Pencil className="h-3 w-3" /> Edit
-							</Link>
-						</Button>
-					</div>
-					<AdvancedTagSelector
-						availableTags={parsedTagsForUiPackage}
-						selectedTags={
-							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
-						}
-						onTagSelect={async (tag: { id: string }) => {
-							await addTagToPost(post.id, tag.id)
-						}}
-						onTagRemove={async (tagId: string) => {
-							await removeTagFromPost(post.id, tagId)
-						}}
-					/>
-				</div>
-			)}
+			<TagField post={post} showEditButton />
 			<AddToList lists={lists} post={post} />
 			<FormField
 				control={form.control}

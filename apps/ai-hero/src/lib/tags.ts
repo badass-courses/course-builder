@@ -17,7 +17,7 @@ export const TagSchema = z.object({
 	id: z.string(),
 	type: z.literal('topic').default('topic'),
 	organizationId: z.string().nullish(),
-	fields: TagFieldsSchema.nullish(),
+	fields: TagFieldsSchema,
 	createdAt: z.union([z.string(), z.date()]).transform((val) => new Date(val)),
 	updatedAt: z.union([z.string(), z.date()]).transform((val) => new Date(val)),
 	deleteAt: z

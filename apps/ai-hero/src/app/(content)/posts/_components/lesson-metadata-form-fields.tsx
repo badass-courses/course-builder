@@ -1,12 +1,9 @@
 import * as React from 'react'
-import { Suspense, use } from 'react'
-import Image from 'next/image'
+import { use } from 'react'
 import { useRouter } from 'next/navigation'
-import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import type { Post, PostSchema } from '@/lib/posts'
-import { updatePost } from '@/lib/posts-query'
 import type { Solution } from '@/lib/solutions/solution'
 import {
 	addSolutionResourceToLesson,
@@ -15,8 +12,7 @@ import {
 } from '@/lib/solutions/solution-query'
 import type { Tag } from '@/lib/tags'
 import { api } from '@/trpc/react'
-import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { ExternalLink, Shuffle, Trash } from 'lucide-react'
+import { ExternalLink, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -45,13 +41,9 @@ import {
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
-import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
-import { NewLessonVideoForm } from '../../_components/new-lesson-video-form'
-import { AddToList } from './add-to-list'
 import { CreatePostModal } from './create-post-modal'
-import { SimplePostPlayer } from './post-player'
-import { PostUploader } from './post-uploader'
+import { TagField } from './tag-field'
 import { VideoResourceField } from './video-resource-field'
 
 /**
@@ -62,37 +54,15 @@ export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResourceId?: string | null | undefined
 	post: Post
-	tagLoader: Promise<Tag[]>
-	listsLoader: Promise<any>
-	sendResourceChatMessage: (options: {
-		resourceId: string
-		messages: any[]
-		selectedWorkflow?: string
-	}) => Promise<void>
-}> = ({
-	form,
-	post,
-	videoResourceId: initialVideoResourceId,
-	tagLoader,
-	listsLoader,
-	sendResourceChatMessage,
-}) => {
+}> = ({ form, post, videoResourceId: initialVideoResourceId }) => {
 	const router = useRouter()
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | null | undefined
 	>(initialVideoResourceId)
-	const tags = tagLoader ? use(tagLoader) : []
-	const lists = listsLoader ? use(listsLoader) : []
 
 	const { data: videoResource, refetch } = api.videoResources.get.useQuery({
 		videoResourceId: videoResourceId,
 	})
-
-	const [videoUploadStatus, setVideoUploadStatus] = React.useState<
-		'loading' | 'finalizing upload'
-	>('loading')
-
-	const [replacingVideo, setReplacingVideo] = React.useState(false)
 
 	const {
 		transcript,
@@ -153,36 +123,8 @@ export const LessonMetadataFormFields: React.FC<{
 		}
 	}, [solution, router])
 
-	const [thumbnailTime, setThumbnailTime] = React.useState(0)
 	const [showCreateSolutionModal, setShowCreateSolutionModal] =
 		React.useState(false)
-	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
-
-	const parsedTagsForUiPackage = z
-		.array(
-			z.object({
-				id: z.string(),
-				fields: z.object({
-					label: z.string(),
-					name: z.string(),
-				}),
-			}),
-		)
-		.parse(tags)
-
-	const parsedSelectedTagsForUiPackage = z
-		.array(
-			z.object({
-				tag: z.object({
-					id: z.string(),
-					fields: z.object({
-						label: z.string(),
-						name: z.string(),
-					}),
-				}),
-			}),
-		)
-		.parse(post.tags)
 
 	return (
 		<>
@@ -224,25 +166,7 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			{tags?.length > 0 && (
-				<div className="px-5">
-					<div className="flex w-full items-baseline justify-between">
-						<FormLabel className="text-lg font-bold">Tags</FormLabel>
-					</div>
-					<AdvancedTagSelector
-						availableTags={parsedTagsForUiPackage}
-						selectedTags={
-							parsedSelectedTagsForUiPackage?.map((tag) => tag.tag) ?? []
-						}
-						onTagSelect={async (tag: { id: string }) => {
-							// Add tag logic
-						}}
-						onTagRemove={async (tagId: string) => {
-							// Remove tag logic
-						}}
-					/>
-				</div>
-			)}
+			<TagField post={post} />
 
 			{/* Solution Section */}
 			<div className="border-muted bg-muted/50 mx-5 mb-6 mt-4 rounded-lg border p-4">

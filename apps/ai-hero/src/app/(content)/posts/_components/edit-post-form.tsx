@@ -40,7 +40,6 @@ export type EditPostFormProps = {
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
 	theme?: string
-	tagLoader: Promise<Tag[]>
 	listsLoader: Promise<List[]>
 	sendResourceChatMessage: (options: {
 		resourceId: string
@@ -53,7 +52,6 @@ export function EditPostForm({
 	post,
 	videoResourceLoader,
 	videoResourceId,
-	tagLoader,
 	listsLoader,
 }: Omit<EditPostFormProps, 'form'>) {
 	const { theme } = useTheme()
@@ -84,7 +82,6 @@ export function EditPostForm({
 	return isMobile ? (
 		<MobileEditPostForm
 			listsLoader={listsLoader}
-			tagLoader={tagLoader}
 			post={post}
 			form={form}
 			videoResourceId={videoResource?.id}
@@ -136,7 +133,6 @@ export function EditPostForm({
 					post={post}
 					form={form}
 					videoResourceId={videoResource?.id}
-					tagLoader={tagLoader}
 					listsLoader={listsLoader}
 					sendResourceChatMessage={sendResourceChatMessage}
 				/>
