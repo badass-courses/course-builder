@@ -71,7 +71,7 @@ export interface CreatePostModalProps {
  *   onResourceCreated={async (resource) => {
  *     // Custom handling after creation
  *   }}
- *   defaultResourceType="lesson"
+ *   defaultResourceType="cohort-lesson"
  * />
  * ```
  */
@@ -81,14 +81,12 @@ export function CreatePostModal({
 	showTrigger = true,
 	open,
 	defaultResourceType = 'article',
-	availableResourceTypes = ['article', 'lesson'],
+	availableResourceTypes = ['article', 'cohort-lesson'],
 	title = 'New Post',
 	parentLessonId,
 	isSolutionContext = false,
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
-
-	console.log('isOpen', isOpen, open)
 
 	React.useEffect(() => {
 		setIsOpen(open)

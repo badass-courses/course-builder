@@ -157,7 +157,7 @@ export default function ListResourcesEdit({
 				title="Create a Lesson"
 				open={isCreatePostModalOpen}
 				onOpenChange={setIsCreatePostModalOpen}
-				defaultResourceType="lesson"
+				defaultResourceType="cohort-lesson"
 				onResourceCreated={async (resource) => {
 					track('post_created', {
 						source: 'search_modal',

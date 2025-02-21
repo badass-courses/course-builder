@@ -8,7 +8,7 @@ import { PostSchema, PostTypeSchema } from '../posts'
  */
 export const SolutionSchema = PostSchema.extend({
 	fields: z.object({
-		postType: z.literal('solution'),
+		postType: z.literal('cohort-lesson-solution'),
 		parentLessonId: z.string(),
 		title: z.string(),
 		body: z.string().nullable().optional(),
@@ -25,7 +25,7 @@ export const SolutionSchema = PostSchema.extend({
 }).refine(
 	(data) => {
 		// Ensure solution type is correct
-		return data.fields.postType === 'solution'
+		return data.fields.postType === 'cohort-lesson-solution'
 	},
 	{
 		message: 'Invalid post type for solution',

@@ -4,15 +4,15 @@ import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resou
 
 import { TagSchema } from './tags'
 
-export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
+export const POST_TYPES_WITH_VIDEO = ['cohort-lesson', 'podcast', 'tip']
 
 export const PostTypeSchema = z.union([
 	z.literal('article'),
-	z.literal('lesson'),
+	z.literal('cohort-lesson'),
 	z.literal('podcast'),
 	z.literal('tip'),
 	z.literal('course'),
-	z.literal('solution'),
+	z.literal('cohort-lesson-solution'),
 ])
 
 export type PostType = z.infer<typeof PostTypeSchema>
@@ -30,13 +30,13 @@ export const NewPostInputSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
 	videoResourceId: z.string().optional(),
 	postType: z.enum([
-		'lesson',
+		'cohort-lesson',
 		'podcast',
 		'tip',
 		'course',
 		'playlist',
 		'article',
-		'solution',
+		'cohort-lesson-solution',
 	]),
 	createdById: z.string(),
 	parentLessonId: z.string().optional(),

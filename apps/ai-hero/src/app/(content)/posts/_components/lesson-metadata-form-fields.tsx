@@ -7,7 +7,6 @@ import {
 	deleteSolution,
 	getSolutionForLesson,
 } from '@/lib/solutions/solution-query'
-import { api } from '@/trpc/react'
 import { ExternalLink, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -51,9 +50,6 @@ export const LessonMetadataFormFields: React.FC<{
 	post: Post
 }> = ({ form, post, videoResourceId: initialVideoResourceId }) => {
 	const router = useRouter()
-	const [videoResourceId, setVideoResourceId] = React.useState<
-		string | null | undefined
-	>(initialVideoResourceId)
 
 	// Solution handling
 	const [solution, setSolution] = React.useState<Solution | null>(null)
@@ -195,8 +191,8 @@ export const LessonMetadataFormFields: React.FC<{
 				onOpenChange={setShowCreateSolutionModal}
 				showTrigger={false}
 				title="Add Solution"
-				availableResourceTypes={['solution']}
-				defaultResourceType="solution"
+				availableResourceTypes={['cohort-lesson-solution']}
+				defaultResourceType="cohort-lesson-solution"
 				isSolutionContext={true}
 				parentLessonId={post.id}
 				onResourceCreated={async (resource) => {

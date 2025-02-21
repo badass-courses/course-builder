@@ -202,7 +202,7 @@ export async function createPost(input: NewPostInput) {
 			state: 'draft',
 			visibility: 'public',
 			slug: slugify(`${input.title}~${postGuid}`),
-			...(input.postType === 'solution' && input.parentLessonId
+			...(input.postType === 'cohort-lesson-solution' && input.parentLessonId
 				? { parentLessonId: input.parentLessonId }
 				: {}),
 		},
@@ -214,7 +214,7 @@ export async function createPost(input: NewPostInput) {
 			postId: newPostId,
 			userId: user.id,
 			title: input.title,
-			...(input.postType === 'solution'
+			...(input.postType === 'cohort-lesson-solution' && input.parentLessonId
 				? { parentLessonId: input.parentLessonId }
 				: {}),
 		})

@@ -61,7 +61,7 @@ export function CreatePost({
 			}}
 			createResource={async (input) => {
 				// Add parentLessonId to input when creating a solution
-				if (input.postType === 'solution' && parentLessonId) {
+				if (input.postType === 'cohort-lesson-solution' && parentLessonId) {
 					return createPost({
 						...input,
 						parentLessonId,
