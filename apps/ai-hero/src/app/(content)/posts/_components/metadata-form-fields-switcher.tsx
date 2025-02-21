@@ -29,11 +29,11 @@ export function MetadataFormFieldsSwitcher(
 ) {
 	const { post, ...rest } = props
 
-	if (post.fields.postType === 'lesson') {
+	if (post.fields.postType === 'cohort-lesson') {
 		return <LessonMetadataFormFields post={post} {...rest} />
 	}
 
-	if (post.fields.postType === 'solution') {
+	if (post.fields.postType === 'cohort-lesson-solution') {
 		return <SolutionMetadataFormFields post={post} {...rest} />
 	}
 

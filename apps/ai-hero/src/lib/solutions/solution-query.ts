@@ -29,7 +29,7 @@ export async function getSolution(id: string): Promise<Solution | null> {
 	const solution = await db.query.contentResource.findFirst({
 		where: sql`
 			${contentResource.id} = ${id} AND
-			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'solution'
+			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'cohort-lesson-solution'
 		`,
 	})
 
@@ -58,7 +58,7 @@ export async function getSolutionForLesson(
 		JOIN ${contentResourceResource} AS crr ON cr_lesson.id = crr.resourceOfId
 		JOIN ${contentResource} AS cr_video ON crr.resourceId = cr_video.id
 		WHERE (cr_lesson.id = ${lessonId} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonId})
-			AND JSON_EXTRACT(cr_video.fields, "$.postType") = 'solution'
+			AND JSON_EXTRACT(cr_video.fields, "$.postType") = 'cohort-lesson-solution'
 		LIMIT 1;`
 
 	const result = await db.execute(query)
@@ -86,7 +86,7 @@ export const addSolutionResourceToLesson = async ({
 
 	const solutionResource = await db.query.contentResource.findFirst({
 		where: sql`
-			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'solution' AND
+			JSON_EXTRACT(${contentResource.fields}, "$.postType") = 'cohort-lesson-solution' AND
 			${contentResource.id} = ${solutionResourceId}
 		`,
 		with: {
@@ -161,10 +161,10 @@ export async function createSolution(
 
 	const solution = await courseBuilderAdapter.createContentResource({
 		id: newSolutionId,
-		type: 'solution',
+		type: 'post',
 		fields: {
 			title: input.title,
-			postType: 'solution',
+			postType: 'cohort-lesson-solution',
 			parentLessonId: input.parentLessonId,
 			state: 'draft',
 			visibility: 'unlisted',

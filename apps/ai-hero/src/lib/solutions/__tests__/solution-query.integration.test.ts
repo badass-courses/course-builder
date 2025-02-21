@@ -102,7 +102,7 @@ describe('Solution API', () => {
 
 		it('creates a solution for a valid lesson', async () => {
 			const lesson = await createTestPost(db, {
-				postType: 'lesson',
+				postType: 'cohort-lesson',
 				createdById: TEST_ADMIN.id,
 			})
 
@@ -116,7 +116,7 @@ describe('Solution API', () => {
 					const body = (await request.json()) as Record<string, unknown>
 					const solution = await createTestPost(db, {
 						...body,
-						postType: 'solution',
+						postType: 'cohort-lesson-solution',
 						createdById: TEST_ADMIN.id,
 						parentLessonId: body.parentLessonId as string,
 					})
@@ -136,20 +136,20 @@ describe('Solution API', () => {
 			expect(res.status).toBe(200)
 			const data = await res.json()
 			expect(data.title).toBe(mockSolution.title)
-			expect(data.postType).toBe('solution')
+			expect(data.postType).toBe('cohort-lesson-solution')
 			expect(data.createdById).toBe(TEST_ADMIN.id)
 			expect(data.parentLessonId).toBe(lesson.id)
 		})
 
 		it('prevents creating multiple solutions for the same lesson', async () => {
 			const lesson = await createTestPost(db, {
-				postType: 'lesson',
+				postType: 'cohort-lesson',
 				createdById: TEST_ADMIN.id,
 			})
 
 			// Create first solution
 			await createTestPost(db, {
-				postType: 'solution',
+				postType: 'cohort-lesson-solution',
 				createdById: TEST_ADMIN.id,
 				title: 'First Solution',
 				parentLessonId: lesson.id,
@@ -192,12 +192,12 @@ describe('Solution API', () => {
 
 		it('deletes an existing solution', async () => {
 			const lesson = await createTestPost(db, {
-				postType: 'lesson',
+				postType: 'cohort-lesson',
 				createdById: TEST_ADMIN.id,
 			})
 
 			const solution = await createTestPost(db, {
-				postType: 'solution',
+				postType: 'cohort-lesson-solution',
 				createdById: TEST_ADMIN.id,
 				title: 'Test Solution',
 				parentLessonId: lesson.id,
@@ -239,12 +239,12 @@ describe('Solution API', () => {
 	describe('Parent-Child Relationship', () => {
 		it('deletes solution when parent lesson is deleted', async () => {
 			const lesson = await createTestPost(db, {
-				postType: 'lesson',
+				postType: 'cohort-lesson',
 				createdById: TEST_ADMIN.id,
 			})
 
 			const solution = await createTestPost(db, {
-				postType: 'solution',
+				postType: 'cohort-lesson-solution',
 				createdById: TEST_ADMIN.id,
 				title: 'Test Solution',
 				parentLessonId: lesson.id,
@@ -277,7 +277,7 @@ describe('Solution API', () => {
 	describe('Validation Rules', () => {
 		it('validates solution title length', async () => {
 			const lesson = await createTestPost(db, {
-				postType: 'lesson',
+				postType: 'cohort-lesson',
 				createdById: TEST_ADMIN.id,
 			})
 
@@ -307,7 +307,7 @@ describe('Solution API', () => {
 
 		it('validates solution visibility', async () => {
 			const lesson = await createTestPost(db, {
-				postType: 'lesson',
+				postType: 'cohort-lesson',
 				createdById: TEST_ADMIN.id,
 			})
 
