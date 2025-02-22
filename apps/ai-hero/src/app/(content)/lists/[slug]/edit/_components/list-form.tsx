@@ -100,6 +100,17 @@ export const ListForm = withResourceForm<List, typeof ListSchema>(
 		},
 		bodyPanelConfig: {
 			showListResources: true,
+			listEditorConfig: {
+				title: (
+					<div>
+						<span className="flex text-lg font-bold">Resources</span>
+						<span className="text-muted-foreground mt-2 font-normal">
+							Add and organize resources in this list.
+						</span>
+					</div>
+				),
+				showTierSelector: true,
+			},
 		},
 		createPostConfig: {
 			title: 'Create a Resource',

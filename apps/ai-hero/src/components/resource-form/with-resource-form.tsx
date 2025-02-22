@@ -78,6 +78,17 @@ export interface ResourceFormConfig<
 	/** Configuration for the body panel */
 	bodyPanelConfig?: {
 		showListResources?: boolean
+		listEditorConfig?: {
+			title?: React.ReactNode
+			searchConfig?: React.ReactNode
+			showTierSelector?: boolean
+			onResourceAdd?: (resource: ContentResource) => Promise<void>
+			onResourceRemove?: (resourceId: string) => Promise<void>
+			onResourceReorder?: (
+				resourceId: string,
+				newPosition: number,
+			) => Promise<void>
+		}
 	}
 }
 
@@ -178,7 +189,26 @@ export function withResourceForm<
 					config.bodyPanelConfig?.showListResources ? (
 						<ListResourcesEdit
 							list={resource}
-							createPostConfig={config.createPostConfig}
+							config={{
+								selection: {
+									availableResourceTypes: config.createPostConfig
+										?.availableResourceTypes || ['article'],
+									defaultResourceType:
+										config.createPostConfig?.defaultResourceType || 'article',
+									createResourceTitle: config.createPostConfig?.title,
+									showTierSelector:
+										config.bodyPanelConfig?.listEditorConfig?.showTierSelector,
+									searchConfig:
+										config.bodyPanelConfig?.listEditorConfig?.searchConfig,
+								},
+								title: config.bodyPanelConfig?.listEditorConfig?.title,
+								onResourceAdd:
+									config.bodyPanelConfig?.listEditorConfig?.onResourceAdd,
+								onResourceRemove:
+									config.bodyPanelConfig?.listEditorConfig?.onResourceRemove,
+								onResourceReorder:
+									config.bodyPanelConfig?.listEditorConfig?.onResourceReorder,
+							}}
 						/>
 					) : null
 				}
