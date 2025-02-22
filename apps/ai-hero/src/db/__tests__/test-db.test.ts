@@ -18,6 +18,7 @@ describe('SQLite Test DB', () => {
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 			deletedAt: null,
+			parentLessonId: null,
 		}
 
 		// Insert test data
