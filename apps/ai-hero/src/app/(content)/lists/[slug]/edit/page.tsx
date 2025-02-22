@@ -4,7 +4,7 @@ import { getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
-import { EditListForm } from './_components/edit-list-form'
+import { ListForm } from './_components/list-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,5 +44,5 @@ export default async function ListEditPage(props: {
 		redirect(`/${list?.fields?.slug}`)
 	}
 
-	return <EditListForm key={list.fields.slug} list={{ ...list }} />
+	return <ListForm key={list.fields.slug} resource={list} />
 }

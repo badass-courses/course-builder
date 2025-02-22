@@ -70,4 +70,7 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 			return result as Cohort
 		},
 		onSave: onCohortSave,
+		bodyPanelConfig: {
+			showListResources: true,
+		},
 	}

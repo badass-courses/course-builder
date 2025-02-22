@@ -1,17 +1,11 @@
 import * as React from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { TagField } from '@/app/(content)/posts/_components/tag-field'
 import type { List, ListSchema } from '@/lib/lists'
 import { ListTypeSchema } from '@/lib/lists'
-import { addTagToPost, removeTagFromPost } from '@/lib/posts-query'
-import { api } from '@/trpc/react'
-import { Pencil } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
-	Button,
 	FormControl,
 	FormDescription,
 	FormField,
@@ -33,35 +27,6 @@ export const ListMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof ListSchema>>
 	list: List
 }> = ({ form, list }) => {
-	const router = useRouter()
-	const { data: tags = [] } = api.tags.getTags.useQuery()
-
-	const parsedTagsForUiPackage = z
-		.array(
-			z.object({
-				id: z.string(),
-				fields: z.object({
-					label: z.string(),
-					name: z.string(),
-				}),
-			}),
-		)
-		.parse(tags)
-
-	const parsedSelectedTagsForUiPackage = z
-		.array(
-			z.object({
-				tag: z.object({
-					id: z.string(),
-					fields: z.object({
-						label: z.string(),
-						name: z.string(),
-					}),
-				}),
-			}),
-		)
-		.parse(list.tags)
-
 	// Get all possible values from the enum
 	const listTypeOptions = ListTypeSchema.options
 
