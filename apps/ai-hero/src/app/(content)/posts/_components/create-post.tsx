@@ -1,5 +1,6 @@
 'use client'
 
+import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
@@ -33,6 +34,10 @@ export interface CreatePostProps {
 	 * Parent lesson ID when creating a solution
 	 */
 	parentLessonId?: string
+	/**
+	 * Called when navigation is about to start
+	 */
+	onNavigationStart?: () => void
 }
 
 /**
@@ -44,19 +49,27 @@ export function CreatePost({
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
 	parentLessonId,
+	onNavigationStart,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
+	const [isPending, startTransition] = useTransition()
 
 	return (
 		<NewResourceWithVideoForm
 			className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
 			onResourceCreated={async (resource: ContentResource) => {
+				const editUrl = `/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`
+
+				// Start navigation transition
+				startTransition(() => {
+					router.push(editUrl)
+					// Only close dialog when transition actually starts
+					onNavigationStart?.()
+				})
+
+				// Then notify parent components
 				if (onResourceCreated) {
-					onResourceCreated(resource)
-				} else {
-					router.push(
-						`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,
-					)
+					await onResourceCreated(resource)
 				}
 			}}
 			createResource={async (input) => {

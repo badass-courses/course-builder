@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { PostType } from '@/lib/posts'
-import { FilePlus2 } from 'lucide-react'
+import { FilePlus2, Loader2 } from 'lucide-react'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
 import {
@@ -88,15 +88,24 @@ export function CreatePostModal({
 	isSolutionContext = false,
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
+	const [isProcessing, setIsProcessing] = React.useState(false)
 
 	React.useEffect(() => {
 		setIsOpen(open)
 	}, [open])
 
+	const handleResourceCreated = async (resource: ContentResource) => {
+		setIsProcessing(true)
+		if (onResourceCreated) {
+			await onResourceCreated(resource)
+		}
+	}
+
 	return (
 		<Dialog
 			open={isOpen}
 			onOpenChange={(open) => {
+				if (isProcessing) return // prevent closing while processing
 				if (onOpenChange) {
 					onOpenChange(open)
 				}
@@ -119,14 +128,18 @@ export function CreatePostModal({
 			<DialogContent>
 				{title && (
 					<DialogHeader className="fluid-xl font-heading mb-3 font-semibold">
-						{title}
+						<div className="flex items-center gap-2">
+							{isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
+							{isProcessing ? 'Creating...' : title}
+						</div>
 					</DialogHeader>
 				)}
 				<CreatePost
-					onResourceCreated={onResourceCreated}
+					onResourceCreated={handleResourceCreated}
 					defaultResourceType={defaultResourceType}
 					availableResourceTypes={availableResourceTypes}
 					parentLessonId={parentLessonId}
+					onNavigationStart={() => setIsOpen(false)}
 				/>
 			</DialogContent>
 		</Dialog>
