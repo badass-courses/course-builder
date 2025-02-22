@@ -17,6 +17,10 @@ import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
 
+/**
+ * Base fields required for all resource types
+ * @interface BaseResourceFields
+ */
 export interface BaseResourceFields {
 	body?: string | null
 	title?: string | null
@@ -26,6 +30,10 @@ export interface BaseResourceFields {
 	description?: string | null
 }
 
+/**
+ * Base configuration for resource tools
+ * @interface BaseTool
+ */
 export type BaseTool = {
 	id: string
 	label?: string
@@ -33,30 +41,52 @@ export type BaseTool = {
 	toolComponent?: React.ReactElement
 }
 
+/**
+ * Configuration for resource form functionality
+ * @interface ResourceFormConfig
+ * @template T - Resource type extending ContentResource with BaseResourceFields
+ * @template S - Zod schema for form validation
+ */
 export interface ResourceFormConfig<
 	T extends ContentResource & {
 		fields: BaseResourceFields
 	},
 	S extends z.ZodSchema,
 > {
+	/** Type of resource being edited */
 	resourceType: 'cohort' | 'list' | 'page' | 'post' | 'tutorial' | 'workshop'
+	/** Zod schema for form validation */
 	schema: S
+	/** Function to generate default form values */
 	defaultValues: (resource?: T) => z.infer<S>
+	/** Configuration for creating new posts */
 	createPostConfig?: {
 		title: string
 		defaultResourceType: PostType
 		availableResourceTypes: PostType[]
 	}
+	/** Additional tools to be displayed in the resource editor */
 	customTools?: BaseTool[]
+	/** Function to generate resource URL path */
 	getResourcePath: (slug?: string) => string
+	/** Function to update resource data */
 	updateResource: (resource: Partial<T>) => Promise<T>
+	/** Optional function for automatic resource updates */
 	autoUpdateResource?: (resource: Partial<T>) => Promise<T>
+	/** Optional callback after successful save */
 	onSave?: (resource: ContentResource) => Promise<void>
+	/** Configuration for the body panel */
 	bodyPanelConfig?: {
 		showListResources?: boolean
 	}
 }
 
+/**
+ * Props for resource form components
+ * @interface ResourceFormProps
+ * @template T - Resource type extending ContentResource
+ * @template S - Zod schema for form validation
+ */
 export interface ResourceFormProps<
 	T extends ContentResource,
 	S extends z.ZodSchema,
@@ -65,6 +95,9 @@ export interface ResourceFormProps<
 	form?: UseFormReturn<z.infer<S>>
 }
 
+/**
+ * Default tools available in the resource editor
+ */
 const defaultTools: BaseTool[] = [
 	{ id: 'assistant' },
 	{
@@ -76,7 +109,12 @@ const defaultTools: BaseTool[] = [
 ]
 
 /**
- * HOC that provides common resource form functionality
+ * Higher-order component that provides common resource form functionality
+ * @template T - Resource type extending ContentResource with BaseResourceFields
+ * @template S - Zod schema for form validation
+ * @param {React.ComponentType<ResourceFormProps<T, S>>} Component - Component to wrap
+ * @param {ResourceFormConfig<T, S>} config - Configuration for the resource form
+ * @returns {React.FC<{resource: T}>} Wrapped component with resource form functionality
  */
 export function withResourceForm<
 	T extends ContentResource & {
