@@ -126,21 +126,24 @@ export function EditPagesForm({
 			form={form}
 			bodyPanelSlot={
 				<ListResourcesEdit
-					title={
-						<div>
-							<span className="flex text-lg font-bold">Resources</span>
-							<span className="text-muted-foreground mt-2 font-normal">
-								Attach resources to this page to create a curated collection
-								that can be displayed in any order.
-							</span>
-						</div>
-					}
-					searchConfig={<SearchConfig />}
 					list={page}
-					createPostConfig={{
-						title: 'Create a Resource',
-						defaultResourceType: 'article',
-						availableResourceTypes: ['article'],
+					config={{
+						title: (
+							<div>
+								<span className="flex text-lg font-bold">Resources</span>
+								<span className="text-muted-foreground mt-2 font-normal">
+									Attach resources to this page to create a curated collection
+									that can be displayed in any order.
+								</span>
+							</div>
+						),
+						selection: {
+							availableResourceTypes: ['article'],
+							defaultResourceType: 'article',
+							createResourceTitle: 'Create a Resource',
+							showTierSelector: false,
+							searchConfig: <SearchConfig />,
+						},
 					}}
 				/>
 			}
