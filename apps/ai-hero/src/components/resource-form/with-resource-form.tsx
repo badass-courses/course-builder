@@ -39,10 +39,10 @@ export interface ResourceFormConfig<
 	},
 	S extends z.ZodSchema,
 > {
-	resourceType: 'cohort' | 'list' | 'page'
+	resourceType: 'cohort' | 'list' | 'page' | 'post' | 'tutorial' | 'workshop'
 	schema: S
-	defaultValues: (resource: T) => z.infer<S>
-	createPostConfig: {
+	defaultValues: (resource?: T) => z.infer<S>
+	createPostConfig?: {
 		title: string
 		defaultResourceType: PostType
 		availableResourceTypes: PostType[]
@@ -50,7 +50,11 @@ export interface ResourceFormConfig<
 	customTools?: BaseTool[]
 	getResourcePath: (slug?: string) => string
 	updateResource: (resource: Partial<T>) => Promise<T>
+	autoUpdateResource?: (resource: Partial<T>) => Promise<T>
 	onSave?: (resource: ContentResource) => Promise<void>
+	bodyPanelConfig?: {
+		showListResources?: boolean
+	}
 }
 
 export interface ResourceFormProps<
@@ -133,10 +137,12 @@ export function withResourceForm<
 				updateResource={config.updateResource}
 				onSave={config.onSave}
 				bodyPanelSlot={
-					<ListResourcesEdit
-						list={resource}
-						createPostConfig={config.createPostConfig}
-					/>
+					config.bodyPanelConfig?.showListResources ? (
+						<ListResourcesEdit
+							list={resource}
+							createPostConfig={config.createPostConfig}
+						/>
+					) : null
 				}
 				availableWorkflows={[
 					{
