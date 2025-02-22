@@ -55,10 +55,52 @@ interface ResourceListProps extends ResourceListSlots {
 }
 
 /**
- * ResourceList
+ * ResourceList Component
  *
  * Creates a flexible list of resources with multiple injection points (slots)
- * that let you add stuff before/after the entire list, or before/after each item.
+ * that let you add content before/after the entire list, or before/after each item.
+ *
+ * Features:
+ * - Flexible slot system for custom content injection
+ * - Custom item rendering
+ * - Empty state handling
+ * - Resource removal and expansion
+ * - Context-based state management
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {ContentResource[]} props.resources - Array of resources to display
+ * @param {string} [props.className] - Optional CSS class name
+ * @param {() => React.ReactNode} [props.beforeAllItems] - Content to render before all items
+ * @param {() => React.ReactNode} [props.afterAllItems] - Content to render after all items
+ * @param {(item: ContentResource, index: number) => React.ReactNode} [props.beforeEachItem] - Content to render before each item
+ * @param {(item: ContentResource, index: number) => React.ReactNode} [props.afterEachItem] - Content to render after each item
+ * @param {(item: ContentResource, index: number, context: ResourceListContext) => React.ReactNode} [props.itemRenderer] - Custom item renderer
+ * @param {() => React.ReactNode} [props.emptyStateRenderer] - Content to render when list is empty
+ * @param {(resourceId: string) => void} [props.onRemove] - Callback when a resource is removed
+ * @param {(resourceId: string) => void} [props.onExpand] - Callback when a resource is expanded
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <ResourceList
+ *   resources={items}
+ *   className="my-list"
+ *   itemRenderer={(item) => <CustomItem item={item} />}
+ * />
+ *
+ * // Advanced usage with slots
+ * <ResourceList
+ *   resources={items}
+ *   beforeAllItems={() => <Header />}
+ *   beforeEachItem={(item) => <ItemHeader item={item} />}
+ *   afterEachItem={(item) => <ItemFooter item={item} />}
+ *   afterAllItems={() => <Footer />}
+ *   emptyStateRenderer={() => <EmptyState />}
+ *   onRemove={(id) => handleRemove(id)}
+ *   onExpand={(id) => handleExpand(id)}
+ * />
+ * ```
  */
 export function ResourceList({
 	resources,
@@ -135,7 +177,24 @@ function DefaultResourceItem({ item }: { item: TreeItem }) {
 }
 
 /**
- * Custom hook to consume resource list context if you need it in child components.
+ * Custom hook to consume resource list context.
+ * Provides access to resource list operations like removal and expansion.
+ *
+ * @returns {ResourceListContext} The resource list context
+ *
+ * @example
+ * ```tsx
+ * function ResourceItem() {
+ *   const { onRemove, onExpand } = useResourceListContext()
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={() => onRemove(id)}>Remove</button>
+ *       <button onClick={() => onExpand(id)}>Expand</button>
+ *     </div>
+ *   )
+ * }
+ * ```
  */
 export function useResourceListContext() {
 	return useContext(ResourceListContext)

@@ -33,10 +33,53 @@ import SearchConfig from './search-config'
 import { SelectionProvider } from './selection-context'
 
 /**
- * List resources editor component
+ * List resources editor component.
+ * A powerful component for managing ordered collections of resources with features
+ * like drag-and-drop reordering, tier-based organization, and resource selection.
+ *
+ * Features:
+ * - Resource selection with type filtering
+ * - Drag-and-drop reordering
+ * - Tier-based organization (standard/premium)
+ * - Custom search configuration
+ * - Resource creation integration
+ * - Nested resource support
+ * - Position tracking
+ *
+ * @component
  * @param {Object} props - Component props
  * @param {ContentResource} props.list - The list resource being edited
  * @param {ListEditorConfig} [props.config] - Configuration for the list editor
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <ListResourcesEdit
+ *   list={resource}
+ *   config={{
+ *     selection: {
+ *       availableResourceTypes: ['article'],
+ *       defaultResourceType: 'article'
+ *     }
+ *   }}
+ * />
+ *
+ * // Advanced usage with tier selector and custom title
+ * <ListResourcesEdit
+ *   list={resource}
+ *   config={{
+ *     title: <CustomTitle />,
+ *     selection: {
+ *       availableResourceTypes: ['article', 'tutorial'],
+ *       showTierSelector: true,
+ *       searchConfig: <CustomSearchConfig />
+ *     },
+ *     onResourceAdd: async (resource) => {
+ *       // Custom add logic
+ *     }
+ *   }}
+ * />
+ * ```
  */
 export default function ListResourcesEdit({
 	list,
