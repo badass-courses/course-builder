@@ -15,9 +15,22 @@ export default async function CohortEditPage(props: {
 	const { ability } = await getServerAuthSession()
 	const cohort = await getCohort(params.slug)
 
+	console.log('CohortEditPage:', {
+		params,
+		cohort,
+		fields: cohort?.fields,
+		id: cohort?.id,
+		type: cohort?.type,
+		ability: ability.can('create', 'Content'),
+	})
+
 	if (!cohort || !ability.can('create', 'Content')) {
+		console.error('CohortEditPage: Not found or no permission', {
+			cohort: !!cohort,
+			canCreate: ability.can('create', 'Content'),
+		})
 		notFound()
 	}
 
-	return <EditCohortForm key={cohort.fields.slug} cohort={cohort} />
+	return <EditCohortForm key={cohort.fields.slug} resource={cohort} />
 }
