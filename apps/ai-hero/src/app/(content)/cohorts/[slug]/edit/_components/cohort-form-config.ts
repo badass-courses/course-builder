@@ -13,7 +13,6 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 		resourceType: 'cohort',
 		schema: CohortSchema,
 		defaultValues: (cohort) => {
-			console.log('cohort', cohort)
 			if (!cohort) {
 				return {
 					type: 'cohort',

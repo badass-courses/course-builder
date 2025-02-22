@@ -112,20 +112,14 @@ export function NewResourceWithVideoForm({
 			}
 			const resource = await createResource(values as any)
 			if (!resource) {
-				// Handle edge case, e.g., toast an error message
-				console.log('no resource in onSubmit')
+				console.error('No resource created')
 				return
 			}
 
-			onResourceCreated(resource, form.watch('title'))
+			await onResourceCreated(resource, form.watch('title'))
 		} catch (error) {
-			console.error('Error polling video resource:', error)
+			console.error('Error creating resource:', error)
 			// handle error, e.g. toast an error message
-		} finally {
-			form.reset()
-			setVideoResourceId(videoResourceId)
-			form.setValue('videoResourceId', '')
-			setIsSubmitting(false)
 		}
 	}
 

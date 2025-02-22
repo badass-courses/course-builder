@@ -1,7 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { courseBuilderAdapter } from '@/db'
-import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { getAllLists } from '@/lib/lists-query'
 import { getPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -66,7 +65,6 @@ export default async function ArticleEditPage(props: {
 			post={{ ...post }}
 			videoResourceLoader={videoResourceLoader}
 			listsLoader={listsLoader}
-			sendResourceChatMessage={sendResourceChatMessage}
 		/>
 	)
 }
