@@ -2,7 +2,6 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
 import { addPostToList } from '@/lib/lists-query'
-import { PostType } from '@/lib/posts'
 import { track } from '@/utils/analytics'
 import {
 	TYPESENSE_COLLECTION_NAME,
@@ -25,42 +24,28 @@ import {
 import { DynamicTitle } from './dynamic-title'
 import { getInitialTreeState, treeStateReducer } from './lesson-list/data/tree'
 import Tree from './lesson-list/tree'
+import {
+	createListEditorConfig,
+	type ListEditorConfig,
+} from './list-editor-config'
 import { ResourcesInfiniteHits } from './resources-infinite-hits'
 import SearchConfig from './search-config'
 import { SelectionProvider } from './selection-context'
 
-export interface CreatePostConfig {
-	/**
-	 * Title for the create post modal
-	 */
-	title?: string
-	/**
-	 * Default resource type to create
-	 */
-	defaultResourceType?: PostType
-	/**
-	 * Available resource types that can be created
-	 */
-	availableResourceTypes?: PostType[]
-}
-
+/**
+ * List resources editor component
+ * @param {Object} props - Component props
+ * @param {ContentResource} props.list - The list resource being edited
+ * @param {ListEditorConfig} [props.config] - Configuration for the list editor
+ */
 export default function ListResourcesEdit({
 	list,
-	title = <DynamicTitle />,
-	searchConfig = <SearchConfig />,
-	showTierSelector = false,
-	createPostConfig = {
-		title: 'Create a Resource',
-		defaultResourceType: 'article',
-		availableResourceTypes: ['article'],
-	},
+	config: userConfig,
 }: {
 	list: ContentResource
-	title?: React.ReactNode | string
-	searchConfig?: React.ReactNode
-	showTierSelector?: boolean
-	createPostConfig?: CreatePostConfig
+	config?: Partial<ListEditorConfig>
 }) {
+	const config = createListEditorConfig(userConfig || {})
 	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
 	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
 		React.useState(false)
@@ -107,9 +92,56 @@ export default function ListResourcesEdit({
 				rootResourceId={list.id}
 				rootResource={list}
 				onRefresh={() => refresh()}
-				showTierSelector={showTierSelector}
+				showTierSelector={config.selection.showTierSelector}
 			/>
 		)
+	}
+
+	const handleResourceAdd = async (resource: ContentResource) => {
+		track('post_created', {
+			source: 'search_modal',
+			resourceId: resource.id,
+			resourceType: resource.type,
+			listId: list.id,
+		})
+
+		// Add to database first to get accurate position
+		const result = await addPostToList({
+			postId: resource.id,
+			listId: list.id,
+			metadata: {
+				tier: 'standard',
+			},
+		})
+
+		if (!result) {
+			throw new Error('Failed to add post to list')
+		}
+
+		// Update UI with server data
+		updateState({
+			type: 'add-item',
+			itemId: resource.id,
+			item: {
+				id: resource.id,
+				label: resource.fields?.title,
+				type: resource.type,
+				children: [],
+				tier: 'standard',
+				itemData: {
+					resourceId: resource.id,
+					resourceOfId: list.id,
+					position: result.position,
+					metadata: {
+						tier: 'standard',
+					},
+					resource: resource as any,
+				},
+			},
+		})
+
+		// Call user-provided onResourceAdd if available
+		await config.onResourceAdd?.(resource)
 	}
 
 	return (
@@ -132,10 +164,10 @@ export default function ListResourcesEdit({
 				}}
 				future={{ preserveSharedStateOnUnmount: true }}
 			>
-				{searchConfig}
+				{config.selection.searchConfig || <SearchConfig />}
 				<div className="border-b pr-2 text-sm font-medium">
 					<div className="mb-3 flex items-center justify-between px-5 pt-3">
-						{title}
+						{config.title || <DynamicTitle />}
 						<Dialog
 							open={isSearchModalOpen}
 							onOpenChange={setIsSearchModalOpen}
@@ -176,56 +208,12 @@ export default function ListResourcesEdit({
 				</div>
 			</InstantSearchNext>
 			<CreatePostModal
-				title={createPostConfig.title}
+				title={config.selection.createResourceTitle}
 				open={isCreatePostModalOpen}
 				onOpenChange={setIsCreatePostModalOpen}
-				defaultResourceType={createPostConfig.defaultResourceType}
-				availableResourceTypes={createPostConfig.availableResourceTypes}
-				onResourceCreated={async (resource) => {
-					track('post_created', {
-						source: 'search_modal',
-						resourceId: resource.id,
-						resourceType: resource.type,
-						listId: list.id,
-					})
-
-					// Add to database first to get accurate position
-					const result = await addPostToList({
-						postId: resource.id,
-						listId: list.id,
-						metadata: {
-							tier: 'standard',
-						},
-					})
-
-					if (!result) {
-						throw new Error('Failed to add post to list')
-					}
-
-					// Update UI with server data
-					updateState({
-						type: 'add-item',
-						itemId: resource.id,
-						item: {
-							id: resource.id,
-							label: resource.fields?.title,
-							type: resource.type,
-							children: [],
-							tier: 'standard',
-							itemData: {
-								resourceId: resource.id,
-								resourceOfId: list.id,
-								position: result.position,
-								metadata: {
-									tier: 'standard',
-								},
-								resource: resource as any,
-							},
-						},
-					})
-
-					setIsCreatePostModalOpen(false)
-				}}
+				defaultResourceType={config.selection.defaultResourceType}
+				availableResourceTypes={config.selection.availableResourceTypes}
+				onResourceCreated={handleResourceAdd}
 				showTrigger={false}
 			/>
 		</SelectionProvider>

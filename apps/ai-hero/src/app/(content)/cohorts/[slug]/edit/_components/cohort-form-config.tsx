@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { ResourceFormConfig } from '@/components/resource-form/with-resource-form'
 import { Cohort, CohortSchema } from '@/lib/cohort'
 import { updateResource } from '@/lib/resources-query'
@@ -72,5 +73,16 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 		onSave: onCohortSave,
 		bodyPanelConfig: {
 			showListResources: true,
+			listEditorConfig: {
+				title: (
+					<div>
+						<span className="flex text-lg font-bold">Lessons</span>
+						<span className="text-muted-foreground mt-2 font-normal">
+							Add and organize lessons in this cohort.
+						</span>
+					</div>
+				),
+				showTierSelector: false,
+			},
 		},
 	}
