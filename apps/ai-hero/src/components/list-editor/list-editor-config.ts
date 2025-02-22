@@ -4,8 +4,19 @@ import { z } from 'zod'
 import { ContentResource } from '@coursebuilder/core/schemas'
 
 /**
- * Configuration for list resource selection
+ * Configuration for list resource selection and filtering.
+ * Controls what types of resources can be added to a list and how they are selected.
+ *
  * @interface ListResourceSelectionConfig
+ *
+ * @example
+ * ```typescript
+ * const selectionConfig: ListResourceSelectionConfig = {
+ *   availableResourceTypes: ['article', 'video'],
+ *   defaultResourceType: 'article',
+ *   showTierSelector: true
+ * }
+ * ```
  */
 export interface ListResourceSelectionConfig {
 	/** Available resource types that can be selected */
@@ -14,31 +25,79 @@ export interface ListResourceSelectionConfig {
 	defaultResourceType: PostType
 	/** Title for the create resource modal */
 	createResourceTitle?: string
-	/** Whether to show tier selector */
+	/** Whether to show tier selector (standard/premium) */
 	showTierSelector?: boolean
 	/** Custom search configuration component */
 	searchConfig?: React.ReactNode
 }
 
 /**
- * Configuration for list editor functionality
+ * Configuration for list editor functionality.
+ * Defines how the list editor behaves, including resource selection,
+ * organization, and event handling.
+ *
+ * Features:
+ * - Resource type filtering
+ * - Drag-and-drop reordering
+ * - Tier-based organization
+ * - Custom search configuration
+ * - Resource CRUD operations
+ *
  * @interface ListEditorConfig
+ *
+ * @example
+ * ```typescript
+ * const listEditorConfig: ListEditorConfig = {
+ *   selection: {
+ *     availableResourceTypes: ['article'],
+ *     defaultResourceType: 'article',
+ *     showTierSelector: true
+ *   },
+ *   title: <CustomTitle />,
+ *   onResourceAdd: async (resource) => {
+ *     // Handle resource addition
+ *   }
+ * }
+ * ```
  */
 export interface ListEditorConfig {
 	/** Resource selection configuration */
 	selection: ListResourceSelectionConfig
 	/** Custom title component */
 	title?: React.ReactNode
-	/** Function to handle resource addition */
+	/**
+	 * Function to handle resource addition
+	 * @param {ContentResource} resource - The resource being added
+	 * @returns {Promise<void>}
+	 */
 	onResourceAdd?: (resource: ContentResource) => Promise<void>
-	/** Function to handle resource removal */
+	/**
+	 * Function to handle resource removal
+	 * @param {string} resourceId - ID of the resource to remove
+	 * @returns {Promise<void>}
+	 */
 	onResourceRemove?: (resourceId: string) => Promise<void>
-	/** Function to handle resource reordering */
+	/**
+	 * Function to handle resource reordering
+	 * @param {string} resourceId - ID of the resource being reordered
+	 * @param {number} newPosition - New position in the list
+	 * @returns {Promise<void>}
+	 */
 	onResourceReorder?: (resourceId: string, newPosition: number) => Promise<void>
 }
 
 /**
- * Default configuration for list editor
+ * Default configuration for list editor.
+ * Provides sensible defaults for a basic list editor setup.
+ *
+ * @example
+ * ```typescript
+ * const config = createListEditorConfig({
+ *   selection: {
+ *     availableResourceTypes: ['video']
+ *   }
+ * })
+ * ```
  */
 export const defaultListEditorConfig: ListEditorConfig = {
 	selection: {
@@ -50,7 +109,8 @@ export const defaultListEditorConfig: ListEditorConfig = {
 }
 
 /**
- * Schema for validating list editor configuration
+ * Schema for validating list editor configuration.
+ * Uses Zod for runtime type checking of configuration objects.
  */
 export const ListEditorConfigSchema = z.object({
 	selection: z.object({
@@ -66,9 +126,20 @@ export const ListEditorConfigSchema = z.object({
 })
 
 /**
- * Creates a list editor configuration with defaults
- * @param config Partial list editor configuration
- * @returns Complete list editor configuration
+ * Creates a list editor configuration with defaults.
+ * Merges provided configuration with default values.
+ *
+ * @param {Partial<ListEditorConfig>} config - Partial configuration to merge with defaults
+ * @returns {ListEditorConfig} Complete list editor configuration
+ *
+ * @example
+ * ```typescript
+ * const config = createListEditorConfig({
+ *   selection: {
+ *     showTierSelector: true
+ *   }
+ * })
+ * ```
  */
 export function createListEditorConfig(
 	config: Partial<ListEditorConfig>,
