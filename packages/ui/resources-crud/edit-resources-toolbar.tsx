@@ -25,7 +25,7 @@ export function EditResourcesToolbar({
 		<div className="bg-muted h-12 w-full md:h-[var(--pane-layout-height)] md:w-12 md:border-l">
 			<div className="flex flex-row gap-1 p-1 md:flex-col">
 				<TooltipProvider delayDuration={0}>
-					{Array.from(tools).map((tool) => (
+					{tools.map((tool) => (
 						<Tooltip key={tool.id}>
 							<TooltipTrigger asChild>
 								<Button
