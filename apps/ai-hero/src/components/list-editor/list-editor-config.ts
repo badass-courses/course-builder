@@ -12,7 +12,7 @@ import { ContentResource } from '@coursebuilder/core/schemas'
  * @example
  * ```typescript
  * const selectionConfig: ListResourceSelectionConfig = {
- *   availableResourceTypes: ['article', 'video'],
+ *   availableResourceTypes: ['article', 'video', 'workshop'],
  *   defaultResourceType: 'article',
  *   showTierSelector: true
  * }
@@ -20,15 +20,17 @@ import { ContentResource } from '@coursebuilder/core/schemas'
  */
 export interface ListResourceSelectionConfig {
 	/** Available resource types that can be selected */
-	availableResourceTypes: PostType[]
+	availableResourceTypes: string[]
 	/** Default resource type for new resources */
-	defaultResourceType: PostType
+	defaultResourceType: string
 	/** Title for the create resource modal */
 	createResourceTitle?: string
 	/** Whether to show tier selector (standard/premium) */
 	showTierSelector?: boolean
 	/** Custom search configuration component */
 	searchConfig?: React.ReactNode
+	/** Top-level resource types (not post subtypes) */
+	topLevelResourceTypes?: string[]
 }
 
 /**

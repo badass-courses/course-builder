@@ -1,5 +1,9 @@
 import * as React from 'react'
-import { NewPostInput, PostType, PostTypeSchema } from '@/lib/posts'
+import { NewPostInput } from '@/lib/posts'
+import { isTopLevelResourceType } from '@/lib/resources'
+import { createResourceAction } from '@/lib/resources/create-resource-action'
+import { log } from '@/server/logger'
+import { track } from '@/utils/analytics'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -36,12 +40,27 @@ const NewResourceWithVideoSchema = z.object({
 type NewResourceWithVideo = z.infer<typeof NewResourceWithVideoSchema>
 
 const FormValuesSchema = NewResourceWithVideoSchema.extend({
-	postType: PostTypeSchema,
+	postType: z.string(),
 	videoResourceId: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof FormValuesSchema>
 
+/**
+ * Form for creating a new resource with an optional video attachment.
+ * Supports creating both top-level resources (workshop, tutorial) and post subtypes (article, podcast).
+ *
+ * @param props - Component props
+ * @param props.getVideoResource - Function to retrieve a video resource by ID or slug
+ * @param props.createResource - Function to create a post resource
+ * @param props.onResourceCreated - Callback when a resource is created
+ * @param props.availableResourceTypes - List of resource types available for selection
+ * @param props.defaultPostType - Default resource type to select
+ * @param props.className - Additional CSS classes
+ * @param props.children - Render prop for video upload UI
+ * @param props.uploadEnabled - Whether video upload is enabled
+ * @param props.topLevelResourceTypes - List of top-level resource types (not post subtypes)
+ */
 export function NewResourceWithVideoForm({
 	getVideoResource,
 	createResource,
@@ -51,17 +70,19 @@ export function NewResourceWithVideoForm({
 	className,
 	children,
 	uploadEnabled = true,
+	topLevelResourceTypes = [],
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewPostInput) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
-	availableResourceTypes?: PostType[] | undefined
-	defaultPostType?: PostType
+	availableResourceTypes?: string[] | undefined
+	defaultPostType?: string
 	className?: string
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
 	) => React.ReactNode
 	uploadEnabled?: boolean
+	topLevelResourceTypes?: string[]
 }) {
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | undefined
@@ -110,16 +131,52 @@ export function NewResourceWithVideoForm({
 			if (values.videoResourceId) {
 				await pollVideoResource(values.videoResourceId).next()
 			}
-			const resource = await createResource(values as any)
+
+			const selectedType = values.postType
+			let resource: ContentResource | null = null
+
+			// Check if the selected type is a top-level resource type or a post subtype
+			if (
+				topLevelResourceTypes.includes(selectedType) ||
+				isTopLevelResourceType(selectedType)
+			) {
+				// If it's a top-level resource type, use createResourceAction
+				track('create_top_level_resource', {
+					resourceType: selectedType,
+					title: values.title,
+				})
+
+				resource = await createResourceAction(selectedType, values.title)
+			} else {
+				// If it's a post subtype, use createPost
+				track('create_post', {
+					postType: selectedType,
+					title: values.title,
+				})
+
+				resource = await createResource({
+					...values,
+					postType: selectedType as any,
+					createdById: '',
+				})
+			}
+
 			if (!resource) {
-				console.error('No resource created')
+				console.error('No resource created', {
+					resourceType: selectedType,
+					title: values.title,
+				})
 				return
 			}
 
 			await onResourceCreated(resource, form.watch('title'))
 		} catch (error) {
-			console.error('Error creating resource:', error)
-			// handle error, e.g. toast an error message
+			console.error(
+				'Error creating resource:',
+				error instanceof Error ? error.message : String(error),
+			)
+		} finally {
+			setIsSubmitting(false)
 		}
 	}
 
@@ -171,13 +228,15 @@ export function NewResourceWithVideoForm({
 						control={form.control}
 						name="postType"
 						render={({ field }) => {
-							const descriptions = {
+							const descriptions: Record<string, string> = {
 								lesson: 'A lesson to be added to a cohort',
 								article: 'A standard article',
 								podcast:
 									'A podcast episode that will be distributed across podcast networks via the egghead podcast',
 								course:
 									'A collection of lessons that will be distributed as a course',
+								workshop: 'A comprehensive hands-on learning experience',
+								tutorial: 'A step-by-step guide to completing a specific task',
 							}
 
 							return (
@@ -209,7 +268,7 @@ export function NewResourceWithVideoForm({
 									</FormControl>
 									{field.value && (
 										<div className="text-muted-foreground w-full text-right text-sm italic">
-											{descriptions[field.value as keyof typeof descriptions]}
+											{descriptions[field.value] || `A ${field.value} resource`}
 										</div>
 									)}
 									<FormMessage />

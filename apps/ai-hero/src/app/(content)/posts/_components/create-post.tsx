@@ -24,12 +24,16 @@ export interface CreatePostProps {
 	 * The default type of resource to create
 	 * @default 'article'
 	 */
-	defaultResourceType?: PostType
+	defaultResourceType?: string
 	/**
 	 * List of allowed resource types that can be created
 	 * @default ['article', 'lesson']
 	 */
-	availableResourceTypes?: PostType[]
+	availableResourceTypes?: string[]
+	/**
+	 * List of top-level resource types (not post subtypes)
+	 */
+	topLevelResourceTypes?: string[]
 	/**
 	 * Parent lesson ID when creating a solution
 	 */
@@ -48,6 +52,7 @@ export function CreatePost({
 	onResourceCreated,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
+	topLevelResourceTypes,
 	parentLessonId,
 	onNavigationStart,
 }: CreatePostProps = {}): JSX.Element {
@@ -83,8 +88,9 @@ export function CreatePost({
 				return createPost(input)
 			}}
 			getVideoResource={getVideoResource}
-			availableResourceTypes={availableResourceTypes}
-			defaultPostType={defaultResourceType}
+			availableResourceTypes={availableResourceTypes as PostType[]}
+			defaultPostType={defaultResourceType as PostType}
+			topLevelResourceTypes={topLevelResourceTypes}
 			uploadEnabled={false}
 		>
 			{(handleSetVideoResourceId: (id: string) => void) => (
