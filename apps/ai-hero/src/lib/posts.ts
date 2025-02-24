@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { POST_SUBTYPES } from './resources'
 import { TagSchema } from './tags'
 
 export const POST_TYPES_WITH_VIDEO = [
@@ -34,7 +35,12 @@ export type PostAction = z.infer<typeof PostActionSchema>
 export const NewPostInputSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
 	videoResourceId: z.string().optional(),
-	postType: z.string(),
+	postType: z.string().refine(
+		(type) => POST_SUBTYPES.includes(type),
+		(type) => ({
+			message: `Invalid post type: ${type}. Valid types are: ${POST_SUBTYPES.join(', ')}`,
+		}),
+	),
 	createdById: z.string(),
 	parentLessonId: z.string().optional(),
 })

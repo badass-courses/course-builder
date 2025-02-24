@@ -22,6 +22,16 @@ export const ResourceTypeSchema = z.enum([
 export type ResourceType = z.infer<typeof ResourceTypeSchema>
 
 /**
+ * String literal type for resource types - useful for better autocomplete
+ */
+export type ResourceTypeString = keyof typeof ResourceTypeSchema.enum
+
+/**
+ * String literal type for post subtypes - useful for better autocomplete
+ */
+export type PostSubtypeString = (typeof POST_SUBTYPES)[number]
+
+/**
  * Resource types that support video content
  */
 export const RESOURCE_TYPES_WITH_VIDEO: ResourceType[] = [
@@ -41,25 +51,17 @@ export const AnyResourceTypeSchema = z.union([
 export type AnyResourceType = z.infer<typeof AnyResourceTypeSchema>
 
 /**
- * Mapping between resource types and their available post subtypes
- * This defines which post subtypes can be created within each resource type
+ * Valid post subtypes - only the 'post' resource type has subtypes
  */
-export const RESOURCE_TYPE_TO_POST_SUBTYPES: Record<ResourceType, string[]> = {
-	post: [
-		'article',
-		'podcast',
-		'tip',
-		'cohort-lesson',
-		'cohort-lesson-solution',
-		'course',
-		'playlist',
-	],
-	workshop: [],
-	tutorial: [],
-	cohort: [],
-	list: [],
-	page: [],
-} as const
+export const POST_SUBTYPES: string[] = [
+	'article',
+	'podcast',
+	'tip',
+	'cohort-lesson',
+	'cohort-lesson-solution',
+	'course',
+	'playlist',
+]
 
 /**
  * Check if a given string is a valid top-level resource type
@@ -77,6 +79,22 @@ export function isTopLevelResourceType(type: string): type is ResourceType {
  */
 export function isPostSubtype(type: string): boolean {
 	return PostTypeSchema.safeParse(type).success
+}
+
+/**
+ * Check if a resource type supports video
+ * @param type - The resource type to check
+ * @returns true if the type supports video uploads
+ */
+export function supportsVideo(type: string): boolean {
+	// Check if it's a top-level resource type that supports video
+	if (isTopLevelResourceType(type)) {
+		return RESOURCE_TYPES_WITH_VIDEO.includes(type)
+	}
+
+	// Check if it's a post subtype that supports video
+	const postTypesWithVideo = ['cohort-lesson', 'podcast', 'tip']
+	return postTypesWithVideo.includes(type)
 }
 
 /**
