@@ -7,10 +7,8 @@ import {
 	ResourceCreationConfig,
 	supportsVideo,
 } from '@/lib/resources'
-import {
-	createResourceAction,
-	ResourceCreationError,
-} from '@/lib/resources/create-resource-action'
+import { createResourceAction } from '@/lib/resources/create-resource-action'
+import { ResourceCreationError } from '@/lib/resources/resource-errors'
 import { track } from '@/utils/analytics'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
