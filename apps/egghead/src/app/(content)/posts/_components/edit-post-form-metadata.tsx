@@ -127,7 +127,7 @@ export const PostMetadataFormFields: React.FC<{
 
 	const primaryTagImageUrl = post.tags?.find(
 		(tagRow) => tagRow.tagId === post.fields.primaryTagId,
-	).tag.fields.image_url
+	)?.tag?.fields?.image_url
 	return (
 		<>
 			{POST_TYPES_WITH_VIDEO.includes(post.fields.postType) && (
