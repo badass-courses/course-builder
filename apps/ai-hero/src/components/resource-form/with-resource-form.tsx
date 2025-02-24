@@ -237,6 +237,7 @@ export function withResourceForm<
 				resourceSchema={config.schema}
 				getResourcePath={config.getResourcePath}
 				updateResource={config.updateResource}
+				autoUpdateResource={config.autoUpdateResource}
 				onSave={config.onSave}
 				bodyPanelSlot={
 					config.bodyPanelConfig?.showListResources ? (
