@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Import only what we need from resource-types.ts
 import {
 	AnyResourceTypeSchema,
 	POST_SUBTYPES,
@@ -10,7 +9,6 @@ import {
 	ResourceTypeSchema,
 } from './resource-types'
 
-// Re-export everything for backward compatibility
 export {
 	AnyResourceTypeSchema,
 	POST_SUBTYPES,
