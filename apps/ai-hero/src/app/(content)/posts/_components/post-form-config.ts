@@ -58,7 +58,7 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 			},
 		}
 	},
-	getResourcePath: (slug?: string) => `/posts/${slug || ''}`,
+	getResourcePath: (slug?: string) => `/${slug || ''}`,
 	updateResource: async (resource: Partial<Post>) => {
 		if (!resource.id || !resource.fields) {
 			throw new Error('Invalid resource data')
@@ -82,6 +82,7 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 		return result as Post
 	},
 	autoUpdateResource: async (resource: Partial<Post>) => {
+		console.log('autoUpdateResource', resource)
 		if (!resource.id || !resource.fields) {
 			throw new Error('Invalid resource data')
 		}

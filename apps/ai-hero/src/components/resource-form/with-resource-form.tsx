@@ -159,20 +159,11 @@ export interface ResourceFormProps<
 	resource: T
 	form?: UseFormReturn<z.infer<S>>
 }
-
 /**
  * Default tools available in the resource editor
  * These tools are automatically included in every resource form
  */
-const defaultTools: BaseTool[] = [
-	{ id: 'assistant' },
-	{
-		id: 'media',
-		icon: () => (
-			<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
-		),
-	},
-]
+const defaultTools: BaseTool[] = [{ id: 'assistant' }]
 
 /**
  * Higher-order component that provides common resource form functionality.
@@ -236,19 +227,7 @@ export function withResourceForm<
 		// Combine default and custom tools
 		const tools = [
 			...defaultTools,
-			...(config.customTools?.map((tool) => ({
-				...tool,
-				toolComponent:
-					tool.id === 'media' ? (
-						<ImageResourceUploader
-							key="image-uploader"
-							belongsToResourceId={resource.id}
-							uploadDirectory={`${config.resourceType}s`}
-						/>
-					) : (
-						tool.toolComponent
-					),
-			})) ?? []),
+			...(config.customTools ?? []),
 		] as ResourceTool[]
 
 		return (
