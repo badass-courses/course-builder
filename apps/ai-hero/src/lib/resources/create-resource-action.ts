@@ -10,7 +10,11 @@ import {
 import { log } from '@/server/logger'
 
 import { createResource } from './create-resources'
-import { ResourceCreationError } from './resource-errors'
+import {
+	InvalidResourceTypeError,
+	ResourceCreationError,
+	ResourceValidationError,
+} from './resource-errors'
 
 /**
  * Server action to create a new top-level resource
@@ -24,9 +28,8 @@ export async function createResourceAction(type: string, title: string) {
 	try {
 		// Validate title
 		if (!title || title.trim().length < 2) {
-			throw new ResourceCreationError(
+			throw new ResourceValidationError(
 				'Resource title must be at least 2 characters long',
-				'validation_error',
 				{ field: 'title', value: title },
 			)
 		}
@@ -35,9 +38,8 @@ export async function createResourceAction(type: string, title: string) {
 		if (!isTopLevelResourceType(type)) {
 			// If it's a post subtype, suggest using createPost instead
 			if (isPostSubtype(type) || POST_SUBTYPES.includes(type)) {
-				throw new ResourceCreationError(
+				throw new InvalidResourceTypeError(
 					`"${type}" is a post subtype, not a top-level resource type. Use createPost() instead.`,
-					'invalid_resource_type',
 					{
 						value: type,
 						validTypes: Object.keys(ResourceTypeSchema.enum),
@@ -47,9 +49,8 @@ export async function createResourceAction(type: string, title: string) {
 			}
 
 			// Otherwise it's just an invalid type
-			throw new ResourceCreationError(
+			throw new InvalidResourceTypeError(
 				`Invalid resource type: "${type}". Valid types are: ${Object.values(ResourceTypeSchema.enum).join(', ')}`,
-				'invalid_resource_type',
 				{ value: type, validTypes: Object.values(ResourceTypeSchema.enum) },
 			)
 		}

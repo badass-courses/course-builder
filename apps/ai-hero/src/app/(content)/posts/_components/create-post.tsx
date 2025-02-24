@@ -35,10 +35,6 @@ export interface CreatePostProps {
 	 */
 	topLevelResourceTypes?: string[]
 	/**
-	 * Parent lesson ID when creating a solution
-	 */
-	parentLessonId?: string
-	/**
 	 * Called when navigation is about to start
 	 */
 	onNavigationStart?: () => void
@@ -53,7 +49,6 @@ export function CreatePost({
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
 	topLevelResourceTypes,
-	parentLessonId,
 	onNavigationStart,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()

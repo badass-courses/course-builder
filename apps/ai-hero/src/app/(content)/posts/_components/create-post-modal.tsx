@@ -56,14 +56,6 @@ export interface CreatePostModalProps {
 	 * @default 'New Post'
 	 */
 	title?: string
-	/**
-	 * Parent lesson ID when creating a solution
-	 */
-	parentLessonId?: string
-	/**
-	 * Whether this modal is being used to create a solution
-	 */
-	isSolutionContext?: boolean
 }
 
 /**
@@ -89,8 +81,6 @@ export function CreatePostModal({
 	availableResourceTypes = ['article'],
 	topLevelResourceTypes = [],
 	title = 'New Post',
-	parentLessonId,
-	isSolutionContext = false,
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
 	const [isProcessing, setIsProcessing] = React.useState(false)
@@ -125,8 +115,7 @@ export function CreatePostModal({
 						className="w-full gap-1"
 						onClick={() => setIsOpen(true)}
 					>
-						<FilePlus2 className="h-4 w-4" />{' '}
-						{isSolutionContext ? 'Add Solution' : 'New Post'}
+						<FilePlus2 className="h-4 w-4" /> {'New Post'}
 					</Button>
 				</DialogTrigger>
 			)}
@@ -143,8 +132,6 @@ export function CreatePostModal({
 					onResourceCreated={handleResourceCreated}
 					defaultResourceType={defaultResourceType as PostType}
 					availableResourceTypes={availableResourceTypes as PostType[]}
-					parentLessonId={parentLessonId}
-					onNavigationStart={() => setIsOpen(false)}
 					topLevelResourceTypes={topLevelResourceTypes}
 				/>
 			</DialogContent>
