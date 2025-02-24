@@ -8,6 +8,7 @@ import {
 	Dialog,
 	DialogContent,
 	DialogHeader,
+	DialogTitle,
 	DialogTrigger,
 } from '@coursebuilder/ui'
 
@@ -127,11 +128,11 @@ export function CreatePostModal({
 			)}
 			<DialogContent>
 				{title && (
-					<DialogHeader className="fluid-xl font-heading mb-3 font-semibold">
-						<div className="flex items-center gap-2">
+					<DialogHeader className="">
+						<DialogTitle className="font-heading mb-3 flex items-center gap-2 text-2xl font-semibold">
 							{isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
 							{isProcessing ? 'Creating...' : title}
-						</div>
+						</DialogTitle>
 					</DialogHeader>
 				)}
 				<CreatePost
