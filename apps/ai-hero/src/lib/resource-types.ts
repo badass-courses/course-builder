@@ -19,7 +19,7 @@ export type PostType = z.infer<typeof PostTypeSchema>
 /**
  * Valid post subtypes - only the 'post' resource type has subtypes
  */
-export const POST_SUBTYPES: PostType[] = [
+export const POST_SUBTYPES: (PostType | string)[] = [
 	'article',
 	'podcast',
 	'tip',
@@ -76,4 +76,4 @@ export const RESOURCE_TYPES_WITH_VIDEO: ResourceType[] = ['lesson']
 /**
  * Post types that support video content
  */
-export const POST_TYPES_WITH_VIDEO: PostType[] = ['article']
+export const POST_TYPES_WITH_VIDEO: (PostType | string)[] = ['article']
