@@ -11,7 +11,6 @@ import { usersRouter } from '@/trpc/api/routers/users'
 import { videoResourceRouter } from '@/trpc/api/routers/videoResource'
 import { createTRPCRouter } from '@/trpc/api/trpc'
 
-import { solutionsRouter } from './routers/solutions'
 import { tagsRouter } from './routers/tags'
 import { typesenseRouter } from './routers/typesense'
 
@@ -33,7 +32,6 @@ export const appRouter = createTRPCRouter({
 	certificate: certificateRouter,
 	deviceVerification: deviceVerificationRouter,
 	typesense: typesenseRouter,
-	solutions: solutionsRouter,
 	tags: tagsRouter,
 })
 
