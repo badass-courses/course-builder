@@ -1,63 +1,30 @@
 import { z } from 'zod'
 
-import { PostType, PostTypeSchema } from './posts'
-
-/**
- * Schema defining all top-level resource types in the system
- * This schema should be used when working with primary resource entities
- * that are not post subtypes.
- */
-export const ResourceTypeSchema = z.enum([
-	'post',
-	'workshop',
-	'tutorial',
-	'cohort',
-	'list',
-	'page',
-	'lesson',
-])
-
-/**
- * Type representing all top-level resource types
- */
-export type ResourceType = z.infer<typeof ResourceTypeSchema>
-
-/**
- * String literal type for resource types - useful for better autocomplete
- */
-export type ResourceTypeString = keyof typeof ResourceTypeSchema.enum
-
-/**
- * String literal type for post subtypes - useful for better autocomplete
- */
-export type PostSubtypeString = (typeof POST_SUBTYPES)[number]
-
-/**
- * Resource types that support video content
- */
-export const RESOURCE_TYPES_WITH_VIDEO: ResourceType[] = ['lesson']
-
-/**
- * Combined schema for all resource type identifiers, including both
- * top-level resource types and post subtypes
- */
-export const AnyResourceTypeSchema = z.union([
-	ResourceTypeSchema,
+// Import only what we need from resource-types.ts
+import {
+	AnyResourceTypeSchema,
+	POST_SUBTYPES,
 	PostTypeSchema,
-])
+	RESOURCE_TYPES_WITH_VIDEO,
+	ResourceType,
+	ResourceTypeSchema,
+} from './resource-types'
 
-export type AnyResourceType = z.infer<typeof AnyResourceTypeSchema>
-
-/**
- * Valid post subtypes - only the 'post' resource type has subtypes
- */
-export const POST_SUBTYPES: string[] = [
-	'article',
-	'podcast',
-	'tip',
-	'course',
-	'playlist',
-]
+// Re-export everything for backward compatibility
+export {
+	AnyResourceTypeSchema,
+	POST_SUBTYPES,
+	PostTypeSchema,
+	ResourceTypeSchema,
+	RESOURCE_TYPES_WITH_VIDEO,
+}
+export type {
+	AnyResourceType,
+	PostSubtypeString,
+	PostType,
+	ResourceType,
+	ResourceTypeString,
+} from './resource-types'
 
 /**
  * Check if a given string is a valid top-level resource type
