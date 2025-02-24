@@ -5,12 +5,7 @@ import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resou
 import { POST_SUBTYPES } from './resources'
 import { TagSchema } from './tags'
 
-export const POST_TYPES_WITH_VIDEO = [
-	'cohort-lesson',
-	'podcast',
-	'tip',
-	'workshop',
-]
+export const POST_TYPES_WITH_VIDEO = ['article']
 
 export const PostTypeSchema = z.union([
 	z.literal('article'),
