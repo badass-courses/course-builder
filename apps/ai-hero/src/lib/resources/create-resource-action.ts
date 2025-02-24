@@ -10,20 +10,7 @@ import {
 import { log } from '@/server/logger'
 
 import { createResource } from './create-resources'
-
-/**
- * Error class for resource creation errors
- */
-export class ResourceCreationError extends Error {
-	constructor(
-		message: string,
-		public readonly type: string,
-		public readonly details?: Record<string, any>,
-	) {
-		super(message)
-		this.name = 'ResourceCreationError'
-	}
-}
+import { ResourceCreationError } from './resource-errors'
 
 /**
  * Server action to create a new top-level resource
