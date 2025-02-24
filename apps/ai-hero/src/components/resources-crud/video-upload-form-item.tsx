@@ -23,7 +23,7 @@ export function VideoUploadFormItem({
 	isValidatingVideoResource,
 	videoResourceValid,
 }: {
-	selectedPostType: PostType
+	selectedPostType: string
 	form: UseFormReturn<any>
 	videoResourceId?: string
 	setVideoResourceId: (id: string) => void

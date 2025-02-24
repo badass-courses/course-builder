@@ -41,12 +41,16 @@ export interface CreatePostModalProps {
 	 * The default type of resource to create
 	 * @default 'article'
 	 */
-	defaultResourceType?: PostType
+	defaultResourceType?: string
 	/**
 	 * List of allowed resource types that can be created in this context
 	 * @default ['article']
 	 */
-	availableResourceTypes?: PostType[]
+	availableResourceTypes?: string[]
+	/**
+	 * List of top-level resource types (not post subtypes)
+	 */
+	topLevelResourceTypes?: string[]
 	/**
 	 * Custom title for the dialog header
 	 * @default 'New Post'
@@ -84,6 +88,7 @@ export function CreatePostModal({
 	open,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
+	topLevelResourceTypes = [],
 	title = 'New Post',
 	parentLessonId,
 	isSolutionContext = false,
@@ -137,10 +142,11 @@ export function CreatePostModal({
 				)}
 				<CreatePost
 					onResourceCreated={handleResourceCreated}
-					defaultResourceType={defaultResourceType}
-					availableResourceTypes={availableResourceTypes}
+					defaultResourceType={defaultResourceType as PostType}
+					availableResourceTypes={availableResourceTypes as PostType[]}
 					parentLessonId={parentLessonId}
 					onNavigationStart={() => setIsOpen(false)}
+					topLevelResourceTypes={topLevelResourceTypes}
 				/>
 			</DialogContent>
 		</Dialog>

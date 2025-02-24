@@ -5,6 +5,11 @@ import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { PostType } from '@/lib/posts'
+import {
+	isTopLevelResourceType,
+	ResourceCreationConfig,
+	ResourceType,
+} from '@/lib/resources'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -81,7 +86,7 @@ export interface ResourceFormConfig<
 	S extends z.ZodSchema,
 > {
 	/** Type of resource being edited */
-	resourceType: 'cohort' | 'list' | 'page' | 'post' | 'tutorial' | 'workshop'
+	resourceType: ResourceType
 
 	/** Zod schema for form validation */
 	schema: S
@@ -90,7 +95,25 @@ export interface ResourceFormConfig<
 	defaultValues: (resource?: T) => z.infer<S>
 
 	/**
+	 * Configuration for creating new resources within this resource
+	 * @example
+	 * ```typescript
+	 * createResourceConfig: {
+	 *   title: 'Create New Content',
+	 *   availableTypes: [
+	 *     { type: 'workshop' },
+	 *     { type: 'tutorial' },
+	 *     { type: 'post', postTypes: ['article', 'podcast'] }
+	 *   ],
+	 *   defaultType: { type: 'post', postType: 'article' }
+	 * }
+	 * ```
+	 */
+	createResourceConfig?: ResourceCreationConfig
+
+	/**
 	 * Configuration for creating new posts within this resource
+	 * @deprecated Use createResourceConfig instead for more flexibility with all resource types
 	 * @example
 	 * ```typescript
 	 * createPostConfig: {
@@ -230,6 +253,39 @@ export function withResourceForm<
 			...(config.customTools ?? []),
 		] as ResourceTool[]
 
+		// Extract available resource types and default resource type based on config format
+		let availableResourceTypes: string[] = ['article']
+		let defaultResourceType: string = 'article'
+		let resourceTitle: string | undefined
+		let topLevelResourceTypes: string[] = []
+
+		if (config.createResourceConfig) {
+			// New format
+			availableResourceTypes =
+				config.createResourceConfig.availableTypes.flatMap((typeConfig) => {
+					if ('postTypes' in typeConfig) {
+						// For post types, return the post subtypes
+						return typeConfig.postTypes
+					} else {
+						// For other resource types, return the type itself
+						topLevelResourceTypes.push(typeConfig.type)
+						return [typeConfig.type]
+					}
+				})
+
+			defaultResourceType =
+				'postType' in config.createResourceConfig.defaultType
+					? config.createResourceConfig.defaultType.postType || 'article'
+					: config.createResourceConfig.defaultType.type
+
+			resourceTitle = config.createResourceConfig.title
+		} else if (config.createPostConfig) {
+			// Old format
+			availableResourceTypes = config.createPostConfig.availableResourceTypes
+			defaultResourceType = config.createPostConfig.defaultResourceType
+			resourceTitle = config.createPostConfig.title
+		}
+
 		return (
 			<ResourceFormComponent
 				resource={resource}
@@ -245,15 +301,14 @@ export function withResourceForm<
 							list={resource}
 							config={{
 								selection: {
-									availableResourceTypes: config.createPostConfig
-										?.availableResourceTypes || ['article'],
-									defaultResourceType:
-										config.createPostConfig?.defaultResourceType || 'article',
-									createResourceTitle: config.createPostConfig?.title,
+									availableResourceTypes: availableResourceTypes as PostType[],
+									defaultResourceType: defaultResourceType as PostType,
+									createResourceTitle: resourceTitle,
 									showTierSelector:
 										config.bodyPanelConfig?.listEditorConfig?.showTierSelector,
 									searchConfig:
 										config.bodyPanelConfig?.listEditorConfig?.searchConfig,
+									topLevelResourceTypes: topLevelResourceTypes,
 								},
 								title: config.bodyPanelConfig?.listEditorConfig?.title,
 								onResourceAdd:

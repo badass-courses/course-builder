@@ -256,6 +256,7 @@ export default function ListResourcesEdit({
 				onOpenChange={setIsCreatePostModalOpen}
 				defaultResourceType={config.selection.defaultResourceType}
 				availableResourceTypes={config.selection.availableResourceTypes}
+				topLevelResourceTypes={config.selection.topLevelResourceTypes}
 				onResourceCreated={handleResourceAdd}
 				showTrigger={false}
 			/>
