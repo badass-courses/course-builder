@@ -159,12 +159,29 @@ export function NewResourceWithVideoForm({
 			setIsSubmitting(true)
 			setCreationError(null)
 
+			// Track attempt with resource type
+			track('resource_creation_attempt', {
+				resourceType: selectedPostType,
+				hasVideo: !!values.videoResourceId,
+				isTopLevel:
+					topLevelResourceTypes.includes(selectedPostType) ||
+					isTopLevelResourceType(selectedPostType),
+			})
+
 			// Validate video if required
 			if (typeRequiresVideo) {
 				if (!values.videoResourceId) {
 					setCreationError(
 						`A video is required for ${selectedPostType} resources`,
 					)
+
+					// Track validation error
+					track('resource_creation_validation_error', {
+						resourceType: selectedPostType,
+						error: 'missing_video',
+						message: `A video is required for ${selectedPostType} resources`,
+					})
+
 					setIsSubmitting(false)
 					return
 				}
@@ -173,6 +190,14 @@ export function NewResourceWithVideoForm({
 					await pollVideoResource(values.videoResourceId).next()
 				} catch (error) {
 					setCreationError('Video resource validation failed')
+
+					// Track video validation error
+					track('resource_creation_validation_error', {
+						resourceType: selectedPostType,
+						error: 'video_validation_failed',
+						videoResourceId: values.videoResourceId,
+					})
+
 					setIsSubmitting(false)
 					return
 				}
@@ -190,6 +215,7 @@ export function NewResourceWithVideoForm({
 				track('create_top_level_resource', {
 					resourceType: selectedType,
 					title: values.title,
+					hasVideo: !!values.videoResourceId,
 				})
 
 				resource = await createResourceAction(selectedType, values.title)
@@ -198,6 +224,7 @@ export function NewResourceWithVideoForm({
 				track('create_post', {
 					postType: selectedType,
 					title: values.title,
+					hasVideo: !!values.videoResourceId,
 				})
 
 				resource = await createResource({
@@ -209,8 +236,22 @@ export function NewResourceWithVideoForm({
 
 			if (!resource) {
 				setCreationError('Failed to create resource')
+
+				// Track creation failure
+				track('resource_creation_failed', {
+					resourceType: selectedType,
+					reason: 'null_resource_returned',
+				})
+
 				return
 			}
+
+			// Track successful creation
+			track('resource_creation_success', {
+				resourceType: selectedType,
+				resourceId: resource.id,
+				hasVideo: !!values.videoResourceId,
+			})
 
 			toast({
 				title: 'Resource created',
@@ -220,13 +261,26 @@ export function NewResourceWithVideoForm({
 			await onResourceCreated(resource, form.watch('title'))
 		} catch (error) {
 			let errorMessage = 'Error creating resource'
+			let errorType = 'unknown_error'
+			let errorDetails = {}
 
 			// Handle our custom error type
 			if (error instanceof ResourceCreationError) {
 				errorMessage = error.message
+				errorType = error.type
+				errorDetails = error.details || {}
 			} else if (error instanceof Error) {
 				errorMessage = error.message
+				errorType = 'standard_error'
 			}
+
+			// Track error with detailed information
+			track('resource_creation_error', {
+				resourceType: selectedPostType,
+				errorType,
+				errorMessage,
+				details: errorDetails,
+			})
 
 			setCreationError(errorMessage)
 			toast({
