@@ -394,7 +394,7 @@ const TreeItem = memo(function TreeItem({
 					{item.label ?? item.id}
 				</span>
 			</div>
-			<small className="text-ellipsis opacity-50">
+			<small className="flex-shrink-0 text-ellipsis text-right opacity-50">
 				{item.itemData?.resource?.fields?.postType ? (
 					<span className="capitalize">
 						{item.itemData.resource.fields.postType}
@@ -406,14 +406,14 @@ const TreeItem = memo(function TreeItem({
 
 	return (
 		<Fragment>
-			<div className="relative border-b transition-colors dark:border-neutral-700">
+			<div className="relative transition-colors">
 				<DraggableItemRenderer
 					ref={buttonRef}
 					item={item}
 					label={labelNode}
 					className={cn('w-full text-left', debugStyles[state], {
 						'opacity-40': state === 'dragging',
-						'bg-yellow-50/20 dark:bg-yellow-500/10': shouldHighlightParent,
+						// 'bg-yellow-50/20 dark:bg-yellow-500/10': shouldHighlightParent,
 					})}
 					data-drag-state={state}
 					data-item-id={item.id}
