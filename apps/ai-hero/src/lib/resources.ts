@@ -14,6 +14,7 @@ export const ResourceTypeSchema = z.enum([
 	'cohort',
 	'list',
 	'page',
+	'lesson',
 ])
 
 /**
@@ -34,10 +35,7 @@ export type PostSubtypeString = (typeof POST_SUBTYPES)[number]
 /**
  * Resource types that support video content
  */
-export const RESOURCE_TYPES_WITH_VIDEO: ResourceType[] = [
-	'workshop',
-	'tutorial',
-]
+export const RESOURCE_TYPES_WITH_VIDEO: ResourceType[] = ['lesson']
 
 /**
  * Combined schema for all resource type identifiers, including both
@@ -93,7 +91,7 @@ export function supportsVideo(type: string): boolean {
 	}
 
 	// Check if it's a post subtype that supports video
-	const postTypesWithVideo = ['cohort-lesson', 'podcast', 'tip']
+	const postTypesWithVideo = ['article']
 	return postTypesWithVideo.includes(type)
 }
 
