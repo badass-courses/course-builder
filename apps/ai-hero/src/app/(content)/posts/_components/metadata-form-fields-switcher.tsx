@@ -4,8 +4,6 @@ import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { ArticleMetadataFormFields } from './article-metadata-form-fields'
-import { LessonMetadataFormFields } from './lesson-metadata-form-fields'
-import { SolutionMetadataFormFields } from './solution-metadata-form-fields'
 
 interface MetadataFormFieldsSwitcherProps {
 	post: Post
@@ -20,22 +18,17 @@ interface MetadataFormFieldsSwitcherProps {
 }
 
 /**
- * Renders metadata form fields based on the post type.
- * For lessons, a dedicated lesson metadata form is rendered,
- * while articles use the default article metadata form.
+ * Metadata form fields switcher component
+ *
+ * Selects the appropriate metadata form component based on post type.
+ * Different post types have different metadata requirements,
+ * so we use this switcher to render the appropriate form.
  */
 export function MetadataFormFieldsSwitcher(
 	props: MetadataFormFieldsSwitcherProps,
 ) {
 	const { post, ...rest } = props
 
-	if (post.fields.postType === 'cohort-lesson') {
-		return <LessonMetadataFormFields post={post} {...rest} />
-	}
-
-	if (post.fields.postType === 'cohort-lesson-solution') {
-		return <SolutionMetadataFormFields post={post} {...rest} />
-	}
-
+	// For now, all types use the ArticleMetadataFormFields
 	return <ArticleMetadataFormFields post={post} {...rest} />
 }

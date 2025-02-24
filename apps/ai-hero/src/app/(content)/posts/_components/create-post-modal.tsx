@@ -67,8 +67,7 @@ export interface CreatePostModalProps {
 }
 
 /**
- * A modal dialog component for creating new posts or lessons.
- * Provides a form interface wrapped in a dialog with optional trigger button.
+ * Modal dialog for creating new post resources.
  *
  * @example
  * ```tsx
@@ -76,8 +75,8 @@ export interface CreatePostModalProps {
  *   onResourceCreated={async (resource) => {
  *     // Custom handling after creation
  *   }}
- *   defaultResourceType="cohort-lesson"
- *   availableResourceTypes={['cohort-lesson', 'article']}
+ *   defaultResourceType="article"
+ *   availableResourceTypes={['article', 'podcast']}
  * />
  * ```
  */

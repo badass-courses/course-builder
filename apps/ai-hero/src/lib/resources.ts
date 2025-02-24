@@ -55,8 +55,6 @@ export const POST_SUBTYPES: string[] = [
 	'article',
 	'podcast',
 	'tip',
-	'cohort-lesson',
-	'cohort-lesson-solution',
 	'course',
 	'playlist',
 ]

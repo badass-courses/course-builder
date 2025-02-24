@@ -9,11 +9,9 @@ export const POST_TYPES_WITH_VIDEO = ['article']
 
 export const PostTypeSchema = z.union([
 	z.literal('article'),
-	z.literal('cohort-lesson'),
 	z.literal('podcast'),
 	z.literal('tip'),
 	z.literal('course'),
-	z.literal('cohort-lesson-solution'),
 ])
 
 export type PostType = z.infer<typeof PostTypeSchema>
