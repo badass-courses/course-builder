@@ -181,7 +181,6 @@ async function main() {
 					initialValue: 'article' as PostType,
 					options: [
 						{ value: 'article' as PostType, label: 'Article', hint: 'default' },
-						{ value: 'cohort-lesson' as PostType, label: 'Lesson' },
 						{ value: 'podcast' as PostType, label: 'Podcast' },
 						{ value: 'tip' as PostType, label: 'Tip' },
 						{ value: 'course' as PostType, label: 'Course' },

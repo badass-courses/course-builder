@@ -78,13 +78,7 @@ export function CreatePost({
 				}
 			}}
 			createResource={async (input) => {
-				// Add parentLessonId to input when creating a solution
-				if (input.postType === 'cohort-lesson-solution' && parentLessonId) {
-					return createPost({
-						...input,
-						parentLessonId,
-					})
-				}
+				// All posts get created the same way now
 				return createPost(input)
 			}}
 			getVideoResource={getVideoResource}

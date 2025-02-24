@@ -202,9 +202,6 @@ export async function createPost(input: NewPostInput) {
 			state: 'draft',
 			visibility: 'public',
 			slug: slugify(`${input.title}~${postGuid}`),
-			...(input.postType === 'cohort-lesson-solution' && input.parentLessonId
-				? { parentLessonId: input.parentLessonId }
-				: {}),
 		},
 	}
 
@@ -214,9 +211,6 @@ export async function createPost(input: NewPostInput) {
 			postId: newPostId,
 			userId: user.id,
 			title: input.title,
-			...(input.postType === 'cohort-lesson-solution' && input.parentLessonId
-				? { parentLessonId: input.parentLessonId }
-				: {}),
 		})
 	} catch (error) {
 		await log.error('post.create.failed', {

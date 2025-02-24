@@ -46,11 +46,12 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 		createResourceConfig: {
 			title: 'Add Content',
 			availableTypes: [
-				{ type: 'post', postTypes: ['cohort-lesson', 'article'] },
+				{ type: 'post', postTypes: ['article'] },
 				{ type: 'workshop' },
 				{ type: 'tutorial' },
+				{ type: 'lesson' },
 			],
-			defaultType: { type: 'post', postType: 'cohort-lesson' },
+			defaultType: { type: 'post', postType: 'article' },
 		},
 		getResourcePath: (slug?: string) =>
 			slug ? `/cohorts/${slug}` : '/cohorts',
