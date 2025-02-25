@@ -68,7 +68,7 @@ import {
 	writeTagsToSanityResource,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
-import { upsertPostToTypeSense } from './typesense-query'
+import { updatePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function searchLessons(searchTerm: string) {
 	const { session } = await getServerAuthSession()
@@ -861,6 +861,20 @@ export const addResourceToResource = async ({
 			resource: true,
 		},
 	})
+
+	if (resource.fields?.postType === 'lesson') {
+		await updatePostInTypeSense(String(resource.fields?.eggheadLessonId), {
+			belongs_to_resource: parentResource.fields?.eggheadPlaylistId,
+			resources: [
+				{
+					id: parentResource.id,
+					title: parentResource.fields?.title,
+					slug: parentResource.fields?.slug,
+					eggheadPlaylistId: parentResource.fields?.eggheadPlaylistId,
+				},
+			],
+		})
+	}
 
 	return resourceResource
 }

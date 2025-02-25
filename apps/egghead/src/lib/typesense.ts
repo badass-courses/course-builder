@@ -41,6 +41,7 @@ export const TypesensePostSchema = z.object({
 		)
 		.optional(),
 })
+export type TypeSensePost = z.infer<typeof TypesensePostSchema>
 
 const TypesenseResourceSchema = z.object({
 	id: z.string(),
