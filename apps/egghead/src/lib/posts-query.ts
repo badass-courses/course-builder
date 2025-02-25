@@ -710,9 +710,9 @@ export async function getCoursesForPost(postId: string) {
 	return await db
 		.select({
 			courseId: contentResource.id,
-			courseTitle: sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
-			courseSlug: sql`JSON_EXTRACT(${contentResource.fields}, '$.slug')`,
-			eggheadPlaylistId: sql`JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId')`,
+			courseTitle: sql<string>`CAST(JSON_EXTRACT(${contentResource.fields}, '$.title') AS CHAR)`,
+			courseSlug: sql<string>`CAST(JSON_EXTRACT(${contentResource.fields}, '$.slug') AS CHAR)`,
+			eggheadPlaylistId: sql<number>`CAST(JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId') AS SIGNED)`,
 		})
 		.from(contentResource)
 		.innerJoin(
