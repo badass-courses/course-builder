@@ -4,30 +4,26 @@ import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
+import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
+import { Mermaid } from '@coursebuilder/mdx-mermaid/client'
+
 export async function compileMDX(source: string) {
 	return await _compileMDX({
 		source: source,
-		// @ts-expect-error
-		components: { Code, Scrollycoding },
+		components: {
+			// @ts-expect-error
+			Code,
+			Scrollycoding,
+			Mermaid,
+		},
 		options: {
 			mdxOptions: {
 				remarkPlugins: [
+					remarkMermaid,
 					remarkGfm,
-					[
-						remarkCodeHike,
-						{
-							components: { code: 'Code' },
-						},
-					],
+					[remarkCodeHike, { components: { code: 'Code' } }],
 				],
-				recmaPlugins: [
-					[
-						recmaCodeHike,
-						{
-							components: { code: 'Code' },
-						},
-					],
-				],
+				recmaPlugins: [[recmaCodeHike, { components: { code: 'Code' } }]],
 			},
 		},
 	})
