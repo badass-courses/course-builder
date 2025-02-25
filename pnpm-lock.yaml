@@ -186,13 +186,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.2
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
         specifier: ^0.0.11
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.4
@@ -207,7 +207,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.3
+        specifier: ^2.0.4
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -790,13 +790,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.2
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
         specifier: ^0.0.11
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.4
@@ -808,7 +808,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.3
+        specifier: ^2.0.4
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -1004,7 +1004,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0)
@@ -1347,7 +1347,7 @@ importers:
         version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
       mysql2:
         specifier: ^3.6.1
         version: 3.9.2
@@ -1437,13 +1437,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.2
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
         specifier: ^0.0.11
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.4
@@ -1455,7 +1455,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.3
+        specifier: ^2.0.4
         version: link:../../packages/ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -1642,7 +1642,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0)
@@ -1948,10 +1948,10 @@ importers:
         specifier: ^6.5.0
         version: 6.7.0
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
@@ -1960,7 +1960,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.3
+        specifier: ^2.0.4
         version: link:../../packages/ui
       '@heroicons/react':
         specifier: ^2.0.18
@@ -2276,10 +2276,10 @@ importers:
         specifier: ^6.5.0
         version: 6.7.0
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
@@ -2288,7 +2288,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.3
+        specifier: ^2.0.4
         version: link:../../packages/ui
       '@heroicons/react':
         specifier: ^2.0.18
@@ -2604,13 +2604,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.2
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
         specifier: ^0.0.11
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.4
@@ -2622,7 +2622,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.3
+        specifier: ^2.0.4
         version: link:../../packages/ui
       '@designbycode/tailwindcss-text-stroke':
         specifier: ^1.2.1
@@ -3330,7 +3330,7 @@ importers:
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.9.11)
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../core
       '@libsql/client':
         specifier: 0.5.6
@@ -3798,7 +3798,7 @@ importers:
   packages/next:
     dependencies:
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../core
       inngest:
         specifier: ^3.22.5
@@ -3859,7 +3859,7 @@ importers:
         specifier: ^6.36.2
         version: 6.36.2
       '@coursebuilder/core':
-        specifier: 1.0.2
+        specifier: 1.0.3
         version: link:../core
       '@hookform/resolvers':
         specifier: ^3.3.2
@@ -21409,7 +21409,7 @@ packages:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
+      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
       zod: 3.22.4
     dev: false
 
