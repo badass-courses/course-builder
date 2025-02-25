@@ -38,7 +38,8 @@ import type { VideoResource } from '@coursebuilder/core/schemas'
 
 import { syncInstructorToSanity } from './instructor-query'
 import { Post, PostSchema } from './posts'
-import { getPost, positionInputItem } from './posts-query'
+import { getPost } from './posts-query'
+import type { positionInputItem } from './posts/playlists'
 import { EggheadTag } from './tags'
 
 export async function createSanityVideoResource(videoResource: VideoResource) {
