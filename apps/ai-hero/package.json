@@ -55,6 +55,7 @@
 		"@coursebuilder/commerce-next": "^0.0.11",
 		"@coursebuilder/core": "1.0.2",
 		"@coursebuilder/email-templates": "^1.0.4",
+		"@coursebuilder/mdx-mermaid": "workspace:*",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/nodash": "workspace:^",
 		"@coursebuilder/ui": "^2.0.3",
