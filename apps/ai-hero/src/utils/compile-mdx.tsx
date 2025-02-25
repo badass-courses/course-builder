@@ -7,6 +7,12 @@ import remarkGfm from 'remark-gfm'
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
 import { Mermaid } from '@coursebuilder/mdx-mermaid/client'
 
+/**
+ * Compiles MDX content with support for CodeHike and Mermaid diagrams
+ *
+ * @param source - MDX source content to compile
+ * @returns Compiled MDX content
+ */
 export async function compileMDX(source: string) {
 	return await _compileMDX({
 		source: source,
@@ -19,7 +25,13 @@ export async function compileMDX(source: string) {
 		options: {
 			mdxOptions: {
 				remarkPlugins: [
-					remarkMermaid,
+					[
+						remarkMermaid,
+						{
+							// Enable debug mode in development
+							debug: process.env.NODE_ENV === 'development',
+						},
+					],
 					remarkGfm,
 					[remarkCodeHike, { components: { code: 'Code' } }],
 				],

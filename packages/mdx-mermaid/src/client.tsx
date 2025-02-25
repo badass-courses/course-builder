@@ -2,11 +2,43 @@
 
 import React from 'react'
 
-interface MermaidProps {
-	chart: string
-	className?: string
+/**
+ * Configuration options for Mermaid diagrams
+ * @interface MermaidConfig
+ */
+export interface MermaidConfig {
+	/** Custom theme to use (default, dark, forest, neutral) */
+	theme?: string
+	/** Custom theme variables to override default styling */
+	themeVariables?: Record<string, string>
+	/** Custom CSS to apply to the diagram */
+	themeCSS?: string
+	/** Security level for Mermaid (default: 'loose') */
+	securityLevel?: 'strict' | 'loose' | 'antiscript'
+	/** Additional Mermaid configuration options */
+	[key: string]: any
 }
 
+/**
+ * Props for the Mermaid component
+ * @interface MermaidProps
+ */
+interface MermaidProps {
+	/** Mermaid diagram definition */
+	chart: string
+	/** CSS class name to apply to the container */
+	className?: string
+	/** Configuration options for the Mermaid diagram */
+	config?: MermaidConfig
+	/** Whether to enable debug mode */
+	debug?: boolean
+}
+
+/**
+ * Hook to determine if an element is visible in the viewport
+ * @param ref - Reference to the element to check
+ * @returns boolean indicating if the element is visible
+ */
 function useIsVisible(ref: React.RefObject<HTMLElement>) {
 	const [isIntersecting, setIntersecting] = React.useState(false)
 
@@ -30,6 +62,11 @@ function useIsVisible(ref: React.RefObject<HTMLElement>) {
 	return isIntersecting
 }
 
+/**
+ * Parse Mermaid directives from chart definition
+ * @param chart - Mermaid chart definition
+ * @returns Object containing parsed theme, config, and cleaned chart
+ */
 function parseThemeDirective(chart: string) {
 	const themeMatch = chart.match(/%%\{.*?theme\s*:\s*([^}\s]+).*?\}%%/)
 	const configMatch = chart.match(/%%\{.*?init\s*:\s*({[^}]+}).*?\}%%/)
@@ -45,11 +82,37 @@ function parseThemeDirective(chart: string) {
 	}
 }
 
-export function Mermaid({ chart, className = 'my-4 block' }: MermaidProps) {
+// Global cache for rendered diagrams
+const diagramCache = new Map<string, string>()
+
+/**
+ * Mermaid component for rendering Mermaid diagrams in MDX
+ *
+ * Features:
+ * - Automatic light/dark theme detection
+ * - Lazy loading of Mermaid library
+ * - Intersection observer for performance optimization
+ * - Caching of rendered diagrams
+ * - Support for inline and global configuration
+ *
+ * @param props - Component props
+ * @returns React component
+ */
+export function Mermaid({
+	chart,
+	className = 'my-4 block',
+	config: globalConfig = {},
+	debug = false,
+}: MermaidProps) {
 	const id = React.useId()
 	const [svg, setSvg] = React.useState('')
 	const containerRef = React.useRef<HTMLDivElement>(null)
 	const isVisible = useIsVisible(containerRef as React.RefObject<HTMLElement>)
+
+	// Create a cache key based on the chart content and current theme
+	const getCacheKey = React.useCallback((chart: string, isDark: boolean) => {
+		return `${chart}:${isDark ? 'dark' : 'light'}`
+	}, [])
 
 	React.useEffect(() => {
 		if (!isVisible) return
@@ -75,9 +138,30 @@ export function Mermaid({ chart, className = 'my-4 block' }: MermaidProps) {
 				cleanChart,
 			} = parseThemeDirective(chart)
 
+			// Check if we have a cached version of this diagram
+			const cacheKey = getCacheKey(cleanChart, isDarkTheme)
+			if (diagramCache.has(cacheKey)) {
+				if (debug) console.log('Using cached Mermaid diagram:', cacheKey)
+				setSvg(diagramCache.get(cacheKey)!)
+				return
+			}
+
 			const { default: mermaid } = await import('mermaid')
 
 			try {
+				// Merge global config with inline config
+				const mergedConfig = {
+					...globalConfig,
+					...(inlineConfig || {}),
+					themeVariables: {
+						...(globalConfig.themeVariables || {}),
+						...(inlineConfig?.themeVariables || {}),
+					},
+					themeCSS: [globalConfig.themeCSS || '', inlineConfig?.themeCSS || '']
+						.filter(Boolean)
+						.join('\n'),
+				}
+
 				mermaid.initialize({
 					startOnLoad: false,
 					theme: inlineTheme || (isDarkTheme ? 'dark' : 'default'),
@@ -118,7 +202,7 @@ export function Mermaid({ chart, className = 'my-4 block' }: MermaidProps) {
 									border2: '#f3f4f6',
 									arrowheadColor: '#4b5563',
 								}),
-						...(inlineConfig?.themeVariables || {}),
+						...(mergedConfig.themeVariables || {}),
 					},
 					themeCSS: `
 						.node rect, .node circle, .node polygon, .node path {
@@ -135,9 +219,9 @@ export function Mermaid({ chart, className = 'my-4 block' }: MermaidProps) {
 						.edgeLabel foreignObject {
 							text-align: center;
 						}
-						${inlineConfig?.themeCSS || ''}
+						${mergedConfig.themeCSS || ''}
 					`,
-					...inlineConfig,
+					...(mergedConfig || {}),
 				})
 
 				const { svg: renderedSvg } = await mermaid.render(
@@ -145,6 +229,10 @@ export function Mermaid({ chart, className = 'my-4 block' }: MermaidProps) {
 					cleanChart,
 					containerRef.current || undefined,
 				)
+
+				// Cache the rendered SVG
+				diagramCache.set(cacheKey, renderedSvg)
+				if (debug) console.log('Cached Mermaid diagram:', cacheKey)
 
 				setSvg(renderedSvg)
 			} catch (error) {
@@ -156,7 +244,7 @@ export function Mermaid({ chart, className = 'my-4 block' }: MermaidProps) {
 				</div>`)
 			}
 		}
-	}, [chart, id, isVisible])
+	}, [chart, id, isVisible, globalConfig, debug, getCacheKey])
 
 	return (
 		<div
