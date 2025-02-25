@@ -1,14 +1,12 @@
 'use server'
 
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import {
 	contentResource,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
-	users,
 } from '@/db/schema'
 import {
 	generateContentHash,
@@ -23,7 +21,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
-import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
+import { and, eq, like } from 'drizzle-orm'
 import readingTime from 'reading-time'
 import { z } from 'zod'
 
@@ -34,10 +32,7 @@ import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
-import {
-	ContentResource,
-	ContentResourceSchema,
-} from '@coursebuilder/core/schemas'
+import { ContentResource } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
 import {
@@ -56,8 +51,22 @@ import {
 	updateEggheadPlaylist,
 	writeLegacyTaggingsToEgghead,
 } from './egghead'
+import { upsertPostToTypeSense } from './external/typesense'
 import { writeNewPostToDatabase } from './posts-new-query'
 import { createNewPostVersion } from './posts-version-query'
+// Import the read operations from the new module
+import {
+	getAllPostIds,
+	getAllPosts,
+	getAllPostsForUser,
+	getCachedAllPosts,
+	getCachedAllPostsForUser,
+	getCachedPost,
+	getCoursesForPost,
+	getPost,
+	getPostTags,
+	searchLessons,
+} from './posts/read'
 import {
 	removeLessonFromSanityCourse,
 	reorderResourcesInSanityCourse,
@@ -67,39 +76,20 @@ import {
 	updateSanityLesson,
 	writeTagsToSanityResource,
 } from './sanity-content-query'
-import { EggheadTag, EggheadTagSchema } from './tags'
-import { upsertPostToTypeSense } from './typesense-query'
+import { EggheadTag } from './tags'
 
-export async function searchLessons(searchTerm: string) {
-	const { session } = await getServerAuthSession()
-	const userId = session?.user?.id
-
-	const lessons = await db.query.contentResource.findMany({
-		where: and(
-			eq(contentResource.type, 'post'),
-			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
-			or(
-				sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`}`,
-				sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.body')) LIKE ${`%${searchTerm.toLowerCase()}%`}`,
-			),
-		),
-		orderBy: [
-			// Sort by createdById matching current user (if logged in)
-			sql`CASE
-				WHEN ${contentResource.createdById} = ${userId} THEN 0
-				ELSE 1
-			END`,
-			// Secondary sort by title match (prioritize title matches)
-			sql`CASE
-				WHEN LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${searchTerm.toLowerCase()}%`} THEN 0
-				ELSE 1
-			END`,
-			// Then sort by title alphabetically
-			sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
-		],
-	})
-
-	return ContentResourceSchema.array().parse(lessons)
+// Re-export them to maintain backwards compatibility
+export {
+	searchLessons,
+	getPost,
+	getCachedPost,
+	getAllPosts,
+	getCachedAllPosts,
+	getAllPostsForUser,
+	getCachedAllPostsForUser,
+	getPostTags,
+	getCoursesForPost,
+	getAllPostIds,
 }
 
 export async function deletePost(id: string) {
@@ -125,130 +115,6 @@ export async function deletePost(id: string) {
 	revalidatePath('/posts')
 
 	return true
-}
-
-export const getCachedPost = unstable_cache(
-	async (slug: string) => getPost(slug),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
-
-export async function getPost(slug: string): Promise<Post | null> {
-	const postData = await db.query.contentResource.findFirst({
-		where: or(
-			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
-			eq(contentResource.id, slug),
-		),
-		with: {
-			tags: {
-				with: {
-					tag: true,
-				},
-				orderBy: asc(contentResourceTagTable.position),
-			},
-			resources: {
-				with: {
-					resource: true,
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-	})
-
-	const parsedPost = PostSchema.safeParse(postData)
-	if (!parsedPost.success) {
-		console.error(
-			'Error parsing post',
-			parsedPost.error,
-			JSON.stringify(postData),
-		)
-		return null
-	}
-
-	const post = parsedPost.data
-
-	if (!post.currentVersionId) {
-		await createNewPostVersion(post)
-	}
-
-	return post
-}
-
-export const getCachedAllPosts = unstable_cache(
-	async () => getAllPosts(),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
-
-export async function getAllPosts(): Promise<Post[]> {
-	const posts = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'post'),
-		with: {
-			tags: {
-				with: {
-					tag: true,
-				},
-				orderBy: asc(contentResourceTagTable.position),
-			},
-			resources: {
-				with: {
-					resource: true,
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-		orderBy: desc(contentResource.createdAt),
-	})
-
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
-
-	return postsParsed.data
-}
-
-export const getCachedAllPostsForUser = unstable_cache(
-	async (userId?: string) => getAllPostsForUser(userId),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
-
-export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
-	if (!userId) {
-		redirect('/')
-	}
-
-	const posts = await db.query.contentResource.findMany({
-		where: and(
-			eq(contentResource.type, 'post'),
-			eq(contentResource.createdById, userId),
-		),
-		with: {
-			tags: {
-				with: {
-					tag: true,
-				},
-				orderBy: asc(contentResourceTagTable.position),
-			},
-			resources: {
-				with: {
-					resource: true,
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
-		orderBy: desc(contentResource.createdAt),
-	})
-
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
-
-	return postsParsed.data
 }
 
 // rpc style "action" verb-y
@@ -317,17 +183,6 @@ export async function updatePost(
 		action,
 		updatedById: user.id,
 	})
-}
-
-export async function getPostTags(postId: string): Promise<EggheadTag[]> {
-	const tags = await db.query.contentResourceTag.findMany({
-		where: eq(contentResourceTagTable.contentResourceId, postId),
-		with: {
-			tag: true,
-		},
-	})
-
-	return z.array(EggheadTagSchema).parse(tags.map((tag) => tag.tag))
 }
 
 export async function addTagToPost(postId: string, tagId: string) {
@@ -706,27 +561,6 @@ export async function addEggheadLessonToPlaylist({
 	}
 }
 
-export async function getCoursesForPost(postId: string) {
-	return await db
-		.select({
-			courseId: contentResource.id,
-			courseTitle: sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
-			courseSlug: sql`JSON_EXTRACT(${contentResource.fields}, '$.slug')`,
-			eggheadPlaylistId: sql`JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId')`,
-		})
-		.from(contentResource)
-		.innerJoin(
-			contentResourceResource,
-			eq(contentResource.id, contentResourceResource.resourceOfId),
-		)
-		.where(
-			and(
-				eq(contentResourceResource.resourceId, postId),
-				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'course'`,
-			),
-		)
-}
-
 export async function removePostFromCoursePost({
 	postId,
 	resourceOfId,
@@ -1004,18 +838,4 @@ export async function removeSection(
 	return await db
 		.delete(contentResourceResource)
 		.where(eq(contentResourceResource.resourceId, sectionId))
-}
-
-export async function getAllPostIds() {
-	return await db.query.contentResource
-		.findMany({
-			where: and(
-				eq(contentResource.type, 'post'),
-				sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
-			),
-			columns: {
-				id: true,
-			},
-		})
-		.then((posts) => posts.map((post) => post.id))
 }
