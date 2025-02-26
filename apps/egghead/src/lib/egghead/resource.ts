@@ -51,9 +51,13 @@ export async function getEggheadLesson(eggheadLessonId: number) {
  * @returns The Egghead playlist data
  */
 export async function getEggheadPlaylist(eggheadPlaylistId: number) {
-	const playlist = await fetch(
+	const response = await fetch(
 		`https://app.egghead.io/api/v1/playlists/${eggheadPlaylistId}`,
-	).then((res) => res.json())
-
-	return playlist
+	)
+	
+	if (!response.ok) {
+		throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText}`)
+	}
+	
+	return response.json()
 }
