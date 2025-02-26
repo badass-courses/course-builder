@@ -56,6 +56,11 @@ export interface CreatePostModalProps {
 	 * @default 'New Post'
 	 */
 	title?: string
+	/**
+	 * Whether to enable video upload
+	 * @default true
+	 */
+	uploadEnabled?: boolean
 }
 
 /**
@@ -81,6 +86,7 @@ export function CreatePostModal({
 	availableResourceTypes = ['article'],
 	topLevelResourceTypes = [],
 	title = 'New Post',
+	uploadEnabled = true,
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
 	const [isProcessing, setIsProcessing] = React.useState(false)
@@ -133,6 +139,7 @@ export function CreatePostModal({
 					defaultResourceType={defaultResourceType as PostType}
 					availableResourceTypes={availableResourceTypes as PostType[]}
 					topLevelResourceTypes={topLevelResourceTypes}
+					uploadEnabled={uploadEnabled}
 				/>
 			</DialogContent>
 		</Dialog>

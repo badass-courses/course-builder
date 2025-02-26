@@ -60,7 +60,7 @@ export default function ListResourceNavigation({
 		<>
 			<aside
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] flex-shrink-0 overflow-y-auto border-r xl:block',
+					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[400px] flex-shrink-0 overflow-y-auto border-r xl:block',
 					className,
 					{
 						'w-0': !isExpanded,
@@ -104,7 +104,7 @@ export default function ListResourceNavigation({
 				)}
 				{/* Resource navigation list */}
 				<nav>
-					<ol className="divide-border flex flex-col divide-y">
+					<ol className="flex flex-col">
 						{list.resources.map(({ resource }, i) => {
 							const isActive = pathname.includes(`/${resource.fields.slug}`)
 							const isCompleted = progress?.completedLessons.find(
@@ -119,27 +119,40 @@ export default function ListResourceNavigation({
 									<Link
 										aria-current={isActive ? 'page' : undefined}
 										className={cn(
-											'hover:bg-muted flex items-baseline gap-2 py-2 pl-2 pr-4 font-medium transition sm:py-3',
+											'relative flex items-start gap-2 py-2 pl-2 pr-5 font-medium transition duration-150 ease-in-out hover:bg-gradient-to-l hover:from-transparent hover:to-gray-200 sm:py-3 dark:hover:bg-gray-900 dark:hover:bg-gradient-to-l dark:hover:from-transparent dark:hover:to-gray-800',
 											{
-												'text-primary-foreground bg-primary hover:bg-primary/80':
+												'': isCompleted,
+												'before:absolute before:left-[17px] before:top-0 before:h-full before:w-px before:bg-gray-200 before:content-[""] dark:before:bg-gray-800':
+													true,
+												'before:bg-gradient-to-b before:from-transparent before:via-gray-500 before:to-transparent dark:before:bg-gradient-to-b dark:before:from-transparent dark:before:via-gray-500 dark:before:to-transparent':
 													isActive,
-												'items-center': isCompleted,
+												'opacity-[0.85] hover:opacity-100': !isActive,
+												'bg-gray-200 dark:bg-gray-800/75': isActive,
 											},
 										)}
 										href={`/${resource.fields.slug}?list=${list.fields.slug}`}
 									>
-										<div className="min-w-[2ch] text-right font-mono text-[9px] font-normal">
+										<div
+											className={cn(
+												'bg-background relative z-10 flex h-5 w-5 flex-shrink-0 translate-y-0.5 items-center justify-center rounded-full border border-gray-300 text-center font-mono text-[11px] font-semibold dark:border-gray-700 dark:bg-gray-800',
+												{
+													'dark:bg-primary bg-foreground text-background border-primary dark:border-primary':
+														isActive,
+												},
+											)}
+										>
 											{isCompleted ? (
 												<Check
-													className={cn('text-primary w-[2ch]', {
-														'text-primary-foreground': isActive,
+													strokeWidth={3}
+													className={cn('w-3', {
+														'': isActive,
 													})}
 												/>
 											) : (
-												<small className="opacity-60">{i + 1}</small>
+												<small className="tracking-tighter">{i + 1}</small>
 											)}
 										</div>
-										{resource.fields.title}
+										<span className="">{resource.fields.title}</span>
 									</Link>
 								</li>
 							)
