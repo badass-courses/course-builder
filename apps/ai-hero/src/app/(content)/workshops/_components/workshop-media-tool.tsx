@@ -17,7 +17,7 @@ export function WorkshopMediaTool() {
 	return (
 		<div className="p-5">
 			<ImageResourceUploader
-				belongsToResourceId={resource?.id || ''}
+				belongsToResourceId={resource.id}
 				uploadDirectory="workshops"
 			/>
 		</div>
