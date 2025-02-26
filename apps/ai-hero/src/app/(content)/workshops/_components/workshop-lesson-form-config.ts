@@ -56,7 +56,21 @@ export const createWorkshopLessonFormConfig = (
 				throw new Error(`Failed to update lesson with id ${resource.id}`)
 			}
 
-			return updatedResource as Lesson
+			// Use Zod to validate the result instead of type assertion
+			const validationResult = LessonSchema.safeParse(updatedResource)
+
+			if (!validationResult.success) {
+				log.error('Invalid lesson data returned from update', {
+					errors: validationResult.error.format(),
+					resourceId: resource.id,
+					moduleSlug,
+				})
+				throw new Error(
+					`Invalid lesson data returned from update: ${validationResult.error.message}`,
+				)
+			}
+
+			return validationResult.data
 		} catch (error) {
 			log.error('Failed to update lesson', {
 				error,
