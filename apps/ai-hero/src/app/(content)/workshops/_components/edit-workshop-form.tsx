@@ -5,7 +5,11 @@ import * as React from 'react'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { WithWorkshopForm } from './with-workshop-form'
-import { WorkshopResourceType } from './workshop-form-config'
+import {
+	isWorkshopResource,
+	parseWorkshopResource,
+	WorkshopResourceType,
+} from './workshop-form-config'
 
 /**
  * EditWorkshopForm component using the withResourceForm HOC
@@ -14,8 +18,13 @@ import { WorkshopResourceType } from './workshop-form-config'
  * @param props Workshop resource to edit
  */
 export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
-	// Type cast workshop to WorkshopResourceType to satisfy TypeScript
-	return (
-		<WithWorkshopForm resource={workshop as unknown as WorkshopResourceType} />
-	)
+	// Use type guard instead of type assertion for better type safety
+	if (!isWorkshopResource(workshop)) {
+		console.warn('Resource is not a workshop, but attempting to render as one')
+		// Try to parse and validate the workshop schema
+		const validatedWorkshop = parseWorkshopResource(workshop)
+		return <WithWorkshopForm resource={validatedWorkshop} />
+	}
+
+	return <WithWorkshopForm resource={workshop} />
 }

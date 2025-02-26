@@ -5,6 +5,7 @@ import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { PostType } from '@/lib/posts'
+import { ResourceType as ResourceTypeFromTypes } from '@/lib/resource-types'
 import {
 	isTopLevelResourceType,
 	ResourceCreationConfig,
@@ -88,7 +89,7 @@ export interface ResourceFormConfig<
 	S extends z.ZodSchema,
 > {
 	/** Type of resource being edited */
-	resourceType: ResourceType
+	resourceType: ResourceTypeFromTypes
 
 	/** Zod schema for form validation */
 	schema: S

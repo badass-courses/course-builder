@@ -16,7 +16,7 @@ export function WorkshopResourcesTool() {
 
 	return (
 		<div className="h-[var(--pane-layout-height)] overflow-y-auto p-5">
-			{resource && <WorkshopResourcesEdit workshop={resource} />}
+			<WorkshopResourcesEdit workshop={resource} />
 		</div>
 	)
 }

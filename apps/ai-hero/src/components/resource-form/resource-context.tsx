@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ResourceType } from '@/lib/resources'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -6,25 +7,29 @@ import { ContentResource } from '@coursebuilder/core/schemas'
  * Context for providing the current resource being edited to child components
  * This allows tools and other components to access the resource without prop drilling
  */
-export interface ResourceContextType {
-	resource: ContentResource
-	resourceType: string
+export interface ResourceContextType<
+	T extends ContentResource = ContentResource,
+> {
+	resource: T
+	resourceType: ResourceType
 }
 
-export const ResourceContext = React.createContext<ResourceContextType | null>(
-	null,
-)
+// Create context with null as default value and generic type parameter
+export const ResourceContext =
+	React.createContext<ResourceContextType<any> | null>(null)
 
 /**
  * Provider component for the ResourceContext
+ *
+ * @template T The specific ContentResource type being provided
  */
-export function ResourceProvider({
+export function ResourceProvider<T extends ContentResource>({
 	children,
 	resource,
 	resourceType,
 }: React.PropsWithChildren<{
-	resource: ContentResource
-	resourceType: string
+	resource: T
+	resourceType: ResourceType
 }>) {
 	return (
 		<ResourceContext.Provider value={{ resource, resourceType }}>
@@ -35,15 +40,17 @@ export function ResourceProvider({
 
 /**
  * Hook to use the resource context
+ *
+ * @template T The specific ContentResource type to cast the resource to
  * @returns The current resource context
  * @throws Error if used outside of a ResourceProvider
  */
 export function useResource<
 	T extends ContentResource = ContentResource,
->(): ResourceContextType & { resource: T } {
+>(): ResourceContextType<T> {
 	const context = React.useContext(ResourceContext)
 	if (!context) {
 		throw new Error('useResource must be used within a ResourceProvider')
 	}
-	return context as ResourceContextType & { resource: T }
+	return context as ResourceContextType<T>
 }
