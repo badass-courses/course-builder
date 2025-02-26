@@ -2,6 +2,7 @@ import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/a
 import { ResourceFormConfig } from '@/components/resource-form/with-resource-form'
 import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
+import { log } from '@/server/logger'
 import pluralize from 'pluralize'
 import { z } from 'zod'
 
@@ -42,8 +43,26 @@ export const createWorkshopLessonFormConfig = (
 	// Resource path generation
 	getResourcePath: (slug?: string) => `/workshops/${moduleSlug}/${slug}`,
 
-	// Update function
-	updateResource: updateLesson as any, // Type casting for now, would need proper typing in real implementation
+	// Update function - now we can pass the Lesson directly to updateLesson
+	updateResource: async (resource: Partial<Lesson>): Promise<Lesson> => {
+		try {
+			if (!resource.id) {
+				throw new Error('Lesson ID is required for updates')
+			}
+
+			// updateLesson now accepts Lesson type directly
+			const updatedResource = await updateLesson(resource)
+
+			return updatedResource as Lesson
+		} catch (error) {
+			log.error('Failed to update lesson', {
+				error,
+				resourceId: resource.id,
+				moduleSlug,
+			})
+			throw error
+		}
+	},
 
 	// Save callback
 	onSave: (resource) => onLessonSave(`/workshops/${moduleSlug}/`, resource),
