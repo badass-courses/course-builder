@@ -14,6 +14,11 @@ import { WorkshopResourceType } from './workshop-form-config'
 export function WorkshopMediaTool() {
 	const { resource } = useResource<WorkshopResourceType>()
 
+	// Add null check to prevent errors if resource is unavailable
+	if (!resource) {
+		return <div className="p-5">No workshop found.</div>
+	}
+
 	return (
 		<div className="p-5">
 			<ImageResourceUploader

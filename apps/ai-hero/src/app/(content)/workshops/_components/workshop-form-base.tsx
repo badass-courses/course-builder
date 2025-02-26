@@ -93,7 +93,9 @@ export function WorkshopFormBase(
 							{...field}
 							onDrop={(e) => {
 								const result = e.dataTransfer.getData('text/plain')
-								const parsedResult = result.match(/\(([^)]+)\)/)
+								// Use a more robust URL regex pattern to handle more formats
+								const urlRegex = /(https?:\/\/[^\s"'<>()[\]{}]+)/
+								const parsedResult = result.match(urlRegex)
 								if (parsedResult) {
 									field.onChange(parsedResult[1])
 								}
