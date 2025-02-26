@@ -347,17 +347,17 @@ export async function writePostUpdateToDatabase(input: {
 		postSlug = `${slugify(postUpdate.fields.title ?? '')}~${postGuid}`
 	}
 
-	const lessonState = determineEggheadLessonState(
+	const lessonState = await determineEggheadLessonState(
 		action,
 		postUpdate.fields.state,
 	)
 
-	const lessonVisibilityState = determineEggheadVisibilityState(
+	const lessonVisibilityState = await determineEggheadVisibilityState(
 		postUpdate.fields.visibility,
 		postUpdate.fields.state,
 	)
 
-	const access = determineEggheadAccess(postUpdate?.fields?.access)
+	const access = await determineEggheadAccess(postUpdate?.fields?.access)
 
 	const duration = await getVideoDuration(currentPost.resources)
 	const timeToRead = Math.floor(
