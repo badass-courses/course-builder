@@ -131,6 +131,7 @@ async function WorkshopsList() {
 		where: eq(contentResource.type, 'workshop'),
 	})
 
+	// @ts-expect-error
 	workshops = [...workshops, ...allWorkshops]
 
 	return (
