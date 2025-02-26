@@ -1,6 +1,7 @@
 'use server'
 
-import { eggheadPgQuery } from '@/db/eggheadPostgres'
+import { eggheadPgQuery, getEggheadPostgresClient } from '@/db/eggheadPostgres'
+import { EggheadResource, EggheadResourceType } from '@/lib/egghead/types'
 import { Post } from '@/lib/posts'
 import { getPost } from '@/lib/posts-query'
 
@@ -9,7 +10,7 @@ import { getPost } from '@/lib/posts-query'
  * @param post - The post to get resource info for
  * @returns The resource info object or undefined
  */
-function getResourceInfo(post: Post) {
+function getResourceInfo(post: Post): EggheadResource | undefined {
 	if (post.fields.eggheadLessonId) {
 		return {
 			id: post.fields.eggheadLessonId,
@@ -28,25 +29,28 @@ function getResourceInfo(post: Post) {
 }
 
 /**
- * Builds a tagging query for a post
- * @param post - The post to build tagging query for
- * @returns The SQL query string for tagging
+ * Builds tagging queries for a post
+ * @param post - The post to build tagging queries for
+ * @returns Array of SQL queries for tagging
  */
-function buildTaggingQuery(post: Post) {
+function buildTaggingQueries(post: Post): string[] {
 	const eggheadResource = getResourceInfo(post)
 	if (!eggheadResource) {
 		throw new Error('No egghead resource found')
 	}
 
-	let query = ``
+	const { id, type } = eggheadResource
+	const queries: string[] = []
+
 	for (const tag of post?.tags?.map((tag) => tag.tag) || []) {
 		const tagId = Number(tag.id.split('_')[1])
-		query += `INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
-					VALUES (${tagId}, ${eggheadResource.id}, '${eggheadResource.type}', 'topics', NOW(), NOW());
-		`
+		queries.push(`
+			INSERT INTO taggings (tag_id, taggable_id, taggable_type, context, created_at, updated_at)
+			VALUES (${tagId}, ${id}, '${type}', 'topics', NOW(), NOW())
+		`)
 	}
 
-	return query
+	return queries
 }
 
 /**
@@ -60,11 +64,14 @@ export async function removeLegacyTaggingsOnEgghead(postId: string) {
 		throw new Error(`Post with id ${postId} not found.`)
 	}
 
-	const eggheadResourceId =
-		post.fields.eggheadLessonId || post.fields.eggheadPlaylistId
+	const eggheadResource = getResourceInfo(post)
+	if (!eggheadResource) {
+		throw new Error(`No egghead resource found for post ${postId}.`)
+	}
 
 	return eggheadPgQuery(
-		`DELETE FROM taggings WHERE taggings.taggable_id = ${eggheadResourceId}`,
+		`DELETE FROM taggings WHERE taggings.taggable_id = $1 AND taggings.taggable_type = $2`,
+		[eggheadResource.id, eggheadResource.type],
 	)
 }
 
@@ -79,11 +86,39 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 		throw new Error(`Post with id ${postId} not found.`)
 	}
 
-	// just wipe them and rewrite, no need to be smart
-	await removeLegacyTaggingsOnEgghead(postId)
+	const eggheadResource = getResourceInfo(post)
+	if (!eggheadResource) {
+		throw new Error(`No egghead resource found for post ${postId}.`)
+	}
 
-	if (!post?.tags) return
+	if (!post.tags || post.tags.length === 0) {
+		return
+	}
 
-	const query = buildTaggingQuery(post)
-	Boolean(query) && (await eggheadPgQuery(query))
+	const client = await getEggheadPostgresClient()
+
+	try {
+		await client.query('BEGIN')
+
+		await client.query(
+			`DELETE FROM taggings WHERE taggings.taggable_id = $1 AND taggings.taggable_type = $2`,
+			[eggheadResource.id, eggheadResource.type],
+		)
+
+		const tagQueries = buildTaggingQueries(post)
+		for (const query of tagQueries) {
+			await client.query(query)
+		}
+
+		await client.query('COMMIT')
+	} catch (error) {
+		await client.query('ROLLBACK')
+		console.error(
+			`Error writing taggings to Egghead for post ${postId}:`,
+			error,
+		)
+		throw error
+	} finally {
+		client.release()
+	}
 }

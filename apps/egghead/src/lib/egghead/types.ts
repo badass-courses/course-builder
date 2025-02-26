@@ -11,6 +11,19 @@ export type EggheadLessonState = 'published' | 'approved' | 'retired'
 export type EggheadLessonVisibilityState = 'indexed' | 'hidden'
 
 /**
+ * Type for Egghead resource type in database
+ */
+export type EggheadResourceType = 'Lesson' | 'Playlist'
+
+/**
+ * Interface for Egghead resource info
+ */
+export interface EggheadResource {
+	id: number
+	type: EggheadResourceType
+}
+
+/**
  * Base URL for Egghead API v1
  */
 export const EGGHEAD_API_V1_BASE_URL = 'https://app.egghead.io/api/v1'
