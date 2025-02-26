@@ -129,6 +129,7 @@ async function WorkshopsList() {
 
 	const allWorkshops = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'workshop'),
+		limit: 50,
 	})
 
 	// @ts-expect-error

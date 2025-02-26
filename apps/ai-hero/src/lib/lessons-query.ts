@@ -290,13 +290,8 @@ export async function updateLesson(input: Partial<Lesson> | PostUpdate) {
 	let titleFromInput: string | undefined
 	let fieldsToUpdate: Record<string, any> = {}
 
-	// Safely extract fields based on input type
-	if ('fields' in input && input.fields) {
-		// Handle PostUpdate fields
-		fieldsToUpdate = input.fields
-		titleFromInput = input.fields.title
-	} else if (input.fields) {
-		// Handle Lesson fields
+	// Safely extract fields regardless of input type
+	if (input.fields) {
 		fieldsToUpdate = input.fields
 		titleFromInput = input.fields.title
 	}
