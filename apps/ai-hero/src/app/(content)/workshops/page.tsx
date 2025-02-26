@@ -6,11 +6,11 @@ import { PricingWidget } from '@/components/commerce/home-pricing-widget'
 import { Contributor } from '@/components/contributor'
 import config from '@/config'
 import { db } from '@/db'
-import { contentResourceProduct } from '@/db/schema'
+import { contentResource, contentResourceProduct } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
-import { asc } from 'drizzle-orm'
+import { asc, eq } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
 import { z } from 'zod'
 
@@ -101,7 +101,9 @@ async function WorkshopsList() {
 	})
 
 	const workshopsModule = z
-		.array(z.object({ fields: z.record(z.any()), id: z.string() }))
+		.array(
+			z.object({ fields: z.record(z.any()), id: z.string(), type: z.string() }),
+		)
 		.parse(
 			productResources.map((productResource) => {
 				return productResource.resource
@@ -110,16 +112,26 @@ async function WorkshopsList() {
 
 	const { ability } = await getServerAuthSession()
 
-	const workshops = [...workshopsModule].filter((workshop) => {
+	let workshops = [...workshopsModule].filter((workshop) => {
+		if (workshop.type !== 'workshop') {
+			return false
+		}
 		if (ability.can('create', 'Content')) {
 			return workshop
 		} else {
 			return workshop.fields?.visibility === 'public'
 		}
 	})
+
 	const publicWorkshops = [...workshopsModule].filter(
 		(workshop) => workshop.fields?.visibility === 'public',
 	)
+
+	const allWorkshops = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'workshop'),
+	})
+
+	workshops = [...workshops, ...allWorkshops]
 
 	return (
 		<ul className="mx-auto mt-8 flex w-full flex-col">
