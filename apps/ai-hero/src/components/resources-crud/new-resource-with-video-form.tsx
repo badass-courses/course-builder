@@ -125,10 +125,11 @@ export function NewResourceWithVideoForm({
 
 	// Determine if current type needs video
 	const selectedPostType = form.watch('postType')
-	const typeRequiresVideo = React.useMemo(
+	const typeSupportsVideo = React.useMemo(
 		() => supportsVideo(selectedPostType),
 		[selectedPostType],
 	)
+	const typeRequiresVideo = false
 
 	async function* pollVideoResource(
 		videoResourceId: string,
@@ -169,7 +170,7 @@ export function NewResourceWithVideoForm({
 			})
 
 			// Validate video if required
-			if (typeRequiresVideo) {
+			if (typeSupportsVideo) {
 				if (!values.videoResourceId) {
 					setCreationError(
 						`A video is required for ${selectedPostType} resources`,
@@ -389,7 +390,7 @@ export function NewResourceWithVideoForm({
 						}}
 					/>
 				)}
-				{uploadEnabled && (typeRequiresVideo || !selectedPostType) && (
+				{uploadEnabled && (typeRequiresVideo || typeSupportsVideo) && (
 					<VideoUploadFormItem
 						selectedPostType={selectedPostType}
 						form={form}
@@ -410,14 +411,13 @@ export function NewResourceWithVideoForm({
 				<Button
 					type="submit"
 					variant="default"
+					className="capitalize"
 					disabled={
 						(videoResourceId ? !videoResourceValid : typeRequiresVideo) ||
 						isSubmitting
 					}
 				>
-					{isSubmitting
-						? 'Creating...'
-						: `Create ${selectedPostType.charAt(0).toUpperCase() + selectedPostType.slice(1)}`}
+					{isSubmitting ? 'Creating...' : `Create ${selectedPostType}`}
 				</Button>
 			</form>
 		</Form>

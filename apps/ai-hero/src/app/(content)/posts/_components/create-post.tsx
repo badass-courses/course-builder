@@ -38,6 +38,11 @@ export interface CreatePostProps {
 	 * Called when navigation is about to start
 	 */
 	onNavigationStart?: () => void
+	/**
+	 * Whether to enable video upload
+	 * @default true
+	 */
+	uploadEnabled?: boolean
 }
 
 /**
@@ -50,6 +55,7 @@ export function CreatePost({
 	availableResourceTypes = ['article'],
 	topLevelResourceTypes,
 	onNavigationStart,
+	uploadEnabled = true,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
@@ -80,7 +86,7 @@ export function CreatePost({
 			availableResourceTypes={availableResourceTypes as PostType[]}
 			defaultPostType={defaultResourceType as PostType}
 			topLevelResourceTypes={topLevelResourceTypes}
-			uploadEnabled={false}
+			uploadEnabled={uploadEnabled}
 		>
 			{(handleSetVideoResourceId: (id: string) => void) => (
 				<PostUploader setVideoResourceId={handleSetVideoResourceId} />
