@@ -48,7 +48,6 @@ import {
 	updateEggheadPlaylist,
 	writeLegacyTaggingsToEgghead,
 } from '../egghead'
-import { upsertPostToTypeSense } from '../external/typesense'
 import { writeNewPostToDatabase } from '../posts-new-query'
 import { createNewPostVersion } from '../posts-version-query'
 import {
@@ -60,6 +59,7 @@ import {
 	writeTagsToSanityResource,
 } from '../sanity-content-query'
 import { EggheadTag } from '../tags'
+import { upsertPostToTypeSense } from '../typesense/post'
 import { getPost } from './read'
 
 /**
