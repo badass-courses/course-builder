@@ -1,18 +1,11 @@
 import * as React from 'react'
-import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { PostType } from '@/lib/posts'
 import { ResourceType as ResourceTypeFromTypes } from '@/lib/resource-types'
-import {
-	isTopLevelResourceType,
-	ResourceCreationConfig,
-	ResourceType,
-} from '@/lib/resources'
+import { ResourceCreationConfig } from '@/lib/resources'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -128,8 +121,8 @@ export interface ResourceFormConfig<
 	 */
 	createPostConfig?: {
 		title: string
-		defaultResourceType: PostType
-		availableResourceTypes: PostType[]
+		defaultResourceType: string
+		availableResourceTypes: string[]
 	}
 
 	/** Additional tools to be displayed in the resource editor */
@@ -305,9 +298,8 @@ export function withResourceForm<
 								list={resource}
 								config={{
 									selection: {
-										availableResourceTypes:
-											availableResourceTypes as PostType[],
-										defaultResourceType: defaultResourceType as PostType,
+										availableResourceTypes: availableResourceTypes as string[],
+										defaultResourceType: defaultResourceType,
 										createResourceTitle: resourceTitle,
 										showTierSelector:
 											config.bodyPanelConfig?.listEditorConfig
