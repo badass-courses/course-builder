@@ -34,11 +34,15 @@ export async function getEggheadResource(post: Post) {
  * @returns The Egghead lesson data
  */
 export async function getEggheadLesson(eggheadLessonId: number) {
-	const lesson = await fetch(
+	const response = await fetch(
 		`https://app.egghead.io/api/v1/lessons/${eggheadLessonId}`,
-	).then((res) => res.json())
-
-	return lesson
+	)
+	
+	if (!response.ok) {
+		throw new Error(`Failed to fetch lesson: ${response.status} ${response.statusText}`)
+	}
+	
+	return response.json()
 }
 
 /**
