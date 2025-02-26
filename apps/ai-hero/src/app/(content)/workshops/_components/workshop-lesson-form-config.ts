@@ -82,5 +82,16 @@ export const createWorkshopLessonFormConfig = (
 	},
 
 	// Save callback
-	onSave: (resource) => onLessonSave(`/workshops/${moduleSlug}/`, resource),
+	onSave: async (resource) => {
+		try {
+			return await onLessonSave(`/workshops/${moduleSlug}/`, resource)
+		} catch (error) {
+			log.error('Failed to save lesson', {
+				error,
+				resourceId: resource.id,
+				moduleSlug,
+			})
+			throw error
+		}
+	},
 })
