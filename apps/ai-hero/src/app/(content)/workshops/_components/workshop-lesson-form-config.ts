@@ -51,7 +51,12 @@ export const createWorkshopLessonFormConfig = (
 			// updateLesson now accepts Lesson type directly
 			const updatedResource = await updateLesson(resource)
 
-			return updatedResource
+			// Ensure we never return null
+			if (!updatedResource) {
+				throw new Error(`Failed to update lesson with id ${resource.id}`)
+			}
+
+			return updatedResource as Lesson
 		} catch (error) {
 			log.error('Failed to update lesson', {
 				error,
