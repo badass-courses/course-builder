@@ -1,8 +1,9 @@
 import { getEggheadResource, getEggheadUserProfile } from '@/lib/egghead'
 import { Post, PostAction } from '@/lib/posts'
 import { getCoursesForPost } from '@/lib/posts-query'
-import { TypesenseInstructorSchema, TypesensePostSchema } from '@/lib/typesense'
-import Typesense from 'typesense'
+
+import { createTypesenseClient, getTypesenseCollectionName } from './client'
+import { TypesenseInstructorSchema, TypesensePostSchema } from './types'
 
 /**
  * Upsert a post to TypeSense or delete it if not indexable
@@ -10,28 +11,19 @@ import Typesense from 'typesense'
  * @param action - The action being performed (publish, save, etc.)
  */
 export async function upsertPostToTypeSense(post: Post, action: PostAction) {
-	let client = new Typesense.Client({
-		nodes: [
-			{
-				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
-				port: 443,
-				protocol: 'https',
-			},
-		],
-		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
-		connectionTimeoutSeconds: 2,
-	})
+	const client = createTypesenseClient()
+	const collectionName = getTypesenseCollectionName()
 
 	const shouldIndex =
 		post.fields.state === 'published' && post.fields.visibility === 'public'
 
 	if (!shouldIndex) {
 		await client
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(collectionName)
 			.documents(String(post.fields.eggheadLessonId))
 			.delete()
-			.catch((err) => {
-				console.error(err)
+			.catch((error: Error) => {
+				console.error(error)
 			})
 	} else {
 		// eggheadResource is either a lesson or a playlist
@@ -101,7 +93,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		}
 
 		await client
-			.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+			.collections(collectionName)
 			.documents()
 			.upsert({
 				...resource.data,
@@ -110,8 +102,8 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 				}),
 				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
 			})
-			.catch((err) => {
-				console.error(err)
+			.catch((error: Error) => {
+				console.error(error)
 			})
 	}
 }
