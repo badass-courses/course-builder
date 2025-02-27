@@ -65,15 +65,18 @@ export const LessonMetadataFormFields: React.FC<{
 	})
 
 	// Fetch solution for this lesson if it exists
-	const { data: solutionResource, refetch: refetchSolution } =
-		api.solutions.getForLesson.useQuery(
-			{
-				lessonId: lesson.id,
-			},
-			{
-				enabled: !!lesson.id,
-			},
-		)
+	const {
+		data: solutionResource,
+		isLoading: solutionLoading,
+		refetch: refetchSolution,
+	} = api.solutions.getForLesson.useQuery(
+		{
+			lessonId: lesson.id,
+		},
+		{
+			enabled: !!lesson.id,
+		},
+	)
 
 	// Solution mutations
 	const createSolutionMutation = api.solutions.create.useMutation({
@@ -237,26 +240,54 @@ export const LessonMetadataFormFields: React.FC<{
 					<label className="text-lg font-bold">Solution</label>
 				</div>
 
-				{solutionResource ? (
+				{solutionLoading ? (
+					<div className="mt-4 animate-pulse space-y-4">
+						<div className="flex items-center justify-between">
+							<div className="bg-muted h-5 w-1/3 rounded"></div>
+							<div className="flex space-x-2">
+								<div className="bg-muted h-9 w-24 rounded"></div>
+								<div className="bg-muted h-9 w-24 rounded"></div>
+							</div>
+						</div>
+						<div className="bg-muted h-32 rounded-md p-4"></div>
+						<div className="space-y-2">
+							<div className="bg-muted-foreground/20 h-3 w-24 rounded"></div>
+							<div className="bg-muted-foreground/20 h-4 w-full rounded"></div>
+							<div className="bg-muted-foreground/20 h-4 w-3/4 rounded"></div>
+						</div>
+					</div>
+				) : solutionResource ? (
 					<div className="mt-4 space-y-4">
 						<div className="flex items-center justify-between">
 							<h3 className="font-medium">{solutionResource.fields.title}</h3>
-							<Button
-								variant="destructive"
-								size="sm"
-								onClick={() => {
-									if (
-										confirm('Are you sure you want to delete this solution?')
-									) {
-										deleteSolutionMutation.mutate({
-											solutionId: solutionResource.id,
-										})
+							<div className="space-x-2">
+								<Button
+									variant="outline"
+									onClick={() =>
+										router.push(
+											`/workshops/${module}/${lesson.fields.slug}/solution/edit`,
+										)
 									}
-								}}
-							>
-								<Trash className="mr-2 h-4 w-4" />
-								Delete Solution
-							</Button>
+								>
+									Edit Solution
+								</Button>
+								<Button
+									variant="destructive"
+									size="sm"
+									onClick={() => {
+										if (
+											confirm('Are you sure you want to delete this solution?')
+										) {
+											deleteSolutionMutation.mutate({
+												solutionId: solutionResource.id,
+											})
+										}
+									}}
+								>
+									<Trash className="mr-2 h-4 w-4" />
+									Delete Solution
+								</Button>
+							</div>
 						</div>
 						<div className="bg-muted rounded-md p-4">
 							<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
@@ -275,15 +306,11 @@ export const LessonMetadataFormFields: React.FC<{
 				) : (
 					<div className="mt-4">
 						<Button
-							onClick={() => {
-								createSolutionMutation.mutate({
-									lessonId: lesson.id,
-									title: `Solution for ${lesson.fields.title}`,
-									body: '```typescript\n// Your solution code here\n```\n\nExplanation of approach...',
-									slug: `${lesson.fields.slug}-solution`,
-									description: 'Solution explanation for this lesson',
-								})
-							}}
+							onClick={() =>
+								router.push(
+									`/workshops/${module}/${lesson.fields.slug}/solution/edit`,
+								)
+							}
 						>
 							<PlusCircle className="mr-2 h-4 w-4" />
 							Add Solution
