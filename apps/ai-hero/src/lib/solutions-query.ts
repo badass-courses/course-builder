@@ -10,37 +10,61 @@ import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, eq, isNull, or, sql } from 'drizzle-orm'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas'
+import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+
 /**
  * Get a solution for a specific lesson
  */
 export async function getSolutionForLesson(lessonId: string) {
-	const resourceJoin = await db.query.contentResourceResource.findFirst({
-		where: and(
-			eq(contentResourceResource.resourceOfId, lessonId),
-			isNull(contentResourceResource.deletedAt),
-		),
-		with: {
-			resource: {
-				with: {
-					resources: {
-						with: {
-							resource: true,
-						},
+	log.info('solution.getForLesson', { lessonId })
+
+	// Use a direct SQL query to get the solution linked to the lesson
+	const query = sql`
+		SELECT s.*
+		FROM ${contentResource} AS s
+		JOIN ${contentResourceResource} AS crr ON s.id = crr.resourceId
+		WHERE crr.resourceOfId = ${lessonId}
+		  AND s.type = 'solution'
+		  AND s.deletedAt IS NULL
+		  AND crr.deletedAt IS NULL
+		LIMIT 1;
+	`
+
+	try {
+		const result = await db.execute(query)
+
+		if (!result.rows.length) return null
+
+		// Get the full solution with its resources
+		// Type assertion to handle the SQL result properly
+		const solutionId = (result.rows[0] as { id: string }).id
+
+		const solution = await db.query.contentResource.findFirst({
+			where: and(
+				eq(contentResource.id, solutionId),
+				isNull(contentResource.deletedAt),
+			),
+			with: {
+				resources: {
+					where: isNull(contentResourceResource.deletedAt),
+					with: {
+						resource: true,
 					},
 				},
 			},
-		},
-	})
+		})
 
-	if (
-		!resourceJoin?.resource ||
-		resourceJoin.resource.type !== 'solution' ||
-		resourceJoin.resource.deletedAt
-	) {
+		if (!solution) return null
+
+		return SolutionSchema.parse(solution)
+	} catch (error) {
+		log.error('solution.getForLesson.error', {
+			error,
+			lessonId,
+		})
 		return null
 	}
-
-	return SolutionSchema.parse(resourceJoin.resource)
 }
 
 /**
@@ -59,6 +83,14 @@ export async function getSolution(solutionSlugOrId: string) {
 			eq(contentResource.type, 'solution'),
 			isNull(contentResource.deletedAt),
 		),
+		with: {
+			resources: {
+				where: isNull(contentResourceResource.deletedAt),
+				with: {
+					resource: true,
+				},
+			},
+		},
 	})
 
 	if (!solution) {
@@ -67,7 +99,10 @@ export async function getSolution(solutionSlugOrId: string) {
 
 	const parsedSolution = SolutionSchema.safeParse(solution)
 	if (!parsedSolution.success) {
-		console.error('Error parsing solution', solution, parsedSolution.error)
+		log.error('solution.parse.error', {
+			error: parsedSolution.error,
+			solutionId: solution.id,
+		})
 		return null
 	}
 
@@ -350,4 +385,42 @@ export const addVideoResourceToSolution = async ({
 			resource: true,
 		},
 	})
+}
+
+/**
+ * Get the video resource for a solution
+ * Uses the resource join table to find the associated video resource
+ */
+export const getVideoResourceForSolution = async (solutionIdOrSlug: string) => {
+	const query = sql`SELECT cr_video.*
+		FROM ${contentResource} AS cr_solution
+		JOIN ${contentResourceResource} AS crr ON cr_solution.id = crr.resourceOfId
+		JOIN ${contentResource} AS cr_video ON crr.resourceId = cr_video.id
+		WHERE (cr_solution.id = ${solutionIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_solution.fields, '$.slug')) = ${solutionIdOrSlug})
+			AND cr_video.type = 'videoResource'
+			AND cr_solution.type = 'solution'
+			AND cr_solution.deletedAt IS NULL
+			AND crr.deletedAt IS NULL
+		LIMIT 1;`
+
+	try {
+		const result = await db.execute(query)
+
+		if (!result.rows.length) return null
+
+		const videoResourceRow = ContentResourceSchema.parse(result.rows[0])
+
+		const videoResource = {
+			...videoResourceRow,
+			...videoResourceRow.fields,
+		}
+
+		return VideoResourceSchema.parse(videoResource)
+	} catch (error) {
+		log.error('solutions.getVideoResourceForSolution.error', {
+			error,
+			solutionIdOrSlug,
+		})
+		return null
+	}
 }

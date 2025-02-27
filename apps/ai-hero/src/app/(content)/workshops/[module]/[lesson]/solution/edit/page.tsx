@@ -1,11 +1,12 @@
-import * as React from 'react'
 import { notFound } from 'next/navigation'
 import { EditSolutionForm } from '@/app/(content)/workshops/_components/edit-solution-form'
 import { getLesson } from '@/lib/lessons-query'
-import { getSolutionForLesson } from '@/lib/solutions-query'
+import {
+	getSolutionForLesson,
+	getVideoResourceForSolution,
+} from '@/lib/solutions-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
-import slugify from '@sindresorhus/slugify'
 
 /**
  * Solution edit page
@@ -14,9 +15,9 @@ import slugify from '@sindresorhus/slugify'
 export default async function SolutionEditPage({
 	params,
 }: {
-	params: { module: string; lesson: string }
+	params: Promise<{ module: string; lesson: string }>
 }) {
-	const { module, lesson } = params
+	const { module, lesson } = await params
 	const { ability } = await getServerAuthSession()
 
 	if (!ability.can('create', 'Content')) {
@@ -37,16 +38,10 @@ export default async function SolutionEditPage({
 		? solution.fields.slug
 		: `${lessonData.fields.slug}-solution~${guid()}`
 
-	// Get the video resource from the solution's resources join table
-	const videoResource =
-		solution?.resources
-			?.map((resource) => resource.resource)
-			?.find((resource) => resource.type === 'videoResource') || null
-
-	// Load the video resource using the adapter
-	const videoResourceLoader = videoResource
-		? courseBuilderAdapter.getVideoResource(videoResource.id)
-		: Promise.resolve(null)
+	// Get the video resource using our dedicated function
+	const videoResource = solution
+		? await getVideoResourceForSolution(solution.id)
+		: null
 
 	return (
 		<EditSolutionForm
@@ -54,6 +49,7 @@ export default async function SolutionEditPage({
 			solution={solution}
 			lessonId={lessonData.id}
 			defaultSlug={defaultSlug}
+			videoResource={videoResource}
 		/>
 	)
 }

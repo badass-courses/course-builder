@@ -156,20 +156,17 @@ export function EditSolutionForm({
 	solution,
 	lessonId,
 	defaultSlug,
-	videoResourceLoader,
+	videoResource,
 }: {
 	solution: Solution | null
 	lessonId: string
 	defaultSlug?: string
-	videoResourceLoader: Promise<VideoResource | null>
+	videoResource: VideoResource | null
 }) {
 	const router = useRouter()
 	const params = useParams()
 	const moduleId = params?.module as string
 	const lessonSlug = params?.lesson as string
-
-	// Use the video resource loader - standard React pattern
-	const videoResource = React.use(videoResourceLoader)
 
 	// We need to cast to the interface expected by the form
 	const typedWithResourceForm = withResourceForm as typeof withResourceForm<
