@@ -170,7 +170,7 @@ export function NewResourceWithVideoForm({
 			})
 
 			// Validate video if required
-			if (typeSupportsVideo) {
+			if (typeRequiresVideo) {
 				if (!values.videoResourceId) {
 					setCreationError(
 						`A video is required for ${selectedPostType} resources`,
