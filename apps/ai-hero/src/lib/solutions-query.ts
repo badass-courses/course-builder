@@ -75,12 +75,14 @@ export async function createSolution({
 	body,
 	slug,
 	description,
+	videoResourceId,
 }: {
 	lessonId: string
 	title: string
 	body?: string
 	slug: string
 	description?: string
+	videoResourceId?: string | null
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -100,6 +102,7 @@ export async function createSolution({
 				description: description || '',
 				state: 'draft',
 				visibility: 'unlisted',
+				videoResourceId: videoResourceId || null,
 			},
 			createdById: user.id,
 		} as any) // Using 'any' to bypass the type check as the adapter likely handles the ID generation

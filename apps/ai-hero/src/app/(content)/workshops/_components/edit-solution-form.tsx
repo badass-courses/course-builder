@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { ContentVideoResourceField } from '@/components/content/content-video-resource-field'
 import {
 	ResourceFormProps,
 	withResourceForm,
@@ -9,7 +10,7 @@ import {
 import { Solution, SolutionSchema } from '@/lib/solution'
 import { createSolution, updateSolution } from '@/lib/solutions-query'
 import { ArrowLeft } from 'lucide-react'
-import { z } from 'zod'
+import ReactMarkdown from 'react-markdown'
 
 import {
 	Button,
@@ -33,6 +34,7 @@ interface SolutionFormData extends Solution {
 		description?: string
 		state: 'draft' | 'published' | 'archived' | 'deleted'
 		visibility: 'public' | 'private' | 'unlisted'
+		videoResourceId?: string | null
 	}
 }
 
@@ -49,7 +51,7 @@ const BaseSolutionForm = ({
 	const router = useRouter()
 	const params = useParams()
 	const moduleId = params?.module as string
-	const lesson = params?.lesson as string
+	const lessonSlug = params?.lesson as string
 
 	if (!form) return null
 
@@ -60,12 +62,27 @@ const BaseSolutionForm = ({
 					type="button"
 					variant="outline"
 					className="gap-2"
-					onClick={() => router.push(`/workshops/${moduleId}/${lesson}/edit`)}
+					onClick={() =>
+						router.push(`/workshops/${moduleId}/${lessonSlug}/edit`)
+					}
 				>
 					<ArrowLeft className="h-4 w-4" />
 					Back to Lesson
 				</Button>
 			</div>
+
+			{/* Video Section */}
+			<ContentVideoResourceField
+				resource={resource}
+				form={form}
+				initialVideoResourceId={resource?.fields?.videoResourceId}
+				label="Solution Video"
+				onVideoUpdate={async (resourceId, videoResourceId) => {
+					form.setValue('fields.videoResourceId', videoResourceId)
+				}}
+				showTranscript={true}
+				className="mb-6 px-5"
+			/>
 
 			<FormField
 				control={form.control}
@@ -136,7 +153,7 @@ export function EditSolutionForm({
 	const router = useRouter()
 	const params = useParams()
 	const moduleId = params?.module as string
-	const lesson = params?.lesson as string
+	const lessonSlug = params?.lesson as string
 
 	// We need to cast to the interface expected by the form
 	const typedWithResourceForm = withResourceForm as typeof withResourceForm<
@@ -167,11 +184,12 @@ export function EditSolutionForm({
 					description: resource?.fields?.description || '',
 					state: resource?.fields?.state || 'draft',
 					visibility: resource?.fields?.visibility || 'unlisted',
+					videoResourceId: resource?.fields?.videoResourceId || null,
 				},
 				resources: resource?.resources || [],
 			}
 		},
-		getResourcePath: () => `/workshops/${moduleId}/${lesson}`,
+		getResourcePath: () => `/workshops/${moduleId}/${lessonSlug}`,
 		updateResource: async (updatedSolution: Partial<SolutionFormData>) => {
 			if (!solution?.id) {
 				// Create new solution
@@ -181,6 +199,7 @@ export function EditSolutionForm({
 					body: updatedSolution.fields?.body || '',
 					slug: updatedSolution.fields?.slug || '',
 					description: updatedSolution.fields?.description || '',
+					videoResourceId: updatedSolution.fields?.videoResourceId || null,
 				})
 				// Cast the result to our expected type
 				return result as SolutionFormData
@@ -192,7 +211,7 @@ export function EditSolutionForm({
 			}
 		},
 		onSave: async () => {
-			router.push(`/workshops/${moduleId}/${lesson}/edit`)
+			router.push(`/workshops/${moduleId}/${lessonSlug}/edit`)
 		},
 	})
 
@@ -213,6 +232,7 @@ export function EditSolutionForm({
 			description: '',
 			state: 'draft',
 			visibility: 'unlisted',
+			videoResourceId: null,
 		},
 		resources: [],
 	}

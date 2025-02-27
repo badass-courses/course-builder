@@ -54,6 +54,7 @@ export const solutionsRouter = createTRPCRouter({
 				body: z.string().optional(),
 				slug: z.string(),
 				description: z.string().optional(),
+				videoResourceId: z.string().nullable().optional(),
 			}),
 		)
 		.mutation(async ({ input }) => {
