@@ -342,7 +342,7 @@ export function NewResourceWithVideoForm({
 						name="postType"
 						render={({ field }) => {
 							const descriptions: Record<string, string> = {
-								lesson: 'A lesson to be added to a cohort',
+								lesson: 'Lessons can have solutions',
 								article: 'A standard article',
 								podcast:
 									'A podcast episode that will be distributed across podcast networks via the egghead podcast',
