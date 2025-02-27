@@ -9,7 +9,7 @@ import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { pollVideoResource } from '@/utils/poll-video-resource'
-import { RefreshCcw } from 'lucide-react'
+import { PlusCircle, RefreshCcw, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -62,6 +62,30 @@ export const LessonMetadataFormFields: React.FC<{
 	const { transcript, setTranscript } = useTranscript({
 		videoResourceId,
 		initialTranscript: videoResource?.transcript,
+	})
+
+	// Fetch solution for this lesson if it exists
+	const { data: solutionResource, refetch: refetchSolution } =
+		api.solutions.getForLesson.useQuery(
+			{
+				lessonId: lesson.id,
+			},
+			{
+				enabled: !!lesson.id,
+			},
+		)
+
+	// Solution mutations
+	const createSolutionMutation = api.solutions.create.useMutation({
+		onSuccess: () => {
+			refetchSolution()
+		},
+	})
+
+	const deleteSolutionMutation = api.solutions.delete.useMutation({
+		onSuccess: () => {
+			refetchSolution()
+		},
 	})
 
 	React.useEffect(() => {
@@ -206,6 +230,67 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+
+			{/* Solution Section */}
+			<div className="mt-6 border-t px-5 pt-6">
+				<div className="flex items-center justify-between gap-2">
+					<label className="text-lg font-bold">Solution</label>
+				</div>
+
+				{solutionResource ? (
+					<div className="mt-4 space-y-4">
+						<div className="flex items-center justify-between">
+							<h3 className="font-medium">{solutionResource.fields.title}</h3>
+							<Button
+								variant="destructive"
+								size="sm"
+								onClick={() => {
+									if (
+										confirm('Are you sure you want to delete this solution?')
+									) {
+										deleteSolutionMutation.mutate({
+											solutionId: solutionResource.id,
+										})
+									}
+								}}
+							>
+								<Trash className="mr-2 h-4 w-4" />
+								Delete Solution
+							</Button>
+						</div>
+						<div className="bg-muted rounded-md p-4">
+							<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+								{solutionResource.fields.body || 'No solution content yet.'}
+							</ReactMarkdown>
+						</div>
+						{solutionResource.fields.description && (
+							<div className="prose prose-sm dark:prose-invert text-muted-foreground max-w-none">
+								<p className="text-xs font-medium uppercase">Explanation:</p>
+								<ReactMarkdown>
+									{solutionResource.fields.description}
+								</ReactMarkdown>
+							</div>
+						)}
+					</div>
+				) : (
+					<div className="mt-4">
+						<Button
+							onClick={() => {
+								createSolutionMutation.mutate({
+									lessonId: lesson.id,
+									title: `Solution for ${lesson.fields.title}`,
+									body: '```typescript\n// Your solution code here\n```\n\nExplanation of approach...',
+									slug: `${lesson.fields.slug}-solution`,
+									description: 'Solution explanation for this lesson',
+								})
+							}}
+						>
+							<PlusCircle className="mr-2 h-4 w-4" />
+							Add Solution
+						</Button>
+					</div>
+				)}
+			</div>
 			<FormField
 				control={form.control}
 				name="fields.description"
