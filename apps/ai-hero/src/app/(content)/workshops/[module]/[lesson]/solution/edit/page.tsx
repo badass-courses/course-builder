@@ -37,6 +37,17 @@ export default async function SolutionEditPage({
 		? solution.fields.slug
 		: `${lessonData.fields.slug}-solution~${guid()}`
 
+	// Get the video resource from the solution's resources join table
+	const videoResource =
+		solution?.resources
+			?.map((resource) => resource.resource)
+			?.find((resource) => resource.type === 'videoResource') || null
+
+	// Load the video resource using the adapter
+	const videoResourceLoader = videoResource
+		? courseBuilderAdapter.getVideoResource(videoResource.id)
+		: Promise.resolve(null)
+
 	return (
 		<EditSolutionForm
 			key={solution?.id || `new-solution-${lessonData.id}`}

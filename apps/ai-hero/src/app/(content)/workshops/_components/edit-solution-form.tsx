@@ -12,6 +12,7 @@ import { createSolution, updateSolution } from '@/lib/solutions-query'
 import { ArrowLeft } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
+import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import {
 	Button,
 	FormDescription,
@@ -34,7 +35,6 @@ interface SolutionFormData extends Solution {
 		description?: string
 		state: 'draft' | 'published' | 'archived' | 'deleted'
 		visibility: 'public' | 'private' | 'unlisted'
-		videoResourceId?: string | null
 	}
 }
 
@@ -42,12 +42,16 @@ interface SolutionFormData extends Solution {
 interface SolutionFormProps
 	extends ResourceFormProps<SolutionFormData, typeof SolutionSchema> {
 	lessonTitle?: string
+	videoResource?: VideoResource | null
 }
 
 const BaseSolutionForm = ({
 	resource,
 	form,
-}: ResourceFormProps<SolutionFormData, typeof SolutionSchema>) => {
+	videoResource,
+}: ResourceFormProps<SolutionFormData, typeof SolutionSchema> & {
+	videoResource?: VideoResource | null
+}) => {
 	const router = useRouter()
 	const params = useParams()
 	const moduleId = params?.module as string
@@ -75,10 +79,17 @@ const BaseSolutionForm = ({
 			<ContentVideoResourceField
 				resource={resource}
 				form={form}
-				initialVideoResourceId={resource?.fields?.videoResourceId}
+				initialVideoResourceId={videoResource?.id}
 				label="Solution Video"
 				onVideoUpdate={async (resourceId, videoResourceId) => {
-					form.setValue('fields.videoResourceId', videoResourceId)
+					// When a video is added, connect it to the solution
+					const { addVideoResourceToSolution } = await import(
+						'@/lib/solutions-query'
+					)
+					await addVideoResourceToSolution({
+						solutionId: resourceId,
+						videoResourceId,
+					})
 				}}
 				showTranscript={true}
 				className="mb-6 px-5"
@@ -145,15 +156,20 @@ export function EditSolutionForm({
 	solution,
 	lessonId,
 	defaultSlug,
+	videoResourceLoader,
 }: {
 	solution: Solution | null
 	lessonId: string
 	defaultSlug?: string
+	videoResourceLoader: Promise<VideoResource | null>
 }) {
 	const router = useRouter()
 	const params = useParams()
 	const moduleId = params?.module as string
 	const lessonSlug = params?.lesson as string
+
+	// Use the video resource loader - standard React pattern
+	const videoResource = React.use(videoResourceLoader)
 
 	// We need to cast to the interface expected by the form
 	const typedWithResourceForm = withResourceForm as typeof withResourceForm<
@@ -161,59 +177,60 @@ export function EditSolutionForm({
 		typeof SolutionSchema
 	>
 
-	const SolutionFormWithResource = typedWithResourceForm(BaseSolutionForm, {
-		resourceType: 'solution',
-		schema: SolutionSchema,
-		defaultValues: (resource?: SolutionFormData) => {
-			// Create the default values object with the shape expected by the form
-			return {
-				id: resource?.id || '',
-				type: 'solution' as const,
-				createdById: resource?.createdById || '',
-				createdAt: resource?.createdAt || null,
-				updatedAt: resource?.updatedAt || null,
-				deletedAt: resource?.deletedAt || null,
-				// Include additional fields required by ContentResource
-				organizationId: resource?.organizationId || null,
-				createdByOrganizationMembershipId:
-					resource?.createdByOrganizationMembershipId || null,
-				fields: {
-					title: resource?.fields?.title || '',
-					body: resource?.fields?.body || '',
-					slug: resource?.fields?.slug || defaultSlug || '',
-					description: resource?.fields?.description || '',
-					state: resource?.fields?.state || 'draft',
-					visibility: resource?.fields?.visibility || 'unlisted',
-					videoResourceId: resource?.fields?.videoResourceId || null,
-				},
-				resources: resource?.resources || [],
-			}
+	const SolutionFormWithResource = typedWithResourceForm(
+		(props) => <BaseSolutionForm {...props} videoResource={videoResource} />,
+		{
+			resourceType: 'solution',
+			schema: SolutionSchema,
+			defaultValues: (resource?: SolutionFormData) => {
+				// Create the default values object with the shape expected by the form
+				return {
+					id: resource?.id || '',
+					type: 'solution' as const,
+					createdById: resource?.createdById || '',
+					createdAt: resource?.createdAt || null,
+					updatedAt: resource?.updatedAt || null,
+					deletedAt: resource?.deletedAt || null,
+					// Include additional fields required by ContentResource
+					organizationId: resource?.organizationId || null,
+					createdByOrganizationMembershipId:
+						resource?.createdByOrganizationMembershipId || null,
+					fields: {
+						title: resource?.fields?.title || '',
+						body: resource?.fields?.body || '',
+						slug: resource?.fields?.slug || defaultSlug || '',
+						description: resource?.fields?.description || '',
+						state: resource?.fields?.state || 'draft',
+						visibility: resource?.fields?.visibility || 'unlisted',
+					},
+					resources: resource?.resources || [],
+				}
+			},
+			getResourcePath: () => `/workshops/${moduleId}/${lessonSlug}`,
+			updateResource: async (updatedSolution: Partial<SolutionFormData>) => {
+				if (!solution?.id) {
+					// Create new solution
+					const result = await createSolution({
+						lessonId,
+						title: updatedSolution.fields?.title || '',
+						body: updatedSolution.fields?.body || '',
+						slug: updatedSolution.fields?.slug || '',
+						description: updatedSolution.fields?.description || '',
+					})
+					// Cast the result to our expected type
+					return result as SolutionFormData
+				} else {
+					// Update existing solution
+					const result = await updateSolution(updatedSolution as Solution)
+					// Cast the result to our expected type
+					return result as SolutionFormData
+				}
+			},
+			onSave: async () => {
+				router.push(`/workshops/${moduleId}/${lessonSlug}/edit`)
+			},
 		},
-		getResourcePath: () => `/workshops/${moduleId}/${lessonSlug}`,
-		updateResource: async (updatedSolution: Partial<SolutionFormData>) => {
-			if (!solution?.id) {
-				// Create new solution
-				const result = await createSolution({
-					lessonId,
-					title: updatedSolution.fields?.title || '',
-					body: updatedSolution.fields?.body || '',
-					slug: updatedSolution.fields?.slug || '',
-					description: updatedSolution.fields?.description || '',
-					videoResourceId: updatedSolution.fields?.videoResourceId || null,
-				})
-				// Cast the result to our expected type
-				return result as SolutionFormData
-			} else {
-				// Update existing solution
-				const result = await updateSolution(updatedSolution as Solution)
-				// Cast the result to our expected type
-				return result as SolutionFormData
-			}
-		},
-		onSave: async () => {
-			router.push(`/workshops/${moduleId}/${lessonSlug}/edit`)
-		},
-	})
+	)
 
 	// Convert the solution to our form data format with all required fields
 	const formSolution: SolutionFormData = (solution as SolutionFormData) || {
@@ -232,7 +249,6 @@ export function EditSolutionForm({
 			description: '',
 			state: 'draft',
 			visibility: 'unlisted',
-			videoResourceId: null,
 		},
 		resources: [],
 	}

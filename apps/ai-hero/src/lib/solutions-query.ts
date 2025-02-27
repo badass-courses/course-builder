@@ -20,7 +20,15 @@ export async function getSolutionForLesson(lessonId: string) {
 			isNull(contentResourceResource.deletedAt),
 		),
 		with: {
-			resource: true,
+			resource: {
+				with: {
+					resources: {
+						with: {
+							resource: true,
+						},
+					},
+				},
+			},
 		},
 	})
 
@@ -75,14 +83,12 @@ export async function createSolution({
 	body,
 	slug,
 	description,
-	videoResourceId,
 }: {
 	lessonId: string
 	title: string
 	body?: string
 	slug: string
 	description?: string
-	videoResourceId?: string | null
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -102,7 +108,6 @@ export async function createSolution({
 				description: description || '',
 				state: 'draft',
 				visibility: 'unlisted',
-				videoResourceId: videoResourceId || null,
 			},
 			createdById: user.id,
 		} as any) // Using 'any' to bypass the type check as the adapter likely handles the ID generation
@@ -274,4 +279,75 @@ export async function getLessonForSolution(solutionId: string) {
 		})
 		return null
 	}
+}
+
+/**
+ * Connect a video resource to a solution
+ */
+export const addVideoResourceToSolution = async ({
+	videoResourceId,
+	solutionId,
+}: {
+	videoResourceId: string
+	solutionId: string
+}) => {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	// Get the video resource
+	const videoResource = await db.query.contentResource.findFirst({
+		where: and(
+			eq(contentResource.id, videoResourceId),
+			eq(contentResource.type, 'videoResource'),
+		),
+		with: {
+			resources: true,
+		},
+	})
+
+	// Get the solution
+	const solution = await db.query.contentResource.findFirst({
+		where: and(
+			eq(contentResource.id, solutionId),
+			eq(contentResource.type, 'solution'),
+		),
+		with: {
+			resources: true,
+		},
+	})
+
+	if (!solution) {
+		throw new Error(`Solution with id ${solutionId} not found`)
+	}
+
+	if (!videoResource) {
+		throw new Error(`Video Resource with id ${videoResourceId} not found`)
+	}
+
+	// Create the resource join
+	await db.insert(contentResourceResource).values({
+		resourceOfId: solution.id,
+		resourceId: videoResource.id,
+		position: solution.resources.length,
+	})
+
+	log.info('solution.video.connected', {
+		solutionId: solution.id,
+		videoResourceId,
+		userId: user.id,
+	})
+
+	return db.query.contentResourceResource.findFirst({
+		where: and(
+			eq(contentResourceResource.resourceOfId, solution.id),
+			eq(contentResourceResource.resourceId, videoResource.id),
+		),
+		with: {
+			resource: true,
+		},
+	})
 }
