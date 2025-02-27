@@ -2,6 +2,7 @@ import { SolutionSchema } from '@/lib/solution'
 import {
 	createSolution as createSolutionAction,
 	deleteSolution as deleteSolutionAction,
+	getLessonForSolution,
 	getSolution,
 	getSolutionForLesson,
 } from '@/lib/solutions-query'
@@ -80,6 +81,25 @@ export const solutionsRouter = createTRPCRouter({
 				return deleteSolutionAction(solutionId)
 			} catch (error) {
 				log.error('solution.delete.trpc.error', { error })
+				throw error
+			}
+		}),
+
+	/**
+	 * Get the parent lesson for a solution
+	 */
+	getParentLesson: protectedProcedure
+		.input(
+			z.object({
+				solutionId: z.string(),
+			}),
+		)
+		.query(async ({ input }) => {
+			try {
+				const { solutionId } = input
+				return getLessonForSolution(solutionId)
+			} catch (error) {
+				log.error('solution.getParentLesson.trpc.error', { error })
 				throw error
 			}
 		}),
