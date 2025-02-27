@@ -1,17 +1,11 @@
 import * as React from 'react'
-import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { PostType } from '@/lib/posts'
-import {
-	isTopLevelResourceType,
-	ResourceCreationConfig,
-	ResourceType,
-} from '@/lib/resources'
+import { ResourceType as ResourceTypeFromTypes } from '@/lib/resource-types'
+import { ResourceCreationConfig } from '@/lib/resources'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -21,6 +15,8 @@ import { ContentResource } from '@coursebuilder/core/schemas'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
+
+import { ResourceProvider } from './resource-context'
 
 /**
  * Base fields required for all resource types in the system.
@@ -86,7 +82,7 @@ export interface ResourceFormConfig<
 	S extends z.ZodSchema,
 > {
 	/** Type of resource being edited */
-	resourceType: ResourceType
+	resourceType: ResourceTypeFromTypes
 
 	/** Zod schema for form validation */
 	schema: S
@@ -125,8 +121,8 @@ export interface ResourceFormConfig<
 	 */
 	createPostConfig?: {
 		title: string
-		defaultResourceType: PostType
-		availableResourceTypes: PostType[]
+		defaultResourceType: string
+		availableResourceTypes: string[]
 	}
 
 	/** Additional tools to be displayed in the resource editor */
@@ -247,7 +243,7 @@ export function withResourceForm<
 			? EditResourcesFormMobile
 			: EditResourcesFormDesktop
 
-		// Combine default and custom tools
+		// Revert back to original processing of custom tools without resource injection
 		const tools = [
 			...defaultTools,
 			...(config.customTools ?? []),
@@ -287,55 +283,58 @@ export function withResourceForm<
 		}
 
 		return (
-			<ResourceFormComponent
-				resource={resource}
-				form={form}
-				resourceSchema={config.schema}
-				getResourcePath={config.getResourcePath}
-				updateResource={config.updateResource}
-				autoUpdateResource={config.autoUpdateResource}
-				onSave={config.onSave}
-				bodyPanelSlot={
-					config.bodyPanelConfig?.showListResources ? (
-						<ListResourcesEdit
-							list={resource}
-							config={{
-								selection: {
-									availableResourceTypes: availableResourceTypes as PostType[],
-									defaultResourceType: defaultResourceType as PostType,
-									createResourceTitle: resourceTitle,
-									showTierSelector:
-										config.bodyPanelConfig?.listEditorConfig?.showTierSelector,
-									searchConfig:
-										config.bodyPanelConfig?.listEditorConfig?.searchConfig,
-									topLevelResourceTypes: topLevelResourceTypes,
-								},
-								title: config.bodyPanelConfig?.listEditorConfig?.title,
-								onResourceAdd:
-									config.bodyPanelConfig?.listEditorConfig?.onResourceAdd,
-								onResourceRemove:
-									config.bodyPanelConfig?.listEditorConfig?.onResourceRemove,
-								onResourceReorder:
-									config.bodyPanelConfig?.listEditorConfig?.onResourceReorder,
-							}}
-						/>
-					) : null
-				}
-				availableWorkflows={[
-					{
-						value: `${config.resourceType}-chat-default`,
-						label: `${config.resourceType.charAt(0).toUpperCase() + config.resourceType.slice(1)} Chat`,
-						default: true,
-					},
-				]}
-				sendResourceChatMessage={sendResourceChatMessage}
-				hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-				user={session?.user}
-				tools={tools}
-				theme={theme}
-			>
-				<Component resource={resource} form={form} />
-			</ResourceFormComponent>
+			<ResourceProvider resource={resource} resourceType={config.resourceType}>
+				<ResourceFormComponent
+					resource={resource}
+					form={form}
+					resourceSchema={config.schema}
+					getResourcePath={config.getResourcePath}
+					updateResource={config.updateResource}
+					autoUpdateResource={config.autoUpdateResource}
+					onSave={config.onSave}
+					bodyPanelSlot={
+						config.bodyPanelConfig?.showListResources ? (
+							<ListResourcesEdit
+								list={resource}
+								config={{
+									selection: {
+										availableResourceTypes: availableResourceTypes as string[],
+										defaultResourceType: defaultResourceType,
+										createResourceTitle: resourceTitle,
+										showTierSelector:
+											config.bodyPanelConfig?.listEditorConfig
+												?.showTierSelector,
+										searchConfig:
+											config.bodyPanelConfig?.listEditorConfig?.searchConfig,
+										topLevelResourceTypes: topLevelResourceTypes,
+									},
+									title: config.bodyPanelConfig?.listEditorConfig?.title,
+									onResourceAdd:
+										config.bodyPanelConfig?.listEditorConfig?.onResourceAdd,
+									onResourceRemove:
+										config.bodyPanelConfig?.listEditorConfig?.onResourceRemove,
+									onResourceReorder:
+										config.bodyPanelConfig?.listEditorConfig?.onResourceReorder,
+								}}
+							/>
+						) : null
+					}
+					availableWorkflows={[
+						{
+							value: `${config.resourceType}-chat-default`,
+							label: `${config.resourceType.charAt(0).toUpperCase() + config.resourceType.slice(1)} Chat`,
+							default: true,
+						},
+					]}
+					sendResourceChatMessage={sendResourceChatMessage}
+					hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+					user={session?.user}
+					tools={tools}
+					theme={theme}
+				>
+					<Component resource={resource} form={form} />
+				</ResourceFormComponent>
+			</ResourceProvider>
 		)
 	}
 }

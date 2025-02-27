@@ -20,6 +20,8 @@ import {
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { last } from '@coursebuilder/nodash'
 
+import { Lesson } from './lessons'
+
 const redis = Redis.fromEnv()
 
 export const getLessonVideoTranscript = async (
@@ -263,31 +265,47 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 	return parsedSolution.data
 }
 
-export async function updateLesson(input: PostUpdate) {
+export async function updateLesson(input: Partial<Lesson> | PostUpdate) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentLesson = await getLesson(input.id)
+	// Ensure we have an ID to look up
+	const id = input.id
+	if (!id) {
+		throw new Error('Lesson ID is required for updates')
+	}
+
+	const currentLesson = await getLesson(id)
 
 	if (!currentLesson) {
-		throw new Error(`Tip with id ${input.id} not found.`)
+		throw new Error(`Lesson with id ${id} not found.`)
 	}
 
 	let lessonSlug = currentLesson.fields.slug
 
-	if (input.fields.title !== currentLesson.fields.title) {
+	// Handle both PostUpdate and Lesson formats
+	let titleFromInput: string | undefined
+	let fieldsToUpdate: Record<string, any> = {}
+
+	// Safely extract fields regardless of input type
+	if (input.fields) {
+		fieldsToUpdate = input.fields
+		titleFromInput = input.fields.title
+	}
+
+	if (titleFromInput && titleFromInput !== currentLesson.fields.title) {
 		const splitSlug = currentLesson?.fields.slug.split('~') || ['', guid()]
-		lessonSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		lessonSlug = `${slugify(titleFromInput)}~${splitSlug[1] || guid()}`
 	}
 
 	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
 		id: currentLesson.id,
 		fields: {
 			...currentLesson.fields,
-			...input.fields,
+			...fieldsToUpdate,
 			slug: lessonSlug,
 		},
 	})

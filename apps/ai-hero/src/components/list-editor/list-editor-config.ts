@@ -1,4 +1,3 @@
-import { PostType } from '@/lib/posts'
 import { z } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/schemas'

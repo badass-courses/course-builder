@@ -136,8 +136,8 @@ export function CreatePostModal({
 				)}
 				<CreatePost
 					onResourceCreated={handleResourceCreated}
-					defaultResourceType={defaultResourceType as PostType}
-					availableResourceTypes={availableResourceTypes as PostType[]}
+					defaultResourceType={defaultResourceType}
+					availableResourceTypes={availableResourceTypes}
 					topLevelResourceTypes={topLevelResourceTypes}
 					uploadEnabled={uploadEnabled}
 				/>

@@ -4,7 +4,6 @@ import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
-import { PostType } from '@/lib/posts'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import pluralize from 'pluralize'
@@ -83,8 +82,8 @@ export function CreatePost({
 				return createPost(input)
 			}}
 			getVideoResource={getVideoResource}
-			availableResourceTypes={availableResourceTypes as PostType[]}
-			defaultPostType={defaultResourceType as PostType}
+			availableResourceTypes={availableResourceTypes}
+			defaultPostType={defaultResourceType}
 			topLevelResourceTypes={topLevelResourceTypes}
 			uploadEnabled={uploadEnabled}
 		>
