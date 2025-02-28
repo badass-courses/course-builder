@@ -10,6 +10,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	FormDescription,
@@ -26,9 +27,9 @@ import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metada
 
 export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof LessonSchema>>
-	initialVideoResourceId: string | null | undefined
+	videoResource: VideoResource | null
 	lesson: Lesson
-}> = ({ form, initialVideoResourceId, lesson }) => {
+}> = ({ form, videoResource, lesson }) => {
 	const router = useRouter()
 	const { module, lesson: lessonSlug } = useParams<{
 		module: string
@@ -68,7 +69,7 @@ export const LessonMetadataFormFields: React.FC<{
 			<ContentVideoResourceField
 				resource={lesson}
 				form={form}
-				initialVideoResourceId={initialVideoResourceId}
+				videoResource={videoResource}
 				onVideoUpdate={async (resourceId, videoResourceId) => {
 					// Just updates the form value, actual saving happens on form submit
 					form.setValue('fields.videoResourceId' as any, videoResourceId)

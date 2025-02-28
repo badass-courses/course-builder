@@ -15,8 +15,8 @@ import { PostFormFields } from './post-form-fields'
 
 export type EditPostFormProps = {
 	post: Post
-	videoResourceLoader: Promise<VideoResource | null>
-	videoResourceId?: string | null | undefined
+	videoResourceLoader?: Promise<VideoResource | null>
+	videoResource?: VideoResource | null
 	listsLoader: Promise<List[]>
 }
 
@@ -26,19 +26,21 @@ export type EditPostFormProps = {
 export function EditPostForm({
 	post,
 	videoResourceLoader,
-	videoResourceId,
+	videoResource,
 	listsLoader,
 }: EditPostFormProps) {
 	const isMobile = useIsMobile()
-	const videoResource = videoResourceLoader
-		? React.use(videoResourceLoader)
-		: null
+
+	// Handle either direct videoResource or resolve from loader
+	const resolvedVideoResource =
+		videoResource ||
+		(videoResourceLoader ? React.use(videoResourceLoader) : null)
 
 	const PostForm = withResourceForm(
 		(props) => (
 			<PostFormFields
 				{...props}
-				videoResourceId={videoResourceId}
+				videoResource={resolvedVideoResource}
 				listsLoader={listsLoader}
 			/>
 		),

@@ -79,7 +79,7 @@ const BaseSolutionForm = ({
 			<ContentVideoResourceField
 				resource={resource}
 				form={form}
-				initialVideoResourceId={videoResource?.id}
+				videoResource={videoResource}
 				label="Solution Video"
 				onVideoUpdate={async (resourceId, videoResourceId) => {
 					// When a video is added, connect it to the solution

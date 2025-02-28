@@ -7,6 +7,8 @@ import type { Post } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import type { UseFormReturn } from 'react-hook-form'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
+
 /**
  * A specialized video resource field component for posts
  * Wraps the generic ContentVideoResourceField with post-specific functionality
@@ -14,16 +16,26 @@ import type { UseFormReturn } from 'react-hook-form'
 export const VideoResourceField: React.FC<{
 	form: UseFormReturn<any>
 	post: Post
+	videoResource?: VideoResource | null
 	initialVideoResourceId?: string | null
 	label?: string
-}> = ({ form, post, initialVideoResourceId, label = 'Video' }) => {
+}> = ({
+	form,
+	post,
+	videoResource,
+	initialVideoResourceId,
+	label = 'Video',
+}) => {
 	const router = useRouter()
+
+	// Use videoResource.id if available, otherwise fall back to initialVideoResourceId
+	const videoId = videoResource?.id || initialVideoResourceId
 
 	return (
 		<ContentVideoResourceField
+			videoResource={videoResource}
 			resource={post}
 			form={form}
-			initialVideoResourceId={initialVideoResourceId}
 			label={label}
 			thumbnailEnabled={true}
 			showTranscript={true}

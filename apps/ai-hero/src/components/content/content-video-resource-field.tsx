@@ -15,6 +15,7 @@ import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import { Shuffle } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	FormDescription,
@@ -53,9 +54,9 @@ interface ContentVideoResourceFieldProps<T extends ContentResourceBase> {
 	form: UseFormReturn<any>
 
 	/**
-	 * Initial video resource ID to display
+	 * Video resource object to display
 	 */
-	initialVideoResourceId?: string | null
+	videoResource?: VideoResource | null
 
 	/**
 	 * Label to display for the video field
@@ -100,25 +101,22 @@ interface ContentVideoResourceFieldProps<T extends ContentResourceBase> {
 export const ContentVideoResourceField = <T extends ContentResourceBase>({
 	resource,
 	form,
-	initialVideoResourceId,
-	onVideoUpdate,
+	videoResource: initialVideoResource,
 	label = 'Video',
 	thumbnailEnabled = false,
 	showTranscript = true,
 	className = '',
 	required = false,
+	onVideoUpdate,
 }: ContentVideoResourceFieldProps<T>) => {
 	const router = useRouter()
-	const [videoResourceId, setVideoResourceId] = React.useState<
-		string | null | undefined
-	>(initialVideoResourceId)
 
 	const { data: videoResource, refetch } = api.videoResources.get.useQuery(
 		{
-			videoResourceId: videoResourceId,
+			videoResourceId: initialVideoResource?.id,
 		},
 		{
-			enabled: !!videoResourceId,
+			enabled: !!initialVideoResource?.id,
 		},
 	)
 
@@ -134,7 +132,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 		setIsProcessing: setIsTranscriptProcessing,
 		TranscriptDialog,
 	} = useTranscript({
-		videoResourceId,
+		videoResourceId: videoResource?.id,
 		initialTranscript: videoResource?.transcript,
 	})
 
@@ -146,7 +144,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 
 	// Socket connection for video and transcript updates
 	useSocket({
-		room: videoResourceId,
+		room: videoResource?.id,
 		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
 		onMessage: async (messageEvent) => {
 			try {
@@ -156,14 +154,8 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 					case 'video.asset.ready':
 					case 'videoResource.created':
 						if (data.body.id) {
-							setVideoResourceId(data.body.id)
-							// Update the form with the new video resource ID if callback provided
-							if (onVideoUpdate) {
-								await onVideoUpdate(resource.id, data.body.id)
-							}
+							refetch()
 						}
-						router.refresh()
-						refetch()
 						break
 					case 'transcript.ready':
 						setTranscript(data.body)
@@ -182,11 +174,11 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 	// Effect to poll video resource until it's ready
 	React.useEffect(() => {
 		async function pollVideo() {
-			if (videoResourceId) {
+			if (videoResource?.id) {
 				const { pollVideoResource } = await import(
 					'@/utils/poll-video-resource'
 				)
-				await pollVideoResource(videoResourceId).next()
+				await pollVideoResource(videoResource.id).next()
 				refetch()
 			}
 		}
@@ -194,11 +186,11 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 		if (!['ready', 'errored'].includes(videoResource?.state || '')) {
 			pollVideo()
 		}
-	}, [videoResource?.state, videoResourceId, refetch])
+	}, [videoResource?.state, videoResource?.id, refetch])
 
 	return (
 		<div className={className}>
-			{!videoResourceId && (
+			{!videoResource?.id && (
 				<div className="px-5">
 					<FormLabel className="text-lg font-bold">{label}</FormLabel>
 					{!required && (
@@ -217,7 +209,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 					</div>
 				}
 			>
-				{videoResourceId ? (
+				{videoResource?.id ? (
 					replacingVideo ? (
 						<div>
 							<NewLessonVideoForm
@@ -225,16 +217,10 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 								onVideoUploadCompleted={(videoResourceId) => {
 									setReplacingVideo(false)
 									setVideoUploadStatus('finalizing upload')
-									setVideoResourceId(videoResourceId)
-									if (onVideoUpdate) {
-										onVideoUpdate(resource.id, videoResourceId)
-									}
+									refetch()
 								}}
 								onVideoResourceCreated={(videoResourceId) => {
-									setVideoResourceId(videoResourceId)
-									if (onVideoUpdate) {
-										onVideoUpdate(resource.id, videoResourceId)
-									}
+									refetch()
 								}}
 							/>
 							<Button
@@ -297,7 +283,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 																	if (onVideoUpdate) {
 																		await onVideoUpdate(
 																			resource.id,
-																			videoResourceId,
+																			videoResource.id,
 																			{ thumbnailTime },
 																		)
 																	}
@@ -366,16 +352,10 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 						parentResourceId={resource.id}
 						onVideoUploadCompleted={(videoResourceId) => {
 							setVideoUploadStatus('finalizing upload')
-							setVideoResourceId(videoResourceId)
-							if (onVideoUpdate) {
-								onVideoUpdate(resource.id, videoResourceId)
-							}
+							refetch()
 						}}
 						onVideoResourceCreated={(videoResourceId) => {
-							setVideoResourceId(videoResourceId)
-							if (onVideoUpdate) {
-								onVideoUpdate(resource.id, videoResourceId)
-							}
+							refetch()
 						}}
 					/>
 				)}
@@ -383,12 +363,12 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 
 			{/* Show transcript for videos that are ready */}
 			{showTranscript &&
-				videoResourceId &&
+				videoResource?.id &&
 				videoResource?.state === 'ready' && (
 					<div className="mt-6 px-5">
 						<div className="flex items-center justify-between gap-2">
 							<label className="text-lg font-bold">Transcript</label>
-							{Boolean(videoResourceId) && (
+							{Boolean(videoResource.id) && (
 								<TooltipProvider delayDuration={0}>
 									<Tooltip>
 										<TooltipTrigger asChild>
@@ -400,7 +380,9 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 													const { reprocessTranscript } = await import(
 														'@/app/(content)/posts/[slug]/edit/actions'
 													)
-													await reprocessTranscript({ videoResourceId })
+													await reprocessTranscript({
+														videoResourceId: videoResource.id,
+													})
 												}}
 												title="Reprocess"
 											>

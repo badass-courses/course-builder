@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
@@ -8,12 +7,10 @@ import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
-import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { ListSchema, type List } from '@/lib/lists'
-import { getAllLists, getMinimalListForNavigation } from '@/lib/lists-query'
+import { getAllLists } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
-import { getAllPosts, getCachedPostOrList, getPost } from '@/lib/posts-query'
+import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
 // import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
@@ -31,7 +28,6 @@ import PostNextUpFromListPagination from '../_components/post-next-up-from-list-
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
-import PostProgressToggle from './_components/post-progress-toggle'
 
 export const experimental_ppr = true
 

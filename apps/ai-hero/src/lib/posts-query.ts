@@ -1068,6 +1068,8 @@ export async function getPostOrList(slugOrId: string) {
 		},
 	})
 
+	console.log({ postOrList })
+
 	if (!postOrList) {
 		return null
 	}
