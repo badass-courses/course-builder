@@ -165,7 +165,7 @@ export function createWorkshopFormConfig(
 		onSave: onWorkshopSave,
 
 		// Custom tools
-		customTools: [mediaUploadTool, resourcesTool],
+		customTools: [mediaUploadTool, resourcesTool], // resourcesTool provides a custom UI for resource management
 		createResourceConfig: {
 			title: 'Add Content',
 			availableTypes: [
@@ -176,7 +176,7 @@ export function createWorkshopFormConfig(
 			defaultType: { type: 'post', postType: 'article' },
 		},
 		bodyPanelConfig: {
-			showListResources: true,
+			showListResources: true, // Enables the built-in resource list view - works alongside resourcesTool which provides additional resource management features
 			listEditorConfig: {
 				title: (
 					<div>
