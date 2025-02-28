@@ -152,27 +152,23 @@ export const removeEggheadLessonFromPlaylist = async ({
 		throw new Error('Unauthorized')
 	}
 
-	try {
-		const response = await fetch(
-			`${process.env.EGGHEAD_API_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons/${eggheadLessonId}`,
-			{
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${process.env.EGGHEAD_AUTH_TOKEN}`,
-				},
+	const response = await fetch(
+		`${process.env.EGGHEAD_API_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons/${eggheadLessonId}`,
+		{
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${process.env.EGGHEAD_AUTH_TOKEN}`,
 			},
-		).then(async (res) => {
-			if (!res.ok) {
-				console.log('Error removing lesson from playlist', res)
-				throw new EggheadApiError(res.statusText, res.status)
-			}
-			return await res.json()
-		})
+		},
+	).then(async (res) => {
+		if (!res.ok) {
+			console.log('Error removing lesson from playlist', res)
+			throw new EggheadApiError(res.statusText, res.status)
+		}
+		return await res.json()
+	})
 
-		return response
-	} catch (error) {
-		throw error
-	}
+	return response
 }
 
 /**
