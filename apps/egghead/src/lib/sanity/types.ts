@@ -34,15 +34,6 @@ export type SystemFields = {
 }
 
 /**
- * Sanity reference schema
- */
-export type Reference = {
-	_ref?: string
-	_type?: string
-	_key?: string
-}
-
-/**
  * Software library document in Sanity
  */
 export type SanitySoftwareLibraryDocument = {
@@ -56,18 +47,16 @@ export type SanitySoftwareLibraryDocument = {
 /**
  * Reference to a Sanity document
  */
-export type SanityArrayElementReference = {
+export type SanityReference = {
 	_type: 'reference'
-	_key: string
 	_ref: string
 }
 
 /**
  * Reference to a Sanity document
  */
-export type SanityReference = {
-	_type: 'reference'
-	_ref: string
+export type SanityArrayElementReference = SanityReference & {
+	_key: string
 }
 
 /**
@@ -76,7 +65,7 @@ export type SanityReference = {
 export type SoftwareLibraryArrayObject = {
 	_type?: string
 	_key?: string
-	library?: Reference
+	library?: SanityReference
 }
 
 /**
@@ -126,7 +115,7 @@ export type SanityLessonDocument = {
  * Collaborator in Sanity
  */
 export type SanityCollaborator = SystemFields & {
-	person?: Reference
+	person?: SanityReference
 	title?: string
 	eggheadInstructorId?: string
 	role?: string
@@ -143,15 +132,15 @@ export type SanityCourse = SystemFields & {
 	description?: string
 	image?: string
 	images?: Image[]
-	imageIllustrator?: Reference
+	imageIllustrator?: SanityReference
 	accessLevel?: string
 	searchIndexingState?: string
 	productionProcessState?: string
 	railsCourseId?: number
 	sharedId?: string
 	softwareLibraries?: SoftwareLibraryArrayObject[]
-	collaborators?: Reference[] | SanityCollaborator
-	resources?: Reference[]
+	collaborators?: SanityArrayElementReference[] | SanityCollaborator
+	resources?: SanityArrayElementReference[]
 }
 
 /**

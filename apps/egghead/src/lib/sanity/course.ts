@@ -10,7 +10,11 @@ import { eq } from 'drizzle-orm'
 import { getSanityCollaborator } from './collaborator'
 import { getSanityLessonForEggheadLessonId } from './lesson'
 import { getSanitySoftwareLibrary } from './softwarelibrary'
-import type { PositionInputItem, Reference, SanityCourse } from './types'
+import type {
+	PositionInputItem,
+	SanityArrayElementReference,
+	SanityCourse,
+} from './types'
 import { createSanityArrayElementReference } from './utils'
 
 /**
@@ -109,7 +113,8 @@ export async function removeLessonFromSanityCourse({
 	const resources = sanityCourse.resources || []
 
 	const filteredResources = resources.filter(
-		(resource: Reference) => resource._ref !== sanityLesson._id,
+		(resource: SanityArrayElementReference) =>
+			resource._ref !== sanityLesson._id,
 	)
 
 	return await sanityWriteClient
@@ -271,10 +276,14 @@ export async function writeTagsToSanityResource(postId: string) {
 			)
 		: []
 
+	const softwareLibraryArrayReferences = softwareLibraries.map((library) => {
+		return createSanityArrayElementReference(library?._id || '')
+	})
+
 	return await sanityWriteClient
 		.patch(sanityResource._id)
 		.set({
-			softwareLibraries,
+			softwareLibraryArrayReferences,
 		})
 		.commit()
 }
