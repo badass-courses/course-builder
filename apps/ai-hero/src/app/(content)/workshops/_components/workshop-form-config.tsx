@@ -166,6 +166,29 @@ export function createWorkshopFormConfig(
 
 		// Custom tools
 		customTools: [mediaUploadTool, resourcesTool],
+		createResourceConfig: {
+			title: 'Add Content',
+			availableTypes: [
+				{ type: 'post', postTypes: ['article'] },
+				{ type: 'tutorial' },
+				{ type: 'lesson' },
+			],
+			defaultType: { type: 'post', postType: 'article' },
+		},
+		bodyPanelConfig: {
+			showListResources: true,
+			listEditorConfig: {
+				title: (
+					<div>
+						<span className="flex text-lg font-bold">Resources</span>
+						<span className="text-muted-foreground mt-2 font-normal">
+							Add and organize resources in this workshop.
+						</span>
+					</div>
+				),
+				showTierSelector: true,
+			},
+		},
 		...customConfig,
 	}
 }
