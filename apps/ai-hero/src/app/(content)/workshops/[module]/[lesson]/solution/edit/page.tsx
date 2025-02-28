@@ -6,11 +6,13 @@ import {
 	getVideoResourceForSolution,
 } from '@/lib/solutions-query'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 
 /**
  * Solution edit page
  * Allows creating or editing a solution for a lesson
+ * Only fetches video resource if user has required permissions
  */
 export default async function SolutionEditPage({
 	params,
@@ -38,10 +40,18 @@ export default async function SolutionEditPage({
 		? solution.fields.slug
 		: `${lessonData.fields.slug}-solution~${guid()}`
 
-	// Get the video resource using our dedicated function
-	const videoResource = solution
-		? await getVideoResourceForSolution(solution.id)
-		: null
+	// Only fetch video resource if user has permission to view content
+	let videoResource = null
+	if (solution && ability.can('view', 'Content')) {
+		try {
+			videoResource = await getVideoResourceForSolution(solution.id)
+		} catch (error) {
+			log.error('solutionEditPage.getVideoResource.error', {
+				error,
+				solutionId: solution.id,
+			})
+		}
+	}
 
 	return (
 		<EditSolutionForm

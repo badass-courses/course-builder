@@ -2,9 +2,14 @@ import * as React from 'react'
 import { notFound } from 'next/navigation'
 import { getLesson, getVideoResourceForLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 
 import { EditWorkshopLessonForm } from '../../../_components/edit-workshop-lesson-form'
 
+/**
+ * Page component for editing a workshop lesson
+ * Fetches the lesson and video resource (if authorized)
+ */
 export default async function LessonEditPage(props: {
 	params: Promise<{ lesson: string }>
 }) {
@@ -16,7 +21,18 @@ export default async function LessonEditPage(props: {
 		notFound()
 	}
 
-	const videoResource = await getVideoResourceForLesson(params.lesson)
+	// Only fetch video resource if user has permission to view content
+	let videoResource = null
+	if (ability.can('view', 'Content')) {
+		try {
+			videoResource = await getVideoResourceForLesson(params.lesson)
+		} catch (error) {
+			log.error('lessonEditPage.getVideoResource.error', {
+				error,
+				lessonId: params.lesson,
+			})
+		}
+	}
 
 	return (
 		<EditWorkshopLessonForm
