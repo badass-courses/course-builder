@@ -3,8 +3,8 @@
 import { getEggheadUserProfile } from '@/lib/egghead'
 import { sanityWriteClient } from '@/server/sanity-write-client'
 
-import type { SanityCollaborator, SanityReference } from './types'
-import { createSanityReference } from './utils'
+import type { SanityArrayElementReference, SanityCollaborator } from './types'
+import { createSanityArrayElementReference } from './utils'
 
 // Define a more specific SanityDocument type for collaborators
 type SanityCollaboratorDocument = {
@@ -31,7 +31,7 @@ export async function getSanityCollaborator(
 	instructorId: number,
 	role: string = 'instructor',
 	returnReference = true,
-): Promise<SanityReference | SanityCollaboratorDocument | null> {
+): Promise<SanityArrayElementReference | SanityCollaboratorDocument | null> {
 	// Check if collaborator exists
 	const existingCollaborator =
 		await sanityWriteClient.fetch<SanityCollaboratorDocument | null>(
@@ -41,7 +41,7 @@ export async function getSanityCollaborator(
 
 	if (existingCollaborator) {
 		return returnReference
-			? createSanityReference(existingCollaborator._id)
+			? createSanityArrayElementReference(existingCollaborator._id)
 			: existingCollaborator
 	}
 
@@ -61,7 +61,7 @@ export async function getSanityCollaborator(
 	})
 
 	return returnReference
-		? createSanityReference(collaborator._id)
+		? createSanityArrayElementReference(collaborator._id)
 		: (collaborator as SanityCollaboratorDocument)
 }
 

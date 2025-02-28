@@ -56,9 +56,17 @@ export type SanitySoftwareLibraryDocument = {
 /**
  * Reference to a Sanity document
  */
-export type SanityReference = {
+export type SanityArrayElementReference = {
 	_type: 'reference'
 	_key: string
+	_ref: string
+}
+
+/**
+ * Reference to a Sanity document
+ */
+export type SanityReference = {
+	_type: 'reference'
 	_ref: string
 }
 
@@ -109,7 +117,7 @@ export type SanityLessonDocument = {
 	description?: string
 	railsLessonId?: string | number
 	softwareLibraries?: SoftwareLibraryArrayObject[]
-	collaborators?: SanityReference[]
+	collaborators?: SanityArrayElementReference[]
 	status?: string
 	accessLevel?: 'free' | 'pro'
 }
