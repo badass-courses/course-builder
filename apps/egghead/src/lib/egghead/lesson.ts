@@ -234,3 +234,22 @@ export async function syncEggheadResourceInstructor(
 			break
 	}
 }
+
+/**
+ * Gets a lesson from the Egghead API by its ID
+ * @param eggheadLessonId - The Egghead lesson ID
+ * @returns The Egghead lesson data
+ */
+export async function getEggheadLesson(eggheadLessonId: number) {
+	const response = await fetch(
+		`https://app.egghead.io/api/v1/lessons/${eggheadLessonId}`,
+	)
+
+	if (!response.ok) {
+		throw new Error(
+			`Failed to fetch lesson: ${response.status} ${response.statusText}`,
+		)
+	}
+
+	return response.json()
+}

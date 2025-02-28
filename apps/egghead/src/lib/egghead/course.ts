@@ -209,3 +209,22 @@ export async function syncEggheadCourseInstructor(
 			return res.json()
 		})
 }
+
+/**
+ * Gets a playlist from the Egghead API by its ID
+ * @param eggheadPlaylistId - The Egghead playlist ID
+ * @returns The Egghead playlist data
+ */
+export async function getEggheadPlaylist(eggheadPlaylistId: number) {
+	const response = await fetch(
+		`https://app.egghead.io/api/v1/playlists/${eggheadPlaylistId}`,
+	)
+
+	if (!response.ok) {
+		throw new Error(
+			`Failed to fetch playlist: ${response.status} ${response.statusText}`,
+		)
+	}
+
+	return response.json()
+}

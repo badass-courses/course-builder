@@ -2,6 +2,9 @@
 
 import { Post } from '@/lib/posts'
 
+import { getEggheadPlaylist } from './course'
+import { getEggheadLesson } from './lesson'
+
 /**
  * Gets the appropriate Egghead resource based on post type
  * @param post - The post for which to get the Egghead resource
@@ -26,38 +29,4 @@ export async function getEggheadResource(post: Post) {
 		default:
 			throw new Error('Unsupported post type')
 	}
-}
-
-/**
- * Gets a lesson from the Egghead API by its ID
- * @param eggheadLessonId - The Egghead lesson ID
- * @returns The Egghead lesson data
- */
-export async function getEggheadLesson(eggheadLessonId: number) {
-	const response = await fetch(
-		`https://app.egghead.io/api/v1/lessons/${eggheadLessonId}`,
-	)
-	
-	if (!response.ok) {
-		throw new Error(`Failed to fetch lesson: ${response.status} ${response.statusText}`)
-	}
-	
-	return response.json()
-}
-
-/**
- * Gets a playlist from the Egghead API by its ID
- * @param eggheadPlaylistId - The Egghead playlist ID
- * @returns The Egghead playlist data
- */
-export async function getEggheadPlaylist(eggheadPlaylistId: number) {
-	const response = await fetch(
-		`https://app.egghead.io/api/v1/playlists/${eggheadPlaylistId}`,
-	)
-	
-	if (!response.ok) {
-		throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText}`)
-	}
-	
-	return response.json()
 }
