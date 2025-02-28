@@ -23,15 +23,13 @@ export default async function LessonEditPage(props: {
 
 	// Only fetch video resource if user has permission to view content
 	let videoResource = null
-	if (ability.can('view', 'Content')) {
-		try {
-			videoResource = await getVideoResourceForLesson(params.lesson)
-		} catch (error) {
-			log.error('lessonEditPage.getVideoResource.error', {
-				error,
-				lessonId: params.lesson,
-			})
-		}
+	try {
+		videoResource = await getVideoResourceForLesson(params.lesson)
+	} catch (error) {
+		log.error('lessonEditPage.getVideoResource.error', {
+			error,
+			lessonId: params.lesson,
+		})
 	}
 
 	return (

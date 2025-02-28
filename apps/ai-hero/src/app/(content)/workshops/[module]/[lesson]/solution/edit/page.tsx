@@ -42,7 +42,7 @@ export default async function SolutionEditPage({
 
 	// Only fetch video resource if user has permission to view content
 	let videoResource = null
-	if (solution && ability.can('view', 'Content')) {
+	if (solution) {
 		try {
 			videoResource = await getVideoResourceForSolution(solution.id)
 		} catch (error) {
