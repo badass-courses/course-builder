@@ -45,42 +45,38 @@ export const addEggheadLessonToPlaylist = async ({
 		throw new Error('Unauthorized')
 	}
 
-	try {
-		const response = await fetch(
-			`${process.env.EGGHEAD_API_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${process.env.EGGHEAD_AUTH_TOKEN}`,
-				},
-				body: JSON.stringify({
-					playlist_id: eggheadPlaylistId,
-					lesson_id: eggheadLessonId,
-					position,
-				}),
+	const response = await fetch(
+		`${process.env.EGGHEAD_API_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons`,
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${process.env.EGGHEAD_AUTH_TOKEN}`,
 			},
-		).then(async (res) => {
-			if (res.status === 422) {
-				const body = await res.json()
-				if (body?.error?.includes('Item already in the list')) {
-					return {
-						message: 'Item already in the list',
-					}
+			body: JSON.stringify({
+				playlist_id: eggheadPlaylistId,
+				lesson_id: eggheadLessonId,
+				position,
+			}),
+		},
+	).then(async (res) => {
+		if (res.status === 422) {
+			const body = await res.json()
+			if (body?.error?.includes('Item already in the list')) {
+				return {
+					message: 'Item already in the list',
 				}
 			}
+		}
 
-			if (!res.ok) {
-				throw new EggheadApiError(res.statusText, res.status)
-			}
+		if (!res.ok) {
+			throw new EggheadApiError(res.statusText, res.status)
+		}
 
-			return await res.json()
-		})
+		return await res.json()
+	})
 
-		return response
-	} catch (error) {
-		throw error
-	}
+	return response
 }
 
 /**
