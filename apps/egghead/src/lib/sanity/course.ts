@@ -11,7 +11,7 @@ import { getSanityCollaborator } from './collaborator'
 import { getSanityLessonForEggheadLessonId } from './lesson'
 import { getSanitySoftwareLibrary } from './softwarelibrary'
 import type { PositionInputItem, Reference, SanityCourse } from './types'
-import { createSanityReference } from './utils'
+import { createSanityArrayElementReference } from './utils'
 
 /**
  * Creates a Sanity course document
@@ -72,7 +72,10 @@ export async function addLessonToSanityCourse({
 	return await sanityWriteClient
 		.patch(sanityCourse._id)
 		.set({
-			resources: [...resources, createSanityReference(sanityLesson._id)],
+			resources: [
+				...resources,
+				createSanityArrayElementReference(sanityLesson._id),
+			],
 		})
 		.commit()
 }
@@ -162,7 +165,7 @@ export async function reorderResourcesInSanityCourse({
 	)
 
 	const newSanityLessonReferences = sanityLessons.map((lesson) => {
-		return createSanityReference(lesson?._id || '')
+		return createSanityArrayElementReference(lesson?._id || '')
 	})
 
 	return await sanityWriteClient

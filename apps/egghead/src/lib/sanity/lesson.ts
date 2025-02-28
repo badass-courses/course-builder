@@ -12,11 +12,11 @@ import type { VideoResource } from '@coursebuilder/core/schemas'
 
 import { getSanityCollaborator } from './collaborator'
 import type {
+	SanityArrayElementReference,
 	SanityLessonDocument,
-	SanityReference,
 	SoftwareLibraryArrayObject,
 } from './types'
-import { createSanityReference } from './utils'
+import { createSanityArrayElementReference } from './utils'
 
 /**
  * Creates a Sanity video resource document from a VideoResource
@@ -76,7 +76,7 @@ export async function replaceSanityLessonResources({
 	}
 
 	const videoResourceReference = videoResourceId
-		? createSanityReference(videoResourceId)
+		? createSanityArrayElementReference(videoResourceId)
 		: undefined
 
 	return await sanityWriteClient
@@ -112,7 +112,7 @@ export async function patchSanityLessonWithVideoResourceReference(
 	return await sanityWriteClient
 		.patch(sanityLesson._id as string)
 		.set({
-			resources: [createSanityReference(videoResourceDocumentId)],
+			resources: [createSanityArrayElementReference(videoResourceDocumentId)],
 		})
 		.commit()
 }
@@ -169,7 +169,7 @@ export async function updateSanityLesson(
 		typeof contentResourceData.fields === 'object' &&
 		'videoResourceId' in contentResourceData.fields
 	) {
-		videoResourceReference = createSanityReference(
+		videoResourceReference = createSanityArrayElementReference(
 			contentResourceData.fields.videoResourceId as string,
 		)
 	}
@@ -198,7 +198,7 @@ export async function updateSanityLesson(
  */
 export async function createSanityLesson(
 	eggheadLesson: EggheadLesson,
-	collaborator: SanityReference,
+	collaborator: SanityArrayElementReference,
 	softwareLibraries: SoftwareLibraryArrayObject[],
 ) {
 	const { id, slug, title, is_pro } = eggheadLesson

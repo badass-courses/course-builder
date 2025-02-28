@@ -1,4 +1,4 @@
-import type { SanityReference } from './types'
+import type { SanityArrayElementReference, SanityReference } from './types'
 
 /**
  * Generates a random key for Sanity references
@@ -15,10 +15,24 @@ export const keyGenerator = (): string => {
  * @param documentId - The ID of the document to reference
  * @returns A Sanity reference object
  */
-export function createSanityReference(documentId: string): SanityReference {
+export function createSanityArrayElementReference(
+	documentId: string,
+): SanityArrayElementReference {
 	return {
 		_type: 'reference',
 		_key: keyGenerator(),
+		_ref: documentId,
+	}
+}
+
+/**
+ * Creates a Sanity reference object for a single document
+ * @param documentId - The ID of the document to reference
+ * @returns A Sanity reference object
+ */
+export function createSanityReference(documentId: string): SanityReference {
+	return {
+		_type: 'reference',
 		_ref: documentId,
 	}
 }
