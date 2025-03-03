@@ -8,6 +8,7 @@ import { Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	FormDescription,
@@ -28,6 +29,7 @@ import { VideoResourceField } from './video-resource-field'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
+	videoResource?: VideoResource | null
 	videoResourceId?: string | null | undefined
 	post: Post
 	listsLoader: Promise<List[]>
@@ -39,6 +41,7 @@ export const PostMetadataFormFields: React.FC<{
 }> = ({
 	form,
 	post,
+	videoResource,
 	videoResourceId: initialVideoResourceId,
 	listsLoader,
 	sendResourceChatMessage,
@@ -96,7 +99,10 @@ export const PostMetadataFormFields: React.FC<{
 			<VideoResourceField
 				form={form}
 				post={post}
-				initialVideoResourceId={initialVideoResourceId}
+				videoResource={videoResource}
+				initialVideoResourceId={
+					initialVideoResourceId ? videoResource?.id : null
+				}
 			/>
 			<FormField
 				control={form.control}

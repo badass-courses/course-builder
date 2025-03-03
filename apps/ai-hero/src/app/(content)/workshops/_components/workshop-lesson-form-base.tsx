@@ -39,7 +39,7 @@ export function WorkshopLessonFormBase({
 
 	return (
 		<LessonMetadataFormFields
-			initialVideoResourceId={initialVideoId}
+			videoResource={videoResource}
 			form={form}
 			lesson={lesson}
 		/>
