@@ -47,23 +47,35 @@ export default async function ArticleEditPage(props: {
 		redirect(`/${post?.fields?.slug}`)
 	}
 
-	const videoResource =
+	// Extract video resource from post resources
+	const videoResourceRef =
 		post.resources
 			?.map((resource) => resource.resource)
 			?.find((resource) => {
 				return resource.type === 'videoResource'
 			}) || null
 
-	const videoResourceLoader = videoResource
-		? courseBuilderAdapter.getVideoResource(videoResource.id)
-		: Promise.resolve(null)
+	// Resolve video resource server-side instead of passing a loader
+	let videoResource = null
+	if (videoResourceRef) {
+		try {
+			videoResource = await courseBuilderAdapter.getVideoResource(
+				videoResourceRef.id,
+			)
+		} catch (error) {
+			console.error('Error loading video resource:', error)
+		}
+	}
+
+	console.log({ videoResource, videoResourceRef })
+
 	const listsLoader = getAllLists()
 
 	return (
 		<EditPostForm
 			key={post.fields.slug}
 			post={{ ...post }}
-			videoResourceLoader={videoResourceLoader}
+			videoResource={videoResourceRef}
 			listsLoader={listsLoader}
 		/>
 	)
