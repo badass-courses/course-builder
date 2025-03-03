@@ -3,6 +3,7 @@ import '@/styles/globals.css'
 import * as React from 'react'
 import { Metadata } from 'next'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
+import LayoutClient from '@/components/layout-client'
 import Navigation from '@/components/navigation'
 import Footer from '@/components/navigation/footer'
 import { Party } from '@/components/party'
@@ -87,7 +88,6 @@ export default function RootLayout({
 									 */
 									routerConfig={extractRouterConfig(ourFileRouter)}
 								/>
-								<Navigation />
 								<CouponProvider
 									getCouponForCode={async (couponCodeOrId: string | null) => {
 										'use server'
@@ -99,7 +99,10 @@ export default function RootLayout({
 									}}
 									getProduct={getProduct}
 								>
-									{children}
+									<LayoutClient>
+										<Navigation />
+										{children}
+									</LayoutClient>
 								</CouponProvider>
 								<Footer />
 							</ThemeProvider>
