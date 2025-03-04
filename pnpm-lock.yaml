@@ -1004,7 +1004,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0)
@@ -1347,7 +1347,7 @@ importers:
         version: 5.1.2(@planetscale/database@1.19.0)(@types/node@20.12.5)(typescript@5.4.5)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
       mysql2:
         specifier: ^3.6.1
         version: 3.9.2
@@ -1642,7 +1642,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0)
@@ -3556,7 +3556,7 @@ importers:
         version: 1.0.7
       next:
         specifier: 15.2.0-canary.19
-        version: 15.2.0-canary.19(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        version: 15.2.0-canary.19(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -3753,7 +3753,7 @@ importers:
         version: 19.0.0
       react-email:
         specifier: 2.1.1
-        version: 2.1.1(@babel/core@7.26.0)(eslint@8.57.1)
+        version: 2.1.1(@babel/core@7.24.0)(eslint@8.57.1)
       tsup:
         specifier: 8.0.2
         version: 8.0.2(postcss@8.4.35)(typescript@5.4.5)
@@ -3809,7 +3809,7 @@ importers:
         version: 0.37.2(nodemailer@6.9.11)
       next:
         specifier: 15.2.0-canary.19
-        version: 15.2.0-canary.19(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        version: 15.2.0-canary.19(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
         version: 5.0.0-beta.25(next@15.2.0-canary.19)(react@19.0.0)
@@ -21409,7 +21409,7 @@ packages:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
+      drizzle-orm: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.9.2)(react@19.0.0)
       zod: 3.22.4
     dev: false
 
@@ -27686,7 +27686,7 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.37.2(nodemailer@6.9.11)
-      next: 15.1.5(@babel/core@7.26.0)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.1.5(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
     dev: true
 
@@ -27788,7 +27788,7 @@ packages:
       react-dom: 19.0.0(react@19.0.0)
     dev: false
 
-  /next@14.1.0(@babel/core@7.26.0)(react-dom@18.3.1)(react@18.3.1):
+  /next@14.1.0(@babel/core@7.24.0)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-wlzrsbfeSU48YQBjZhDzOwhWhGsy+uQycR8bHAOt1LY1bn3zZEcDyHQOEoN3aWzQ8LHCAJ1nqrWCc9XF2+O45Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
@@ -27811,7 +27811,7 @@ packages:
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.1(@babel/core@7.26.0)(react@18.3.1)
+      styled-jsx: 5.1.1(@babel/core@7.24.0)(react@18.3.1)
     optionalDependencies:
       '@next/swc-darwin-arm64': 14.1.0
       '@next/swc-darwin-x64': 14.1.0
@@ -27827,7 +27827,7 @@ packages:
       - babel-plugin-macros
     dev: false
 
-  /next@15.1.5(@babel/core@7.26.0)(react-dom@19.0.0)(react@19.0.0):
+  /next@15.1.5(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-Cf/TEegnt01hn3Hoywh6N8fvkhbOuChO4wFje24+a86wKOubgVaWkDqxGVgoWlz2Hp9luMJ9zw3epftujdnUOg==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
@@ -27856,7 +27856,7 @@ packages:
       postcss: 8.4.31
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-      styled-jsx: 5.1.6(@babel/core@7.26.0)(react@19.0.0)
+      styled-jsx: 5.1.6(@babel/core@7.24.0)(react@19.0.0)
     optionalDependencies:
       '@next/swc-darwin-arm64': 15.1.5
       '@next/swc-darwin-x64': 15.1.5
@@ -29816,7 +29816,7 @@ packages:
       react: 19.0.0
       scheduler: 0.25.0
 
-  /react-email@2.1.1(@babel/core@7.26.0)(eslint@8.57.1):
+  /react-email@2.1.1(@babel/core@7.24.0)(eslint@8.57.1):
     resolution: {integrity: sha512-09oMVl/jN0/Re0bT0sEqYjyyFSCN/Tg0YmzjC9wfYpnMx02Apk40XXitySDfUBMR9EgTdr6T4lYknACqiLK3mg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -29848,7 +29848,7 @@ packages:
       glob: 10.3.4
       log-symbols: 4.1.0
       mime-types: 2.1.35
-      next: 14.1.0(@babel/core@7.26.0)(react-dom@18.3.1)(react@18.3.1)
+      next: 14.1.0(@babel/core@7.24.0)(react-dom@18.3.1)(react@18.3.1)
       normalize-path: 3.0.0
       ora: 5.4.1
       postcss: 8.4.35
@@ -32137,7 +32137,7 @@ packages:
       - '@babel/core'
     dev: false
 
-  /styled-jsx@5.1.1(@babel/core@7.26.0)(react@18.3.1):
+  /styled-jsx@5.1.1(@babel/core@7.24.0)(react@18.3.1):
     resolution: {integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==}
     engines: {node: '>= 12.0.0'}
     peerDependencies:
@@ -32150,7 +32150,7 @@ packages:
       babel-plugin-macros:
         optional: true
     dependencies:
-      '@babel/core': 7.26.0
+      '@babel/core': 7.24.0
       client-only: 0.0.1
       react: 18.3.1
     dev: false
