@@ -48,7 +48,7 @@ export default function PixelatedImageCarousel() {
 
 	// Handle transition completion - simplified to reduce state changes
 	const handleTransitionComplete = React.useCallback(() => {
-		console.log('Transition complete, updating to next image', nextIndex)
+		// console.log('Transition complete, updating to next image', nextIndex)
 
 		// Use a single timeout with a slightly longer delay
 		const timeout = window.setTimeout(() => {
@@ -69,12 +69,12 @@ export default function PixelatedImageCarousel() {
 		if (isTransitioning || isTransitionEnding) return
 
 		const timer = window.setTimeout(() => {
-			console.log(
-				'Starting transition from index',
-				currentIndex,
-				'to',
-				nextIndex,
-			)
+			// console.log(
+			// 	'Starting transition from index',
+			// 	currentIndex,
+			// 	'to',
+			// 	nextIndex,
+			// )
 			setIsTransitioning(true)
 		}, 3000) // 3 seconds between transitions
 
@@ -89,12 +89,12 @@ export default function PixelatedImageCarousel() {
 	const triggerTransition = React.useCallback(() => {
 		if (isTransitioning || isTransitionEnding) return
 
-		console.log(
-			'Manually triggering transition from index',
-			currentIndex,
-			'to',
-			nextIndex,
-		)
+		// console.log(
+		// 	'Manually triggering transition from index',
+		// 	currentIndex,
+		// 	'to',
+		// 	nextIndex,
+		// )
 
 		setIsTransitioning(true)
 	}, [currentIndex, nextIndex, isTransitioning, isTransitionEnding])
@@ -201,7 +201,7 @@ function PixelGrid({
 	React.useEffect(() => {
 		const timer = window.setTimeout(() => {
 			if (!hasCalledCompleteRef.current && onComplete) {
-				console.log('Fallback timer triggered for transition completion')
+				// console.log('Fallback timer triggered for transition completion')
 				hasCalledCompleteRef.current = true
 				onComplete()
 			}
