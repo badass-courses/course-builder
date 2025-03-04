@@ -421,7 +421,8 @@ const AIPracticesGrid: React.FC<AIPracticesGridProps> = ({
 							className={cn(
 								'text-primary absolute bottom-[-4.5px] right-[-4.5px] z-10 opacity-0',
 								{
-									'sm:opacity-100': [0, 1].includes(index),
+									'lg:opacity-100': [0, 1].includes(index),
+									'lg:opacity-0': [2].includes(index),
 									'opacity-100': [0, 2].includes(index),
 								},
 							)}

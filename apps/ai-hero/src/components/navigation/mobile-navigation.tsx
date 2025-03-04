@@ -9,6 +9,7 @@ import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import { Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
+import type { Subscriber } from '@coursebuilder/core/schemas/subscriber-schema'
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
