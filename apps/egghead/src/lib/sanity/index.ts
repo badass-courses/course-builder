@@ -16,8 +16,13 @@ export {
 	removeLessonFromSanityCourse,
 	reorderResourcesInSanityCourse,
 	updateSanityCourseMetadata,
+} from './course'
+
+export {
 	writeTagsToSanityResource,
 	syncSanityResourceInstructor,
-} from './course'
+	getSanityResourceForPost,
+	getSoftwareLibraryReferencesFromTags,
+} from './resource'
 
 export { getSanitySoftwareLibrary } from './softwarelibrary'
