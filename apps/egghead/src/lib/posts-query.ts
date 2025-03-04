@@ -68,7 +68,7 @@ import {
 	writeTagsToSanityResource,
 } from './sanity-content-query'
 import { EggheadTag, EggheadTagSchema } from './tags'
-import { upsertPostToTypeSense } from './typesense-query'
+import { updatePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function searchLessons(searchTerm: string) {
 	const { session } = await getServerAuthSession()
@@ -710,9 +710,9 @@ export async function getCoursesForPost(postId: string) {
 	return await db
 		.select({
 			courseId: contentResource.id,
-			courseTitle: sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`,
-			courseSlug: sql`JSON_EXTRACT(${contentResource.fields}, '$.slug')`,
-			eggheadPlaylistId: sql`JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId')`,
+			courseTitle: sql<string>`CAST(JSON_EXTRACT(${contentResource.fields}, '$.title') AS CHAR)`,
+			courseSlug: sql<string>`CAST(JSON_EXTRACT(${contentResource.fields}, '$.slug') AS CHAR)`,
+			eggheadPlaylistId: sql<number>`CAST(JSON_EXTRACT(${contentResource.fields}, '$.eggheadPlaylistId') AS SIGNED)`,
 		})
 		.from(contentResource)
 		.innerJoin(
@@ -861,6 +861,20 @@ export const addResourceToResource = async ({
 			resource: true,
 		},
 	})
+
+	if (resource.fields?.postType === 'lesson') {
+		await updatePostInTypeSense(String(resource.fields?.eggheadLessonId), {
+			belongs_to_resource: parentResource.fields?.eggheadPlaylistId,
+			resources: [
+				{
+					id: parentResource.id,
+					title: parentResource.fields?.title,
+					slug: parentResource.fields?.slug,
+					eggheadPlaylistId: parentResource.fields?.eggheadPlaylistId,
+				},
+			],
+		})
+	}
 
 	return resourceResource
 }

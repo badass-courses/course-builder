@@ -3,10 +3,14 @@ import Typesense from 'typesense'
 import { getEggheadResource, getEggheadUserProfile } from './egghead'
 import { Post, PostAction } from './posts'
 import { getCoursesForPost } from './posts-query'
-import { TypesenseInstructorSchema, TypesensePostSchema } from './typesense'
+import {
+	TypesenseInstructorSchema,
+	TypesensePostSchema,
+	type TypeSensePost,
+} from './typesense'
 
-export async function upsertPostToTypeSense(post: Post, action: PostAction) {
-	let client = new Typesense.Client({
+function createTypesenseClient() {
+	return new Typesense.Client({
 		nodes: [
 			{
 				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST!,
@@ -17,6 +21,10 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		apiKey: process.env.TYPESENSE_WRITE_API_KEY!,
 		connectionTimeoutSeconds: 2,
 	})
+}
+
+export async function upsertPostToTypeSense(post: Post, action: PostAction) {
+	let client = createTypesenseClient()
 
 	const shouldIndex =
 		post.fields.state === 'published' && post.fields.visibility === 'public'
@@ -110,4 +118,16 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 				console.error(err)
 			})
 	}
+}
+
+export async function updatePostInTypeSense(
+	id: string,
+	attributes: Partial<TypeSensePost>,
+) {
+	const client = createTypesenseClient()
+
+	return client
+		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+		.documents(id)
+		.update(attributes)
 }
