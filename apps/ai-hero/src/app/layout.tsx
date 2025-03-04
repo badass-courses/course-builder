@@ -102,9 +102,9 @@ export default function RootLayout({
 									<LayoutClient>
 										<Navigation />
 										{children}
+										<Footer />
 									</LayoutClient>
 								</CouponProvider>
-								<Footer />
 							</ThemeProvider>
 						</NuqsAdapter>
 					</TRPCReactProvider>

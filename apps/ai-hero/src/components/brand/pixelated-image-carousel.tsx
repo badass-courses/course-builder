@@ -13,9 +13,15 @@ import { motion } from 'framer-motion'
 export default function PixelatedImageCarousel() {
 	const images = [
 		'https://res.cloudinary.com/total-typescript/image/upload/v1740986689/aihero.dev/assets/hero-1_ght0uc.jpg',
-		'https://res.cloudinary.com/total-typescript/image/upload/v1740986689/aihero.dev/assets/hero-2_gbwgpp.jpg',
+		// 'https://res.cloudinary.com/total-typescript/image/upload/v1740986689/aihero.dev/assets/hero-2_gbwgpp.jpg',
 		'https://res.cloudinary.com/total-typescript/image/upload/v1740986689/aihero.dev/assets/hero-3_nal1rn.jpg',
-		'https://res.cloudinary.com/total-typescript/image/upload/v1740993776/aihero.dev/assets/hero-4_t4zzpa.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741067743/aihero.dev/assets/hero-4_nzoyu6.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741083586/aihero.dev/assets/hero-5_2x_jqloft.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741083585/aihero.dev/assets/hero-6_2x_ova0mu.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741083588/aihero.dev/assets/hero-7_2x_ouothr.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741083587/aihero.dev/assets/hero-8_2x_w0bnxf.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741083585/aihero.dev/assets/hero-9_2x_lhz69l.jpg',
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741083588/aihero.dev/assets/hero-10_2x_sxxxb9.jpg',
 	] as const
 
 	// Track the current index in the images array

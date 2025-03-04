@@ -21,7 +21,7 @@ module.exports = {
 	],
 	theme: {
 		fluidTypography: {
-			lineHeight: 1.1,
+			lineHeight: 1.2,
 		},
 		container: {
 			center: true,
@@ -104,7 +104,7 @@ module.exports = {
 						'tr, thead': {
 							borderColor: theme('colors.border'),
 						},
-						p: { fontWeight: 400 },
+						p: { fontWeight: 300 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
 							color: theme('colors.foreground'),

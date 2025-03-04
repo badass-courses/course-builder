@@ -26,9 +26,12 @@ export const AnimatedTitle = ({
 		return index >= 0 ? index : 0
 	})
 
+	const [isFirstRender, setIsFirstRender] = useState(true)
+
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setCurrentIndex((prev) => (prev + 1) % words.length)
+			setIsFirstRender(false)
 		}, 2000)
 
 		return () => clearInterval(interval)
@@ -66,6 +69,7 @@ export const AnimatedTitle = ({
 					},
 				)}
 			>
+				<br className="block lg:hidden" />
 				{beforeWords.map((part, i) => (
 					<motion.span
 						aria-hidden="true"
@@ -76,8 +80,9 @@ export const AnimatedTitle = ({
 						{part}
 					</motion.span>
 				))}
+				<br className="block lg:hidden" />
 				<span
-					className="relative inline-block overflow-hidden py-2.5 text-[150%] sm:py-2 sm:text-[100%]"
+					className="relative inline-block overflow-hidden py-2.5 sm:py-2"
 					aria-hidden="true"
 				>
 					<AnimatePresence
@@ -85,14 +90,25 @@ export const AnimatedTitle = ({
 					>
 						<motion.span
 							key={words[currentIndex]}
-							initial={{
-								y: -40,
-								opacity: 0,
-								width: 0,
-								skewX: 20,
-								scale: 0.8,
-								rotate: 5,
-							}}
+							initial={
+								isFirstRender
+									? {
+											y: 0,
+											opacity: 1,
+											width: 'auto',
+											skewX: 0,
+											scale: 1,
+											rotate: 0,
+										}
+									: {
+											y: -40,
+											opacity: 0,
+											width: 0,
+											skewX: 20,
+											scale: 0.8,
+											rotate: 5,
+										}
+							}
 							animate={{
 								y: 0,
 								opacity: 1,

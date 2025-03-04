@@ -23,9 +23,6 @@ export default function Footer() {
 					className="font-heading flex items-center justify-center gap-2 font-semibold leading-none saturate-0"
 				>
 					<LogoMark className="h-12 w-12" />
-					{/* <span className="text-muted-foreground text-3xl font-bold !leading-none">
-						AI Hero
-					</span> */}
 				</Link>
 			</div>
 			<div className="mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light sm:justify-start">

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
@@ -9,9 +10,11 @@ import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import { LockIcon, ShieldCheckIcon } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { twMerge } from 'tailwind-merge'
 
 import common from '../text/common'
+import { CldImage } from './cld-image'
 
 type PrimaryNewsletterCtaProps = {
 	onSuccess?: () => void
@@ -24,11 +27,16 @@ type PrimaryNewsletterCtaProps = {
 		event?: string
 		params?: Record<string, string>
 	}
+	resource?: {
+		path: string
+		title: string
+	}
 }
 
 export const PrimaryNewsletterCta: React.FC<
 	React.PropsWithChildren<PrimaryNewsletterCtaProps>
 > = ({
+	resource,
 	children,
 	className,
 	id = 'primary-newsletter-cta',
@@ -41,12 +49,7 @@ export const PrimaryNewsletterCta: React.FC<
 	const router = useRouter()
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()
-	if (status === 'pending') {
-		return null
-	}
-	if (subscriber) {
-		return null
-	}
+
 	const handleOnSuccess = (subscriber: Subscriber | undefined) => {
 		if (subscriber) {
 			track(trackProps.event as string, trackProps.params)
@@ -54,58 +57,74 @@ export const PrimaryNewsletterCta: React.FC<
 			router.push(redirectUrl)
 		}
 	}
-
+	const { data: session } = useSession()
 	return (
 		<section
-			data-theme="elysium"
+			// data-theme="elysium"
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'border-border/50 dark relative flex flex-col items-center overflow-x-hidden border-b bg-black pb-[0] sm:pb-[450px]',
+				'flex flex-col items-center justify-center px-5',
 				className,
 			)}
 		>
-			<Image
-				src={require('../../public/assets/mountain.jpg')}
-				className="hidden object-cover object-bottom sm:block"
-				aria-hidden="true"
-				quality={100}
-				loading="eager"
-				alt=""
-				fill
-			/>
 			{children ? (
 				children
 			) : (
-				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-10 pt-10 text-white">
-					<h2 className="font-heading fluid-2xl text-center font-extrabold">
+				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10">
+					<CldImage
+						loading="lazy"
+						src="https://res.cloudinary.com/total-typescript/image/upload/v1741008166/aihero.dev/assets/textured-logo-mark_2x_ecauns.png"
+						alt=""
+						aria-hidden="true"
+						width={130}
+						height={130}
+						className="mb-8 rotate-12"
+					/>
+					<h2 className="font-heading sm:fluid-3xl fluid-2xl text-center font-semibold dark:text-white">
 						{title}
 					</h2>
-					<h3 className="fluid-base pt-8 text-center font-sans font-normal">
+					<h3 className="sm:fluid-lg fluid-base pt-5 text-center font-sans font-normal opacity-90 sm:pt-8 sm:font-light">
 						{byline}
 					</h3>
 				</div>
 			)}
-			<SubscribeToConvertkitForm
-				onSuccess={onSuccess ? onSuccess : handleOnSuccess}
-				actionLabel={actionLabel}
-				className="relative z-10 [&_input]:h-16"
-			/>
-			<p
-				data-nospam=""
-				className="text-muted-foreground inline-flex items-center px-5 pt-8 text-center text-sm opacity-75"
-			>
-				<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
-				Unsubscribe at any time.
-			</p>
-			<Image
-				src={require('../../public/assets/mountain.jpg')}
-				className="absolute bottom-0 block origin-bottom scale-[2] sm:hidden"
-				aria-hidden="true"
-				quality={100}
-				loading="eager"
-				alt=""
-			/>
+
+			<div className="not-prose relative flex w-full items-center justify-center">
+				{subscriber && (
+					<div className="absolute z-10 flex -translate-y-8 flex-col text-center">
+						<p className="fluid-lg font-medium">You're subscribed, thanks!</p>
+						<p className="sm:fluid-lg fluid-base pt-5 text-center font-sans font-normal opacity-90 sm:pt-8 sm:font-light">
+							{session?.user
+								? common['newsletter-subscribed-logged-in']({
+										resource,
+									})
+								: common['newsletter-subscribed-logged-out']({
+										resource,
+									})}
+						</p>
+					</div>
+				)}
+				<div
+					className={cn('', {
+						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
+							subscriber,
+					})}
+				>
+					<SubscribeToConvertkitForm
+						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
+						actionLabel={actionLabel}
+						className="[&_input]:border-foreground/40 relative z-10 [&_input]:h-16"
+					/>
+					<p
+						data-nospam=""
+						className="text-muted-foreground inline-flex items-center px-5 pt-8 text-center text-sm opacity-75"
+					>
+						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
+						Unsubscribe at any time.
+					</p>
+				</div>
+			</div>
 		</section>
 	)
 }
