@@ -3,13 +3,13 @@
 import * as React from 'react'
 import Image from 'next/image'
 import { createAppAbility } from '@/ability'
+import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import { Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
-import type { Subscriber } from '@coursebuilder/core/schemas/subscriber-schema'
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
@@ -20,7 +20,7 @@ import { useNavLinks } from './use-nav-links'
 type MobileNavigationProps = {
 	isMobileMenuOpen: boolean
 	setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
-	subscriber: Subscriber | null
+	subscriber?: Subscriber | null
 }
 
 /**
