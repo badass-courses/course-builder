@@ -1,4 +1,5 @@
 import { TeamPageTemplate } from '@/app/(user)/team/page_client'
+import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
@@ -81,5 +82,9 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 export default async function TeamPage() {
 	const pageData = await teamPageDataLoader()
 
-	return <TeamPageTemplate {...pageData} />
+	return (
+		<LayoutClient withContainer>
+			<TeamPageTemplate {...pageData} />
+		</LayoutClient>
+	)
 }

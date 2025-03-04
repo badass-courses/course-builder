@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
@@ -164,25 +165,27 @@ const Welcome = async (props: {
 		const isDiscordConnected = await discordAccountsForCurrentUser()
 
 		return (
-			<div className="container border-x">
-				<WelcomePage
-					product={product}
-					productResources={productResources}
-					purchase={purchase}
-					existingPurchase={existingPurchase}
-					upgrade={upgrade}
-					providers={providers}
-					isGithubConnected={isGithubConnected}
-					isDiscordConnected={isDiscordConnected}
-					redemptionsLeft={redemptionsLeft}
-					isTransferAvailable={isTransferAvailable}
-					purchaseUserTransfers={purchaseUserTransfers}
-					hasCharge={hasCharge}
-					userEmail={session?.user?.email}
-					cancelPurchaseTransfer={cancelPurchaseTransfer}
-					initiatePurchaseTransfer={initiatePurchaseTransfer}
-				/>
-			</div>
+			<LayoutClient withContainer>
+				<div className="container border-x">
+					<WelcomePage
+						product={product}
+						productResources={productResources}
+						purchase={purchase}
+						existingPurchase={existingPurchase}
+						upgrade={upgrade}
+						providers={providers}
+						isGithubConnected={isGithubConnected}
+						isDiscordConnected={isDiscordConnected}
+						redemptionsLeft={redemptionsLeft}
+						isTransferAvailable={isTransferAvailable}
+						purchaseUserTransfers={purchaseUserTransfers}
+						hasCharge={hasCharge}
+						userEmail={session?.user?.email}
+						cancelPurchaseTransfer={cancelPurchaseTransfer}
+						initiatePurchaseTransfer={initiatePurchaseTransfer}
+					/>
+				</div>
+			</LayoutClient>
 		)
 	}
 

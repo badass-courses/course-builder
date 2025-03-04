@@ -11,6 +11,7 @@ import PixelatedImageCarousel from '@/components/brand/pixelated-image-carousel'
 import { CldImage } from '@/components/cld-image'
 import { PricingWidgetServer } from '@/components/commerce/pricing-widget-server'
 import { TeamPricingWidget } from '@/components/commerce/team-pricing-widget'
+import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
@@ -99,7 +100,7 @@ const Home = async (props: Props) => {
 			?.map((match) => match.replace(/^## /, '')) || []
 
 	return (
-		<div>
+		<LayoutClient withContainer>
 			<main className="flex w-full flex-col justify-center">
 				{firstPageResource && (
 					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
@@ -199,7 +200,7 @@ const Home = async (props: Props) => {
 					</section>
 				)}
 			</main>
-		</div>
+		</LayoutClient>
 	)
 }
 

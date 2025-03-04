@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import { getAllTutorials } from '@/lib/tutorials-query'
@@ -33,27 +34,29 @@ export default async function Tutorials() {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<main className="container min-h-[calc(100vh-var(--nav-height))] px-5">
-			<div className="mx-auto flex h-full w-full max-w-screen-lg flex-col items-center border-x">
-				<div className="w-full px-5 pb-16 pt-24">
-					<h1 className="font-heading fluid-3xl text-center font-medium">
-						Free Next.js Tutorials
-					</h1>
+		<LayoutClient withContainer>
+			<main className="container min-h-[calc(100vh-var(--nav-height))] px-5">
+				<div className="mx-auto flex h-full w-full max-w-screen-lg flex-col items-center border-x">
+					<div className="w-full px-5 pb-16 pt-24">
+						<h1 className="font-heading fluid-3xl text-center font-medium">
+							Free Next.js Tutorials
+						</h1>
+					</div>
+					<div className="relative w-full">
+						<TutorialsList />
+						{ability.can('update', 'Content') ? (
+							<div className="mx-auto flex w-full items-center justify-center py-16">
+								<Button asChild variant="secondary" className="gap-1">
+									<Link href={`/tutorials/new`}>
+										<FilePlus2 className="h-4 w-4" /> New Tutorial
+									</Link>
+								</Button>
+							</div>
+						) : null}
+					</div>
 				</div>
-				<div className="relative w-full">
-					<TutorialsList />
-					{ability.can('update', 'Content') ? (
-						<div className="mx-auto flex w-full items-center justify-center py-16">
-							<Button asChild variant="secondary" className="gap-1">
-								<Link href={`/tutorials/new`}>
-									<FilePlus2 className="h-4 w-4" /> New Tutorial
-								</Link>
-							</Button>
-						</div>
-					) : null}
-				</div>
-			</div>
-		</main>
+			</main>
+		</LayoutClient>
 	)
 }
 

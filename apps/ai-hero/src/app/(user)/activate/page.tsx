@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getServerAuthSession } from '@/server/auth'
 
 import Verify from './_components/verifiy'
@@ -18,5 +19,9 @@ export default async function Activate(props: {
 		)
 	}
 
-	return <Verify userCode={userCode} />
+	return (
+		<LayoutClient withContainer>
+			<Verify userCode={userCode} />
+		</LayoutClient>
+	)
 }

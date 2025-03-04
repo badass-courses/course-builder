@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getPage } from '@/lib/pages-query'
 import { getServerAuthSession } from '@/server/auth'
 

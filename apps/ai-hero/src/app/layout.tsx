@@ -99,11 +99,7 @@ export default function RootLayout({
 									}}
 									getProduct={getProduct}
 								>
-									<LayoutClient>
-										<Navigation />
-										{children}
-										<Footer />
-									</LayoutClient>
+									{children}
 								</CouponProvider>
 							</ThemeProvider>
 						</NuqsAdapter>

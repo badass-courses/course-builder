@@ -129,7 +129,7 @@ const testimonialVariants = cva('', {
 	variants: {
 		variant: {
 			default:
-				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-center gap-10 py-5 sm:py-10',
+				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
 			centered:
 				'flex text-center text-balance flex-col items-center justify-center border-none dark:text-white',
 		},

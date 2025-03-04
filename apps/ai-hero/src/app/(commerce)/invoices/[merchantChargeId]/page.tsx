@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/brand/logo'
+import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -127,188 +128,190 @@ const Invoice = async (props: {
 	const emailData = `mailto:?subject=Invoice for ${product.name}&body=Invoice for ${product.name} purchase: ${`${env.NEXT_PUBLIC_URL}/invoices/${params.merchantChargeId}`}`
 
 	return (
-		<div className="container border-x px-5">
-			<main className="mx-auto w-full max-w-screen-md">
-				<div className="flex flex-col justify-between pb-5 pt-10 print:hidden">
-					<Link
-						href="/invoices"
-						className="mb-5 inline-flex items-center gap-1 text-sm opacity-75 transition hover:opacity-100"
-					>
-						<ChevronLeft className="h-3 w-3" /> Invoices
-					</Link>
-					<h1 className="font-text text-center text-lg font-medium leading-tight sm:text-left sm:text-xl">
-						Your Invoice for {product.name}
-					</h1>
-					<div className="flex flex-col items-center gap-2 pt-3 sm:flex-row">
-						<Suspense>
-							<InvoicePrintButton />
-						</Suspense>
-						{emailData && (
-							<Button asChild variant="secondary">
-								<a href={emailData}>
-									<span className="pr-2">Send via email</span>
-									<MailIcon aria-hidden="true" className="w-5" />
-								</a>
-							</Button>
-						)}
-					</div>
-				</div>
-				<div className="rounded-t-md border bg-white pr-12 text-gray-900 print:border-none print:shadow-none">
-					<div className="px-10 py-16">
-						<div className="flex w-full grid-cols-3 flex-col items-start justify-between gap-8 sm:grid sm:gap-0">
-							<div className="col-span-2 flex items-center">
-								<span className="font-text pl-2 text-2xl font-bold">
-									<Logo className="w-40 text-black" />
-								</span>
-							</div>
-							<div>
-								<h2 className="mb-2 text-xs uppercase text-gray-500">From</h2>
-								<span className="font-semibold">{productName}</span>
-								<br />
-								co Skill Recordings Inc.
-								<br />
-								12333 Sowden Rd
-								<br />
-								Ste. B, PMB #97429
-								<br />
-								Houston, TX 77080-2059
-								<br />
-								972-992-5951
-							</div>
+		<LayoutClient withContainer>
+			<div className="container border-x px-5">
+				<main className="mx-auto w-full max-w-screen-md">
+					<div className="flex flex-col justify-between pb-5 pt-10 print:hidden">
+						<Link
+							href="/invoices"
+							className="mb-5 inline-flex items-center gap-1 text-sm opacity-75 transition hover:opacity-100"
+						>
+							<ChevronLeft className="h-3 w-3" /> Invoices
+						</Link>
+						<h1 className="font-text text-center text-lg font-medium leading-tight sm:text-left sm:text-xl">
+							Your Invoice for {product.name}
+						</h1>
+						<div className="flex flex-col items-center gap-2 pt-3 sm:flex-row">
+							<Suspense>
+								<InvoicePrintButton />
+							</Suspense>
+							{emailData && (
+								<Button asChild variant="secondary">
+									<a href={emailData}>
+										<span className="pr-2">Send via email</span>
+										<MailIcon aria-hidden="true" className="w-5" />
+									</a>
+								</Button>
+							)}
 						</div>
-						<div className="grid grid-cols-3 gap-5 pb-64">
-							<div className="col-span-2">
-								<p className="mb-2 text-2xl font-bold">Invoice</p>
-								Invoice ID: <strong>{params.merchantChargeId}</strong>
-								<br />
-								Created: <strong>{date}</strong>
-								<br />
-								Status:{' '}
-								<strong>
-									{charge.status === 'succeeded'
-										? charge.refunded
-											? 'Refunded'
-											: 'Paid'
-										: 'Pending'}
-								</strong>
-							</div>
-							<div className="pt-12">
-								<h2 className="mb-2 text-xs uppercase text-gray-500">
-									Invoice For
-								</h2>
+					</div>
+					<div className="rounded-t-md border bg-white pr-12 text-gray-900 print:border-none print:shadow-none">
+						<div className="px-10 py-16">
+							<div className="flex w-full grid-cols-3 flex-col items-start justify-between gap-8 sm:grid sm:gap-0">
+								<div className="col-span-2 flex items-center">
+									<span className="font-text pl-2 text-2xl font-bold">
+										<Logo className="w-40 text-black" />
+									</span>
+								</div>
 								<div>
-									{/* <Input
+									<h2 className="mb-2 text-xs uppercase text-gray-500">From</h2>
+									<span className="font-semibold">{productName}</span>
+									<br />
+									co Skill Recordings Inc.
+									<br />
+									12333 Sowden Rd
+									<br />
+									Ste. B, PMB #97429
+									<br />
+									Houston, TX 77080-2059
+									<br />
+									972-992-5951
+								</div>
+							</div>
+							<div className="grid grid-cols-3 gap-5 pb-64">
+								<div className="col-span-2">
+									<p className="mb-2 text-2xl font-bold">Invoice</p>
+									Invoice ID: <strong>{params.merchantChargeId}</strong>
+									<br />
+									Created: <strong>{date}</strong>
+									<br />
+									Status:{' '}
+									<strong>
+										{charge.status === 'succeeded'
+											? charge.refunded
+												? 'Refunded'
+												: 'Paid'
+											: 'Pending'}
+									</strong>
+								</div>
+								<div className="pt-12">
+									<h2 className="mb-2 text-xs uppercase text-gray-500">
+										Invoice For
+									</h2>
+									<div>
+										{/* <Input
 										className="border-primary mb-1 h-8 border-2 p-2 text-base leading-none print:hidden"
 										defaultValue={customer.name as string}
 									/> */}
-									{customer.name}
-									<br />
-									{customer.email}
-									{/* <br />
+										{customer.name}
+										<br />
+										{customer.email}
+										{/* <br />
                   {charge.billing_details.address?.city}
                   <br />
                   {charge.billing_details.address?.postal_code}
                   <br />
                   {charge.billing_details.address?.country} */}
+									</div>
+									<Suspense>
+										<InvoiceCustomText />
+									</Suspense>
 								</div>
-								<Suspense>
-									<InvoiceCustomText />
-								</Suspense>
+							</div>
+							<h2 className="sr-only">Purchase details</h2>
+							<table className="w-full table-auto text-left">
+								<thead className="table-header-group">
+									<tr className="table-row">
+										<th scope="col">Description</th>
+										<th scope="col">Unit Price</th>
+										<th scope="col">Quantity</th>
+										<th scope="col" className="text-right">
+											Amount
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{quantity ? (
+										<tr className="table-row">
+											<td>{product.name}</td>
+											<td>
+												{charge.currency.toUpperCase()}{' '}
+												{formatUsd(charge.amount / 100 / quantity)}
+											</td>
+											<td>{quantity}</td>
+											<td className="text-right">
+												{amount === null
+													? `${charge.currency.toUpperCase()} 0.00`
+													: `${charge.currency.toUpperCase()} ${formatUsd(
+															amount,
+														)}`}
+											</td>
+										</tr>
+									) : (
+										<tr className="table-row">
+											<td>{product.name}</td>
+											<td>
+												{charge.currency.toUpperCase()} {formatUsd(amount)}
+											</td>
+											<td>1</td>
+											<td className="text-right">
+												{amount === null
+													? `${charge.currency.toUpperCase()} 0.00`
+													: `${charge.currency.toUpperCase()} ${formatUsd(
+															amount,
+														)}`}
+											</td>
+										</tr>
+									)}
+								</tbody>
+							</table>
+							<div className="flex flex-col items-end py-16">
+								<div>
+									<span className="mr-3">Total</span>
+									<strong className="text-lg">
+										{charge.currency.toUpperCase()} {formatUsd(amount)}
+									</strong>
+								</div>
 							</div>
 						</div>
-						<h2 className="sr-only">Purchase details</h2>
-						<table className="w-full table-auto text-left">
-							<thead className="table-header-group">
-								<tr className="table-row">
-									<th scope="col">Description</th>
-									<th scope="col">Unit Price</th>
-									<th scope="col">Quantity</th>
-									<th scope="col" className="text-right">
-										Amount
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{quantity ? (
-									<tr className="table-row">
-										<td>{product.name}</td>
-										<td>
-											{charge.currency.toUpperCase()}{' '}
-											{formatUsd(charge.amount / 100 / quantity)}
-										</td>
-										<td>{quantity}</td>
-										<td className="text-right">
-											{amount === null
-												? `${charge.currency.toUpperCase()} 0.00`
-												: `${charge.currency.toUpperCase()} ${formatUsd(
-														amount,
-													)}`}
-										</td>
-									</tr>
-								) : (
-									<tr className="table-row">
-										<td>{product.name}</td>
-										<td>
-											{charge.currency.toUpperCase()} {formatUsd(amount)}
-										</td>
-										<td>1</td>
-										<td className="text-right">
-											{amount === null
-												? `${charge.currency.toUpperCase()} 0.00`
-												: `${charge.currency.toUpperCase()} ${formatUsd(
-														amount,
-													)}`}
-										</td>
-									</tr>
-								)}
-							</tbody>
-						</table>
-						<div className="flex flex-col items-end py-16">
+					</div>
+					{!bulkCoupon && purchaseUserTransfers.length > 0 ? (
+						<div className="py-16 print:hidden">
 							<div>
-								<span className="mr-3">Total</span>
-								<strong className="text-lg">
-									{charge.currency.toUpperCase()} {formatUsd(amount)}
-								</strong>
+								<h2 className="text-primary pb-4 text-sm uppercase">
+									Transfer this purchase to another email address
+								</h2>
+								<PurchaseTransfer.Root
+									onTransferInitiated={async () => {
+										'use server'
+										revalidatePath(`/invoices/${params.merchantChargeId}`)
+									}}
+									purchaseUserTransfers={purchaseUserTransfers}
+									cancelPurchaseTransfer={cancelPurchaseTransfer}
+									initiatePurchaseTransfer={initiatePurchaseTransfer}
+								>
+									<PurchaseTransfer.Available>
+										<PurchaseTransfer.Description />
+										<PurchaseTransfer.Form>
+											<PurchaseTransfer.InputLabel />
+											<PurchaseTransfer.InputEmail />
+											<PurchaseTransfer.SubmitButton />
+										</PurchaseTransfer.Form>
+									</PurchaseTransfer.Available>
+									<PurchaseTransfer.Initiated>
+										<PurchaseTransfer.Description />
+										<PurchaseTransfer.Cancel />
+									</PurchaseTransfer.Initiated>
+									<PurchaseTransfer.Completed>
+										<PurchaseTransfer.Description />
+									</PurchaseTransfer.Completed>
+								</PurchaseTransfer.Root>
 							</div>
 						</div>
-					</div>
-				</div>
-				{!bulkCoupon && purchaseUserTransfers.length > 0 ? (
-					<div className="py-16 print:hidden">
-						<div>
-							<h2 className="text-primary pb-4 text-sm uppercase">
-								Transfer this purchase to another email address
-							</h2>
-							<PurchaseTransfer.Root
-								onTransferInitiated={async () => {
-									'use server'
-									revalidatePath(`/invoices/${params.merchantChargeId}`)
-								}}
-								purchaseUserTransfers={purchaseUserTransfers}
-								cancelPurchaseTransfer={cancelPurchaseTransfer}
-								initiatePurchaseTransfer={initiatePurchaseTransfer}
-							>
-								<PurchaseTransfer.Available>
-									<PurchaseTransfer.Description />
-									<PurchaseTransfer.Form>
-										<PurchaseTransfer.InputLabel />
-										<PurchaseTransfer.InputEmail />
-										<PurchaseTransfer.SubmitButton />
-									</PurchaseTransfer.Form>
-								</PurchaseTransfer.Available>
-								<PurchaseTransfer.Initiated>
-									<PurchaseTransfer.Description />
-									<PurchaseTransfer.Cancel />
-								</PurchaseTransfer.Initiated>
-								<PurchaseTransfer.Completed>
-									<PurchaseTransfer.Description />
-								</PurchaseTransfer.Completed>
-							</PurchaseTransfer.Root>
-						</div>
-					</div>
-				) : null}
-			</main>
-		</div>
+					) : null}
+				</main>
+			</div>
+		</LayoutClient>
 	)
 }
 

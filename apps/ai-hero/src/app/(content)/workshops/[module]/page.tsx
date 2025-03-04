@@ -9,6 +9,7 @@ import { PreviewWorkshopButton } from '@/app/(content)/workshops/_components/pre
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
@@ -84,16 +85,16 @@ export default async function ModulePage(props: Props) {
 	}
 
 	return (
-		<>
-			{workshop.fields?.visibility !== 'public' && (
-				<div className="bg-muted flex w-full items-center justify-center gap-2 p-3 text-center">
-					<Construction className="h-4 w-4" />{' '}
-					<p className="text-sm font-medium capitalize">
-						{workshop.fields?.visibility} {workshop.type}
-					</p>
-				</div>
-			)}
+		<LayoutClient withContainer>
 			<main className="container relative px-0">
+				{workshop.fields?.visibility !== 'public' && (
+					<div className="bg-muted flex w-full items-center justify-center gap-2 p-3 text-center">
+						<Construction className="h-4 w-4" />{' '}
+						<p className="text-sm font-medium capitalize">
+							{workshop.fields?.visibility} {workshop.type}
+						</p>
+					</div>
+				)}
 				<WorkshopMetadata
 					title={workshop.fields?.title}
 					description={workshop.fields?.description || ''}
@@ -169,7 +170,7 @@ export default async function ModulePage(props: Props) {
 					}}
 				</WorkshopPricing>
 			</main>
-		</>
+		</LayoutClient>
 	)
 }
 

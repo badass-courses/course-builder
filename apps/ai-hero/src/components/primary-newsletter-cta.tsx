@@ -32,6 +32,7 @@ type PrimaryNewsletterCtaProps = {
 		path: string
 		title: string
 	}
+	isHiddenForSubscribers?: boolean
 }
 
 export const PrimaryNewsletterCta: React.FC<
@@ -45,6 +46,7 @@ export const PrimaryNewsletterCta: React.FC<
 	byline = common['primary-newsletter-byline'],
 	actionLabel = common['primary-newsletter-button-cta-label'],
 	trackProps = { event: 'subscribed', params: {} },
+	isHiddenForSubscribers = false,
 	onSuccess,
 }) => {
 	const router = useRouter()
@@ -59,6 +61,11 @@ export const PrimaryNewsletterCta: React.FC<
 		}
 	}
 	const { data: session } = useSession()
+
+	if (isHiddenForSubscribers && subscriber) {
+		return null
+	}
+
 	return (
 		<section
 			// data-theme="elysium"

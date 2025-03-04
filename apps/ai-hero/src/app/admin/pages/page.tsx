@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { Page } from '@/lib/pages'
 import { getPages } from '@/lib/pages-query'
 import type { Post } from '@/lib/posts'
