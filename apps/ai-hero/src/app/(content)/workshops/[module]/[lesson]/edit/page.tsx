@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { notFound } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getLesson, getVideoResourceForLesson } from '@/lib/lessons-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -33,11 +34,13 @@ export default async function LessonEditPage(props: {
 	}
 
 	return (
-		<EditWorkshopLessonForm
-			key={lesson.id}
-			lesson={lesson}
-			videoResource={videoResource}
-			moduleType="workshop"
-		/>
+		<LayoutClient>
+			<EditWorkshopLessonForm
+				key={lesson.id}
+				lesson={lesson}
+				videoResource={videoResource}
+				moduleType="workshop"
+			/>
+		</LayoutClient>
 	)
 }

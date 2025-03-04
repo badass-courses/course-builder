@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { EditSolutionForm } from '@/app/(content)/workshops/_components/edit-solution-form'
+import LayoutClient from '@/components/layout-client'
 import { getLesson } from '@/lib/lessons-query'
 import {
 	getSolutionForLesson,
@@ -54,12 +55,14 @@ export default async function SolutionEditPage({
 	}
 
 	return (
-		<EditSolutionForm
-			key={solution?.id || `new-solution-${lessonData.id}`}
-			solution={solution}
-			lessonId={lessonData.id}
-			defaultSlug={defaultSlug}
-			videoResource={videoResource}
-		/>
+		<LayoutClient>
+			<EditSolutionForm
+				key={solution?.id || `new-solution-${lessonData.id}`}
+				solution={solution}
+				lessonId={lessonData.id}
+				defaultSlug={defaultSlug}
+				videoResource={videoResource}
+			/>
+		</LayoutClient>
 	)
 }

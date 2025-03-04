@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Search from '@/app/(search)/q/_components/search'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
@@ -182,15 +183,17 @@ export default async function PostsIndexPage() {
 	}
 
 	return (
-		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5 lg:flex-row">
-			<div className="mx-auto flex w-full flex-col">
-				<FeaturedGrid posts={featuredContent} />
-				<Search />
-			</div>
-			<React.Suspense fallback={null}>
-				<PostListActions />
-			</React.Suspense>
-		</main>
+		<LayoutClient withContainer>
+			<main className="mx-[-1px] flex min-h-[calc(100vh-var(--nav-height))] flex-col lg:flex-row">
+				<div className="mx-auto flex w-full flex-col">
+					<FeaturedGrid posts={featuredContent} />
+					<Search />
+				</div>
+				<React.Suspense fallback={null}>
+					<PostListActions />
+				</React.Suspense>
+			</main>
+		</LayoutClient>
 	)
 }
 

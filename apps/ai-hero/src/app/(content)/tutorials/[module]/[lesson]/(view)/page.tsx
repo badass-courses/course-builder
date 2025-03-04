@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import LayoutClient from '@/components/layout-client'
 import { getLesson } from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
@@ -32,5 +33,9 @@ export default async function Page(props: {
 	params: Promise<{ lesson: string; module: string }>
 }) {
 	const params = await props.params
-	return <LessonPageWrapper params={params} />
+	return (
+		<LayoutClient>
+			<LessonPageWrapper params={params} />
+		</LayoutClient>
+	)
 }

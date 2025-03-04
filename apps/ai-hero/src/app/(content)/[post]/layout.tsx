@@ -1,3 +1,4 @@
+import LayoutClient from '@/components/layout-client'
 import { getListForPost } from '@/lib/lists-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 
@@ -18,14 +19,16 @@ export default async function Layout(props: {
 	)
 
 	return (
-		<ListProvider initialList={list}>
-			<ProgressProvider initialProgress={initialProgress}>
-				<div className="flex flex-1">
-					<ListResourceNavigation />
-					<MobileListResourceNavigation />
-					{props.children}
-				</div>
-			</ProgressProvider>
-		</ListProvider>
+		<LayoutClient withContainer={list ? false : true}>
+			<ListProvider initialList={list}>
+				<ProgressProvider initialProgress={initialProgress}>
+					<div className="flex flex-1">
+						<ListResourceNavigation />
+						<MobileListResourceNavigation />
+						{props.children}
+					</div>
+				</ProgressProvider>
+			</ListProvider>
+		</LayoutClient>
 	)
 }

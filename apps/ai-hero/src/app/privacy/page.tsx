@@ -1,11 +1,14 @@
+import LayoutClient from '@/components/layout-client'
 import ReactMarkdown from 'react-markdown'
 
 const PrivacyPage = () => (
-	<main className="p-5 py-16 lg:py-24">
-		<article className="prose dark:prose-invert mx-auto">
-			<ReactMarkdown>{markdownContent}</ReactMarkdown>
-		</article>
-	</main>
+	<LayoutClient withContainer>
+		<main className="p-5 py-16 lg:py-24">
+			<article className="prose dark:prose-invert mx-auto">
+				<ReactMarkdown>{markdownContent}</ReactMarkdown>
+			</article>
+		</main>
+	</LayoutClient>
 )
 
 export default PrivacyPage

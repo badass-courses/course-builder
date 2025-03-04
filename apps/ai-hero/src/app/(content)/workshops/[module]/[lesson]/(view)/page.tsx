@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
+import LayoutClient from '@/components/layout-client'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getCachedLesson } from '@/lib/lessons-query'
@@ -74,6 +75,6 @@ export default async function LessonPageWrapper(props: Props) {
 	const lesson = await getCachedLesson(params.lesson)
 
 	return (
-		<LessonPage params={params} lesson={lesson} searchParams={searchParams} />
+		<LessonPage searchParams={searchParams} lesson={lesson} params={params} />
 	)
 }

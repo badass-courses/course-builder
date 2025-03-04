@@ -1,11 +1,14 @@
 'use client'
 
+import React from 'react'
 import Image from 'next/image'
 import { AnimatedTitle } from '@/components/brand/animated-word'
 import { CldImage } from '@/components/cld-image'
 import config from '@/config'
 import MuxPlayer from '@mux/mux-player-react'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVertical } from 'lucide-react'
+import { useTheme } from 'next-themes'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -95,22 +98,24 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-center gap-10 py-5 sm:py-10',
+				'not-prose relative flex w-full flex-col items-center gap-16 border-y px-5 py-16 lg:flex-row lg:px-16',
 				className,
 			)}
 		>
-			<Image
-				src={'/assets/matt-in-new-studio@2x.jpg'}
+			<CldImage
+				loading="lazy"
+				src="https://res.cloudinary.com/total-typescript/image/upload/v1741011187/aihero.dev/assets/matt-in-new-studio-square_2x_hutwgm.png"
 				alt={config.author}
-				width={1458 / 2}
-				height={820 / 2}
-				className="flex-shrink-0 rounded"
-				quality={100}
+				width={290}
+				height={290}
+				className="flex-shrink-0 rotate-2"
 			/>
 
 			<div className="">
-				<h3 className="fluid-xl mb-5 font-bold">Hi, I'm {config.author}</h3>
-				<div className="flex flex-col gap-3">{children}</div>
+				<h3 className="mb-5 text-3xl font-bold">Hi, I'm {config.author}</h3>
+				<div className="flex flex-col gap-3 text-xl leading-relaxed">
+					{children}
+				</div>
 			</div>
 		</section>
 	)
@@ -120,20 +125,36 @@ const CheckList = ({ children }: { children: React.ReactNode }) => {
 	return <ul data-checklist="">{children}</ul>
 }
 
+const testimonialVariants = cva('', {
+	variants: {
+		variant: {
+			default:
+				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
+			centered:
+				'flex text-center text-balance flex-col items-center justify-center border-none dark:text-white',
+		},
+	},
+	defaultVariants: {
+		variant: 'default',
+	},
+})
+
 const Testimonial = ({
 	children,
 	authorName,
 	authorAvatar,
+	variant = 'default',
 }: {
 	children: React.ReactNode
 	authorName: string
 	authorAvatar: string
+	variant?: VariantProps<typeof testimonialVariants>['variant']
 }) => {
 	return (
-		<blockquote className="border-primary">
+		<blockquote className={cn(testimonialVariants({ variant }))}>
 			{children}
 			{authorName && (
-				<div className="text-muted-foreground mt-3 flex items-center gap-2 text-[80%] font-normal not-italic">
+				<div className="text-muted-foreground flex items-center gap-2 text-[80%] font-normal not-italic">
 					{authorAvatar && authorAvatar.includes('res.cloudinary') && (
 						<CldImage
 							alt={authorName}
@@ -143,7 +164,7 @@ const Testimonial = ({
 							src={authorAvatar}
 						/>
 					)}
-					{authorName}
+					<span className="font-mono text-sm">{authorName}</span>
 				</div>
 			)}
 		</blockquote>
@@ -360,6 +381,148 @@ I'm building AI Hero to make the secrets of the AI Engineer available to everyon
 	)
 }
 
+type AIPracticesGridProps = {
+	items: string[]
+	className?: string
+}
+
+/**
+ * A grid component that displays AI practices with large letter backgrounds
+ * Each item is displayed with its first letter as a large background element
+ */
+const AIPracticesGrid: React.FC<AIPracticesGridProps> = ({
+	items,
+	className,
+}) => {
+	return (
+		<div
+			className={cn(
+				'not-prose divide-border -mx-[1px] -my-[1px] grid w-full border-collapse grid-cols-2 divide-x divide-y border-b md:grid-cols-2 lg:grid-cols-3',
+				className,
+			)}
+		>
+			{items.map((item, index) => {
+				const letters = ['a', 'i', 'h', 'e', 'r', 'o']
+				return (
+					<div
+						key={item}
+						className={cn(
+							'group relative flex h-56 items-center justify-center bg-gradient-to-b from-white to-gray-100 text-center first-of-type:border-l first-of-type:border-t dark:from-gray-900  dark:to-gray-950',
+						)}
+					>
+						<PatternElement
+							className={cn('absolute -right-2', {
+								'sm:opacity-0': [2, 5].includes(index),
+								'opacity-0': [1, 3, 5].includes(index),
+							})}
+						/>
+						<svg
+							aria-hidden="true"
+							className={cn(
+								'text-primary absolute bottom-[-4.5px] right-[-4.5px] z-10 opacity-0',
+								{
+									'lg:opacity-100': [0, 1].includes(index),
+									'lg:opacity-0': [2].includes(index),
+									'opacity-100': [0, 2].includes(index),
+								},
+							)}
+							width="8"
+							height="8"
+							viewBox="0 0 8 8"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								fillRule="evenodd"
+								clipRule="evenodd"
+								d="M6.74701 7.48108L0.559456 1.29353L0.366897 0.366989L1.26911 0.53522L7.48091 6.74702L7.63292 7.63301L6.74701 7.48108Z"
+								fill="currentColor"
+							/>
+							<path
+								fillRule="evenodd"
+								clipRule="evenodd"
+								d="M1.25324 7.48108L7.44079 1.29353L7.63335 0.366989L6.73114 0.53522L0.519338 6.74702L0.367326 7.63301L1.25324 7.48108Z"
+								fill="currentColor"
+							/>
+						</svg>
+
+						{/* Large background letter */}
+						<span className="text-foreground/5 absolute flex select-none items-center justify-center font-mono text-[150px] font-bold uppercase">
+							{letters[index]}
+						</span>
+
+						{/* Item text */}
+
+						<h3 className="z-10 text-xl font-semibold leading-none lg:text-2xl">
+							{item}
+						</h3>
+					</div>
+				)
+			})}
+		</div>
+	)
+}
+
+const PatternElement = ({ className }: { className?: string }) => {
+	const { theme } = useTheme()
+	const [isMounted, setIsMounted] = React.useState(false)
+
+	React.useEffect(() => {
+		setIsMounted(true)
+	}, [])
+
+	return isMounted ? (
+		<CldImage
+			src={
+				theme === 'light'
+					? 'https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png'
+					: 'https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png'
+			}
+			width={16}
+			height={35}
+			alt=""
+			className={cn('', className)}
+		/>
+	) : null
+}
+
+const ShinyText = ({
+	children,
+	text,
+	disabled = false,
+	speed = 5,
+	className = '',
+}: {
+	children?: React.ReactNode
+	text?: string
+	disabled?: boolean
+	speed?: number
+	className?: string
+}) => {
+	const animationDuration = `${speed}s`
+
+	return (
+		<span
+			className={cn(
+				className,
+				'inline-block bg-[linear-gradient(120deg,rgba(0,0,0,0)40%,rgba(0,0,0,1)50%,rgba(0,0,0,0)60%)] bg-clip-text text-[#000000b1] dark:bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] dark:text-[#ffffffc7]',
+				{
+					'animate-shine': !disabled,
+				},
+			)}
+			style={{
+				// backgroundImage:
+				// 	'linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 60%)',
+				backgroundSize: '200% 100%',
+				WebkitBackgroundClip: 'text',
+				animationDuration: animationDuration,
+			}}
+		>
+			{children || text}
+		</span>
+	)
+}
+
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -372,6 +535,7 @@ const allMdxPageBuilderComponents = {
 	MuxPlayer,
 	Testimonial,
 	AnimatedTitle,
+	ShinyText,
 }
 
 export {
@@ -384,4 +548,6 @@ export {
 	allMdxPageBuilderComponents,
 	PageBlocks,
 	Testimonial,
+	AIPracticesGrid,
+	ShinyText,
 }

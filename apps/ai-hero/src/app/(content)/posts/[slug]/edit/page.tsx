@@ -1,5 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter } from '@/db'
 import { getAllLists } from '@/lib/lists-query'
 import { getPost } from '@/lib/posts-query'
@@ -67,16 +68,16 @@ export default async function ArticleEditPage(props: {
 		}
 	}
 
-	console.log({ videoResource, videoResourceRef })
-
 	const listsLoader = getAllLists()
 
 	return (
-		<EditPostForm
-			key={post.fields.slug}
-			post={{ ...post }}
-			videoResource={videoResourceRef}
-			listsLoader={listsLoader}
-		/>
+		<LayoutClient>
+			<EditPostForm
+				key={post.fields.slug}
+				post={{ ...post }}
+				videoResource={videoResourceRef}
+				listsLoader={listsLoader}
+			/>
+		</LayoutClient>
 	)
 }

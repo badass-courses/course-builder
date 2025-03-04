@@ -1,23 +1,21 @@
-#primary-newsletter-cta > [data-sr-convertkit-subscribe-form] {
+#primary-newsletter-cta [data-sr-convertkit-subscribe-form] {
 	@apply mx-auto flex w-full max-w-[420px] flex-col;
 
 	[data-sr-fieldset] {
 		@apply mb-2;
 	}
 	input {
-		@apply placeholder:text-muted-foreground relative flex p-5 text-base text-white placeholder:opacity-75;
+		@apply placeholder:text-muted-foreground text-foreground relative flex p-5 text-base placeholder:opacity-75;
 		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent;
 	}
 	[data-sr-input-label] {
-		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal opacity-80;
+		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal;
 	}
 	[data-sr-input-asterisk] {
 		@apply opacity-50;
 	}
 	[data-sr-button] {
 		@apply bg-primary relative mt-4 py-8 text-base font-medium;
-		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white/50 before:to-transparent;
-		@apply after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent;
 	}
 }
 

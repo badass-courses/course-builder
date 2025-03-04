@@ -7,7 +7,7 @@ import { createAppAbility } from '@/ability'
 import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { Menu, X } from 'lucide-react'
+import { Menu, Newspaper, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { Button, Sheet, SheetContent } from '@coursebuilder/ui'
@@ -46,6 +46,8 @@ const Navigation = () => {
 		api.ability.getCurrentAbilityRules.useQuery()
 
 	const { data: sessionData, status: sessionStatus } = useSession()
+	const { data: subscriber, status } =
+		api.ability.getCurrentSubscriberFromCookie.useQuery()
 
 	return (
 		<header
@@ -121,6 +123,18 @@ const Navigation = () => {
 								}}
 							/>
 						)}
+						{sessionStatus === 'unauthenticated' && !subscriber && (
+							<NavLinkItem
+								href="/newsletter"
+								className="border-l [&_span]:flex [&_span]:items-center"
+								label={
+									<>
+										<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
+										Newsletter
+									</>
+								}
+							/>
+						)}
 						<UserMenu />
 						<ThemeToggle className="hover:bg-muted border-l px-5" />
 					</ul>
@@ -128,6 +142,7 @@ const Navigation = () => {
 				<MobileNavigation
 					isMobileMenuOpen={isMobileMenuOpen}
 					setIsMobileMenuOpen={setIsMobileMenuOpen}
+					subscriber={subscriber}
 				/>
 			</div>
 		</header>

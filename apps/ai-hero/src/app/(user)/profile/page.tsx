@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { getProviders, getServerAuthSession } from '@/server/auth'
@@ -40,20 +41,22 @@ export default async function ProfilePage() {
 
 	if (ability.can('read', 'User', session?.user?.id)) {
 		return (
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
-				<header className="w-full md:max-w-[230px]">
-					<h1 className="fluid-xl text-center font-bold md:text-left">
-						Your Profile
-					</h1>
-				</header>
-				<main className="flex w-full flex-col space-y-10 md:max-w-md">
-					<EditProfileForm
-						user={session.user}
-						discordConnected={discordConnected}
-						discordProvider={discordProvider}
-					/>
-				</main>
-			</div>
+			<LayoutClient withContainer>
+				<div className="mx-auto flex w-full max-w-screen-lg flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
+					<header className="w-full md:max-w-[230px]">
+						<h1 className="fluid-xl text-center font-bold md:text-left">
+							Your Profile
+						</h1>
+					</header>
+					<main className="flex w-full flex-col space-y-10 md:max-w-md">
+						<EditProfileForm
+							user={session.user}
+							discordConnected={discordConnected}
+							discordProvider={discordProvider}
+						/>
+					</main>
+				</div>
+			</LayoutClient>
 		)
 	}
 

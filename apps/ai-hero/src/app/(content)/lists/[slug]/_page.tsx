@@ -11,6 +11,7 @@ import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-comp
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
@@ -128,7 +129,7 @@ export default async function ListPage(props: {
 	return (
 		<main className="flex min-h-screen w-full flex-col pb-16">
 			<header className="relative flex items-center justify-center px-5 pb-8 sm:px-8 sm:pb-0">
-				<div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col-reverse items-center justify-between gap-10 py-5 md:grid md:grid-cols-5 md:py-16 lg:gap-16">
+				<div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col-reverse items-center justify-between gap-10 py-5 md:grid md:grid-cols-5 md:pb-10 md:pt-10 lg:gap-16">
 					<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 md:items-start">
 						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left">
 							{list.fields.title}

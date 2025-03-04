@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getPrompts } from '@/lib/prompts-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -23,7 +24,7 @@ export default async function PromptsIndexPage() {
 	const prompts = await getPrompts()
 
 	return (
-		<div>
+		<LayoutClient withContainer>
 			{ability.can('update', 'Content') ? (
 				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
 					<div />
@@ -47,6 +48,6 @@ export default async function PromptsIndexPage() {
 					</Card>
 				))}
 			</div>
-		</div>
+		</LayoutClient>
 	)
 }
