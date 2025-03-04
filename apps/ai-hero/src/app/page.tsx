@@ -166,7 +166,7 @@ const Home = async (props: Props) => {
 								PrimaryNewsletterCta: (props) => (
 									<PrimaryNewsletterCta
 										resource={firstPageResource}
-										className={cn('not-prose pb-16', props.className)}
+										className={cn('not-prose pb-10 sm:pb-16', props.className)}
 										trackProps={{
 											event: 'subscribed',
 											params: {

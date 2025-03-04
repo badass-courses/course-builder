@@ -128,7 +128,7 @@ export const PrimaryNewsletterCta: React.FC<
 					/>
 					<p
 						data-nospam=""
-						className="text-muted-foreground inline-flex items-center px-5 pt-8 text-center text-sm opacity-75"
+						className="text-muted-foreground inline-flex items-center pt-8 text-xs opacity-75 sm:text-sm"
 					>
 						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
 						Unsubscribe at any time.
