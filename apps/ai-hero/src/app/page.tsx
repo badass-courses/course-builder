@@ -2,7 +2,10 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import {
+	ShinyText,
+	Testimonial,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { AnimatedTitle } from '@/components/brand/animated-word'
 import PixelatedImageCarousel from '@/components/brand/pixelated-image-carousel'
 import { CldImage } from '@/components/cld-image'
@@ -110,7 +113,7 @@ const Home = async (props: Props) => {
 					</div>
 				)}
 				<header className="relative flex w-full flex-col items-center justify-center px-3 pb-10 pt-10 sm:pb-20 sm:pt-16">
-					<div className="absolute -top-16 left-1/3 h-80 w-16 -rotate-12 bg-purple-500 opacity-30 blur-3xl dark:bg-white" />
+					<div className="absolute -top-16 left-1/3 h-80 w-16 -rotate-12 bg-[#F7ADBC] opacity-50 blur-3xl dark:bg-white dark:opacity-30" />
 					<div
 						className="pointer-events-none absolute left-0 top-0 h-full w-full select-none opacity-60 mix-blend-overlay"
 						style={{
@@ -118,7 +121,7 @@ const Home = async (props: Props) => {
 							backgroundRepeat: 'repeat',
 						}}
 					/>
-					<div>
+					<div className="relative z-10">
 						<AnimatedTitle
 							className="mx-auto max-w-6xl text-center text-3xl leading-[0.9] sm:text-[3.2rem] dark:text-white"
 							word="Changing"
@@ -128,7 +131,7 @@ const Home = async (props: Props) => {
 						</AnimatedTitle>
 					</div>
 					<h2 className="mt-8 text-center text-xl font-normal opacity-80 sm:text-2xl">
-						Pandora's Box has been opened. AI is here.
+						<ShinyText>Pandora's Box has been opened. AI is here.</ShinyText>
 					</h2>
 				</header>
 				<PixelatedImageCarousel />
@@ -151,6 +154,7 @@ const Home = async (props: Props) => {
 								Section,
 								CheckList,
 								Testimonial,
+								ShinyText,
 								CldImage: (props) => <CldImage {...props} />,
 								AIPracticesGrid: (props) => (
 									<AIPracticesGrid

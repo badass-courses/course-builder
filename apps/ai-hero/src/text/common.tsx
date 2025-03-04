@@ -45,7 +45,7 @@ export default {
 				<Link href="/login" className="underline underline-offset-2">
 					Log in
 				</Link>{' '}
-				to track your progress and then check out{' '}
+				to track your progress and check out{' '}
 				<Link
 					href={resource?.path || defaultResource.path}
 					className="underline underline-offset-2"

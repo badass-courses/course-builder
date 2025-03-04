@@ -407,7 +407,7 @@ const AIPracticesGrid: React.FC<AIPracticesGridProps> = ({
 					<div
 						key={item}
 						className={cn(
-							'group relative flex h-56 items-center justify-center bg-gradient-to-b from-white to-gray-100 text-center first-of-type:border-t dark:from-gray-900  dark:to-gray-950',
+							'group relative flex h-56 items-center justify-center bg-gradient-to-b from-white to-gray-100 text-center first-of-type:border-l first-of-type:border-t dark:from-gray-900  dark:to-gray-950',
 						)}
 					>
 						<PatternElement
@@ -485,6 +485,43 @@ const PatternElement = ({ className }: { className?: string }) => {
 	) : null
 }
 
+const ShinyText = ({
+	children,
+	text,
+	disabled = false,
+	speed = 5,
+	className = '',
+}: {
+	children?: React.ReactNode
+	text?: string
+	disabled?: boolean
+	speed?: number
+	className?: string
+}) => {
+	const animationDuration = `${speed}s`
+
+	return (
+		<span
+			className={cn(
+				className,
+				'inline-block bg-[linear-gradient(120deg,rgba(0,0,0,0)40%,rgba(0,0,0,1)50%,rgba(0,0,0,0)60%)] bg-clip-text text-[#000000b1] dark:bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] dark:text-[#ffffffc7]',
+				{
+					'animate-shine': !disabled,
+				},
+			)}
+			style={{
+				// backgroundImage:
+				// 	'linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 60%)',
+				backgroundSize: '200% 100%',
+				WebkitBackgroundClip: 'text',
+				animationDuration: animationDuration,
+			}}
+		>
+			{children || text}
+		</span>
+	)
+}
+
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -497,6 +534,7 @@ const allMdxPageBuilderComponents = {
 	MuxPlayer,
 	Testimonial,
 	AnimatedTitle,
+	ShinyText,
 }
 
 export {
@@ -510,4 +548,5 @@ export {
 	PageBlocks,
 	Testimonial,
 	AIPracticesGrid,
+	ShinyText,
 }

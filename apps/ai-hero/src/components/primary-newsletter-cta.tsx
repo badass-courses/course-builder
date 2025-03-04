@@ -4,6 +4,7 @@ import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ShinyText } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
@@ -84,7 +85,7 @@ export const PrimaryNewsletterCta: React.FC<
 					<h2 className="font-heading sm:fluid-3xl fluid-2xl text-center font-semibold dark:text-white">
 						{title}
 					</h2>
-					<h3 className="sm:fluid-lg fluid-base pt-5 text-center font-sans font-normal opacity-90 sm:pt-8 sm:font-light">
+					<h3 className="pt-5 text-center font-sans text-lg font-normal opacity-90 sm:pt-8 sm:text-xl sm:font-light lg:text-2xl">
 						{byline}
 					</h3>
 				</div>
@@ -93,8 +94,10 @@ export const PrimaryNewsletterCta: React.FC<
 			<div className="not-prose relative flex w-full items-center justify-center">
 				{subscriber && (
 					<div className="absolute z-10 flex -translate-y-8 flex-col text-center">
-						<p className="fluid-lg font-medium">You're subscribed, thanks!</p>
-						<p className="sm:fluid-lg fluid-base pt-5 text-center font-sans font-normal opacity-90 sm:pt-8 sm:font-light">
+						<ShinyText className="text-lg font-semibold sm:text-xl lg:text-2xl">
+							You're subscribed, thanks!
+						</ShinyText>
+						<p className="pt-3 text-center font-sans text-lg font-normal opacity-90 sm:text-xl sm:font-light lg:text-2xl">
 							{session?.user
 								? common['newsletter-subscribed-logged-in']({
 										resource,

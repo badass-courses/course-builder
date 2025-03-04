@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { cn } from '@/utils/cn'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
 /**
  * A carousel component that cycles through images with a pixelated transition effect.
@@ -99,13 +99,15 @@ export default function PixelatedImageCarousel() {
 		setIsTransitioning(true)
 	}, [currentIndex, nextIndex, isTransitioning, isTransitionEnding])
 
+	const shouldReduceMotion = useReducedMotion()
+
 	return (
 		<div className="relative aspect-[1278/623] h-full w-full overflow-hidden">
 			{/* Current image always visible */}
 			<div className="absolute inset-0">
 				<Image
 					priority
-					src={currentImage}
+					src={shouldReduceMotion ? images[0] : currentImage}
 					alt={`AI Hero image ${currentIndex + 1}`}
 					width={1278}
 					height={623}
@@ -115,7 +117,7 @@ export default function PixelatedImageCarousel() {
 			</div>
 
 			{/* Pixelated transition effect */}
-			{(isTransitioning || isTransitionEnding) && (
+			{(isTransitioning || isTransitionEnding) && !shouldReduceMotion && (
 				<PixelGrid
 					nextImage={nextImage}
 					onComplete={handleTransitionComplete}

@@ -53,9 +53,13 @@ export const AnimatedTitle = ({
 	return (
 		<>
 			<h1
-				className={cn({
-					'sr-only': !shouldReduceMotion,
-				})}
+				className={cn(
+					className,
+					'flex w-full flex-wrap items-baseline justify-center gap-0.5 text-center leading-[1.2] sm:gap-1.5',
+					{
+						'sr-only': !shouldReduceMotion,
+					},
+				)}
 			>
 				{children}
 			</h1>
