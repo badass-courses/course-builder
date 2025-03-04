@@ -6,7 +6,7 @@ import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
-import { Menu, X } from 'lucide-react'
+import { Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
@@ -19,6 +19,7 @@ import { useNavLinks } from './use-nav-links'
 type MobileNavigationProps = {
 	isMobileMenuOpen: boolean
 	setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+	subscriber: Subscriber | null
 }
 
 /**
@@ -27,6 +28,7 @@ type MobileNavigationProps = {
 export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	isMobileMenuOpen,
 	setIsMobileMenuOpen,
+	subscriber,
 }) => {
 	const links = useNavLinks()
 	const { data: sessionData, status: sessionStatus } = useSession()
@@ -100,6 +102,18 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 										/>
 									</span>
 								</div>
+							)}
+							{sessionStatus === 'unauthenticated' && !subscriber && (
+								<NavLinkItem
+									href="/newsletter"
+									className="[&_span]:flex [&_span]:items-center"
+									label={
+										<>
+											<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
+											Newsletter
+										</>
+									}
+								/>
 							)}
 							<ul className="flex flex-col gap-1">
 								{links.map((link) => (
