@@ -452,11 +452,14 @@ export async function writePostUpdateToDatabase(input: {
 	}
 
 	await updateSanityLesson(currentPost.fields.eggheadLessonId, updatedPost)
-	await replaceSanityLessonResources({
-		post: updatedPost,
-		eggheadLessonId: currentPost.fields.eggheadLessonId,
-		videoResourceId: videoResourceId,
-	})
+
+	if (currentPost.fields.eggheadLessonId) {
+		await replaceSanityLessonResources({
+			post: updatedPost,
+			eggheadLessonId: currentPost.fields.eggheadLessonId,
+			videoResourceId: videoResourceId,
+		})
+	}
 
 	const newContentHash = generateContentHash(updatedPost)
 
