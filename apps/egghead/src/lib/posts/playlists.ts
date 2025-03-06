@@ -9,6 +9,7 @@ import { and, eq, like } from 'drizzle-orm'
 import { ContentResource } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
+import { EGGHEAD_API_V1_BASE_URL, getEggheadToken } from '../egghead'
 import { reorderResourcesInSanityCourse } from '../sanity-content-query'
 import { getPost } from './read'
 
@@ -30,53 +31,61 @@ class CourseBuilderError extends Error {
  * @throws {EggheadApiError} If the API returns an error
  * @throws {Error} If the user is not authorized
  */
-export const addEggheadLessonToPlaylist = async ({
+export async function addEggheadLessonToPlaylist({
 	eggheadPlaylistId,
 	eggheadLessonId,
 	position,
 }: {
 	eggheadPlaylistId: string
 	eggheadLessonId: string
-	position?: number
-}) => {
-	const { session, ability } = await getServerAuthSession()
+	position?: string
+}) {
+	try {
+		const { session, ability } = await getServerAuthSession()
 
-	if (!session?.user?.id || !ability.can('create', 'Content')) {
-		throw new Error('Unauthorized')
-	}
+		if (!session?.user?.id || !ability.can('create', 'Content')) {
+			throw new Error('Unauthorized')
+		}
 
-	const response = await fetch(
-		`${process.env.EGGHEAD_API_V1_BASE_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons`,
-		{
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${process.env.EGGHEAD_AUTH_TOKEN}`,
+		const eggheadToken = await getEggheadToken(session.user.id)
+
+		const response = await fetch(
+			`${process.env.EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/add`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+						row_order_position: position || 'last',
+					},
+				}),
 			},
-			body: JSON.stringify({
-				playlist_id: eggheadPlaylistId,
-				lesson_id: eggheadLessonId,
-				position,
-			}),
-		},
-	).then(async (res) => {
-		if (res.status === 422) {
-			const body = await res.json()
-			if (body?.error?.includes('Item already in the list')) {
-				return {
-					message: 'Item already in the list',
-				}
+		).then(async (res) => {
+			if (!res.ok) {
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		if (error instanceof Error && 'status' in error) {
+			if (error.status === 304) {
+				// Item already exists in playlist
+				console.log('Lesson already exists in playlist')
+			} else if (error.status === 403) {
+				// Not authorized
+				console.log('Not authorized to modify this playlist')
 			}
 		}
-
-		if (!res.ok) {
-			throw new EggheadApiError(res.statusText, res.status)
-		}
-
-		return await res.json()
-	})
-
-	return response
+		throw error
+	}
 }
 
 /**
@@ -118,8 +127,8 @@ export const removePostFromCoursePost = async ({
 			coursePost?.fields?.eggheadPlaylistId
 		) {
 			await removeEggheadLessonFromPlaylist({
-				eggheadLessonId: String(post.fields.eggheadLessonId),
-				eggheadPlaylistId: String(coursePost.fields.eggheadPlaylistId),
+				eggheadLessonId: Number(post.fields.eggheadLessonId),
+				eggheadPlaylistId: Number(coursePost.fields.eggheadPlaylistId),
 			})
 		}
 	} catch (e) {
@@ -139,36 +148,50 @@ export const removePostFromCoursePost = async ({
  * @throws {EggheadApiError} If the API returns an error
  * @throws {Error} If the user is not authorized
  */
-export const removeEggheadLessonFromPlaylist = async ({
+export async function removeEggheadLessonFromPlaylist({
 	eggheadLessonId,
 	eggheadPlaylistId,
 }: {
-	eggheadLessonId: string
-	eggheadPlaylistId: string
-}) => {
+	eggheadLessonId: number
+	eggheadPlaylistId: number
+}) {
 	const { session, ability } = await getServerAuthSession()
 
 	if (!session?.user?.id || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
-	const response = await fetch(
-		`${process.env.EGGHEAD_API_V1_BASE_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons/${eggheadLessonId}`,
-		{
-			method: 'DELETE',
-			headers: {
-				Authorization: `Bearer ${process.env.EGGHEAD_AUTH_TOKEN}`,
-			},
-		},
-	).then(async (res) => {
-		if (!res.ok) {
-			console.log('Error removing lesson from playlist', res)
-			throw new EggheadApiError(res.statusText, res.status)
-		}
-		return await res.json()
-	})
+	const eggheadToken = await getEggheadToken(session.user.id)
 
-	return response
+	try {
+		const response = await fetch(
+			`${process.env.EGGHEAD_API_V1_BASE_URL}/playlists/${eggheadPlaylistId}/items/remove`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${eggheadToken}`,
+					'User-Agent': 'authjs',
+				},
+				body: JSON.stringify({
+					tracklistable: {
+						tracklistable_type: 'Lesson',
+						tracklistable_id: eggheadLessonId,
+					},
+				}),
+			},
+		).then(async (res) => {
+			if (!res.ok) {
+				console.log('Error removing lesson from playlist', res)
+				throw new EggheadApiError(res.statusText, res.status)
+			}
+			return await res.json()
+		})
+
+		return response
+	} catch (error) {
+		throw error
+	}
 }
 
 /**
@@ -322,13 +345,19 @@ export const updateResourcePositions = async (input: positionInputItem[]) => {
 	}
 
 	const result = await db.transaction(async (trx) => {
-		for (const { parentResourceId, resourceId, position, children } of input) {
+		for (const {
+			currentParentResourceId,
+			parentResourceId,
+			resourceId,
+			position,
+			children,
+		} of input) {
 			await trx
 				.update(contentResourceResource)
 				.set({ position, resourceOfId: parentResourceId })
 				.where(
 					and(
-						eq(contentResourceResource.resourceOfId, parentResourceId),
+						eq(contentResourceResource.resourceOfId, currentParentResourceId),
 						eq(contentResourceResource.resourceId, resourceId),
 					),
 				)
