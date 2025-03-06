@@ -46,7 +46,7 @@ export const addEggheadLessonToPlaylist = async ({
 	}
 
 	const response = await fetch(
-		`${process.env.EGGHEAD_API_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons`,
+		`${process.env.EGGHEAD_API_V1_BASE_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons`,
 		{
 			method: 'POST',
 			headers: {
@@ -153,7 +153,7 @@ export const removeEggheadLessonFromPlaylist = async ({
 	}
 
 	const response = await fetch(
-		`${process.env.EGGHEAD_API_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons/${eggheadLessonId}`,
+		`${process.env.EGGHEAD_API_V1_BASE_URL}/api/v1/playlists/${eggheadPlaylistId}/lessons/${eggheadLessonId}`,
 		{
 			method: 'DELETE',
 			headers: {
@@ -322,19 +322,13 @@ export const updateResourcePositions = async (input: positionInputItem[]) => {
 	}
 
 	const result = await db.transaction(async (trx) => {
-		for (const {
-			currentParentResourceId,
-			parentResourceId,
-			resourceId,
-			position,
-			children,
-		} of input) {
+		for (const { parentResourceId, resourceId, position, children } of input) {
 			await trx
 				.update(contentResourceResource)
 				.set({ position, resourceOfId: parentResourceId })
 				.where(
 					and(
-						eq(contentResourceResource.resourceOfId, currentParentResourceId),
+						eq(contentResourceResource.resourceOfId, parentResourceId),
 						eq(contentResourceResource.resourceId, resourceId),
 					),
 				)
