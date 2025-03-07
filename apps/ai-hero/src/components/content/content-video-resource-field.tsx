@@ -200,7 +200,6 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 					)}
 				</div>
 			)}
-
 			<Suspense
 				fallback={
 					<div className="bg-muted flex aspect-video h-full w-full flex-col items-center justify-center gap-2 p-5 text-sm">
@@ -360,8 +359,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 					/>
 				)}
 			</Suspense>
-
-			{/* Show transcript for videos that are ready */}
+			{/* Show transcript for videos that are ready
 			{showTranscript &&
 				videoResource?.id &&
 				videoResource?.state === 'ready' && (
@@ -401,7 +399,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 							{transcript ? transcript : 'Transcript Processing'}
 						</div>
 					</div>
-				)}
+				)} */}
 		</div>
 	)
 }
