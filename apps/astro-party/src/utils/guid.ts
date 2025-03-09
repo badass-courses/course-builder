@@ -1,3 +1,3 @@
-import { customAlphabet } from 'nanoid'
-
-export const guid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
+// This file is kept for backward compatibility
+// Import the utility from the shared package
+export { guid } from '@coursebuilder/utils-core/guid'

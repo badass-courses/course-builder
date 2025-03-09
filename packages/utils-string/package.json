@@ -1,0 +1,28 @@
+{
+  "name": "@coursebuilder/utils-string",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./chicagor-title": {
+      "types": "./dist/chicagor-title.d.ts",
+      "import": "./dist/chicagor-title.js",
+      "default": "./dist/chicagor-title.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "tsup": "8.0.2",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  }
+}

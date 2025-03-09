@@ -1,0 +1,32 @@
+{
+  "name": "@coursebuilder/utils-ui",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./cn": {
+      "types": "./dist/cn.d.ts",
+      "import": "./dist/cn.js",
+      "default": "./dist/cn.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "tsup": "8.0.2",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  }
+}

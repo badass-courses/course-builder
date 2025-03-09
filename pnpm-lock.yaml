@@ -4053,6 +4053,69 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
 
+  packages/utils-core:
+    dependencies:
+      nanoid:
+        specifier: ^3.3.6
+        version: 3.3.8
+    devDependencies:
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
+
+  packages/utils-file:
+    dependencies:
+      shortid:
+        specifier: ^2.2.16
+        version: 2.2.16
+    devDependencies:
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
+
+  packages/utils-string:
+    devDependencies:
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
+
+  packages/utils-ui:
+    dependencies:
+      clsx:
+        specifier: ^2.1.0
+        version: 2.1.1
+      tailwind-merge:
+        specifier: ^2.2.1
+        version: 2.6.0
+    devDependencies:
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
+
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:
@@ -12800,7 +12863,7 @@ packages:
       '@react-aria/utils': 3.25.3(react@19.0.0)
       '@react-types/shared': 3.25.0(react@19.0.0)
       '@swc/helpers': 0.5.13
-      clsx: 2.1.0
+      clsx: 2.1.1
       react: 19.0.0
     dev: false
 
@@ -13291,7 +13354,7 @@ packages:
       '@react-stately/utils': 3.10.4(react@19.0.0)
       '@react-types/shared': 3.25.0(react@19.0.0)
       '@swc/helpers': 0.5.13
-      clsx: 2.1.0
+      clsx: 2.1.1
       react: 19.0.0
     dev: false
 
@@ -17892,7 +17955,7 @@ packages:
   /@vitest/snapshot@1.6.0:
     resolution: {integrity: sha512-+Hx43f8Chus+DCmygqqfetcAZrDJwvTj0ymqjQq4CvmpKFSTVteEOBzCusu1x2tt4OJcvBflyHUE0DZSLgEMtQ==}
     dependencies:
-      magic-string: 0.30.12
+      magic-string: 0.30.17
       pathe: 1.1.2
       pretty-format: 29.7.0
 
@@ -26000,8 +26063,8 @@ packages:
     resolution: {integrity: sha512-ok6z3qlYyCDS4ZEU27HaU6x/xZa9Whf8jD4ptH5UZTQYZVYeb9bnZ3ojVhiJNLiXK1Hfc0GNbLXcmZ5plLDDBg==}
     engines: {node: '>=14'}
     dependencies:
-      mlly: 1.7.2
-      pkg-types: 1.2.1
+      mlly: 1.7.4
+      pkg-types: 1.3.1
 
   /local-pkg@1.0.0:
     resolution: {integrity: sha512-bbgPw/wmroJsil/GgL4qjDzs5YLTBMQ99weRsok1XCDccQeehbHA/I1oRvk2NPtr7KGZgT/Y5tPRnAtMqeG2Kg==}
@@ -26195,11 +26258,6 @@ packages:
 
   /magic-string@0.30.10:
     resolution: {integrity: sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==}
-    dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
-
-  /magic-string@0.30.12:
-    resolution: {integrity: sha512-Ea8I3sQMVXr8JhN4z+H/d8zwo+tYDgHE9+5G4Wnrwhs0gaK9fXTKx0Tw5Xwsd/bCPTTZNRAdpyzvoeORe9LYpw==}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
 
@@ -27476,14 +27534,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dev: false
-
-  /mlly@1.7.2:
-    resolution: {integrity: sha512-tN3dvVHYVz4DhSXinXIk7u9syPYaJvio118uomkovAtWBT+RdbP6Lfh/5Lvo519YMmwBafwlh20IPTXIStscpA==}
-    dependencies:
-      acorn: 8.14.0
-      pathe: 1.1.2
-      pkg-types: 1.2.1
-      ufo: 1.5.4
 
   /mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
@@ -29037,13 +29087,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       find-up: 4.1.0
-
-  /pkg-types@1.2.1:
-    resolution: {integrity: sha512-sQoqa8alT3nHjGuTjuKgOnvjo4cljkufdtLMnO2LBP/wRwuDlo1tkaEdMxCRhyGRPacv/ztlZgDPm2b7FAmEvw==}
-    dependencies:
-      confbox: 0.1.8
-      mlly: 1.7.4
-      pathe: 1.1.2
 
   /pkg-types@1.3.1:
     resolution: {integrity: sha512-/Jm5M4RvtBFVkKWRu2BLUTNP8/M2a+UwuAX+ae4770q1qVGtfjG+WTCupoZixokjmHiry8uI+dlY8KXYV5HVVQ==}
@@ -32330,6 +32373,10 @@ packages:
     resolution: {integrity: sha512-SqqhhaL0T06SW59+JVNfAqKdqLs0497esifRrZ7jOaefP3o64fdFNDMrAQWZFMxTLJPiHVjRLUywT8uFz1xNWQ==}
     dependencies:
       '@babel/runtime': 7.26.0
+    dev: false
+
+  /tailwind-merge@2.6.0:
+    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
     dev: false
 
   /tailwind-scrollbar@3.1.0(tailwindcss@3.4.1):
