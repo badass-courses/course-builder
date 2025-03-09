@@ -1,0 +1,31 @@
+{
+  "name": "@coursebuilder/utils-core",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./guid": {
+      "types": "./dist/guid.d.ts",
+      "import": "./dist/guid.js",
+      "default": "./dist/guid.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "nanoid": "^3.3.6"
+  },
+  "devDependencies": {
+    "tsup": "8.0.2",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  }
+}

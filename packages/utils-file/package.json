@@ -1,0 +1,31 @@
+{
+  "name": "@coursebuilder/utils-file",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./get-unique-filename": {
+      "types": "./dist/get-unique-filename.d.ts",
+      "import": "./dist/get-unique-filename.js",
+      "default": "./dist/get-unique-filename.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "shortid": "^2.2.16"
+  },
+  "devDependencies": {
+    "tsup": "8.0.2",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  }
+}
