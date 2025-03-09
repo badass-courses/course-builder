@@ -5,10 +5,9 @@ import BasicEmail from '@/emails/basic-email'
 import { env } from '@/env.mjs'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
+import { sendAnEmail } from '@/utils/send-an-email'
 import { Ratelimit } from '@upstash/ratelimit'
 import sanitizeHtml from 'sanitize-html'
-
-import { sendAnEmail } from '@coursebuilder/utils-email/send-an-email'
 
 import {
 	TeamInquiryContext,
