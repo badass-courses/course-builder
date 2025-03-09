@@ -39,7 +39,7 @@ export const UserNavigation: React.FC<UserNavigationProps> = ({
 }) => {
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+	const ability = createAppAbility(abilityRules || [])
 	const isLoadingUserInfo = sessionStatus === 'loading'
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')

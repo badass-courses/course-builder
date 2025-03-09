@@ -35,7 +35,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { setIsFeedbackDialogOpen } = useFeedback()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+	const ability = createAppAbility(abilityRules || [])
 
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')

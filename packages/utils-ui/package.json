@@ -21,8 +21,8 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"clsx": "^2.1.0",
-		"tailwind-merge": "^2.2.1"
+		"clsx": "^2.0.0",
+		"tailwind-merge": "^1.14.0"
 	},
 	"devDependencies": {
 		"tsup": "8.0.2",

@@ -10,7 +10,13 @@ describe('filterResources', () => {
 		position: number,
 		nestedResources: ContentResourceResource[] = [],
 	): ContentResourceResource => ({
+		resourceId: `resource-${type}-${position}`,
+		resourceOfId: `resource-of-${type}-${position}`,
 		position,
+		metadata: null,
+		createdAt: null,
+		updatedAt: null,
+		deletedAt: null,
 		resource: {
 			id: `resource-${type}-${position}`,
 			type,
@@ -91,7 +97,13 @@ describe('filterResources', () => {
 	it('should ensure all resources have a resources array', () => {
 		const resources: ContentResourceResource[] = [
 			{
+				resourceId: 'test-resource-id',
+				resourceOfId: 'test-parent-id',
 				position: 0,
+				metadata: null,
+				createdAt: null,
+				updatedAt: null,
+				deletedAt: null,
 				resource: {
 					id: 'resource-without-resources',
 					type: 'module',

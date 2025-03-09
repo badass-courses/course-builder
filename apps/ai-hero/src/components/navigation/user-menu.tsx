@@ -27,7 +27,7 @@ import { NavLinkItem } from './nav-link-item'
 export const UserMenu = () => {
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+	const ability = createAppAbility(abilityRules || [])
 
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')

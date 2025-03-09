@@ -7,6 +7,16 @@ import OpenAI from 'openai'
 const openai = new OpenAI()
 
 /**
+ * Process the embedding response
+ * @internal
+ */
+export function processEmbeddingResponse(response: {
+	data: Array<{ embedding: number[]; index: number; object: string }>
+}) {
+	return response.data[0] || { embedding: null }
+}
+
+/**
  * Generates an embedding vector for the given text using OpenAI's embeddings API
  *
  * @param text - The text to generate an embedding for
@@ -25,5 +35,8 @@ export async function get_embedding(text: string) {
 		encoding_format: 'float',
 	})
 
-	return embedding.data[0] || { embedding: null }
+	return processEmbeddingResponse(embedding)
 }
+
+// For testing
+get_embedding.processResponse = processEmbeddingResponse

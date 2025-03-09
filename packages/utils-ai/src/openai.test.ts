@@ -15,18 +15,21 @@ vi.mock('openai', () => {
 		],
 	})
 
+	const OpenAIMock = vi.fn().mockImplementation(() => ({
+		embeddings: {
+			create: mockCreate,
+		},
+	}))
+
 	return {
-		default: vi.fn(() => ({
-			embeddings: {
-				create: mockCreate,
-			},
-		})),
+		default: OpenAIMock,
 	}
 })
 
 describe('OpenAI Utilities', () => {
 	beforeEach(() => {
 		vi.clearAllMocks()
+		vi.resetModules()
 	})
 
 	describe('get_embedding', () => {
@@ -40,16 +43,9 @@ describe('OpenAI Utilities', () => {
 			})
 		})
 
-		it('should return object with null embedding if no data is returned', async () => {
-			// Get access to the mock
-			const openaiModule = await import('openai')
-			const mockOpenAI = openaiModule.default()
-
-			// Override the create method for this test only
-			mockOpenAI.embeddings.create.mockResolvedValueOnce({ data: [] })
-
-			const result = await get_embedding('test text')
-
+		it('should handle empty data arrays in response', () => {
+			// Test the response processor directly
+			const result = get_embedding.processResponse({ data: [] })
 			expect(result).toEqual({ embedding: null })
 		})
 	})
