@@ -1,8 +1,8 @@
-// Re-export from the shared package
-// This file exists for backward compatibility
+// Import directly from typesense-instantsearch-adapter
+import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter'
+
 import {
 	createDefaultConfig,
-	createTypesenseAdapter,
 	getTypesenseCollectionName,
 } from '@coursebuilder/utils-search/typesense-adapter'
 
@@ -16,7 +16,10 @@ const config = createDefaultConfig({
 	sortBy: '_text_match:desc', // default sort
 })
 
-export const typesenseInstantsearchAdapter = createTypesenseAdapter(config)
+// Create adapter directly instead of using the createTypesenseAdapter function
+export const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter(
+	config,
+)
 
 export const TYPESENSE_COLLECTION_NAME = getTypesenseCollectionName({
 	envVar: 'NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME',
