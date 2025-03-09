@@ -40,6 +40,7 @@
 		"@coursebuilder/utils-email": "1.0.0",
 		"@coursebuilder/utils-file": "1.0.0",
 		"@coursebuilder/utils-media": "1.0.0",
+		"@coursebuilder/utils-seo": "1.0.0",
 		"@coursebuilder/utils-string": "1.0.0",
 		"@coursebuilder/utils-ui": "1.0.0",
 		"@atlaskit/select": "^17.3.4",
