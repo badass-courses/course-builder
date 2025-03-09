@@ -209,6 +209,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
       '@coursebuilder/utils-aws':
         specifier: 1.0.0
         version: link:../../packages/utils-aws
@@ -834,6 +837,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
       '@coursebuilder/utils-aws':
         specifier: 1.0.0
         version: link:../../packages/utils-aws
@@ -1505,6 +1511,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
       '@coursebuilder/utils-aws':
         specifier: 1.0.0
         version: link:../../packages/utils-aws
@@ -2034,6 +2043,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
       '@coursebuilder/utils-browser':
         specifier: 1.0.0
         version: link:../../packages/utils-browser
@@ -2383,6 +2395,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
       '@coursebuilder/utils-browser':
         specifier: 1.0.0
         version: link:../../packages/utils-browser
@@ -2738,6 +2753,9 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
       '@coursebuilder/utils-aws':
         specifier: 1.0.0
         version: link:../../packages/utils-aws
@@ -4190,6 +4208,25 @@ importers:
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
+
+  packages/utils-ai:
+    dependencies:
+      openai:
+        specifier: ^4.29.1
+        version: 4.29.1(encoding@0.1.13)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.12.5
+        version: 20.12.5
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
 
   packages/utils-aws:
     dependencies:
