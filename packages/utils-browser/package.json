@@ -1,32 +1,32 @@
 {
-  "name": "@coursebuilder/utils-browser",
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./cookies": {
-      "types": "./dist/cookies.d.ts",
-      "import": "./dist/cookies.js",
-      "default": "./dist/cookies.js"
-    }
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "js-cookie": "^3.0.5",
-    "@coursebuilder/nodash": "*"
-  },
-  "devDependencies": {
-    "tsup": "8.0.2",
-    "typescript": "5.4.5",
-    "vitest": "1.6.0"
-  }
+	"name": "@coursebuilder/utils-browser",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./cookies": {
+			"types": "./dist/cookies.d.ts",
+			"import": "./dist/cookies.js",
+			"default": "./dist/cookies.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"js-cookie": "^3.0.5",
+		"@coursebuilder/nodash": "*"
+	},
+	"devDependencies": {
+		"tsup": "8.0.2",
+		"typescript": "5.4.5",
+		"vitest": "1.6.0"
+	}
 }

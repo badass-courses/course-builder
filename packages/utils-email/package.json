@@ -1,37 +1,37 @@
 {
-  "name": "@coursebuilder/utils-email",
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./send-an-email": {
-      "types": "./dist/send-an-email.d.ts",
-      "import": "./dist/send-an-email.js",
-      "default": "./dist/send-an-email.js"
-    }
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@react-email/render": "^0.0.10",
-    "process": "^0.11.10"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.55",
-    "react": "^18.2.0",
-    "tsup": "8.0.2",
-    "typescript": "5.4.5",
-    "vitest": "1.6.0"
-  },
-  "peerDependencies": {
-    "react": ">=18.0.0"
-  }
+	"name": "@coursebuilder/utils-email",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./send-an-email": {
+			"types": "./dist/send-an-email.d.ts",
+			"import": "./dist/send-an-email.js",
+			"default": "./dist/send-an-email.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"@react-email/render": "^0.0.10",
+		"process": "^0.11.10"
+	},
+	"devDependencies": {
+		"@types/react": "^18.2.55",
+		"react": "^18.2.0",
+		"tsup": "8.0.2",
+		"typescript": "5.4.5",
+		"vitest": "1.6.0"
+	},
+	"peerDependencies": {
+		"react": ">=18.0.0"
+	}
 }
