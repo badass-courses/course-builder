@@ -113,6 +113,7 @@ This will create a properly structured package with:
 
 ### Working with Utility Packages
 
+#### Adding Dependencies
 When updating package.json files to add dependencies:
 1. Use string replacement with Edit tool to add dependencies
 2. Maintain alphabetical order of dependencies
@@ -128,6 +129,13 @@ Example of proper package.json edit:
 "@coursebuilder/utils-resource": "1.0.0", // New line added here
 "@coursebuilder/utils-seo": "1.0.0",
 ```
+
+#### Framework Compatibility
+When creating utility packages that interact with framework-specific libraries:
+1. Keep framework-specific dependencies (React, Next.js, etc.) as peer dependencies
+2. For utilities that use third-party libraries (like Typesense, OpenAI), provide adapters rather than direct implementations
+3. Be careful with libraries that might conflict with framework internals
+4. Test builds across multiple apps to ensure compatibility
 
 ## Code Style
 - **Formatting**: Single quotes, no semicolons, tabs (width: 2), 80 char line limit
@@ -159,6 +167,21 @@ export { someUtility } from '@coursebuilder/utils-domain/some-utility'
 ```
 
 This preserves existing import paths throughout the codebase while moving the implementation to a shared package.
+
+#### Important: Avoid Object.defineProperty for Re-exports
+Do NOT use `Object.defineProperty(exports, ...)` for re-exports as this can cause conflicts with framework internals, especially with Next.js and tRPC:
+
+```typescript
+// DON'T DO THIS - can cause "Cannot redefine property" errors in build
+Object.defineProperty(exports, 'someFunction', {
+  value: function() { /* implementation */ }
+})
+
+// INSTEAD DO THIS - standard export pattern
+export function someFunction() { /* implementation */ }
+```
+
+These conflicts typically manifest as "Cannot redefine property" errors during build and are difficult to debug. They occur because the build process may try to define the same property multiple times through different bundling mechanisms.
 
 ### TSDoc Comments for Utilities
 Always include comprehensive TSDoc comments for utility functions:
