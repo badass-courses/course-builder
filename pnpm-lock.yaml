@@ -209,12 +209,18 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-aws':
+        specifier: 1.0.0
+        version: link:../../packages/utils-aws
       '@coursebuilder/utils-browser':
         specifier: 1.0.0
         version: link:../../packages/utils-browser
       '@coursebuilder/utils-core':
         specifier: 1.0.0
         version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
         specifier: 1.0.0
         version: link:../../packages/utils-file
@@ -828,12 +834,18 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-aws':
+        specifier: 1.0.0
+        version: link:../../packages/utils-aws
       '@coursebuilder/utils-browser':
         specifier: 1.0.0
         version: link:../../packages/utils-browser
       '@coursebuilder/utils-core':
         specifier: 1.0.0
         version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
         specifier: 1.0.0
         version: link:../../packages/utils-file
@@ -1493,12 +1505,18 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-aws':
+        specifier: 1.0.0
+        version: link:../../packages/utils-aws
       '@coursebuilder/utils-browser':
         specifier: 1.0.0
         version: link:../../packages/utils-browser
       '@coursebuilder/utils-core':
         specifier: 1.0.0
         version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
         specifier: 1.0.0
         version: link:../../packages/utils-file
@@ -2022,6 +2040,9 @@ importers:
       '@coursebuilder/utils-core':
         specifier: 1.0.0
         version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
         specifier: 1.0.0
         version: link:../../packages/utils-file
@@ -2368,6 +2389,9 @@ importers:
       '@coursebuilder/utils-core':
         specifier: 1.0.0
         version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
         specifier: 1.0.0
         version: link:../../packages/utils-file
@@ -2714,12 +2738,18 @@ importers:
       '@coursebuilder/ui':
         specifier: ^2.0.4
         version: link:../../packages/ui
+      '@coursebuilder/utils-aws':
+        specifier: 1.0.0
+        version: link:../../packages/utils-aws
       '@coursebuilder/utils-browser':
         specifier: 1.0.0
         version: link:../../packages/utils-browser
       '@coursebuilder/utils-core':
         specifier: 1.0.0
         version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
         specifier: 1.0.0
         version: link:../../packages/utils-file
@@ -4160,6 +4190,31 @@ importers:
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
+
+  packages/utils-aws:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.515.0
+        version: 3.535.0
+      '@aws-sdk/client-textract':
+        specifier: ^3.515.0
+        version: 3.535.0
+      '@aws-sdk/credential-providers':
+        specifier: ^3.515.0
+        version: 3.535.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20.12.5
+        version: 20.12.5
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
 
   packages/utils-browser:
     dependencies:
@@ -34145,7 +34200,7 @@ packages:
       '@types/node': 20.12.5
       esbuild: 0.24.2
       postcss: 8.5.1
-      rollup: 4.24.4
+      rollup: 4.34.6
     optionalDependencies:
       fsevents: 2.3.3
 
