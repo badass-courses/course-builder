@@ -1,30 +1,29 @@
 {
-  "name": "@coursebuilder/utils-media",
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./video-resource": {
-      "types": "./dist/video-resource.d.ts",
-      "import": "./dist/video-resource.js",
-      "default": "./dist/video-resource.js"
-    }
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-  },
-  "devDependencies": {
-    "tsup": "8.0.2",
-    "typescript": "5.4.5",
-    "vitest": "1.6.0"
-  }
+	"name": "@coursebuilder/utils-media",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./video-resource": {
+			"types": "./dist/video-resource.d.ts",
+			"import": "./dist/video-resource.js",
+			"default": "./dist/video-resource.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"tsup": "8.0.2",
+		"typescript": "5.4.5",
+		"vitest": "1.6.0"
+	}
 }
