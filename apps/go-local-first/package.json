@@ -35,6 +35,7 @@
 		"@atlaskit/pragmatic-drag-and-drop-live-region": "^1.0.3",
 		"@coursebuilder/utils-browser": "1.0.0",
 		"@coursebuilder/utils-core": "1.0.0",
+		"@coursebuilder/utils-email": "1.0.0",
 		"@coursebuilder/utils-file": "1.0.0",
 		"@coursebuilder/utils-media": "1.0.0",
 		"@coursebuilder/utils-string": "1.0.0",
