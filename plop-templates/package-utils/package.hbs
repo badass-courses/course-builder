@@ -1,0 +1,30 @@
+{
+  "name": "@coursebuilder/utils-{{kebabCase domain}}",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./{{kebabCase utilityName}}": {
+      "types": "./dist/{{kebabCase utilityName}}.d.ts",
+      "import": "./dist/{{kebabCase utilityName}}.js",
+      "default": "./dist/{{kebabCase utilityName}}.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tsup": "8.0.2",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  }
+}
