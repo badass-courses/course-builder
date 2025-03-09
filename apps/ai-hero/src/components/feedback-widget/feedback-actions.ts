@@ -5,6 +5,7 @@ import { users } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
 import { env } from '@/env.mjs'
 import { getServerAuthSession } from '@/server/auth'
+import { sendAnEmail } from '@/utils/send-an-email'
 import { eq } from 'drizzle-orm'
 import sanitizeHtml from 'sanitize-html'
 
@@ -12,7 +13,6 @@ import {
 	getEmoji,
 	type FeedbackContext,
 } from '@coursebuilder/ui/feedback-widget'
-import { sendAnEmail } from '@coursebuilder/utils-email/send-an-email'
 
 export type SendFeedbackFromUserOptions = {
 	emailAddress?: string
