@@ -238,14 +238,26 @@ For each utility (`guid.ts`, `cn.ts`):
    - **Output:** Provide the test file code.
    - **[STOP FOR FEEDBACK]:** Present the tests. Wait for approval before proceeding.
 
-5. **Update App Imports**
-   - **Action:** Update all apps to import the utility from the shared package.
-   - **Task:**
-     - For each app using the local `<utility>.ts` (identified in Step 1), find import statements (e.g., `import { guid } from '@/utils/guid';`).
-     - Replace with the shared package import (e.g., `import { guid } from '@coursebuilder/utils-core/guid';`).
-     - Ensure import paths are correct (assume path aliases are configured if needed).
-   - **Output:** Provide a list of updated import statements for each app (file path and new import code).
-   - **[STOP FOR FEEDBACK]:** Present the updated imports. Wait for approval before proceeding.
+5. **Update App Utilities and Dependencies**
+   - **Action:** Use the re-export pattern to maintain backward compatibility.
+   - **Task:** For each app with its own implementation of the utility:
+     - Replace the original utility implementation with a re-export:
+     ```typescript
+     // In /apps/app-name/src/utils/<utility>.ts
+     // Re-export from the shared package
+     // This file exists for backward compatibility
+     export { utilityFunction } from '@coursebuilder/utils-domain/utility-name'
+     ```
+     - Update each app's package.json to add the dependency:
+     ```json
+     "@coursebuilder/utils-domain": "1.0.0"
+     ```
+     - Keep existing import statements in the app (e.g., `import { guid } from '@/utils/guid';`) to minimize changes.
+     - Ensure the proper dependency is added to all apps that use this utility.
+   - **Output:** Provide:
+     - The updated re-export utility files.
+     - The changes made to each app's package.json.
+   - **[STOP FOR FEEDBACK]:** Present the updated utilities and dependencies. Wait for approval before proceeding.
 
 ---
 
@@ -351,6 +363,37 @@ For each utility (`guid.ts`, `cn.ts`):
 - **Code Consistency:** Use camelCase for function names (e.g., `getUniqueFilename`) unless the original utility uses a different convention.
 - **Placeholder Implementations:** If unable to analyze actual code, use a placeholder (e.g., `// Implementation from canonical version`) and note that it should be replaced with the approved code.
 - **Error Handling:** If a step cannot be completed (e.g., missing code access), note the issue and propose a workaround, then stop for feedback.
+- **Working Directory:** Always run commands from the project root directory (e.g., `pnpm build` instead of `cd packages/utils-xyz && pnpm build`) to avoid repeated confirmations and ensure consistent paths.
+
+### Implementation Patterns
+
+#### Re-export Pattern for Backward Compatibility
+When creating new utility packages, use the re-export pattern to minimize codebase changes:
+
+1. **Create the centralized utility** in the shared package with full implementation
+2. **Replace app-specific implementations** with simple re-exports:
+```typescript
+// In /apps/app-name/src/utils/some-utility.ts
+// Re-export from the shared package
+// This file exists for backward compatibility
+export { someUtility } from '@coursebuilder/utils-domain/some-utility'
+```
+3. **Keep existing app import paths** using `@/utils/some-utility` instead of updating all imports
+4. **Benefits:**
+   - Minimal code changes needed across the codebase
+   - Maintains backward compatibility for existing code
+   - Still centralizes the core logic in one place
+   - Allows for gradual migration in the future
+
+#### Package Dependencies
+Always remember to update each app's package.json to add the dependency on the new utility package:
+
+1. **Add the dependency** in each app's package.json:
+```json
+"@coursebuilder/utils-domain": "1.0.0"
+```
+2. **Place it alphabetically** with other @coursebuilder packages
+3. **Include this in all apps** that have or could use the utility
 
 ---
 
