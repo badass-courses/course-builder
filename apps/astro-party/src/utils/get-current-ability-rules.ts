@@ -1,3 +1,4 @@
+// App-specific implementation for coursebuilder
 import { headers } from 'next/headers'
 import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter } from '@/db'
@@ -9,78 +10,91 @@ import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 
 import { getResourceSection } from './get-resource-section'
 
-export async function getCurrentAbilityRules({
-	lessonId,
-	moduleId,
-}: {
-	lessonId?: string
-	moduleId?: string
-}) {
-	const headerStore = await headers()
-	const country =
-		headerStore.get('x-vercel-ip-country') ||
-		process.env.DEFAULT_COUNTRY ||
-		'US'
+// Re-export from the shared package
+// This file exists for backward compatibility
+export {
+	getCurrentAbilityRules,
+	getViewingAbilityForResource,
+	getAbilityForResource,
+	type AbilityForResource,
+} from '@coursebuilder/utils-auth/current-ability-rules'
 
-	const convertkitSubscriber = await getSubscriberFromCookie()
+// Override the getCurrentAbilityRules function with the actual implementation
+// This sets up the implementation that the package defines but doesn't implement
+Object.defineProperty(exports, 'getCurrentAbilityRules', {
+	value: async function ({
+		lessonId,
+		moduleId,
+	}: {
+		lessonId?: string
+		moduleId?: string
+	}) {
+		const headerStore = await headers()
+		const country =
+			headerStore.get('x-vercel-ip-country') ||
+			process.env.DEFAULT_COUNTRY ||
+			'US'
 
-	const { session } = await getServerAuthSession()
+		const convertkitSubscriber = await getSubscriberFromCookie()
 
-	const lessonResource = lessonId && (await getLesson(lessonId))
-	const moduleResource = moduleId ? await getModule(moduleId) : null
+		const { session } = await getServerAuthSession()
 
-	const sectionResource =
-		lessonResource &&
-		module &&
-		(await getResourceSection(lessonResource.id, moduleResource))
+		const lessonResource = lessonId && (await getLesson(lessonId))
+		const moduleResource = moduleId ? await getModule(moduleId) : null
 
-	const purchases = await courseBuilderAdapter.getPurchasesForUser(
-		session?.user?.id,
-	)
+		const sectionResource =
+			lessonResource &&
+			module &&
+			(await getResourceSection(lessonResource.id, moduleResource))
 
-	return defineRulesForPurchases({
-		user: session?.user,
-		country,
-		isSolution: false,
-		...(convertkitSubscriber && {
-			subscriber: convertkitSubscriber,
-		}),
-		...(lessonResource && { lesson: lessonResource }),
-		...(moduleResource && { module: moduleResource }),
-		...(sectionResource ? { section: sectionResource } : {}),
-		...(purchases && { purchases: purchases }),
-	})
-}
+		const purchases = await courseBuilderAdapter.getPurchasesForUser(
+			session?.user?.id,
+		)
 
-export async function getViewingAbilityForResource(
-	lessonId: string,
-	moduleId: string,
-) {
-	const abilityRules = await getCurrentAbilityRules({ lessonId, moduleId })
-	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
-	return canView
-}
+		return defineRulesForPurchases({
+			user: session?.user,
+			country,
+			isSolution: false,
+			...(convertkitSubscriber && {
+				subscriber: convertkitSubscriber,
+			}),
+			...(lessonResource && { lesson: lessonResource }),
+			...(moduleResource && { module: moduleResource }),
+			...(sectionResource ? { section: sectionResource } : {}),
+			...(purchases && { purchases: purchases }),
+		})
+	},
+})
 
-export type AbilityForResource = {
-	canView: boolean
-	canInviteTeam: boolean
-	isRegionRestricted: boolean
-}
+// Override getViewingAbilityForResource with the actual implementation
+Object.defineProperty(exports, 'getViewingAbilityForResource', {
+	value: async function (lessonId: string, moduleId: string) {
+		const abilityRules = await exports.getCurrentAbilityRules({
+			lessonId,
+			moduleId,
+		})
+		const ability = createAppAbility(abilityRules || [])
+		const canView = ability.can('read', 'Content')
+		return canView
+	},
+})
 
-export async function getAbilityForResource(
-	lessonId: string,
-	moduleId: string,
-) {
-	const abilityRules = await getCurrentAbilityRules({ lessonId, moduleId })
-	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
-	const canInviteTeam = ability.can('read', 'Team')
-	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+// Override getAbilityForResource with the actual implementation
+Object.defineProperty(exports, 'getAbilityForResource', {
+	value: async function (lessonId: string, moduleId: string) {
+		const abilityRules = await exports.getCurrentAbilityRules({
+			lessonId,
+			moduleId,
+		})
+		const ability = createAppAbility(abilityRules || [])
+		const canView = ability.can('read', 'Content')
+		const canInviteTeam = ability.can('read', 'Team')
+		const isRegionRestricted = ability.can('read', 'RegionRestriction')
 
-	return {
-		canView,
-		canInviteTeam,
-		isRegionRestricted,
-	}
-}
+		return {
+			canView,
+			canInviteTeam,
+			isRegionRestricted,
+		}
+	},
+})
