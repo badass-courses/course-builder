@@ -85,6 +85,7 @@ Course Builder is a real-time multiplayer CMS (Content Management System) design
 - `pnpm format:check` - Check formatting without changing files
 - `pnpm format` - Format all files using Prettier
 - `pnpm typecheck` - Run TypeScript type checking
+- `pnpm manypkg fix` - Fix dependency version mismatches and sort package.json files
 
 Use `--filter="APP_NAME"` to run commands for a specific app
 
@@ -136,6 +137,17 @@ Example of proper package.json edit:
 - **Testing Framework**: Vitest
 
 ## Common Patterns
+
+### Dependency Management
+When adding dependencies to packages in the monorepo, ensure that:
+1. All packages use consistent dependency versions
+2. Dependencies in package.json files are sorted alphabetically
+
+If you encounter linting errors related to dependency versions or sorting:
+```bash
+# Fix dependency version mismatches and sort package.json files
+pnpm manypkg fix
+```
 
 ### Re-export Pattern for Backward Compatibility
 When creating shared utility packages, use the re-export pattern to maintain backward compatibility:

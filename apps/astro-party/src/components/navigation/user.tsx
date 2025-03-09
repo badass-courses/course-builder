@@ -32,7 +32,7 @@ export const User: React.FC<{
 	const pathname = usePathname()
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+	const ability = createAppAbility(abilityRules || [])
 	const isLoadingUserInfo = sessionStatus === 'loading'
 
 	const canCreateContent = ability.can('create', 'Content')
