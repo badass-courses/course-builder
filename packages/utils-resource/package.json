@@ -1,0 +1,31 @@
+{
+  "name": "@coursebuilder/utils-resource",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./filter-resources": {
+      "types": "./dist/filter-resources.d.ts",
+      "import": "./dist/filter-resources.js",
+      "default": "./dist/filter-resources.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@coursebuilder/core": "workspace:^"
+  },
+  "devDependencies": {
+    "tsup": "8.0.2",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  }
+}
