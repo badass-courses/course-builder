@@ -395,6 +395,21 @@ Always remember to update each app's package.json to add the dependency on the n
 2. **Place it alphabetically** with other @coursebuilder packages
 3. **Include this in all apps** that have or could use the utility
 
+⚠️ **IMPORTANT IMPLEMENTATION NOTE**: When updating package.json files, use the Edit tool with string replacement to add the new dependency line in the correct place. Match the exact indentation pattern of the file and insert the new dependency line without modifying anything else:
+
+```
+// Example of correct string replacement
+"@coursebuilder/utils-media": "1.0.0",
+"@coursebuilder/utils-seo": "1.0.0",
+
+// Replace with:
+"@coursebuilder/utils-media": "1.0.0",
+"@coursebuilder/utils-resource": "1.0.0", // New line added here
+"@coursebuilder/utils-seo": "1.0.0",
+```
+
+Do NOT replace entire files or sections - only add the single line needed for the new dependency.
+
 ---
 
 **Execution Order:** Start with Phase 1, process each utility (`guid.ts`, then `cn.ts`) through all steps, then proceed to Phase 2, and so on. Complete Phase 5 last.
