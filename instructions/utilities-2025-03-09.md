@@ -6,6 +6,19 @@
 
 A critical requirement is that all centralized utilities must be thoroughly documented using TSdoc comments to enhance readability and support automated documentation generation.
 
+**Automated Package Creation:** To streamline the process, a custom Plop template has been created for utility packages. You can use it to quickly scaffold new utility packages with the correct structure:
+
+```bash
+# Create a new utility package using the template
+pnpm plop package-utils <domain> <utilityName> <functionName> "<utilityDescription>"
+
+# Example:
+pnpm plop package-utils browser cookies getCookies "Browser cookie utility"
+
+# Alternatively, use named parameters:
+pnpm plop package-utils -- --domain browser --utilityName cookies --functionName getCookies --utilityDescription "Browser cookie utility"
+```
+
 **Assumption:** You have access to the entire code base and can locate and analyze utility files as needed. If you cannot access the code directly, provide placeholder implementations and indicate where the actual code should be inserted based on analysis.
 
 **Instructions Overview:**
@@ -66,83 +79,112 @@ For each utility (`guid.ts`, `cn.ts`):
    - **Action:** Determine the target package from the mapping (e.g., `guid.ts` → `@coursebuilder/utils-core`).
    - **Task:** Check if the package exists in `/packages`:
      - If it **does not exist**:
-       - Create a directory `/packages/utils-<domain>` (e.g., `/packages/utils-core` for `@coursebuilder/utils-core`).
-       - Add `package.json`:
-         ```json
-         {
-           "name": "@coursebuilder/utils-<domain>",
-           "version": "1.0.0",
-           "type": "module",
-           "exports": {
-             "./<utility-name>": {
-               "types": "./dist/<utility-name>.d.ts",
-               "import": "./dist/<utility-name>.js",
-               "default": "./dist/<utility-name>.js"
-             }
-           },
-           "files": [
-             "dist",
-             "src"
-           ],
-           "scripts": {
-             "build": "tsup",
-             "dev": "tsup --watch",
-             "typecheck": "tsc --noEmit",
-             "test": "vitest run",
-             "test:watch": "vitest"
-           },
-           "dependencies": {},
-           "devDependencies": {
-             "tsup": "8.0.2",
-             "typescript": "5.4.5",
-             "vitest": "1.6.0"
-           }
-         }
-         ```
-         Replace `<domain>` with the domain from the package name (e.g., `core`) and `<utility-name>` with the name of the utility (e.g., `guid`).
-       - Add `tsconfig.json`:
-         ```json
-         {
-           "extends": "../../tsconfig.base.json",
-           "compilerOptions": {
-             "outDir": "dist",
-             "rootDir": "src"
-           },
-           "include": ["src"]
-         }
-         ```
-       - Add `tsup.config.ts`:
-         ```typescript
-         import { defineConfig } from 'tsup'
-
-         export default defineConfig({
-           entry: ['src/<utility-name>.ts'],
-           format: ['esm'],
-           dts: true,
-           splitting: false,
-           sourcemap: true,
-           clean: true,
-         })
-         ```
-       - Add `vitest.config.ts`:
-         ```typescript
-         import { defineConfig } from 'vitest/config'
-
-         export default defineConfig({
-           test: {
-             environment: 'node',
-             include: ['src/**/*.test.ts'],
-           },
-         })
-         ```
-       - **Verify Package Setup:**
+       - **Recommended Method**: Use the package-utils Plop template:
          ```bash
-         cd /packages/utils-<domain>
-         pnpm i
-         pnpm build
-         pnpm test
+         pnpm plop package-utils <domain> <utilityName> <functionName> "<utilityDescription>"
+         
+         # Example:
+         pnpm plop package-utils core guid guid "Globally unique identifier generator"
          ```
-         This ensures the package builds correctly and tests pass.
+         This will automatically create the package with all necessary files and proper configuration.
+       
+       - **Alternative Manual Method**:
+         - Create a directory `/packages/utils-<domain>` (e.g., `/packages/utils-core` for `@coursebuilder/utils-core`).
+         - Add `package.json`:
+           ```json
+           {
+             "name": "@coursebuilder/utils-<domain>",
+             "version": "1.0.0",
+             "type": "module",
+             "exports": {
+               "./<utility-name>": {
+                 "types": "./dist/<utility-name>.d.ts",
+                 "import": "./dist/<utility-name>.js",
+                 "default": "./dist/<utility-name>.js"
+               }
+             },
+             "files": [
+               "dist",
+               "src"
+             ],
+             "scripts": {
+               "build": "tsup",
+               "dev": "tsup --watch",
+               "typecheck": "tsc --noEmit",
+               "test": "vitest run",
+               "test:watch": "vitest"
+             },
+             "dependencies": {},
+             "devDependencies": {
+               "tsup": "8.0.2",
+               "typescript": "5.4.5",
+               "vitest": "1.6.0"
+             }
+           }
+           ```
+           Replace `<domain>` with the domain from the package name (e.g., `core`) and `<utility-name>` with the name of the utility (e.g., `guid`).
+         - Add `tsconfig.json`:
+           ```json
+           {
+             "compilerOptions": {
+               "lib": ["dom", "dom.iterable", "esnext"],
+               "allowJs": true,
+               "baseUrl": ".",
+               "declaration": true,
+               "declarationMap": true, 
+               "emitDecoratorMetadata": true,
+               "experimentalDecorators": true,
+               "forceConsistentCasingInFileNames": true,
+               "resolveJsonModule": true,
+               "allowSyntheticDefaultImports": true,
+               "isolatedModules": true,
+               "module": "ESNext",
+               "moduleResolution": "node",
+               "skipDefaultLibCheck": true,
+               "skipLibCheck": true,
+               "strict": true,
+               "strictNullChecks": true,
+               "stripInternal": true,
+               "target": "es2020",
+               "outDir": "dist",
+               "rootDir": "src"
+             },
+             "include": ["src/**/*"],
+             "exclude": ["node_modules", "*.js", "*.d.ts"]
+           }
+           ```
+         - Add `tsup.config.ts`:
+           ```typescript
+           import { defineConfig } from 'tsup'
+
+           export default defineConfig({
+             entry: ['src/<utility-name>.ts'],
+             format: ['esm'],
+             dts: true,
+             splitting: false,
+             sourcemap: true,
+             clean: true,
+           })
+           ```
+         - Add `vitest.config.ts`:
+           ```typescript
+           import { defineConfig } from 'vitest/config'
+
+           export default defineConfig({
+             test: {
+               environment: 'node',
+               include: ['src/**/*.test.ts'],
+             },
+           })
+           ```
+         - **Verify Package Setup:**
+           ```bash
+           cd /packages/utils-<domain>
+           pnpm i
+           pnpm build
+           pnpm test
+           ```
+           This ensures the package builds correctly and tests pass.
      - If it **exists**:
        - Use the existing package and proceed.
    - **Task:** Add the canonical utility:
