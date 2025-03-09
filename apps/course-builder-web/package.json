@@ -35,6 +35,7 @@
 		"@coursebuilder/utils-core": "1.0.0",
 		"@coursebuilder/utils-file": "1.0.0",
 		"@coursebuilder/utils-media": "1.0.0",
+		"@coursebuilder/utils-email": "1.0.0",
 		"@coursebuilder/utils-string": "1.0.0",
 		"@coursebuilder/utils-ui": "1.0.0",
 		"@auth/core": "0.37.2",
