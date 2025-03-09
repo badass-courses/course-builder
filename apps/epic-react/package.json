@@ -28,6 +28,7 @@
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/nodash": "workspace:^",
 		"@coursebuilder/ui": "^2.0.4",
+		"@coursebuilder/utils-ai": "1.0.0",
 		"@coursebuilder/utils-browser": "1.0.0",
 		"@coursebuilder/utils-core": "1.0.0",
 		"@coursebuilder/utils-file": "1.0.0",

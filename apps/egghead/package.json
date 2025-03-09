@@ -31,6 +31,7 @@
 		"@aws-sdk/s3-request-presigner": "^3.441.0",
 		"@casl/ability": "^6.5.0",
 		"@coursebuilder/adapter-drizzle": "1.0.3",
+		"@coursebuilder/utils-ai": "1.0.0",
 		"@coursebuilder/utils-browser": "1.0.0",
 		"@coursebuilder/utils-core": "1.0.0",
 		"@coursebuilder/utils-file": "1.0.0",
