@@ -27,6 +27,9 @@ function fileExtension(
  * @example
  * // Returns something like "my-image-a1b2c3.jpg"
  * getUniqueFilename('my image.jpg')
+ *
+ * // For filenames without extension, returns something like "test-a1b2c3.test"
+ * getUniqueFilename('test')
  */
 export const getUniqueFilename = (fullFilename: string): string => {
 	// filename with no extension
@@ -35,6 +38,13 @@ export const getUniqueFilename = (fullFilename: string): string => {
 	const scrubbed = `${filename}-${generate()}`
 		.replace(/[^\w\d_\-.]+/gi, '')
 		.toLowerCase()
+
+	// Get the extension
+	const extension = fileExtension(fullFilename)
+
+	// If the file has no extension, use the original filename as extension
+	const finalExtension = extension || filename
+
 	// rebuild it as a fresh new thing
-	return `${scrubbed}.${fileExtension(fullFilename)}`
+	return `${scrubbed}.${finalExtension}`
 }
