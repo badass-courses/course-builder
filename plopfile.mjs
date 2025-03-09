@@ -38,6 +38,9 @@ export default function (plop) {
 	plop.setGenerator('package-utils', {
 		description:
 			'create a utility package following the centralization pattern',
+		// Usage examples:
+		// pnpm plop package-utils browser cookies getCookies "Browser cookie utility"
+		// pnpm plop package-utils -- --domain browser --utilityName cookies --functionName getCookies --utilityDescription "Browser cookie utility"
 		prompts: [
 			{
 				type: 'input',
