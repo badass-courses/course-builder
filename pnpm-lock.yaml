@@ -4053,6 +4053,25 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
 
+  packages/utils-browser:
+    dependencies:
+      '@coursebuilder/nodash':
+        specifier: '*'
+        version: link:../nodash
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
+    devDependencies:
+      tsup:
+        specifier: 8.0.2
+        version: 8.0.2(@swc/core@1.10.9)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.12.5)(@vitest/ui@1.2.2)
+
   packages/utils-core:
     dependencies:
       nanoid:

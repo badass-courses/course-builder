@@ -21,6 +21,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "js-cookie": "^3.0.5",
+    "@coursebuilder/nodash": "*"
   },
   "devDependencies": {
     "tsup": "8.0.2",
