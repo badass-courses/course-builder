@@ -25,13 +25,15 @@ export const UserSchema = userSchema.merge(
 		role: z.enum(['admin', 'user']).nullish(),
 		email: z.string().nullish(),
 		fields: z.any(),
-		entitlements: z.array(
-			z.object({
-				type: z.string(),
-				expires: z.date().nullish(),
-				metadata: z.record(z.any()),
-			}),
-		),
+		entitlements: z
+			.array(
+				z.object({
+					type: z.string(),
+					expires: z.date().nullish(),
+					metadata: z.record(z.any()),
+				}),
+			)
+			.optional(),
 		organizationRoles: z
 			.array(
 				z.object({
