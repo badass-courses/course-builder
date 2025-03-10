@@ -1,3 +1,4 @@
+// App-specific implementation for coursebuilder
 import { headers } from 'next/headers'
 import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
@@ -9,14 +10,20 @@ import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
+// Import type without implementation
+import { type AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
+
 import { getResourceSection } from './get-resource-section'
 
+// Provide the actual implementation directly
 export async function getCurrentAbilityRules({
 	lessonId,
 	moduleId,
+	organizationId: orgId,
 }: {
 	lessonId?: string
 	moduleId?: string
+	organizationId?: string
 }) {
 	const headerStore = await headers()
 	const country =
@@ -24,7 +31,7 @@ export async function getCurrentAbilityRules({
 		process.env.DEFAULT_COUNTRY ||
 		'US'
 
-	const organizationId = headerStore.get('x-organization-id')
+	const organizationId = orgId || headerStore.get('x-organization-id')
 
 	const convertkitSubscriber = await getSubscriberFromCookie()
 
@@ -35,7 +42,7 @@ export async function getCurrentAbilityRules({
 
 	const sectionResource =
 		lessonResource &&
-		module &&
+		moduleResource &&
 		(await getResourceSection(lessonResource.id, moduleResource))
 
 	const purchases = await courseBuilderAdapter.getPurchasesForUser(
@@ -90,23 +97,23 @@ export async function getViewingAbilityForResource(
 	lessonId: string,
 	moduleId: string,
 ) {
-	const abilityRules = await getCurrentAbilityRules({ lessonId, moduleId })
+	const abilityRules = await getCurrentAbilityRules({
+		lessonId,
+		moduleId,
+	})
 	const ability = createAppAbility(abilityRules || [])
 	const canView = ability.can('read', 'Content')
 	return canView
 }
 
-export type AbilityForResource = {
-	canView: boolean
-	canInviteTeam: boolean
-	isRegionRestricted: boolean
-}
-
 export async function getAbilityForResource(
 	lessonId: string,
 	moduleId: string,
-) {
-	const abilityRules = await getCurrentAbilityRules({ lessonId, moduleId })
+): Promise<AbilityForResource> {
+	const abilityRules = await getCurrentAbilityRules({
+		lessonId,
+		moduleId,
+	})
 	const ability = createAppAbility(abilityRules || [])
 	const canView = ability.can('read', 'Content')
 	const canInviteTeam = ability.can('read', 'Team')
@@ -118,3 +125,6 @@ export async function getAbilityForResource(
 		isRegionRestricted,
 	}
 }
+
+// Re-export the type for compatibility
+export type { AbilityForResource }

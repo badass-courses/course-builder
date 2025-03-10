@@ -3,11 +3,14 @@ import type { Post, PostSchema } from '@/lib/posts'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
+
 import { ArticleMetadataFormFields } from './article-metadata-form-fields'
 
 interface MetadataFormFieldsSwitcherProps {
 	post: Post
 	form: UseFormReturn<z.infer<typeof PostSchema>>
+	videoResource?: VideoResource | null
 	videoResourceId?: string | null
 	listsLoader: Promise<List[]>
 	sendResourceChatMessage: (options: {

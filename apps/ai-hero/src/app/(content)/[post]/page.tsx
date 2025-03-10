@@ -1,19 +1,17 @@
-import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 // import { PricingWidget } from '@/components/home-pricing-widget'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
-import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { ListSchema, type List } from '@/lib/lists'
-import { getAllLists, getMinimalListForNavigation } from '@/lib/lists-query'
+import { getAllLists } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
-import { getAllPosts, getCachedPostOrList, getPost } from '@/lib/posts-query'
+import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
 // import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
@@ -31,7 +29,6 @@ import PostNextUpFromListPagination from '../_components/post-next-up-from-list-
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
-import PostProgressToggle from './_components/post-progress-toggle'
 
 export const experimental_ppr = true
 
@@ -139,11 +136,24 @@ export default async function PostPage(props: {
 						</div>
 						<PostBody post={post} />
 						{/* {listSlugFromParam && (
-								<PostProgressToggle
-									className="flex w-full items-center justify-center"
-									postId={post.id}
-								/>
-							)} */}
+									<PostProgressToggle
+										className="flex w-full items-center justify-center"
+										postId={post.id}
+									/>
+								)} */}
+						{!hasVideo && (
+							<PrimaryNewsletterCta
+								isHiddenForSubscribers
+								className="pt-20"
+								trackProps={{
+									event: 'subscribed',
+									params: {
+										post: post.fields.slug,
+										location: 'post',
+									},
+								}}
+							/>
+						)}
 						<PostNextUpFromListPagination postId={post.id} />
 						<div className="mx-auto mt-10 flex w-full max-w-[290px] flex-col gap-1">
 							<strong className="w-full text-center text-lg font-semibold">
@@ -158,34 +168,22 @@ export default async function PostPage(props: {
 				</div>
 			</div>
 			{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
-					<section id="buy">
-						<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-							Get Really Good At Node.js
-						</h2>
-						<div className="flex items-center justify-center border-y">
-							<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
-								<PricingWidget
-									quantityAvailable={-1}
-									pricingDataLoader={pricingDataLoader}
-									commerceProps={{ ...commerceProps }}
-									product={product}
-								/>
+						<section id="buy">
+							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+								Get Really Good At Node.js
+							</h2>
+							<div className="flex items-center justify-center border-y">
+								<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
+									<PricingWidget
+										quantityAvailable={-1}
+										pricingDataLoader={pricingDataLoader}
+										commerceProps={{ ...commerceProps }}
+										product={product}
+									/>
+								</div>
 							</div>
-						</div>
-					</section>
-				) : hasVideo ? null : ( */}
-			{!hasVideo && (
-				<PrimaryNewsletterCta
-					className="pt-20"
-					trackProps={{
-						event: 'subscribed',
-						params: {
-							post: post.fields.slug,
-							location: 'post',
-						},
-					}}
-				/>
-			)}
+						</section>
+					) : hasVideo ? null : ( */}
 		</main>
 	)
 }

@@ -1,0 +1,32 @@
+{
+	"name": "@coursebuilder/utils-search",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./typesense-adapter": {
+			"types": "./dist/typesense-adapter.d.ts",
+			"import": "./dist/typesense-adapter.js",
+			"default": "./dist/typesense-adapter.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"typesense": "^1.8.2",
+		"typesense-instantsearch-adapter": "^2.8.0"
+	},
+	"devDependencies": {
+		"tsup": "8.0.2",
+		"typescript": "5.4.5",
+		"vitest": "1.6.0"
+	}
+}

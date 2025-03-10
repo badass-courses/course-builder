@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { CohortSchema } from '@/lib/cohort'
@@ -28,7 +29,7 @@ export default async function EventIndexPage() {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<>
+		<LayoutClient withContainer>
 			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
 				<div className=" w-full max-w-screen-md border-b px-5 py-16 md:border-dashed">
 					<h1 className="font-heading text-center text-5xl font-bold">
@@ -51,7 +52,7 @@ export default async function EventIndexPage() {
 					aria-hidden="true"
 				/>
 			</main>
-		</>
+		</LayoutClient>
 	)
 }
 

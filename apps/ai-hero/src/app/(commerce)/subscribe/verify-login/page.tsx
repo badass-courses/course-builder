@@ -2,6 +2,7 @@ import { ParsedUrlQuery } from 'querystring'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getCsrf } from '@/app/(user)/login/actions'
+import LayoutClient from '@/components/layout-client'
 import { Login } from '@/components/login'
 import config from '@/config'
 import { env } from '@/env.mjs'
@@ -66,12 +67,14 @@ export default async function VerifyLoginPage({
 	)
 
 	return (
-		<Login
-			title="Login to Subscribe"
-			csrfToken={csrfToken}
-			providers={providers}
-			subtitle={`to ${config.defaultTitle}`}
-			callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
-		/>
+		<LayoutClient withContainer>
+			<Login
+				title="Login to Subscribe"
+				csrfToken={csrfToken}
+				providers={providers}
+				subtitle={`to ${config.defaultTitle}`}
+				callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
+			/>
+		</LayoutClient>
 	)
 }

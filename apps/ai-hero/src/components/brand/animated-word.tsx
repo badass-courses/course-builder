@@ -9,12 +9,14 @@ interface AnimatedTitleProps {
 	word: string
 	words: string[]
 	children: string
+	className?: string
 }
 
 export const AnimatedTitle = ({
 	word,
 	words,
 	children,
+	className,
 }: AnimatedTitleProps) => {
 	const shouldReduceMotion = useReducedMotion()
 
@@ -24,9 +26,12 @@ export const AnimatedTitle = ({
 		return index >= 0 ? index : 0
 	})
 
+	const [isFirstRender, setIsFirstRender] = useState(true)
+
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setCurrentIndex((prev) => (prev + 1) % words.length)
+			setIsFirstRender(false)
 		}, 2000)
 
 		return () => clearInterval(interval)
@@ -48,21 +53,27 @@ export const AnimatedTitle = ({
 	return (
 		<>
 			<h1
-				className={cn('', {
-					'sr-only': !shouldReduceMotion,
-				})}
+				className={cn(
+					className,
+					'flex w-full flex-wrap items-baseline justify-center gap-0.5 text-center leading-[1.2] sm:gap-1.5',
+					{
+						'sr-only': !shouldReduceMotion,
+					},
+				)}
 			>
 				{children}
 			</h1>
 			<h1
 				aria-hidden={'true'}
 				className={cn(
+					className,
 					'flex w-full flex-wrap items-baseline justify-center gap-0.5 text-center sm:gap-1.5',
 					{
 						hidden: shouldReduceMotion,
 					},
 				)}
 			>
+				<br className="block lg:hidden" />
 				{beforeWords.map((part, i) => (
 					<motion.span
 						aria-hidden="true"
@@ -73,8 +84,9 @@ export const AnimatedTitle = ({
 						{part}
 					</motion.span>
 				))}
+				<br className="block lg:hidden" />
 				<span
-					className="relative inline-block overflow-hidden py-2.5 text-[150%] sm:py-2 sm:text-[100%]"
+					className="relative inline-block overflow-hidden py-2.5 sm:py-2"
 					aria-hidden="true"
 				>
 					<AnimatePresence
@@ -82,11 +94,32 @@ export const AnimatedTitle = ({
 					>
 						<motion.span
 							key={words[currentIndex]}
-							initial={{ y: -40, opacity: 0, width: 0 }}
+							initial={
+								isFirstRender
+									? {
+											y: 0,
+											opacity: 1,
+											width: 'auto',
+											skewX: 0,
+											scale: 1,
+											rotate: 0,
+										}
+									: {
+											y: -40,
+											opacity: 0,
+											width: 0,
+											skewX: 20,
+											scale: 0.8,
+											rotate: 5,
+										}
+							}
 							animate={{
 								y: 0,
 								opacity: 1,
 								width: 'auto',
+								skewX: 0,
+								scale: 1,
+								rotate: 0,
 								transition: {
 									width: {
 										duration: 0.4,
@@ -100,19 +133,58 @@ export const AnimatedTitle = ({
 										duration: 0.4,
 										ease: 'easeInOut',
 									},
+									skewX: {
+										type: 'spring',
+										stiffness: 120,
+										damping: 12,
+										duration: 0.7,
+									},
+									scale: {
+										type: 'spring',
+										stiffness: 150,
+										damping: 15,
+										duration: 0.7,
+									},
+									rotate: {
+										type: 'spring',
+										stiffness: 100,
+										damping: 10,
+										duration: 0.6,
+									},
 								},
 							}}
 							exit={{
 								y: 40,
 								opacity: 0,
 								width: 0,
+								skewX: -20,
+								scale: 0.8,
+								rotate: -5,
 								transition: {
 									width: { duration: 0.4 },
 									opacity: { duration: 0.3 },
 									y: { duration: 0.4 },
+									skewX: {
+										type: 'spring',
+										stiffness: 120,
+										damping: 12,
+										duration: 0.7,
+									},
+									scale: {
+										type: 'spring',
+										stiffness: 150,
+										damping: 15,
+										duration: 0.7,
+									},
+									rotate: {
+										type: 'spring',
+										stiffness: 100,
+										damping: 10,
+										duration: 0.6,
+									},
 								},
 							}}
-							style={{ display: 'inline-block' }}
+							style={{ display: 'inline-block', transformOrigin: 'center' }}
 							className="absolute left-0"
 						>
 							{words[currentIndex]}

@@ -1,4 +1,3 @@
-import { POST_TYPES_WITH_VIDEO, PostType } from '@/lib/posts'
 import { FileVideo } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 

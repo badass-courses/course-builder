@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Suspense } from 'react'
-import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/app/_components/contributor'
@@ -19,11 +18,9 @@ import {
 } from '@/lib/lessons-query'
 import { Module } from '@/lib/module'
 import { getTutorial } from '@/lib/tutorials-query'
-import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { codeToHtml } from '@/utils/shiki'
-import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import {
@@ -193,7 +190,6 @@ async function PlayerContainer({
 }: {
 	lesson: Lesson | null
 	exercise: Lesson | null
-
 	params: { module: string; lesson: string }
 }) {
 	if (!lesson) {

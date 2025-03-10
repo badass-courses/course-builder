@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { env } from '@/env.mjs'
 import { createList, getAllLists } from '@/lib/lists-query'
@@ -24,12 +25,14 @@ export default async function ListsPage() {
 
 	const canCreateContent = ability.can('create', 'Content')
 	return (
-		<div className="container flex flex-col gap-4 py-8">
-			<h1 className="fluid-2xl font-bold">Lists</h1>
-			<div className="flex flex-col gap-5 lg:flex-row">
-				<ListsTable canCreateContent={canCreateContent} lists={lists} />
-				{canCreateContent && <CreateListForm />}
-			</div>
-		</div>
+		<LayoutClient withContainer className="">
+			<main className="p-5">
+				<h1 className="fluid-2xl font-bold">Lists</h1>
+				<div className="flex flex-col gap-5">
+					<ListsTable canCreateContent={canCreateContent} lists={lists} />
+					{canCreateContent && <CreateListForm />}
+				</div>
+			</main>
+		</LayoutClient>
 	)
 }

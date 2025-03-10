@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
@@ -133,16 +134,18 @@ export default async function ThanksSubscriptionPage(props: {
 
 function PageLoading() {
 	return (
-		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
-			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-				<h1 className="text-center text-lg font-medium sm:text-xl lg:text-2xl">
-					Validating Your Subscription, Hang Tight...
-				</h1>
-				<div className="mx-auto">
-					<Spinner className="text-center" />
+		<LayoutClient withContainer>
+			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+					<h1 className="text-center text-lg font-medium sm:text-xl lg:text-2xl">
+						Validating Your Subscription, Hang Tight...
+					</h1>
+					<div className="mx-auto">
+						<Spinner className="text-center" />
+					</div>
 				</div>
-			</div>
-		</main>
+			</main>
+		</LayoutClient>
 	)
 }
 
@@ -167,20 +170,22 @@ async function SubscriptionThanksPageLoaded({
 	const loginLink = <LoginLinkComp email={email} />
 
 	return (
-		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
-			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-				<PurchaseSummary.Root title={title} product={product} email={email}>
-					<div className="flex flex-col items-center gap-10 sm:flex-row">
-						<PurchaseSummary.ProductImage />
-						<div className="flex w-full flex-col items-start">
-							<PurchaseSummary.Status />
-							<PurchaseSummary.Title />
-							<PurchaseSummary.Description />
+		<LayoutClient withContainer>
+			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+					<PurchaseSummary.Root title={title} product={product} email={email}>
+						<div className="flex flex-col items-center gap-10 sm:flex-row">
+							<PurchaseSummary.ProductImage />
+							<div className="flex w-full flex-col items-start">
+								<PurchaseSummary.Status />
+								<PurchaseSummary.Title />
+								<PurchaseSummary.Description />
+							</div>
 						</div>
-					</div>
-				</PurchaseSummary.Root>
-				{loginLink}
-			</div>
-		</main>
+					</PurchaseSummary.Root>
+					{loginLink}
+				</div>
+			</main>
+		</LayoutClient>
 	)
 }

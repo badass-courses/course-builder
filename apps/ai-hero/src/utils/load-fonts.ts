@@ -2,7 +2,7 @@ import localFont from 'next/font/local'
 
 export const maisonNeue = localFont({
 	preload: true,
-	display: 'block',
+	display: 'auto',
 	src: [
 		{
 			path: '../styles/fonts/79b83604-3201-4a23-bd15-e067b7bcd7f0.woff2',

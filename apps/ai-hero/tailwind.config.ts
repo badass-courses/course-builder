@@ -21,7 +21,7 @@ module.exports = {
 	],
 	theme: {
 		fluidTypography: {
-			lineHeight: 1.1,
+			lineHeight: 1.2,
 		},
 		container: {
 			center: true,
@@ -89,10 +89,15 @@ module.exports = {
 					from: { height: 'var(--radix-accordion-content-height)' },
 					to: { height: 0 },
 				},
+				shine: {
+					'0%': { 'background-position': '100%' },
+					'100%': { 'background-position': '-100%' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
+				shine: 'shine 5s linear infinite',
 			},
 			typography: (theme: any) => ({
 				DEFAULT: {
@@ -104,7 +109,7 @@ module.exports = {
 						'tr, thead': {
 							borderColor: theme('colors.border'),
 						},
-						p: { fontWeight: 400 },
+						p: { fontWeight: 300 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
 							color: theme('colors.foreground'),

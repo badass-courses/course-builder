@@ -1,14 +1,13 @@
+// Re-export from the shared package
+// This file exists for backward compatibility
 import { env } from '@/env.mjs'
+
+import { getOGImageUrlForResource as getOGImage } from '@coursebuilder/utils-seo/og-image'
 
 export const getOGImageUrlForResource = (resource: {
 	fields?: { slug: string }
 	id: string
 	updatedAt?: Date | string | null
 }) => {
-	const updatedAt =
-		typeof resource.updatedAt === 'string'
-			? resource.updatedAt
-			: resource.updatedAt?.toISOString()
-
-	return `${env.NEXT_PUBLIC_URL}/api/og?resource=${resource?.fields?.slug || resource.id}${updatedAt ? `&updatedAt=${encodeURI(updatedAt)}` : ''}`
+	return getOGImage(resource, env.NEXT_PUBLIC_URL)
 }

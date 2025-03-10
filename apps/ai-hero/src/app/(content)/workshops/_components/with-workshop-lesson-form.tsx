@@ -16,9 +16,14 @@ import { createWorkshopLessonFormConfig } from './workshop-lesson-form-config'
  * Higher-order component for workshop lesson forms
  * Takes lesson and videoResource props and creates a form component
  *
+ * @param moduleSlug - The slug of the module
+ * @param videoResource - Optional video resource to pass to the form
  * @returns A component that renders the workshop lesson form
  */
-export function createWithWorkshopLessonForm(moduleSlug: string) {
+export function createWithWorkshopLessonForm(
+	moduleSlug: string,
+	videoResource: VideoResource | null = null,
+) {
 	// Create the form config using the module slug
 	const config = createWorkshopLessonFormConfig(moduleSlug)
 
@@ -32,8 +37,8 @@ export function createWithWorkshopLessonForm(moduleSlug: string) {
 				<WorkshopLessonFormBase
 					lesson={resource as Lesson}
 					form={form as UseFormReturn<z.infer<typeof LessonSchema>>}
-					videoResource={null} // This should be passed in from parent
-					initialVideoResourceId={null} // This should be passed in from parent
+					videoResource={videoResource} // Pass through from parent
+					initialVideoResourceId={videoResource?.id} // Use ID from video resource
 				/>
 			)
 		},
@@ -60,10 +65,10 @@ export function WithWorkshopLessonForm({
 	// Get module slug from URL params
 	const { module } = useParams<{ module: string }>()
 
-	// Create the form component with the module slug
+	// Create the form component with the module slug and video resource
 	const LessonForm = React.useMemo(
-		() => createWithWorkshopLessonForm(module),
-		[module],
+		() => createWithWorkshopLessonForm(module, videoResource),
+		[module, videoResource],
 	)
 
 	// Render the form with the lesson resource

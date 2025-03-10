@@ -1,0 +1,30 @@
+{
+	"name": "@coursebuilder/utils-seo",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		"./og-image": {
+			"types": "./dist/og-image.d.ts",
+			"import": "./dist/og-image.js",
+			"default": "./dist/og-image.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@types/node": "^20.12.5",
+		"tsup": "8.0.2",
+		"typescript": "5.4.5",
+		"vitest": "1.6.0"
+	}
+}

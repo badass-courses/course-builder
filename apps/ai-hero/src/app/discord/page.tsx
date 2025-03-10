@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { ContributorImage } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import { getProviders } from '@/server/auth'
 
 import { DiscordConnectButton } from './discord-connect-button'
@@ -26,18 +27,20 @@ export default async function Discord() {
 	const discordProvider = providers?.discord
 
 	return (
-		<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col items-center justify-center gap-10 bg-[#7289DA] px-5 text-black dark:text-black">
-			<h1 className="sm:fluid-3xl fluid-2xl mx-auto w-full max-w-xl text-balance text-center">
-				Join <ContributorImage className="inline-block " />{' '}
-				{process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME}{' '}
-				{process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}'s AI Hero Discord
-			</h1>
+		<LayoutClient withContainer>
+			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col items-center justify-center gap-10 bg-[#7289DA] px-5 text-black dark:text-black">
+				<h1 className="sm:fluid-3xl fluid-2xl mx-auto w-full max-w-xl text-balance text-center">
+					Join <ContributorImage className="inline-block " />{' '}
+					{process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME}{' '}
+					{process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}'s AI Hero Discord
+				</h1>
 
-			<div>
-				{discordProvider ? (
-					<DiscordConnectButton discordProvider={discordProvider} />
-				) : null}
-			</div>
-		</main>
+				<div>
+					{discordProvider ? (
+						<DiscordConnectButton discordProvider={discordProvider} />
+					) : null}
+				</div>
+			</main>
+		</LayoutClient>
 	)
 }
