@@ -100,7 +100,7 @@ const diagramCache = new Map<string, string>()
  */
 export function Mermaid({
 	chart,
-	className = 'my-4 block',
+	className = 'py-10 w-full flex bg-background border rounded-lg items-center justify-center',
 	config: globalConfig = {},
 	debug = false,
 }: MermaidProps) {
@@ -140,11 +140,11 @@ export function Mermaid({
 
 			// Check if we have a cached version of this diagram
 			const cacheKey = getCacheKey(cleanChart, isDarkTheme)
-			if (diagramCache.has(cacheKey)) {
-				if (debug) console.log('Using cached Mermaid diagram:', cacheKey)
-				setSvg(diagramCache.get(cacheKey)!)
-				return
-			}
+			// if (diagramCache.has(cacheKey)) {
+			// 	if (debug) console.log('Using cached Mermaid diagram:', cacheKey)
+			// 	setSvg(diagramCache.get(cacheKey)!)
+			// 	return
+			// }
 
 			const { default: mermaid } = await import('mermaid')
 
@@ -162,66 +162,165 @@ export function Mermaid({
 						.join('\n'),
 				}
 
+				// Debug logging
+				if (debug) {
+					console.log('Mermaid configuration:', {
+						theme: inlineTheme || 'base',
+						darkMode: isDarkTheme,
+						globalConfig,
+						inlineConfig,
+						mergedConfig,
+					})
+				}
+
+				// Create base theme variables based on dark/light mode
+				const baseThemeVariables = isDarkTheme
+					? {
+							// Dark theme colors
+							fontFamily: 'inherit',
+							fontSize: '16px',
+							// Primary colors
+							primaryColor: '#FFA947',
+							primaryTextColor: '#f3f4f6',
+							// primaryBorderColor: '#60a5fa',
+							// Secondary colors
+							secondaryColor: '#2B2C2D',
+							secondaryTextColor: '#f3f4f6',
+							secondaryBorderColor: '#6b7280',
+							// Tertiary colors
+							tertiaryColor: '#374151',
+							tertiaryTextColor: '#f3f4f6',
+							tertiaryBorderColor: '#151617',
+							// Background and text
+							background: '#2B2C2D',
+							textColor: '#f3f4f6',
+							mainBkg: '#2B2C2D',
+							nodeBkg: '#2B2C2D',
+							// Lines and borders
+							lineColor: '#9ca3af',
+							border1: '#151617',
+							border2: '#374151',
+							arrowheadColor: '#9ca3af',
+							// Note styling
+							noteBkgColor: '#151617',
+							noteTextColor: '#f3f4f6',
+							noteBorderColor: '#6b7280',
+							// Error styling
+							errorBkgColor: '#ef4444',
+							errorTextColor: '#f3f4f6',
+							// Flowchart specific
+							nodeBorder: '#FFA947',
+							clusterBkg: '#151617',
+							clusterBorder: '#151617',
+							defaultLinkColor: '#9ca3af',
+							titleColor: '#f3f4f6',
+							edgeLabelBackground: '#2B2C2D',
+							nodeTextColor: '#f3f4f6',
+						}
+					: {
+							// Light theme colors
+							fontFamily: 'inherit',
+							fontSize: '16px',
+							// Primary colors
+							primaryColor: '#3b82f6',
+							primaryTextColor: '#111827',
+							primaryBorderColor: '#60a5fa',
+							// Secondary colors
+							secondaryColor: '#e5e7eb',
+							secondaryTextColor: '#111827',
+							secondaryBorderColor: '#d1d5db',
+							// Tertiary colors
+							tertiaryColor: '#f3f4f6',
+							tertiaryTextColor: '#111827',
+							tertiaryBorderColor: '#e5e7eb',
+							// Background and text
+							background: '#ffffff',
+							textColor: '#111827',
+							mainBkg: '#ffffff',
+							nodeBkg: '#ffffff',
+							// Lines and borders
+							lineColor: '#4b5563',
+							border1: '#e5e7eb',
+							border2: '#f3f4f6',
+							arrowheadColor: '#4b5563',
+							// Note styling
+							noteBkgColor: '#fff5ad',
+							noteTextColor: '#333333',
+							noteBorderColor: '#e6dd80',
+							// Error styling
+							errorBkgColor: '#fecaca',
+							errorTextColor: '#b91c1c',
+							// Flowchart specific
+							nodeBorder: '#3b82f6',
+							clusterBkg: '#f3f4f6',
+							clusterBorder: '#e5e7eb',
+							defaultLinkColor: '#4b5563',
+							titleColor: '#111827',
+							edgeLabelBackground: '#ffffff',
+							nodeTextColor: '#111827',
+						}
+
+				// Combine base theme variables with custom theme variables
+				const finalThemeVariables = {
+					...baseThemeVariables,
+					...(mergedConfig.themeVariables || {}),
+				}
+
+				if (debug) {
+					console.log('Final theme variables:', finalThemeVariables)
+				}
+
+				// Create a copy of mergedConfig without themeVariables to prevent overriding
+				const {
+					themeVariables: _,
+					themeCSS: __,
+					...restMergedConfig
+				} = mergedConfig
+
 				mermaid.initialize({
 					startOnLoad: false,
-					theme: inlineTheme || (isDarkTheme ? 'dark' : 'default'),
+					theme: inlineTheme || 'base',
 					securityLevel: 'loose',
 					fontFamily: 'inherit',
 					darkMode: isDarkTheme,
-					themeVariables: {
-						...(isDarkTheme
-							? {
-									// Dark theme colors
-									primaryColor: '#3b82f6',
-									primaryTextColor: '#f3f4f6',
-									primaryBorderColor: '#60a5fa',
-									lineColor: '#9ca3af',
-									secondaryColor: '#4b5563',
-									tertiaryColor: '#374151',
-									background: '#1f2937',
-									mainBkg: '#1f2937',
-									nodeBkg: '#1f2937',
-									textColor: '#f3f4f6',
-									border1: '#4b5563',
-									border2: '#374151',
-									arrowheadColor: '#9ca3af',
-								}
-							: {
-									// Light theme colors
-									primaryColor: '#3b82f6',
-									primaryTextColor: '#111827',
-									primaryBorderColor: '#60a5fa',
-									lineColor: '#4b5563',
-									secondaryColor: '#e5e7eb',
-									tertiaryColor: '#f3f4f6',
-									background: '#ffffff',
-									mainBkg: '#ffffff',
-									nodeBkg: '#ffffff',
-									textColor: '#111827',
-									border1: '#e5e7eb',
-									border2: '#f3f4f6',
-									arrowheadColor: '#4b5563',
-								}),
-						...(mergedConfig.themeVariables || {}),
+					flowchart: {
+						padding: 20,
+						diagramPadding: 20,
+						rankSpacing: 60,
 					},
+					themeVariables: finalThemeVariables,
 					themeCSS: `
 						.node rect, .node circle, .node polygon, .node path {
 							stroke-width: 2px;
-						}
-						.node.current rect, .node.current circle, .node.current polygon {
+							}
+							.node.current rect, .node.current circle, .node.current polygon {
 							filter: brightness(120%);
 						}
-						.edgeLabel {
-							background-color: ${isDarkTheme ? '#1f2937' : '#ffffff'};
-							padding: 4px 8px;
-							border-radius: 4px;
+						.node rect {
+						}
+						.edgeLabel {	
+						border-radius: 4px;
+						}
+						.cluster rect {
+							rx: 10;
+							ry: 10;
 						}
 						.edgeLabel foreignObject {
 							text-align: center;
+							
+							}
+						.edgeLabel foreignObject > div {
+							
+						}
+						.edgeLabel foreignObject > div > span > p {
+							border-radius: 4px;
+								padding: 2px 10px;
+							
+							
 						}
 						${mergedConfig.themeCSS || ''}
 					`,
-					...(mergedConfig || {}),
+					...restMergedConfig,
 				})
 
 				const { svg: renderedSvg } = await mermaid.render(
