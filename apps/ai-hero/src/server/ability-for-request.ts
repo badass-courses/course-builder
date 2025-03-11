@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { getAbility, UserSchema } from '@/ability'
 import { db } from '@/db'
 import { deviceAccessToken } from '@/db/schema'
+import { log } from '@/server/logger'
 import { eq } from 'drizzle-orm'
 
 export async function getUserAbilityForRequest(request: NextRequest) {
@@ -36,6 +37,9 @@ export async function getUserAbilityForRequest(request: NextRequest) {
 	})
 
 	if (!userParsed.success) {
+		await log.error('user_parsing_failed', userParsed.error.format())
+		console.log('User parsing failed:', userParsed.error.format())
+
 		return { user: null, ability: getAbility() }
 	}
 

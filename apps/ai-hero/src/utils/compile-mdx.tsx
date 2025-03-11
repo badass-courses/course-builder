@@ -20,7 +20,18 @@ export async function compileMDX(source: string) {
 			// @ts-expect-error
 			Code,
 			Scrollycoding,
-			Mermaid,
+			Mermaid: (props) => (
+				<Mermaid
+					{...props}
+					className="flex w-full items-center justify-center rounded-lg border bg-white py-10 dark:bg-transparent"
+					config={{
+						theme: 'base',
+						themeVariables: {
+							fontSize: '16px',
+						},
+					}}
+				/>
+			),
 		},
 		options: {
 			mdxOptions: {
