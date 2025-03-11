@@ -77,8 +77,11 @@ Course Builder is a real-time multiplayer CMS (Content Management System) design
 
 ### Testing
 - `pnpm test` - Run all tests
+- `pnpm test --filter="@coursebuilder/utils-file"` - Test specific package
 - `pnpm test:watch` - Run tests in watch mode
-- `vitest run src/path/to/test.test.ts` - Run a single test file
+- `cd packages/package-name && pnpm test` - Run tests for specific package
+- `cd packages/package-name && pnpm test src/path/to/test.test.ts` - Run a single test file
+- `cd packages/package-name && pnpm test:watch src/path/to/test.test.ts` - Watch single test file
 
 ### Linting and Formatting
 - `pnpm lint` - Run linting on all packages/apps
@@ -143,6 +146,20 @@ When creating utility packages that interact with framework-specific libraries:
 - **File structure**: Monorepo with apps in /apps and packages in /packages
 - **Package Manager**: PNPM (v8.15.5+)
 - **Testing Framework**: Vitest
+
+### Conventional Commits
+We use conventional commits with package/app-specific scopes:
+- Format: `<type>(<scope>): <description>`
+- Types: `feat`, `fix`, `refactor`, `style`, `docs`, `test`, `chore`
+- Scopes:
+  - App codes: `aih` (ai-hero), `egh` (egghead), `eweb` (epic-web)
+  - Packages: `utils-email`, `core`, `ui`, `mdx-mermaid`, etc.
+
+Examples:
+- `fix(egh): convert SanityReference to SanityArrayElementReference`
+- `style(mdx-mermaid): make flowcharts nicer`
+- `refactor(utils): implement SEO utility package with re-export pattern`
+- `feat(utils-email): create email utilities package with sendAnEmail`
 
 ## Common Patterns
 
