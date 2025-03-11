@@ -46,5 +46,5 @@ export const getUniqueFilename = (fullFilename: string): string => {
 	const finalExtension = extension || filename
 
 	// rebuild it as a fresh new thing
-	return `${scrubbed}.${finalExtension}`
+	return `${scrubbed}.${finalExtension.toLowerCase()}`
 }
