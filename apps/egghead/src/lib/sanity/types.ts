@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { SanityCourseSchema } from './schemas'
+
 /**
  * Common Sanity types
  */
@@ -125,23 +127,7 @@ export type SanityCollaborator = SystemFields & {
 /**
  * Course document in Sanity
  */
-export type SanityCourse = SystemFields & {
-	title?: string
-	slug?: Slug
-	summary?: string
-	description?: string
-	image?: string
-	images?: Image[]
-	imageIllustrator?: SanityReference
-	accessLevel?: string
-	searchIndexingState?: string
-	productionProcessState?: string
-	railsCourseId?: number
-	sharedId?: string
-	softwareLibraries?: SoftwareLibraryArrayObject[]
-	collaborators?: SanityArrayElementReference[] | SanityCollaborator
-	resources?: SanityArrayElementReference[]
-}
+export type SanityCourse = z.infer<typeof SanityCourseSchema>
 
 /**
  * Position input item for ordering resources
