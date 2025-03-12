@@ -144,7 +144,7 @@ export interface ResourceFormConfig<
 	autoUpdateResource?: (resource: Partial<T>) => Promise<T>
 
 	/** Optional callback after successful save */
-	onSave?: (resource: ContentResource) => Promise<void>
+	onSave?: (resource: ContentResource, isSlugMismatch: boolean) => Promise<void>
 
 	/**
 	 * Configuration for the body panel

@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import {
 	withResourceForm,
 	type ResourceFormProps,
@@ -29,10 +30,13 @@ function BaseListForm({
 
 /**
  * Enhanced list form with resource form functionality
+ * @param {Object} props - Component props
+ * @param {List} props.resource - The list resource to edit
  */
-export const ListForm = withResourceForm<List, typeof ListSchema>(
-	BaseListForm,
-	{
+export function EditListForm({ resource }: { resource: List }) {
+	const router = useRouter()
+
+	const ListForm = withResourceForm<List, typeof ListSchema>(BaseListForm, {
 		resourceType: 'list',
 		schema: ListSchema,
 		defaultValues: (resource) => ({
@@ -98,6 +102,11 @@ export const ListForm = withResourceForm<List, typeof ListSchema>(
 				type: 'list',
 			} as List
 		},
+		onSave: async (resource, isSlugMismatch) => {
+			if (isSlugMismatch) {
+				router.push(`/lists/${resource.fields?.slug}/edit`)
+			}
+		},
 		bodyPanelConfig: {
 			showListResources: true,
 			listEditorConfig: {
@@ -117,5 +126,7 @@ export const ListForm = withResourceForm<List, typeof ListSchema>(
 			defaultResourceType: 'article',
 			availableResourceTypes: ['article'],
 		},
-	},
-)
+	})
+
+	return <ListForm resource={resource} />
+}
