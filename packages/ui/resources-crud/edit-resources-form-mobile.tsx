@@ -25,7 +25,7 @@ export function EditResourcesFormMobile({
 	user,
 	tools = [],
 }: {
-	onSave?: (resource: ContentResource) => Promise<void>
+	onSave?: (resource: ContentResource, isSlugMismatch: boolean) => Promise<void>
 	resource: ContentResource & {
 		fields: {
 			body?: string | null
@@ -51,7 +51,10 @@ export function EditResourcesFormMobile({
 	const onSubmit = async (values: z.infer<typeof resourceSchema>) => {
 		const updatedResource = await updateResource(values)
 		if (updatedResource && onSave) {
-			onSave(updatedResource)
+			const isSlugMismatch =
+				resource.fields.slug !== updatedResource.fields.slug
+
+			onSave(updatedResource, isSlugMismatch)
 		}
 	}
 
