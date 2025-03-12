@@ -48,8 +48,8 @@ export function EditPostForm({
 		),
 		{
 			...postFormConfig,
-			onSave: async (resource, isSlugMismatch) => {
-				if (isSlugMismatch) {
+			onSave: async (resource, hasNewSlug) => {
+				if (hasNewSlug) {
 					router.push(`/posts/${resource.fields?.slug}/edit`)
 				}
 			},

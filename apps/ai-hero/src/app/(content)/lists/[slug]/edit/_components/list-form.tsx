@@ -102,8 +102,8 @@ export function EditListForm({ resource }: { resource: List }) {
 				type: 'list',
 			} as List
 		},
-		onSave: async (resource, isSlugMismatch) => {
-			if (isSlugMismatch) {
+		onSave: async (resource, hasNewSlug) => {
+			if (hasNewSlug) {
 				router.push(`/lists/${resource.fields?.slug}/edit`)
 			}
 		},
