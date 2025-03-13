@@ -283,7 +283,11 @@ export function withResourceForm<
 		}
 
 		return (
-			<ResourceProvider resource={resource} resourceType={config.resourceType}>
+			<ResourceProvider
+				form={form}
+				resource={resource}
+				resourceType={config.resourceType}
+			>
 				<ResourceFormComponent
 					resource={resource}
 					form={form}

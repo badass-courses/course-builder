@@ -11,6 +11,7 @@ import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
 import { api } from '@/trpc/react'
+import { pollVideoResource } from '@/utils/poll-video-resource'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import { Shuffle } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -162,6 +163,12 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 						setIsTranscriptProcessing(false)
 						refetch()
 						break
+					case 'video.asset.attached':
+						refetch()
+						break
+					case 'video.asset.detached':
+						refetch()
+						break
 					default:
 						break
 				}
@@ -175,9 +182,6 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 	React.useEffect(() => {
 		async function pollVideo() {
 			if (videoResource?.id) {
-				const { pollVideoResource } = await import(
-					'@/utils/poll-video-resource'
-				)
 				await pollVideoResource(videoResource.id).next()
 				refetch()
 			}
