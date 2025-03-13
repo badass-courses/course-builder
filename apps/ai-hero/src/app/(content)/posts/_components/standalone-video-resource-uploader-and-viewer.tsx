@@ -161,7 +161,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 												})
 											}}
 										>
-											Use as primary resource video
+											Use as primary video
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											onClick={() => {
