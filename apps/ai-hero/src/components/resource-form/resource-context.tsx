@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { ResourceType } from '@/lib/resources'
+import { UseFormReturn } from 'react-hook-form'
+import { z, type Schema } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
 
@@ -12,6 +14,7 @@ export interface ResourceContextType<
 > {
 	resource: T
 	resourceType: ResourceType
+	form: UseFormReturn<z.infer<Schema>>
 }
 
 // Create context with null as default value and generic type parameter
@@ -27,12 +30,14 @@ export function ResourceProvider<T extends ContentResource>({
 	children,
 	resource,
 	resourceType,
+	form,
 }: React.PropsWithChildren<{
 	resource: T
 	resourceType: ResourceType
+	form: UseFormReturn<z.infer<Schema>>
 }>) {
 	return (
-		<ResourceContext.Provider value={{ resource, resourceType }}>
+		<ResourceContext.Provider value={{ resource, resourceType, form }}>
 			{children}
 		</ResourceContext.Provider>
 	)

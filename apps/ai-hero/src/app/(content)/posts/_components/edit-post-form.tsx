@@ -7,12 +7,13 @@ import { withResourceForm } from '@/components/resource-form/with-resource-form'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { List } from '@/lib/lists'
 import { Post } from '@/lib/posts'
-import { ImagePlusIcon } from 'lucide-react'
+import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
 import { postFormConfig } from './post-form-config'
 import { PostFormFields } from './post-form-fields'
+import StandaloneVideoResourceUploaderAndViewer from './standalone-video-resource-uploader-and-viewer'
 
 export type EditPostFormProps = {
 	post: Post
@@ -55,7 +56,7 @@ export function EditPostForm({
 			},
 			customTools: [
 				{
-					id: 'media',
+					id: 'images',
 					icon: () => (
 						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
 					),
@@ -66,6 +67,13 @@ export function EditPostForm({
 							uploadDirectory={`posts`}
 						/>
 					),
+				},
+				{
+					id: 'videos',
+					icon: () => (
+						<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
 				},
 			],
 		},

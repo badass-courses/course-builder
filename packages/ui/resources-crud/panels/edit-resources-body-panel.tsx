@@ -143,7 +143,7 @@ export function EditResourcesBodyPanel({
 								},
 							}}
 							height="var(--code-editor-layout-height)"
-							value={resource.fields.body || ''}
+							value={form.getValues('fields.body') || ''}
 							onChange={(value, viewUpdate) => {
 								const yDoc = Buffer.from(
 									Y.encodeStateAsUpdate(partyKitProvider.doc),
