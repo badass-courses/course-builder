@@ -140,11 +140,11 @@ export function Mermaid({
 
 			// Check if we have a cached version of this diagram
 			const cacheKey = getCacheKey(cleanChart, isDarkTheme)
-			// if (diagramCache.has(cacheKey)) {
-			// 	if (debug) console.log('Using cached Mermaid diagram:', cacheKey)
-			// 	setSvg(diagramCache.get(cacheKey)!)
-			// 	return
-			// }
+			if (diagramCache.has(cacheKey)) {
+				if (debug) console.log('Using cached Mermaid diagram:', cacheKey)
+				setSvg(diagramCache.get(cacheKey)!)
+				return
+			}
 
 			const { default: mermaid } = await import('mermaid')
 

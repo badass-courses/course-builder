@@ -144,7 +144,7 @@ export interface ResourceFormConfig<
 	autoUpdateResource?: (resource: Partial<T>) => Promise<T>
 
 	/** Optional callback after successful save */
-	onSave?: (resource: ContentResource) => Promise<void>
+	onSave?: (resource: ContentResource, hasNewSlug: boolean) => Promise<void>
 
 	/**
 	 * Configuration for the body panel
@@ -283,7 +283,11 @@ export function withResourceForm<
 		}
 
 		return (
-			<ResourceProvider resource={resource} resourceType={config.resourceType}>
+			<ResourceProvider
+				form={form}
+				resource={resource}
+				resourceType={config.resourceType}
+			>
 				<ResourceFormComponent
 					resource={resource}
 					form={form}

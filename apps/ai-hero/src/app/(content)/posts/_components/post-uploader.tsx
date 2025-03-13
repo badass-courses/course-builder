@@ -20,6 +20,7 @@ export function PostUploader({
 					mode: 'auto',
 				}}
 				content={{
+					label: 'Upload Video',
 					uploadIcon: (
 						<div className="bg-muted aspect-square rounded-full p-2">
 							<YoutubeIcon
