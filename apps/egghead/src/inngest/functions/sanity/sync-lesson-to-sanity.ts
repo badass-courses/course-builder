@@ -3,18 +3,19 @@ import { inngest } from '@/inngest/inngest.server'
 import { eggheadLessonSchema, getEggheadLesson } from '@/lib/egghead'
 import type { EggheadLesson } from '@/lib/egghead'
 import {
-	SanityReferenceSchema,
-	SoftwareLibraryArrayObjectSchema,
-} from '@/lib/sanity-content'
-import type {
-	SanityReference,
-	SoftwareLibraryArrayObject,
-} from '@/lib/sanity-content'
-import {
 	createSanityLesson,
 	getSanityCollaborator,
 	getSanitySoftwareLibrary,
 } from '@/lib/sanity-content-query'
+import {
+	SanityReferenceSchema,
+	SoftwareLibraryArrayObjectSchema,
+} from '@/lib/sanity/schemas'
+import type {
+	SanityArrayElementReference,
+	SoftwareLibraryArrayObject,
+} from '@/lib/sanity/types'
+import { createSanityArrayElementReference } from '@/lib/sanity/utils'
 
 export const syncLessonToSanity = inngest.createFunction(
 	{
@@ -50,11 +51,12 @@ export const syncLessonToSanity = inngest.createFunction(
 		const sanityCollaboratorReferenceObject = (await step.run(
 			'Get collaborator',
 			async () => {
-				return SanityReferenceSchema?.parse(
+				const collaboratorRef = SanityReferenceSchema?.parse(
 					await getSanityCollaborator(lesson.instructor.id),
 				)
+				return createSanityArrayElementReference(collaboratorRef._ref)
 			},
-		)) as SanityReference
+		)) as SanityArrayElementReference
 
 		const sanityLesson = await step.run('Create lesson in sanity', async () => {
 			return await createSanityLesson(

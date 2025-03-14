@@ -93,8 +93,21 @@ export default function Tree({
 		const resourcePositions = currentData.flatMap((item, index) => {
 			if (!item.itemData) return []
 
+			if (!item.itemData.resourceId || !item.itemData.resourceOfId) {
+				console.error('Missing required fields in item:', item)
+				return []
+			}
+
 			const children = item.children.flatMap((childItem, childIndex) => {
 				if (!childItem.itemData) return []
+
+				if (
+					!childItem.itemData.resourceId ||
+					!childItem.itemData.resourceOfId
+				) {
+					console.error('Missing required fields in child item:', childItem)
+					return []
+				}
 
 				return {
 					currentParentResourceId: childItem.itemData.resourceOfId,
@@ -115,7 +128,11 @@ export default function Tree({
 			]
 		})
 
-		await updateResourcePositions(resourcePositions)
+		if (resourcePositions.length > 0) {
+			await updateResourcePositions(resourcePositions)
+		} else {
+			console.warn('No valid resource positions to update')
+		}
 	}, [rootResourceId])
 
 	useEffect(() => {
@@ -160,7 +177,7 @@ export default function Tree({
 
 			return
 		}
-	}, [lastAction, registry, saveTreeData])
+	}, [lastAction, registry, saveTreeData, rootResourceId])
 
 	useEffect(() => {
 		return () => {

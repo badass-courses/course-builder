@@ -20,16 +20,14 @@ import {
 } from './errors/post-errors'
 import { getPost } from './posts-query'
 import { createNewPostVersion } from './posts-version-query'
-import {
-	SanityCourseSchema,
-	SanityLessonDocumentSchema,
-} from './sanity-content'
+import { SanityLessonDocumentSchema } from './sanity-content'
 import {
 	createSanityCourse,
 	getSanityCollaborator,
 	replaceSanityLessonResources,
 	updateSanityLesson,
 } from './sanity-content-query'
+import { SanityCourseSchema } from './sanity/schemas'
 import { loadEggheadInstructorForUser } from './users'
 
 const NewPostInputSchema = z.object({
