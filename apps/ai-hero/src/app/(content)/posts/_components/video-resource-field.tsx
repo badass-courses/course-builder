@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation'
 import { ContentVideoResourceField } from '@/components/content/content-video-resource-field'
 import { env } from '@/env.mjs'
 import { useSocket } from '@/hooks/use-socket'
-import { VIDEO_ATTACHED_EVENT } from '@/inngest/events/video-attachment'
+import {
+	VIDEO_ATTACHED_EVENT,
+	VIDEO_DETACHED_EVENT,
+} from '@/inngest/events/video-attachment'
 import type { Post } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
@@ -57,6 +60,13 @@ export const VideoResourceField: React.FC<{
 					} else {
 						console.error('Missing videoResourceId in message', message)
 					}
+				}
+				if (message.name === VIDEO_DETACHED_EVENT) {
+					console.log('video asset detached')
+					toast({
+						title: 'Video asset detached',
+					})
+					setCurrentVideoResource(null)
 				}
 			} catch (error) {}
 		},

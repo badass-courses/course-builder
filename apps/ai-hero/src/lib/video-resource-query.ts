@@ -11,7 +11,6 @@ import { log } from '@/server/logger'
 import { and, desc, eq, notExists, notInArray, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
-import PartykitProvider from '@coursebuilder/core/providers/partykit'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export async function getVideoResource(id: string | null | undefined) {

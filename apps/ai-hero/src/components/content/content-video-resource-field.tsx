@@ -13,11 +13,19 @@ import { useTranscript } from '@/hooks/use-transcript'
 import { api } from '@/trpc/react'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
-import { Shuffle } from 'lucide-react'
+import { Shuffle, TrashIcon, Unlink } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { VideoResource } from '@coursebuilder/core/schemas'
 import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
 	Button,
 	FormDescription,
 	FormLabel,
@@ -126,6 +134,8 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 	>('loading')
 
 	const [replacingVideo, setReplacingVideo] = React.useState(false)
+	const [showDetachConfirmation, setShowDetachConfirmation] =
+		React.useState(false)
 
 	const {
 		transcript,
@@ -192,70 +202,122 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 		}
 	}, [videoResource?.state, videoResource?.id, refetch])
 
-	return (
-		<div className={className}>
-			{videoResource?.id || initialVideoResource?.id ? (
-				replacingVideo ? (
-					<div className="-mt-7">
-						<NewLessonVideoForm
-							parentResourceId={resource.id}
-							onVideoUploadCompleted={(videoResourceId) => {
-								setReplacingVideo(false)
-								setVideoUploadStatus('finalizing upload')
-								refetch()
-							}}
-							onVideoResourceCreated={(videoResourceId) => {
-								refetch()
-							}}
-						/>
-						<div className="flex items-center gap-1 border-b px-4 py-2">
-							<Button
-								variant="secondary"
-								size={'sm'}
-								type="button"
-								onClick={() => setReplacingVideo(false)}
-							>
-								Cancel Replace Video
-							</Button>
-						</div>
-					</div>
-				) : (
-					<>
-						{videoResource && videoResource.state === 'ready' ? (
-							<div className="-mt-5 border-b">
-								<div className="flex items-center justify-center">
-									{thumbnailEnabled ? (
-										<SimplePostPlayer
-											ref={playerRef}
-											thumbnailTime={form.watch('fields.thumbnailTime') || 0}
-											handleVideoTimeUpdate={(e: Event) => {
-												const currentTime = (e.target as HTMLMediaElement)
-													.currentTime
-												if (currentTime) {
-													setThumbnailTime(currentTime)
-												}
-											}}
-											videoResource={videoResource}
-										/>
-									) : (
-										<LessonPlayer
-											title={resource.fields?.title}
-											videoResource={videoResource}
-										/>
-									)}
-								</div>
-								<div className="flex items-center gap-1 px-4 py-2">
-									<Button
-										variant="secondary"
-										size={'sm'}
-										type="button"
-										onClick={() => setReplacingVideo(true)}
-									>
-										Replace Video
-									</Button>
+	const { mutateAsync: detachFromPost } =
+		api.videoResources.detachFromPost.useMutation()
 
-									{thumbnailEnabled && (
-										<TooltipProvider>
+	const handleDetachVideo = async () => {
+		if (videoResource?.id) {
+			await detachFromPost({
+				postId: resource.id,
+				videoResourceId: videoResource.id,
+			})
+			setShowDetachConfirmation(false)
+		}
+	}
+
+	return (
+		<TooltipProvider>
+			<div className={className}>
+				{videoResource?.id || initialVideoResource?.id ? (
+					replacingVideo ? (
+						<div className="-mt-7">
+							<NewLessonVideoForm
+								parentResourceId={resource.id}
+								onVideoUploadCompleted={(videoResourceId) => {
+									setReplacingVideo(false)
+									setVideoUploadStatus('finalizing upload')
+									refetch()
+								}}
+								onVideoResourceCreated={(videoResourceId) => {
+									refetch()
+								}}
+							/>
+							<div className="flex items-center gap-1 border-b px-4 py-2">
+								<Button
+									variant="secondary"
+									size={'sm'}
+									type="button"
+									onClick={() => setReplacingVideo(false)}
+								>
+									Cancel Replace Video
+								</Button>
+							</div>
+						</div>
+					) : (
+						<>
+							{videoResource && videoResource.state === 'ready' ? (
+								<div className="-mt-5 border-b">
+									<div className="flex items-center justify-center">
+										{thumbnailEnabled ? (
+											<SimplePostPlayer
+												ref={playerRef}
+												thumbnailTime={form.watch('fields.thumbnailTime') || 0}
+												handleVideoTimeUpdate={(e: Event) => {
+													const currentTime = (e.target as HTMLMediaElement)
+														.currentTime
+													if (currentTime) {
+														setThumbnailTime(currentTime)
+													}
+												}}
+												videoResource={videoResource}
+											/>
+										) : (
+											<LessonPlayer
+												title={resource.fields?.title}
+												videoResource={videoResource}
+											/>
+										)}
+									</div>
+									<div className="flex items-center gap-1 px-4 py-2">
+										<Button
+											variant="secondary"
+											size={'sm'}
+											type="button"
+											onClick={() => setReplacingVideo(true)}
+										>
+											Replace Video
+										</Button>
+										<Tooltip delayDuration={0}>
+											<TooltipTrigger asChild>
+												<Button
+													variant="outline"
+													size="icon"
+													className="h-6 w-6"
+													type="button"
+													onClick={() => setShowDetachConfirmation(true)}
+												>
+													<Unlink className="h-3 w-3" />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent side="bottom" className="px-1 py-0">
+												<span className="text-xs">Detach video</span>
+											</TooltipContent>
+										</Tooltip>
+
+										{/* Detach Confirmation Dialog */}
+										<AlertDialog
+											open={showDetachConfirmation}
+											onOpenChange={setShowDetachConfirmation}
+										>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>Detach Video</AlertDialogTitle>
+													<AlertDialogDescription>
+														Are you sure you want to detach this video from the
+														content? This action will remove the video from this
+														content but won't delete the video resource.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction onClick={handleDetachVideo}>
+														Detach
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
+
+										{thumbnailEnabled && (
 											<Tooltip delayDuration={0}>
 												<div className="flex items-center">
 													<TooltipTrigger asChild>
@@ -317,49 +379,49 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 													</div>
 												</TooltipContent>
 											</Tooltip>
-										</TooltipProvider>
-									)}
+										)}
 
-									{showTranscript && transcript && TranscriptDialog}
+										{showTranscript && transcript && TranscriptDialog}
+									</div>
 								</div>
-							</div>
-						) : videoResource ? (
-							<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-								<Spinner className="h-5 w-5" />
-								<span>video is {videoResource.state}</span>
-							</div>
-						) : (
-							<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-								<Spinner className="h-5 w-5" />
-								<span>video is {videoUploadStatus}</span>
+							) : videoResource ? (
+								<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+									<Spinner className="h-5 w-5" />
+									<span>video is {videoResource.state}</span>
+								</div>
+							) : (
+								<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+									<Spinner className="h-5 w-5" />
+									<span>video is {videoUploadStatus}</span>
+								</div>
+							)}
+						</>
+					)
+				) : (
+					<div className="-mt-7">
+						<NewLessonVideoForm
+							parentResourceId={resource.id}
+							onVideoUploadCompleted={(videoResourceId) => {
+								setVideoUploadStatus('finalizing upload')
+								refetch()
+							}}
+							onVideoResourceCreated={(videoResourceId) => {
+								refetch()
+							}}
+						/>
+						{!videoResource?.id && (
+							<div className="flex items-baseline gap-3 border-b px-5 py-2">
+								<FormLabel className="text-base font-bold">{label}</FormLabel>
+								{!required && (
+									<FormDescription className="pb-0">
+										Add a video for this content (optional).
+									</FormDescription>
+								)}
 							</div>
 						)}
-					</>
-				)
-			) : (
-				<div className="-mt-7">
-					<NewLessonVideoForm
-						parentResourceId={resource.id}
-						onVideoUploadCompleted={(videoResourceId) => {
-							setVideoUploadStatus('finalizing upload')
-							refetch()
-						}}
-						onVideoResourceCreated={(videoResourceId) => {
-							refetch()
-						}}
-					/>
-					{!videoResource?.id && (
-						<div className="flex items-baseline gap-3 border-b px-5 py-2">
-							<FormLabel className="text-base font-bold">{label}</FormLabel>
-							{!required && (
-								<FormDescription className="pb-0">
-									Add a video for this content (optional).
-								</FormDescription>
-							)}
-						</div>
-					)}
-				</div>
-			)}
-		</div>
+					</div>
+				)}
+			</div>
+		</TooltipProvider>
 	)
 }
