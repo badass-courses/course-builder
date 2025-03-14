@@ -270,60 +270,21 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 									</div>
 									<div className="flex items-center gap-1 px-4 py-2">
 										<Button
-											variant="secondary"
+											variant="outline"
 											size={'sm'}
 											type="button"
 											onClick={() => setReplacingVideo(true)}
 										>
 											Replace Video
 										</Button>
-										<Tooltip delayDuration={0}>
-											<TooltipTrigger asChild>
-												<Button
-													variant="outline"
-													size="icon"
-													className="h-6 w-6"
-													type="button"
-													onClick={() => setShowDetachConfirmation(true)}
-												>
-													<Unlink className="h-3 w-3" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent side="bottom" className="px-1 py-0">
-												<span className="text-xs">Detach video</span>
-											</TooltipContent>
-										</Tooltip>
-
-										{/* Detach Confirmation Dialog */}
-										<AlertDialog
-											open={showDetachConfirmation}
-											onOpenChange={setShowDetachConfirmation}
-										>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Detach Video</AlertDialogTitle>
-													<AlertDialogDescription>
-														Are you sure you want to detach this video from the
-														content? This action will remove the video from this
-														content but won't delete the video resource.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction onClick={handleDetachVideo}>
-														Detach
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
-
+										{showTranscript && transcript && TranscriptDialog}
 										{thumbnailEnabled && (
 											<Tooltip delayDuration={0}>
 												<div className="flex items-center">
 													<TooltipTrigger asChild>
 														<Button
 															type="button"
-															className="rounded-r-none"
+															className="rounded-r-none border-r-0"
 															disabled={thumbnailTime === 0}
 															onClick={async () => {
 																form.setValue(
@@ -339,7 +300,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 																	)
 																}
 															}}
-															variant="secondary"
+															variant="outline"
 															size={'sm'}
 														>
 															<span>Set Thumbnail</span>
@@ -380,8 +341,44 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 												</TooltipContent>
 											</Tooltip>
 										)}
-
-										{showTranscript && transcript && TranscriptDialog}
+										<Tooltip delayDuration={0}>
+											<TooltipTrigger asChild>
+												<Button
+													variant="outline"
+													size="icon"
+													className="h-6 w-6 flex-shrink-0"
+													type="button"
+													onClick={() => setShowDetachConfirmation(true)}
+												>
+													<Unlink className="h-3 w-3" />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent side="bottom" className="px-1 py-0">
+												<span className="text-xs">Detach video</span>
+											</TooltipContent>
+										</Tooltip>
+										{/* Detach Confirmation Dialog */}
+										<AlertDialog
+											open={showDetachConfirmation}
+											onOpenChange={setShowDetachConfirmation}
+										>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>Detach Video</AlertDialogTitle>
+													<AlertDialogDescription>
+														Are you sure you want to detach this video from the
+														content? This action will remove the video from this
+														content but won't delete the video resource.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction onClick={handleDetachVideo}>
+														Detach
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
 									</div>
 								</div>
 							) : videoResource ? (
