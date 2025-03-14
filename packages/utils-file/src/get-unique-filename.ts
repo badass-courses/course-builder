@@ -33,7 +33,7 @@ function fileExtension(
  */
 export const getUniqueFilename = (fullFilename: string): string => {
 	// filename with no extension
-	const filename = fullFilename.replace(/\.[^/.]+$/, '')
+	const filename = fullFilename.replace(/\.[^/.]+$/, '').toLowerCase()
 	// remove stuff s3 hates
 	const scrubbed = `${filename}-${generate()}`
 		.replace(/[^\w\d_\-.]+/gi, '')
