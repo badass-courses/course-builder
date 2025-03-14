@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { communicationPreferences, invites, userRoles } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
+import InstructorInviteEmail from '@/emails/instructor-invite-email'
 import { INSTRUCTOR_INVITE_CREATED_EVENT } from '@/inngest/events/instructor-invite-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -18,37 +19,44 @@ export const instructorInviteCreated = inngest.createFunction(
 		event: INSTRUCTOR_INVITE_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		// const email = {
-		// 	body: `{{user.email}} signed up.`,
-		// 	subject: 'egghead Post Builder Signup from {{user.email}}',
-		// }
+		const inviteId = nanoid()
 
 		await step.run('create invite', async () => {
-			const invite = await db.insert(invites).values({
-				id: nanoid(),
+			await db.insert(invites).values({
+				id: inviteId,
 				inviteState: 'INITIATED',
 				inviteEmail: event.data.email,
 				createdAt: new Date(),
 			})
-
-			return invite
 		})
+
+		const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invites/${inviteId}`
 
 		// const sendResponse = await step.run('send the email', async () => {
 		// 	return await sendAnEmail({
-		// 		Component: BasicEmail,
+		// 		Component: InstructorInviteEmail,
 		// 		componentProps: {
-		// 			body: email.body,
+		// 			inviteUrl,
 		// 		},
-		// 		Subject: email.subject,
-		// 		To: event.user.email,
+		// 		Subject: 'You have been invited to join egghead as an instructor',
+		// 		To: event.data.email,
 		// 		type: 'broadcast',
 		// 	})
 		// })
 
+		const sendResponse = await step.run('send the invite email', async () => {
+			return await sendAnEmail({
+				Component: BasicEmail,
+				componentProps: {
+					body: `click here to accept the invite`,
+				},
+				Subject: 'You have been invited to join egghead as an instructor',
+				To: event.data.email,
+				type: 'broadcast',
+			})
+		})
+
 		return {
-			// sendResponse,
-			// email,
 			email: event.data.email,
 		}
 	},
