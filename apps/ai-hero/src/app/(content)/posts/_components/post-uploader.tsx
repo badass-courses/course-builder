@@ -13,7 +13,7 @@ export function PostUploader({
 	return (
 		<div>
 			<UploadDropzone
-				className=""
+				className="aspect-video rounded-none"
 				input={{ parentResourceId }}
 				endpoint="videoUploader"
 				config={{
@@ -36,6 +36,7 @@ export function PostUploader({
 							cursor: 'pointer',
 							background: 'hsl(var(--muted))',
 							border: '1px dashed hsl(var(--input))',
+							padding: '0.5rem 1rem',
 						}
 					},
 					label({}) {

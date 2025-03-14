@@ -194,50 +194,36 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 
 	return (
 		<div className={className}>
-			{!videoResource?.id && (
-				<div className="px-5">
-					<FormLabel className="text-lg font-bold">{label}</FormLabel>
-					{!required && (
-						<FormDescription className="mb-4">
-							Add a video for this content (optional).
-						</FormDescription>
-					)}
-				</div>
-			)}
-			<Suspense
-				fallback={
-					<div className="bg-muted flex aspect-video h-full w-full flex-col items-center justify-center gap-2 p-5 text-sm">
-						<Spinner className="h-4 w-4" />
-						<span>video is loading</span>
-					</div>
-				}
-			>
-				{videoResource?.id ? (
-					replacingVideo ? (
-						<div>
-							<NewLessonVideoForm
-								parentResourceId={resource.id}
-								onVideoUploadCompleted={(videoResourceId) => {
-									setReplacingVideo(false)
-									setVideoUploadStatus('finalizing upload')
-									refetch()
-								}}
-								onVideoResourceCreated={(videoResourceId) => {
-									refetch()
-								}}
-							/>
+			{videoResource?.id || initialVideoResource?.id ? (
+				replacingVideo ? (
+					<div className="-mt-7">
+						<NewLessonVideoForm
+							parentResourceId={resource.id}
+							onVideoUploadCompleted={(videoResourceId) => {
+								setReplacingVideo(false)
+								setVideoUploadStatus('finalizing upload')
+								refetch()
+							}}
+							onVideoResourceCreated={(videoResourceId) => {
+								refetch()
+							}}
+						/>
+						<div className="flex items-center gap-1 border-b px-4 py-2">
 							<Button
-								variant="ghost"
+								variant="secondary"
+								size={'sm'}
 								type="button"
 								onClick={() => setReplacingVideo(false)}
 							>
 								Cancel Replace Video
 							</Button>
 						</div>
-					) : (
-						<>
-							{videoResource && videoResource.state === 'ready' ? (
-								<div className="-mt-5 border-b">
+					</div>
+				) : (
+					<>
+						{videoResource && videoResource.state === 'ready' ? (
+							<div className="-mt-5 border-b">
+								<div className="flex items-center justify-center">
 									{thumbnailEnabled ? (
 										<SimplePostPlayer
 											ref={playerRef}
@@ -257,100 +243,101 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 											videoResource={videoResource}
 										/>
 									)}
+								</div>
+								<div className="flex items-center gap-1 px-4 py-2">
+									<Button
+										variant="secondary"
+										size={'sm'}
+										type="button"
+										onClick={() => setReplacingVideo(true)}
+									>
+										Replace Video
+									</Button>
 
-									<div className="flex items-center gap-1 px-4 pb-2">
-										<Button
-											variant="secondary"
-											size={'sm'}
-											type="button"
-											onClick={() => setReplacingVideo(true)}
-										>
-											Replace Video
-										</Button>
-
-										{thumbnailEnabled && (
-											<TooltipProvider>
-												<Tooltip delayDuration={0}>
-													<div className="flex items-center">
-														<TooltipTrigger asChild>
-															<Button
-																type="button"
-																className="rounded-r-none"
-																disabled={thumbnailTime === 0}
-																onClick={async () => {
-																	form.setValue(
-																		'fields.thumbnailTime',
-																		thumbnailTime,
-																	)
-
-																	if (onVideoUpdate) {
-																		await onVideoUpdate(
-																			resource.id,
-																			videoResource.id,
-																			{ thumbnailTime },
-																		)
-																	}
-																}}
-																variant="secondary"
-																size={'sm'}
-															>
-																<span>Set Thumbnail</span>
-															</Button>
-														</TooltipTrigger>
+									{thumbnailEnabled && (
+										<TooltipProvider>
+											<Tooltip delayDuration={0}>
+												<div className="flex items-center">
+													<TooltipTrigger asChild>
 														<Button
 															type="button"
-															className="border-secondary rounded-l-none border bg-transparent px-2"
-															variant="secondary"
-															size={'sm'}
-															onClick={() => {
-																if (playerRef.current?.seekable) {
-																	const seekableEnd =
-																		playerRef.current.seekable.end(0)
-																	// Generate a random time between 0 and the end of the video
-																	const randomTime = Math.floor(
-																		Math.random() * seekableEnd,
+															className="rounded-r-none"
+															disabled={thumbnailTime === 0}
+															onClick={async () => {
+																form.setValue(
+																	'fields.thumbnailTime',
+																	thumbnailTime,
+																)
+
+																if (onVideoUpdate) {
+																	await onVideoUpdate(
+																		resource.id,
+																		videoResource.id,
+																		{ thumbnailTime },
 																	)
-																	playerRef.current.currentTime = randomTime
-																	playerRef.current.thumbnailTime = randomTime
 																}
 															}}
+															variant="secondary"
+															size={'sm'}
 														>
-															<Shuffle className="h-3 w-3" />
+															<span>Set Thumbnail</span>
 														</Button>
+													</TooltipTrigger>
+													<Button
+														type="button"
+														className="border-secondary rounded-l-none border bg-transparent px-2"
+														variant="secondary"
+														size={'sm'}
+														onClick={() => {
+															if (playerRef.current?.seekable) {
+																const seekableEnd =
+																	playerRef.current.seekable.end(0)
+																// Generate a random time between 0 and the end of the video
+																const randomTime = Math.floor(
+																	Math.random() * seekableEnd,
+																)
+																playerRef.current.currentTime = randomTime
+																playerRef.current.thumbnailTime = randomTime
+															}
+														}}
+													>
+														<Shuffle className="h-3 w-3" />
+													</Button>
+												</div>
+												<TooltipContent side="bottom">
+													<div className="text-xs">
+														current thumbnail:
+														<Image
+															src={`https://image.mux.com/${videoResource.muxPlaybackId}/thumbnail.webp?time=${form.watch('fields.thumbnailTime')}`}
+															className="aspect-video"
+															width={192}
+															height={108}
+															alt="Thumbnail"
+														/>
 													</div>
-													<TooltipContent side="bottom">
-														<div className="text-xs">
-															current thumbnail:
-															<Image
-																src={`https://image.mux.com/${videoResource.muxPlaybackId}/thumbnail.webp?time=${form.watch('fields.thumbnailTime')}`}
-																className="aspect-video"
-																width={192}
-																height={108}
-																alt="Thumbnail"
-															/>
-														</div>
-													</TooltipContent>
-												</Tooltip>
-											</TooltipProvider>
-										)}
+												</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
+									)}
 
-										{showTranscript && transcript && TranscriptDialog}
-									</div>
+									{showTranscript && transcript && TranscriptDialog}
 								</div>
-							) : videoResource ? (
-								<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-									<Spinner className="h-5 w-5" />
-									<span>video is {videoResource.state}</span>
-								</div>
-							) : (
-								<div className="bg-muted/75 -mt-5 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-									<Spinner className="h-5 w-5" />
-									<span>video is {videoUploadStatus}</span>
-								</div>
-							)}
-						</>
-					)
-				) : (
+							</div>
+						) : videoResource ? (
+							<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+								<Spinner className="h-5 w-5" />
+								<span>video is {videoResource.state}</span>
+							</div>
+						) : (
+							<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
+								<Spinner className="h-5 w-5" />
+								<span>video is {videoUploadStatus}</span>
+							</div>
+						)}
+					</>
+				)
+			) : (
+				<div className="-mt-7">
 					<NewLessonVideoForm
 						parentResourceId={resource.id}
 						onVideoUploadCompleted={(videoResourceId) => {
@@ -361,49 +348,18 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 							refetch()
 						}}
 					/>
-				)}
-			</Suspense>
-			{/* Show transcript for videos that are ready
-			{showTranscript &&
-				videoResource?.id &&
-				videoResource?.state === 'ready' && (
-					<div className="mt-6 px-5">
-						<div className="flex items-center justify-between gap-2">
-							<label className="text-lg font-bold">Transcript</label>
-							{Boolean(videoResource.id) && (
-								<TooltipProvider delayDuration={0}>
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<Button
-												variant="ghost"
-												size="icon"
-												type="button"
-												onClick={async () => {
-													const { reprocessTranscript } = await import(
-														'@/app/(content)/posts/[slug]/edit/actions'
-													)
-													await reprocessTranscript({
-														videoResourceId: videoResource.id,
-													})
-												}}
-												title="Reprocess"
-											>
-												<Shuffle className="h-3 w-3" />
-											</Button>
-										</TooltipTrigger>
-										<TooltipContent side="top">
-											Reprocess Transcript
-										</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
+					{!videoResource?.id && (
+						<div className="flex items-baseline gap-3 border-b px-5 py-2">
+							<FormLabel className="text-base font-bold">{label}</FormLabel>
+							{!required && (
+								<FormDescription className="pb-0">
+									Add a video for this content (optional).
+								</FormDescription>
 							)}
 						</div>
-
-						<div className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
-							{transcript ? transcript : 'Transcript Processing'}
-						</div>
-					</div>
-				)} */}
+					)}
+				</div>
+			)}
 		</div>
 	)
 }

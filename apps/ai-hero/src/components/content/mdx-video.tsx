@@ -12,7 +12,7 @@ export default function MDXVideo({ resourceId }: { resourceId: string }) {
 
 	if (status === 'pending')
 		return (
-			<div className="flex aspect-video h-full w-full items-center justify-center border">
+			<div className="flex aspect-video h-full w-full max-w-4xl items-center justify-center border">
 				<Spinner className="h-6 w-6" />
 			</div>
 		)
@@ -21,6 +21,7 @@ export default function MDXVideo({ resourceId }: { resourceId: string }) {
 
 	return (
 		<MuxPlayer
+			className="w-full max-w-4xl"
 			playbackRates={[0.75, 1, 1.25, 1.5, 1.75, 2]}
 			maxResolution="2160p"
 			minResolution="540p"

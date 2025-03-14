@@ -75,7 +75,7 @@ export default async function ArticleEditPage(props: {
 			<EditPostForm
 				key={post.fields.slug}
 				post={{ ...post }}
-				videoResource={videoResourceRef}
+				videoResource={videoResource}
 				listsLoader={listsLoader}
 			/>
 		</LayoutClient>
