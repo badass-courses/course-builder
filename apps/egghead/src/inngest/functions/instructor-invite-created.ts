@@ -19,40 +19,31 @@ export const instructorInviteCreated = inngest.createFunction(
 		event: INSTRUCTOR_INVITE_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		const inviteId = nanoid()
-
-		await step.run('create invite', async () => {
+		const newInviteId = await step.run('create invite', async () => {
+			const inviteId = nanoid()
 			await db.insert(invites).values({
 				id: inviteId,
 				inviteState: 'INITIATED',
 				inviteEmail: event.data.email,
 				createdAt: new Date(),
 			})
+
+			return inviteId
 		})
 
-		const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invites/${inviteId}`
-
-		// const sendResponse = await step.run('send the email', async () => {
-		// 	return await sendAnEmail({
-		// 		Component: InstructorInviteEmail,
-		// 		componentProps: {
-		// 			inviteUrl,
-		// 		},
-		// 		Subject: 'You have been invited to join egghead as an instructor',
-		// 		To: event.data.email,
-		// 		type: 'broadcast',
-		// 	})
-		// })
+		const inviteUrl = `${process.env.COURSEBUILDER_URL}/invites/${newInviteId}`
 
 		const sendResponse = await step.run('send the invite email', async () => {
 			return await sendAnEmail({
-				Component: BasicEmail,
+				Component: InstructorInviteEmail,
 				componentProps: {
-					body: `click here to accept the invite`,
+					inviteUrl,
 				},
 				Subject: 'You have been invited to join egghead as an instructor',
 				To: event.data.email,
-				type: 'broadcast',
+				ReplyTo: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				From: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				type: 'transactional',
 			})
 		})
 

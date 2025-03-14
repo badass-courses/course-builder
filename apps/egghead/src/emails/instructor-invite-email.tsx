@@ -30,9 +30,9 @@ export default function InstructorInviteEmail({
 					a great opportunity to share your knowledge and help others learn.
 				</Text>
 				<Section style={buttonContainer}>
-					<Link style={{ ...button, padding: '12px 20px' }} href={inviteUrl}>
-						Accept Invitation
-					</Link>
+					<a href={inviteUrl} rel="noopener noreferrer">
+						click here to accept invite
+					</a>
 				</Section>
 				<Text style={text}>
 					If you have any questions, please don't hesitate to reach out to our
