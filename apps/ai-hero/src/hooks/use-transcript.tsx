@@ -34,7 +34,7 @@ const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
 		<Dialog open={isOpen} onOpenChange={onOpenChange}>
 			<DialogTrigger asChild>
 				<Button variant="outline" size={'sm'} type="button">
-					Transcript
+					View Transcript
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-h-[80vh]">

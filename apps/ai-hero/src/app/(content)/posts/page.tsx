@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Search from '@/app/(search)/q/_components/search'
+import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import config from '@/config'
@@ -16,10 +17,11 @@ import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { desc, inArray, sql } from 'drizzle-orm'
-import { Book } from 'lucide-react'
+import { Book, ChevronRight } from 'lucide-react'
 
 import {
 	Badge,
+	Button,
 	Card,
 	CardContent,
 	CardFooter,
@@ -62,8 +64,9 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 				{primary && (
 					<div className="relative overflow-hidden">
 						<PostTeaser
+							isHighlighted
 							post={primary}
-							className="[&_[data-card='']]:bg-foreground/5 [&_[data-card='']]:hover:bg-foreground/10 [&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+							className="[&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
 						/>
 					</div>
 				)}
@@ -201,13 +204,25 @@ const PostTeaser: React.FC<{
 	post?: Post | List
 	i?: number
 	className?: string
-}> = ({ post, className, i }) => {
+	isHighlighted?: boolean
+}> = ({ post, className, i, isHighlighted }) => {
 	if (!post) return null
 	const title = post.fields.title
 	const description = post.fields.description
 
 	return (
-		<li className={cn('flex h-full', className)}>
+		<li className={cn('relative flex h-full', className)}>
+			{isHighlighted && (
+				<div className="absolute inset-0 -z-10 flex items-center justify-center">
+					<div className="bg-background absolute z-10 h-[97%] w-[98%] md:w-[97%]" />
+					<CldImage
+						alt=""
+						src="https://res.cloudinary.com/total-typescript/image/upload/v1741960224/aihero.dev/assets/vojtaholik_wired_--no_face_robot_human_person_body_--ar_21_--sr_82bb670f-8f36-4c22-9412-4d94f90bc705_3_ht5kyu.jpg"
+						fill
+						className="object-cover"
+					/>
+				</div>
+			)}
 			<Link href={`/${post.fields.slug}`} passHref className="flex w-full">
 				<Card
 					data-card=""
@@ -240,6 +255,11 @@ const PostTeaser: React.FC<{
 									{description}
 								</p>
 							</CardContent>
+						)}
+						{isHighlighted && (
+							<Button className="mt-4 md:mt-8" variant="outline">
+								Learn More <ChevronRight className="ml-2 w-3" />
+							</Button>
 						)}
 					</div>
 					<div>

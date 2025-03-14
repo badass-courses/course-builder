@@ -147,12 +147,13 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 											onClick={() => {
 												form.setValue(
 													'fields.body',
-													`${form.getValues('fields.body')}\n<Video resourceId="${videoResource.id}" />`,
+													`${form.watch('fields.body')}\n<Video resourceId="${videoResource.id}" />`,
 												)
 											}}
 										>
 											Embed video
 										</DropdownMenuItem>
+
 										<DropdownMenuItem
 											onClick={() => {
 												attachVideoResourceToPost({

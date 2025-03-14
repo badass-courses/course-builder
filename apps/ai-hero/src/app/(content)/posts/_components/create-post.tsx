@@ -18,7 +18,7 @@ export interface CreatePostProps {
 	/**
 	 * If provided, called instead of the default router.push to the resource's edit page.
 	 */
-	onResourceCreated?: (resource: ContentResource) => void
+	onResourceCreated?: (resource: ContentResource) => Promise<void>
 	/**
 	 * The default type of resource to create
 	 * @default 'article'
