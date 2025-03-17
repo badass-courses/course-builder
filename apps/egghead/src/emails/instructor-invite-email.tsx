@@ -26,8 +26,7 @@ export default function InstructorInviteEmail({
 			<Body style={main}>
 				<Heading style={h1}>Welcome to egghead!</Heading>
 				<Text style={text}>
-					We're excited to invite you to join egghead as an instructor. This is
-					a great opportunity to share your knowledge and help others learn.
+					We're excited to invite you to join egghead as an instructor.
 				</Text>
 				<Section style={buttonContainer}>
 					<a href={inviteUrl} rel="noopener noreferrer">
@@ -37,9 +36,6 @@ export default function InstructorInviteEmail({
 				<Text style={text}>
 					If you have any questions, please don't hesitate to reach out to our
 					team.
-				</Text>
-				<Text style={footer}>
-					This is an automated message, please do not reply to this email.
 				</Text>
 			</Body>
 		</Html>

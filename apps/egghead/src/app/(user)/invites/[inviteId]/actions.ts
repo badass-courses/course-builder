@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { db } from '@/db'
 import { invites } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -30,16 +30,14 @@ export async function acceptInstructorInvite({
 		throw new Error('Invite has already been used or expired')
 	}
 
-	if (invite.inviteEmail !== email) {
-		throw new Error('Email does not match invite')
-	}
-
 	await db
 		.update(invites)
 		.set({
 			inviteState: 'VERIFIED',
+			acceptedEmail: email,
+			confirmedAt: new Date(),
 		})
 		.where(eq(invites.id, inviteId))
 
-	revalidatePath(`/invites/${inviteId}`)
+	redirect(`/invites/${inviteId}/onboarding`)
 }

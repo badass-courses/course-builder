@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { acceptInstructorInvite } from '@/lib/actions/accept-instructor-invite'
 
 import { Button, Input, Label, useToast } from '@coursebuilder/ui'
+
+import { acceptInstructorInvite } from '../actions'
 
 interface AcceptInviteFormProps {
 	inviteId: string
