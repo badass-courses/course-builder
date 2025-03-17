@@ -18,13 +18,15 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 		post.fields.state === 'published' && post.fields.visibility === 'public'
 
 	if (!shouldIndex) {
-		await client
-			.collections(collectionName)
-			.documents(String(post.fields.eggheadLessonId))
-			.delete()
-			.catch((error: Error) => {
-				console.error(error)
-			})
+		try {
+			await client
+				.collections(collectionName)
+				.documents(String(post.fields.eggheadLessonId))
+				.delete()
+		} catch (error) {
+			console.error('Error deleting post from Typesense index:', error)
+			// Still continue execution rather than failing the whole process
+		}
 	} else {
 		// eggheadResource is either a lesson or a playlist
 		const eggheadResource = await getEggheadResource(post)
@@ -92,18 +94,45 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			throw new Error('Failed to parse lesson post for TypesensePostSchema')
 		}
 
-		await client
-			.collections(collectionName)
-			.documents()
-			.upsert({
-				...resource.data,
-				...(action === 'publish' && {
-					published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-				}),
-				updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
-			})
-			.catch((error: Error) => {
-				console.error(error)
-			})
+		try {
+			// Check if collection exists first
+			try {
+				await client.collections(collectionName).retrieve()
+			} catch (collectionError: any) {
+				if (collectionError.httpStatus === 404) {
+					console.error(
+						`Typesense collection '${collectionName}' not found. Skipping index operation.`,
+					)
+					return // Exit early if collection doesn't exist
+				}
+				// For other errors, proceed and let the main operation try
+			}
+
+			await client
+				.collections(collectionName)
+				.documents()
+				.upsert({
+					...resource.data,
+					...(action === 'publish' && {
+						published_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+					}),
+					updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+				})
+		} catch (error: any) {
+			console.error('Error upserting post to Typesense index:', error)
+
+			// Check specific error codes
+			const httpStatus =
+				error.httpStatus ||
+				(error.message && error.message.includes('404') ? 404 : null)
+
+			if (httpStatus === 404) {
+				console.error(
+					'404 Not Found error. This may indicate the Typesense collection does not exist or is misconfigured.',
+				)
+			}
+
+			// Still continue execution rather than failing the whole process
+		}
 	}
 }
