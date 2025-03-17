@@ -8,8 +8,8 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import {
 	getInitialTreeState,
 	treeStateReducer,
-} from '@/components/lesson-list/data/tree'
-import Tree from '@/components/lesson-list/tree'
+} from '@/components/list-editor/lesson-list/data/tree'
+import Tree from '@/components/list-editor/lesson-list/tree'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import {
