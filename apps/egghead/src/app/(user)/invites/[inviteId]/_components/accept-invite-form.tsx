@@ -25,16 +25,19 @@ export function AcceptInviteForm({
 
 		try {
 			await acceptInstructorInvite({ inviteId, email })
-			toast({
-				title: 'Invitation accepted!',
-				description: 'You will be redirected to complete your profile.',
-			})
 		} catch (error) {
-			toast({
-				title: 'Error',
-				description: 'Failed to accept invitation. Please try again.',
-				variant: 'destructive',
-			})
+			if ((error as Error).message === 'NEXT_REDIRECT') {
+				toast({
+					title: 'Invitation accepted!',
+					description: 'You will be redirected to complete your profile.',
+				})
+			} else {
+				toast({
+					title: 'Error',
+					description: 'Failed to accept invitation. Please try again.',
+					variant: 'destructive',
+				})
+			}
 		} finally {
 			setIsSubmitting(false)
 		}

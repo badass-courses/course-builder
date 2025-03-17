@@ -3,6 +3,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { instructorInviteCompleted } from './functions/instructor-invite-completed'
 import { instructorInviteCreated } from './functions/instructor-invite-created'
 import { migrateTipsToPosts } from './functions/migrate-tips-to-posts'
 import { notifySlack } from './functions/notify-slack-for-post'
@@ -27,5 +28,6 @@ export const inngestConfig = {
 		syncVideoResourceData,
 		syncPostsToEggheadLessons,
 		instructorInviteCreated,
+		instructorInviteCompleted,
 	],
 }

@@ -25,6 +25,7 @@ export const instructorInviteCreated = inngest.createFunction(
 				id: inviteId,
 				inviteState: 'INITIATED',
 				inviteEmail: event.data.email,
+				invitedById: event.data.invitedById,
 				createdAt: new Date(),
 			})
 

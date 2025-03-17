@@ -29,6 +29,10 @@ import {
 	EggheadLessonCreated,
 } from './events/egghead/lesson-created'
 import {
+	INSTRUCTOR_INVITE_COMPLETED_EVENT,
+	InstructorInviteCompleted,
+} from './events/instructor-invite-completed'
+import {
 	INSTRUCTOR_INVITE_CREATED_EVENT,
 	InstructorInviteCreated,
 } from './events/instructor-invite-created'
@@ -57,6 +61,7 @@ export type Events = {
 	[POST_CREATED_EVENT]: PostCreated
 	[SYNC_POSTS_TO_EGGHEAD_LESSONS_EVENT]: SyncPostsToEggheadLessonsEvent
 	[INSTRUCTOR_INVITE_CREATED_EVENT]: InstructorInviteCreated
+	[INSTRUCTOR_INVITE_COMPLETED_EVENT]: InstructorInviteCompleted
 	[EGGHEAD_COURSE_CREATED_EVENT]: EggheadCourseCreated
 }
 

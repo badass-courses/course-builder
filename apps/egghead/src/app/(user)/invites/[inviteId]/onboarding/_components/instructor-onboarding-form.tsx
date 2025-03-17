@@ -35,17 +35,19 @@ export function InstructorOnboardingForm({
 				website: formData.get('website') as string,
 				bio: formData.get('bio') as string,
 			})
-
-			toast({
-				title: 'Profile created!',
-				description: 'Your instructor profile has been created successfully.',
-			})
 		} catch (error) {
-			toast({
-				title: 'Error',
-				description: 'Failed to create profile. Please try again.',
-				variant: 'destructive',
-			})
+			if ((error as Error).message === 'NEXT_REDIRECT') {
+				toast({
+					title: 'Invitation accepted!',
+					description: 'Your instructor profile has been created successfully.',
+				})
+			} else {
+				toast({
+					title: 'Error',
+					description: 'Failed to accept invitation. Please try again.',
+					variant: 'destructive',
+				})
+			}
 		} finally {
 			setIsSubmitting(false)
 		}
