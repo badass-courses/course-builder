@@ -172,6 +172,7 @@ export function createWorkshopFormConfig(
 				{ type: 'post', postTypes: ['article'] },
 				{ type: 'tutorial' },
 				{ type: 'lesson' },
+				{ type: 'section' },
 			],
 			defaultType: { type: 'post', postType: 'article' },
 		},

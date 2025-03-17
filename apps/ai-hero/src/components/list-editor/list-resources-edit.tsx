@@ -99,10 +99,14 @@ export default function ListResourcesEdit({
 						throw new Error('resourceItem.resource is required')
 					}
 					const resources = resourceItem.resource.resources ?? []
+					// Check if the resource is a section type to properly handle expansion
+					const isSection = resourceItem.resource.type === 'section'
 					return {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
+						// For section types, we want to make sure they're initially expanded
+						isOpen: isSection && resources.length > 0 ? true : false,
 						children: resources.map((resourceItem: any) => {
 							if (!resourceItem.resource) {
 								throw new Error('resourceItem.resource is required')
@@ -169,6 +173,9 @@ export default function ListResourcesEdit({
 				id: resource.id,
 				label: resource.fields?.title,
 				type: resource.type,
+				// Set isOpen to true if it's a section with children
+				isOpen:
+					resource.type === 'section' && (resource.resources || []).length > 0,
 				children: [],
 				tier: 'standard',
 				itemData: {
@@ -200,7 +207,7 @@ export default function ListResourcesEdit({
 					[TYPESENSE_COLLECTION_NAME]: {
 						query: '',
 						refinementList: {
-							type: ['post', 'lesson'],
+							type: ['post', 'lesson', 'section'],
 						},
 						configure: {},
 					},

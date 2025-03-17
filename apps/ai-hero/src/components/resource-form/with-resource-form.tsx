@@ -310,7 +310,7 @@ export function withResourceForm<
 												?.showTierSelector,
 										searchConfig:
 											config.bodyPanelConfig?.listEditorConfig?.searchConfig,
-										topLevelResourceTypes: topLevelResourceTypes,
+										topLevelResourceTypes: topLevelResourceTypes || ['section'],
 									},
 									title: config.bodyPanelConfig?.listEditorConfig?.title,
 									onResourceAdd:
