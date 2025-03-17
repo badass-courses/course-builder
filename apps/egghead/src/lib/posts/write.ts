@@ -469,7 +469,11 @@ export async function writePostUpdateToDatabase(input: {
 		await createNewPostVersion(updatedPost, updatedById)
 	}
 
-	await upsertPostToTypeSense(updatedPost, action)
+	try {
+		await upsertPostToTypeSense(updatedPost, action)
+	} catch (error) {
+		console.error('Error in upsertPostToTypeSense', error)
+	}
 
 	return updatedPost
 }
