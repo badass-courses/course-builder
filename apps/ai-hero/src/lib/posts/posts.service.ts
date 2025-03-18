@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -291,6 +292,9 @@ export async function updatePost({
 			action: actionResult.data,
 			newState: result.fields.state,
 		})
+		console.log('🔄 Revalidating path:', `/${result.fields.slug}`)
+		revalidatePath(`/${result.fields.slug}`)
+
 		return result
 	} catch (error: any) {
 		console.error('❌ Update failed:', {
@@ -325,6 +329,10 @@ export async function deletePost({
 
 	try {
 		await deletePostFromDatabase(id)
+
+		console.log('🔄 Revalidating path:', `/${postToDelete.fields?.slug}`)
+		revalidatePath(`/${postToDelete.fields?.slug}`)
+
 		return { message: 'Post deleted successfully' }
 	} catch (error) {
 		throw new PostError('Failed to delete post', 500, error)
