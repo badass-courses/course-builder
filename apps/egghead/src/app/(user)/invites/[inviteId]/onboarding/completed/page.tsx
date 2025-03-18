@@ -10,11 +10,7 @@ import { getProviders, Provider } from '@/server/auth'
 import { eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 
-interface OnboardingPageProps {
-	params: {
-		inviteId: string
-	}
-}
+type Params = Promise<{ inviteId: string }>
 
 // Create a separate component for the status check
 async function InviteStatus({
@@ -67,10 +63,10 @@ async function InviteStatus({
 	)
 }
 
-export default async function OnboardingCompletedPage({
-	params,
-}: OnboardingPageProps) {
-	const { inviteId } = params
+export default async function OnboardingCompletedPage(props: {
+	params: Params
+}) {
+	const { inviteId } = await props.params
 	const providers = await getProviders()
 	const csrfToken = await getCsrf()
 
