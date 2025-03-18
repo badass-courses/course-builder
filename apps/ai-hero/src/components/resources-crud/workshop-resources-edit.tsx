@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation'
 import {
 	getInitialTreeState,
 	treeStateReducer,
-} from '@/components/lesson-list/data/tree'
-import Tree from '@/components/lesson-list/tree'
+} from '@/components/list-editor/lesson-list/data/tree'
+import Tree from '@/components/list-editor/lesson-list/tree'
 import { createResource } from '@/lib/resources/create-resources'
 import { addResourceToWorkshop } from '@/lib/workshops-query'
 

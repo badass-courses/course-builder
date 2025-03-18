@@ -33,11 +33,10 @@ function fileExtension(
  */
 export const getUniqueFilename = (fullFilename: string): string => {
 	// filename with no extension
-	const filename = fullFilename.replace(/\.[^/.]+$/, '')
-	// remove stuff s3 hates
-	const scrubbed = `${filename}-${generate()}`
-		.replace(/[^\w\d_\-.]+/gi, '')
-		.toLowerCase()
+	const filename = fullFilename.replace(/\.[^/.]+$/, '').toLowerCase()
+
+	// Generate a random ID using only alphanumeric characters
+	const uniqueId = generate().replace(/[^a-zA-Z0-9]/g, '')
 
 	// Get the extension
 	const extension = fileExtension(fullFilename)
@@ -45,6 +44,8 @@ export const getUniqueFilename = (fullFilename: string): string => {
 	// If the file has no extension, use the original filename as extension
 	const finalExtension = extension || filename
 
-	// rebuild it as a fresh new thing
-	return `${scrubbed}.${finalExtension}`
+	// rebuild it as a fresh new thing with clean filename (no special chars)
+	const cleanFilename = filename.replace(/[^\w\d]+/gi, '')
+
+	return `${cleanFilename}-${uniqueId}.${finalExtension.toLowerCase()}`
 }

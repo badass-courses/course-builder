@@ -64,24 +64,56 @@ export function ResourceResourcesList({
 					if (!resourceItem.resource) {
 						throw new Error('resourceItem.resource is required')
 					}
+
+					// Log warning if resourceItem is missing required fields
+					if (!resourceItem.resourceId || !resourceItem.resourceOfId) {
+						console.warn(
+							'Resource item might be missing required fields:',
+							resourceItem,
+						)
+					}
+
 					const resources = resourceItem.resource.resources ?? []
 					return {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
+						children: resources.map((childResourceItem: any) => {
+							if (!childResourceItem.resource) {
+								throw new Error('childResourceItem.resource is required')
 							}
+
+							// Log warning if child resource item is missing required fields
+							if (
+								!childResourceItem.resourceId ||
+								!childResourceItem.resourceOfId
+							) {
+								console.warn(
+									'Child resource item might be missing required fields:',
+									childResourceItem,
+								)
+							}
+
 							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
+								id: childResourceItem.resource.id,
+								label: childResourceItem.resource.fields?.title,
+								type: childResourceItem.resource.type,
 								children: [],
-								itemData: resourceItem as any,
+								itemData: {
+									...childResourceItem,
+									resource: childResourceItem.resource,
+									resourceId: childResourceItem.resource.id,
+									resourceOfId:
+										childResourceItem.resourceOfId || resourceItem.resource.id,
+								},
 							}
 						}),
-						itemData: resourceItem as any,
+						itemData: {
+							...resourceItem,
+							resource: resourceItem.resource,
+							resourceId: resourceItem.resource.id,
+							resourceOfId: resourceItem.resourceOfId || resource.id,
+						},
 					}
 				})
 			: []),
@@ -103,7 +135,12 @@ export function ResourceResourcesList({
 				label: createdResource.fields?.title,
 				type: createdResource.type,
 				children: [],
-				itemData: createdResource as any,
+				itemData: {
+					resource: createdResource,
+					resourceId: createdResource.id,
+					resourceOfId: resource.id,
+					position: 0,
+				},
 			},
 		})
 

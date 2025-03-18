@@ -7,6 +7,13 @@ import { ListOrderedIcon, Pencil } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
 
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@coursebuilder/ui'
+
 import { CreatePostModal } from './create-post-modal'
 
 export function PostActions({
@@ -81,44 +88,56 @@ export function PostActions({
 				</ul>
 			) : null}
 			{unlisted && unlisted.length > 0 ? (
-				<ul className=" flex flex-col px-5 pt-4">
-					<strong>Unlisted</strong>
-					{unlisted.map((post) => {
-						const postLists =
-							allLists &&
-							allLists.filter((list) =>
-								list.resources.filter(
-									({ resource }) => resource.id === post.id,
-								),
-							)
+				<Accordion
+					type="single"
+					collapsible
+					className="px-5 py-4 [&>div]:border-b-0"
+				>
+					<AccordionItem value="unlisted">
+						<AccordionTrigger>
+							<strong>Unlisted ({unlisted.length})</strong>
+						</AccordionTrigger>
+						<AccordionContent>
+							<ul className="flex max-h-[200px] flex-col overflow-y-auto">
+								{unlisted.map((post) => {
+									const postLists =
+										allLists &&
+										allLists.filter((list) =>
+											list.resources.some(
+												({ resource }) => resource.id === post.id,
+											),
+										)
 
-						return (
-							<li key={post.id}>
-								<Link
-									className="group flex flex-col pt-2"
-									href={`/posts/${post.fields.slug}/edit`}
-								>
-									<strong className="group-hover:text-primary inline-flex items-baseline gap-1 font-semibold leading-tight transition">
-										<span>{post.fields.title}</span>
-									</strong>
-								</Link>
-								<div className="text-muted-foreground flex flex-col gap-1 pb-2 text-sm">
-									{postLists &&
-										postLists.map((postList) => (
+									return (
+										<li key={post.id}>
 											<Link
-												key={postList.id}
-												href={`/lists/${postList?.fields.slug}/edit`}
-												className="text-muted-foreground hover:text-primary flex items-center gap-1 "
+												className="group flex flex-col pt-2"
+												href={`/posts/${post.fields.slug}/edit`}
 											>
-												<ListOrderedIcon className="w-3" />
-												{postList && postList.fields.title}
+												<strong className="group-hover:text-primary inline-flex items-baseline gap-1 font-semibold leading-tight transition">
+													<span>{post.fields.title}</span>
+												</strong>
 											</Link>
-										))}
-								</div>
-							</li>
-						)
-					})}
-				</ul>
+											<div className="text-muted-foreground flex flex-col gap-1 pb-2 text-sm">
+												{postLists &&
+													postLists.map((postList) => (
+														<Link
+															key={postList.id}
+															href={`/lists/${postList?.fields.slug}/edit`}
+															className="text-muted-foreground hover:text-primary flex items-center gap-1 "
+														>
+															<ListOrderedIcon className="w-3" />
+															{postList && postList.fields.title}
+														</Link>
+													))}
+											</div>
+										</li>
+									)
+								})}
+							</ul>
+						</AccordionContent>
+					</AccordionItem>
+				</Accordion>
 			) : null}
 			<CreatePostModal />
 		</aside>
