@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 import { Button, Input, Label, Textarea, useToast } from '@coursebuilder/ui'
 
 import { createInstructorProfile } from '../actions'
+import { CloudinaryUploadButton } from './cloudinary-profile-uploader'
 
 interface InstructorOnboardingFormProps {
 	inviteId: string
@@ -16,6 +18,9 @@ export function InstructorOnboardingForm({
 	acceptedEmail,
 }: InstructorOnboardingFormProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [imageUrl, setImageUrl] = useState(
+		'https://res.cloudinary.com/dg3gyk0gu/image/upload/v1566948117/transcript-images/Eggo_Notext.png',
+	)
 	const { toast } = useToast()
 
 	async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -34,6 +39,7 @@ export function InstructorOnboardingForm({
 				bluesky: formData.get('bluesky') as string,
 				website: formData.get('website') as string,
 				bio: formData.get('bio') as string,
+				profileImageUrl: imageUrl,
 			})
 		} catch (error) {
 			if ((error as Error).message === 'NEXT_REDIRECT') {
@@ -117,6 +123,21 @@ export function InstructorOnboardingForm({
 						placeholder="Please tell us a bit about yourself. What do you like to do?"
 						className="h-32"
 						disabled={isSubmitting}
+					/>
+				</div>
+
+				<div className="flex w-full items-center gap-4">
+					<Image
+						src={imageUrl}
+						alt="Instructor profile image"
+						width={75}
+						height={75}
+					/>
+
+					<CloudinaryUploadButton
+						dir="instructor-images"
+						id={inviteId}
+						onImageUploadedAction={setImageUrl}
 					/>
 				</div>
 			</div>

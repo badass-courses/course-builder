@@ -47,6 +47,7 @@ export const instructorInviteCompleted = inngest.createFunction(
 				id,
 				email: acceptedEmail,
 				name: `${event.data.firstName} ${event.data.lastName}`,
+				image: event.data.profileImageUrl ?? '',
 			})
 		})
 
@@ -107,6 +108,7 @@ export const instructorInviteCompleted = inngest.createFunction(
 					twitter: event.data.twitter ?? '',
 					website: event.data.website ?? '',
 					bio: event.data.bio ?? '',
+					profileImageUrl: event.data.profileImageUrl ?? '',
 				})
 			},
 		)
@@ -189,6 +191,7 @@ async function createEggheadInstructor({
 	twitter,
 	website,
 	bio,
+	profileImageUrl,
 }: {
 	userId: string
 	firstName: string
@@ -197,6 +200,7 @@ async function createEggheadInstructor({
 	twitter: string
 	website: string
 	bio: string
+	profileImageUrl: string
 }) {
 	// add instructor to egghead user
 	const columns = [
@@ -209,6 +213,7 @@ async function createEggheadInstructor({
 		'website',
 		'state',
 		'bio_short',
+		'profile_picture_url',
 	]
 
 	const values = [
@@ -221,6 +226,7 @@ async function createEggheadInstructor({
 		website,
 		'invited',
 		bio,
+		profileImageUrl,
 	]
 
 	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')

@@ -19,6 +19,7 @@ interface CreateInstructorProfileParams {
 	website?: string
 	bio?: string
 	bluesky?: string
+	profileImageUrl?: string
 }
 
 export async function createInstructorProfile({
@@ -30,6 +31,7 @@ export async function createInstructorProfile({
 	website,
 	bluesky,
 	bio,
+	profileImageUrl,
 }: CreateInstructorProfileParams) {
 	await inngest.send({
 		name: INSTRUCTOR_INVITE_COMPLETED_EVENT,
@@ -42,6 +44,7 @@ export async function createInstructorProfile({
 			website,
 			bio,
 			bluesky,
+			profileImageUrl,
 		},
 	})
 

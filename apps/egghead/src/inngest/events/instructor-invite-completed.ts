@@ -10,5 +10,6 @@ export type InstructorInviteCompleted = {
 		website?: string
 		bio?: string
 		bluesky?: string
+		profileImageUrl?: string
 	}
 }
