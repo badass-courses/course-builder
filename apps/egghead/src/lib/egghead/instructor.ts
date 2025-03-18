@@ -6,6 +6,8 @@ import { eggheadPgQuery } from '@/db/eggheadPostgres'
  * Adds an instructor role to a user in egghead Database
  * @param userId - The user's ID
  */
+const INSTRUCTOR_ROLE_ID = 8
+
 export async function addInstructorRoleToEggheadUser({
 	userId,
 }: {
@@ -16,7 +18,7 @@ export async function addInstructorRoleToEggheadUser({
     VALUES ($1, $2)
   `
 
-	await eggheadPgQuery(instructorRoleQuery, [userId, 8])
+	await eggheadPgQuery(instructorRoleQuery, [userId, INSTRUCTOR_ROLE_ID])
 }
 
 /**
