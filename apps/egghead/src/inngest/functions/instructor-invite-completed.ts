@@ -131,7 +131,7 @@ export const instructorInviteCompleted = inngest.createFunction(
 						completedAt: new Date(),
 						userId: id,
 					})
-					.where(eq(invites.id, invitedById))
+					.where(eq(invites.id, event.data.inviteId))
 			},
 		)
 
