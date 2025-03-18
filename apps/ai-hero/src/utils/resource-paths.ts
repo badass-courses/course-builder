@@ -1,10 +1,4 @@
-import { ResourceType } from '@/lib/resource-types'
 import { z } from 'zod'
-
-import {
-	ContentResource,
-	ContentResourceSchema,
-} from '@coursebuilder/core/schemas'
 
 /**
  * Resource path management system for handling different resource types and contexts
