@@ -85,6 +85,10 @@ Set the following URLs in your `.env.development.local`:
 NEXTAUTH_URL="https://some-unique-value.ngrok-free.app/api/auth"
 UPLOADTHING_URL="https://some-unique-value.ngrok-free.app"
 NEXT_PUBLIC_URL="https://some-unique-value.ngrok-free.app"
+
+# UploadThing credentials (get these from your UploadThing dashboard)
+UPLOADTHING_SECRET="your_api_key_here"
+UPLOADTHING_APP_ID="your_app_id_here"
 ```
 
 _Note: `NEXTAUTH_URL` now needs to end in `/api/auth` for NextAuth v5._

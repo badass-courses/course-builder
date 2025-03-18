@@ -15,34 +15,66 @@ export const ourFileRouter = {
 			}),
 		)
 		.middleware(async ({ req, input }) => {
-			const { session, ability } = await getServerAuthSession()
+			try {
+				const { session, ability } = await getServerAuthSession()
 
-			if (!session?.user || !ability.can('create', 'Content')) {
-				throw new Error('Unauthorized')
-			}
+				if (!session?.user) {
+					console.error('UploadThing error: No user in session')
+					throw new Error('Unauthorized - No user in session')
+				}
 
-			return {
-				user: session.user,
-				userId: session.user.id,
-				...(input?.parentResourceId && {
-					parentResourceId: input.parentResourceId,
-				}),
+				if (!ability.can('create', 'Content')) {
+					console.error('UploadThing error: User lacks permission', {
+						userId: session.user.id,
+					})
+					throw new Error('Unauthorized - Insufficient permissions')
+				}
+
+				console.log('UploadThing middleware: User authorized', {
+					userId: session.user.id,
+					parentResourceId: input?.parentResourceId,
+				})
+
+				return {
+					user: session.user,
+					userId: session.user.id,
+					...(input?.parentResourceId && {
+						parentResourceId: input.parentResourceId,
+					}),
+				}
+			} catch (error) {
+				console.error('UploadThing middleware error:', error)
+				throw error
 			}
 		})
 		.onUploadComplete(async (opts) => {
-			console.debug('Upload complete for userId:', opts.metadata.userId)
-			console.debug('file url', opts)
-			await inngest.send({
-				name: VIDEO_UPLOADED_EVENT,
-				data: {
-					originalMediaUrl: opts.file.url,
-					fileName: opts.file.name || 'untitled',
-					title: opts.file.name || 'untitled',
-					parentResourceId: opts.metadata.parentResourceId,
-					fileKey: opts.file.key,
-				},
-				user: opts.metadata.user,
-			})
+			try {
+				console.log('Upload complete for userId:', opts.metadata.userId)
+				console.log('File details:', {
+					url: opts.file.url,
+					name: opts.file.name,
+					size: opts.file.size,
+					key: opts.file.key,
+				})
+
+				await inngest.send({
+					name: VIDEO_UPLOADED_EVENT,
+					data: {
+						originalMediaUrl: opts.file.url,
+						fileName: opts.file.name || 'untitled',
+						title: opts.file.name || 'untitled',
+						parentResourceId: opts.metadata.parentResourceId,
+						fileKey: opts.file.key,
+					},
+					user: opts.metadata.user,
+				})
+
+				console.log('Successfully sent event to Inngest')
+			} catch (error) {
+				console.error('Error in onUploadComplete:', error)
+				// Don't throw here to prevent the client from receiving an error
+				// after the upload is already complete
+			}
 		}),
 } satisfies FileRouter
 
