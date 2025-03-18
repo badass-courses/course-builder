@@ -37,6 +37,7 @@ import {
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { useResource } from '../resource-form/resource-context'
 import { VideoUploadFormItem } from './video-upload-form-item'
 
 const NewResourceWithVideoSchema = z.object({
