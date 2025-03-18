@@ -8,8 +8,10 @@ import {
 	useState,
 } from 'react'
 import { useRouter } from 'next/navigation'
+import { useResource } from '@/components/resource-form/resource-context'
 import { removePostFromList } from '@/lib/lists-query'
 import { cn } from '@/utils/cn'
+import { getResourcePath } from '@/utils/resource-paths'
 import {
 	Instruction,
 	ItemMode,
@@ -404,6 +406,8 @@ const TreeItem = memo(function TreeItem({
 		</span>
 	)
 
+	const { resource: parentResource } = useResource()
+
 	return (
 		<Fragment>
 			<div className="relative transition-colors">
@@ -428,25 +432,31 @@ const TreeItem = memo(function TreeItem({
 					{showTierSelector && item.type !== 'section' && (
 						<TierSelect item={item} dispatch={dispatch} />
 					)}
-					<Button
-						className="hover:bg-secondary h-6 w-6"
-						type="button"
-						variant="outline"
-						size="icon"
-						onClick={() => {
-							if (
-								item.itemData?.resource?.fields?.slug &&
-								item.type &&
-								item.type !== 'section'
-							) {
-								router.push(
-									`/${pluralize(item.type)}/${item.itemData.resource.fields.slug}/edit`,
-								)
-							}
-						}}
-					>
-						<ExternalLink className="h-3 w-3" />
-					</Button>
+					{item.itemData?.resource?.fields?.slug &&
+						item.type &&
+						item.type !== 'section' && (
+							<Button
+								className="hover:bg-secondary h-6 w-6"
+								type="button"
+								variant="outline"
+								size="icon"
+								onClick={() => {
+									const editUrl = getResourcePath(
+										item.type,
+										item.itemData.resource.fields.slug,
+										'edit',
+										{
+											parentType: parentResource.type,
+											parentSlug:
+												parentResource.fields?.slug || parentResource.id,
+										},
+									)
+									router.push(editUrl)
+								}}
+							>
+								<ExternalLink className="h-3 w-3" />
+							</Button>
+						)}
 					<Button
 						className="h-6 w-6"
 						type="button"
