@@ -441,17 +441,19 @@ const TreeItem = memo(function TreeItem({
 								variant="outline"
 								size="icon"
 								onClick={() => {
-									const editUrl = getResourcePath(
-										item.type,
-										item.itemData.resource.fields.slug,
-										'edit',
-										{
-											parentType: parentResource.type,
-											parentSlug:
-												parentResource.fields?.slug || parentResource.id,
-										},
-									)
-									router.push(editUrl)
+									if (item.type) {
+										const editUrl = getResourcePath(
+											item.type,
+											item.itemData?.resource?.fields?.slug,
+											'edit',
+											{
+												parentType: parentResource.type,
+												parentSlug:
+													parentResource.fields?.slug || parentResource.id,
+											},
+										)
+										router.push(editUrl)
+									}
 								}}
 							>
 								<ExternalLink className="h-3 w-3" />
