@@ -4,6 +4,13 @@ import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { invites, organizationMemberships, profiles, users } from '@/db/schema'
 import { INSTRUCTOR_INVITE_COMPLETED_EVENT } from '@/inngest/events/instructor-invite-completed'
 import { inngest } from '@/inngest/inngest.server'
+import {
+	addInstructorRoleToEggheadUser,
+	addRevenueSplitToEggheadInstructor,
+	createEggheadInstructor,
+	createEggheadUser,
+	getEggheadUserByEmail,
+} from '@/lib/egghead'
 import { addRoleToUser } from '@/lib/users'
 import { eq } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
@@ -146,149 +153,3 @@ export const instructorInviteCompleted = inngest.createFunction(
 		}
 	},
 )
-
-async function addInstructorRoleToEggheadUser({ userId }: { userId: string }) {
-	const instructorRoleQuery = `
-    INSERT INTO users_roles (user_id, role_id)
-    VALUES ($1, $2)
-  `
-
-	await eggheadPgQuery(instructorRoleQuery, [userId, 8])
-}
-
-async function addRevenueSplitToEggheadInstructor({
-	eggheadInstructorId,
-}: {
-	eggheadInstructorId: string
-}) {
-	const revenueSplitQuery = `
-    INSERT INTO instructor_revenue_splits (
-      instructor_id,
-      credit_to_instructor_id,
-      percentage,
-      from_date
-    ) VALUES (
-      $1,
-      $2,
-      $3,
-      $4
-    );
-  `
-
-	await eggheadPgQuery(revenueSplitQuery, [
-		eggheadInstructorId,
-		null,
-		0.2,
-		new Date(),
-	])
-}
-
-async function createEggheadInstructor({
-	userId,
-	email,
-	firstName,
-	lastName,
-	twitter,
-	website,
-	bio,
-	profileImageUrl,
-}: {
-	userId: string
-	firstName: string
-	lastName: string
-	email: string
-	twitter: string
-	website: string
-	bio: string
-	profileImageUrl: string
-}) {
-	// add instructor to egghead user
-	const columns = [
-		'first_name',
-		'last_name',
-		'slug',
-		'user_id',
-		'email',
-		'twitter',
-		'website',
-		'state',
-		'bio_short',
-		'profile_picture_url',
-	]
-
-	const values = [
-		firstName,
-		lastName,
-		`${firstName}-${lastName}`,
-		userId,
-		email,
-		twitter,
-		website,
-		'invited',
-		bio,
-		profileImageUrl,
-	]
-
-	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
-
-	const query = `
-    INSERT INTO instructors (${columns.join(', ')})
-    VALUES (${placeholders})
-    RETURNING id
-  `
-
-	const eggheadInstructorResult = await eggheadPgQuery(query, values)
-
-	return eggheadInstructorResult.rows[0].id
-}
-
-async function createEggheadUser(email: string) {
-	return await fetch('https://app.egghead.io/api/v1/users/send_token', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-		},
-		body: JSON.stringify({
-			email,
-		}),
-	}).then(async (res) => {
-		if (!res.ok) {
-			throw new Error(
-				`Failed to create egghead user: ${res.status} ${res.statusText}`,
-			)
-		}
-		const data = await res.json()
-		if (!data) {
-			throw new Error('No data returned from egghead API')
-		}
-		return data
-	})
-}
-
-async function getEggheadUserByEmail(email: string) {
-	return await fetch(
-		`https://app.egghead.io/api/v1/users/${email}?by_email=true&support=true`,
-		{
-			headers: {
-				Authorization: `Bearer ${process.env.EGGHEAD_ADMIN_TOKEN}`,
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-		},
-	).then(async (res) => {
-		if (!res.ok) {
-			console.error('Full response:', {
-				status: res.status,
-				statusText: res.statusText,
-				headers: Object.fromEntries(res.headers.entries()),
-			})
-			throw new Error(
-				`Failed to get egghead user: ${res.status} ${res.statusText}`,
-			)
-		}
-		const data = await res.json()
-		console.log('egghead user data', data)
-		return data
-	})
-}
