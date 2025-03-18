@@ -8,6 +8,8 @@ import { addRoleToUser } from '@/lib/users'
 import { eq } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 
+const EGGHEAD_ORGANIZATION_ID = '4a2f87c3-bd6e-4a50-ae1d-35b91c7f624d'
+
 export const instructorInviteCompleted = inngest.createFunction(
 	{
 		id: `instructor-invite-completed`,
@@ -55,7 +57,7 @@ export const instructorInviteCompleted = inngest.createFunction(
 		await step.run('add user to egghead organization', async () => {
 			await db.insert(organizationMemberships).values({
 				id: crypto.randomUUID(),
-				organizationId: 'ea57ef92-ac03-eb83-ba03-69ac0a4689d7', //'4a2f87c3-bd6e-4a50-ae1d-35b91c7f624d',
+				organizationId: EGGHEAD_ORGANIZATION_ID,
 				userId: id,
 				role: 'instructor',
 				invitedById,
