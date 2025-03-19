@@ -432,33 +432,32 @@ export async function updateListItemFields(
 	})
 
 	if (!item) throw new Error('item not found')
+
 	let result
 	switch (item.type) {
-		case 'post':
-			{
-				const parsedPost = PostSchema.parse(item)
-				result = await updatePost(
-					{
-						id: item.id,
-						fields: { ...parsedPost.fields, ...fields },
-					},
-					'save',
-				)
-			}
+		case 'post': {
+			const parsedPost = PostSchema.parse(item)
+			result = await updatePost(
+				{
+					id: item.id,
+					fields: { ...parsedPost.fields, ...fields },
+				},
+				'save',
+			)
 			break
-		case 'list':
-			{
-				const parsedList = ListSchema.parse(item)
-				result = await updateList(
-					{
-						id: item.id,
-						fields: { ...parsedList.fields, ...fields },
-						resources: parsedList.resources,
-					},
-					'save',
-				)
-			}
+		}
+		case 'list': {
+			const parsedList = ListSchema.parse(item)
+			result = await updateList(
+				{
+					id: item.id,
+					fields: { ...parsedList.fields, ...fields },
+					resources: parsedList.resources,
+				},
+				'save',
+			)
 			break
+		}
 		default: {
 			result = await courseBuilderAdapter.updateContentResourceFields({
 				id: item.id,
