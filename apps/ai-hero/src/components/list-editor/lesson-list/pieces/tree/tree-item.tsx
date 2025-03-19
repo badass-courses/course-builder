@@ -250,6 +250,7 @@ const TreeItem = memo(function TreeItem({
 					uniqueContextId,
 					item: item,
 				}),
+				canDrag: () => state !== 'editing',
 				onGenerateDragPreview: ({ nativeSetDragImage }) => {
 					setCustomNativeDragPreview({
 						getOffset: pointerOutsideOfPreview({ x: '16px', y: '8px' }),
@@ -362,6 +363,7 @@ const TreeItem = memo(function TreeItem({
 		getPathToItem,
 		clearParentOfInstructionState,
 		shouldHighlightParent,
+		state,
 	])
 
 	useEffect(

@@ -85,7 +85,7 @@ export const DraggableItemRenderer = forwardRef<
 			{state === 'editing' && onResourceUpdate ? (
 				<div className="flex items-center gap-1 pl-7">
 					<Input
-						className="h-6 min-w-24"
+						className="h-6 min-w-40"
 						style={{
 							width: `${item.label?.length}ch`,
 						}}

@@ -464,6 +464,7 @@ export async function updateListItemFields(
 						: {}),
 				},
 			})
+			await upsertPostToTypeSense(result as any, 'save')
 	}
 
 	return result
