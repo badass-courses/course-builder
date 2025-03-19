@@ -177,7 +177,7 @@ export const instructorInviteCompleted = inngest.createFunction(
 			async () => {
 				return await notificationProvider.postEphemeral({
 					channel: slackChannel.channel.id,
-					user: `${invite.invitedById}`,
+					user: 'U050Q7CM0',
 					text: `*A new instructor has completed the invite process.*`,
 					attachments: [
 						{
