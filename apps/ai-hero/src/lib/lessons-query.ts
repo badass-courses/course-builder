@@ -6,6 +6,7 @@ import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { LessonSchema } from '@/lib/lessons'
 import type { PostUpdate } from '@/lib/posts'
+import { upsertPostToTypeSense } from '@/lib/typesense-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -301,14 +302,28 @@ export async function updateLesson(input: Partial<Lesson> | PostUpdate) {
 		lessonSlug = `${slugify(titleFromInput)}~${splitSlug[1] || guid()}`
 	}
 
-	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
-		id: currentLesson.id,
+	const updatedLesson = {
+		...currentLesson,
 		fields: {
 			...currentLesson.fields,
 			...fieldsToUpdate,
 			slug: lessonSlug,
 		},
+	}
+
+	// Update the lesson
+	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
+		id: currentLesson.id,
+		fields: updatedLesson.fields,
 	})
+
+	// Index the lesson in Typesense using the existing post indexing function
+	try {
+		await upsertPostToTypeSense(updatedLesson, 'save')
+		console.log('🔍 Lesson updated in Typesense')
+	} catch (error) {
+		console.log('❌ Error updating lesson in Typesense', error)
+	}
 
 	revalidateTag('lesson')
 

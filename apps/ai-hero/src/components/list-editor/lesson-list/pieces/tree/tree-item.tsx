@@ -13,6 +13,7 @@ import { useResource } from '@/components/resource-form/resource-context'
 import { removePostFromList } from '@/lib/lists-query'
 import { cn } from '@/utils/cn'
 import { getResourcePath } from '@/utils/resource-paths'
+import { getResourceStatus } from '@/utils/resource-status'
 import {
 	Instruction,
 	ItemMode,
@@ -506,74 +507,13 @@ const TreeItem = memo(function TreeItem({
 							{showTierSelector && item.type !== 'section' && (
 								<TierSelect item={item} dispatch={dispatch} />
 							)}
-
-							{/* {item.itemData?.resource?.fields?.slug &&
-								item.type &&
-								item.type !== 'section' && (
-									<Button
-										className="hover:bg-secondary h-6 w-6"
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() => {
-											if (item.type) {
-												const editUrl = getResourcePath(
-													item.type,
-													item.itemData?.resource?.fields?.slug,
-													'edit',
-													{
-														parentType: parentResource.type,
-														parentSlug:
-															parentResource.fields?.slug || parentResource.id,
-													},
-												)
-												router.push(editUrl)
-											}
-										}}
-									>
-										<ExternalLink className="h-3 w-3" />
-									</Button>
+							<span className="text-muted-foreground ml-2 flex min-w-[90px] items-center gap-2 text-xs">
+								{getResourceStatus(
+									item.itemData?.resource.fields?.visibility,
+									item.itemData?.resource.fields?.state,
 								)}
-
-							{item.type === 'section' && onResourceUpdate && (
-								<Button
-									className="h-6 w-6"
-									type="button"
-									variant="outline"
-									size="icon"
-									onClick={(e) => {
-										e.stopPropagation()
-										setState('editing')
-									}}
-								>
-									<Pencil className="h-3 w-3" />
-								</Button>
-							)}
-
-							<Button
-								className="h-6 w-6"
-								type="button"
-								variant="outline"
-								size="icon"
-								onClick={async () => {
-									if (rootResourceId) {
-										dispatch({ type: 'remove-item', itemId: item.id })
-										const resourceId = item?.itemData?.resource?.id || item?.id // this is important because newly added items don't have itemData
-										if (resourceId && excludedIds.includes(resourceId)) {
-											setExcludedIds((prev) =>
-												prev.filter((id) => id !== resourceId),
-											)
-											refresh()
-										}
-										await removePostFromList({
-											postId: item.id,
-											listId: rootResourceId,
-										})
-									}
-								}}
-							>
-								<Trash className="h-3 w-3" />
-							</Button> */}
+							</span>
+							<span></span>
 						</DraggableItemRenderer>
 					</ContextMenuTrigger>
 					<ContextMenuContent>
@@ -581,6 +521,7 @@ const TreeItem = memo(function TreeItem({
 							<>
 								<ContextMenuItem asChild>
 									<Link
+										target="_blank"
 										href={getResourcePath(
 											item.type,
 											item.itemData?.resource?.fields?.slug,
@@ -598,6 +539,7 @@ const TreeItem = memo(function TreeItem({
 								<ContextMenuSeparator />
 								<ContextMenuItem asChild>
 									<Link
+										target="_blank"
 										href={getResourcePath(
 											item.type,
 											item.itemData?.resource?.fields?.slug,
