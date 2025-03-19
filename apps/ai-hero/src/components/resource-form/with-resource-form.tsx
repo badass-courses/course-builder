@@ -3,6 +3,7 @@ import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
+import type { PostUpdate, UpdatePostRequest } from '@/lib/posts'
 import { ResourceType as ResourceTypeFromTypes } from '@/lib/resource-types'
 import { ResourceCreationConfig } from '@/lib/resources'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -162,6 +163,10 @@ export interface ResourceFormConfig<
 				resourceId: string,
 				newPosition: number,
 			) => Promise<void>
+			onResourceUpdate?: (
+				itemId: string,
+				fields: Record<string, any>,
+			) => void | Promise<void>
 		}
 	}
 }
@@ -319,6 +324,12 @@ export function withResourceForm<
 										config.bodyPanelConfig?.listEditorConfig?.onResourceRemove,
 									onResourceReorder:
 										config.bodyPanelConfig?.listEditorConfig?.onResourceReorder,
+									onResourceUpdate: async (itemId, fields) => {
+										await config.bodyPanelConfig?.listEditorConfig?.onResourceUpdate?.(
+											itemId,
+											fields,
+										)
+									},
 								}}
 							/>
 						) : null

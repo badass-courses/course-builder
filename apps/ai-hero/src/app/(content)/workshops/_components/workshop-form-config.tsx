@@ -3,6 +3,7 @@ import {
 	BaseTool,
 	ResourceFormConfig,
 } from '@/components/resource-form/with-resource-form'
+import { updateListItemFields } from '@/lib/lists-query'
 import { updateWorkshop } from '@/lib/workshops-query'
 import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
 import { z } from 'zod'
@@ -174,7 +175,7 @@ export function createWorkshopFormConfig(
 				{ type: 'lesson' },
 				{ type: 'section' },
 			],
-			defaultType: { type: 'post', postType: 'article' },
+			defaultType: { type: 'lesson' },
 		},
 		bodyPanelConfig: {
 			showListResources: true, // Enables the built-in resource list view - works alongside resourcesTool which provides additional resource management features
@@ -188,6 +189,12 @@ export function createWorkshopFormConfig(
 					</div>
 				),
 				showTierSelector: true,
+				onResourceUpdate: async (itemId, data) => {
+					await updateListItemFields(itemId, data)
+				},
+				onResourceAdd: async (resource) => {
+					// await createResource(resource)
+				},
 			},
 		},
 		...customConfig,

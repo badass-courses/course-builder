@@ -10,9 +10,15 @@
  * @param {string} [props.className] - Additional class names
  * @param {React.Ref<HTMLDivElement>} ref - The forwarded ref for Atlassian DnD
  */
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useContext, useState } from 'react'
+import { ChevronDown, GroupIcon, X } from 'lucide-react'
 
+import { Button, Input } from '@coursebuilder/ui'
+
+import Spinner from '../spinner'
 import type { TreeItem } from './lesson-list/data/tree'
+import { TreeContext } from './lesson-list/pieces/tree/tree-context'
+import type { TreeItemState } from './lesson-list/pieces/tree/tree-item'
 
 /**
  * DraggableItemRenderer
@@ -29,6 +35,13 @@ interface DraggableItemRendererProps {
 	label?: React.ReactNode
 	children?: React.ReactNode
 	className?: string
+	onClick?: (e: React.MouseEvent) => void
+	onResourceUpdate?: (
+		itemId: string,
+		fields: Record<string, any>,
+	) => Promise<void>
+	state?: TreeItemState
+	setState?: (state: TreeItemState) => void
 }
 
 /**
@@ -47,17 +60,76 @@ interface DraggableItemRendererProps {
 export const DraggableItemRenderer = forwardRef<
 	HTMLDivElement,
 	DraggableItemRendererProps
->(function DraggableItemRenderer({ item, label, children, className }, ref) {
+>(function DraggableItemRenderer(
+	{
+		item,
+		label,
+		children,
+		className,
+		onClick,
+		onResourceUpdate,
+		state,
+		setState,
+	},
+	ref,
+) {
+	const [sectionName, setSectionName] = useState(item.label)
+	const { dispatch } = useContext(TreeContext)
+	const [isSaving, setIsSaving] = useState(false)
 	return (
 		<div
 			ref={ref}
-			className={`flex cursor-move items-center justify-between p-2 ${className ?? ''}`}
+			onClick={onClick}
+			className={`flex items-center justify-between p-2 ${className ?? ''}`}
 		>
-			{/* Render custom label node (or fallback to item.label) */}
-			<div className="flex-1 font-semibold">
-				{label ?? item.label ?? item.id}
-			</div>
-
+			{state === 'editing' && onResourceUpdate ? (
+				<div className="flex items-center gap-1 pl-7">
+					<Input
+						className="h-6 min-w-24"
+						style={{
+							width: `${item.label?.length}ch`,
+						}}
+						type="text"
+						defaultValue={sectionName}
+						onChange={(e) => {
+							setSectionName(e.target.value)
+						}}
+					/>
+					<Button
+						type="button"
+						variant="default"
+						className="h-5 px-2 disabled:cursor-wait"
+						onClick={async (e) => {
+							if (sectionName) {
+								setIsSaving(true)
+								await onResourceUpdate?.(item.id, { title: sectionName })
+								dispatch({
+									type: 'update-item',
+									itemId: item.id,
+									fields: { title: sectionName },
+								})
+								setIsSaving(false)
+							}
+						}}
+					>
+						{isSaving ? <Spinner className="h-3 w-3" /> : 'Save'}
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						className="h-6 px-1"
+						onClick={() => {
+							setState?.('idle')
+						}}
+					>
+						<X className="h-4 w-4" />
+					</Button>
+				</div>
+			) : (
+				<div className="flex-1 font-semibold">
+					{label ?? item.label ?? item.id}
+				</div>
+			)}
 			{/* Render any "actions" or additional row tools */}
 			{children ? (
 				<div className="flex items-center gap-2">{children}</div>

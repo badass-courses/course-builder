@@ -18,8 +18,8 @@ export default function SearchConfig() {
 			hitsPerPage={20}
 			filters={
 				excludedIds.length
-					? `(type:post || type:lesson || type:list || type:workshop || type:tutorial) && ${excludedIds.map((id) => `id:!=${id}`).join(' && ')}`
-					: '(type:post || type:lesson || type:list || type:workshop || type:tutorial)'
+					? `(type:post || type:lesson || type:section || type:list || type:workshop || type:tutorial) && ${excludedIds.map((id) => `id:!=${id}`).join(' && ')}`
+					: '(type:post || type:lesson || type:section || type:list || type:workshop || type:tutorial)'
 			}
 		/>
 	)

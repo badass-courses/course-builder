@@ -85,8 +85,17 @@ export interface ListEditorConfig {
 	 * @returns {Promise<void>}
 	 */
 	onResourceReorder?: (resourceId: string, newPosition: number) => Promise<void>
+	/**
+	 * Function to handle item updating
+	 * @param {string} itemId - ID of the item being updated
+	 * @param {Record<string, any>} fields - Fields to update
+	 * @returns {Promise<void>}
+	 */
+	onResourceUpdate?: (
+		itemId: string,
+		fields: Record<string, any>,
+	) => Promise<void>
 }
-
 /**
  * Default configuration for list editor.
  * Provides sensible defaults for a basic list editor setup.
@@ -124,6 +133,7 @@ export const ListEditorConfigSchema = z.object({
 	onResourceAdd: z.function().optional(),
 	onResourceRemove: z.function().optional(),
 	onResourceReorder: z.function().optional(),
+	onResourceUpdate: z.function().optional(),
 })
 
 /**
