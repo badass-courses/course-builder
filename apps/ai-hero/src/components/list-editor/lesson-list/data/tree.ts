@@ -115,6 +115,11 @@ export type TreeAction =
 			itemId: string
 			tier: 'standard' | 'premium' | 'vip'
 	  }
+	| {
+			type: 'update-item'
+			itemId: string
+			fields: Record<string, any>
+	  }
 
 export const tree = {
 	remove(data: TreeItem[], id: string): TreeItem[] {
@@ -248,20 +253,34 @@ export function treeStateReducer(
 
 const dataReducer = (data: TreeItem[], action: TreeAction) => {
 	if (action.type === 'update-tier') {
-		return data.map((item) => {
-			if (item.id !== action.itemId) return item
-			if (!item.itemData) return item
-			return {
-				...item,
-				itemData: {
-					...item.itemData,
-					metadata: {
-						...(item.itemData.metadata || {}),
-						tier: action.tier,
-					},
-				},
-			}
-		})
+		function updateTierRecursively(items: TreeItem[]): TreeItem[] {
+			return items.map((item) => {
+				if (item.id === action.itemId && action.type === 'update-tier') {
+					if (!item.itemData) return item
+					return {
+						...item,
+						itemData: {
+							...item.itemData,
+							metadata: {
+								...(item.itemData.metadata || {}),
+								tier: action.tier,
+							},
+						},
+					}
+				}
+
+				if (item.children.length > 0) {
+					return {
+						...item,
+						children: updateTierRecursively(item.children),
+					}
+				}
+
+				return item
+			})
+		}
+
+		return updateTierRecursively(data)
 	}
 
 	if (action.type === 'add-item') {
@@ -318,6 +337,41 @@ const dataReducer = (data: TreeItem[], action: TreeAction) => {
 		console.warn('TODO: action not implemented', instruction)
 
 		return data
+	}
+
+	if (action.type === 'update-item') {
+		function updateRecursively(items: TreeItem[]): TreeItem[] {
+			return items.map((item) => {
+				if (item.id === action.itemId && action.type === 'update-item') {
+					if (!item.itemData) return item
+					return {
+						...item,
+						label: action.fields.title,
+						itemData: {
+							...item.itemData,
+							resource: {
+								...item.itemData?.resource,
+								fields: {
+									...item.itemData?.resource?.fields,
+									...action.fields,
+								},
+							},
+						},
+					}
+				}
+
+				if (item.children.length > 0) {
+					return {
+						...item,
+						children: updateRecursively(item.children),
+					}
+				}
+
+				return item
+			})
+		}
+
+		return updateRecursively(data)
 	}
 
 	function toggle(item: TreeItem): TreeItem {

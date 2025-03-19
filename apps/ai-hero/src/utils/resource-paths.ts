@@ -68,6 +68,10 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 		edit: (slug) => `/lists/${slug}/edit`,
 		view: (slug) => `/${slug}`,
 	},
+	section: {
+		edit: (slug) => ``,
+		view: (slug) => ``,
+	},
 }
 
 /**

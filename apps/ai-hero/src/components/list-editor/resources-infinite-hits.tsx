@@ -51,7 +51,15 @@ export function ResourcesInfiniteHits({
 						metadata: {
 							tier: 'standard',
 						},
-						resource: resource as any,
+
+						resource: {
+							...resource,
+							fields: {
+								...(resource as any).fields,
+								visibility: resource.visibility,
+								state: resource.state,
+							},
+						} as any,
 					},
 				},
 			})

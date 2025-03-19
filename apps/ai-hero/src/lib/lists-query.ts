@@ -15,6 +15,8 @@ import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { ListSchema, type ListUpdate } from './lists'
+import { PostSchema } from './posts'
+import { updatePost } from './posts-query'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function createList(input: {
@@ -415,4 +417,61 @@ export async function deleteList(id: string) {
 	revalidatePath('/lists')
 
 	return true
+}
+
+export async function updateListItemFields(
+	itemId: string,
+	fields: Record<string, any>,
+) {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('update', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+	const item = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, itemId),
+	})
+
+	if (!item) throw new Error('item not found')
+
+	let result
+	switch (item.type) {
+		case 'post': {
+			const parsedPost = PostSchema.parse(item)
+			result = await updatePost(
+				{
+					id: item.id,
+					fields: { ...parsedPost.fields, ...fields },
+				},
+				'save',
+			)
+			break
+		}
+		case 'list': {
+			const parsedList = ListSchema.parse(item)
+			result = await updateList(
+				{
+					id: item.id,
+					fields: { ...parsedList.fields, ...fields },
+					resources: parsedList.resources,
+				},
+				'save',
+			)
+			break
+		}
+		default: {
+			result = await courseBuilderAdapter.updateContentResourceFields({
+				id: item.id,
+				fields: {
+					...item.fields,
+					...fields,
+					...(fields.title && item.fields?.title !== fields.title
+						? { slug: `${slugify(fields.title)}~${item.id.split('-')[1]}` }
+						: {}),
+				},
+			})
+			await upsertPostToTypeSense(result as any, 'save')
+		}
+	}
+
+	return result
 }
