@@ -17,6 +17,8 @@ import { NonRetriableError } from 'inngest'
 
 const EGGHEAD_ORGANIZATION_ID = '4a2f87c3-bd6e-4a50-ae1d-35b91c7f624d'
 
+const TEAM_SLACK_IDS = ['U025C46HVMX', 'U050Q7CM0', 'U030KRULU', 'UDLK3M6JW']
+
 export const instructorInviteCompleted = inngest.createFunction(
 	{
 		id: `instructor-invite-completed`,
@@ -25,7 +27,7 @@ export const instructorInviteCompleted = inngest.createFunction(
 	{
 		event: INSTRUCTOR_INVITE_COMPLETED_EVENT,
 	},
-	async ({ event, step }) => {
+	async ({ event, step, notificationProvider }) => {
 		const invite = await step.run('get instructor invite', async () => {
 			return await db.query.invites.findFirst({
 				where: eq(invites.id, event.data.inviteId),
@@ -143,6 +145,46 @@ export const instructorInviteCompleted = inngest.createFunction(
 						userId: id,
 					})
 					.where(eq(invites.id, event.data.inviteId))
+			},
+		)
+
+		const slackChannel = await step.run('Create slack channel', async () => {
+			const channelName =
+				`cc-${event.data.firstName.toLowerCase()}-${event.data.lastName.toLowerCase()}`
+					.replace(/[^a-z0-9-]/g, '-')
+					.replace(/-+/g, '-')
+					.replace(/^-|-$/g, '')
+
+			return await notificationProvider.createChannel({
+				name: channelName,
+				is_private: true,
+			})
+		})
+
+		const inviteToChannel = await step.run(
+			'Invite to slack channel',
+			async () => {
+				return await notificationProvider.inviteToChannel({
+					channel: slackChannel.channel.id,
+					users: TEAM_SLACK_IDS,
+					force: true,
+				})
+			},
+		)
+
+		const postEphemeral = await step.run(
+			'Post ephemeral message to slack channel',
+			async () => {
+				return await notificationProvider.postEphemeral({
+					channel: slackChannel.channel.id,
+					user: `${invite.invitedById}`,
+					text: `*A new instructor has completed the invite process.*`,
+					attachments: [
+						{
+							text: `Hey (${event.data.email}) :wave: welcome! We'll use this channel to talk about content you want to create. As a first step before starting on a course we like to publish a lesson to get you started. Do you have any ideas for a lesson-sized topic you'd like to cover?`,
+						},
+					],
+				})
 			},
 		)
 
