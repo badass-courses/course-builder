@@ -7,7 +7,7 @@ import {
 	type ResourceFormProps,
 } from '@/components/resource-form/with-resource-form'
 import { List, ListSchema, type ListUpdate } from '@/lib/lists'
-import { updateList } from '@/lib/lists-query'
+import { updateList, updateListItemFields } from '@/lib/lists-query'
 
 import { ListMetadataFormFields } from './list-metadata-form-fields'
 
@@ -118,13 +118,20 @@ export function EditListForm({ resource }: { resource: List }) {
 						</span>
 					</div>
 				),
-				showTierSelector: true,
+				showTierSelector: false,
+				onResourceUpdate: async (itemId, data) => {
+					await updateListItemFields(itemId, data)
+				},
 			},
 		},
-		createPostConfig: {
-			title: 'Create a Resource',
-			defaultResourceType: 'article',
-			availableResourceTypes: ['article'],
+		createResourceConfig: {
+			title: 'Add Content',
+			availableTypes: [
+				{ type: 'post', postTypes: ['article'] },
+				{ type: 'lesson' },
+				{ type: 'section' },
+			],
+			defaultType: { type: 'post', postType: 'article' },
 		},
 	})
 

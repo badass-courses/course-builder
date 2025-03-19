@@ -7,7 +7,7 @@ import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { useInstantSearch } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
@@ -99,10 +99,14 @@ export default function ListResourcesEdit({
 						throw new Error('resourceItem.resource is required')
 					}
 					const resources = resourceItem.resource.resources ?? []
+					// Check if the resource is a section type to properly handle expansion
+					const isSection = resourceItem.resource.type === 'section'
 					return {
 						id: resourceItem.resource.id,
 						label: resourceItem.resource.fields?.title,
 						type: resourceItem.resource.type,
+						// For section types, we want to make sure they're initially expanded
+						isOpen: isSection && resources.length > 0 ? true : false,
 						children: resources.map((resourceItem: any) => {
 							if (!resourceItem.resource) {
 								throw new Error('resourceItem.resource is required')
@@ -136,6 +140,7 @@ export default function ListResourcesEdit({
 				rootResource={list}
 				onRefresh={() => refresh()}
 				showTierSelector={config.selection.showTierSelector}
+				onResourceUpdate={config.onResourceUpdate}
 			/>
 		)
 	}
@@ -169,6 +174,9 @@ export default function ListResourcesEdit({
 				id: resource.id,
 				label: resource.fields?.title,
 				type: resource.type,
+				// Set isOpen to true if it's a section with children
+				isOpen:
+					resource.type === 'section' && (resource.resources || []).length > 0,
 				children: [],
 				tier: 'standard',
 				itemData: {
@@ -197,10 +205,10 @@ export default function ListResourcesEdit({
 					setUiState(uiState)
 				}}
 				initialUiState={{
-					[TYPESENSE_COLLECTION_NAME]: {
+					[TYPESENSE_COLLECTION_NAME as string]: {
 						query: '',
 						refinementList: {
-							type: ['post', 'lesson'],
+							type: ['post', 'lesson', 'section'],
 						},
 						configure: {},
 					},
@@ -209,40 +217,42 @@ export default function ListResourcesEdit({
 			>
 				{config.selection.searchConfig || <SearchConfig />}
 				<div className="border-b pr-2 text-sm font-medium">
-					<div className="mb-3 flex items-center justify-between px-5 pt-3">
+					<div className="flex items-center justify-between border-b py-3 pl-5 pr-2">
 						{config.title || <DynamicTitle />}
-						<Dialog
-							open={isSearchModalOpen}
-							onOpenChange={setIsSearchModalOpen}
-						>
-							<DialogTrigger asChild>
-								<Button variant="outline" className="gap-1">
-									<Plus className="text-primary w-4" /> Add Resources
-								</Button>
-							</DialogTrigger>
-							<DialogContent className="w-full max-w-3xl overflow-y-auto py-5 sm:max-h-[80vh]">
-								<DialogTitle className="sr-only">Add Resources</DialogTitle>
-								<ResourcesInfiniteHits
-									updateTreeState={updateState}
-									list={list}
-								/>
-								<DialogFooter>
-									<Button
-										variant="outline"
-										onClick={() => {
-											track('create_post_button_clicked', {
-												source: 'search_modal',
-												listId: list.id,
-											})
-											setIsSearchModalOpen(false)
-											setIsCreatePostModalOpen(true)
-										}}
-									>
-										Create a Resource
+						<div className="flex items-center gap-2">
+							<Button
+								className="gap-1"
+								variant="outline"
+								onClick={() => {
+									track('create_post_button_clicked', {
+										source: 'search_modal',
+										listId: list.id,
+									})
+									setIsSearchModalOpen(false)
+									setIsCreatePostModalOpen(true)
+								}}
+							>
+								<Plus className="text-primary w-4" />
+								Create New
+							</Button>
+							<Dialog
+								open={isSearchModalOpen}
+								onOpenChange={setIsSearchModalOpen}
+							>
+								<DialogTrigger asChild>
+									<Button variant="outline" className="gap-2">
+										<Search className="text-primary w-4" /> Add to list
 									</Button>
-								</DialogFooter>
-							</DialogContent>
-						</Dialog>
+								</DialogTrigger>
+								<DialogContent className="w-full max-w-3xl overflow-y-auto py-5 sm:max-h-[80vh]">
+									<DialogTitle className="sr-only">Add Resources</DialogTitle>
+									<ResourcesInfiniteHits
+										updateTreeState={updateState}
+										list={list}
+									/>
+								</DialogContent>
+							</Dialog>
+						</div>
 					</div>
 					<TreeWithSearch />
 					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">

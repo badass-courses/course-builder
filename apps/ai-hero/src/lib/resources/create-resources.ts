@@ -10,6 +10,8 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { upsertPostToTypeSense } from '../typesense-query'
+
 const NewResourceSchema = z.object({
 	type: z.string(),
 	title: z.string().min(2).max(90),
@@ -67,5 +69,7 @@ export async function createResource(input: NewResource) {
 		console.error('Error parsing resource', resource)
 		throw new Error('Error parsing resource')
 	}
+
+	await upsertPostToTypeSense(parsedResource.data, 'save')
 	return parsedResource.data
 }

@@ -17,7 +17,7 @@ import { getPostTags } from './posts-query'
 import { TypesenseResourceSchema } from './typesense'
 
 export async function upsertPostToTypeSense(
-	post: Post | List,
+	post: ContentResource,
 	action: PostAction,
 ) {
 	try {
@@ -80,18 +80,18 @@ export async function upsertPostToTypeSense(
 		console.log('🔄 Validating resource schema')
 		const resource = TypesenseResourceSchema.safeParse({
 			id: post.id,
-			title: post.fields.title,
-			slug: post.fields.slug,
-			description: post.fields.body,
-			summary: post.fields.description,
+			title: post.fields?.title,
+			slug: post.fields?.slug,
+			description: post.fields?.body || '',
+			summary: post.fields?.description || '',
 			type:
-				'postType' in post.fields
+				post?.fields && 'postType' in post.fields
 					? post.fields.postType
-					: 'type' in post.fields
+					: post?.fields && 'type' in post.fields
 						? post.fields.type
 						: post.type,
-			visibility: post.fields.visibility,
-			state: post.fields.state,
+			visibility: post.fields?.visibility,
+			state: post.fields?.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
 			...(tags.length > 0 && { tags: tags.map((tag) => tag) }),
 		})

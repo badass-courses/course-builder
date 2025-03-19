@@ -99,6 +99,7 @@ export function CreatePostModal({
 		setIsProcessing(true)
 		if (onResourceCreated) {
 			await onResourceCreated(resource)
+			setIsProcessing(false)
 		}
 	}
 

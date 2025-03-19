@@ -351,6 +351,8 @@ export function NewResourceWithVideoForm({
 									'A collection of lessons that will be distributed as a course',
 								workshop: 'A comprehensive hands-on learning experience',
 								tutorial: 'A step-by-step guide to completing a specific task',
+								section:
+									'A section can be used to organize resources in a workshop',
 							}
 
 							return (

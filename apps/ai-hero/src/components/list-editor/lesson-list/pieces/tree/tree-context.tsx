@@ -26,8 +26,11 @@ export type TreeContextValue = {
 	 * Optional refresh mechanism, e.g. for search re-fetches.
 	 */
 	onRefresh?: () => void
+	onResourceUpdate?: (
+		itemId: string,
+		fields: Record<string, any>,
+	) => Promise<void>
 }
-
 export const TreeContext = createContext<TreeContextValue>({
 	dispatch: () => {},
 	uniqueContextId: Symbol('default'),
@@ -37,6 +40,7 @@ export const TreeContext = createContext<TreeContextValue>({
 	rootResourceId: null,
 	rootResource: null,
 	registerTreeItem: () => {},
+	onResourceUpdate: () => Promise.resolve(),
 })
 
 export type DependencyContext = {
