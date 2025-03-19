@@ -3,9 +3,11 @@
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { useResource } from '@/components/resource-form/resource-context'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
+import { getResourcePath } from '@/utils/resource-paths'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -58,12 +60,21 @@ export function CreatePost({
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
+	const { resource: parentResource } = useResource()
 
 	return (
 		<NewResourceWithVideoForm
 			className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
 			onResourceCreated={async (resource: ContentResource) => {
-				const editUrl = `/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`
+				const editUrl = getResourcePath(
+					resource.type,
+					resource.fields?.slug || resource.id,
+					'edit',
+					{
+						parentType: parentResource.type,
+						parentSlug: parentResource.fields?.slug || parentResource.id,
+					},
+				)
 
 				// Start navigation transition
 				startTransition(() => {
