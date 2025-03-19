@@ -443,6 +443,7 @@ export async function updateListItemFields(
 				},
 				'save',
 			)
+			break
 		case 'list':
 			const parsedList = ListSchema.parse(item)
 			result = await updateList(
@@ -453,6 +454,7 @@ export async function updateListItemFields(
 				},
 				'save',
 			)
+			break
 		default:
 			result = await courseBuilderAdapter.updateContentResourceFields({
 				id: item.id,

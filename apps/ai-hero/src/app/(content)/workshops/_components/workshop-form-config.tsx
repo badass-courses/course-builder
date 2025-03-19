@@ -192,9 +192,6 @@ export function createWorkshopFormConfig(
 				onResourceUpdate: async (itemId, data) => {
 					await updateListItemFields(itemId, data)
 				},
-				onResourceAdd: async (resource) => {
-					// await createResource(resource)
-				},
 			},
 		},
 		...customConfig,

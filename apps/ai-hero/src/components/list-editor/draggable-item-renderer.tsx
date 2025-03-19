@@ -73,7 +73,7 @@ export const DraggableItemRenderer = forwardRef<
 	},
 	ref,
 ) {
-	const [sectionName, setSectionName] = useState(item.label)
+	const [itemLabel, setItemLabel] = useState(item.label)
 	const { dispatch } = useContext(TreeContext)
 	const [isSaving, setIsSaving] = useState(false)
 	return (
@@ -90,9 +90,9 @@ export const DraggableItemRenderer = forwardRef<
 							width: `${item.label?.length}ch`,
 						}}
 						type="text"
-						defaultValue={sectionName}
+						defaultValue={itemLabel}
 						onChange={(e) => {
-							setSectionName(e.target.value)
+							setItemLabel(e.target.value)
 						}}
 					/>
 					<Button
@@ -100,14 +100,21 @@ export const DraggableItemRenderer = forwardRef<
 						variant="default"
 						className="h-5 px-2 disabled:cursor-wait"
 						onClick={async (e) => {
-							if (sectionName) {
+							if (!itemLabel) return
+
+							try {
 								setIsSaving(true)
-								await onResourceUpdate?.(item.id, { title: sectionName })
+								await onResourceUpdate?.(item.id, { title: itemLabel })
 								dispatch({
 									type: 'update-item',
 									itemId: item.id,
-									fields: { title: sectionName },
+									fields: { title: itemLabel },
 								})
+								setState?.('idle')
+							} catch (error) {
+								console.error('Failed to update section name:', error)
+								// Could add toast notification here
+							} finally {
 								setIsSaving(false)
 							}
 						}}
