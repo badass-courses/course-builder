@@ -435,27 +435,31 @@ export async function updateListItemFields(
 	let result
 	switch (item.type) {
 		case 'post':
-			const parsedPost = PostSchema.parse(item)
-			result = await updatePost(
-				{
-					id: item.id,
-					fields: { ...parsedPost.fields, ...fields },
-				},
-				'save',
-			)
+			{
+				const parsedPost = PostSchema.parse(item)
+				result = await updatePost(
+					{
+						id: item.id,
+						fields: { ...parsedPost.fields, ...fields },
+					},
+					'save',
+				)
+			}
 			break
 		case 'list':
-			const parsedList = ListSchema.parse(item)
-			result = await updateList(
-				{
-					id: item.id,
-					fields: { ...parsedList.fields, ...fields },
-					resources: parsedList.resources,
-				},
-				'save',
-			)
+			{
+				const parsedList = ListSchema.parse(item)
+				result = await updateList(
+					{
+						id: item.id,
+						fields: { ...parsedList.fields, ...fields },
+						resources: parsedList.resources,
+					},
+					'save',
+				)
+			}
 			break
-		default:
+		default: {
 			result = await courseBuilderAdapter.updateContentResourceFields({
 				id: item.id,
 				fields: {
@@ -467,6 +471,7 @@ export async function updateListItemFields(
 				},
 			})
 			await upsertPostToTypeSense(result as any, 'save')
+		}
 	}
 
 	return result
