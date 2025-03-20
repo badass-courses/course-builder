@@ -1,40 +1,19 @@
-import { cn } from '@/utils/cn'
-
 import '@/styles/globals.css'
 
-import { Providers } from './providers'
+import * as React from 'react'
+import { Inter } from 'next/font/google'
+import { Providers } from '@/app/providers'
+import Navigation from '@/components/navigation'
 
-const PUBLIC_TITLE = 'Epic Web'
+const inter = Inter({
+	subsets: ['latin'],
+	variable: '--font-sans',
+})
 
 export const metadata = {
-	title: {
-		default: PUBLIC_TITLE,
-		template: `%s | ${PUBLIC_TITLE}`,
-	},
-	description: 'The Epic Web Platform by Kent C. Dodds',
-	openGraph: {
-		title: PUBLIC_TITLE,
-		description: 'The Epic Web Platform by Kent C. Dodds',
-		url: process.env.NEXT_PUBLIC_URL,
-		siteName: PUBLIC_TITLE,
-		locale: 'en_US',
-		type: 'website',
-	},
-	robots: {
-		index: true,
-		follow: true,
-		googleBot: {
-			index: true,
-			follow: true,
-			'max-video-preview': -1,
-			'max-image-preview': 'large',
-			'max-snippet': -1,
-		},
-	},
-	twitter: {
-		title: PUBLIC_TITLE,
-		card: 'summary_large_image',
-	},
+	title: 'Epic Web Builder',
+	description: 'Build Epic Web content',
+	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 
 export default function RootLayout({
@@ -43,9 +22,16 @@ export default function RootLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<html lang="en" suppressHydrationWarning>
-			<body className={cn('bg-background min-h-screen antialiased')}>
-				<Providers>{children}</Providers>
+		<html lang="en" suppressHydrationWarning={true}>
+			<body className={`font-sans ${inter.variable}`}>
+				<Providers>
+					<div className="flex min-h-screen w-full flex-col">
+						<Navigation />
+						<main className="flex min-h-[calc(100vh-3.5rem)] flex-col">
+							{children}
+						</main>
+					</div>
+				</Providers>
 			</body>
 		</html>
 	)
