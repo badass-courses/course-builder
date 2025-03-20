@@ -2,6 +2,7 @@
 	"name": "epic-web",
 	"version": "0.1.0",
 	"private": true,
+	"description": "Epic Web Builder for creating and managing Epic Web content",
 	"type": "module",
 	"scripts": {
 		"dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
