@@ -112,6 +112,15 @@ export const authOptions: NextAuthConfig = {
 					}),
 				]
 			: []),
+		...(env.GITHUB_ID && env.GITHUB_SECRET && !env.GITHUB_CLIENT_ID
+			? [
+					GithubProvider({
+						clientId: env.GITHUB_ID,
+						clientSecret: env.GITHUB_SECRET,
+						allowDangerousEmailAccountLinking: true,
+					}),
+				]
+			: []),
 	],
 	pages: {
 		signIn: '/login',
