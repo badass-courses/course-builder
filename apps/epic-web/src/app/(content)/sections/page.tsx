@@ -27,14 +27,12 @@ export default function SectionsPage() {
 	// This would be replaced with a real query to fetch content resources
 	// For now, using a placeholder query
 	const { data: contentResources } =
-		api.contentResources.getAllContent.useQuery(undefined, {
-			enabled: status === 'authenticated',
-			onSuccess: (data) => {
-				if (data?.length && !selectedContentId) {
-					setSelectedContentId(data[0].id)
-				}
-			},
-		})
+		api.contentResources.getAllContent.useQuery(undefined)
+
+	// Set first content resource as selected when data loads
+	if (contentResources?.length && !selectedContentId) {
+		setSelectedContentId(contentResources[0].id)
+	}
 
 	if (status === 'loading') {
 		return (

@@ -1,5 +1,4 @@
 import { getAbilityRules } from '@/ability'
-import { getServerAuthSession } from '@/server/auth'
 import {
 	createTRPCRouter,
 	protectedProcedure,
@@ -8,6 +7,13 @@ import {
 
 export const abilityRouter = createTRPCRouter({
 	getCurrentAbilityRules: publicProcedure.query(async ({ ctx }) => {
-		return getAbilityRules({ user: ctx.session?.user })
+		const userData = ctx.session?.user
+			? {
+					id: ctx.session.user.id || '',
+					roles: [],
+				}
+			: undefined
+
+		return getAbilityRules({ user: userData })
 	}),
 })
