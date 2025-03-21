@@ -72,6 +72,31 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 		edit: (slug) => ``,
 		view: (slug) => ``,
 	},
+	solution: {
+		view: (slug, context) => {
+			if (context?.parentType === 'workshop') {
+				const parentSlug = context.parentSlug || context.getParentSlug?.()
+				if (!parentSlug) {
+					console.warn('No parent slug found for workshop lesson')
+					return `/${slug}`
+				}
+				return `/workshops/${parentSlug}/${slug}/solution`
+			}
+
+			return `/${slug}`
+		},
+		edit: (slug, context) => {
+			if (context?.parentType === 'workshop') {
+				const parentSlug = context.parentSlug || context.getParentSlug?.()
+				if (!parentSlug) {
+					console.warn('No parent slug found for workshop lesson')
+					return `/posts/${slug}/edit`
+				}
+				return `/workshops/${parentSlug}/${slug}/solution/edit`
+			}
+			return `/posts/${slug}/edit`
+		},
+	},
 }
 
 /**

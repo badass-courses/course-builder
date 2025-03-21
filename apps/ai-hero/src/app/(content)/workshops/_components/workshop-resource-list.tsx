@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { createAppAbility, type AppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
@@ -87,7 +87,7 @@ export function WorkshopResourceList(props: Props) {
 
 	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
 		workshopNavigation
-
+	const params = useParams()
 	return (
 		<nav
 			className={cn('relative w-full max-w-sm flex-shrink-0', className, {
@@ -149,26 +149,37 @@ export function WorkshopResourceList(props: Props) {
 					>
 						<ol className="">
 							{resources.map((resource: NavigationResource, i: number) => {
+								const isActiveGroup =
+									(resource.type === 'section' || resource.type === 'lesson') &&
+									resource.resources.some((item) => params.lesson === item.slug)
+
 								return resource.type === 'section' ? (
 									// sections
 									<li key={`${resource.id}-accordion`}>
 										<AccordionItem value={resource.id} className="border-0">
-											<AccordionTrigger className="hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight">
+											<AccordionTrigger
+												className={cn(
+													'hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight',
+													{
+														'bg-muted': isActiveGroup,
+													},
+												)}
+											>
 												<h3 className="pr-2">{resource.title}</h3>
 											</AccordionTrigger>
-											{resource.lessons.length > 0 && (
+											{resource.resources.length > 0 && (
 												// section lessons
 												<AccordionContent>
 													<ol className="divide-border bg-background divide-y border-b">
-														{resource.lessons.map((lesson, index: number) => {
+														{resource.resources.map((item, index: number) => {
 															return (
 																<LessonResource
-																	lesson={lesson}
+																	lesson={item}
 																	index={index}
 																	moduleProgress={moduleProgress}
 																	ability={ability}
 																	abilityStatus={abilityStatus}
-																	key={lesson.id}
+																	key={item.id}
 																/>
 															)
 														})}
@@ -180,7 +191,7 @@ export function WorkshopResourceList(props: Props) {
 								) : (
 									// top-level lessons
 									<LessonResource
-										className="border-b"
+										className={cn('border-b')}
 										lesson={resource}
 										index={i}
 										moduleProgress={moduleProgress}
@@ -239,78 +250,133 @@ const LessonResource = ({
 	className?: string
 }) => {
 	const params = useParams()
+	const pathname = usePathname()
+	const isOnSolution = pathname.includes('/solution')
+	const solution =
+		lesson.type === 'lesson' &&
+		lesson.resources?.find((resource) => resource.type === 'solution')
+	const isActiveSolution =
+		lesson.slug === params.lesson && pathname.includes('/solution')
 
-	const isActive = lesson.slug === params.lesson
+	const isActiveLesson = lesson.slug === params.lesson && !isOnSolution
+	const isActiveGroup =
+		(isActiveLesson &&
+			lesson.type === 'lesson' &&
+			lesson?.resources?.length > 0) ||
+		isActiveSolution
 
 	const isCompleted = moduleProgress?.completedLessons?.some(
 		(progress) => progress.resourceId === lesson.id && progress.completedAt,
 	)
+	// if solution of a resource is active, or resource of a section is active
 
 	return (
 		<li
 			key={lesson.id}
-			className={cn('', className)}
-			data-active={isActive ? 'true' : 'false'}
+			className={cn(
+				'',
+				{
+					'bg-muted': isActiveGroup,
+				},
+				className,
+			)}
+			data-active={isActiveLesson ? 'true' : 'false'}
 		>
-			<div className="relative flex w-full items-center">
-				<Link
-					className={cn(
-						'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
-						{
-							'bg-muted text-primary border-gray-200': isActive,
-							'hover:text-primary': !isActive,
-						},
-					)}
-					href={`/workshops/${params.module}/${lesson.slug}`}
-					prefetch={true}
-				>
-					{isCompleted ? (
-						<div
-							aria-label="Completed"
-							className="flex w-6 flex-shrink-0 items-center justify-center pr-1"
-						>
-							<Check
-								aria-hidden="true"
-								className="text-primary relative h-4 w-4 translate-y-1"
-							/>
-						</div>
-					) : (
-						<span
-							className="relative w-6 flex-shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
-							aria-hidden="true"
-						>
-							{index + 1}
-						</span>
-					)}
-					<span className="w-full text-balance text-base">{lesson.title}</span>
-					{abilityStatus === 'success' && (
-						<>
-							{ability.can('read', 'Content') || index === 0 ? null : (
-								<Lock
-									className="absolute right-5 w-3 text-gray-500"
-									aria-label="locked"
-								/>
-							)}
-						</>
-					)}
-				</Link>
-				{abilityStatus === 'success' && (
-					<div className="absolute right-2 flex w-10 items-center justify-center">
-						{ability.can('create', 'Content') ? (
-							<Button
-								asChild
-								variant="outline"
-								size="icon"
-								className="scale-75"
+			<div>
+				<div className="relative flex w-full items-center">
+					<Link
+						className={cn(
+							'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+							{
+								'bg-muted text-primary border-gray-200':
+									isActiveLesson && !isActiveGroup,
+								'hover:text-primary': !isActiveLesson && !isActiveGroup,
+								'hover:bg-foreground/10': isActiveGroup,
+							},
+						)}
+						href={`/workshops/${params.module}/${lesson.slug}`}
+						prefetch={true}
+					>
+						{isCompleted ? (
+							<div
+								aria-label="Completed"
+								className="flex w-6 flex-shrink-0 items-center justify-center pr-1"
 							>
-								<Link href={`/workshops/${params.module}/${lesson.slug}/edit`}>
-									<Pen className="w-3" />
-								</Link>
-							</Button>
-						) : null}
-					</div>
-				)}
+								<Check
+									aria-hidden="true"
+									className="text-primary relative h-4 w-4 translate-y-1"
+								/>
+							</div>
+						) : (
+							<span
+								className="relative w-6 flex-shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
+								aria-hidden="true"
+							>
+								{index + 1}
+							</span>
+						)}
+						<span className="w-full text-balance text-base">
+							{lesson.title}
+						</span>
+						{abilityStatus === 'success' && (
+							<>
+								{ability.can('read', 'Content') || index === 0 ? null : (
+									<Lock
+										className="absolute right-5 w-3 text-gray-500"
+										aria-label="locked"
+									/>
+								)}
+							</>
+						)}
+					</Link>
+
+					{ability.can('create', 'Content') ? (
+						<Button asChild variant="outline" size="icon" className="scale-75">
+							<Link href={`/workshops/${params.module}/${lesson.slug}/edit`}>
+								<Pen className="w-3" />
+							</Link>
+						</Button>
+					) : null}
+				</div>
 			</div>
+			{solution && isActiveGroup && (
+				<ul>
+					<li data-active={isActiveLesson ? 'true' : 'false'}>
+						<Link
+							className={cn(
+								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								{
+									'pl-9': true,
+									'bg-foreground/10 text-primary border-gray-200':
+										isActiveLesson,
+									'hover:text-primary': !isActiveLesson,
+								},
+							)}
+							prefetch={true}
+							href={`/workshops/${params.module}/${lesson.slug}`}
+						>
+							Problem
+						</Link>
+					</li>
+					<li data-active={isActiveSolution ? 'true' : 'false'}>
+						<Link
+							className={cn(
+								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								{
+									'pl-9': true,
+									'bg-foreground/10 text-primary border-gray-200':
+										isActiveSolution,
+									'hover:text-primary': !isActiveSolution,
+								},
+							)}
+							prefetch={true}
+							href={`/workshops/${params.module}/${lesson.slug}/solution`}
+						>
+							Solution
+						</Link>
+					</li>
+				</ul>
+			)}
 		</li>
 	)
 }

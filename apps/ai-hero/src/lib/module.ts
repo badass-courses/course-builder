@@ -50,6 +50,7 @@ export const ModuleSchema = z.object({
 					'videoResource',
 					'linkResource',
 					'exercise',
+					'post',
 				]),
 				fields: z.object({
 					slug: z.string().optional().nullable(),
@@ -63,7 +64,13 @@ export const ModuleSchema = z.object({
 						resourceOfId: z.string(),
 						resource: z.object({
 							id: z.string(),
-							type: z.enum(['lesson', 'videoResource', 'exercise', 'solution']),
+							type: z.enum([
+								'lesson',
+								'videoResource',
+								'exercise',
+								'solution',
+								'post',
+							]),
 							fields: z.object({
 								slug: z.string().optional().nullable(),
 								title: z.string().min(2).max(90).optional().nullable(),

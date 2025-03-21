@@ -155,6 +155,7 @@ export async function getListForPost(postIdOrSlug: string) {
 			ON list.id = relation.resourceOfId
 		LEFT JOIN ${contentResource} AS resources
 			ON resources.id = relation.resourceId
+		WHERE JSON_EXTRACT(resources.fields, '$.state') = 'published'
 		ORDER BY relation.position ASC
 	`)
 
