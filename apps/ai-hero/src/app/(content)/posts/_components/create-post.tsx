@@ -71,7 +71,7 @@ export function CreatePost({
 					resource.type,
 					resource.fields?.slug || resource.id,
 					'edit',
-					{
+					parentResource && {
 						parentType: parentResource.type,
 						parentSlug: parentResource.fields?.slug || parentResource.id,
 					},
