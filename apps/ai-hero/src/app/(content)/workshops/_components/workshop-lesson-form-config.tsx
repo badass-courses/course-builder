@@ -1,9 +1,30 @@
+import React from 'react'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
-import { ResourceFormConfig } from '@/components/resource-form/with-resource-form'
+import {
+	ResourceFormConfig,
+	type BaseTool,
+} from '@/components/resource-form/with-resource-form'
 import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
 import { log } from '@/server/logger'
+import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
+
+import StandaloneVideoResourceUploaderAndViewer from '../../posts/_components/standalone-video-resource-uploader-and-viewer'
+import { WorkshopMediaTool } from './workshop-media-tool'
+
+const mediaUploadTool: BaseTool = {
+	id: 'media',
+	label: 'Media',
+	icon: () =>
+		React.createElement(ImagePlusIcon, {
+			strokeWidth: 1.5,
+			size: 24,
+			width: 18,
+			height: 18,
+		}),
+	toolComponent: React.createElement(WorkshopMediaTool),
+}
 
 /**
  * Configuration for the workshop lesson form
@@ -13,7 +34,6 @@ export const createWorkshopLessonFormConfig = (
 ): ResourceFormConfig<Lesson, typeof LessonSchema> => ({
 	resourceType: 'lesson',
 	schema: LessonSchema,
-
 	// Default values for the form
 	defaultValues: (lesson?: Partial<Lesson>): z.infer<typeof LessonSchema> => ({
 		type: lesson?.type || 'lesson',
@@ -37,7 +57,16 @@ export const createWorkshopLessonFormConfig = (
 			gitpod: lesson?.fields?.gitpod || '',
 		},
 	}),
-
+	customTools: [
+		mediaUploadTool,
+		{
+			id: 'videos',
+			icon: () => (
+				<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+		},
+	],
 	// Resource path generation
 	getResourcePath: (slug?: string) => `/workshops/${moduleSlug}/${slug}`,
 

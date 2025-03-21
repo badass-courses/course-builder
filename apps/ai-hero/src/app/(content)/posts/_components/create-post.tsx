@@ -60,7 +60,8 @@ export function CreatePost({
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
-	const { resource: parentResource } = useResource()
+	const resource = useResource()
+	const parentResource = resource?.resource
 
 	return (
 		<NewResourceWithVideoForm
