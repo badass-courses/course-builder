@@ -38,6 +38,7 @@ type Props = {
 }
 
 export function WorkshopResourceList(props: Props) {
+	const params = useParams()
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
 	const className = 'className' in props ? props.className : ''
@@ -87,7 +88,7 @@ export function WorkshopResourceList(props: Props) {
 
 	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
 		workshopNavigation
-	const params = useParams()
+
 	return (
 		<nav
 			className={cn('relative w-full max-w-sm flex-shrink-0', className, {
