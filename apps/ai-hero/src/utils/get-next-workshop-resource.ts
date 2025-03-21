@@ -1,4 +1,4 @@
-import { WorkshopNavigation } from '@/lib/workshops'
+import { WorkshopNavigation, type NavigationResource } from '@/lib/workshops'
 
 /**
  * Flattens all navigation resources, including nested solutions,
@@ -30,7 +30,10 @@ export function getNextWorkshopResource(
 	}> = []
 
 	// Helper function to process a resource and its solutions
-	const processResource = (resource: any, isInSection = false) => {
+	const processResource = (
+		resource: NavigationResource,
+		isInSection = false,
+	) => {
 		// Add the resource itself
 		flattenedNavResources.push({
 			id: resource.id,
@@ -45,7 +48,7 @@ export function getNextWorkshopResource(
 			'resources' in resource &&
 			resource.resources?.length > 0
 		) {
-			resource.resources.forEach((solution: any) => {
+			resource.resources.forEach((solution) => {
 				flattenedNavResources.push({
 					id: solution.id,
 					slug: resource.slug, // Use parent lesson's slug for solution
