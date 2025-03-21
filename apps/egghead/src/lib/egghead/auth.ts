@@ -77,3 +77,64 @@ export async function getEggheadUserProfile(userId: string) {
 
 	return parsedProfile.data
 }
+
+/**
+ * Gets a user from egghead API by email
+ * @param email - The user's email
+ * @returns The user's egghead profile
+ */
+export async function getEggheadUserByEmail(email: string) {
+	return await fetch(
+		`https://app.egghead.io/api/v1/users/${email}?by_email=true&support=true`,
+		{
+			headers: {
+				Authorization: `Bearer ${process.env.EGGHEAD_ADMIN_TOKEN}`,
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+		},
+	).then(async (res) => {
+		if (!res.ok) {
+			console.error('Full response:', {
+				status: res.status,
+				statusText: res.statusText,
+				headers: Object.fromEntries(res.headers.entries()),
+			})
+			throw new Error(
+				`Failed to get egghead user: ${res.status} ${res.statusText}`,
+			)
+		}
+		const data = await res.json()
+		console.log('egghead user data', data)
+		return data
+	})
+}
+
+/**
+ * Creates a new user in egghead API via /users/send_token
+ * @param email - The user's email
+ * @returns The created user's profile
+ */
+export async function createEggheadUser(email: string) {
+	return await fetch('https://app.egghead.io/api/v1/users/send_token', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
+		},
+		body: JSON.stringify({
+			email,
+		}),
+	}).then(async (res) => {
+		if (!res.ok) {
+			throw new Error(
+				`Failed to create egghead user: ${res.status} ${res.statusText}`,
+			)
+		}
+		const data = await res.json()
+		if (!data) {
+			throw new Error('No data returned from egghead API')
+		}
+		return data
+	})
+}
