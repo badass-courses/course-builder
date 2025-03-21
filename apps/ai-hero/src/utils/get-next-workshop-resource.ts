@@ -29,63 +29,44 @@ export function getNextWorkshopResource(
 		parentSlug?: string
 	}> = []
 
+	// Helper function to process a resource and its solutions
+	const processResource = (resource: any, isInSection = false) => {
+		// Add the resource itself
+		flattenedNavResources.push({
+			id: resource.id,
+			slug: resource.slug,
+			title: resource.title,
+			type: resource.type,
+		})
+
+		// Add solutions if this is a lesson with solutions
+		if (
+			resource.type === 'lesson' &&
+			'resources' in resource &&
+			resource.resources?.length > 0
+		) {
+			resource.resources.forEach((solution: any) => {
+				flattenedNavResources.push({
+					id: solution.id,
+					slug: resource.slug, // Use parent lesson's slug for solution
+					title: solution.title,
+					type: solution.type,
+					parentId: resource.id,
+					parentSlug: resource.slug,
+				})
+			})
+		}
+	}
+
 	// Process all resources and flatten them
 	navigation.resources.forEach((resource) => {
 		if (resource.type === 'section') {
 			// Process section's resources
 			resource.resources.forEach((sectionItem) => {
-				// Add the section item itself
-				flattenedNavResources.push({
-					id: sectionItem.id,
-					slug: sectionItem.slug,
-					title: sectionItem.title,
-					type: sectionItem.type,
-				})
-
-				// Add solutions if this is a lesson with solutions
-				if (
-					sectionItem.type === 'lesson' &&
-					'resources' in sectionItem &&
-					sectionItem.resources?.length > 0
-				) {
-					sectionItem.resources.forEach((solution) => {
-						flattenedNavResources.push({
-							id: solution.id,
-							slug: sectionItem.slug, // Use parent lesson's slug for solution
-							title: solution.title,
-							type: solution.type,
-							parentId: sectionItem.id,
-							parentSlug: sectionItem.slug,
-						})
-					})
-				}
+				processResource(sectionItem, true)
 			})
 		} else {
-			// Add the top-level resource
-			flattenedNavResources.push({
-				id: resource.id,
-				slug: resource.slug,
-				title: resource.title,
-				type: resource.type,
-			})
-
-			// Add solutions if this is a lesson with solutions
-			if (
-				resource.type === 'lesson' &&
-				'resources' in resource &&
-				resource.resources?.length > 0
-			) {
-				resource.resources.forEach((solution) => {
-					flattenedNavResources.push({
-						id: solution.id,
-						slug: resource.slug, // Use parent lesson's slug for solution
-						title: solution.title,
-						type: solution.type,
-						parentId: resource.id,
-						parentSlug: resource.slug,
-					})
-				})
-			}
+			processResource(resource)
 		}
 	})
 
