@@ -166,15 +166,13 @@ export const LessonMetadataFormFields: React.FC<{
 					</div>
 				) : (
 					<div className="mt-4">
-						<Button
-							onClick={() =>
-								router.push(
-									`/workshops/${module}/${lesson.fields.slug}/solution/edit`,
-								)
-							}
-						>
-							<PlusCircle className="mr-2 h-4 w-4" />
-							Add Solution
+						<Button asChild>
+							<Link
+								href={`/workshops/${module}/${lesson.fields.slug}/solution/edit`}
+							>
+								<PlusCircle className="mr-2 h-4 w-4" />
+								Add Solution
+							</Link>
 						</Button>
 					</div>
 				)}

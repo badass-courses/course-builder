@@ -12,6 +12,8 @@ import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
+import { getNextWorkshopResource } from '@/utils/get-next-workshop-resource'
+import { getResourcePath } from '@/utils/resource-paths'
 import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
@@ -29,6 +31,7 @@ import {
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { revalidateModuleLesson } from '../actions'
+import { useWorkshopNavigation } from '../workshops/_components/workshop-navigation-provider'
 import { useModuleProgress } from './module-progress-provider'
 
 export function AuthedVideoPlayer({
@@ -65,15 +68,19 @@ export function AuthedVideoPlayer({
 	const [currentResource, setCurrentResource] =
 		React.useState<ContentResource>(resource)
 
-	const { data: nextResource } = api.progress.getNextResource.useQuery(
-		{
-			lessonId: currentResource.id,
-			moduleSlug: moduleSlug,
-		},
-		{
-			enabled: Boolean(moduleSlug),
-		},
-	)
+	// const { data: nextResource } = api.progress.getNextResource.useQuery(
+	// 	{
+	// 		lessonId: currentResource.id,
+	// 		moduleSlug: moduleSlug,
+	// 	},
+	// 	{
+	// 		enabled: Boolean(moduleSlug),
+	// 	},
+	// )
+
+	const navigation = useWorkshopNavigation()
+
+	const nextResource = getNextWorkshopResource(navigation, currentResource.id)
 
 	const { data: nextLessonPlaybackId } =
 		api.lessons.getLessonMuxPlaybackId.useQuery(
@@ -128,7 +135,6 @@ export function AuthedVideoPlayer({
 					resource,
 					nextResource,
 					nextLessonPlaybackId,
-					isFullscreen,
 					playerRef,
 					currentResource,
 					dispatchVideoPlayerOverlay,
@@ -148,37 +154,6 @@ export function AuthedVideoPlayer({
 		},
 	} as MuxPlayerProps
 
-	const [isFullscreen, setIsFullscreen] = React.useState(false)
-
-	const handleFullscreenChange = React.useCallback(() => {
-		setIsFullscreen((fullscreen) => {
-			if (fullscreen && currentResource) {
-				setTimeout(() => {
-					console.log('navigate to', currentResource?.fields?.slug)
-					router.push(
-						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${currentResource?.fields?.slug}?t=${Math.floor(Number(playerRef?.current?.currentTime))}`,
-					)
-				}, 250)
-			}
-			return !fullscreen
-		})
-	}, [playerRef, nextResource, setIsFullscreen])
-
-	React.useEffect(() => {
-		const currentPlayer = playerRef?.current
-		if (currentPlayer) {
-			currentPlayer.addEventListener('fullscreenchange', handleFullscreenChange)
-		}
-
-		return () => {
-			if (currentPlayer) {
-				currentPlayer.removeEventListener(
-					'fullscreenchange',
-					handleFullscreenChange,
-				)
-			}
-		}
-	}, [playerRef, handleFullscreenChange])
 	return playbackId ? (
 		<MuxPlayer
 			metadata={{
@@ -196,7 +171,6 @@ export function AuthedVideoPlayer({
 
 async function handleOnVideoEnded({
 	resource,
-	isFullscreen,
 	playerRef,
 	dispatchVideoPlayerOverlay,
 	setCurrentResource,
@@ -214,10 +188,9 @@ async function handleOnVideoEnded({
 }: {
 	canView?: boolean
 	resource: ContentResource
-	isFullscreen: boolean
 	playerRef: React.RefObject<MuxPlayerRefAttributes | null>
 	dispatchVideoPlayerOverlay: React.Dispatch<VideoPlayerOverlayAction>
-	setCurrentResource: React.Dispatch<ContentResource>
+	setCurrentResource: React.Dispatch<any>
 	currentResource: ContentResource
 	handleSetLessonComplete: (
 		props: handleSetLessonCompleteProps,
@@ -225,7 +198,14 @@ async function handleOnVideoEnded({
 	bingeMode: boolean
 	moduleSlug?: string
 	moduleType?: 'tutorial' | 'workshop'
-	nextResource?: ContentResource | null
+	nextResource?: {
+		id: string
+		slug: string
+		title: string
+		type: string
+		parentId?: string
+		parentSlug?: string
+	} | null
 	nextLessonPlaybackId?: string | null
 	router: ReturnType<typeof useRouter>
 	moduleProgress: ModuleProgress | null
@@ -237,13 +217,11 @@ async function handleOnVideoEnded({
 		moduleSlug: moduleSlug,
 		moduleType: moduleType,
 		bingeMode,
-		isFullscreen,
 	})
 	if (resource?.type === 'exercise') {
 		router.push(`${resource?.fields?.slug}/exercise`)
 	} else {
 		if (
-			isFullscreen &&
 			bingeMode &&
 			nextLessonPlaybackId &&
 			nextResource &&
@@ -275,7 +253,10 @@ async function handleOnVideoEnded({
 			if (nextResource) {
 				setTimeout(() => {
 					router.push(
-						`${moduleType ? `/${pluralize(moduleType)}` : ''}/${moduleSlug}/${nextResource?.fields?.slug}`,
+						getResourcePath(nextResource.type, nextResource.slug, 'view', {
+							parentType: moduleType as string,
+							parentSlug: moduleSlug as string,
+						}),
 					)
 				}, 250)
 			} else {
@@ -285,8 +266,6 @@ async function handleOnVideoEnded({
 				})
 			}
 		} else {
-			if (isFullscreen) {
-			}
 			dispatchVideoPlayerOverlay({
 				type: 'COMPLETED',
 				playerRef,
