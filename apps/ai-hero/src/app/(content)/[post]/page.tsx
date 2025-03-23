@@ -297,10 +297,7 @@ export async function generateMetadata(
 		title: resource.fields.title,
 		description: resource.fields.description,
 		alternates: {
-			canonical:
-				searchParams && searchParams.list
-					? `/${resource.fields.slug}`
-					: undefined,
+			canonical: `/${resource.fields.slug}`,
 		},
 		openGraph: {
 			images: [
