@@ -1,7 +1,9 @@
+import { ThemeImage } from '@/components/cld-image'
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import MDXVideo from '@/components/content/mdx-video'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
+import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
@@ -35,6 +37,12 @@ export async function compileMDX(source: string) {
 			),
 			Video: ({ resourceId }: { resourceId: string }) => (
 				<MDXVideo resourceId={resourceId} />
+			),
+			ThemeImage: ({
+				urls,
+				...props
+			}: { urls: { dark: string; light: string } } & CldImageProps) => (
+				<ThemeImage urls={urls} {...props} />
 			),
 		},
 		options: {
