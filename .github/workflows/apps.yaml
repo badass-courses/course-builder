@@ -3,6 +3,7 @@ name: Apps E2E
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  SKIP_ENV_VALIDATION: true
 
 on:
   pull_request:
@@ -36,6 +37,10 @@ jobs:
 
       - name: Build Course Builder packages
         run: pnpm build --filter "@coursebuilder/*"
+        env:
+          SKIP_ENV_VALIDATION: true
 
       - name: Run build
         run: pnpm turbo --filter ./apps/${{ matrix.dir }} build
+        env:
+          SKIP_ENV_VALIDATION: true
