@@ -6,6 +6,7 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   FORCE_COLOR: true
+  SKIP_ENV_VALIDATION: true
 
 on:
   push:
@@ -31,6 +32,8 @@ jobs:
 
       - name: Build
         run: pnpm turbo build --filter "./packages/*"
+        env:
+          SKIP_ENV_VALIDATION: true
       - name: Test
         run: pnpm test
         env:
@@ -75,6 +78,8 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+        env:
+          SKIP_ENV_VALIDATION: true
 
   check-changeset:
     runs-on: ubuntu-latest
