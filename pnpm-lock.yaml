@@ -746,7 +746,7 @@ importers:
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -2394,7 +2394,7 @@ importers:
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -2683,7 +2683,7 @@ importers:
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.2.5)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -2700,11 +2700,11 @@ importers:
         specifier: ^6.5.0
         version: 6.7.0
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.2
-        version: 1.0.2(drizzle-orm@0.36.0)
+        specifier: 1.0.3
+        version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 1.0.2
-        version: 1.0.2(@babel/core@7.26.0)(@swc/core@1.10.9)(drizzle-orm@0.36.0)(eslint@8.57.1)(next@15.2.0-canary.19)(postcss@8.5.1)(react-dom@19.0.0)(react@19.0.0)(solid-js@1.9.4)(svelte@4.2.19)(typescript@5.4.5)(vue@3.5.13)(zod@3.24.1)
+        specifier: 1.0.3
+        version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
         version: link:../../packages/next
@@ -2945,7 +2945,7 @@ importers:
         version: 0.5.12(@ianvs/prettier-plugin-sort-imports@4.2.1)(prettier-plugin-astro@0.14.1)(prettier@3.4.2)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -3639,7 +3639,7 @@ importers:
         version: 3.1.0(tailwindcss@3.4.1)
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tailwindcss-fluid-typography:
         specifier: ^1.0.5
         version: 1.0.5(tailwindcss@3.4.1)
@@ -3757,10 +3757,10 @@ importers:
         version: 2.2.1
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(@swc/core@1.10.9)(postcss@8.5.1)(typescript@5.4.5)
+        version: 8.0.2(postcss@8.4.47)(typescript@5.4.5)
       type-fest:
         specifier: ^3.7.0
         version: 3.13.1
@@ -3985,7 +3985,7 @@ importers:
         version: 1.14.0
       tailwindcss:
         specifier: ^3.3.3
-        version: 3.4.1
+        version: 3.4.1(ts-node@10.9.2)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -6359,7 +6359,7 @@ packages:
       '@babel/helpers': 7.24.8
       '@babel/parser': 7.26.5
       '@babel/template': 7.25.9
-      '@babel/traverse': 7.26.5(supports-color@5.5.0)
+      '@babel/traverse': 7.26.5
       '@babel/types': 7.26.5
       convert-source-map: 2.0.0
       debug: 4.4.0(supports-color@5.5.0)
@@ -6382,7 +6382,7 @@ packages:
       '@babel/helpers': 7.26.0
       '@babel/parser': 7.26.5
       '@babel/template': 7.25.9
-      '@babel/traverse': 7.26.5(supports-color@5.5.0)
+      '@babel/traverse': 7.26.5
       '@babel/types': 7.26.5
       convert-source-map: 2.0.0
       debug: 4.4.0(supports-color@5.5.0)
@@ -6513,11 +6513,11 @@ packages:
       - supports-color
     dev: false
 
-  /@babel/helper-module-imports@7.25.9(supports-color@5.5.0):
+  /@babel/helper-module-imports@7.25.9:
     resolution: {integrity: sha512-tnUA4RsrmflIM6W6RFTLFSXITtl0wKjgpnLgXyowocVPrbYrLUXSBXDgTs8BlbmIzIdlBySRQjINYs2BAkiLtw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/traverse': 7.26.5(supports-color@5.5.0)
+      '@babel/traverse': 7.26.5
       '@babel/types': 7.26.5
     transitivePeerDependencies:
       - supports-color
@@ -6543,7 +6543,7 @@ packages:
     dependencies:
       '@babel/core': 7.24.9
       '@babel/helper-environment-visitor': 7.24.7
-      '@babel/helper-module-imports': 7.25.9(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.25.9
       '@babel/helper-simple-access': 7.24.7
       '@babel/helper-split-export-declaration': 7.24.7
       '@babel/helper-validator-identifier': 7.25.9
@@ -6558,9 +6558,9 @@ packages:
       '@babel/core': ^7.0.0
     dependencies:
       '@babel/core': 7.26.0
-      '@babel/helper-module-imports': 7.25.9(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
-      '@babel/traverse': 7.26.5(supports-color@5.5.0)
+      '@babel/traverse': 7.26.5
     transitivePeerDependencies:
       - supports-color
 
@@ -6578,7 +6578,7 @@ packages:
     resolution: {integrity: sha512-zBAIvbCMh5Ts+b86r/CjU+4XGYIs+R1j951gxI3KmmxBMhCg4oQMsv6ZXQ64XOm/cvzfU1FmoCyt6+owc5QMYg==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/traverse': 7.26.5(supports-color@5.5.0)
+      '@babel/traverse': 7.26.5
       '@babel/types': 7.26.5
     transitivePeerDependencies:
       - supports-color
@@ -6874,7 +6874,7 @@ packages:
     dependencies:
       '@babel/core': 7.26.0
       '@babel/helper-annotate-as-pure': 7.22.5
-      '@babel/helper-module-imports': 7.25.9(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.25.9
       '@babel/helper-plugin-utils': 7.24.0
       '@babel/plugin-syntax-jsx': 7.23.3(@babel/core@7.26.0)
       '@babel/types': 7.26.0
@@ -6969,7 +6969,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@babel/traverse@7.26.5(supports-color@5.5.0):
+  /@babel/traverse@7.26.5:
     resolution: {integrity: sha512-rkOSPOw+AXbgtwUga3U4u8RpoK9FEFWBNAlTpcnkLFjL5CT+oyHNuUUC/xx6XefEJ16r38r8Bc/lfp6rYuHeJQ==}
     engines: {node: '>=6.9.0'}
     dependencies:
@@ -7742,117 +7742,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@coursebuilder/adapter-drizzle@1.0.2(drizzle-orm@0.36.0):
-    resolution: {integrity: sha512-Ps8sSsGkXzoqSHjgJSsBWpI9MAHZgya9o0uOQ4ouvU69irmB520b32iUWq2DuXjhOrvOq5eoMCjCLbUJC0YLKA==}
-    peerDependencies:
-      drizzle-orm: 0.36.x
-    dependencies:
-      '@coursebuilder/nodash': 0.0.1
-      '@sindresorhus/slugify': 2.2.1
-      date-fns: 2.30.0
-      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
-      nanoid: 5.0.6
-      uuid: 9.0.1
-    dev: false
-
-  /@coursebuilder/core@1.0.2(@babel/core@7.26.0)(@swc/core@1.10.9)(drizzle-orm@0.36.0)(eslint@8.57.1)(next@15.2.0-canary.19)(postcss@8.5.1)(react-dom@19.0.0)(react@19.0.0)(solid-js@1.9.4)(svelte@4.2.19)(typescript@5.4.5)(vue@3.5.13)(zod@3.24.1):
-    resolution: {integrity: sha512-azcTuQ+AfgNjNgN9suBcG7Lb2bC4x2p1kO5xPN4D+9TCEE/uqfXC9mx77z9dt9UpGz270dVAC5ppdzu159KA8g==}
-    dependencies:
-      '@anthropic-ai/sdk': 0.17.2(encoding@0.1.13)
-      '@coursebuilder/email-templates': 1.0.4(@babel/core@7.26.0)(@swc/core@1.10.9)(eslint@8.57.1)(postcss@8.5.1)(react-dom@19.0.0)(typescript@5.4.5)
-      '@coursebuilder/nodash': 0.0.1
-      '@react-email/components': 0.0.27(react-dom@19.0.0)(react@19.0.0)
-      '@slack/web-api': 7.0.4
-      '@types/cookie': 0.6.0
-      '@types/uuid': 9.0.8
-      ai: 3.0.19(react@19.0.0)(solid-js@1.9.4)(svelte@4.2.19)(vue@3.5.13)(zod@3.24.1)
-      cookie: 0.6.0
-      date-fns: 2.30.0
-      drizzle-zod: 0.5.1(drizzle-orm@0.36.0)(zod@3.24.1)
-      inngest: 3.22.5(next@15.2.0-canary.19)(typescript@5.4.5)
-      liquidjs: 10.16.3
-      nodemailer: 6.9.11
-      openai-edge: 1.2.2
-      pluralize: 8.0.0
-      query-string: 9.0.0
-      srt-parser-2: 1.2.3
-      stripe: 16.9.0
-      unplugin-swc: 1.4.4(@swc/core@1.10.9)
-      uuid: 9.0.1
-      xstate: 5.13.0
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@microsoft/api-extractor'
-      - '@opentelemetry/api'
-      - '@sveltejs/kit'
-      - '@swc/core'
-      - '@swc/helpers'
-      - '@vercel/node'
-      - aws-lambda
-      - babel-plugin-macros
-      - bufferutil
-      - debug
-      - drizzle-orm
-      - encoding
-      - eslint
-      - express
-      - fastify
-      - h3
-      - hono
-      - koa
-      - next
-      - postcss
-      - react
-      - react-dom
-      - rollup
-      - sass
-      - solid-js
-      - supports-color
-      - svelte
-      - ts-node
-      - typescript
-      - uglify-js
-      - utf-8-validate
-      - vue
-      - webpack-cli
-      - zod
-    dev: false
-
-  /@coursebuilder/email-templates@1.0.4(@babel/core@7.26.0)(@swc/core@1.10.9)(eslint@8.57.1)(postcss@8.5.1)(react-dom@19.0.0)(typescript@5.4.5):
-    resolution: {integrity: sha512-71BzNNSch0DYjehh2OAOh/cOcuIVNE/eKvWAoCQ59ch5TGLmRxlHazQX50Pap+YcinP9uci3DFMAYl3upBmEAQ==}
-    dependencies:
-      '@react-email/components': 0.0.27(react-dom@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown': 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@types/react': /types-react@19.0.0-rc.1
-      date-fns: 2.30.0
-      date-fns-tz: 2.0.1(date-fns@2.30.0)
-      react: 19.0.0-rc-02c0e824-20241028
-      react-email: 2.1.1(@babel/core@7.26.0)(eslint@8.57.1)
-      tsup: 8.0.2(@swc/core@1.10.9)(postcss@8.5.1)(typescript@5.4.5)
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@microsoft/api-extractor'
-      - '@opentelemetry/api'
-      - '@swc/core'
-      - '@swc/helpers'
-      - babel-plugin-macros
-      - bufferutil
-      - eslint
-      - postcss
-      - react-dom
-      - sass
-      - supports-color
-      - ts-node
-      - typescript
-      - uglify-js
-      - utf-8-validate
-      - webpack-cli
-    dev: false
-
-  /@coursebuilder/nodash@0.0.1:
-    resolution: {integrity: sha512-8pkDD5rjw6XbVXC+MTqg+UPZr9pKiLAuU+Rr/TBKPiruIXkrF8cqGeIth9x3qS4yci2ciIfg+B0fZc2IQ7CY3w==}
-    dev: false
-
   /@cspotcode/source-map-support@0.8.1:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -7873,7 +7762,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /@drizzle-team/brocli@0.10.2:
@@ -7905,7 +7794,7 @@ packages:
   /@emotion/babel-plugin@11.11.0:
     resolution: {integrity: sha512-m4HEDZleaaCH+XgDDsPF15Ht6wTLsgDTeR3WYj9Q/k76JtWhrJjcP4+/XlG8LGT/Rol9qUfOIztXeA84ATpqPQ==}
     dependencies:
-      '@babel/helper-module-imports': 7.25.9(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.25.9
       '@babel/runtime': 7.26.0
       '@emotion/hash': 0.9.1
       '@emotion/memoize': 0.8.1
@@ -14369,14 +14258,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/body@0.0.10(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-dMJyL9aU25ieatdPtVjCyQ/WHZYHwNc+Hy/XpF8Cc18gu21cUynVEeYQzFSeigDRMeBQ3PGAyjVDPIob7YlGwA==}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/body@0.0.7(react@18.3.1):
     resolution: {integrity: sha512-vjJ5P1MUNWV0KNivaEWA6MGj/I3c764qQJMsKjCHlW6mkFJ4SXbm2OlQFtKAb++Bj8LDqBlnE6oW77bWcMc0NA==}
     peerDependencies:
@@ -14403,15 +14284,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/button@0.0.18(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-uNUnpeDzz1o9HAky47JSTsUN/Ih0A3Az165AAOgAy8XOVzQJPrltUBRzHkScSVJTwRqKLASkie1yZbtNGIcRdA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/code-block@0.0.3(react@18.3.1):
     resolution: {integrity: sha512-nxhl7WjjM2cOYtl0boBZfSObTrUCz2LbarcMyHkTVAsA9rbjbtWAQF7jmlefXJusk3Uol5l2c8hTh2lHLlHTRQ==}
     engines: {node: '>=18.0.0'}
@@ -14432,16 +14304,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/code-block@0.0.9(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-Zrhc71VYrSC1fVXJuaViKoB/dBjxLw6nbE53Bm/eUuZPdnnZ1+ZUIh8jfaRKC5MzMjgnLGQTweGXVnfIrhyxtQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      prismjs: 1.29.0
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/code-inline@0.0.1(react@18.3.1):
     resolution: {integrity: sha512-SeZKTB9Q4+TUafzeUm/8tGK3dFgywUHb1od/BrAiJCo/im65aT+oJfggJLjK2jCdSsus8odcK2kReeM3/FCNTQ==}
     engines: {node: '>=18.0.0'}
@@ -14460,15 +14322,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/code-inline@0.0.4(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-zj3oMQiiUCZbddSNt3k0zNfIBFK0ZNDIzzDyBaJKy6ZASTtWfB+1WFX0cpTX8q0gUiYK+A94rk5Qp68L6YXjXQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/column@0.0.12(react@19.0.0):
     resolution: {integrity: sha512-Rsl7iSdDaeHZO938xb+0wR5ud0Z3MVfdtPbNKJNojZi2hApwLAQXmDrnn/AcPDM5Lpl331ZljJS8vHTWxxkvKw==}
     engines: {node: '>=18.0.0'}
@@ -14476,15 +14329,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/column@0.0.12(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-Rsl7iSdDaeHZO938xb+0wR5ud0Z3MVfdtPbNKJNojZi2hApwLAQXmDrnn/AcPDM5Lpl331ZljJS8vHTWxxkvKw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/column@0.0.9(react@18.3.1):
@@ -14558,37 +14402,6 @@ packages:
       - react-dom
     dev: false
 
-  /@react-email/components@0.0.27(react-dom@19.0.0)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-4oIEL2m6HrL9GMClgj9EHg2o6ffFvoIB5YMaK+lk+AuICvNHh3TwveYi1xLYH1PZZB7fV83Vml8MWjbnOdrl8w==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      '@react-email/body': 0.0.10(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/button': 0.0.18(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/code-block': 0.0.9(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/code-inline': 0.0.4(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/column': 0.0.12(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/container': 0.0.14(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/font': 0.0.8(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/head': 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/heading': 0.0.14(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/hr': 0.0.10(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/html': 0.0.10(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/img': 0.0.10(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/link': 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/markdown': 0.0.12(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/preview': 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/render': 1.0.2(react-dom@19.0.0)(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/row': 0.0.11(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/section': 0.0.15(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/tailwind': 1.0.1(react@19.0.0-rc-02c0e824-20241028)
-      '@react-email/text': 0.0.10(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
-    transitivePeerDependencies:
-      - react-dom
-    dev: false
-
   /@react-email/container@0.0.11(react@18.3.1):
     resolution: {integrity: sha512-jzl/EHs0ClXIRFamfH+NR/cqv4GsJJscqRhdYtnWYuRAsWpKBM1muycrrPqIVhWvWi6sFHInWTt07jX+bDc3SQ==}
     engines: {node: '>=18.0.0'}
@@ -14607,15 +14420,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/container@0.0.14(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-NgoaJJd9tTtsrveL86Ocr/AYLkGyN3prdXKd/zm5fQpfDhy/NXezyT3iF6VlwAOEUIu64ErHpAJd+P6ygR+vjg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/font@0.0.5(react@18.3.1):
     resolution: {integrity: sha512-if/qKYmH3rJ2egQJoKbV8SfKCPavu+ikUq/naT/UkCr8Q0lkk309tRA0x7fXG/WeIrmcipjMzFRGTm2TxTecDw==}
     peerDependencies:
@@ -14632,14 +14436,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/font@0.0.8(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-fSBEqYyVPAyyACBBHcs3wEYzNknpHMuwcSAAKE8fOoDfGqURr/vSxKPdh4tOa9z7G4hlcEfgGrCYEa2iPT22cw==}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/head@0.0.11(react@19.0.0):
     resolution: {integrity: sha512-skw5FUgyamIMK+LN+fZQ5WIKQYf0dPiRAvsUAUR2eYoZp9oRsfkIpFHr0GWPkKAYjFEj+uJjaxQ/0VzQH7svVg==}
     engines: {node: '>=18.0.0'}
@@ -14647,15 +14443,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/head@0.0.11(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-skw5FUgyamIMK+LN+fZQ5WIKQYf0dPiRAvsUAUR2eYoZp9oRsfkIpFHr0GWPkKAYjFEj+uJjaxQ/0VzQH7svVg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/head@0.0.7(react@18.3.1):
@@ -14688,15 +14475,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/heading@0.0.14(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-jZM7IVuZOXa0G110ES8OkxajPTypIKlzlO1K1RIe1auk76ukQRiCg1IRV4HZlWk1GGUbec5hNxsvZa2kU8cb9w==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/hr@0.0.10(react@19.0.0):
     resolution: {integrity: sha512-3AA4Yjgl3zEid/KVx6uf6TuLJHVZvUc2cG9Wm9ZpWeAX4ODA+8g9HyuC0tfnjbRsVMhMcCGiECuWWXINi+60vA==}
     engines: {node: '>=18.0.0'}
@@ -14704,15 +14482,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/hr@0.0.10(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-3AA4Yjgl3zEid/KVx6uf6TuLJHVZvUc2cG9Wm9ZpWeAX4ODA+8g9HyuC0tfnjbRsVMhMcCGiECuWWXINi+60vA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/hr@0.0.7(react@18.3.1):
@@ -14733,15 +14502,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/html@0.0.10(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-06uiuSKJBWQJfhCKv4MPupELei4Lepyz9Sth7Yq7Fq29CAeB1ejLgKkGqn1I+FZ72hQxPLdYF4iq4yloKv3JCg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/html@0.0.7(react@18.3.1):
     resolution: {integrity: sha512-oy7OoRtoOKApVI/5Lz1OZptMKmMYJu9Xn6+lOmdBQchAuSdQtWJqxhrSj/iI/mm8HZWo6MZEQ6SFpfOuf8/P6Q==}
     engines: {node: '>=18.0.0'}
@@ -14760,15 +14520,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/img@0.0.10(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-pJ8glJjDNaJ53qoM95pvX9SK05yh0bNQY/oyBKmxlBDdUII6ixuMc3SCwYXPMl+tgkQUyDgwEBpSTrLAnjL3hA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/img@0.0.7(react@18.3.1):
     resolution: {integrity: sha512-up9tM2/dJ24u/CFjcvioKbyGuPw1yeJg605QA7VkrygEhd0CoQEjjgumfugpJ+VJgIt4ZjT9xMVCK5QWTIWoaA==}
     engines: {node: '>=18.0.0'}
@@ -14785,15 +14536,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/link@0.0.11(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-o1/BgPn2Fi+bN4Nh+P64t4tulaOyPhkBNSpNmiYL1Ar+ilw8q0BmUAqM+lvHy8Qr/4K7BjkgFoc4GoYkoEjOig==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/link@0.0.7(react@18.3.1):
@@ -14815,16 +14557,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/markdown@0.0.11(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-KeDTS0bAvvtgavYAIAmxKpRxWUSr1/jufckDzu9g4QsQtth8wYaSR5wCPXuTPmhFgJMIlNSlOiBnVp+oRbDtKA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.2.0
-    dependencies:
-      md-to-react-email: 5.0.2(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/markdown@0.0.12(react@19.0.0):
     resolution: {integrity: sha512-wsuvj1XAb6O63aizCLNEeqVgKR3oFjAwt9vjfg2y2oh4G1dZeo8zonZM2x1fmkEkBZhzwSHraNi70jSXhA3A9w==}
     engines: {node: '>=18.0.0'}
@@ -14833,16 +14565,6 @@ packages:
     dependencies:
       md-to-react-email: 5.0.2(react@19.0.0)
       react: 19.0.0
-    dev: false
-
-  /@react-email/markdown@0.0.12(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-wsuvj1XAb6O63aizCLNEeqVgKR3oFjAwt9vjfg2y2oh4G1dZeo8zonZM2x1fmkEkBZhzwSHraNi70jSXhA3A9w==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      md-to-react-email: 5.0.2(react@19.0.0-rc-02c0e824-20241028)
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/markdown@0.0.9(react@18.3.1):
@@ -14862,15 +14584,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/preview@0.0.11(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-7O/CT4b16YlSGrj18htTPx3Vbhu2suCGv/cSe5c+fuSrIM/nMiBSZ3Js16Vj0XJbAmmmlVmYFZw9L20wXJ+LjQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/preview@0.0.8(react@18.3.1):
@@ -14906,20 +14619,6 @@ packages:
       react-promise-suspense: 0.3.4
     dev: false
 
-  /@react-email/render@1.0.2(react-dom@19.0.0)(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-q82eBd39TepzA/xjlm8szqJlrQk/gh7mgtxXMGlJ4dcdx89go1m9YBDpZY98SFy+2r2KAOd5A1mxvUbsPwoATg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      html-to-text: 9.0.5
-      js-beautify: 1.15.1
-      react: 19.0.0-rc-02c0e824-20241028
-      react-dom: 19.0.0(react@19.0.0)
-      react-promise-suspense: 0.3.4
-    dev: false
-
   /@react-email/row@0.0.11(react@19.0.0):
     resolution: {integrity: sha512-ra09h7BMoGa14ds3vh7KVuj1N3astTstEC1YbMdCiHcx/nxylglNaT7qJXU74ZTzyHiGabyiNuyabTS+HLoMCA==}
     engines: {node: '>=18.0.0'}
@@ -14927,15 +14626,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/row@0.0.11(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-ra09h7BMoGa14ds3vh7KVuj1N3astTstEC1YbMdCiHcx/nxylglNaT7qJXU74ZTzyHiGabyiNuyabTS+HLoMCA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/row@0.0.7(react@18.3.1):
@@ -14965,15 +14655,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/section@0.0.15(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-xfM3Qy5eU7fbkwvktlTeQgad7uo+1Z7YVh1aowSZaRBvKbkEXgoH/XssRYQmQL8ZrZGXbEJMujwtf4fsQL6vrg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/tailwind@0.0.15(react@18.3.1):
     resolution: {integrity: sha512-TE3NQ7VKhhvv3Zv0Z1NtoV6AF7aOWiG4juVezMZw1hZCG0mkN6iXC63u23vPQi12y6xCp20ZUHfg67kQeDSP/g==}
     engines: {node: '>=18.0.0'}
@@ -14992,15 +14673,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@react-email/tailwind@1.0.1(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-CPCIV1u8Voc6CMoYvd/wcgJek0uOsWNMNMUIJjJItb0+NflIeVg3gn49/zyrCqfturx7QIXTykkL82+5V7kKuA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /@react-email/text@0.0.10(react@19.0.0):
     resolution: {integrity: sha512-wNAnxeEAiFs6N+SxS0y6wTJWfewEzUETuyS2aZmT00xk50VijwyFRuhm4sYSjusMyshevomFwz5jNISCxRsGWw==}
     engines: {node: '>=18.0.0'}
@@ -15008,15 +14680,6 @@ packages:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0
-    dev: false
-
-  /@react-email/text@0.0.10(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-wNAnxeEAiFs6N+SxS0y6wTJWfewEzUETuyS2aZmT00xk50VijwyFRuhm4sYSjusMyshevomFwz5jNISCxRsGWw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^18.0 || ^19.0 || ^19.0.0-rc
-    dependencies:
-      react: 19.0.0-rc-02c0e824-20241028
     dev: false
 
   /@react-email/text@0.0.7(react@18.3.1):
@@ -17609,7 +17272,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: true
 
   /@tanstack/query-core@5.54.1:
@@ -22839,16 +22502,6 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /drizzle-zod@0.5.1(drizzle-orm@0.36.0)(zod@3.24.1):
-    resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
-    peerDependencies:
-      drizzle-orm: '>=0.23.13'
-      zod: '*'
-    dependencies:
-      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.8)(@types/react@19.0.7)(mysql2@3.9.2)(pg@8.12.0)(react@19.0.0)
-      zod: 3.24.1
-    dev: false
-
   /dset@3.1.4:
     resolution: {integrity: sha512-2QF/g9/zTaPDc3BjNcVTGoBbXBgYfMTTceLaYcFJ/W9kggFUkhxD/hMEeuLKbugyef9SqAx8cpgwlIP/jinUTA==}
     engines: {node: '>=4'}
@@ -27772,15 +27425,6 @@ packages:
       react: 19.0.0
     dev: false
 
-  /md-to-react-email@5.0.2(react@19.0.0-rc-02c0e824-20241028):
-    resolution: {integrity: sha512-x6kkpdzIzUhecda/yahltfEl53mH26QdWu4abUF9+S0Jgam8P//Ciro8cdhyMHnT5MQUJYrIbO6ORM2UxPiNNA==}
-    peerDependencies:
-      react: 18.x
-    dependencies:
-      marked: 7.0.4
-      react: 19.0.0-rc-02c0e824-20241028
-    dev: false
-
   /md5@2.3.0:
     resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
     dependencies:
@@ -30588,6 +30232,7 @@ packages:
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.8
+    dev: false
 
   /postcss-js@4.0.1(postcss@8.4.47):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
@@ -30606,6 +30251,7 @@ packages:
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.5.1
+    dev: false
 
   /postcss-load-config@4.0.2(postcss@8.4.35):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
@@ -30624,7 +30270,7 @@ packages:
       yaml: 2.4.1
     dev: false
 
-  /postcss-load-config@4.0.2(postcss@8.4.47):
+  /postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -30638,9 +30284,10 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.47
+      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       yaml: 2.4.1
 
-  /postcss-load-config@4.0.2(postcss@8.5.1)(ts-node@10.9.2):
+  /postcss-load-config@4.0.2(postcss@8.5.1):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -30654,8 +30301,8 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.5.1
-      ts-node: 10.9.2(@types/node@20.12.5)(typescript@5.4.5)
       yaml: 2.4.1
+    dev: false
 
   /postcss-nested@6.0.1(postcss@8.4.47):
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
@@ -30674,6 +30321,7 @@ packages:
     dependencies:
       postcss: 8.5.1
       postcss-selector-parser: 6.0.16
+    dev: false
 
   /postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -31929,11 +31577,6 @@ packages:
   /react@19.0.0:
     resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
     engines: {node: '>=0.10.0'}
-
-  /react@19.0.0-rc-02c0e824-20241028:
-    resolution: {integrity: sha512-GbZ7hpPHQMiEu53BqEaPQVM/4GG4hARo+mqEEnx4rYporDvNvUjutiAFxYFSbu6sgHwcr7LeFv8htEOwALVA2A==}
-    engines: {node: '>=0.10.0'}
-    dev: false
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -33920,7 +33563,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=1.2.0'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /tailwind-merge@1.14.0:
@@ -33939,14 +33582,14 @@ packages:
     peerDependencies:
       tailwindcss: 3.x
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
 
   /tailwindcss-animate@1.0.7(tailwindcss@3.4.1):
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /tailwindcss-fluid-typography@1.0.5(tailwindcss@3.4.1):
@@ -33954,7 +33597,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=2.0.0'
     dependencies:
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: true
 
   /tailwindcss-radix@2.9.0:
@@ -33983,7 +33626,7 @@ packages:
       postcss: 8.5.1
       postcss-import: 15.1.0(postcss@8.5.1)
       postcss-js: 4.0.1(postcss@8.5.1)
-      postcss-load-config: 4.0.2(postcss@8.5.1)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.5.1)
       postcss-nested: 6.0.1(postcss@8.5.1)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
@@ -33992,7 +33635,7 @@ packages:
       - ts-node
     dev: false
 
-  /tailwindcss@3.4.1:
+  /tailwindcss@3.4.1(ts-node@10.9.2):
     resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -34014,44 +33657,13 @@ packages:
       postcss: 8.4.47
       postcss-import: 15.1.0(postcss@8.4.47)
       postcss-js: 4.0.1(postcss@8.4.47)
-      postcss-load-config: 4.0.2(postcss@8.4.47)
+      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.47)
       postcss-selector-parser: 6.0.16
       resolve: 1.22.8
       sucrase: 3.35.0
     transitivePeerDependencies:
       - ts-node
-
-  /tailwindcss@3.4.1(ts-node@10.9.2):
-    resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.2
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.0
-      lilconfig: 2.1.0
-      micromatch: 4.0.5
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.1.1
-      postcss: 8.5.1
-      postcss-import: 15.1.0(postcss@8.5.1)
-      postcss-js: 4.0.1(postcss@8.5.1)
-      postcss-load-config: 4.0.2(postcss@8.5.1)(ts-node@10.9.2)
-      postcss-nested: 6.0.1(postcss@8.5.1)
-      postcss-selector-parser: 6.0.16
-      resolve: 1.22.8
-      sucrase: 3.35.0
-    transitivePeerDependencies:
-      - ts-node
-    dev: true
 
   /tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
@@ -34419,46 +34031,6 @@ packages:
   /tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  /tsup@8.0.2(@swc/core@1.10.9)(postcss@8.5.1)(typescript@5.4.5):
-    resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
-    engines: {node: '>=18'}
-    hasBin: true
-    peerDependencies:
-      '@microsoft/api-extractor': ^7.36.0
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.5.0'
-    peerDependenciesMeta:
-      '@microsoft/api-extractor':
-        optional: true
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      '@swc/core': 1.10.9
-      bundle-require: 4.0.2(esbuild@0.19.12)
-      cac: 6.7.14
-      chokidar: 3.6.0
-      debug: 4.4.0(supports-color@5.5.0)
-      esbuild: 0.19.12
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss: 8.5.1
-      postcss-load-config: 4.0.2(postcss@8.5.1)(ts-node@10.9.2)
-      resolve-from: 5.0.0
-      rollup: 4.24.4
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tree-kill: 1.2.2
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-
   /tsup@8.0.2(@swc/core@1.10.9)(typescript@5.4.5):
     resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
     engines: {node: '>=18'}
@@ -34487,7 +34059,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.5.1)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
       resolve-from: 5.0.0
       rollup: 4.24.4
       source-map: 0.8.0-beta.0
@@ -34538,6 +34110,46 @@ packages:
       - supports-color
       - ts-node
     dev: false
+
+  /tsup@8.0.2(postcss@8.4.47)(typescript@5.4.5):
+    resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+    peerDependencies:
+      '@microsoft/api-extractor': ^7.36.0
+      '@swc/core': ^1
+      postcss: ^8.4.12
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      '@microsoft/api-extractor':
+        optional: true
+      '@swc/core':
+        optional: true
+      postcss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 4.0.2(esbuild@0.19.12)
+      cac: 6.7.14
+      chokidar: 3.6.0
+      debug: 4.4.0(supports-color@5.5.0)
+      esbuild: 0.19.12
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      postcss: 8.4.47
+      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2)
+      resolve-from: 5.0.0
+      rollup: 4.24.4
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tree-kill: 1.2.2
+      typescript: 5.4.5
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+    dev: true
 
   /tsx@4.7.1:
     resolution: {integrity: sha512-8d6VuibXHtlN5E3zFkgY8u4DX7Y3Z27zvvPKVmLon/D4AjuKzarkUBTLDBgj9iTQ0hg5xM7c/mYiRVM+HETf0g==}
@@ -34739,12 +34351,6 @@ packages:
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
     dev: true
-
-  /types-react@19.0.0-rc.1:
-    resolution: {integrity: sha512-RshndUfqTW6K3STLPis8BtAYCGOkMbtvYsi90gmVNDZBXUyUc5juf2PE9LfS/JmOlUIRO8cWTS/1MTnmhjDqyQ==}
-    dependencies:
-      csstype: 3.1.3
-    dev: false
 
   /typescript@5.1.6:
     resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
@@ -35125,7 +34731,7 @@ packages:
       '@uploadthing/shared': 7.1.5
       effect: 3.11.5
       next: 15.2.0-canary.19(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
-      tailwindcss: 3.4.1
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
   /upper-case-first@2.0.2:
