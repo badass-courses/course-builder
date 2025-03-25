@@ -28,7 +28,10 @@ export function InfiniteHits() {
 
 	if (status === 'loading') {
 		return (
-			<div className="w-full border-x border-b border-t" aria-live="polite">
+			<div
+				className="h-[800px] w-full border-x border-b border-t"
+				aria-live="polite"
+			>
 				<div className="sr-only">Loading results...</div>
 				{Array.from({ length: 5 }).map((_, i) => (
 					<SkeletonItem key={i} />
@@ -39,10 +42,13 @@ export function InfiniteHits() {
 
 	return items.length === 0 && status !== 'idle' ? (
 		<div
-			className="text-muted-foreground flex w-full items-center justify-center border-x border-b p-5 py-8"
+			className="h-[800px] w-full border-x border-b border-t"
 			aria-live="polite"
 		>
-			<p>No results found</p>
+			<div className="sr-only">Loading results...</div>
+			{Array.from({ length: 5 }).map((_, i) => (
+				<SkeletonItem key={i} />
+			))}
 		</div>
 	) : (
 		<div>

@@ -82,7 +82,7 @@ export default async function PostPage(props: {
 				className={cn(
 					'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
 					{
-						'pt-16': !hasVideo,
+						'pt-6 sm:pt-14': !hasVideo,
 					},
 				)}
 			>
@@ -109,7 +109,7 @@ export default async function PostPage(props: {
 							href="/posts"
 							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
 						>
-							← Posts
+							← All Posts
 						</Link>
 					) : (
 						<div />
