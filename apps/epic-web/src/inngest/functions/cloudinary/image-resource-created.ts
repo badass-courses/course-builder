@@ -15,7 +15,7 @@ export const imageResourceCreated = inngest.createFunction(
 					requestId: event.data.resourceId,
 					name: 'image.resource.created',
 				},
-				roomId: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
+				roomId: env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME || '',
 			})
 		})
 
