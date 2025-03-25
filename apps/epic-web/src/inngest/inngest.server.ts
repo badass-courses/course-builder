@@ -27,28 +27,30 @@ export type Events = {
 }
 
 const callbackBase =
-	env.NODE_ENV === 'production' ? env.UPLOADTHING_URL : env.NEXT_PUBLIC_URL
+	env.NODE_ENV === 'production'
+		? env.UPLOADTHING_URL || ''
+		: env.NEXT_PUBLIC_URL || ''
 
 const middleware = createInngestMiddleware({
 	db: courseBuilderAdapter,
-	siteRootUrl: env.NEXT_PUBLIC_URL,
+	siteRootUrl: env.NEXT_PUBLIC_URL || '',
 	mediaUploadProvider: new UTApi(),
 	openaiProvider: OpenAIProvider({
-		apiKey: env.OPENAI_API_KEY,
-		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		apiKey: env.OPENAI_API_KEY || '',
+		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL || '',
 	}),
 	partyProvider: PartykitProvider({
-		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		partyUrlBase: env.NEXT_PUBLIC_PARTY_KIT_URL || '',
 	}),
 	transcriptProvider: DeepgramProvider({
-		apiKey: env.DEEPGRAM_API_KEY,
+		apiKey: env.DEEPGRAM_API_KEY || '',
 		callbackUrl: `${callbackBase}/api/coursebuilder/webhook/deepgram`,
 	}),
 	getAuthConfig: () => authOptions,
 })
 
 export const inngest = new Inngest({
-	id: env.INNGEST_APP_NAME,
+	id: env.INNGEST_APP_NAME || '',
 	middleware: [middleware],
 	schemas: new EventSchemas().fromRecord<Events & CourseBuilderCoreEvents>(),
 })
