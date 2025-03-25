@@ -18,8 +18,8 @@ const inter = Inter({
 })
 
 export const metadata = {
-	title: 'Epic React Builder',
-	description: 'build Epic React content',
+	title: 'Epic Web Builder',
+	description: 'build Epic Web content',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }
 
