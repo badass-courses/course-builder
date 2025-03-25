@@ -41,19 +41,58 @@ export const env = createEnv({
 			// VERCEL_URL doesn't include `https` so it cant be validated as a URL
 			process.env.VERCEL ? z.string() : z.string(),
 		),
-		OPENAI_API_KEY: z.string(),
-		INNGEST_EVENT_KEY: z.string(),
-		INNGEST_SIGNING_KEY: z.string(),
-		INNGEST_APP_NAME: z.string(),
-		MUX_SECRET_KEY: z.string(),
-		MUX_ACCESS_TOKEN_ID: z.string(),
-		OPENAI_MODEL_ID: z.string(),
-		UPSTASH_REDIS_REST_URL: z.string(),
-		UPSTASH_REDIS_REST_TOKEN: z.string(),
-		DEEPGRAM_API_KEY: z.string(),
-		UPLOADTHING_URL: z.string(),
-		POSTMARK_API_KEY: z.string(),
-		POSTMARK_WEBHOOK_SECRET: z.string(),
+		OPENAI_API_KEY:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		INNGEST_EVENT_KEY:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		INNGEST_SIGNING_KEY:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		INNGEST_APP_NAME:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		MUX_SECRET_KEY:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		MUX_ACCESS_TOKEN_ID:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		OPENAI_MODEL_ID:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		UPSTASH_REDIS_REST_URL:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		UPSTASH_REDIS_REST_TOKEN:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		DEEPGRAM_API_KEY:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		UPLOADTHING_URL:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		POSTMARK_API_KEY:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		POSTMARK_WEBHOOK_SECRET:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
 		GITHUB_CLIENT_ID: z.string().optional(),
 		GITHUB_CLIENT_SECRET: z.string().optional(),
 		TWITTER_CLIENT_ID: z.string().optional(),
@@ -69,15 +108,42 @@ export const env = createEnv({
 	 * `NEXT_PUBLIC_`.
 	 */
 	client: {
-		NEXT_PUBLIC_APP_NAME: z.string(),
-		NEXT_PUBLIC_PARTYKIT_ROOM_NAME: z.string(),
-		NEXT_PUBLIC_PARTY_KIT_URL: z.string(),
-		NEXT_PUBLIC_URL: z.string(),
-		NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string(),
-		NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string(),
-		NEXT_PUBLIC_SUPPORT_EMAIL: z.string(),
-		NEXT_PUBLIC_SUPPORT_PHYSICAL_ADDRESS: z.string(),
-		NEXT_PUBLIC_SITE_TITLE: z.string(),
+		NEXT_PUBLIC_APP_NAME:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_PARTYKIT_ROOM_NAME:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_PARTY_KIT_URL:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_URL:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_SUPPORT_EMAIL:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_SUPPORT_PHYSICAL_ADDRESS:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
+		NEXT_PUBLIC_SITE_TITLE:
+			process.env.NODE_ENV === 'production'
+				? z.string()
+				: z.string().optional(),
 	},
 
 	/**
