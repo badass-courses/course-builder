@@ -42,6 +42,7 @@ export const ThemeImage: React.FC<ThemeImageProps> = ({
 	if (!mounted || !url) {
 		return (
 			<Shimmer
+				className="mx-auto"
 				style={{
 					aspectRatio: `${width} / ${height}`,
 					maxWidth: width,
@@ -57,6 +58,7 @@ export const ThemeImage: React.FC<ThemeImageProps> = ({
 	return (
 		<CldImage_
 			{...props}
+			className={cn('mx-auto', props.className)}
 			width={width}
 			height={height}
 			src={url}
