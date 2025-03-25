@@ -4,8 +4,8 @@ import { Landing } from '@/components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
 
 export const metadata: Metadata = {
-	title: 'Epic React Builder',
-	description: 'Epic React Builder for creating content for Epic React',
+	title: 'Epic Web Builder',
+	description: 'Epic Web Builder for creating content for Epic Web',
 }
 
 export default async function PlaygroundPage() {
