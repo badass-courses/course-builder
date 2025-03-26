@@ -107,6 +107,7 @@ export const Share = ({
 			</a>
 			<button
 				type="button"
+				className="text-nowrap"
 				onClick={async () => {
 					await navigator.clipboard.writeText(url)
 					await handleShare('copy')

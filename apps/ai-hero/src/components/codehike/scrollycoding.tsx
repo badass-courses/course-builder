@@ -68,7 +68,7 @@ export default function Scrollycoding(props: any) {
 						},
 					)}
 				>
-					<div className="sticky top-10 w-full lg:sticky lg:top-16">
+					<div className="sticky top-10 w-full lg:sticky lg:top-20">
 						<Selection
 							from={steps.map((step: any) => (
 								<Code key={step.code} codeblock={step.code} />
@@ -99,7 +99,7 @@ async function Code({
 		<Pre
 			code={highlighted}
 			handlers={[tokenTransitions]}
-			className="bg-card mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
+			className="!bg-card mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
 			style={{
 				...highlighted.style,
 				padding: '1rem',

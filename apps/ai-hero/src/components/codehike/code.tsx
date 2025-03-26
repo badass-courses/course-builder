@@ -10,7 +10,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 	const highlighted = await highlight(codeblock, 'github-from-css')
 	const isTerminalCode = highlighted.lang === 'shellscript'
 	return (
-		<div data-pre="" className="group relative max-w-full">
+		<div data-pre="" className="group relative w-auto">
 			{isTerminalCode && (
 				<div
 					aria-hidden="true"
@@ -27,7 +27,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			<CopyButton text={highlighted.code} />
 			<Pre
 				code={highlighted}
-				className={cn('bg-card text-xs sm:text-sm', {
+				className={cn('!bg-card text-xs sm:text-sm', {
 					'!mt-0 !rounded-t-none rounded-b border-x border-b border-t-0':
 						isTerminalCode,
 				})}
