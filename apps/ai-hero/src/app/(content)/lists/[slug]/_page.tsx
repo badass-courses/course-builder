@@ -126,64 +126,8 @@ export default async function ListPage(props: {
 		true,
 	)
 
-	return (
-		<main className="flex min-h-screen w-full flex-col">
-			<header className="relative flex items-center justify-center md:px-8 lg:px-10">
-				<div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
-					<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
-						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
-							{list.fields.title}
-						</h1>
-						{list.fields.description && (
-							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
-								<p>{list.fields.description}</p>
-							</div>
-						)}
-						<div className="flex items-center gap-2">
-							<Contributor />
-						</div>
-					</div>
-
-					<div className="col-span-2">
-						{firstResource && list.fields?.image && (
-							<Link
-								className="group relative flex items-center justify-center"
-								href={firstResourceHref}
-							>
-								<Image
-									priority
-									alt={list.fields.title}
-									src={list.fields.image}
-									width={480}
-									height={270}
-									className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
-									sizes="(max-width: 768px) 100vw, 480px"
-								/>
-								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
-									<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
-									<span className="sr-only">Start Learning</span>
-								</div>
-							</Link>
-						)}
-					</div>
-					<Suspense fallback={null}>
-						<ListActionBar className="absolute right-0 top-5" list={list} />
-					</Suspense>
-				</div>
-
-				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
-					<img
-						src={squareGridPattern}
-						alt=""
-						aria-hidden="true"
-						className="hidden h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
-					/>
-					<div
-						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
-						aria-hidden="true"
-					/>
-				</div>
-			</header>
+	const Links = () => {
+		return (
 			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
 				<div
 					aria-hidden="true"
@@ -233,10 +177,69 @@ export default async function ListPage(props: {
 						</Dialog>
 					</div>
 				</div>
-				<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
-					Content
-				</div>
+				<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex"></div>
 			</div>
+		)
+	}
+
+	return (
+		<main className="flex min-h-screen w-full flex-col">
+			<header className="relative flex items-center justify-center md:px-8 lg:px-10">
+				<div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
+					<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
+						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+							{list.fields.title}
+						</h1>
+						{list.fields.description && (
+							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
+								<p>{list.fields.description}</p>
+							</div>
+						)}
+						<div className="flex items-center gap-2">
+							<Contributor />
+						</div>
+					</div>
+					<div className="col-span-2">
+						{firstResource && list.fields?.image && (
+							<Link
+								className="group relative flex items-center justify-center"
+								href={firstResourceHref}
+							>
+								<Image
+									priority
+									alt={list.fields.title}
+									src={list.fields.image}
+									width={480}
+									height={270}
+									className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
+									sizes="(max-width: 768px) 100vw, 480px"
+								/>
+								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
+									<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
+									<span className="sr-only">Start Learning</span>
+								</div>
+							</Link>
+						)}
+					</div>
+					<Suspense fallback={null}>
+						<ListActionBar className="absolute right-0 top-5" list={list} />
+					</Suspense>
+				</div>
+
+				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
+					<img
+						src={squareGridPattern}
+						alt=""
+						aria-hidden="true"
+						className="hidden h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
+					/>
+					<div
+						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						aria-hidden="true"
+					/>
+				</div>
+			</header>
+			<Links />
 			<div className="">
 				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid ">
 					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
@@ -245,6 +248,7 @@ export default async function ListPage(props: {
 					<ListResources list={list} />
 				</div>
 			</div>
+			<Links />
 		</main>
 	)
 }
