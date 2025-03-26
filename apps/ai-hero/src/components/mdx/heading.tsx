@@ -43,13 +43,7 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 	const Component = motion[`h${level}`]
 
 	return (
-		<Component
-			ref={ref}
-			id={slug}
-			// initial={{ opacity: 0.3 }}
-			// animate={{ opacity: isInView ? 1 : 0.3 }}
-			className="scroll-mt-32"
-		>
+		<Component ref={ref} id={slug} className="scroll-mt-32">
 			<Link href={`#${slug}`} className="!text-inherit no-underline">
 				{children}
 			</Link>

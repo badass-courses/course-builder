@@ -46,7 +46,7 @@ export const extractMarkdownHeadings = (
 		const heading: MarkdownHeading = { level, text, slug, items: [] }
 
 		// @ts-expect-error
-		while (level <= stack[stack.length - 1]?.level) {
+		while (stack.length > 0 && level <= stack[stack.length - 1].level) {
 			stack.pop()
 		}
 

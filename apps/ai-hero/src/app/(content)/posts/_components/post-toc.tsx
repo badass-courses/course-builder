@@ -102,7 +102,6 @@ export default function PostToC({ markdown }: { markdown: string }) {
 												{item.text}
 											</Link>
 										</div>
-										{/* {JSON.stringify(item.items)} */}
 										{item.items.length > 0 && (
 											<ol className="">
 												{item.items.map((item) => {
