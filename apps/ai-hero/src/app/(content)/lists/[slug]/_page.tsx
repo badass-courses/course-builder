@@ -126,7 +126,7 @@ export default async function ListPage(props: {
 		true,
 	)
 
-	const Links = () => {
+	const Links = ({ children }: { children?: React.ReactNode }) => {
 		return (
 			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
 				<div
@@ -177,7 +177,7 @@ export default async function ListPage(props: {
 						</Dialog>
 					</div>
 				</div>
-				<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex"></div>
+				{children}
 			</div>
 		)
 	}
@@ -239,7 +239,11 @@ export default async function ListPage(props: {
 					/>
 				</div>
 			</header>
-			<Links />
+			<Links>
+				<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
+					Content
+				</div>
+			</Links>
 			<div className="">
 				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid ">
 					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
