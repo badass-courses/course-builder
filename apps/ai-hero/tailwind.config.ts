@@ -109,7 +109,7 @@ module.exports = {
 						'tr, thead': {
 							borderColor: theme('colors.border'),
 						},
-						p: { fontWeight: 300 },
+						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
 							color: theme('colors.foreground'),

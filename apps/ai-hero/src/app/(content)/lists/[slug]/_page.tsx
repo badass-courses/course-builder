@@ -135,7 +135,7 @@ export default async function ListPage(props: {
 							{list.fields.title}
 						</h1>
 						{list.fields.description && (
-							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg">
+							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
 								<p>{list.fields.description}</p>
 							</div>
 						)}
@@ -156,7 +156,7 @@ export default async function ListPage(props: {
 									src={list.fields.image}
 									width={480}
 									height={270}
-									className="brightness-90 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded"
+									className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
 									sizes="(max-width: 768px) 100vw, 480px"
 								/>
 								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
