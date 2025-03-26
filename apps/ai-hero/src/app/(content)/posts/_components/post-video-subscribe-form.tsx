@@ -95,7 +95,7 @@ export const PostNewsletterCta: React.FC<
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="[&_input]:border-0"
+						className="[&_input]:border-0 [&_input]:text-base"
 					/>
 				</div>
 			</div>

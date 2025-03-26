@@ -117,22 +117,28 @@ export default async function PostPage(props: {
 				</div>
 				<div className="relative z-10">
 					<article className="flex h-full flex-col gap-5">
-						<PostTitle post={post} />
-						<div className="relative flex w-full items-center justify-between gap-3">
-							<div className="flex items-center gap-8">
-								<Contributor className="flex [&_img]:w-8" />
-								{post.fields?.github && (
-									<Button asChild variant="outline" className="h-11 text-base">
-										<Link href={post.fields?.github} target="_blank">
-											<Github className="text-muted-foreground mr-2 h-4 w-4" />
-											Source Code
-										</Link>
-									</Button>
-								)}
+						<div className="flex flex-col gap-5">
+							<PostTitle post={post} />
+							<div className="relative flex w-full items-center justify-between gap-3">
+								<div className="flex items-center gap-8">
+									<Contributor className="flex [&_img]:w-8" />
+									{post.fields?.github && (
+										<Button
+											asChild
+											variant="outline"
+											className="h-11 text-base"
+										>
+											<Link href={post.fields?.github} target="_blank">
+												<Github className="text-muted-foreground mr-2 h-4 w-4" />
+												Source Code
+											</Link>
+										</Button>
+									)}
+								</div>
+								<Suspense fallback={null}>
+									<PostActionBar post={post} />
+								</Suspense>
 							</div>
-							<Suspense fallback={null}>
-								<PostActionBar post={post} />
-							</Suspense>
 						</div>
 						<PostBody post={post} />
 						{/* {listSlugFromParam && (
@@ -208,7 +214,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="fluid-3xl mb-4 font-bold">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
@@ -243,7 +249,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="mb-10 flex flex-col items-center justify-center border-b bg-black"
+					className="mb-6 flex flex-col items-center justify-center border-b bg-black sm:mb-10"
 				>
 					<PostPlayer
 						title={post.fields?.title}

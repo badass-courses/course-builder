@@ -10,13 +10,13 @@ export default function ListResources({ list }: { list: List }) {
 	const { progress } = useProgress()
 
 	return (
-		<aside className="col-span-2">
+		<aside className="md:bg-muted col-span-2 border-l dark:md:bg-transparent">
 			{list.resources.length > 0 && (
 				<>
-					<h3 className="fluid-lg mb-3 font-sans font-semibold tracking-tight">
+					<div className="block border-y px-5 py-4 text-lg font-semibold sm:hidden">
 						Content
-					</h3>
-					<ol className="divide-border flex flex-col divide-y rounded border">
+					</div>
+					<ol className="dark:divide-border flex flex-col divide-y divide-gray-200 sm:border-b">
 						{list.resources.map(({ resource }, i) => {
 							const isComplete = progress?.completedLessons.find(
 								({ resourceId }) => resourceId === resource.id,
@@ -24,14 +24,15 @@ export default function ListResources({ list }: { list: List }) {
 							return (
 								<li key={resource.id}>
 									<Link
-										className="hover:bg-muted flex items-center gap-3 px-2 py-2 font-medium transition sm:py-3"
+										className="dark:hover:bg-muted hover:text-primary text-foreground/90 hover:bg-background flex min-h-14 items-center gap-3 px-2 py-2 pr-3 font-medium transition sm:py-2 sm:pr-4"
 										href={`/${resource.fields.slug}?list=${list.fields.slug}`}
 									>
-										<small className="min-w-[2ch] text-right font-mono text-xs font-normal opacity-60">
-											{i + 1}
-										</small>
-										{isComplete && (
+										{isComplete ? (
 											<Check className="text-muted-foreground w-4 flex-shrink-0" />
+										) : (
+											<small className="min-w-[2ch] text-right font-mono text-[9px] font-normal opacity-60">
+												{i + 1}
+											</small>
 										)}
 										{resource.fields.title}
 									</Link>
