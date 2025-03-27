@@ -1,11 +1,9 @@
 'use client'
 
-import { usePathname, useSearchParams } from 'next/navigation'
-import { useTheme } from 'next-themes'
+import { useQueryState } from 'nuqs'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { CldImage } from './cld-image'
 import Navigation from './navigation'
 import Footer from './navigation/footer'
 
@@ -21,8 +19,7 @@ export default function LayoutClient({
 	withContainer?: boolean
 	className?: string
 }) {
-	const searchParams = useSearchParams()
-	const listSlug = searchParams.get('list')
+	const [listSlug] = useQueryState('list')
 
 	const showContainer = listSlug ? false : true
 

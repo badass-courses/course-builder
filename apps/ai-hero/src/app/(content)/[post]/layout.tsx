@@ -30,21 +30,18 @@ export default async function Layout(props: {
 	)
 
 	return (
-		// Wrapping in suspense because we use useSearchParams in LayoutClient
-		<Suspense>
-			<ListProvider initialList={list}>
-				<ProgressProvider initialProgress={initialProgress}>
-					<ActiveHeadingProvider>
-						<LayoutClient>
-							<div className="flex flex-1">
-								<ListResourceNavigation />
-								<MobileListResourceNavigation />
-								{props.children}
-							</div>
-						</LayoutClient>
-					</ActiveHeadingProvider>
-				</ProgressProvider>
-			</ListProvider>
-		</Suspense>
+		<ListProvider initialList={list}>
+			<ProgressProvider initialProgress={initialProgress}>
+				<ActiveHeadingProvider>
+					<LayoutClient>
+						<div className="flex flex-1">
+							<ListResourceNavigation />
+							<MobileListResourceNavigation />
+							{props.children}
+						</div>
+					</LayoutClient>
+				</ActiveHeadingProvider>
+			</ProgressProvider>
+		</ListProvider>
 	)
 }
