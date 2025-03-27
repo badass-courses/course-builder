@@ -4,6 +4,7 @@ import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import MDXVideo from '@/components/content/mdx-video'
 import { Heading } from '@/components/mdx/heading'
+import { TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
@@ -53,16 +54,7 @@ export async function compileMDX(source: string) {
 			h4: ({ children }) => <Heading level={4}>{children}</Heading>,
 			h5: ({ children }) => <Heading level={5}>{children}</Heading>,
 			h6: ({ children }) => <Heading level={6}>{children}</Heading>,
-			Link: ({ children, track = () => {}, ...props }) => (
-				<Link
-					onClick={() => {
-						track()
-					}}
-					{...props}
-				>
-					{children}
-				</Link>
-			),
+			Link: TrackLink,
 			Button: ({ children, ...props }) => (
 				<Button {...props}>{children}</Button>
 			),

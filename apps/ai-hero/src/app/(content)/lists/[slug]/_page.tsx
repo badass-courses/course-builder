@@ -17,12 +17,12 @@ import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
 import { track } from '@/utils/analytics'
+import { compileMDX } from '@/utils/compile-mdx'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { PlayIcon } from '@heroicons/react/24/solid'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import { ChevronRight, Github, Play, Share2 } from 'lucide-react'
-import { compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import {
@@ -86,32 +86,7 @@ export default async function ListPage(props: {
 	let body
 
 	if (list.fields.body) {
-		const { content } = await compileMDX({
-			source: list.fields.body,
-			// @ts-expect-error
-			components: { Code, Scrollycoding, Testimonial },
-			options: {
-				mdxOptions: {
-					remarkPlugins: [
-						remarkGfm,
-						[
-							remarkCodeHike,
-							{
-								components: { code: 'Code' },
-							},
-						],
-					],
-					recmaPlugins: [
-						[
-							recmaCodeHike,
-							{
-								components: { code: 'Code' },
-							},
-						],
-					],
-				},
-			},
-		})
+		const { content } = await compileMDX(list.fields.body)
 		body = content
 	}
 
