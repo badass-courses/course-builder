@@ -1,5 +1,7 @@
 'use client'
 
+import { useParams } from 'next/navigation'
+
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import Navigation from './navigation'
@@ -24,7 +26,7 @@ export default function LayoutClient({
 			className={cn(
 				'',
 				{
-					'relative mx-auto w-full max-w-[1030px] px-2 sm:px-4': showContainer,
+					'relative mx-auto w-full max-w-[1200px] px-2 sm:px-4': true,
 				},
 				className,
 			)}

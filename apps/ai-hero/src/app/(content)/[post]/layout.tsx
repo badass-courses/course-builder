@@ -1,12 +1,9 @@
-import { Suspense } from 'react'
 import LayoutClient from '@/components/layout-client'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import { getListForPost } from '@/lib/lists-query'
-import { getCachedPostOrList, getPost } from '@/lib/posts-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 
-import { cn } from '@coursebuilder/ui/utils/cn'
-
+import { getCachedPostOrList } from '../../../lib/posts-query'
 import { ListProvider } from './_components/list-provider'
 import ListResourceNavigation, {
 	MobileListResourceNavigation,
@@ -18,7 +15,11 @@ export default async function Layout(props: {
 	params: Promise<{ post: string }>
 }) {
 	const params = await props.params
-	const list = await getListForPost(params.post)
+	const post = await getCachedPostOrList(params.post)
+	let list = null
+	if (post && post.type === 'post') {
+		list = await getListForPost(params.post)
+	}
 	const initialProgress = await getModuleProgressForUser(
 		list ? list.id : params.post,
 	)
@@ -27,11 +28,11 @@ export default async function Layout(props: {
 		<ListProvider initialList={list}>
 			<ProgressProvider initialProgress={initialProgress}>
 				<ActiveHeadingProvider>
-					<LayoutClient withContainer={list ? false : true}>
+					<LayoutClient withContainer>
 						<div className="flex flex-1">
 							<ListResourceNavigation />
 							<MobileListResourceNavigation />
-							{props.children}
+							<div className="min-w-0">{props.children}</div>
 						</div>
 					</LayoutClient>
 				</ActiveHeadingProvider>

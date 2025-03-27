@@ -100,7 +100,7 @@ export default async function PostPage(props: {
 						aria-hidden="true"
 					/>
 				</div>
-				<div className="relative z-10 mx-auto flex w-full max-w-screen-xl items-center justify-between px-5 md:px-10 lg:px-16">
+				<div className="relative z-10 mx-auto flex w-full items-center justify-between px-5 md:px-10 lg:px-14">
 					{!listSlugFromParam ? (
 						<Link
 							href="/posts"
@@ -114,7 +114,7 @@ export default async function PostPage(props: {
 				</div>
 				<div className="relative z-10">
 					<article className="relative flex h-full flex-col">
-						<div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-5 md:px-10 lg:px-16">
+						<div className="mx-auto flex w-full flex-col gap-5 px-5 md:px-10 lg:px-14">
 							<PostTitle post={post} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-8">
@@ -204,7 +204,7 @@ async function PostBody({ post }: { post: Post | null }) {
 	const { content } = await compileMDX(post.fields.body)
 
 	return (
-		<div className="mx-auto w-full max-w-screen-xl px-5 md:px-10 lg:px-16">
+		<div className="px-5 md:px-10 lg:px-14">
 			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
 				{content}
 			</article>

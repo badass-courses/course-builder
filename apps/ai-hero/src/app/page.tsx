@@ -1,6 +1,5 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import {
 	ShinyText,
@@ -19,12 +18,9 @@ import { getPage } from '@/lib/pages-query'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
-import { AnimatePresence, motion, useAnimation, useInView } from 'framer-motion'
-import { ChevronRight } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Badge } from '@coursebuilder/ui'
 
 import {
 	AIPracticesGrid,

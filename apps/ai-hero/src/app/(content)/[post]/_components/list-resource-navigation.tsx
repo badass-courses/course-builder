@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
-import { Book, Check, ListChecks, MenuIcon } from 'lucide-react'
+import { AlignLeft, Book, Check, ListChecks, MenuIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import {
@@ -40,7 +40,7 @@ export default function ListResourceNavigation({
 		return (
 			<div
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] flex h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] flex-shrink-0 items-start justify-start overflow-y-auto border-r p-5',
+					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] flex h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] flex-shrink-0 items-start justify-start overflow-y-auto border-r p-5',
 					className,
 					{ 'w-0': !isExpanded },
 				)}
@@ -60,7 +60,7 @@ export default function ListResourceNavigation({
 		<>
 			<aside
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[400px] flex-shrink-0 overflow-y-auto border-r xl:block',
+					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] flex-shrink-0 overflow-y-auto border-r xl:block',
 					className,
 					{
 						'w-0': !isExpanded,
@@ -173,8 +173,7 @@ export function MobileListResourceNavigation() {
 
 	return (
 		<>
-			{/* {!isOpen && ( */}
-			<div className="bg-card fixed -left-2 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow xl:sr-only xl:hidden">
+			<div className="bg-card fixed left-1 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow xl:sr-only xl:hidden">
 				<Button
 					className="rounded"
 					onClick={() => {
@@ -183,13 +182,13 @@ export function MobileListResourceNavigation() {
 					variant="default"
 					size="icon"
 				>
-					<ListChecks className="w-5" />
+					<AlignLeft className="w-5" />
 				</Button>
 				<Link href={`/${list?.fields?.slug}`} className="text-base font-medium">
 					{list?.fields?.title}
 				</Link>
 			</div>
-			{/* )} */}
+
 			<Sheet onOpenChange={setIsOpen} open={isOpen}>
 				<SheetContent side="left" className="overflow-y-auto px-0">
 					{/* <SheetTitle className="px-5">{list?.fields?.title}</SheetTitle> */}
