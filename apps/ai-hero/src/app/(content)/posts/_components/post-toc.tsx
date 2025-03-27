@@ -11,6 +11,63 @@ import { useInteractOutside } from 'react-aria'
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+/**
+ * Recursive component to render a table of contents item and its children
+ */
+function TOCItem({
+	item,
+	activeHeading,
+	depth = 0,
+}: {
+	item: ReturnType<typeof extractMarkdownHeadings>[number]
+	activeHeading: { slug: string; text: string } | null
+	depth: number
+}) {
+	const isActive = activeHeading?.slug === item.slug
+
+	return (
+		<li className="relative flex flex-col">
+			<div className={cn('relative flex items-center', depth > 0 && 'pl-4')}>
+				{isActive && (
+					<motion.div
+						className="bg-primary absolute left-0 h-6 w-px"
+						layoutId="active-heading"
+						transition={{
+							type: 'spring',
+							stiffness: 500,
+							damping: 30,
+						}}
+					/>
+				)}
+				<Link
+					href={`#${item.slug}`}
+					className={cn(
+						'block py-2 pl-4 text-sm leading-4 transition-colors',
+						depth === 0
+							? 'text-foreground hover:text-primary font-medium'
+							: 'text-muted-foreground hover:text-primary pl-4',
+						isActive && 'text-primary',
+					)}
+				>
+					{item.text}
+				</Link>
+			</div>
+			{item.items.length > 0 && (
+				<ol className="">
+					{item.items.map((child) => (
+						<TOCItem
+							key={child.slug}
+							item={child}
+							activeHeading={activeHeading}
+							depth={depth + 1}
+						/>
+					))}
+				</ol>
+			)}
+		</li>
+	)
+}
+
 export default function PostToC({ markdown }: { markdown: string }) {
 	const data = extractMarkdownHeadings(markdown)
 	const { activeHeading } = useActiveHeadingContext()
@@ -33,7 +90,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	return (
 		<nav
 			ref={containerRef}
-			className="bg-background sticky top-[63px] z-50 mt-5 flex min-w-[200px] flex-col border-y "
+			className="bg-background sticky top-[63px] z-50 mt-5 flex min-w-[200px] flex-col border-y"
 			aria-label="On this page"
 		>
 			<div className="mx-auto flex w-full max-w-screen-xl items-center px-5 md:px-10 lg:px-16">
@@ -71,73 +128,16 @@ export default function PostToC({ markdown }: { markdown: string }) {
 				</button>
 				{isOpen && (
 					<div className="bg-background absolute left-0 top-10 max-h-[50vh] w-full overflow-y-auto border-y pb-5">
-						{/* Background line that spans the entire height */}
 						<ol className="relative mx-auto w-full max-w-screen-xl px-5 md:px-10 lg:px-16">
 							<div className="bg-border absolute left-5 h-full w-px md:left-10 lg:left-16" />
-							{data.map((item, index) => {
-								const isActive = activeHeading?.slug === item.slug
-								return (
-									<li key={item.slug} className="relative flex flex-col">
-										<div className="relative flex items-center pl-4">
-											{isActive && (
-												<motion.div
-													className="bg-primary absolute left-0 h-6 w-px"
-													layoutId="active-heading"
-													transition={{
-														type: 'spring',
-														stiffness: 500,
-														damping: 30,
-													}}
-												/>
-											)}
-											<Link
-												href={`#${item.slug}`}
-												className={cn(
-													'hover:text-primary text-foreground block py-2 text-sm font-medium leading-4 transition-colors',
-													{
-														'text-primary': isActive,
-													},
-												)}
-											>
-												{item.text}
-											</Link>
-										</div>
-										{item.items.length > 0 && (
-											<ol className="">
-												{item.items.map((item) => {
-													const isActive = activeHeading?.slug === item.slug
-													return (
-														<li key={item.slug} className="pl-4">
-															{isActive && (
-																<motion.div
-																	className="bg-primary absolute left-0 h-6 w-px"
-																	layoutId="active-heading"
-																	transition={{
-																		type: 'spring',
-																		stiffness: 500,
-																		damping: 30,
-																	}}
-																/>
-															)}
-															<Link
-																href={`#${item.slug}`}
-																className={cn(
-																	'hover:text-primary text-muted-foreground block py-2 pl-4 text-sm leading-4 transition-colors',
-																	{
-																		'text-primary': isActive,
-																	},
-																)}
-															>
-																{item.text}
-															</Link>
-														</li>
-													)
-												})}
-											</ol>
-										)}
-									</li>
-								)
-							})}
+							{data.map((item) => (
+								<TOCItem
+									key={item.slug}
+									item={item}
+									activeHeading={activeHeading}
+									depth={0}
+								/>
+							))}
 						</ol>
 					</div>
 				)}
