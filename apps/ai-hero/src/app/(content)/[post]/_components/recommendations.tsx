@@ -36,7 +36,7 @@ export default function Recommendations({
 	return (
 		<nav
 			className={cn(
-				'bg-card mt-8 flex w-full flex-col items-center border-y px-5 py-16 text-center',
+				'bg-card flex w-full flex-col items-center border-y px-5 py-16 text-center',
 				className,
 			)}
 			aria-label="Recommendations"
