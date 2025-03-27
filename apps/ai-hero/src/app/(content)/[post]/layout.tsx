@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import LayoutClient from '@/components/layout-client'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import { getListForPost } from '@/lib/lists-query'
@@ -29,21 +30,21 @@ export default async function Layout(props: {
 	)
 
 	return (
-		<ListProvider initialList={list}>
-			<ProgressProvider initialProgress={initialProgress}>
-				<ActiveHeadingProvider>
-					<LayoutClient
-						className={cn('', {})}
-						// withContainer={list ? false : true}
-					>
-						<div className="flex flex-1">
-							<ListResourceNavigation />
-							<MobileListResourceNavigation />
-							{props.children}
-						</div>
-					</LayoutClient>
-				</ActiveHeadingProvider>
-			</ProgressProvider>
-		</ListProvider>
+		// Wrapping in suspense because we use useSearchParams in LayoutClient
+		<Suspense>
+			<ListProvider initialList={list}>
+				<ProgressProvider initialProgress={initialProgress}>
+					<ActiveHeadingProvider>
+						<LayoutClient>
+							<div className="flex flex-1">
+								<ListResourceNavigation />
+								<MobileListResourceNavigation />
+								{props.children}
+							</div>
+						</LayoutClient>
+					</ActiveHeadingProvider>
+				</ProgressProvider>
+			</ListProvider>
+		</Suspense>
 	)
 }
