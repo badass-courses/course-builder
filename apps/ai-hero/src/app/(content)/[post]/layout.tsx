@@ -32,7 +32,7 @@ export default async function Layout(props: {
 						<div className="flex flex-1">
 							<ListResourceNavigation />
 							<MobileListResourceNavigation />
-							<div className="min-w-0">{props.children}</div>
+							<div className="w-full min-w-0">{props.children}</div>
 						</div>
 					</LayoutClient>
 				</ActiveHeadingProvider>

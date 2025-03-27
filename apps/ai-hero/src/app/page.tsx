@@ -96,7 +96,7 @@ const Home = async (props: Props) => {
 			?.map((match) => match.replace(/^## /, '')) || []
 
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="flex w-full flex-col justify-center">
 				{firstPageResource && (
 					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">

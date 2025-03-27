@@ -76,7 +76,7 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<main className="w-full">
+		<main className="bg-card w-full dark:bg-transparent">
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
 				className={cn('relative w-full', {
@@ -96,7 +96,7 @@ export default async function PostPage(props: {
 						className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
 					/>
 					<div
-						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						className="dark:to-background dark:via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent via-white to-white dark:from-transparent"
 						aria-hidden="true"
 					/>
 				</div>
@@ -163,7 +163,7 @@ export default async function PostPage(props: {
 						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 border-t pl-5">
 							<strong className="text-lg font-semibold">Share</strong>
 							<Share
-								className="bg-background inline-flex rounded-none border-y-0"
+								className="inline-flex rounded-none border-y-0"
 								title={post?.fields.title}
 							/>
 						</div>
@@ -244,7 +244,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 		<VideoPlayerOverlayProvider>
 			<Suspense
 				fallback={
-					<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />
+					<PlayerContainerSkeleton className="aspect-video h-full max-h-[75vh] w-full bg-black" />
 				}
 			>
 				<section
@@ -255,7 +255,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
-						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
+						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
 						videoResource={videoResource}
 					/>
 					<PostNewsletterCta

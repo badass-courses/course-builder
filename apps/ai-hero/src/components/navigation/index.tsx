@@ -52,7 +52,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
+				'dark:bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b bg-white px-0 print:hidden',
 				{
 					'sticky top-0': !params.lesson,
 				},
