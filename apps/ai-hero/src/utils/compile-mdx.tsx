@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ThemeImage } from '@/components/cld-image'
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
@@ -57,6 +58,19 @@ export async function compileMDX(source: string) {
 			Link: TrackLink,
 			Button: ({ children, ...props }) => (
 				<Button {...props}>{children}</Button>
+			),
+			Testimonial: ({
+				children,
+				authorName,
+				authorAvatar,
+			}: {
+				children: React.ReactNode
+				authorName: string
+				authorAvatar: string
+			}) => (
+				<Testimonial authorName={authorName} authorAvatar={authorAvatar}>
+					{children}
+				</Testimonial>
 			),
 		},
 		options: {
