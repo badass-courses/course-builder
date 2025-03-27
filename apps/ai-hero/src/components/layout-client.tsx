@@ -1,7 +1,5 @@
 'use client'
 
-import { useQueryState } from 'nuqs'
-
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import Navigation from './navigation'
@@ -19,9 +17,7 @@ export default function LayoutClient({
 	withContainer?: boolean
 	className?: string
 }) {
-	const [listSlug] = useQueryState('list')
-
-	const showContainer = listSlug ? false : true
+	const showContainer = withContainer
 
 	return (
 		<div

@@ -18,13 +18,7 @@ export default async function Layout(props: {
 	params: Promise<{ post: string }>
 }) {
 	const params = await props.params
-	const post = await getCachedPostOrList(params.post)
-	let list = null
-	if (post?.type === 'list') {
-		// nothing to do
-	} else {
-		list = await getListForPost(params.post)
-	}
+	const list = await getListForPost(params.post)
 	const initialProgress = await getModuleProgressForUser(
 		list ? list.id : params.post,
 	)
@@ -33,7 +27,7 @@ export default async function Layout(props: {
 		<ListProvider initialList={list}>
 			<ProgressProvider initialProgress={initialProgress}>
 				<ActiveHeadingProvider>
-					<LayoutClient>
+					<LayoutClient withContainer={list ? false : true}>
 						<div className="flex flex-1">
 							<ListResourceNavigation />
 							<MobileListResourceNavigation />

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { ThemeImage } from '@/components/cld-image'
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
@@ -10,6 +11,7 @@ import remarkGfm from 'remark-gfm'
 
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
 import { Mermaid } from '@coursebuilder/mdx-mermaid/client'
+import { Button } from '@coursebuilder/ui'
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
@@ -51,6 +53,19 @@ export async function compileMDX(source: string) {
 			h4: ({ children }) => <Heading level={4}>{children}</Heading>,
 			h5: ({ children }) => <Heading level={5}>{children}</Heading>,
 			h6: ({ children }) => <Heading level={6}>{children}</Heading>,
+			Link: ({ children, track = () => {}, ...props }) => (
+				<Link
+					onClick={() => {
+						track()
+					}}
+					{...props}
+				>
+					{children}
+				</Link>
+			),
+			Button: ({ children, ...props }) => (
+				<Button {...props}>{children}</Button>
+			),
 		},
 		options: {
 			mdxOptions: {

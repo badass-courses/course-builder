@@ -100,7 +100,7 @@ export default async function PostPage(props: {
 						aria-hidden="true"
 					/>
 				</div>
-				<div className="relative z-10 flex w-full items-center justify-between px-5 md:px-10 lg:px-16">
+				<div className="relative z-10 mx-auto flex w-full max-w-screen-xl items-center justify-between px-5 md:px-10 lg:px-16">
 					{!listSlugFromParam ? (
 						<Link
 							href="/posts"
@@ -214,7 +214,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
