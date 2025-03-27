@@ -160,10 +160,10 @@ export default async function PostPage(props: {
 								}}
 							/>
 						)}
-						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 pl-5">
+						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 border-t pl-5">
 							<strong className="text-lg font-semibold">Share</strong>
 							<Share
-								className="bg-background inline-flex rounded-none"
+								className="bg-background inline-flex rounded-none border-y-0"
 								title={post?.fields.title}
 							/>
 						</div>

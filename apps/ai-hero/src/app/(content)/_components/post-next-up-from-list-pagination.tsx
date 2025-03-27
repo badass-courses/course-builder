@@ -45,7 +45,7 @@ export default function PostNextUpFromListPagination({
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
 			className={cn(
-				'bg-card mt-8 flex w-full flex-col items-center border-t px-5 py-16 text-center',
+				'bg-card flex w-full flex-col items-center border-t px-5 py-16 text-center',
 				className,
 			)}
 			aria-label="List navigation"
