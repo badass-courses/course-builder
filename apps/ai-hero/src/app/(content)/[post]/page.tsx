@@ -3,8 +3,8 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
-import LayoutClient from '@/components/layout-client'
 // import { PricingWidget } from '@/components/home-pricing-widget'
+// import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
@@ -12,7 +12,6 @@ import { courseBuilderAdapter } from '@/db'
 import { getAllLists } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
-// import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -28,6 +27,7 @@ import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-pl
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
+import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
 export const experimental_ppr = true
@@ -79,12 +79,9 @@ export default async function PostPage(props: {
 		<main className="w-full">
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
-				className={cn(
-					'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
-					{
-						'pt-6 sm:pt-14': !hasVideo,
-					},
-				)}
+				className={cn('relative w-full', {
+					'pt-6 sm:pt-14': !hasVideo,
+				})}
 			>
 				<div
 					className={cn('absolute right-0 w-full', {
@@ -103,7 +100,7 @@ export default async function PostPage(props: {
 						aria-hidden="true"
 					/>
 				</div>
-				<div className="relative z-10 flex w-full items-center justify-between">
+				<div className="relative z-10 mx-auto flex w-full max-w-screen-xl items-center justify-between px-5 md:px-10 lg:px-16">
 					{!listSlugFromParam ? (
 						<Link
 							href="/posts"
@@ -116,10 +113,10 @@ export default async function PostPage(props: {
 					)}
 				</div>
 				<div className="relative z-10">
-					<article className="flex h-full flex-col gap-5">
-						<div className="flex flex-col gap-5">
+					<article className="relative flex h-full flex-col">
+						<div className="mx-auto flex w-full max-w-screen-xl flex-col gap-5 px-5 md:px-10 lg:px-16">
 							<PostTitle post={post} />
-							<div className="relative flex w-full items-center justify-between gap-3">
+							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-8">
 									<Contributor className="flex [&_img]:w-8" />
 									{post.fields?.github && (
@@ -140,6 +137,9 @@ export default async function PostPage(props: {
 								</Suspense>
 							</div>
 						</div>
+						{post?.type === 'post' && post?.fields?.body && (
+							<PostToC markdown={post?.fields?.body} />
+						)}
 						<PostBody post={post} />
 						{/* {listSlugFromParam && (
 									<PostProgressToggle
@@ -160,16 +160,14 @@ export default async function PostPage(props: {
 								}}
 							/>
 						)}
-						<PostNextUpFromListPagination postId={post.id} />
-						<div className="mx-auto mt-10 flex w-full max-w-[290px] flex-col gap-1">
-							<strong className="w-full text-center text-lg font-semibold">
-								Share
-							</strong>
+						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 pl-5">
+							<strong className="text-lg font-semibold">Share</strong>
 							<Share
-								className="bg-background w-full"
+								className="bg-background inline-flex rounded-none"
 								title={post?.fields.title}
 							/>
 						</div>
+						<PostNextUpFromListPagination postId={post.id} />
 					</article>
 				</div>
 			</div>
@@ -206,15 +204,17 @@ async function PostBody({ post }: { post: Post | null }) {
 	const { content } = await compileMDX(post.fields.body)
 
 	return (
-		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-			{content}
-		</article>
+		<div className="mx-auto w-full max-w-screen-xl px-5 md:px-10 lg:px-16">
+			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+				{content}
+			</article>
+		</div>
 	)
 }
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,

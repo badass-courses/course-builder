@@ -1,6 +1,11 @@
+import { Suspense } from 'react'
 import LayoutClient from '@/components/layout-client'
+import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import { getListForPost } from '@/lib/lists-query'
+import { getCachedPostOrList, getPost } from '@/lib/posts-query'
 import { getModuleProgressForUser } from '@/lib/progress'
+
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { ListProvider } from './_components/list-provider'
 import ListResourceNavigation, {
@@ -19,16 +24,18 @@ export default async function Layout(props: {
 	)
 
 	return (
-		<LayoutClient withContainer={list ? false : true}>
-			<ListProvider initialList={list}>
-				<ProgressProvider initialProgress={initialProgress}>
-					<div className="flex flex-1">
-						<ListResourceNavigation />
-						<MobileListResourceNavigation />
-						{props.children}
-					</div>
-				</ProgressProvider>
-			</ListProvider>
-		</LayoutClient>
+		<ListProvider initialList={list}>
+			<ProgressProvider initialProgress={initialProgress}>
+				<ActiveHeadingProvider>
+					<LayoutClient withContainer={list ? false : true}>
+						<div className="flex flex-1">
+							<ListResourceNavigation />
+							<MobileListResourceNavigation />
+							{props.children}
+						</div>
+					</LayoutClient>
+				</ActiveHeadingProvider>
+			</ProgressProvider>
+		</ListProvider>
 	)
 }

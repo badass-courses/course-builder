@@ -1,11 +1,7 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import { useTheme } from 'next-themes'
-
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { CldImage } from './cld-image'
 import Navigation from './navigation'
 import Footer from './navigation/footer'
 
@@ -21,17 +17,19 @@ export default function LayoutClient({
 	withContainer?: boolean
 	className?: string
 }) {
-	const pathname = usePathname()
-	const pathsWithContainer = ['/']
 	const showContainer = withContainer
 
 	return (
 		<div
-			className={cn(className, '', {
-				'relative mx-auto w-full max-w-[1030px] px-2 sm:px-4': withContainer,
-			})}
+			className={cn(
+				'',
+				{
+					'relative mx-auto w-full max-w-[1030px] px-2 sm:px-4': showContainer,
+				},
+				className,
+			)}
 		>
-			{withContainer && (
+			{showContainer && (
 				<div className="absolute bottom-0 left-0 top-0 flex flex-col">
 					<SidePatternColumn side="left" />
 				</div>
@@ -41,7 +39,7 @@ export default function LayoutClient({
 				{children}
 				<Footer />
 			</div>
-			{withContainer && (
+			{showContainer && (
 				<div className="absolute bottom-0 right-0 top-0 flex flex-col">
 					<SidePatternColumn side="right" />
 				</div>
