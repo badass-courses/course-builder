@@ -69,7 +69,20 @@ function TOCItem({
 }
 
 export default function PostToC({ markdown }: { markdown: string }) {
-	const data = extractMarkdownHeadings(markdown)
+	const allHeadings = extractMarkdownHeadings(markdown)
+	// Filter out h4 and above headings recursively
+	const filterHeadings = (
+		headings: ReturnType<typeof extractMarkdownHeadings>,
+	): typeof headings => {
+		return headings
+			.filter((heading) => heading.level < 4)
+			.map((heading) => ({
+				...heading,
+				items: filterHeadings(heading.items),
+			}))
+	}
+
+	const data = filterHeadings(allHeadings)
 	const { activeHeading } = useActiveHeadingContext()
 	const [isOpen, setIsOpen] = React.useState(false)
 	const containerRef = React.useRef<HTMLElement>(null)
