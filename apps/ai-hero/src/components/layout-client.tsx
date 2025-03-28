@@ -19,19 +19,17 @@ export default function LayoutClient({
 	withContainer?: boolean
 	className?: string
 }) {
-	const showContainer = withContainer
-
 	return (
 		<div
 			className={cn(
 				'',
 				{
-					'relative mx-auto w-full max-w-[1200px] px-2 sm:px-4': true,
+					'relative mx-auto w-full max-w-[1200px] px-2 sm:px-4': withContainer,
 				},
 				className,
 			)}
 		>
-			{showContainer && (
+			{withContainer && (
 				<div className="absolute bottom-0 left-0 top-0 flex flex-col">
 					<SidePatternColumn side="left" />
 				</div>
@@ -41,7 +39,7 @@ export default function LayoutClient({
 				{children}
 				<Footer />
 			</div>
-			{showContainer && (
+			{withContainer && (
 				<div className="absolute bottom-0 right-0 top-0 flex flex-col">
 					<SidePatternColumn side="right" />
 				</div>
