@@ -187,7 +187,7 @@
 		"react-instantsearch": "7.14",
 		"react-instantsearch-nextjs": "0.4",
 		"react-markdown": "9.0.3",
-		"react-resizable-panels": "^2.1.5",
+		"react-resizable-panels": "^2.1.7",
 		"react-stately": "^3.33.0",
 		"react-use": "^17.5.0",
 		"react-wrap-balancer": "^0.2.4",
