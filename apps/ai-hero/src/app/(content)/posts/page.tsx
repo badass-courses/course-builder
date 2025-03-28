@@ -223,7 +223,12 @@ const PostTeaser: React.FC<{
 					/>
 				</div>
 			)}
-			<Link href={`/${post.fields.slug}`} passHref className="flex w-full">
+			<Link
+				prefetch
+				href={`/${post.fields.slug}`}
+				passHref
+				className="flex w-full"
+			>
 				<Card
 					data-card=""
 					className={cn(

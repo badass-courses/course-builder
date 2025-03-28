@@ -71,6 +71,7 @@ const Navigation = () => {
 						}}
 					>
 						<Link
+							prefetch
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
 							className="font-heading hover:bg-muted flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-5 text-lg font-semibold leading-none transition"

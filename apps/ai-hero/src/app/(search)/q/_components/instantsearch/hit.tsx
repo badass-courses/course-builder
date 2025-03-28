@@ -12,6 +12,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (
 		<li className="">
 			<Link
+				prefetch
 				className="to-secondary group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out hover:bg-gradient-to-l sm:py-5 md:flex-row lg:px-6"
 				href={`/${hit.slug}`}
 			>
