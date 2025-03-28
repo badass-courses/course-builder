@@ -203,7 +203,7 @@
 	}
 
 	html {
-		@apply overflow-y-scroll;
+		scrollbar-gutter: stable;
 	}
 
 	html.dark .shiki,
