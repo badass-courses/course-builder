@@ -202,6 +202,10 @@
 			'calt' 1;
 	}
 
+	html {
+		@apply overflow-y-scroll;
+	}
+
 	html.dark .shiki,
 	html.dark .shiki span {
 		color: var(--shiki-dark) !important;
