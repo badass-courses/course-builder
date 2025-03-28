@@ -84,17 +84,6 @@ const Home = async (props: Props) => {
 		title: page.resources[0]?.resource?.fields?.title,
 	}
 
-	// Extract h1 and h2 headings from markdown content
-	const h1Headings =
-		page?.fields?.body
-			?.match(/^# (.+)$/gm)
-			?.map((match) => match.replace(/^# /, '')) || []
-
-	const h2Headings =
-		page?.fields?.body
-			?.match(/^## (.+)$/gm)
-			?.map((match) => match.replace(/^## /, '')) || []
-
 	return (
 		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="flex w-full flex-col justify-center">
@@ -103,6 +92,7 @@ const Home = async (props: Props) => {
 						<Link
 							className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
 							href={firstPageResource.path}
+							prefetch
 						>
 							New: <span className="underline">{firstPageResource?.title}</span>{' '}
 							▸
