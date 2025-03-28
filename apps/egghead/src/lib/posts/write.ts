@@ -278,10 +278,7 @@ export async function removeTagFromPost(postId: string, tagId: string) {
  * Updates the instructor for a post
  * Manages authorization and syncs with egghead and sanity
  */
-export async function updatePostInstructor(
-	postId: string,
-	instructorId: string,
-) {
+export async function updatePostInstructor(postId: string, userId: string) {
 	const { ability, session } = await getServerAuthSession()
 
 	if (!session?.user?.id || ability.cannot('manage', 'all')) {
@@ -293,16 +290,16 @@ export async function updatePostInstructor(
 	await db
 		.update(contentResource)
 		.set({
-			createdById: instructorId,
+			createdById: userId,
 		})
 		.where(eq(contentResource.id, postId))
 
 	try {
-		await syncEggheadResourceInstructor(postId, instructorId)
-		await syncSanityResourceInstructor(postId, instructorId)
+		await syncEggheadResourceInstructor(postId, userId)
+		await syncSanityResourceInstructor(postId, userId)
 	} catch (error) {
 		console.error(
-			`Error syncing egghead resource instructor with id ${instructorId} for post ${postId}, rolling db back to id ${originalPost?.createdById}`,
+			`Error syncing egghead resource instructor with id ${userId} for post ${postId}, rolling db back to id ${originalPost?.createdById}`,
 			error,
 		)
 
