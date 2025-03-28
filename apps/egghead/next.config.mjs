@@ -37,6 +37,11 @@ const config = {
 				hostname: 'neatly-diverse-goldfish.ngrok-free.app',
 				port: '',
 			},
+			{
+				protocol: 'https',
+				hostname: 'res.cloudinary.com',
+				port: '',
+			},
 		],
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
