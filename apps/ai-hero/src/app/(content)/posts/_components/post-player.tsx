@@ -99,11 +99,7 @@ export function PostPlayer({
 		},
 		onEnded: async () => {
 			if (autoplay && nextUp) {
-				router.push(
-					`/${nextUp?.resource.fields?.slug}${
-						list ? `?list=${list.fields.slug}` : ''
-					}`,
-				)
+				router.push(`/${nextUp?.resource.fields?.slug}`)
 			} else {
 				dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
 			}

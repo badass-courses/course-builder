@@ -3,27 +3,18 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
-import { cookies } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { Code } from '@/components/codehike/code'
-import Scrollycoding from '@/components/codehike/scrollycoding'
 import { Contributor } from '@/components/contributor'
-import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
-import { track } from '@/utils/analytics'
 import { compileMDX } from '@/utils/compile-mdx'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { PlayIcon } from '@heroicons/react/24/solid'
-import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
-import { ChevronRight, Github, Play, Share2 } from 'lucide-react'
-import remarkGfm from 'remark-gfm'
+import { Github, Share2 } from 'lucide-react'
 
 import {
 	Button,
@@ -91,7 +82,7 @@ export default async function ListPage(props: {
 	}
 
 	const firstResource = list.resources?.[0]?.resource
-	const firstResourceHref = `/${firstResource?.fields?.slug}?list=${list.fields.slug}`
+	const firstResourceHref = `/${firstResource?.fields?.slug}`
 
 	const squareGridPattern = generateGridPattern(
 		list.fields.title,
@@ -122,7 +113,11 @@ export default async function ListPage(props: {
 							</Link>
 						</Button>
 					)}
-					<div className="grid w-full grid-cols-2 items-center sm:flex sm:w-auto">
+					<div
+						className={cn('w-full items-center sm:flex sm:w-auto', {
+							'grid grid-cols-2': list?.fields?.github,
+						})}
+					>
 						{list?.fields?.github && (
 							<Button
 								className="h-14 w-full rounded-none border-r px-5 md:w-auto"

@@ -51,7 +51,7 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 					console.warn('No parent slug found for list lesson')
 					return `/${slug}`
 				}
-				return `/${slug}?list=${parentSlug}`
+				return `/${slug}`
 			}
 			return `/${slug}`
 		},

@@ -25,7 +25,7 @@ export default function ListResources({ list }: { list: List }) {
 								<li key={resource.id}>
 									<Link
 										className="dark:hover:bg-muted hover:text-primary text-foreground/90 hover:bg-background flex min-h-14 items-center gap-3 px-2 py-2 pr-3 font-medium transition sm:py-2 sm:pr-4"
-										href={`/${resource.fields.slug}?list=${list.fields.slug}`}
+										href={`/${resource.fields.slug}`}
 									>
 										{isComplete ? (
 											<Check className="text-muted-foreground w-4 flex-shrink-0" />

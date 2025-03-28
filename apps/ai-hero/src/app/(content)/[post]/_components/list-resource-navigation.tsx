@@ -4,18 +4,9 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import Spinner from '@/components/spinner'
-import { AlignLeft, Book, Check, ListChecks, MenuIcon } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { AlignLeft, Book, Check } from 'lucide-react'
 
-import {
-	Button,
-	Label,
-	Sheet,
-	SheetContent,
-	SheetTitle,
-	SheetTrigger,
-	Switch,
-} from '@coursebuilder/ui'
+import { Button, Sheet, SheetContent } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { AutoPlayToggle } from '../../_components/autoplay-toggle'
@@ -30,11 +21,9 @@ export default function ListResourceNavigation({
 	withHeader?: boolean
 }) {
 	const pathname = usePathname()
-	const searchParams = useSearchParams()
 	const [isExpanded, setIsExpanded] = React.useState(true)
 	const { list, isLoading: isListLoading } = useList()
 	const { progress } = useProgress()
-	const { data: session } = useSession()
 
 	if (isListLoading) {
 		return (
@@ -53,7 +42,6 @@ export default function ListResourceNavigation({
 		)
 	}
 
-	if (!searchParams.has('list')) return null
 	if (!list) return null
 
 	return (
@@ -130,7 +118,7 @@ export default function ListResourceNavigation({
 												'bg-gray-200 dark:bg-gray-800/75': isActive,
 											},
 										)}
-										href={`/${resource.fields.slug}?list=${list.fields.slug}`}
+										href={`/${resource.fields.slug}`}
 									>
 										<div
 											className={cn(
