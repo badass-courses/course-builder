@@ -10,7 +10,6 @@ import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
-import { Button, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { LogoMark } from '../brand/logo'
@@ -19,7 +18,6 @@ import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
 import { useLiveEventToastNotifier } from './use-live-event-toast-notifier'
 import { useNavLinks } from './use-nav-links'
-import { UserNavigation } from './user'
 import { UserMenu } from './user-menu'
 
 const Navigation = () => {
