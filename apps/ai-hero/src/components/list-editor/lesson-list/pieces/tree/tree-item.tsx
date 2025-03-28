@@ -454,7 +454,7 @@ const TreeItem = memo(function TreeItem({
 		</span>
 	)
 
-	const { resource: parentResource } = useResource()
+	const parentResource = useResource()?.resource
 
 	return (
 		<div
@@ -526,7 +526,7 @@ const TreeItem = memo(function TreeItem({
 											item.type,
 											item.itemData?.resource?.fields?.slug,
 											'view',
-											{
+											parentResource && {
 												parentType: parentResource.type,
 												parentSlug:
 													parentResource.fields?.slug || parentResource.id,
@@ -544,7 +544,7 @@ const TreeItem = memo(function TreeItem({
 											item.type,
 											item.itemData?.resource?.fields?.slug,
 											'edit',
-											{
+											parentResource && {
 												parentType: parentResource.type,
 												parentSlug:
 													parentResource.fields?.slug || parentResource.id,
