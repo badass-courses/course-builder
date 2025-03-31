@@ -4,8 +4,7 @@ import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { LessonSchema } from '@/lib/lessons'
-import type { PostUpdate } from '@/lib/posts'
+import { LessonSchema, type LessonUpdate } from '@/lib/lessons'
 import { upsertPostToTypeSense } from '@/lib/typesense-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
@@ -266,7 +265,10 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 	return parsedSolution.data
 }
 
-export async function updateLesson(input: Partial<Lesson> | PostUpdate) {
+export async function updateLesson(
+	input: Partial<Lesson> | LessonUpdate,
+	revalidate = true,
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
@@ -325,7 +327,13 @@ export async function updateLesson(input: Partial<Lesson> | PostUpdate) {
 		console.log('❌ Error updating lesson in Typesense', error)
 	}
 
-	revalidateTag('lesson')
+	if (revalidate) {
+		revalidateTag('lesson')
+	}
 
 	return updatedResource
+}
+
+export async function autoUpdateLesson(input: LessonUpdate) {
+	return await updateLesson(input, false)
 }

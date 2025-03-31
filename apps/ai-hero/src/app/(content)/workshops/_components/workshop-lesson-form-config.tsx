@@ -4,8 +4,8 @@ import {
 	ResourceFormConfig,
 	type BaseTool,
 } from '@/components/resource-form/with-resource-form'
-import { Lesson, LessonSchema } from '@/lib/lessons'
-import { updateLesson } from '@/lib/lessons-query'
+import { Lesson, LessonSchema, type LessonUpdate } from '@/lib/lessons'
+import { autoUpdateLesson, updateLesson } from '@/lib/lessons-query'
 import { log } from '@/server/logger'
 import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
@@ -108,5 +108,26 @@ export const createWorkshopLessonFormConfig = (
 			})
 			throw error
 		}
+	},
+	autoUpdateResource: async (resource: Partial<Lesson>) => {
+		console.log('autoUpdateResource', resource)
+		if (!resource.id || !resource.fields) {
+			throw new Error('Invalid resource data')
+		}
+		const postUpdate: LessonUpdate = {
+			id: resource.id,
+			fields: {
+				title: resource.fields.title || '',
+				body: resource.fields.body || '',
+				slug: resource.fields.slug || '',
+				description: resource.fields.description || '',
+				state: resource.fields.state || 'draft',
+				visibility: resource.fields.visibility || 'public',
+				github: resource.fields.github || '',
+				thumbnailTime: resource.fields.thumbnailTime || 0,
+			},
+		}
+		const result = await autoUpdateLesson(postUpdate)
+		return result as Lesson
 	},
 })

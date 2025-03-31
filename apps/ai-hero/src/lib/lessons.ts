@@ -24,9 +24,13 @@ export const LessonSchema = ContentResourceSchema.merge(
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 			github: z.string().optional(),
 			gitpod: z.string().optional(),
+			thumbnailTime: z.number().nullish(),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 	}),
 )
 
 export type Lesson = z.infer<typeof LessonSchema>
+
+export const LessonUpdateSchema = LessonSchema.partial()
+export type LessonUpdate = z.infer<typeof LessonUpdateSchema>
