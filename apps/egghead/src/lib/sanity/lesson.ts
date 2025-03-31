@@ -69,24 +69,73 @@ export async function replaceSanityLessonResources({
 		throw new Error('Egghead lesson ID is required.')
 	}
 
+	console.log(`[replaceSanityLessonResources] Starting for lesson ${eggheadLessonId}, videoResourceId: ${videoResourceId}`)
+
 	const sanityLesson = await getSanityLessonForEggheadLessonId(eggheadLessonId)
 
 	if (!sanityLesson) {
+		console.error(`[replaceSanityLessonResources] Sanity lesson with id ${eggheadLessonId} not found.`)
 		throw new Error(`Sanity lesson with id ${eggheadLessonId} not found.`)
 	}
 
-	const videoResourceReference = videoResourceId
-		? createSanityArrayElementReference(videoResourceId)
-		: undefined
+	// Initialize an update object with basic properties
+	const updateObj: Record<string, any> = {
+		title: post.fields.title,
+		description: post.fields.description || '',
+	}
 
+	// Only try to set resources if we have a videoResourceId
+	if (videoResourceId) {
+		try {
+			// Check if the referenced video resource exists in Sanity
+			console.log(`[replaceSanityLessonResources] Checking if video resource exists: ${videoResourceId}`)
+			const resourceExists = await checkVideoResourceExists(videoResourceId)
+			
+			if (resourceExists) {
+				console.log(`[replaceSanityLessonResources] Video resource exists, creating reference`)
+				updateObj.resources = [createSanityArrayElementReference(videoResourceId)]
+			} else {
+				console.log(`[replaceSanityLessonResources] Video resource does not exist in Sanity: ${videoResourceId}`)
+				// Don't add the resource to the update if it doesn't exist
+				// Maintain existing resources to avoid clearing them
+				updateObj.resources = undefined
+			}
+		} catch (error) {
+			console.error(`[replaceSanityLessonResources] Error checking video resource: ${error}`)
+			// In case of error, don't update resources
+			updateObj.resources = undefined
+		}
+	} else {
+		console.log(`[replaceSanityLessonResources] No videoResourceId provided, skipping resources update`)
+	}
+
+	console.log(`[replaceSanityLessonResources] Updating lesson with:`, updateObj)
 	return await sanityWriteClient
 		.patch(sanityLesson._id as string)
-		.set({
-			title: post.fields.title,
-			description: post.fields.description || '',
-			resources: videoResourceReference ? [videoResourceReference] : undefined,
-		})
+		.set(updateObj)
 		.commit()
+		.catch(error => {
+			console.error(`[replaceSanityLessonResources] Error updating Sanity lesson:`, error)
+			throw error
+		})
+}
+
+/**
+ * Checks if a video resource exists in Sanity
+ * @param videoResourceId - The ID of the video resource to check
+ * @returns True if the resource exists, false otherwise
+ */
+async function checkVideoResourceExists(videoResourceId: string): Promise<boolean> {
+	try {
+		const result = await sanityWriteClient.fetch(
+			`*[_id == $videoResourceId][0]`,
+			{ videoResourceId }
+		)
+		return !!result
+	} catch (error) {
+		console.error(`[checkVideoResourceExists] Error checking if video resource exists:`, error)
+		return false
+	}
 }
 
 /**
