@@ -27,12 +27,17 @@ import {
 	type WorkshopRaw,
 } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import z from 'zod'
 
-import { ContentResource, productSchema } from '@coursebuilder/core/schemas'
+import {
+	ContentResource,
+	ContentResourceSchema,
+	productSchema,
+} from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
 /**
@@ -286,6 +291,7 @@ export async function getWorkshopNavigation(
 		moduleSlugOrId,
 		moduleType,
 	)
+
 	return workshopNavigation
 }
 
@@ -310,8 +316,14 @@ export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	return parsedProduct.data
 }
 
+export const getCachedMinimalWorkshop = unstable_cache(
+	async (slug: string) => getMinimalWorkshop(slug),
+	['workshop'],
+	{ revalidate: 3600, tags: ['workshop'] },
+)
+
 export async function getMinimalWorkshop(moduleSlugOrId: string) {
-	return db.query.contentResource.findFirst({
+	const workshop = await db.query.contentResource.findFirst({
 		where: and(
 			or(
 				eq(
@@ -327,6 +339,15 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 			fields: true,
 		},
 	})
+
+	if (!workshop) {
+		await log.error('getMinimalWorkshop.notFound', {
+			moduleSlugOrId,
+		})
+		return null
+	}
+
+	return workshop
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
@@ -545,4 +566,84 @@ export async function updateWorkshop(input: Module) {
 		...updatedWorkshop,
 		resources: {},
 	}
+}
+
+export async function getWorkshopsForLesson(lessonId: string) {
+	// Query to find all workshops containing the lesson either directly or through a section
+	const query = sql`
+		WITH workshop_lesson AS (
+			-- Direct lesson in workshop
+			SELECT DISTINCT
+				w.id,
+				w.type,
+				w.fields,
+				w.createdAt,
+				w.updatedAt,
+				w.deletedAt,
+				w.createdById,
+				w.currentVersionId,
+				w.organizationId,
+				w.createdByOrganizationMembershipId,
+				NULL as resources
+			FROM ${contentResource} w
+			JOIN ${contentResourceResource} crr ON w.id = crr.resourceOfId
+			WHERE w.type = 'workshop'
+				AND crr.resourceId = ${lessonId}
+
+			UNION
+
+			-- Lesson in section in workshop
+			SELECT DISTINCT
+				w.id,
+				w.type,
+				w.fields,
+				w.createdAt,
+				w.updatedAt,
+				w.deletedAt,
+				w.createdById,
+				w.currentVersionId,
+				w.organizationId,
+				w.createdByOrganizationMembershipId,
+				NULL as resources
+			FROM ${contentResource} w
+			JOIN ${contentResourceResource} crr_section ON w.id = crr_section.resourceOfId
+			JOIN ${contentResource} section ON section.id = crr_section.resourceId
+			JOIN ${contentResourceResource} crr_lesson ON section.id = crr_lesson.resourceOfId
+			WHERE w.type = 'workshop'
+				AND section.type = 'section'
+				AND crr_lesson.resourceId = ${lessonId}
+		)
+		SELECT 
+			id,
+			type,
+			fields,
+			createdAt,
+			updatedAt,
+			deletedAt,
+			createdById,
+			currentVersionId,
+			organizationId,
+			createdByOrganizationMembershipId,
+			resources
+		FROM workshop_lesson
+		ORDER BY createdAt ASC;
+	`
+
+	const result = await db.execute(query)
+	console.log('parsedWorkshops result', result.rows)
+	if (!result.rows.length) {
+		return []
+	}
+
+	const parsedWorkshops = z.array(ContentResourceSchema).safeParse(result.rows)
+	console.log('parsedWorkshops', parsedWorkshops)
+	if (!parsedWorkshops.success) {
+		await log.error('getWorkshopsForLesson.parseError', {
+			lessonId,
+			issues: parsedWorkshops.error.issues,
+		})
+		return []
+	}
+
+	return parsedWorkshops.data
 }
