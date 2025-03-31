@@ -72,7 +72,6 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
 			JOIN workshop ON workshop.id = crr.resourceOfId
 			WHERE cr.type = 'section'
-			ORDER BY crr.position
 		),
 		resources AS (
 			-- Get top-level resources (not in sections)
@@ -115,7 +114,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN resources ON resources.id = crr.resourceOfId AND resources.type = 'lesson'
 			WHERE cr.type = 'solution'
 		)
-		-- Get all data in separate result sets
+		-- Get all data in separate result sets without complex ordering
 		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId FROM workshop
 		UNION ALL
 		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId FROM sections
@@ -156,6 +155,9 @@ async function getAllWorkshopLessonsWithSectionInfo(
 				position: row.position,
 			}),
 		)
+
+	// Sort sections by position
+	sections.sort((a, b) => a.position - b.position)
 
 	const resources = validatedRows
 		.filter((row) => row.type === 'resource')
@@ -214,21 +216,67 @@ function transformToNavigationStructure(
 		return acc
 	}, new Map<string, { id: string; slug: string; title: string; type: 'solution' }[]>())
 
-	// Group resources by section
-	const resourcesBySectionId = resources.reduce((acc, resource) => {
-		const key = resource.sectionId || 'top-level'
-		if (!acc.has(key)) {
-			acc.set(key, [])
-		}
+	// Group resources by section first, without sorting
+	const topLevelResources: ResourceRaw[] = []
+	const resourcesBySectionId = new Map<string, ResourceRaw[]>()
 
-		// Add solutions to lessons
+	// First group resources by their section
+	for (const resource of resources) {
+		if (resource.sectionId) {
+			if (!resourcesBySectionId.has(resource.sectionId)) {
+				resourcesBySectionId.set(resource.sectionId, [])
+			}
+			resourcesBySectionId.get(resource.sectionId)!.push(resource)
+		} else {
+			topLevelResources.push(resource)
+		}
+	}
+
+	// Sort top-level resources by position
+	topLevelResources.sort((a, b) => a.position - b.position)
+
+	// Sort resources within each section by position
+	resourcesBySectionId.forEach((sectionResources) => {
+		sectionResources.sort((a, b) => a.position - b.position)
+	})
+
+	// Transform top-level resources to NavigationResource objects
+	const navigationTopLevelResources = topLevelResources.map((resource) => {
 		const resourceSolutions =
 			resource.type === 'lesson'
 				? solutionsByLessonId.get(resource.id) || []
 				: []
 
-		const navigationResource: NavigationResource =
-			resource.type === 'lesson'
+		return resource.type === 'lesson'
+			? NavigationLessonSchema.parse({
+					id: resource.id,
+					slug: resource.slug,
+					title: resource.title,
+					position: resource.position,
+					type: 'lesson',
+					resources: resourceSolutions,
+				})
+			: NavigationPostSchema.parse({
+					id: resource.id,
+					slug: resource.slug,
+					title: resource.title,
+					position: resource.position,
+					type: 'post',
+				})
+	})
+
+	// Map sections to navigation sections with their resources
+	const sectionResources = sections.map((section) => {
+		const sectionRawResources = resourcesBySectionId.get(section.id) || []
+
+		// Transform each resource in the section to a NavigationResource
+		const sectionNavigationResources = sectionRawResources.map((resource) => {
+			const resourceSolutions =
+				resource.type === 'lesson'
+					? solutionsByLessonId.get(resource.id) || []
+					: []
+
+			return resource.type === 'lesson'
 				? NavigationLessonSchema.parse({
 						id: resource.id,
 						slug: resource.slug,
@@ -244,27 +292,22 @@ function transformToNavigationStructure(
 						position: resource.position,
 						type: 'post',
 					})
+		})
 
-		acc.get(key)!.push(navigationResource)
-		return acc
-	}, new Map<string, NavigationResource[]>())
-
-	// Create section resources and top-level resources
-	const topLevelResources = resourcesBySectionId.get('top-level') || []
-	const sectionResources = sections.map((section) => {
 		return NavigationSectionSchema.parse({
 			id: section.id,
 			slug: section.slug,
 			title: section.title,
 			position: section.position,
 			type: 'section',
-			resources: resourcesBySectionId.get(section.id) || [],
+			resources: sectionNavigationResources,
 		})
 	})
 
-	// Combine and sort all resources
-	const allResources = [...topLevelResources, ...sectionResources]
+	// Combine top-level resources and sections, sorted by position
+	const allResources = [...navigationTopLevelResources, ...sectionResources]
 	allResources.sort((a, b) => a.position - b.position)
+
 	const workshopNavigation = {
 		id: workshop.id,
 		slug: workshop.slug,
@@ -273,7 +316,6 @@ function transformToNavigationStructure(
 		resources: allResources,
 	}
 
-	// Create the final workshop navigation structure
 	return WorkshopNavigationSchema.parse(workshopNavigation)
 }
 
