@@ -15,16 +15,18 @@ export const TypesenseResourceSchema = z.object({
 	updated_at_timestamp: z.number().optional(),
 	created_at_timestamp: z.number().optional(),
 	tags: z.array(TagSchema).nullish(),
-	parentResources: z.array(
-		z.object({
-			id: z.string(),
-			title: z.string(),
-			slug: z.string(),
-			type: z.string(),
-			visibility: z.string(),
-			state: z.string(),
-		}),
-	),
+	parentResources: z
+		.array(
+			z.object({
+				id: z.string(),
+				title: z.string(),
+				slug: z.string(),
+				type: z.string(),
+				visibility: z.string(),
+				state: z.string(),
+			}),
+		)
+		.nullish(),
 })
 
 export const attributeLabelMap: {
