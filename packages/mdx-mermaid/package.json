@@ -1,0 +1,43 @@
+{
+	"name": "@coursebuilder/mdx-mermaid",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/remarkPlugin.d.ts",
+			"import": "./dist/remarkPlugin.js"
+		},
+		"./client": {
+			"types": "./dist/client.d.ts",
+			"import": "./dist/client.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+	},
+	"dependencies": {
+		"@types/mdast": "^4.0.3",
+		"@types/unist": "^3.0.2",
+		"mermaid": "^11.4.1",
+		"unified": "^11.0.5",
+		"unist-util-visit": "^5.0.0"
+	},
+	"peerDependencies": {
+		"react": "19.0.0",
+		"react-dom": "19.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "19.0.7",
+		"@types/react-dom": "19.0.3",
+		"react": "19.0.0",
+		"react-dom": "19.0.0",
+		"tsup": "8.0.2",
+		"typescript": "5.4.5"
+	}
+}

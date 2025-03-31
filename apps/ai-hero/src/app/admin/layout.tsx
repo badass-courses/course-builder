@@ -1,4 +1,5 @@
 import React from 'react'
+import LayoutClient from '@/components/layout-client'
 import {
 	FileText,
 	Flag,
@@ -18,47 +19,49 @@ const AdminLayout = async ({
 	params: Promise<{ module: string }>
 }) => {
 	return (
-		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
-			<div className="hidden border-r md:block">
-				<div className="flex h-full max-h-screen flex-col gap-2">
-					<nav className="">
-						<ul>
-							<li className="divide-border flex flex-col divide-y">
-								<NavItem href="/admin/dashboard">
-									<HomeIcon className="h-4 w-4" />
-									Dashboard
-								</NavItem>
-								<NavItem href="/admin/pages">
-									<FileText className="h-4 w-4" />
-									Pages
-								</NavItem>
-								<NavItem href="/lists">
-									<ListChecks className="h-4 w-4" />
-									Lists
-								</NavItem>
-								<NavItem href="/admin/coupons">
-									<TicketIcon className="h-4 w-4" />
-									Coupons
-								</NavItem>
-								<NavItem href="/admin/tags">
-									<TagIcon className="h-4 w-4" />
-									Tags
-								</NavItem>
-								<NavItem href="/admin/emails">
-									<Mail className="h-4 w-4" />
-									Emails
-								</NavItem>
-								<NavItem href="/admin/flags">
-									<Flag className="h-4 w-4" />
-									Feature Flags
-								</NavItem>
-							</li>
-						</ul>
-					</nav>
+		<LayoutClient>
+			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
+				<div className="hidden border-r md:block">
+					<div className="flex h-full max-h-screen flex-col gap-2">
+						<nav className="">
+							<ul>
+								<li className="divide-border flex flex-col divide-y">
+									<NavItem href="/admin/dashboard">
+										<HomeIcon className="h-4 w-4" />
+										Dashboard
+									</NavItem>
+									<NavItem href="/admin/pages">
+										<FileText className="h-4 w-4" />
+										Pages
+									</NavItem>
+									<NavItem href="/lists">
+										<ListChecks className="h-4 w-4" />
+										Lists
+									</NavItem>
+									<NavItem href="/admin/coupons">
+										<TicketIcon className="h-4 w-4" />
+										Coupons
+									</NavItem>
+									<NavItem href="/admin/tags">
+										<TagIcon className="h-4 w-4" />
+										Tags
+									</NavItem>
+									<NavItem href="/admin/emails">
+										<Mail className="h-4 w-4" />
+										Emails
+									</NavItem>
+									<NavItem href="/admin/flags">
+										<Flag className="h-4 w-4" />
+										Feature Flags
+									</NavItem>
+								</li>
+							</ul>
+						</nav>
+					</div>
 				</div>
+				<div className="flex flex-col">{children}</div>
 			</div>
-			<div className="flex flex-col">{children}</div>
-		</div>
+		</LayoutClient>
 	)
 }
 

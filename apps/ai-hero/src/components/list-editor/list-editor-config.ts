@@ -1,4 +1,3 @@
-import { PostType } from '@/lib/posts'
 import { z } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
@@ -12,7 +11,7 @@ import { ContentResource } from '@coursebuilder/core/schemas'
  * @example
  * ```typescript
  * const selectionConfig: ListResourceSelectionConfig = {
- *   availableResourceTypes: ['article', 'video'],
+ *   availableResourceTypes: ['article', 'video', 'workshop'],
  *   defaultResourceType: 'article',
  *   showTierSelector: true
  * }
@@ -20,15 +19,17 @@ import { ContentResource } from '@coursebuilder/core/schemas'
  */
 export interface ListResourceSelectionConfig {
 	/** Available resource types that can be selected */
-	availableResourceTypes: PostType[]
+	availableResourceTypes: string[]
 	/** Default resource type for new resources */
-	defaultResourceType: PostType
+	defaultResourceType: string
 	/** Title for the create resource modal */
 	createResourceTitle?: string
 	/** Whether to show tier selector (standard/premium) */
 	showTierSelector?: boolean
 	/** Custom search configuration component */
 	searchConfig?: React.ReactNode
+	/** Top-level resource types (not post subtypes) */
+	topLevelResourceTypes?: string[]
 }
 
 /**
@@ -84,8 +85,17 @@ export interface ListEditorConfig {
 	 * @returns {Promise<void>}
 	 */
 	onResourceReorder?: (resourceId: string, newPosition: number) => Promise<void>
+	/**
+	 * Function to handle item updating
+	 * @param {string} itemId - ID of the item being updated
+	 * @param {Record<string, any>} fields - Fields to update
+	 * @returns {Promise<void>}
+	 */
+	onResourceUpdate?: (
+		itemId: string,
+		fields: Record<string, any>,
+	) => Promise<void>
 }
-
 /**
  * Default configuration for list editor.
  * Provides sensible defaults for a basic list editor setup.
@@ -123,6 +133,7 @@ export const ListEditorConfigSchema = z.object({
 	onResourceAdd: z.function().optional(),
 	onResourceRemove: z.function().optional(),
 	onResourceReorder: z.function().optional(),
+	onResourceUpdate: z.function().optional(),
 })
 
 /**

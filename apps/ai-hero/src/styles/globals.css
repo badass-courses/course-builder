@@ -43,13 +43,13 @@
 		--primary-foreground: 0 0% 100%;
 		--secondary: 0 0% 91%;
 		--secondary-foreground: 0 0% 0%;
-		--muted: 0 0% 95%;
+		--muted: 0 0% 96%;
 		--muted-foreground: 0 0% 30%;
 		--accent: 0 0% 92%;
 		--accent-foreground: 0 0% 5%;
 		--destructive: 0 50% 50%;
 		--destructive-foreground: 32 5% 99%;
-		--border: 0 0% 93%;
+		--border: 0 0% 91%;
 		--input: 0 0% 90%;
 		--ring: 0 0% 80%;
 		--radius: 0.3rem;
@@ -101,7 +101,7 @@
 	.dark {
 		/* golden color scheme */
 		--background: 0 0% 2%;
-		--foreground: 32 5% 87%;
+		--foreground: 0 0% 87%;
 		--card: 0 0% 5%;
 		--card-foreground: 32 5% 90%;
 		--popover: 32 10% 5%;
@@ -196,10 +196,14 @@
 	}
 
 	body {
-		@apply bg-background text-foreground font-normal antialiased;
+		@apply bg-background text-foreground overflow-x-hidden font-normal antialiased;
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;
+	}
+
+	html {
+		scrollbar-gutter: stable;
 	}
 
 	html.dark .shiki,
@@ -220,4 +224,16 @@
 [data-checklist] {
 	@apply list-outside !pl-4;
 	list-style-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8cGF0aCBmaWxsPSIjRjNBRDVCIiBkPSJtMTQgMy4xNS0uNy0xLjRjLTYuMDM4IDEuNzUtOS4xIDUuNi05LjEgNS42bC0yLjgtMi4xTDAgNi42NWw0LjIgNS42YzMuMjM3LTYuMDM3IDkuOC05LjEgOS44LTkuMVoiLz4KPC9zdmc+Cg==');
+}
+
+[data-builders-heading] {
+	@apply relative flex items-center justify-center;
+
+	img {
+		@apply absolute right-[-10px] max-w-24 rotate-[8deg] sm:right-[-20px] lg:max-w-full;
+	}
+}
+
+[data-every-hero-needs-a-guide] {
+	@apply relative w-80 translate-y-5 sm:w-auto;
 }

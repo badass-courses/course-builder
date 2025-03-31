@@ -30,7 +30,7 @@ export const ImageResourceBrowser = () => {
 								className="flex aspect-square items-center justify-center overflow-hidden rounded border"
 							>
 								<img
-									src={asset.url}
+									src={asset.url.replace('http://', 'https://')}
 									alt={asset.id}
 									onDragStart={(e) => {
 										e.dataTransfer.setData(

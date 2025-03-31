@@ -3,6 +3,8 @@ import { ResourceFormProps } from '@/components/resource-form/with-resource-form
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 
+import { VideoResource } from '@coursebuilder/core/schemas'
+
 import { MetadataFormFieldsSwitcher } from './metadata-form-fields-switcher'
 
 /**
@@ -11,9 +13,11 @@ import { MetadataFormFieldsSwitcher } from './metadata-form-fields-switcher'
 export function PostFormFields({
 	form,
 	resource,
+	videoResource,
 	videoResourceId,
 	listsLoader,
 }: ResourceFormProps<Post, typeof PostSchema> & {
+	videoResource?: VideoResource | null
 	videoResourceId?: string | null
 	listsLoader: Promise<any[]>
 }) {
@@ -23,6 +27,7 @@ export function PostFormFields({
 		<MetadataFormFieldsSwitcher
 			form={form}
 			post={resource}
+			videoResource={videoResource}
 			videoResourceId={videoResourceId}
 			listsLoader={listsLoader}
 			sendResourceChatMessage={sendResourceChatMessage}

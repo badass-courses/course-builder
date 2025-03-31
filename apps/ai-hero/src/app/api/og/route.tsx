@@ -209,7 +209,7 @@ export async function GET(request: Request) {
 					</div>
 					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
 						<div
-							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[62px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-24`}
+							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-16`}
 						>
 							{title}
 						</div>

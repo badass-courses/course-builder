@@ -2,20 +2,13 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import {
+	POST_SUBTYPES,
+	POST_TYPES_WITH_VIDEO,
+	PostType,
+	PostTypeSchema,
+} from './resource-types'
 import { TagSchema } from './tags'
-
-export const POST_TYPES_WITH_VIDEO = ['cohort-lesson', 'podcast', 'tip']
-
-export const PostTypeSchema = z.union([
-	z.literal('article'),
-	z.literal('cohort-lesson'),
-	z.literal('podcast'),
-	z.literal('tip'),
-	z.literal('course'),
-	z.literal('cohort-lesson-solution'),
-])
-
-export type PostType = z.infer<typeof PostTypeSchema>
 
 export const PostActionSchema = z.union([
 	z.literal('publish'),
@@ -26,18 +19,19 @@ export const PostActionSchema = z.union([
 
 export type PostAction = z.infer<typeof PostActionSchema>
 
+// Re-export for backward compatibility
+export { POST_TYPES_WITH_VIDEO, PostTypeSchema }
+export type { PostType }
+
 export const NewPostInputSchema = z.object({
 	title: z.string().min(1, 'Title is required'),
 	videoResourceId: z.string().optional(),
-	postType: z.enum([
-		'cohort-lesson',
-		'podcast',
-		'tip',
-		'course',
-		'playlist',
-		'article',
-		'cohort-lesson-solution',
-	]),
+	postType: z.string().refine(
+		(type) => POST_SUBTYPES.includes(type as PostType),
+		(type) => ({
+			message: `Invalid post type: ${type}. Valid types are: ${POST_SUBTYPES.join(', ')}`,
+		}),
+	),
 	createdById: z.string(),
 	parentLessonId: z.string().optional(),
 })

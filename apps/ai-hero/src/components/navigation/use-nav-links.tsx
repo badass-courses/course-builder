@@ -11,7 +11,7 @@ export function useNavLinks() {
 	return [
 		{
 			href: '/posts',
-			label: 'Posts',
+			label: 'Learn',
 			// label: (
 			// 	<span className="relative">
 			// 		Posts

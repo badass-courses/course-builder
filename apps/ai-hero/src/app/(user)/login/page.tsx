@@ -1,4 +1,5 @@
 import { headers } from 'next/headers'
+import LayoutClient from '@/components/layout-client'
 import { Login } from '@/components/login'
 import config from '@/config'
 import { getProviders } from '@/server/auth'
@@ -14,10 +15,13 @@ export default async function LoginPage() {
 	const csrfToken = await getCsrf()
 
 	return (
-		<Login
-			csrfToken={csrfToken}
-			providers={providers}
-			subtitle={`to start learning`}
-		/>
+		<LayoutClient withContainer>
+			<Login
+				csrfToken={csrfToken}
+				providers={providers}
+				title={`Log In`}
+				subtitle={`We'll create your account if you don't have one yet.`}
+			/>
+		</LayoutClient>
 	)
 }

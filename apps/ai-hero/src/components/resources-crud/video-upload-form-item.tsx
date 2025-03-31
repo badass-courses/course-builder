@@ -1,4 +1,3 @@
-import { POST_TYPES_WITH_VIDEO, PostType } from '@/lib/posts'
 import { FileVideo } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -23,7 +22,7 @@ export function VideoUploadFormItem({
 	isValidatingVideoResource,
 	videoResourceValid,
 }: {
-	selectedPostType: PostType
+	selectedPostType: string
 	form: UseFormReturn<any>
 	videoResourceId?: string
 	setVideoResourceId: (id: string) => void
@@ -33,55 +32,51 @@ export function VideoUploadFormItem({
 	videoResourceValid: boolean
 }) {
 	return (
-		POST_TYPES_WITH_VIDEO.includes(selectedPostType) && (
-			<FormField
-				control={form.control}
-				name="videoResourceId"
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>
-							{videoResourceId ? 'Video' : 'Upload a Video'}
-						</FormLabel>
-						<FormDescription>
-							<span className="block">
-								You can upload a video later if needed.
-							</span>
-							Your video will be uploaded and then transcribed automatically.
-						</FormDescription>
-						<FormControl>
-							<Input type="hidden" {...field} />
-						</FormControl>
-						{!videoResourceId ? (
-							children(handleSetVideoResourceId)
-						) : (
-							<div className="mt-5 flex w-full justify-between border-t pt-5">
-								<div className="flex flex-col divide-y">
-									<span className="text-primary flex items-center gap-2 py-1 text-sm">
-										<FileVideo className="h-4 w-4" />
-										<span>{videoResourceId}</span>
-									</span>
-								</div>
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onClick={() => {
-										setVideoResourceId('')
-										form.setValue('videoResourceId', '')
-									}}
-								>
-									clear
-								</Button>
+		<FormField
+			control={form.control}
+			name="videoResourceId"
+			render={({ field }) => (
+				<FormItem>
+					<FormLabel>{videoResourceId ? 'Video' : 'Upload a Video'}</FormLabel>
+					<FormDescription>
+						<span className="block">
+							You can upload a video later if needed.
+						</span>
+						Your video will be uploaded and then transcribed automatically.
+					</FormDescription>
+					<FormControl>
+						<Input type="hidden" {...field} />
+					</FormControl>
+					{!videoResourceId ? (
+						children(handleSetVideoResourceId)
+					) : (
+						<div className="mt-5 flex w-full justify-between border-t pt-5">
+							<div className="flex flex-col divide-y">
+								<span className="text-primary flex items-center gap-2 py-1 text-sm">
+									<FileVideo className="h-4 w-4" />
+									<span>{videoResourceId}</span>
+								</span>
 							</div>
-						)}
-						{isValidatingVideoResource && !videoResourceValid ? (
-							<FormMessage>Processing Upload</FormMessage>
-						) : null}
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									setVideoResourceId('')
+									form.setValue('videoResourceId', '')
+								}}
+							>
+								clear
+							</Button>
+						</div>
+					)}
+					{isValidatingVideoResource && !videoResourceValid ? (
+						<FormMessage>Processing Upload</FormMessage>
+					) : null}
 
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-		)
+					<FormMessage />
+				</FormItem>
+			)}
+		/>
 	)
 }

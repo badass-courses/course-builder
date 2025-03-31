@@ -1,14 +1,18 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
+import { Rss } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import { Configure } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
+
+import { Button } from '@coursebuilder/ui'
 
 import { InfiniteHits } from './infinite-hits'
 import ClearRefinements from './instantsearch/clear-refinements'
@@ -107,7 +111,10 @@ function Search() {
 			initialUiState={initialUiState}
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
-			<Configure filters={'state:published'} hitsPerPage={40} />
+			<Configure
+				filters={'visibility:public && state:published'}
+				hitsPerPage={40}
+			/>
 			<div className="bg-background top-[var(--nav-height)] z-10 flex flex-col items-end gap-x-3 border-x border-b border-t px-4 pb-4 sm:sticky sm:flex-row sm:items-center sm:border-t-0 sm:pb-0">
 				<SearchBox />
 				{/* <RefinementList
@@ -115,7 +122,7 @@ function Search() {
 					queryKey="instructor"
 					label="Instructor"
 				/> */}
-				<div className="grid w-full grid-cols-3 flex-row items-center gap-3">
+				<div className="grid w-full grid-cols-2 flex-row items-center gap-3 sm:grid-cols-3">
 					<RefinementList attribute="type" label="Type" />
 					<RefinementList
 						attribute="tags.fields.label"
@@ -123,7 +130,25 @@ function Search() {
 						queryKey="tags"
 					/>
 					<SortBy />
+					<Button variant="secondary" className="sm:hidden" asChild>
+						<Link
+							href="/rss.xml"
+							className="flex items-center gap-1"
+							target="_blank"
+						>
+							<Rss className="w-3" /> RSS
+						</Link>
+					</Button>
 				</div>
+				<Button variant="secondary" className="hidden sm:flex" asChild>
+					<Link
+						href="/rss.xml"
+						className="flex items-center gap-1"
+						target="_blank"
+					>
+						<Rss className="w-3" /> RSS
+					</Link>
+				</Button>
 				{/* <HitsPerPageSelect items={hitsPerPageItems} /> */}
 				{/* <ClearRefinements className="mt-2 sm:mt-0" /> */}
 			</div>

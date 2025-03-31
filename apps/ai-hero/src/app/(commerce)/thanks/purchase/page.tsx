@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
@@ -138,16 +139,18 @@ export default async function ThanksPurchasePage(props: {
 
 function PageLoading() {
 	return (
-		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
-			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-				<h1 className="text-center text-lg font-medium sm:text-xl lg:text-2xl">
-					Validating Your Purchase, Hang Tight...
-				</h1>
-				<div className="mx-auto">
-					<Spinner className="text-center" />
+		<LayoutClient withContainer>
+			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+					<h1 className="text-center text-lg font-medium sm:text-xl lg:text-2xl">
+						Validating Your Purchase, Hang Tight...
+					</h1>
+					<div className="mx-auto">
+						<Spinner className="text-center" />
+					</div>
 				</div>
-			</div>
-		</main>
+			</main>
+		</LayoutClient>
 	)
 }
 
@@ -239,75 +242,79 @@ async function PurchaseThanksPageLoaded({
 			break
 	}
 	return (
-		<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
-			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-				<PurchaseSummary.Root
-					title={title}
-					description={description}
-					product={product}
-					email={email}
-				>
-					<div className="flex flex-col items-center gap-10 sm:flex-row">
-						<PurchaseSummary.ProductImage />
-						<div className="flex w-full flex-col items-start">
-							<PurchaseSummary.Status />
-							<PurchaseSummary.Title />
-							<PurchaseSummary.Description />
+		<LayoutClient withContainer>
+			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+					<PurchaseSummary.Root
+						title={title}
+						description={description}
+						product={product}
+						email={email}
+					>
+						<div className="flex flex-col items-center gap-10 sm:flex-row">
+							<PurchaseSummary.ProductImage />
+							<div className="flex w-full flex-col items-start">
+								<PurchaseSummary.Status />
+								<PurchaseSummary.Title />
+								<PurchaseSummary.Description />
+							</div>
 						</div>
-					</div>
-				</PurchaseSummary.Root>
-				{inviteTeam && (
+					</PurchaseSummary.Root>
+					{inviteTeam && (
+						<div className="border-b pb-5">
+							<h2 className="text-primary pb-4 text-sm uppercase">
+								Invite Team
+							</h2>
+							{inviteTeam}
+						</div>
+					)}
+					{loginLink && loginLink}
 					<div className="border-b pb-5">
-						<h2 className="text-primary pb-4 text-sm uppercase">Invite Team</h2>
-						{inviteTeam}
+						<h2 className="text-primary pb-4 text-sm uppercase">Invoice</h2>
+						<InvoiceTeaser.Root
+							className="flex w-full flex-row items-center justify-between sm:gap-10"
+							purchase={{ product: { name: stripeProductName }, ...purchase }}
+						>
+							<InvoiceTeaser.Link className="flex w-full flex-col justify-between sm:flex-row sm:items-center">
+								<InvoiceTeaser.Title className="inline-flex items-center gap-2">
+									<FileText className="h-4 w-4 opacity-75" />
+									<span className="underline">{stripeProductName}</span>
+								</InvoiceTeaser.Title>
+								<InvoiceTeaser.Metadata />
+							</InvoiceTeaser.Link>
+							<InvoiceTeaser.Link className="text-primary flex flex-shrink-0 hover:underline" />
+						</InvoiceTeaser.Root>
 					</div>
-				)}
-				{loginLink && loginLink}
-				<div className="border-b pb-5">
-					<h2 className="text-primary pb-4 text-sm uppercase">Invoice</h2>
-					<InvoiceTeaser.Root
-						className="flex w-full flex-row items-center justify-between sm:gap-10"
-						purchase={{ product: { name: stripeProductName }, ...purchase }}
-					>
-						<InvoiceTeaser.Link className="flex w-full flex-col justify-between sm:flex-row sm:items-center">
-							<InvoiceTeaser.Title className="inline-flex items-center gap-2">
-								<FileText className="h-4 w-4 opacity-75" />
-								<span className="underline">{stripeProductName}</span>
-							</InvoiceTeaser.Title>
-							<InvoiceTeaser.Metadata />
-						</InvoiceTeaser.Link>
-						<InvoiceTeaser.Link className="text-primary flex flex-shrink-0 hover:underline" />
-					</InvoiceTeaser.Root>
+					<div>
+						<PurchaseTransfer.Root
+							onTransferInitiated={async () => {
+								'use server'
+								revalidatePath('/thanks/purchase')
+							}}
+							purchaseUserTransfers={purchaseUserTransfers}
+							cancelPurchaseTransfer={cancelPurchaseTransfer}
+							initiatePurchaseTransfer={initiatePurchaseTransfer}
+						>
+							<PurchaseTransfer.Header />
+							<PurchaseTransfer.Available>
+								<PurchaseTransfer.Description />
+								<PurchaseTransfer.Form>
+									<PurchaseTransfer.InputLabel />
+									<PurchaseTransfer.InputEmail />
+									<PurchaseTransfer.SubmitButton />
+								</PurchaseTransfer.Form>
+							</PurchaseTransfer.Available>
+							<PurchaseTransfer.Initiated>
+								<PurchaseTransfer.Description />
+								<PurchaseTransfer.Cancel />
+							</PurchaseTransfer.Initiated>
+							<PurchaseTransfer.Completed>
+								<PurchaseTransfer.Description />
+							</PurchaseTransfer.Completed>
+						</PurchaseTransfer.Root>
+					</div>
 				</div>
-				<div>
-					<PurchaseTransfer.Root
-						onTransferInitiated={async () => {
-							'use server'
-							revalidatePath('/thanks/purchase')
-						}}
-						purchaseUserTransfers={purchaseUserTransfers}
-						cancelPurchaseTransfer={cancelPurchaseTransfer}
-						initiatePurchaseTransfer={initiatePurchaseTransfer}
-					>
-						<PurchaseTransfer.Header />
-						<PurchaseTransfer.Available>
-							<PurchaseTransfer.Description />
-							<PurchaseTransfer.Form>
-								<PurchaseTransfer.InputLabel />
-								<PurchaseTransfer.InputEmail />
-								<PurchaseTransfer.SubmitButton />
-							</PurchaseTransfer.Form>
-						</PurchaseTransfer.Available>
-						<PurchaseTransfer.Initiated>
-							<PurchaseTransfer.Description />
-							<PurchaseTransfer.Cancel />
-						</PurchaseTransfer.Initiated>
-						<PurchaseTransfer.Completed>
-							<PurchaseTransfer.Description />
-						</PurchaseTransfer.Completed>
-					</PurchaseTransfer.Root>
-				</div>
-			</div>
-		</main>
+			</main>
+		</LayoutClient>
 	)
 }

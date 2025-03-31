@@ -7,9 +7,13 @@ import {
 	useRef,
 	useState,
 } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useResource } from '@/components/resource-form/resource-context'
 import { removePostFromList } from '@/lib/lists-query'
 import { cn } from '@/utils/cn'
+import { getResourcePath } from '@/utils/resource-paths'
+import { getResourceStatus } from '@/utils/resource-status'
 import {
 	Instruction,
 	ItemMode,
@@ -24,12 +28,26 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
-import { ChevronDown, ChevronUp, Dot, ExternalLink, Trash } from 'lucide-react'
+import {
+	ChevronDown,
+	ChevronUp,
+	Dot,
+	ExternalLink,
+	Pencil,
+	Trash,
+} from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
 
-import { Button } from '@coursebuilder/ui'
+import {
+	Button,
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuSeparator,
+	ContextMenuTrigger,
+} from '@coursebuilder/ui'
 
 import { DraggableItemRenderer } from '../../../draggable-item-renderer'
 import { useSelection } from '../../../selection-context'
@@ -39,17 +57,6 @@ import { indentPerLevel } from './constants'
 import { DependencyContext, TreeContext } from './tree-context'
 
 const iconColor = token('color.icon', '#44546F')
-
-// Debug styles for drag states with dark mode support
-const debugStyles = {
-	dragging:
-		'outline-dashed outline-2 outline-orange-500/50 dark:outline-orange-400/50',
-	preview:
-		'outline-dashed outline-2 outline-blue-500/50 dark:outline-blue-400/50',
-	'parent-of-instruction':
-		'outline-dashed outline-2 outline-green-500/50 dark:outline-green-400/50',
-	idle: '',
-}
 
 // Performance monitoring
 const dragPerf = {
@@ -91,7 +98,7 @@ function Icon({ item }: { item: TreeItemType }) {
 
 function Preview({ item }: { item: TreeItemType }) {
 	return (
-		<div className="rounded-s bg-red-300 p-[var(--grid)]">Item {item.id}</div>
+		<div className="rounded-sm bg-red-300 p-[var(--grid)]">Item {item.id}</div>
 	)
 }
 
@@ -124,26 +131,37 @@ function delay({
 	}
 }
 
+export type TreeItemState =
+	| 'idle'
+	| 'dragging'
+	| 'preview'
+	| 'parent-of-instruction'
+	| 'editing'
+
 const TreeItem = memo(function TreeItem({
 	item,
 	mode,
 	level,
 	refresh = () => {},
 	index,
+	childIndex = 0,
 	showTierSelector = false,
+	className,
+	DEBUG = false,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
 	refresh?: () => void
 	index: number
+	childIndex?: number
 	showTierSelector?: boolean
+	className?: string
+	DEBUG?: boolean
 }) {
 	const buttonRef = useRef<HTMLDivElement>(null)
 	const { excludedIds, setExcludedIds } = useSelection()
-	const [state, setState] = useState<
-		'idle' | 'dragging' | 'preview' | 'parent-of-instruction'
-	>('idle')
+	const [state, setState] = useState<TreeItemState>('idle')
 	const [instruction, setInstruction] = useState<Instruction | null>(null)
 	const cancelExpandRef = useRef<(() => void) | null>(null)
 
@@ -153,6 +171,7 @@ const TreeItem = memo(function TreeItem({
 		getPathToItem,
 		rootResource,
 		rootResourceId,
+		onResourceUpdate,
 	} = useContext(TreeContext)
 	const { DropIndicator, attachInstruction, extractInstruction } =
 		useContext(DependencyContext)
@@ -190,6 +209,15 @@ const TreeItem = memo(function TreeItem({
 			const targetId = target.data.id
 			invariant(typeof targetId === 'string')
 
+			// If this is the target section itself and it's empty, highlight it
+			if (
+				targetId === item.id &&
+				item.type === 'section' &&
+				item.children.length === 0
+			) {
+				return true
+			}
+
 			const path = getPathToItem(targetId)
 			const parentLevel: number = getParentLevelOfInstruction(instruction)
 			const parentId = path[parentLevel]
@@ -223,6 +251,7 @@ const TreeItem = memo(function TreeItem({
 					uniqueContextId,
 					item: item,
 				}),
+				canDrag: () => state !== 'editing',
 				onGenerateDragPreview: ({ nativeSetDragImage }) => {
 					setCustomNativeDragPreview({
 						getOffset: pointerOutsideOfPreview({ x: '16px', y: '8px' }),
@@ -335,6 +364,7 @@ const TreeItem = memo(function TreeItem({
 		getPathToItem,
 		clearParentOfInstructionState,
 		shouldHighlightParent,
+		state,
 	])
 
 	useEffect(
@@ -375,17 +405,37 @@ const TreeItem = memo(function TreeItem({
 	const labelNode = (
 		<span
 			className={cn(
-				'flex flex-col items-center justify-between gap-3 bg-transparent px-5 sm:flex-row',
+				'flex flex-col items-center justify-between gap-3 bg-transparent px-3 sm:flex-row',
 				{
 					'opacity-40': state === 'dragging',
 					transparent: state === 'parent-of-instruction',
 				},
+				className,
 			)}
 		>
 			<div className="flex w-full flex-row items-center">
-				<span className="mr-2 min-w-[15px] text-xs opacity-50">
-					{index + 1}
+				<span className="mr-2 min-w-[20px] text-xs opacity-50">
+					{level === 0 ? index + 1 : `${index + 1}.${childIndex + 1}`}
 				</span>
+				{item.type === 'section' && (
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						className="-ml-1 mr-1 h-4 w-4 p-0 hover:bg-transparent"
+						onClick={(e) => {
+							e.stopPropagation()
+							toggleOpen()
+						}}
+						aria-label={item.isOpen ? 'Collapse section' : 'Expand section'}
+					>
+						{item.isOpen ? (
+							<ChevronUp className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+						) : (
+							<ChevronDown className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+						)}
+					</Button>
+				)}
 				<span
 					className={cn('text-left', {
 						'font-semibold': item.type === 'section',
@@ -404,97 +454,154 @@ const TreeItem = memo(function TreeItem({
 		</span>
 	)
 
-	return (
-		<Fragment>
-			<div className="relative transition-colors">
-				<DraggableItemRenderer
-					ref={buttonRef}
-					item={item}
-					label={labelNode}
-					className={cn('w-full text-left', debugStyles[state], {
-						'opacity-40': state === 'dragging',
-						// 'bg-yellow-50/20 dark:bg-yellow-500/10': shouldHighlightParent,
-					})}
-					data-drag-state={state}
-					data-item-id={item.id}
-					data-item-level={level}
-				>
-					{/* Debug info */}
-					{process.env.NODE_ENV === 'development' && (
-						<div className="absolute right-0 top-0 text-xs text-neutral-500 dark:text-neutral-400">
-							{state !== 'idle' && `State: ${state}`}
-						</div>
-					)}
-					{showTierSelector && item.type !== 'section' && (
-						<TierSelect item={item} dispatch={dispatch} />
-					)}
-					<Button
-						className="hover:bg-secondary h-6 w-6"
-						type="button"
-						variant="outline"
-						size="icon"
-						onClick={() => {
-							if (
-								item.itemData?.resource?.fields?.slug &&
-								item.type &&
-								item.type !== 'section'
-							) {
-								router.push(
-									`/${pluralize(item.type)}/${item.itemData.resource.fields.slug}/edit`,
-								)
-							}
-						}}
-					>
-						<ExternalLink className="h-3 w-3" />
-					</Button>
-					<Button
-						className="h-6 w-6"
-						type="button"
-						variant="outline"
-						size="icon"
-						onClick={async () => {
-							if (rootResourceId) {
-								dispatch({ type: 'remove-item', itemId: item.id })
-								const resourceId = item?.itemData?.resource?.id || item?.id // this is important because newly added items don't have itemData
-								if (resourceId && excludedIds.includes(resourceId)) {
-									setExcludedIds((prev) =>
-										prev.filter((id) => id !== resourceId),
-									)
-									refresh()
-								}
-								await removePostFromList({
-									postId: item.id,
-									listId: rootResourceId,
-								})
-							}
-						}}
-					>
-						<Trash className="h-3 w-3" />
-					</Button>
-				</DraggableItemRenderer>
+	const parentResource = useResource()?.resource
 
+	return (
+		<div
+			className={cn('relative', {
+				'bg-muted': state === 'parent-of-instruction',
+				'ring-primary/30 ring-2':
+					state === 'parent-of-instruction' &&
+					item.type === 'section' &&
+					item.children.length === 0,
+			})}
+		>
+			<div className={cn('relative')}>
+				<ContextMenu>
+					<ContextMenuTrigger>
+						<DraggableItemRenderer
+							ref={buttonRef}
+							item={item}
+							label={labelNode}
+							className={cn(
+								'hover:bg-muted w-full text-left transition ease-in-out',
+								{
+									'cursor-grabbing opacity-40': state === 'dragging', //  outline-dashed outline-2 outline-orange-500/50 dark:outline-orange-400/50
+									'cursor-grabbing': state === 'preview', // outline-dashed outline-2 outline-blue-500/50 dark:outline-blue-400/50
+									'bg-muted cursor-grabbing': state === 'parent-of-instruction', // outline-dashed outline-2 outline-green-500/50 dark:outline-green-400/50
+									'cursor-grab': state === 'idle',
+									'cursor-pointer': item.type === 'section',
+									'bg-muted': state === 'editing',
+								},
+							)}
+							data-drag-state={state}
+							data-item-id={item.id}
+							data-item-level={level}
+							state={state}
+							setState={setState}
+							onResourceUpdate={onResourceUpdate}
+							onClick={(e) => {
+								e.preventDefault()
+								e.stopPropagation()
+								if (item.type === 'section' && state !== 'editing') {
+									toggleOpen()
+								}
+							}}
+						>
+							{/* Debug info */}
+							{DEBUG && (
+								<div className="absolute right-0 top-0 text-xs">
+									{state !== 'idle' && `State: ${state}`}
+								</div>
+							)}
+							{showTierSelector && item.type !== 'section' && (
+								<TierSelect item={item} dispatch={dispatch} />
+							)}
+							<span className="text-muted-foreground ml-2 flex min-w-[90px] items-center gap-2 text-xs">
+								{getResourceStatus(
+									item.itemData?.resource.fields?.visibility,
+									item.itemData?.resource.fields?.state,
+								)}
+							</span>
+							<span></span>
+						</DraggableItemRenderer>
+					</ContextMenuTrigger>
+					<ContextMenuContent>
+						{item.type !== 'section' && item.type && (
+							<>
+								<ContextMenuItem asChild>
+									<Link
+										target="_blank"
+										href={getResourcePath(
+											item.type,
+											item.itemData?.resource?.fields?.slug,
+											'view',
+											parentResource && {
+												parentType: parentResource.type,
+												parentSlug:
+													parentResource.fields?.slug || parentResource.id,
+											},
+										)}
+									>
+										View
+									</Link>
+								</ContextMenuItem>
+								<ContextMenuSeparator />
+								<ContextMenuItem asChild>
+									<Link
+										target="_blank"
+										href={getResourcePath(
+											item.type,
+											item.itemData?.resource?.fields?.slug,
+											'edit',
+											parentResource && {
+												parentType: parentResource.type,
+												parentSlug:
+													parentResource.fields?.slug || parentResource.id,
+											},
+										)}
+									>
+										Edit
+									</Link>
+								</ContextMenuItem>
+							</>
+						)}
+						{onResourceUpdate && (
+							<ContextMenuItem onClick={() => setState('editing')}>
+								Rename
+							</ContextMenuItem>
+						)}
+						<ContextMenuItem
+							onClick={async () => {
+								if (rootResourceId) {
+									dispatch({ type: 'remove-item', itemId: item.id })
+									const resourceId = item?.itemData?.resource?.id || item?.id // this is important because newly added items don't have itemData
+									if (resourceId && excludedIds.includes(resourceId)) {
+										setExcludedIds((prev) =>
+											prev.filter((id) => id !== resourceId),
+										)
+										refresh()
+									}
+									await removePostFromList({
+										postId: item.id,
+										listId: rootResourceId,
+									})
+								}
+							}}
+						>
+							Remove from list
+						</ContextMenuItem>
+					</ContextMenuContent>
+				</ContextMenu>
 				{instruction ? (
 					<div
-						className={cn(
-							'bg-primary/50 dark:bg-primary/30 absolute left-0 h-px w-full',
-							{
-								'top-0': instruction.type === 'reorder-above',
-								'bottom-0': instruction.type === 'reorder-below',
-								'opacity-0': instruction.type === 'instruction-blocked',
-							},
-						)}
+						className={cn('bg-primary absolute left-0 h-px w-full', {
+							'top-0': instruction.type === 'reorder-above',
+							'bottom-0': instruction.type === 'reorder-below',
+							'opacity-0': instruction.type === 'instruction-blocked',
+						})}
 					/>
 				) : null}
 			</div>
 			{item.children.length && item.isOpen ? (
 				<div id={aria?.['aria-controls']}>
-					{item.children.map((child, index, array) => {
+					{item.children.map((child, idx) => {
 						const childType: ItemMode = (() => {
 							if (child.children.length && child.isOpen) {
 								return 'expanded'
 							}
 
-							if (index === array.length - 1) {
+							if (idx === item.children.length - 1) {
 								return 'last-in-group'
 							}
 
@@ -507,14 +614,16 @@ const TreeItem = memo(function TreeItem({
 								key={child.id}
 								level={level + 1}
 								mode={childType}
-								index={index}
+								index={level === 0 ? index : index}
+								childIndex={idx}
 								showTierSelector={showTierSelector}
+								className={'ml-7'}
 							/>
 						)
 					})}
 				</div>
 			) : null}
-		</Fragment>
+		</div>
 	)
 })
 

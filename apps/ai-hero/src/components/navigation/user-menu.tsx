@@ -27,7 +27,7 @@ import { NavLinkItem } from './nav-link-item'
 export const UserMenu = () => {
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
-	const ability = createAppAbility(abilityRules)
+	const ability = createAppAbility(abilityRules || [])
 
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
@@ -44,7 +44,7 @@ export const UserMenu = () => {
 	}
 
 	if (!sessionData?.user?.email) {
-		return <NavLinkItem className="border-l" label="Login" href="/login" />
+		return <NavLinkItem className="border-l" label="Log in" href="/login" />
 	}
 
 	const userAvatar = sessionData.user.image ? (

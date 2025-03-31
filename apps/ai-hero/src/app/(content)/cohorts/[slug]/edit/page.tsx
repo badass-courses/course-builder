@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getCohort } from '@/lib/cohorts-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -32,5 +33,9 @@ export default async function CohortEditPage(props: {
 		notFound()
 	}
 
-	return <EditCohortForm key={cohort.fields.slug} resource={cohort} />
+	return (
+		<LayoutClient>
+			<EditCohortForm key={cohort.fields.slug} resource={cohort} />
+		</LayoutClient>
+	)
 }

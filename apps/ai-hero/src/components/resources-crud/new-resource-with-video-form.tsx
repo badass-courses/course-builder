@@ -1,5 +1,15 @@
 import * as React from 'react'
-import { NewPostInput, PostType, PostTypeSchema } from '@/lib/posts'
+import { NewPostInput } from '@/lib/posts'
+import {
+	isTopLevelResourceType,
+	POST_SUBTYPES,
+	RESOURCE_TYPES_WITH_VIDEO,
+	ResourceCreationConfig,
+	supportsVideo,
+} from '@/lib/resources'
+import { createResourceAction } from '@/lib/resources/create-resource-action'
+import { ResourceCreationError } from '@/lib/resources/resource-errors'
+import { track } from '@/utils/analytics'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -23,25 +33,55 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	useToast,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { useResource } from '../resource-form/resource-context'
 import { VideoUploadFormItem } from './video-upload-form-item'
 
 const NewResourceWithVideoSchema = z.object({
-	title: z.string().min(2).max(90),
+	title: z
+		.string()
+		.min(2, 'Title must be at least 2 characters')
+		.max(90, 'Title must be less than 90 characters'),
 	videoResourceId: z.string().min(4, 'Please upload a video'),
 })
 
 type NewResourceWithVideo = z.infer<typeof NewResourceWithVideoSchema>
 
-const FormValuesSchema = NewResourceWithVideoSchema.extend({
-	postType: PostTypeSchema,
+// Improved schema for form values with better validation
+const FormValuesSchema = z.object({
+	title: z
+		.string()
+		.min(2, 'Title must be at least 2 characters')
+		.max(90, 'Title must be less than 90 characters'),
 	videoResourceId: z.string().optional(),
+	postType: z.string().refine(
+		(type) => isTopLevelResourceType(type) || POST_SUBTYPES.includes(type),
+		(type) => ({
+			message: `Invalid type: ${type}. Must be a valid resource type or post subtype.`,
+		}),
+	),
 })
 
 type FormValues = z.infer<typeof FormValuesSchema>
 
+/**
+ * Form for creating a new resource with an optional video attachment.
+ * Supports creating both top-level resources (workshop, tutorial) and post subtypes (article, podcast).
+ *
+ * @param props - Component props
+ * @param props.getVideoResource - Function to retrieve a video resource by ID or slug
+ * @param props.createResource - Function to create a post resource
+ * @param props.onResourceCreated - Callback when a resource is created
+ * @param props.availableResourceTypes - List of resource types available for selection
+ * @param props.defaultPostType - Default resource type to select
+ * @param props.className - Additional CSS classes
+ * @param props.children - Render prop for video upload UI
+ * @param props.uploadEnabled - Whether video upload is enabled
+ * @param props.topLevelResourceTypes - List of top-level resource types (not post subtypes)
+ */
 export function NewResourceWithVideoForm({
 	getVideoResource,
 	createResource,
@@ -51,18 +91,21 @@ export function NewResourceWithVideoForm({
 	className,
 	children,
 	uploadEnabled = true,
+	topLevelResourceTypes = [],
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewPostInput) => Promise<ContentResource>
 	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
-	availableResourceTypes?: PostType[] | undefined
-	defaultPostType?: PostType
+	availableResourceTypes?: string[] | undefined
+	defaultPostType?: string
 	className?: string
 	children: (
 		handleSetVideoResourceId: (value: string) => void,
 	) => React.ReactNode
 	uploadEnabled?: boolean
+	topLevelResourceTypes?: string[]
 }) {
+	const { toast } = useToast()
 	const [videoResourceId, setVideoResourceId] = React.useState<
 		string | undefined
 	>()
@@ -70,6 +113,7 @@ export function NewResourceWithVideoForm({
 		React.useState<boolean>(false)
 	const [isValidatingVideoResource, setIsValidatingVideoResource] =
 		React.useState<boolean>(false)
+	const [creationError, setCreationError] = React.useState<string | null>(null)
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(FormValuesSchema),
@@ -79,6 +123,14 @@ export function NewResourceWithVideoForm({
 			postType: defaultPostType,
 		},
 	})
+
+	// Determine if current type needs video
+	const selectedPostType = form.watch('postType')
+	const typeSupportsVideo = React.useMemo(
+		() => supportsVideo(selectedPostType),
+		[selectedPostType],
+	)
+	const typeRequiresVideo = false
 
 	async function* pollVideoResource(
 		videoResourceId: string,
@@ -107,19 +159,140 @@ export function NewResourceWithVideoForm({
 	const onSubmit = async (values: FormValues) => {
 		try {
 			setIsSubmitting(true)
-			if (values.videoResourceId) {
-				await pollVideoResource(values.videoResourceId).next()
+			setCreationError(null)
+
+			// Track attempt with resource type
+			track('resource_creation_attempt', {
+				resourceType: selectedPostType,
+				hasVideo: !!values.videoResourceId,
+				isTopLevel:
+					topLevelResourceTypes.includes(selectedPostType) ||
+					isTopLevelResourceType(selectedPostType),
+			})
+
+			// Validate video if required
+			if (typeRequiresVideo) {
+				if (!values.videoResourceId) {
+					setCreationError(
+						`A video is required for ${selectedPostType} resources`,
+					)
+
+					// Track validation error
+					track('resource_creation_validation_error', {
+						resourceType: selectedPostType,
+						error: 'missing_video',
+						message: `A video is required for ${selectedPostType} resources`,
+					})
+
+					setIsSubmitting(false)
+					return
+				}
+
+				try {
+					await pollVideoResource(values.videoResourceId).next()
+				} catch (error) {
+					setCreationError('Video resource validation failed')
+
+					// Track video validation error
+					track('resource_creation_validation_error', {
+						resourceType: selectedPostType,
+						error: 'video_validation_failed',
+						videoResourceId: values.videoResourceId,
+					})
+
+					setIsSubmitting(false)
+					return
+				}
 			}
-			const resource = await createResource(values as any)
+
+			const selectedType = values.postType
+			let resource: ContentResource | null = null
+
+			// Check if the selected type is a top-level resource type or a post subtype
+			if (
+				topLevelResourceTypes.includes(selectedType) ||
+				isTopLevelResourceType(selectedType)
+			) {
+				// If it's a top-level resource type, use createResourceAction
+				track('create_top_level_resource', {
+					resourceType: selectedType,
+					title: values.title,
+					hasVideo: !!values.videoResourceId,
+				})
+
+				resource = await createResourceAction(selectedType, values.title)
+			} else {
+				// If it's a post subtype, use createPost
+				track('create_post', {
+					postType: selectedType,
+					title: values.title,
+					hasVideo: !!values.videoResourceId,
+				})
+
+				resource = await createResource({
+					...values,
+					postType: selectedType as any,
+					createdById: '',
+				})
+			}
+
 			if (!resource) {
-				console.error('No resource created')
+				setCreationError('Failed to create resource')
+
+				// Track creation failure
+				track('resource_creation_failed', {
+					resourceType: selectedType,
+					reason: 'null_resource_returned',
+				})
+
 				return
 			}
 
+			// Track successful creation
+			track('resource_creation_success', {
+				resourceType: selectedType,
+				resourceId: resource.id,
+				hasVideo: !!values.videoResourceId,
+			})
+
+			toast({
+				title: 'Resource created',
+				description: `Successfully created ${selectedType}: ${values.title}`,
+			})
+
 			await onResourceCreated(resource, form.watch('title'))
 		} catch (error) {
+			let errorMessage = 'Error creating resource'
+			let errorType = 'unknown_error'
+			let errorDetails = {}
+
+			// Handle our custom error type
+			if (error instanceof ResourceCreationError) {
+				errorMessage = error.message
+				errorType = error.type
+				errorDetails = error.details || {}
+			} else if (error instanceof Error) {
+				errorMessage = error.message
+				errorType = 'standard_error'
+			}
+
+			// Track error with detailed information
+			track('resource_creation_error', {
+				resourceType: selectedPostType,
+				errorType,
+				errorMessage,
+				details: errorDetails,
+			})
+
+			setCreationError(errorMessage)
+			toast({
+				variant: 'destructive',
+				title: 'Creation failed',
+				description: errorMessage,
+			})
 			console.error('Error creating resource:', error)
-			// handle error, e.g. toast an error message
+		} finally {
+			setIsSubmitting(false)
 		}
 	}
 
@@ -140,8 +313,6 @@ export function NewResourceWithVideoForm({
 			setIsValidatingVideoResource(false)
 		}
 	}
-
-	const selectedPostType = form.watch('postType')
 
 	return (
 		<Form {...form}>
@@ -171,13 +342,17 @@ export function NewResourceWithVideoForm({
 						control={form.control}
 						name="postType"
 						render={({ field }) => {
-							const descriptions = {
-								lesson: 'A lesson to be added to a cohort',
+							const descriptions: Record<string, string> = {
+								lesson: 'Lessons can have solutions',
 								article: 'A standard article',
 								podcast:
 									'A podcast episode that will be distributed across podcast networks via the egghead podcast',
 								course:
 									'A collection of lessons that will be distributed as a course',
+								workshop: 'A comprehensive hands-on learning experience',
+								tutorial: 'A step-by-step guide to completing a specific task',
+								section:
+									'A section can be used to organize resources in a workshop',
 							}
 
 							return (
@@ -209,7 +384,7 @@ export function NewResourceWithVideoForm({
 									</FormControl>
 									{field.value && (
 										<div className="text-muted-foreground w-full text-right text-sm italic">
-											{descriptions[field.value as keyof typeof descriptions]}
+											{descriptions[field.value] || `A ${field.value} resource`}
 										</div>
 									)}
 									<FormMessage />
@@ -218,7 +393,7 @@ export function NewResourceWithVideoForm({
 						}}
 					/>
 				)}
-				{uploadEnabled && (
+				{uploadEnabled && (typeRequiresVideo || typeSupportsVideo) && (
 					<VideoUploadFormItem
 						selectedPostType={selectedPostType}
 						form={form}
@@ -231,16 +406,21 @@ export function NewResourceWithVideoForm({
 						{children}
 					</VideoUploadFormItem>
 				)}
+
+				{creationError && (
+					<div className="text-destructive mt-2 text-sm">{creationError}</div>
+				)}
+
 				<Button
 					type="submit"
 					variant="default"
+					className="capitalize"
 					disabled={
-						(videoResourceId ? !videoResourceValid : false) || isSubmitting
+						(videoResourceId ? !videoResourceValid : typeRequiresVideo) ||
+						isSubmitting
 					}
 				>
-					{isSubmitting
-						? 'Creating...'
-						: `Create ${selectedPostType.charAt(0).toUpperCase() + selectedPostType.slice(1)}`}
+					{isSubmitting ? 'Creating...' : `Create ${selectedPostType}`}
 				</Button>
 			</form>
 		</Form>

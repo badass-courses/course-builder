@@ -1,11 +1,6 @@
-import * as React from 'react'
 import { ResourceFormConfig } from '@/components/resource-form/with-resource-form'
 import { Cohort, CohortSchema } from '@/lib/cohort'
 import { updateResource } from '@/lib/resources-query'
-import { ImagePlusIcon } from 'lucide-react'
-import { z } from 'zod'
-
-import { ContentResource } from '@coursebuilder/core/schemas'
 
 import { onCohortSave } from '../actions'
 
@@ -48,10 +43,15 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 				},
 			}
 		},
-		createPostConfig: {
-			title: 'Create a Lesson',
-			defaultResourceType: 'cohort-lesson',
-			availableResourceTypes: ['cohort-lesson'],
+		createResourceConfig: {
+			title: 'Add Content',
+			availableTypes: [
+				{ type: 'post', postTypes: ['article'] },
+				{ type: 'workshop' },
+				{ type: 'tutorial' },
+				{ type: 'lesson' },
+			],
+			defaultType: { type: 'post', postType: 'article' },
 		},
 		getResourcePath: (slug?: string) =>
 			slug ? `/cohorts/${slug}` : '/cohorts',
@@ -82,7 +82,7 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 						</span>
 					</div>
 				),
-				showTierSelector: false,
+				showTierSelector: true,
 			},
 		},
 	}

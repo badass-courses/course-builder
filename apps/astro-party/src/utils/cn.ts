@@ -1,6 +1,3 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs))
-}
+// This file is kept for backward compatibility
+// Import the utility from the shared package
+export { cn } from '@coursebuilder/utils-ui/cn'

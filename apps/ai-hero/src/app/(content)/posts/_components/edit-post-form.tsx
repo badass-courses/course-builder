@@ -1,22 +1,24 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { withResourceForm } from '@/components/resource-form/with-resource-form'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { List } from '@/lib/lists'
 import { Post } from '@/lib/posts'
-import { ImagePlusIcon } from 'lucide-react'
+import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
 import { postFormConfig } from './post-form-config'
 import { PostFormFields } from './post-form-fields'
+import StandaloneVideoResourceUploaderAndViewer from './standalone-video-resource-uploader-and-viewer'
 
 export type EditPostFormProps = {
 	post: Post
-	videoResourceLoader: Promise<VideoResource | null>
-	videoResourceId?: string | null | undefined
+	videoResourceLoader?: Promise<VideoResource | null>
+	videoResource?: VideoResource | null
 	listsLoader: Promise<List[]>
 }
 
@@ -26,27 +28,35 @@ export type EditPostFormProps = {
 export function EditPostForm({
 	post,
 	videoResourceLoader,
-	videoResourceId,
+	videoResource,
 	listsLoader,
 }: EditPostFormProps) {
 	const isMobile = useIsMobile()
-	const videoResource = videoResourceLoader
-		? React.use(videoResourceLoader)
-		: null
+	const router = useRouter()
+
+	// Handle either direct videoResource or resolve from loader
+	const resolvedVideoResource =
+		videoResource ||
+		(videoResourceLoader ? React.use(videoResourceLoader) : null)
 
 	const PostForm = withResourceForm(
 		(props) => (
 			<PostFormFields
 				{...props}
-				videoResourceId={videoResourceId}
+				videoResource={resolvedVideoResource}
 				listsLoader={listsLoader}
 			/>
 		),
 		{
 			...postFormConfig,
+			onSave: async (resource, hasNewSlug) => {
+				if (hasNewSlug) {
+					router.push(`/posts/${resource.fields?.slug}/edit`)
+				}
+			},
 			customTools: [
 				{
-					id: 'media',
+					id: 'images',
 					icon: () => (
 						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
 					),
@@ -57,6 +67,13 @@ export function EditPostForm({
 							uploadDirectory={`posts`}
 						/>
 					),
+				},
+				{
+					id: 'videos',
+					icon: () => (
+						<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
 				},
 			],
 		},

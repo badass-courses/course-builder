@@ -39,7 +39,7 @@ export function EditResourcesFormDesktop({
 	toggleMdxPreview,
 	isShowingMdxPreview,
 }: {
-	onSave?: (resource: ContentResource) => Promise<void>
+	onSave?: (resource: ContentResource, hasNewSlug: boolean) => Promise<void>
 	onPublish?: (resource: ContentResource) => Promise<void>
 	onArchive?: (resource: ContentResource) => Promise<void>
 	onUnPublish?: (resource: ContentResource) => Promise<void>
@@ -94,7 +94,9 @@ export function EditResourcesFormDesktop({
 		}
 
 		if (updatedResource && onSave) {
-			return await onSave(updatedResource)
+			const hasNewSlug = resource.fields.slug !== updatedResource.fields.slug
+
+			return await onSave(updatedResource, hasNewSlug)
 		}
 	}
 

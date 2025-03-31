@@ -5,7 +5,7 @@
 			@apply flex w-full;
 		}
 		[data-sr-fieldset]:last-of-type {
-			@apply md:w-[150%];
+			@apply md:w-[130%];
 		}
 		input {
 			@apply border-border flex h-14 items-center rounded-none border-y-0 border-b px-6 focus-visible:ring-0 focus-visible:ring-offset-0 md:h-20 md:border-x md:border-b-0 md:px-8 md:text-lg !important;
@@ -17,7 +17,7 @@
 			@apply opacity-50;
 		}
 		[data-sr-button] {
-			@apply bg-primary text-primary-foreground h-14 w-full rounded-none px-8 font-medium md:h-20 md:w-auto md:text-lg lg:px-12 !important;
+			@apply bg-primary text-primary-foreground h-14 w-full rounded-none px-8 font-medium md:h-20 md:w-auto md:text-lg lg:px-10 !important;
 		}
 	}
 }

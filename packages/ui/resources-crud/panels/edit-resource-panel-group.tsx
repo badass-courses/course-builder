@@ -11,6 +11,7 @@ export function EditResourcePanelGroup({
 		<ResizablePanelGroup
 			direction="horizontal"
 			className="!flex-col border-t md:!flex-row"
+			autoSaveId="edit-layout-panel-group"
 		>
 			{children}
 		</ResizablePanelGroup>

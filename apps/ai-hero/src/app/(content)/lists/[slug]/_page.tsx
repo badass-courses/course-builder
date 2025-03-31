@@ -3,26 +3,18 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
-import { cookies } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { Code } from '@/components/codehike/code'
-import Scrollycoding from '@/components/codehike/scrollycoding'
 import { Contributor } from '@/components/contributor'
 import { Share } from '@/components/share'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
-import { track } from '@/utils/analytics'
+import { compileMDX } from '@/utils/compile-mdx'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { PlayIcon } from '@heroicons/react/24/solid'
-import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
-import { ChevronRight, Github, Play, Share2 } from 'lucide-react'
-import { compileMDX } from 'next-mdx-remote/rsc'
-import remarkGfm from 'remark-gfm'
+import { Github, Share2 } from 'lucide-react'
 
 import {
 	Button,
@@ -85,37 +77,12 @@ export default async function ListPage(props: {
 	let body
 
 	if (list.fields.body) {
-		const { content } = await compileMDX({
-			source: list.fields.body,
-			// @ts-expect-error
-			components: { Code, Scrollycoding, Testimonial },
-			options: {
-				mdxOptions: {
-					remarkPlugins: [
-						remarkGfm,
-						[
-							remarkCodeHike,
-							{
-								components: { code: 'Code' },
-							},
-						],
-					],
-					recmaPlugins: [
-						[
-							recmaCodeHike,
-							{
-								components: { code: 'Code' },
-							},
-						],
-					],
-				},
-			},
-		})
+		const { content } = await compileMDX(list.fields.body)
 		body = content
 	}
 
 	const firstResource = list.resources?.[0]?.resource
-	const firstResourceHref = `/${firstResource?.fields?.slug}?list=${list.fields.slug}`
+	const firstResourceHref = `/${firstResource?.fields?.slug}`
 
 	const squareGridPattern = generateGridPattern(
 		list.fields.title,
@@ -125,55 +92,81 @@ export default async function ListPage(props: {
 		true,
 	)
 
+	const Links = ({ children }: { children?: React.ReactNode }) => {
+		return (
+			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
+				<div
+					aria-hidden="true"
+					className="via-foreground/10 to-muted absolute -bottom-px right-0 h-px w-2/3 bg-gradient-to-r from-transparent"
+				/>
+				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
+					<div className="h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat sm:w-8 lg:w-10  dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]" />
+					{firstResource?.fields?.slug && (
+						<Button
+							size="lg"
+							className="before:bg-primary-foreground relative h-14 w-full rounded-none text-base font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[''] sm:max-w-[180px]"
+							asChild
+						>
+							<Link href={firstResourceHref}>
+								Start Learning
+								{/* <ChevronRight className="ml-2 w-4" /> */}
+							</Link>
+						</Button>
+					)}
+					<div
+						className={cn('w-full items-center sm:flex sm:w-auto', {
+							'grid grid-cols-2': list?.fields?.github,
+						})}
+					>
+						{list?.fields?.github && (
+							<Button
+								className="h-14 w-full rounded-none border-r px-5 md:w-auto"
+								variant="ghost"
+								size="lg"
+								asChild
+							>
+								<Link href={list.fields.github} target="_blank">
+									<Github className="mr-2 w-3" /> Code
+								</Link>
+							</Button>
+						)}
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button
+									className="h-14 w-full rounded-none px-5 md:w-auto md:border-r"
+									variant="ghost"
+									size="lg"
+								>
+									<Share2 className="mr-2 w-3" /> Share
+								</Button>
+							</DialogTrigger>
+							<DialogContent>
+								<DialogTitle>Share {list.fields.title}</DialogTitle>
+								<Share className="" />
+							</DialogContent>
+						</Dialog>
+					</div>
+				</div>
+				{children}
+			</div>
+		)
+	}
+
 	return (
-		<main className="flex min-h-screen w-full flex-col pb-16">
-			<header className="relative flex items-center justify-center px-5 pb-8 sm:px-8 sm:pb-0">
-				<div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col-reverse items-center justify-between gap-10 py-5 md:grid md:grid-cols-5 md:py-16 lg:gap-16">
-					<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 md:items-start">
-						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left">
+		<main className="flex min-h-screen w-full flex-col">
+			<header className="relative flex items-center justify-center md:px-8 lg:px-10">
+				<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
+					<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
+						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
 							{list.fields.title}
 						</h1>
 						{list.fields.description && (
-							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center sm:prose-lg opacity-75">
+							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
 								<p>{list.fields.description}</p>
 							</div>
 						)}
-						<Contributor />
-						<div className="mt-5 flex w-full flex-col flex-wrap items-center justify-center gap-1.5 sm:flex-row sm:gap-2 md:justify-start">
-							{firstResource?.fields?.slug && (
-								<Button size="lg" className="w-full sm:max-w-[180px]" asChild>
-									<Link href={firstResourceHref}>
-										Start Learning <ChevronRight className="ml-2 w-4" />
-									</Link>
-								</Button>
-							)}
-							{list?.fields?.github && (
-								<Button
-									className="w-full px-5 sm:w-auto"
-									variant="outline"
-									size="lg"
-									asChild
-								>
-									<Link href={list.fields.github} target="_blank">
-										<Github className="mr-2 w-3" /> Code
-									</Link>
-								</Button>
-							)}
-							<Dialog>
-								<DialogTrigger asChild>
-									<Button
-										className="w-full px-5 sm:w-auto"
-										variant="outline"
-										size="lg"
-									>
-										<Share2 className="mr-2 w-3" /> Share
-									</Button>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogTitle>Share {list.fields.title}</DialogTitle>
-									<Share className="" />
-								</DialogContent>
-							</Dialog>
+						<div className="flex items-center gap-2">
+							<Contributor />
 						</div>
 					</div>
 					<div className="col-span-2">
@@ -188,7 +181,7 @@ export default async function ListPage(props: {
 									src={list.fields.image}
 									width={480}
 									height={270}
-									className="rounded brightness-90 transition duration-300 ease-in-out group-hover:brightness-100"
+									className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
 									sizes="(max-width: 768px) 100vw, 480px"
 								/>
 								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
@@ -202,6 +195,7 @@ export default async function ListPage(props: {
 						<ListActionBar className="absolute right-0 top-5" list={list} />
 					</Suspense>
 				</div>
+
 				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
 					<img
 						src={squareGridPattern}
@@ -215,14 +209,20 @@ export default async function ListPage(props: {
 					/>
 				</div>
 			</header>
-			<div className="px-5 sm:px-8">
-				<div className="mx-auto mt-10 flex w-full max-w-5xl flex-col gap-10 sm:grid md:grid-cols-5 lg:gap-16">
-					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
+			<Links>
+				<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
+					Content
+				</div>
+			</Links>
+			<div className="">
+				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid ">
+					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
 						{body || 'No body found.'}
 					</article>
 					<ListResources list={list} />
 				</div>
 			</div>
+			<Links />
 		</main>
 	)
 }

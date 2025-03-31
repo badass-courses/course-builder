@@ -26,7 +26,7 @@ export const attributeLabelMap: {
 	title: 'Title',
 	type: 'Type',
 	state: 'State',
-	visibility: 'External ID',
+	visibility: 'Visibility',
 	id: 'ID',
 	slug: 'Slug',
 	published_at_timestamp: 'Published At',

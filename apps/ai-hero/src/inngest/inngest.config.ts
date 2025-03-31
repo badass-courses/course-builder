@@ -18,6 +18,10 @@ import { createUserOrganizations } from './functions/create-user-organization'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import {
+	videoResourceAttached,
+	videoResourceDetached,
+} from './functions/video-resource-attached'
 
 export const inngestConfig = {
 	client: inngest,
@@ -41,5 +45,7 @@ export const inngestConfig = {
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
 		createUserOrganizations,
+		videoResourceAttached,
+		videoResourceDetached,
 	],
 }

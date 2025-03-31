@@ -34,9 +34,7 @@ export default function PostNextUpFromListPagination({
 
 	React.useEffect(() => {
 		if (nextUp) {
-			router.prefetch(
-				`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`,
-			)
+			router.prefetch(`/${nextUp.resource.fields?.slug}`)
 		}
 	}, [nextUp, list, router])
 
@@ -45,7 +43,7 @@ export default function PostNextUpFromListPagination({
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
 			className={cn(
-				'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
+				'dark:bg-card bg-background flex w-full flex-col items-center border-t px-5 py-16 text-center',
 				className,
 			)}
 			aria-label="List navigation"
@@ -54,7 +52,7 @@ export default function PostNextUpFromListPagination({
 			<ul>
 				<li className="flex flex-col">
 					<Link
-						href={`/${nextUp.resource.fields?.slug}${list ? `?list=${list.fields.slug}` : ''}`}
+						href={`/${nextUp.resource.fields?.slug}`}
 						className="dark:text-primary flex w-full items-center gap-2 text-balance text-lg text-orange-600 hover:underline lg:text-xl"
 						onClick={async () => {
 							if (!isCompleted) {

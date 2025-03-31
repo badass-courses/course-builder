@@ -41,30 +41,30 @@ export interface CreatePostModalProps {
 	 * The default type of resource to create
 	 * @default 'article'
 	 */
-	defaultResourceType?: PostType
+	defaultResourceType?: string
 	/**
 	 * List of allowed resource types that can be created in this context
 	 * @default ['article']
 	 */
-	availableResourceTypes?: PostType[]
+	availableResourceTypes?: string[]
+	/**
+	 * List of top-level resource types (not post subtypes)
+	 */
+	topLevelResourceTypes?: string[]
 	/**
 	 * Custom title for the dialog header
 	 * @default 'New Post'
 	 */
 	title?: string
 	/**
-	 * Parent lesson ID when creating a solution
+	 * Whether to enable video upload
+	 * @default true
 	 */
-	parentLessonId?: string
-	/**
-	 * Whether this modal is being used to create a solution
-	 */
-	isSolutionContext?: boolean
+	uploadEnabled?: boolean
 }
 
 /**
- * A modal dialog component for creating new posts or lessons.
- * Provides a form interface wrapped in a dialog with optional trigger button.
+ * Modal dialog for creating new post resources.
  *
  * @example
  * ```tsx
@@ -72,8 +72,8 @@ export interface CreatePostModalProps {
  *   onResourceCreated={async (resource) => {
  *     // Custom handling after creation
  *   }}
- *   defaultResourceType="cohort-lesson"
- *   availableResourceTypes={['cohort-lesson', 'article']}
+ *   defaultResourceType="article"
+ *   availableResourceTypes={['article', 'podcast']}
  * />
  * ```
  */
@@ -84,9 +84,9 @@ export function CreatePostModal({
 	open,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
+	topLevelResourceTypes = [],
 	title = 'New Post',
-	parentLessonId,
-	isSolutionContext = false,
+	uploadEnabled = true,
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
 	const [isProcessing, setIsProcessing] = React.useState(false)
@@ -99,6 +99,7 @@ export function CreatePostModal({
 		setIsProcessing(true)
 		if (onResourceCreated) {
 			await onResourceCreated(resource)
+			setIsProcessing(false)
 		}
 	}
 
@@ -121,8 +122,7 @@ export function CreatePostModal({
 						className="w-full gap-1"
 						onClick={() => setIsOpen(true)}
 					>
-						<FilePlus2 className="h-4 w-4" />{' '}
-						{isSolutionContext ? 'Add Solution' : 'New Post'}
+						<FilePlus2 className="h-4 w-4" /> {'New Post'}
 					</Button>
 				</DialogTrigger>
 			)}
@@ -139,8 +139,8 @@ export function CreatePostModal({
 					onResourceCreated={handleResourceCreated}
 					defaultResourceType={defaultResourceType}
 					availableResourceTypes={availableResourceTypes}
-					parentLessonId={parentLessonId}
-					onNavigationStart={() => setIsOpen(false)}
+					topLevelResourceTypes={topLevelResourceTypes}
+					uploadEnabled={uploadEnabled}
 				/>
 			</DialogContent>
 		</Dialog>

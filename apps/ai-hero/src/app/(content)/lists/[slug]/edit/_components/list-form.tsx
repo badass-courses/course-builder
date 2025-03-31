@@ -1,12 +1,13 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import {
 	withResourceForm,
 	type ResourceFormProps,
 } from '@/components/resource-form/with-resource-form'
 import { List, ListSchema, type ListUpdate } from '@/lib/lists'
-import { updateList } from '@/lib/lists-query'
+import { updateList, updateListItemFields } from '@/lib/lists-query'
 
 import { ListMetadataFormFields } from './list-metadata-form-fields'
 
@@ -29,10 +30,13 @@ function BaseListForm({
 
 /**
  * Enhanced list form with resource form functionality
+ * @param {Object} props - Component props
+ * @param {List} props.resource - The list resource to edit
  */
-export const ListForm = withResourceForm<List, typeof ListSchema>(
-	BaseListForm,
-	{
+export function EditListForm({ resource }: { resource: List }) {
+	const router = useRouter()
+
+	const ListForm = withResourceForm<List, typeof ListSchema>(BaseListForm, {
 		resourceType: 'list',
 		schema: ListSchema,
 		defaultValues: (resource) => ({
@@ -98,6 +102,11 @@ export const ListForm = withResourceForm<List, typeof ListSchema>(
 				type: 'list',
 			} as List
 		},
+		onSave: async (resource, hasNewSlug) => {
+			if (hasNewSlug) {
+				router.push(`/lists/${resource.fields?.slug}/edit`)
+			}
+		},
 		bodyPanelConfig: {
 			showListResources: true,
 			listEditorConfig: {
@@ -109,13 +118,22 @@ export const ListForm = withResourceForm<List, typeof ListSchema>(
 						</span>
 					</div>
 				),
-				showTierSelector: true,
+				showTierSelector: false,
+				onResourceUpdate: async (itemId, data) => {
+					await updateListItemFields(itemId, data)
+				},
 			},
 		},
-		createPostConfig: {
-			title: 'Create a Resource',
-			defaultResourceType: 'article',
-			availableResourceTypes: ['article'],
+		createResourceConfig: {
+			title: 'Add Content',
+			availableTypes: [
+				{ type: 'post', postTypes: ['article'] },
+				{ type: 'lesson' },
+				{ type: 'section' },
+			],
+			defaultType: { type: 'post', postType: 'article' },
 		},
-	},
-)
+	})
+
+	return <ListForm resource={resource} />
+}

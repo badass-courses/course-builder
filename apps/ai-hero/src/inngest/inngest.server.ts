@@ -29,6 +29,12 @@ import {
 } from '@/inngest/events/postmark-webhook'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
 import {
+	VIDEO_ATTACHED_EVENT,
+	VIDEO_DETACHED_EVENT,
+	VideoAttached,
+	VideoDetached,
+} from '@/inngest/events/video-attachment'
+import {
 	SYNC_PURCHASE_TAGS_EVENT,
 	SyncPurchaseTags,
 } from '@/inngest/functions/sync-purchase-tags'
@@ -91,6 +97,8 @@ export type Events = {
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
 	[CREATE_USER_ORGANIZATIONS_EVENT]: CreateUserOrganizations
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
+	[VIDEO_ATTACHED_EVENT]: VideoAttached
+	[VIDEO_DETACHED_EVENT]: VideoDetached
 }
 
 const callbackBase =

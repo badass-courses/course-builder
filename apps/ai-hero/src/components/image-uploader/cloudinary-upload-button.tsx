@@ -48,7 +48,7 @@ export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
 									console.debug('Done! Here is the image info: ', result.info)
 									createImageResource({
 										asset_id: result.info.asset_id,
-										secure_url: result.info.url,
+										secure_url: result.info.secure_url,
 									})
 								}
 							},

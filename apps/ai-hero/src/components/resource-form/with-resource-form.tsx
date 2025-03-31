@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { PostType } from '@/lib/posts'
+import type { PostUpdate, UpdatePostRequest } from '@/lib/posts'
+import { ResourceType as ResourceTypeFromTypes } from '@/lib/resource-types'
+import { ResourceCreationConfig } from '@/lib/resources'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -16,6 +16,8 @@ import { ContentResource } from '@coursebuilder/core/schemas'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
+
+import { ResourceProvider } from './resource-context'
 
 /**
  * Base fields required for all resource types in the system.
@@ -81,7 +83,7 @@ export interface ResourceFormConfig<
 	S extends z.ZodSchema,
 > {
 	/** Type of resource being edited */
-	resourceType: 'cohort' | 'list' | 'page' | 'post' | 'tutorial' | 'workshop'
+	resourceType: ResourceTypeFromTypes
 
 	/** Zod schema for form validation */
 	schema: S
@@ -90,7 +92,25 @@ export interface ResourceFormConfig<
 	defaultValues: (resource?: T) => z.infer<S>
 
 	/**
+	 * Configuration for creating new resources within this resource
+	 * @example
+	 * ```typescript
+	 * createResourceConfig: {
+	 *   title: 'Create New Content',
+	 *   availableTypes: [
+	 *     { type: 'workshop' },
+	 *     { type: 'tutorial' },
+	 *     { type: 'post', postTypes: ['article', 'podcast'] }
+	 *   ],
+	 *   defaultType: { type: 'post', postType: 'article' }
+	 * }
+	 * ```
+	 */
+	createResourceConfig?: ResourceCreationConfig
+
+	/**
 	 * Configuration for creating new posts within this resource
+	 * @deprecated Use createResourceConfig instead for more flexibility with all resource types
 	 * @example
 	 * ```typescript
 	 * createPostConfig: {
@@ -102,8 +122,8 @@ export interface ResourceFormConfig<
 	 */
 	createPostConfig?: {
 		title: string
-		defaultResourceType: PostType
-		availableResourceTypes: PostType[]
+		defaultResourceType: string
+		availableResourceTypes: string[]
 	}
 
 	/** Additional tools to be displayed in the resource editor */
@@ -125,7 +145,7 @@ export interface ResourceFormConfig<
 	autoUpdateResource?: (resource: Partial<T>) => Promise<T>
 
 	/** Optional callback after successful save */
-	onSave?: (resource: ContentResource) => Promise<void>
+	onSave?: (resource: ContentResource, hasNewSlug: boolean) => Promise<void>
 
 	/**
 	 * Configuration for the body panel
@@ -143,6 +163,10 @@ export interface ResourceFormConfig<
 				resourceId: string,
 				newPosition: number,
 			) => Promise<void>
+			onResourceUpdate?: (
+				itemId: string,
+				fields: Record<string, any>,
+			) => void | Promise<void>
 		}
 	}
 }
@@ -224,63 +248,108 @@ export function withResourceForm<
 			? EditResourcesFormMobile
 			: EditResourcesFormDesktop
 
-		// Combine default and custom tools
+		// Revert back to original processing of custom tools without resource injection
 		const tools = [
 			...defaultTools,
 			...(config.customTools ?? []),
 		] as ResourceTool[]
 
+		// Extract available resource types and default resource type based on config format
+		let availableResourceTypes: string[] = ['article']
+		let defaultResourceType: string = 'article'
+		let resourceTitle: string | undefined
+		let topLevelResourceTypes: string[] = []
+
+		if (config.createResourceConfig) {
+			// New format
+			availableResourceTypes =
+				config.createResourceConfig.availableTypes.flatMap((typeConfig) => {
+					if ('postTypes' in typeConfig) {
+						// For post types, return the post subtypes
+						return typeConfig.postTypes
+					} else {
+						// For other resource types, return the type itself
+						topLevelResourceTypes.push(typeConfig.type)
+						return [typeConfig.type]
+					}
+				})
+
+			defaultResourceType =
+				'postType' in config.createResourceConfig.defaultType
+					? config.createResourceConfig.defaultType.postType || 'article'
+					: config.createResourceConfig.defaultType.type
+
+			resourceTitle = config.createResourceConfig.title
+		} else if (config.createPostConfig) {
+			// Old format
+			availableResourceTypes = config.createPostConfig.availableResourceTypes
+			defaultResourceType = config.createPostConfig.defaultResourceType
+			resourceTitle = config.createPostConfig.title
+		}
+
 		return (
-			<ResourceFormComponent
-				resource={resource}
+			<ResourceProvider
 				form={form}
-				resourceSchema={config.schema}
-				getResourcePath={config.getResourcePath}
-				updateResource={config.updateResource}
-				autoUpdateResource={config.autoUpdateResource}
-				onSave={config.onSave}
-				bodyPanelSlot={
-					config.bodyPanelConfig?.showListResources ? (
-						<ListResourcesEdit
-							list={resource}
-							config={{
-								selection: {
-									availableResourceTypes: config.createPostConfig
-										?.availableResourceTypes || ['article'],
-									defaultResourceType:
-										config.createPostConfig?.defaultResourceType || 'article',
-									createResourceTitle: config.createPostConfig?.title,
-									showTierSelector:
-										config.bodyPanelConfig?.listEditorConfig?.showTierSelector,
-									searchConfig:
-										config.bodyPanelConfig?.listEditorConfig?.searchConfig,
-								},
-								title: config.bodyPanelConfig?.listEditorConfig?.title,
-								onResourceAdd:
-									config.bodyPanelConfig?.listEditorConfig?.onResourceAdd,
-								onResourceRemove:
-									config.bodyPanelConfig?.listEditorConfig?.onResourceRemove,
-								onResourceReorder:
-									config.bodyPanelConfig?.listEditorConfig?.onResourceReorder,
-							}}
-						/>
-					) : null
-				}
-				availableWorkflows={[
-					{
-						value: `${config.resourceType}-chat-default`,
-						label: `${config.resourceType.charAt(0).toUpperCase() + config.resourceType.slice(1)} Chat`,
-						default: true,
-					},
-				]}
-				sendResourceChatMessage={sendResourceChatMessage}
-				hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-				user={session?.user}
-				tools={tools}
-				theme={theme}
+				resource={resource}
+				resourceType={config.resourceType}
 			>
-				<Component resource={resource} form={form} />
-			</ResourceFormComponent>
+				<ResourceFormComponent
+					resource={resource}
+					form={form}
+					resourceSchema={config.schema}
+					getResourcePath={config.getResourcePath}
+					updateResource={config.updateResource}
+					autoUpdateResource={config.autoUpdateResource}
+					onSave={config.onSave}
+					bodyPanelSlot={
+						config.bodyPanelConfig?.showListResources ? (
+							<ListResourcesEdit
+								list={resource}
+								config={{
+									selection: {
+										availableResourceTypes: availableResourceTypes as string[],
+										defaultResourceType: defaultResourceType,
+										createResourceTitle: resourceTitle,
+										showTierSelector:
+											config.bodyPanelConfig?.listEditorConfig
+												?.showTierSelector,
+										searchConfig:
+											config.bodyPanelConfig?.listEditorConfig?.searchConfig,
+										topLevelResourceTypes: topLevelResourceTypes || ['section'],
+									},
+									title: config.bodyPanelConfig?.listEditorConfig?.title,
+									onResourceAdd:
+										config.bodyPanelConfig?.listEditorConfig?.onResourceAdd,
+									onResourceRemove:
+										config.bodyPanelConfig?.listEditorConfig?.onResourceRemove,
+									onResourceReorder:
+										config.bodyPanelConfig?.listEditorConfig?.onResourceReorder,
+									onResourceUpdate: async (itemId, fields) => {
+										await config.bodyPanelConfig?.listEditorConfig?.onResourceUpdate?.(
+											itemId,
+											fields,
+										)
+									},
+								}}
+							/>
+						) : null
+					}
+					availableWorkflows={[
+						{
+							value: `${config.resourceType}-chat-default`,
+							label: `${config.resourceType.charAt(0).toUpperCase() + config.resourceType.slice(1)} Chat`,
+							default: true,
+						},
+					]}
+					sendResourceChatMessage={sendResourceChatMessage}
+					hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+					user={session?.user}
+					tools={tools}
+					theme={theme}
+				>
+					<Component resource={resource} form={form} />
+				</ResourceFormComponent>
+			</ResourceProvider>
 		)
 	}
 }

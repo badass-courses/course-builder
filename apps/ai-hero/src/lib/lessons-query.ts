@@ -6,6 +6,7 @@ import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { LessonSchema } from '@/lib/lessons'
 import type { PostUpdate } from '@/lib/posts'
+import { upsertPostToTypeSense } from '@/lib/typesense-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -19,6 +20,8 @@ import {
 } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { last } from '@coursebuilder/nodash'
+
+import { Lesson } from './lessons'
 
 const redis = Redis.fromEnv()
 
@@ -263,34 +266,64 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 	return parsedSolution.data
 }
 
-export async function updateLesson(input: PostUpdate) {
+export async function updateLesson(input: Partial<Lesson> | PostUpdate) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}
 
-	const currentLesson = await getLesson(input.id)
+	// Ensure we have an ID to look up
+	const id = input.id
+	if (!id) {
+		throw new Error('Lesson ID is required for updates')
+	}
+
+	const currentLesson = await getLesson(id)
 
 	if (!currentLesson) {
-		throw new Error(`Tip with id ${input.id} not found.`)
+		throw new Error(`Lesson with id ${id} not found.`)
 	}
 
 	let lessonSlug = currentLesson.fields.slug
 
-	if (input.fields.title !== currentLesson.fields.title) {
-		const splitSlug = currentLesson?.fields.slug.split('~') || ['', guid()]
-		lessonSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	// Handle both PostUpdate and Lesson formats
+	let titleFromInput: string | undefined
+	let fieldsToUpdate: Record<string, any> = {}
+
+	// Safely extract fields regardless of input type
+	if (input.fields) {
+		fieldsToUpdate = input.fields
+		titleFromInput = input.fields.title
 	}
 
-	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
-		id: currentLesson.id,
+	if (titleFromInput && titleFromInput !== currentLesson.fields.title) {
+		const splitSlug = currentLesson?.fields.slug.split('~') || ['', guid()]
+		lessonSlug = `${slugify(titleFromInput)}~${splitSlug[1] || guid()}`
+	}
+
+	const updatedLesson = {
+		...currentLesson,
 		fields: {
 			...currentLesson.fields,
-			...input.fields,
+			...fieldsToUpdate,
 			slug: lessonSlug,
 		},
+	}
+
+	// Update the lesson
+	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
+		id: currentLesson.id,
+		fields: updatedLesson.fields,
 	})
+
+	// Index the lesson in Typesense using the existing post indexing function
+	try {
+		await upsertPostToTypeSense(updatedLesson, 'save')
+		console.log('🔍 Lesson updated in Typesense')
+	} catch (error) {
+		console.log('❌ Error updating lesson in Typesense', error)
+	}
 
 	revalidateTag('lesson')
 

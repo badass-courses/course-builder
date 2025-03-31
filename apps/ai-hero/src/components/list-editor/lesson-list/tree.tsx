@@ -63,7 +63,7 @@ function createTreeItemRegistry() {
 }
 
 // Debug utilities
-const DEBUG = process.env.NODE_ENV === 'development'
+const DEBUG = false // process.env.NODE_ENV === 'development'
 
 interface PerformanceMetrics {
 	dragOperations: number
@@ -107,6 +107,8 @@ export default function Tree({
 	rootResource,
 	onRefresh,
 	showTierSelector = false,
+
+	onResourceUpdate,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
@@ -114,9 +116,11 @@ export default function Tree({
 	rootResource: ContentResource | Product
 	onRefresh?: () => void
 	showTierSelector?: boolean
+	onResourceUpdate?: (
+		itemId: string,
+		fields: Record<string, any>,
+	) => Promise<void>
 }) {
-	const params = useParams<{ module: string }>()
-
 	const ref = useRef<HTMLDivElement>(null)
 	const { extractInstruction } = useContext(DependencyContext)
 	const dragStartTimeRef = useRef<number>(0)
@@ -399,6 +403,7 @@ export default function Tree({
 			rootResourceId,
 			rootResource,
 			onRefresh,
+			onResourceUpdate,
 		}),
 		[
 			getChildrenOfItem,
@@ -408,6 +413,7 @@ export default function Tree({
 			rootResourceId,
 			rootResource,
 			onRefresh,
+			onResourceUpdate,
 		],
 	)
 
@@ -453,6 +459,9 @@ export default function Tree({
 		)
 	}, [context, extractInstruction, updateState])
 
+	const [isRenameSectionModalOpen, setIsRenameSectionModalOpen] =
+		useState(false)
+
 	return (
 		<TreeContext.Provider value={context}>
 			<div ref={ref}>
@@ -495,6 +504,7 @@ export default function Tree({
 						return (
 							<div className="relative border-b transition-colors">
 								<TreeItem
+									DEBUG={DEBUG}
 									refresh={onRefresh}
 									item={item}
 									level={0}

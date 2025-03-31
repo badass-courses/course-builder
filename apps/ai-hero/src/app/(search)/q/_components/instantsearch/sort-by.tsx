@@ -38,7 +38,7 @@ export function SortBy() {
 			onValueChange={(value) => refine(value)}
 			defaultValue={TYPESENSE_COLLECTION_NAME}
 		>
-			<SelectTrigger className="text-muted-foreground text-base">
+			<SelectTrigger className="text-muted-foreground truncate text-nowrap text-base [&_span]:truncate">
 				<SelectValue placeholder="Sort by..." />
 			</SelectTrigger>
 			<SelectContent>

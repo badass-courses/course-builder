@@ -13,13 +13,14 @@ export function PostUploader({
 	return (
 		<div>
 			<UploadDropzone
-				className=""
+				className="aspect-video rounded-none"
 				input={{ parentResourceId }}
 				endpoint="videoUploader"
 				config={{
 					mode: 'auto',
 				}}
 				content={{
+					label: 'Upload Video',
 					uploadIcon: (
 						<div className="bg-muted aspect-square rounded-full p-2">
 							<YoutubeIcon
@@ -35,6 +36,7 @@ export function PostUploader({
 							cursor: 'pointer',
 							background: 'hsl(var(--muted))',
 							border: '1px dashed hsl(var(--input))',
+							padding: '0.5rem 1rem',
 						}
 					},
 					label({}) {

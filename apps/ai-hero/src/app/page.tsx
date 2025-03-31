@@ -1,22 +1,29 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import {
+	ShinyText,
+	Testimonial,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { AnimatedTitle } from '@/components/brand/animated-word'
+import PixelatedImageCarousel from '@/components/brand/pixelated-image-carousel'
+import { CldImage } from '@/components/cld-image'
 import { PricingWidgetServer } from '@/components/commerce/pricing-widget-server'
 import { TeamPricingWidget } from '@/components/commerce/team-pricing-widget'
+import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
+import { track } from '@/utils/analytics'
+import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
-import { ChevronRight } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Badge } from '@coursebuilder/ui'
 
 import {
+	AIPracticesGrid,
 	BlueSection,
 	CenteredTitle,
 	CheckList,
@@ -31,7 +38,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
 	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1730364146/aihero-card_2x_jkg4cs.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741104174/aihero.dev/assets/card_2x_mxsopp.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -72,22 +79,56 @@ const Home = async (props: Props) => {
 	// 	await getPricingProps({ searchParams })
 	const page = await getPage('home-6z2ir')
 	const isCommerceEnabled = await commerceEnabled()
+	const firstPageResource = page?.resources?.[0] && {
+		path: page.resources[0]?.resource?.fields?.slug,
+		title: page.resources[0]?.resource?.fields?.title,
+	}
 
 	return (
-		<div className="">
-			<main className="flex w-full flex-col justify-center pt-10 sm:pt-16">
-				<Link
-					className="mx-auto mb-5 flex items-center justify-center"
-					href="/vercel-ai-sdk-tutorial"
+		<LayoutClient className="max-w-[1030px]" withContainer>
+			<main className="flex w-full flex-col justify-center">
+				{firstPageResource && (
+					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
+						<Link
+							className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
+							href={firstPageResource.path}
+							prefetch
+						>
+							New: <span className="underline">{firstPageResource?.title}</span>{' '}
+							▸
+						</Link>
+					</div>
+				)}
+				<header className="relative flex w-full flex-col items-center justify-center px-3 pb-10 pt-10 sm:pb-20 sm:pt-16">
+					<div className="absolute -top-16 left-1/3 h-80 w-16 -rotate-12 bg-[#F7ADBC] opacity-50 blur-3xl dark:bg-white dark:opacity-30" />
+					<div
+						className="pointer-events-none absolute left-0 top-0 h-full w-full select-none opacity-60 mix-blend-overlay"
+						style={{
+							backgroundImage: 'url(/assets/noise.png)',
+							backgroundRepeat: 'repeat',
+						}}
+					/>
+					<div className="relative z-10">
+						<AnimatedTitle
+							className="mx-auto max-w-6xl text-center text-3xl leading-[0.9] sm:text-[3.2rem] dark:text-white"
+							word="Changing"
+							words={['Changing', 'Evolving', 'Shifting', 'Advancing']}
+						>
+							Your Job as a Developer is Changing Faster than You Can Imagine
+						</AnimatedTitle>
+					</div>
+					<h2 className="mt-8 text-center text-xl font-normal opacity-80 sm:text-2xl">
+						<ShinyText>Pandora's Box has been opened. AI is here.</ShinyText>
+					</h2>
+				</header>
+				<PixelatedImageCarousel />
+				<article
+					className={cn(
+						'prose dark:prose-strong:text-white dark:prose-headings:text-white prose-h2:drop-shadow-[1px_3px_0px_hsl(var(--background))] prose-h1:text-center prose-h2:text-center prose-h2:max-w-3xl prose-h2:text-balance lg:prose-h1:max-w-6xl prose-h1:max-w-4xl xl:prose-h1:text-6xl lg:prose-h1:text-5xl sm:prose-h1:text-4xl prose-h1:text-3xl sm:prose-lg prose-lg lg:prose-2xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-blockquote:mx-auto prose-blockquote:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mt-10 max-w-none overflow-x-hidden pb-8 sm:overflow-x-visible sm:pb-16 md:mt-16',
+						'prose-p:px-5 prose-ul:px-5 prose-headings:px-5', // paddings
+						{},
+					)}
 				>
-					<Badge className="dark:bg-primary mx-auto flex items-center gap-1 overflow-hidden rounded-full bg-orange-600 p-0">
-						<span className="bg-background/10 flex px-2 py-1">Out Now</span>
-						<span className="flex items-center gap-1 px-2 pr-3">
-							Free Vercel AI SDK Tutorial <ChevronRight className="w-3" />
-						</span>
-					</Badge>
-				</Link>
-				<article className="prose prose-h1:text-center lg:prose-h1:max-w-6xl prose-h1:max-w-4xl xl:prose-h1:text-6xl lg:prose-h1:text-5xl sm:prose-h1:text-4xl prose-h1:text-3xl sm:prose-lg lg:prose-xl prose-headings:mx-auto prose-headings:max-w-3xl prose-p:mx-auto prose-p:max-w-3xl prose-blockquote:mx-auto prose-blockquote:max-w-3xl prose-ul:mx-auto prose-ul:max-w-3xl prose-img:mx-auto prose-img:max-w-3xl mx-auto max-w-none px-5 pb-8 sm:pb-16">
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
@@ -100,6 +141,26 @@ const Home = async (props: Props) => {
 								Section,
 								CheckList,
 								Testimonial,
+								ShinyText,
+								CldImage: (props) => <CldImage {...props} />,
+								AIPracticesGrid: (props) => (
+									<AIPracticesGrid
+										items={props.items}
+										className="my-6 sm:my-16"
+									/>
+								),
+								PrimaryNewsletterCta: (props) => (
+									<PrimaryNewsletterCta
+										resource={firstPageResource}
+										className={cn('not-prose pb-10 sm:pb-16', props.className)}
+										trackProps={{
+											event: 'subscribed',
+											params: {
+												location: 'home',
+											},
+										}}
+									/>
+								),
 								// @ts-expect-error
 								MuxPlayer,
 							}}
@@ -124,17 +185,8 @@ const Home = async (props: Props) => {
 						</div>
 					</section>
 				)}
-				<PrimaryNewsletterCta
-					className="px-5 pt-10"
-					trackProps={{
-						event: 'subscribed',
-						params: {
-							location: 'home',
-						},
-					}}
-				/>
 			</main>
-		</div>
+		</LayoutClient>
 	)
 }
 

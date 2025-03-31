@@ -3,10 +3,11 @@
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { useResource } from '@/components/resource-form/resource-context'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
-import { PostType } from '@/lib/posts'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
+import { getResourcePath } from '@/utils/resource-paths'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -19,25 +20,30 @@ export interface CreatePostProps {
 	/**
 	 * If provided, called instead of the default router.push to the resource's edit page.
 	 */
-	onResourceCreated?: (resource: ContentResource) => void
+	onResourceCreated?: (resource: ContentResource) => Promise<void>
 	/**
 	 * The default type of resource to create
 	 * @default 'article'
 	 */
-	defaultResourceType?: PostType
+	defaultResourceType?: string
 	/**
 	 * List of allowed resource types that can be created
 	 * @default ['article', 'lesson']
 	 */
-	availableResourceTypes?: PostType[]
+	availableResourceTypes?: string[]
 	/**
-	 * Parent lesson ID when creating a solution
+	 * List of top-level resource types (not post subtypes)
 	 */
-	parentLessonId?: string
+	topLevelResourceTypes?: string[]
 	/**
 	 * Called when navigation is about to start
 	 */
 	onNavigationStart?: () => void
+	/**
+	 * Whether to enable video upload
+	 * @default true
+	 */
+	uploadEnabled?: boolean
 }
 
 /**
@@ -48,17 +54,28 @@ export function CreatePost({
 	onResourceCreated,
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
-	parentLessonId,
+	topLevelResourceTypes,
 	onNavigationStart,
+	uploadEnabled = true,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
+	const resource = useResource()
+	const parentResource = resource?.resource
 
 	return (
 		<NewResourceWithVideoForm
 			className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
 			onResourceCreated={async (resource: ContentResource) => {
-				const editUrl = `/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`
+				const editUrl = getResourcePath(
+					resource.type,
+					resource.fields?.slug || resource.id,
+					'edit',
+					parentResource && {
+						parentType: parentResource.type,
+						parentSlug: parentResource.fields?.slug || parentResource.id,
+					},
+				)
 
 				// Start navigation transition
 				startTransition(() => {
@@ -73,19 +90,14 @@ export function CreatePost({
 				}
 			}}
 			createResource={async (input) => {
-				// Add parentLessonId to input when creating a solution
-				if (input.postType === 'cohort-lesson-solution' && parentLessonId) {
-					return createPost({
-						...input,
-						parentLessonId,
-					})
-				}
+				// All posts get created the same way now
 				return createPost(input)
 			}}
 			getVideoResource={getVideoResource}
 			availableResourceTypes={availableResourceTypes}
 			defaultPostType={defaultResourceType}
-			uploadEnabled={false}
+			topLevelResourceTypes={topLevelResourceTypes}
+			uploadEnabled={uploadEnabled}
 		>
 			{(handleSetVideoResourceId: (id: string) => void) => (
 				<PostUploader setVideoResourceId={handleSetVideoResourceId} />
