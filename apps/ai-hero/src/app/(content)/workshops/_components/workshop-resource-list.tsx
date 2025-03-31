@@ -100,9 +100,7 @@ export function WorkshopResourceList(props: Props) {
 				{withHeader && (
 					<div
 						ref={ref as any}
-						className={cn(
-							'relative z-10 w-full border-b pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]',
-						)}
+						className={cn('relative z-10 w-full border-b pl-2')}
 					>
 						<div className="flex w-full flex-row items-center gap-3 p-3">
 							{workshopNavigation.coverImage && (
@@ -316,9 +314,7 @@ const LessonResource = ({
 								{index + 1}
 							</span>
 						)}
-						<span className="w-full text-balance text-base">
-							{lesson.title}
-						</span>
+						<span className="w-full text-base">{lesson.title}</span>
 						{abilityStatus === 'success' && (
 							<>
 								{ability.can('read', 'Content') || index === 0 ? null : (
@@ -332,7 +328,12 @@ const LessonResource = ({
 					</Link>
 
 					{ability.can('create', 'Content') ? (
-						<Button asChild variant="outline" size="icon" className="scale-75">
+						<Button
+							asChild
+							variant="outline"
+							size="icon"
+							className="absolute right-0.5 scale-75"
+						>
 							<Link href={`/workshops/${params.module}/${lesson.slug}/edit`}>
 								<Pen className="w-3" />
 							</Link>
