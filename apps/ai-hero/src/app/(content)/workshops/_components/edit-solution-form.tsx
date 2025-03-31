@@ -223,9 +223,6 @@ export function EditSolutionForm({
 					return result as SolutionFormData
 				}
 			},
-			onSave: async () => {
-				router.push(`/workshops/${moduleId}/${lessonSlug}/edit`)
-			},
 		},
 	)
 
