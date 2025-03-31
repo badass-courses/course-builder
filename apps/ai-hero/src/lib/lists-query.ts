@@ -323,20 +323,56 @@ export async function removePostFromList({
 	const list = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, listId),
 		with: {
-			resources: true,
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	})
 
 	if (!list) throw new Error('List not found')
 
-	await db
-		.delete(contentResourceResource)
-		.where(
-			and(
-				eq(contentResourceResource.resourceOfId, list.id),
-				eq(contentResourceResource.resourceId, postId),
+	// Find the resource to remove - could be in top level or in a section
+	const resourceToRemove = list.resources.find(
+		(r) =>
+			r.resourceId === postId ||
+			r.resource.resources?.some(
+				(childResource) => childResource.resourceId === postId,
 			),
-		)
+	)
+
+	if (!resourceToRemove) throw new Error('Resource not found in list')
+
+	// If the resource is directly in the list
+	if (resourceToRemove.resourceId === postId) {
+		await db
+			.delete(contentResourceResource)
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, list.id),
+					eq(contentResourceResource.resourceId, postId),
+				),
+			)
+	} else {
+		// If the resource is in a section
+		await db
+			.delete(contentResourceResource)
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, resourceToRemove.resourceId),
+					eq(contentResourceResource.resourceId, postId),
+				),
+			)
+	}
 }
 
 export async function updateList(
