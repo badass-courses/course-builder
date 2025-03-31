@@ -76,9 +76,23 @@ export const createWorkshopLessonFormConfig = (
 			if (!resource.id) {
 				throw new Error('Lesson ID is required for updates')
 			}
+			const lessonUpdate: LessonUpdate = {
+				id: resource.id,
+				fields: {
+					title: resource.fields?.title || '',
+					body: resource.fields?.body || '',
+					slug: resource.fields?.slug || '',
+					description: resource.fields?.description || '',
+					state: resource.fields?.state || 'draft',
+					visibility: resource.fields?.visibility || 'public',
+					github: resource.fields?.github || '',
+					thumbnailTime: resource.fields?.thumbnailTime || 0,
+				},
+				tags: resource.tags || [],
+			}
 
 			// updateLesson now accepts Lesson type directly
-			const updatedResource = await updateLesson(resource)
+			const updatedResource = await updateLesson(lessonUpdate)
 
 			// Ensure we never return null
 			if (!updatedResource) {
