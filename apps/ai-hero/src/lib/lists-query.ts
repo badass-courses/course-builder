@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -116,6 +116,13 @@ export async function getList(listIdOrSlug: string) {
 
 	return listParsed.data
 }
+
+export const getCachedListForPost = unstable_cache(
+	async (slugOrId: string) => getListForPost(slugOrId),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
 export async function getListForPost(postIdOrSlug: string) {
 	// optimized query that skips body fields
 	const result = await db.execute(sql`

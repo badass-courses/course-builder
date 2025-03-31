@@ -1,6 +1,6 @@
 import LayoutClient from '@/components/layout-client'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
-import { getListForPost } from '@/lib/lists-query'
+import { getCachedListForPost } from '@/lib/lists-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 
 import { getCachedPostOrList } from '../../../lib/posts-query'
@@ -18,7 +18,7 @@ export default async function Layout(props: {
 	const post = await getCachedPostOrList(params.post)
 	let list = null
 	if (post && post.type === 'post') {
-		list = await getListForPost(params.post)
+		list = await getCachedListForPost(params.post)
 	}
 	const initialProgress = await getModuleProgressForUser(
 		list ? list.id : params.post,

@@ -9,7 +9,7 @@ import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import { courseBuilderAdapter } from '@/db'
-import { getAllLists } from '@/lib/lists-query'
+import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -34,17 +34,12 @@ export const experimental_ppr = true
 
 type Props = {
 	params: Promise<{ post: string }>
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export default async function PostPage(props: {
 	params: Promise<{ post: string }>
-	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
-	const searchParams = await props.searchParams
 	const params = await props.params
-
-	const listSlugFromParam = searchParams.list
 
 	const post = await getCachedPostOrList(params.post)
 
@@ -53,13 +48,12 @@ export default async function PostPage(props: {
 	}
 
 	if (post.type === 'list') {
-		return (
-			<ListPage
-				list={post}
-				params={{ slug: params.post } as any}
-				searchParams={searchParams as any}
-			/>
-		)
+		return <ListPage list={post} params={{ slug: params.post } as any} />
+	}
+
+	let list = null
+	if (post && post.type === 'post') {
+		list = await getCachedListForPost(params.post)
 	}
 
 	const squareGridPattern = generateGridPattern(
@@ -101,7 +95,7 @@ export default async function PostPage(props: {
 					/>
 				</div>
 				<div className="relative z-10 mx-auto flex w-full items-center justify-between px-5 md:px-10 lg:px-14">
-					{!listSlugFromParam ? (
+					{!list ? (
 						<Link
 							href="/posts"
 							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
@@ -291,7 +285,6 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const searchParams = await props.searchParams
 
 	const resource = await getCachedPostOrList(params.post)
 
