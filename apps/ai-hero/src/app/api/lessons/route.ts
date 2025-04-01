@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
-		await log.info('api.posts.get.started', {
+		await log.info('api.lessons.get.started', {
 			userId: user?.id,
 			slugOrId,
 			hasAbility: !!ability,
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 			slug: slugOrId,
 		})
 
-		await log.info('api.posts.get.success', {
+		await log.info('api.lessons.get.success', {
 			userId: user?.id,
 			slugOrId,
 			resultCount: Array.isArray(result) ? result.length : 1,
