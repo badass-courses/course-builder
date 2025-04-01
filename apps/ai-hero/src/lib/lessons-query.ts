@@ -2,7 +2,11 @@
 
 import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceResource,
+	contentResourceTag,
+} from '@/db/schema'
 import { env } from '@/env.mjs'
 import {
 	LessonSchema,
@@ -197,6 +201,14 @@ export async function getLesson(lessonSlugOrId: string) {
 						eq(contentResource.type, 'post'),
 					),
 				),
+				with: {
+					tags: {
+						with: {
+							tag: true,
+						},
+						orderBy: asc(contentResourceTag.position),
+					},
+				},
 			})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)

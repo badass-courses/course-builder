@@ -56,6 +56,7 @@ export const createWorkshopLessonFormConfig = (
 			github: lesson?.fields?.github || '',
 			gitpod: lesson?.fields?.gitpod || '',
 		},
+		tags: lesson?.tags || [],
 	}),
 	customTools: [
 		mediaUploadTool,
@@ -140,6 +141,7 @@ export const createWorkshopLessonFormConfig = (
 				github: resource.fields.github || '',
 				thumbnailTime: resource.fields.thumbnailTime || 0,
 			},
+			tags: resource.tags || [],
 		}
 		const result = await autoUpdateLesson(postUpdate)
 		return result as Lesson
