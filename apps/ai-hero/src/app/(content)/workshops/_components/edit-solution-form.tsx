@@ -114,22 +114,6 @@ const BaseSolutionForm = ({
 			/>
 			<FormField
 				control={form.control}
-				name="fields.body"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">
-							Solution Content
-						</FormLabel>
-						<FormDescription>
-							Add code examples, explanations, and implementation details.
-						</FormDescription>
-						<Textarea className="min-h-[300px] font-mono" {...field} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">

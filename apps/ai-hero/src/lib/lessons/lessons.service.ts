@@ -97,7 +97,14 @@ export async function getLesson(slugOrId: string, ability: Ability) {
 	}
 
 	console.log('✅ Lesson found:', lessonParsed.data.id)
-	return lessonParsed.data
+
+	const parentResources = await getWorkshopsForLesson(lessonParsed.data.id)
+	console.log('✅ Retrieved parent resources:', parentResources)
+
+	return {
+		...lessonParsed.data,
+		parentResources,
+	}
 }
 
 // New function that doesn't require session
