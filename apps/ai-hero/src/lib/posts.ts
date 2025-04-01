@@ -51,7 +51,7 @@ export const PostVisibilitySchema = z.union([
 	z.literal('unlisted'),
 ])
 
-export const PostTagsChema = z
+export const PostTagsSchema = z
 	.array(
 		z.object({
 			contentResourceId: z.string(),
@@ -98,7 +98,7 @@ export const PostSchema = ContentResourceSchema.merge(
 			thumbnailTime: z.number().nullish(),
 			featured: FeaturedSchema.optional(),
 		}),
-		tags: PostTagsChema,
+		tags: PostTagsSchema,
 	}),
 )
 
@@ -117,7 +117,7 @@ export const PostUpdateSchema = z.object({
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
 	}),
-	tags: PostTagsChema,
+	tags: PostTagsSchema,
 	videoResourceId: z.string().optional().nullable(),
 })
 

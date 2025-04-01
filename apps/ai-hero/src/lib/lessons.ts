@@ -5,7 +5,7 @@ import {
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
-import { PostStateSchema, PostTagsChema, PostVisibilitySchema } from './posts'
+import { PostStateSchema, PostTagsSchema, PostVisibilitySchema } from './posts'
 
 export const LessonSchema = ContentResourceSchema.merge(
 	z.object({
@@ -29,7 +29,7 @@ export const LessonSchema = ContentResourceSchema.merge(
 			thumbnailTime: z.number().nullish(),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
-		tags: PostTagsChema,
+		tags: PostTagsSchema,
 	}),
 )
 
@@ -47,7 +47,7 @@ export const LessonUpdateSchema = z.object({
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
 	}),
-	tags: PostTagsChema,
+	tags: PostTagsSchema,
 })
 export type LessonUpdate = z.infer<typeof LessonUpdateSchema>
 

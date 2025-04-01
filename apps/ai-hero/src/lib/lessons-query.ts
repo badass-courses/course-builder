@@ -400,29 +400,35 @@ export async function writeNewLessonToDatabase(
 		}
 
 		try {
-			// Step 2: Create the core lesson
-			console.log('📝 Creating core lesson...')
-			const lesson = await createCoreLesson({
-				newLessonId,
-				title,
-				lessonGuid,
-				lessonType,
-				createdById,
-			})
-			console.log('✅ Core lesson created:', lesson)
-
-			// Step 3: Link video resource if provided
-			if (videoResourceId) {
-				console.log('🔗 Linking video resource to lesson...')
-				await db.insert(contentResourceResource).values({
-					resourceOfId: lesson.id,
-					resourceId: videoResourceId,
-					position: 0,
+			// Wrap database operations in a transaction
+			const lesson = await db.transaction(async (tx) => {
+				// Step 2: Create the core lesson
+				console.log('📝 Creating core lesson...')
+				const lesson = await createCoreLesson({
+					newLessonId,
+					title,
+					lessonGuid,
+					lessonType,
+					createdById,
+					tx, // Pass transaction context
 				})
-				console.log('✅ Video resource linked to lesson')
-			}
+				console.log('✅ Core lesson created:', lesson)
 
-			// Step 4: Index the lesson in Typesense
+				// Step 3: Link video resource if provided
+				if (videoResourceId) {
+					console.log('🔗 Linking video resource to lesson...')
+					await tx.insert(contentResourceResource).values({
+						resourceOfId: lesson.id,
+						resourceId: videoResourceId,
+						position: 0,
+					})
+					console.log('✅ Video resource linked to lesson')
+				}
+
+				return lesson
+			})
+
+			// Step 4: Index the lesson in Typesense (outside transaction since it's a separate system)
 			try {
 				console.log('🔍 Indexing lesson in Typesense')
 				await upsertPostToTypeSense(lesson, 'save')
@@ -453,18 +459,21 @@ export async function writeNewLessonToDatabase(
 	}
 }
 
+// Helper function that accepts transaction context
 async function createCoreLesson({
 	newLessonId,
 	title,
 	lessonGuid,
 	lessonType,
 	createdById,
+	tx,
 }: {
 	newLessonId: string
 	title: string
 	lessonGuid: string
 	lessonType: string
 	createdById: string
+	tx?: any // Transaction context
 }): Promise<Lesson> {
 	try {
 		console.log('📝 Creating core lesson with:', {
@@ -475,7 +484,9 @@ async function createCoreLesson({
 			createdById,
 		})
 
-		await db.insert(contentResource).values({
+		const dbContext = tx || db // Use transaction context if provided, otherwise use db
+
+		await dbContext.insert(contentResource).values({
 			id: newLessonId,
 			type: 'lesson',
 			createdById,
@@ -490,7 +501,7 @@ async function createCoreLesson({
 		console.log('✅ Lesson inserted into database')
 
 		// Direct query by ID without filters
-		const lesson = await db.query.contentResource.findFirst({
+		const lesson = await dbContext.query.contentResource.findFirst({
 			where: eq(contentResource.id, newLessonId),
 			with: {
 				resources: {
