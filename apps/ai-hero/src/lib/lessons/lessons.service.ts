@@ -99,7 +99,7 @@ export async function getLesson(slugOrId: string, ability: Ability) {
 	console.log('✅ Lesson found:', lessonParsed.data.id)
 
 	const parentResources = await getWorkshopsForLesson(lessonParsed.data.id)
-	console.log('✅ Retrieved parent resources:', parentResources)
+	console.log('✅ Retrieved parent resources')
 
 	return {
 		...lessonParsed.data,
@@ -349,7 +349,7 @@ export async function updateLesson({
 		console.log('🔍 Getting parent resources (workshops) for lesson', result.id)
 		let parentResources = null
 		parentResources = await getWorkshopsForLesson(result.id)
-		console.log('✅ Retrieved parent resources:', parentResources)
+		console.log('✅ Retrieved parent resources')
 		if (parentResources.length > 0) {
 			const lessonPath = getResourcePath('lesson', result.fields.slug, 'view', {
 				parentType: parentResources[0]?.type as string,
