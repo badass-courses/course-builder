@@ -1,7 +1,7 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"globalDependencies": ["**/.env.*local"],
-	"globalEnv": ["PORT"],
+	"globalEnv": ["PORT", "SKIP_ENV_VALIDATION"],
 	"tasks": {
 		"topo": {
 			"dependsOn": ["^topo"]
@@ -68,7 +68,8 @@
 				"AWS_SECRET_ACCESS_KEY",
 				"AWS_BUCKET_NAME",
 				"SLACK_TOKEN",
-				"SLACK_DEFAULT_CHANNEL_ID"
+				"SLACK_DEFAULT_CHANNEL_ID",
+				"SKIP_ENV_VALIDATION"
 			],
 			"outputLogs": "new-only"
 		},
