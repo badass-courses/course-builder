@@ -3,6 +3,7 @@ import { Ability, subject } from '@casl/ability'
 import { getLesson } from '../lessons/lessons.service'
 import type { NewSolutionInput, SolutionUpdate } from '../solution'
 import {
+	deleteSolutionFromDatabase,
 	getSolutionForLesson as getSolutionForLessonQuery,
 	writeNewSolutionToDatabase,
 	writeSolutionUpdateToDatabase,
@@ -112,4 +113,36 @@ export async function createSolutionForLesson(
 	})
 
 	return solution
+}
+
+export async function deleteSolutionForLesson(
+	lessonId: string,
+	ability: Ability,
+	userId: string,
+) {
+	const lesson = await getLesson(lessonId, ability)
+	if (!lesson) {
+		console.log('❌ Lesson not found:', lessonId)
+		throw new SolutionError('Lesson not found', 404)
+	}
+
+	if (ability.cannot('manage', subject('Content', lesson))) {
+		console.error('❌ User lacks permission:', {
+			userId,
+			lessonId: lesson.id,
+			action: 'delete',
+		})
+		throw new SolutionError('Unauthorized', 401)
+	}
+
+	const solution = await getSolutionForLessonQuery(lesson.id)
+
+	if (!solution) {
+		console.log('❌ Solution not found:', lesson.id)
+		throw new SolutionError('Solution not found', 404)
+	}
+
+	await deleteSolutionFromDatabase(solution.id)
+
+	return { message: 'Solution deleted' }
 }

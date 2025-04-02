@@ -25,6 +25,8 @@ import { z } from 'zod'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 
+import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
+
 /**
  * Get a solution for a specific lesson
  */
@@ -163,7 +165,7 @@ export async function createSolution({
 				visibility: 'unlisted',
 			},
 			createdById: user.id,
-		} as any) // Using 'any' to bypass the type check as the adapter likely handles the ID generation
+		} as any)
 
 		// Create the link between lesson and solution
 		await db.insert(contentResourceResource).values({
@@ -177,6 +179,20 @@ export async function createSolution({
 			lessonId,
 			userId: user.id,
 		})
+
+		try {
+			await upsertPostToTypeSense(solution, 'save')
+			await log.info('solution.typesense.indexed', {
+				solutionId: solution.id,
+				action: 'save',
+			})
+		} catch (error) {
+			await log.error('solution.typesense.index.failed', {
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+				solutionId: solution.id,
+			})
+		}
 
 		revalidateTag('solution')
 		return solution
@@ -224,22 +240,57 @@ export async function updateSolution(input: Partial<Solution>) {
 		solutionSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
-		id: currentSolution.id,
-		fields: {
-			...currentSolution.fields,
-			...input.fields,
-			slug: solutionSlug,
-		},
-	})
+	try {
+		const updatedResource =
+			await courseBuilderAdapter.updateContentResourceFields({
+				id: currentSolution.id,
+				fields: {
+					...currentSolution.fields,
+					...input.fields,
+					slug: solutionSlug,
+				},
+			})
 
-	log.info('solution.updated', {
-		solutionId: currentSolution.id,
-		userId: user.id,
-	})
+		try {
+			await upsertPostToTypeSense(
+				{
+					...currentSolution,
+					fields: {
+						...currentSolution.fields,
+						...input.fields,
+						slug: solutionSlug,
+					},
+				},
+				'save',
+			)
+			await log.info('solution.update.typesense.success', {
+				solutionId: currentSolution.id,
+				userId: user.id,
+			})
+		} catch (error) {
+			await log.error('solution.update.typesense.failed', {
+				solutionId: currentSolution.id,
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+				userId: user.id,
+			})
+		}
 
-	revalidateTag('solution')
-	return updatedResource
+		log.info('solution.updated', {
+			solutionId: currentSolution.id,
+			userId: user.id,
+		})
+
+		revalidateTag('solution')
+		return updatedResource
+	} catch (error) {
+		log.error('solution.update.error', {
+			error,
+			solutionId: currentSolution.id,
+			userId: user.id,
+		})
+		throw error
+	}
 }
 
 /**
@@ -281,6 +332,17 @@ export async function deleteSolution(solutionId: string) {
 				deletedAt: new Date(),
 			})
 			.where(eq(contentResourceResource.resourceId, solutionId))
+
+		try {
+			await deletePostInTypeSense(solutionId)
+			await log.info('solution.delete.typesense.success', { solutionId })
+		} catch (error) {
+			await log.error('solution.delete.typesense.failed', {
+				solutionId,
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+			})
+		}
 
 		log.info('solution.deleted', {
 			solutionId,
@@ -495,6 +557,21 @@ export const writeSolutionUpdateToDatabase = async (
 		throw new Error(`Solution with id ${solution.id} not found after update.`)
 	}
 
+	try {
+		await upsertPostToTypeSense(updatedSolution.data, 'save')
+		console.log('✅ Successfully upserted solution to TypeSense')
+	} catch (error) {
+		console.error(
+			'⚠️ TypeSense indexing failed but continuing with solution update:',
+			{
+				error,
+				solutionId: solution.id,
+				stack: error instanceof Error ? error.stack : undefined,
+			},
+		)
+		// Don't rethrow - let the solution update succeed even if TypeSense fails
+	}
+
 	return updatedSolution.data
 }
 
@@ -538,6 +615,18 @@ export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
 			})
 			console.log('✅ Lesson-solution link created')
 
+			try {
+				await upsertPostToTypeSense(solution, 'save')
+				console.log('✅ Successfully indexed solution in TypeSense')
+			} catch (error) {
+				console.error('⚠️ Failed to index solution in TypeSense:', {
+					error,
+					solutionId: solution.id,
+					stack: error instanceof Error ? error.stack : undefined,
+				})
+				// Don't rethrow - let the solution creation succeed even if TypeSense fails
+			}
+
 			revalidateTag('solution')
 			return solution
 		} catch (error) {
@@ -554,4 +643,20 @@ export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
 		}
 		throw error
 	}
+}
+
+export async function deleteSolutionFromDatabase(solutionId: string) {
+	try {
+		await deletePostInTypeSense(solutionId)
+		console.log('✅ Successfully deleted solution from TypeSense')
+	} catch (error) {
+		console.error('⚠️ Failed to delete solution from TypeSense:', {
+			error,
+			solutionId: solutionId,
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		// Continue with database deletion even if TypeSense fails
+	}
+
+	await db.delete(contentResource).where(eq(contentResource.id, solutionId))
 }
