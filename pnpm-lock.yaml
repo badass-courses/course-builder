@@ -2736,8 +2736,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.0.3
-        version: 15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.26
+        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
@@ -10424,22 +10424,6 @@ packages:
     dependencies:
       fast-glob: 3.3.1
     dev: true
-
-  /@next/mdx@15.0.3(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
-    resolution: {integrity: sha512-EwCJKDeJqfbHbsS7rIdWpKDOZsOPsif9AX4PaIhy5ghSMsZvi+/vIZVc07pZT7BdwCIoL9XM1KZMd/vzxCxF5A==}
-    peerDependencies:
-      '@mdx-js/loader': '>=0.15.0'
-      '@mdx-js/react': '>=0.15.0'
-    peerDependenciesMeta:
-      '@mdx-js/loader':
-        optional: true
-      '@mdx-js/react':
-        optional: true
-    dependencies:
-      '@mdx-js/loader': 3.1.0(acorn@8.14.0)(webpack@5.97.1)
-      '@mdx-js/react': 3.1.0(@types/react@19.0.7)(react@19.0.0)
-      source-map: 0.7.4
-    dev: false
 
   /@next/mdx@15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
     resolution: {integrity: sha512-zO1d4zvcmk5sw+7EKOKlgKxIOoNTYsst6AnPsJ5J5dXC0dc+85+pLpP363BEvBhSm0Ndm7tsS1qYP6/ew2i1Bw==}
